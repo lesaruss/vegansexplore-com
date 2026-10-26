@@ -269,18 +269,20 @@
       .dir-grid { grid-template-columns: 1fr; }
       .partners-grid { grid-template-columns: 1fr; }
       .member-bar { padding: 14px 24px; }
-      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page; the bar is Collapse and the city
-         picker on one row, the picker reaching the same right edge as the Section dropdown, then Page tour and Get
-         Passport centered under them. */
+      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page. The bar is one row (Sean,
+         2026-10-26): the city picker, then Collapse on the right; Get Passport or Dashboard and Page tour are in the hero. */
       .hero-eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
       .hero-meta { gap: 12px 16px; }
       .hero-divider-v { display: none; }
-      .member-bar { flex-direction: column; align-items: stretch; gap: 12px; }
-      .member-bar-left { flex-wrap: nowrap; gap: 12px; width: 100%; }
+      .member-bar { flex-wrap: nowrap; align-items: stretch; gap: 10px; }
+      .member-bar-left { flex: 1 1 auto; flex-wrap: nowrap; gap: 10px; min-width: 0; }
       .mb-breadcrumb { flex: 1; }
       .mb-breadcrumb .mb-city { width: 100%; }
-      .member-bar-actions { justify-content: center; flex-wrap: wrap; gap: 12px; }
-      .member-bar-actions > * { min-height: 44px; display: inline-flex; align-items: center; box-sizing: border-box; }
+      .member-bar-actions { flex: 0 0 auto; gap: 10px; }
+      .member-bar-toggle, .mb-city { min-height: 44px; box-sizing: border-box; }
+    }
+    @media (max-width: 480px) {
+      .member-bar { padding: 12px 16px; gap: 8px; }
     }
 
     /* ── Locked panel ── */
@@ -390,7 +392,7 @@
       </div>
       <div class="hero-actions">
         <a href="/passport#/join" class="btn-join" id="hub-join">Get Passport</a>
-        <a href="/welcome" class="btn-outline-light" id="hub-second">Take the Tour</a>
+        <a href="/welcome" class="btn-outline-light" id="hub-second">Page tour</a>
       </div>
     </div>
   </section>
@@ -400,19 +402,14 @@
       var img = document.getElementById('hub-banner'); img.src = h.page.banner; img.alt = h.page.alt;
       document.getElementById('hub-heading').innerHTML = h.page.short + '<br><em>Vegans</em>';
       document.getElementById('hub-regions').innerHTML = h.page.regions;
-      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport and Take the
-      // Tour; signed in, Explore Directory and Explore Dashboard. The badge reads Preview until they are a member.
+      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport; signed in,
+      // Dashboard (Sean, 2026-10-26). Page tour is the second button for both (ve-tour.js
+      // puts it there; Sean, 2026-10-26). The badge reads Preview until they are a member.
       var join = document.getElementById('hub-join'), second = document.getElementById('hub-second');
       var me = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? (VEAuth.getMember && VEAuth.getMember()) || {} : null;
       if (me) {
-        join.textContent = 'Explore Directory'; join.href = '?tab=directory';
-        join.onclick = function () { if (window.switchTab) { switchTab('directory'); return false; } };
-        second.textContent = 'Explore Dashboard'; second.href = '/dashboard';
-        if (me.membership_status === 'active') {
-          document.getElementById('hub-access').textContent = 'Member';
-          // Members already hold the Passport: the bar's Get Passport goes once the bar is on the page.
-          document.addEventListener('DOMContentLoaded', function () { var mp = document.getElementById('mb-passport'); if (mp) mp.style.display = 'none'; });
-        }
+        join.textContent = 'Dashboard'; join.href = '/dashboard';
+        if (me.membership_status === 'active') document.getElementById('hub-access').textContent = 'Member';
       } else {
         join.href = '/passport?community=' + h.slug + '#/join';
       }
@@ -421,18 +418,18 @@
 
   <!-- MEMBER BAR: collapses the hero -->
   <div class="member-bar" id="member-bar" role="complementary" aria-label="Community hub banner control">
+    <!-- The city picker on the left, Collapse on the right, at every width (Sean, 2026-10-26). -->
     <div class="member-bar-left">
-      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
-        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
-        <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
-      </button>
       <nav class="mb-breadcrumb" aria-label="Breadcrumb">
         <label class="visually-hidden" for="hub-crumb">Community</label>
         <select class="mb-city" id="hub-crumb" aria-current="page"></select>
       </nav>
     </div>
     <div class="member-bar-actions">
-      <a href="/passport" class="btn-join" id="mb-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a>
+      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
+        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+        <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
+      </button>
     </div>
   </div>
 

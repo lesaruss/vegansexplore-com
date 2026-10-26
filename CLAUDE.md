@@ -540,9 +540,10 @@ being held automatically. On `/bounties` it is the always-open first card in eve
 On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
 keeps the section you are on, All cities opens `/directory` from the Directory section, else `/communities`. No "Communities /"
 before it, so it fits a phone (Sean, 2026-10-25). The hub's hero buttons (Sean, 2026-10-25: "anybody can be a part of any
-community"): signed out, **Get Passport** (`/passport?community=<slug>#/join`) and **Take the Tour** (`/welcome`), with a
-Preview badge; signed in, **Explore Directory** and **Explore Dashboard**, the badge Member for an active member, and no Get
-Passport in the bar. Under the title, the hero rotates the cities that have open Directory listings at an address in the hub,
+community"): signed out, **Get Passport** (`/passport?community=<slug>#/join`) and **Page tour** (the hub's spotlight tour,
+`ve-tour.js` `hub`), with a Preview badge; signed in, **Dashboard** (`/dashboard`, the green button) and **Page tour**, the badge
+Member for an active member. The bar under the hero (Sean, 2026-10-26) is the city picker on the left and Collapse on the right,
+one row at every width, nothing else in it (no Get Passport, no Dashboard, no Page tour). Under the title, the hero rotates the cities that have open Directory listings at an address in the hub,
 three at a time, most listings first, fading every 4 seconds and looping (Sean, 2026-10-25: "as new ones are added, it will update
 that automatically"; `heroCities` in `hub.html`); three or fewer cities keep the hub's written areas (`VE_HUBS[].page.regions`,
 South Florida's are its counties). The hub passes an axe-core WCAG 2 AA check at phone and desktop width (2026-10-25): muted text

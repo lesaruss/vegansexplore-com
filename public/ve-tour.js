@@ -141,17 +141,19 @@
 
     hub: {
       label: 'Community tour',
-      // Its button reads Page tour, so it is not mistaken for the hero's Take the Tour (the site tour, /welcome; Sean, 2026-10-25).
+      // Its button reads Page tour, so it is not mistaken for the site tour (/welcome; Sean, 2026-10-25).
       button: 'Page tour',
       ready: onHub,
       prepare: function () { hubTab('news'); },
       finish: function () { hubTab('news'); try { global.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { global.scrollTo(0, 0); } },
-      launcher: function (btn) { var host = q('.member-bar-actions'); if (!host || !onHub()) return false; btn.className += ' ve-tour-launch-light'; host.insertBefore(btn, host.firstChild); return true; },
+      // It takes the hero's second button (Sean, 2026-10-26): Get Passport or Dashboard, then Page tour, so the bar
+      // under the hero stays one row on phones.
+      launcher: function (btn) { var host = q('#hub-second'); if (!host || !onHub()) return false; btn.className = 'btn-outline-light'; btn.textContent = 'Page tour'; host.parentNode.replaceChild(btn, host); return true; },
       steps: [
         { sel: ['section.hero .hero-content', 'section.hero'], title: 'Your city, all in one place',
           body: "Every city has a community hub like this one. Here's what you'll find." },
         { sel: ['section.hero .hero-actions .btn-join'], title: 'Start here',
-          body: 'New here? Get your Passport to join Vegans Explore. Already a member? Jump straight to the Directory or your dashboard.' },
+          body: 'New here? Get your Passport to join Vegans Explore. Already a member? Your dashboard is one tap away.' },
         { sel: ['.hub-menu'], title: 'Everything for this city',
           body: 'News, events, the Directory, ways to get involved, bounties and the Community Board. Pick one here.' },
         { hubTab: 'news', sel: ['#tab-news .section-hdr', '.hub-menu'], title: 'Local news',
