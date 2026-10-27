@@ -511,7 +511,10 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
 - **The Ambassador Guide**, `/ambassadors/welcome` (`ambassadors/welcome.html`; Sean, 2026-10-27: "everything should really be like
   a guide... Create it like the Passport but tailored to someone who has been hand selected to join the community because of their
   contributions to the movement"): the Passport Guide's layout (tabs are the tour, a Guide's picture and words on the right, Back / N
-  of M / Next, their points and Copy your link in the header), nine tabs (`#/<tab>`): Overview (You were hand selected), Your
+  of M / Next, their points and Copy your link in the header), ten tabs (`#/<tab>`): Overview (You were hand selected), **Why it matters** (Sean, 2026-10-27: "Did it really explain to him why being
+  an ambassador matters?... he doesn't need money... He probably just wants to support the community": local places get found
+  through member votes and vetting, the city comes alive, the $11 keeps the community running, their voice carries, and points as
+  support they can give away; the points are a footnote everywhere, never the pitch), Your
   membership (on us, points, level, what points do), Your role, Your city (home chapter, `set_home_community`, its hub, Pulse and
   Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
   with their link), Answering questions (straight answers, do and don't), Your progress (`ve-auth` `referrals`: members and waiting

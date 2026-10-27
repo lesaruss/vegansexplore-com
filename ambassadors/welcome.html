@@ -208,17 +208,18 @@
   var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
   var TABS = [
     { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. You were hand selected for what you have already given the movement. This Guide walks you through what comes with it, one tab at a time.' },
+    { k: 'why', label: 'Why it matters', g: 'dani', say: 'Every person who joins makes Vegan easier to find and easier to live in their city. People already trust you, and that is why your invitation counts.' },
     { k: 'account', label: 'Your membership', g: 'theo', say: 'Your Founding Membership is on us, in recognition of your work. Here are your points, your level, and what they can do.' },
     { k: 'role', label: 'Your role', g: 'nori', say: 'You already do the work. As an Ambassador you bring people in and are a voice for your city, your way, with the people who already trust you.' },
     { k: 'city', label: 'Your city', g: 'river', say: 'Pick the city you represent. Your Daily Pulse, events and Directory open there, and so does the hub you will point people to.' },
-    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours. When someone becomes a member through it, you earn 111 points.' },
+    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours. Everyone who joins through it adds their voice, their votes and their support to the community.' },
     { k: 'who', label: 'Who to invite', g: 'maya', say: 'Start with the people who would love it most: friends who eat Vegan, the Vegan-curious, and the places you already go.' },
     { k: 'share', label: 'What to share', g: 'dani', say: 'Here are a few things to send, each with your link already in it. Use them as they are, or say it your way.' },
     { k: 'questions', label: 'Answering questions', g: 'theo', say: 'People will ask what it is and what it costs. Here are the straight answers, and a few things to keep in mind.' },
     { k: 'progress', label: 'Your progress', g: 'liz', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
   ];
   var BLURB = {
-    account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
+    why: 'What each new member makes possible.', account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
     city: 'The city you represent.', link: 'Your link, and how it counts.', who: 'Where to start.',
     share: 'Ready-made words, with your link.', questions: 'Straight answers to what people ask.', progress: 'Who joined through you.'
   };
@@ -260,8 +261,18 @@
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
-      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: the people you have reached, the work you have done for the animals and for this community. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, with <b>' + n(M && M.points) + ' points</b> to start, and this Guide shows you everything that comes with it.') +
-        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('account', 'Start the Guide');
+      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: the people you have reached, the work you have done for the animals and for this community. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, and this Guide shows you everything that comes with it, starting with why it matters.') +
+        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
+    },
+    why: function () {
+      return head('Why it matters', 'Making Vegan easier to find, city by city', 'Vegans Explore grows one person at a time, and the people who join because someone they trust asked them are the ones who stay and take part. Here is what each one makes possible.') +
+        '<div class="dg-grid">' +
+        card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory') +
+        card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more fosters, rescues and jobs posted on the Board.', 'Community') +
+        card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the volunteer Community Managers in each city and the tools members use.', 'Your $11 at work') +
+        card('Your voice carries', 'People listen to someone they know in a way they never listen to an ad. That is why we asked you.', 'Why you') +
+        card('Support you can pass on', 'Points come in as people join through you. Use them yourself, or give them to a Vegan business or rescue you believe in, right from its page.', 'Give') +
+        '</div>' + nextBtn('account', 'Next: your membership');
     },
     account: function () {
       var total = (M && M.total_points) || 0, lv = level(total);
@@ -272,8 +283,8 @@
         '<div class="dg-level"><b>Your level</b><strong>' + lv + '</strong><span>' + (to > 0 ? n(to) + ' points to Level ' + (lv + 1) : 'the top level') + '</span></div>' +
         '<div class="dg-level"><b>Earned so far</b><strong>' + n(total) + '</strong><span>lifetime points</span></div></div>' +
         '<div class="dg-grid">' +
+        card('Give your points to a place you love', 'Give points to a Vegan business, rescue or nonprofit from its page in the Directory. It shows on their page as support from the community. Points are a boost, never money.', 'Give') +
         card('Unlock a Guide', 'Every Guide is $11 or 1,100 points, and yours to keep. <a href="/guides">See the Guides</a>.', 'Spend') +
-        card('Boost a place you love', 'Give points to a business or nonprofit from its page in the Directory. Points are a boost, never money.', 'Give') +
         card('Talk with your Guide', 'Ask your Guide anything Vegan, 4 points a message.', 'Spend') +
         card('Levels never drop', 'Level 2 from 2,500 points earned, Level 3 from 10,000. Spending or giving points never lowers your level.', 'Levels') +
         '</div>' + nextBtn('role', 'Next: your role');
@@ -309,7 +320,7 @@
         '<li><b>They open your link</b>It takes them to the Passport, and remembers you for their visit.</li>' +
         '<li><b>They make an account</b>With email, or Continue with Google. Your link still counts.</li>' +
         '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
-        '<li><b>You earn 111 points</b>The moment they become a member, once per friend.</li></ol>' +
+        '<li><b>The community grows</b>Another member voting for local places, joining their city and taking part. You also get 111 points, once per friend, to use or give away.</li></ol>' +
         '<div class="dg-grid">' +
         card('It counts when they join', 'An account that has not paid its $11 is not a member yet, so it shows as Waiting in Your progress until it does.', 'How it counts') +
         card('Use the same link everywhere', 'One link is easier to remember, and every member it brings in is counted to you.', 'Tip') +
