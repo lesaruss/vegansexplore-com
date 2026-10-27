@@ -522,11 +522,8 @@ Adding listings (Sean, 2026-10-27: "I'm not sure exactly how I would do that"). 
 with address, phone, website, hours and pin, each marked if already listed), or fill it in by hand; The details (all of it
 editable, Online only, and their Instagram, Facebook and TikTok, filled from the links on their own home page, `add_site`, Sean
 2026-10-27: "you should be able to pull their social media"; builder template links like facebook.com/wix are skipped); **Logo**
-(Sean, same day: up to four pictures from their website, an `<img>` that says logo, the app icon, the share picture or the page
-icon, each 200 px or more on the shorter side and picked by eye, never automatic; or an uploaded file, `add_logo_url`, staged in
-`vegan-media/media/listings/_new/`; or the first letter for now; `add_create` copies the pick into
-`media/listings/<slug>/logo-*`, never hot-linked, with `details.logo_source` admin or website and `details.logo_checked`; SVG
-logos are not read); What it is (the kind and how Vegan, both picked on purpose, "Not a Vegan business" for a store or service;
+(the logo editor below, with up to four pictures from their website to load into it, an `<img>` that says logo, the app icon,
+the share picture or the page icon, SVGs included; left empty, the first letter); What it is (the kind and how Vegan, both picked on purpose, "Not a Vegan business" for a store or service;
 an optional about); Add it (`add_create`: live at once, refused as `already_listed` with the slug when the same Google place or name
 and city is on the Directory; a business waiting in the backlog with the same place goes live instead of a second copy;
 `crawl_source` `admin`, `details.added_by_hand`, a team note). The nightly essentials pass fills what is still empty. **Paste a
@@ -534,6 +531,20 @@ list** (`#paste`, `paste_list`, up to 200 lines): one business a line, "Name, Ci
 quarantined listing (`crawl_source` `paste`, `details.pasted`) and a `ve_backlog_checks` row, checked by the backlog cron like the
 import backlog and waiting in Business outreach > New places to add or set aside. Nothing pasted goes live on its own; a line
 already on the Directory or in New places is left out and listed.
+**Logos** (Sean, 2026-10-27: "a review of any business that doesn't have a logo... I could just drop whatever image that I find
+and then you do that for me... crop it and size it so it looks good, maybe drop a background in it if it's a transparent image";
+266 of 490 open listings had none that day). Directory review's home has **Logos** (`#logos`, `ve-discover` `logo_queue`: every
+open listing with no logo, most voted first, search and city) and one listing per view (`#logo/<id>`): links to look on (their
+website, Instagram, Facebook, Google Images, and the logo we set aside on 2026-10-10 when there was one), then the **logo editor**,
+`/public/ve-logo-editor.js` (`VELogoEditor.mount(el, {fetchUrl, onChange})`): drop a picture, choose a file, paste one (Copy image,
+then Ctrl+V), drag one from another tab, or paste its link (fetched server side by `logo_fetch`, JPEG, PNG, WebP, GIF or SVG, so the
+canvas is never tainted); an 800 x 800 square to drag, zoom (slider or wheel), Fit, Fill, Trim edges and Center; the background
+fills what the picture does not (Match its edges by default for a solid picture, white for a transparent one, black, our green or
+any color); a preview at card and listing size. **Save and next** uploads the square as a JPEG (`add_logo_url`, staged in
+`vegan-media/media/listings/_new/`) and `logo_set` copies it to `media/listings/<slug>/logo-*` (never hot-linked; under 200 px on
+the shorter side is refused), sets `details.logo_source` admin and `details.logo_checked`, moves a set-aside logo to
+`details.logo_replaced`, and logs a `ve_listing_edits` row (field `logo`). **The letter is fine** (`logo_skip`,
+`details.logo_letter_ok`) takes one off the list; Skip for now leaves it.
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business

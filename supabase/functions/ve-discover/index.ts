@@ -21,6 +21,14 @@
 //        social media"); a logo is only ever a suggestion the admin picks by eye, then copied into our storage
 // POST { action: 'add_logo_url', content_type, bytes }  super admin -> { path, signed_url }   a logo file to upload, staged
 //        under media/listings/_new/ until add_create moves it next to the listing
+// Logos (Sean, 2026-10-27: "a review of any business that doesn't have a logo... I could just drop whatever image that I find
+// and then you do that for me... crop it and size it"), Depot > Directory review > Logos, with /public/ve-logo-editor.js:
+// POST { action: 'logo_queue', q?, city?, offset? }  super admin -> { rows, total, cities }   open listings with no logo, most
+//        voted first; one marked "the letter is fine" (logo_skip) leaves the list
+// POST { action: 'logo_fetch', url }                 super admin -> { data: base64, type }   a picture from a link, so the
+//        editor's canvas is never tainted (JPEG, PNG, WebP, GIF or SVG, up to 8 MB)
+// POST { action: 'logo_set', listing_id, path }      super admin   the editor's square (staged by add_logo_url) becomes the logo
+// POST { action: 'logo_skip', listing_id, undo? }    super admin   the first letter is fine for this one
 // POST { action: 'paste_list', text }              super admin -> { added, skipped }   one business a line ("Name, City, ST" or
 //        an Instagram handle): each becomes a hidden listing and a backlog check, so it waits in New places for a decision
 //
@@ -455,13 +463,23 @@ async function readSite(website: string) {
     if (href && /(^|\s)icon(\s|$)/.test(rel)) cands.push({ url: abs(href), from: 'Their page icon' });
   }
   const seen = new Set<string>();
-  const list = cands.filter((c) => c.url && /^https?:/i.test(c.url) && !/\.svg(\?|$)/i.test(c.url) && !seen.has(c.url) && seen.add(c.url)).slice(0, 8);
-  const read = await Promise.all(list.map(async (c) => { const img = await readImage(c.url); return 'error' in img ? null : { url: c.url, w: img.w, h: img.h, from: c.from }; }));
-  out.logos = read.filter((x): x is { url: string; w: number; h: number; from: string } => !!x && Math.min(x.w, x.h) >= LOGO_MIN).slice(0, 4);
+  const list = cands.filter((c) => c.url && /^https?:/i.test(c.url) && !seen.has(c.url) && seen.add(c.url)).slice(0, 8);
+  // An SVG has no pixel size and draws sharp at any size, so it is kept as it is (w and h 0); the editor turns it into a square.
+  const read = await Promise.all(list.map(async (c) => {
+    if (/\.svg(\?|#|$)/i.test(c.url)) return { url: c.url, w: 0, h: 0, from: c.from + ' (SVG)' };
+    const img = await readImage(c.url); return 'error' in img ? null : { url: c.url, w: img.w, h: img.h, from: c.from };
+  }));
+  out.logos = read.filter((x): x is { url: string; w: number; h: number; from: string } => !!x && (x.w === 0 || Math.min(x.w, x.h) >= LOGO_MIN)).slice(0, 4);
   return out;
 }
+
+function toBase64(b: Uint8Array) {
+  let s = '';
+  for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000));
+  return btoa(s);
+}
 // Put the picked logo next to the listing in our storage (never hot-linked) and on the listing.
-async function saveLogo(l: { id: string; slug: string; details: any }, logo: any, by: string): Promise<string> {
+async function saveLogo(l: { id: string; slug: string; details: any }, logo: any, by: string, saved?: { url?: string }): Promise<string> {
   const SB = 'vegan-media';
   let bytes: Uint8Array, type: string, w: number, h: number, source: string, staged = '';
   if (logo?.path) {
@@ -485,7 +503,12 @@ async function saveLogo(l: { id: string; slug: string; details: any }, logo: any
   const url = `${SUPABASE_URL}/storage/v1/object/public/${SB}/${path}`;
   const details = { ...(l.details || {}) } as Record<string, any>;
   details.logo_source = source; details.logo_checked = { by, at: new Date().toISOString(), w, h, ...(source === 'website' ? { from: String(logo.url).slice(0, 400) } : {}) };
-  await db.from('listings').update({ logo_url: url, details }).eq('id', l.id);
+  // A logo set aside as unverified (20261010_listing_logos_letter_unless_ours.sql) is replaced by one checked by eye.
+  if (details.logo_unverified) { details.logo_replaced = { url: details.logo_unverified, at: new Date().toISOString() }; delete details.logo_unverified; delete details.logo_unverified_at; delete details.logo_unverified_why; }
+  delete details.logo_letter_ok;
+  const { error: upErr } = await db.from('listings').update({ logo_url: url, details, updated_at: new Date().toISOString() }).eq('id', l.id);
+  if (upErr) return 'The logo did not save: ' + upErr.message;
+  if (saved) saved.url = url;
   return '';
 }
 
@@ -530,6 +553,59 @@ Deno.serve(async (req) => {
     const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
     if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
     return json({ ok: true, path, signed_url: up.signedUrl });
+  }
+
+  if (action === 'logo_queue') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const { data, error } = await db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, tiktok, vote_count, details')
+      .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
+      .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
+    if (error) return json({ error: error.message }, 400);
+    const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok);
+    const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
+    const q = clean(body.q, 80).toLowerCase(), city = clean(body.city, 80);
+    const rows = all.filter((l: any) => (!q || `${l.name} ${l.address_city || ''} ${l.category || ''}`.toLowerCase().includes(q)) && (!city || l.address_city === city))
+      .map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city, state: l.address_state, website: l.website, instagram: l.instagram,
+        facebook: l.facebook, tiktok: l.tiktok, votes: l.vote_count || 0, set_aside: l.details?.logo_unverified || null }));
+    return json({ ok: true, total: rows.length, all: all.length, cities, rows });
+  }
+
+  if (action === 'logo_fetch') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const url = clean(body.url, 2000);
+    if (!/^https?:\/\//i.test(url)) return json({ error: 'url', message: 'Paste a link that starts with http.' }, 400);
+    try {
+      const r = await fetchWithin(url, 10000, 'image/*,*/*;q=0.5');
+      if (!r.ok) return json({ error: 'fetch', message: `That link answered ${r.status}.` }, 502);
+      const buf = new Uint8Array(await r.arrayBuffer());
+      if (buf.length > 8 * 1024 * 1024) return json({ error: 'size', message: 'That picture is over 8 MB.' }, 400);
+      const head = new TextDecoder().decode(buf.slice(0, 300)).trim().toLowerCase();
+      const type = buf[0] === 0x89 && buf[1] === 0x50 ? 'image/png' : buf[0] === 0xff && buf[1] === 0xd8 ? 'image/jpeg'
+        : String.fromCharCode(...buf.slice(0, 4)) === 'RIFF' ? 'image/webp' : String.fromCharCode(...buf.slice(0, 3)) === 'GIF' ? 'image/gif'
+        : /<svg|^<\?xml[^>]*>\s*(<!--[\s\S]*?-->\s*)*<svg/.test(head) || /<svg/.test(head) ? 'image/svg+xml' : '';
+      if (!type) return json({ error: 'type', message: /<html|<!doctype/.test(head) ? 'That link is a web page, not a picture. Open the picture on its own (right-click, Open image in new tab) and copy that link.' : 'That link is not a picture.' }, 400);
+      return json({ ok: true, type, data: toBase64(buf) });
+    } catch (e) { return json({ error: 'fetch', message: 'That link did not open.' }, 502); }
+  }
+
+  if (action === 'logo_set' || action === 'logo_skip') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
+    const { data: l } = await db.from('listings').select('id, slug, name, logo_url, details').eq('id', body.listing_id).maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const by = who.admin.name || 'Sean', at = new Date().toISOString();
+    if (action === 'logo_skip') {
+      const details = { ...(l.details || {}) } as Record<string, any>;
+      if (body.undo) delete details.logo_letter_ok; else details.logo_letter_ok = { by, at };
+      await db.from('listings').update({ details }).eq('id', l.id);
+      return json({ ok: true });
+    }
+    const saved: { url?: string } = {};
+    const err = await saveLogo({ id: l.id, slug: l.slug, details: l.details }, { path: body.path }, by, saved);
+    if (err) return json({ error: 'logo', message: err }, 400);
+    await db.from('ve_listing_edits').insert({ listing_id: l.id, member_id: who.admin.id, field: 'logo', old_value: l.logo_url || null, new_value: saved.url,
+      meta: { by: 'admin', where: 'directory_review_logos' } });
+    return json({ ok: true, logo_url: saved.url });
   }
 
   if (action === 'add_create') {
