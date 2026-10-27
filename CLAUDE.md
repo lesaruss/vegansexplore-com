@@ -672,7 +672,8 @@ search** (Sean, 2026-10-27: "go"; migration `20261027_community_search.sql`): Go
 rescues and Vegan or animal rights nonprofits in all eight cities, filtered (open only; no zoos, petting or city farms, wildlife
 parks, county animal services, clinics or unrelated charities; nothing already listed or waiting), made 215 quarantined listings
 (`crawl_source` `community-search`, `details.community_search` with the hub and a guess of Rescues, Sanctuaries or Nonprofits),
-each waiting in Business outreach > New places > Ready to list with the guess in its note. Nothing went live. Six from South
+each waiting in Business outreach > New places > Ready to list with the guess in its note and its category picked from it
+(Rescues, Sanctuaries, Nonprofits and Events hide How Vegan there and list with none). Nothing went live. Six from South
 Florida's search are national organizations elsewhere, and their note says so. Run it again by city with new searches the same way.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official

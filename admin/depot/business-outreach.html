@@ -619,7 +619,8 @@
         if (!r) { location.hash = '#places'; return; }
         var l = r.listing || {}, p = r.place || {}, g = r.ig || {}, pv = PV[r.verdict] || [r.verdict, 'off'];
         crumbs([['Business outreach', '#'], ['New places', '#places'], [PV[r.verdict] ? PV[r.verdict][0] : 'Places', '#places/' + r.verdict], [l.name]]);
-        var guessCat = /bakery|cafe|coffee/i.test(p.type || g.category || '') ? 'Bakeries & Cafes' : /grocery|market|supermarket/i.test(p.type || g.category || '') ? 'Markets' : /catering/i.test(p.type || g.category || '') ? 'Catering' : r.verdict === 'other' ? '' : 'Restaurants';
+        var orgGuess = /community search: looks like a (rescue|sanctuary|nonprofit)/.exec(r.reason || '');
+        var guessCat = orgGuess ? { rescue: 'Rescues', sanctuary: 'Sanctuaries', nonprofit: 'Nonprofits' }[orgGuess[1]] : /bakery|cafe|coffee/i.test(p.type || g.category || '') ? 'Bakeries & Cafes' : /grocery|market|supermarket/i.test(p.type || g.category || '') ? 'Markets' : /catering/i.test(p.type || g.category || '') ? 'Catering' : r.verdict === 'other' ? '' : 'Restaurants';
         var site = p.website || g.link || l.website;
         V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + pv[1] + '">' + esc(pv[0]) + '</span></h2>' +
           '<p class="hint" style="margin:0 0 12px">' + esc(r.reason || '') + '</p>' +
@@ -632,15 +633,19 @@
 '</div>' +
           '<h2>Your call</h2><div class="form">' +
             '<label>Category<select id="pl-cat"><option value="">Pick one</option>' + (placeCache.cats || []).map(function (c) { return '<option' + (c === guessCat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
-            '<label>How Vegan<select id="pl-vs"><option value="">Pick one</option>' + VSTAT.map(function (v) { return '<option value="' + v[0] + '">' + v[1] + '</option>'; }).join('') + '</select></label></div>' +
+            '<label id="pl-vs-l">How Vegan<select id="pl-vs"><option value="">Pick one</option>' + VSTAT.map(function (v) { return '<option value="' + v[0] + '">' + v[1] + '</option>'; }).join('') + '</select></label></div>' +
           '<textarea class="note-in" id="pl-note" style="margin-top:10px" placeholder="Checked their menu: fully Vegan. (optional)"></textarea>' +
           '<div class="row-btns" style="margin-top:8px"><button type="button" class="btn btn-sm" id="pl-add">Add to the Directory</button><button type="button" class="btn btn-ghost btn-sm" id="pl-hide">Set aside</button></div>' +
           '<p class="hint">Adding lists it with Google\'s address, phone and website, the category and Vegan status you picked, and a note. It then joins its city\'s outreach once we find its email. Set aside hides it with a note; nothing is deleted.</p>' +
           '<p class="msg" id="pl-msg" role="status"></p></section>' +
           '<section class="card"><h2>Their website</h2>' + (site ? '<iframe class="frame" src="' + esc(/^https?:/.test(site) ? site : 'https://' + site) + '" title="' + esc(l.name) + ' website" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe><p class="hint">Some sites refuse to open inside another page; use the Website button then.</p>' : '<p class="empty">No website.</p>') + '</section></div>';
+        // Rescues, sanctuaries, nonprofits and events are organizations: no How Vegan (Sean, 2026-10-27).
+        var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Events'];
+        function syncVs() { $('pl-vs-l').style.display = ORGS.indexOf($('pl-cat').value) >= 0 ? 'none' : ''; }
+        $('pl-cat').addEventListener('change', syncVs); syncVs();
         function decide(decision) {
-          var msg = $('pl-msg'), cat = $('pl-cat').value, vs = $('pl-vs').value;
-          if (decision === 'list' && (!cat || !vs)) { msg.className = 'msg err'; msg.textContent = 'Pick its category and how Vegan it is first.'; return; }
+          var msg = $('pl-msg'), cat = $('pl-cat').value, org = ORGS.indexOf(cat) >= 0, vs = org ? null : $('pl-vs').value;
+          if (decision === 'list' && (!cat || (!org && !vs))) { msg.className = 'msg err'; msg.textContent = org || !cat ? 'Pick its category first.' : 'Pick how Vegan it is first.'; return; }
           Array.prototype.forEach.call(V().querySelectorAll('#pl-add,#pl-hide'), function (b) { b.disabled = true; });
           disc({ action: 'backlog_decide', listing_id: id, decision: decision, category: cat, vegan_status: vs, note: $('pl-note').value.trim() }).then(function (x) {
             if (!x.ok) throw new Error(x.error === 'already_decided' ? 'Someone already decided this one.' : (x.error || 'That did not work.'));
