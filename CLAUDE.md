@@ -1589,6 +1589,23 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
   (migration `20261024_partner_dashboard.sql`). A listing's Photos, Video and Pulse tabs show only once they have something
   in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
+- **Menus are linked, not copied** (Sean, 2026-10-27, replacing the copying below: "how do we know if they're updated?... if
+  she changes just one of them, we're presenting wrong information... a tab that says menu, and... when they click it, it takes
+  them out to wherever their menu is listed... not until they claim it"; migration `20261027_menu_links_not_copies.sql`, run
+  through `ve-once-menu-links`). A food place (Restaurants, Bakeries & Cafes, Food Trucks, Vendors, Catering, Meal Prep;
+  `PLACE_MENU_CATS` in `directory/listing.html`) that is not claimed has a **Menu** tab that links out (`#tab-btn-menu-link`,
+  `listings.menu_crawl_url`, counted as a `menu` action; a location uses its main listing's); a claimed one shows the menu its
+  owner keeps on the Partner Dashboard (and any the team entered), never a copied one (`source` `import` stays in the table, not
+  shown). Brands keep their Products list. The copying is paused, not deleted: crons `ve-menu-reader` and `ve-menu-import-queue`
+  off, dispatcher `menu_import` disabled. The **link finder** (`ve-menu-reader` `link` / `link_sweep`, cron `ve-menu-links`, 15 every
+  10 minutes, no AI) reads their home page and takes their menu PDF, else their menu page, else their own ordering page (Toast,
+  Square `/s/order`, Clover...; through their own Order page when that only points there), never a marketplace; it fills only an
+  empty `menu_crawl_url` (a `ve_listing_edits` row) and notes what it found (`ve_menu_imports.link_checked_at`, `link_note`). The
+  75 places whose menu had been copied took that page as their link. Directory review's list is **No menu link** (`#menu`,
+  `ve_menu_missing()`): Not found, No website, Not checked yet; Menu link + Save, **Find the link again** (`menu_retry`) and
+  **No menu online** (`menu_none`). Connecting a point of sale for claimed owners is researched, not built (2026-10-27): Square's
+  Catalog API by self-serve OAuth with a catalog webhook is the one any owner can connect; Clover needs an approved app; Toast
+  needs its partner program (an owner's own Standard API credentials may not be shared with a third party under its terms).
 - **Menus on every listing** (Sean, 2026-10-24: "I would love to see the menus on all the listings"; migration
   `20261024_ve_menu_import.sql`). `ve_menu_items.source` is `manual` (the team), `owner` (their dashboard) or `import`. The
   Background writer (dispatcher source `menu_import`, Station 2, batch 5) works through `ve_menu_imports` (food places with a
