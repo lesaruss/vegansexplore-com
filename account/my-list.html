@@ -33,6 +33,10 @@
   .ml-unsave-btn{align-self:flex-start;background:none;border:1.5px solid var(--ve-border);color:var(--ve-text-75);padding:7px 14px;border-radius:6px;font-weight:800;font-size:10.5px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;}
   .ml-unsave-btn:hover{border-color:#dc2626;color:#dc2626;}
   .ml-empty{font-size:13px;color:var(--ve-text-50);}
+  /* Listings or Episodes (Sean, 2026-10-27: members save podcast episodes, played from the show's own feed). */
+  .ml-views{display:flex;gap:8px;margin:0 0 22px}.ml-views button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text-75);cursor:pointer;min-height:38px}
+  .ml-views button[aria-pressed=true]{background:var(--ve-green-light);border-color:var(--ve-green-dark);color:var(--ve-green-dark)}
+
 </style>
 </head>
 <body>
@@ -49,13 +53,16 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <style>.ve-embedded .ve-nav{display:none !important}</style>
 <script src="/public/nav.js"></script>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-episodes.js"></script>
 
 <main>
   <div id="ml-gate"><p>Checking access&hellip;</p></div>
   <div id="ml-content">
     <p class="ml-eyebrow">My List</p>
-    <h1>Your Saved Listings</h1>
-    <p class="ml-sub">Every restaurant, shop, and service you've saved across the Directory, in one place.</p>
+    <h1 id="ml-h1">Your Saved Listings</h1>
+    <p class="ml-sub" id="ml-sub">Every restaurant, shop, and service you've saved across the Directory, in one place.</p>
+    <div class="ml-views" role="group" aria-label="What to show"><button type="button" data-view="listings" aria-pressed="true">Listings</button><button type="button" data-view="episodes" aria-pressed="false">Episodes</button></div>
+    <div class="vep-dock"></div>
     <div id="ml-grid"><p class="ml-empty">Loading your list&hellip;</p></div>
   </div>
 </main>
@@ -107,16 +114,48 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
     if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to see your list.', init); });
   }
 
+  // Saved podcast episodes: play here, or open the episode on its show's page.
+  function renderEpisodes() {
+    var grid = document.getElementById('ml-grid');
+    grid.innerHTML = '<p class="ml-empty">Loading your episodes&hellip;</p>';
+    VEEpisodes.css();
+    VEEpisodes.mine().then(function (d) {
+      var eps = (d && d.episodes) || [];
+      if (!eps.length) { grid.innerHTML = '<p class="ml-empty">No episodes saved yet. Open a podcast in the Directory, then its Episodes, and tap Save.</p>'; return; }
+      var byKey = {};
+      grid.innerHTML = '<div class="vep"><div class="vep-list">' + eps.map(function (e) {
+        var show = { id: e.show.id, name: e.show.name, image: e.show.logo || '' }; byKey[show.id + '|' + e.guid] = { ep: e, show: show };
+        return VEEpisodes.row(e, show, { saved: true, showName: true, href: '/directory/' + encodeURIComponent(e.show.slug || '') + '?tab=episodes&ep=' + encodeURIComponent(e.guid) });
+      }).join('') + '</div></div>';
+      grid.querySelectorAll('[data-vep-play]').forEach(function (b) { b.onclick = function () { var x = byKey[b.getAttribute('data-vep-play')]; if (x) VEEpisodes.play(x.ep, x.show); }; });
+      grid.querySelectorAll('[data-vep-save]').forEach(function (b) {
+        b.onclick = function () {
+          var k = b.getAttribute('data-vep-save'), x = byKey[k];
+          VEEpisodes.save(x.show.id, x.ep.guid, b).then(function (on) { if (on === false) { var r = b.closest('.vep-row'); if (r) r.remove(); if (!grid.querySelector('.vep-row')) renderEpisodes(); } });
+        };
+      });
+    }).catch(function () { grid.innerHTML = '<p class="ml-empty">Could not load your episodes right now.</p>'; });
+  }
+  function show(view) {
+    document.querySelectorAll('.ml-views button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
+    document.getElementById('ml-h1').textContent = view === 'episodes' ? 'Your Saved Episodes' : 'Your Saved Listings';
+    document.getElementById('ml-sub').textContent = view === 'episodes' ? 'Podcast episodes you saved, ready to play.' : "Every restaurant, shop, and service you've saved across the Directory, in one place.";
+    var u = new URL(location.href); if (view === 'episodes') u.searchParams.set('view', 'episodes'); else u.searchParams.delete('view');
+    history.replaceState(null, '', u.pathname + u.search);
+    if (view === 'episodes') { renderEpisodes(); return; }
+    document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">Loading your list&hellip;</p>';
+    VEAuth.listSavedListings().then(function (d) {
+      if (d && d.error) { document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">' + esc(d.error) + '</p>'; return; }
+      renderGrid(d.items || []);
+    }).catch(function () { document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">Could not load your list right now.</p>'; });
+  }
+  document.querySelectorAll('.ml-views button').forEach(function (b) { b.addEventListener('click', function () { show(b.getAttribute('data-view')); }); });
+
   function init() {
     if (!window.VEAuth || !VEAuth.isLoggedIn()) { showDenied(); return; }
     document.getElementById('ml-gate').style.display = 'none';
     document.getElementById('ml-content').style.display = 'block';
-    VEAuth.listSavedListings().then(function (d) {
-      if (d && d.error) { document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">' + esc(d.error) + '</p>'; return; }
-      renderGrid(d.items || []);
-    }).catch(function () {
-      document.getElementById('ml-grid').innerHTML = '<p class="ml-empty">Could not load your list right now.</p>';
-    });
+    show(new URLSearchParams(location.search).get('view') === 'episodes' ? 'episodes' : 'listings');
   }
 
   init();

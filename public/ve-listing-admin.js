@@ -96,6 +96,8 @@
     '#vla h3{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#1f5f22;margin:18px 0 4px;padding-top:12px;border-top:1px solid #eee}' +
     '#vla label.h{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#555;margin:10px 0 5px}' +
     '#vla select,#vla input[type=text]{width:100%;font:inherit;font-size:14px;padding:9px 10px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;color:#1a1a1a}' +
+    // Dropdowns: our own arrow, 16px in from the right edge (canon-sean-interface-defaults rule 15; the select rule in claim.html).
+    '#vla select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'14\' height=\'9\' viewBox=\'0 0 14 9\'%3E%3Cpath d=\'M1 1l6 6 6-6\' fill=\'none\' stroke=\'%231f5f22\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px}#vla select::-ms-expand{display:none}' +
     '#vla .row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px}#vla .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}' +
     '#vla .chips{display:flex;flex-wrap:wrap;gap:6px}#vla .chips label{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;border:1px solid rgba(0,0,0,.18);border-radius:99px;padding:5px 11px;cursor:pointer;min-height:32px}' +
     '#vla .chips label:has(input:checked){background:#EAF7EA;border-color:#2d7d31}#vla .chips label:has(input:disabled){opacity:.45;cursor:default}' +
@@ -118,7 +120,7 @@
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
     '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -206,6 +208,11 @@
       '<div class="note" id="vla-first" hidden>Pick the main section and sub-section first. The rest of the listing follows from what it is.</div>' +
       '<div id="vla-rest">' +
 
+      // Episodes (Sean, 2026-10-27): the show's RSS feed fills its Episodes tab (ve-podcast). Found from Apple Podcasts when empty.
+      '<div id="vla-p-rss" hidden><h3>Episodes</h3><label class="h" for="vla-rss">Podcast RSS feed</label>' +
+      '<input type="text" id="vla-rss" placeholder="https://feeds.example.com/show" value="' + esc(l.rss_url || '') + '">' +
+      '<div class="note">Its episodes play on its page and members can save them. We find it from the Apple Podcasts link when there is one; clear it to take Episodes off.</div></div>' +
+
       '<div id="vla-p-loc"><h3>Location</h3>' +
       '<label class="check"><input type="checkbox" id="vla-online"' + (online ? ' checked' : '') + '> Online only, no storefront</label>' +
       '<div id="vla-addr"><div class="row"><div class="street"><label class="h" for="vla-st">Street</label><input type="text" id="vla-st" value="' + esc(l.address_street) + '"></div>' +
@@ -281,6 +288,7 @@
       $('#vla-first').hidden = picked; $('#vla-rest').hidden = !picked;
       $('#vla-p-loc').hidden = $('#vla-p-ch').hidden = $('#vla-p-vegan').hidden = media;
       $('#vla-p-locs').hidden = media || kind === 'brand';
+      $('#vla-p-rss').hidden = cur !== 'Podcasts';
       $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
       drawStatus(kind);
     }
@@ -493,7 +501,17 @@
             : d && d.error === 'parent_not_found' ? 'Part of: no listing has that address.' : d && d.error === 'parent_is_self' ? 'Part of: a listing cannot be part of itself.'
             : d && d.error === 'has_locations' ? 'Part of: this listing is the main listing of its own locations. Move those first.'
             : 'That did not save. Try again.' + (d && d.message ? ' (' + d.message + ')' : '')); return; }
-          Object.assign(target, d.listing, { logo_url: l.logo_url }); close(true); if (onSaved) onSaved(d.listing);
+          Object.assign(target, d.listing, { logo_url: l.logo_url });
+          // A changed feed is read at once, so a wrong one says so before the window closes.
+          var rss = $('#vla-rss').value.trim();
+          if ($('#vla-p-rss').hidden || rss === (l.rss_url || '')) { close(true); if (onSaved) onSaved(d.listing); return; }
+          msg.className = 'msg'; msg.textContent = 'Saved. Reading the feed...';
+          fetch(SB + '/functions/v1/ve-podcast', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'admin_feed', listing_id: l.id, rss_url: rss }) })
+            .then(function (r) { return r.json(); }).then(function (f) {
+              btn.disabled = false;
+              if (f && f.ok) { l.rss_url = rss; close(true); if (onSaved) onSaved(d.listing); return; }
+              bad('Saved, but the feed did not read: ' + (f && f.error === 'bad_url' ? 'that is not a web address.' : (f && f.error) || 'try again.'));
+            }).catch(function () { btn.disabled = false; bad('Saved, but the feed could not be reached. Try again.'); });
         }).catch(function () { btn.disabled = false; bad('Could not connect. Try again.'); });
     };
   }
