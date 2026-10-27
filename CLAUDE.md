@@ -938,8 +938,13 @@ between the different chapters... like traveling to these different locations." 
 member's home city, else the last pick, else All cities, which lists every chapter (`ve-board` `list` with community `all`; topics
 from every city and the national one, posts from every city with their city tag, no How it works posts). Six tabs, the Daily
 Pulse first: Daily Pulse, Jobs, Classifieds, Fosters, Rescues, Suggest a Topic. **Requests & Offers left** (Sean: "doing similar
-stuff to jobs classified"; it had no member posts); an old request still opens. Each tab has its line and its button (Post a job,
-Post a listing...; on the Daily Pulse, Suggest a topic). Two cards across beside the ad rail on every tab and post. A post's
+stuff to jobs classified"; it had no member posts); an old request still opens. **Every tab has its own address** (Sean,
+2026-10-27): `/pulse`, `/pulse/jobs`, `/pulse/classifieds`, `/pulse/fosters`, `/pulse/rescues`, `/pulse/suggest` (a rewrite in
+`vercel.json` before `/pulse/:slug`, so none of these can be an article slug; an old `?lane=` link moves to its address; back and
+forward move between tabs). Each tab has its line and its button (Post a job, Post a listing...; on the Daily Pulse, Suggest a
+topic), and **the button sits in the banner between View community and Expand** (the banner's `action`, relabelled by
+`setAction` as the tab changes), like Submit an event on `/events`; the one under the tabs shows only in a city hub's frame,
+which hides the banner. Two cards across beside the ad rail on every tab and post. A post's
 conversation is its **Comments** (Add a comment, Post comment); topic cards say Join the conversation. Anyone reads; posting,
 commenting, contact details and reports are for members, and anyone else gets the Passport window (`VEVotes.memberPrompt(kind)`:
 post, comment, contact, report, job; `/passport?from=board`), never a sign-in box. **Hiring is a perk of a business in the
@@ -953,7 +958,7 @@ tab frames this page on the member's active city (`#dash-pulse-host`, loaded the
 "In each city, let's set the sections... a jobs board... a classified... a Fosters Board, and then a
 Rescues Board... so as people start going into these cities, they actually see stuff." Every city's
 board (now `/pulse`, above) has the toggles Daily Pulse, Jobs, Classifieds, Fosters, Rescues and Suggest a Topic
-(`?lane=jobs|classifieds|fosters|rescues|suggest`, the Daily Pulse is the default; Requests & Offers left on 2026-10-26). A row of tabs on
+(`/pulse/jobs|classifieds|fosters|rescues|suggest`, the Daily Pulse is `/pulse`; Requests & Offers left on 2026-10-26). A row of tabs on
 desktop, three by two on a phone.
 
 - Each section is a `ve_board_posts.kind` (`job`, `classified`, `foster`, `rescue`; Requests & Offers is

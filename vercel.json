@@ -20,6 +20,10 @@
       "destination": "/directory/product"
     },
     {
+      "source": "/pulse/:lane(jobs|classifieds|fosters|rescues|suggest)",
+      "destination": "/pulse"
+    },
+    {
       "source": "/pulse/:slug",
       "destination": "/api/pulse-article?slug=:slug"
     },
@@ -593,7 +597,7 @@
     },
     {
       "source": "/club/job-openings",
-      "destination": "/pulse?lane=jobs",
+      "destination": "/pulse/jobs",
       "permanent": false
     },
     {
@@ -1278,7 +1282,7 @@
     },
     {
       "source": "/partners/news-submission",
-      "destination": "/pulse?lane=suggest",
+      "destination": "/pulse/suggest",
       "permanent": false
     },
     {

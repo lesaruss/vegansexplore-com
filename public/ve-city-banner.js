@@ -21,6 +21,7 @@
        meta: '<span>...</span>'       // optional: a line under the sub, while the banner is open (a city hub's cities)
      });
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
+     banner.setAction('Post a job');   // the page's own button can change with what the page shows (the Pulse's tabs)
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
    Options for the dashboard: initial (the city when the address bar has none) and param: false (leave the address bar alone).
    A page that is not about a city (Media, Sean 2026-10-27: "no one's trying to make media just for one location") picks from
@@ -217,6 +218,7 @@
       hub: function () { return hubBySlug(current); },
       fold: fold,
       autoFold: function () { if (!chosen) fold(true); },
+      setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
       matches: matches
     };
     show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');

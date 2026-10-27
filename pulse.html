@@ -78,6 +78,7 @@
     .post-join { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 800; color: var(--ve-green-dark); }
     .tag-city { background: #e8eefb; color: #23408e; }
     /* The tab's own line: what it is for, and its button (Post a job, Suggest a topic). */
+    body.has-banner #new-post { display: none; }
     .lane-intro { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 20px; padding: 16px 0 4px; }
     .lane-intro h2 { font-size: 20px; font-weight: 900; line-height: 1.2; }
     .lane-intro p { font-size: 14px; line-height: 1.55; color: var(--ve-text-75); margin-top: 4px; max-width: 860px; }
@@ -406,8 +407,20 @@
     var params = new URLSearchParams(location.search);
     // Areas a post can be for (VE_HUBS[].page.boardAreas, Sean 2026-10-10); no area means the whole city.
     function areasFor(slug) { var h = window.VE_HUB ? VE_HUB(slug) : null; return (h && h.page && h.page.boardAreas) || []; }
-    // The Daily Pulse tab first (Sean, 2026-10-26). An old Requests & Offers link (lane=board) still opens its post.
-    var state = { lane: LANES[params.get('lane')] && params.get('lane') !== 'board' ? params.get('lane') : 'pulse', city: '', type: '', q: '', category: '', area: params.get('area') || '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
+    // Every tab has its own address (Sean, 2026-10-27): /pulse is the Daily Pulse, /pulse/jobs, /pulse/classifieds,
+    // /pulse/fosters, /pulse/rescues and /pulse/suggest the rest (rewrites in vercel.json). An old ?lane= link still lands,
+    // and the address is moved to the tab's own. An old Requests & Offers link (lane=board) still opens its post.
+    function laneFromPath() {
+      var m = location.pathname.match(/^\/pulse\/(jobs|classifieds|fosters|rescues|suggest)\/?$/);
+      var l = m ? m[1] : params.get('lane');
+      return LANES[l] && l !== 'board' ? l : 'pulse';
+    }
+    function lanePath(lane) { return lane && lane !== 'pulse' && lane !== 'board' ? '/pulse/' + lane : '/pulse'; }
+    var state = { lane: laneFromPath(), city: '', type: '', q: '', category: '', area: params.get('area') || '', status: 'open', viewer: { signed_in: false, member: false, moderator: false }, last: null, current: null, reportTarget: null };
+    if (params.has('lane')) {
+      var oldLink = new URL(location.href); oldLink.searchParams.delete('lane');
+      history.replaceState(history.state, '', lanePath(state.lane) + oldLink.search + oldLink.hash);
+    }
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
     function token() { return window.VEAuth && VEAuth.getToken ? (VEAuth.getToken() || '') : ''; }
@@ -492,14 +505,15 @@
     $('category').innerHTML += CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
     $('p-category').innerHTML = CATEGORIES.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('');
 
-    function syncUrl() {
+    function syncUrl(push) {
       var u = new URL(location.href);
       // The banner keeps ?city= (pushState); a city hub's frame keeps its ?community=.
       if (!inHub) { u.searchParams.delete('community'); if (state.city) u.searchParams.set('city', state.city); else u.searchParams.delete('city'); }
-      if (state.lane !== 'pulse') u.searchParams.set('lane', state.lane); else u.searchParams.delete('lane');
+      u.searchParams.delete('lane');
       if (state.area && state.lane !== 'pulse') u.searchParams.set('area', state.area); else u.searchParams.delete('area');
       if (state.current) u.searchParams.set('post', state.current.id); else u.searchParams.delete('post');
-      history.replaceState(null, '', u.pathname + u.search);
+      var url = lanePath(state.lane) + u.search;
+      if (push) history.pushState({ lane: state.lane }, '', url); else history.replaceState(history.state, '', url);
     }
     // Every lane but the Pulse is a posting board (body.lane-board); data-lane names which one.
     function setLane(lane) {
@@ -512,6 +526,7 @@
       $('q').placeholder = L.search;
       state.type = ''; state.category = ''; $('category').value = '';
       $('lane-h1').textContent = L.h1; $('lane-lede').textContent = L.lede; $('new-post').textContent = L.post;
+      if (banner) banner.setAction(L.post);
       if (!pulse) {
         $('status-done').textContent = L.done[1];
         $('chips').innerHTML = '<button type="button" class="chip" data-type="" aria-pressed="true">Everything</button>' +
@@ -521,7 +536,7 @@
     }
     setLane(state.lane);
     Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) {
-      b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; closePost(); setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(); load(); });
+      b.addEventListener('click', function () { if (state.lane === b.getAttribute('data-lane')) return; closePost(); setLane(b.getAttribute('data-lane')); state.q = ''; $('q').value = ''; syncUrl(true); load(); });
     });
     function pickCity(slug) {
       if (slug === state.city) return;
@@ -533,11 +548,15 @@
       banner = VECityBanner.mount('pulse-hero', {
         key: 'pulse', title: 'Daily Pulse', allTitle: 'Every City', allLabel: 'All cities', initial: state.city,
         sub: 'Every chapter\'s community board: today\'s briefing and its conversation, jobs, classifieds, fosters and rescues. Read anything; members post and comment.',
+        // The tab's own button (Suggest a topic, Post a job, Post a listing...) sits in the banner between View community and
+        // Expand, up front like Submit an event on /events (Sean, 2026-10-27); the button under the tabs steps aside.
+        action: { label: LANES[state.lane].post, onClick: function () { $('new-post').click(); } },
         onChange: function (slug) { pickCity(slug); }
       });
+      document.body.classList.add('has-banner');
       // The first click into the board folds the banner, as on the Directory.
       $('main').addEventListener('click', function (e) { if (e.target.closest('.lane, .post-card, .chip')) banner.autoFold(); });
-      if (params.get('post') || params.get('lane')) banner.autoFold();
+      if (params.get('post') || state.lane !== 'pulse') banner.autoFold();
       // In the dashboard window, View community opens in the whole window.
       if (document.documentElement.classList.contains('ve-embedded')) Array.prototype.forEach.call(banner.el.querySelectorAll('a'), function (x) { x.target = '_top'; });
     }
@@ -673,6 +692,8 @@
       if (history.state && history.state.post) history.back(); else closePost();
     });
     window.addEventListener('popstate', function () {
+      var lane = laneFromPath();
+      if (lane !== state.lane) { closePost(true); setLane(lane); state.q = ''; $('q').value = ''; load(); }
       var id = new URLSearchParams(location.search).get('post');
       if (id) openPost(id); else closePost(true);
     });
@@ -689,7 +710,7 @@
       $('d-question').hidden = !topic || !post.question; $('d-question').innerHTML = topic && post.question ? '<span class="q-label">Today\'s question</span>' + esc(post.question) : '';
       $('d-back-label').textContent = topic || lane === 'board' ? 'Back to the Daily Pulse' : 'Back to ' + L.name;
       $('detail').classList.toggle('is-topic', topic);
-      $('d-back').setAttribute('href', '/pulse?' + (lane !== 'board' && lane !== 'pulse' ? 'lane=' + lane + '&' : '') + (state.city ? 'city=' + state.city : ''));
+      $('d-back').setAttribute('href', lanePath(lane) + (state.city ? '?city=' + state.city : ''));
       $('d-briefing').innerHTML = topic && window.VEPulse ? VEPulse.briefing(post) : '';
       var src = $('d-source');
       if (topic && post.source_url && !(post.briefing && post.briefing.stories && post.briefing.stories.length)) {
@@ -738,7 +759,7 @@
       } else if (e.target.id === 'mod-post') {
         call({ action: 'moderate', post_id: post.id, op: post.status === 'hidden' ? 'restore' : 'hide' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
       } else if (e.target.id === 'copy-link') {
-        var link = location.origin + '/pulse?' + (laneOf(post) !== 'board' && laneOf(post) !== 'pulse' ? 'lane=' + laneOf(post) + '&' : '') + (post.community !== 'national' ? 'city=' + post.community + '&' : state.city ? 'city=' + state.city + '&' : '') + 'post=' + post.id;
+        var link = location.origin + lanePath(laneOf(post)) + '?' + (post.community !== 'national' ? 'city=' + post.community + '&' : state.city ? 'city=' + state.city + '&' : '') + 'post=' + post.id;
         (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { e.target.textContent = 'Link copied'; }, function () { prompt('Copy this link', link); });
       }
     }
@@ -775,7 +796,7 @@
     // ---- New post -----------------------------------------------------------------------
     // The Daily Pulse tab's button suggests a topic: the briefings are written for each city, the conversation is the comments.
     $('new-post').addEventListener('click', function () {
-      if (state.lane === 'pulse') { setLane('suggest'); syncUrl(); load(); }
+      if (state.lane === 'pulse') { setLane('suggest'); syncUrl(true); load(); }
       if (!gate(state.lane === 'jobs' ? 'job' : 'post')) return;
       var L = LANES[state.lane], business = !!state.viewer.business || !!state.viewer.moderator;
       $('c-title').textContent = 'Post to ' + LANES[state.lane].name;
