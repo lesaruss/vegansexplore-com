@@ -127,7 +127,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .listen-icons{display:flex;flex-wrap:wrap;gap:12px}
 .listen-icon{display:flex;flex-direction:column;align-items:center;gap:6px;width:76px;text-decoration:none;color:var(--ve-text)}
-.listen-icon span{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ve-border);transition:.15s}
+.listen-icon span{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ve-border);background:#fff;transition:.15s}
 .listen-icon:hover span{border-color:#5EC47A;transform:translateY(-1px)}.listen-icon:focus-visible{outline:2px solid #5EC47A;outline-offset:3px;border-radius:12px}
 .listen-icon small{font-size:10.5px;font-weight:700;text-align:center;line-height:1.25;color:var(--ve-text-75)}
 .platform-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;text-decoration:none;color:var(--ve-text);font-family:Montserrat,sans-serif;transition:.15s;cursor:pointer}
@@ -1274,7 +1274,10 @@ function renderPodcastOverview(l){
   var rss = l.rss_url ? [{href:l.rss_url, color:'#F69820', label:'RSS feed', icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="#e07b00" aria-hidden="true"><circle cx="6" cy="18" r="2.2"/><path d="M4 10.5a9.5 9.5 0 019.5 9.5h-2.6A6.9 6.9 0 004 13.1zM4 4.5A15.5 15.5 0 0119.5 20h-2.6A12.9 12.9 0 004 7.1z"/></svg>'}] : [];
   var all = web.concat(p, rss);
   return (all.length ? '<div class="section"><h2 class="section-title">Listen on</h2><div class="listen-icons">' + all.map(function(x){
-      return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span style="background:'+x.color+'1a">'+x.icon.replace(/width="18" height="18"/, 'width="22" height="22"')+'</span><small>'+esc(x.label)+'</small></a>';
+      // The platforms' own marks (public/icons/platforms, Simple Icons) where we have them (Sean, 2026-10-27).
+      var file = { 'Apple Podcasts': 'apple-podcasts', 'Spotify': 'spotify', 'YouTube': 'youtube', 'RSS feed': 'rss' }[x.label];
+      var ic = file ? '<img src="/public/icons/platforms/'+file+'.svg" alt="" width="28" height="28">' : x.icon.replace(/width="18" height="18"/, 'width="22" height="22"');
+      return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span'+(file ? '' : ' style="background:'+x.color+'1a"')+'>'+ic+'</span><small>'+esc(x.label)+'</small></a>';
     }).join('') + '</div></div>' : '') +
     '<div class="section" id="ep-section" hidden><h2 class="section-title">Episodes</h2><div id="ep-host"></div></div>';
 }
@@ -2999,8 +3002,13 @@ function renderListing(l){
     : ['Documentaries & Films', 'Books'].indexOf(l.category) >= 0 ? ['Unavailable for now', 'No longer available']
     : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(l.category) >= 0 ? ['Paused', 'Out of business']
     : ['Temporarily Closed', 'Permanently Closed'];
+  var mediaKind = ['show', 'work'].indexOf(listingKind(l)) >= 0;
+  var mediaStatus = l.business_status === 'CLOSED_PERMANENTLY' ? [statusWords[1], isSoFlo ? 'color:#ccc;border-color:#777' : 'color:#666;border-color:#999']
+    : l.business_status === 'CLOSED_TEMPORARILY' ? [statusWords[0], 'color:#F6B04A;border-color:#F6B04A']
+    : [listingKind(l) === 'work' ? 'Available' : 'Active', isSoFlo ? 'color:#7fe0a0;border-color:#7fe0a0' : 'color:#5EC47A;border-color:#5EC47A'];
   var statusBadge = '';
-  if(l.status === 'closed' || l.business_status === 'CLOSED_PERMANENTLY'){
+  if(mediaKind){ /* the tag in the header says it */ }
+  else if(l.status === 'closed' || l.business_status === 'CLOSED_PERMANENTLY'){
     statusBadge = '<div style="background:#b71c1c;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">'+statusWords[1]+'</div>';
   } else if(l.business_status === 'CLOSED_TEMPORARILY'){
     statusBadge = '<div style="background:#e65100;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">'+statusWords[0]+'</div>';
@@ -3094,7 +3102,9 @@ function renderListing(l){
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
             '<span class="badge-cat">'+esc(l.category)+'</span>'+
-            (l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
+            // Media shows whether it is still going (Active, On hiatus, Ended; Sean, 2026-10-27), not how Vegan it is.
+            (mediaKind ? '<span class="badge-subcat" style="'+mediaStatus[1]+'">'+mediaStatus[0]+'</span>' : '')+
+            (!mediaKind && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             cuisineLabels(l).map(function(c){ return '<span class="badge-subcat badge-cuisine" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'">'+esc(c)+'</span>'; }).join('')+
             verifiedBadge+
           '</div>'+

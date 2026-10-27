@@ -143,6 +143,8 @@
     + '.vrd-root .rank-subcat{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px}'
     + '.vrd-root .vrd-vegan{display:inline-block;margin-left:0;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
     + '.vrd-root .vrd-vegan-fully{background:#e3f6e7;color:#1f6b33}'
+    + '.vrd-root .vrd-mstat{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
+    + '.vrd-root .vrd-mstat-on{background:#e3f6e7;color:#1f6b33}.vrd-root .vrd-mstat-paused{background:#fff1dc;color:#8a5200}.vrd-root .vrd-mstat-off{background:#eee;color:#555}'
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
     + '.vrd-root .vrd-vends{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;background:#e8eefb;color:#23408e;white-space:nowrap}'
@@ -364,15 +366,24 @@
       : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(cat) >= 0 ? 'brand' : 'place'];
   }
 
+  // Media says whether it is still going in place of how Vegan it is (Sean, 2026-10-27: a podcast's Active, On hiatus or Ended,
+  // which ve-podcast sets from its latest episode).
+  var MEDIA_CATS = ['Podcasts', 'YouTube', 'News Outlets', 'Media', 'Documentaries & Films', 'Books'];
+  function isMedia(l) { return MEDIA_CATS.indexOf(l.category) >= 0; }
+  function mediaTag(l) {
+    var w = statusWords(l.category), s = l.business_status;
+    var t = s === 'CLOSED_PERMANENTLY' ? [w[1], 'off'] : s === 'CLOSED_TEMPORARILY' ? [w[0], 'paused'] : [/Books|Documentaries/.test(l.category) ? 'Available' : 'Active', 'on'];
+    return ' <span class="vrd-mstat vrd-mstat-' + t[1] + '">' + t[0] + '</span>';
+  }
   function makeBrowseCard(l, idx, type) {
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
-    var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">' + statusWords(l.category)[0] + '</span>' : '';
+    var temp = l.business_status === 'CLOSED_TEMPORARILY' && !isMedia(l) ? ' <span class="vrd-temp">' + statusWords(l.category)[0] + '</span>' : '';
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-      '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + '</div>' + vettingNote(l) + '</div>' +
+      '<div class="rank-subcat">' + esc(l.category || '') + (isMedia(l) ? mediaTag(l) : veganTag(l)) + vendsTag(l) + '</div>' + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
@@ -518,7 +529,8 @@
       return out;
     }
     approved.forEach(function (l) {
-      var into = l.business_status === 'CLOSED_PERMANENTLY' ? closedTabs : tabs; // marked closed: only under Type > Closed
+      // Marked closed: only under Type > Closed. Media that has ended stays with the rest: its episodes and pages still play.
+      var into = l.business_status === 'CLOSED_PERMANENTLY' && !isMedia(l) ? closedTabs : tabs;
       // Still being vetted: only in the members' Being vetted section, not with the vetted places.
       if (into === tabs && TRUST && window.VETrust && window.VETrust.pending(l, TRUST)) { tabs.vetting.push(l); return; }
       tabsOf(l).forEach(function (tab) { if (into[tab]) into[tab].push(l); });

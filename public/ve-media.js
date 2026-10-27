@@ -104,7 +104,8 @@
 
   // The top 12 of a kind: most votes, then most voters, then a logo over a letter, then A to Z. Never ours, never closed.
   function rank(rows) {
-    return rows.filter(function (l) { return OURS.indexOf(l.slug) < 0 && l.business_status !== 'CLOSED_PERMANENTLY'; })
+    // Ended shows count too (Sean, 2026-10-27): their status shows on the card.
+    return rows.filter(function (l) { return OURS.indexOf(l.slug) < 0; })
       .sort(function (a, b) {
         return (b.vote_count || 0) - (a.vote_count || 0) || (b.voter_count || 0) - (a.voter_count || 0) ||
           (b.logo_url ? 1 : 0) - (a.logo_url ? 1 : 0) || String(a.name).localeCompare(String(b.name));
@@ -194,7 +195,9 @@
     var o = { title: 'Vegan Media', pickLabel: 'Kind of media', art: '/communities/new-york/banner.jpg',
       sub: 'Our shows and picks first, then the podcasts, documentaries and books members vote to the top in the Directory.',
       choices: TYPES.map(function (t) { return { value: t.key, label: t.label }; }),
-      link: function (key) { return { href: directoryUrl(key), label: 'See in the Directory' }; } };
+      link: function (key) { return { href: directoryUrl(key), label: 'See in the Directory' }; },
+      // Join our network (Sean, 2026-10-27): the podcast network's application, between the Directory and Expand.
+      actions: [{ label: 'Join our network', href: '/media/network', go: true }] };
     for (var k in extra) o[k] = extra[k];
     return o;
   }

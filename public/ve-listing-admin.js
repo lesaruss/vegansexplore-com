@@ -299,7 +299,10 @@
       $('#vla-bs-t').textContent = st.title;
       $('#vla-bs').innerHTML = opts.map(function (o) { return chip('radio', 'vla-bs', o[0], o[1], o[0] === cur); }).join('');
       var last = st.opts[st.opts.length - 1][1];
-      $('#vla-bs-note').textContent = last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
+      // A podcast's status follows its feed (ve-podcast, every hour): a save here holds only until the feed is read again.
+      $('#vla-bs-note').textContent = $('#vla-sub').value === 'Podcasts'
+        ? 'Set from its latest episode: Active within 6 months, On hiatus to a year, then Ended. A new episode sets it back on its own. To take it off the Directory:'
+        : last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
     }
     // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).
     function syncVet() {

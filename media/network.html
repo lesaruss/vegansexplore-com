@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join the Podcast Network — Vegans Explore</title>
+<meta name="description" content="Apply to the Vegans Explore Podcast Network: be part of the sponsorships we bring to the network, and be promoted across Vegans Explore.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* The Vegans Explore Podcast Network application (Sean, 2026-10-27: "I want people to want to join the network so that way they
+     can be part of our sponsorship conversations... They don't got to post anything on their podcast unless they're involved in a
+     campaign... you just got to become a member"). Media's banner sends Join our network here. One step per view (?step=), Back /
+     Step N of M / Next, Next checks the step, sign-in at the button (canon rule 14). Saved by ve-podcast network_apply. */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --g: #1f5f22; --g2: #2d7d31; --gl: #EAF7EA; --b: rgba(0,0,0,.14); --t75: rgba(26,26,26,.75); --t60: rgba(26,26,26,.62); }
+  body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
+  .page-frame { width: 100%; display: flex; flex-direction: column; min-height: 100vh; }
+  main { flex: 1; max-width: none; margin: 0; padding: 36px 40px 80px; }
+  @media (max-width: 700px) { main { padding: 24px 16px 64px; } }
+  .crumb { font-size: 12px; font-weight: 700; color: var(--t60); margin: 0 0 10px; }
+  .crumb a { color: var(--g); }
+  .eyebrow { font-size: 11px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: var(--g2); }
+  h1 { font-size: 30px; font-weight: 900; line-height: 1.15; margin: 6px 0 10px; }
+  .sub { max-width: 860px; font-size: 15px; line-height: 1.65; color: var(--t75); margin-bottom: 20px; }
+  .gets { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 10px; margin: 0 0 26px; }
+  .gets div { border: 1px solid var(--b); border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.5; color: var(--t75); }
+  .gets b { display: block; color: #1a1a1a; font-size: 14px; margin-bottom: 2px; }
+  .stepper { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; counter-reset: st; }
+  .stepper li { counter-increment: st; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--t75); border: 1px solid var(--b); border-radius: 6px; padding: 7px 12px; }
+  .stepper li::before { content: counter(st); display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: #e7ece8; color: #4a5a4d; font-size: 11px; }
+  .stepper li.on { border-color: var(--g); color: var(--g); } .stepper li.on::before { background: var(--g); color: #fff; }
+  .stepper li.done::before { background: #3A9B3E; color: #fff; content: '\2713'; }
+  .card { border: 1px solid var(--b); border-radius: 12px; padding: 22px; margin-bottom: 16px; }
+  .card h2 { font-size: 18px; font-weight: 900; margin-bottom: 4px; } .card .hint { font-size: 13px; color: var(--t60); margin-bottom: 8px; line-height: 1.5; }
+  label.h { display: block; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: #555; margin: 14px 0 6px; }
+  label.h i { font-style: normal; font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--t60); }
+  input[type=text], input[type=url], input[type=email], select, textarea { width: 100%; font: inherit; font-size: 15px; padding: 11px 12px; border: 1px solid rgba(0,0,0,.28); border-radius: 6px; background: #fff; color: #1a1a1a; }
+  textarea { min-height: 110px; resize: vertical; }
+  /* Dropdowns: our own arrow, 16px in from the right edge (canon rule 15, the select rule in claim.html). */
+  select { min-height: 46px; -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 46px; cursor: pointer;
+    background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } @media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips label { display: flex; gap: 8px; align-items: center; font-size: 13.5px; font-weight: 700; border: 1px solid rgba(0,0,0,.2); border-radius: 6px; padding: 9px 13px; cursor: pointer; }
+  .chips label:has(input:checked) { background: var(--gl); border-color: var(--g2); } .chips input { accent-color: var(--g); width: 16px; height: 16px; }
+  .err { color: #8a1c12; font-size: 13px; font-weight: 700; min-height: 18px; margin-top: 10px; }
+  .step-nav { display: flex; align-items: center; gap: 12px; } .step-nav .count { flex: 1; text-align: center; font-size: 13px; font-weight: 800; color: var(--t75); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 12px 20px; min-height: 44px; border-radius: 6px; border: 0; background: var(--g); color: #fff; cursor: pointer; text-decoration: none; }
+  .btn.o { background: #fff; color: var(--g); border: 1px solid rgba(0,0,0,.25); } .btn:disabled { opacity: .55; cursor: default; } .btn[hidden] { display: none; }
+  .done-box { border: 1px solid var(--b); border-radius: 12px; padding: 26px; }
+  .done-box h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; } .done-box p { font-size: 15px; line-height: 1.65; color: var(--t75); margin-bottom: 12px; max-width: 860px; }
+  .done-box .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="page-frame">
+
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-hubs.js"></script>
+
+<main id="main-content">
+  <div class="vear-layout"><div class="vear-main">
+    <p class="crumb"><a href="/media">Media</a> / Join our network</p>
+    <p class="eyebrow">The Vegans Explore Podcast Network</p>
+    <h1>Join our podcast network</h1>
+    <p class="sub">Network shows are part of the sponsorships we bring in: when a brand wants to reach Vegans, we put the network in front of them, and your show is in that conversation. You only carry something on your show when you choose to join a campaign. Your show is promoted on Vegans Explore either way. Tell us about your show and we will be in touch.</p>
+    <div class="gets">
+      <div><b>Sponsorship conversations</b>Brands we bring to the network can include your show. You say yes or no to each campaign.</div>
+      <div><b>Promoted on Vegans Explore</b>Your episodes play on your page, members save them, and you see who does.</div>
+      <div><b>Help when you want it</b>Promos on our shows, clips and social promotion, and production help.</div>
+      <div><b>Founding Members</b>The network is for Founding Members: $11, one time, and you are part of everything we build.</div>
+    </div>
+    <ol class="stepper" id="stepper" aria-label="Steps"></ol>
+    <form id="nf" novalidate>
+      <section class="card" data-step="1" aria-labelledby="s1t">
+        <h2 id="s1t">Your podcast</h2><p class="hint">Its RSS feed or its Apple Podcasts link is how we find your episodes.</p>
+        <label class="h" for="f-name">Podcast name</label><input type="text" id="f-name" maxlength="160" autocomplete="off">
+        <div class="row2"><div><label class="h" for="f-rss">RSS feed <i>(or the Apple link)</i></label><input type="url" id="f-rss" placeholder="https://feeds.example.com/show"></div>
+          <div><label class="h" for="f-apple">Apple Podcasts link</label><input type="url" id="f-apple" placeholder="https://podcasts.apple.com/..."></div></div>
+        <div class="row2"><div><label class="h" for="f-web">Website <i>(optional)</i></label><input type="url" id="f-web"></div>
+          <div><label class="h" for="f-hosts">Host or hosts</label><input type="text" id="f-hosts" maxlength="200"></div></div>
+      </section>
+      <section class="card" data-step="2" aria-labelledby="s2t">
+        <h2 id="s2t">Your audience</h2><p class="hint">Your best estimate is fine. It helps us know which campaigns fit.</p>
+        <div class="row2"><div><label class="h" for="f-dl">Downloads a month</label><select id="f-dl"><option value="">Pick one</option><option value="under_1k">Under 1,000</option><option value="1k_5k">1,000 to 5,000</option><option value="5k_25k">5,000 to 25,000</option><option value="25k_100k">25,000 to 100,000</option><option value="over_100k">Over 100,000</option><option value="unsure">Not sure</option></select></div>
+          <div><label class="h" for="f-src">Where that number comes from</label><select id="f-src"><option value="">Pick one</option><option>My host's dashboard</option><option>Apple Podcasts Connect</option><option>Spotify for Creators</option><option>YouTube Studio</option><option>An estimate</option></select></div></div>
+        <div class="row2"><div><label class="h" for="f-cad">How often you release</label><select id="f-cad"><option value="">Pick one</option><option>Every week</option><option>Every two weeks</option><option>Every month</option><option>In seasons</option><option>Paused right now</option></select></div>
+          <div><label class="h" for="f-aud">Where most listeners are <i>(optional)</i></label><input type="text" id="f-aud" maxlength="300" placeholder="The US, the UK, South Florida..."></div></div>
+      </section>
+      <section class="card" data-step="3" aria-labelledby="s3t">
+        <h2 id="s3t">Your social</h2><p class="hint">Where your listeners follow you. Leave out what you do not use.</p>
+        <div class="row2"><div><label class="h" for="f-ig">Instagram</label><input type="text" id="f-ig" maxlength="120" placeholder="@yourshow"></div>
+          <div><label class="h" for="f-tt">TikTok</label><input type="text" id="f-tt" maxlength="120" placeholder="@yourshow"></div></div>
+        <div class="row2"><div><label class="h" for="f-yt">YouTube</label><input type="text" id="f-yt" maxlength="200" placeholder="@yourshow or a link"></div>
+          <div><label class="h" for="f-fol">Followers, all together</label><select id="f-fol"><option value="">Pick one</option><option value="under_1k">Under 1,000</option><option value="1k_5k">1,000 to 5,000</option><option value="5k_25k">5,000 to 25,000</option><option value="25k_100k">25,000 to 100,000</option><option value="over_100k">Over 100,000</option><option value="unsure">Not sure</option></select></div></div>
+      </section>
+      <section class="card" data-step="4" aria-labelledby="s4t">
+        <h2 id="s4t">What you want from the network</h2><p class="hint">Pick all that apply.</p>
+        <div class="chips" role="group" aria-label="What you want">
+          <label><input type="checkbox" name="int" value="sponsorships"> Sponsorships</label>
+          <label><input type="checkbox" name="int" value="promotion"> Promotion on Vegans Explore</label>
+          <label><input type="checkbox" name="int" value="promos"> Promos on your shows</label>
+          <label><input type="checkbox" name="int" value="clips"> Clips and social promotion</label>
+          <label><input type="checkbox" name="int" value="production"> Production help</label>
+        </div>
+        <label class="h" for="f-notes">Anything else <i>(optional)</i></label><textarea id="f-notes" maxlength="2000"></textarea>
+        <div class="row2"><div><label class="h" for="f-cname">Your name</label><input type="text" id="f-cname" maxlength="120" autocomplete="name"></div>
+          <div><label class="h" for="f-cemail">Your email</label><input type="email" id="f-cemail" maxlength="200" autocomplete="email"></div></div>
+      </section>
+      <p class="err" id="err" role="alert"></p>
+      <div class="step-nav"><button type="button" class="btn o" id="back">Back</button><span class="count" id="count"></span><button type="button" class="btn" id="next">Next</button></div>
+    </form>
+    <div class="done-box" id="done" hidden></div>
+  </div><aside class="vear-rail" data-ad-page="chapter"></aside></div>
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-ad-rail.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-podcast';
+  var STEPS = ['Your podcast', 'Your audience', 'Your social', 'What you want'], DRAFT = 've_network_draft';
+  var $ = function (id) { return document.getElementById(id); };
+  var FIELDS = ['f-name', 'f-rss', 'f-apple', 'f-web', 'f-hosts', 'f-dl', 'f-src', 'f-cad', 'f-aud', 'f-ig', 'f-tt', 'f-yt', 'f-fol', 'f-notes', 'f-cname', 'f-cemail'];
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function url(v) { v = String(v || '').trim(); if (v && !/^https?:\/\//i.test(v)) v = 'https://' + v; return v; }
+
+  // What they typed is kept for the visit, so signing in or a reload never loses it.
+  function saveDraft() {
+    var d = {}; FIELDS.forEach(function (f) { d[f] = $(f).value; });
+    d.int = [].map.call(document.querySelectorAll('input[name=int]:checked'), function (i) { return i.value; });
+    try { sessionStorage.setItem(DRAFT, JSON.stringify(d)); } catch (e) {}
+  }
+  try {
+    var d = JSON.parse(sessionStorage.getItem(DRAFT) || 'null');
+    if (d) { FIELDS.forEach(function (f) { if (d[f]) $(f).value = d[f]; }); (d.int || []).forEach(function (v) { var i = document.querySelector('input[name=int][value="' + v + '"]'); if (i) i.checked = true; }); }
+  } catch (e) {}
+  var m = window.VEAuth && VEAuth.getMember && VEAuth.getMember();
+  if (m) { if (!$('f-cname').value) $('f-cname').value = m.name || ''; if (!$('f-cemail').value) $('f-cemail').value = m.email || ''; }
+  document.getElementById('nf').addEventListener('input', function () { saveDraft(); $('err').textContent = ''; });
+
+  function stepNow() { var n = parseInt(new URLSearchParams(location.search).get('step'), 10); return n >= 1 && n <= STEPS.length ? n : 1; }
+  function show(n, push) {
+    var u = new URL(location.href); if (n > 1) u.searchParams.set('step', n); else u.searchParams.delete('step');
+    if (u.href !== location.href) history[push ? 'pushState' : 'replaceState'](null, '', u.pathname + u.search);
+    document.querySelectorAll('[data-step]').forEach(function (s) { s.hidden = +s.getAttribute('data-step') !== n; });
+    $('stepper').innerHTML = STEPS.map(function (t, i) { return '<li class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '"' + (i + 1 === n ? ' aria-current="step"' : '') + '>' + t + '</li>'; }).join('');
+    $('count').textContent = 'Step ' + n + ' of ' + STEPS.length;
+    $('back').hidden = n === 1;
+    $('next').textContent = n === STEPS.length ? (window.VEAuth && VEAuth.isLoggedIn() ? 'Send my application' : 'Sign in and send') : 'Next';
+    $('err').textContent = '';
+    if (push) { var top = $('stepper').getBoundingClientRect().top + window.scrollY - 90; if (window.scrollY > top) window.scrollTo({ top: top, behavior: 'smooth' }); }
+  }
+  function check(n) {
+    if (n === 1) {
+      if (!$('f-name').value.trim()) return ['f-name', 'Add your podcast\'s name.'];
+      if (!$('f-rss').value.trim() && !$('f-apple').value.trim()) return ['f-rss', 'Add its RSS feed or its Apple Podcasts link.'];
+    }
+    if (n === 2 && !$('f-dl').value) return ['f-dl', 'Pick your downloads a month, or Not sure.'];
+    if (n === 4) {
+      if (!$('f-cname').value.trim()) return ['f-cname', 'Add your name.'];
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('f-cemail').value.trim())) return ['f-cemail', 'Add an email we can reply to.'];
+    }
+    return null;
+  }
+  $('back').onclick = function () { show(Math.max(1, stepNow() - 1), true); };
+  $('next').onclick = function () {
+    var n = stepNow(), bad = check(n);
+    if (bad) { $('err').textContent = bad[1]; $(bad[0]).focus(); return; }
+    if (n < STEPS.length) { show(n + 1, true); return; }
+    // Sign-in comes last, at the button.
+    if (!(window.VEAuth && VEAuth.isLoggedIn())) { saveDraft(); VEAuth.showAuthModal('Sign in or create your account to send your application.', send); return; }
+    send();
+  };
+  window.addEventListener('popstate', function () { if ($('done').hidden) show(stepNow(), false); });
+
+  function send() {
+    var btn = $('next'); btn.disabled = true; btn.textContent = 'Sending...';
+    var a = { podcast_name: $('f-name').value, rss_url: url($('f-rss').value), apple_url: url($('f-apple').value), website: url($('f-web').value), hosts: $('f-hosts').value,
+      monthly_downloads: $('f-dl').value, stats_source: $('f-src').value, release_cadence: $('f-cad').value, audience: $('f-aud').value,
+      socials: { instagram: $('f-ig').value, tiktok: $('f-tt').value, youtube: $('f-yt').value }, social_followers: $('f-fol').value,
+      interests: [].map.call(document.querySelectorAll('input[name=int]:checked'), function (i) { return i.value; }),
+      notes: $('f-notes').value, contact_name: $('f-cname').value, contact_email: $('f-cemail').value };
+    fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'network_apply', application: a }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        btn.disabled = false; show(stepNow(), false);
+        if (!d || !d.ok) {
+          $('err').textContent = d && d.error === 'feed' ? 'Add its RSS feed or its Apple Podcasts link (step 1).' : d && d.error === 'too_many' ? 'You have sent five today. Try again tomorrow.'
+            : d && d.error === 'not_authenticated' ? 'Sign in again, then send.' : 'That did not send. Try again.';
+          return;
+        }
+        try { sessionStorage.removeItem(DRAFT); } catch (e) {}
+        done(d, a.podcast_name);
+      }).catch(function () { btn.disabled = false; show(stepNow(), false); $('err').textContent = 'Could not connect. Try again.'; });
+  }
+  function done(d, name) {
+    $('nf').hidden = true; $('stepper').hidden = true; var box = $('done'); box.hidden = false;
+    box.innerHTML = '<h2>Thank you. ' + esc(name) + ' is in.</h2><p>We read every application and will reply by email.' +
+      (d.listing ? ' Your show is already in the Directory: <a href="/directory/' + esc(d.listing.slug) + '">' + esc(d.listing.name) + '</a>.' : ' We will add your show to the Directory too.') + '</p>' +
+      (d.member_active ? '<p>You are a Founding Member, so you are all set.</p><div class="acts"><a class="btn o" href="/media">Back to Media</a></div>'
+        : '<p><b>One more step:</b> the network is for Founding Members. Become one for $11, one time, and your show is part of every sponsorship conversation we have.</p>' +
+          '<div class="acts"><button type="button" class="btn" id="join">Become a Founding Member, $11</button><a class="btn o" href="/media">Not now</a></div><p class="err" id="jerr"></p>');
+    var j = $('join');
+    if (j) j.onclick = function () {
+      j.disabled = true; j.textContent = 'Opening checkout...';
+      VEAuth.startEntryCheckout(1100).then(function (r) { if (r && r.url) { location.href = r.url; return; } j.disabled = false; j.textContent = 'Become a Founding Member, $11'; $('jerr').textContent = (r && r.error) || 'Checkout did not open. Try again.'; })
+        .catch(function () { j.disabled = false; j.textContent = 'Become a Founding Member, $11'; $('jerr').textContent = 'Checkout did not open. Try again.'; });
+    };
+    box.scrollIntoView({ block: 'start' });
+  }
+  show(stepNow(), false);
+})();
+</script>
+</body>
+</html>
