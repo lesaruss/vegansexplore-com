@@ -172,6 +172,8 @@
       var V = function () { return $('view'); };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function disc(body) { return fetch(FN_DISCOVER, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      // The name is saved the listing editor's way (ve-claims admin_listing); listing_fix does not hold it.
+      function claims(body) { return fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function crumbs(parts) {
         $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a> <span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join(' ');
@@ -283,6 +285,8 @@
             // What it shows, as a form: fill in what you found and Save. Missing ones are marked; only what changed is saved.
             '<section class="card"><h2>What it shows</h2><p class="hint" style="margin:0 0 12px">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + '. Fill in what you found and save: the listing updates now, and the flags it fixes go away.</p>' +
             '<div class="fix" id="dr-fix">' +
+              // The name (Sean, 2026-10-27: "I wanted to change the title and I couldn't").
+              '<div class="wide"><label for="dr-name">Name</label><input type="text" id="dr-name" maxlength="160" value="' + esc(l.name || '') + '"></div>' +
               // What kind of business, and Online only (Sean, 2026-10-25, Axiology: an online beauty brand has no hours or street).
               '<div><label for="dr-kind">Kind</label><select id="dr-kind">' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === l.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') +
                 (KINDS.some(function (g) { return g[1].indexOf(l.category) >= 0; }) ? '' : '<option selected value="">' + esc(l.category || 'Pick one') + '</option>') + '</select></div>' +
@@ -326,12 +330,19 @@
             if (hChanged && !$('dr-online').checked) fields.hours = h;
             if ($('dr-kind').value && $('dr-kind').value !== l.category) fields.category = $('dr-kind').value;
             if ($('dr-online').checked && !online) { fields.online = true; delete fields.address_street; delete fields.address_zip; }
-            if (!Object.keys(fields).length && !live) { msg.className = 'msg'; msg.textContent = 'Nothing changed.'; return; }
+            var newName = $('dr-name').value.trim(), renamed = newName && newName !== l.name;
+            if (!Object.keys(fields).length && !renamed && !live) { msg.className = 'msg'; msg.textContent = 'Nothing changed.'; return; }
+            if (!newName) { msg.className = 'msg err'; msg.textContent = 'It needs a name.'; return; }
             btns.forEach(function (b) { b.disabled = true; });
             msg.className = 'msg'; msg.textContent = 'Saving...';
-            api({ action: 'listing_fix', listing_id: l.id, fields: fields, live: !!live, note: $('dr-note').value }).then(function (r) {
+            (renamed ? claims({ action: 'admin_listing', listing_id: l.id, name: newName }).then(function (r) {
+              if (!r || !r.ok) throw new Error(r && r.error === 'duplicate_listing' ? 'Another listing already has that name there.' : 'The name did not save.');
+            }) : Promise.resolve()).then(function () {
+              return Object.keys(fields).length || live ? api({ action: 'listing_fix', listing_id: l.id, fields: fields, live: !!live, note: $('dr-note').value }) : { ok: true, saved: [] };
+            }).then(function (r) {
               if (!r.ok) throw new Error(r.error === 'bad_link' ? 'That ' + (r.field === 'menu_crawl_url' ? 'menu link' : r.field) + ' is not a link.' : r.error || 'That did not save.');
-              var said = r.saved.length ? 'Saved: ' + r.saved.join(', ').replace(/_/g, ' ') + '.' : 'Saved.';
+              var saved = (renamed ? ['name'] : []).concat(r.saved || []);
+              var said = saved.length ? 'Saved: ' + saved.join(', ').replace(/_/g, ' ') + '.' : 'Saved.';
               return load().then(function () {
                 if (!live) { viewListing(l.id, from); setTimeout(function () { var m = $('dr-fix-msg'); if (m) { m.className = 'msg'; m.textContent = said; } }, 400); return; }
                 msg.textContent = said + ' Back on the Directory.';

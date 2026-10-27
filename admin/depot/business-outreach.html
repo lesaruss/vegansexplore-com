@@ -736,6 +736,8 @@
           '<div class="row-btns" id="pl-site-logos" style="margin:0 0 10px"></div>' +
           '<div id="pl-logo"></div>' +
           '<h2 style="margin-top:18px">Your call</h2><div class="form">' +
+            // The name it goes live under (Sean, 2026-10-27: "I wanted to change the title and I couldn't").
+            '<label style="grid-column:1/-1">Name<input type="text" id="pl-name" maxlength="160" value="' + esc(l.name || '') + '"></label>' +
             '<label>Main category<select id="pl-cat"><option value="">Pick one</option>' + (placeCache.cats || []).map(function (c) { return '<option' + (c === guessCat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
             '<label id="pl-vs-l">How Vegan<select id="pl-vs"><option value="">Pick one</option>' + VSTAT.map(function (v) { return '<option value="' + v[0] + '">' + v[1] + '</option>'; }).join('') + '</select></label></div>' +
           '<p class="pl-h">Also show it under</p><div class="pl-extra" id="pl-extra">' + (placeCache.cats || []).map(function (c) {
@@ -782,10 +784,13 @@
             if (!x.ok) throw new Error(x.error === 'already_decided' ? 'Someone already decided this one.' : (x.error || 'That did not work.'));
             placeCache.rows = placeCache.rows.filter(function (y) { return y.listing_id !== id; });
             if (decision !== 'list') return 'Set aside.';
-            // The other sections it shows under are saved the listing editor's way (ve-claims admin_listing, extra_categories).
-            var also = !extra.length ? Promise.resolve() : fetch(CLAIMS, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
-              body: JSON.stringify({ action: 'admin_listing', listing_id: id, category: cat, extra_categories: extra }) }).then(function (r) { return r.json(); })
-              .then(function (d) { if (!d || !d.ok) throw new Error('its other sections did not save; add them with Edit listing'); });
+            // A new name and the other sections it shows under are saved the listing editor's way (ve-claims admin_listing).
+            var nm = $('pl-name').value.trim(), body = { action: 'admin_listing', listing_id: id };
+            if (nm && nm !== l.name) body.name = nm;
+            if (extra.length) { body.category = cat; body.extra_categories = extra; }
+            var also = !body.name && !extra.length ? Promise.resolve() : fetch(CLAIMS, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+              body: JSON.stringify(body) }).then(function (r) { return r.json(); })
+              .then(function (d) { if (!d || !d.ok) throw new Error((body.name ? 'the new name' : 'its other sections') + ' did not save; change it with Edit listing'); });
             return also.then(saveLogo).then(function (withLogo) { return withLogo ? 'Added to the Directory with its logo.' : 'Added to the Directory.'; },
               function (e) { return 'Added to the Directory. One thing to fix: ' + e.message + ' (the logo in Directory review > Logos, sections with Edit listing).'; });
           }).then(function (done) {

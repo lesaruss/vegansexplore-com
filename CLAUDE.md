@@ -1269,7 +1269,9 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   and its own Add as (the category from the guess, `guessCatOf`; How Vegan for anything but an organization), and one button that
   adds every ticked row through `backlog_decide`, on whichever city tab is open. Organizations start ticked; a food place starts
   unticked until its How Vegan is picked (never guessed), and the button waits until every ticked row is complete. The logo and
-  other sections are left to the place's own page (the logo sweep suggests a logo afterwards); **Set aside** makes it `rejected` with a note,
+  other sections are left to the place's own page (the logo sweep suggests a logo afterwards); a place's own page and Directory review's What it
+  shows both have a **Name** field (Sean, 2026-10-27: "I wanted to change the title and I couldn't"), saved through `ve-claims`
+  `admin_listing` like the listing editor; **Set aside** makes it `rejected` with a note,
   never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
   newly listed business joins its city's outreach through Find emails on the city card.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
