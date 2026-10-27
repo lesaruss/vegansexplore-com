@@ -3004,7 +3004,8 @@ function renderListing(l){
 
   // Business status badge
   // In the words of the kind of listing (Sean, 2026-10-27). Keep in step with STATUS_WORDS in /public/ve-region-directory.js.
-  var statusWords = ['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(l.category) >= 0 ? ['On hiatus', 'Ended']
+  // A show is never Ended, only On hiatus (Sean, 2026-10-27: "it could come back 3 years later").
+  var statusWords = ['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(l.category) >= 0 ? ['On hiatus', 'On hiatus']
     : ['Documentaries & Films', 'Books'].indexOf(l.category) >= 0 ? ['Unavailable for now', 'No longer available']
     : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(l.category) >= 0 ? ['Paused', 'Out of business']
     : ['Temporarily Closed', 'Permanently Closed'];
@@ -3116,7 +3117,7 @@ function renderListing(l){
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
             '<span class="badge-cat">'+esc(catLabel)+'</span>'+
-            // Media shows whether it is still going (Active, On hiatus, Ended; Sean, 2026-10-27), not how Vegan it is.
+            // Media shows whether it is still going (Active or On hiatus; Sean, 2026-10-27), not how Vegan it is.
             (mediaKind && mediaStatus ? '<span class="badge-subcat" style="'+mediaStatus[1]+'">'+mediaStatus[0]+'</span>' : '')+
             (!mediaKind && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             cuisineLabels(l).map(function(c){ return '<span class="badge-subcat badge-cuisine" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'">'+esc(c)+'</span>'; }).join('')+

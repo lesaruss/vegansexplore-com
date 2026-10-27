@@ -14,7 +14,7 @@
  * What it is comes first (Sean, 2026-10-27: "once you select its media... you don't see anything else. Then based off what
  * you choose, the next part populates"): the section sits under the logo, and the rest shows only what fits that kind of
  * listing (KIND_OF). Media hides How Vegan, Location, Chapters and Locations (it is in every chapter: saving sets Every
- * chapter) and its status reads Active / On hiatus / Ended (books and films: Available / No longer available); products and
+ * chapter) and its status reads Active / On hiatus (books and films: Available / No longer available); products and
  * brands hide Locations and read In business / Paused / Out of business; places keep it all. A part that is hidden is not
  * saved, so what the listing already has stays. Nothing but the section shows until a section is picked.
  *
@@ -83,7 +83,8 @@
   function kindOf(cat) { return MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
   var STATUS = {
     place: { title: 'Open or closed', opts: OPEN },
-    show: { title: 'Status', opts: [['OPERATIONAL', 'Active'], ['CLOSED_TEMPORARILY', 'On hiatus'], ['CLOSED_PERMANENTLY', 'Ended']] },
+    // Never Ended (Sean, 2026-10-27: "it could come back 3 years later").
+    show: { title: 'Status', opts: [['OPERATIONAL', 'Active'], ['CLOSED_TEMPORARILY', 'On hiatus']] },
     work: { title: 'Status', opts: [['OPERATIONAL', 'Available'], ['CLOSED_PERMANENTLY', 'No longer available']] },
     brand: { title: 'Status', opts: [['OPERATIONAL', 'In business'], ['CLOSED_TEMPORARILY', 'Paused'], ['CLOSED_PERMANENTLY', 'Out of business']] }
   };
@@ -302,7 +303,7 @@
       $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
       drawStatus(kind);
     }
-    // Status words fit the kind: a podcast is Active, On hiatus or Ended; a brand In business, Paused or Out of business.
+    // Status words fit the kind: a podcast is Active or On hiatus; a brand In business, Paused or Out of business.
     function drawStatus(kind) {
       var cur = (wrap.querySelector('input[name=vla-bs]:checked') || {}).value || bs, st = STATUS[kind], opts = st.opts.slice();
       if (!opts.some(function (o) { return o[0] === cur; })) opts.splice(1, 0, [cur, cur === 'CLOSED_TEMPORARILY' ? 'Unavailable for now' : cur]);
@@ -311,8 +312,8 @@
       var last = st.opts[st.opts.length - 1][1];
       // A podcast's status follows its feed (ve-podcast, every hour): a save here holds only until the feed is read again.
       $('#vla-bs-note').textContent = $('#vla-sub').value === 'Podcasts'
-        ? 'Set from its latest episode: Active within 6 months, On hiatus to a year, then Ended. A new episode sets it back on its own. To take it off the Directory:'
-        : last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
+        ? 'Set from its latest episode: Active within 6 months, then On hiatus, never Ended. A new episode sets it back on its own. To take it off the Directory:'
+        : kind === 'show' ? 'To take it off the Directory:' : last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
     }
     // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).
     function syncVet() {

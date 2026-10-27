@@ -21,9 +21,9 @@
 //                                                                       hours, and sets every podcast's status from its latest episode
 //
 // A podcast's status follows its feed (Sean, 2026-10-27: "if an episode has been posted within the last 6 months, we can consider it
-// active. Anything longer than 6 months to about a year, we'll say on hiatus. And then anything past a year, we'll say ended"):
-// listings.business_status OPERATIONAL, CLOSED_TEMPORARILY or CLOSED_PERMANENTLY, set each time a feed is read and by the hourly
-// refresh, so a new episode puts it back to Active on its own.
+// active. Anything longer than 6 months... we'll say on hiatus"). Never Ended (Sean, same day: "it could come back 3 years later...
+// I would take offense if somebody typed my podcast ended"): listings.business_status OPERATIONAL or CLOSED_TEMPORARILY, set each
+// time a feed is read and by the hourly refresh, so a new episode puts it back to Active on its own.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -111,7 +111,7 @@ function statusOf(latest: string | null | undefined): string | null {
   const t = latest ? Date.parse(latest) : NaN;
   if (isNaN(t)) return null;
   const age = Date.now() - t;
-  return age < 183 * DAY ? 'OPERATIONAL' : age < 365 * DAY ? 'CLOSED_TEMPORARILY' : 'CLOSED_PERMANENTLY';
+  return age < 183 * DAY ? 'OPERATIONAL' : 'CLOSED_TEMPORARILY';
 }
 // Only a podcast, and only when it changes. The episodes are newest first, so the first one is the latest.
 async function syncStatus(l: any, latest: string | null | undefined) {

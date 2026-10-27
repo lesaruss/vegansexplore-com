@@ -99,12 +99,12 @@
   }
 
   // A featured show is its Directory listing (Sean, 2026-10-27: "the same as the page... set up the same way as the others"):
-  // the card opens /directory/<slug> (episodes from its feed, Listen on), wears the feed's Active / On hiatus / Ended, and
+  // the card opens /directory/<slug> (episodes from its feed, Listen on), wears the feed's Active or On hiatus (never Ended), and
   // lists where else to listen, Spotify, Apple Podcasts, Amazon Music and YouTube, from the listing (details.platforms).
   var LISTEN = [['spotify', 'Spotify', 'spotify'], ['apple', 'Apple Podcasts', 'apple-podcasts'], ['amazon', 'Amazon Music', 'amazon-music'], ['youtube', 'YouTube', 'youtube']];
   function showStatus(l) {
     var b = l && l.business_status;
-    var t = b === 'CLOSED_PERMANENTLY' ? ['Ended', 'off'] : b === 'CLOSED_TEMPORARILY' ? ['On hiatus', 'paused'] : l ? ['Active', 'on'] : null;
+    var t = b === 'CLOSED_PERMANENTLY' || b === 'CLOSED_TEMPORARILY' ? ['On hiatus', 'paused'] : l ? ['Active', 'on'] : null;
     return t ? '<span class="vrd-mstat vrd-mstat-' + t[1] + '">' + t[0] + '</span>' : '';
   }
   function showCard(s, l) {
@@ -123,7 +123,7 @@
 
   // The top 12 of a kind: most votes, then most voters, then a logo over a letter, then A to Z. Never ours, never closed.
   function rank(rows) {
-    // Ended shows count too (Sean, 2026-10-27): their status shows on the card.
+    // Shows on hiatus count too (Sean, 2026-10-27): their status shows on the card.
     return rows.filter(function (l) { return OURS.indexOf(l.slug) < 0; })
       .sort(function (a, b) {
         return (b.vote_count || 0) - (a.vote_count || 0) || (b.voter_count || 0) - (a.voter_count || 0) ||

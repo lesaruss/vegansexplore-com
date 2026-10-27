@@ -577,8 +577,8 @@ shows until a main section is picked, and Save asks for one. Media (Podcasts, Yo
 Films, Books) hides Location, Locations, Chapters and How Vegan, is saved as every chapter (`communities` `['all']`), its address
 left as it is; a brand hides Locations. Only the parts shown are sent to `admin_listing`. `business_status` keeps its three values,
 in the kind's words (`kindOf` and `STATUS` in `ve-listing-admin.js`, `STATUS_WORDS` in `ve-region-directory.js`, `statusWords` in
-`directory/listing.html`; change all three): a place Open / Temporarily closed / Permanently closed, a show Active / On hiatus /
-Ended, a book or film Available / No longer available, a brand In business / Paused / Out of business.
+`directory/listing.html`; change all three): a place Open / Temporarily closed / Permanently closed, a show Active / On hiatus (never
+Ended), a book or film Available / No longer available, a brand In business / Paused / Out of business.
 **The logo sweep** (Sean, 2026-10-27: "do a sweep and see which ones you can do similarly... so I'm not going through all 200...
 the clean logo, no food in the background, just the actual logo"; migration `20261027_ve_logo_suggestions.sql`). Cron
 `ve-logo-sweep` (every 5 minutes, `ve-discover` `logo_sweep`, five listings a run, each looked at once) gathers each listing's
@@ -825,11 +825,11 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   cards are the Directory's card, with + Vote.
 - **Featured shows are their listings** (Sean, 2026-10-27: "the same as the page... include YouTube and Amazon Music on there as
   options for our featured ones... the episodes pulled from the RSS feed... go off the RSS feed"). A Featured card opens
-  `/directory/<slug>` (in the dashboard, under the Directory tab), wears the feed's Active / On hiatus / Ended and has **Listen
+  `/directory/<slug>` (in the dashboard, under the Directory tab), wears the feed's Active or On hiatus and has **Listen
   here** plus Spotify, Apple Podcasts, Amazon Music and YouTube (`LISTEN` in `ve-media.js`, read from the listing's
   `details.platforms`; on the listing's Listen on, `details.platforms.youtube` is the show's playlist, the `youtube` column stays
   the channel for socials). The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
-  its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads Ended.
+  its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
 
@@ -863,15 +863,17 @@ Plays (`play`, the episode's guid) and Listen on clicks (`listen`) are `ve_listi
 `20261027_ve_listing_events_actions.sql`, which also fixed the table refusing every visitor action from 2026-10-24 to 2026-10-27).
 
 **Status from the feed** (Sean, same day: "if an episode has been posted within the last 6 months, we can consider it active.
-Anything longer than 6 months to about a year, we'll say on hiatus. And then anything past a year, we'll say ended... if a new
-episode gets posted... that can update the tag automatically"). `ve-podcast` sets a podcast's `business_status` from its latest
+Anything longer than 6 months... we'll say on hiatus... if a new episode gets posted... that can update the tag automatically").
+**Never Ended** (Sean, same day: "We can't confirm it's ended because it could come back 3 years later... I would take offense if
+somebody typed my podcast ended"): a show is Active or On hiatus, however old its last episode (migration
+`20261027_shows_never_ended.sql` moved the five the feed had marked Ended). `ve-podcast` sets a podcast's `business_status` from its latest
 episode each time it reads the feed, and cron `ve-podcast-refresh` (hourly, `refresh`, x-cron-secret) re-reads feeds older than 20
 hours, eight a run, and re-checks every status from what we hold. A save in the listing editor holds only until then. Media (show
-and work) wears its status where other listings say how Vegan they are: the listing header's tag (Active, On hiatus, Ended;
-Available for books and films) and the Directory card's tag (`mediaTag` in `ve-region-directory.js`), and ended media stays in its
+and work) wears its status where other listings say how Vegan they are: the listing header's tag (Active, On hiatus;
+Available for books and films) and the Directory card's tag (`mediaTag` in `ve-region-directory.js`), and media on hiatus stays in its
 section and in Media's top 12 instead of moving to Closed. **Media is not a place** (Sean, 2026-10-27: VegNews showed San Francisco; "I don't think we need to have online there...
 Available doesn't tell me anything"): a media card's line under the name says what it is, never a city or Online: Podcast or
-YouTube channel or News outlet with its Active / On hiatus / Ended, Documentary film and its year, a book's type and its year
+YouTube channel or News outlet with its Active / On hiatus, Documentary film and its year, a book's type and its year
 (`mediaMeta` in `ve-region-directory.js`; a book or film shows a status only when it is no longer available). The listing page
 does the same (the header badge, no address chip, no address in Contact, the Directory breadcrumb, never a chapter's). The Media
 section has no Area, How Vegan or Online / Closed filters, and every media listing counts in every chapter. **Books sort by type**
@@ -881,14 +883,14 @@ read by the Directory as `release_year:details->>release_year` and set in the li
 saved by the edge function `ve-listing-media` (super admin, a `ve_listing_edits` row each; `admin_listing` does not hold details).
 **Sorting and status** (Sean, 2026-10-27): no sort by the day a listing was added anywhere ("I don't think people care
 when I added the listing"; the old Most Recent and First Added only flipped the vote order); Sort by is Most Votes and A to Z, and
-books and films add **Newest first** and **Oldest first** by the year they came out (no year goes last). A show's Active / On hiatus /
-Ended is a **Status** filter on Podcasts, YouTube and News Outlets, not a sort (best practice: people want only the shows still going).
+books and films add **Newest first** and **Oldest first** by the year they came out (no year goes last). A show's Active / On hiatus
+is a **Status** filter on Podcasts, YouTube and News Outlets, not a sort (best practice: people want only the shows still going).
 The 22 books were filed from their own descriptions (migration `20261027_media_book_types.sql`; Badass Vegan and Breaking Up with
 Dairy as Lifestyle, The Cheese Trap as Health & nutrition, the rest Cookbooks); every documentary already had its year. **Other
 media** (category `Media`) is hidden for now (Sean: "I don't know what media is"): not a pill, not in the editor's picker unless a
 listing is still filed there, and its one listing, Zara Osei Media, was re-filed under Services > Content Creation & Media the same day, and Viva! (a UK Vegan
-charity) moved from News Outlets to Community > Nonprofits, serving the London chapter (Sean: "move Zara and Viva"). On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
-Podcast, Vegans Who Lift, The Raw Vegan Podcast, Vegan Marathoner), 4 Ended (Moby Pod, Keep On Cookin', The Ordinary Vegan, The Keto
+charity) moved from News Outlets to Community > Nonprofits, serving the London chapter (Sean: "move Zara and Viva"). On 2026-10-27: 47 Active and the rest On hiatus (among them SoFlo Vegans, Vegans Explore
+Podcast, Vegans Who Lift, Pre-Vegans, Moby Pod, Keep On Cookin', The Ordinary Vegan and The Keto
 Vegan). Listen on uses the platforms' own marks (`/public/icons/platforms/`, Simple Icons, CC0 shapes).
 
 **The Vegans Explore Podcast Network** (Sean, same day: "I want people to want to join the network so that way they can be part
