@@ -858,7 +858,20 @@ episode each time it reads the feed, and cron `ve-podcast-refresh` (hourly, `ref
 hours, eight a run, and re-checks every status from what we hold. A save in the listing editor holds only until then. Media (show
 and work) wears its status where other listings say how Vegan they are: the listing header's tag (Active, On hiatus, Ended;
 Available for books and films) and the Directory card's tag (`mediaTag` in `ve-region-directory.js`), and ended media stays in its
-section and in Media's top 12 instead of moving to Closed. On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
+section and in Media's top 12 instead of moving to Closed. **Media is not a place** (Sean, 2026-10-27: VegNews showed San Francisco; "I don't think we need to have online there...
+Available doesn't tell me anything"): a media card's line under the name says what it is, never a city or Online: Podcast or
+YouTube channel or News outlet with its Active / On hiatus / Ended, Documentary film and its year, a book's type and its year
+(`mediaMeta` in `ve-region-directory.js`; a book or film shows a status only when it is no longer available). The listing page
+does the same (the header badge, no address chip, no address in Contact, the Directory breadcrumb, never a chapter's). The Media
+section has no Area, How Vegan or Online / Closed filters, and every media listing counts in every chapter. **Books sort by type**
+(`details.book_type`: Cookbook, Biography & memoir, Educational, Health & nutrition, Lifestyle, Children's; `BOOK_TYPES` in
+`ve-region-directory.js`, `ve-listing-admin.js` and `ve-listing-media`, change all three), the year is `details.release_year`, both
+read by the Directory as `release_year:details->>release_year` and set in the listing editor's **About the work** (books and films),
+saved by the edge function `ve-listing-media` (super admin, a `ve_listing_edits` row each; `admin_listing` does not hold details).
+The 22 books were filed from their own descriptions (migration `20261027_media_book_types.sql`; Badass Vegan and Breaking Up with
+Dairy as Lifestyle, The Cheese Trap as Health & nutrition, the rest Cookbooks); every documentary already had its year. **Other
+media** (category `Media`) is hidden for now (Sean: "I don't know what media is"): not a pill, not in the editor's picker unless a
+listing is still filed there, and its one listing (Zara Osei Media) shows nowhere until it is re-filed. On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
 Podcast, Vegans Who Lift, The Raw Vegan Podcast, Vegan Marathoner), 4 Ended (Moby Pod, Keep On Cookin', The Ordinary Vegan, The Keto
 Vegan). Listen on uses the platforms' own marks (`/public/icons/platforms/`, Simple Icons, CC0 shapes).
 
