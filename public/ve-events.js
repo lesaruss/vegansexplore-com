@@ -326,7 +326,6 @@
         var b = ev.target.closest('[data-cat]'); if (!b) return;
         st.cat = b.getAttribute('data-cat'); st.shown = 40; syncUrl(); drawRows();
       });
-      el.querySelector('[data-go="submit"]').addEventListener('click', function () { go('#submit/1'); });
       drawRows();
     }
 
