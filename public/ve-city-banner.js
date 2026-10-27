@@ -4,15 +4,21 @@
    cities), a city picker from VE_HUBS (/public/ve-hubs.js, load it first), Visit the community, and
    Collapse / Expand, which folds it to one bar that keeps the picker. ?city=<hub slug> carries the choice.
 
+   Collapse or Expand is one choice for the whole site (Sean, 2026-10-27: "if somebody collapses it, let it stay collapsed when they
+   navigate through to the different pages"): sessionStorage ve_banner_hero, read by every banner.
+
    Usage:
      <section id="my-banner"></section>
      var banner = VECityBanner.mount('my-banner', {
-       key: 'events',                 // remembers Collapse / Expand for the visit (sessionStorage ve_<key>_hero)
+       key: 'events',                 // names the banner (its id); Collapse / Expand is shared by every banner
        title: 'Vegan Events',         // the big line; the city name (or allLabel) goes under it
        sub: 'One line about the page.',
        allTitle: 'Every City', allLabel: 'All cities',
        onChange: function (slug, hub) {},  // runs at mount and on every pick ('' is all cities)
-       action: { label: 'Submit an event', onClick: function () {} }   // optional: the page's own button, beside View community
+       action: { label: 'Submit an event', onClick: function () {} },  // optional: the page's own button, beside View community
+       actions: [{ label, href | onClick, id, go: true, open: true }],  // optional: more buttons (go: the green one; open: only
+                                                                        // while the banner is open, not in the folded bar)
+       meta: '<span>...</span>'       // optional: a line under the sub, while the banner is open (a city hub's cities)
      });
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
@@ -70,7 +76,11 @@
     '.vcb.is-collapsed .vcb-t{display:block;white-space:nowrap;}',
     '.vcb.is-collapsed .vcb-pick{margin-top:0;flex-wrap:nowrap;}',
     '.vcb.is-collapsed .vcb-pick select{padding:9px 44px 9px 14px;}',
-    '.vcb.is-collapsed .vcb-actions{display:grid;grid-auto-rows:1fr;gap:8px;margin:0;}',
+    // Folded, the buttons keep their own height, stacked and centered beside the title (Sean, 2026-10-27: one button "should just be
+    // the same size as normally... centered"), never stretched to the bar's height.
+    '.vcb.is-collapsed .vcb-actions{display:grid;grid-auto-rows:auto;align-content:center;gap:8px;margin:0;}',
+    '.vcb.is-collapsed .vcb-open-only,.vcb.is-collapsed .vcb-meta{display:none !important;}',
+    '.vcb-meta{margin-top:14px;}',
     '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;display:flex;align-items:center;justify-content:center;}',
     // Option B on phones: flat scrim and a frosted card.
     '@media (max-width:900px){.vcb{align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,.09);}}',
@@ -113,6 +123,7 @@
         '<div class="vcb-eyebrow">' + esc(opts.eyebrow || 'Vegans Explore') + '</div>' +
         '<h1 id="' + id + '-h"><span class="vcb-t">' + esc(opts.title || '') + '</span> <em data-vcb-city>' + esc(opts.allTitle || 'Every City') + '</em></h1>' +
         (opts.sub ? '<p class="vcb-sub">' + esc(opts.sub) + '</p>' : '') +
+        (opts.meta ? '<div class="vcb-meta">' + opts.meta + '</div>' : '') +
         '<div class="vcb-pick">' +
           '<label for="' + id + '-city">' + esc(opts.pickLabel || 'City') + '</label>' +
           '<select id="' + id + '-city">' + (choices ? '' : '<option value="">' + esc(opts.allLabel || 'All cities') + '</option>') +
@@ -122,6 +133,12 @@
         '<div class="vcb-actions">' +
           (opts.hubLink === false ? '' : '<a class="vcb-btn" data-vcb-link href="/communities">View communities</a>') +
           (opts.action ? '<button type="button" class="vcb-btn vcb-btn-go" data-vcb-action>' + esc(opts.action.label) + '</button>' : '') +
+          (opts.actions || []).map(function (a, i) {
+            var cls = 'vcb-btn' + (a.go ? ' vcb-btn-go' : '') + (a.open ? ' vcb-open-only' : '');
+            var id = a.id ? ' id="' + esc(a.id) + '"' : '';
+            return a.href ? '<a class="' + cls + '"' + id + ' href="' + esc(a.href) + '">' + esc(a.label) + '</a>'
+              : '<button type="button" class="' + cls + '"' + id + ' data-vcb-act="' + i + '">' + esc(a.label) + '</button>';
+          }).join('') +
           '<button type="button" class="vcb-btn vcb-toggle" aria-controls="' + id + '" aria-expanded="true">Collapse</button>' +
         '</div>' +
       '</div>';
@@ -129,7 +146,7 @@
     var select = el.querySelector('select'), cityEl = el.querySelector('[data-vcb-city]');
     var link = el.querySelector('[data-vcb-link]'), toggle = el.querySelector('.vcb-toggle');
     var mobile = window.matchMedia('(max-width: 900px)');
-    var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_' + (opts.key || 'banner') + '_hero';
+    var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_banner_hero';
     var current = '', chosen = null;
 
     function art(slug) {
@@ -186,6 +203,9 @@
       chosen = on ? 'collapsed' : 'expanded'; try { sessionStorage.setItem(storeKey, chosen); } catch (e) {}
     });
     if (chosen) fold(chosen === 'collapsed');
+    Array.prototype.forEach.call(el.querySelectorAll('[data-vcb-act]'), function (b) {
+      b.addEventListener('click', function () { var a = opts.actions[+b.getAttribute('data-vcb-act')]; if (a && a.onClick) a.onClick(); });
+    });
     var actionBtn = el.querySelector('[data-vcb-action]');
     if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) fold(true); opts.action.onClick(); });
 

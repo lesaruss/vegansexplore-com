@@ -39,7 +39,7 @@
     return location.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '') || '/';
   }
   function onDashboard() { return !!document.getElementById('dash-content'); }
-  function onHub() { return !!(q('#hub-heading') && q('#hub-tab-select')); }
+  function onHub() { return !!(q('#hero-section.vcb') && q('#hub-content-grid')); }
   function onPartners() { return !!(q('#stage') && q('#s-seat')); }
   // The page a step lives on: 'dashboard' for every dashboard tab URL, else the clean path.
   function currentPage() { return onDashboard() ? 'dashboard' : pathKey(); }
@@ -146,29 +146,29 @@
       ready: onHub,
       prepare: function () { hubTab('news'); },
       finish: function () { hubTab('news'); try { global.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { global.scrollTo(0, 0); } },
-      // It takes the hero's second button (Sean, 2026-10-26): Get Passport or Dashboard, then Page tour, so the bar
-      // under the hero stays one row on phones.
-      launcher: function (btn) { var host = q('#hub-second'); if (!host || !onHub()) return false; btn.className = 'btn-outline-light'; btn.textContent = 'Page tour'; host.parentNode.replaceChild(btn, host); return true; },
+      // It takes the banner's second button (Sean, 2026-10-26): Get your Passport or Dashboard, then Page tour, shown while the
+      // banner is open (the folded bar keeps the Passport and Expand; Sean, 2026-10-27).
+      launcher: function (btn) { var host = q('#hub-second'); if (!host || !onHub()) return false; btn.className = 'vcb-btn vcb-open-only'; btn.textContent = 'Page tour'; host.parentNode.replaceChild(btn, host); return true; },
       steps: [
-        { sel: ['section.hero .hero-content', 'section.hero'], title: 'Your city, all in one place',
+        { sel: ['#hero-section .vcb-main', '#hero-section'], title: 'Your city, all in one place',
           body: "Every city has a community hub like this one. Here's what you'll find." },
-        { sel: ['section.hero .hero-actions .btn-join'], title: 'Start here',
+        { sel: ['#hub-join'], title: 'Start here',
           body: 'New here? Get your Passport to join Vegans Explore. Already a member? Your dashboard is one tap away.' },
-        { sel: ['.hub-menu'], title: 'Everything for this city',
-          body: 'News, events, the Directory, ways to get involved, bounties and the Community Board. Pick one here.' },
-        { hubTab: 'news', sel: ['#tab-news .section-hdr', '.hub-menu'], title: 'Local news',
+        { sel: ['#hero-section select'], title: 'Every city',
+          body: 'Pick another city here to go to its community. The menu at the top takes you to the Pulse, the Directory and Events.' },
+        { hubTab: 'news', sel: ['#tab-news .section-hdr', '#hero-section'], title: 'Local news',
           body: 'Stories from this city: openings, closings and what people are talking about.' },
-        { hubTab: 'events', sel: ['#tab-events .section-hdr', '.hub-menu'], title: 'Events',
+        { hubTab: 'events', sel: ['#tab-events .section-hdr', '#hero-section'], title: 'Events',
           body: "What's coming up here. Know about an event? Submit it here and we'll review it." },
-        { hubTab: 'directory', sel: ['#tab-directory .section-hdr', '.hub-menu'], title: 'The Directory',
+        { hubTab: 'directory', sel: ['#tab-directory .section-hdr', '#hero-section'], title: 'The Directory',
           body: 'Vegan and Vegan-friendly spots in this city. Vote for your favorites so others can find them.' },
-        { hubTab: 'opportunities', sel: ['#tab-opportunities .section-hdr', '.hub-menu'], title: 'Get involved',
+        { hubTab: 'opportunities', sel: ['#tab-opportunities .section-hdr', '#hero-section'], title: 'Get involved',
           body: 'Every open role in this city, and the ones open in every city.' },
-        { hubTab: 'bounties', sel: ['.hub-menu'], title: 'Bounties',
+        { hubTab: 'bounties', sel: ['#tab-bounties', '#hero-section'], title: 'Bounties',
           body: "Cover your city and earn points: recap videos, interviews, write-ups and more." },
-        { hubTab: 'board', sel: ['.hub-menu'], title: 'The Community Board',
+        { hubTab: 'board', sel: ['#tab-board', '#hero-section'], title: 'The Community Board',
           body: 'Ask the city and find who can help: rescue, fostering, rides, food and more. It opens right here.' },
-        { hubTab: 'members', sel: ['#tab-members .section-hdr', '.hub-menu'], title: 'For Founding Members',
+        { hubTab: 'members', sel: ['#tab-members .section-hdr', '#hero-section'], title: 'For Founding Members',
           body: 'Members and Rewards open for Founding Members: $11, one time. Enjoy exploring.' }
       ]
     },
@@ -263,7 +263,7 @@
       if (!dashTabAvailable(step.tab)) return false;
       if (step.tab !== 'profile') return true;
     }
-    if (step.hubTab) return !!q('#hub-tab-select option[value="' + step.hubTab + '"]');
+    if (step.hubTab) return !!q('#tab-' + step.hubTab);
     if (step.slide) return step.sel.some(function (s) { return !!q(s); });
     // A step that sets up its own part (before) is checked once that has run.
     if (step.before) return step.sel.some(function (s) { return !!q(s); });
@@ -481,7 +481,6 @@
       if (!currentTarget && ++tries < 25) { setTimeout(paint, 200); return; }
       currentRing = null;
       if (step.tab && step.tab !== 'profile') currentRing = q('#dash-tabs .dash-tab[data-tab-key="' + step.tab + '"]');
-      if (step.hubTab) currentRing = q('.hub-menu');
       currentPlacement = step.placement || 'bottom';
       if (currentTarget && currentTarget.scrollIntoView) currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
 

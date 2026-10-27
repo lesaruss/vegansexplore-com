@@ -576,8 +576,12 @@
      exactly (public/hub-news.js, already live on every community hub page)
      -- porting its CSS here so the shared renderer looks right wherever
      it's mounted, tokens trimmed to the ones this file already defines. */
-  /* The city banner on the Directory and Events tabs (public/ve-city-banner.js), inset like the dashboard's cards. */
-  .dash-hero-banner{border-radius:14px;overflow:hidden;margin-bottom:22px;}
+  /* The city banner on the Directory, Events, Media and Communities tabs (public/ve-city-banner.js) runs edge to edge, square, as on
+     the public pages (Sean, 2026-10-27: "I actually prefer it to be full width on the page"), and so does the Daily Pulse's frame,
+     whose banner is the /pulse page's own. main's side padding is 32px (16px on phones). */
+  .dash-hero-banner{border-radius:0;margin:0 -32px 22px;}
+  #dash-pulse-host{margin:0 -32px;}
+  @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
   .event-date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:var(--ve-green-light);min-width:72px;text-align:center;flex-shrink:0;}
