@@ -2,8 +2,11 @@
    I find and then you do that for me, and then we can adjust it... crop it and size it so it looks good, maybe drop a background
    in it if it's a transparent image").
 
-   VELogoEditor.mount(el, { fetchUrl(url) -> Promise<{ data: base64, type }>, onChange(ready) })
+   VELogoEditor.mount(el, { fetchUrl(url) -> Promise<{ data: base64, type }>, onChange(ready), background?, trim? })
      -> { load(file|blob|url), toBlob() -> Promise<Blob>, ready() }
+   VELogoEditor.auto(file|blob|url, { fetchUrl, background? }) -> Promise<{ canvas, toBlob() }>   the same square with no hands:
+     trimmed, fitted and filled (background "match", "white", "black" or #rrggbb; by default the editor's own choice). The logo
+     sweep's suggestions (Depot > Directory review > Logos > Suggested) are drawn with it.
    Drop a picture, choose a file, paste one (copy image, then Ctrl+V / Cmd+V anywhere on the page) or paste its link. Links go
    through fetchUrl (ve-discover logo_fetch) so the canvas is never tainted. The square is 800 x 800: drag to move, the slider
    or the wheel to zoom, Fit shows the whole logo, Fill covers the square, Trim edges cuts empty margins. The background fills
@@ -36,6 +39,72 @@
     '.vle-prev canvas{display:block;border:1px solid rgba(0,0,0,.15);background:#fff;margin:0 auto 4px;}' +
     '.vle-msg{font-size:12px;font-weight:700;color:#b71c1c;min-height:1em;margin:0;}' +
     '.vle-info{font-size:12px;color:#555;margin:0;}';
+
+  // ---- Shared by the editor and auto(): open a picture, read its edges, trim it, pick a background ----
+  function openImage(x, fetchUrl) {
+    return new Promise(function (res, rej) {
+      var img = new Image();
+      img.onload = function () { res(img); };
+      img.onerror = function () { rej(new Error('That picture did not open.')); };
+      if (typeof x !== 'string') { img.src = URL.createObjectURL(x); return; }
+      if (/^data:image\//.test(x)) { img.src = x; return; }
+      if (!fetchUrl) { rej(new Error('Links cannot be loaded here.')); return; }
+      fetchUrl(x).then(function (d) {
+        if (!d || !d.data) throw new Error((d && d.message) || 'That link did not give a picture.');
+        img.src = 'data:' + d.type + ';base64,' + d.data;
+      }).catch(rej);
+    });
+  }
+  function edgesOf(src) {
+    var n = 64, t = document.createElement('canvas'); t.width = n; t.height = n;
+    var c = t.getContext('2d'); c.drawImage(src, 0, 0, n, n);
+    var d = c.getImageData(0, 0, n, n).data, r = 0, g = 0, b = 0, k = 0, clear = 0;
+    for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) {
+      if (i && j && i < n - 1 && j < n - 1) continue;
+      var p = (j * n + i) * 4;
+      if (d[p + 3] < 200) { clear++; continue; }
+      r += d[p]; g += d[p + 1]; b += d[p + 2]; k++;
+    }
+    return { alpha: clear > (n * 4) * 0.2, edge: k ? '#' + [r / k, g / k, b / k].map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join('') : '#ffffff' };
+  }
+  // Cut away margins that are empty (see-through) or the same color as the edges; null when there is nothing to cut.
+  function trimmed(src, sw, sh, e) {
+    var t = document.createElement('canvas'); t.width = sw; t.height = sh;
+    var c = t.getContext('2d'); c.drawImage(src, 0, 0);
+    var d = c.getImageData(0, 0, sw, sh).data, er = parseInt(e.edge.slice(1, 3), 16), eg = parseInt(e.edge.slice(3, 5), 16), eb = parseInt(e.edge.slice(5, 7), 16);
+    var x0 = sw, y0 = sh, x1 = -1, y1 = -1;
+    for (var y = 0; y < sh; y++) for (var x = 0; x < sw; x++) {
+      var p = (y * sw + x) * 4;
+      var empty = d[p + 3] < 16 || (!e.alpha && Math.abs(d[p] - er) + Math.abs(d[p + 1] - eg) + Math.abs(d[p + 2] - eb) < 36);
+      if (empty) continue;
+      if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
+    }
+    if (x1 < 0 || (x0 === 0 && y0 === 0 && x1 === sw - 1 && y1 === sh - 1)) return null;
+    var o = document.createElement('canvas'); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1;
+    o.getContext('2d').drawImage(t, x0, y0, o.width, o.height, 0, 0, o.width, o.height);
+    return o;
+  }
+  function bgFor(want, e) {
+    if (want === 'match') return e.alpha ? '#ffffff' : e.edge;
+    if (want === 'white') return '#ffffff';
+    if (want === 'black') return '#000000';
+    if (/^#[0-9a-f]{6}$/i.test(want || '')) return want;
+    return e.alpha ? '#ffffff' : e.edge;
+  }
+  function auto(x, o) {
+    o = o || {};
+    return openImage(x, o.fetchUrl).then(function (img) {
+      var src = img, sw = img.naturalWidth || img.width, sh = img.naturalHeight || img.height;
+      if (!sw || !sh) throw new Error('That picture did not open.');
+      var e = edgesOf(src), t = trimmed(src, sw, sh, e);
+      if (t) { src = t; sw = t.width; sh = t.height; }
+      var cv = document.createElement('canvas'); cv.width = OUT; cv.height = OUT;
+      var c = cv.getContext('2d'), k = Math.min(OUT / sw, OUT / sh) * 0.86, w = sw * k, h = sh * k;
+      c.fillStyle = bgFor(o.background, e); c.fillRect(0, 0, OUT, OUT);
+      c.imageSmoothingQuality = 'high'; c.drawImage(src, OUT / 2 - w / 2, OUT / 2 - h / 2, w, h);
+      return { canvas: cv, small: Math.min(img.naturalWidth || 0, img.naturalHeight || 0) < 200, toBlob: function () { return new Promise(function (res) { cv.toBlob(res, 'image/jpeg', 0.92); }); } };
+    });
+  }
 
   function mount(el, opts) {
     opts = opts || {};
@@ -75,19 +144,7 @@
       Array.prototype.forEach.call(el.querySelectorAll('[data-bg]'), function (b) { b.setAttribute('aria-pressed', String(b.dataset.bg === bgMode)); });
     }
     // The picture's edge: its color (for "Match its edges") and whether it is see-through.
-    function study() {
-      var n = 64, t = document.createElement('canvas'); t.width = n; t.height = n;
-      var c = t.getContext('2d'); c.drawImage(src, 0, 0, n, n);
-      var d = c.getImageData(0, 0, n, n).data, r = 0, g = 0, b = 0, k = 0, clear = 0;
-      for (var i = 0; i < n; i++) for (var j = 0; j < n; j++) {
-        if (i && j && i < n - 1 && j < n - 1) continue;
-        var p = (j * n + i) * 4;
-        if (d[p + 3] < 200) { clear++; continue; }
-        r += d[p]; g += d[p + 1]; b += d[p + 2]; k++;
-      }
-      alpha = clear > (n * 4) * 0.2;
-      edge = k ? '#' + [r / k, g / k, b / k].map(function (v) { return ('0' + Math.round(v).toString(16)).slice(-2); }).join('') : '#ffffff';
-    }
+    function study() { var e = edgesOf(src); alpha = e.alpha; edge = e.edge; }
     function setFit(mode) {
       fit = Math.min(OUT / sw, OUT / sh) * 0.86;
       scale = mode === 'fill' ? Math.max(OUT / sw, OUT / sh) : fit; ox = 0; oy = 0; draw();
@@ -97,6 +154,9 @@
       if (!sw || !sh) { say('That picture did not open.'); return; }
       study(); bgMode = alpha ? '#ffffff' : 'edge'; bg = alpha ? '#ffffff' : edge;
       say(Math.min(sw, sh) < 200 ? 'This picture is small (' + sw + ' x ' + sh + '), so it may look soft. A bigger one is better if you can find it.' : '');
+      // A suggestion opened to adjust starts the way the sweep showed it: trimmed, on its background.
+      if (opts.trim) { var t = trimmed(src, sw, sh, { alpha: alpha, edge: edge }); if (t) { src = t; sw = t.width; sh = t.height; } opts.trim = false; }
+      if (opts.background) { bg = bgFor(opts.background, { alpha: alpha, edge: edge }); bgMode = opts.background === 'match' ? 'edge' : bg; opts.background = ''; }
       tools(true); setFit('fit');
     }
     function fromBlob(b) {
@@ -122,19 +182,8 @@
     function load(x) { if (!x) return; if (typeof x === 'string') fromUrl(x); else fromBlob(x); }
     // Cut away margins that are empty (see-through) or the same color as the edges.
     function trim() {
-      var t = document.createElement('canvas'); t.width = sw; t.height = sh;
-      var c = t.getContext('2d'); c.drawImage(src, 0, 0);
-      var d = c.getImageData(0, 0, sw, sh).data, er = parseInt(edge.slice(1, 3), 16), eg = parseInt(edge.slice(3, 5), 16), eb = parseInt(edge.slice(5, 7), 16);
-      var x0 = sw, y0 = sh, x1 = -1, y1 = -1;
-      for (var y = 0; y < sh; y++) for (var x = 0; x < sw; x++) {
-        var p = (y * sw + x) * 4;
-        var empty = d[p + 3] < 16 || (!alpha && Math.abs(d[p] - er) + Math.abs(d[p + 1] - eg) + Math.abs(d[p + 2] - eb) < 36);
-        if (empty) continue;
-        if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y;
-      }
-      if (x1 < 0 || (x0 === 0 && y0 === 0 && x1 === sw - 1 && y1 === sh - 1)) { say('No empty edges to trim.'); return; }
-      var o = document.createElement('canvas'); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1;
-      o.getContext('2d').drawImage(t, x0, y0, o.width, o.height, 0, 0, o.width, o.height);
+      var o = trimmed(src, sw, sh, { alpha: alpha, edge: edge });
+      if (!o) { say('No empty edges to trim.'); return; }
       src = o; sw = o.width; sh = o.height; say(''); setFit('fit');
     }
 
@@ -190,5 +239,5 @@
       toBlob: function () { draw(); return new Promise(function (res) { cv.toBlob(function (b) { res(b); }, 'image/jpeg', 0.92); }); },
     };
   }
-  window.VELogoEditor = { mount: mount, size: OUT };
+  window.VELogoEditor = { mount: mount, auto: auto, size: OUT };
 })();

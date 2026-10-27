@@ -19,7 +19,7 @@
        is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
        (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>).
        Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"):
-       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create). Logos (#logos, #logo/<id>): every open listing with no logo, made square in /public/ve-logo-editor.js; logo_queue, logo_fetch, logo_set, logo_skip
+       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create). Logos (#logos, #logo/<id>): every open listing with no logo, made square in /public/ve-logo-editor.js; logo_queue, logo_fetch, logo_set, logo_skip; Suggested (#logos/suggested): the logo sweep's picks, squared by VELogoEditor.auto, ticked and saved together; logo_suggest_reject
        and Paste a list (#paste: one business a line, checked like the backlog and waiting in New places; ve-discover paste_list). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
@@ -116,6 +116,18 @@
     .logo-letter{background:var(--ve-green-deep);color:#fff;font-size:24px;font-weight:900;}
     .logo-sum{width:56px;height:56px;object-fit:contain;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
     @media (max-width:640px){.lg-bar{flex-direction:column;align-items:stretch;gap:8px;}.lg-bar>*{width:100%;text-align:center;justify-content:center;}.lg-bar #lg-save{order:-1;}.lg-bar .row-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}.lg-bar .row-btns>*{width:100%;}.lg-bar .row-btns>*:only-child{grid-column:1/-1;}}
+    .sg-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px;}
+    .sg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:12px;}
+    @media (max-width:640px){.sg-grid{grid-template-columns:1fr 1fr;gap:8px;}.sg-card{padding:8px;}.sg-card .row-btns{flex-direction:column;}.sg-card .row-btns .btn{width:100%;}}
+    .sg-card{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:4px;}
+    .sg-card small{color:var(--ve-text-75);font-size:12px;}
+    .sg-why{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .sg-pic{position:relative;aspect-ratio:1/1;border-radius:10px;border:1px solid var(--ve-border);overflow:hidden;display:flex;align-items:center;justify-content:center;background:#fafafa;text-align:center;padding:0;margin-bottom:6px;}
+    .sg-pic img{width:100%;height:100%;object-fit:cover;display:block;}
+    .sg-pic .hint{padding:10px;}
+    .sg-small{position:absolute;left:8px;bottom:8px;}
+    .sg-tick{display:flex;gap:6px;align-items:center;font-size:12px;font-weight:800;text-transform:none;letter-spacing:0;margin:0;}
+    .sg-tick input{width:auto;min-height:0;accent-color:var(--ve-green-deep);}
     .radios small{display:block;font-weight:500;color:var(--ve-text-75);}
   </style>
 </head>
@@ -561,35 +573,127 @@
         });
       }
 
-      // ---- Logos: every open listing with no logo, one at a time (#logos, #logo/<id>) ----
-      var lg = { rows: null, q: '', city: '', all: 0, done: 0 };
-      function loadLogos() { return disc({ action: 'logo_queue' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); lg.rows = d.rows; lg.all = d.all; lg.cities = d.cities; }); }
-      function logoRows() {
+      // ---- Logos: every open listing with no logo (#logos, #logos/suggested, #logo/<id>[/s]) ----
+      // The sweep (ve-discover logo_sweep, every 5 minutes) finds the clean logo where it can: those wait in Suggested as finished
+      // squares to tick and save together; To find holds the rest, one at a time with the editor.
+      var lg = { rows: null, q: '', city: '', all: 0, done: 0, sweep: null, auto: {}, skip: {} };
+      function loadLogos() { return disc({ action: 'logo_queue' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); lg.rows = d.rows; lg.all = d.all; lg.cities = d.cities; lg.sweep = d.sweep; }); }
+      function isSuggested(r) { return r.suggest && r.suggest.status === 'found'; }
+      function logoRows(tab) {
         var q = lg.q.toLowerCase();
-        return lg.rows.filter(function (r) { return (!q || (r.name + ' ' + (r.city || '') + ' ' + (r.category || '')).toLowerCase().indexOf(q) >= 0) && (!lg.city || r.city === lg.city); });
+        return lg.rows.filter(function (r) {
+          return (tab === 'suggested' ? isSuggested(r) : !isSuggested(r)) &&
+            (!q || (r.name + ' ' + (r.city || '') + ' ' + (r.category || '')).toLowerCase().indexOf(q) >= 0) && (!lg.city || r.city === lg.city);
+        });
       }
-      function viewLogos() {
-        crumbs([['Directory review', '#'], ['Logos']]);
-        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(viewLogos).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
-        var rows = logoRows();
-        V().innerHTML = '<div class="home-head"><p class="sub">Every open listing with no logo, the most voted first. Open one, find their logo (their website, Instagram or a Google image search), drop or paste it in, and make it square right here. <strong>' + lg.rows.length + '</strong> to go' + (lg.done ? ', ' + lg.done + ' done this visit' : '') + '.</p></div>' +
+      function logosHead(tab) {
+        var sug = lg.rows.filter(isSuggested).length, find = lg.rows.length - sug, sw = lg.sweep || { checked: 0, left: 0 };
+        return '<div class="home-head"><p class="sub">Every open listing with no logo. The sweep looks at each one\'s website and Instagram and picks their own clean logo when it finds one: those wait in <strong>Suggested</strong>, already squared, for you to tick and save. <strong>To find</strong> holds the rest, one at a time with the editor.' +
+          (sw.left ? ' The sweep has looked at ' + sw.checked + ' so far and looks at five more every five minutes (' + sw.left + ' to go).' : ' The sweep has looked at every one.') +
+          (lg.done ? ' ' + lg.done + ' done this visit.' : '') + '</p></div>' +
+          '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (tab === 'suggested') + '" data-lt="suggested">Suggested &middot; ' + sug + '</button>' +
+          '<button type="button" role="tab" aria-selected="' + (tab !== 'suggested') + '" data-lt="find">To find &middot; ' + find + '</button></div>' +
           '<div class="tools"><input type="search" id="lg-q" placeholder="Search a name, city or kind" value="' + esc(lg.q) + '" aria-label="Search">' +
-          '<select id="lg-city" aria-label="City"><option value="">Every city</option>' + (lg.cities || []).map(function (c) { return '<option' + (c === lg.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
+          '<select id="lg-city" aria-label="City"><option value="">Every city</option>' + (lg.cities || []).map(function (c) { return '<option' + (c === lg.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>';
+      }
+      function wireLogosHead(tab, redraw) {
+        Array.prototype.forEach.call(V().querySelectorAll('[data-lt]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.lt === 'suggested' ? '#logos/suggested' : '#logos'; }); });
+        $('lg-q').addEventListener('input', function () { lg.q = this.value; var p = this.selectionStart; redraw(); var i = $('lg-q'); i.focus(); i.setSelectionRange(p, p); });
+        $('lg-city').addEventListener('change', function () { lg.city = this.value; redraw(); });
+      }
+      function viewLogos(tab) {
+        crumbs([['Directory review', '#'], ['Logos']]);
+        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogos(tab); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
+        if (tab === 'suggested') return viewSuggested();
+        var rows = logoRows('find');
+        V().innerHTML = logosHead('find') +
           '<section class="card">' + (rows.length
             ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>Where to look</div><div>Kind</div><div></div></div>' +
-              rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + (r.votes ? ' &middot; ' + r.votes + ' votes' : '') + '</small></div><div><small>' + esc([r.website && 'Website', r.instagram && 'Instagram', r.facebook && 'Facebook'].filter(Boolean).join(', ') || 'Google only') + (r.set_aside ? ' &middot; one set aside' : '') + '</small></div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#logo/' + r.id + '">Add logo</a></div></div>'; }).join('') + '</div>'
-            : '<p class="empty">' + (lg.rows.length ? 'Nothing matches.' : 'Every open listing has a logo.') + '</p>') + '</section>';
-        $('lg-q').addEventListener('input', function () { lg.q = this.value; var p = this.selectionStart; viewLogos(); var i = $('lg-q'); i.focus(); i.setSelectionRange(p, p); });
-        $('lg-city').addEventListener('change', function () { lg.city = this.value; viewLogos(); });
+              rows.map(function (r) {
+                var sg = r.suggest;
+                return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + (r.votes ? ' &middot; ' + r.votes + ' votes' : '') + '</small></div>' +
+                  '<div><small>' + esc([r.website && 'Website', r.instagram && 'Instagram', r.facebook && 'Facebook'].filter(Boolean).join(', ') || 'Google only') + (r.set_aside ? ' &middot; one set aside' : '') + '</small>' +
+                  (sg ? '<small>' + (sg.status === 'rejected' ? 'You turned down the sweep\'s pick' : 'Sweep: ' + esc(sg.why || 'nothing found')) + '</small>' : '<small>Not swept yet</small>') + '</div>' +
+                  '<div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#logo/' + r.id + '">Add logo</a></div></div>';
+              }).join('') + '</div>'
+            : '<p class="empty">' + (lg.rows.length ? 'Nothing here.' : 'Every open listing has a logo.') + '</p>') + '</section>';
+        wireLogosHead('find', function () { viewLogos('find'); });
       }
-      function viewLogo(id) {
-        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
-        var rows = logoRows(), i = -1;
+      // Suggested: each one squared in the browser (VELogoEditor.auto, the editor's own trim, fit and background), ticked by default.
+      function viewSuggested() {
+        var rows = logoRows('suggested');
+        V().innerHTML = logosHead('suggested') +
+          (rows.length ? '<div class="sg-bar"><button type="button" class="btn" id="sg-save">Save the ticked ones</button><span class="msg" id="sg-msg" role="status"></span></div>' +
+            '<div class="sg-grid">' + rows.map(function (r) {
+              return '<div class="sg-card" data-id="' + r.id + '"><div class="sg-pic" id="sg-pic-' + r.id + '"><span class="hint">Squaring...</span></div>' +
+                '<label class="sg-tick"><input type="checkbox" data-tick="' + r.id + '"' + (lg.skip[r.id] ? '' : ' checked') + '> Use this</label>' +
+                '<strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small>' +
+                '<small class="sg-why">' + esc((r.suggest.source || '') + (r.suggest.why ? ': ' + r.suggest.why : '')) + '</small>' +
+                '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="#logo/' + r.id + '/s">Adjust</a><button type="button" class="btn btn-ghost btn-sm" data-nope="' + r.id + '">Not this</button></div></div>';
+            }).join('') + '</div>'
+          : '<section class="card"><p class="empty">' + (lg.sweep && lg.sweep.left ? 'Nothing suggested yet. The sweep is still looking; come back in a few minutes.' : 'Nothing waiting.') + '</p></section>');
+        wireLogosHead('suggested', viewSuggested);
+        Array.prototype.forEach.call(V().querySelectorAll('[data-tick]'), function (c) { c.addEventListener('change', function () { if (c.checked) delete lg.skip[c.dataset.tick]; else lg.skip[c.dataset.tick] = 1; count(); }); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-nope]'), function (b) {
+          b.addEventListener('click', function () {
+            var id = b.dataset.nope; b.disabled = true;
+            disc({ action: 'logo_suggest_reject', listing_id: id }).then(function (d) {
+              if (!d.ok) throw new Error(d.error || 'save');
+              lg.rows.forEach(function (r) { if (r.id === id) r.suggest.status = 'rejected'; }); viewSuggested();
+            }).catch(function (e) { b.disabled = false; $('sg-msg').className = 'msg err'; $('sg-msg').textContent = e.message; });
+          });
+        });
+        function count() {
+          var n = rows.filter(function (r) { return !lg.skip[r.id] && lg.auto[r.id] && lg.auto[r.id].ok; }).length;
+          if ($('sg-save')) { $('sg-save').textContent = n ? 'Save the ' + n + ' ticked' : 'Save the ticked ones'; $('sg-save').disabled = !n; }
+        }
+        // Square them three at a time; each picture comes through logo_fetch, so the canvas stays clean.
+        var todo = rows.filter(function (r) { return !lg.auto[r.id]; }), running = 0;
+        function show(r) {
+          var box = $('sg-pic-' + r.id), a = lg.auto[r.id]; if (!box || !a) return;
+          if (!a.ok) { box.innerHTML = '<span class="hint">' + esc(a.error) + '</span>'; var c = V().querySelector('[data-tick="' + r.id + '"]'); if (c) { c.checked = false; c.disabled = true; } return; }
+          box.innerHTML = ''; var img = new Image(); img.src = a.url; img.alt = r.name + ' logo'; box.appendChild(img);
+          if (a.small) box.insertAdjacentHTML('beforeend', '<span class="tag wait sg-small">Small picture</span>');
+        }
+        function pump() {
+          while (running < 3 && todo.length) {
+            var r = todo.shift(); running++;
+            (function (r) {
+              VELogoEditor.auto(r.suggest.url, { fetchUrl: logoFetch, background: r.suggest.background }).then(function (x) {
+                return x.toBlob().then(function (blob) { lg.auto[r.id] = { ok: true, blob: blob, url: URL.createObjectURL(blob), small: x.small }; });
+              }).catch(function (e) { lg.auto[r.id] = { ok: false, error: e.message || 'Could not load it' }; })
+                .then(function () { running--; show(r); count(); pump(); });
+            })(r);
+          }
+        }
+        rows.forEach(show); count(); pump();
+        if ($('sg-save')) $('sg-save').addEventListener('click', function () {
+          var pick = rows.filter(function (r) { return !lg.skip[r.id] && lg.auto[r.id] && lg.auto[r.id].ok; }), btn = this, msg = $('sg-msg'), i = 0, bad = [];
+          if (!pick.length) return;
+          btn.disabled = true; msg.className = 'msg';
+          (function next() {
+            if (i >= pick.length) {
+              msg.className = bad.length ? 'msg err' : 'msg';
+              msg.textContent = (pick.length - bad.length) + ' saved.' + (bad.length ? ' These did not save: ' + bad.join(', ') + '.' : '');
+              btn.disabled = false; count(); return;
+            }
+            var r = pick[i++]; msg.textContent = 'Saving ' + i + ' of ' + pick.length + ': ' + r.name + '...';
+            uploadSquare(lg.auto[r.id].blob).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: true }); }).then(function (d) {
+              if (!d.ok) throw new Error(d.message || d.error);
+              lg.done++; lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; });
+              var card = V().querySelector('.sg-card[data-id="' + r.id + '"]'); if (card) card.remove();
+            }).catch(function () { bad.push(r.name); }).then(next);
+          })();
+        });
+      }
+      function viewLogo(id, fromSuggestion) {
+        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id, fromSuggestion); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
+        var r0 = lg.rows.filter(function (x) { return x.id === id; })[0];
+        if (!r0) { location.hash = '#logos'; return; }
+        var tab = isSuggested(r0) ? 'suggested' : 'find', rows = logoRows(tab), i = -1;
         rows.forEach(function (r, k) { if (r.id === id) i = k; });
-        var r = rows[i] || lg.rows.filter(function (x) { return x.id === id; })[0];
-        if (!r) { location.hash = '#logos'; return; }
-        var next = rows[i + 1];
-        crumbs([['Directory review', '#'], ['Logos', '#logos'], [r.name]]);
+        var r = r0, next = tab === 'find' ? rows[i + 1] : null;
+        crumbs([['Directory review', '#'], ['Logos', tab === 'suggested' ? '#logos/suggested' : '#logos'], [r.name]]);
         var ig = String(r.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
         var look = [
           r.website && ['Their website', /^https?:/i.test(r.website) ? r.website : 'https://' + r.website],
@@ -597,28 +701,34 @@
           r.facebook && ['Facebook', /^https?:/i.test(r.facebook) ? r.facebook : 'https://www.facebook.com/' + r.facebook],
           ['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(r.name + ' ' + (r.city || '') + ' logo')],
         ].filter(Boolean);
-        V().innerHTML = '<section class="card"><div class="home-head"><div><h2 style="margin:0 0 2px">' + esc(r.name) + '</h2><p class="hint" style="margin:0">' + esc([r.category, [r.city, r.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + (i >= 0 ? ' &middot; ' + (i + 1) + ' of ' + rows.length : '') + '</p></div>' +
+        var seen = (r.suggest && r.suggest.candidates) || [];
+        V().innerHTML = '<section class="card"><div class="home-head"><div><h2 style="margin:0 0 2px">' + esc(r.name) + '</h2><p class="hint" style="margin:0">' + esc([r.category, [r.city, r.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + (tab === 'find' && i >= 0 ? ' &middot; ' + (i + 1) + ' of ' + rows.length : '') + '</p></div>' +
             '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Open its page</a></div></div>' +
           '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">Find their logo</p>' +
           '<div class="row-btns">' + look.map(function (x) { return '<a class="btn btn-ghost btn-sm" href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + '</a>'; }).join('') +
             (r.set_aside ? '<button type="button" class="btn btn-ghost btn-sm" id="lg-aside">Load the one we set aside</button>' : '') + '</div>' +
+          (seen.length ? '<p class="hint" style="margin:8px 0 4px">' + (isSuggested(r) ? 'The sweep picked: ' + esc(r.suggest.source || '') + '. ' : r.suggest && r.suggest.why ? 'The sweep: ' + esc(r.suggest.why) + ' ' : '') + 'Pictures it looked at:</p><div class="row-btns">' +
+            seen.map(function (c, k) { return '<button type="button" class="btn btn-ghost btn-sm" data-seen="' + k + '">' + esc(c.from) + (c.w ? ' (' + c.w + ' x ' + c.h + ')' : '') + '</button>'; }).join('') + '</div>' : '') +
           '<p class="hint" style="margin:6px 0 14px">On their page, right-click the logo and Copy image, then paste it here (Ctrl+V or Cmd+V). You can also drag it in from the other tab, or save it and drop the file.</p>' +
           '<div id="lg-editor"></div>' +
           '<p class="msg" id="lg-msg" role="status"></p>' +
-          '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="#logos">Back to the list</a>' +
+          '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="' + (tab === 'suggested' ? '#logos/suggested' : '#logos') + '">Back to the list</a>' +
             '<span class="row-btns" style="justify-content:center"><button type="button" class="btn btn-ghost" id="lg-skip">The letter is fine</button>' + (next ? '<a class="btn btn-ghost" href="#logo/' + next.id + '">Skip for now</a>' : '') + '</span>' +
             '<button type="button" class="btn" id="lg-save" disabled>' + (next ? 'Save and next' : 'Save') + '</button></div></section>';
         var msg = $('lg-msg'), save = $('lg-save');
-        var ed = VELogoEditor.mount($('lg-editor'), { fetchUrl: logoFetch, onChange: function (on) { save.disabled = !on; } });
+        var ed = VELogoEditor.mount($('lg-editor'), { fetchUrl: logoFetch, onChange: function (on) { save.disabled = !on; },
+          background: fromSuggestion && isSuggested(r) ? r.suggest.background : '', trim: !!(fromSuggestion && isSuggested(r)) });
+        if (fromSuggestion && isSuggested(r)) ed.load(r.suggest.url);
         if ($('lg-aside')) $('lg-aside').addEventListener('click', function () { ed.load(r.set_aside); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-seen]'), function (b) { b.addEventListener('click', function () { ed.load(seen[+b.dataset.seen].url); }); });
         function gone(okText) {
-          lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; });
-          if (next) location.hash = '#logo/' + next.id; else { location.hash = '#logos'; }
-          setTimeout(function () { var m = $('lg-msg'); if (m && okText) { m.className = 'msg'; m.textContent = okText; } }, 60);
+          lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; }); delete lg.auto[r.id];
+          if (next) location.hash = '#logo/' + next.id; else location.hash = tab === 'suggested' ? '#logos/suggested' : '#logos';
+          setTimeout(function () { var m = $('lg-msg') || $('sg-msg'); if (m && okText) { m.className = 'msg'; m.textContent = okText; } }, 60);
         }
         save.addEventListener('click', function () {
           save.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
-          ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path }); }).then(function (d) {
+          ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: !!fromSuggestion }); }).then(function (d) {
             if (!d.ok) throw new Error(d.message || d.error || 'That did not save.');
             lg.done++; gone(r.name + ' has its logo.');
           }).catch(function (e) { save.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
@@ -633,8 +743,8 @@
         var h = location.hash.replace(/^#/, '').split('/');
         if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(5, +h[1] || 1)));
         if (h[0] === 'paste') return viewPaste();
-        if (h[0] === 'logos') return viewLogos();
-        if (h[0] === 'logo' && h[1]) return viewLogo(h[1]);
+        if (h[0] === 'logos') return viewLogos(h[1] === 'suggested' ? 'suggested' : 'find');
+        if (h[0] === 'logo' && h[1]) return viewLogo(h[1], h[2] === 's');
         if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
         viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');
       }
