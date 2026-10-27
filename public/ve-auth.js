@@ -49,7 +49,7 @@ function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!ge
 function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
 function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
-function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||null}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||joinCarry('ve_join_community'),referral_code:joinCarry('ve_join_ref')}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function forgotPassword(email){return call('forgot_password',{email:email});}
 function resetPassword(token,password){return call('reset_password',{token:token,password:password});}
 function verifyEmail(token){return call('verify_email',{token:token});}

@@ -36,6 +36,11 @@
     .form textarea{min-height:110px;resize:vertical;}
     .form .wide{grid-column:1/-1;}
     .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .kind{border:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:10px;}
+    .kind legend{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:6px;}
+    .kind label{display:flex;flex-direction:row;gap:10px;align-items:flex-start;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:12px;cursor:pointer;font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ve-text);}
+    .kind label b{display:block;font-size:14px;}
+    .kind input{width:18px;height:18px;min-height:0;margin-top:2px;accent-color:var(--ve-green-deep);flex:none;}
     .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
     .chip{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;}
     .chip:hover{border-color:var(--ve-green-deep);}
@@ -81,7 +86,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Invites</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">The only way in besides the $11 Passport: a membership on us, with the points you choose, sent from you. They accept from the email by making their account with that email (or signing in to an account that never paid), and it is active at once with their points. Each invitation works once, for 30 days.</p>
+    <p class="sub">The only way in besides the $11 Passport: a membership on us, or an Ambassador account, with the points you choose, sent from you. They accept from the email by making their account with that email (or signing in to an account that never paid), and it is active at once with their points. Each invitation works once, for 30 days.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -130,7 +135,7 @@
           }).join('') + '</nav><a class="btn" href="#new">New invite</a></div>' +
           '<div class="list">' + (rows.length ? rows.map(function (i) {
             return '<div class="row"><div><b>' + esc(i.name) + '</b><small>' + esc(i.email) + ' &middot; made ' + esc(day(i.created_at)) + (i.joined_at ? ' &middot; joined ' + esc(day(i.joined_at)) : i.sent_at ? ' &middot; sent ' + esc(day(i.sent_at)) : '') + '</small></div>' +
-              '<span class="pts">' + (i.comp ? (i.points ? pts(i.points) + ' points' : 'No points') : 'Not on us') + '</span>' + tag(i.status) +
+              '<span class="pts">' + (i.points_to === 'ambassador' ? 'Ambassador &middot; ' : '') + (i.comp ? (i.points ? pts(i.points) + ' points' : 'No points') : 'Not on us') + '</span>' + tag(i.status) +
               '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
           }).join('') : '<p class="empty">' + (st === 'all' ? 'No invitations yet. New invite makes the first one.' : 'None here.') + '</p>') + '</div>';
       }
@@ -139,6 +144,9 @@
         app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a> &rsaquo; New invite</p>' +
           '<section class="card"><h2>New invite</h2><form class="form" id="f">' +
           '<label class="wide">Who<textarea id="f-people" required placeholder="Jordan Lee, jordan@example.com&#10;Ana Brooks &lt;ana@example.com&gt;&#10;Sam Ortiz, sam@example.com, 5000"></textarea><span class="hint">One person a line: their name and email. Add a number at the end to give that person different points.</span></label>' +
+          '<fieldset class="wide kind"><legend>What it is</legend>' +
+            '<label><input type="radio" name="f-kind" value="ambassador" checked> <span><b>An Ambassador</b> A Founding Membership on us, the Ambassador role and its onboarding: their share link and what to share.</span></label>' +
+            '<label><input type="radio" name="f-kind" value="none"> <span><b>A membership on us</b> A Founding Membership on us, nothing more.</span></label></fieldset>' +
           '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="hint">What each one starts with. 0 for none. The Passport comes with 1,100.</span><span class="chips">' +
             [0, 1100, 2500, 5000, 10000].map(function (n) { return '<button type="button" class="chip" data-pts="' + n + '">' + (n ? pts(n) : 'None') + '</button>'; }).join('') + '</span></label>' +
           '<label class="wide">A line from you (optional)<textarea id="f-reason" maxlength="600" placeholder="You joined LESARUSS AI this month, and I want to say thank you with a seat in Vegans Explore."></textarea><span class="hint">The first line of the email, before the rest. Leave it empty and the email starts with the invitation.</span></label>' +
@@ -154,7 +162,8 @@
           if (bad.length) { msg.textContent = 'Each line needs a name and an email: ' + bad.map(function (p) { return p.name || p.email || '(blank)'; }).join(', '); return; }
           var points = Math.max(0, Math.min(100000, Math.round(Number($('f-points').value) || 0)));
           $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making them...';
-          api({ action: 'create', brand: 'vegans-explore', points_to: 'none', points: points, reason: $('f-reason').value.trim() || null, people: people }).then(function (d) {
+          var kind = (document.querySelector('input[name="f-kind"]:checked') || {}).value === 'ambassador' ? 'ambassador' : 'none';
+          api({ action: 'create', brand: 'vegans-explore', points_to: kind, points: points, reason: $('f-reason').value.trim() || null, people: people }).then(function (d) {
             $('mk').disabled = false;
             if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
             msg.textContent = d.created.length ? d.created.length + ' ready. Nothing has been sent: open each one to read its email and send it.' : 'None were made.';
@@ -176,7 +185,7 @@
         var open = ['ready', 'sent', 'opened'].indexOf(i.status) >= 0;
         app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a> &rsaquo; ' + esc(i.name) + '</p>' +
           '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(i.name) + '</h2>' + tag(i.status) + '</div>' +
-          '<div class="kv"><div><span>Email</span>' + esc(i.email) + '</div><div><span>Points</span>' + (i.comp ? (i.points ? pts(i.points) : 'None') : 'Not on us') + '</div>' +
+          '<div class="kv"><div><span>Email</span>' + esc(i.email) + '</div><div><span>What it is</span>' + (i.points_to === 'ambassador' ? 'An Ambassador' : i.points_to === 'none' ? 'A membership on us' : esc(i.points_to)) + '</div><div><span>Points</span>' + (i.comp ? (i.points ? pts(i.points) : 'None') : 'Not on us') + '</div>' +
           '<div><span>Made</span>' + esc(day(i.created_at)) + '</div>' + (i.sent_at ? '<div><span>Sent</span>' + esc(day(i.sent_at)) + (i.sent_via === 'copied' ? ' (link copied)' : '') + '</div>' : '') +
           (i.joined_at ? '<div><span>Joined</span>' + esc(day(i.joined_at)) + '</div>' : i.expires_at ? '<div><span>Works until</span>' + esc(day(i.expires_at)) + '</div>' : '') + '</div>' +
           (open ? '<h2>The email</h2><div class="mail" id="mail">Loading the email...</div>' : '') +

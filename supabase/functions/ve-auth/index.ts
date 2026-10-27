@@ -116,20 +116,6 @@ async function ensureMemberPointsRow(memberId: string): Promise<void> {
   }
 }
 
-async function awardReferralBounty(referrerId: string, newMemberId: string): Promise<void> {
-  try {
-    await supabase.rpc('award_points_bounty', {
-      p_member_id: referrerId,
-      p_brand: 'vegans-explore',
-      p_action_type: 'referral_signup',
-      p_ref_id: `referral_signup:${newMemberId}`,
-      p_reason: 'referral',
-    });
-  } catch (e) {
-    console.error('awardReferralBounty failed:', e);
-  }
-}
-
 async function sendWelcomeEmail(email: string, name: string): Promise<void> {
   try {
     await fetch('https://api.resend.com/emails', {
@@ -739,7 +725,8 @@ serve(async (req: Request) => {
       }
 
       await ensureMemberPointsRow(member.id);
-      if (referred_by) await awardReferralBounty(referred_by, member.id);
+      // The referral pays when the friend becomes a member, not here (trg_zz_referral_on_admit, migration
+      // 20261027_ambassadors.sql): an account that has not paid earns its referrer nothing.
       // Registration is the Passport (Sean, 2026-10-27: "they can only register through the Passport program"): an account that
       // has not paid is only the checkout's account, so it gets no welcome. ve-stripe-webhook's "Your Passport is active" is the
       // welcome; an invited account that lands active here gets this one.
@@ -805,9 +792,15 @@ serve(async (req: Request) => {
 
       const initials = gUser.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
       const ref_code = `VE-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
+      // A share link (?ref=) counts for Google sign-ups too (Sean, 2026-10-27: Ambassadors bring people in).
+      let referred_by: string | null = null;
+      if (typeof body.referral_code === 'string' && /^[A-Z0-9-]{3,24}$/i.test(body.referral_code)) {
+        const { data: referrer } = await supabase.from('members').select('id').eq('referral_code', body.referral_code.toUpperCase()).maybeSingle();
+        if (referrer) referred_by = referrer.id;
+      }
       const { data: member, error: insertErr } = await supabase.from('members').insert({
         email: gUser.email.toLowerCase(), name: gUser.name, google_id: gUser.sub,
-        avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code,
+        avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code, referred_by,
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['google'], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,

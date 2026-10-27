@@ -3375,6 +3375,8 @@
     if (admin || (member.ve_tier && member.ve_tier !== 'free')) {
       t.push({ icon: 'compass', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
     }
+    // Ambassadors (Sean, 2026-10-27): their onboarding stays a tool, for their link and the words to share.
+    if (member.ve_role === 'ambassador') t.unshift({ icon: 'megaphone', title: 'Your Ambassador link', desc: 'Your share link and ready-made words to bring people in.', fn: function () { location.href = '/ambassadors/welcome?step=3'; } });
     if (!admin && member.ve_role === 'community_manager') t.push({ icon: 'eye', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
     if (staff) {
       t.push({ icon: 'cap', title: 'Certification', desc: 'Your Community Manager handbook as a course. Pass every module to be certified.', fn: function () { openConsoleFrame('/dashboard/certification', 'Certification'); } });
@@ -3846,7 +3848,7 @@
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
     document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
-    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : (member.membership_status === 'active' ? 'Founding Member' : 'Member'));
+    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador' : (member.membership_status === 'active' ? 'Founding Member' : 'Member'));
 
     if (member.is_superadmin) {
       loadAndRenderSectioned(member, isStaff);

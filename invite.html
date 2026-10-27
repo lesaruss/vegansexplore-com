@@ -126,6 +126,10 @@
         $('gift').textContent = 'Your Founding Membership is on us, with ' + pts + ' points to start';
         $('pt-points').textContent = 'Everything a paid member has, ' + pts + ' points to start, and more you earn by taking part';
       }
+      if (inv.points_to === 'ambassador') {
+        $('title').textContent = inv.first_name + ', be one of our first Ambassadors.';
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to be one of the people who bring others in. Accept, and your Ambassador account walks you through it.';
+      }
       if (inv.points_to === 'community_manager') {
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';
       }
@@ -157,7 +161,7 @@
           try { var m = VEAuth.getMember(); if (m && d.membership_status) VEAuth.setSession(token, Object.assign({}, m, { membership_status: d.membership_status })); } catch (e) {}
           var next = d.next || '/dashboard';
           $('done-next').href = next;
-          $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : 'Go to your dashboard';
+          $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : invite.points_to === 'ambassador' ? 'Start as an Ambassador' : 'Go to your dashboard';
           $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active. Thank you for what you do for this community.' : 'Your account is ready.';
           if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Become a Founding Member any time from your dashboard.';
           show('done');

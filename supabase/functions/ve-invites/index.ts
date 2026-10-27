@@ -18,6 +18,8 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 //     points (Sean, 2026-10-27): what a membership on us brings, 0 to 100,000, granted once when it is claimed
 //     (universe_invite_claim). A person's own points win over the batch's. An email whose account never paid
 //     (pending_payment) can be invited: they accept by signing in on the invitation page.
+//     points_to 'ambassador' (Sean, 2026-10-27): the claim makes them an Ambassador, and accepting opens the Ambassador
+//     onboarding (/ambassadors/welcome).
 //   POST { action: 'list', status? }    the invitations, newest first (Depot > Invites)
 //   POST { action: 'preview', id }       the email exactly as it will go out
 //   POST { action: 'send', ids }         emails each one from Sean (Resend), up to 100 per call
@@ -137,14 +139,16 @@ async function emailFor(inv: Invite) {
   const untilText = until.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/New_York' });
   const subject = d ? `${first}, a seat at our ${dinnerPlace(d)} table`
     : inv.points_to === 'community_manager' ? `${first}, lead ${city ?? 'your city'} with ${brand}`
+    : inv.points_to === 'ambassador' ? `${first}, be a ${brand} Ambassador`
     : `${first}, an invitation to ${brand}`;
   const paras: string[] = [];
   if (inv.reason) paras.push(inv.reason);
   paras.push(`I'm building ${brand}, a community for Vegans, city by city, and I'd like you to be part of it.`);
   if (d) paras.push(`I'd like you at our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${city ?? ''} community as its Community Manager. Your link has the details.`.replace('our  ', 'our '));
+  if (inv.points_to === 'ambassador') paras.push(`I'd like you to be one of our first Ambassadors: one of the people who bring others in. Your link sets up your Ambassador account and walks you through it.`);
   if (inv.comp) paras.push(`Your Founding Membership is on us${inv.points > 0 ? `, with ${Number(inv.points).toLocaleString('en-US')} points to start` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
-  const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : 'Accept your invitation';
+  const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : 'Accept your invitation';
   const url = linkUrl(inv);
   const fine = `This invitation is just for you. It works once, until ${untilText}.`;
   const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a;font-size:15px;line-height:1.6">
@@ -197,7 +201,7 @@ Deno.serve(async (req: Request) => {
       };
       if (messages[result]) return json({ error: result, message: messages[result] }, 409);
       const { data: after } = await db.from('members').select('membership_status').eq('id', me).maybeSingle();
-      return json({ ok: true, result, membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : '/dashboard') });
+      return json({ ok: true, result, membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : '/dashboard') });
     }
 
     // ---- Admin ----
@@ -207,7 +211,7 @@ Deno.serve(async (req: Request) => {
     if (action === 'create') {
       const brand = String(body.brand ?? 'vegans-explore');
       if (!BRANDS[brand]) return json({ error: 'bad_brand', message: 'That brand does not have a membership to invite to yet.' }, 400);
-      const pointsTo = ['none', 'dinner', 'community_manager'].includes(body.points_to) ? body.points_to : 'none';
+      const pointsTo = ['none', 'dinner', 'community_manager', 'ambassador'].includes(body.points_to) ? body.points_to : 'none';
       const dinner = pointsTo === 'dinner' ? await dinnerOf(clip(body.dinner_slug, 80)) : null;
       if (pointsTo === 'dinner' && !dinner) return json({ error: 'bad_dinner', message: 'Pick a dinner.' }, 400);
       const city = pointsTo === 'community_manager' ? clip(body.city_slug, 40) : dinner?.city_slug ?? null;
@@ -276,7 +280,7 @@ Deno.serve(async (req: Request) => {
 
         // The personal tracked link (Depot > Links), so the click names them.
         const base = `invite-${slugify(firstName(name), 16) || 'guest'}`;
-        const initiative = dinner ? `dinner-${dinner.slug}` : pointsTo === 'community_manager' ? 'community-managers' : `invite-${brand}`;
+        const initiative = dinner ? `dinner-${dinner.slug}` : pointsTo === 'community_manager' ? 'community-managers' : pointsTo === 'ambassador' ? 'ambassadors' : `invite-${brand}`;
         const dest = await destinationFor(inv);
         let link: { id: string; code: string } | null = null;
         for (let tries = 0; !link && tries < 6; tries++) {

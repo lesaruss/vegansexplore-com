@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Welcome, Ambassador — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Ambassador onboarding (Sean, 2026-10-27: "Once I use the invite option, it should create an onboarding for
+       Ambassadors"). An Ambassador (members.ve_role 'ambassador') is a Founding Member whose job is to bring people in. Four
+       steps, one per view (?step=1..4), Back / Step N of M / Next: Welcome (what they have), Your city (their home chapter,
+       ve-auth set_home_community), Your link (/passport?ref=<referral_code>; a friend who becomes a member through it pays them
+       the referral, trg_zz_referral_on_admit), What to share (ready-made words to copy). An Ambassador invitation from
+       Depot > Invites opens this page after it is accepted; a super admin can open it to see it. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--g:#1f5f22;--g2:#22C55E;--gl:#EAF7EA;--line:rgba(0,0,0,.1);--t:#1a1a1a;--t75:rgba(26,26,26,.78);}
+    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--t);line-height:1.6;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:44px 40px 80px;}
+    @media (max-width:600px){main{padding:28px 16px 56px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+    h1{font-size:clamp(26px,3.4vw,38px);font-weight:900;line-height:1.1;margin-bottom:10px;}
+    .lede{font-size:15.5px;color:var(--t75);max-width:860px;margin-bottom:22px;}
+    .steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;}
+    .steps span{font-size:12px;font-weight:800;padding:7px 12px;border-radius:6px;background:#eef1ee;color:#444;}
+    .steps span.on{background:var(--g);color:#fff;}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin:0 0 18px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;margin:0 0 6px;}
+    .tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;}
+    .tile b{display:block;font-size:15px;margin-bottom:4px;}
+    .tile p{font-size:13.5px;color:var(--t75);}
+    .big{font-size:30px;font-weight:900;line-height:1.1;color:var(--g);}
+    .link{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--gl);border-radius:10px;padding:14px 16px;margin:6px 0 14px;}
+    .link code{font-size:15px;font-weight:800;color:var(--g);word-break:break-all;flex:1;min-width:220px;}
+    .msg-box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;}
+    .msg-box h3{font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+    .msg-box p{font-size:14px;white-space:pre-line;margin-bottom:10px;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;min-height:44px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn.o{background:#fff;color:var(--g);border:1px solid rgba(0,0,0,.25);}
+    .btn.sm{font-size:11px;padding:7px 12px;min-height:36px;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px;margin-top:6px;}
+    .nav span{font-size:13px;font-weight:800;color:var(--t75);}
+    select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;max-width:420px;}
+    .note{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin-top:8px;}
+    .note.bad{color:#a61b1b;}
+    .gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .gate p{margin:0 0 16px;color:var(--t75);}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main>
+  <p class="eyebrow">Vegans Explore Ambassadors</p>
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden>
+    <h1 id="title">Welcome, Ambassador</h1>
+    <p class="lede" id="lede"></p>
+    <div class="steps" id="steps"></div>
+    <section class="card" id="view" aria-live="polite"></section>
+  </div>
+</main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-hubs.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var STEPS = [['welcome', 'Welcome'], ['city', 'Your city'], ['link', 'Your link'], ['share', 'What to share']];
+  var $ = function (id) { return document.getElementById(id); };
+  var M = null;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function first() { return String((M && M.name) || '').trim().split(/\s+/)[0] || 'there'; }
+  function link() { return 'https://vegansexplore.com/passport' + (M && M.referral_code ? '?ref=' + encodeURIComponent(M.referral_code) : ''); }
+  function hubName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : ''; }
+  function step() { var n = parseInt(new URLSearchParams(location.search).get('step'), 10); return n >= 1 && n <= STEPS.length ? n : 1; }
+  function go(n) { var u = new URL(location.href); u.searchParams.set('step', n); history.pushState(null, '', u.pathname + u.search); draw(); window.scrollTo(0, 0); }
+  function copy(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+    else window.prompt('Copy this', text);
+  }
+
+  // Ready-made words: plain, true, and every one carries their link.
+  function messages() {
+    var l = link();
+    return [
+      ['A text to a friend', 'I joined Vegans Explore, a community for Vegans city by city: the Vegan places worth going to, events, the Daily Pulse and Guides. Get your Passport with my link: ' + l],
+      ['An Instagram or Facebook post', 'I’m a Vegans Explore Ambassador. It’s where I find the Vegan restaurants, events and people in my city, voted on by members. Your Passport is $11, one time, and comes with 1,100 points for your first Guide. Join me: ' + l],
+      ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up. Claim yours and see who comes in: https://vegansexplore.com/business. If you join as a member, use my link: ' + l]
+    ];
+  }
+
+  var VIEWS = {
+    welcome: function () {
+      return '<div class="grid">' +
+        '<div class="tile"><b>Founding Member</b><p>Your membership is active and on us. Everything a member has is yours.</p></div>' +
+        '<div class="tile"><b>Your points</b><p class="big">' + Number((M && M.points) || 0).toLocaleString('en-US') + '</p><p>Spend them on Guides, or give them to the places you love.</p></div>' +
+        '<div class="tile"><b>Ambassador</b><p>You are one of the first people we asked to bring others in. The next three steps set you up: your city, your link, and what to share.</p></div>' +
+        '</div>';
+    },
+    city: function () {
+      var opts = '<option value="">Pick your city</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + esc(h.slug) + '"' + (M && M.home_community === h.slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('');
+      return '<p style="margin-bottom:12px">The city you represent. It is where your Daily Pulse, events and Directory open, and where we will point people you bring in.</p>' +
+        '<label for="city" style="display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Your city</label>' +
+        '<select id="city">' + opts + '</select><p class="note" id="city-note" role="status">' + (M && M.home_community ? 'Your city is ' + esc(hubName(M.home_community)) + '.' : '') + '</p>';
+    },
+    link: function () {
+      return '<p>This is your link. Share it anywhere: a text, a post, your bio.</p>' +
+        '<div class="link"><code id="the-link">' + esc(link()) + '</code><button type="button" class="btn sm" id="copy-link">Copy</button></div>' +
+        '<div class="grid"><div class="tile"><b>How it counts</b><p>When someone gets their Passport through your link, you get 111 points. It counts when they join, not when they only look around.</p></div>' +
+        '<div class="tile"><b>Where it goes</b><p>The Passport: what Vegans Explore is, what $11 gets them, and how to join.</p></div></div>';
+    },
+    share: function () {
+      return '<p style="margin-bottom:12px">Use these as they are, or say it your way. Each one has your link.</p><div class="grid">' + messages().map(function (m, i) {
+        return '<div class="msg-box"><h3>' + esc(m[0]) + '</h3><p>' + esc(m[1]) + '</p><button type="button" class="btn sm o" data-copy="' + i + '">Copy</button></div>';
+      }).join('') + '</div>';
+    }
+  };
+
+  function draw() {
+    var n = step(), k = STEPS[n - 1][0];
+    $('title').textContent = n === 1 ? 'Welcome, ' + first() : STEPS[n - 1][1];
+    $('lede').textContent = n === 1 ? 'You are a Vegans Explore Ambassador. Thank you for what you have already done for this community.' : 'Step ' + n + ' of ' + STEPS.length + ' in setting up your Ambassador account.';
+    $('steps').innerHTML = STEPS.map(function (s, i) { return '<span class="' + (i === n - 1 ? 'on' : '') + '">' + (i + 1) + '. ' + esc(s[1]) + '</span>'; }).join('');
+    $('view').innerHTML = VIEWS[k]() + '<div class="nav">' +
+      (n > 1 ? '<button type="button" class="btn o" id="back">Back</button>' : '<span></span>') + '<span>Step ' + n + ' of ' + STEPS.length + '</span>' +
+      (n < STEPS.length ? '<button type="button" class="btn" id="next">Next</button>' : '<a class="btn" href="/dashboard">Go to your dashboard</a>') + '</div>';
+    if ($('back')) $('back').onclick = function () { go(n - 1); };
+    if ($('next')) $('next').onclick = function () {
+      if (k !== 'city') return go(n + 1);
+      var v = $('city').value, note = $('city-note');
+      if (!v) { note.className = 'note bad'; note.textContent = 'Pick your city to go on.'; return; }
+      if (M && M.home_community === v) return go(n + 1);
+      this.disabled = true; note.className = 'note'; note.textContent = 'Saving...';
+      var btn = this;
+      VEAuth.setHomeCommunity(v).then(function (d) {
+        btn.disabled = false;
+        if (d && d.error) { note.className = 'note bad'; note.textContent = 'That did not save. Try again.'; return; }
+        M.home_community = v; go(n + 1);
+      }, function () { btn.disabled = false; note.className = 'note bad'; note.textContent = 'Could not connect. Try again.'; });
+    };
+    if ($('copy-link')) $('copy-link').onclick = function () { copy(link(), this); };
+    Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function (b) { b.onclick = function () { copy(messages()[+b.dataset.copy][1], b); }; });
+  }
+
+  function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; $('app').hidden = true; }
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 200);
+    var token = VEAuth.getToken();
+    if (!token || !VEAuth.isLoggedIn()) {
+      gate('<p>Sign in to your Ambassador account to get started.</p><button type="button" class="btn" id="signin">Sign in</button>');
+      $('signin').onclick = function () { VEAuth.showAuthModal('Sign in to your Ambassador account.', function () { location.reload(); }, 'login'); };
+      return;
+    }
+    // Fresh from the server, so the role, points and city are today's.
+    fetch(FN + '?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ action: 'me', token: token }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        M = d && d.member;
+        if (!M) return gate('<p>We could not open your account just now. Refresh to try again.</p>');
+        try { VEAuth.setSession(token, Object.assign({}, VEAuth.getRealMember ? VEAuth.getRealMember() : {}, M)); } catch (e) {}
+        if (M.ve_role !== 'ambassador' && !M.is_superadmin) return gate('<p>This page is for Vegans Explore Ambassadors. If you were invited, open the link in your invitation.</p><a class="btn" href="/dashboard">Go to your dashboard</a>');
+        $('app').hidden = false; draw();
+      }, function () { gate('<p>Could not connect. Refresh to try again.</p>'); });
+  }
+  window.addEventListener('popstate', function () { if (M) draw(); });
+  start();
+})();
+</script>
+</body>
+</html>

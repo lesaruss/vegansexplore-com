@@ -496,6 +496,30 @@ Continue with Google, closed the $11 window and kept a free account.) There is n
   can be invited (they sign in on `/invite` to accept); a paid member is left out ("Already a member"). `ve-invites` `list` feeds
   the page; HQ > People makes the same invitations with `points`.
 
+## Ambassadors (Sean, 2026-10-27)
+
+"I want him to be an early ambassador and share it with other people. Let's actually give him an Ambassador account. Once I use
+the invite option, it should create an onboarding for Ambassadors. The points amount will be set by me during the invite
+process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassadors`, now the 410 stub.)
+
+- An **Ambassador** is a Founding Member whose job is to bring people in: `members.ve_role` `ambassador` (the check widened), with
+  `founding_member` true. The dashboard calls them Ambassador and puts **Your Ambassador link** first in Your tools.
+- **Invite one**: Depot > Invites > New invite, What it is: **An Ambassador** (the default) or **A membership on us**, with the points
+  Sean sets (`universe_invites.points_to` `ambassador`). The email asks them to be one of the first Ambassadors; accepting makes
+  them an active Founding Member and an Ambassador (never over a staff role) with their points, and opens the onboarding.
+  Every comped claim is a Founding Member (`universe_invite_claim`).
+- **The onboarding**, `/ambassadors/welcome` (`ambassadors/welcome.html`), four steps, one per view (`?step=`): Welcome (Founding
+  Member, their points, the role), Your city (their home chapter, required, `set_home_community`), Your link
+  (`/passport?ref=<referral_code>` and how it counts), What to share (a text, a post and a note for a business, each with their link,
+  to copy). For Ambassadors and super admins only.
+- **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
+  `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
+  friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`
+  too (`loginWithGoogle` sends it; `ve-auth` `google` sets `referred_by`).
+- **Joshua Mattey** (joshmatteymgl@gmail.com, signed up 2026-10-27 with Google) was made an active Founding Member and Ambassador
+  with 1,100 points directly (ledger `comp_membership`, ref `sean-2026-10-27`); Sean tells him on a call. He signs in with Google.
+- Not decided yet (Sean's call): what an Ambassador earns beyond the referral, and any Ambassador-only perks or levels.
+
 ## Invites and free memberships (Sean, 2026-10-04)
 
 Sean invites people who aren't confirmed yet (no account anywhere in the universe) from HQ > People
