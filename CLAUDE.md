@@ -1606,7 +1606,7 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   tried once (`reader_at`, `reader_note`, `reader_read`). Cron `ve-menu-reader`, one every 5 minutes in the background; `read`
   with `save: false` keeps a test in `reader_preview`. Proven 2026-10-27: Cafe Gratitude 144 items from its PDF, Under the Mango
   Tree 28 and Blue Tree 19 from their Square pages. Toast's own ordering pages return nothing to an automated browser, so a menu
-  that is only on Toast is still missing. **No menu yet** (Sean, 2026-10-27: "Go with the No menu yet list in Directory review";
+  that is only on Toast is still missing. An Instagram pass was built and switched off the same day before it read anything (Sean: "I don't think it's probably the best route"); `ve_menu_imports.ig_at` stays unused. **No menu yet** (Sean, 2026-10-27: "Go with the No menu yet list in Directory review";
   migration `20261027_ve_menu_missing.sql`) is a Directory review tab (`#menu`, `ve_menu_missing()` through `ve-outreach`
   `review_list` `menu`): every open food place with no menu (locations left out, they show their main listing's), Not found first,
   then No website, then Being read, most voted first. A listing's **Menu** card says what the reader found and opened, and offers

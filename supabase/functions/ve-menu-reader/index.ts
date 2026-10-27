@@ -6,9 +6,6 @@
 // schema.org Menu, an ordering app's state). All of it goes to Claude (structured output), which copies the menu word for word
 // and never guesses. A Vegan place keeps its whole menu; a place with Vegan options keeps only what the menu marks Vegan.
 // Saved through ve_menu_import_save (source import), which refuses a listing that already has a menu.
-// Instagram (Sean, 2026-10-27: "try reading the Instagram menus"): when their site gives no menu, the reader looks at their
-// Instagram (Apify's instagram-profile-scraper: the latest posts, pinned ones first, carousels included) and Claude copies a menu
-// posted there as a picture or a caption. A place already read once gets this second look by itself (ig_at marks it).
 //
 // POST { action: 'read', listing_id | slug, save?: true }  read one in the background (save false keeps what it read in
 //                                                        ve_menu_imports.reader_preview and saves nothing)
@@ -272,39 +269,6 @@ async function gather(website: string, deadline: number, menuUrl = '') {
   return { read, sources, base };
 }
 
-// ---- Their Instagram: the latest posts, pinned first ----
-const igHandle = (v: string) => { const m = String(v || '').trim().match(/^@?([\w.]{2,30})$|instagram\.com\/([\w.]{2,30})/i); const h = m ? (m[1] || m[2]) : ''; return /^(p|reel|reels|stories|explore|tv)$/i.test(h) ? '' : h.toLowerCase(); };
-async function instagramSources(handle: string, budget: number) {
-  const read: string[] = [], sources: Source[] = [];
-  const token = await secret('APIFY_API_TOKEN');
-  if (!token) return { read: ['Instagram: no Apify key'], sources };
-  let p: any;
-  try {
-    const r = await fetch(`https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${token}&timeout=90`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usernames: [handle] }), signal: AbortSignal.timeout(100000) });
-    if (!r.ok) return { read: [`Instagram @${handle}: the reader answered ${r.status}`], sources };
-    p = ((await r.json()) as any[])[0];
-  } catch (e) { return { read: [`Instagram @${handle}: ${String((e as Error).message || e).slice(0, 100)}`], sources }; }
-  if (!p || p.error) return { read: [`Instagram @${handle}: ${p?.error === 'not_found' ? 'not found' : 'no answer'}`], sources };
-  // A post that says menu or shows prices first, then pinned posts, then the rest by date.
-  const posts = ((p.latestPosts || []) as any[]).filter((x) => x && x.type !== 'Video');
-  const rank = (x: any) => (/menu|price|\$\s?\d/i.test(x.caption || '') ? 4 : 0) + (x.isPinned ? 2 : 0);
-  posts.sort((a, b) => rank(b) - rank(a) || String(b.timestamp || '').localeCompare(String(a.timestamp || '')));
-  const captions = posts.slice(0, 12).map((x) => `${x.url || ''} (${String(x.timestamp || '').slice(0, 10)}${x.isPinned ? ', pinned' : ''}): ${String(x.caption || '').slice(0, 1500)}`);
-  if (p.biography || captions.length) sources.push({ kind: 'text', url: `https://www.instagram.com/${handle}/`, text: `Their Instagram bio: ${String(p.biography || '').slice(0, 600)}\n\nTheir latest posts (link, date: caption):\n` + captions.join('\n\n') });
-  let n = 0;
-  for (const x of posts.slice(0, 8)) {
-    const imgs = [...new Set([...(x.images || []), x.displayUrl].filter(Boolean))].slice(0, x.isPinned || rank(x) >= 4 ? 4 : 1);
-    for (const u of imgs) {
-      if (n >= 10) break;
-      const f = await fetchFile(u, 'image');
-      if (f && budget - f.size > 0) { budget -= f.size; sources.push({ kind: 'image', url: x.url || u, type: f.type, data: f.data }); n++; }
-    }
-  }
-  read.push(`Instagram @${handle}: ${posts.length} posts, ${n} picture${n === 1 ? '' : 's'}`);
-  return { read, sources };
-}
-
 // ---- Claude copies the menu ----
 const SCHEMA = {
   type: 'object', additionalProperties: false, required: ['found', 'own_business', 'source', 'note', 'items'],
@@ -336,32 +300,15 @@ You get the text of their pages (some opened in a browser), menu data found on t
 - An ordering page is their menu: copy its items, sections and prices.
 - Leave out add-ons, modifiers, sauces on the side, gift cards, merchandise and catering trays unless that is all they sell. Keep juices, smoothies, coffee and teas; leave out a drinks list that is only sodas and water.
 - found is false when there is no menu with items in the sources: an empty page, a site that is down, a different business, or pictures you cannot read. Say why in the note.
-- From Instagram: copy a menu only when a picture or a caption shows one (a menu board, a printed menu, a list of items). A photo of one dish is not a menu. When posts show different menus, take the newest, and put the post's link as the source.
 - Spell Vegan with a capital V. No em dashes or en dashes in anything you write.`;
 
-async function readMenu(l: any, menuUrl = '', onlyInstagram = false) {
-  // The background run has about 400 s: the site first, then (when it gives no menu) their Instagram.
-  const ig = igHandle(l.instagram || '');
-  let first: any = null;
-  if (!onlyInstagram && (l.website || menuUrl)) {
-    const g = await gather(l.website || menuUrl, Date.now() + (ig ? 190000 : 330000), menuUrl);
-    first = g.sources.length ? await ask(l, g.sources, g.read, g.base) : { ok: false, why: 'nothing_read', read: g.read, note: 'Nothing on their site could be read' };
-    if ((first.ok && first.found) || !ig) return first;
-  }
-  if (!ig) return first || { ok: false, why: 'no_source', read: [], note: 'No website or Instagram to read' };
-  const g2 = await instagramSources(ig, 16_000_000);
-  const read = [...(first?.read || []), ...g2.read];
-  if (!g2.sources.length) return { ...(first || { ok: false, why: 'nothing_read' }), read, ig: true };
-  const r2: any = await ask(l, g2.sources, read, `https://www.instagram.com/${ig}/`, true);
-  if (r2.ok && r2.found) return { ...r2, ig: true };
-  // Neither had a menu: say what each found.
-  return { ...r2, ig: true, note: [first?.note, r2.note ? 'Instagram: ' + r2.note : ''].filter(Boolean).join(' ').slice(0, 280) };
-}
-async function ask(l: any, sources: Source[], readList: string[], base: string, fromInstagram = false) {
-  const g = { sources, read: readList, base };
+async function readMenu(l: any, menuUrl = '') {
+  // The background run has about 400 s; the model gets the last 120.
+  const g = await gather(l.website || menuUrl, Date.now() + 330000, menuUrl);
+  if (!g.sources.length) return { ok: false, why: 'nothing_read', read: g.read, note: 'Nothing on their site could be read' };
   const apiKey = await secret('ANTHROPIC_API_KEY');
   if (!apiKey) return { ok: false, why: 'no_model_key', read: g.read };
-  const content: any[] = [{ type: 'text', text: `The business: ${l.name}${l.address_city ? ', ' + l.address_city : ''} (${l.category}). ${fromInstagram ? 'These are from their Instagram.' : 'Their website: ' + l.website + '.'}` }];
+  const content: any[] = [{ type: 'text', text: `The business: ${l.name}${l.address_city ? ', ' + l.address_city : ''} (${l.category}). Their website: ${l.website}.` }];
   for (const s of g.sources) {
     if (s.kind === 'text') content.push({ type: 'text', text: `Source ${s.url}:\n${s.text}` });
     else {
@@ -395,25 +342,25 @@ async function ask(l: any, sources: Source[], readList: string[], base: string, 
   return { ok: true, found: !!out.found && out.own_business !== false && items.length > 0, items, all: all.length, note, source: sourceUrl, read: g.read };
 }
 
-async function runOne(listingId: string, save: boolean, onlyInstagram = false) {
-  const { data: l } = await db.from('listings').select('id, slug, name, website, instagram, category, vegan_status, address_city, status, menu_crawl_url').eq('id', listingId).maybeSingle();
+async function runOne(listingId: string, save: boolean) {
+  const { data: l } = await db.from('listings').select('id, slug, name, website, category, vegan_status, address_city, status, menu_crawl_url').eq('id', listingId).maybeSingle();
   if (!l || l.status !== 'approved') return { ok: false, why: 'not_found' };
   const { data: qi } = await db.from('ve_menu_imports').select('menu_url').eq('listing_id', l.id).maybeSingle();
   const menuUrl = qi?.menu_url || l.menu_crawl_url || '';
-  if (!/^https?:\/\//i.test(l.website || '') && !/^https?:\/\//i.test(menuUrl) && !igHandle(l.instagram || '')) return { ok: false, why: 'no_website' };
+  if (!/^https?:\/\//i.test(l.website || '') && !/^https?:\/\//i.test(menuUrl)) return { ok: false, why: 'no_website' };
   const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
   if (count) return { ok: false, why: 'has_menu' };
-  const r: any = await readMenu(l, menuUrl, onlyInstagram);
+  const r: any = await readMenu(l, menuUrl);
   const result: any = { slug: l.slug, name: l.name, ...r };
   if (!save) { await db.from('ve_menu_imports').update({ reader_preview: result }).eq('listing_id', l.id); return result; }
   await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none' }, { onConflict: 'listing_id', ignoreDuplicates: true });
   if (r.ok && r.found) {
-    const { data: s, error } = await db.rpc('ve_menu_import_save', { p_listing: l.id, p_items: r.items, p_menu_url: r.source, p_note: ('Read by the menu reader' + (r.ig ? ' from Instagram. ' : '. ') + (r.note || '')).slice(0, 300) });
+    const { data: s, error } = await db.rpc('ve_menu_import_save', { p_listing: l.id, p_items: r.items, p_menu_url: r.source, p_note: ('Read by the menu reader. ' + (r.note || '')).slice(0, 300) });
     result.saved = error ? { ok: false, why: error.message } : s;
   }
   await db.from('ve_menu_imports').update({
     reader_at: new Date().toISOString(), reader_note: (r.ok && r.found ? `Copied ${r.items.length} items` : r.note || r.why || 'No menu found').slice(0, 300),
-    reader_read: r.read || [], ...(r.ig ? { ig_at: new Date().toISOString() } : {}),
+    reader_read: r.read || [],
   }).eq('listing_id', l.id);
   delete result.items; result.items = r.items?.length || 0;
   return result;
@@ -445,7 +392,7 @@ Deno.serve(async (req) => {
     if (!id) return json({ error: 'not_found' }, 404);
     // A read takes longer than a request may wait (150 s), so it runs in the background; the result lands on its
     // ve_menu_imports row (reader_note and reader_read, or reader_preview for save: false).
-    (EdgeRuntime as any).waitUntil(runOne(id, body.save !== false, body.instagram === true).catch(async (e) => {
+    (EdgeRuntime as any).waitUntil(runOne(id, body.save !== false).catch(async (e) => {
       await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id);
     }));
     return json({ ok: true, started: id });
@@ -454,18 +401,10 @@ Deno.serve(async (req) => {
     const limit = Math.min(Math.max(+body.limit || 1, 1), 2);
     // Most voted first.
     const { data: rows } = await db.from('ve_menu_imports').select('listing_id, listings!inner(status, vote_count)').eq('status', 'none').is('reader_at', null).eq('listings.status', 'approved').limit(500);
-    let ids = ((rows || []) as any[]).sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
-    // Nothing new: a place the reader tried before the Instagram pass gets its Instagram look (ig_at null, has an Instagram).
-    let igOnly = false;
-    if (!ids.length) {
-      const { data: again } = await db.from('ve_menu_imports').select('listing_id, reader_note, listings!inner(status, vote_count, instagram)').eq('status', 'none').not('reader_at', 'is', null).is('ig_at', null)
-        .eq('listings.status', 'approved').neq('listings.instagram', '').not('listings.instagram', 'is', null).limit(500);
-      ids = ((again || []) as any[]).filter((r) => r.reader_note !== 'Reading').sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
-      igOnly = ids.length > 0;
-    }
+    const ids = ((rows || []) as any[]).sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
     // Mark them first so a second run does not take the same ones.
-    if (ids.length) await db.from('ve_menu_imports').update({ reader_at: new Date().toISOString(), reader_note: 'Reading', ...(igOnly ? { ig_at: new Date().toISOString() } : {}) }).in('listing_id', ids);
-    const work = (async () => { for (const id of ids) { try { await runOne(id, true, igOnly); } catch (e) { await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id); } } })();
+    if (ids.length) await db.from('ve_menu_imports').update({ reader_at: new Date().toISOString(), reader_note: 'Reading' }).in('listing_id', ids);
+    const work = (async () => { for (const id of ids) { try { await runOne(id, true); } catch (e) { await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id); } } })();
     (EdgeRuntime as any).waitUntil(work);
     return json({ ok: true, started: ids.length });
   }
