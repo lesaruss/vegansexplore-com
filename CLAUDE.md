@@ -495,8 +495,11 @@ Chapters a listing serves (Sean, 2026-10-24: Florida Animal Rescue Alliance "cov
 would be a global organization. It could have its headquarters notated, but it should show up in all the community
 sections"). The address puts a listing in its home chapter; `listings.communities` adds more (hub slugs from `VE_HUBS`, or
 `all` for every chapter, new ones included; migration `20261024_listing_communities.sql`). `ve-region-directory.js` shows a
-listing in a chapter when either says so (callers pass `hub: <slug>`), the card keeps the address as headquarters ("Jupiter ·
-Every chapter"), and the listing page adds "Serves every chapter" or "Also serves Central Florida". Set it in the listing
+listing in a chapter when either says so (callers pass `hub: <slug>`), the card reads like a brand, by its reach, never its headquarters' city (Sean, 2026-10-27, Be An Animal Hero "still says Jupiter"):
+Every chapter, All of Florida (every chapter of a state with more than one), the two chapters by name, or N chapters (`reachOf` in
+`ve-region-directory.js`). Statewide and national organizations were set the same day: Florida Animal Rescue Alliance and the
+Muscovy Sanctuary of Florida all of Florida, sixteen national advocacy groups (Animal Welfare Institute, IFAW, Farm Animal Rights
+Movement...) every chapter, and the listing page adds "Serves every chapter" or "Also serves Central Florida". Set it in the listing
 editor's Chapters section (`ve-listing-admin.js`, saved by `ve-claims` `admin_listing`). Passport Challenge and Tours stops
 still go by address.
 
@@ -675,7 +678,8 @@ only when there is more than a page of 24).
 
 **Community is the animals first** (Sean, 2026-10-27: "there's a lot of backlash on brands that don't put the animals first...
 I really want that to be what the community directory is all about... nonprofits... events... rescues... sanctuaries"). Community's
-sub-sections are **Nonprofits, Rescues, Sanctuaries, Events** (the same lists as Food's, above; migration
+sub-sections are **All** (first here, the one exception: Sean, 2026-10-27, "I don't mind people seeing all of the community listings
+in one slot"; `allFirst` in `CAT_CONFIG`), **Nonprofits, Rescues, Sanctuaries, Events** (the same lists as Food's, above; migration
 `20261027_community_resort.sql`). Community Partner was never a kind of listing: its 29 rows (a June spreadsheet import) were
 re-filed from Google and their Instagram bios the same day (14 into Vendors, Food Trucks, Restaurants, Bakeries, Health and
 Wellness, Coaches, Beauty, Clothing; two closed for good), and the 15 with nothing to go by are On hold in Directory review, each
@@ -799,7 +803,9 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
   (`VECityBanner.mount(el, {key, title, sub, onChange, action})`, after `ve-hubs.js`): the city's art, the city picker, and
   buttons (Sean, 2026-10-26: "my goal was to have it be a button"): **View community** (the picked city's hub, or View
-  communities for All cities), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
+  communities for All cities; Sean, 2026-10-27: it opens them the way the menu's Communities does, so in the dashboard, or a page the
+  dashboard frames such as the Daily Pulse, the dashboard opens the chapter (`VEOpenCommunity` in center-console), and any other frame
+  sends the whole window), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
   the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit).
   Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
   then the picker on the left; the buttons on the right, each its own height, stacked and centered (Sean, 2026-10-27: one
@@ -937,6 +943,22 @@ slot ids, South Florida's counties and pinned event) live in `VE_HUBS[].page` in
 its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its art in
 `/communities/<slug>/`, its slug in the rewrite, and its three `ad_placements` rows. Change a hub in
 `hub.html` once and every city gets it.
+
+- **Eleven chapters** (Sean, 2026-10-27: "separate the DMV to be the individual major hubs... set up just like Philadelphia... and
+  then we could do North Florida... closing out the state of Florida"): South Florida, Central Florida, **North Florida**, Atlanta,
+  **Washington, D.C.**, **Maryland**, **Virginia**, New York, Philadelphia, Los Angeles, London. The DMV is gone: `/communities/dmv`
+  forwards to D.C., and migration `20261027_chapters_split_dmv_north_florida.sql` moved its board, feeds, sources, roles, outreach list
+  and ad slots to D.C., gave each new chapter its pinned board guides, local Daily Pulse, outreach list (off) and three Humble Cabbage
+  slots, and widened `members_home_community_check` and `member_communities_community_slug_check`. Florida is covered city by city:
+  South Florida adds the Treasure Coast and the Keys, Central Florida Greater Orlando, Tampa Bay, the Space Coast, Volusia and the
+  southwest Gulf, North Florida Jacksonville to the Panhandle (`SF`, `CF`, `NF` in `ve-hubs.js`; `ve-claims` `HUBS` and
+  `ve_outreach_cities` hold the same lists). A chapter's art is `VE_HUBS[].page.banner` (the banner, the guide and the listing header
+  read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); Virginia wears D.C.'s and
+  North Florida Central Florida's until their own are made (Higgsfield credits ran out 2026-10-27). VE_HUBS[].state groups chapters by
+  state. The chapter list also lives in `ve-auth` (`VALID_COMMUNITIES`, names, city aliases), `ve-board`, `ve-bounties`, `ve-claims`,
+  `ve-hunt`, `ve-invites`, `ve-media-library`, `ve-news-desk`, `ve-tours` and the name maps in the dashboard, join, lead and Depot
+  pages; the dashboard's city rules are built from VE_HUBS. A new chapter changes all of them. Large functions deploy from a commit
+  through `ve-function-deploy` (admin token, `{slug, sha}`, returns the source sha256).
 
 - **The banner is the shared one** (Sean, 2026-10-27: "the same look and feel as everywhere else"): `VECityBanner` (`hubBanner`),
   **Vegan Community** over the city, its picker (another city opens its hub on the same section; All cities opens `/communities`,
