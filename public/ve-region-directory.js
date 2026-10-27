@@ -195,7 +195,9 @@
     // Each label and its dropdown are one field (.sb-f): a row on desktop, two across on phones (Sean, 2026-10-25).
     var sortHtml = '<span class="sb-f"><span class="sort-label">Sort by</span>' +
       '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '">' +
-      '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="recent">Most Recent</option><option value="added">First Added</option>' +
+      // No sort by the day a listing was added (Sean, 2026-10-27: "I don't think people care when I added the listing"). Books and
+      // films sort by the year they came out, newest or oldest first (SUB_FILTERS years; the options show only there).
+      '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="newest" data-years hidden>Newest first</option><option value="oldest" data-years hidden>Oldest first</option>' +
       '</select></span>';
     var geoHtml = '';
     if (config && config.regions) {
@@ -237,6 +239,10 @@
       '<span class="vrd-sub" data-sub-for="booktype" hidden><span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type of book" class="sort-select" data-vrd-booktype="' + cat.key + '"><option value="">All</option>' +
       BOOK_TYPES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
+      // A show's status is a filter, not a sort (Sean, 2026-10-27, "you could decide what the best practice is"): people want only
+      // the shows still going, not the list reordered.
+      '<span class="vrd-sub" data-sub-for="mstat" hidden><span class="geo-label">Status</span>' +
+      '<select aria-label="Filter by status" class="sort-select" data-vrd-mstat="' + cat.key + '"><option value="">All</option><option value="active">Active</option><option value="hiatus">On hiatus</option><option value="ended">Ended</option></select></span>' +
       '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Sells at</span>' +
       '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Anywhere</option><option value="1">Markets &amp; events</option><option value="0">Online &amp; stores</option></select></span>';
     return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + '</div>';
@@ -444,8 +450,8 @@
   var BOOK_TYPES = [['cookbook', 'Cookbook'], ['memoir', 'Biography & memoir'], ['educational', 'Educational'], ['health', 'Health & nutrition'],
     ['lifestyle', 'Lifestyle'], ['children', 'Children\'s']];
   // Books sort by what kind of book, never by region (Sean, 2026-10-27); every media sub-section drops the location filter.
-  var SUB_FILTERS = { 'Books': { geo: false, booktype: true }, 'Podcasts': { geo: false }, 'YouTube': { geo: false }, 'News Outlets': { geo: false },
-    'Documentaries & Films': { geo: false }, 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
+  var SUB_FILTERS = { 'Books': { geo: false, booktype: true, years: true }, 'Podcasts': { geo: false, mstat: true }, 'YouTube': { geo: false, mstat: true },
+    'News Outlets': { geo: false, mstat: true }, 'Documentaries & Films': { geo: false, years: true }, 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
     'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
@@ -461,7 +467,8 @@
     return out.join('|');
   }
   function extraAttrs(l) {
-    return ' data-booktype="' + esc(l.book_type || '') + '" data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
+    var ms = l.business_status === 'CLOSED_PERMANENTLY' ? 'ended' : l.business_status === 'CLOSED_TEMPORARILY' ? 'hiatus' : 'active';
+    return ' data-booktype="' + esc(l.book_type || '') + '" data-year="' + esc(l.release_year || '') + '" data-mstat="' + ms + '" data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
   }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
@@ -614,6 +621,12 @@
       var on = !!sf[w.dataset.subFor]; w.hidden = !on;
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
+    // Newest and Oldest belong to books and films; anywhere else the sort goes back to Most Votes.
+    var sortSel = bar.querySelector('[data-vrd-sort]');
+    if (sortSel) {
+      sortSel.querySelectorAll('[data-years]').forEach(function (o) { o.hidden = !sf.years; o.disabled = !sf.years; });
+      if (!sf.years && /^(newest|oldest)$/.test(sortSel.value)) { sortSel.value = 'votes'; sortSel.dispatchEvent(new Event('change')); }
+    }
     // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
     var sells = bar.querySelector('[data-vrd-sells]');
     var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false && !(sf.sells && sells && sells.value === '1');
@@ -641,6 +654,7 @@
     // The picked sub-section's own filters; the others are hidden and cleared (syncSubFilters).
     var sf = subFiltersFor(panel, special);
     var booktypeSel = bar ? bar.querySelector('[data-vrd-booktype]') : null, booktype = sf.booktype && booktypeSel ? booktypeSel.value : '';
+    var mstatSel = bar ? bar.querySelector('[data-vrd-mstat]') : null, mstat = sf.mstat && mstatSel ? mstatSel.value : '';
     var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
@@ -661,6 +675,7 @@
       if (geoOk && region) { var hs = card.dataset.hubs || ''; geoOk = hs === '*' || hs.split('|').indexOf(region) > -1; }
       if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
       if (booktype && card.dataset.booktype !== booktype) geoOk = false;
+      if (mstat && card.dataset.mstat !== mstat) geoOk = false;
       if (chain && card.dataset.chain !== chain) geoOk = false;
       if (cuisine && (card.dataset.cuisines || '').split('|').indexOf(cuisine) < 0) geoOk = false;
       if (sells && card.dataset.vends !== sells) geoOk = false;
@@ -798,7 +813,7 @@
         applyPanelFilters(sel.closest('.board-panel'), state, true);
       });
     });
-    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype]').forEach(function (sel) {
+    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-mstat]').forEach(function (sel) {
       sel.addEventListener('change', function () { var panel = sel.closest('.board-panel'); if (sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); applyPanelFilters(panel, state, true); });
     });
 
@@ -837,8 +852,12 @@
         cards.sort(function (a, b) {
           if (order === 'votes') return (parseInt(b.dataset.plus || 0) - parseInt(a.dataset.plus || 0)) || parseInt(b.dataset.votes) - parseInt(a.dataset.votes);
           if (order === 'az') return a.dataset.name.localeCompare(b.dataset.name);
-          if (order === 'recent') return parseInt(b.dataset.idx) - parseInt(a.dataset.idx);
-          if (order === 'added') return parseInt(a.dataset.idx) - parseInt(b.dataset.idx);
+          // By the year it came out; anything without a year goes last, then by votes.
+          if (order === 'newest' || order === 'oldest') {
+            var ya = parseInt(a.dataset.year, 10), yb = parseInt(b.dataset.year, 10);
+            if (isNaN(ya) !== isNaN(yb)) return isNaN(ya) ? 1 : -1;
+            return (isNaN(ya) ? 0 : order === 'newest' ? yb - ya : ya - yb) || parseInt(b.dataset.votes) - parseInt(a.dataset.votes);
+          }
           return 0;
         });
         cards.forEach(function (c) { grid.appendChild(c); });

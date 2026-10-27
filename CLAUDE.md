@@ -868,6 +868,10 @@ section has no Area, How Vegan or Online / Closed filters, and every media listi
 `ve-region-directory.js`, `ve-listing-admin.js` and `ve-listing-media`, change all three), the year is `details.release_year`, both
 read by the Directory as `release_year:details->>release_year` and set in the listing editor's **About the work** (books and films),
 saved by the edge function `ve-listing-media` (super admin, a `ve_listing_edits` row each; `admin_listing` does not hold details).
+**Sorting and status** (Sean, 2026-10-27): no sort by the day a listing was added anywhere ("I don't think people care
+when I added the listing"; the old Most Recent and First Added only flipped the vote order); Sort by is Most Votes and A to Z, and
+books and films add **Newest first** and **Oldest first** by the year they came out (no year goes last). A show's Active / On hiatus /
+Ended is a **Status** filter on Podcasts, YouTube and News Outlets, not a sort (best practice: people want only the shows still going).
 The 22 books were filed from their own descriptions (migration `20261027_media_book_types.sql`; Badass Vegan and Breaking Up with
 Dairy as Lifestyle, The Cheese Trap as Health & nutrition, the rest Cookbooks); every documentary already had its year. **Other
 media** (category `Media`) is hidden for now (Sean: "I don't know what media is"): not a pill, not in the editor's picker unless a
