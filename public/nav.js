@@ -251,7 +251,8 @@
         '<span class="ve-nav-lesars">' + tierBadge + '</span>' +
         '<div class="ve-nav-member-menu" id="ve-member-menu" role="menu">' +
           '<a href="/account"' + cur('/account') + ' role="menuitem">My Account</a>' +
-          '<a href="/account/my-list"' + cur('/account/my-list') + ' role="menuitem">My List</a>' +
+          // My Saves (Sean, 2026-10-27): the dashboard tab with saved episodes and listings; it replaced My List.
+          '<a href="/dashboard/saves"' + cur('/dashboard/saves') + ' role="menuitem">My Saves</a>' +
           (member.membership_status === 'active' ? '<a href="/dashboard?contribute=1" role="menuitem">Contribute</a>' : '') +
           '<hr>' +
           '<button id="ve-signout-desktop" role="menuitem">Sign Out</button>' +
@@ -265,7 +266,7 @@
           'Account' +
           '<span class="ve-mob-lesars">' + tierBadge + '</span>' +
         '</a>' +
-        '<a href="/account/my-list"' + cur('/account/my-list') + '>My List</a>' +
+        '<a href="/dashboard/saves"' + cur('/dashboard/saves') + '>My Saves</a>' +
         (member.membership_status === 'active' ? '<a href="/dashboard?contribute=1">Contribute</a>' : '') +
       '</div>' +
       '<button class="ve-mob-signout" id="ve-signout-mobile">Sign Out</button>';

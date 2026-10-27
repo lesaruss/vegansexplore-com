@@ -798,13 +798,21 @@ there, never something members add or follow (the Follow Shows tiles and modal a
 ## Podcast episodes on a listing (Sean, 2026-10-27)
 
 "Is it possible to add an RSS of the podcast so that way it actually populates on their listing? ... people can actually just
-listen to the episodes on our platform... they can save the episodes. But it's all pulling from their RSS feed." A podcast's
-listing (category Podcasts) has an **Episodes** tab, after Overview, shown only once its feed has episodes, and Listen & Watch
-gets **Listen here**, which opens it. The list searches and shows 20 at a time (Show more); an episode opens on its own view
-(`?tab=episodes&ep=<guid>`, Episodes / title back); **Play** plays it in the player bar at the foot of the window (one at a time,
-it keeps playing across tabs; inside the dashboard's frame the bar sits above the list); **Save** is for members (anyone else
-gets the Passport window) and the saves are in My List > Episodes (`/account/my-list?view=episodes`). The audio streams from the
-show's own host; nothing is copied.
+listen to the episodes on our platform... they can save the episodes. But it's all pulling from their RSS feed." Then, the same
+day: "put the episodes on the overview page... their website, Apple Podcasts... Spotify, all the usual suspects... little square
+icons... and then below it... the podcasts listed... with some pagination." A podcast's listing (category Podcasts) opens on its
+Overview: About, **Listen on** (square icons: Website, Spotify, Apple Podcasts, YouTube, Amazon Music, the RSS feed, whichever it
+has; `renderPodcastOverview` and `platformList` in `directory/listing.html`), then **Episodes**, shown only once its feed has
+some: search, 20 a page with page numbers (first, last and two either side, `?epage=`), and an episode on its own view
+(`?ep=<guid>`, Episodes / title back; an old `?tab=episodes` link lands here too). **Play** plays it in the player bar at the
+foot of the window (one at a time, it keeps playing across tabs; inside the dashboard's frame the bar sits above the list);
+**Save** is for members (anyone else gets the Passport window). The audio streams from the show's own host; nothing is copied.
+
+**My Saves** (Sean, same day: "my favorites, or my saves... a section on the navigation just for members") is a dashboard tab
+(`/dashboard/saves`, after Guides; `renderSavesTab` in center-console, read each time it opens): Podcast episodes (the little
+picture, the title, the show, Play and remove, played in the same player bar; the show opens under the Directory tab) and Places
+and brands (saved listings). The nav's account menu and Your tools' My Saves open it; it replaced My List
+(`/account/my-list` still works and has Listings and Episodes).
 
 - The feed is `listings.rss_url`. Left empty, `ve-podcast` finds it once from the listing's Apple Podcasts id (iTunes lookup,
   `feedUrl`) and saves it; an empty string means the team turned it off. Set it in the listing editor's **Episodes** field (shown

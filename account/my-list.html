@@ -125,7 +125,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
       var byKey = {};
       grid.innerHTML = '<div class="vep"><div class="vep-list">' + eps.map(function (e) {
         var show = { id: e.show.id, name: e.show.name, image: e.show.logo || '' }; byKey[show.id + '|' + e.guid] = { ep: e, show: show };
-        return VEEpisodes.row(e, show, { saved: true, showName: true, href: '/directory/' + encodeURIComponent(e.show.slug || '') + '?tab=episodes&ep=' + encodeURIComponent(e.guid) });
+        return VEEpisodes.row(e, show, { saved: true, showName: true, href: '/directory/' + encodeURIComponent(e.show.slug || '') + '?ep=' + encodeURIComponent(e.guid) });
       }).join('') + '</div></div>';
       grid.querySelectorAll('[data-vep-play]').forEach(function (b) { b.onclick = function () { var x = byKey[b.getAttribute('data-vep-play')]; if (x) VEEpisodes.play(x.ep, x.show); }; });
       grid.querySelectorAll('[data-vep-save]').forEach(function (b) {
