@@ -234,7 +234,7 @@
       // Media home first (Sean, 2026-10-27: the page's own home, like Directory home); See in the Directory shows while it is open.
       home: { label: 'Media home', href: '/media' },
       // Join our network (Sean, 2026-10-27): the podcast network's application, between the Directory and Expand.
-      actions: [{ label: 'Join our network', href: '/media/network', go: true }] };
+      actions: [{ label: 'Join our network', short: 'Join network', href: '/media/network', go: true }] };
     for (var k in extra) o[k] = extra[k];
     return o;
   }

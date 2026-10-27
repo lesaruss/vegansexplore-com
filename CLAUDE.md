@@ -829,7 +829,7 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). **Phones have no
   Expand** (Sean, 2026-10-27: "on mobile, we lose the expand... seeing it big on desktop is cool"): at 900 px and under the banner
   is always folded, the title, the line under it and the picker on the left and the page's two buttons on the right at their own
-  size; a banner with no buttons (My Saves, Guides) gives the title the whole width (`vcb-no-acts`).
+  size; a banner with no buttons (My Saves, Guides) gives the title the whole width (`vcb-no-acts`). A button can carry a shorter phone label (`short`: Media's Join our network reads Join network).
   Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
   then the picker on the left; the buttons on the right, each its own height, stacked and centered (Sean, 2026-10-27: one
   button "should just be the same size as normally"). **Collapse or Expand is one choice for the whole site** (Sean,
