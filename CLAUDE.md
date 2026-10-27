@@ -871,7 +871,8 @@ saved by the edge function `ve-listing-media` (super admin, a `ve_listing_edits`
 The 22 books were filed from their own descriptions (migration `20261027_media_book_types.sql`; Badass Vegan and Breaking Up with
 Dairy as Lifestyle, The Cheese Trap as Health & nutrition, the rest Cookbooks); every documentary already had its year. **Other
 media** (category `Media`) is hidden for now (Sean: "I don't know what media is"): not a pill, not in the editor's picker unless a
-listing is still filed there, and its one listing (Zara Osei Media) shows nowhere until it is re-filed. On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
+listing is still filed there, and its one listing, Zara Osei Media, was re-filed under Services > Content Creation & Media the same day, and Viva! (a UK Vegan
+charity) moved from News Outlets to Community > Nonprofits, serving the London chapter (Sean: "move Zara and Viva"). On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
 Podcast, Vegans Who Lift, The Raw Vegan Podcast, Vegan Marathoner), 4 Ended (Moby Pod, Keep On Cookin', The Ordinary Vegan, The Keto
 Vegan). Listen on uses the platforms' own marks (`/public/icons/platforms/`, Simple Icons, CC0 shapes).
 
