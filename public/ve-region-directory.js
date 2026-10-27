@@ -355,10 +355,19 @@
       '<a class="vla-edit" data-vrd-review="#l/' + encodeURIComponent(l.id) + '/' + list + '" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener" title="Admin only: fix it in the Review tab">Review</a></span>';
   }
 
+  // Paused and closed in the words of the kind of listing (Sean, 2026-10-27): a podcast is On hiatus or Ended, a book or film No
+  // longer available, a brand Paused or Out of business. Keep in step with STATUS in /public/ve-listing-admin.js and statusWords
+  // in /directory/listing.html.
+  var STATUS_WORDS = { show: ['On hiatus', 'Ended'], work: ['Unavailable for now', 'No longer available'], brand: ['Paused', 'Out of business'], place: ['Temporarily closed', 'Permanently closed'] };
+  function statusWords(cat) {
+    return STATUS_WORDS[['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(cat) >= 0 ? 'show' : ['Documentaries & Films', 'Books'].indexOf(cat) >= 0 ? 'work'
+      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(cat) >= 0 ? 'brand' : 'place'];
+  }
+
   function makeBrowseCard(l, idx, type) {
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
-    var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">Temporarily closed</span>' : '';
+    var temp = l.business_status === 'CLOSED_TEMPORARILY' ? ' <span class="vrd-temp">' + statusWords(l.category)[0] + '</span>' : '';
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
@@ -375,7 +384,7 @@
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#555">' + esc(l.name) + '</div>' +
       '<div class="rank-meta">' + cardMeta(l) + '</div>' +
-      '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">Permanently Closed</span></div></div>' +
+      '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">' + statusWords(l.category)[1] + '</span></div></div>' +
       '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span>' + adminBtn(l) + '</div>' +
       '</div>';
   }

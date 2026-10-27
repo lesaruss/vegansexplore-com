@@ -565,6 +565,14 @@ The listing editor's **Upload a logo / Replace the logo** (`ve-listing-admin.js`
 we implement that into the replace logo button?") opens the same logo editor under the logo, with the logo as it is loaded in, and
 links to look on (their website, Instagram, Facebook, Google Images); **Save logo** saves it the Logos way (`add_logo_url`,
 `logo_set`), so it shows in Logos > Done. Copy it into our storage and Remove stay as they were.
+**The listing editor follows what it is** (Sean, 2026-10-27: "the main section... should come after the logo... based off what you
+choose, the next part populates"). Name, Logo, then **What it is** (main section, sub-section, Also show it under); nothing more
+shows until a main section is picked, and Save asks for one. Media (Podcasts, YouTube, News Outlets, Other media, Documentaries &
+Films, Books) hides Location, Locations, Chapters and How Vegan, is saved as every chapter (`communities` `['all']`), its address
+left as it is; a brand hides Locations. Only the parts shown are sent to `admin_listing`. `business_status` keeps its three values,
+in the kind's words (`kindOf` and `STATUS` in `ve-listing-admin.js`, `STATUS_WORDS` in `ve-region-directory.js`, `statusWords` in
+`directory/listing.html`; change all three): a place Open / Temporarily closed / Permanently closed, a show Active / On hiatus /
+Ended, a book or film Available / No longer available, a brand In business / Paused / Out of business.
 **The logo sweep** (Sean, 2026-10-27: "do a sweep and see which ones you can do similarly... so I'm not going through all 200...
 the clean logo, no food in the background, just the actual logo"; migration `20261027_ve_logo_suggestions.sql`). Cron
 `ve-logo-sweep` (every 5 minutes, `ve-discover` `logo_sweep`, five listings a run, each looked at once) gathers each listing's
