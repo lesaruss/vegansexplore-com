@@ -241,7 +241,7 @@ async function gather(website: string, deadline: number) {
         // Ordering apps fill their menu in late, so they get a longer wait.
         const rr = await rendered(at, ORDER_HOSTS.test(h) ? 20 : 8);
         if (rr.text.length > text.length) { text = rr.text; read.push(`${rr.url} (opened in a browser)`); }
-        else if (rr.error) read.push(`${at}: the browser could not open it (${rr.error})`);
+        else read.push(`${at}: ${rr.error ? 'the browser could not open it (' + rr.error + ')' : 'nothing came back (it may block automated browsers)'}`);
         for (const m of rr.text.matchAll(/!\[([^\]]*)\]\((https?:[^)\s]+)/g)) if (!/logo|icon|favicon|\.svg/i.test(m[2]) && (menuPage || /menu/i.test(m[1] + m[2]))) pics.unshift(m[2]);
         for (const m of rr.text.matchAll(/(?<!!)\[([^\]]{0,60})\]\((https?:[^)\s]+)/g)) { offer(m[2], m[1]); if (/\.pdf(\?|$)/i.test(m[2])) pdfs.push(m[2]); }
       } else if (p.html) read.push(at);
