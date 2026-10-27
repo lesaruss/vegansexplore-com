@@ -29,6 +29,11 @@
 //        editor's canvas is never tainted (JPEG, PNG, WebP, GIF or SVG, up to 8 MB)
 // POST { action: 'logo_set', listing_id, path }      super admin   the editor's square (staged by add_logo_url) becomes the logo
 // POST { action: 'logo_skip', listing_id, undo? }    super admin   the first letter is fine for this one
+// POST { action: 'logo_sweep', n? }                  cron or ops   (Sean, 2026-10-27: "do a sweep and see which ones you can do
+//        similarly... the clean logo, no food in the background, just the actual logo") a few listings from the queue that have
+//        no ve_logo_suggestions row: their website's logo pictures and Instagram profile picture, shown to Claude, which picks
+//        their own clean logo or none (migration 20261027_ve_logo_suggestions.sql). Nothing is saved to the listing here.
+// POST { action: 'logo_suggest_reject', listing_id }  super admin   Not this: the suggestion goes, the listing stays on the list
 // POST { action: 'paste_list', text }              super admin -> { added, skipped }   one business a line ("Name, City, ST" or
 //        an Instagram handle): each becomes a hidden listing and a backlog check, so it waits in New places for a decision
 //
@@ -36,6 +41,7 @@
 // (APIFY_API_TOKEN). Ops is the LESARUSS_ADMIN_TOKEN or the cron's x-cron-secret. verify_jwt is false: the VE app token is
 // HMAC-checked here the same way ve-cookbook checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
+import Anthropic from 'npm:@anthropic-ai/sdk';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -478,6 +484,111 @@ function toBase64(b: Uint8Array) {
   for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode(...b.subarray(i, i + 0x8000));
   return btoa(s);
 }
+
+// ---- The logo sweep ----
+const LOGO_MODEL = 'claude-opus-5-5';
+const LOGO_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['pick', 'background', 'why'],
+  properties: {
+    pick: { type: 'integer', description: 'The number of the picture that is this business\'s own clean logo, or -1 when none is.' },
+    background: { type: 'string', description: 'What to fill the square around the logo with: "match" when the logo sits on a solid color of its own (keep that color), "white" for a dark logo on white or transparent, "black" for a light or white logo on transparent, or a #rrggbb color.' },
+    why: { type: 'string', description: 'One short sentence for the team: why this one, or why none fits.' },
+  },
+};
+async function judgeLogos(name: string, kind: string, city: string, pics: { from: string; type: string; bytes: Uint8Array }[]) {
+  const apiKey = await secret('ANTHROPIC_API_KEY');
+  if (!apiKey) return { error: 'no Anthropic key' };
+  const client = new Anthropic({ apiKey });
+  const content: any[] = [];
+  pics.forEach((p, i) => {
+    content.push({ type: 'text', text: `Picture ${i}: ${p.from}` });
+    content.push({ type: 'image', source: { type: 'base64', media_type: p.type, data: toBase64(p.bytes) } });
+  });
+  content.push({ type: 'text', text: `The business: ${name}${kind ? ', ' + kind : ''}${city ? ', ' + city : ''}. Which picture is its own clean logo?` });
+  try {
+    const response: any = await client.beta.messages.create({
+      model: LOGO_MODEL, max_tokens: 4000,
+      betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      output_config: { effort: 'low', format: { type: 'json_schema', schema: LOGO_SCHEMA } },
+      system: `You pick logos for the Vegans Explore Directory. Each listing shows a small square logo on its card.
+- Pick the picture that is this business's own logo, clean: its mark or its name as designed, on a plain or see-through background.
+- Never pick a photo of food or drinks, a storefront, a room, people, a menu, a flyer, or a logo that sits inside a photo.
+- Never pick a website builder's or a platform's own icon (Wix, Squarespace, Shopify, WordPress, Toast, Instagram, Facebook), a blank or generic icon, or another business's logo.
+- An Instagram profile picture counts only when it is the logo itself, not a photo.
+- When two pictures are the same logo, pick the larger, sharper one, and the full logo over a tiny cropped icon.
+- When none fits, pick -1 and say why.`,
+      messages: [{ role: 'user', content }],
+    } as any);
+    if (response.stop_reason === 'refusal') return { error: 'refused' };
+    const text = (response.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
+    return { result: JSON.parse(text) as { pick: number; background: string; why: string } };
+  } catch (e) {
+    if (e instanceof Anthropic.RateLimitError) return { error: 'busy' };
+    if (e instanceof Anthropic.APIError) return { error: `anthropic ${e.status}` };
+    return { error: String((e as Error).message || e) };
+  }
+}
+// Instagram profile pictures for a batch of handles (one Apify run).
+async function igPictures(handles: string[]): Promise<Record<string, string>> {
+  const token = await secret('APIFY_API_TOKEN');
+  if (!token || !handles.length) return {};
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 100000);
+  try {
+    const r = await fetch(`https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${token}&timeout=90`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ usernames: handles }), signal: ctl.signal,
+    });
+    if (!r.ok) return {};
+    const out: Record<string, string> = {};
+    for (const p of (await r.json()) as any[]) { const u = String(p.username || '').toLowerCase(); const pic = p.profilePicUrlHD || p.profilePicUrl; if (u && pic && !p.error) out[u] = pic; }
+    return out;
+  } catch { return {}; } finally { clearTimeout(t); }
+}
+async function logoSweep(n: number) {
+  const { data: q } = await db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
+    .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
+    .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
+  const { data: had } = await db.from('ve_logo_suggestions').select('listing_id');
+  const seen = new Set((had || []).map((x: any) => x.listing_id));
+  const open = (q || []).filter((l: any) => !l.details?.logo_letter_ok && !seen.has(l.id));
+  const batch = open.slice(0, n);
+  if (!batch.length) return { checked: 0, left: 0 };
+  const handleOf2 = (l: any) => handleOf(l.ig_handle || l.instagram || '');
+  const igP = igPictures([...new Set(batch.map(handleOf2).filter(Boolean))]);
+  const sites = Promise.all(batch.map(async (l: any) => {
+    let site = String(l.website || '').trim();
+    if (!site) return null;
+    if (!/^https?:\/\//i.test(site)) site = 'https://' + site;
+    try { new URL(site); } catch { return null; }
+    try { return await readSite(site); } catch { return null; }
+  }));
+  const [ig, siteRes] = await Promise.all([igP, sites]);
+  let found = 0;
+  await Promise.all(batch.map(async (l: any, i: number) => {
+    const cands: { url: string; from: string; w: number; h: number }[] = [...((siteRes[i]?.logos) || [])];
+    const h = handleOf2(l);
+    if (h && ig[h]) cands.push({ url: ig[h], from: 'Their Instagram picture', w: 0, h: 0 });
+    const pics: { from: string; type: string; bytes: Uint8Array; url: string }[] = [];
+    for (const c of cands) {
+      if (/\.svg(\?|#|$)/i.test(c.url)) continue;  // Claude reads pictures, not SVG; an SVG stays a candidate for the hand list
+      const img = await readImage(c.url);
+      if ('error' in img || img.bytes.length > 5 * 1024 * 1024) continue;
+      pics.push({ from: c.from, type: img.type, bytes: img.bytes, url: c.url });
+      if (pics.length >= 5) break;
+    }
+    const row: Record<string, unknown> = { listing_id: l.id, candidates: cands, checked_at: new Date().toISOString() };
+    if (!pics.length) Object.assign(row, { status: 'none', why: !l.website && !h ? 'No website or Instagram to look at' : 'No logo picture on their website or Instagram' });
+    else {
+      const j = await judgeLogos(l.name, l.category || '', l.address_city || '', pics);
+      if ('error' in j) { if (j.error === 'busy') return; Object.assign(row, { status: 'none', why: 'The check did not run: ' + j.error }); }
+      else if (j.result.pick >= 0 && j.result.pick < pics.length) {
+        const p = pics[j.result.pick];
+        Object.assign(row, { status: 'found', url: p.url, source: p.from, background: j.result.background, why: j.result.why }); found++;
+      } else Object.assign(row, { status: 'none', why: j.result.why });
+    }
+    await db.from('ve_logo_suggestions').upsert(row);
+  }));
+  return { checked: batch.length, found, left: open.length - batch.length };
+}
 // Put the picked logo next to the listing in our storage (never hot-linked) and on the listing.
 async function saveLogo(l: { id: string; slug: string; details: any }, logo: any, by: string, saved?: { url?: string }): Promise<string> {
   const SB = 'vegan-media';
@@ -524,6 +635,10 @@ Deno.serve(async (req) => {
     if (!who.ops) return json({ error: 'ops_only' }, 403);
     return json(await backlogRun(Math.max(0, Math.min(+body.ig || BATCH.ig, 60)), Math.max(0, Math.min(+body.google || BATCH.google, 40))));
   }
+  if (action === 'logo_sweep') {
+    if (!who.ops) return json({ error: 'ops_only' }, 403);
+    return json(await logoSweep(Math.max(1, Math.min(+body.n || 5, 10))));
+  }
   if (!who.ops && !who.admin) return json({ error: 'admins_only' }, 403);
 
   if (action === 'add_search') {
@@ -562,12 +677,16 @@ Deno.serve(async (req) => {
       .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
     if (error) return json({ error: error.message }, 400);
     const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok);
+    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates');
+    const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
     const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
     const q = clean(body.q, 80).toLowerCase(), city = clean(body.city, 80);
     const rows = all.filter((l: any) => (!q || `${l.name} ${l.address_city || ''} ${l.category || ''}`.toLowerCase().includes(q)) && (!city || l.address_city === city))
       .map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city, state: l.address_state, website: l.website, instagram: l.instagram,
-        facebook: l.facebook, tiktok: l.tiktok, votes: l.vote_count || 0, set_aside: l.details?.logo_unverified || null }));
-    return json({ ok: true, total: rows.length, all: all.length, cities, rows });
+        facebook: l.facebook, tiktok: l.tiktok, votes: l.vote_count || 0, set_aside: l.details?.logo_unverified || null,
+        suggest: (() => { const x: any = sug.get(l.id); return x ? { status: x.status, url: x.url, source: x.source, background: x.background, why: x.why, candidates: x.candidates || [] } : null; })() }));
+    const swept = all.filter((l: any) => sug.has(l.id)).length;
+    return json({ ok: true, total: rows.length, all: all.length, cities, rows, sweep: { checked: swept, left: all.length - swept } });
   }
 
   if (action === 'logo_fetch') {
@@ -588,6 +707,13 @@ Deno.serve(async (req) => {
     } catch (e) { return json({ error: 'fetch', message: 'That link did not open.' }, 502); }
   }
 
+  if (action === 'logo_suggest_reject') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
+    await db.from('ve_logo_suggestions').update({ status: 'rejected', decided_by: who.admin.id, decided_at: new Date().toISOString() }).eq('listing_id', body.listing_id);
+    return json({ ok: true });
+  }
+
   if (action === 'logo_set' || action === 'logo_skip') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
     if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
@@ -604,7 +730,8 @@ Deno.serve(async (req) => {
     const err = await saveLogo({ id: l.id, slug: l.slug, details: l.details }, { path: body.path }, by, saved);
     if (err) return json({ error: 'logo', message: err }, 400);
     await db.from('ve_listing_edits').insert({ listing_id: l.id, member_id: who.admin.id, field: 'logo', old_value: l.logo_url || null, new_value: saved.url,
-      meta: { by: 'admin', where: 'directory_review_logos' } });
+      meta: { by: 'admin', where: 'directory_review_logos', ...(body.from_suggestion ? { from: 'logo_sweep' } : {}) } });
+    await db.from('ve_logo_suggestions').update({ status: 'used', decided_by: who.admin.id, decided_at: at }).eq('listing_id', l.id);
     return json({ ok: true, logo_url: saved.url });
   }
 

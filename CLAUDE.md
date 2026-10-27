@@ -546,6 +546,18 @@ any color); a preview at card and listing size. **Save and next** uploads the sq
 the shorter side is refused), sets `details.logo_source` admin and `details.logo_checked`, moves a set-aside logo to
 `details.logo_replaced`, and logs a `ve_listing_edits` row (field `logo`). **The letter is fine** (`logo_skip`,
 `details.logo_letter_ok`) takes one off the list; Skip for now leaves it.
+**The logo sweep** (Sean, 2026-10-27: "do a sweep and see which ones you can do similarly... so I'm not going through all 200...
+the clean logo, no food in the background, just the actual logo"; migration `20261027_ve_logo_suggestions.sql`). Cron
+`ve-logo-sweep` (every 5 minutes, `ve-discover` `logo_sweep`, five listings a run, each looked at once) gathers each listing's
+logo pictures from its website (`readSite`) and its Instagram profile picture (Apify), and shows up to five to Claude (Opus 5.5,
+structured output) with the business's name: it picks the business's own clean logo (never food, a storefront, people, a logo
+inside a photo, a builder's or a platform's icon, or another business's logo) or none, and the background to square it on
+(`match`, `white`, `black` or a color). The pick is a `ve_logo_suggestions` row (found, none, used, rejected), never saved to the
+listing by itself. Logos has two tabs: **Suggested** (`#logos/suggested`): every pick squared in the browser by
+`VELogoEditor.auto` (the editor's own trim, fit and background), ticked by default, **Save the N ticked** saves them all through
+`logo_set` (`from_suggestion`, the row turns `used`), **Adjust** opens it in the editor already trimmed and on its background
+(`#logo/<id>/s`), **Not this** (`logo_suggest_reject`) sends it to To find; and **To find** (`#logos`): the rest, each with what the
+sweep said and the pictures it looked at (SVGs included, which Claude does not read) to load into the editor.
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business
