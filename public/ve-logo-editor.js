@@ -15,7 +15,9 @@
 (function () {
   if (window.VELogoEditor) return;
   var OUT = 800;
-  var CSS = '.vle{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start;}' +
+  // [hidden] wins over the display rules below on any page (the drop box is display:flex), not only where the page says so.
+  var CSS = '.vle [hidden]{display:none !important;}' +
+    '.vle{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:18px;align-items:start;}' +
     '@media (max-width:760px){.vle{grid-template-columns:1fr;}}' +
     '.vle-stage{position:relative;width:100%;aspect-ratio:1/1;border-radius:10px;overflow:hidden;border:1px solid rgba(0,0,0,.18);background:repeating-conic-gradient(#e9e9e9 0 25%,#fff 0 50%) 0 0/20px 20px;touch-action:none;cursor:grab;}' +
     '.vle-stage canvas{display:block;width:100%;height:100%;}' +

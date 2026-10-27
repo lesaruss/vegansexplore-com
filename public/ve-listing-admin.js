@@ -4,9 +4,12 @@
  * mark it closed, and, for restaurants and cafes, fill in the At a Glance details (atmosphere,
  * seating, amenities, accessibility, ownership) that Love Life Cafe shows.
  *
- * Logo (Sean, 2026-09-29: "upload the logos directly on the listings"): upload one, copy a logo
+ * Logo (Sean, 2026-09-29: "upload the logos directly on the listings"): make one, copy a logo
  * still linked from the business's own site into our storage, or remove it. A logo change saves
- * right away through ve-media-library (logo_set / logo_fetch), the same path as Depot > Logos.
+ * right away. Upload / Replace the logo opens the logo editor (/public/ve-logo-editor.js; Sean,
+ * 2026-10-27: "Can we implement that into the replace logo button?"): drop, paste or link a picture,
+ * square it, and Save logo stores it the way Directory review > Logos does (ve-discover add_logo_url,
+ * logo_set), so it shows in Logos > Done. Copy and Remove go through ve-media-library as before.
  *
  * Chapters (Sean, 2026-10-24): an organization that covers more than its own city (Florida Animal Rescue
  * Alliance across Florida, PETA everywhere) also shows in the chapters picked here, or in every chapter.
@@ -91,8 +94,13 @@
     '.vla-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}' +
     '#vla .logo{display:flex;gap:14px;align-items:center;flex-wrap:wrap}#vla .logo-img{width:72px;height:72px;border-radius:12px;border:1px solid rgba(0,0,0,.12);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:#fff;flex:0 0 auto}' +
     '#vla .logo-btns{display:flex;flex-wrap:wrap;gap:6px;flex:1;min-width:0}#vla .logo-btns button{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25);padding:8px 12px;min-height:38px}#vla .logo-btns .rm{color:#8a1c12}' +
-    '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label';
+    '#vla .logo-msg{flex-basis:100%;font-size:12.5px;font-weight:700;color:#1f5f22;min-height:18px}#vla .logo-msg.bad{color:#8a1c12}' +
+    // The logo editor opens under the logo, and the dialog widens while it is open.
+    '#vla .box.vla-wide{max-width:880px}#vla .ledit{border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:14px;margin:4px 0 6px;background:#fafafa}' +
+    '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
+    '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
+    '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -109,6 +117,32 @@
       var sc = document.createElement('script'); sc.src = '/public/ve-media-upload.js';
       sc.onload = function () { window.VEMediaUpload ? res(window.VEMediaUpload) : rej(new Error('load')); }; sc.onerror = function () { rej(new Error('load')); };
       document.head.appendChild(sc);
+    });
+  }
+  // The logo editor (Directory review > Logos) is loaded the first time a logo is made here.
+  function logoEditor() {
+    if (window.VELogoEditor) return Promise.resolve(window.VELogoEditor);
+    return new Promise(function (res, rej) {
+      var sc = document.createElement('script'); sc.src = '/public/ve-logo-editor.js';
+      sc.onload = function () { window.VELogoEditor ? res(window.VELogoEditor) : rej(new Error('load')); }; sc.onerror = function () { rej(new Error('load')); };
+      document.head.appendChild(sc);
+    });
+  }
+  var DISCOVER = SB + '/functions/v1/ve-discover';
+  function disc(body) {
+    return fetch(DISCOVER, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); });
+  }
+  // The editor's square goes to the staging folder (add_logo_url), then logo_set moves it next to the listing.
+  function uploadSquare(blob) {
+    return disc({ action: 'add_logo_url', content_type: 'image/jpeg', bytes: blob.size }).then(function (u) {
+      if (!u || !u.signed_url) throw new Error((u && u.message) || 'Could not start the upload. Try again.');
+      return new Promise(function (res, rej) {
+        var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', 'image/jpeg'); x.setRequestHeader('x-upsert', 'true');
+        x.onload = function () { if (x.status >= 300) rej(new Error('The upload did not go through. Try again.')); else res(u.path); };
+        x.onerror = function () { rej(new Error('The upload did not go through. Check your connection and try again.')); };
+        x.send(blob);
+      });
     });
   }
   function chip(type, name, value, label, on) { return '<label><input type="' + type + '" name="' + name + '" value="' + esc(value) + '"' + (on ? ' checked' : '') + '>' + esc(label) + '</label>'; }
@@ -140,7 +174,7 @@
 
       '<h3>Logo</h3><div class="logo"><div class="logo-img" id="vla-logo"></div><div class="logo-btns">' +
       '<button type="button" id="vla-up">Upload a logo</button><button type="button" id="vla-copy" hidden>Copy it into our storage</button><button type="button" class="rm" id="vla-rm" hidden>Remove</button>' +
-      '<input type="file" id="vla-file" accept="image/*" hidden></div><div class="logo-msg" id="vla-lmsg" role="status"></div></div>' +
+      '</div><div class="logo-msg" id="vla-lmsg" role="status"></div></div><div class="ledit" id="vla-ledit" hidden></div>' +
 
       '<h3>Location</h3>' +
       '<label class="check"><input type="checkbox" id="vla-online"' + (online ? ' checked' : '') + '> Online only, no storefront</label>' +
@@ -266,16 +300,42 @@
       var btns = wrap.querySelectorAll('.logo-btns button'); btns.forEach(function (b) { b.disabled = true; });
       drawLogo(label);
       return p().then(function (saved) {
-        l.logo_url = saved.logo_url; target.logo_url = saved.logo_url; target.logo_alt_text = saved.logo_alt_text; logoChanged = true;
+        l.logo_url = saved.logo_url; target.logo_url = saved.logo_url; if ('logo_alt_text' in saved) target.logo_alt_text = saved.logo_alt_text; logoChanged = true;
         drawLogo(saved.logo_url ? 'Saved. The logo is live now.' : 'Removed. The initials show now.');
       }, function (e) {
-        drawLogo(e && e.message === 'not_an_image' ? 'That file is not a picture.' : e && e.message === 'fetch_failed' ? 'Their website would not hand over the logo. Upload it instead.' : 'That did not save. Try again.', true);
+        drawLogo(e && e.message === 'not_an_image' ? 'That file is not a picture.' : e && e.message === 'fetch_failed' ? 'Their website would not hand over the logo. Make it in the editor instead.' : e && / /.test(e.message || '') ? e.message : 'That did not save. Try again.', true);
       }).then(function () { btns.forEach(function (b) { b.disabled = false; }); });
     }
-    $('#vla-up').onclick = function () { $('#vla-file').click(); };
-    $('#vla-file').onchange = function () {
-      var f = this.files && this.files[0]; this.value = ''; if (!f) return;
-      logoWork('Adding the logo...', function () { return uploader().then(function (U) { return U.setLogo(VEAuth.getToken(), f, l); }); });
+    // Upload / Replace the logo: the logo editor, with the logo as it is loaded in to adjust, and where to look for a better one.
+    function closeEditor() { var p = $('#vla-ledit'); p.hidden = true; p.innerHTML = ''; wrap.querySelector('.box').classList.remove('vla-wide'); $('#vla-up').disabled = false; }
+    $('#vla-up').onclick = function () {
+      var panel = $('#vla-ledit'); if (!panel.hidden) return;
+      $('#vla-up').disabled = true; drawLogo('Opening the logo editor...');
+      logoEditor().then(function (LE) {
+        var name = String(l.name || ''), ig = String(l.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
+        var look = [];
+        if (l.website) look.push(['Their website', /^https?:/i.test(l.website) ? l.website : 'https://' + l.website]);
+        if (ig) look.push(['Instagram', 'https://www.instagram.com/' + ig + '/']);
+        if (l.facebook) look.push(['Facebook', l.facebook]);
+        look.push(['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(name + ' logo')]);
+        panel.innerHTML = '<div class="ledit-look">' + look.map(function (x) { return '<a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + '</a>'; }).join('') + '</div>' +
+          '<p class="ledit-hint">' + (l.logo_url ? 'The logo as it is now is loaded below. Adjust it, or' : 'Find their logo, then') +
+          ' right-click it and Copy image and paste here (Ctrl+V or Cmd+V), drag it in from the other tab, paste its link, or drop a file.</p>' +
+          '<div id="vla-le"></div><div class="ledit-acts"><button type="button" class="cancel" id="vla-le-x">Cancel</button><button type="button" class="save" id="vla-le-save" disabled>Save logo</button></div>';
+        panel.hidden = false; wrap.querySelector('.box').classList.add('vla-wide'); drawLogo();
+        var save = $('#vla-le-save');
+        var ed = LE.mount($('#vla-le'), { fetchUrl: function (url) { return disc({ action: 'logo_fetch', url: url }); }, onChange: function (on) { save.disabled = !on; } });
+        if (l.logo_url) ed.load(l.logo_url);
+        $('#vla-le-x').onclick = closeEditor;
+        save.onclick = function () {
+          save.disabled = true;
+          logoWork('Saving the logo...', function () {
+            return ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: l.id, path: path }); })
+              .then(function (d) { if (!d.ok) throw new Error(d.message || d.error || 'save'); closeEditor(); return { logo_url: d.logo_url }; });
+          }).then(function () { if (!$('#vla-ledit').hidden) save.disabled = false; });
+        };
+        panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }, function () { $('#vla-up').disabled = false; drawLogo('The logo editor did not load. Try again.', true); });
     };
     $('#vla-copy').onclick = function () {
       logoWork('Copying the logo from their website...', function () {
