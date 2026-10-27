@@ -549,8 +549,8 @@
       document.addEventListener('click', function (e) { if (e.target.closest('[data-search-again]')) { e.preventDefault(); findMode(); } });
 
       // ---- Add it: the business is not in the Directory yet, so the same form asks for its name, kind and city.
-      var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
-        'Health and Wellness', 'Fitness and Athletics', 'Coaches and Consultants', 'Events', 'Nonprofits', 'Podcasts', 'Books', 'Content Creation & Media',
+      var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
+        'Health and Wellness', 'Fitness and Athletics', 'Coaches and Consultants', 'Events', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Podcasts', 'Books', 'Content Creation & Media',
         'E-Commerce & Marketplaces', 'Marketing & Growth', 'Web & Development', 'Business Operations'];
       $('n-cat').innerHTML = '<option value="">Choose one</option>' + CATS.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
       function me() { try { return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; } catch (e) { return null; } }

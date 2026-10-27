@@ -637,7 +637,7 @@ and folds it to one bar (city picker, View community, Expand) after the first cl
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
 listing counts in a region by its address or the chapters it serves (`data-hubs`). **Every section opens on its first
 sub-section and All comes last** (Sean, 2026-10-26: "all now goes to the back of the line"), which let **Food Brands come back
-to Food**: Restaurants, Bakeries & Cafes, Food Trucks & Vendors, Food Brands, **Nutrition & Supplements** (new: supplement and
+to Food**: Restaurants, Bakeries & Cafes, **Food Trucks**, **Vendors** (apart since 2026-10-27, Sean: "you might be just looking for a food truck"), Food Brands, **Nutrition & Supplements** (new: supplement and
 nutrition brands, sold everywhere, so no location filter; Brand Partner like a Food Brand), Markets, Catering, Meal Prep.
 Products is Fitness and Athletics, Clothing and Fashion, Beauty and Personal Care, E-Commerce & Marketplaces; **Brands is
 retired** (its three listings were re-filed the same day; an old `Brands` row still shows under Products > All). Change these
@@ -645,8 +645,8 @@ together: `CAT_MAP` and `CAT_CONFIG` in `ve-region-directory.js`, `SECTIONS` in 
 review, `CATEGORIES` in `ve-claims`, `LISTING_CATEGORIES` in `ve-outreach`, `CATEGORIES` in `ve-discover`, `FOOD_CATS` in
 `directory/listing.html` and `CATS` in `claim.html`. **Brands that vend** (Sean, 2026-10-26: many sell nationally online "but
 they still show up at... farmers markets and special events, festivals... a tool for promoters who are looking to find vendors"):
-a Food Brands or Nutrition & Supplements listing with Food Trucks & Vendors in its extra categories (the listing editor's Also show
-it under, with a note saying so) stays in its brand section, also shows under Food Trucks & Vendors with the location filter, and
+a Food Brands or Nutrition & Supplements listing with Vendors in its extra categories (the listing editor's Also show
+it under, with a note saying so) stays in its brand section, also shows under Vendors with the location filter, and
 its card reads **Markets & events** (`vendsAt` in `ve-region-directory.js`). In the brand sections, **Sells at**
 (Anywhere, Markets & events, Online & stores) filters them, and Markets & events brings the location filter back. Vetting goes by the main category only, so a vending brand never lands in Being vetted. A sub-section can have its own filters
 (`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make (**Makes**), never by city (`listings.product_kinds`:
@@ -657,6 +657,18 @@ the last fourth to itself; phones keep the pills with the search under them. The
 Vegan, Type) share one row, each the same width, wrapping evenly only when they no longer fit. Under the cards, the page
 numbers (first, last and two either side of the current one) sit in the middle and Show 24 / 48 / 111 at the far right (shown
 only when there is more than a page of 24).
+
+**Community is the animals first** (Sean, 2026-10-27: "there's a lot of backlash on brands that don't put the animals first...
+I really want that to be what the community directory is all about... nonprofits... events... rescues... sanctuaries"). Community's
+sub-sections are **Nonprofits, Rescues, Sanctuaries, Events** (the same lists as Food's, above; migration
+`20261027_community_resort.sql`). Community Partner was never a kind of listing: its 29 rows (a June spreadsheet import) were
+re-filed from Google and their Instagram bios the same day (14 into Vendors, Food Trucks, Restaurants, Bakeries, Health and
+Wellness, Coaches, Beauty, Clothing; two closed for good), and the 15 with nothing to go by are On hold in Directory review, each
+with what we know. Rescues, sanctuaries and nonprofits are organizations: no How Vegan (`vegan_status` null). From Sean's Instagram
+list (the `ve_businesses` import) the ones Google and their own website confirm were listed (Muscovy Sanctuary of Florida, Rowdy
+Girl Sanctuary, UFAR Animals Rescue; Mercy For Animals, The Humane League and Humane World for Animals in every chapter); the 15
+known only on Instagram wait in Business outreach > New places > Ready to list for Sean to confirm and add. Next (proposed): a
+search in each of our cities for farm animal sanctuaries, rescues and Vegan nonprofits, into New places the same way.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated

@@ -37,11 +37,11 @@
   // Main sections and their sub-sections. Keep in step with CAT_MAP / CAT_CONFIG in
   // /public/ve-region-directory.js and CATEGORIES in supabase/functions/ve-claims.
   var SECTIONS = [
-    ['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep']],
+    ['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep']],
     ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
     ['Services', ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
-    ['Community', ['Community Partner', 'Nonprofits', 'Events']]
+    ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events']]
   ];
   var SUB_LABEL = { 'Media': 'Other media' };
   // The chapters, from /public/ve-hubs.js where the page loads it (same order and names).
@@ -67,7 +67,7 @@
     ['ethiopian', 'Ethiopian'], ['african', 'African'], ['indian', 'Indian'], ['thai', 'Thai'], ['chinese', 'Chinese'], ['japanese', 'Japanese & sushi'],
     ['korean', 'Korean'], ['vietnamese', 'Vietnamese'], ['asian', 'Pan-Asian'], ['burgers', 'Burgers & fast food'], ['bowls', 'Bowls & salads'],
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
-  var FOOD_PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'];
+  var FOOD_PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
   // At a Glance belongs to places you sit down in.
   var DINING = ['Restaurants', 'Bakeries & Cafes'];
   var VEGAN = [['fully_vegan', '100% Vegan'], ['vegan_friendly', 'Vegan-friendly'], ['vegan_options', 'Vegan options']];
@@ -201,7 +201,7 @@
       '<label class="h">Main section</label><div class="chips" id="vla-sec">' + SECTIONS.map(function (s) { return chip('radio', 'vla-sec', s[0], s[0], s[0] === sec); }).join('') + '</div>' +
       '<label class="h" for="vla-sub">Sub-section</label><select id="vla-sub"></select>' +
       '<label class="h">Also show it under</label><div class="chips" id="vla-extra"></div>' +
-      '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Food Trucks &amp; Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
+      '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
       '<div id="vla-cuis-wrap"><label class="h">What kind of food (up to four)</label><div class="chips">' + CUISINES.map(function (k) { return chip('checkbox', 'vla-cuis', k[0], k[1], (l.cuisines || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
       '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
 
