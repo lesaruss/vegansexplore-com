@@ -34,6 +34,9 @@
 //        no ve_logo_suggestions row: their website's logo pictures and Instagram profile picture, shown to Claude, which picks
 //        their own clean logo or none (migration 20261027_ve_logo_suggestions.sql). Nothing is saved to the listing here.
 // POST { action: 'logo_suggest_reject', listing_id }  super admin   Not this: the suggestion goes, the listing stays on the list
+// POST { action: 'logo_done' }                       super admin -> { rows }   every logo made here (Sean, 2026-10-27: "Is there
+//        a way that I can see what logos have been created... I want to do some quality control"), newest first
+// POST { action: 'logo_clear', listing_id }          super admin   Remove: back to the letter and back on the list; the file stays
 // POST { action: 'paste_list', text }              super admin -> { added, skipped }   one business a line ("Name, City, ST" or
 //        an Instagram handle): each becomes a hidden listing and a backlog check, so it waits in New places for a decision
 //
@@ -705,6 +708,38 @@ Deno.serve(async (req) => {
       if (!type) return json({ error: 'type', message: /<html|<!doctype/.test(head) ? 'That link is a web page, not a picture. Open the picture on its own (right-click, Open image in new tab) and copy that link.' : 'That link is not a picture.' }, 400);
       return json({ ok: true, type, data: toBase64(buf) });
     } catch (e) { return json({ error: 'fetch', message: 'That link did not open.' }, 502); }
+  }
+
+  if (action === 'logo_done') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const { data, error } = await db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, logo_url, status, details')
+      .not('details->logo_checked', 'is', null).limit(2000);
+    if (error) return json({ error: error.message }, 400);
+    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, source').eq('status', 'used');
+    const swept = new Map((sg || []).map((x: any) => [x.listing_id, x.source]));
+    const rows = (data || []).filter((l: any) => l.logo_url).map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city,
+      state: l.address_state, website: l.website, instagram: l.instagram, facebook: l.facebook, logo_url: l.logo_url, live: l.status === 'approved',
+      by: l.details?.logo_checked?.by || '', at: l.details?.logo_checked?.at || '', w: l.details?.logo_checked?.w || null, h: l.details?.logo_checked?.h || null,
+      sweep: swept.get(l.id) || null })).sort((a: any, b: any) => String(b.at).localeCompare(String(a.at)));
+    return json({ ok: true, rows });
+  }
+
+  if (action === 'logo_clear') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
+    const { data: l } = await db.from('listings').select('id, logo_url, details').eq('id', body.listing_id).maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const at = new Date().toISOString();
+    const details = { ...(l.details || {}) } as Record<string, any>;
+    details.logo_removed = { url: l.logo_url, by: who.admin.name || 'Sean', at, checked: details.logo_checked || null };
+    delete details.logo_checked; delete details.logo_source; delete details.logo_letter_ok;
+    const { error } = await db.from('listings').update({ logo_url: null, details, updated_at: at }).eq('id', l.id);
+    if (error) return json({ error: error.message }, 400);
+    await db.from('ve_listing_edits').insert({ listing_id: l.id, member_id: who.admin.id, field: 'logo', old_value: l.logo_url || null, new_value: null,
+      meta: { by: 'admin', where: 'directory_review_logos_done', removed: true } });
+    // A removed sweep pick goes to To find, not back to Suggested.
+    await db.from('ve_logo_suggestions').update({ status: 'rejected', decided_by: who.admin.id, decided_at: at }).eq('listing_id', l.id);
+    return json({ ok: true });
   }
 
   if (action === 'logo_suggest_reject') {

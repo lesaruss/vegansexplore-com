@@ -19,7 +19,7 @@
        is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
        (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>).
        Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"):
-       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create). Logos (#logos, #logo/<id>): every open listing with no logo, made square in /public/ve-logo-editor.js; logo_queue, logo_fetch, logo_set, logo_skip; Suggested (#logos/suggested): the logo sweep's picks, squared by VELogoEditor.auto, ticked and saved together; logo_suggest_reject
+       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create). Logos (#logos, #logo/<id>): every open listing with no logo, made square in /public/ve-logo-editor.js; logo_queue, logo_fetch, logo_set, logo_skip; Suggested (#logos/suggested): the logo sweep's picks, squared by VELogoEditor.auto, ticked and saved together; logo_suggest_reject; Done (#logos/done): every logo made here, Redo (#logo/<id>/redo) and Remove (logo_done, logo_clear)
        and Paste a list (#paste: one business a line, checked like the backlog and waiting in New places; ve-discover paste_list). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
@@ -128,6 +128,10 @@
     .sg-small{position:absolute;left:8px;bottom:8px;}
     .sg-tick{display:flex;gap:6px;align-items:center;font-size:12px;font-weight:800;text-transform:none;letter-spacing:0;margin:0;}
     .sg-tick input{width:auto;min-height:0;accent-color:var(--ve-green-deep);}
+    .dn-row{display:flex;gap:8px;align-items:center;}
+    .dn-row span{display:flex;flex-direction:column;}
+    .dn-card{flex:0 0 40px;width:40px;height:40px;border-radius:8px;overflow:hidden;border:1px solid var(--ve-border);}
+    .dn-card img{width:100%;height:100%;object-fit:cover;display:block;}
     .radios small{display:block;font-weight:500;color:var(--ve-text-75);}
   </style>
 </head>
@@ -576,8 +580,18 @@
       // ---- Logos: every open listing with no logo (#logos, #logos/suggested, #logo/<id>[/s]) ----
       // The sweep (ve-discover logo_sweep, every 5 minutes) finds the clean logo where it can: those wait in Suggested as finished
       // squares to tick and save together; To find holds the rest, one at a time with the editor.
-      var lg = { rows: null, q: '', city: '', all: 0, done: 0, sweep: null, auto: {}, skip: {} };
-      function loadLogos() { return disc({ action: 'logo_queue' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); lg.rows = d.rows; lg.all = d.all; lg.cities = d.cities; lg.sweep = d.sweep; }); }
+      var lg = { rows: null, doneRows: [], q: '', city: '', all: 0, done: 0, sweep: null, auto: {}, skip: {} };
+      function loadLogos() {
+        return Promise.all([disc({ action: 'logo_queue' }), disc({ action: 'logo_done' }).catch(function () { return null; })]).then(function (r) {
+          var d = r[0]; if (!d.ok) throw new Error(d.error || 'load');
+          lg.rows = d.rows; lg.all = d.all; lg.cities = d.cities; lg.sweep = d.sweep;
+          lg.doneRows = (r[1] && r[1].ok && r[1].rows) || [];
+        });
+      }
+      function filt2(list) {
+        var q = lg.q.toLowerCase();
+        return list.filter(function (r) { return (!q || (r.name + ' ' + (r.city || '') + ' ' + (r.category || '')).toLowerCase().indexOf(q) >= 0) && (!lg.city || r.city === lg.city); });
+      }
       function isSuggested(r) { return r.suggest && r.suggest.status === 'found'; }
       function logoRows(tab) {
         var q = lg.q.toLowerCase();
@@ -592,12 +606,13 @@
           (sw.left ? ' The sweep has looked at ' + sw.checked + ' so far and looks at five more every five minutes (' + sw.left + ' to go).' : ' The sweep has looked at every one.') +
           (lg.done ? ' ' + lg.done + ' done this visit.' : '') + '</p></div>' +
           '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (tab === 'suggested') + '" data-lt="suggested">Suggested &middot; ' + sug + '</button>' +
-          '<button type="button" role="tab" aria-selected="' + (tab !== 'suggested') + '" data-lt="find">To find &middot; ' + find + '</button></div>' +
+          '<button type="button" role="tab" aria-selected="' + (tab === 'find') + '" data-lt="find">To find &middot; ' + find + '</button>' +
+          '<button type="button" role="tab" aria-selected="' + (tab === 'done') + '" data-lt="done">Done &middot; ' + lg.doneRows.length + '</button></div>' +
           '<div class="tools"><input type="search" id="lg-q" placeholder="Search a name, city or kind" value="' + esc(lg.q) + '" aria-label="Search">' +
           '<select id="lg-city" aria-label="City"><option value="">Every city</option>' + (lg.cities || []).map(function (c) { return '<option' + (c === lg.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>';
       }
       function wireLogosHead(tab, redraw) {
-        Array.prototype.forEach.call(V().querySelectorAll('[data-lt]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.lt === 'suggested' ? '#logos/suggested' : '#logos'; }); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-lt]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.lt === 'find' ? '#logos' : '#logos/' + b.dataset.lt; }); });
         $('lg-q').addEventListener('input', function () { lg.q = this.value; var p = this.selectionStart; redraw(); var i = $('lg-q'); i.focus(); i.setSelectionRange(p, p); });
         $('lg-city').addEventListener('change', function () { lg.city = this.value; redraw(); });
       }
@@ -605,6 +620,7 @@
         crumbs([['Directory review', '#'], ['Logos']]);
         if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogos(tab); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
         if (tab === 'suggested') return viewSuggested();
+        if (tab === 'done') return viewDone();
         var rows = logoRows('find');
         V().innerHTML = logosHead('find') +
           '<section class="card">' + (rows.length
@@ -681,19 +697,55 @@
             uploadSquare(lg.auto[r.id].blob).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: true }); }).then(function (d) {
               if (!d.ok) throw new Error(d.message || d.error);
               lg.done++; lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; });
+              lg.doneRows.unshift({ id: r.id, slug: r.slug, name: r.name, category: r.category, city: r.city, state: r.state, website: r.website, instagram: r.instagram,
+                facebook: r.facebook, logo_url: d.logo_url || lg.auto[r.id].url, live: true, by: 'you', at: new Date().toISOString(), sweep: r.suggest.source });
               var card = V().querySelector('.sg-card[data-id="' + r.id + '"]'); if (card) card.remove();
             }).catch(function () { bad.push(r.name); }).then(next);
           })();
         });
       }
+
+      // Done: every logo made here, newest first, each at full size and at card size, to check by eye (Sean, 2026-10-27:
+      // "I want to do some quality control"). Redo opens it in the editor; Remove puts the letter back and the listing on To find.
+      function viewDone() {
+        var rows = filt2(lg.doneRows);
+        function when(t) { return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+        V().innerHTML = logosHead('done') +
+          (rows.length ? '<div class="sg-grid">' + rows.map(function (r) {
+            return '<div class="sg-card" data-id="' + r.id + '"><div class="sg-pic"><img src="' + esc(r.logo_url) + '" alt="' + esc(r.name) + ' logo" loading="lazy"></div>' +
+              '<div class="dn-row"><span class="dn-card"><img src="' + esc(r.logo_url) + '" alt="" loading="lazy"></span><span><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></span></div>' +
+              '<small>' + esc((r.by ? 'Saved by ' + r.by + ', ' : 'Saved ') + when(r.at)) + (r.sweep ? ' &middot; <span class="tag on">From the sweep</span>' : '') + (r.live ? '' : ' &middot; <span class="tag off">Not on the Directory</span>') + '</small>' +
+              '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="#logo/' + r.id + '/redo">Redo</a><button type="button" class="btn btn-ghost btn-sm" data-clear="' + r.id + '">Remove</button>' +
+              '<a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Its page</a></div></div>';
+          }).join('') + '</div><p class="msg" id="dn-msg" role="status"></p>'
+          : '<section class="card"><p class="empty">' + (lg.doneRows.length ? 'Nothing matches.' : 'No logos made here yet.') + '</p></section>');
+        wireLogosHead('done', viewDone);
+        Array.prototype.forEach.call(V().querySelectorAll('[data-clear]'), function (b) {
+          b.addEventListener('click', function () {
+            var id = b.dataset.clear, r = lg.doneRows.filter(function (x) { return x.id === id; })[0];
+            if (!r || !window.confirm('Remove the logo from ' + r.name + '? Its card shows the letter again and it goes back on To find.')) return;
+            b.disabled = true;
+            disc({ action: 'logo_clear', listing_id: id }).then(function (d) {
+              if (!d.ok) throw new Error(d.error || 'save');
+              lg.doneRows = lg.doneRows.filter(function (x) { return x.id !== id; });
+              lg.rows.push({ id: r.id, slug: r.slug, name: r.name, category: r.category, city: r.city, state: r.state, website: r.website, instagram: r.instagram, facebook: r.facebook,
+                votes: 0, set_aside: null, suggest: r.sweep ? { status: 'rejected', candidates: [] } : null });
+              viewDone();
+            }).catch(function (e) { b.disabled = false; var m = $('dn-msg'); if (m) { m.className = 'msg err'; m.textContent = 'That did not save: ' + e.message; } });
+          });
+        });
+      }
       function viewLogo(id, fromSuggestion) {
         if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id, fromSuggestion); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
-        var r0 = lg.rows.filter(function (x) { return x.id === id; })[0];
-        if (!r0) { location.hash = '#logos'; return; }
-        var tab = isSuggested(r0) ? 'suggested' : 'find', rows = logoRows(tab), i = -1;
+        var redo = fromSuggestion === 'redo';
+        if (redo) fromSuggestion = false;
+        var r0 = (redo ? lg.doneRows : lg.rows).filter(function (x) { return x.id === id; })[0];
+        if (!r0) { location.hash = redo ? '#logos/done' : '#logos'; return; }
+        var tab = redo ? 'done' : isSuggested(r0) ? 'suggested' : 'find', rows = redo ? [] : logoRows(tab), i = -1;
         rows.forEach(function (r, k) { if (r.id === id) i = k; });
         var r = r0, next = tab === 'find' ? rows[i + 1] : null;
-        crumbs([['Directory review', '#'], ['Logos', tab === 'suggested' ? '#logos/suggested' : '#logos'], [r.name]]);
+        var back = tab === 'find' ? '#logos' : '#logos/' + tab;
+        crumbs([['Directory review', '#'], ['Logos', back], [r.name]]);
         var ig = String(r.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
         var look = [
           r.website && ['Their website', /^https?:/i.test(r.website) ? r.website : 'https://' + r.website],
@@ -712,28 +764,35 @@
           '<p class="hint" style="margin:6px 0 14px">On their page, right-click the logo and Copy image, then paste it here (Ctrl+V or Cmd+V). You can also drag it in from the other tab, or save it and drop the file.</p>' +
           '<div id="lg-editor"></div>' +
           '<p class="msg" id="lg-msg" role="status"></p>' +
-          '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="' + (tab === 'suggested' ? '#logos/suggested' : '#logos') + '">Back to the list</a>' +
-            '<span class="row-btns" style="justify-content:center"><button type="button" class="btn btn-ghost" id="lg-skip">The letter is fine</button>' + (next ? '<a class="btn btn-ghost" href="#logo/' + next.id + '">Skip for now</a>' : '') + '</span>' +
+          '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="' + back + '">Back to the list</a>' +
+            '<span class="row-btns" style="justify-content:center">' + (redo ? '' : '<button type="button" class="btn btn-ghost" id="lg-skip">The letter is fine</button>') + (next ? '<a class="btn btn-ghost" href="#logo/' + next.id + '">Skip for now</a>' : '') + '</span>' +
             '<button type="button" class="btn" id="lg-save" disabled>' + (next ? 'Save and next' : 'Save') + '</button></div></section>';
         var msg = $('lg-msg'), save = $('lg-save');
         var ed = VELogoEditor.mount($('lg-editor'), { fetchUrl: logoFetch, onChange: function (on) { save.disabled = !on; },
           background: fromSuggestion && isSuggested(r) ? r.suggest.background : '', trim: !!(fromSuggestion && isSuggested(r)) });
         if (fromSuggestion && isSuggested(r)) ed.load(r.suggest.url);
+        if (redo) { ed.load(r.logo_url); msg.textContent = 'This is the logo as it is now. Change it and save, or go back.'; }
         if ($('lg-aside')) $('lg-aside').addEventListener('click', function () { ed.load(r.set_aside); });
         Array.prototype.forEach.call(V().querySelectorAll('[data-seen]'), function (b) { b.addEventListener('click', function () { ed.load(seen[+b.dataset.seen].url); }); });
-        function gone(okText) {
-          lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; }); delete lg.auto[r.id];
-          if (next) location.hash = '#logo/' + next.id; else location.hash = tab === 'suggested' ? '#logos/suggested' : '#logos';
+        function gone(okText, url) {
+          if (redo) { r.logo_url = url || r.logo_url; r.at = new Date().toISOString(); location.hash = '#logos/done'; }
+          else {
+            lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; }); delete lg.auto[r.id];
+            if (url) lg.doneRows.unshift({ id: r.id, slug: r.slug, name: r.name, category: r.category, city: r.city, state: r.state, website: r.website, instagram: r.instagram,
+              facebook: r.facebook, logo_url: url, live: true, by: 'you', at: new Date().toISOString(), sweep: fromSuggestion ? (r.suggest && r.suggest.source) : null });
+            if (next) location.hash = '#logo/' + next.id; else location.hash = back;
+          }
           setTimeout(function () { var m = $('lg-msg') || $('sg-msg'); if (m && okText) { m.className = 'msg'; m.textContent = okText; } }, 60);
         }
         save.addEventListener('click', function () {
           save.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
-          ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: !!fromSuggestion }); }).then(function (d) {
+          var made = '';
+          ed.toBlob().then(function (blob) { made = URL.createObjectURL(blob); return uploadSquare(blob); }).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: !!fromSuggestion }); }).then(function (d) {
             if (!d.ok) throw new Error(d.message || d.error || 'That did not save.');
-            lg.done++; gone(r.name + ' has its logo.');
+            lg.done++; gone(r.name + ' has its logo.', d.logo_url || made);
           }).catch(function (e) { save.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
         });
-        $('lg-skip').addEventListener('click', function () {
+        if ($('lg-skip')) $('lg-skip').addEventListener('click', function () {
           disc({ action: 'logo_skip', listing_id: r.id }).then(function (d) { if (!d.ok) throw new Error(d.error || 'save'); gone(r.name + ' keeps its letter.'); })
             .catch(function (e) { msg.className = 'msg err'; msg.textContent = 'That did not save: ' + e.message; });
         });
@@ -743,8 +802,8 @@
         var h = location.hash.replace(/^#/, '').split('/');
         if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(5, +h[1] || 1)));
         if (h[0] === 'paste') return viewPaste();
-        if (h[0] === 'logos') return viewLogos(h[1] === 'suggested' ? 'suggested' : 'find');
-        if (h[0] === 'logo' && h[1]) return viewLogo(h[1], h[2] === 's');
+        if (h[0] === 'logos') return viewLogos(h[1] === 'suggested' || h[1] === 'done' ? h[1] : 'find');
+        if (h[0] === 'logo' && h[1]) return viewLogo(h[1], h[2] === 'redo' ? 'redo' : h[2] === 's');
         if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
         viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');
       }
