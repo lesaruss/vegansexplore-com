@@ -565,7 +565,7 @@
     },
     {
       "source": "/club/job-openings",
-      "destination": "/board?lane=jobs",
+      "destination": "/pulse?lane=jobs",
       "permanent": false
     },
     {
@@ -1250,7 +1250,7 @@
     },
     {
       "source": "/partners/news-submission",
-      "destination": "/board?lane=suggest",
+      "destination": "/pulse?lane=suggest",
       "permanent": false
     },
     {
@@ -1710,7 +1710,7 @@
     },
     {
       "source": "/town-hall",
-      "destination": "/board",
+      "destination": "/pulse",
       "permanent": false
     },
     {
@@ -1997,11 +1997,6 @@
       "source": "/terms",
       "destination": "/policies?p=terms",
       "permanent": true
-    },
-    {
-      "source": "/pulse",
-      "destination": "/board?lane=pulse",
-      "permanent": false
     },
     {"source": "/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
     {"source": "/opportunities/community-managers", "destination": "/community-managers/onboarding", "permanent": false},
