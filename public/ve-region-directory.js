@@ -107,19 +107,34 @@
     // The search and the filter icon, one row under the tabs; the filters drop down under the icon (Sean, 2026-10-27).
     + '.vrd-root .vrd-tools{position:relative;display:flex;align-items:center;gap:10px;margin-bottom:16px}'
     + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:0}'
-    + '.vrd-root .vrd-tools .vrd-search-input{border-radius:6px;padding:11px 14px 11px 34px;font-size:13px}'
+    + '.vrd-root .vrd-tools .vrd-search-input{height:44px;border-radius:6px;padding:0 14px 0 34px;font-size:13px}'
     + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}'
     + '.vrd-root .vrd-filter-btn:hover,.vrd-root .vrd-filter-btn[aria-expanded=true]{border-color:#2d7a4f;color:#2d7a4f}'
     + '.vrd-root .vrd-filter-btn[aria-expanded=true]{background:#f0faf4}'
     + '.vrd-root .vrd-filter-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}'
     + '.vrd-root .vrd-filter-count{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#2d7a4f;color:#fff;font-size:10px;font-weight:800;line-height:18px;text-align:center}'
-    + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(760px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:16px}'
+    + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);padding:0;overflow:hidden}'
     + '.vrd-root .vrd-filter-pop[hidden]{display:none}'
-    + '.vrd-root .vrd-filter-pop .sort-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 14px;align-items:end;margin:0}'
-    + '.vrd-root .vrd-filter-pop .sort-bar .sb-f,.vrd-root .vrd-filter-pop .sort-bar .vrd-geo,.vrd-root .vrd-filter-pop .sort-bar .vrd-sub{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
-    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo{display:grid;grid-template-columns:1fr;gap:6px}'
-    + '.vrd-root .vrd-filter-pop .sort-bar select{width:100%;max-width:100%;min-width:0}'
-    + '.vrd-root .vrd-filter-pop .sort-bar .geo-label,.vrd-root .vrd-filter-pop .sort-bar .sort-label{margin:0;font-size:10px}'
+    + '.vrd-root .vrd-pop-sec{padding:18px 20px}'
+    + '.vrd-root .vrd-pop-sec + .vrd-pop-sec{border-top:1px solid #eee}'
+    + '.vrd-root .vrd-pop-h{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#1a1a1a;margin:0 0 12px}'
+    + '.vrd-root .vrd-filter-pop .subcat-list{gap:8px}'
+    + '.vrd-root .vrd-filter-pop .subcat-pill{border-radius:6px;padding:8px 14px}'
+    + '.vrd-root .vrd-filter-pop .sort-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;align-items:start;margin:0}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .sb-f,.vrd-root .vrd-filter-pop .sort-bar .vrd-sub{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
+    // Area is a region and then its cities: one label, the two dropdowns under it.
+    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo:empty{display:none}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .geo-label,.vrd-root .vrd-filter-pop .sort-bar .sort-label{margin:0;font-size:10px;letter-spacing:.08em;color:#666}'
+    // Dropdowns: our chevron 16px from the edge (canon rule 15), the 6px corner (rule 13), one height.
+    + '.vrd-root .vrd-filter-pop .sort-bar select,.vrd-root .vrd-filter-pop select{flex:0 0 auto;width:100%;max-width:100%;min-width:0;height:40px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 12px;font-size:12px;color:#1a1a1a;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
+    + '.vrd-root .vrd-filter-pop select:focus{outline:none;border-color:#5EC47A}'
+    + '.vrd-root .vrd-pop-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;background:#fafafa}'
+    + '.vrd-root .vrd-pop-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 16px;border-radius:6px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-pop-btn:hover{border-color:#2d7a4f;color:#2d7a4f}'
+    + '.vrd-root .vrd-pop-done{background:#2d7d31;border-color:#2d7d31;color:#fff}'
+    + '.vrd-root .vrd-pop-done:hover{background:#1f5f22;border-color:#1f5f22;color:#fff}'
+    + '@media(max-width:600px){.vrd-root .vrd-filter-pop .sort-bar{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}.vrd-root .vrd-pop-sec{padding:16px}.vrd-root .vrd-pop-foot{padding:12px 16px}.vrd-root .vrd-pop-btn{flex:1 1 0}}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:10px 18px;margin-bottom:16px;flex-wrap:wrap}'
@@ -290,9 +305,10 @@
     var allBtn = '<button class="subcat-pill' + (cat.allFirst || !cat.subcats.length ? ' sc-active' : '') + '" data-vrd-subcat="All">All</button>';
     var subcatBtns = (cat.allFirst ? allBtn : '') + cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i || cat.allFirst ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
       (cat.allFirst ? '' : allBtn);
+    var first = cat.allFirst || !cat.subcats.length ? cat.label : cat.subcats[0];
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
-      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(first) + '&hellip;" aria-label="Search ' + esc(first) + '">' +
       '</div>';
 
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
@@ -302,9 +318,15 @@
       '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
       '<span class="vrd-filter-count" hidden></span></button>';
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
-      '<div class="subcat-pills"><div class="subcat-list">' + subcatBtns + '</div></div>' +
+      // The sub-sections are in the dropdown too, first (Sean, 2026-10-27: "It should also have the Restaurant, Bakeries, Food
+      // Truck options in the icon as well"); the search says which one is showing ("Search Restaurants...").
       '<div class="vrd-tools">' + searchHtml + filterBtn +
-      '<div class="vrd-filter-pop" id="' + cat.key + '-filters" role="region" aria-label="Sort and filter" hidden>' + buildBar(cat, config) + '</div></div>' +
+      '<div class="vrd-filter-pop" id="' + cat.key + '-filters" role="region" aria-label="Sort and filter" hidden>' +
+        (cat.subcats.length ? '<div class="vrd-pop-sec"><div class="vrd-pop-h">' + esc(cat.label) + '</div><div class="subcat-list">' + subcatBtns + '</div></div>' : '') +
+        '<div class="vrd-pop-sec"><div class="vrd-pop-h">Sort and filter</div>' + buildBar(cat, config) + '</div>' +
+        '<div class="vrd-pop-foot"><button type="button" class="vrd-pop-btn" data-vrd-reset>Reset filters</button>' +
+        '<button type="button" class="vrd-pop-btn vrd-pop-done" data-vrd-done>Done</button></div>' +
+      '</div></div>' +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       // The pages in the middle, how many to show at the far right (Sean, 2026-10-26).
       '<div class="vrd-foot"><div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
@@ -882,6 +904,15 @@
         if (open) { var first = pop.querySelector('select'); if (first) first.focus(); }
       });
       pop.addEventListener('change', function () { countFilters(btn.closest('.board-panel')); });
+      var close = function () { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+      var done = pop.querySelector('[data-vrd-done]'); if (done) done.addEventListener('click', function () { close(); btn.focus(); });
+      // Reset puts every filter back where it started (the sub-section stays); each change runs the page's own filtering.
+      var reset = pop.querySelector('[data-vrd-reset]'); if (reset) reset.addEventListener('click', function () {
+        pop.querySelectorAll('.sort-bar select').forEach(function (sel) {
+          if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart) { sel.value = sel._vrdStart; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        });
+        countFilters(btn.closest('.board-panel'));
+      });
       pop.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
     });
     root.querySelectorAll('.board-panel').forEach(function (panel) {
@@ -918,6 +949,8 @@
         syncSubFilters(panel);
         applyPanelFilters(panel, state, true);
         countFilters(panel);
+        var q = panel.querySelector('[data-vrd-search]'), sub = btn.getAttribute('data-vrd-subcat');
+        if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : sub; q.placeholder = 'Search ' + lbl + '\u2026'; q.setAttribute('aria-label', 'Search ' + lbl); }
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
       });
     });
