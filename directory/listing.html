@@ -1275,7 +1275,7 @@ function renderPodcastOverview(l){
   var all = web.concat(p, rss);
   return (all.length ? '<div class="section"><h2 class="section-title">Listen on</h2><div class="listen-icons">' + all.map(function(x){
       // The platforms' own marks (public/icons/platforms, Simple Icons) where we have them (Sean, 2026-10-27).
-      var file = { 'Apple Podcasts': 'apple-podcasts', 'Spotify': 'spotify', 'YouTube': 'youtube', 'RSS feed': 'rss' }[x.label];
+      var file = { 'Apple Podcasts': 'apple-podcasts', 'Spotify': 'spotify', 'YouTube': 'youtube', 'Amazon Music': 'amazon-music', 'RSS feed': 'rss' }[x.label];
       var ic = file ? '<img src="/public/icons/platforms/'+file+'.svg" alt="" width="28" height="28">' : x.icon.replace(/width="18" height="18"/, 'width="22" height="22"');
       return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span'+(file ? '' : ' style="background:'+x.color+'1a"')+'>'+ic+'</span><small>'+esc(x.label)+'</small></a>';
     }).join('') + '</div></div>' : '') +
@@ -1286,6 +1286,8 @@ function platformList(l){
   var pl = (l.details && l.details.platforms) || {};
   if(!l.spotify_url && pl.spotify) l = Object.assign({}, l, { spotify_url: pl.spotify });
   if(!l.apple_podcasts_url && pl.apple) l = Object.assign({}, l, { apple_podcasts_url: pl.apple });
+  if(!l.amazon_music_url && pl.amazon) l = Object.assign({}, l, { amazon_music_url: pl.amazon });
+  if(pl.youtube) l = Object.assign({}, l, { youtube: pl.youtube });
   if(l.spotify_url) platforms.push({href:l.spotify_url, color:'#1DB954', label:'Spotify', sub:'Listen on Spotify', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#1DB954"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>'});
   if(l.apple_podcasts_url) platforms.push({href:l.apple_podcasts_url, color:'#9c27b0', label:'Apple Podcasts', sub:'Listen on Apple', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#9c27b0"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 4.5c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 15c-2.67 0-5.01-1.28-6.48-3.24.18-.36.54-.6.96-.6h11.04c.42 0 .78.24.96.6C17.01 18.22 14.67 19.5 12 19.5z"/></svg>'});
   if(l.amazon_music_url) platforms.push({href:l.amazon_music_url, color:'#00A8E1', label:'Amazon Music', sub:'Listen on Amazon', icon:'<svg width="18" height="18" viewBox="0 0 24 24" fill="#00A8E1"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0z"/></svg>'});

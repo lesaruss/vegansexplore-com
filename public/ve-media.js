@@ -28,10 +28,9 @@
   ];
   function directoryUrl(key) { return '/directory?tab=media&sub=' + encodeURIComponent(typeOf(key).cat); }
 
-  var SPOTIFY = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.5 9.3c3.6-1.1 7.9-.8 11 1M7.1 12.6c3-.9 6.5-.6 9.2.9M7.7 15.7c2.4-.6 5-.4 7.1.7" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>';
-  var APPLE = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#9B4DE0"/><circle cx="12" cy="10" r="2.4" fill="#fff"/><path d="M11 13.6h2l-.4 5.4h-1.2z" fill="#fff"/><path d="M8.1 14.4a5 5 0 1 1 7.8 0M6 16.3a7.6 7.6 0 1 1 12 0" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>';
 
-  // Our shows, in order. slug is the show's page (/podcast/<slug>/) and its Directory listing, which stays out of the 12.
+  // Our shows, in order. slug is the show's Directory listing (/directory/<slug>), which stays out of the 12; its links and
+  // status come from the listing, spotify and apple here are only the fallback.
   // type: the kind of media it is featured under.
   var SHOWS = [
     { type: 'podcasts', slug: 'vegans-explore-podcast', name: 'Vegans Explore Podcast', desc: 'Our flagship daily show, spotlighting Vegan topics, changemakers, nonprofits, and brands from around the world.',
@@ -71,6 +70,12 @@
     '.vem-listen{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;}',
     '.vem-listen a{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1.5px solid rgba(0,0,0,.1);border-radius:6px;padding:8px 10px;font-size:12px;font-weight:700;color:#1a1a1a;text-decoration:none;}',
     '.vem-listen a:hover{border-color:#1a1a1a;}',
+    '.vem-listen a:not(.vem-here){flex:1 1 0;height:40px;padding:0;}',
+    '.vem-listen a.vem-here{flex:1 0 100%;padding:10px;background:#2d7d31;border-color:#2d7d31;color:#fff;font-size:13px;}',
+    '.vem-listen a.vem-here:hover{background:#1b5e20;border-color:#1b5e20;}',
+    '.vem-meta .vrd-mstat{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;}',
+    '.vem-meta .vrd-mstat-on{background:#e3f6e7;color:#1f6b33}.vem-meta .vrd-mstat-paused{background:#fff1dc;color:#8a5200}.vem-meta .vrd-mstat-off{background:#eee;color:#555}',
+    '.vem-meta{font-size:12px;font-weight:700;color:rgba(26,26,26,.68);display:flex;align-items:center;gap:6px;}',
     '.vem-search{position:relative;margin:0 0 16px;}',
     '.vem-search input{width:100%;font-family:inherit;font-size:14px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.12);border-radius:6px;background:#fff;color:#1a1a1a;}',
     '.vem-search input:focus{outline:none;border-color:#2d7d31;}',
@@ -93,13 +98,27 @@
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
   }
 
-  function showCard(s) {
+  // A featured show is its Directory listing (Sean, 2026-10-27: "the same as the page... set up the same way as the others"):
+  // the card opens /directory/<slug> (episodes from its feed, Listen on), wears the feed's Active / On hiatus / Ended, and
+  // lists where else to listen, Spotify, Apple Podcasts, Amazon Music and YouTube, from the listing (details.platforms).
+  var LISTEN = [['spotify', 'Spotify', 'spotify'], ['apple', 'Apple Podcasts', 'apple-podcasts'], ['amazon', 'Amazon Music', 'amazon-music'], ['youtube', 'YouTube', 'youtube']];
+  function showStatus(l) {
+    var b = l && l.business_status;
+    var t = b === 'CLOSED_PERMANENTLY' ? ['Ended', 'off'] : b === 'CLOSED_TEMPORARILY' ? ['On hiatus', 'paused'] : l ? ['Active', 'on'] : null;
+    return t ? '<span class="vrd-mstat vrd-mstat-' + t[1] + '">' + t[0] + '</span>' : '';
+  }
+  function showCard(s, l) {
+    var href = '/directory/' + s.slug, pl = (l && l.details && l.details.platforms) || {};
+    var links = LISTEN.map(function (p) {
+      var u = pl[p[0]] || s[p[0]];
+      return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener" title="' + p[1] + '" aria-label="' + p[1] + '"><img src="/public/icons/platforms/' + p[2] + '.svg" alt="" width="20" height="20"></a>' : '';
+    }).join('');
     return '<div class="vem-show">' +
-      '<a class="vem-thumb" href="/podcast/' + s.slug + '/" style="background-image:url(\'' + esc(s.img) + '\')" aria-label="' + esc(s.name) + '"><span class="vem-pill">Featured</span></a>' +
-      '<div class="vem-body"><h3 class="vem-title"><a href="/podcast/' + s.slug + '/">' + esc(s.name) + '</a></h3>' +
+      '<a class="vem-thumb" href="' + href + '" data-vem-open="' + esc(s.slug) + '" style="background-image:url(\'' + esc(s.img) + '\')" aria-label="' + esc(s.name) + '"><span class="vem-pill">Featured</span></a>' +
+      '<div class="vem-body"><h3 class="vem-title"><a href="' + href + '" data-vem-open="' + esc(s.slug) + '">' + esc(s.name) + '</a></h3>' +
+      '<div class="vem-meta">Podcast ' + showStatus(l) + '</div>' +
       '<p class="vem-desc">' + esc(s.desc) + '</p>' +
-      '<div class="vem-listen"><a href="' + esc(s.spotify) + '" target="_blank" rel="noopener">' + SPOTIFY + '<span>Spotify</span></a>' +
-      '<a href="' + esc(s.apple) + '" target="_blank" rel="noopener">' + APPLE + '<span>Apple Podcasts</span></a></div></div></div>';
+      '<div class="vem-listen"><a class="vem-here" href="' + href + '" data-vem-open="' + esc(s.slug) + '">Listen here</a>' + links + '</div></div></div>';
   }
 
   // The top 12 of a kind: most votes, then most voters, then a logo over a letter, then A to Z. Never ours, never closed.
@@ -138,14 +157,29 @@
     var grid = el.querySelector('[data-vem-grid]'), title = el.querySelector('[data-vem-title]');
     var featured = el.querySelector('[data-vem-featured]'), shows = el.querySelector('[data-vem-shows]');
     var allLink = el.querySelector('[data-vem-all]'), seq = 0;
+    // Inside the dashboard a featured show opens under its Directory tab, like the cards below.
+    shows.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('[data-vem-open]');
+      if (!a || !opts.onOpenListing || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      var s = SHOWS.filter(function (x) { return x.slug === a.getAttribute('data-vem-open'); })[0];
+      opts.onOpenListing(s.slug, s.name);
+    });
 
     function load() {
       var t = typeOf(type), mine = ++seq;
       // This kind's Featured, or none (then its 12 lead the page).
       var feat = SHOWS.filter(function (x) { return x.type === t.key; });
       featured.hidden = !feat.length;
-      shows.innerHTML = feat.map(showCard).join('');
-      el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our shows, on Spotify, Apple Podcasts and here.' : 'Our picks.';
+      shows.innerHTML = feat.map(function (s) { return showCard(s, null); }).join('');
+      // Then each show's listing: its status from the feed and its Listen on links.
+      if (feat.length) get('listings?select=slug,business_status,details&status=eq.approved&slug=in.(' + feat.map(function (x) { return x.slug; }).join(',') + ')')
+        .then(function (rows) {
+          if (mine !== seq) return;
+          var by = {}; (rows || []).forEach(function (r) { by[r.slug] = r; });
+          shows.innerHTML = feat.map(function (s) { return showCard(s, by[s.slug] || null); }).join('');
+        }).catch(function () {});
+      el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our shows: listen here, or on Spotify, Apple Podcasts, Amazon Music and YouTube.' : 'Our picks.';
       el.querySelector('[data-vem-searchbox]').hidden = t.key !== 'podcasts';
       title.textContent = 'Top ' + TOP + ' ' + t.label;
       allLink.textContent = 'See every ' + t.one + ' in the Directory';

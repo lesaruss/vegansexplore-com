@@ -823,6 +823,13 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   row with `type: 'books'`). Then its **top 12** as voted in the Directory, read fresh on every visit: most votes, then most
   voters, then a logo over a letter, then A to Z. Our own shows are Directory listings too and never count in the 12. The
   cards are the Directory's card, with + Vote.
+- **Featured shows are their listings** (Sean, 2026-10-27: "the same as the page... include YouTube and Amazon Music on there as
+  options for our featured ones... the episodes pulled from the RSS feed... go off the RSS feed"). A Featured card opens
+  `/directory/<slug>` (in the dashboard, under the Directory tab), wears the feed's Active / On hiatus / Ended and has **Listen
+  here** plus Spotify, Apple Podcasts, Amazon Music and YouTube (`LISTEN` in `ve-media.js`, read from the listing's
+  `details.platforms`; on the listing's Listen on, `details.platforms.youtube` is the show's playlist, the `youtube` column stays
+  the channel for socials). The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
+  its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads Ended.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
 

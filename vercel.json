@@ -346,6 +346,11 @@
   ],
   "redirects": [
     {
+      "source": "/podcast/:slug(vegans-explore-podcast|soflo-vegans-podcast|pre-vegans-podcast|vegans-who-lift-podcast)",
+      "destination": "/directory/:slug",
+      "permanent": false
+    },
+    {
       "source": "/podcast",
       "destination": "/media",
       "permanent": false
