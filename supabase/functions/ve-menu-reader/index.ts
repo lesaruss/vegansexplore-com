@@ -90,13 +90,13 @@ async function fetchPage(url: string) {
   return { url, final: url, status: 0, type: '', html: '' };
 }
 // A page that builds itself in the browser (ordering apps, script-only sites), opened in a real browser.
-async function rendered(url: string): Promise<{ url: string; text: string; error?: string }> {
+async function rendered(url: string, wait = 8): Promise<{ url: string; text: string; error?: string }> {
   const token = await secret('APIFY_API_TOKEN');
   if (!token) return { url, text: '', error: 'no Apify key' };
   try {
     const r = await fetch(`https://api.apify.com/v2/acts/apify~rag-web-browser/run-sync-get-dataset-items?token=${token}&timeout=55`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(65000),
-      body: JSON.stringify({ query: url, maxResults: 1, outputFormats: ['markdown'], scrapingTool: 'browser-playwright', requestTimeoutSecs: 45, dynamicContentWaitSecs: 8, removeCookieWarnings: true }),
+      body: JSON.stringify({ query: url, maxResults: 1, outputFormats: ['markdown'], scrapingTool: 'browser-playwright', requestTimeoutSecs: 45, dynamicContentWaitSecs: wait, removeCookieWarnings: true }),
     });
     if (!r.ok) return { url, text: '', error: `browser answered ${r.status}` };
     const d = ((await r.json()) as any[])[0] || {};
@@ -236,7 +236,8 @@ async function gather(website: string, deadline: number) {
       // Script-only pages and ordering apps: open them in a real browser (three a listing). Its links and pictures count too.
       if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && Date.now() < deadline - 150000 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
         renders++;
-        const rr = await rendered(at);
+        // Ordering apps fill their menu in late, so they get a longer wait.
+        const rr = await rendered(at, ORDER_HOSTS.test(h) ? 20 : 8);
         if (rr.text.length > text.length) { text = rr.text; read.push(`${rr.url} (opened in a browser)`); }
         else if (rr.error) read.push(`${at}: the browser could not open it (${rr.error})`);
         for (const m of rr.text.matchAll(/!\[([^\]]*)\]\((https?:[^)\s]+)/g)) if (!/logo|icon|favicon|\.svg/i.test(m[2]) && (menuPage || /menu/i.test(m[1] + m[2]))) pics.unshift(m[2]);
@@ -366,6 +367,10 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
 
+  if (body.action === 'get') { // diagnostics: the first part of any URL, as the reader sees it
+    try { const r = await fetch(String(body.url || ''), { headers: { 'User-Agent': UA, Accept: '*/*' }, signal: AbortSignal.timeout(15000) }); return json({ status: r.status, type: r.headers.get('content-type'), body: (await r.text()).slice(0, 3000) }); }
+    catch (e) { return json({ error: String((e as Error).message || e) }); }
+  }
   if (body.action === 'probe') {
     const p = await fetchPage(String(body.url || ''));
     const base = p.final || body.url;
