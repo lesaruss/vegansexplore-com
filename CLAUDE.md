@@ -561,6 +561,10 @@ any color); a preview at card and listing size. **Save and next** uploads the sq
 the shorter side is refused), sets `details.logo_source` admin and `details.logo_checked`, moves a set-aside logo to
 `details.logo_replaced`, and logs a `ve_listing_edits` row (field `logo`). **The letter is fine** (`logo_skip`,
 `details.logo_letter_ok`) takes one off the list; Skip for now leaves it.
+The listing editor's **Upload a logo / Replace the logo** (`ve-listing-admin.js`, every Edit listing button; Sean, 2026-10-27: "Can
+we implement that into the replace logo button?") opens the same logo editor under the logo, with the logo as it is loaded in, and
+links to look on (their website, Instagram, Facebook, Google Images); **Save logo** saves it the Logos way (`add_logo_url`,
+`logo_set`), so it shows in Logos > Done. Copy it into our storage and Remove stay as they were.
 **The logo sweep** (Sean, 2026-10-27: "do a sweep and see which ones you can do similarly... so I'm not going through all 200...
 the clean logo, no food in the background, just the actual logo"; migration `20261027_ve_logo_suggestions.sql`). Cron
 `ve-logo-sweep` (every 5 minutes, `ve-discover` `logo_sweep`, five listings a run, each looked at once) gathers each listing's
