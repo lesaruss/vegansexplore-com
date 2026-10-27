@@ -2631,7 +2631,7 @@ function menuTabContent(items){
       '</div>'+
       '<div id="menu-blocks">'+blocks+'</div>'+
       // A menu the Background writer copied from their website says so (migration 20261024_ve_menu_import.sql).
-      (items.every(function(i){ return i.source === 'import'; }) && items[0].created_at ? '<p class="menu-source">From their '+(items[0].source_url ? '<a href="'+esc(items[0].source_url)+'" target="_blank" rel="noopener">website</a>' : 'website')+', checked '+
+      (items.every(function(i){ return i.source === 'import'; }) && items[0].created_at ? '<p class="menu-source">From their '+(items[0].source_url ? '<a href="'+esc(items[0].source_url)+'" target="_blank" rel="noopener">'+(/instagram\.com/i.test(items[0].source_url) ? 'Instagram' : 'website')+'</a>' : 'website')+', checked '+
         esc(new Date(items[0].created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))+'. Prices and dishes may have changed.</p>' : '')+
     '</div>';
   // Attach event after render (use setTimeout so DOM is ready)

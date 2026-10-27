@@ -10,3 +10,6 @@ select cron.schedule('ve-menu-reader', '*/5 * * * *', $$
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select value from public.lesaruss_secrets where key = 'CRON_SECRET')),
     body := '{"action":"sweep","limit":1}'::jsonb, timeout_milliseconds := 30000)
 $$);
+
+-- Instagram (Sean, 2026-10-27: "try reading the Instagram menus"): ig_at marks a listing whose Instagram the reader has looked at.
+alter table public.ve_menu_imports add column if not exists ig_at timestamptz;
