@@ -158,7 +158,7 @@ across (two under 1280 px, one on phones), and a card's name shows whole, up to 
 the chapter's two 300 x 250s; a Directory listing keeps its one 300 x 250 in the info column (Sean, 2026-09-27). A city hub's
 rail is its tall slot (`data-ad-page="hub"`, `data-ad-chapter` the hub slug; the rotating Billboard is gone), at the Pulse's
 width (three-fourths and one-fourth, the slot a full 300 px). Under every ad, filled or not, **Your ad here / Advertise with
-Vegans Explore** links to `/partners` until a page for businesses is decided (`CTA` in the script). The rail sticks 16px under
+Vegans Explore** links to `/business#/found`, the business page's Get found (`CTA` in the script; Sean, 2026-10-27). The rail sticks 16px under
 the site's menu (`--ve-nav-h`, set by `nav.js`).
 
 **Every slot filled** (Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
@@ -359,6 +359,32 @@ The goal is businesses on board for Q1 2027 through Front Row Start. Migrations 
   opened, next) and the listing notes. `ve-outreach` `tick` sends the task emails (any hour) and the onboarding emails
   (weekdays 9 to 5 Eastern). While building it, `ve_listing_claims_tier_check` turned out to refuse tier `brand` (the Partner
   plan), so every Partner claim would have failed to save; widened the same day, before any claim was made.
+
+## For businesses and the sample business (Sean, 2026-10-27)
+
+"Let's remove the VE Verify from Love Life Cafe... it has served its purpose of using it as a template... that also means
+removing the partner dashboard... create a fictitious listing that shows like the full soup to nuts page... so that way members
+can see what it looks like to have the dashboard without it actually being a real person... Or maybe we have a page specifically
+for businesses that is a squeeze page for them."
+
+- **Love Life Cafe is a plain listing again**: its comped VE Verified year is canceled (`ve_verified_memberships` status
+  canceled, with a note) and Sean's account no longer owns or claims it, so it is unclaimed like any other place: its Menu links
+  to its own menu, and its 51 hand-entered menu items, 4 videos and Pulse post stay in their tables for when the business claims
+  it (migration `20261027_love_life_cafe_plain_listing.sql`, run through `ve-once-love-life-plain`, now the 410 stub). No listing
+  holds VE Verified now; the badge code stays, dormant, in case it returns with our services.
+- **`/business`** is the business page: the Passport Guide (`passport.html`, rewrite in `vercel.json`) with its own tabs when
+  the address is `/business` (`BIZ` in the page): Overview, Your page, Your dashboard, Get found (each item Live or Coming),
+  Partner plan (Front Row Start), Get started (the Passport, $11 with 1,100 points, which cover a claim; then Find your business,
+  `/claim`). Send a business here whenever we ask it to join or do something. The Passport's For businesses tab and the ad
+  rail's Your ad here link to it. The old Passport Stop / Anchor page ($250 a quarter, the one-thing services) moved to
+  `/business/stops` (`business/stops.html`; `/claim` and Depot > Services and Verified link there).
+- **`/business/sample`** is the sample business: the real listing page (`directory/listing.html`, rewrite in `vercel.json`) in
+  demo mode (`demoSrc`), fed `/business/sample/listing-demo.js`. Green Leaf Kitchen is invented (the same sample business as
+  `/claim`'s previews), never a database row, marked Sample with `noindex`. Its bar switches **A visitor** / **The owner**
+  (`sampleView`); The owner, Claim Listing, or `?tab=brand` open **Your dashboard**, the real business dashboard
+  (`VEPartnerDash.mount` with `call`, answered by the demo file's `dashboard()` on seeded sample numbers, and `onJoin`); anything
+  that would save says so in a toast, and joining goes to `/business#/start`. Its logo and photos are left for Higgsfield art
+  (credits ran out 2026-10-27), so its dashboard shows them under Get your page ready, the way a new owner sees it.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

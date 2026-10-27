@@ -12,6 +12,14 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/business/sample",
+      "destination": "/directory/listing"
+    },
+    {
+      "source": "/business",
+      "destination": "/passport"
+    },
+    {
       "source": "/directory/:slug",
       "destination": "/directory/listing"
     },

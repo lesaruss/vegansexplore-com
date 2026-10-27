@@ -183,6 +183,18 @@
     { k: 'business', label: 'For businesses', g: 'liz', say: 'Businesses come in the same way, for the same eleven dollars, and then get what we offer only to members.' },
     { k: 'join', label: 'Get your Passport', g: 'liz', say: 'Eleven dollars, one time, and it comes with 1,100 welcome points: enough for your first Guide. Come join us!' }
   ];
+  // For businesses (Sean, 2026-10-27: "a page specifically for businesses... anytime we're asking them to become a member or
+  // do something, they could take them to that version of the passport page"). /business is this page (rewrite in vercel.json)
+  // with its own tabs, ending on Get started; the sample business (/business/sample) shows the page and the dashboard.
+  var BIZ = /^\/business\/?$/.test(location.pathname);
+  if (BIZ) TABS = [
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. This is Vegans Explore for businesses. Your page, your numbers and the members who find you, one tab at a time.' },
+    { k: 'page', label: 'Your page', g: 'river', say: 'Your page in the Directory is where members find you, vote for you, save you and check in when they visit.' },
+    { k: 'dash', label: 'Your dashboard', g: 'liz', say: 'Your dashboard sits on your own page: your numbers, who comes back, your menu, ads and what you can take part in.' },
+    { k: 'found', label: 'Get found', g: 'nori', say: 'Members find you in the Directory, the Guides, the Daily Pulse and at our events. Here is what is live and what is coming.' },
+    { k: 'partner', label: 'Partner plan', g: 'maya', say: 'When you want the full experience, the Partner plan puts you in the front row of every campaign.' },
+    { k: 'start', label: 'Get started', g: 'liz', say: 'Eleven dollars, one time. Your 1,100 welcome points cover your page. Come join us!' }
+  ];
   var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
   var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
   var tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
@@ -279,7 +291,7 @@
         card('Your business dashboard', 'Your numbers, your page and menu, ads and the campaigns open to you, on your own page.', 'Members') +
         card('Advertising and sponsorships', 'Ad spots across the site, and sponsorships of our campaigns and events, only for members.', 'Members') +
         card('Marketing services', 'Help with your Google listing, website and social, starting with a free check in the Restaurant Guide.', 'Members') +
-        '</div>' + joinBtns();
+        '</div>' + '<div class="dg-btns"><a class="dg-btn" href="/business">See Vegans Explore for businesses</a><a href="/business/sample" style="font-size:13px;font-weight:800;color:var(--g)">See a sample business</a></div>';
     },
     join: function () {
       var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
@@ -302,6 +314,77 @@
         '<div class="dg-pricebox">' + box + '</div></div>';
     }
   };
+  var SAMPLE = '/business/sample', SAMPLE_DASH = '/business/sample?tab=brand';
+  function sampleBtns() {
+    return '<div class="dg-btns"><a class="dg-btn" href="' + SAMPLE + '">See a sample page</a><a class="dg-btn" style="background:#fff;color:var(--g);border:1px solid var(--line)" href="' + SAMPLE_DASH + '">See a sample dashboard</a></div>';
+  }
+  function startBtns() {
+    return '<div class="dg-btns"><a class="dg-btn" href="' + href('start') + '">Get started</a><a href="' + SAMPLE + '" style="font-size:13px;font-weight:800;color:var(--g)">See a sample business</a></div>';
+  }
+  if (BIZ) VIEWS = {
+    overview: function () {
+      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
+        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BIZ_BLURB[t.k]) + '</span></div></a>';
+      }).join('');
+      return head('Vegans Explore for businesses', 'Be found by the people looking for you', 'Vegans Explore is where Vegans and the Vegan-curious look for places to eat, shop and go, city by city. Businesses come in the same way as everyone: the Passport, <b>$11 one time</b>. Its 1,100 welcome points cover your page.') +
+        '<div class="dg-tiles">' + tiles + '</div>' + sampleBtns();
+    },
+    page: function () {
+      return head('Your page', 'Your page in the Directory', 'Every business in the Directory has a page. Claim yours, or add it if it is not there yet, and it is yours to keep up to date.') +
+        '<div class="dg-grid">' +
+        card('Your story, your way', 'Your about, hours, links, menu, logo and photos, changed by you and live right away.', 'Yours') +
+        card('Votes', 'Members vote for the places they love once a day. The Directory sorts by those votes.', 'Members') +
+        card('Saves and check-ins', 'Members save you for later and check in when they visit, 10 points a visit. You see who comes back.', 'Members') +
+        card('Reviewed by our team', 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.', 'Trust') +
+        '</div>' + sampleBtns();
+    },
+    dash: function () {
+      return head('Your dashboard', 'Everything about your page, in one place', 'Your dashboard opens on your own page once your claim is approved. One thing at a time, with your numbers on top.') +
+        '<div class="dg-grid">' +
+        card('Your numbers', 'Views, visitors, calls, directions, orders and clicks, against the period before. 7 days to a year.', 'Insights') +
+        card('Who comes back', 'Every member who checked in, and your regulars, so they hear about your next deal first.', 'Check-ins') +
+        card('Your menu', 'Add, change and hide items. Mark your favorites as Featured.', 'Menu') +
+        card('Ads and opportunities', 'Ask about an ad spot, and tell us which campaigns you want in on.', 'Grow') +
+        '</div>' + '<p class="dg-lede" style="margin-top:16px">The sample dashboard runs on made-up numbers, so you can click through every part of it.</p>' +
+        '<div class="dg-btns"><a class="dg-btn" href="' + SAMPLE_DASH + '">See a sample dashboard</a></div>';
+    },
+    found: function () {
+      return head('Get found', 'Where members find you', 'Your page is in the Directory from day one. Here is everything else, marked Live or Coming.') +
+        '<div class="dg-grid">' +
+        card('The Directory', 'Search, sections and every city\'s hub, sorted by member votes. <a href="/directory">Open it</a>.', 'Live') +
+        card('Events', 'Submit your event to the calendar every city sees. <a href="/events">See events</a>.', 'Live') +
+        card('Ads', 'Ad spots on the Daily Pulse, the Directory, Events and the city hubs. Ask about one from your dashboard.', 'Live') +
+        card('The Restaurant Guide', 'A free check of your Google listing, website and social, then the fixes in order. <a href="/guides/vegan-restaurant-survival-guide">Take a look</a>.', 'Live') +
+        card('A featured spot in a Guide', 'Where people are choosing where to eat and what to buy.', 'Coming', true) +
+        card('Our campaigns', 'The Plant-Based Showcase, community nights in each city and our Q1 2027 campaigns.', 'Coming', true) +
+        '</div>' + startBtns();
+    },
+    partner: function () {
+      var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+      return head('Partner plan', 'The full experience', front ? '<b>Front Row Start:</b> become a Partner before January 1 and the rest of 2026 is on us. Nothing today, then <b>$111 a quarter</b> from January 2027.' : 'The Partner plan is <b>$111 a quarter</b>, on top of your page and dashboard.') +
+        '<div class="dg-grid">' +
+        card('A front-row seat', 'First in line for every campaign we run, in your city and beyond.', 'Partner') +
+        card('Ads placed for you', 'We place your ads where your customers are looking.', 'Partner') +
+        card('A campaign manager', 'One person on our team who knows your business.', 'Partner') +
+        card('Start with the basics', 'Not ready? Your page and dashboard come with the $11. Add the Partner plan any time.', 'Members') +
+        '</div>' + startBtns();
+    },
+    start: function () {
+      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
+      var steps = '<div class="dg-access"><ul>' +
+        '<li><b>1. Get your Passport</b>, $11 one time, with 1,100 welcome points.</li>' +
+        '<li><b>2. Find your business</b> in the Directory and claim it, or add it. Each page is 1,100 points or $11, so your welcome points cover it.</li>' +
+        '<li><b>3. We review it.</b> Before anything is approved, our team carefully reviews each claim to make sure it is accurate.</li>' +
+        '<li><b>4. Your dashboard opens</b> on your page.</li></ul>';
+      var box = isMember()
+        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Find your business next.</p><a class="dg-btn" href="/claim">Find your business</a>' + status
+        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Create a free account, then get your Passport. Already a member? <a href="#" data-signin>Sign in</a>.') +
+          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button><p style="margin-top:10px"><a href="/claim">Or find your business first</a></p>' + status;
+      return head('Get started', 'Your page, in four steps', 'Your $11 is a membership contribution, one time. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
+    }
+  };
+  var BIZ_BLURB = { page: 'Claim it or add it. Yours to keep up to date.', dash: 'Your numbers, check-ins, menu and ads.', found: 'The Directory, Events, ads and Guides.',
+    partner: 'Front Row Start, then $111 a quarter.', start: '$11 one time. Your points cover your page.' };
   var BLURB = {
     places: 'Vote for the places you love, every day.', community: 'Your city\'s hub, its Daily Pulse and its Board.',
     guides: 'Mini apps, $11 or 1,100 points each.', points: 'Earn them, spend them, give them. Levels 1 to 3.',
@@ -315,7 +398,7 @@
     var t = tab(cur), i = TABS.indexOf(t);
     main.innerHTML = VIEWS[cur]();
     main.scrollTop = 0;
-    menu.innerHTML = TABS.map(function (x) { return '<a href="' + href(x.k) + '"' + (x.k === 'join' ? ' class="dg-join-tab"' : '') + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    menu.innerHTML = TABS.map(function (x) { return '<a href="' + href(x.k) + '"' + (x.k === 'join' || x.k === 'start' ? ' class="dg-join-tab"' : '') + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
     sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
     var pic = art(t.g);
     guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
@@ -328,7 +411,7 @@
     tourEl.innerHTML = tourM.innerHTML = nav;
     document.getElementById('pgJoinbox').style.display = isMember() ? 'none' : '';
     document.getElementById('pgSignin').style.display = me() ? 'none' : '';
-    if (activated === 'success' && cur === 'join') setStatus(isMember() ? '' : 'Your payment went through. It can take a minute to show here: refresh this page shortly.');
+    if (activated === 'success' && (cur === 'join' || cur === 'start')) setStatus(isMember() ? '' : 'Your payment went through. It can take a minute to show here: refresh this page shortly.');
   }
   function setStatus(t) { var s = document.getElementById('pgStatus'); if (s) s.textContent = t; }
 
@@ -350,8 +433,13 @@
     else a.showActivateModal('Your Passport: $11, one time, with 1,100 welcome points, enough for your first Guide.');
   });
   window.addEventListener('hashchange', draw);
-  if (activated === 'success') { if (!location.hash) location.hash = '#/join'; }
+  if (activated === 'success') { if (!location.hash) location.hash = BIZ ? '#/start' : '#/join'; }
   if (activated) { params.delete('activate'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+  if (BIZ) {
+    document.title = 'For businesses — Vegans Explore';
+    var h1 = document.querySelector('.dg-title'); if (h1) h1.textContent = 'For businesses';
+    var cn = document.querySelector('link[rel="canonical"]'); if (cn) cn.href = 'https://vegansexplore.com/business';
+  }
   document.documentElement.classList.add('dg-fit');
   draw();
   if (activated === 'success') {

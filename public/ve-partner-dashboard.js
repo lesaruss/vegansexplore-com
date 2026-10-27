@@ -22,7 +22,8 @@
  *   guides    the Guides: theirs, free, or $11 or 1,100 points
  *   plan      Founding Member and the Partner plan
  *
- *   VEPartnerDash.mount(el, listing, { editPage: function (step) {} })
+ *   VEPartnerDash.mount(el, listing, { editPage: function (step) {}, call?: function (body) -> Promise, onJoin?: function () {} })
+ *   call and onJoin stand in for ve-claims and the $11 checkout on the sample business (/business/sample, Sean 2026-10-27).
  */
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
@@ -126,6 +127,7 @@
   function mount(el, l, opts) {
     opts = opts || {};
     css();
+    var api = opts.call || call;
     var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null;
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     function go(view, extra) {
@@ -139,7 +141,7 @@
     }
     function load(cb) {
       el.innerHTML = '<div class="vpd"><p class="vpd-empty">Loading your dashboard...</p></div>';
-      call({ action: 'owner_dashboard', listing_id: l.id, days: days }).then(function (d) {
+      api({ action: 'owner_dashboard', listing_id: l.id, days: days }).then(function (d) {
         if (!d || !d.ok) { el.innerHTML = '<div class="vpd"><p class="vpd-empty">We could not open your dashboard just now. Try again in a moment.</p></div>'; return; }
         D = d; cb();
       });
@@ -234,7 +236,7 @@
     // ---- Menu: the list, then one item on its own.
     function drawMenu() {
       if (!menu) {
-        call({ action: 'menu_list', listing_id: l.id }).then(function (d) { menu = (d && d.items) || []; draw(); });
+        api({ action: 'menu_list', listing_id: l.id }).then(function (d) { menu = (d && d.items) || []; draw(); });
         return '<p class="vpd-empty">Loading your menu...</p>';
       }
       var item = q('item');
@@ -384,6 +386,7 @@
       el.querySelectorAll('[data-vpd-edit]').forEach(function (b) { b.addEventListener('click', function () { if (opts.editPage) opts.editPage(b.dataset.vpdEdit); }); });
       el.querySelectorAll('[data-vpd-join]').forEach(function (b) {
         b.addEventListener('click', function () {
+          if (opts.onJoin) return opts.onJoin();
           if (!window.VEAuth || !VEAuth.startEntryCheckout) return;
           b.disabled = true;
           VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; else b.disabled = false; }, function () { b.disabled = false; });
@@ -400,7 +403,7 @@
           is_vegan: c('is_vegan'), is_gluten_free: c('is_gluten_free'), is_featured: c('is_featured'), is_available: c('is_available') };
         if (!String(item.name || '').trim()) return msg('Give the item a name.', true);
         save.disabled = true; msg('Saving...');
-        call({ action: 'menu_save', listing_id: l.id, item: item }).then(function (d) {
+        api({ action: 'menu_save', listing_id: l.id, item: item }).then(function (d) {
           save.disabled = false;
           if (!d || !d.ok) return msg(d && d.error === 'menu_full' ? 'Your menu holds 300 items at most.' : 'That did not save. Try again.', true);
           menu = null; D.menu_count = Math.max(D.menu_count, 1); go('menu');
@@ -409,14 +412,14 @@
       var del = el.querySelector('[data-vpd-del]');
       if (del) del.addEventListener('click', function () {
         if (!confirm('Remove this item from your menu?')) return;
-        call({ action: 'menu_delete', listing_id: l.id, id: q('item') }).then(function (d) { if (!d || !d.ok) return msg('That did not go through. Try again.', true); menu = null; go('menu'); });
+        api({ action: 'menu_delete', listing_id: l.id, id: q('item') }).then(function (d) { if (!d || !d.ok) return msg('That did not go through. Try again.', true); menu = null; go('menu'); });
       });
       el.querySelectorAll('[data-vpd-ad]').forEach(function (b) {
         b.addEventListener('click', function () {
           var note = prompt('Anything we should know? Dates, a budget, what you want to promote. (Optional)') ;
           if (note === null) return;
           b.disabled = true;
-          call({ action: 'ad_request', listing_id: l.id, page_slug: b.dataset.vpdAd, note: note }).then(function (d) {
+          api({ action: 'ad_request', listing_id: l.id, page_slug: b.dataset.vpdAd, note: note }).then(function (d) {
             if (!d || !d.ok) { b.disabled = false; return msg('That did not go through. Try again.', true); }
             b.textContent = 'We will be in touch'; msg('Got it. We will send you the price and a sample.');
           });
@@ -426,7 +429,7 @@
         b.addEventListener('click', function () {
           var k = b.dataset.vpdInt, on = (D.interests || []).indexOf(k) < 0;
           b.disabled = true;
-          call({ action: 'partner_interest', listing_id: l.id, campaign: k, label: b.dataset.label, on: on }).then(function (d) {
+          api({ action: 'partner_interest', listing_id: l.id, campaign: k, label: b.dataset.label, on: on }).then(function (d) {
             b.disabled = false;
             if (!d || !d.ok) return msg('That did not go through. Try again.', true);
             D.interests = on ? (D.interests || []).concat(k) : (D.interests || []).filter(function (x) { return x !== k; });

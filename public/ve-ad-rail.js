@@ -26,7 +26,7 @@
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   // One ad per page (Sean, 2026-10-27: "it's either going to be the long one or two short ones, not both"): a tall 300 x 600,
   // or a chapter's two 300 x 250s. The slots each page has (ad_placements.slot_id); every rail ends with Your ad here (CTA).
-  var CTA = '/partners';
+  var CTA = '/business#/found'; // the business page (Sean, 2026-10-27)
   var PAGES = {
     pulse: [{ id: 'skyscraper', shape: 'tower', size: '300 x 600' }],
     '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }]
@@ -91,7 +91,7 @@
     rail.innerHTML = '<div class="vear-label">Advertisement</div>' + slots.map(function (s) {
       return '<div class="vear-slot ' + s.shape + '" data-slot="' + s.id + '"><a class="vear-ph" href="' + CTA + '"><strong>Your ad here</strong><span>' + s.size + ' &middot; Advertise with Vegans Explore</span></a></div>';
     }).join('') +
-      // Under every ad, filled or not (Sean, 2026-10-27: "a little line that says your ad here"). /partners until the business page is decided.
+      // Under every ad, filled or not (Sean, 2026-10-27: "a little line that says your ad here"). It opens /business on Get found.
       '<a class="vear-cta" href="' + CTA + '">Your ad here<span>Advertise with Vegans Explore</span></a>';
     fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent(page), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })

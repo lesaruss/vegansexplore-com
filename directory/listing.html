@@ -2395,7 +2395,7 @@ document.addEventListener('click', function(e){
 // Liz explaining, and then the other is the actual dashboard"). Its owner and super admins get the dashboard
 // (/public/ve-partner-dashboard.js, ?pd=<view>); everyone else gets Liz's preview. ?as=visitor shows a super admin the preview.
 function loadPartnerHome(l){
-  var el = document.getElementById('pd-home'); if(!el) return;
+  var el = document.getElementById('pd-home'); if(!el || DEMO) return;
   var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
   var qs = new URLSearchParams(location.search);
   var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
@@ -2723,6 +2723,12 @@ function demoSlug(){
   var s = q || (m ? m[1] : '');
   return /^[a-z0-9-]{2,60}$/.test(s) ? s : '';
 }
+// The sample business (Sean, 2026-10-27): /business/sample is the same page fed /business/sample/listing-demo.js, an invented
+// restaurant with a Visitor / Owner switch that opens the real business dashboard on sample numbers.
+function demoSrc(){
+  if(/^\/business\/sample\/?$/.test(location.pathname)) return '/business/sample/listing-demo.js';
+  var s = demoSlug(); return s ? '/campaign-engine/' + s + '/listing-demo.js' : '';
+}
 function demoToast(msg){
   var t = document.getElementById('demo-toast');
   if(!t){ t = document.createElement('div'); t.id = 'demo-toast'; t.className = 'demo-toast'; t.setAttribute('role','status'); document.body.appendChild(t); }
@@ -2953,6 +2959,9 @@ function wireCampaign(l){
   });
 }
 function demoBar(){
+  if(DEMO.business) return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Sample</strong>'+esc(DEMO.label)+'</div>'+
+    '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A visitor</button><button type="button" data-view="owner" aria-pressed="false">The owner</button></div>'+
+    '<div class="db-links"><a href="/business">For businesses</a><a href="/claim">Find your business</a></div></div>';
   var weeks = '';
   if(DEMO.campaignAt){ for(var w=1; w<=11; w++) weeks += '<option value="'+w+'"'+(w===CST.week?' selected':'')+'>'+(w===11?'Final':'Week '+w)+'</option>'; }
   return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Illustrative</strong>'+esc(DEMO.label)+'</div>'+
@@ -2969,7 +2978,29 @@ function setDemoWeek(w, l){
   var sel = document.getElementById('demo-week'); if(sel) sel.value = String(CST.week);
 }
 window.veDemoWeek = function(w){ if(window._veDemoListing) setDemoWeek(w, window._veDemoListing); };
-function setDemoView(v, l){ CST.view = v; refreshCampaign(l); }
+function setDemoView(v, l){ CST.view = v; if(DEMO && DEMO.business) sampleView(l); else refreshCampaign(l); }
+// The sample business: The owner shows the Partner Dashboard tab with the real dashboard on DEMO.dashboard's numbers; A visitor
+// sees the page as anyone does. The view rides in the address bar (?tab=brand is the owner's) so back and links work.
+var SAMPLE_DASH = null;
+function sampleView(l){
+  var owner = CST.view === 'owner', bt = document.querySelector('.tab-btn[data-tab="brand"]');
+  document.querySelectorAll('[data-view]').forEach(function(x){ x.setAttribute('aria-pressed', x.getAttribute('data-view') === CST.view ? 'true' : 'false'); });
+  if(bt){ bt.style.display = owner ? '' : 'none'; var lk = bt.querySelector('.pd-lock'); if(lk) lk.remove(); bt.lastChild.textContent = 'Your dashboard'; }
+  var el = document.getElementById('pd-home');
+  if(owner && el && window.VEPartnerDash){
+    if(!SAMPLE_DASH) SAMPLE_DASH = VEPartnerDash.mount(el, l, {
+      call: function(body){ return DEMO.dashboard(body, demoToast); },
+      editPage: function(){ demoToast('Sample dashboard: on your own page, Your page opens the editor for your story, hours, links and photos.'); },
+      onJoin: function(){ location.href = '/business#/start'; }
+    });
+    else SAMPLE_DASH.redraw();
+    showListingTab('brand');
+  } else if(!owner){
+    var u = new URL(location.href); ['tab', 'pd', 'item'].forEach(function(k){ u.searchParams.delete(k); });
+    history.replaceState(null, '', u.pathname + u.search + u.hash);
+    if(bt && bt.classList.contains('active')) showListingTab('overview');
+  }
+}
 window.veDemoView = function(v){ if(window._veDemoListing) setDemoView(v, window._veDemoListing); };
 
 function renderListing(l){
@@ -3858,16 +3889,16 @@ function ownerVerifiedCard(l){
     (t
       ? '<p><b style="color:#fff">'+(t==='plus'?'Passport Anchor':'Passport Stop')+'</b>'+(until?', next charge '+esc(until):'')+'. '+(l.ve_verified?'Your Verified badge is live.':'Your Verified badge goes live after our in-person visit.')+'</p>'+
         '<a href="'+href+'" class="claim-btn">See your plan and results</a>'
-      : '<p>Your listing. Be a stop on the map Vegans are walking: Passport members come in, buy and get stamped, and every quarter we show you who came. From $250 a quarter.</p>'+
-        '<a href="/business" class="claim-btn">See how it works</a>')+
+      : '<p>Your listing. Your numbers, your page and your menu are on your dashboard.</p>'+
+        '<a href="'+pdHref(l)+'" data-pd-open class="claim-btn">Open your dashboard</a>')+
     '</div></div>';
 }
 
 // Init
-var dslug = demoSlug();
-if(dslug){
+var dsrc = demoSrc();
+if(dsrc){
   var ds = document.createElement('script');
-  ds.src = '/campaign-engine/' + dslug + '/listing-demo.js';
+  ds.src = dsrc;
   ds.onload = function(){ if(window.VE_DEMO){ DEMO = window.VE_DEMO; renderDemo(); } else showNotFound(); };
   ds.onerror = function(){ showNotFound(); };
   document.head.appendChild(ds);
@@ -3960,7 +3991,7 @@ function renderDemo(){
   l._campaign = DEMO.campaignAt ? DEMO.campaignAt(CST.week) : (DEMO.campaign || null);
   window._veDemoListing = l;
   renderListing(l); fitHeroAvatar();
-  document.title = l.name + ' (Illustrative) — VEGANS EXPLORE';
+  document.title = l.name + (DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
   var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
   document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
   if(DEMO.menu && DEMO.menu.length){
@@ -3979,6 +4010,16 @@ function renderDemo(){
   });
   var donate = document.getElementById('donate-btn'); if(donate) donate.disabled = true;
   root.addEventListener('change', function(e){ if(e.target && e.target.id === 'demo-week') setDemoWeek(parseInt(e.target.value,10), l); });
+  if(DEMO.business){
+    // Claim Listing and Own this business open the owner's side; anything that would buy or claim the sample goes to /business.
+    root.addEventListener('click', function(e){
+      if(e.target.closest('[data-pd-open]')){ e.preventDefault(); e.stopPropagation(); setDemoView('owner', l); return; }
+      var a = e.target.closest('a[href^="/claim?listing="]'); if(a){ e.preventDefault(); location.href = '/business#/start'; }
+    });
+    var vs = new URLSearchParams(location.search);
+    setDemoView(vs.get('tab') === 'brand' || vs.get('view') === 'owner' ? 'owner' : 'member', l);
+    window.addEventListener('popstate', function(){ if(new URLSearchParams(location.search).get('tab') === 'brand' && CST.view !== 'owner') setDemoView('owner', l); });
+  }
   if(DEMO.tour !== false){
     var ts = document.createElement('script'); ts.src = '/public/ve-tour.js';
     ts.onload = function(){ registerDemoTour(); var q=''; try{ q = new URLSearchParams(location.search).get('tour') || ''; }catch(e){} if(q !== '0') setTimeout(startDemoTour, 400); };
