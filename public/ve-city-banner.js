@@ -74,7 +74,7 @@
     '.vcb.is-collapsed .vcb-main{display:flex;flex-direction:column;justify-content:space-between;gap:8px;min-width:0;}',
     '.vcb.is-collapsed .vcb-eyebrow,.vcb.is-collapsed .vcb-sub{display:none;}',
     '.vcb.is-collapsed h1{font-size:22px;line-height:1.15;margin:0;letter-spacing:-.01em;}',
-    '.vcb.is-collapsed h1 em{display:block;font-size:17px;margin-top:4px;}',
+    '.vcb.is-collapsed h1 em{display:block;font-size:17px;margin-top:4px;white-space:nowrap;overflow:hidden;}',
     // Folded, the title stays on one line and shrinks to fit instead (Sean, 2026-10-26: two rows made the buttons taller on phones).
     '.vcb.is-collapsed .vcb-t{display:block;white-space:nowrap;}',
     '.vcb.is-collapsed .vcb-pick{margin-top:0;flex-wrap:nowrap;}',
@@ -134,7 +134,9 @@
           '</select>' +
         '</div></div>' +
         '<div class="vcb-actions">' +
-          (opts.home ? '<a class="vcb-btn" data-vcb-home href="' + esc(opts.home.href || '#') + '">' + esc(opts.home.label) + '</a>'
+          // With a home button, a page's own link (Media's See in the Directory) follows it and shows only while the banner is open.
+          (opts.home ? '<a class="vcb-btn" data-vcb-home href="' + esc(opts.home.href || '#') + '">' + esc(opts.home.label) + '</a>' +
+              (opts.link ? '<a class="vcb-btn vcb-open-only" data-vcb-link href="#">See more</a>' : '')
             : opts.hubLink === false ? '' : '<a class="vcb-btn" data-vcb-link href="/communities">View communities</a>') +
           (opts.action ? '<button type="button" class="vcb-btn vcb-btn-go" data-vcb-action>' + esc(opts.action.label) + '</button>' : '') +
           (opts.actions || []).map(function (a, i) {
@@ -151,7 +153,8 @@
     var link = el.querySelector('[data-vcb-link]'), toggle = el.querySelector('.vcb-toggle');
     var mobile = window.matchMedia('(max-width: 900px)');
     var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_banner_hero';
-    var current = '', chosen = null;
+    // label: what the line under the title says in place of the city (the Directory's section, Sean 2026-10-27); setLabel.
+    var current = '', chosen = null, label = '';
 
     // A chapter's art is its VE_HUBS page.banner (a new chapter needs no entry here); ART is the fallback by file name.
     function art(slug) {
@@ -163,7 +166,7 @@
     function show(slug, quiet) {
       if (choices) {
         var c = choice(slug) || choices[0];
-        current = c.value; select.value = current; cityEl.textContent = c.label; paint();
+        current = c.value; select.value = current; cityEl.textContent = label || c.label; paint(); fitTitle();
         if (link && opts.link) { var l = opts.link(current) || {}; if (l.href) link.href = l.href; if (l.label) link.textContent = l.label; }
         if (opts.onChange && !quiet) opts.onChange(current, null);
         return;
@@ -171,8 +174,8 @@
       var hub = hubBySlug(slug);
       current = hub ? hub.slug : '';
       select.value = current;
-      cityEl.textContent = hub ? hub.name : (opts.allTitle || 'Every City');
-      paint();
+      cityEl.textContent = label || (hub ? hub.name : (opts.allTitle || 'Every City'));
+      paint(); fitTitle();
       // A city opens its hub; All cities opens every community.
       if (link) { link.href = hub ? '/communities/' + hub.slug : '/communities'; link.textContent = hub ? 'View community' : 'View communities'; }
       if (opts.onChange && !quiet) opts.onChange(current, hub);
@@ -201,14 +204,36 @@
     if (mobile.addEventListener) mobile.addEventListener('change', paint);
 
     // Expanded on landing; autoFold() folds it on the first click into the page, unless the visitor chose with the button.
-    // Folded, shrink the title until it fits its column on one line (fitTitle), never below 12px.
-    var title = el.querySelector('.vcb-t');
+    // Folded, shrink the title until it fits its column on one line (fitTitle), never below 12px. On a phone the buttons
+    // stack taller than the title, so the title and the line under it grow to fill that height instead (Sean, 2026-10-27:
+    // "make the title big enough where it's filling in that gap, but not adjusting anything else"): the biggest size at which
+    // every word still fits the column, the line under it stays one line, and the title, that line and the picker together are
+    // no taller than the buttons.
+    var title = el.querySelector('.vcb-t'), h1 = el.querySelector('h1'), pick = el.querySelector('.vcb-pick');
+    var phone = window.matchMedia('(max-width: 900px)'), fitting = false;
     function fitTitle() {
-      if (!title) return;
-      title.style.fontSize = '';
-      if (!el.classList.contains('is-collapsed')) return;
-      var size = parseFloat(getComputedStyle(title).fontSize) || 18;
-      while (title.scrollWidth > title.clientWidth + 1 && size > 12) { size -= 0.5; title.style.fontSize = size + 'px'; }
+      if (!title || fitting) return;
+      fitting = true;
+      title.style.fontSize = ''; title.style.whiteSpace = ''; title.style.lineHeight = ''; cityEl.style.fontSize = '';
+      if (el.classList.contains('is-collapsed')) {
+        var size = parseFloat(getComputedStyle(title).fontSize) || 18;
+        while (title.scrollWidth > title.clientWidth + 1 && size > 12) { size -= 0.5; title.style.fontSize = size + 'px'; }
+        var acts = el.querySelector('.vcb-actions');
+        if (phone.matches && acts) {
+          var room = acts.offsetHeight, ratio = (parseFloat(getComputedStyle(cityEl).fontSize) || 15) / size;
+          var fits = function (n) {
+            title.style.fontSize = n + 'px'; cityEl.style.fontSize = Math.round(n * ratio * 2) / 2 + 'px';
+            var words = title.scrollWidth <= title.clientWidth + 1 && cityEl.scrollWidth <= cityEl.clientWidth + 1;
+            return words && h1.offsetHeight + pick.offsetHeight + 8 <= room;
+          };
+          title.style.whiteSpace = 'normal'; title.style.lineHeight = '1.05';
+          var best = size;
+          for (var n = size + 1; n <= 44; n++) { if (fits(n)) best = n; else break; }
+          if (best === size) { title.style.whiteSpace = ''; title.style.lineHeight = ''; }
+          fits(best);
+        }
+      }
+      fitting = false;
     }
     if (window.ResizeObserver) new ResizeObserver(function () { fitTitle(); }).observe(el); else window.addEventListener('resize', fitTitle);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitTitle);
@@ -242,6 +267,7 @@
       autoFold: function () { if (!chosen) fold(true); },
       setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
       setHome: function (href) { if (homeBtn && href) homeBtn.href = href; },
+      setLabel: function (text) { label = text || ''; show(current, true); },
       matches: matches
     };
     show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');

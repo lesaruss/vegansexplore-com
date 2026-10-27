@@ -232,6 +232,8 @@
       sub: 'Our shows and picks first, then the podcasts, documentaries and books members vote to the top in the Directory.',
       choices: TYPES.map(function (t) { return { value: t.key, label: t.label }; }),
       link: function (key) { return { href: directoryUrl(key), label: 'See in the Directory' }; },
+      // Media home first (Sean, 2026-10-27: the page's own home, like Directory home); See in the Directory shows while it is open.
+      home: { label: 'Media home', href: '/media' },
       // Join our network (Sean, 2026-10-27): the podcast network's application, between the Directory and Expand.
       actions: [{ label: 'Join our network', href: '/media/network', go: true }] };
     for (var k in extra) o[k] = extra[k];

@@ -2249,6 +2249,7 @@
     if (!mount || dashMediaBanner || !window.VEMedia || !window.VECityBanner) return;
     var media = null;
     dashMediaBanner = VECityBanner.mount('dash-media-hero', VEMedia.bannerOptions({ key: 'dash-media', param: false,
+      home: { label: 'Media home', href: '/dashboard/media', onClick: function () { dashMediaBanner.set(VEMedia.TYPES[0].key); } },
       onChange: function (type) { if (media) media.setType(type); } }));
     media = VEMedia.mount(mount, { type: dashMediaBanner.current(), onInteract: function () { dashMediaBanner.autoFold(); },
       onOpenListing: function (slug, name) { if (window.activateDashTab) window.activateDashTab('directory', { skipHistory: true }); openDashboardListing(slug, name); } });
@@ -3442,14 +3443,14 @@
             if (location.pathname + location.search !== '/dashboard/directory') history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
             renderDirectory(member);
           } },
-          actions: [{ label: 'Submit your listing', href: '/claim?add=1', go: true }]
+          actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }]
         });
         mount.addEventListener('click', function (e) { if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) dashDirBanner.autoFold(); });
       } else dashDirBanner.setQuiet(active || '');
     }
     // All cities: every listing, by region, the same as /directory.
     if (!active && window.VERegionDirectory) {
-      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory' });
+      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory', onSection: function (k, label) { if (dashDirBanner) dashDirBanner.setLabel(label); } });
       return;
     }
     var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
@@ -3466,7 +3467,8 @@
       hub: active,
       matchListing: cfg.matchListing,
       onOpenListing: openDashboardListing,
-      url: '/dashboard/directory'
+      url: '/dashboard/directory',
+      onSection: function (k, label) { if (dashDirBanner) dashDirBanner.setLabel(label); }
     };
     if (cfg.counties) initConfig.counties = cfg.counties;
     window.VERegionDirectory.init(initConfig);

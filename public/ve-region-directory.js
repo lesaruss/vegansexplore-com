@@ -836,6 +836,12 @@
     } finally { root._vrdRestoring = false; }
   }
 
+  // config.onSection(key, label): the section on show (the Directory's banner names it under its title, Sean 2026-10-27).
+  function tellSection(root, config) {
+    var on = root.querySelector('.cat-tab.active'), key = on && on.getAttribute('data-vrd-tab');
+    var c = CAT_CONFIG.filter(function (x) { return x.key === key; })[0];
+    if (config && config.onSection && c) config.onSection(c.key, c.label);
+  }
   function wireControls(root, state) {
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var on = panel.querySelector('.subcat-pill.sc-active'); if (on) on._vrdDefault = true;
@@ -848,6 +854,7 @@
         var panel = root.querySelector('#board-' + btn.getAttribute('data-vrd-tab'));
         panel.classList.add('active');
         openToolFrame(root, btn.getAttribute('data-vrd-tab'));
+        tellSection(root, state);
         var on = panel.querySelector('.subcat-pill.sc-active');
         pushSection(root, state, btn.getAttribute('data-vrd-tab'), on && !on._vrdDefault ? on.getAttribute('data-vrd-subcat') : '');
       });
@@ -1066,6 +1073,7 @@
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
       fetchAll(root, config);
+      tellSection(root, config);
       if (config.url) {
         applySection(root, config);
         if (!root._vrdPop) { root._vrdPop = config; window.addEventListener('popstate', function () { if (urlHere(root._vrdPop)) applySection(root, root._vrdPop); }); }

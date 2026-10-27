@@ -651,7 +651,7 @@ Directory's **Your votes rank them** box at the foot of the page (`.lv-vote`), o
 after sign-in), never the old sign-in pop-up, and lets any link that already goes to `/passport` through.
 
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
-and folds it to one bar (city picker, Directory home, Submit your listing, Expand) after the first click into a section; Collapse/Expand is
+and folds it to one bar (city picker, Directory home, Submit listing, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
 listing counts in a region by its address or the chapters it serves (`data-hubs`). **Every section opens on its first
 sub-section and All comes last** (Sean, 2026-10-26: "all now goes to the back of the line"), which let **Food Brands come back
@@ -677,7 +677,7 @@ forward move through them, on `/directory` and the dashboard's Directory tab (`/
 `VERegionDirectory.init`, `pushSection` and `applySection` in `ve-region-directory.js`; a city hub, whose `?tab=` is its own
 section, leaves it off). **The city is not in the address**: the same link opens in whichever chapter the visitor picked (kept for
 the visit, `sessionStorage` `ve_dir_city`), and an old `?city=` link opens on that city before the address drops it. A listing's
-breadcrumb links back to its sub-section. **Submit your listing** (the banner's green button, Sean 2026-10-27) opens Join the
+breadcrumb links back to its sub-section. **Submit listing** (the banner's green button, Sean 2026-10-27; one row on a phone) opens Join the
 Directory's Add it (`/claim?add=1`): $11 or 1,100 points a listing (Guide pricing, below).
 Layout (Sean, 2026-10-26): on desktop the section pills fill three-fourths in two rows (the fuller one on top) and the search has
 the last fourth to itself; phones keep the pills with the search under them. The filters (Sort by, Area, the sub-section's own,
@@ -814,8 +814,8 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   buttons (Sean, 2026-10-26: "my goal was to have it be a button"). **The first button is the page's own home** (Sean, 2026-10-27:
   "the same as if they were to click that top navigation button"; option `home`, `setHome`): **Directory home** (`/directory`, and
   on the dashboard the Directory tab's first section), **Events home** (the calendar with no search or filter, `VEEvents` `home()` on
-  the dashboard), **Pulse home** (today's Daily Pulse in the city picked) and **Depot home**; the dashboard's Dashboard, Guides and My
-  Saves banners have none, and Media keeps See in the Directory. It replaced **View community** (the picked city's hub, or View
+  the dashboard), **Pulse home** (today's Daily Pulse in the city picked), **Media home** (Podcasts; See in the Directory follows it while the
+  banner is open) and **Depot home**; the dashboard's Dashboard, Guides and My Saves banners have none. It replaced **View community** (the picked city's hub, or View
   communities for All cities, still the default for a banner with no `home`; Sean, 2026-10-27: it opens them the way the menu's Communities does, so in the dashboard, or a page the
   dashboard frames such as the Daily Pulse, the dashboard opens the chapter (`VEOpenCommunity` in center-console), and any other frame
   sends the whole window), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
@@ -828,7 +828,14 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   frame, `.ve-in-dash` in `pulse.html`). No City label shows beside the picker (it
   pushed it out on phones; screen readers still hear it), so the picker sits flush left under the title, and on phones a 22px
   gap keeps it clear of the buttons (Sean, 2026-10-26). Folded, the title (Vegan Directory, Vegan Events) is always one line: it
-  shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). The
+  shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). On a
+  phone (900 px and under) the stacked buttons are taller than the title, so the title and the line under it grow to fill that
+  height (Sean, 2026-10-27: "make the title big enough where it's filling in that gap, but not adjusting anything else"; `fitTitle`):
+  the biggest size at which every word fits the column, the line under it stays one line, and title, line and picker are no taller
+  than the buttons. Button labels stay one row on a phone (Submit listing, not Submit your listing). The line under the title is
+  the city unless the page names something else (`setLabel`): **the Directory names its section** there (Food, Services, Media,
+  Community, Being vetted, Review; Sean, 2026-10-27: "is it redundant for us to have the title as well as the dropdown?"), the city
+  being in the picker (`onSection` in `VERegionDirectory.init`). The
   Directory, Events and Communities wear it; on `/communities` and the dashboard's Communities tab a pick goes straight to that chapter (Sean,
   2026-10-27: "you go directly to the Atlanta community"; `param: false`, no View community button, the picker back on All
   cities when you come back; an old `/communities?city=<slug>` forwards to the chapter); the cards below stay for browsing. A new browse page

@@ -83,7 +83,10 @@
       if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dir-ad-rail'), hub ? hub.slug : '');
       try { sessionStorage.setItem('ve_dir_city', slug || ''); } catch (e) {}
       // url: each section and sub-section has its own address, ?tab=food&sub=markets, kept as the city changes (Sean, 2026-10-27).
-      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub), url: '/directory' });
+      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub), url: '/directory',
+        // The line under Vegan Directory names the section on show (Sean, 2026-10-27: "is it redundant for us to have the title as
+        // well as the dropdown?"): the city is in the picker.
+        onSection: function (key, label) { if (banner) banner.setLabel(label); } });
     }
     // The city is not in the address (Sean, 2026-10-27: "it could be the same URL for North Florida, Atlanta... it would just show
     // different things based off of what location it's pulling"): the pick is kept for the visit, and an old ?city= link still
@@ -99,9 +102,11 @@
       // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
       home: { label: 'Directory home', href: '/directory' },
       // Submit your listing (Sean, 2026-10-27): Join the Directory's Add it, $11 or 1,100 points a listing.
-      actions: [{ label: 'Submit your listing', href: '/claim?add=1', go: true }],
+      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }],
       onChange: show
     });
+    // The first draw ran while the banner was being made: name its section now.
+    var t0 = document.querySelector('#ve-region-directory .cat-tab.active'); if (t0) banner.setLabel(t0.textContent.trim());
     document.getElementById('ve-region-directory').addEventListener('click', function (e) {
       if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) banner.autoFold();
     });
