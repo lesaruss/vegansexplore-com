@@ -209,7 +209,9 @@
       function pdate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function logo(l) { return l && l.logo_url ? '<div class="logo" style="background-image:url(\'' + esc(l.logo_url) + '\')" aria-hidden="true"></div>' : '<div class="logo" aria-hidden="true">' + esc(((l && l.name) || '?').charAt(0)) + '</div>'; }
       // The four lists, in the order Sean works them.
-      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      // No menu yet (Sean, 2026-10-27): open food places with no menu on their page (ve_menu_missing), read and not found first.
+      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['menu', 'No menu yet'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      var MENU_STAGE = { not_found: ['Not found', 'bad'], no_website: ['No website', 'off'], reading: ['Being read', 'wait'] };
       var data = null, filt = { q: '', city: '' };
       function load() { return api({ action: 'review_list' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); data = d; }); }
       function rowsOf(tab) {
@@ -222,6 +224,7 @@
       }
       function why(r, tab) {
         if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
+        if (tab === 'menu') { var ms = MENU_STAGE[r.stage] || MENU_STAGE.reading; return '<span class="tag ' + ms[1] + '">' + ms[0] + '</span><small>' + esc(r.stage === 'reading' ? 'The menu reader gets to it soon' : r.stage === 'no_website' ? 'Add their website or a menu link' : (r.note || 'No menu could be read')) + '</small>'; }
         if (tab === 'vetting') return '<span class="tag wait">' + (r.voter_count || 0) + ' of ' + (data.min_voters || 10) + ' member votes</span><small>Members only until then, or until you vet it</small>';
         if (tab === 'flagged') return '<div class="flags">' + (r.flags || []).map(function (x) { return '<span class="tag ' + (r.strong ? 'wait' : 'off') + '">' + esc(x) + '</span>'; }).join('') + '</div>';
         if (tab === 'removed') return '<small>Removed by ' + esc((r.removed || {}).by || '') + ' &middot; ' + esc(pdate((r.removed || {}).at)) + '</small>' + ((r.removed || {}).reason ? '<small>' + esc(r.removed.reason) + '</small>' : '');
@@ -233,13 +236,13 @@
         crumbs([['Directory review']]);
         var rows = rowsOf(tab);
         var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
-        V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone.</p>' +
+        V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone. <strong>No menu yet</strong> is every open food place with no menu on its page: add it by hand, give the reader a menu link, or mark that they have no menu online.</p>' +
           '<div class="row-btns"><a class="btn" href="#add/1">Add a listing</a><a class="btn btn-ghost" href="#paste">Paste a list</a><a class="btn btn-ghost" href="#logos">Logos</a></div></div>' +
           '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
           '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
           '<section class="card">' + (rows.length
-            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : tab === 'vetting' ? 'Votes' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
+            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : tab === 'vetting' ? 'Votes' : tab === 'menu' ? 'Where it stands' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
               rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></div><div>' + why(r, tab) + '</div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#l/' + r.id + '/' + tab + '">Review</a></div></div>'; }).join('') + '</div>'
             : '<p class="empty">' + (tab === 'held' ? 'Nothing on hold.' : 'Nothing here.') + '</p>') + '</section>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-tab]'), function (b) { b.addEventListener('click', function () { location.hash = '#' + b.dataset.tab; }); });
@@ -298,6 +301,20 @@
           ].filter(function (c) { return c[0] !== st; });
           // Being vetted: a Vegan-friendly or Vegan-options food place members see until enough members vote (public/ve-trust.js).
           var minV = (data && data.min_voters) || 10;
+          // The menu (No menu yet): where the readers got to, what they read, and the three ways to finish it.
+          var menuCard = '';
+          if (PLACES.indexOf(l.category) >= 0 && !d.menu_items && st === 'live') {
+            var mrow = ((data && data.menu) || []).filter(function (x) { return x.id === l.id; })[0], ms = MENU_STAGE[(mrow || {}).stage] || null;
+            var said = mi && (mi.reader_note && mi.reader_note !== 'Reading' ? mi.reader_note : mi.note);
+            menuCard = '<h2>Menu</h2><p class="hint" style="margin:0 0 8px">' + (ms ? '<span class="tag ' + ms[1] + '">' + ms[0] + '</span> ' : '') +
+                esc(mrow && mrow.stage === 'reading' ? 'Waiting for the menu reader.' : said || (l.details && l.details.menu_none_ok ? 'Marked: no menu online.' : 'No menu yet.')) + '</p>' +
+              (mi && mi.reader_read && mi.reader_read.length ? '<details style="margin:0 0 10px"><summary class="hint" style="cursor:pointer">What the reader opened</summary><ul class="notes">' + mi.reader_read.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>' : '') +
+              '<div class="row-btns" style="margin:0 0 6px"><a class="btn btn-sm" href="/directory/' + encodeURIComponent(l.slug) + '?tab=brand&pd=menu" target="_blank" rel="noopener">Add it by hand</a>' +
+                '<button type="button" class="btn btn-ghost btn-sm" id="dr-menu-retry">Read it again</button>' +
+                '<button type="button" class="btn btn-ghost btn-sm" id="dr-menu-none">No menu online</button></div>' +
+              '<p class="hint" style="margin:0 0 14px">Found their menu somewhere? Put the link in Menu link and Save: the reader starts there. No menu online takes it off this list (your note below goes with it).</p>' +
+              '<p class="msg" id="dr-menu-msg" role="status"></p>';
+          }
           var vetting = st === 'live' && /^(vegan_friendly|vegan_options)$/.test(l.vegan_status || '') && PLACES.indexOf(l.category) >= 0
             && !l.vetted_at && l.claim_status !== 'verified' && (l.voter_count || 0) < minV;
           if (vetting) CH.unshift(['vet', 'Vetted by us', 'btn', 'You know the place: it shows to everyone now, without waiting for ' + minV + ' member votes.']);
@@ -307,6 +324,7 @@
             '<div class="row-btns" style="margin:0 0 14px"><a class="btn btn-ghost btn-sm" href="' + esc(maps) + '" target="_blank" rel="noopener">Google Maps</a>' +
               (l.website ? '<a class="btn btn-ghost btn-sm" href="' + esc(l.website) + '" target="_blank" rel="noopener">Website</a>' : '') +
               (st === 'live' || st === 'closed' ? '<a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(l.slug) + '" target="_blank" rel="noopener">Their page</a>' : '') + '</div>' +
+            menuCard +
             '<h2>Your call</h2><textarea id="dr-note" placeholder="Why, for the record (optional): Called them, closed since August."></textarea>' +
             '<div class="choices">' + CH.map(function (c) { return '<div class="choice"><button type="button" class="' + c[2] + '" data-state="' + c[0] + '">' + c[1] + '</button><p>' + c[3] + '</p></div>'; }).join('') + '</div>' +
             '<p class="msg" id="dr-msg" role="status" style="margin-top:10px"></p></section>' +
@@ -383,6 +401,19 @@
           $('dr-online').addEventListener('change', syncOnline); syncOnline();
           $('dr-save').addEventListener('click', function () { saveFix(false); });
           if ($('dr-save-live')) $('dr-save-live').addEventListener('click', function () { saveFix(true); });
+          [['dr-menu-retry', 'menu_retry', 'Back in line: the readers try again shortly.'], ['dr-menu-none', 'menu_none', 'Marked: no menu online.']].forEach(function (b) {
+            if (!$(b[0])) return;
+            $(b[0]).addEventListener('click', function () {
+              var msg = $('dr-menu-msg'); this.disabled = true;
+              api({ action: b[1], listing_id: l.id, note: $('dr-note').value }).then(function (r) {
+                if (!r.ok) throw new Error(r.error || 'That did not work.');
+                msg.className = 'msg'; msg.textContent = b[2];
+                // Straight on to the next one in the same list.
+                var list = rowsOf(from), i = list.map(function (x) { return x.id; }).indexOf(l.id), nxt = list[i + 1] || list[i - 1];
+                return load().then(function () { if (from === 'menu') setTimeout(function () { location.hash = nxt && nxt.id !== l.id ? '#l/' + nxt.id + '/menu' : '#menu'; }, 600); });
+              }).catch(function (e) { msg.className = 'msg err'; msg.textContent = e.message; $(b[0]).disabled = false; });
+            });
+          });
           Array.prototype.forEach.call(V().querySelectorAll('[data-state]'), function (b) {
             b.addEventListener('click', function () {
               var s = b.dataset.state, msg = $('dr-msg'), label = b.textContent;

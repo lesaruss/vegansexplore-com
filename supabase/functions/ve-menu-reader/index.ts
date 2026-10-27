@@ -201,7 +201,7 @@ async function fetchFile(url: string, kind: 'image' | 'pdf') {
 }
 
 type Source = { kind: 'text' | 'image' | 'pdf'; url: string; text?: string; type?: string; data?: string };
-async function gather(website: string, deadline: number) {
+async function gather(website: string, deadline: number, menuUrl = '') {
   const read: string[] = [], sources: Source[] = [];
   const home = await fetchPage(website);
   if (!home.html) { read.push(`${website}: ${home.status ? 'answered ' + home.status : home.error || 'did not open'}`); }
@@ -219,6 +219,8 @@ async function gather(website: string, deadline: number) {
     const u = url.split('#')[0], sc = score(u, text);
     if (sc > 0 && !done.has(u)) cand.set(u, Math.max(cand.get(u) || 0, sc + bonus));
   };
+  // A menu link the team gave (Directory review) is read first, wherever it is, unless it is a marketplace.
+  if (/^https?:\/\//i.test(menuUrl) && !MARKETPLACE.test(hostOf(menuUrl)) && menuUrl !== base) cand.set(menuUrl.split('#')[0], 100);
   // Square Online keeps its menu at /s/order.
   const squareOrder = (u: string) => { const h = hostOf(u); if (/\.square\.site$/.test(h)) offer(new URL(u).origin + '/s/order', 'order menu', 3); };
   const pics: string[] = [], pdfs: string[] = [];
@@ -300,9 +302,9 @@ You get the text of their pages (some opened in a browser), menu data found on t
 - found is false when there is no menu with items in the sources: an empty page, a site that is down, a different business, or pictures you cannot read. Say why in the note.
 - Spell Vegan with a capital V. No em dashes or en dashes in anything you write.`;
 
-async function readMenu(l: any) {
+async function readMenu(l: any, menuUrl = '') {
   // The background run has about 400 s; the model gets the last 120.
-  const g = await gather(l.website, Date.now() + 330000);
+  const g = await gather(l.website || menuUrl, Date.now() + 330000, menuUrl);
   if (!g.sources.length) return { ok: false, why: 'nothing_read', read: g.read, note: 'Nothing on their site could be read' };
   const apiKey = await secret('ANTHROPIC_API_KEY');
   if (!apiKey) return { ok: false, why: 'no_model_key', read: g.read };
@@ -341,12 +343,14 @@ async function readMenu(l: any) {
 }
 
 async function runOne(listingId: string, save: boolean) {
-  const { data: l } = await db.from('listings').select('id, slug, name, website, category, vegan_status, address_city, status').eq('id', listingId).maybeSingle();
+  const { data: l } = await db.from('listings').select('id, slug, name, website, category, vegan_status, address_city, status, menu_crawl_url').eq('id', listingId).maybeSingle();
   if (!l || l.status !== 'approved') return { ok: false, why: 'not_found' };
-  if (!/^https?:\/\//i.test(l.website || '')) return { ok: false, why: 'no_website' };
+  const { data: qi } = await db.from('ve_menu_imports').select('menu_url').eq('listing_id', l.id).maybeSingle();
+  const menuUrl = qi?.menu_url || l.menu_crawl_url || '';
+  if (!/^https?:\/\//i.test(l.website || '') && !/^https?:\/\//i.test(menuUrl)) return { ok: false, why: 'no_website' };
   const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
   if (count) return { ok: false, why: 'has_menu' };
-  const r: any = await readMenu(l);
+  const r: any = await readMenu(l, menuUrl);
   const result: any = { slug: l.slug, name: l.name, ...r };
   if (!save) { await db.from('ve_menu_imports').update({ reader_preview: result }).eq('listing_id', l.id); return result; }
   await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none' }, { onConflict: 'listing_id', ignoreDuplicates: true });

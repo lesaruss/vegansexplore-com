@@ -25,6 +25,7 @@
 //   listing_edits  { listing_id }      what the owner changed on their page (ve_listing_edits), newest first
 //   listing_edit_undo { edit_id }     puts one change back, if nothing changed the same thing since
 //   listing_note   { contact_id | listing_id, note }   a note on the business's Directory listing (details.admin_notes)
+//   menu_retry     { listing_id }   No menu yet: read it again (the writer, then the menu reader); menu_none { listing_id, note } no menu online
 //   listing_closed { contact_id, note? }  no longer in business: the listing is marked permanently closed (shown only
 //                                         under the Directory's Closed filter, never in All) and the business leaves
 //                                         the email list
@@ -659,7 +660,7 @@ Deno.serve(async (req) => {
       // that are live but shown to members only until 10 different members vote, the business claims it, or we vet it.
       const { data: trust } = await db.from('ve_site_settings').select('value').eq('key', 'directory_trust').maybeSingle();
       const minVoters = +(trust?.value?.min_voters) || 10;
-      const [held, removed, closed, flags, vetting] = await Promise.all([
+      const [held, removed, closed, flags, vetting, menu] = await Promise.all([
         db.from('listings').select(COLS).eq('status', 'pending').not('details->review', 'is', null).order('updated_at', { ascending: false }).limit(500),
         db.from('listings').select(COLS).eq('status', 'rejected').not('details->removed_at', 'is', null).order('updated_at', { ascending: false }).limit(300),
         db.from('listings').select(COLS).eq('status', 'approved').eq('business_status', 'CLOSED_PERMANENTLY').order('updated_at', { ascending: false }).limit(300),
@@ -668,9 +669,13 @@ Deno.serve(async (req) => {
           .in('category', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep']).is('vetted_at', null)
           .neq('claim_status', 'verified').lt('voter_count', minVoters).neq('business_status', 'CLOSED_PERMANENTLY')
           .order('voter_count', { ascending: false }).order('name').limit(500) : Promise.resolve({ data: [] }),
+        // No menu yet (Sean, 2026-10-27): open food places with no menu on their page, read and not found first.
+        db.rpc('ve_menu_missing'),
       ]);
       return json({ ok: true, held: (held.data || []).map(pick), removed: (removed.data || []).map(pick), closed: (closed.data || []).map(pick),
-        flagged: flags.data || [], vetting: ((vetting as any).data || []).map((l: any) => ({ ...pick(l), voter_count: l.voter_count || 0 })), min_voters: minVoters });
+        flagged: flags.data || [], vetting: ((vetting as any).data || []).map((l: any) => ({ ...pick(l), voter_count: l.voter_count || 0 })), min_voters: minVoters,
+        menu: (menu.data || []).map((r: any) => ({ id: r.listing_id, slug: r.slug, name: r.name, category: r.category, city: r.city, state: r.state,
+          logo_url: r.logo_url, website: r.website, vote_count: r.vote_count, stage: r.stage, note: r.note, tried_at: r.tried_at, menu_url: r.menu_url })) });
     }
     if (action === 'review_get') {
       if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
@@ -682,7 +687,7 @@ Deno.serve(async (req) => {
         db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id),
         // Members who checked in there (the team sees who; the public only counts).
         db.from('ve_checkins').select('created_at, points, distance_m, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(20),
-        db.from('ve_menu_imports').select('status, menu_url, note, done_at').eq('listing_id', l.id).maybeSingle(),
+        db.from('ve_menu_imports').select('status, menu_url, note, done_at, reader_at, reader_note, reader_read').eq('listing_id', l.id).maybeSingle(),
       ]);
       const f = (flags || []).find((x: any) => x.listing_id === l.id);
       const g = a?.facts?.google || {};
@@ -746,7 +751,8 @@ Deno.serve(async (req) => {
         // A menu link: the Background writer copies the menu from it, unless the listing has a menu already.
         if (changed.includes('menu_crawl_url') && next.menu_crawl_url) {
           const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
-          if (!count) await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: next.menu_crawl_url, note: 'Menu link from Directory review', marked_at: null, done_at: null }, { onConflict: 'listing_id' });
+          // The writer reads it first; if it finds nothing, the menu reader tries again from this link.
+          if (!count) await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: next.menu_crawl_url, note: 'Menu link from Directory review', marked_at: null, done_at: null, reader_at: null, reader_note: null }, { onConflict: 'listing_id' });
         }
       }
       if (body.live && l.status !== 'approved') {
@@ -755,6 +761,27 @@ Deno.serve(async (req) => {
       }
       return json({ ok: true, saved: changed.filter((k) => !['address_city', 'address_state', 'location', 'latitude', 'longitude'].includes(k) || k === 'location')
         .map((k) => (k === 'google_hours_json' ? 'hours' : k === 'menu_crawl_url' ? 'menu_url' : k === 'location' ? 'online only' : k)) });
+    }
+    // No menu yet (Sean, 2026-10-27). Read it again: back to the writer, then the menu reader, from the menu link if there is
+    // one. No menu online: the business publishes none, so it leaves the list (details.menu_none_ok, a team note).
+    if (action === 'menu_retry' || action === 'menu_none') {
+      if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
+      const { data: l } = await db.from('listings').select('id, details, menu_crawl_url').eq('id', body.listing_id).maybeSingle();
+      if (!l) return json({ error: 'not_found' }, 404);
+      const at = new Date().toISOString();
+      if (action === 'menu_retry') {
+        const { error } = await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: l.menu_crawl_url || null, note: 'Read again from Directory review',
+          items: 0, marked_at: null, done_at: null, reader_at: null, reader_note: null, reader_preview: null }, { onConflict: 'listing_id' });
+        if (error) return json({ error: error.message }, 400);
+        return json({ ok: true });
+      }
+      const d = { ...(l.details || {}) }, note = clean(body.note, 500);
+      d.menu_none_ok = { at, by: me, note: note || null };
+      const { data: who } = await db.from('members').select('name').eq('id', me).single();
+      d.admin_notes = [...(d.admin_notes || []), { at, by: String(who?.name || 'Admin').split(/\s+/)[0], kind: 'note', text: 'No menu online' + (note ? ': ' + note : '') }];
+      const { error } = await db.from('listings').update({ details: d, updated_at: at }).eq('id', l.id);
+      if (error) return json({ error: error.message }, 400);
+      return json({ ok: true });
     }
     // Vetted by us (the same switch as the listing editor's): a Vegan-friendly or Vegan-options food place shows to everyone now.
     if (action === 'listing_vetted') {
