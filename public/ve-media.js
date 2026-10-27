@@ -1,16 +1,18 @@
 /* ve-media.js: the Media section (Sean, 2026-10-27: "let's do media instead of shows... what we're showing on media is
    our featured media plus the top 12 listings voted by you guys"). One component on /media and the dashboard's Media tab.
 
-   - Our shows come first, always, each with a Featured pill (SHOWS below; nobody adds theirs, we decide what is here).
-   - Then the top 12 of one kind of media, as voted in the Directory: Podcasts, Documentaries or Books (the dropdown,
-     TYPES below). Read fresh on every load, so a vote moves the list on the next visit. Our own shows are Directory
-     listings too and are left out of the 12. Ties go to the one with a logo, then A to Z.
+   - One kind of media at a time (Sean, 2026-10-27: "you shouldn't see the podcast when they're clicking on documentaries"):
+     Podcasts, Documentaries or Books (TYPES below), picked in the page's banner, which is not about a city.
+   - That kind's Featured first, with a Featured pill: what we put there, nobody adds theirs (SHOWS below, our four shows,
+     are Podcasts' Featured; a kind with nothing featured skips straight to its 12).
+   - Then its top 12 as voted in the Directory. Read fresh on every load, so a vote moves the list on the next visit. Our
+     own shows are Directory listings too and are left out of the 12. Ties go to the one with a logo, then A to Z.
    - Cards are the Directory's own card (VERegionDirectory.card / wire), so votes work the same everywhere.
 
    Usage (load /public/ve-region-directory.js first):
-     var media = VEMedia.mount(el, { urlState: true, onInteract: function () {}, onOpenListing: function (slug, name) {} });
+     var media = VEMedia.mount(el, { type: 'podcasts', onInteract: function () {}, onOpenListing: function (slug, name) {} });
      media.setType('books');
-   urlState keeps ?type= in the address bar (/media); the dashboard passes false.
+   VEMedia.TYPES feeds the banner's picker; VEMedia.directoryUrl(type) is its See in the Directory link.
 */
 (function () {
   if (window.VEMedia) return;
@@ -20,32 +22,33 @@
 
   // The kinds of media in the dropdown: key, label, the Directory sub-section (listings.category) it reads.
   var TYPES = [
-    { key: 'podcasts', label: 'Podcasts', cat: 'Podcasts' },
-    { key: 'documentaries', label: 'Documentaries', cat: 'Documentaries & Films' },
-    { key: 'books', label: 'Books', cat: 'Books' }
+    { key: 'podcasts', label: 'Podcasts', one: 'podcast', cat: 'Podcasts' },
+    { key: 'documentaries', label: 'Documentaries', one: 'documentary', cat: 'Documentaries & Films' },
+    { key: 'books', label: 'Books', one: 'book', cat: 'Books' }
   ];
+  function directoryUrl(key) { return '/directory?tab=media&sub=' + encodeURIComponent(typeOf(key).cat); }
 
   var SPOTIFY = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#1DB954"/><path d="M6.5 9.3c3.6-1.1 7.9-.8 11 1M7.1 12.6c3-.9 6.5-.6 9.2.9M7.7 15.7c2.4-.6 5-.4 7.1.7" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/></svg>';
   var APPLE = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#9B4DE0"/><circle cx="12" cy="10" r="2.4" fill="#fff"/><path d="M11 13.6h2l-.4 5.4h-1.2z" fill="#fff"/><path d="M8.1 14.4a5 5 0 1 1 7.8 0M6 16.3a7.6 7.6 0 1 1 12 0" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>';
 
   // Our shows, in order. slug is the show's page (/podcast/<slug>/) and its Directory listing, which stays out of the 12.
+  // type: the kind of media it is featured under.
   var SHOWS = [
-    { slug: 'vegans-explore-podcast', name: 'Vegans Explore Podcast', desc: 'Our flagship daily show, spotlighting Vegan topics, changemakers, nonprofits, and brands from around the world.',
+    { type: 'podcasts', slug: 'vegans-explore-podcast', name: 'Vegans Explore Podcast', desc: 'Our flagship daily show, spotlighting Vegan topics, changemakers, nonprofits, and brands from around the world.',
       img: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/78/e8/15/78e815be-972b-683e-53eb-a56c001e9969/mza_10373735271438816480.jpg/600x600bb.jpg',
       spotify: 'https://open.spotify.com/show/19GDaPV2SIwybt3HpMurHu', apple: 'https://podcasts.apple.com/us/podcast/vegans-explore-podcast/id1818708745' },
-    { slug: 'soflo-vegans-podcast', name: 'SoFlo Vegans Podcast', desc: "South Florida's Vegan community show, running since 2018: local restaurant spotlights, guest interviews, and the people building the SoFlo Vegan movement.",
+    { type: 'podcasts', slug: 'soflo-vegans-podcast', name: 'SoFlo Vegans Podcast', desc: "South Florida's Vegan community show, running since 2018: local restaurant spotlights, guest interviews, and the people building the SoFlo Vegan movement.",
       img: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts221/v4/8c/41/0d/8c410d14-e682-99ce-96cf-f39b8bebb698/mza_10096790309738673455.jpg/600x600bb.jpg',
       spotify: 'https://open.spotify.com/show/0AjEvjgjAWPWr8GsuyCkcz', apple: 'https://podcasts.apple.com/us/podcast/soflo-vegans-podcast/id1368665222' },
-    { slug: 'pre-vegans-podcast', name: 'Pre-Vegans Podcast', desc: 'A beginner-friendly series answering the questions people ask before they go Vegan.',
+    { type: 'podcasts', slug: 'pre-vegans-podcast', name: 'Pre-Vegans Podcast', desc: 'A beginner-friendly series answering the questions people ask before they go Vegan.',
       img: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/53/d9/56/53d95636-6d45-1b44-6274-201548f57873/mza_1682445160343010984.jpg/600x600bb.jpg',
       spotify: 'https://open.spotify.com/show/1lttNCqQ6zBrilhrKLogs7', apple: 'https://podcasts.apple.com/us/podcast/pre-vegans-podcast/id1780250627' },
-    { slug: 'vegans-who-lift-podcast', name: 'Vegans Who Lift Podcast', desc: 'Vegan bodybuilding, fitness, and coaching conversations hosted by Brooke Sellers and John Thomas.',
+    { type: 'podcasts', slug: 'vegans-who-lift-podcast', name: 'Vegans Who Lift Podcast', desc: 'Vegan bodybuilding, fitness, and coaching conversations hosted by Brooke Sellers and John Thomas.',
       img: 'https://is1-ssl.mzstatic.com/image/thumb/Podcasts116/v4/a0/99/53/a099536e-ce80-ef47-ff90-c9cf600fc2e8/mza_11962273234771203853.jpg/600x600bb.jpg',
       spotify: 'https://open.spotify.com/show/5Pr82Chfg3dYfoHHFizyAQ', apple: 'https://podcasts.apple.com/us/podcast/vegans-who-lift-podcast/id1727178761' }
   ];
   var OURS = SHOWS.map(function (s) { return s.slug; });
 
-  var CHEVRON = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\")";
   var css = [
     '.vem{font-family:Montserrat,sans-serif;color:#1a1a1a;}',
     '.vem-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 16px;padding-bottom:12px;border-bottom:2px solid rgba(0,0,0,.08);}',
@@ -78,11 +81,6 @@
     '.vem-res-show{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2d7d31;}',
     '.vem-res-title{font-size:13px;font-weight:800;margin-top:2px;}',
     '.vem-note{font-size:13px;color:rgba(26,26,26,.6);padding:8px 0;}',
-    '.vem-type{display:flex;align-items:center;gap:10px;}',
-    '.vem-type label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
-    // Dropdowns never show the browser's arrow (canon rule 15).
-    '.vem-type select{appearance:none;-webkit-appearance:none;-moz-appearance:none;font-family:inherit;font-size:13px;font-weight:800;color:#1a1a1a;background:#fff ' + CHEVRON + ' no-repeat right 16px center;border:1.5px solid rgba(0,0,0,.15);border-radius:6px;padding:10px 44px 10px 14px;cursor:pointer;min-width:200px;}',
-    '.vem-type select::-ms-expand{display:none;}',
     '.vem-all{display:inline-block;margin-top:16px;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2d7d31;text-decoration:none;}',
     '.vem-all:hover{text-decoration:underline;}',
     '.vem :focus-visible{outline:3px solid #F69820;outline-offset:3px;}'
@@ -118,35 +116,39 @@
     var el = typeof target === 'string' ? document.getElementById(target) : target;
     if (!document.getElementById('vem-css')) { var st = document.createElement('style'); st.id = 'vem-css'; st.textContent = css; document.head.appendChild(st); }
     if (window.VERegionDirectory) VERegionDirectory.css();
-    var urlState = opts.urlState !== false;
-    var type = typeOf(urlState ? new URLSearchParams(location.search).get('type') : opts.type).key;
+    var type = typeOf(opts.type).key;
     var uid = 'vem-' + Math.random().toString(36).slice(2, 8);
 
     el.classList.add('vem');
     el.innerHTML =
-      '<section class="vem-sec" aria-labelledby="' + uid + '-f">' +
-        '<div class="vem-head"><div><h2 id="' + uid + '-f">Featured</h2><p>Our shows, on Spotify, Apple Podcasts and here.</p></div></div>' +
-        '<div class="vem-search"><label for="' + uid + '-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search our episodes</label>' +
+      '<section class="vem-sec" data-vem-featured aria-labelledby="' + uid + '-f">' +
+        '<div class="vem-head"><div><h2 id="' + uid + '-f">Featured</h2><p data-vem-fsub></p></div></div>' +
+        '<div data-vem-searchbox><div class="vem-search"><label for="' + uid + '-q" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search our episodes</label>' +
           '<input type="search" id="' + uid + '-q" placeholder="Search our episodes by topic, guest, or keyword"></div>' +
-        '<div class="vem-results" data-vem-results aria-live="polite"></div>' +
-        '<div class="vem-shows">' + SHOWS.map(showCard).join('') + '</div>' +
+        '<div class="vem-results" data-vem-results aria-live="polite"></div></div>' +
+        '<div class="vem-shows" data-vem-shows></div>' +
       '</section>' +
       '<section class="vem-sec" aria-labelledby="' + uid + '-t">' +
-        '<div class="vem-head"><div><h2 id="' + uid + '-t" data-vem-title></h2><p>The top ' + TOP + ' as voted by members in the Directory. Vote for your favorites to move them up.</p></div>' +
-          '<div class="vem-type"><label for="' + uid + '-k">Media</label><select id="' + uid + '-k">' +
-            TYPES.map(function (t) { return '<option value="' + t.key + '">' + esc(t.label) + '</option>'; }).join('') + '</select></div></div>' +
+        '<div class="vem-head"><div><h2 id="' + uid + '-t" data-vem-title></h2><p>The top ' + TOP + ' as voted by members in the Directory. Vote for your favorites to move them up.</p></div></div>' +
         '<div class="vrd-root"><div class="rank-grid" data-vem-grid></div></div>' +
         '<a class="vem-all" data-vem-all href="/directory?tab=media">See them all in the Directory</a>' +
       '</section>';
 
-    var select = el.querySelector('select'), grid = el.querySelector('[data-vem-grid]'), title = el.querySelector('[data-vem-title]');
+    var grid = el.querySelector('[data-vem-grid]'), title = el.querySelector('[data-vem-title]');
+    var featured = el.querySelector('[data-vem-featured]'), shows = el.querySelector('[data-vem-shows]');
     var allLink = el.querySelector('[data-vem-all]'), seq = 0;
 
     function load() {
       var t = typeOf(type), mine = ++seq;
-      select.value = t.key;
+      // This kind's Featured, or none (then its 12 lead the page).
+      var feat = SHOWS.filter(function (x) { return x.type === t.key; });
+      featured.hidden = !feat.length;
+      shows.innerHTML = feat.map(showCard).join('');
+      el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our shows, on Spotify, Apple Podcasts and here.' : 'Our picks.';
+      el.querySelector('[data-vem-searchbox]').hidden = t.key !== 'podcasts';
       title.textContent = 'Top ' + TOP + ' ' + t.label;
-      allLink.textContent = 'See every ' + t.label.toLowerCase().replace(/s$/, '') + ' in the Directory';
+      allLink.textContent = 'See every ' + t.one + ' in the Directory';
+      allLink.href = directoryUrl(t.key);
       grid.innerHTML = '<p class="vem-note">Loading&hellip;</p>';
       var fields = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,voter_count,business_status';
       var cat = '"' + t.cat + '"';
@@ -160,18 +162,6 @@
         })
         .catch(function () { if (mine === seq) grid.innerHTML = '<p class="vem-note">The list did not load. Refresh to try again.</p>'; });
     }
-
-    select.addEventListener('change', function () {
-      type = select.value;
-      if (urlState) {
-        var q = new URLSearchParams(location.search);
-        if (type === TYPES[0].key) q.delete('type'); else q.set('type', type);
-        var s = q.toString();
-        history.replaceState(history.state, '', location.pathname + (s ? '?' + s : '') + location.hash);
-      }
-      if (opts.onInteract) opts.onInteract();
-      load();
-    });
 
     // Search our episodes (ve_pulse_content, the same search the old /podcast page had).
     var input = el.querySelector('input[type="search"]'), results = el.querySelector('[data-vem-results]'), timer = null;
@@ -195,8 +185,19 @@
     });
 
     load();
-    return { setType: function (k) { type = typeOf(k).key; load(); }, reload: load };
+    return { setType: function (k) { if (typeOf(k).key === type) return; type = typeOf(k).key; load(); }, reload: load };
   }
 
-  window.VEMedia = { mount: mount, TYPES: TYPES, SHOWS: SHOWS };
+  // The banner's options (VECityBanner.mount), the same on /media and the dashboard: Vegan Media over the kind, the kinds
+  // instead of cities, and See in the Directory for that kind. Add key, param or initial, and onChange.
+  function bannerOptions(extra) {
+    var o = { title: 'Vegan Media', pickLabel: 'Kind of media', art: '/communities/new-york/banner.jpg',
+      sub: 'Our shows and picks first, then the podcasts, documentaries and books members vote to the top in the Directory.',
+      choices: TYPES.map(function (t) { return { value: t.key, label: t.label }; }),
+      link: function (key) { return { href: directoryUrl(key), label: 'See in the Directory' }; } };
+    for (var k in extra) o[k] = extra[k];
+    return o;
+  }
+
+  window.VEMedia = { mount: mount, TYPES: TYPES, SHOWS: SHOWS, directoryUrl: directoryUrl, bannerOptions: bannerOptions };
 })();
