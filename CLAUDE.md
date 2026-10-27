@@ -826,7 +826,10 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   communities for All cities, still the default for a banner with no `home`; Sean, 2026-10-27: it opens them the way the menu's Communities does, so in the dashboard, or a page the
   dashboard frames such as the Daily Pulse, the dashboard opens the chapter (`VEOpenCommunity` in center-console), and any other frame
   sends the whole window), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
-  the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit).
+  the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit). **Phones have no
+  Expand** (Sean, 2026-10-27: "on mobile, we lose the expand... seeing it big on desktop is cool"): at 900 px and under the banner
+  is always folded, the title, the line under it and the picker on the left and the page's two buttons on the right at their own
+  size; a banner with no buttons (My Saves, Guides) gives the title the whole width (`vcb-no-acts`).
   Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
   then the picker on the left; the buttons on the right, each its own height, stacked and centered (Sean, 2026-10-27: one
   button "should just be the same size as normally"). **Collapse or Expand is one choice for the whole site** (Sean,

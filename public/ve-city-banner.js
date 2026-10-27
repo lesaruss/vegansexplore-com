@@ -88,6 +88,9 @@
     // Option B on phones: flat scrim and a frosted card.
     // Phones (Sean, 2026-10-27: "make the section with the title and city drop down full width so it flushes with the top
     // navigation"): no gap under the menu, and the card with the title and picker runs the full width.
+    // Phones have no Expand (Sean, 2026-10-27: "on mobile, we lose the expand"): the banner is always folded there, and a banner
+    // with no buttons left gives its title the whole width (vcb-no-acts).
+    '@media (max-width:900px){.vcb-toggle{display:none !important;}.vcb.is-collapsed.vcb-no-acts .vcb-inner{grid-template-columns:minmax(0,1fr);}.vcb.vcb-no-acts .vcb-actions{display:none;}}',
     '@media (max-width:900px){.vcb{margin-top:0;align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:0;margin:0;padding:28px 20px;width:100%;max-width:100%;border:0;}}',
     '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0;padding:24px 16px;max-width:100%;border:0;}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
   ].join('');
@@ -245,7 +248,18 @@
       var on = !el.classList.contains('is-collapsed'); fold(on);
       chosen = on ? 'collapsed' : 'expanded'; try { sessionStorage.setItem(storeKey, chosen); } catch (e) {}
     });
-    if (chosen) fold(chosen === 'collapsed');
+    // On a phone it is always folded and the choice is the desktop's alone; back on a wide screen it is as the visitor left it.
+    var autoFolded = false;
+    function byDevice() {
+      if (phone.matches) { fold(true); return; }
+      fold(chosen ? chosen === 'collapsed' : autoFolded);
+    }
+    var acts = Array.prototype.filter.call(el.querySelectorAll('.vcb-actions .vcb-btn'), function (b) {
+      return !b.classList.contains('vcb-toggle') && !b.classList.contains('vcb-open-only');
+    });
+    if (!acts.length) el.classList.add('vcb-no-acts');
+    byDevice();
+    if (phone.addEventListener) phone.addEventListener('change', byDevice);
     Array.prototype.forEach.call(el.querySelectorAll('[data-vcb-act]'), function (b) {
       b.addEventListener('click', function () { var a = opts.actions[+b.getAttribute('data-vcb-act')]; if (a && a.onClick) a.onClick(); });
     });
@@ -257,7 +271,7 @@
       e.preventDefault(); opts.home.onClick();
     });
     var actionBtn = el.querySelector('[data-vcb-action]');
-    if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) fold(true); opts.action.onClick(); });
+    if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) { autoFolded = true; fold(true); } opts.action.onClick(); });
 
     var api = {
       el: el,
@@ -266,7 +280,7 @@
       current: function () { return current; },
       hub: function () { return hubBySlug(current); },
       fold: fold,
-      autoFold: function () { if (!chosen) fold(true); },
+      autoFold: function () { if (!chosen) { autoFolded = true; fold(true); } },
       setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
       setHome: function (href) { if (homeBtn && href) homeBtn.href = href; },
       setLabel: function (text) { label = text || ''; show(current, true); },
