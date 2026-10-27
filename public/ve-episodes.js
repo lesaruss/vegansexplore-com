@@ -3,7 +3,7 @@
  * from their RSS feed"). The episodes come from the show's own feed through the ve-podcast edge function; the audio streams from
  * the show's host. Used by the listing page's Episodes tab and My List's Episodes.
  *
- *   VEEpisodes.mount(el, { listing: {id, slug, name, logo_url}, onReady(total) })   the list (search, 20 at a time, Show more),
+ *   VEEpisodes.mount(el, { listing: {id, slug, name, logo_url}, onReady(total) })   the list (search, 20 a page, ?epage=),
  *       and one episode on its own view (?ep=<guid> in the address bar, Episodes / title to go back)
  *   VEEpisodes.play(ep, show)        plays in the player bar at the foot of the window (one at a time, keeps playing across tabs)
  *   VEEpisodes.save(listingId, guid) toggles a member's save; the Passport window for anyone else
@@ -39,7 +39,9 @@
     '.vep-acts{display:flex;flex-direction:column;gap:6px}' +
     '.vep-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;border:1px solid rgba(0,0,0,.22);background:#fff;color:#1f5f22;white-space:nowrap}' +
     '.vep-btn.go{background:#1f5f22;border-color:#1f5f22;color:#fff}.vep-btn[aria-pressed=true]{background:#EAF7EA;border-color:#2d7d31}' +
-    '.vep-more{display:flex;justify-content:center;margin-top:16px}.vep-empty{font-size:13.5px;color:rgba(26,26,26,.7);padding:20px 0}' +
+    '.vep-pages{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:18px}.vep-pages button{min-width:38px;min-height:38px;padding:0 10px;font:inherit;font-size:13px;font-weight:800;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;color:#1a1a1a;cursor:pointer}' +
+    '.vep-pages button[aria-current=page]{background:#1f5f22;border-color:#1f5f22;color:#fff}.vep-pages .gap{align-self:center;padding:0 4px;color:rgba(26,26,26,.6)}' +
+    '.vep-empty{font-size:13.5px;color:rgba(26,26,26,.7);padding:20px 0}' +
     '.vep-crumb{font-size:12.5px;font-weight:700;margin:0 0 16px;color:rgba(26,26,26,.68)}.vep-crumb button{background:none;border:0;padding:0;font:inherit;color:#1f5f22;cursor:pointer}.vep-crumb button:hover{text-decoration:underline}' +
     '.vep-one{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start}.vep-one .vep-img{width:200px;height:200px;border-radius:12px}' +
     '.vep-one h2{font-size:22px;font-weight:900;line-height:1.25;margin:0 0 6px}.vep-one .vep-acts{flex-direction:row;flex-wrap:wrap;margin:14px 0 18px}' +
@@ -99,6 +101,7 @@
       if (btn) btn.disabled = false;
       if (d && d.why === 'members_only') { if (window.VEVotes && VEVotes.savePrompt) VEVotes.savePrompt(); return null; }
       if (!d || !d.ok) return null;
+      if (window.veEpisodeSaved) window.veEpisodeSaved(listingId, guid, d.saved);
       document.querySelectorAll('[data-vep-save="' + CSS_ESC(listingId + '|' + guid) + '"]').forEach(function (b) { saveLook(b, d.saved); });
       return d.saved;
     }).catch(function () { if (btn) btn.disabled = false; return null; });
@@ -124,6 +127,7 @@
   // ---- the list and one episode ----
   function mount(el, opts) {
     css();
+    var PER = 20, page = Math.max(1, parseInt(new URLSearchParams(location.search).get('epage'), 10) || 1);
     var L = opts.listing, show = { id: L.id, name: L.name, image: L.logo_url || '' }, saved = [], eps = [], total = 0, q = '', seq = 0;
     el.innerHTML = '<div class="vep-dock"></div><div class="vep"></div>'; var root = el.lastChild;
     function epParam() { return new URLSearchParams(location.search).get('ep') || ''; }
@@ -150,9 +154,9 @@
 
     function drawList() {
       root.innerHTML = '<div class="vep-bar"><input type="search" placeholder="Search episodes" aria-label="Search episodes" value="' + esc(q) + '"><span class="vep-count" aria-live="polite"></span></div>' +
-        '<div class="vep-list"></div><div class="vep-more"></div>';
+        '<div class="vep-list"></div><div class="vep-pages"></div>';
       var input = root.querySelector('input'), t = null;
-      input.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { q = input.value.trim(); load(0); }, 300); });
+      input.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { q = input.value.trim(); go(1, false); }, 300); });
       paint();
     }
     function paint() {
@@ -160,8 +164,14 @@
       root.querySelector('.vep-count').textContent = total ? total + (total === 1 ? ' episode' : ' episodes') + (q ? ' match' : '') : '';
       list.innerHTML = eps.length ? eps.map(function (e) { return row(e, show, { saved: saved.indexOf(e.guid) >= 0, href: hrefOf(e.guid) }); }).join('')
         : '<div class="vep-empty">' + (q ? 'No episodes match that.' : 'No episodes yet.') + '</div>';
-      root.querySelector('.vep-more').innerHTML = eps.length < total ? '<button type="button" class="vep-btn">Show more</button>' : '';
-      var more = root.querySelector('.vep-more button'); if (more) more.onclick = function () { more.disabled = true; load(eps.length); };
+      // Page numbers: the first, the last and two either side of this one (the Directory's pager).
+      var pages = Math.ceil(total / PER), nums = [], last = 0;
+      for (var n = 1; n <= pages; n++) if (n === 1 || n === pages || Math.abs(n - page) <= 2) nums.push(n);
+      root.querySelector('.vep-pages').innerHTML = pages > 1 ? '<nav aria-label="Episode pages" style="display:contents">' + nums.map(function (n) {
+        var gap = n - last > 1 ? '<span class="gap">…</span>' : ''; last = n;
+        return gap + '<button type="button" data-p="' + n + '"' + (n === page ? ' aria-current="page"' : '') + ' aria-label="Page ' + n + '">' + n + '</button>';
+      }).join('') + '</nav>' : '';
+      root.querySelectorAll('.vep-pages [data-p]').forEach(function (b) { b.onclick = function () { go(+b.getAttribute('data-p'), true); }; });
       wire(list);
     }
     function load(offset) {
@@ -171,10 +181,22 @@
         if (!d || !d.ok) { root.innerHTML = '<div class="vep-empty">The episodes did not load. Try again in a moment.</div>'; return d; }
         if (d.show && d.show.image) show.image = d.show.image;
         if (d.saved) saved = d.saved;
-        eps = offset ? eps.concat(d.episodes) : d.episodes; total = d.total;
+        eps = d.episodes; total = d.total;
         eps.forEach(function (e) { cache[e.guid] = e; });
         paint(); return d;
       });
+    }
+    function go(n, scroll) {
+      page = n;
+      var u = new URL(location.href); if (n > 1) u.searchParams.set('epage', n); else u.searchParams.delete('epage');
+      if (u.href !== location.href) history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+      load((n - 1) * PER).then(function () { if (scroll) toTop(); });
+    }
+    function toTop() {
+      // Clear of the sticky menu (--ve-nav-h, set by nav.js).
+      var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 72;
+      var top = root.getBoundingClientRect().top;
+      if (top < navH || top > window.innerHeight) window.scrollTo({ top: top + window.scrollY - navH - 16, behavior: 'smooth' });
     }
     function openOne(guid, push) {
       setEp(guid, push);
@@ -193,26 +215,24 @@
           '<div class="vep-full">' + esc(ep.summary) + '</div></div></article>';
         root.querySelector('.vep-crumb button').onclick = back;
         wire(root);
-        // Clear of the sticky menu (--ve-nav-h, set by nav.js).
-        var navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 72;
-        var top = root.getBoundingClientRect().top;
-        if (top < navH || top > window.innerHeight) window.scrollTo({ top: top + window.scrollY - navH - 16, behavior: 'smooth' });
+        toTop();
       });
     }
-    function back() { setEp('', true); drawList(); if (!eps.length) load(0); }
+    function back() { setEp('', true); drawList(); if (!eps.length) load((page - 1) * PER); }
     window.addEventListener('popstate', function () {
       var g = epParam(); if (!root.isConnected) return;
-      if (g) openOne(g, false); else { drawList(); if (!eps.length) load(0); }
+      if (g) openOne(g, false); else { drawList(); if (!eps.length) load((page - 1) * PER); }
     });
 
     var first = epParam();
     // The first page tells the page whether there is anything to show (no empty tab).
-    return call({ action: 'episodes', listing_id: L.id, offset: 0, limit: 20 }).then(function (d) {
+    return call({ action: 'episodes', listing_id: L.id, offset: (page - 1) * PER, limit: PER }).then(function (d) {
       if (d && d.ok) {
         if (d.show && d.show.image) show.image = d.show.image;
         saved = d.saved || []; eps = d.episodes || []; total = d.total || 0; eps.forEach(function (e) { cache[e.guid] = e; });
       }
       if (opts.onReady) opts.onReady(total, eps[0] || null, show);
+      if (total && !eps.length && page > 1) { history.replaceState(history.state, '', location.pathname + location.search.replace(/[?&]epage=\d+/, '').replace(/^&/, '?') + location.hash); return mount(el, opts); }
       if (!total) return total;
       if (first) openOne(first, false); else drawList();
       return total;

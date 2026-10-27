@@ -157,6 +157,20 @@
   .dash-mini-stat-label{font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:4px;}
   .dash-mini-stat-progress{font-size:8px;font-weight:700;color:var(--ve-text-50);margin-top:2px;}
   @media (max-width:640px){ .dash-welcome{flex-direction:column;} .dash-welcome-stats{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;} .dash-mini-stat{min-width:0;padding:10px 6px;} .dash-mini-stat-value{font-size:17px;} .dash-mini-stat-label{font-size:8px;letter-spacing:0.06em;} .dash-mini-stat-progress{font-size:7px;} }
+  .dash-saves{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr));gap:18px;margin-top:14px}
+  .dash-saves-box{border:1.5px solid var(--ve-border);border-radius:12px;padding:16px 16px 8px;background:#fff;min-width:0}
+  .dash-saves-box h3{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-green-dark);margin:0 0 10px}
+  .dash-saves-list{max-height:560px;overflow:auto}
+  .dash-save-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ve-border)}
+  .dash-save-row:first-child{border-top:0}
+  .dash-save-img{width:48px;height:48px;border-radius:8px;background:var(--ve-green-light) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px}
+  .dash-save-t{font-size:13.5px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;background:none;border:0;padding:0;text-align:left;font-family:inherit;color:var(--ve-text);cursor:pointer}
+  .dash-save-t:hover{color:var(--ve-green-dark);text-decoration:underline}
+  .dash-save-s{font-size:11.5px;font-weight:700;color:var(--ve-text-50);margin-top:2px}.dash-save-s button{background:none;border:0;padding:0;font:inherit;color:var(--ve-green-dark);cursor:pointer}
+  .dash-save-acts{display:flex;gap:6px}
+  .dash-save-acts button{width:38px;height:38px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-green-dark);cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .dash-save-acts .go{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff}
+  .dash-saves-empty{font-size:13px;color:var(--ve-text-50);padding:6px 0 14px;line-height:1.5}
   .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:6px;}
   .dash-welcome h1{font-size:26px;font-weight:900;letter-spacing:-0.01em;text-transform:uppercase;margin-bottom:4px;}
   .dash-welcome-sub{font-size:13px;color:var(--ve-text-50);}
@@ -615,6 +629,7 @@
 <script src="/public/ve-city-banner.js"></script>
 <script src="/public/ve-events.js"></script>
 <script src="/public/ve-media.js"></script>
+<script src="/public/ve-episodes.js"></script>
 
 <div class="console-backdrop"></div>
 
@@ -937,6 +952,18 @@
          and tabs signed in or out). It loads the first time the tab is on screen; the page sizes the frame (ve-frame-height). -->
     <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Pulse">
       <div id="dash-pulse-host"><iframe title="Daily Pulse" id="dash-pulse-frame" scrolling="no"></iframe></div>
+    </div>
+
+    <!-- My Saves (Sean, 2026-10-27: "put it on their dashboard... a section for... saved podcasts... the podcast with the little
+         icon and then the text so they can listen to it anytime... my favorites, or my saves... a section on the navigation just
+         for members"): what a member saved, one box per kind, each short list scrolling inside. Filled by renderSavesTab. -->
+    <div id="dash-saves-section" style="display:none;margin-bottom:28px;" data-tab-key="saves" data-tab-order="0.7" data-tab-label="My Saves">
+      <p class="dash-eyebrow" style="margin-bottom:2px;">My Saves</p>
+      <p class="dash-section-title">Everything you saved</p>
+      <div class="dash-saves">
+        <section class="dash-saves-box" aria-labelledby="dash-saves-ep-t"><h3 id="dash-saves-ep-t">Podcast episodes</h3><div id="dash-saves-eps" class="dash-saves-list"></div></section>
+        <section class="dash-saves-box" aria-labelledby="dash-saves-l-t"><h3 id="dash-saves-l-t">Places and brands</h3><div id="dash-saves-listings" class="dash-saves-list"></div></section>
+      </div>
     </div>
 
     <!-- Guides in the top menu (Sean, 2026-10-26: "that's going to be one of the big things that we're selling"), and in Your tools. -->
@@ -2167,6 +2194,54 @@
   // The Media tab (Sean, 2026-10-27), mounted once: the same banner and lists as /media. Its banner picks the kind of media,
   // not a city ("no one's trying to make media just for one location"); a listing opens under the Directory tab.
   var dashMediaBanner = null;
+  // My Saves (Sean, 2026-10-27): saved podcast episodes, played right here, and saved listings. Read each time the tab opens.
+  function renderSavesTab() {
+    var eb = document.getElementById('dash-saves-eps'), lb = document.getElementById('dash-saves-listings');
+    if (!eb || !lb) return;
+    var PLAY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>';
+    var X = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+    function e(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function openShow(slug, name) { if (window.activateDashTab) window.activateDashTab('directory', { skipHistory: true }); openDashboardListing(slug, name); }
+    if (!eb.children.length) eb.innerHTML = '<div class="dash-saves-empty">Loading...</div>';
+    if (window.VEEpisodes) VEEpisodes.mine().then(function (d) {
+      var eps = (d && d.episodes) || [];
+      if (!eps.length) { eb.innerHTML = '<div class="dash-saves-empty">No episodes saved yet. Open a podcast in the Directory (Media, then Podcasts) and tap Save on an episode.</div>'; return; }
+      eb.innerHTML = eps.map(function (x, i) {
+        return '<div class="dash-save-row"><div class="dash-save-img" style="background-image:url(\'' + e(x.image || x.show.logo || '') + '\')"></div>' +
+          '<div style="min-width:0"><button type="button" class="dash-save-t" data-i="' + i + '" data-act="play">' + e(x.title) + '</button>' +
+          '<div class="dash-save-s"><button type="button" data-i="' + i + '" data-act="show">' + e(x.show.name) + '</button>' + (x.duration ? ' · ' + e(VEEpisodes.len(x.duration)) : '') + '</div></div>' +
+          '<div class="dash-save-acts"><button type="button" class="go" data-i="' + i + '" data-act="play" aria-label="Play ' + e(x.title) + '">' + PLAY + '</button>' +
+          '<button type="button" data-i="' + i + '" data-act="remove" aria-label="Remove ' + e(x.title) + ' from My Saves">' + X + '</button></div></div>';
+      }).join('');
+      eb.onclick = function (ev) {
+        var b = ev.target.closest('[data-act]'); if (!b) return;
+        var x = eps[+b.getAttribute('data-i')], show = { id: x.show.id, name: x.show.name, image: x.show.logo || '' };
+        var act = b.getAttribute('data-act');
+        if (act === 'play') VEEpisodes.play(x, show);
+        else if (act === 'show') openShow(x.show.slug, x.show.name);
+        else VEEpisodes.save(x.show.id, x.guid, b).then(function (on) { if (on === false) renderSavesTab(); });
+      };
+    }).catch(function () { eb.innerHTML = '<div class="dash-saves-empty">Your episodes did not load. Try again in a moment.</div>'; });
+    if (window.VEAuth && VEAuth.listSavedListings) VEAuth.listSavedListings().then(function (d) {
+      var items = (d && d.items) || [];
+      if (!items.length) { lb.innerHTML = '<div class="dash-saves-empty">Nothing saved yet. Tap Save on any listing in the Directory.</div>'; return; }
+      lb.innerHTML = items.map(function (l, i) {
+        var img = l.logo_url ? 'background-image:url(\'' + e(l.logo_url) + '\');background-color:#fff;background-size:contain' : 'background-color:' + e(l.color || '#2d7d31');
+        return '<div class="dash-save-row"><div class="dash-save-img" style="' + img + '">' + (l.logo_url ? '' : e((l.name || '?').charAt(0))) + '</div>' +
+          '<div style="min-width:0"><button type="button" class="dash-save-t" data-i="' + i + '" data-act="open">' + e(l.name) + '</button>' +
+          '<div class="dash-save-s">' + e([l.category, l.address_city].filter(Boolean).join(' · ')) + '</div></div>' +
+          '<div class="dash-save-acts"><button type="button" data-i="' + i + '" data-act="remove" aria-label="Remove ' + e(l.name) + ' from My Saves">' + X + '</button></div></div>';
+      }).join('');
+      lb.onclick = function (ev) {
+        var b = ev.target.closest('[data-act]'); if (!b) return;
+        var l = items[+b.getAttribute('data-i')];
+        if (b.getAttribute('data-act') === 'open') openShow(l.slug, l.name);
+        else { b.disabled = true; VEAuth.unsaveListing(l.id).then(function () { renderSavesTab(); }); }
+      };
+    }).catch(function () { lb.innerHTML = '<div class="dash-saves-empty">Your saves did not load. Try again in a moment.</div>'; });
+  }
+  window.renderSavesTab = renderSavesTab;
+
   function renderMediaTab() {
     var mount = document.getElementById('dash-media-mount');
     if (!mount || dashMediaBanner || !window.VEMedia || !window.VECityBanner) return;
@@ -2746,7 +2821,9 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (FICONS[name] || FICONS.star) + '</svg>';
   }
 
+  // My List is the My Saves tab now (Sean, 2026-10-27).
   function openMyList() {
+    if (window.activateDashTab) { window.activateDashTab('saves'); return; }
     openToolInFrame('My List', '/account/my-list', false);
   }
 
@@ -3275,7 +3352,7 @@
       { icon: 'book', title: 'Guides', desc: 'Step-by-step Guides for your journey, $11 or 1,100 points each.', fn: function () { if (window.activateDashTab) activateDashTab('guides'); } },
       { icon: 'megaphone', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
       { icon: 'target', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
-      { icon: 'list', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } },
+      { icon: 'list', title: 'My Saves', desc: 'The episodes and listings you saved.', fn: function () { openMyList(); } },
       { icon: 'pin', title: 'Community Board', desc: 'The Daily Pulse, jobs, classifieds, fosters and rescues.', fn: function () { if (window.activateDashTab) window.activateDashTab('pulse'); } }
     ];
     if (admin || (member.ve_tier && member.ve_tier !== 'free')) {
@@ -3446,6 +3523,7 @@
         btn.classList.toggle('active', btn.getAttribute('data-tab-key') === key);
       });
       mobileSelect.value = key;
+      if (key === 'saves') renderSavesTab();
       if (!opts.skipHistory) {
         if (key === 'directory') closeDashboardListing(true);
         var url = '/dashboard/' + key;
