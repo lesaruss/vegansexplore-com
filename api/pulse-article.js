@@ -255,10 +255,11 @@ module.exports = async (req, res) => {
     + '.ad-rail-label{position:absolute;left:0;right:0;bottom:100%;margin-bottom:6px;font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-30);text-align:center;}'
     + '.ad-slot{position:relative;border-radius:8px;overflow:hidden;background:#fff;border:1px solid var(--ve-border);width:100%;max-width:300px;flex-shrink:0;}'
     + '.ad-slot-tower{aspect-ratio:1/2;} .ad-slot-landscape{aspect-ratio:6/5;}'
+    + '.ad-cta{display:block;text-align:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2d7d31;text-decoration:none;}.ad-cta span{display:block;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(26,26,26,0.68);margin-top:2px;}.ad-cta:hover{text-decoration:underline;}'
     + '.ad-slot a{display:block;width:100%;height:100%;} .ad-slot img{width:100%;height:100%;object-fit:cover;display:block;}'
     + '.ad-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--ve-green-light);color:var(--ve-green-dark);}'
     + '.ad-placeholder svg{width:26px;height:26px;opacity:0.6;} .ad-ph-text{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;} .ad-ph-dim{font-size:10px;font-weight:600;color:var(--ve-text-30);}'
-    + '@media (max-width:960px){.pulse-content-row{flex-direction:column;}.ad-rail-label{position:static;width:100%;margin:0;}.ad-rail{position:static;top:auto;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:12px;padding-top:20px;border-top:1px solid var(--ve-border);}.ad-slot{width:100%;max-width:100%;}}'
+    + '@media (max-width:960px){.pulse-content-row{flex-direction:column;}.ad-rail-label{position:static;width:100%;margin:0;}.ad-rail{position:static;top:auto;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:12px;padding-top:20px;border-top:1px solid var(--ve-border);}.ad-slot{width:100%;max-width:100%;}.ad-cta{width:100%;}}'
     + '@media (max-width:640px){.pulse-list-wrap{padding:16px 16px 48px;}}'
     + '.panel-breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap;}'
     + '.panel-trail-btn{background:none;border:none;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;}'
@@ -363,7 +364,8 @@ module.exports = async (req, res) => {
     + '<aside class="ad-rail" id="veAdRail" aria-label="Advertisement">'
     + '<div class="ad-rail-label">Advertisement</div>'
     + '<div class="ad-slot ad-slot-tower" id="adSlotSkyscraper"><div class="ad-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div class="ad-ph-text">Advertisement</div><div class="ad-ph-dim">300 x 600</div></div></div>'
-    + '<div class="ad-slot ad-slot-landscape" id="adSlotLandscape1"><div class="ad-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div class="ad-ph-text">Advertisement</div><div class="ad-ph-dim">300 x 250</div></div></div>'
+    // One ad per page, the tall one (Sean, 2026-10-27), and Your ad here under it, as in public/ve-ad-rail.js.
+    + '<a class="ad-cta" href="/partners">Your ad here<span>Advertise with Vegans Explore</span></a>'
     + '</aside>'
     + '</div></div>'
     + '<script src="/public/footer.js"></script>'
@@ -384,7 +386,7 @@ module.exports = async (req, res) => {
     + "var PULSE_SUPABASE_URL=" + JSON.stringify(SUPABASE_URL) + ";"
     + "var PULSE_ANON_KEY=" + JSON.stringify(SUPABASE_ANON_KEY) + ";"
     + "function pEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}"
-    + "var VE_AD_SLOT_ELS={'skyscraper':'adSlotSkyscraper','landscape-1':'adSlotLandscape1'};"
+    + "var VE_AD_SLOT_ELS={'skyscraper':'adSlotSkyscraper'};"
     + "function renderAdSlot(elId,ad){var el=document.getElementById(elId);if(!el||!ad||!ad.image_url)return;el.innerHTML='<a href=\"'+pEsc(ad.link_url||'#')+'\" target=\"_blank\" rel=\"noopener noreferrer sponsored\"><img src=\"'+pEsc(ad.image_url)+'\" alt=\"Advertisement\"></a>';}"
     + "fetch(PULSE_SUPABASE_URL+'/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=pulse',{headers:{apikey:PULSE_ANON_KEY,Authorization:'Bearer '+PULSE_ANON_KEY}}).then(function(r){return r.json();}).then(function(data){var slots=data&&data.slots;if(!slots||!slots.length)return;slots.forEach(function(s){var elId=VE_AD_SLOT_ELS[s.slot_id];if(elId)renderAdSlot(elId,s);});}).catch(function(){});"
     + "var pulseSlug=" + JSON.stringify(post.slug) + ";"

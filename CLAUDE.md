@@ -147,6 +147,14 @@ buy runs on every page of the chapter; All cities uses `/directory`'s pair (`ve-
 `data-ad-page="chapter"` and follows the city picker (`VEAdRail.chapter(rail, slug)`). Beside it the Directory is three cards
 across (two under 1280 px, one on phones), and a card's name shows whole, up to three rows, never cut with an ellipsis.
 
+**One ad per page** (Sean, 2026-10-27: "it's either going to be the long one or two short ones, not both"): the Pulse
+(and its post pages, `api/pulse-article.js`), Events and the city hubs show one tall 300 x 600; the Directory and Media show
+the chapter's two 300 x 250s; a Directory listing keeps its one 300 x 250 in the info column (Sean, 2026-09-27). A city hub's
+rail is its tall slot (`data-ad-page="hub"`, `data-ad-chapter` the hub slug; the rotating Billboard is gone), at the Pulse's
+width (three-fourths and one-fourth, the slot a full 300 px). Under every ad, filled or not, **Your ad here / Advertise with
+Vegans Explore** links to `/partners` until a page for businesses is decided (`CTA` in the script). The rail sticks 16px under
+the site's menu (`--ve-nav-h`, set by `nav.js`).
+
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
 (page_slug + slot_id) through the `ad-resolve` function; a rail fills, and counts an impression,
