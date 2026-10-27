@@ -78,6 +78,7 @@
       if (dock) { bar.className = 'docked'; dock.appendChild(bar); } else document.body.appendChild(bar);
     }
     now = { key: key, ep: ep, show: show };
+    if (window.veEpisodePlayed) try { window.veEpisodePlayed(ep, show); } catch (e) {}
     bar.innerHTML = '<div class="vep-img" style="background-image:url(\'' + esc(ep.image || (show && show.image) || '') + '\')"></div>' +
       '<div style="min-width:0"><div class="pt">' + esc(ep.title) + '</div><div class="ps">' + esc((show && show.name) || '') + '</div></div>' +
       '<audio controls preload="metadata" src="' + esc(ep.audio) + '"></audio>' +
