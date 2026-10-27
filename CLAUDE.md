@@ -1596,7 +1596,17 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   never a third-party listing and never guessed, through `ve_menu_import_save`, which saves once and refuses a listing that
   already has a menu. Cron `ve-menu-import-queue` (07:17 UTC) queues new food places every night
   (none did after 2026-10-24); on 2026-10-27 274 bare-domain websites (guanabanas.com) were made https:// links (logged in
-  `ve_listing_edits`), which let 98 more places queue (migration `20261027_menu_queue_nightly.sql`). The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
+  `ve_listing_edits`), which let 98 more places queue (migration `20261027_menu_queue_nightly.sql`). **The menu reader** (Sean, 2026-10-27: "build the menu
+  reader"; edge function `ve-menu-reader`, migration `20261027_ve_menu_reader.sql`) takes what the writer left at `none` (a picture,
+  a PDF, an ordering page that loads only in a browser): it reads their home and menu pages, follows their own ordering links
+  (Toast, Square `/s/order`, Clover, ChowNow, order.online...; never DoorDash, Uber Eats, Grubhub or Yelp), opens script-only pages
+  in a real browser (Apify `rag-web-browser`, three a listing), takes the menu's PDFs and pictures (Wix and Squarespace originals,
+  18 MB a read) and any menu data on the page, and Claude (Opus 5.5, structured output) copies the menu word for word. A Vegan
+  place keeps its whole menu; any other keeps only what its menu marks Vegan. Saved through `ve_menu_import_save`; each listing is
+  tried once (`reader_at`, `reader_note`, `reader_read`). Cron `ve-menu-reader`, one every 5 minutes in the background; `read`
+  with `save: false` keeps a test in `reader_preview`. Proven 2026-10-27: Cafe Gratitude 144 items from its PDF, Under the Mango
+  Tree 28 and Blue Tree 19 from their Square pages. Toast's own ordering pages return nothing to an automated browser, so a menu
+  that is only on Toast is still missing. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
 - **Restaurant essentials** (Sean, 2026-10-25: "just because it's vegan doesn't tell the whole story... all the restaurant listings
   have, 250 character about us... the hours... the socials... the address that you can click and go to Google Maps... and then
   the menus... media... can come later once they become members"; migration `20261025_restaurant_essentials.sql`). Food places
