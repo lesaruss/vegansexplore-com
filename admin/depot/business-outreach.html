@@ -58,6 +58,10 @@
     @media (max-width:760px){.item{grid-template-columns:40px 1fr;}.item>div:nth-child(3),.item>div:nth-child(4){grid-column:2;}.item .act{grid-column:1/-1;text-align:left;}.item.head{display:none;}}
     .batches .item{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 110px 170px 120px;}
     @media (max-width:760px){.batches .item{grid-template-columns:1fr 1fr;}}
+    /* Lists that open on a business's logo (New places, New partners, Check-ups): the logo keeps a narrow column and the words take
+       the width (Sean, 2026-10-27: the send-day columns above gave the logo the widest column, so it sat alone in a wide gap). */
+    .batches.with-logo .item{grid-template-columns:44px minmax(0,1.5fr) minmax(0,1.3fr) minmax(0,1.8fr) 110px;}
+    @media (max-width:760px){.batches.with-logo .item{grid-template-columns:40px 1fr;}}
     .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;}
     @media (max-width:980px){.two{grid-template-columns:1fr;}}
     .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
@@ -145,8 +149,8 @@
               return '<div class="item"><div><strong>' + esc(day(b.send_on)) + '</strong></div><div>' + esc(cityName(b.community_slug)) + '</div><div>' + b.size + '</div><div><span class="tag ' + s[1] + '">' + s[0] + '</span></div><div class="act"><a class="btn btn-sm" href="#batch/' + b.id + '">Review</a></div></div>';
             }).join('') + '</div>'
           : '<p class="empty">No sends planned yet. Plan a city below.</p>') + '</section>' +
-          '<section class="card batches" id="np-home"><h2>New partners</h2><p class="empty">Loading...</p></section>' +
-          '<section class="card batches" id="ck-home"><h2>Check-ups</h2><p class="empty">Loading...</p></section>' +
+          '<section class="card batches with-logo" id="np-home"><h2>New partners</h2><p class="empty">Loading...</p></section>' +
+          '<section class="card batches with-logo" id="ck-home"><h2>Check-ups</h2><p class="empty">Loading...</p></section>' +
           '<section class="card batches" id="np-places"><h2>New places</h2><p class="empty">Loading...</p></section>' +
           '<section><h2>Cities</h2><div class="grid">' + data.cities.map(function (c) {
             var n = c.counts || {}, emailed = (n.in_sequence || 0) + (n.finished || 0);
@@ -386,7 +390,7 @@
         api({ action: 'partners' }).then(function (d) {
           var rows = (d.rows || []).slice().sort(function (a, b) { var o = { waiting: 0, onboarding: 1, done: 2 }; return (o[a.status] - o[b.status]) || String(b.submitted_at).localeCompare(String(a.submitted_at)); });
           V().innerHTML = '<p class="sub">Every business that claimed its page. Approve the claim in <a href="/admin/depot/claims">Claims</a>; then they get three emails from you over three weeks, and whoever welcomes them works the checklist. A partner is Welcomed when the checklist is done.</p>' +
-            '<section class="card batches">' + (rows.length ? partnerList(rows, d.items) : '<p class="empty">Nobody yet.</p>') + '</section>';
+            '<section class="card batches with-logo">' + (rows.length ? partnerList(rows, d.items) : '<p class="empty">Nobody yet.</p>') + '</section>';
         });
       }
       function viewPartner(id) {
@@ -503,7 +507,7 @@
             (cities.length > 1 ? '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + !city + '" data-c="">All cities</button>' + cities.map(function (c) {
               var n = flagCache.filter(function (r) { return r.city === c; })[0];
               return '<button type="button" role="tab" aria-selected="' + (city === c) + '" data-c="' + esc(c) + '">' + esc(n.city_name || c) + '</button>'; }).join('') + '</div>' : '') +
-            '<section class="card batches">' + (rows.length ? flagList(rows) : '<p class="empty">Nothing flagged.</p>') + '</section>';
+            '<section class="card batches with-logo">' + (rows.length ? flagList(rows) : '<p class="empty">Nothing flagged.</p>') + '</section>';
           Array.prototype.forEach.call(V().querySelectorAll('[data-c]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.c ? '#checkups/' + b.dataset.c : '#checkups'; }); });
         });
       }
@@ -591,7 +595,7 @@
               return '<button type="button" role="tab" aria-selected="' + (v === verdict) + '" data-v="' + v + '">' + esc(PV[v][0]) + ' · ' + o[v] + '</button>'; }).join('') + '</div>' +
             (cities.length > 1 ? '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + !city + '" data-c="">All cities</button>' + cities.map(function (c) {
               return '<button type="button" role="tab" aria-selected="' + (city === c) + '" data-c="' + esc(c) + '">' + esc(cname(c)) + ' · ' + s.by_city[c][verdict] + '</button>'; }).join('') + '</div>' : '') +
-            '<section class="card batches"><div class="list"><div class="item head"><div></div><div>From our list</div><div>What we found</div><div>Why</div><div></div></div>' +
+            '<section class="card batches with-logo"><div class="list"><div class="item head"><div></div><div>From our list</div><div>What we found</div><div>Why</div><div></div></div>' +
             (placeCache.rows.map(function (r) { var l = r.listing || {};
               return '<div class="item"><div>' + logo({ name: l.name }) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.location || l.address_city, l.crawl_source === 'sfv-facebook-group' ? 'SoFlo Vegans group' : l.crawl_source].filter(Boolean).join(' · ')) + '</small></div>' +
                 '<div>' + placeFound(r) + '</div><div><small style="white-space:normal">' + esc(r.reason || '') + '</small></div>' +
