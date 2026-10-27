@@ -155,6 +155,13 @@ width (three-fourths and one-fourth, the slot a full 300 px). Under every ad, fi
 Vegans Explore** links to `/partners` until a page for businesses is decided (`CTA` in the script). The rail sticks 16px under
 the site's menu (`--ve-nav-h`, set by `nav.js`).
 
+**Every slot filled** (Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
+we can slowly systematically update the real estate later on"; migration `20261027_humble_cabbage_test_campaign.sql`). Every
+slot the site draws carries a Humble Cabbage ad under its one sponsor campaign (`ad_sponsor_campaigns` `humble-cabbage`), its
+characters spread across pages (never the paused "$5 to the LESARUSS Foundation" art), each page with its own tracked link
+(`/go/hc-ve-events`, `hc-ve-all-cities`, `hc-ve-<city>`, besides `hc-ve-pulse`, `hc-ve-sofl`, `hc-ve-directory`), so impressions
+(`ad_impressions`) and clicks read by page. A real advertiser takes a slot by replacing that slot's Humble Cabbage campaign.
+
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
 (page_slug + slot_id) through the `ad-resolve` function; a rail fills, and counts an impression,
