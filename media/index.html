@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script src="/analytics.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vegan Media — Vegans Explore</title>
+<meta name="description" content="Our shows, featured first, then the top Vegan podcasts, documentaries and books as voted by members in the Vegans Explore Directory.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  /* Media (Sean, 2026-10-27: "let's do media instead of shows"; it was /podcast). Our shows first with a Featured pill,
+     then the top 12 podcasts, documentaries or books as voted in the Directory, beside the chapter's ad rail. The
+     content is /public/ve-media.js, the same component as the dashboard's Media tab; the banner is the shared city
+     banner (/public/ve-city-banner.js), whose city picks the rail's chapter for now. */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
+  .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+  main { flex: 1; max-width: none; margin: 0; padding: 36px 40px 80px; }
+  @media (max-width: 700px) { main { padding: 24px 16px 64px; } }
+</style>
+</head>
+<body>
+<div class="page-frame">
+
+<script src="/public/nav.js"></script>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-hubs.js"></script>
+<script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-region-directory.js"></script>
+<script src="/public/ve-media.js"></script>
+
+<section id="media-hero"></section>
+
+<main id="main-content">
+  <div class="vear-layout"><div class="vear-main" id="media-main"></div><aside class="vear-rail" id="media-rail" data-ad-page="chapter"></aside></div>
+</main>
+
+<script src="/public/footer.js"></script>
+</div>
+
+<script src="/public/ve-ad-rail.js"></script>
+<script>
+(function () {
+  var rail = document.getElementById('media-rail');
+  var banner = VECityBanner.mount('media-hero', {
+    key: 'media', title: 'Vegan Media', allTitle: 'Every City', allLabel: 'All cities',
+    sub: 'Our shows first, then the podcasts, documentaries and books members vote to the top in the Directory.',
+    onChange: function (slug) { if (window.VEAdRail) VEAdRail.chapter(rail, slug); else rail.setAttribute('data-ad-chapter', slug || ''); }
+  });
+  VEMedia.mount('media-main', { onInteract: function () { banner.autoFold(); } });
+  if (new URLSearchParams(location.search).get('type')) banner.autoFold();
+})();
+</script>
+</body>
+</html>

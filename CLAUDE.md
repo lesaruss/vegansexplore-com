@@ -136,8 +136,9 @@ The cap applies to the card only. Full article and detail views
 ## Ad rail (Sean, 2026-10-04)
 
 Three-fourths content, one-fourth ads on the right, on: the Daily Pulse (`/pulse`, every tab and post, and so the
-dashboard Daily Pulse tab), the dashboard Events tab, `/events`, and the Directory (`/directory` and the
-dashboard Directory tab). Not on Communities, Tools or Shows (a Directory listing page has its own billboard).
+dashboard Daily Pulse tab), the dashboard Events tab, `/events`, the Directory (`/directory` and the
+dashboard Directory tab) and Media (`/media` and the dashboard Media tab, the chapter's rail like the Directory's). Not on
+Communities or Tools (a Directory listing page has its own billboard).
 
 The Directory's rail is the **chapter's** (Sean, 2026-10-26: "those banners will appear throughout the entire chapter...
 Central Florida will have its own... all that's real estate that people can purchase ads on"): two 300 x 250 banners stacked,
@@ -681,7 +682,7 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
 - **Vetting, in order**: `ve_event_intake` refuses no official link, no date, an event that is over, and a duplicate (same
   name, same day); the writer keeps only Vegan events confirmed on their official page; the team approves each one in Depot >
   Events. Nothing goes live on its own.
-- The menu (`public/nav.js`): Guides, Pulse, Podcasts, Communities, Directory, Events. The Community Board left it ("the
+- The menu (`public/nav.js`): Guides, Pulse, Media, Communities, Directory, Events. The Community Board left it ("the
   community board is in the pulse"): `/pulse` is the Board (see The Daily Pulse is the Community Board). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
@@ -700,6 +701,24 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   cities widens only that tab (`DASH_ALL` in center-console). The banner is the dashboard's city picker: the city pill and
   Contribute left the welcome row (Sean, 2026-10-26), the welcome row (with View As) shows only on the Dashboard tab, and every
   banner, on the dashboard or a public page, sits 24px under the menu (`.vcb` margin in `ve-city-banner.js`).
+
+## Media (Sean, 2026-10-27)
+
+"Let's do media instead of shows... what we're showing on media is our featured media plus the top 12 listings voted by you
+guys. So they get a little bit more prominence." `/media` (`media/index.html`; `/podcast`, `/podcasts`, `/shows` and
+`/podcast-network` forward to it) and the dashboard's **Media** tab (`/dashboard/media`, which was Shows; `/dashboard/shows`
+forwards) are one component, `/public/ve-media.js` (`VEMedia.mount`, after `ve-region-directory.js`). It is what we put
+there, never something members add or follow (the Follow Shows tiles and modal are gone):
+
+- **Featured** first, always: our four shows (`SHOWS` in the script), each with a Featured pill, Spotify and Apple Podcasts,
+  opening its page at `/podcast/<show>/`, with the episode search above them.
+- Then the **top 12** of one kind, as voted in the Directory, picked from the Media dropdown (`TYPES`: Podcasts, Documentaries
+  (`Documentaries & Films`), Books; `?type=` on `/media`). Read fresh on every visit, so votes move it; most votes, then most
+  voters, then a logo over a letter, then A to Z. Our own shows are Directory listings too and never count in the 12. The cards
+  are the Directory's card, with + Vote; See every ... in the Directory opens `/directory?tab=media`.
+- The city banner (`VECityBanner`, key `media`) with the chapter's ad rail on the right (`data-ad-page="chapter"`, the same two
+  banners as the Directory). For now the city only picks the rail's chapter ("we could put a city in there for now, and then we
+  can generate something later").
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
@@ -747,8 +766,8 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
 
 "I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
 between the different chapters... like traveling to these different locations." `/pulse` (`pulse.html`, which was `board.html`;
-`/board` forwards here, query kept; the old article feed is gone, its pages still open at `/pulse/<slug>` and the shows at
-`/podcast`) wears the city banner (`VECityBanner`, key `pulse`): `?city=<hub>` (an old `?community=` still works), else the
+`/board` forwards here, query kept; the old article feed is gone, its pages still open at `/pulse/<slug>` and the shows on
+`/media`) wears the city banner (`VECityBanner`, key `pulse`): `?city=<hub>` (an old `?community=` still works), else the
 member's home city, else the last pick, else All cities, which lists every chapter (`ve-board` `list` with community `all`; topics
 from every city and the national one, posts from every city with their city tag, no How it works posts). Six tabs, the Daily
 Pulse first: Daily Pulse, Jobs, Classifieds, Fosters, Rescues, Suggest a Topic. **Requests & Offers left** (Sean: "doing similar

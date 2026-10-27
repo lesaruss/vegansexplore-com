@@ -36,7 +36,7 @@
 
     { key: 'tab-directory', group: 'Tabs', label: 'Directory tab', note: 'Local Directory listings for their city.', today: [M, C, S], tab: 'directory', sel: ['#dash-directory-section'] },
     { key: 'tab-events', group: 'Tabs', label: 'Events tab', note: 'Upcoming events.', today: [M, C, S], tab: 'events', sel: ['#dash-events-section'] },
-    { key: 'tab-shows', group: 'Tabs', label: 'Shows tab', note: 'Podcasts and shows.', today: [M, C, S], tab: 'shows', sel: ['#dash-shows-section'] },
+    { key: 'tab-media', group: 'Tabs', label: 'Media tab', note: 'Our shows, then the top podcasts, documentaries and books as voted.', today: [M, C, S], tab: 'media', sel: ['#dash-media-section'] },
     { key: 'tab-pulse', group: 'Tabs', label: 'Daily Pulse tab', note: 'The full Daily Pulse feed.', today: [M, C, S], tab: 'pulse', sel: ['#dash-pulse-section'] },
     { key: 'tab-communities', group: 'Tabs', label: 'Communities tab', note: 'Their communities and the city switcher.', today: [M, C, S], tab: 'communities', sel: ['#dash-community-section'] },
     { key: 'tab-tools', group: 'Tabs', label: 'Tools tab', note: 'Everything listed under "Tools tab" below.', today: [M, C, S], tab: 'tools', sel: ['#dash-tools-section'] },
