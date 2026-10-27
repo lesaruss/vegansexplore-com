@@ -679,9 +679,11 @@ section, leaves it off). **The city is not in the address**: the same link opens
 the visit, `sessionStorage` `ve_dir_city`), and an old `?city=` link opens on that city before the address drops it. A listing's
 breadcrumb links back to its sub-section. **Submit listing** (the banner's green button, Sean 2026-10-27; one row on a phone) opens Join the
 Directory's Add it (`/claim?add=1`): $11 or 1,100 points a listing (Guide pricing, below).
-Layout (Sean, 2026-10-26): on desktop the section pills fill three-fourths in two rows (the fuller one on top) and the search has
-the last fourth to itself; phones keep the pills with the search under them. The filters (Sort by, Area, the sub-section's own,
-Vegan, Type) share one row, each the same width, wrapping evenly only when they no longer fit. Under the cards, the page
+Layout (Sean, 2026-10-27: "hide the filter options... as an icon to the right of the search... When they click the icon again it
+closes. The search and the icon should be below the tabs"): the section tabs, then the sub-section pills across the full width,
+then one row with the search and a **filter icon** at its right (`.vrd-tools`, `[data-vrd-filter]`). The icon opens a dropdown
+under it (`.vrd-filter-pop`) holding Sort by and every filter (Area, the sub-section's own, Vegan, Type), a grid on desktop and one
+column on phones; the icon again (or Escape) closes it, and the icon shows how many filters are set (`countFilters`). Under the cards, the page
 numbers (first, last and two either side of the current one) sit in the middle and Show 24 / 48 / 111 at the far right (shown
 only when there is more than a page of 24).
 

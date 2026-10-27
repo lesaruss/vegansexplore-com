@@ -102,12 +102,24 @@
     + '.vrd-root .vrd-search-input{width:100%;padding:8px 14px 8px 32px;border:1.5px solid #ddd;border-radius:20px;font-size:12px;font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;transition:border-color .15s}'
     + '.vrd-root .vrd-search-input:focus{outline:none;border-color:#5EC47A}'
     + '@media(max-width:640px){.vrd-root .subcat-pills .vrd-search-wrap{flex:1 1 100%;margin-left:0;max-width:none;order:99}}'
-    // Desktop: the sections take three-fourths in two rows (the fuller one on top), the search the last fourth on its own
-    // (Sean, 2026-10-26). Phones keep the pills, then the search under them with room between.
-    + '.vrd-root .subcat-pills.vrd-split{flex-wrap:nowrap;align-items:flex-start;gap:20px}'
+    // The sub-sections fill the row under the tabs (Sean, 2026-10-27; the search moved under them, beside the filter icon).
     + '.vrd-root .subcat-list{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;gap:8px 6px}'
-    + '.vrd-root .subcat-pills.vrd-split .vrd-search-wrap{flex:0 0 calc(25% - 15px);max-width:none;min-width:0;margin-left:0}'
-    + '@media(max-width:640px){.vrd-root .subcat-pills.vrd-split{flex-wrap:wrap;gap:0}.vrd-root .subcat-list{flex:1 1 100%}.vrd-root .subcat-pills.vrd-split .vrd-search-wrap{flex:1 1 100%;margin-top:14px}}'
+    // The search and the filter icon, one row under the tabs; the filters drop down under the icon (Sean, 2026-10-27).
+    + '.vrd-root .vrd-tools{position:relative;display:flex;align-items:center;gap:10px;margin-bottom:16px}'
+    + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:0}'
+    + '.vrd-root .vrd-tools .vrd-search-input{border-radius:6px;padding:11px 14px 11px 34px;font-size:13px}'
+    + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-filter-btn:hover,.vrd-root .vrd-filter-btn[aria-expanded=true]{border-color:#2d7a4f;color:#2d7a4f}'
+    + '.vrd-root .vrd-filter-btn[aria-expanded=true]{background:#f0faf4}'
+    + '.vrd-root .vrd-filter-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}'
+    + '.vrd-root .vrd-filter-count{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#2d7a4f;color:#fff;font-size:10px;font-weight:800;line-height:18px;text-align:center}'
+    + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(760px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:16px}'
+    + '.vrd-root .vrd-filter-pop[hidden]{display:none}'
+    + '.vrd-root .vrd-filter-pop .sort-bar{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 14px;align-items:end;margin:0}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .sb-f,.vrd-root .vrd-filter-pop .sort-bar .vrd-geo,.vrd-root .vrd-filter-pop .sort-bar .vrd-sub{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo{display:grid;grid-template-columns:1fr;gap:6px}'
+    + '.vrd-root .vrd-filter-pop .sort-bar select{width:100%;max-width:100%;min-width:0}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .geo-label,.vrd-root .vrd-filter-pop .sort-bar .sort-label{margin:0;font-size:10px}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
     + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:10px 18px;margin-bottom:16px;flex-wrap:wrap}'
@@ -283,9 +295,16 @@
       '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
       '</div>';
 
+    // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
+    // as an icon to the right of the search... they see the filter options and sort by options appear as a drop down. When they
+    // click the icon again it closes"). The icon shows how many filters are set.
+    var filterBtn = '<button type="button" class="vrd-filter-btn" data-vrd-filter aria-expanded="false" aria-controls="' + cat.key + '-filters" aria-label="Sort and filter" title="Sort and filter">' +
+      '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
+      '<span class="vrd-filter-count" hidden></span></button>';
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
-      '<div class="subcat-pills vrd-split"><div class="subcat-list">' + subcatBtns + '</div>' + searchHtml + '</div>' +
-      buildBar(cat, config) +
+      '<div class="subcat-pills"><div class="subcat-list">' + subcatBtns + '</div></div>' +
+      '<div class="vrd-tools">' + searchHtml + filterBtn +
+      '<div class="vrd-filter-pop" id="' + cat.key + '-filters" role="region" aria-label="Sort and filter" hidden>' + buildBar(cat, config) + '</div></div>' +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       // The pages in the middle, how many to show at the far right (Sean, 2026-10-26).
       '<div class="vrd-foot"><div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
@@ -842,7 +861,29 @@
     var c = CAT_CONFIG.filter(function (x) { return x.key === key; })[0];
     if (config && config.onSection && c) config.onSection(c.key, c.label);
   }
+  // How many filters differ from where they started, on the icon.
+  function countFilters(panel) {
+    var btn = panel.querySelector('[data-vrd-filter]'), badge = btn && btn.querySelector('.vrd-filter-count');
+    if (!badge) return;
+    var n = 0;
+    panel.querySelectorAll('.vrd-filter-pop select').forEach(function (sel) {
+      var wrap = sel.closest('.vrd-sub'); if (wrap && wrap.hidden) return;
+      if (sel.style.display === 'none' || sel.hidden) return;
+      if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart) n++;
+    });
+    badge.textContent = n; badge.hidden = !n;
+  }
   function wireControls(root, state) {
+    root.querySelectorAll('.vrd-filter-pop select').forEach(function (sel) { sel._vrdStart = sel.value; });
+    root.querySelectorAll('[data-vrd-filter]').forEach(function (btn) {
+      var pop = root.querySelector('#' + btn.getAttribute('aria-controls'));
+      btn.addEventListener('click', function () {
+        var open = pop.hidden; pop.hidden = !open; btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        if (open) { var first = pop.querySelector('select'); if (first) first.focus(); }
+      });
+      pop.addEventListener('change', function () { countFilters(btn.closest('.board-panel')); });
+      pop.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
+    });
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var on = panel.querySelector('.subcat-pill.sc-active'); if (on) on._vrdDefault = true;
     });
@@ -876,6 +917,7 @@
         btn.classList.add('sc-active');
         syncSubFilters(panel);
         applyPanelFilters(panel, state, true);
+        countFilters(panel);
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
       });
     });
