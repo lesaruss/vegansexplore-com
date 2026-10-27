@@ -826,6 +826,28 @@ shows, production, network sponsorships, ad spots, clips and social promotion (i
 Plays (`play`, the episode's guid) and Listen on clicks (`listen`) are `ve_listing_events` kinds (migration
 `20261027_ve_listing_events_actions.sql`, which also fixed the table refusing every visitor action from 2026-10-24 to 2026-10-27).
 
+**Status from the feed** (Sean, same day: "if an episode has been posted within the last 6 months, we can consider it active.
+Anything longer than 6 months to about a year, we'll say on hiatus. And then anything past a year, we'll say ended... if a new
+episode gets posted... that can update the tag automatically"). `ve-podcast` sets a podcast's `business_status` from its latest
+episode each time it reads the feed, and cron `ve-podcast-refresh` (hourly, `refresh`, x-cron-secret) re-reads feeds older than 20
+hours, eight a run, and re-checks every status from what we hold. A save in the listing editor holds only until then. Media (show
+and work) wears its status where other listings say how Vegan they are: the listing header's tag (Active, On hiatus, Ended;
+Available for books and films) and the Directory card's tag (`mediaTag` in `ve-region-directory.js`), and ended media stays in its
+section and in Media's top 12 instead of moving to Closed. On 2026-10-27: 47 Active, 5 On hiatus (SoFlo Vegans, Vegans Explore
+Podcast, Vegans Who Lift, The Raw Vegan Podcast, Vegan Marathoner), 4 Ended (Moby Pod, Keep On Cookin', The Ordinary Vegan, The Keto
+Vegan). Listen on uses the platforms' own marks (`/public/icons/platforms/`, Simple Icons, CC0 shapes).
+
+**The Vegans Explore Podcast Network** (Sean, same day: "I want people to want to join the network so that way they can be part
+of our sponsorship conversations... They don't got to post anything on their podcast unless they're involved in a campaign...
+they're going to be promoted on our platform regardless... you just got to become a member"). Media's banner has **Join our
+network** (green, between See in the Directory and Expand), opening `/media/network` (`media/network.html`): four steps, one per
+view (`?step=`): Your podcast (name, RSS or Apple link, website, hosts), Your audience (downloads a month, where that number comes
+from, how often, where listeners are), Your social, What you want (sponsorships, promotion, promos, clips, production) and who to
+reply to; sign-in at the button. Saved by `ve-podcast` `network_apply` into `ve_podcast_network_applications` (migration
+`20261027_ve_podcast_network.sql`, matched to its Directory listing by feed, Apple id or name, `member_active` recorded) and emailed
+to Sean. A non-member is asked to become a Founding Member ($11) on the thank-you screen. The offer itself (what a network show
+commits to, its share of a sponsorship) is not set yet; the review of applications is Sean's for now.
+
 - The feed is `listings.rss_url`. Left empty, `ve-podcast` finds it once from the listing's Apple Podcasts id (iTunes lookup,
   `feedUrl`) and saves it; an empty string means the team turned it off. Set it in the listing editor's **Episodes** field (shown
   for Podcasts), which reads the feed at once and says if it fails. On 2026-10-27, 54 of the 56 podcasts were found this way;
