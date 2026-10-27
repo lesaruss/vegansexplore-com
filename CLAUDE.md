@@ -1595,9 +1595,14 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   through `ve-once-menu-links`). A food place (Restaurants, Bakeries & Cafes, Food Trucks, Vendors, Catering, Meal Prep;
   `PLACE_MENU_CATS` in `directory/listing.html`) that is not claimed has a **Menu** tab that links out (`#tab-btn-menu-link`,
   `listings.menu_crawl_url`, counted as a `menu` action; a location uses its main listing's); a claimed one shows the menu its
-  owner keeps on the Partner Dashboard (and any the team entered), never a copied one (`source` `import` stays in the table, not
-  shown). Brands keep their Products list. The copying is paused, not deleted: crons `ve-menu-reader` and `ve-menu-import-queue`
-  off, dispatcher `menu_import` disabled. The **link finder** (`ve-menu-reader` `link` / `link_sweep`, cron `ve-menu-links`, 15 every
+  owner keeps on the Partner Dashboard (and any the team entered), never a copied one. Brands keep their Products list. **Then,
+  the same day** (Sean: "if we can get an accurate menu, we can use that... only if we can keep the menu up to date with our
+  processes"; migration `20261027_menu_monthly_recheck.sql`, run through `ve-once-menu-check`): an unclaimed place shows the menu
+  we copied while it is current, each item's `ve_menu_items.checked_at` under 35 days old ("From their website, checked <date>. We
+  check it every month."); older, the Menu tab links out instead. The copying runs again (crons `ve-menu-reader`,
+  `ve-menu-import-queue`, dispatcher `menu_import`), and with nothing new to read the reader's sweep re-reads the stalest copied
+  menu from the page it came from (`ve_menu_refresh_due`: unclaimed, oldest over 28 days, a failed re-read retried after a week): a
+  good read replaces the copied items, a failed one changes nothing, so the menu ages out to a link. The **link finder** (`ve-menu-reader` `link` / `link_sweep`, cron `ve-menu-links`, 15 every
   10 minutes, no AI) reads their home page and takes their menu PDF, else their menu page, else their own ordering page (Toast,
   Square `/s/order`, Clover...; through their own Order page when that only points there), never a marketplace; it fills only an
   empty `menu_crawl_url` (a `ve_listing_edits` row) and notes what it found (`ve_menu_imports.link_checked_at`, `link_note`). The
