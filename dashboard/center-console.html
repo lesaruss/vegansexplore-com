@@ -53,6 +53,14 @@
   .ve-apps-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
   .ve-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--ve-green);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:900;letter-spacing:0.05em;border:none;cursor:pointer;margin-left:2px;overflow:hidden;padding:0;}
   .ve-avatar-img{width:100%;height:100%;object-fit:cover;display:block;}
+  .ve-burger{display:none;align-items:center;justify-content:center;width:38px;height:38px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;flex-shrink:0;}
+  .ve-burger svg{width:20px;height:20px;}
+  .ve-burger[aria-expanded="true"]{border-color:var(--ve-green-dark);color:var(--ve-green-dark);}
+  .ve-burger-menu{position:absolute;left:0;right:0;top:100%;z-index:60;background:#fff;border-bottom:1px solid var(--ve-border);box-shadow:0 14px 28px rgba(0,0,0,.12);padding:6px 0;}
+  .ve-burger-menu[hidden]{display:none;}
+  .ve-burger-menu button{display:block;width:100%;text-align:left;padding:14px 22px;font:inherit;font-size:14px;font-weight:800;color:var(--ve-text);background:none;border:0;border-left:3px solid transparent;cursor:pointer;}
+  .ve-burger-menu button:hover{background:#f6faf7;}
+  .ve-burger-menu button[aria-current="page"]{color:var(--ve-green-dark);border-left-color:var(--ve-green);background:#f0faf4;}
 
   /* --- Center Console frame (2026-09-06, Logan, Sean direction: dashboard v1,
      non-destructive parallel build). Updated 2026-09-07 (Sean direction):
@@ -123,7 +131,12 @@
        section nav drops to its own row (the mobile select), like HQ wraps its
        primary nav below the bar at this width. */
     .ve-topnav{height:auto;flex-wrap:wrap;row-gap:8px;padding-top:8px;padding-bottom:8px;}
-    .ve-topnav-nav{order:3;flex:0 0 100%;}
+    /* Phones (Sean, 2026-10-27: "make the menu on mobile the hamburger menu in the right corner"): no section row; Apps keeps its
+       icon, the avatar stays, and the hamburger after them opens the sections in a panel under the bar. Every tab's banner
+       sits flush under the bar. */
+    .ve-topnav-nav{display:none;}
+    .ve-apps-btn{padding:0;width:38px;justify-content:center;font-size:0;gap:0;}
+    .ve-burger{display:inline-flex;}
     .ve-topnav-nav .dash-tabs-mobile{margin-bottom:0;}
     .console-frame{position:static;width:auto;height:auto;min-height:0;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
@@ -594,6 +607,8 @@
   /* The Dashboard tab's banner says welcome, so the old welcome row steps aside. */
   body.dash-has-banner .dash-welcome{display:none !important;}
   body.dash-has-banner main{padding-top:24px;}
+  /* Phones: every tab's banner flush under the bar (Sean, 2026-10-27). After the rules above, so it wins. */
+  @media (max-width:760px){ body.dash-has-banner main, body[data-dash-tab] main, body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:0;} }
   @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
@@ -688,7 +703,9 @@
       Apps
     </button>
     <button type="button" class="ve-avatar" id="ve-topnav-avatar" aria-label="Your account"></button>
+    <button type="button" class="ve-burger" id="ve-burger" aria-label="Menu" aria-expanded="false" aria-controls="ve-burger-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg></button>
   </div>
+  <div class="ve-burger-menu" id="ve-burger-menu" role="menu" aria-label="Dashboard sections" hidden></div>
 </header>
   <main>
   <div id="dash-gate">
@@ -2799,7 +2816,9 @@
     crumb.appendChild(back);
     crumb.appendChild(sep);
     crumb.appendChild(current);
-    crumb.style.display = 'flex';
+    // A page with its own banner (the Daily Pulse and the other browse pages) has its home button there, so no "Dashboard"
+    // crumb over it (Sean, 2026-10-27); a tool without one (Bounties, Members, Leads) keeps it as the way back.
+    crumb.style.display = /^\/(pulse|events|directory|media|communities)(\/|\?|$)/.test(src) ? 'none' : 'flex';
     var iframe = document.createElement('iframe');
     iframe.className = 'dash-mylist-iframe' + (tall ? ' dash-tool-iframe-tall' : '');
     iframe.title = label;
@@ -3610,6 +3629,21 @@
     });
 
     mobileSelect.addEventListener('change', function () { activate(mobileSelect.value); });
+    // The phone's hamburger lists the same sections as the select, the open one marked (Sean, 2026-10-27).
+    (function () {
+      var burger = document.getElementById('ve-burger'), menu = document.getElementById('ve-burger-menu');
+      if (!burger || !menu) return;
+      function set(open) {
+        if (open) menu.innerHTML = Array.prototype.map.call(mobileSelect.options, function (o) {
+          return '<button type="button" role="menuitem" data-key="' + o.value + '"' + (o.value === mobileSelect.value ? ' aria-current="page"' : '') + '>' + o.textContent.replace(/</g, '&lt;') + '</button>';
+        }).join('');
+        menu.hidden = !open; burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      burger.addEventListener('click', function (e) { e.stopPropagation(); set(menu.hidden); });
+      menu.addEventListener('click', function (e) { var b = e.target.closest('[data-key]'); if (!b) return; set(false); activate(b.getAttribute('data-key')); });
+      document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) set(false); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { set(false); burger.focus(); } });
+    })();
 
     window.addEventListener('popstate', function (e) {
       if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }

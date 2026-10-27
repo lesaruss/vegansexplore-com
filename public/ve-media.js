@@ -153,7 +153,6 @@
       '<section class="vem-sec" aria-labelledby="' + uid + '-t">' +
         '<div class="vem-head"><div><h2 id="' + uid + '-t" data-vem-title></h2><p>The top ' + TOP + ' as voted by members in the Directory. Vote for your favorites to move them up.</p></div></div>' +
         '<div class="vrd-root"><div class="rank-grid" data-vem-grid></div></div>' +
-        '<a class="vem-all" data-vem-all href="/directory?tab=media">See them all in the Directory</a>' +
       '</section>';
 
     var grid = el.querySelector('[data-vem-grid]'), title = el.querySelector('[data-vem-title]');
@@ -184,8 +183,8 @@
       el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our shows: listen here, or on Spotify, Apple Podcasts, Amazon Music and YouTube.' : 'Our picks.';
       el.querySelector('[data-vem-searchbox]').hidden = t.key !== 'podcasts';
       title.textContent = 'Top ' + TOP + ' ' + t.label;
-      allLink.textContent = 'See every ' + t.one + ' in the Directory';
-      allLink.href = directoryUrl(t.key);
+      // No "See every book in the Directory" line (Sean, 2026-10-27): the banner's See in the Directory does that.
+      if (allLink) { allLink.textContent = 'See every ' + t.one + ' in the Directory'; allLink.href = directoryUrl(t.key); }
       grid.innerHTML = '<p class="vem-note">Loading&hellip;</p>';
       var fields = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,voter_count,business_status';
       var cat = '"' + t.cat + '"';

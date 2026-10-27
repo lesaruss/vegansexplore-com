@@ -86,8 +86,10 @@
     '.vcb-meta{margin-top:14px;}',
     '.vcb.is-collapsed .vcb-btn{width:100%;padding:8px 10px;display:flex;align-items:center;justify-content:center;}',
     // Option B on phones: flat scrim and a frosted card.
-    '@media (max-width:900px){.vcb{align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,.09);}}',
-    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0 16px 24px;padding:28px 24px;max-width:calc(100% - 32px);border:1px solid rgba(255,255,255,.10);}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
+    // Phones (Sean, 2026-10-27: "make the section with the title and city drop down full width so it flushes with the top
+    // navigation"): no gap under the menu, and the card with the title and picker runs the full width.
+    '@media (max-width:900px){.vcb{margin-top:0;align-items:flex-end;min-height:520px;background-position:center center;}.vcb::before{background:rgba(0,0,0,.32);}.vcb::after{display:none;}.vcb-inner{background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:0;margin:0;padding:28px 20px;width:100%;max-width:100%;border:0;}}',
+    '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0;padding:24px 16px;max-width:100%;border:0;}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
   ].join('');
 
   function injectCss() {

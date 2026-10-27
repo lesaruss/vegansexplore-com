@@ -107,8 +107,19 @@
     // Signed in the menu has up to nine sections: the badge steps aside first, then the gaps close.
     '@media(max-width:1240px){.ve-nav-in .ve-nav-lesars{display:none;} .ve-nav-in .ve-pub-tabs{gap:16px;}}',
     '@media(max-width:1060px){.ve-nav-in .ve-pub-tabs{gap:12px;} .ve-nav-in .ve-pub-tabs a{font-size:11px;letter-spacing:0.02em;} .ve-nav-in .ve-nav-inner{padding:0 18px;}}',
-    '@media(max-width:960px){.ve-nav-in .ve-nav-inner{height:auto;flex-wrap:wrap;row-gap:0;padding-top:0;padding-bottom:10px;} .ve-nav-in .ve-wordmark{height:56px;} .ve-nav-in .ve-pub-nav{order:3;flex:0 0 100%;margin-left:0;} .ve-nav-in .ve-pub-tabs{display:none;} .ve-nav-in .ve-pub-select{display:block;} .ve-nav-in .ve-nav-right-wrap{margin-left:auto;}}',
-    '@media(max-width:860px){.ve-nav-public .ve-nav-inner{height:auto;flex-wrap:wrap;row-gap:0;padding-top:0;padding-bottom:10px;} .ve-nav-public .ve-wordmark{height:56px;} .ve-nav-public .ve-pub-nav{order:3;flex:0 0 100%;margin-left:0;} .ve-pub-tabs{display:none;} .ve-pub-select{display:block;} .ve-nav-public .ve-nav-right-wrap{display:flex !important;margin-left:auto;}}',
+    // Phones (Sean, 2026-10-27: "To save space at the top, can we make the menu on mobile the hamburger menu in the right
+    // corner"): the menu row is gone; a hamburger after Log In and Join (or the avatar) opens the sections in a panel under the bar.
+    '.ve-burger{display:none;align-items:center;justify-content:center;width:42px;height:42px;margin-left:6px;border:1.5px solid rgba(0,0,0,0.12);border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;flex-shrink:0;}',
+    '.ve-burger svg{width:20px;height:20px;}',
+    '.ve-burger[aria-expanded="true"]{border-color:#2d7d31;color:#2d7d31;}',
+    '.ve-burger:focus-visible{outline:3px solid #22C55E;outline-offset:2px;}',
+    '.ve-burger-menu{position:absolute;left:0;right:0;top:100%;z-index:1000;background:#fff;border-bottom:1px solid rgba(0,0,0,0.09);box-shadow:0 14px 28px rgba(0,0,0,0.12);padding:6px 0;}',
+    '.ve-burger-menu[hidden]{display:none;}',
+    '.ve-burger-menu a{display:block;padding:14px 22px;font-size:14px;font-weight:800;color:#1a1a1a;text-decoration:none;border-left:3px solid transparent;}',
+    '.ve-burger-menu a:hover{background:#f6faf7;}',
+    '.ve-burger-menu a[aria-current="page"]{color:#2d7d31;border-left-color:#3A9B3E;background:#f0faf4;}',
+    '@media(max-width:960px){.ve-nav-in .ve-pub-nav{display:none;} .ve-nav-in .ve-nav-right-wrap{margin-left:auto;} .ve-nav-in .ve-burger{display:inline-flex;}}',
+    '@media(max-width:860px){.ve-nav-public .ve-pub-nav{display:none;} .ve-nav-public .ve-nav-right-wrap{display:flex !important;margin-left:auto;} .ve-nav-public .ve-burger{display:inline-flex;}}',
     '.ve-nav-right-wrap{display:flex;align-items:center;}',
   ].join('');
 
@@ -215,7 +226,14 @@
           '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
         '</a>' +
         navTabsHtml +
-        '<div class="ve-nav-right-wrap">' + desktopRight + '</div>' +
+        '<div class="ve-nav-right-wrap">' + desktopRight +
+          '<button type="button" class="ve-burger" id="ve-burger" aria-label="Menu" aria-expanded="false" aria-controls="ve-burger-menu">' +
+            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="ve-burger-menu" id="ve-burger-menu" hidden>' +
+        MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') +
       '</div>' +
     '</nav>';
 
@@ -241,6 +259,15 @@
     }
   }
 
+  // The hamburger opens and closes the menu panel; Escape or a tap outside closes it.
+  (function () {
+    var burger = document.getElementById('ve-burger'), menu = document.getElementById('ve-burger-menu');
+    if (!burger || !menu) return;
+    function set(open) { menu.hidden = !open; burger.setAttribute('aria-expanded', open ? 'true' : 'false'); }
+    burger.addEventListener('click', function (e) { e.stopPropagation(); set(menu.hidden); });
+    document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) set(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { set(false); burger.focus(); } });
+  })();
   var pubSelect = document.getElementById('ve-pub-select');
   if (pubSelect) pubSelect.addEventListener('change', function () { if (pubSelect.value) location.href = pubSelect.value; });
   /* ---- Passport gate (event delegation - runs on every page nav.js is included) ---- */

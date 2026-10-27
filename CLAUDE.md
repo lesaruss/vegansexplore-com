@@ -801,8 +801,11 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   Events. Nothing goes live on its own.
 - **Signed out, the nav is the dashboard's top bar** (Sean, 2026-10-27: "I much would prefer using the same sort of navigation
   that we're using on the logged in version"): the logo, then the menu in the dashboard's tab style on desktop (the section
-  you are in underlined in green, `/directory/<slug>` counts as Directory), one full-width dropdown on its own row on phones
-  (`#ve-pub-select`), and Log In and Join (`/passport`) on the right. No hamburger and no announcement pill signed out (a super
+  you are in underlined in green, `/directory/<slug>` counts as Directory), on phones a **hamburger** in the right corner (Sean,
+  2026-10-27: "To save space at the top, can we make the menu on mobile the hamburger menu in the right corner"; `#ve-burger`,
+  `#ve-burger-menu`, a panel of the sections under the bar, the open one marked; 960 px signed in, 860 px signed out), and Log In
+  and Join (`/passport`) on the right. The dashboard's own bar does the same on phones (`#ve-burger` in center-console, built from
+  `#dash-tabs-mobile`), with Apps as its icon only. No announcement pill signed out (a super
   admin viewing as the public gets the Viewing as pill instead). **Signed in it is the same bar** (Sean, 2026-10-27), in the
   dashboard's order: Dashboard, Directory, Events, Daily Pulse, Media, Guides, Communities, My Saves, and **Depot** for super
   admins (`/dashboard/depot`), then the avatar and badge. No announcement pill, no hamburger. **The avatar opens the account
@@ -829,7 +832,9 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   button "should just be the same size as normally"). **Collapse or Expand is one choice for the whole site** (Sean,
   2026-10-27: "let it stay collapsed when they navigate through to the different pages"; `sessionStorage` `ve_banner_hero`).
   On the dashboard every banner runs edge to edge, square, like the public pages (`.dash-hero-banner`, and the Daily Pulse's
-  frame, `.ve-in-dash` in `pulse.html`). No City label shows beside the picker (it
+  frame, `.ve-in-dash` in `pulse.html`). On phones the banner sits flush under the menu and its card runs the full width (Sean, 2026-10-27: "make the section with the
+  title and city drop down full width so it flushes with the top navigation"; the dashboard's `main` loses its top padding there).
+  No City label shows beside the picker (it
   pushed it out on phones; screen readers still hear it), so the picker sits flush left under the title, and on phones a 22px
   gap keeps it clear of the buttons (Sean, 2026-10-26). Folded, the title (Vegan Directory, Vegan Events) is always one line: it
   shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). On a
