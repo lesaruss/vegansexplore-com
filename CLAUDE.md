@@ -699,6 +699,12 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
 - **Vetting, in order**: `ve_event_intake` refuses no official link, no date, an event that is over, and a duplicate (same
   name, same day); the writer keeps only Vegan events confirmed on their official page; the team approves each one in Depot >
   Events. Nothing goes live on its own.
+- **Signed out, the nav is the dashboard's top bar** (Sean, 2026-10-27: "I much would prefer using the same sort of navigation
+  that we're using on the logged in version"): the logo, then the menu in the dashboard's tab style on desktop (the section
+  you are in underlined in green, `/directory/<slug>` counts as Directory), one full-width dropdown on its own row on phones
+  (`#ve-pub-select`), and Log In and Join (`/passport`) on the right. No hamburger and no announcement pill signed out (a super
+  admin viewing as the public keeps the drawer for View As). Signed in, the nav is unchanged: the pill, the member chip and
+  the drawer.
 - The menu (`public/nav.js`): Guides, Pulse, Media, Communities, Directory, Events. The Community Board left it ("the
   community board is in the pulse"): `/pulse` is the Board (see The Daily Pulse is the Community Board). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
