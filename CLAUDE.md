@@ -743,17 +743,19 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
 guys. So they get a little bit more prominence." `/media` (`media/index.html`; `/podcast`, `/podcasts`, `/shows` and
 `/podcast-network` forward to it) and the dashboard's **Media** tab (`/dashboard/media`, which was Shows; `/dashboard/shows`
 forwards) are one component, `/public/ve-media.js` (`VEMedia.mount`, after `ve-region-directory.js`). It is what we put
-there, never something members add or follow (the Follow Shows tiles and modal are gone):
+there, never something members add or follow (the Follow Shows tiles and modal are gone).
 
-- **Featured** first, always: our four shows (`SHOWS` in the script), each with a Featured pill, Spotify and Apple Podcasts,
-  opening its page at `/podcast/<show>/`, with the episode search above them.
-- Then the **top 12** of one kind, as voted in the Directory, picked from the Media dropdown (`TYPES`: Podcasts, Documentaries
-  (`Documentaries & Films`), Books; `?type=` on `/media`). Read fresh on every visit, so votes move it; most votes, then most
-  voters, then a logo over a letter, then A to Z. Our own shows are Directory listings too and never count in the 12. The cards
-  are the Directory's card, with + Vote; See every ... in the Directory opens `/directory?tab=media`.
-- The city banner (`VECityBanner`, key `media`) with the chapter's ad rail on the right (`data-ad-page="chapter"`, the same two
-  banners as the Directory). For now the city only picks the rail's chapter ("we could put a city in there for now, and then we
-  can generate something later").
+- **Not about a city** (Sean, same day: "no one's trying to make media just for one location"). The banner is the shared one
+  (`VECityBanner` with `VEMedia.bannerOptions`: `choices` instead of cities, one picture) and reads **Vegan Media** over the kind
+  of media; its picker is the kind (`TYPES`: Podcasts, Documentaries (`Documentaries & Films`), Books; `?type=` on `/media`), and
+  its button is **See in the Directory**, that kind's section (`/directory?tab=media&sub=<sub-section>`; the Directory opens the
+  pill named in `&sub=`). The ad rail is the All cities pair.
+- **One kind fills the page**: picking Documentaries shows only documentaries. Its **Featured** first, with a Featured pill,
+  when we have put something there (`SHOWS`, each with its `type`: our four shows and the episode search are Podcasts'; Books
+  and Documentaries have none yet, so their 12 lead; a featured book, such as the Pre-Vegans one Sean mentioned, is a `SHOWS`
+  row with `type: 'books'`). Then its **top 12** as voted in the Directory, read fresh on every visit: most votes, then most
+  voters, then a logo over a letter, then A to Z. Our own shows are Directory listings too and never count in the 12. The
+  cards are the Directory's card, with + Vote.
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 

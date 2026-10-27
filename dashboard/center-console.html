@@ -921,10 +921,11 @@
 
     <!-- Media (Sean, 2026-10-27: "let's do media instead of shows"): the same component as /media (public/ve-media.js), our
          shows first with a Featured pill, then the top 12 podcasts, documentaries or books as voted in the Directory. No more
-         following: we decide what is here. Three-fourths the content, one-fourth the chapter's ad rail. -->
+         following: we decide what is here. Its banner picks the kind of media, not a city. Three-fourths the content,
+         one-fourth the ad rail. -->
     <div id="dash-media-section" style="display:none;margin-bottom:28px;" data-tab-key="media" data-tab-order="6" data-tab-label="Media">
       <section id="dash-media-hero" class="dash-hero-banner"></section>
-      <div class="vear-layout"><div class="vear-main" id="dash-media-mount"></div><aside class="vear-rail" id="dash-media-rail" data-ad-page="chapter"></aside></div>
+      <div class="vear-layout"><div class="vear-main" id="dash-media-mount"></div><aside class="vear-rail" data-ad-page="chapter"></aside></div>
     </div>
 
     <!-- The Daily Pulse tab is the public /pulse page in the dashboard window (Sean, 2026-10-26: the same banner, chapters
@@ -2137,19 +2138,16 @@
     if (e.target.id === 'dash-watch-modal') closeWatchModal();
   });
 
-  // The Media tab (Sean, 2026-10-27), mounted once. Its city picks only the ad rail's chapter for now ("we could put a city
-  // in there for now, and then we can generate something later"); a listing opens under the Directory tab like any other.
+  // The Media tab (Sean, 2026-10-27), mounted once: the same banner and lists as /media. Its banner picks the kind of media,
+  // not a city ("no one's trying to make media just for one location"); a listing opens under the Directory tab.
   var dashMediaBanner = null;
-  function renderMediaTab(member) {
+  function renderMediaTab() {
     var mount = document.getElementById('dash-media-mount');
     if (!mount || dashMediaBanner || !window.VEMedia || !window.VECityBanner) return;
-    var rail = document.getElementById('dash-media-rail');
-    dashMediaBanner = VECityBanner.mount('dash-media-hero', {
-      key: 'dash-media', param: false, initial: getActiveCity(member) || '', title: 'Vegan Media', allTitle: 'Every City', allLabel: 'All cities',
-      sub: 'Our shows first, then the podcasts, documentaries and books members vote to the top in the Directory.',
-      onChange: function (slug) { if (window.VEAdRail) VEAdRail.chapter(rail, slug); else rail.setAttribute('data-ad-chapter', slug || ''); }
-    });
-    VEMedia.mount(mount, { urlState: false, onInteract: function () { dashMediaBanner.autoFold(); },
+    var media = null;
+    dashMediaBanner = VECityBanner.mount('dash-media-hero', VEMedia.bannerOptions({ key: 'dash-media', param: false,
+      onChange: function (type) { if (media) media.setType(type); } }));
+    media = VEMedia.mount(mount, { type: dashMediaBanner.current(), onInteract: function () { dashMediaBanner.autoFold(); },
       onOpenListing: function (slug, name) { if (window.activateDashTab) window.activateDashTab('directory', { skipHistory: true }); openDashboardListing(slug, name); } });
   }
 
@@ -3646,7 +3644,7 @@
     dashSafe(function () { renderCommunitySection(member); });
     dashSafe(function () { renderCampaignsSection(member); });
     dashSafe(function () { renderOpportunitiesSection(member); });
-    dashSafe(function () { renderMediaTab(member); });
+    dashSafe(function () { renderMediaTab(); });
     dashSafe(function () { renderGuidesSection(); });
     dashSafe(function () { renderChooseGuideSection(member); });
     dashSafe(function () { initToolsConsolidation(); });

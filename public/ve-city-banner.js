@@ -17,6 +17,9 @@
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
    Options for the dashboard: initial (the city when the address bar has none) and param: false (leave the address bar alone).
+   A page that is not about a city (Media, Sean 2026-10-27: "no one's trying to make media just for one location") picks from
+   its own list instead: choices: [{value, label}] (no All option; the picked label goes under the title), pickLabel (what
+   screen readers hear), art (one picture for every pick) and link(value) -> {href, label} for the first button.
 */
 (function () {
   if (window.VECityBanner) return;
@@ -103,15 +106,17 @@
     el.id = id;
     el.classList.add('vcb');
     el.setAttribute('aria-labelledby', id + '-h');
+    var choices = opts.choices && opts.choices.length ? opts.choices : null;
+    function choice(v) { return choices ? choices.filter(function (c) { return c.value === v; })[0] || null : null; }
     el.innerHTML =
       '<div class="vcb-inner"><div class="vcb-main">' +
         '<div class="vcb-eyebrow">' + esc(opts.eyebrow || 'Vegans Explore') + '</div>' +
         '<h1 id="' + id + '-h"><span class="vcb-t">' + esc(opts.title || '') + '</span> <em data-vcb-city>' + esc(opts.allTitle || 'Every City') + '</em></h1>' +
         (opts.sub ? '<p class="vcb-sub">' + esc(opts.sub) + '</p>' : '') +
         '<div class="vcb-pick">' +
-          '<label for="' + id + '-city">City</label>' +
-          '<select id="' + id + '-city"><option value="">' + esc(opts.allLabel || 'All cities') + '</option>' +
-            hubs().map(function (h) { return '<option value="' + esc(h.slug) + '">' + esc(h.name) + '</option>'; }).join('') +
+          '<label for="' + id + '-city">' + esc(opts.pickLabel || 'City') + '</label>' +
+          '<select id="' + id + '-city">' + (choices ? '' : '<option value="">' + esc(opts.allLabel || 'All cities') + '</option>') +
+            (choices || hubs().map(function (h) { return { value: h.slug, label: h.name }; })).map(function (c) { return '<option value="' + esc(c.value) + '">' + esc(c.label) + '</option>'; }).join('') +
           '</select>' +
         '</div></div>' +
         '<div class="vcb-actions">' +
@@ -131,8 +136,15 @@
       if (mobile.matches && MOBILE_ART[slug]) return '/communities/' + slug + '/' + MOBILE_ART[slug];
       return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
     }
-    function paint() { el.style.backgroundImage = "url('" + art(current || 'new-york') + "')"; }
+    function paint() { el.style.backgroundImage = "url('" + (opts.art || art(current || 'new-york')) + "')"; }
     function show(slug, quiet) {
+      if (choices) {
+        var c = choice(slug) || choices[0];
+        current = c.value; select.value = current; cityEl.textContent = c.label; paint();
+        if (link && opts.link) { var l = opts.link(current) || {}; if (l.href) link.href = l.href; if (l.label) link.textContent = l.label; }
+        if (opts.onChange && !quiet) opts.onChange(current, null);
+        return;
+      }
       var hub = hubBySlug(slug);
       current = hub ? hub.slug : '';
       select.value = current;

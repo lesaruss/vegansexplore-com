@@ -10,9 +10,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
   /* Media (Sean, 2026-10-27: "let's do media instead of shows"; it was /podcast). Our shows first with a Featured pill,
-     then the top 12 podcasts, documentaries or books as voted in the Directory, beside the chapter's ad rail. The
-     content is /public/ve-media.js, the same component as the dashboard's Media tab; the banner is the shared city
-     banner (/public/ve-city-banner.js), whose city picks the rail's chapter for now. */
+     then the top 12 podcasts, documentaries or books as voted in the Directory, beside the ad rail. The content is
+     /public/ve-media.js, the same component as the dashboard's Media tab; the banner is the shared banner
+     (/public/ve-city-banner.js) picking the kind of media instead of a city (Sean, 2026-10-27). */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
   :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
@@ -34,7 +34,7 @@
 <section id="media-hero"></section>
 
 <main id="main-content">
-  <div class="vear-layout"><div class="vear-main" id="media-main"></div><aside class="vear-rail" id="media-rail" data-ad-page="chapter"></aside></div>
+  <div class="vear-layout"><div class="vear-main" id="media-main"></div><aside class="vear-rail" data-ad-page="chapter"></aside></div>
 </main>
 
 <script src="/public/footer.js"></script>
@@ -43,13 +43,12 @@
 <script src="/public/ve-ad-rail.js"></script>
 <script>
 (function () {
-  var rail = document.getElementById('media-rail');
-  var banner = VECityBanner.mount('media-hero', {
-    key: 'media', title: 'Vegan Media', allTitle: 'Every City', allLabel: 'All cities',
-    sub: 'Our shows first, then the podcasts, documentaries and books members vote to the top in the Directory.',
-    onChange: function (slug) { if (window.VEAdRail) VEAdRail.chapter(rail, slug); else rail.setAttribute('data-ad-chapter', slug || ''); }
-  });
-  VEMedia.mount('media-main', { onInteract: function () { banner.autoFold(); } });
+  // Media is not about a city (Sean, 2026-10-27): the banner picks the kind of media (?type=), and its button opens that kind in
+  // the Directory. The rail is the All cities pair, the same as the Directory with no city picked.
+  var media = null;
+  var banner = VECityBanner.mount('media-hero', VEMedia.bannerOptions({ key: 'media', param: 'type',
+    onChange: function (type) { if (media) media.setType(type); } }));
+  media = VEMedia.mount('media-main', { type: banner.current(), onInteract: function () { banner.autoFold(); } });
   if (new URLSearchParams(location.search).get('type')) banner.autoFold();
 })();
 </script>
