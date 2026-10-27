@@ -76,6 +76,8 @@ const HUBS: { slug: string; name: string; terms: string[] }[] = [
   { slug: 'washington-dc', name: 'Washington, D.C.', terms: ['Washington, D.C.', 'Washington, DC', 'Washington DC', 'D.C.', 'the DMV'] },
   { slug: 'maryland', name: 'Maryland', terms: ['Maryland', 'Baltimore', 'Silver Spring', 'Bethesda', 'Takoma Park', 'Annapolis', 'Rockville', 'Columbia, MD', 'Frederick, MD'] },
   { slug: 'virginia', name: 'Virginia', terms: ['Arlington, VA', 'Arlington, Virginia', 'Alexandria, VA', 'Alexandria, Virginia', 'Richmond, VA', 'Richmond, Virginia', 'Virginia Beach', 'Norfolk, VA', 'Charlottesville', 'Northern Virginia'] },
+  { slug: 'delaware', name: 'Delaware', terms: ['Delaware', 'Wilmington, DE', 'Wilmington, Delaware', 'Newark, DE', 'Dover, DE', 'Rehoboth Beach', 'Lewes, DE'] },
+  { slug: 'west-virginia', name: 'West Virginia', terms: ['West Virginia', 'Charleston, WV', 'Morgantown', 'Huntington, WV', 'Wheeling, WV', 'Shepherdstown'] },
   { slug: 'new-york', name: 'New York', terms: ['New York City', 'NYC', 'Manhattan', 'Brooklyn', 'Queens', 'the Bronx', 'Staten Island', 'Harlem', 'Williamsburg', 'New York(?! Times| Post| Magazine| Daily News)'] },
   { slug: 'philadelphia', name: 'Philadelphia', terms: ['Philadelphia', 'Philly'] },
   { slug: 'los-angeles', name: 'Los Angeles', terms: ['Los Angeles', 'West Hollywood', 'Silver Lake', 'Echo Park', 'Santa Monica', 'Venice Beach', 'Pasadena', 'Burbank', 'Long Beach', 'Culver City', 'Koreatown'] },

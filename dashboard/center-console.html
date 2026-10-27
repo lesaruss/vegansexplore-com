@@ -1127,8 +1127,8 @@
 <script>
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
-  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.png','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/washington-dc/banner.png','north-florida':'/communities/central-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','delaware':'Delaware Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','west-virginia':'West Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.png','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/washington-dc/banner.png','delaware':'/communities/philadelphia/banner.png','west-virginia':'/communities/washington-dc/banner.png','north-florida':'/communities/central-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
 
   // A listing link (/dashboard/directory/<slug>) opened signed out goes to the public listing page instead.
   function listingSlugFromPath() {
@@ -2453,6 +2453,8 @@
     'washington-dc': ['Washington', 'Washington DC', 'Washington, DC', 'DC', 'D.C.'],
     'maryland': ['Maryland', 'Baltimore', 'Bethesda', 'Silver Spring', 'Rockville', 'Annapolis', 'Columbia', 'Frederick', 'College Park', 'Takoma Park', 'Towson'],
     'virginia': ['Virginia', 'Arlington', 'Alexandria', 'Fairfax', 'Tysons', 'Falls Church', 'Reston', 'Richmond', 'Virginia Beach', 'Norfolk', 'Charlottesville'],
+    'delaware': ['Delaware', 'Wilmington', 'Newark', 'Dover', 'Rehoboth Beach', 'Lewes', 'Middletown'],
+    'west-virginia': ['West Virginia', 'Charleston', 'Morgantown', 'Huntington', 'Wheeling', 'Shepherdstown', 'Martinsburg'],
     'north-florida': ['North Florida', 'Jacksonville', 'Gainesville', 'Tallahassee', 'Pensacola', 'St. Augustine', 'Destin', 'Panama City'],
     'london': ['London', 'Camden', 'Hackney', 'Brixton', 'Croydon', 'Greenwich', 'Islington', 'Shoreditch'],
     'los-angeles': ['Los Angeles', 'LA', 'Santa Monica', 'Pasadena', 'Long Beach', 'Burbank', 'Glendale', 'Culver City', 'West Hollywood', 'Venice', 'Inglewood'],

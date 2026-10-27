@@ -81,7 +81,7 @@ const REF_RE = /^[a-z0-9:/._-]{1,200}$/i;
 const PLACES = ['miami', 'broward', 'palm-beach'];
 // The Pulse: what a piece can be, and the city hubs that show city pieces (/communities/*).
 const PULSE_TYPES = ['article', 'video', 'interview', 'podcast'];
-const PULSE_CITIES = ['south-florida', 'central-florida', 'north-florida', 'new-york', 'philadelphia', 'los-angeles', 'atlanta', 'washington-dc', 'maryland', 'virginia', 'london'];
+const PULSE_CITIES = ['south-florida', 'central-florida', 'north-florida', 'new-york', 'philadelphia', 'los-angeles', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'london'];
 const PULSE_COLS = 'id, slug, title, content_type, category, summary, body, city_slug, thumbnail_url, video_url, audio_url, youtube_id, author, status, published_at, updated_at, cover_credit, cover_license, names_business, business_listing_id';
 const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const paragraphs = (t: string) => t.replace(/\r\n?/g, '\n').split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)

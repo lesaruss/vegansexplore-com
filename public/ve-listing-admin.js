@@ -52,7 +52,7 @@
     ['therapist', 'Therapists & counselors'], ['other', 'Other practices']];
   var MEDIA_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-media';
   // The chapters, from /public/ve-hubs.js where the page loads it (same order and names).
-  var CHAPTERS_FALLBACK = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'], ['washington-dc', 'Washington, D.C.'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['london', 'London']];
+  var CHAPTERS_FALLBACK = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'], ['washington-dc', 'Washington, D.C.'], ['delaware', 'Delaware'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['west-virginia', 'West Virginia'], ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['london', 'London']];
   function chapters() { return window.VE_HUBS ? VE_HUBS.map(function (h) { return [h.slug, h.name]; }) : CHAPTERS_FALLBACK; }
   // The chapter an address puts a listing in (VE_HUBS match), if the page has the hubs.
   function homeChapter(city, state) {

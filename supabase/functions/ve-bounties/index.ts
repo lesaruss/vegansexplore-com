@@ -57,7 +57,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const SITE = 'https://vegansexplore.com';
 const BUCKET = 've-bounty-uploads';
-const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'maryland', 'virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
+const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
 // A test city only superadmins see, for trying a campaign end to end. Never listed for members, and a
 // sandbox host is never featured.
 const SANDBOX = 'sandbox';

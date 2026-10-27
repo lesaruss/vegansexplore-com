@@ -4,7 +4,7 @@
   "outputDirectory": ".",
   "rewrites": [
     {
-      "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|maryland|virginia|new-york|philadelphia|los-angeles|london)",
+      "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
       "destination": "/communities/hub"
     },
     {
