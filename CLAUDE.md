@@ -898,7 +898,7 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   of media; its picker is the kind (`TYPES`: Podcasts, Documentaries (`Documentaries & Films`), Books; `?type=` on `/media`), and
   its button is **See in the Directory**, that kind's section (`/directory?tab=media&sub=<sub-section>`; the Directory opens the
   pill named in `&sub=`). The ad rail is the All cities pair.
-- **One kind fills the page**: picking Documentaries shows only documentaries. Its **Featured** first, with a Featured pill,
+- **One kind fills the page**: picking Documentaries shows only documentaries. Its **Featured** first, in its own section,
   when we have put something there (`SHOWS`, each with its `type`: our four shows and the episode search are Podcasts'; Books
   and Documentaries have none yet, so their 12 lead; a featured book, such as the Pre-Vegans one Sean mentioned, is a `SHOWS`
   row with `type: 'books'`). Then its **top 12** as voted in the Directory, read fresh on every visit: most votes, then most
@@ -909,7 +909,9 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   `/directory/<slug>` (in the dashboard, under the Directory tab), wears the feed's Active or On hiatus and has **Listen
   here** plus Spotify, Apple Podcasts, Amazon Music and YouTube (`LISTEN` in `ve-media.js`, read from the listing's
   `details.platforms`; on the listing's Listen on, `details.platforms.youtube` is the show's playlist, the `youtube` column stays
-  the channel for socials). The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
+  the channel for socials). Since 2026-10-27 (Sean: "show the featured podcasts in the same format as the other, just in their own
+  section") the Featured section shows them with the Directory's own card, like the 12 (votes and all), in `SHOWS` order; the
+  listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
