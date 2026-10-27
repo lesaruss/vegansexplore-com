@@ -432,6 +432,8 @@
   #dash-directory-crumb .dash-crumb-back:hover{text-decoration:underline;}
   #dash-directory-crumb .dash-crumb-sep{color:var(--ve-text-50);}
   #dash-directory-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-directory-crumb .dash-crumb-share{margin-left:auto;background:#fff;border:1.5px solid var(--ve-border);border-radius:6px;padding:6px 12px;font:inherit;font-size:12px;font-weight:800;color:var(--ve-text);cursor:pointer;}
+  #dash-directory-crumb .dash-crumb-share:hover{border-color:var(--ve-green-dark);color:var(--ve-green-dark);}
   #dash-directory-detail{display:none;}
   .dash-directory-iframe{display:block;width:100%;height:1400px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ .dash-directory-iframe{height:1800px;} }
@@ -1129,7 +1131,13 @@
   var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
   var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','dmv':'/communities/dmv/banner.png','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
 
+  // A listing link (/dashboard/directory/<slug>) opened signed out goes to the public listing page instead.
+  function listingSlugFromPath() {
+    var m = location.pathname.match(/^\/dashboard\/directory\/([a-z0-9][a-z0-9_-]*)\/?$/i);
+    return m ? m[1] : '';
+  }
   function showDenied() {
+    if (listingSlugFromPath()) { location.replace('/directory/' + listingSlugFromPath() + location.search); return; }
     document.getElementById('dash-gate').innerHTML = '<p>Sign in to view your dashboard.</p><button id="dash-signin-btn">Sign In</button>';
     var btn = document.getElementById('dash-signin-btn');
     if (btn) btn.addEventListener('click', function () { VEAuth.showAuthModal('Sign in to view your dashboard.', init); });
@@ -2715,11 +2723,15 @@
   // dashboard without a reload. The listing page itself hides its own
   // sitewide nav when it detects it's embedded (see directory/listing.html)
   // so there's no duplicate header inside the frame.
-  function openDashboardListing(slug, name) {
+  // Each listing has its own address (Sean, 2026-10-27: "if somebody just wanted to share a link to their page"):
+  // /dashboard/directory/<slug> while it is open, and Share copies the public /directory/<slug>.
+  function openDashboardListing(slug, name, noPush) {
     var mount = document.getElementById('dash-directory-mount');
     var detail = document.getElementById('dash-directory-detail');
     var crumb = document.getElementById('dash-directory-crumb');
     if (!mount || !detail || !crumb) return;
+    var path = '/dashboard/directory/' + encodeURIComponent(slug);
+    if (!noPush && location.pathname !== path) history.pushState({ tabKey: 'directory', listing: slug }, '', path);
     mount.style.display = 'none';
     document.getElementById('dash-dir-layout').style.display = 'none';
     crumb.innerHTML = '';
@@ -2727,7 +2739,7 @@
     back.type = 'button';
     back.className = 'dash-crumb-back';
     back.innerHTML = '&larr; Directory';
-    back.addEventListener('click', closeDashboardListing);
+    back.addEventListener('click', function () { closeDashboardListing(); });
     var sep = document.createElement('span');
     sep.className = 'dash-crumb-sep';
     sep.textContent = '/';
@@ -2737,17 +2749,39 @@
     crumb.appendChild(back);
     crumb.appendChild(sep);
     crumb.appendChild(current);
+    var share = document.createElement('button');
+    share.type = 'button';
+    share.className = 'dash-crumb-share';
+    share.textContent = 'Copy link';
+    share.addEventListener('click', function () {
+      var link = location.origin + '/directory/' + encodeURIComponent(slug);
+      (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () {
+        share.textContent = 'Link copied'; setTimeout(function () { share.textContent = 'Copy link'; }, 2000);
+      }, function () { window.prompt('Copy this link', link); });
+    });
+    crumb.appendChild(share);
     crumb.style.display = 'flex';
     var iframe = document.createElement('iframe');
     iframe.className = 'dash-directory-iframe';
     iframe.title = name || 'Listing';
     iframe.src = '/directory/' + encodeURIComponent(slug);
+    // Opened from a link, the name comes from the listing page itself.
+    // The listing page sets its title once its data arrives, so look for it for a few seconds.
+    if (!name) iframe.addEventListener('load', function () {
+      var tries = 0;
+      (function look() {
+        var t = ''; try { t = (iframe.contentDocument.title || '').replace(/\s+[\u2014|-]\s+Vegans Explore$/i, ''); } catch (e) { return; }
+        if (t && !/^Loading/.test(t)) { current.textContent = t; iframe.title = t; return; }
+        if (++tries < 20) setTimeout(look, 300);
+      })();
+    });
     detail.innerHTML = '';
     detail.appendChild(iframe);
     detail.style.display = 'block';
   }
 
-  function closeDashboardListing() {
+  function closeDashboardListing(quiet) {
+    if (!quiet && listingSlugFromPath()) history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
     var mount = document.getElementById('dash-directory-mount');
     var detail = document.getElementById('dash-directory-detail');
     var crumb = document.getElementById('dash-directory-crumb');
@@ -3425,7 +3459,9 @@
   function renderDirectory(member) {
     var mount = document.getElementById('dash-directory-mount');
     if (!mount) return;
-    closeDashboardListing();
+    closeDashboardListing(true);
+    // A /dashboard/directory/<slug> address opens that listing over the Directory once it is drawn.
+    if (listingSlugFromPath()) { var landSlug = listingSlugFromPath(); setTimeout(function () { if (listingSlugFromPath() === landSlug) openDashboardListing(landSlug, '', true); }, 0); }
     var active = DASH_ALL.directory ? '' : getActiveCity(member);
     if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dash-dir-ad-rail'), active || '');
     if (window.VECityBanner) {
@@ -3496,6 +3532,7 @@
     // a signed-out visitor hitting one of these links is prompted to sign
     // in or create an account first and lands on the right tab after.
     function tabKeyFromPath() {
+      if (listingSlugFromPath()) return 'directory';
       var m = location.pathname.match(/^\/dashboard\/([a-z0-9_-]+)\/?$/i);
       if (!m) return null;
       var found = sections.some(function (s) { return s.getAttribute('data-tab-key') === m[1]; });
@@ -3517,6 +3554,7 @@
       });
       mobileSelect.value = key;
       if (!opts.skipHistory) {
+        if (key === 'directory') closeDashboardListing(true);
         var url = '/dashboard/' + key;
         if (location.pathname !== url) history.pushState({ tabKey: key }, '', url);
       }
@@ -3556,6 +3594,9 @@
       if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
+      // Back and forward between the Directory and a listing.
+      if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
+      if (/^\/dashboard\/directory\/?$/.test(location.pathname)) closeDashboardListing(true);
       var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
       if (key === 'tools' && !(e.state && e.state.frame)) key = 'profile'; // Tools is no longer a page of its own
       activate(key, { skipHistory: true });
