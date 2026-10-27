@@ -813,7 +813,8 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   membership, My Account, My Saves, Contribute, Sign out; a super admin also gets **View as** (My account, The public, Member,
   Community Manager; `ve_view_as`) and **Sign in as** (`ve-switch-account`). While a preview or a switch is on, a pill at the
   bottom left says so, with Back to my account.
-- The menu (`public/nav.js`): Guides, Pulse, Media, Communities, Directory, Events. The Community Board left it ("the
+- The menu (`public/nav.js`, Sean, 2026-10-27): signed out, Directory, Events, Daily Pulse, Media, Guides, Communities, the signed-in
+  order without Dashboard, My Saves and the Depot ("My Saves and Depot are logged in versions only"). The Community Board left it ("the
   community board is in the pulse"): `/pulse` is the Board (see The Daily Pulse is the Community Board). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`

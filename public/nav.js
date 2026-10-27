@@ -195,14 +195,15 @@
   }
 
   /* ---- The menu ----
-     Signed out (Sean, 2026-10-26): the public sections. Signed in (Sean, 2026-10-27), the dashboard's order: Dashboard,
-     Directory, Events, Daily Pulse, Media, Guides, Communities, My Saves, and the Depot for super admins. One bar either
-     way: tabs on desktop, one full-width dropdown on phones. A page under a section counts as that section. */
+     Signed in (Sean, 2026-10-27), the dashboard's order: Dashboard, Directory, Events, Daily Pulse, Media, Guides, Communities,
+     My Saves, and the Depot for super admins. Signed out, the same order without Dashboard, My Saves and the Depot (Sean,
+     2026-10-27: "My Saves and Depot are logged in versions only"). One bar either way: tabs on desktop, the hamburger on phones.
+     A page under a section counts as that section. */
   var MENU = loggedIn
     ? [['Dashboard', '/dashboard'], ['Directory', '/directory'], ['Events', '/events'], ['Daily Pulse', '/pulse'], ['Media', '/media'],
        ['Guides', '/guides'], ['Communities', '/communities'], ['My Saves', '/dashboard/saves']]
         .concat(isRealSuperAdmin && !viewAs ? [['Depot', '/dashboard/depot']] : [])
-    : [['Guides', '/guides'], ['Pulse', '/pulse'], ['Media', '/media'], ['Communities', '/communities'], ['Directory', '/directory'], ['Events', '/events']];
+    : [['Directory', '/directory'], ['Events', '/events'], ['Daily Pulse', '/pulse'], ['Media', '/media'], ['Guides', '/guides'], ['Communities', '/communities']];
   function inSection(href) {
     if (href === '/dashboard') return p === '/dashboard' || p === '/dashboard/center-console';
     if (href === '/dashboard/depot') return p.indexOf('/dashboard/depot') === 0 || p.indexOf('/admin/depot') === 0;
