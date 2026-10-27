@@ -234,7 +234,9 @@ async function gather(website: string, deadline: number) {
       if (p.html) { for (const l of linksOf(p.html, at)) offer(l.url, l.text); pics.push(...picturesOf(p.html, at, menuPage)); pdfs.push(...pdfsOf(p.html, at)); }
       squareOrder(at);
       // Script-only pages and ordering apps: open them in a real browser (three a listing). Its links and pictures count too.
-      if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && Date.now() < deadline - 150000 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
+      // The home page is opened in a browser only when it links to no menu or order page (that saves a load for them).
+      const homeHasLinks = url === base && p.html && [...cand.values()].some((v) => v >= 3);
+      if (!homeHasLinks && (text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && Date.now() < deadline - 150000 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
         renders++;
         // Ordering apps fill their menu in late, so they get a longer wait.
         const rr = await rendered(at, ORDER_HOSTS.test(h) ? 20 : 8);
