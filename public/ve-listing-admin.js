@@ -11,6 +11,13 @@
  * square it, and Save logo stores it the way Directory review > Logos does (ve-discover add_logo_url,
  * logo_set), so it shows in Logos > Done. Copy and Remove go through ve-media-library as before.
  *
+ * What it is comes first (Sean, 2026-10-27: "once you select its media... you don't see anything else. Then based off what
+ * you choose, the next part populates"): the section sits under the logo, and the rest shows only what fits that kind of
+ * listing (KIND_OF). Media hides How Vegan, Location, Chapters and Locations (it is in every chapter: saving sets Every
+ * chapter) and its status reads Active / On hiatus / Ended (books and films: Available / No longer available); products and
+ * brands hide Locations and read In business / Paused / Out of business; places keep it all. A part that is hidden is not
+ * saved, so what the listing already has stays. Nothing but the section shows until a section is picked.
+ *
  * Chapters (Sean, 2026-10-24): an organization that covers more than its own city (Florida Animal Rescue
  * Alliance across Florida, PETA everywhere) also shows in the chapters picked here, or in every chapter.
  * Its address stays its headquarters and its home chapter. Saved in listings.communities.
@@ -65,6 +72,17 @@
   var DINING = ['Restaurants', 'Bakeries & Cafes'];
   var VEGAN = [['fully_vegan', '100% Vegan'], ['vegan_friendly', 'Vegan-friendly'], ['vegan_options', 'Vegan options']];
   var OPEN = [['OPERATIONAL', 'Open'], ['CLOSED_TEMPORARILY', 'Temporarily closed'], ['CLOSED_PERMANENTLY', 'Permanently closed']];
+  // What kind of listing a sub-section is, and so which parts of the editor it needs. Keep the words in step with STATUS_WORDS in
+  // /public/ve-region-directory.js and statusWords in /directory/listing.html.
+  var MEDIA_SHOWS = ['Podcasts', 'YouTube', 'News Outlets', 'Media'], MEDIA_WORKS = ['Documentaries & Films', 'Books'];
+  var BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'];
+  function kindOf(cat) { return MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
+  var STATUS = {
+    place: { title: 'Open or closed', opts: OPEN },
+    show: { title: 'Status', opts: [['OPERATIONAL', 'Active'], ['CLOSED_TEMPORARILY', 'On hiatus'], ['CLOSED_PERMANENTLY', 'Ended']] },
+    work: { title: 'Status', opts: [['OPERATIONAL', 'Available'], ['CLOSED_PERMANENTLY', 'No longer available']] },
+    brand: { title: 'Status', opts: [['OPERATIONAL', 'In business'], ['CLOSED_TEMPORARILY', 'Paused'], ['CLOSED_PERMANENTLY', 'Out of business']] }
+  };
   var ATMOS = [['', 'Not set'], ['casual', 'Casual'], ['fast-casual', 'Fast casual'], ['upscale', 'Upscale'], ['fine-dining', 'Fine dining'], ['bar-lounge', 'Bar / lounge']];
   var GLANCE = [
     ['Seating', [['a', 'Dine-in'], ['f', 'indoor_seating', 'Indoor seating'], ['a', 'Outdoor Seating'], ['a', 'Reservations']]],
@@ -170,23 +188,35 @@
     var wrap = document.createElement('div'); wrap.id = 'vla';
     wrap.innerHTML = '<div class="box" role="dialog" aria-modal="true" aria-labelledby="vla-t">' +
       '<h2 id="vla-t">Edit listing</h2><div class="who">Admin only. Changes are live as soon as you save.</div>' +
-      '<label class="h" for="vla-name">Business name</label><input type="text" id="vla-name" maxlength="160" value="' + esc(l.name) + '">' +
+      '<label class="h" for="vla-name" id="vla-name-l">Business name</label><input type="text" id="vla-name" maxlength="160" value="' + esc(l.name) + '">' +
 
       '<h3>Logo</h3><div class="logo"><div class="logo-img" id="vla-logo"></div><div class="logo-btns">' +
       '<button type="button" id="vla-up">Upload a logo</button><button type="button" id="vla-copy" hidden>Copy it into our storage</button><button type="button" class="rm" id="vla-rm" hidden>Remove</button>' +
       '</div><div class="logo-msg" id="vla-lmsg" role="status"></div></div><div class="ledit" id="vla-ledit" hidden></div>' +
 
-      '<h3>Location</h3>' +
+      // What it is, first: the parts under it follow from it.
+      '<h3>What it is</h3>' +
+      '<label class="h">Main section</label><div class="chips" id="vla-sec">' + SECTIONS.map(function (s) { return chip('radio', 'vla-sec', s[0], s[0], s[0] === sec); }).join('') + '</div>' +
+      '<label class="h" for="vla-sub">Sub-section</label><select id="vla-sub"></select>' +
+      '<label class="h">Also show it under</label><div class="chips" id="vla-extra"></div>' +
+      '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Food Trucks &amp; Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
+      '<div id="vla-cuis-wrap"><label class="h">What kind of food (up to four)</label><div class="chips">' + CUISINES.map(function (k) { return chip('checkbox', 'vla-cuis', k[0], k[1], (l.cuisines || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
+      '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
+
+      '<div class="note" id="vla-first" hidden>Pick the main section and sub-section first. The rest of the listing follows from what it is.</div>' +
+      '<div id="vla-rest">' +
+
+      '<div id="vla-p-loc"><h3>Location</h3>' +
       '<label class="check"><input type="checkbox" id="vla-online"' + (online ? ' checked' : '') + '> Online only, no storefront</label>' +
       '<div id="vla-addr"><div class="row"><div class="street"><label class="h" for="vla-st">Street</label><input type="text" id="vla-st" value="' + esc(l.address_street) + '"></div>' +
       '<div><label class="h" for="vla-city">City</label><input type="text" id="vla-city" value="' + esc(l.address_city) + '"></div>' +
       '<div class="row2"><div><label class="h" for="vla-state">State</label><input type="text" id="vla-state" maxlength="40" value="' + esc(l.address_state) + '"></div>' +
       '<div><label class="h" for="vla-zip">Zip</label><input type="text" id="vla-zip" maxlength="12" value="' + esc(l.address_zip) + '"></div></div></div>' +
-      '<div class="note">The city decides which hub it shows on. The map pin follows the street address.</div></div>' +
+      '<div class="note">The city decides which hub it shows on. The map pin follows the street address.</div></div></div>' +
 
       // Locations (Sean, 2026-10-25): one business, many places. Each location is its own listing tied to a main listing,
       // which holds what they share; Add a location copies it (ve-claims admin_location_add).
-      '<h3>Locations</h3>' +
+      '<div id="vla-p-locs"><h3>Locations</h3>' +
       '<div class="row2"><div><label class="h" for="vla-parent">Part of (the main listing)</label><input type="text" id="vla-parent" placeholder="Its address, like jajaja-mexicana" value=""></div>' +
       '<div><label class="h" for="vla-loclabel">This location\'s name</label><input type="text" id="vla-loclabel" maxlength="60" placeholder="West Village" value="' + esc(l.location_label) + '"></div></div>' +
       '<div class="note">Leave Part of empty for the main listing or a business with one place. A location fills anything it leaves empty (about, logo, socials, menu) from the main listing.</div>' +
@@ -198,35 +228,28 @@
         '<div class="row2"><div><label class="h" for="vla-nl-state">State</label><input type="text" id="vla-nl-state" maxlength="40"></div><div><label class="h" for="vla-nl-zip">Zip</label><input type="text" id="vla-nl-zip" maxlength="12"></div></div></div>' +
         '<label class="h" for="vla-nl-phone">Phone</label><input type="text" id="vla-nl-phone" maxlength="40">' +
         '<div class="chips" style="margin-top:8px"><button type="button" class="save" id="vla-nl-go">Add this location</button></div>' +
-        '<div class="note">It copies the name, logo, about, socials, website, section and how Vegan. Its hours, Google place and map pin fill in overnight.</div></div>' +
+        '<div class="note">It copies the name, logo, about, socials, website, section and how Vegan. Its hours, Google place and map pin fill in overnight.</div></div></div>' +
 
-      '<h3>Chapters</h3>' +
+      '<div id="vla-p-ch"><h3>Chapters</h3>' +
       '<label class="check"><input type="checkbox" id="vla-all"' + ((l.communities || []).indexOf('all') >= 0 ? ' checked' : '') + '> Every chapter (a national or global organization)</label>' +
       '<div class="chips" id="vla-ch">' + chapters().map(function (c) { return chip('checkbox', 'vla-ch', c[0], c[1], (l.communities || []).indexOf(c[0]) >= 0); }).join('') + '</div>' +
-      '<div class="note" id="vla-ch-note"></div>' +
+      '<div class="note" id="vla-ch-note"></div></div>' +
 
-      '<h3>Section</h3>' +
-      '<label class="h">Main section</label><div class="chips" id="vla-sec">' + SECTIONS.map(function (s) { return chip('radio', 'vla-sec', s[0], s[0], s[0] === sec); }).join('') + '</div>' +
-      '<label class="h" for="vla-sub">Sub-section</label><select id="vla-sub"></select>' +
-      '<label class="h">Also show it under</label><div class="chips" id="vla-extra"></div>' +
-      '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Food Trucks &amp; Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
-      '<div id="vla-cuis-wrap"><label class="h">What kind of food (up to four)</label><div class="chips">' + CUISINES.map(function (k) { return chip('checkbox', 'vla-cuis', k[0], k[1], (l.cuisines || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
-      '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
-
-      '<h3>How Vegan</h3><div class="chips">' + VEGAN.map(function (o) { return chip('radio', 'vla-vs', o[0], o[1], o[0] === vs); }).join('') + '</div>' +
+      '<div id="vla-p-vegan"><h3>How Vegan</h3><div class="chips">' + VEGAN.map(function (o) { return chip('radio', 'vla-vs', o[0], o[1], o[0] === vs); }).join('') + '</div>' +
       // Vetted by us (Sean, 2026-10-25): skips the 10 member votes a Vegan-friendly or Vegan-options place needs.
       '<div id="vla-vet-wrap"><label class="check"><input type="checkbox" id="vla-vet"' + (l.vetted_at ? ' checked' : '') + '> Vetted by us: show it to everyone now</label>' +
-      '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vote for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div>' +
-      '<h3>Open or closed</h3><div class="chips">' + OPEN.map(function (o) { return chip('radio', 'vla-bs', o[0], o[1], o[0] === bs); }).join('') + '</div>' +
+      '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vote for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div></div>' +
+      '<h3 id="vla-bs-t">Open or closed</h3><div class="chips" id="vla-bs"></div>' +
       // Off the Directory without calling it closed (Sean, 2026-10-25: "I just wanted to remove and not even mark as permanently
       // closed"). Both save at once through ve-outreach listing_state; Depot > Directory review lists them and can put them back.
-      '<div class="note">Permanently closed keeps it under Closed in the Directory, for memory. To take it off without that:</div>' +
+      '<div class="note" id="vla-bs-note"></div>' +
       '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-hold">Hold for review</button><button type="button" class="cancel" id="vla-remove" style="color:#8a1c12;border-color:#8a1c12">Remove from the Directory</button>' +
         '<a class="cancel" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/flagged" target="_blank" rel="noopener" style="text-decoration:none">Open in Directory review</a></div>' +
 
       '<div id="vla-glance"><h3>At a Glance <span style="font-weight:700;letter-spacing:0;text-transform:none;color:#666">(restaurants and cafes)</span></h3>' +
       '<label class="h" for="vla-atm">Atmosphere</label><select id="vla-atm">' + ATMOS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === (l.atmosphere || '') ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
       glance + '</div>' +
+      '</div>' + // #vla-rest
 
       '<div class="acts"><span class="msg" id="vla-msg" role="status"></span><button type="button" class="cancel" id="vla-x">Cancel</button><button type="button" class="save" id="vla-s">Save</button></div></div>';
     document.body.appendChild(wrap);
@@ -252,6 +275,23 @@
       syncVet();
       $('#vla-vends-note').hidden = ['Food Brands', 'Nutrition & Supplements'].indexOf(cur) < 0;
       $('#vla-kinds-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })).indexOf('Food Brands') < 0;
+      // The rest follows from what it is (Sean, 2026-10-27): nothing until a section is picked; media serves every chapter and has no
+      // address, locations or How Vegan; a brand has no locations.
+      var picked = !!($('input[name=vla-sec]:checked') || {}).value, kind = kindOf(cur), media = kind === 'show' || kind === 'work';
+      $('#vla-first').hidden = picked; $('#vla-rest').hidden = !picked;
+      $('#vla-p-loc').hidden = $('#vla-p-ch').hidden = $('#vla-p-vegan').hidden = media;
+      $('#vla-p-locs').hidden = media || kind === 'brand';
+      $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
+      drawStatus(kind);
+    }
+    // Status words fit the kind: a podcast is Active, On hiatus or Ended; a brand In business, Paused or Out of business.
+    function drawStatus(kind) {
+      var cur = (wrap.querySelector('input[name=vla-bs]:checked') || {}).value || bs, st = STATUS[kind], opts = st.opts.slice();
+      if (!opts.some(function (o) { return o[0] === cur; })) opts.splice(1, 0, [cur, cur === 'CLOSED_TEMPORARILY' ? 'Unavailable for now' : cur]);
+      $('#vla-bs-t').textContent = st.title;
+      $('#vla-bs').innerHTML = opts.map(function (o) { return chip('radio', 'vla-bs', o[0], o[1], o[0] === cur); }).join('');
+      var last = st.opts[st.opts.length - 1][1];
+      $('#vla-bs-note').textContent = last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
     }
     // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).
     function syncVet() {
@@ -421,21 +461,25 @@
       function bad(t) { msg.className = 'msg bad'; msg.textContent = t; }
       var name = $('#vla-name').value.trim();
       if (!name) return bad('The business needs a name.');
+      if (!($('input[name=vla-sec]:checked') || {}).value) return bad('Pick the main section first.');
+      var kind = kindOf($('#vla-sub').value), hasLoc = !$('#vla-p-loc').hidden;
       var isOnline = $('#vla-online').checked;
-      if (!isOnline && !$('#vla-city').value.trim()) return bad('Add a city, or tick Online only.');
+      if (hasLoc && !isOnline && !$('#vla-city').value.trim()) return bad('Add a city, or tick Online only.');
       var vals = function (n) { return Array.prototype.map.call(wrap.querySelectorAll('input[name=' + n + ']:checked'), function (i) { return i.value; }); };
       var body = { action: 'admin_listing', listing_id: l.id, name: name, category: $('#vla-sub').value, extra_categories: vals('vla-extra'),
-        business_status: (wrap.querySelector('input[name=vla-bs]:checked') || {}).value || 'OPERATIONAL',
-        address: isOnline ? { online: true } : { street: $('#vla-st').value, city: $('#vla-city').value, state: $('#vla-state').value, zip: $('#vla-zip').value } };
-      var v = wrap.querySelector('input[name=vla-vs]:checked'); if (v) body.vegan_status = v.value;
+        business_status: (wrap.querySelector('input[name=vla-bs]:checked') || {}).value || 'OPERATIONAL' };
+      // Only the parts shown are saved; media keeps its address as it is and serves every chapter.
+      if (hasLoc) body.address = isOnline ? { online: true } : { street: $('#vla-st').value, city: $('#vla-city').value, state: $('#vla-state').value, zip: $('#vla-zip').value };
+      var v = wrap.querySelector('input[name=vla-vs]:checked'); if (v && !$('#vla-p-vegan').hidden) body.vegan_status = v.value;
       // The home chapter comes from the address, so only the extra ones are saved.
-      body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
+      if (kind === 'show' || kind === 'work') body.communities = ['all'];
+      else if (!$('#vla-p-ch').hidden) body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
       if (!$('#vla-kinds-wrap').hidden) body.product_kinds = vals('vla-kind');
       if (!$('#vla-cuis-wrap').hidden) body.cuisines = vals('vla-cuis');
       if (!$('#vla-vet-wrap').hidden) body.vetted = $('#vla-vet').checked;
       var ps = $('#vla-parent').value.trim();
-      if (ps !== parentSlug) body.parent_slug = ps;
-      if ($('#vla-loclabel').value.trim() !== (l.location_label || '')) body.location_label = $('#vla-loclabel').value.trim();
+      if (!$('#vla-p-locs').hidden && ps !== parentSlug) body.parent_slug = ps;
+      if (!$('#vla-p-locs').hidden && $('#vla-loclabel').value.trim() !== (l.location_label || '')) body.location_label = $('#vla-loclabel').value.trim();
       if (!$('#vla-glance').hidden) {
         var flags = vals('vla-flag');
         body.details = { atmosphere: $('#vla-atm').value, accommodations: vals('vla-acc'), owned: vals('vla-own'),
