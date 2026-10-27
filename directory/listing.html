@@ -1369,7 +1369,7 @@ function renderAtAGlance(l){
     return '<div class="section"><h2 class="section-title">At a Glance</h2>'+
       '<div style="text-align:center;padding:20px;background:var(--ve-surface);border-radius:8px;border:1px solid var(--ve-border)">'+
         '<p style="font-size:12px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Atmosphere, seating, accessibility, and community attributes appear here once this business is claimed.</p>'+
-        '<a href="'+pdHref(l)+'" data-pd-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
+        '<a href="'+claimHref(l)+'" data-claim-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
       '</div>'+
     '</div>';
   }
@@ -1384,7 +1384,7 @@ function renderAtAGlance(l){
   html += '</div>';
 
   var footer = coldStart
-    ? '<div style="margin-top:14px;text-align:center"><a href="'+pdHref(l)+'" data-pd-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
+    ? '<div style="margin-top:14px;text-align:center"><a href="'+claimHref(l)+'" data-claim-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
     : '';
 
   return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+footer+'</div>';
@@ -1428,7 +1428,7 @@ function renderSidebar(l){
   // copy says exactly that rather than implying a paid unlock.
   // The one claim box (Sean, 2026-10-27: "keep it very sleek in two places", this and At a Glance): it opens the listing's
   // claim page (the Partner Dashboard view, ?tab=brand) and says every claim is checked before it is approved.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+pdHref(l)+'" data-pd-open class="claim-btn">Claim Listing</a></div></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+claimHref(l)+'" data-claim-open class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -2292,6 +2292,9 @@ var PODCAST_OPPS = [
 // Peace of mind for owners (Sean, 2026-10-27: "it looks so easy to claim it that somebody could claim it that doesn't own it").
 var CLAIM_REVIEW = 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.';
 function pdHref(l){ return '/directory/' + encodeURIComponent(l.slug || '') + '?tab=brand'; }
+// The claim spots (Own this business, Claim Listing) open the business page with this listing in hand (Sean, 2026-10-27: "link
+// the claim boxes to /business too"); its Get started claims this listing (/claim?listing=<slug>).
+function claimHref(l){ return '/business?listing=' + encodeURIComponent(l.slug || ''); }
 document.addEventListener('click', function(e){
   var a = e.target.closest && e.target.closest('[data-pd-open]'); if(!a || !window.veListingTab) return;
   e.preventDefault();
@@ -4013,7 +4016,7 @@ function renderDemo(){
   if(DEMO.business){
     // Claim Listing and Own this business open the owner's side; anything that would buy or claim the sample goes to /business.
     root.addEventListener('click', function(e){
-      if(e.target.closest('[data-pd-open]')){ e.preventDefault(); e.stopPropagation(); setDemoView('owner', l); return; }
+      if(e.target.closest('[data-pd-open],[data-claim-open]')){ e.preventDefault(); e.stopPropagation(); setDemoView('owner', l); return; }
       var a = e.target.closest('a[href^="/claim?listing="]'); if(a){ e.preventDefault(); location.href = '/business#/start'; }
     });
     var vs = new URLSearchParams(location.search);

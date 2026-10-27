@@ -315,6 +315,9 @@
     }
   };
   var SAMPLE = '/business/sample', SAMPLE_DASH = '/business/sample?tab=brand';
+  // From a listing's claim box (?listing=<slug>), Find your business claims that listing.
+  var LISTING = /^[a-z0-9-]{1,120}$/.test(params.get('listing') || '') ? params.get('listing') : '';
+  var CLAIM = LISTING ? '/claim?listing=' + LISTING : '/claim';
   function sampleBtns() {
     return '<div class="dg-btns"><a class="dg-btn" href="' + SAMPLE + '">See a sample page</a><a class="dg-btn" style="background:#fff;color:var(--g);border:1px solid var(--line)" href="' + SAMPLE_DASH + '">See a sample dashboard</a></div>';
   }
@@ -373,13 +376,13 @@
       var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
       var steps = '<div class="dg-access"><ul>' +
         '<li><b>1. Get your Passport</b>, $11 one time, with 1,100 welcome points.</li>' +
-        '<li><b>2. Find your business</b> in the Directory and claim it, or add it. Each page is 1,100 points or $11, so your welcome points cover it.</li>' +
+        (LISTING ? '<li><b>2. Claim your page.</b>' : '<li><b>2. Find your business</b> in the Directory and claim it, or add it.') + ' Each page is 1,100 points or $11, so your welcome points cover it.</li>' +
         '<li><b>3. We review it.</b> Before anything is approved, our team carefully reviews each claim to make sure it is accurate.</li>' +
         '<li><b>4. Your dashboard opens</b> on your page.</li></ul>';
       var box = isMember()
-        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Find your business next.</p><a class="dg-btn" href="/claim">Find your business</a>' + status
+        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. ' + (LISTING ? 'Claim your page next.' : 'Find your business next.') + '</p><a class="dg-btn" href="' + CLAIM + '">' + (LISTING ? 'Claim your page' : 'Find your business') + '</a>' + status
         : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Create a free account, then get your Passport. Already a member? <a href="#" data-signin>Sign in</a>.') +
-          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button><p style="margin-top:10px"><a href="/claim">Or find your business first</a></p>' + status;
+          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button><p style="margin-top:10px"><a href="' + CLAIM + '">' + (LISTING ? 'Or claim your page first' : 'Or find your business first') + '</a></p>' + status;
       return head('Get started', 'Your page, in four steps', 'Your $11 is a membership contribution, one time. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
     }
   };

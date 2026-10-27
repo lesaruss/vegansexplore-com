@@ -375,7 +375,8 @@ for businesses that is a squeeze page for them."
 - **`/business`** is the business page: the Passport Guide (`passport.html`, rewrite in `vercel.json`) with its own tabs when
   the address is `/business` (`BIZ` in the page): Overview, Your page, Your dashboard, Get found (each item Live or Coming),
   Partner plan (Front Row Start), Get started (the Passport, $11 with 1,100 points, which cover a claim; then Find your business,
-  `/claim`). Send a business here whenever we ask it to join or do something. The Passport's For businesses tab and the ad
+  `/claim`; with `?listing=<slug>`, from a listing's claim box, it claims that listing). Send a business here whenever we ask
+  it to join or do something. The Passport's For businesses tab and the ad
   rail's Your ad here link to it. The old Passport Stop / Anchor page ($250 a quarter, the one-thing services) moved to
   `/business/stops` (`business/stops.html`; `/claim` and Depot > Services and Verified link there).
 - **`/business/sample`** is the sample business: the real listing page (`directory/listing.html`, rewrite in `vercel.json`) in
@@ -1537,9 +1538,10 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
 - **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
   partner dashboard. And then underneath it is a sub menu"). **Its tab is hidden from the tab row** (Sean, 2026-10-27: "remove the partner
-  dashboard and then just whenever somebody clicks own this business, our claim listing, that's where it goes"): a visitor opens
-  it (`?tab=brand`) from the only two claim spots, At a Glance's **Own this business? Add details** and the sidebar's black
-  **Claim Listing** box (`data-pd-open`, `pdHref`); the header's "Is this your business? Claim it" and the Build Out This
+  dashboard and then just whenever somebody clicks own this business, our claim listing, that's where it goes"); since
+  2026-10-27 (Sean: "link the claim boxes to /business too") the two claim spots, At a Glance's **Own this business? Add
+  details** and the sidebar's black **Claim Listing** box, open `/business?listing=<slug>` (`claimHref`, `data-claim-open`),
+  whose Get started claims that listing (`/claim?listing=<slug>`); the tab still opens by `?tab=brand` (`pdHref`); the header's "Is this your business? Claim it" and the Build Out This
   Profile card are gone. The tab shows for the owner, super admins and a brand's partner or link. The claim box and the claim
   page say "Before anything is approved, our team carefully reviews each claim to make sure it is accurate." (`CLAIM_REVIEW`). One tab, `data-tab="brand"`, after Products on a brand page and
   last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
