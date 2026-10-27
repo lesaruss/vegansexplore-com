@@ -322,6 +322,7 @@
   #dash-console-crumb .dash-crumb-sep{color:var(--ve-text-50);}
   #dash-console-crumb .dash-crumb-current{color:var(--ve-text);}
   #dash-pulse-host iframe{display:block;width:100%;height:900px;border:0;background:#fff;}
+  #dash-depot-host iframe{display:block;width:100%;height:900px;border:0;background:transparent;}
   #dash-console-host iframe{display:block;width:100%;height:min(660px,calc(100vh - 300px));min-height:440px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ #dash-console-host iframe{height:calc(100vh - 170px);min-height:520px;} }
   /* Action items that are <button>s (Set up your Guide) reuse the tour-prompt look.
@@ -363,19 +364,6 @@
      Cities" placeholder. Reuses the existing dash-community-modal rather
      than opening a new one. --- */
   .dash-city-pill-caret{font-size:9px;opacity:0.7;}
-  /* Superadmin View As (2026-09-08, Sean, Fieldy field note) -- see the
-     markup comment above #dash-viewas-wrap for full context. Amber rather
-     than green so it never reads as a normal member-facing control. */
-  .dash-viewas-wrap{position:relative;margin-top:10px;}
-  .dash-viewas-pill{appearance:none;border:1.5px solid #B45309;background:#FEF3C7;color:#92400E;border-radius:100px;padding:7px 14px;font:inherit;font-size:12px;font-weight:800;letter-spacing:0.02em;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
-  .dash-viewas-pill:hover{background:#fff;}
-  .dash-viewas-pill.previewing{background:#92400E;border-color:#92400E;color:#fff;}
-  .dash-viewas-menu{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:200px;background:#fff;border:1.5px solid var(--ve-border);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.14);padding:6px;z-index:30;}
-  .dash-viewas-menu.open{display:block;}
-  .dash-viewas-opt{display:block;width:100%;text-align:left;appearance:none;border:none;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--ve-text);padding:9px 10px;border-radius:8px;cursor:pointer;}
-  .dash-viewas-opt:hover{background:var(--ve-green-light);}
-  .dash-viewas-opt.current{color:var(--ve-green-dark);font-weight:900;}
-  .dash-viewas-sep{height:1px;background:var(--ve-border);margin:4px 2px;}
 
   /* --- Your Profile tab: 2-column variant of the stats-hero tile grid, for
      Membership + Badges (moved here from the front-and-center row, 2026-09-07
@@ -595,6 +583,8 @@
      whose banner is the /pulse page's own. main's side padding is 32px (16px on phones). */
   .dash-hero-banner{border-radius:0;margin:0 -32px 22px;}
   #dash-pulse-host{margin:0 -32px;}
+  #dash-depot-host{margin:-24px -32px 0;}
+  @media (max-width:700px){ #dash-depot-host{margin:-24px -16px 0;} }
   @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
@@ -616,6 +606,7 @@
 </head>
 <body>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-account-menu.js"></script>
 <script src="/public/dashboard-sections.js"></script>
 <!-- The ONE LESARUSS universal bar, served by LESARUSS HQ (2026-09-27, Sean:
      "It should be the same selector, no matter which brand I'm on"). This site
@@ -703,28 +694,6 @@
         <p class="dash-welcome-sub" id="dash-welcome-sub">Loading&hellip;</p>
         <!-- Contribute and the city pill left the header (Sean, 2026-10-26): the city banner on the Directory and Events
              tabs picks the city, and Contribute opens from the nav's account menu (/dashboard?contribute=1). -->
-        <!-- Superadmin View As (2026-09-08, Sean, Fieldy field note): preview
-             the dashboard as a Free Member, Passport Member, or Community
-             Manager without creating a separate test account -- "I need to
-             make sure what's locked down, what's not locked down." Gated on
-             the REAL account (VEAuth.getRealMember, not the currently
-             previewed one) in initViewAsControl(), so it never shows up for
-             a real non-superadmin and stays usable while a preview is
-             active, to switch modes or return to Real Account. Ephemeral by
-             design -- VEAuth.signOut() clears ve_view_as, so nothing
-             survives logout, per Sean's explicit requirement. -->
-        <div class="dash-viewas-wrap" id="dash-viewas-wrap" style="display:none;">
-          <button type="button" class="dash-viewas-pill" id="dash-viewas-pill">
-            <span id="dash-viewas-label">View As</span>
-            <span class="dash-city-pill-caret" aria-hidden="true">&#9662;</span>
-          </button>
-          <div class="dash-viewas-menu" id="dash-viewas-menu" role="menu">
-            <button type="button" class="dash-viewas-opt" data-viewas="real" role="menuitem">My Account (Real)</button>
-            <div class="dash-viewas-sep"></div>
-            <button type="button" class="dash-viewas-opt" data-viewas="free" role="menuitem">Member</button>
-            <button type="button" class="dash-viewas-opt" data-viewas="cm" role="menuitem">Community Manager</button>
-          </div>
-        </div>
       </div>
 
       <!-- Compact stats cluster, moved up next to Welcome/city pill so the
@@ -933,7 +902,7 @@
       <div class="vear-layout"><div class="vear-main" id="dash-events-cal"></div><aside class="vear-rail" data-ad-page="/events"></aside></div>
     </div>
 
-    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="8" data-tab-label="Communities">
+    <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="6" data-tab-label="Communities">
       <!-- The same banner as /communities (Sean, 2026-10-27): picking a chapter opens it, like tapping its card. -->
       <section id="dash-com-hero" class="dash-hero-banner"></section>
       <div class="dash-community-row" id="dash-community-row"></div>
@@ -943,21 +912,21 @@
          shows first with a Featured pill, then the top 12 podcasts, documentaries or books as voted in the Directory. No more
          following: we decide what is here. Its banner picks the kind of media, not a city. Three-fourths the content,
          one-fourth the ad rail. -->
-    <div id="dash-media-section" style="display:none;margin-bottom:28px;" data-tab-key="media" data-tab-order="6" data-tab-label="Media">
+    <div id="dash-media-section" style="display:none;margin-bottom:28px;" data-tab-key="media" data-tab-order="4" data-tab-label="Media">
       <section id="dash-media-hero" class="dash-hero-banner"></section>
       <div class="vear-layout"><div class="vear-main" id="dash-media-mount"></div><aside class="vear-rail" data-ad-page="chapter"></aside></div>
     </div>
 
     <!-- The Daily Pulse tab is the public /pulse page in the dashboard window (Sean, 2026-10-26: the same banner, chapters
          and tabs signed in or out). It loads the first time the tab is on screen; the page sizes the frame (ve-frame-height). -->
-    <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Pulse">
+    <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="3" data-tab-label="Daily Pulse">
       <div id="dash-pulse-host"><iframe title="Daily Pulse" id="dash-pulse-frame" scrolling="no"></iframe></div>
     </div>
 
     <!-- My Saves (Sean, 2026-10-27: "put it on their dashboard... a section for... saved podcasts... the podcast with the little
          icon and then the text so they can listen to it anytime... my favorites, or my saves... a section on the navigation just
          for members"): what a member saved, one box per kind, each short list scrolling inside. Filled by renderSavesTab. -->
-    <div id="dash-saves-section" style="display:none;margin-bottom:28px;" data-tab-key="saves" data-tab-order="0.7" data-tab-label="My Saves">
+    <div id="dash-saves-section" style="display:none;margin-bottom:28px;" data-tab-key="saves" data-tab-order="7" data-tab-label="My Saves">
       <p class="dash-eyebrow" style="margin-bottom:2px;">My Saves</p>
       <p class="dash-section-title">Everything you saved</p>
       <div class="dash-saves">
@@ -967,12 +936,20 @@
     </div>
 
     <!-- Guides in the top menu (Sean, 2026-10-26: "that's going to be one of the big things that we're selling"), and in Your tools. -->
-    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="0.5" data-tab-label="Guides">
+    <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="5" data-tab-label="Guides">
       <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
       <p class="dash-section-title">Step-By-Step Guides</p>
       <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Every Guide is $11 or 1,100 points, and yours to keep. The ones still being made are here too: tap Notify me to hear the day each one opens.</p>
       <div class="gc-grid" id="dash-guides-row" role="list" aria-label="Guide catalog"></div>
 
+    </div>
+
+    <!-- The Depot (Sean, 2026-10-27: "the depot should be a tool... in the dashboard. It'll only appear for super admins... after
+         communities", last in the menu after My Saves). Its pages open here in their own look (title, Go to, Take the tour) without
+         the site nav or footer; the address bar reads /dashboard/depot/<page> with the page's own view. A Depot page opened on its
+         own by a super admin moves in here (/public/depot-tabs.js). -->
+    <div id="dash-depot-section" style="display:none;margin-bottom:28px;" data-tab-key="depot" data-tab-order="8" data-tab-label="Depot" data-tab-superadmin="1">
+      <div id="dash-depot-host"><iframe title="The Depot" id="dash-depot-frame" scrolling="no"></iframe></div>
     </div>
 
     <div class="dash-modal-overlay" id="dash-campaigns-modal">
@@ -2360,49 +2337,6 @@
     try { window.localStorage.setItem(VE_ACTIVE_CITY_KEY, slug); } catch (e) {}
   }
 
-  // Superadmin View As control (2026-09-08, Sean, Fieldy field note) -- see
-  // the markup comment on #dash-viewas-wrap above for full context. Reads
-  // VEAuth.getViewAs()/setViewAs()/clearViewAs(), which already merge
-  // tier/role overrides onto the real member in ve-auth.js's getMember().
-  // 2026-10-03 (Sean): membership is the one-time Founding Membership now, so View As offers
-  // Member and Community Manager. An old saved Passport preview shows as Member.
-  var VIEW_AS_LABELS = { free: 'Member', passport: 'Member', cm: 'Community Manager' };
-  function initViewAsControl() {
-    var real = VEAuth.getRealMember();
-    var wrap = document.getElementById('dash-viewas-wrap');
-    if (!wrap || !real || !real.is_superadmin) return;
-    wrap.style.display = 'inline-block';
-    var pill = document.getElementById('dash-viewas-pill');
-    var label = document.getElementById('dash-viewas-label');
-    var menu = document.getElementById('dash-viewas-menu');
-    var current = VEAuth.getViewAs();
-    var currentKey = 'real';
-    if (current && current.mode === 'member') {
-      if (current.role === 'community_manager') currentKey = 'cm';
-      else if (current.tier === 'passport') currentKey = 'passport';
-      else currentKey = 'free';
-    }
-    label.textContent = currentKey === 'real' ? 'View As' : ('Viewing: ' + VIEW_AS_LABELS[currentKey]);
-    pill.classList.toggle('previewing', currentKey !== 'real');
-    Array.prototype.forEach.call(menu.querySelectorAll('.dash-viewas-opt'), function (opt) {
-      opt.classList.toggle('current', opt.getAttribute('data-viewas') === currentKey);
-    });
-    pill.onclick = function (e) {
-      e.stopPropagation();
-      menu.classList.toggle('open');
-    };
-    menu.addEventListener('click', function (e) { e.stopPropagation(); });
-    document.addEventListener('click', function () { menu.classList.remove('open'); });
-    Array.prototype.forEach.call(menu.querySelectorAll('.dash-viewas-opt'), function (opt) {
-      opt.addEventListener('click', function () {
-        var v = opt.getAttribute('data-viewas');
-        if (v === 'real') { VEAuth.clearViewAs(); return; }
-        if (v === 'free') { VEAuth.setViewAs('member', { tier: 'free', role: null }); return; }
-        if (v === 'passport') { VEAuth.setViewAs('member', { tier: 'passport', role: null }); return; }
-        if (v === 'cm') { VEAuth.setViewAs('member', { tier: 'free', role: 'community_manager' }); return; }
-      });
-    });
-  }
 
   function renderCityPill(member) {
     var pill = document.getElementById('dash-city-pill');
@@ -3071,7 +3005,7 @@
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
   function consoleFrameFor(src) {
-    var list = document.querySelectorAll('#dash-console-host iframe, #dash-pulse-host iframe');
+    var list = document.querySelectorAll('#dash-console-host iframe, #dash-pulse-host iframe, #dash-depot-host iframe');
     for (var i = 0; i < list.length; i++) if (list[i].contentWindow === src) return list[i];
     return null;
   }
@@ -3080,7 +3014,7 @@
     return m && m.scrollHeight > m.clientHeight + 1 && getComputedStyle(m).overflowY !== 'visible' ? m : null;
   }
   function tellFrameView() {
-    Array.prototype.forEach.call(document.querySelectorAll('#dash-console-host iframe.ve-sized, #dash-pulse-host iframe.ve-sized'), function (f) {
+    Array.prototype.forEach.call(document.querySelectorAll('#dash-console-host iframe.ve-sized, #dash-pulse-host iframe.ve-sized, #dash-depot-host iframe.ve-sized'), function (f) {
       if (!f.contentWindow || !f.offsetParent) return;
       var r = f.getBoundingClientRect(), m = consoleScroller(), vt = 0, vb = window.innerHeight;
       if (m) { var mr = m.getBoundingClientRect(); vt = Math.max(0, mr.top); vb = Math.min(vb, mr.bottom); }
@@ -3409,7 +3343,7 @@
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpAccessCard({ icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', fn: function () { openConsoleFrame('/admin/depot', 'The Depot'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', fn: function () { if (window.activateDashTab) window.activateDashTab('depot'); else openConsoleFrame('/admin/depot', 'The Depot'); } }));
       grid.appendChild(dpAccessCard({ icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/pulse', 'Community Board'); } }));
       grid.appendChild(dpAccessCard({ icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
       grid.appendChild(dpAccessCard({ icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
@@ -3468,6 +3402,45 @@
     window.VERegionDirectory.init(initConfig);
   }
 
+  // The Depot tab (Sean, 2026-10-27): /dashboard/depot/<page> frames /admin/depot/<page>, with the page's query and hash.
+  // The frame loads the first time the tab opens; moving around inside it (Go to, a view's #hash) keeps the address bar in step.
+  function depotPathMatch() { return location.pathname.match(/^\/dashboard\/depot(?:\/([a-z0-9-]+))?\/?$/i); }
+  function depotFrame() { return document.getElementById('dash-depot-frame'); }
+  function depotSrcFromAddress() {
+    var m = depotPathMatch();
+    return '/admin/depot' + (m && m[1] ? '/' + m[1] : '') + (m ? location.search + location.hash : '');
+  }
+  function depotAddress() {
+    var f = depotFrame();
+    try {
+      var l = f && f.getAttribute('src') && f.contentWindow.location;
+      if (l && /^\/admin\/depot(\/|$)/.test(l.pathname)) {
+        var page = l.pathname.replace(/^\/admin\/depot\/?/, '').replace(/\.html$/, '').replace(/\/$/, '').replace(/^index$/, '');
+        return '/dashboard/depot' + (page ? '/' + page : '') + l.search + l.hash;
+      }
+    } catch (e) {}
+    return depotPathMatch() ? location.pathname + location.search + location.hash : '/dashboard/depot';
+  }
+  function syncDepotAddress() {
+    if (document.body.getAttribute('data-dash-tab') !== 'depot') return;
+    var want = depotAddress();
+    if (location.pathname + location.search + location.hash !== want) history.replaceState({ tabKey: 'depot' }, '', want);
+  }
+  function openDepot(fromAddress) {
+    var f = depotFrame(); if (!f) return;
+    if (!f._veDepot) {
+      f._veDepot = true;
+      f.addEventListener('load', function () {
+        syncDepotAddress();
+        try { f.contentWindow.addEventListener('hashchange', syncDepotAddress); } catch (e) {}
+      });
+    }
+    var want = depotSrcFromAddress();
+    if (!f.getAttribute('src')) { f.setAttribute('src', want); return; }
+    // Back or forward to another Depot page: show that page.
+    if (fromAddress) { try { var l = f.contentWindow.location; if (l.pathname + l.search + l.hash !== want) f.contentWindow.location.replace(want); } catch (e) { f.setAttribute('src', want); } }
+  }
+
   // Section tabs underneath the stats hero (2026-09-07, Logan, Sean
   // direction: "tabs underneath, Bounties etc, mobile dropdown variant").
   // Built from every element carrying data-tab-key rather than a hardcoded
@@ -3477,6 +3450,9 @@
   // empty), so no visibility filtering is needed here -- every tab is real.
   function initDashTabs() {
     var sections = Array.prototype.slice.call(document.querySelectorAll('[data-tab-key]'));
+    // The Depot is for super admins only (not while previewing as someone else).
+    var viewer = window.VEAuth && VEAuth.getMember();
+    sections = sections.filter(function (s) { return !s.getAttribute('data-tab-superadmin') || !!(viewer && viewer.is_superadmin); });
     if (!sections.length) return;
     // Sort by data-tab-order (2026-09-07, Logan, Sean direction: Communities
     // leads the tab set as the city/community context-setter). Falls back to
@@ -3503,6 +3479,7 @@
     // in or create an account first and lands on the right tab after.
     function tabKeyFromPath() {
       if (listingSlugFromPath()) return 'directory';
+      if (depotPathMatch()) return sections.some(function (s) { return s.getAttribute('data-tab-key') === 'depot'; }) ? 'depot' : null;
       var m = location.pathname.match(/^\/dashboard\/([a-z0-9_-]+)\/?$/i);
       if (!m) return null;
       var found = sections.some(function (s) { return s.getAttribute('data-tab-key') === m[1]; });
@@ -3524,10 +3501,11 @@
       });
       mobileSelect.value = key;
       if (key === 'saves') renderSavesTab();
+      if (key === 'depot') openDepot();
       if (!opts.skipHistory) {
         if (key === 'directory') closeDashboardListing(true);
-        var url = '/dashboard/' + key;
-        if (location.pathname !== url) history.pushState({ tabKey: key }, '', url);
+        var url = key === 'depot' ? depotAddress() : '/dashboard/' + key;
+        if (location.pathname + (key === 'depot' ? location.search + location.hash : '') !== url) history.pushState({ tabKey: key }, '', url);
       }
     }
     // Exposed so tiles outside this closure (Your Tools) can jump straight
@@ -3568,6 +3546,7 @@
       // Back and forward between the Directory and a listing.
       if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
       if (/^\/dashboard\/directory\/?$/.test(location.pathname)) closeDashboardListing(true);
+      if (depotPathMatch()) { activate('depot', { skipHistory: true }); openDepot(true); return; }
       var key = (e.state && e.state.tabKey) || tabKeyFromPath() || sections[0].getAttribute('data-tab-key');
       if (key === 'tools' && !(e.state && e.state.frame)) key = 'profile'; // Tools is no longer a page of its own
       activate(key, { skipHistory: true });
@@ -3738,7 +3717,6 @@
     dashSafe(function () { renderCmCertPrompt(member); });
     dashSafe(function () { renderCmApplication(member); });
     dashSafe(function () { renderCityPill(member); });
-    dashSafe(function () { initViewAsControl(); });
     dashSafe(function () { renderLeaderboard(member); });
     dashSafe(function () { renderDirectory(member); });
     dashSafe(function () { renderEventsTab(member); });
@@ -4057,6 +4035,15 @@
       if (m.name) avatar.setAttribute('aria-label', 'Your account, ' + m.name);
     }
     if (window.__lrShellMember) paintAvatar(window.__lrShellMember);
+    else {
+      // Until (or unless) the bar reports the member, paint the initials we hold, so the avatar is never blank.
+      try {
+        var held = JSON.parse(localStorage.getItem('ve_member') || 'null');
+        if (held) paintAvatar({ initials: held.initials || (held.name || '').charAt(0), color: held.color, avatarUrl: held.avatar_url, name: held.name });
+      } catch (e) {}
+    }
+    // The avatar opens the account menu (Sean, 2026-10-27): account, Sign out, and for a super admin View As and Sign In As.
+    if (avatar && window.VEAccountMenu) VEAccountMenu.attach(avatar);
     window.addEventListener('lr:shell-member', function (e) { paintAvatar(e.detail); });
 
     // The logo is home: on the dashboard it jumps to the Dashboard tab in place

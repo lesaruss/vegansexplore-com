@@ -36,7 +36,11 @@
       "destination": "/dashboard/center-console"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|secret-shopper)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper)",
+      "destination": "/dashboard/center-console"
+    },
+    {
+      "source": "/dashboard/depot/:page",
       "destination": "/dashboard/center-console"
     },
     {

@@ -58,7 +58,9 @@ this list follows the rule above. A new exception goes on this list first.
 - **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
   everything in `ads/` (Sean, 2026-10-04).
 
-Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts;
+Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. The Depot is the dashboard's last tab, for super
+admins only (Sean, 2026-10-27): `/dashboard/depot/<page>` frames `/admin/depot/<page>` (query and #view kept in the address
+bar), and a Depot page opened on its own by a super admin moves in there (`/public/depot-tabs.js`);
 each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
 .ve-footer{display:none}`). The old standalone `/admin/news-review`,
 `/admin/pulse-city-tags`, `/admin/opportunity-applications` and
@@ -765,8 +767,13 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   that we're using on the logged in version"): the logo, then the menu in the dashboard's tab style on desktop (the section
   you are in underlined in green, `/directory/<slug>` counts as Directory), one full-width dropdown on its own row on phones
   (`#ve-pub-select`), and Log In and Join (`/passport`) on the right. No hamburger and no announcement pill signed out (a super
-  admin viewing as the public keeps the drawer for View As). Signed in, the nav is unchanged: the pill, the member chip and
-  the drawer.
+  admin viewing as the public gets the Viewing as pill instead). **Signed in it is the same bar** (Sean, 2026-10-27), in the
+  dashboard's order: Dashboard, Directory, Events, Daily Pulse, Media, Guides, Communities, My Saves, and **Depot** for super
+  admins (`/dashboard/depot`), then the avatar and badge. No announcement pill, no hamburger. **The avatar opens the account
+  menu** (`/public/ve-account-menu.js`, `VEAccountMenu.attach`, the same menu on the dashboard's avatar): name, email and
+  membership, My Account, My Saves, Contribute, Sign out; a super admin also gets **View as** (My account, The public, Member,
+  Community Manager; `ve_view_as`) and **Sign in as** (`ve-switch-account`). While a preview or a switch is on, a pill at the
+  bottom left says so, with Back to my account.
 - The menu (`public/nav.js`): Guides, Pulse, Media, Communities, Directory, Events. The Community Board left it ("the
   community board is in the pulse"): `/pulse` is the Board (see The Daily Pulse is the Community Board). Lead Your City left it too (`/lead` still exists).
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
@@ -1504,6 +1511,10 @@ starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version d
 (`renderVersion` in `dashboard/center-console.html`) and the order of Your tools (`DASH_TOOLS_FIRST`); everything else is
 shared.
 
+The menu (Sean, 2026-10-27): Dashboard, Directory, Events, Daily Pulse, Media, Guides, Communities, My Saves, then Depot for
+super admins (`data-tab-order` on each section; `data-tab-superadmin` hides one from everyone else and from a View As preview).
+View As moved from the welcome row to the avatar's account menu.
+
 The Dashboard tab (Sean, 2026-10-26): **For you** (it was Action items) is one list of tiles, the checklist tiles (Set up
 your Guide, New here?, the Community Manager ones) and then the version's cards (`ve_dashboard_cards`) as the same tile, each
 with a flat line icon (`FICON`; Sean: "make sure the icons are flat. I don't like the colorful ones"). Five show, the rest
@@ -1560,12 +1571,12 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 ## Sign In As: switch into another account (Sean, 2026-10-26)
 
 "The same way I do view as, I want to have that option to choose from the super admin... so I can log in and see that
-experience." View As only paints the page over the super admin's own session; **Sign In As** (the nav drawer, under View As,
-`public/nav.js`) is a real sign-in, so every call the page makes runs as that member. Only accounts in `ve_switch_accounts` can
+experience." View As only paints the page over the super admin's own session; **Sign In As** (the avatar's account menu,
+under View As, `public/ve-account-menu.js`) is a real sign-in, so every call the page makes runs as that member. Only accounts in `ve_switch_accounts` can
 be switched into (Logan Russell, Sean's founding-member walkthrough account, and the six Guides), only by a super admin signed in
 as themselves, through `ve-switch-account` (`list`, `switch`; an 8-hour token carrying `switched_by`, refused for another switch;
 each switch logged to `stream_events`). The super admin's own session waits in `localStorage` `ve_switch_from`; the
-**Back to my account** pill (bottom left) or the drawer puts it back, and Sign out clears it. Add an account with a
+**Back to my account** pill (bottom left) or the account menu puts it back, and Sign out clears it. Add an account with a
 `ve_switch_accounts` row. The Guide accounts (`<guide>.guide@vegansexplore.com`, `member_class` agent, no password, playbook
 `ve-guide-accounts`) cannot vote, check in or give points (`ve_refuse_agent_actions` triggers on `listing_daily_votes`,
 `ve_checkins`, `ve_listing_point_contributions`). Anything posted while signed in as a Guide is live and, until the Guide

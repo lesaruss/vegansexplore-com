@@ -3,6 +3,21 @@
  * A new Depot feature is one more entry in TABS.
  * Inbox and Sources (Sean, 2026-09-28, content engine plan) replaced News Desk and City News.
  */
+// The Depot lives in the dashboard (Sean, 2026-10-27: "the depot should be a tool... in the dashboard"). A Depot page opened on
+// its own by a signed-in super admin moves to /dashboard/depot/<page>, keeping its query and #view. Anyone else is left where
+// they are (the page's own sign-in check answers them).
+(function () {
+  var top = true; try { top = window.self === window.top; } catch (e) { top = false; }
+  if (!top) return;
+  var m = null; try { m = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
+  var viewing = null; try { viewing = localStorage.getItem('ve_view_as'); } catch (e) {}
+  var tok = null; try { tok = localStorage.getItem('ve_token'); } catch (e) {}
+  if (!m || !m.is_superadmin || !tok || viewing) return;
+  var page = location.pathname.replace(/^\/admin\/depot\/?/, '').replace(/\.html$/, '').replace(/\/$/, '').replace(/^index$/, '');
+  if (!/^[a-z0-9-]*$/i.test(page)) return;
+  location.replace('/dashboard/depot' + (page ? '/' + page : '') + location.search + location.hash);
+})();
+
 (function () {
   var TABS = [
     { href: '/admin/depot/inbox', label: 'Inbox' },
