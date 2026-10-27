@@ -700,6 +700,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-ad-link{display:block;width:100%;height:100%}
 .bb-placeholder.bb-filled{border:none;background:none;padding:0;overflow:hidden;display:block}
 .bb-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);text-align:center;margin-top:10px}
+.bb-cta{display:block;text-align:center;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2d7d31;text-decoration:none}.bb-cta span{display:block;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(26,26,26,.68);margin-top:2px}.bb-cta:hover{text-decoration:underline}
 .listing-sidebar{display:flex;flex-direction:column}
 @media(max-width:768px){
   .bb-wrap{order:999}
@@ -1463,7 +1464,8 @@ function renderSidebar(l){
       '<div class="bb-stacked">'+
         '<div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-icon">'+_bbAdSvg+'</div><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>'+
       '</div>'+
-      '<div class="bb-tag">Powered by LESARUSS Advertising</div>'+
+      // Your ad here under every ad (Sean, 2026-10-27), the same line as the shared rail (public/ve-ad-rail.js).
+      '<a class="bb-cta" href="/partners">Your ad here<span>Advertise with Vegans Explore</span></a>'+
     '</div>';
 
   // A brand page keeps its right column for the ad (Sean, 2026-10-08: "keep the right hand side for advertisement...

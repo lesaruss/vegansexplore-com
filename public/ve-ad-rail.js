@@ -14,6 +14,8 @@
    ad_placements (page_slug + slot_id), ad-resolve picks the active campaign per slot and logs the
    impression, ad-click logs the click.
 
+   A city hub: <aside class="vear-rail" data-ad-page="hub" data-ad-chapter="<hub slug>">, its tall slot.
+
    Usage:
      <div class="vear-layout"><div class="vear-main">...content...</div><aside class="vear-rail" data-ad-page="pulse"></aside></div>
      Rails fill themselves the first time they scroll into view; VEAdRail.mountAll() picks up rails added later.
@@ -22,11 +24,19 @@
   if (window.VEAdRail) return;
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  // The slots each page has, top to bottom (ad_placements.slot_id).
+  // One ad per page (Sean, 2026-10-27: "it's either going to be the long one or two short ones, not both"): a tall 300 x 600,
+  // or a chapter's two 300 x 250s. The slots each page has (ad_placements.slot_id); every rail ends with Your ad here (CTA).
+  var CTA = '/partners';
   var PAGES = {
-    pulse: [{ id: 'skyscraper', shape: 'tower', size: '300 x 600' }, { id: 'landscape-1', shape: 'landscape', size: '300 x 250' }],
-    '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }, { id: 've-events-landscape-1', shape: 'landscape', size: '300 x 250' }]
+    pulse: [{ id: 'skyscraper', shape: 'tower', size: '300 x 600' }],
+    '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }]
   };
+  // A city hub's rail: its tall slot (page /communities/<slug>). Its two short slots run on the chapter rail (Directory, Media).
+  function hubPage(slug) {
+    var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === slug; })[0];
+    var prefix = hub && hub.page && hub.page.adPrefix;
+    return prefix ? { slug: '/communities/' + hub.slug, slots: [{ id: prefix + '-skyscraper', shape: 'tower', size: '300 x 600' }] } : null;
+  }
 
   // A chapter's rail: its hub's two landscape slots, or the Directory's pair for All cities.
   function chapterPage(slug) {
@@ -39,7 +49,8 @@
   var css = [
     '.vear-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start;}',
     '.vear-main{min-width:0;}',
-    '.vear-rail{position:sticky;top:16px;display:flex;flex-direction:column;align-items:stretch;gap:14px;min-width:0;}',
+    // Sticks just under the site's sticky menu (--ve-nav-h, set by nav.js; 0 inside the dashboard window).
+    '.vear-rail{position:sticky;top:calc(var(--ve-nav-h, 0px) + 16px);display:flex;flex-direction:column;align-items:stretch;gap:14px;min-width:0;}',
     '.vear-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(26,26,26,0.45);text-align:center;}',
     '.vear-slot{position:relative;border-radius:10px;overflow:hidden;background:#fff;border:1px solid rgba(0,0,0,0.1);width:100%;max-width:300px;margin:0 auto;}',
     '.vear-slot.tower{aspect-ratio:1/2;}',
@@ -50,9 +61,12 @@
     '.vear-ph strong{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;}',
     '.vear-ph span{font-size:11px;font-weight:600;color:rgba(26,26,26,0.55);}',
     '.vear-ph:hover strong{text-decoration:underline;}',
+    '.vear-cta{display:block;text-align:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2d7d31;text-decoration:none;padding:2px 0;}',
+    '.vear-cta span{display:block;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(26,26,26,0.68);margin-top:2px;}',
+    '.vear-cta:hover{text-decoration:underline;}',
     '.vear-ph:focus-visible,.vear-slot a.vear-ad:focus-visible{outline:2px solid #1a1a1a;outline-offset:-2px;}',
     // Narrow screens: the rail drops under the content, slots side by side.
-    '@media (max-width:900px){.vear-layout{grid-template-columns:minmax(0,1fr);}.vear-rail{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:18px;}.vear-label{width:100%;}.vear-slot{flex:1 1 220px;max-width:300px;margin:0;}}'
+    '@media (max-width:900px){.vear-layout{grid-template-columns:minmax(0,1fr);}.vear-rail{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:18px;}.vear-label,.vear-cta{width:100%;}.vear-slot{flex:1 1 220px;max-width:300px;margin:0;}}'
   ].join('');
   var st = document.createElement('style'); st.id = 'vear-style'; st.textContent = css; document.head.appendChild(st);
   // HTML5 ad creatives render through the shared helper; load it if the page did not.
@@ -69,13 +83,16 @@
     var page = rail.getAttribute('data-ad-page');
     var slots = PAGES[page];
     if (page === 'chapter') { var ch = chapterPage(rail.getAttribute('data-ad-chapter') || ''); page = ch.slug; slots = ch.slots; }
+    if (page === 'hub') { var hp = hubPage(rail.getAttribute('data-ad-chapter') || ''); if (!hp) return; page = hp.slug; slots = hp.slots; }
     if (!slots) return;
     rail.setAttribute('data-ad-ready', '1');
     rail.setAttribute('aria-label', 'Advertisement');
     // An empty slot invites an advertiser instead of showing a blank box.
     rail.innerHTML = '<div class="vear-label">Advertisement</div>' + slots.map(function (s) {
-      return '<div class="vear-slot ' + s.shape + '" data-slot="' + s.id + '"><a class="vear-ph" href="/dashboard/advertising"><strong>Your ad here</strong><span>' + s.size + ' &middot; Advertise with Vegans Explore</span></a></div>';
-    }).join('');
+      return '<div class="vear-slot ' + s.shape + '" data-slot="' + s.id + '"><a class="vear-ph" href="' + CTA + '"><strong>Your ad here</strong><span>' + s.size + ' &middot; Advertise with Vegans Explore</span></a></div>';
+    }).join('') +
+      // Under every ad, filled or not (Sean, 2026-10-27: "a little line that says your ad here"). /partners until the business page is decided.
+      '<a class="vear-cta" href="' + CTA + '">Your ad here<span>Advertise with Vegans Explore</span></a>';
     fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent(page), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {

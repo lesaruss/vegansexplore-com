@@ -379,6 +379,13 @@
     '</div>';
 
   document.currentScript.insertAdjacentHTML('beforebegin', html);
+  // The menu's height, for anything that sticks under it (the ad rail): --ve-nav-h on the page.
+  (function () {
+    var navEl = document.querySelector('.ve-nav'); if (!navEl) return;
+    function setH() { document.documentElement.style.setProperty('--ve-nav-h', Math.round(navEl.getBoundingClientRect().height) + 'px'); }
+    setH(); window.addEventListener('resize', setH); window.addEventListener('load', setH);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(setH);
+  })();
 
   /* ---- Special Announcements pill: rotates messages, links to real pages (safe on every route) ----
      2026-08-18 (V direction): messages used to be hardcoded here, which meant a

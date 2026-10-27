@@ -312,30 +312,11 @@
     .lb-name { font-size: 13px; font-weight: 800; color: var(--ve-text); }
     .lb-loc { font-size: 11px; color: var(--ve-text-50); }
     .lb-points { font-size: 12px; font-weight: 800; color: var(--ve-green); white-space: nowrap; flex-shrink: 0; }
-    /* BILLBOARD / AD INVENTORY — ported verbatim from directory/listing.html */
-    .bb-wrap{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:16px;margin-bottom:14px}
-    .bb-header{font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--ve-border)}
-    .bb-rotator{position:relative;min-height:80px}
-    .bb-slide{display:none}
-    .bb-slide.active{display:block}
-    .bb-placeholder{width:100%;background:#f5f5f5;border:1px dashed #ddd;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:20px 16px}
-    .bb-tall{aspect-ratio:1/2}
-    .bb-stacked{display:flex;flex-direction:column;gap:10px}
-    .bb-stacked .bb-placeholder{aspect-ratio:6/5;padding:16px}
-    .bb-ph-icon{color:#ccc}
-    .bb-ph-text{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#666}
-    .bb-ph-dim{font-size:9px;font-weight:600;color:#666}
-    .bb-ad-img{width:100%;height:100%;display:block;border-radius:8px;object-fit:cover}
-    .bb-ad-link{display:block;width:100%;height:100%}
-    .bb-placeholder.bb-filled{border:none;background:none;padding:0;overflow:hidden;display:block}
-    .bb-dots{display:flex;gap:6px;justify-content:center;margin-top:10px}
-    .bb-dot{width:6px;height:6px;border-radius:50%;background:var(--ve-border);border:none;cursor:pointer;padding:0;transition:.15s}
-    .bb-dot.active{background:#5EC47A;width:18px;border-radius:3px}
-    .bb-tag{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);text-align:center;margin-top:10px}
 
     /* NEWS TAB content/sidebar split so the Billboard has somewhere to live */
-    .hub-content-grid{display:grid;grid-template-columns:1fr 300px;gap:32px;align-items:start}
-    @media(max-width:900px){.hub-content-grid{grid-template-columns:1fr}.bb-wrap{order:999}}
+    /* Three-fourths the section, one-fourth the ad (Sean, 2026-10-27: "the same look and feel as the other pages"), the Pulse's proportion. */
+    .hub-content-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start}
+    @media(max-width:900px){.hub-content-grid{grid-template-columns:1fr}}
     /* ---- The shared hub (Sean, 2026-10-05: South Florida is the prototype; every city gets its layout) ---- */
     /* One menu at every width: a dropdown (the scrolling tab row was "a little much"). */
     .hub-menu { display: flex; align-items: center; gap: 14px; padding: 16px 56px; border-bottom: 1px solid var(--ve-border); flex-wrap: wrap; }
@@ -343,7 +324,7 @@
     .hub-menu select { min-width: 280px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 44px 12px 16px; border: 1.5px solid var(--ve-green); border-radius: 6px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232d7d31'/%3E%3C/svg%3E") no-repeat right 16px center; color: var(--ve-green-dark); cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; }
     .hub-menu select:focus { border-color: var(--ve-green-dark); }
     /* The billboard sits beside most sections; Members, Bounties and the Board take the full width. */
-    .hub-content-sidebar { padding: 48px 56px 0 0; }
+    .hub-content-sidebar { padding: 48px 40px 0 0; position: sticky; top: calc(var(--ve-nav-h, 0px) - 32px); } /* the ad stays in view, 16px under the menu */
     .hub-content-grid.hub-wide { grid-template-columns: 1fr; }
     .hub-content-grid.hub-wide .hub-content-sidebar { display: none; }
     /* Opportunities: every open role, two across beside the billboard. */
@@ -359,7 +340,7 @@
     .mp-skel b { display: block; height: 10px; width: 60%; border-radius: 5px; background: #e3e8e3; }
     .mp-skel b + b { width: 40%; margin-top: 8px; }
     #tab-members .lb-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); gap: 10px; }
-    @media (max-width: 900px) { .hub-content-sidebar { padding: 0 24px 40px; } }
+    @media (max-width: 900px) { .hub-content-sidebar { padding: 0 24px 40px; position: static; } }
     @media (max-width: 700px) {
       .hub-menu { padding: 14px 24px; }
       .hub-menu select { min-width: 0; flex: 1; }
@@ -583,25 +564,9 @@
   </div><!-- /hub-content-main -->
 
   <div class="hub-content-sidebar">
-    <div class="bb-wrap" id="bb-inventory">
-      <div class="bb-header">Billboard</div>
-      <div class="bb-rotator">
-        <div class="bb-slide active" id="bb-slide-0">
-          <div class="bb-placeholder bb-tall" id="bb-ad-skyscraper"><div class="bb-ph-text">Skyscraper</div><div class="bb-ph-dim">300 x 600</div></div>
-        </div>
-        <div class="bb-slide" id="bb-slide-1">
-          <div class="bb-stacked">
-            <div class="bb-placeholder" id="bb-ad-landscape-1"><div class="bb-ph-text">Primary Ad</div><div class="bb-ph-dim">300 x 250</div></div>
-            <div class="bb-placeholder" id="bb-ad-landscape-2"><div class="bb-ph-text">Feature Ad</div><div class="bb-ph-dim">300 x 250</div></div>
-          </div>
-        </div>
-      </div>
-      <div class="bb-dots">
-        <button class="bb-dot active" id="bb-dot-0" aria-label="Skyscraper ad"></button>
-        <button class="bb-dot" id="bb-dot-1" aria-label="Featured ads"></button>
-      </div>
-      <div class="bb-tag">Powered by LESARUSS Advertising</div>
-    </div>
+    <!-- One ad, the city's tall 300 x 600, drawn by the shared rail like the Pulse (Sean, 2026-10-27). public/ve-ad-rail.js;
+         the city's two 300 x 250s run on its chapter rail (Directory, Media). -->
+    <aside class="vear-rail" id="hub-ad-rail" data-ad-page="hub"></aside>
   </div>
 
   </div><!-- /hub-content-grid -->
@@ -815,33 +780,8 @@
   VEHubCommunity.applyGates(HUB.name, P.eventCities);
   if (signedIn) document.getElementById('hub-members-gate').style.display = 'none';
 
-  // ---- Billboard: this city's ad slots (ad_placements, page /communities/<slug>)
-  var SLOT_ELS = {};
-  SLOT_ELS[P.adPrefix + '-skyscraper'] = 'bb-ad-skyscraper';
-  SLOT_ELS[P.adPrefix + '-landscape-1'] = 'bb-ad-landscape-1';
-  SLOT_ELS[P.adPrefix + '-landscape-2'] = 'bb-ad-landscape-2';
-  window.veAdClick = function (placementId, campaignId) {
-    try { navigator.sendBeacon(SUPABASE_URL + '/functions/v1/ad-click', new Blob([JSON.stringify({ placement_id: placementId, campaign_id: campaignId })], { type: 'text/plain' })); } catch (e) {}
-  };
-  fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent('/communities/' + SLUG), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
-    .then(function (r) { return r.json(); }).then(function (data) {
-      ((data && data.slots) || []).forEach(function (s) {
-        var el = document.getElementById(SLOT_ELS[s.slot_id]);
-        if (!el || !s.image_url) return;
-        el.classList.add('bb-filled');
-        el.innerHTML = window.VEAdCreative ? VEAdCreative.markup(s, { linkClass: 'bb-ad-link', imgClass: 'bb-ad-img' })
-          : '<a class="bb-ad-link" href="' + esc(s.link_url || '#') + '" target="_blank" rel="noopener noreferrer sponsored" onclick="veAdClick(\'' + s.placement_id + '\',\'' + s.campaign_id + '\')"><img class="bb-ad-img" src="' + esc(s.image_url) + '" alt="Advertisement"></a>';
-      });
-    }).catch(function () {});
-  (function () {
-    var at = 0, slides = [document.getElementById('bb-slide-0'), document.getElementById('bb-slide-1')], dots = [document.getElementById('bb-dot-0'), document.getElementById('bb-dot-1')];
-    function goTo(n) { at = n; slides.forEach(function (s, i) { s.classList.toggle('active', i === n); }); dots.forEach(function (d, i) { d.classList.toggle('active', i === n); }); }
-    var timer = setInterval(function () { goTo((at + 1) % 2); }, 6000);
-    dots.forEach(function (d, i) { d.addEventListener('click', function () { goTo(i); clearInterval(timer); }); });
-    var wrap = document.getElementById('bb-inventory');
-    wrap.addEventListener('mouseenter', function () { clearInterval(timer); });
-    wrap.addEventListener('mouseleave', function () { clearInterval(timer); timer = setInterval(function () { goTo((at + 1) % 2); }, 6000); });
-  })();
+  // ---- The ad rail: this city's tall slot (public/ve-ad-rail.js, loaded at the end of the page).
+  document.getElementById('hub-ad-rail').setAttribute('data-ad-chapter', SLUG);
 
   // Open on ?tab= (a listing breadcrumb, a shared link, or back). Old tab names land somewhere useful.
   var wanted = new URLSearchParams(location.search).get('tab') || 'news';
@@ -850,5 +790,6 @@
 })();
 </script>
 
+<script src="/public/ve-ad-rail.js"></script>
 </body>
 </html>
