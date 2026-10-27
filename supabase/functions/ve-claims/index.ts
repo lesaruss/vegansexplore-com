@@ -39,6 +39,7 @@
 //   POST { action: 'product_update', listing_id, product_id, variant_key?, image_path?, description? }  a partner swaps a
 //     product's (or a version's) photo or its description; photos under 1000 px on the short side are refused
 //   POST { action: 'listing_apply', business }  any Vegan business applies to be listed (Depot > Claims reviews it)
+//     pay: 'points' takes 1,100 of the member's points instead of a checkout (ve_listing_submit_points), one listing each time
 //   POST { action: 'partner_ask', listing_id, message }  a question Maya has no saved answer for, sent to the account
 //     manager (listings.details.brand_door.account_manager_email, else Sean), Reply-To the partner
 //     (ve_listing_stats: views, products opened, stores' Vegan aisles opened, videos played) for its owner or a super admin
@@ -622,7 +623,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, email, name, is_superadmin, membership_status, membership_tier').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, email, name, is_superadmin, membership_status, membership_tier, lesars_balance').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_authenticated' }, 401);
 
   if (body.action === 'mine') {
@@ -932,11 +933,14 @@ Deno.serve(async (req) => {
     // The way in for a new business is the Partner plan with Front Row Start (tier 'brand'), or the one-time contribution.
     // The page before Join the Directory sent neither; it still files a free application until every page is updated.
     const partner = body.tier === 'brand';
-    const free = !partner && body.amount_cents == null;
-    const cents = free ? 0 : partner ? TIERS.brand.cents : Math.round(Number(body.amount_cents));
+    // Or 1,100 of their points (Sean, 2026-10-27: "It's 1100 points or $11 to submit your listing"), each listing its own 1,100.
+    const points = !partner && body.pay === 'points';
+    const free = !partner && !points && body.amount_cents == null;
+    const cents = free || points ? 0 : partner ? TIERS.brand.cents : Math.round(Number(body.amount_cents));
     if (!name || !category || !city || !description || !vegan_status) return json({ error: 'missing_details' }, 400);
     if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
-    if (!free && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
+    if (points && Number(member.lesars_balance || 0) < 1100) return json({ error: 'not_enough_points', balance: Number(member.lesars_balance || 0) }, 400);
+    if (!free && !points && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const proposed = { application: true, vegan_status, description, tagline: plain(b.tagline, 140), website: webUrl(b.website), instagram: plain(b.instagram, 60).replace(/^@/, ''), phone: plain(b.phone, 40), category, city, state };
     const fields = { name, category, specialty: category, description, tagline: proposed.tagline || null, location: [city, state].filter(Boolean).join(', '), address_city: city, address_state: state || null,
       website: proposed.website || '', instagram: proposed.instagram || null, phone: proposed.phone || null, vegan_status, ve_contact_name: contact_name, ve_contact_email: contact_email };
@@ -970,6 +974,17 @@ Deno.serve(async (req) => {
       listing = l; claimId = c.id;
     }
     if (!listing) return json({ error: 'save_failed' }, 500);
+    if (points) {
+      const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claimId });
+      if (!spent || spent.error) return json({ error: spent?.error || 'points_failed', balance: spent?.balance }, 400);
+      const at = new Date().toISOString();
+      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'points', points: 1100 }, updated_at: at }).eq('id', claimId);
+      await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: at }).eq('id', listing.id);
+      await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
+        `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore, with 1,100 of their points.</p><p>${esc(description)}</p>` +
+        `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p><p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
+      return json({ ok: true, slug: listing.slug, paid_with: 'points', balance: spent.balance });
+    }
     if (free) {
       await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
         `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore.</p><p>${esc(description)}</p>` +

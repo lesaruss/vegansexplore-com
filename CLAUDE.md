@@ -651,7 +651,7 @@ Directory's **Your votes rank them** box at the foot of the page (`.lv-vote`), o
 after sign-in), never the old sign-in pop-up, and lets any link that already goes to `/passport` through.
 
 Directory filters (Sean, 2026-10-24: "the sort menu should be custom to each one"). `/directory` opens on the full banner
-and folds it to one bar (city picker, View community, Expand) after the first click into a section; Collapse/Expand is
+and folds it to one bar (city picker, Directory home, Submit your listing, Expand) after the first click into a section; Collapse/Expand is
 kept for the visit (`sessionStorage` `ve_dir_hero`). Every city filters by region (`VE_HUBS`), then that region's cities; a
 listing counts in a region by its address or the chapters it serves (`data-hubs`). **Every section opens on its first
 sub-section and All comes last** (Sean, 2026-10-26: "all now goes to the back of the line"), which let **Food Brands come back
@@ -670,6 +670,15 @@ its card reads **Markets & events** (`vendsAt` in `ve-region-directory.js`). In 
 (`SUB_FILTERS` in `ve-region-directory.js`): **Food Brands** by what they make (**Makes**), never by city (`listings.product_kinds`:
 dairy, meat, egg, seafood, snacks, drinks, protein, pantry, baked, frozen; set in the listing editor; migration
 `20261024_listing_product_kinds.sql`), **Markets** by national chain (tag `ve-grocery-store`) or local market.
+**Every section and sub-section has its own address** (Sean, 2026-10-27: "if I wanted to send somebody to the markets section of
+our food directory, I couldn't... when I'm going back, it's taking me to the main page"): `?tab=<section>&sub=<sub-section>`
+(`/directory?tab=food&sub=markets`, `bakeries-and-cafes`; the first sub-section leaves `sub` out), pushed on every click so back and
+forward move through them, on `/directory` and the dashboard's Directory tab (`/dashboard/directory?tab=...`; `url` in
+`VERegionDirectory.init`, `pushSection` and `applySection` in `ve-region-directory.js`; a city hub, whose `?tab=` is its own
+section, leaves it off). **The city is not in the address**: the same link opens in whichever chapter the visitor picked (kept for
+the visit, `sessionStorage` `ve_dir_city`), and an old `?city=` link opens on that city before the address drops it. A listing's
+breadcrumb links back to its sub-section. **Submit your listing** (the banner's green button, Sean 2026-10-27) opens Join the
+Directory's Add it (`/claim?add=1`): $11 or 1,100 points a listing (Guide pricing, below).
 Layout (Sean, 2026-10-26): on desktop the section pills fill three-fourths in two rows (the fuller one on top) and the search has
 the last fourth to itself; phones keep the pills with the search under them. The filters (Sort by, Area, the sub-section's own,
 Vegan, Type) share one row, each the same width, wrapping evenly only when they no longer fit. Under the cards, the page
@@ -802,8 +811,12 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
 - **The city banner is one component** (Sean: "the header to be similar to the directory where they can immediately select
   and collapse as well. That should be a feature for all the banners"): `/public/ve-city-banner.js`
   (`VECityBanner.mount(el, {key, title, sub, onChange, action})`, after `ve-hubs.js`): the city's art, the city picker, and
-  buttons (Sean, 2026-10-26: "my goal was to have it be a button"): **View community** (the picked city's hub, or View
-  communities for All cities; Sean, 2026-10-27: it opens them the way the menu's Communities does, so in the dashboard, or a page the
+  buttons (Sean, 2026-10-26: "my goal was to have it be a button"). **The first button is the page's own home** (Sean, 2026-10-27:
+  "the same as if they were to click that top navigation button"; option `home`, `setHome`): **Directory home** (`/directory`, and
+  on the dashboard the Directory tab's first section), **Events home** (the calendar with no search or filter, `VEEvents` `home()` on
+  the dashboard), **Pulse home** (today's Daily Pulse in the city picked) and **Depot home**; the dashboard's Dashboard, Guides and My
+  Saves banners have none, and Media keeps See in the Directory. It replaced **View community** (the picked city's hub, or View
+  communities for All cities, still the default for a banner with no `home`; Sean, 2026-10-27: it opens them the way the menu's Communities does, so in the dashboard, or a page the
   dashboard frames such as the Daily Pulse, the dashboard opens the chapter (`VEOpenCommunity` in center-console), and any other frame
   sends the whole window), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
   the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit).
@@ -1347,6 +1360,13 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 - **Every Guide is $11 or 1,100 points**, yours to keep (`ve_guides.access_rule = 'points'`, `cost_lesars` 1100;
   `ve-guide-unlock` `checkout` for $11, `unlock` for points; `ve_guide_purchase_paid` admits the buyer). Free Guides (the Welcome
   Guide, the Partner Guide) stay open to everyone.
+- **Submitting a listing is $11 or 1,100 points, each listing** (Sean, 2026-10-27: "you get 1100 points when you register. So you
+  could use that for submitting your listing... if you want to submit multiple listings... 1100 points each time... or you can just
+  pay for the listing"). Join the Directory's How to join, when adding a business, has **Use your points** beside the Partner plan and
+  the $11 (the live balance from `ve-auth` `me`); `ve-claims` `listing_apply` `pay: 'points'` saves the application, then
+  `ve_listing_submit_points(member, claim)` takes 1,100 from both balances once per application (`points_ledger` reason
+  `listing_submit`, ref `claim:<id>`; migration `20261027_ve_listing_submit_points.sql`), and it waits in Depot > Claims like any
+  application. The policy (`/policies#membership`), the Guides' facts and a saved answer say the same.
 - **Every purchase earns a flat 25-point thank-you** (`ve_purchase_thanks(member, ref)`, reason `purchase_thanks`, once per
   ref: `stripe:<session>`, `guide:<id>`, `tour:<order>`).
 - **Points are given, never bought.** They come from taking part: Bounties, competitions and campaigns, the Daily Pulse, the

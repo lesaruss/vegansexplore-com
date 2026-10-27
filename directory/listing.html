@@ -2987,7 +2987,7 @@ function renderListing(l){
   // Breadcrumb
   var breadcrumb = community
     ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>'
-    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'">'+esc(dirLabel)+'</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>';
+    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'&amp;sub='+encodeURIComponent(String(l.category||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''))+'">'+esc(dirLabel)+'</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>';
 
   // Avatar
   var av = l.logo_url

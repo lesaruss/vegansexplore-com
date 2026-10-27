@@ -541,6 +541,7 @@
     function pickCity(slug) {
       if (slug === state.city) return;
       closePost(); state.city = slug; state.area = ''; fillAreas(); syncUrl();
+      if (banner) banner.setHome('/pulse' + (slug ? '?city=' + encodeURIComponent(slug) : ''));
       if (slug) { try { localStorage.setItem('ve_selected_city', slug); } catch (e) {} }
       load();
     }
@@ -551,14 +552,14 @@
         // The tab's own button (Suggest a topic, Post a job, Post a listing...) sits in the banner between View community and
         // Expand, up front like Submit an event on /events (Sean, 2026-10-27); the button under the tabs steps aside.
         action: { label: LANES[state.lane].post, onClick: function () { $('new-post').click(); } },
+        // Pulse home: today's Daily Pulse in the city picked, as the menu's Daily Pulse opens it (Sean, 2026-10-27).
+        home: { label: 'Pulse home', href: '/pulse' + (state.city ? '?city=' + encodeURIComponent(state.city) : '') },
         onChange: function (slug) { pickCity(slug); }
       });
       document.body.classList.add('has-banner');
       // The first click into the board folds the banner, as on the Directory.
       $('main').addEventListener('click', function (e) { if (e.target.closest('.lane, .post-card, .chip')) banner.autoFold(); });
       if (params.get('post') || state.lane !== 'pulse') banner.autoFold();
-      // In the dashboard window, View community opens in the whole window.
-      if (document.documentElement.classList.contains('ve-embedded')) Array.prototype.forEach.call(banner.el.querySelectorAll('a'), function (x) { x.target = '_top'; });
     }
     $('area-filter').addEventListener('change', function () { state.area = this.value; syncUrl(); load(); });
     $('category').addEventListener('change', function () { state.category = this.value; load(); });

@@ -15,7 +15,9 @@
        sub: 'One line about the page.',
        allTitle: 'Every City', allLabel: 'All cities',
        onChange: function (slug, hub) {},  // runs at mount and on every pick ('' is all cities)
-       action: { label: 'Submit an event', onClick: function () {} },  // optional: the page's own button, beside View community
+       home: { label: 'Events home', href: '/events' | onClick },  // the first button: back to the page's own home, the same as its
+                                      // menu button (Sean, 2026-10-27, in place of View community); hubLink: false drops it
+       action: { label: 'Submit an event', onClick: function () {} },  // optional: the page's own button, beside the home button
        actions: [{ label, href | onClick, id, go: true, open: true }],  // optional: more buttons (go: the green one; open: only
                                                                         // while the banner is open, not in the folded bar)
        meta: '<span>...</span>'       // optional: a line under the sub, while the banner is open (a city hub's cities)
@@ -132,7 +134,8 @@
           '</select>' +
         '</div></div>' +
         '<div class="vcb-actions">' +
-          (opts.hubLink === false ? '' : '<a class="vcb-btn" data-vcb-link href="/communities">View communities</a>') +
+          (opts.home ? '<a class="vcb-btn" data-vcb-home href="' + esc(opts.home.href || '#') + '">' + esc(opts.home.label) + '</a>'
+            : opts.hubLink === false ? '' : '<a class="vcb-btn" data-vcb-link href="/communities">View communities</a>') +
           (opts.action ? '<button type="button" class="vcb-btn vcb-btn-go" data-vcb-action>' + esc(opts.action.label) + '</button>' : '') +
           (opts.actions || []).map(function (a, i) {
             var cls = 'vcb-btn' + (a.go ? ' vcb-btn-go' : '') + (a.open ? ' vcb-open-only' : '');
@@ -219,6 +222,13 @@
     Array.prototype.forEach.call(el.querySelectorAll('[data-vcb-act]'), function (b) {
       b.addEventListener('click', function () { var a = opts.actions[+b.getAttribute('data-vcb-act')]; if (a && a.onClick) a.onClick(); });
     });
+    // The home button (Sean, 2026-10-27: "the same as if they were to click that top navigation button"): a link to the page's
+    // home, or the page's own onClick where the home is a view inside it (the dashboard's tabs).
+    var homeBtn = el.querySelector('[data-vcb-home]');
+    if (homeBtn && opts.home.onClick) homeBtn.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      e.preventDefault(); opts.home.onClick();
+    });
     var actionBtn = el.querySelector('[data-vcb-action]');
     if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) fold(true); opts.action.onClick(); });
 
@@ -231,6 +241,7 @@
       fold: fold,
       autoFold: function () { if (!chosen) fold(true); },
       setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
+      setHome: function (href) { if (homeBtn && href) homeBtn.href = href; },
       matches: matches
     };
     show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');

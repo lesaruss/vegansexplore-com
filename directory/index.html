@@ -81,20 +81,25 @@
     }
     function show(slug, hub) {
       if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dir-ad-rail'), hub ? hub.slug : '');
-      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub) });
-      // ?tab=<section> opens that section (a listing's breadcrumb links back this way), and &sub=<sub-section> one of its
-      // pills (Media's See in the Directory: ?tab=media&sub=Books).
-      var q = new URLSearchParams(location.search), tab = q.get('tab'), sub = q.get('sub');
-      var btn = tab && document.querySelector('#ve-region-directory [data-vrd-tab="' + tab.replace(/[^a-z]/g, '') + '"]');
-      if (btn) btn.click();
-      var pill = btn && sub && Array.prototype.filter.call(document.querySelectorAll('#ve-region-directory [data-vrd-subcat]'), function (b) { return b.getAttribute('data-vrd-subcat') === sub && b.offsetParent; })[0];
-      if (pill) pill.click();
+      try { sessionStorage.setItem('ve_dir_city', slug || ''); } catch (e) {}
+      // url: each section and sub-section has its own address, ?tab=food&sub=markets, kept as the city changes (Sean, 2026-10-27).
+      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub), url: '/directory' });
     }
+    // The city is not in the address (Sean, 2026-10-27: "it could be the same URL for North Florida, Atlanta... it would just show
+    // different things based off of what location it's pulling"): the pick is kept for the visit, and an old ?city= link still
+    // opens on that city before the address drops it.
+    var q0 = new URLSearchParams(location.search), city0 = q0.get('city');
+    if (city0 === null) { try { city0 = sessionStorage.getItem('ve_dir_city') || ''; } catch (e) { city0 = ''; } }
+    else { q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash); }
     // Expanded on landing; the first click into a section folds it, unless the visitor chose with the button
     // (Sean, 2026-10-24: "an option to collapse and still see the city selector"). The key keeps earlier visits' choice.
     var banner = VECityBanner.mount('dir-hero', {
-      key: 'dir', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
+      key: 'dir', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities', param: false, initial: city0,
       sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
+      // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
+      home: { label: 'Directory home', href: '/directory' },
+      // Submit your listing (Sean, 2026-10-27): Join the Directory's Add it, $11 or 1,100 points a listing.
+      actions: [{ label: 'Submit your listing', href: '/claim?add=1', go: true }],
       onChange: show
     });
     document.getElementById('ve-region-directory').addEventListener('click', function (e) {

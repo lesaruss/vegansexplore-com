@@ -597,6 +597,8 @@
     return {
       setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine)/.test(location.hash)) drawRows(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
+      // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
+      home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
       reload: function () { return load().then(drawRows); }
     };
   }

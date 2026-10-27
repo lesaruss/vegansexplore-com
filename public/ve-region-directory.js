@@ -800,14 +800,56 @@
     });
   }
 
+  // Every section and sub-section has its own address (Sean, 2026-10-27: "if I wanted to send somebody to the markets section
+  // of our food directory, I couldn't... when I'm going back, it's taking me to the main page and resetting everything"):
+  // ?tab=<section>&sub=<sub-section> (food, markets; bakeries-and-cafes), pushed on each click so back and forward move
+  // through them. Not the city: the same link opens in whichever chapter the visitor has picked. config.url is the path the
+  // address belongs to (/directory, /dashboard/directory); a city hub, whose ?tab= is its own section, leaves it out.
+  function subSlug(v) { return String(v || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
+  function defaultPill(panel) {
+    var pills = panel ? panel.querySelectorAll('[data-vrd-subcat]') : [];
+    for (var i = 0; i < pills.length; i++) if (pills[i].classList.contains('sc-active') && pills[i]._vrdDefault) return pills[i];
+    return pills[0] || null;
+  }
+  function urlHere(config) { return config && config.url && location.pathname.replace(/\/$/, '') === config.url; }
+  function pushSection(root, config, tab, sub) {
+    if (!urlHere(config) || root._vrdRestoring) return;
+    var q = new URLSearchParams(location.search);
+    q.set('tab', tab);
+    if (sub) q.set('sub', subSlug(sub)); else q.delete('sub');
+    var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
+    if (url !== location.pathname + location.search + location.hash) history.pushState({ vrdTab: tab, vrdSub: sub || '' }, '', url);
+  }
+  // Opens the section and sub-section the address names (the first section and its first pill when it names none).
+  function applySection(root, config) {
+    var q = new URLSearchParams(location.search), tab = (q.get('tab') || '').replace(/[^a-z]/g, ''), sub = q.get('sub') || '';
+    var btn = (tab && root.querySelector('[data-vrd-tab="' + tab + '"]')) || (urlHere(config) ? root.querySelector('[data-vrd-tab]') : null);
+    if (!btn) return;
+    root._vrdRestoring = true;
+    try {
+      if (!btn.classList.contains('active') || tab) btn.click();
+      var panel = root.querySelector('#board-' + btn.getAttribute('data-vrd-tab'));
+      var pill = sub && panel ? Array.prototype.filter.call(panel.querySelectorAll('[data-vrd-subcat]'), function (b) {
+        var v = b.getAttribute('data-vrd-subcat'); return v === sub || subSlug(v) === subSlug(sub);
+      })[0] : defaultPill(panel);
+      if (pill && !pill.classList.contains('sc-active')) pill.click();
+    } finally { root._vrdRestoring = false; }
+  }
+
   function wireControls(root, state) {
+    root.querySelectorAll('.board-panel').forEach(function (panel) {
+      var on = panel.querySelector('.subcat-pill.sc-active'); if (on) on._vrdDefault = true;
+    });
     root.querySelectorAll('[data-vrd-tab]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         root.querySelectorAll('.cat-tab').forEach(function (t) { t.classList.remove('active'); });
         root.querySelectorAll('.board-panel').forEach(function (p) { p.classList.remove('active'); });
         btn.classList.add('active');
-        root.querySelector('#board-' + btn.getAttribute('data-vrd-tab')).classList.add('active');
+        var panel = root.querySelector('#board-' + btn.getAttribute('data-vrd-tab'));
+        panel.classList.add('active');
         openToolFrame(root, btn.getAttribute('data-vrd-tab'));
+        var on = panel.querySelector('.subcat-pill.sc-active');
+        pushSection(root, state, btn.getAttribute('data-vrd-tab'), on && !on._vrdDefault ? on.getAttribute('data-vrd-subcat') : '');
       });
     });
 
@@ -827,6 +869,7 @@
         btn.classList.add('sc-active');
         syncSubFilters(panel);
         applyPanelFilters(panel, state, true);
+        pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
       });
     });
 
@@ -1023,6 +1066,11 @@
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
       fetchAll(root, config);
+      if (config.url) {
+        applySection(root, config);
+        if (!root._vrdPop) { root._vrdPop = config; window.addEventListener('popstate', function () { if (urlHere(root._vrdPop)) applySection(root, root._vrdPop); }); }
+        else root._vrdPop = config;
+      }
     },
     // The same listing card anywhere else (Sean, 2026-10-08: a Guide shows Directory listings "with
     // the same look and feel of the current directory"). Put cards inside an element with class

@@ -46,7 +46,9 @@
   var banner = VECityBanner.mount('ev-hero', {
     key: 'events', title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
     sub: 'Festivals, meetups, markets and gatherings, in our cities and around the world. Pick a city, search, and find your next one.',
-    onChange: function (slug) { if (cal) cal.setCity(slug); },
+    // Events home: the calendar as the menu's Events opens it, in the city picked (Sean, 2026-10-27).
+    home: { label: 'Events home', href: '/events' },
+    onChange: function (slug) { if (cal) cal.setCity(slug); if (banner) banner.setHome('/events' + (slug ? '?city=' + encodeURIComponent(slug) : '')); },
     action: { label: 'Submit an event', onClick: function () { if (cal) cal.submit(); } }
   });
   cal = VEEvents.mount('ev-cal', { key: 'events', city: banner.current(), onInteract: function () { banner.autoFold(); } });

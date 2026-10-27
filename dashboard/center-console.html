@@ -2628,6 +2628,8 @@
       var b = VECityBanner.mount('dash-' + t[0] + '-hero', {
         key: 'dash-' + t[0], param: false, initial: active, title: t[1], allTitle: 'Every City', allLabel: 'All cities', sub: t[2],
         meta: '<div class="dash-bmeta" id="dash-' + t[0] + '-meta"></div>',
+        // The first button is the tab's own home (Sean, 2026-10-27); only the Depot has views to come home from.
+        hubLink: false, home: t[0] === 'depot' ? { label: 'Depot home', href: '/dashboard/depot', onClick: function () { history.pushState({ tabKey: 'depot' }, '', '/dashboard/depot'); openDepot(true); } } : null,
         onChange: function (slug) { if (dashTabBanners[t[0]] && slug) switchActiveCity(slug, member); }
       });
       dashTabBanners[t[0]] = b;
@@ -2668,6 +2670,7 @@
         key: 'dash-events', param: false, initial: slug, title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
         sub: 'Festivals, meetups, markets and gatherings near you and around the world. Know of one? Submit it.',
         onChange: function (s) { if (dashEvBanner) dashBannerPick('events', s, member); },
+        home: { label: 'Events home', href: '/dashboard/events', onClick: function () { if (dashEvCal) dashEvCal.home(); } },
         action: { label: 'Submit an event', onClick: function () { if (dashEvCal) dashEvCal.submit(); } }
       });
       dashEvCal = VEEvents.mount(mount, { key: 'dash-events', urlState: false, city: slug, onInteract: function () { dashEvBanner.autoFold(); } });
@@ -3433,14 +3436,20 @@
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {
           key: 'dash-dir', param: false, initial: active || '', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
           sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
-          onChange: function (s) { if (dashDirBanner) dashBannerPick('directory', s, member); }
+          onChange: function (s) { if (dashDirBanner) dashBannerPick('directory', s, member); },
+          // Directory home: the Directory as the menu opens it, its first section, in the city picked (Sean, 2026-10-27).
+          home: { label: 'Directory home', href: '/dashboard/directory', onClick: function () {
+            if (location.pathname + location.search !== '/dashboard/directory') history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
+            renderDirectory(member);
+          } },
+          actions: [{ label: 'Submit your listing', href: '/claim?add=1', go: true }]
         });
         mount.addEventListener('click', function (e) { if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) dashDirBanner.autoFold(); });
       } else dashDirBanner.setQuiet(active || '');
     }
     // All cities: every listing, by region, the same as /directory.
     if (!active && window.VERegionDirectory) {
-      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing });
+      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory' });
       return;
     }
     var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
@@ -3456,7 +3465,8 @@
       mount: 'dash-directory-mount',
       hub: active,
       matchListing: cfg.matchListing,
-      onOpenListing: openDashboardListing
+      onOpenListing: openDashboardListing,
+      url: '/dashboard/directory'
     };
     if (cfg.counties) initConfig.counties = cfg.counties;
     window.VERegionDirectory.init(initConfig);
