@@ -371,6 +371,7 @@ Deno.serve(async (req) => {
     const base = p.final || body.url;
     return json({ ok: true, status: p.status, final: p.final, type: p.type, length: p.html.length, text: textOf(p.html).slice(0, 1500),
       data: menuData(p.html).slice(0, 30), square: /editmysite|square/i.test(p.html) ? (await squareProducts(p.html)).slice(0, 10) : [],
+      ids: [...p.html.matchAll(/"(\w*(?:site|user|owner|store|location)_?[iI]d)"\s*:\s*"?([\w-]{4,})/g)].slice(0, 25).map((m) => m[1] + '=' + m[2]),
       pictures: picturesOf(p.html, base, true).slice(0, 12), pdfs: pdfsOf(p.html, base), links: linksOf(p.html, base).filter((l) => /menu|order/i.test(l.text + l.url)).slice(0, 15),
       rendered: body.render ? await rendered(base) : undefined });
   }
