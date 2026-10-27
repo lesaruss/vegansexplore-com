@@ -116,6 +116,18 @@
     .steps span.done{background:var(--ve-green-light);color:var(--ve-green-deep);}
     .step-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ve-border);}
     .step-bar .count{font-size:12px;font-weight:800;color:var(--ve-text-75);}
+    /* Add a listing > Find it: a link and screenshots (Sean, 2026-10-27), read by ve-listing-intake. */
+    .shot-drop{border:2px dashed rgba(0,0,0,.2);border-radius:10px;padding:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#fafafa;}
+    .shot-drop.over{border-color:var(--ve-green-deep);background:var(--ve-green-light);}
+    .shot-drop .hint{flex:1 1 220px;margin:0;}
+    .shot{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--ve-border);background:#fff center/cover no-repeat;}
+    .shot button{position:absolute;top:2px;right:2px;width:24px;height:24px;border-radius:6px;border:0;background:rgba(0,0,0,.65);color:#fff;font-weight:900;cursor:pointer;line-height:1;}
+    .found{border:1px solid var(--ve-green-deep);border-radius:10px;padding:12px 14px;margin-top:14px;background:#f6fbf6;font-size:13px;}
+    .found h3{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;}
+    .found dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:4px 10px;margin:0 0 10px;}
+    .found dt{font-weight:800;color:var(--ve-text-75);}
+    .found dd{margin:0;overflow-wrap:anywhere;}
+    .suggest{font-size:12.5px;color:var(--ve-text-75);margin:6px 0 0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
     .places{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;margin-top:12px;}
     .place{border:1px solid var(--ve-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px;}
     .place strong{font-size:14px;}
@@ -182,6 +194,7 @@
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
+      var FN_INTAKE = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-intake';
       var FN_DISCOVER = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-discover';
       var $ = function (id) { return document.getElementById(id); };
       var V = function () { return $('view'); };
@@ -396,7 +409,7 @@
         ['vegan_friendly', 'Vegan-friendly', 'A few Vegan choices.'], ['', 'Not a Vegan business', 'A store or a service, not Vegan itself.']];
       var DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       var add = null;
-      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
+      function freshAdd() { return { q: '', where: '', url: '', shots: [], found: null, foundPics: [], read: [], places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
       function stepHead(n) {
         return '<div class="steps">' + ADD_STEPS.map(function (t, i) { return '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
       }
@@ -409,6 +422,37 @@
         f.name = p.name || add.q; f.street = p.street || ''; f.city = p.city || ''; f.state = p.state || ''; f.zip = p.zip || ''; f.country = p.country || '';
         f.phone = p.phone || ''; f.website = p.website || ''; f.instagram = ''; f.facebook = ''; f.tiktok = ''; f.logo = null; add.site = null; add.logoPreview = ''; add.logoBlob = null; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
         if (!f.about && p.summary) f.about = p.summary;
+        mergeFound(false);
+      }
+      // What the link and screenshots gave (ve-listing-intake), filled only where Google left a field empty.
+      function mergeFound(all) {
+        var fd = add.found, f = add.f; if (!fd) return;
+        (all ? ['name', 'street', 'city', 'state', 'zip', 'country', 'phone'] : []).concat(['website', 'instagram', 'facebook', 'tiktok', 'about']).forEach(function (k) { if (!f[k] && fd[k]) f[k] = fd[k]; });
+        if (all) f.online = !!fd.online_only && !fd.street;
+        if (fd.hours && !Object.keys(f.hours || {}).length) { f.hours = {}; DAYS_ALL.forEach(function (d) { if (fd.hours[d]) f.hours[d] = fd.hours[d]; }); }
+      }
+      function foundBox() {
+        var fd = add.found; if (!fd) return '';
+        var rows = [['Name', fd.name], ['Kind', fd.kind], ['Where', [fd.street, fd.city, fd.state, fd.zip].filter(Boolean).join(', ') || (fd.online_only ? 'Online only' : '')], ['Phone', fd.phone], ['Website', fd.website], ['Hours', DAYS_ALL.filter(function (d) { return fd.hours && fd.hours[d]; }).map(function (d) { return d.slice(0, 3) + ' ' + fd.hours[d]; }).join(', ')],
+          ['Socials', [fd.instagram && 'Instagram ' + fd.instagram, fd.facebook && 'Facebook', fd.tiktok && 'TikTok ' + fd.tiktok].filter(Boolean).join(' · ')], ['About', fd.about]].filter(function (r) { return r[1]; });
+        return '<div class="found"><h3>What we found</h3><dl>' + rows.map(function (r) { return '<dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('') + '</dl>' +
+          (fd.note ? '<p class="hint" style="margin:0 0 8px">' + esc(fd.note) + '</p>' : '') + (add.read.length ? '<p class="hint" style="margin:0 0 10px">Read: ' + esc(add.read.join(' · ')) + '</p>' : '') +
+          '<div class="row-btns"><button type="button" class="btn btn-ghost btn-sm" id="ad-use-found">Not on Google: use what we found</button></div>' +
+          '<p class="hint" style="margin:8px 0 0">Or pick its Google listing below: we keep the socials and about we found where Google has none.</p></div>';
+      }
+      // A screenshot, shrunk in the browser to 1600 px on its longer side as a JPEG (what Claude needs, and small to send).
+      function shrinkShot(file) {
+        return new Promise(function (res, rej) {
+          var img = new Image(), u = URL.createObjectURL(file);
+          img.onload = function () {
+            var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+            c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+            var g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(img, 0, 0, c.width, c.height);
+            URL.revokeObjectURL(u); var d = c.toDataURL('image/jpeg', 0.85); res({ type: 'image/jpeg', data: d.split(',')[1], preview: d });
+          };
+          img.onerror = function () { URL.revokeObjectURL(u); rej(new Error('That file is not a picture.')); };
+          img.src = u;
+        });
       }
       function viewAdd(n) {
         if (!add) add = freshAdd();
@@ -416,10 +460,15 @@
         crumbs([['Directory review', '#'], ['Add a listing']]);
         var f = add.f, html = '<section class="card">' + stepHead(n);
         if (n === 1) {
-          html += '<h2>Find it</h2><p class="hint" style="margin:0 0 10px">Type the name and where it is. We look it up on Google and fill in the address, phone, website and hours for you.</p>' +
+          html += '<h2>Find it</h2><p class="hint" style="margin:0 0 10px">Give us what you have: the name and where it is, a link (their Instagram, website or Google Maps) and screenshots, any of them. We read the link and the screenshots, look it up on Google and fill in the address, phone, website, socials and hours for you.</p>' +
             '<div class="fix"><div><label for="ad-q">Name</label><input id="ad-q" type="text" value="' + esc(add.q) + '" placeholder="Love Life Cafe"></div>' +
-            '<div><label for="ad-where">Where</label><input id="ad-where" type="text" value="' + esc(add.where) + '" placeholder="Miami, FL"></div></div>' +
+            '<div><label for="ad-where">Where</label><input id="ad-where" type="text" value="' + esc(add.where) + '" placeholder="Miami, FL"></div>' +
+            '<div class="wide"><label for="ad-url">Link <span class="hint" style="text-transform:none;letter-spacing:0">(optional)</span></label><input id="ad-url" type="text" value="' + esc(add.url) + '" placeholder="instagram.com/lovelifecafe, their website or a Google Maps link"></div>' +
+            '<div class="wide"><label for="ad-shot-in">Screenshots <span class="hint" style="text-transform:none;letter-spacing:0">(optional, up to 3)</span></label>' +
+              '<div class="shot-drop" id="ad-drop">' + add.shots.map(function (x, i) { return '<span class="shot" style="background-image:url(\'' + x.preview + '\')"><button type="button" data-shot-rm="' + i + '" aria-label="Remove this screenshot">&times;</button></span>'; }).join('') +
+              (add.shots.length < 3 ? '<p class="hint">Drop a screenshot here, paste one (Ctrl+V or Cmd+V), or <label for="ad-shot-in" style="display:inline;color:var(--ve-green-deep);text-decoration:underline;cursor:pointer;font:inherit;letter-spacing:0;text-transform:none">choose a file</label>. An Instagram profile works best.</p><input id="ad-shot-in" type="file" accept="image/*" multiple hidden>' : '') + '</div></div></div>' +
             '<div class="fix-bar"><button type="button" class="btn" id="ad-search">Look it up</button><button type="button" class="btn btn-ghost" id="ad-hand">Not on Google: fill it in by hand</button><span class="msg" id="ad-msg" role="status"></span></div>' +
+            '<div id="ad-found">' + foundBox() + '</div>' +
             '<div class="places" id="ad-places">' + (add.places ? placeCards() : '') + '</div>' + stepBar(1, '');
         } else if (n === 2) {
           html += '<h2>The details</h2><p class="hint" style="margin:0 0 10px">' + (f.place_id ? 'From Google: check it and change anything that is wrong.' : 'Fill in what you know; the nightly pass fills in more once it has an address.') + '</p>' +
@@ -439,16 +488,20 @@
               '<div class="wide store"><label>Hours</label><div class="hours">' + DAYS_ALL.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(f.hours[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') + '</div></div>' +
             '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(2, 'Next');
         } else if (n === 3) {
-          var logos = (add.site && add.site.logos) || [];
+          var logos = add.logoList = ((add.site && add.site.logos) || []).concat(add.foundPics || []);
           html += '<h2>Logo</h2><p class="hint" style="margin:0 0 10px">Drop in any picture of their logo and make it square here: drag it, zoom it, fill the background. Leave it empty and the card shows the first letter of their name.</p>' +
-            (logos.length ? '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px">From their website</p><div class="logos">' + logos.map(function (g, i) { return '<button type="button" class="logo-pick" data-site-logo="' + i + '"><span class="logo-img"><img src="' + esc(g.url) + '" alt="" loading="lazy"></span><span>' + esc(g.from) + '<small>' + (g.w ? g.w + ' x ' + g.h : 'Sharp at any size') + ' &middot; Use this</small></span></button>'; }).join('') + '</div>' : '') +
+            (logos.length ? '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px">' + (add.foundPics && add.foundPics.length ? 'From their website and Instagram' : 'From their website') + '</p><div class="logos">' + logos.map(function (g, i) { return '<button type="button" class="logo-pick" data-site-logo="' + i + '"><span class="logo-img"><img src="' + esc(g.url) + '" alt="" loading="lazy"></span><span>' + esc(g.from) + '<small>' + (g.w ? g.w + ' x ' + g.h : 'Sharp at any size') + ' &middot; Use this</small></span></button>'; }).join('') + '</div>' : '') +
             '<p class="hint" id="ad-site" role="status">' + (!f.website ? '' : add.site ? (logos.length ? '' : 'Their website has no logo picture we could find.') : 'Looking at their website...') + '</p>' +
             '<div id="ad-editor"></div>' +
             '<p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
         } else if (n === 4) {
+          // What the link and screenshots suggest, offered, never picked for Sean: the kind and How Vegan stay his choice.
+          var fd = add.found || {}, sug = { kind: fd.kind || '', vegan: fd.organization || fd.vegan === 'not_vegan' ? VEGAN[3] : VEGAN.filter(function (v) { return v[0] && v[0] === fd.vegan; })[0] || null };
           html += '<h2>What it is</h2><div class="fix">' +
-            '<div><label for="ad-kind">Kind</label><select id="ad-kind"><option value="">Pick one</option>' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === f.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select></div>' +
-            '<div class="wide"><label>How Vegan</label><div class="radios">' + VEGAN.map(function (v) { return '<label><input type="radio" name="ad-vegan" value="' + v[0] + '"' + (f.vegan_status === v[0] ? ' checked' : '') + '><span>' + v[1] + '<small>' + v[2] + '</small></span></label>'; }).join('') + '</div></div>' +
+            '<div><label for="ad-kind">Kind</label><select id="ad-kind"><option value="">Pick one</option>' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === f.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select>' +
+              (sug.kind ? '<p class="suggest">From what you gave: <strong>' + esc(sug.kind) + '</strong> <button type="button" class="btn btn-ghost btn-sm" id="ad-sug-kind">Use it</button></p>' : '') + '</div>' +
+            '<div class="wide"><label>How Vegan</label><div class="radios">' + VEGAN.map(function (v) { return '<label><input type="radio" name="ad-vegan" value="' + v[0] + '"' + (f.vegan_status === v[0] ? ' checked' : '') + '><span>' + v[1] + '<small>' + v[2] + '</small></span></label>'; }).join('') + '</div>' +
+              (sug.vegan ? '<p class="suggest">From what you gave: <strong>' + esc(sug.vegan[1]) + '</strong> <button type="button" class="btn btn-ghost btn-sm" id="ad-sug-vegan">Use it</button></p>' : '') + '</div>' +
             '<div class="wide"><label for="ad-about">About <span class="hint" style="text-transform:none;letter-spacing:0">(optional; the nightly pass writes one from their website if you leave it)</span></label><textarea id="ad-about" maxlength="400" placeholder="What they do, in a line or two.">' + esc(f.about) + '</textarea></div>' +
             '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(4, 'Next');
         } else {
@@ -468,6 +521,10 @@
         if (n === 1) wireFind();
         if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); readSite(); }
         if (n === 3) wireLogo();
+        if (n === 4) {
+          if ($('ad-sug-kind')) $('ad-sug-kind').addEventListener('click', function () { $('ad-kind').value = add.found.kind; });
+          if ($('ad-sug-vegan')) $('ad-sug-vegan').addEventListener('click', function () { var fd = add.found, val = fd.organization || fd.vegan === 'not_vegan' ? '' : fd.vegan; var r = V().querySelector('input[name="ad-vegan"][value="' + val + '"]'); if (r) r.checked = true; });
+        }
         var nx = $('ad-next'); if (nx) nx.addEventListener('click', function () { nextStep(n); });
         if (nx && n > 1) ['input', 'change'].forEach(function (t) { nx.closest('section').addEventListener(t, function () { $('ad-msg').textContent = ''; }); });
       }
@@ -481,21 +538,68 @@
         }).join('');
       }
       function wireFind() {
+        function keep() { add.q = $('ad-q').value.trim(); add.where = $('ad-where').value.trim(); add.url = $('ad-url').value.trim(); }
+        function fail(m) { $('ad-search').disabled = false; $('ad-msg').className = 'msg err'; $('ad-msg').textContent = m; }
         function go() {
-          add.q = $('ad-q').value.trim(); add.where = $('ad-where').value.trim();
-          if (add.q.length < 2) { $('ad-msg').className = 'msg err'; $('ad-msg').textContent = 'Type the name first.'; return; }
-          $('ad-msg').className = 'msg'; $('ad-msg').textContent = 'Looking it up...'; $('ad-search').disabled = true;
-          disc({ action: 'add_search', name: add.q, where: add.where }).then(function (d) {
+          keep();
+          if (add.url || add.shots.length) return readAll();
+          if (add.q.length < 2) return fail('Type the name, or give us a link or a screenshot.');
+          search(add.q, add.where);
+        }
+        // The link and screenshots first (ve-listing-intake, 10 to 40 seconds), then Google with what they gave.
+        function readAll() {
+          $('ad-msg').className = 'msg'; $('ad-msg').textContent = add.shots.length ? 'Reading your screenshot' + (add.shots.length > 1 ? 's' : '') + (add.url ? ' and the link' : '') + '...' : 'Reading the link...'; $('ad-search').disabled = true;
+          fetch(FN_INTAKE, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+            body: JSON.stringify({ action: 'read', name: add.q, where: add.where, url: add.url, images: add.shots.map(function (x) { return { type: x.type, data: x.data }; }) }) })
+            .then(function (r) { return r.json(); }).then(function (d) {
+              if (!d.ok) return fail(d.error === 'busy' ? 'Busy for a moment. Try again.' : 'Could not read that: ' + (d.error || 'no answer'));
+              add.found = d.found; add.read = d.read || []; add.foundPics = (d.pictures || []).map(function (p) { return { url: p.url, w: 0, h: 0, from: p.from }; });
+              if (!add.q && d.found.name) { add.q = d.found.name; $('ad-q').value = add.q; }
+              if (!add.where && (d.found.city || d.found.state)) { add.where = [d.found.city, d.found.state].filter(Boolean).join(', '); $('ad-where').value = add.where; }
+              $('ad-found').innerHTML = foundBox(); wireFound();
+              var q = d.found.search || [add.q, add.where].join(' ').trim();
+              if (!q || q.length < 2) { $('ad-search').disabled = false; $('ad-msg').textContent = 'Nothing to look up on Google; use what we found.'; return; }
+              search(q, '');
+            }).catch(function (e) { fail('Could not read that: ' + e.message); });
+        }
+        function wireFound() {
+          var b = $('ad-use-found'); if (!b) return;
+          b.addEventListener('click', function () { keep(); add.f = freshAdd().f; mergeFound(true); if (!add.f.name) add.f.name = add.q; location.hash = '#add/2'; });
+        }
+        function search(name, where) {
+          $('ad-msg').className = 'msg'; $('ad-msg').textContent = 'Looking it up on Google...'; $('ad-search').disabled = true;
+          disc({ action: 'add_search', name: name, where: where }).then(function (d) {
             $('ad-search').disabled = false;
             if (!d.ok) throw new Error(d.error || 'search');
             add.places = d.places; $('ad-msg').textContent = ''; $('ad-places').innerHTML = placeCards(); wirePicks();
-          }).catch(function (e) { $('ad-search').disabled = false; $('ad-msg').className = 'msg err'; $('ad-msg').textContent = 'Google did not answer: ' + e.message; });
+          }).catch(function (e) { fail('Google did not answer: ' + e.message); });
         }
+        // Screenshots: drop, paste or choose; up to 3, each shrunk before it is kept.
+        function addShots(files) {
+          files = Array.prototype.filter.call(files || [], function (x) { return /^image\//.test(x.type); }).slice(0, 3 - add.shots.length);
+          if (!files.length) return;
+          keep();
+          Promise.all(files.map(shrinkShot)).then(function (xs) { add.shots = add.shots.concat(xs); viewAdd(1); })
+            .catch(function (e) { fail(e.message); });
+        }
+        var drop = $('ad-drop');
+        ['dragenter', 'dragover'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+        ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+        drop.addEventListener('drop', function (e) { addShots(e.dataTransfer && e.dataTransfer.files); });
+        if ($('ad-shot-in')) $('ad-shot-in').addEventListener('change', function () { addShots(this.files); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-shot-rm]'), function (b) { b.addEventListener('click', function () { keep(); add.shots.splice(+b.dataset.shotRm, 1); viewAdd(1); }); });
+        document.onpaste = function (e) {
+          if (!/^#add\/1/.test(location.hash) || !e.clipboardData) return;
+          var fl = Array.prototype.filter.call(e.clipboardData.items || [], function (it) { return it.kind === 'file' && /^image\//.test(it.type); }).map(function (it) { return it.getAsFile(); });
+          if (fl.length) { e.preventDefault(); addShots(fl); }
+        };
+        $('ad-url').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+        wireFound();
         function wirePicks() { Array.prototype.forEach.call(V().querySelectorAll('[data-pick]'), function (b) { b.addEventListener('click', function () { fromPlace(add.places[+b.dataset.pick]); location.hash = '#add/2'; }); }); }
         $('ad-search').addEventListener('click', go);
         $('ad-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
         $('ad-where').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
-        $('ad-hand').addEventListener('click', function () { add.q = $('ad-q').value.trim(); add.f = freshAdd().f; add.f.name = add.q; location.hash = '#add/2'; });
+        $('ad-hand').addEventListener('click', function () { keep(); add.f = freshAdd().f; mergeFound(true); add.f.name = add.f.name || add.q; location.hash = '#add/2'; });
         wirePicks();
       }
       // Their website's socials and logo pictures (ve-discover add_site), read once per website.
@@ -529,7 +633,7 @@
         add.editor = VELogoEditor.mount($('ad-editor'), { fetchUrl: logoFetch });
         if (add.logoBlob) add.editor.load(add.logoBlob);
         Array.prototype.forEach.call(V().querySelectorAll('[data-site-logo]'), function (b) {
-          b.addEventListener('click', function () { add.editor.load(add.site.logos[+b.dataset.siteLogo].url); });
+          b.addEventListener('click', function () { add.editor.load(add.logoList[+b.dataset.siteLogo].url); });
         });
       }
       // The editor's square, uploaded to the staging folder (add_logo_url); add_create or logo_set moves it next to the listing.

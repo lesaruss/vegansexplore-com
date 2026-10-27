@@ -541,7 +541,16 @@ parent is `/directory` or a hub) and grows to fit (depot-tabs.js `ve-frame-heigh
 Open in Directory review.
 Adding listings (Sean, 2026-10-27: "I'm not sure exactly how I would do that"). Directory review's home has **Add a listing**
 (`#add/1` to `#add/5`, one step per view): Find it on Google (name and where, `ve-discover` `add_search`: up to six Google places
-with address, phone, website, hours and pin, each marked if already listed), or fill it in by hand; The details (all of it
+with address, phone, website, hours and pin, each marked if already listed), or fill it in by hand. **Find it also takes a link and
+screenshots** (Sean, 2026-10-27: "I typically find a lot on Instagram... add a field for the URL... upload an image, like a
+screenshot"): the link (an Instagram profile, read through Apify, or any page, read as text with its structured data and social
+links, plus the site an Instagram bio links to) and up to three screenshots (dropped, pasted or chosen, shrunk to 1600 px in the
+browser) go to the edge function `ve-listing-intake` (`read`, super admin; Claude Opus 5.5, structured output, only what the sources
+show), which returns **What we found** (name, kind, how Vegan, address, phone, website, socials, hours, about, a note on where each
+came from) and the Google search to run. Pick its Google listing (what Google leaves empty is filled from what we found) or **use what
+we found**; its Instagram picture joins the logo choices, and What it is offers the suggested kind and How Vegan with Use it, never
+picked for you. Nothing is saved until Add it. Proven 2026-10-27 on an Instagram link (14 s), an Instagram screenshot (4 s) and a
+website (9 s); The details (all of it
 editable, Online only, and their Instagram, Facebook and TikTok, filled from the links on their own home page, `add_site`, Sean
 2026-10-27: "you should be able to pull their social media"; builder template links like facebook.com/wix are skipped); **Logo**
 (the logo editor below, with up to four pictures from their website to load into it, an `<img>` that says logo, the app icon,
