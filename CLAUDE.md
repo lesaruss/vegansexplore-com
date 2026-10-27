@@ -508,10 +508,15 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   Sean sets (`universe_invites.points_to` `ambassador`). The email asks them to be one of the first Ambassadors; accepting makes
   them an active Founding Member and an Ambassador (never over a staff role) with their points, and opens the onboarding.
   Every comped claim is a Founding Member (`universe_invite_claim`).
-- **The onboarding**, `/ambassadors/welcome` (`ambassadors/welcome.html`), four steps, one per view (`?step=`): Welcome (Founding
-  Member, their points, the role), Your city (their home chapter, required, `set_home_community`), Your link
-  (`/passport?ref=<referral_code>` and how it counts), What to share (a text, a post and a note for a business, each with their link,
-  to copy). For Ambassadors and super admins only.
+- **The Ambassador Guide**, `/ambassadors/welcome` (`ambassadors/welcome.html`; Sean, 2026-10-27: "everything should really be like
+  a guide... Create it like the Passport but tailored to someone who has been hand selected to join the community because of their
+  contributions to the movement"): the Passport Guide's layout (tabs are the tour, a Guide's picture and words on the right, Back / N
+  of M / Next, their points and Copy your link in the header), nine tabs (`#/<tab>`): Overview (You were hand selected), Your
+  membership (on us, points, level, what points do), Your role, Your city (home chapter, `set_home_community`, its hub, Pulse and
+  Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
+  with their link), Answering questions (straight answers, do and don't), Your progress (`ve-auth` `referrals`: members and waiting
+  accounts who signed up with their link, first name and last initial, and the referral points paid). Old `?step=1..4` links land on
+  the matching tab. For Ambassadors and super admins only; the dashboard's tile is The Ambassador Guide. No Higgsfield art or clips.
 - **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
   `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
   friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`

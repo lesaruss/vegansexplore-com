@@ -1,86 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Welcome, Ambassador — Vegans Explore</title>
+  <title>The Ambassador Guide — Vegans Explore</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* The Ambassador onboarding (Sean, 2026-10-27: "Once I use the invite option, it should create an onboarding for
-       Ambassadors"). An Ambassador (members.ve_role 'ambassador') is a Founding Member whose job is to bring people in. Four
-       steps, one per view (?step=1..4), Back / Step N of M / Next: Welcome (what they have), Your city (their home chapter,
-       ve-auth set_home_community), Your link (/passport?ref=<referral_code>; a friend who becomes a member through it pays them
-       the referral, trg_zz_referral_on_admit), What to share (ready-made words to copy). An Ambassador invitation from
-       Depot > Invites opens this page after it is accepted; a super admin can open it to see it. */
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    :root{--g:#1f5f22;--g2:#22C55E;--gl:#EAF7EA;--line:rgba(0,0,0,.1);--t:#1a1a1a;--t75:rgba(26,26,26,.78);}
-    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--t);line-height:1.6;}
-    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
-    main{max-width:none;margin:0;padding:44px 40px 80px;}
-    @media (max-width:600px){main{padding:28px 16px 56px;}}
-    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
-    h1{font-size:clamp(26px,3.4vw,38px);font-weight:900;line-height:1.1;margin-bottom:10px;}
-    .lede{font-size:15.5px;color:var(--t75);max-width:860px;margin-bottom:22px;}
-    .steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;}
-    .steps span{font-size:12px;font-weight:800;padding:7px 12px;border-radius:6px;background:#eef1ee;color:#444;}
-    .steps span.on{background:var(--g);color:#fff;}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin:0 0 18px;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;margin:0 0 6px;}
-    .tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;}
-    .tile b{display:block;font-size:15px;margin-bottom:4px;}
-    .tile p{font-size:13.5px;color:var(--t75);}
-    .big{font-size:30px;font-weight:900;line-height:1.1;color:var(--g);}
-    .link{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--gl);border-radius:10px;padding:14px 16px;margin:6px 0 14px;}
-    .link code{font-size:15px;font-weight:800;color:var(--g);word-break:break-all;flex:1;min-width:220px;}
-    .msg-box{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff;}
-    .msg-box h3{font-size:13px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
-    .msg-box p{font-size:14px;white-space:pre-line;margin-bottom:10px;}
-    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 18px;min-height:44px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
-    .btn.o{background:#fff;color:var(--g);border:1px solid rgba(0,0,0,.25);}
-    .btn.sm{font-size:11px;padding:7px 12px;min-height:36px;}
-    .btn:disabled{opacity:.5;cursor:default;}
-    .nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid var(--line);padding-top:16px;margin-top:6px;}
-    .nav span{font-size:13px;font-weight:800;color:var(--t75);}
-    select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;max-width:420px;}
-    .note{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin-top:8px;}
-    .note.bad{color:#a61b1b;}
-    .gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
-    .gate p{margin:0 0 16px;color:var(--t75);}
+    /* The Ambassador Guide (Sean, 2026-10-27: "everything should really be like a guide... Create it like the Passport but
+       tailored to someone who has been hand selected to join the community because of their contributions to the movement").
+       The Passport Guide's layout (passport.html, its dg-* rules copied here): the tabs are the tour, a Guide's picture
+       (VEGuideArt square, no clips) and words on the right, the content on the left, Back / N of M / Next. For Ambassadors
+       (members.ve_role 'ambassador') and super admins. Tabs: Overview, Your membership, Your role, Your city (ve-auth
+       set_home_community), Your link (/passport?ref=<referral_code>, 111 points when the friend becomes a member,
+       trg_zz_referral_on_admit), Who to invite, What to share, Answering questions, Your progress (ve-auth referrals).
+       An Ambassador invitation from Depot > Invites opens this page once accepted. */
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
+
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/new-york/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .dg-brand-mark{flex:1 1 280px;min-width:0;}
+    .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .dg-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:4px 0 0;text-transform:uppercase;}
+    .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
+    .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
+    .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
+    .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
+    .dg-menu{display:flex;gap:2px;margin-top:12px;overflow:hidden;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-join-tab{margin-left:auto;color:#c5f2c7;}
+    .dg-menu-select{display:none;}
+
+    .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
+    .dg-main{min-width:0;}
+    .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
+    .dg-guide{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
+    .dg-guide.dg-shift{animation:dgShift .55s ease-out;}
+    @keyframes dgShift{from{transform:scale(1.03) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
+    @media (prefers-reduced-motion:reduce){.dg-guide.dg-shift{animation:none;}}
+    .dg-guide-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
+    .dg-guide-name b{color:var(--ink);}
+    .dg-bubble{background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;}
+    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-tour.dg-tour-m{display:none;}
+    .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
+    .dg-tnav[aria-disabled="true"]{opacity:0.35;pointer-events:none;}
+
+    .dg-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-h1{font-size:clamp(22px,2.2vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-0.01em;line-height:1.15;}
+    .dg-lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:860px;}
+    .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
+    .dg-btn:hover{background:#4ade80;}
+    .dg-btn[disabled]{opacity:.6;cursor:default;}
+    .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;}
+    .dg-note{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5;margin:0 0 16px;}
+    .dg-note b{font-weight:900;}
+    .dg-status{display:block;font-size:13px;font-weight:700;color:#8a5a00;margin-top:10px;}
+    .dg-status:empty{display:none;}
+
+    .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;}
+    .dg-tile{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
+    .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
+    .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
+    .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
+    .dg-card .dg-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);margin-bottom:8px;}
+    .dg-card .dg-tag.soon{background:#f2f4f2;color:var(--ink55);}
+    .dg-card a{color:var(--g);font-weight:800;}
+    .dg-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+    .dg-level{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px;text-align:center;}
+    .dg-level b{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .dg-level strong{display:block;font-size:28px;font-weight:900;margin:4px 0 2px;}
+    .dg-level span{font-size:12.5px;color:var(--ink75);}
+
+    .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
+    .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
+    .dg-access li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
+    .dg-access li b{color:var(--ink);}
+    .dg-pricebox{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:24px;text-align:center;}
+    .dg-pricebox .dg-big{font-size:52px;font-weight:900;line-height:1;}
+    .dg-pricebox .dg-big small{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-pricebox p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:10px 0 16px;}
+    .dg-pricebox .dg-btn{width:100%;}
+    .dg-pricebox a{color:var(--g);font-weight:800;}
+
+    @media (min-width:901px) and (min-height:600px){
+      html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
+      html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
+      html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
+      html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
+      html.dg-fit .dg-rail{overflow:hidden;}
+      html.dg-fit .dg-guide{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
+    }
+    @media (max-width:1280px){.dg-menu a{padding:10px 10px 11px;font-size:10.5px;letter-spacing:.05em;}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-access{grid-template-columns:minmax(0,1fr);}.dg-menu{display:none;}
+      .dg-menu-select{display:block;margin:12px 0 14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}}
+    @media (max-width:900px){
+      .dg-top{padding:16px 16px 2px;}
+      .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
+      .dg-joinbox .dg-btn{width:100%;}
+      .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
+      .dg-joinbox .dg-jb-in br{display:none;}
+      .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
+      .dg-rail{order:-1;}
+      .dg-guide{aspect-ratio:1/1;width:100%;max-width:280px;margin:0 auto;}
+      .dg-rail .dg-tour{display:none;}
+      .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
+      .dg-levels{grid-template-columns:minmax(0,1fr);}
+    }
+    @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
+    /* The Ambassador's own extras on the Guide layout. */
+    .dg-joinbox .dg-jb-price b{font-size:30px;}
+    .am-link{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+    .am-link code{font-family:inherit;font-size:15px;font-weight:800;color:var(--g);word-break:break-all;flex:1;min-width:220px;}
+    .am-msg{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;}
+    .am-msg b{display:block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+    .am-msg p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;white-space:pre-line;flex:1;}
+    .am-sm{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:38px;border-radius:6px;cursor:pointer;border:1px solid var(--gm);background:#fff;color:var(--g);align-self:flex-start;}
+    .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
+    .am-steps li{counter-increment:s;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
+    .am-steps li::before{content:counter(s);display:inline-flex;width:26px;height:26px;border-radius:6px;background:var(--g);color:#fff;font-weight:900;font-size:13px;align-items:center;justify-content:center;margin-bottom:8px;}
+    .am-steps li b{display:block;color:var(--ink);font-size:14.5px;}
+    .am-field{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px;}
+    .am-select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;max-width:420px;color:var(--ink);}
+    .am-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .am-row .dg-btn{min-height:46px;}
+    .am-note{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin:8px 0 16px;}
+    .am-note.bad{color:#a61b1b;}
+    .am-qa{border-bottom:1px solid var(--line);padding:12px 0;}
+    .am-qa b{display:block;font-size:14.5px;font-weight:900;margin-bottom:3px;}
+    .am-qa p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .am-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px;}
+    .am-list{border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+    .am-list h3{margin:0 0 6px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .am-list ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--ink75);}
+    .am-people{list-style:none;margin:12px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;max-height:260px;overflow:auto;}
+    .am-people li{display:flex;justify-content:space-between;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;}
+    .am-people li:last-child{border-bottom:0;}
+    .am-tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);white-space:nowrap;}
+    .am-tag.wait{background:var(--warm);color:#8a5a00;}
+    .am-gate{max-width:560px;margin:48px auto;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .am-gate p{margin:0 0 16px;color:var(--ink75);line-height:1.6;}
+    @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
     [hidden]{display:none !important;}
   </style>
 </head>
 <body>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
-<main>
-  <p class="eyebrow">Vegans Explore Ambassadors</p>
-  <div id="gate" class="gate" hidden></div>
-  <div id="app" hidden>
-    <h1 id="title">Welcome, Ambassador</h1>
-    <p class="lede" id="lede"></p>
-    <div class="steps" id="steps"></div>
-    <section class="card" id="view" aria-live="polite"></section>
+
+<header class="dg-top" id="amTop" hidden>
+  <div class="dg-top-row">
+    <div class="dg-brand-mark">
+      <div class="dg-eyebrow">Vegans Explore Guides</div>
+      <h1 class="dg-title">The Ambassador Guide</h1>
+    </div>
+    <div class="dg-joinbox">
+      <div class="dg-jb-price"><b id="amPts">0</b><small>your<br>points</small></div>
+      <a class="dg-btn" href="#/link">Copy your link</a>
+    </div>
   </div>
-</main>
+  <nav class="dg-menu" id="dgMenu" aria-label="Ambassador Guide tabs"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Ambassador Guide tabs"></select>
+</header>
+
+<div class="am-gate" id="amGate" hidden></div>
+
+<div class="dg-app" id="amApp" hidden>
+  <main class="dg-main" id="dgMain" aria-live="polite"></main>
+  <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
+  <aside class="dg-rail" aria-label="Your Guide">
+    <div class="dg-guide" id="dgGuide" role="img"></div>
+    <div class="dg-guide-name" id="dgGuideName"></div>
+    <div class="dg-bubble" id="dgBubble"></div>
+    <div class="dg-tour" id="dgTour"></div>
+  </aside>
+</div>
+
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script>
 (function () {
+  // Every fact here is the live site's (CLAUDE.md): the Passport, points and levels are Sean's lock of 2026-10-25, the
+  // referral pays 111 points when the friend becomes a member (trg_zz_referral_on_admit), and Ambassador perks beyond the
+  // referral are not decided yet, so nothing here promises them.
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var STEPS = [['welcome', 'Welcome'], ['city', 'Your city'], ['link', 'Your link'], ['share', 'What to share']];
+  var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
+  var TABS = [
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. You were hand selected for what you have already given the movement. This Guide walks you through what comes with it, one tab at a time.' },
+    { k: 'account', label: 'Your membership', g: 'theo', say: 'Your Founding Membership is on us, in recognition of your work. Here are your points, your level, and what they can do.' },
+    { k: 'role', label: 'Your role', g: 'nori', say: 'You already do the work. As an Ambassador you bring people in and are a voice for your city, your way, with the people who already trust you.' },
+    { k: 'city', label: 'Your city', g: 'river', say: 'Pick the city you represent. Your Daily Pulse, events and Directory open there, and so does the hub you will point people to.' },
+    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours. When someone becomes a member through it, you earn 111 points.' },
+    { k: 'who', label: 'Who to invite', g: 'maya', say: 'Start with the people who would love it most: friends who eat Vegan, the Vegan-curious, and the places you already go.' },
+    { k: 'share', label: 'What to share', g: 'dani', say: 'Here are a few things to send, each with your link already in it. Use them as they are, or say it your way.' },
+    { k: 'questions', label: 'Answering questions', g: 'theo', say: 'People will ask what it is and what it costs. Here are the straight answers, and a few things to keep in mind.' },
+    { k: 'progress', label: 'Your progress', g: 'liz', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
+  ];
+  var BLURB = {
+    account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
+    city: 'The city you represent.', link: 'Your link, and how it counts.', who: 'Where to start.',
+    share: 'Ready-made words, with your link.', questions: 'Straight answers to what people ask.', progress: 'Who joined through you.'
+  };
   var $ = function (id) { return document.getElementById(id); };
-  var M = null;
+  var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect');
+  var guideEl = $('dgGuide'), nameEl = $('dgGuideName'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
+  var M = null, REF = null, cur = 'overview', lastGuide = null;
+
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
   function first() { return String((M && M.name) || '').trim().split(/\s+/)[0] || 'there'; }
   function link() { return 'https://vegansexplore.com/passport' + (M && M.referral_code ? '?ref=' + encodeURIComponent(M.referral_code) : ''); }
-  function hubName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : ''; }
-  function step() { var n = parseInt(new URLSearchParams(location.search).get('step'), 10); return n >= 1 && n <= STEPS.length ? n : 1; }
-  function go(n) { var u = new URL(location.href); u.searchParams.set('step', n); history.pushState(null, '', u.pathname + u.search); draw(); window.scrollTo(0, 0); }
+  function hub(slug) { return (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0] || null; }
+  function level(total) { return total >= 10000 ? 3 : total >= 2500 ? 2 : 1; }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
+  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
+  function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '">' + esc(label) + '</a></div>'; }
   function copy(text, btn) {
     var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
@@ -89,74 +246,178 @@
 
   // Ready-made words: plain, true, and every one carries their link.
   function messages() {
-    var l = link();
+    var l = link(), h = M && hub(M.home_community), city = h ? h.name : 'my city';
     return [
-      ['A text to a friend', 'I joined Vegans Explore, a community for Vegans city by city: the Vegan places worth going to, events, the Daily Pulse and Guides. Get your Passport with my link: ' + l],
-      ['An Instagram or Facebook post', 'I’m a Vegans Explore Ambassador. It’s where I find the Vegan restaurants, events and people in my city, voted on by members. Your Passport is $11, one time, and comes with 1,100 points for your first Guide. Join me: ' + l],
-      ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up. Claim yours and see who comes in: https://vegansexplore.com/business. If you join as a member, use my link: ' + l]
+      ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. The Passport is $11, one time, and comes with 1,100 points. Here\'s my link: ' + l],
+      ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Your Passport is $11, one time, with 1,100 points to start (enough for your first Guide). Join me: ' + l],
+      ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, the Passport is $11, one time: ' + l],
+      ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up, save and check in at. See what it offers businesses: https://vegansexplore.com/business. If you join as a member, use my link: ' + l]
     ];
   }
 
   var VIEWS = {
-    welcome: function () {
-      return '<div class="grid">' +
-        '<div class="tile"><b>Founding Member</b><p>Your membership is active and on us. Everything a member has is yours.</p></div>' +
-        '<div class="tile"><b>Your points</b><p class="big">' + Number((M && M.points) || 0).toLocaleString('en-US') + '</p><p>Spend them on Guides, or give them to the places you love.</p></div>' +
-        '<div class="tile"><b>Ambassador</b><p>You are one of the first people we asked to bring others in. The next three steps set you up: your city, your link, and what to share.</p></div>' +
-        '</div>';
+    overview: function () {
+      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
+        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+      }).join('');
+      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: the people you have reached, the work you have done for the animals and for this community. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, with <b>' + n(M && M.points) + ' points</b> to start, and this Guide shows you everything that comes with it.') +
+        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('account', 'Start the Guide');
+    },
+    account: function () {
+      var total = (M && M.total_points) || 0, lv = level(total);
+      var to = lv === 1 ? 2500 - total : lv === 2 ? 10000 - total : 0;
+      return head('Your membership', 'A Founding Membership, on us', 'Everyone else joins with the Passport, $11 one time. Yours is our thank-you for your contributions to the movement. It is active, and everything a member has is yours: vote, save, check in, post on the Daily Pulse, join any community and build your Vegan world from your dashboard.') +
+        '<div class="dg-levels">' +
+        '<div class="dg-level"><b>Your points</b><strong>' + n(M && M.points) + '</strong><span>to spend or give</span></div>' +
+        '<div class="dg-level"><b>Your level</b><strong>' + lv + '</strong><span>' + (to > 0 ? n(to) + ' points to Level ' + (lv + 1) : 'the top level') + '</span></div>' +
+        '<div class="dg-level"><b>Earned so far</b><strong>' + n(total) + '</strong><span>lifetime points</span></div></div>' +
+        '<div class="dg-grid">' +
+        card('Unlock a Guide', 'Every Guide is $11 or 1,100 points, and yours to keep. <a href="/guides">See the Guides</a>.', 'Spend') +
+        card('Boost a place you love', 'Give points to a business or nonprofit from its page in the Directory. Points are a boost, never money.', 'Give') +
+        card('Talk with your Guide', 'Ask your Guide anything Vegan, 4 points a message.', 'Spend') +
+        card('Levels never drop', 'Level 2 from 2,500 points earned, Level 3 from 10,000. Spending or giving points never lowers your level.', 'Levels') +
+        '</div>' + nextBtn('role', 'Next: your role');
+    },
+    role: function () {
+      return head('Your role', 'What an Ambassador does', 'You were chosen because people already listen to you. There is no quota and no script: you bring Vegans Explore to the people who trust you, in your own words.') +
+        '<div class="dg-grid">' +
+        card('Bring people in', 'Share your link with friends, family and anyone who would love it. Every member makes the Directory sharper and the hubs busier.', 'The heart of it') +
+        card('Be a voice for your city', 'Vote for the places you love, check in when you visit, and join the conversation on the Daily Pulse. People follow what members do.', 'Every day') +
+        card('Tell us what is happening', 'Know a new place, an event or some news in your city? Send it as a hot tip in <a href="/pulse/suggest">Suggest a Topic</a>, and it can become tomorrow\'s Daily Pulse.', 'Hot tips') +
+        card('Point businesses our way', 'When a Vegan place you love is not in the Directory, or has not claimed its page, send them to <a href="/business">Vegans Explore for businesses</a>.', 'Businesses') +
+        card('What is next for Ambassadors', 'We are shaping what Ambassadors get beyond referral points. You will hear it here first.', 'Coming', true) +
+        '</div>' + nextBtn('city', 'Next: your city');
     },
     city: function () {
-      var opts = '<option value="">Pick your city</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + esc(h.slug) + '"' + (M && M.home_community === h.slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('');
-      return '<p style="margin-bottom:12px">The city you represent. It is where your Daily Pulse, events and Directory open, and where we will point people you bring in.</p>' +
-        '<label for="city" style="display:block;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Your city</label>' +
-        '<select id="city">' + opts + '</select><p class="note" id="city-note" role="status">' + (M && M.home_community ? 'Your city is ' + esc(hubName(M.home_community)) + '.' : '') + '</p>';
+      var h = M && hub(M.home_community);
+      var opts = '<option value="">Pick your city</option>' + (window.VE_HUBS || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (M && M.home_community === x.slug ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
+      return head('Your city', h ? 'You represent ' + h.name : 'Pick the city you represent', 'Your home city is where your Daily Pulse, events and Directory open. You can still join and talk in any community.') +
+        '<label class="am-field" for="amCity">Your city</label>' +
+        '<div class="am-row"><select class="am-select" id="amCity">' + opts + '</select><button type="button" class="dg-btn" id="amCitySave">Save</button></div>' +
+        '<p class="am-note" id="amCityNote" role="status"></p>' +
+        (h ? '<div class="dg-grid">' +
+          card('Your city\'s hub', 'The Daily Pulse, events, the Directory and the members of ' + esc(h.name) + '. <a href="/communities/' + esc(h.slug) + '">Open the hub</a>.', 'Share it') +
+          card('Today\'s Daily Pulse', 'A topic every morning for your city. Join the conversation. <a href="/pulse?city=' + esc(h.slug) + '">Open the Daily Pulse</a>.', 'Every day') +
+          card('Events near you', 'What is coming up, and Submit an event when you know one we do not. <a href="/events?city=' + esc(h.slug) + '">Open Events</a>.', 'Events') +
+          card('The Directory', 'Vote for the places you love, and check in when you visit for 10 points. <a href="/directory">Open the Directory</a>.', 'Vote') +
+          '</div>' + nextBtn('link', 'Next: your link') : '');
     },
     link: function () {
-      return '<p>This is your link. Share it anywhere: a text, a post, your bio.</p>' +
-        '<div class="link"><code id="the-link">' + esc(link()) + '</code><button type="button" class="btn sm" id="copy-link">Copy</button></div>' +
-        '<div class="grid"><div class="tile"><b>How it counts</b><p>When someone gets their Passport through your link, you get 111 points. It counts when they join, not when they only look around.</p></div>' +
-        '<div class="tile"><b>Where it goes</b><p>The Passport: what Vegans Explore is, what $11 gets them, and how to join.</p></div></div>';
+      return head('Your link', 'Your Ambassador link', 'Share it anywhere: a text, a post, your bio, an email. It opens the Passport, the page that shows people what Vegans Explore is and how to join.') +
+        '<div class="am-link"><code>' + esc(link()) + '</code><button type="button" class="dg-btn" data-copy-link>Copy your link</button></div>' +
+        '<ol class="am-steps">' +
+        '<li><b>They open your link</b>It takes them to the Passport, and remembers you for their visit.</li>' +
+        '<li><b>They make an account</b>With email, or Continue with Google. Your link still counts.</li>' +
+        '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
+        '<li><b>You earn 111 points</b>The moment they become a member, once per friend.</li></ol>' +
+        '<div class="dg-grid">' +
+        card('It counts when they join', 'An account that has not paid its $11 is not a member yet, so it shows as Waiting in Your progress until it does.', 'How it counts') +
+        card('Use the same link everywhere', 'One link is easier to remember, and every member it brings in is counted to you.', 'Tip') +
+        '</div>' + nextBtn('who', 'Next: who to invite');
+    },
+    who: function () {
+      return head('Who to invite', 'Start close, then go wider', 'The best invitations are personal: one message to one person who would love it.') +
+        '<div class="dg-grid">' +
+        card('Friends who eat Vegan', 'They will use the Directory and the Daily Pulse right away, and vote for their favorite places.', 'Start here') +
+        card('The Vegan-curious', 'Friends and family who are trying it out. Looking around is free, and the Guides make it easy to start.', 'Gently') +
+        card('People at events', 'Potlucks, festivals and community nights. Show them your city\'s hub on your phone.', 'In person') +
+        card('Your online circle', 'Groups and followers who care about Vegan food and the animals. Share a post with your link.', 'Online') +
+        card('The places you go', 'Vegan restaurants, bakeries and brands. Their page is already in the Directory, or they can add it. Send them to /business.', 'Businesses') +
+        '</div>' + nextBtn('share', 'Next: what to share');
     },
     share: function () {
-      return '<p style="margin-bottom:12px">Use these as they are, or say it your way. Each one has your link.</p><div class="grid">' + messages().map(function (m, i) {
-        return '<div class="msg-box"><h3>' + esc(m[0]) + '</h3><p>' + esc(m[1]) + '</p><button type="button" class="btn sm o" data-copy="' + i + '">Copy</button></div>';
-      }).join('') + '</div>';
+      return head('What to share', 'Ready to send', 'Each one has your link in it. Copy it, change anything you like, and send it.') +
+        '<div class="dg-grid">' + messages().map(function (m, i) {
+          return '<div class="am-msg"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><button type="button" class="am-sm" data-copy="' + i + '">Copy</button></div>';
+        }).join('') + '</div>' + nextBtn('questions', 'Next: answering questions');
+    },
+    questions: function () {
+      var qa = [
+        ['What is Vegans Explore?', 'A community for Vegans and the Vegan-curious, city by city: a Directory of Vegan places that members vote on, a Daily Pulse, events, Guides and a hub for each city.'],
+        ['Is it free?', 'Looking around is free for everyone. The Passport, $11 one time, is how you take part: vote, save, post, join your city and unlock Guides. It never renews.'],
+        ['What do I get for $11?', 'Membership, and 1,100 welcome points, enough for your first Guide. After that you buy only what you want.'],
+        ['Is it a donation?', 'No. It is a membership contribution to Vegans Explore, never a tax-deductible donation.'],
+        ['What are points?', 'Points come from taking part, never from buying them. Spend them on Guides, give them to the places you love, and climb levels.'],
+        ['My city is not on the list.', 'Anyone can join any community, and the Directory covers places everywhere. We open new chapters as members grow in a city.'],
+        ['I own a business.', 'Send them to vegansexplore.com/business: their page, their dashboard and how members find them.']
+      ];
+      return head('Answering questions', 'Straight answers', 'If you do not know an answer, say so and point them to the Passport page. It answers the rest.') +
+        qa.map(function (x) { return '<div class="am-qa"><b>' + esc(x[0]) + '</b><p>' + esc(x[1]) + '</p></div>'; }).join('') +
+        '<div class="am-two">' +
+        '<div class="am-list"><h3>Do</h3><ul><li>Share with people you know, one at a time.</li><li>Say why you use it, in your words.</li><li>Capitalize Vegan.</li></ul></div>' +
+        '<div class="am-list"><h3>Please don\'t</h3><ul><li>Promise anything marked Coming.</li><li>Call the $11 a donation.</li><li>Message strangers in bulk or post your link where it is not welcome.</li></ul></div>' +
+        '</div>' + nextBtn('progress', 'Next: your progress');
+    },
+    progress: function () {
+      if (!REF) { loadRef(); return head('Your progress', 'Who joined through you', '') + '<p class="dg-lede">Loading...</p>'; }
+      if (REF.error) return head('Your progress', 'Who joined through you', '') + '<p class="dg-lede">We could not load this just now. Refresh to try again.</p>';
+      var people = REF.people || [];
+      return head('Your progress', 'Who joined through you', people.length ? 'Thank you. Every one of them makes the community bigger.' : 'No one has used your link yet. Your first one is a message away.') +
+        '<div class="dg-levels">' +
+        '<div class="dg-level"><b>Members</b><strong>' + n(REF.joined) + '</strong><span>joined through you</span></div>' +
+        '<div class="dg-level"><b>Waiting</b><strong>' + n(REF.waiting) + '</strong><span>made an account, no Passport yet</span></div>' +
+        '<div class="dg-level"><b>Points earned</b><strong>' + n(REF.points) + '</strong><span>111 for each member</span></div></div>' +
+        (people.length ? '<ul class="am-people">' + people.map(function (p) {
+          return '<li><span>' + esc(p.name) + '</span><span class="am-tag' + (p.joined ? '' : ' wait') + '">' + (p.joined ? 'Member' : 'Waiting') + '</span></li>';
+        }).join('') + '</ul>' + (REF.waiting ? '<p class="dg-lede" style="margin-top:14px">Waiting means they made an account but have not got their Passport. A friendly note from you is often all it takes.</p>' : '') : '') +
+        '<div class="dg-btns"><a class="dg-btn" href="#/share">Share your link</a><a href="/dashboard" style="font-size:13px;font-weight:800;color:var(--g)">Go to your dashboard</a></div>';
     }
   };
 
-  function draw() {
-    var n = step(), k = STEPS[n - 1][0];
-    $('title').textContent = n === 1 ? 'Welcome, ' + first() : STEPS[n - 1][1];
-    $('lede').textContent = n === 1 ? 'You are a Vegans Explore Ambassador. Thank you for what you have already done for this community.' : 'Step ' + n + ' of ' + STEPS.length + ' in setting up your Ambassador account.';
-    $('steps').innerHTML = STEPS.map(function (s, i) { return '<span class="' + (i === n - 1 ? 'on' : '') + '">' + (i + 1) + '. ' + esc(s[1]) + '</span>'; }).join('');
-    $('view').innerHTML = VIEWS[k]() + '<div class="nav">' +
-      (n > 1 ? '<button type="button" class="btn o" id="back">Back</button>' : '<span></span>') + '<span>Step ' + n + ' of ' + STEPS.length + '</span>' +
-      (n < STEPS.length ? '<button type="button" class="btn" id="next">Next</button>' : '<a class="btn" href="/dashboard">Go to your dashboard</a>') + '</div>';
-    if ($('back')) $('back').onclick = function () { go(n - 1); };
-    if ($('next')) $('next').onclick = function () {
-      if (k !== 'city') return go(n + 1);
-      var v = $('city').value, note = $('city-note');
-      if (!v) { note.className = 'note bad'; note.textContent = 'Pick your city to go on.'; return; }
-      if (M && M.home_community === v) return go(n + 1);
-      this.disabled = true; note.className = 'note'; note.textContent = 'Saving...';
-      var btn = this;
-      VEAuth.setHomeCommunity(v).then(function (d) {
-        btn.disabled = false;
-        if (d && d.error) { note.className = 'note bad'; note.textContent = 'That did not save. Try again.'; return; }
-        M.home_community = v; go(n + 1);
-      }, function () { btn.disabled = false; note.className = 'note bad'; note.textContent = 'Could not connect. Try again.'; });
-    };
-    if ($('copy-link')) $('copy-link').onclick = function () { copy(link(), this); };
-    Array.prototype.forEach.call(document.querySelectorAll('[data-copy]'), function (b) { b.onclick = function () { copy(messages()[+b.dataset.copy][1], b); }; });
+  function loadRef() {
+    if (loadRef.busy) return; loadRef.busy = true;
+    fetch(FN + '?action=referrals', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ action: 'referrals', token: VEAuth.getToken() }) })
+      .then(function (r) { return r.json(); }).then(function (d) { REF = d && typeof d.joined === 'number' ? d : { error: 1 }; }, function () { REF = { error: 1 }; })
+      .then(function () { loadRef.busy = false; if (cur === 'progress') draw(); });
   }
 
-  function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; $('app').hidden = true; }
+  function draw() {
+    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    cur = VIEWS[k] ? k : 'overview';
+    var t = tab(cur), i = TABS.indexOf(t);
+    main.innerHTML = VIEWS[cur]();
+    main.scrollTop = 0;
+    menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
+    var pic = art(t.g);
+    guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
+    guideEl.setAttribute('aria-label', GUIDES[t.g] + ', one of our Guides');
+    if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
+    nameEl.innerHTML = '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
+    bubble.textContent = t.say;
+    var nav = '<a class="dg-tnav" href="#/' + TABS[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
+      '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = nav;
+    $('amPts').textContent = n(M && M.points);
+  }
+
+  sel.addEventListener('change', function () { location.hash = '#/' + sel.value; });
+  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
+  document.addEventListener('click', function (e) {
+    var b;
+    if ((b = e.target.closest('[data-copy-link]'))) return copy(link(), b);
+    if ((b = e.target.closest('[data-copy]'))) return copy(messages()[+b.dataset.copy][1], b);
+    if (e.target.closest('#amCitySave')) {
+      var v = $('amCity').value, note = $('amCityNote'), btn = $('amCitySave');
+      if (!v) { note.className = 'am-note bad'; note.textContent = 'Pick your city first.'; return; }
+      if (M.home_community === v) { note.className = 'am-note'; note.textContent = 'That is already your city.'; return; }
+      btn.disabled = true; note.className = 'am-note'; note.textContent = 'Saving...';
+      VEAuth.setHomeCommunity(v).then(function (d) {
+        btn.disabled = false;
+        if (d && d.error) { note.className = 'am-note bad'; note.textContent = 'That did not save. Try again.'; return; }
+        M.home_community = v; draw(); var n2 = $('amCityNote'); if (n2) n2.textContent = 'Saved. Your city is ' + hub(v).name + '.';
+      }, function () { btn.disabled = false; note.className = 'am-note bad'; note.textContent = 'Could not connect. Try again.'; });
+    }
+  });
+  window.addEventListener('hashchange', function () { if (M) draw(); });
+
+  function gate(html) { $('amGate').innerHTML = html; $('amGate').hidden = false; $('amApp').hidden = true; $('amTop').hidden = true; }
   function start() {
     if (!window.VEAuth) return setTimeout(start, 200);
     var token = VEAuth.getToken();
     if (!token || !VEAuth.isLoggedIn()) {
-      gate('<p>Sign in to your Ambassador account to get started.</p><button type="button" class="btn" id="signin">Sign in</button>');
-      $('signin').onclick = function () { VEAuth.showAuthModal('Sign in to your Ambassador account.', function () { location.reload(); }, 'login'); };
+      gate('<p>Sign in to your Ambassador account to open your Guide.</p><button type="button" class="dg-btn" id="amSignin">Sign in</button>');
+      $('amSignin').onclick = function () { VEAuth.showAuthModal('Sign in to your Ambassador account.', function () { location.reload(); }, 'login'); };
       return;
     }
     // Fresh from the server, so the role, points and city are today's.
@@ -165,11 +426,15 @@
         M = d && d.member;
         if (!M) return gate('<p>We could not open your account just now. Refresh to try again.</p>');
         try { VEAuth.setSession(token, Object.assign({}, VEAuth.getRealMember ? VEAuth.getRealMember() : {}, M)); } catch (e) {}
-        if (M.ve_role !== 'ambassador' && !M.is_superadmin) return gate('<p>This page is for Vegans Explore Ambassadors. If you were invited, open the link in your invitation.</p><a class="btn" href="/dashboard">Go to your dashboard</a>');
-        $('app').hidden = false; draw();
+        if (M.ve_role !== 'ambassador' && !M.is_superadmin) return gate('<p>This Guide is for Vegans Explore Ambassadors. If you were invited, open the link in your invitation.</p><a class="dg-btn" href="/dashboard">Go to your dashboard</a>');
+        // Links from the first version of this page (?step=1..4) land on the matching tab.
+        var st = new URLSearchParams(location.search).get('step');
+        if (st && !location.hash) history.replaceState(null, '', location.pathname + '#/' + ({ 1: 'overview', 2: 'city', 3: 'link', 4: 'share' }[st] || 'overview'));
+        $('amTop').hidden = false; $('amApp').hidden = false;
+        document.documentElement.classList.add('dg-fit');
+        draw();
       }, function () { gate('<p>Could not connect. Refresh to try again.</p>'); });
   }
-  window.addEventListener('popstate', function () { if (M) draw(); });
   start();
 })();
 </script>

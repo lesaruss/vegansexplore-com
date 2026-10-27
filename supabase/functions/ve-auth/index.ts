@@ -1414,6 +1414,26 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ member: { ...member, communities, hidden_modules, podcast_follows, points, total_points } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // ---- The Ambassador Guide's Your progress (Sean, 2026-10-27) ----------
+    // The people who signed up with this member's link (members.referred_by): who became a member and who has an account
+    // waiting on its $11, plus the referral points paid so far (points_ledger reason 'referral', paid by
+    // trg_zz_referral_on_admit when the friend becomes a member). Names are first name and last initial only.
+    if (action === 'referrals') {
+      const decoded = body.token ? await decodeToken(body.token) : null;
+      if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const { data: rows } = await supabase.from('members').select('name, membership_status, created_at, entry_paid_at')
+        .eq('referred_by', decoded.sub).order('created_at', { ascending: false }).limit(200);
+      const { data: paid } = await supabase.from('points_ledger').select('delta').eq('member_id', decoded.sub).eq('reason', 'referral');
+      const short = (n: string) => { const p = String(n || '').trim().split(/\s+/); return p[0] ? p[0] + (p.length > 1 ? ' ' + p[p.length - 1][0] + '.' : '') : 'A friend'; };
+      const people = (rows || []).map((r: any) => ({ name: short(r.name), joined: r.membership_status === 'active', at: r.entry_paid_at || r.created_at }));
+      return new Response(JSON.stringify({
+        joined: people.filter((p) => p.joined).length,
+        waiting: people.filter((p) => !p.joined).length,
+        points: (paid || []).reduce((s: number, r: any) => s + (Number(r.delta) || 0), 0),
+        people: people.slice(0, 50),
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     // ---- Guide front door: city_status --------------------------------
     if (action === 'city_status') {
       const raw = typeof body.city === 'string' ? body.city.trim() : '';
