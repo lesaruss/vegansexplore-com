@@ -518,6 +518,17 @@ those features in there, just so I'm doing it from one place? Because I rarely g
 parent is `/directory` or a hub) and grows to fit (depot-tabs.js `ve-frame-height`). Every card shows admins **Edit** and
 **Review**; Review opens that listing in the Review tab (in Being vetted when it is waiting on votes), and the listing editor has
 Open in Directory review.
+Adding listings (Sean, 2026-10-27: "I'm not sure exactly how I would do that"). Directory review's home has **Add a listing**
+(`#add/1` to `#add/4`, one step per view): Find it on Google (name and where, `ve-discover` `add_search`: up to six Google places
+with address, phone, website, hours and pin, each marked if already listed), or fill it in by hand; The details (all of it
+editable, Online only); What it is (the kind and how Vegan, both picked on purpose, "Not a Vegan business" for a store or service;
+an optional about); Add it (`add_create`: live at once, refused as `already_listed` with the slug when the same Google place or name
+and city is on the Directory; a business waiting in the backlog with the same place goes live instead of a second copy;
+`crawl_source` `admin`, `details.added_by_hand`, a team note). The nightly essentials pass fills what is still empty. **Paste a
+list** (`#paste`, `paste_list`, up to 200 lines): one business a line, "Name, City, State" or an Instagram handle; each becomes a
+quarantined listing (`crawl_source` `paste`, `details.pasted`) and a `ve_backlog_checks` row, checked by the backlog cron like the
+import backlog and waiting in Business outreach > New places to add or set aside. Nothing pasted goes live on its own; a line
+already on the Directory or in New places is left out and listed.
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business
@@ -1054,8 +1065,8 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
 - Verdicts: **Ready to list** (open, and Vegan by Google's Vegan restaurant category or the business's own name or Instagram
   bio; Google's description saying "Vegan options" is only a Check), **Check**, **Not a restaurant**, **Closed** (Google, or an
   Instagram quiet for over a year with no Google profile), **Already listed**, **Not found**, **A person**, **Not enough to check**.
-- Runs by cron `ve-discover-backlog` (every 2 minutes, 40 Instagram accounts and 25 Google lookups a run) until nothing is
-  left; then it costs nothing. Unschedule it once the summary says nothing is left.
+- Runs by cron `ve-discover-backlog` (every 2 minutes, 40 Instagram accounts and 25 Google lookups a run); with nothing
+  pending it costs nothing. Keep it on: Directory review's Paste a list feeds it (the import backlog finished 2026-10-27).
 - **Depot > Business outreach > New places** (`#places/<verdict>[/<city>]`, `#place/<listing>`, a card on the home): each
   verdict a tab with its count, by city; one business opens with what Google and Instagram said, links, and its website framed.
   **Add to the Directory** needs a category and how Vegan it is (100% Vegan, Vegan options, Vegan friendly), picked on purpose,

@@ -17,7 +17,10 @@
        Fix it here (Sean, 2026-10-25: "right now it's allowing me to review but not fix... if I were able to find the websites,
        find social, find the menu, I want to be able to input it here so it updates the listing and unflags it"): What it shows
        is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
-       (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>). */
+       (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>).
+       Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"):
+       Add a listing (#add/1 to #add/4: Find it on Google, The details, What it is, Add it; ve-discover add_search, add_create)
+       and Paste a list (#paste: one business a line, checked like the backlog and waiting in New places; ve-discover paste_list). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -90,6 +93,21 @@
     .hours input{font-weight:500;}
     .fix input::placeholder,.fix textarea::placeholder{color:#a3a3a3;font-weight:500;}
     .fix-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;}
+    .home-head{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start;justify-content:space-between;}
+    .home-head .sub{flex:1 1 520px;}
+    .steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;}
+    .steps span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:#eee;color:#555;}
+    .steps span.on{background:var(--ve-green-deep);color:#fff;}
+    .steps span.done{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .step-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ve-border);}
+    .step-bar .count{font-size:12px;font-weight:800;color:var(--ve-text-75);}
+    .places{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;margin-top:12px;}
+    .place{border:1px solid var(--ve-border);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:6px;font-size:13px;}
+    .place strong{font-size:14px;}
+    .radios{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px;}
+    .radios label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;margin:0;}
+    .fix .radios input,.radios input{accent-color:var(--ve-green-deep);margin-top:3px;width:auto;min-height:0;padding:0;flex:0 0 auto;}
+    .radios small{display:block;font-weight:500;color:var(--ve-text-75);}
   </style>
 </head>
 <body>
@@ -123,9 +141,11 @@
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
+      var FN_DISCOVER = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-discover';
       var $ = function (id) { return document.getElementById(id); };
       var V = function () { return $('view'); };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function disc(body) { return fetch(FN_DISCOVER, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function crumbs(parts) {
         $('crumbs').innerHTML = parts.map(function (p, i) { return i < parts.length - 1 ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a> <span aria-hidden="true">&rsaquo;</span>' : '<span aria-current="page">' + esc(p[0]) + '</span>'; }).join(' ');
@@ -157,7 +177,8 @@
         crumbs([['Directory review']]);
         var rows = rowsOf(tab);
         var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
-        V().innerHTML = '<p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone.</p>' +
+        V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone.</p>' +
+          '<div class="row-btns"><a class="btn" href="#add/1">Add a listing</a><a class="btn btn-ghost" href="#paste">Paste a list</a></div></div>' +
           '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
           '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
@@ -317,8 +338,154 @@
         });
       }
 
+      // ---- Add a listing: four steps, one per view (#add/1 to #add/4) ----
+      var ADD_STEPS = ['Find it', 'The details', 'What it is', 'Add it'];
+      var VEGAN = [['fully_vegan', '100% Vegan', 'Everything they sell is Vegan.'], ['vegan_options', 'Vegan options', 'A clear Vegan menu or section.'],
+        ['vegan_friendly', 'Vegan-friendly', 'A few Vegan choices.'], ['', 'Not a Vegan business', 'A store or a service, not Vegan itself.']];
+      var DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      var add = null;
+      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
+      function stepHead(n) {
+        return '<div class="steps">' + ADD_STEPS.map(function (t, i) { return '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
+      }
+      function stepBar(n, nextLabel) {
+        return '<div class="step-bar">' + (n > 1 ? '<a class="btn btn-ghost" href="#add/' + (n - 1) + '">Back</a>' : '<a class="btn btn-ghost" href="#">Cancel</a>') +
+          '<span class="count">Step ' + n + ' of ' + ADD_STEPS.length + '</span>' + (nextLabel ? '<button type="button" class="btn" id="ad-next">' + nextLabel + '</button>' : '<span></span>') + '</div>';
+      }
+      function fromPlace(p) {
+        var f = add.f;
+        f.name = p.name || add.q; f.street = p.street || ''; f.city = p.city || ''; f.state = p.state || ''; f.zip = p.zip || ''; f.country = p.country || '';
+        f.phone = p.phone || ''; f.website = p.website || ''; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
+        if (!f.about && p.summary) f.about = p.summary;
+      }
+      function viewAdd(n) {
+        if (!add) add = freshAdd();
+        if (n > 1 && !add.f.name) { location.hash = '#add/1'; return; }
+        crumbs([['Directory review', '#'], ['Add a listing']]);
+        var f = add.f, html = '<section class="card">' + stepHead(n);
+        if (n === 1) {
+          html += '<h2>Find it</h2><p class="hint" style="margin:0 0 10px">Type the name and where it is. We look it up on Google and fill in the address, phone, website and hours for you.</p>' +
+            '<div class="fix"><div><label for="ad-q">Name</label><input id="ad-q" type="text" value="' + esc(add.q) + '" placeholder="Love Life Cafe"></div>' +
+            '<div><label for="ad-where">Where</label><input id="ad-where" type="text" value="' + esc(add.where) + '" placeholder="Miami, FL"></div></div>' +
+            '<div class="fix-bar"><button type="button" class="btn" id="ad-search">Look it up</button><button type="button" class="btn btn-ghost" id="ad-hand">Not on Google: fill it in by hand</button><span class="msg" id="ad-msg" role="status"></span></div>' +
+            '<div class="places" id="ad-places">' + (add.places ? placeCards() : '') + '</div>' + stepBar(1, '');
+        } else if (n === 2) {
+          html += '<h2>The details</h2><p class="hint" style="margin:0 0 10px">' + (f.place_id ? 'From Google: check it and change anything that is wrong.' : 'Fill in what you know; the nightly pass fills in more once it has an address.') + '</p>' +
+            '<div class="fix" id="ad-fix">' +
+              '<div class="wide"><label for="ad-name">Name</label><input id="ad-name" data-a="name" type="text" value="' + esc(f.name) + '"></div>' +
+              '<div><label>Where</label><label class="check"><input type="checkbox" id="ad-online"' + (f.online ? ' checked' : '') + '> Online only, no storefront</label><p class="hint">It shows in every chapter, with no street or hours.</p></div>' +
+              '<div class="store"><label>Street</label><input data-a="street" type="text" value="' + esc(f.street) + '" placeholder="123 Main St"></div>' +
+              '<div class="store"><label>City</label><input data-a="city" type="text" value="' + esc(f.city) + '" placeholder="Miami"></div>' +
+              '<div class="store"><label>State</label><input data-a="state" type="text" value="' + esc(f.state) + '" placeholder="FL"></div>' +
+              '<div class="store"><label>ZIP</label><input data-a="zip" type="text" value="' + esc(f.zip) + '" placeholder="33139"></div>' +
+              '<div class="store"><label>Phone</label><input data-a="phone" type="text" value="' + esc(f.phone) + '" placeholder="(305) 555-0100"></div>' +
+              '<div><label>Website</label><input data-a="website" type="text" value="' + esc(f.website) + '" placeholder="https://..."></div>' +
+              '<div><label>Instagram</label><input data-a="instagram" type="text" value="' + esc(f.instagram) + '" placeholder="@handle"></div>' +
+              '<div class="wide store"><label>Hours</label><div class="hours">' + DAYS_ALL.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(f.hours[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') + '</div></div>' +
+            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(2, 'Next');
+        } else if (n === 3) {
+          html += '<h2>What it is</h2><div class="fix">' +
+            '<div><label for="ad-kind">Kind</label><select id="ad-kind"><option value="">Pick one</option>' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === f.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select></div>' +
+            '<div class="wide"><label>How Vegan</label><div class="radios">' + VEGAN.map(function (v) { return '<label><input type="radio" name="ad-vegan" value="' + v[0] + '"' + (f.vegan_status === v[0] ? ' checked' : '') + '><span>' + v[1] + '<small>' + v[2] + '</small></span></label>'; }).join('') + '</div></div>' +
+            '<div class="wide"><label for="ad-about">About <span class="hint" style="text-transform:none;letter-spacing:0">(optional; the nightly pass writes one from their website if you leave it)</span></label><textarea id="ad-about" maxlength="400" placeholder="What they do, in a line or two.">' + esc(f.about) + '</textarea></div>' +
+            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
+        } else {
+          var vl = VEGAN.filter(function (v) { return v[0] === f.vegan_status; })[0];
+          var hrs = DAYS_ALL.filter(function (d) { return f.hours[d]; }).map(function (d) { return d.slice(0, 3) + ' ' + f.hours[d]; }).join(', ');
+          html += '<h2>Add it</h2><dl class="facts">' +
+            '<dt>Name</dt><dd>' + esc(f.name) + '</dd><dt>Kind</dt><dd>' + esc(f.category) + '</dd><dt>How Vegan</dt><dd>' + esc(vl ? vl[1] : '') + '</dd>' +
+            '<dt>Where</dt><dd>' + (f.online ? 'Online only, every chapter' : esc([f.street, f.city, f.state, f.zip].filter(Boolean).join(', '))) + '</dd>' +
+            '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd><dt>Instagram</dt><dd>' + esc(f.instagram || '') + '</dd>' +
+            (f.online ? '' : '<dt>Hours</dt><dd>' + esc(hrs) + '</dd>') + '<dt>About</dt><dd>' + esc(f.about || '') + '</dd></dl>' +
+            '<p class="hint" style="margin-top:12px">It goes live on the Directory now. Food places that are Vegan options or Vegan-friendly wait in Being vetted until members vote, unless you vet them here afterwards.</p>' +
+            '<p class="msg" id="ad-msg" role="status"></p>' + stepBar(4, 'Add to the Directory');
+        }
+        V().innerHTML = html + '</section>';
+        if (n === 1) wireFind();
+        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); }
+        var nx = $('ad-next'); if (nx) nx.addEventListener('click', function () { nextStep(n); });
+        if (nx && n > 1) ['input', 'change'].forEach(function (t) { nx.closest('section').addEventListener(t, function () { $('ad-msg').textContent = ''; }); });
+      }
+      function placeCards() {
+        if (!add.places.length) return '<p class="empty">Google has nothing for that. Try another spelling, or fill it in by hand.</p>';
+        return add.places.map(function (p, i) {
+          return '<div class="place"><strong>' + esc(p.name) + '</strong><span>' + esc(p.address || '') + '</span><span class="hint">' + esc(p.type_name || '') + (p.rating ? ' &middot; ' + p.rating + ' stars, ' + (p.reviews || 0) + ' reviews' : '') + '</span>' +
+            (p.status && p.status !== 'OPERATIONAL' ? '<span><span class="tag bad">' + esc(p.status.replace(/_/g, ' ').toLowerCase()) + '</span></span>' : '') +
+            (p.listed ? '<span><span class="tag on">Already on the Directory</span> <a href="/directory/' + encodeURIComponent(p.listed.slug) + '" target="_blank" rel="noopener">Open it</a></span>'
+              : '<div class="row-btns"><button type="button" class="btn btn-sm" data-pick="' + i + '">This one</button>' + (p.maps ? '<a class="btn btn-ghost btn-sm" href="' + esc(p.maps) + '" target="_blank" rel="noopener">Google Maps</a>' : '') + '</div>') + '</div>';
+        }).join('');
+      }
+      function wireFind() {
+        function go() {
+          add.q = $('ad-q').value.trim(); add.where = $('ad-where').value.trim();
+          if (add.q.length < 2) { $('ad-msg').className = 'msg err'; $('ad-msg').textContent = 'Type the name first.'; return; }
+          $('ad-msg').className = 'msg'; $('ad-msg').textContent = 'Looking it up...'; $('ad-search').disabled = true;
+          disc({ action: 'add_search', name: add.q, where: add.where }).then(function (d) {
+            $('ad-search').disabled = false;
+            if (!d.ok) throw new Error(d.error || 'search');
+            add.places = d.places; $('ad-msg').textContent = ''; $('ad-places').innerHTML = placeCards(); wirePicks();
+          }).catch(function (e) { $('ad-search').disabled = false; $('ad-msg').className = 'msg err'; $('ad-msg').textContent = 'Google did not answer: ' + e.message; });
+        }
+        function wirePicks() { Array.prototype.forEach.call(V().querySelectorAll('[data-pick]'), function (b) { b.addEventListener('click', function () { fromPlace(add.places[+b.dataset.pick]); location.hash = '#add/2'; }); }); }
+        $('ad-search').addEventListener('click', go);
+        $('ad-q').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+        $('ad-where').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+        $('ad-hand').addEventListener('click', function () { add.q = $('ad-q').value.trim(); add.f = freshAdd().f; add.f.name = add.q; location.hash = '#add/2'; });
+        wirePicks();
+      }
+      function nextStep(n) {
+        var f = add.f, msg = $('ad-msg');
+        if (n === 2) {
+          Array.prototype.forEach.call(V().querySelectorAll('#ad-fix [data-a]'), function (x) { f[x.dataset.a] = x.value.trim(); });
+          f.online = $('ad-online').checked; f.hours = {};
+          Array.prototype.forEach.call(V().querySelectorAll('#ad-fix [data-day]'), function (x) { if (x.value.trim()) f.hours[x.dataset.day] = x.value.trim(); });
+          if (f.name.length < 2) { msg.textContent = 'Give it a name.'; return; }
+          if (!f.online && !f.city) { msg.textContent = 'Give it a city, or tick Online only.'; return; }
+          location.hash = '#add/3';
+        } else if (n === 3) {
+          var v = V().querySelector('input[name="ad-vegan"]:checked');
+          f.category = $('ad-kind').value; f.about = $('ad-about').value.trim();
+          if (!f.category) { msg.textContent = 'Pick what kind of business it is.'; return; }
+          if (!v) { msg.textContent = 'Pick how Vegan it is.'; return; }
+          f.vegan_status = v.value;
+          location.hash = '#add/4';
+        } else if (n === 4) {
+          var btn = $('ad-next'); btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Adding...';
+          disc(Object.assign({ action: 'add_create' }, f)).then(function (d) {
+            if (!d.ok) { btn.disabled = false; msg.className = 'msg err'; msg.innerHTML = esc(d.message || d.error || 'That did not save.') + (d.slug ? ' <a href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open it</a>' : ''); return; }
+            add = null;
+            crumbs([['Directory review', '#'], ['Add a listing']]);
+            V().innerHTML = '<section class="card"><h2>' + esc(f.name) + ' is on the Directory</h2><p class="hint" style="margin:0 0 12px">' + (d.from_backlog ? 'It was waiting in the backlog, so that listing went live instead of a second one. ' : '') + 'The nightly pass fills in what it can find (hours, socials, about, menu) where it is still empty.</p>' +
+              '<div class="row-btns"><a class="btn" href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open its page</a><a class="btn btn-ghost" href="#l/' + d.id + '/held">Review it here</a><a class="btn btn-ghost" href="#add/1">Add another</a></div></section>';
+          }).catch(function () { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'That did not save. Try again.'; });
+        }
+      }
+
+      // ---- Paste a list: one business a line, checked like the backlog, waiting in New places ----
+      function viewPaste() {
+        crumbs([['Directory review', '#'], ['Paste a list']]);
+        V().innerHTML = '<section class="card"><h2>Paste a list</h2><p class="hint" style="margin:0 0 10px">One business a line: <strong>Name, City, State</strong> (Love Life Cafe, Miami, FL) or an Instagram handle (@lovelifecafe). Each is looked up on Google or Instagram over the next few minutes and waits in <a href="/admin/depot/business-outreach#places/list">Business outreach &rsaquo; New places</a> for you to add or set aside. Nothing goes live on its own.</p>' +
+          '<textarea id="ps-text" style="min-height:220px" placeholder="Love Life Cafe, Miami, FL&#10;Sobe Vegan, Miami Beach, FL&#10;@plantbasedpizzeria"></textarea>' +
+          '<div class="fix-bar"><button type="button" class="btn" id="ps-go">Check these</button><span class="msg" id="ps-msg" role="status"></span></div><div id="ps-out"></div></section>';
+        $('ps-go').addEventListener('click', function () {
+          var t = $('ps-text').value.trim(), msg = $('ps-msg');
+          if (!t) { msg.className = 'msg err'; msg.textContent = 'Paste at least one line.'; return; }
+          this.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+          var btn = this;
+          disc({ action: 'paste_list', text: t }).then(function (d) {
+            btn.disabled = false;
+            if (!d.ok) throw new Error(d.message || d.error || 'paste');
+            msg.textContent = d.added + (d.added === 1 ? ' business is' : ' businesses are') + ' being checked. They show up in New places within a few minutes.';
+            $('ps-out').innerHTML = (d.skipped || []).length ? '<h2 style="margin-top:14px">Left out</h2><ul class="notes">' + d.skipped.map(function (x) { return '<li><strong>' + esc(x.line) + '</strong>: ' + esc(x.why) + '</li>'; }).join('') + '</ul>' : '';
+            if (d.added) $('ps-text').value = '';
+          }).catch(function (e) { btn.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
+        });
+      }
+
       function route() {
         var h = location.hash.replace(/^#/, '').split('/');
+        if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(4, +h[1] || 1)));
+        if (h[0] === 'paste') return viewPaste();
         if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
         viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');
       }
