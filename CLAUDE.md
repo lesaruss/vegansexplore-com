@@ -1509,7 +1509,12 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   (migration `20261008_ve_listing_events.sql`): every listing logs views, and brand pages log products, store aisles,
   videos and the gallery; one count per visitor and item every 30 minutes; automated browsers are not counted.
 - **Partner Dashboard on every listing** (Sean, 2026-10-09: "instead of getting started, it should be a dashboard...
-  partner dashboard. And then underneath it is a sub menu"). One tab, `data-tab="brand"`, after Products on a brand page and
+  partner dashboard. And then underneath it is a sub menu"). **Its tab is hidden from the tab row** (Sean, 2026-10-27: "remove the partner
+  dashboard and then just whenever somebody clicks own this business, our claim listing, that's where it goes"): a visitor opens
+  it (`?tab=brand`) from the only two claim spots, At a Glance's **Own this business? Add details** and the sidebar's black
+  **Claim Listing** box (`data-pd-open`, `pdHref`); the header's "Is this your business? Claim it" and the Build Out This
+  Profile card are gone. The tab shows for the owner, super admins and a brand's partner or link. The claim box and the claim
+  page say "Before anything is approved, our team carefully reviews each claim to make sure it is accurate." (`CLAIM_REVIEW`). One tab, `data-tab="brand"`, after Products on a brand page and
   last elsewhere. Locked for visitors (`partnerLocked`): claim this page (a brand's claim carries Front Row Start before
   January 1), or, for a business that is not listed, **Apply to be listed** (Join the Directory, below: `ve-claims` `listing_apply`, any
   Vegan business, anywhere; it makes an unlisted (quarantined) listing tagged `ve-application` and a claim in Depot > Claims, labelled
@@ -1589,7 +1594,9 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Background writer (dispatcher source `menu_import`, Station 2, batch 5) works through `ve_menu_imports` (food places with a
   website and no menu; `ve_menu_import_queue()` adds new ones) and copies the menu each business publishes on its own site,
   never a third-party listing and never guessed, through `ve_menu_import_save`, which saves once and refuses a listing that
-  already has a menu. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
+  already has a menu. Cron `ve-menu-import-queue` (07:17 UTC) queues new food places every night
+  (none did after 2026-10-24); on 2026-10-27 274 bare-domain websites (guanabanas.com) were made https:// links (logged in
+  `ve_listing_edits`), which let 98 more places queue (migration `20261027_menu_queue_nightly.sql`). The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
 - **Restaurant essentials** (Sean, 2026-10-25: "just because it's vegan doesn't tell the whole story... all the restaurant listings
   have, 250 character about us... the hours... the socials... the address that you can click and go to Google Maps... and then
   the menus... media... can come later once they become members"; migration `20261025_restaurant_essentials.sql`). Food places

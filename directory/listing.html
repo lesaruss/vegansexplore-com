@@ -149,6 +149,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .social-btn:hover{border-color:#5EC47A;color:#2d7d31}
 .claim-box{background:#0a1a0f;border:1px solid #2d5a3a;border-radius:8px;padding:14px 16px;text-align:center}
 .claim-box p{font-size:11px;color:#aaa;line-height:1.5;margin-bottom:10px}
+.claim-review{font-size:13px!important;font-weight:600;color:#cfe8d5!important;line-height:1.5;border-left:3px solid #5EC47A;padding-left:10px;text-align:left}
+.claim-box .claim-review{font-size:11px!important}
 .claim-btn{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;border-radius:4px;background:transparent;color:#5EC47A;border:1px solid #5EC47A;text-decoration:none;transition:.15s}
 .claim-btn:hover{background:#5EC47A;color:#000}
 
@@ -1363,7 +1365,7 @@ function renderAtAGlance(l){
     return '<div class="section"><h2 class="section-title">At a Glance</h2>'+
       '<div style="text-align:center;padding:20px;background:var(--ve-surface);border-radius:8px;border:1px solid var(--ve-border)">'+
         '<p style="font-size:12px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">Atmosphere, seating, accessibility, and community attributes appear here once this business is claimed.</p>'+
-        '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
+        '<a href="'+pdHref(l)+'" data-pd-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none;border:1px solid var(--ve-green);padding:8px 16px;border-radius:4px;background:var(--ve-green-light);display:inline-block">Own this business? Add details</a>'+
       '</div>'+
     '</div>';
   }
@@ -1378,7 +1380,7 @@ function renderAtAGlance(l){
   html += '</div>';
 
   var footer = coldStart
-    ? '<div style="margin-top:14px;text-align:center"><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
+    ? '<div style="margin-top:14px;text-align:center"><a href="'+pdHref(l)+'" data-pd-open style="font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);text-decoration:none">Own this business? Add missing details</a></div>'
     : '';
 
   return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+footer+'</div>';
@@ -1387,7 +1389,8 @@ function renderAtAGlance(l){
 function renderSidebar(l){
   var contact = '';
   if(l.phone) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a></div>';
-  if(l.website) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Visit Website</a></div>';
+  // A bare domain (guanabanas.com) would open as a path on our own site, so it gets https:// (2026-10-27).
+  if(l.website) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg><a href="'+esc(/^https?:\/\//i.test(l.website) ? l.website : 'https://' + l.website)+'" target="_blank" rel="noopener">Visit Website</a></div>';
   // Media has no place (Sean, 2026-10-27: VegNews showed San Francisco): no address for a show, a book or a film.
   var noPlace = ['show', 'work'].indexOf(listingKind(l)) >= 0;
   if(noPlace) {}
@@ -1419,7 +1422,9 @@ function renderSidebar(l){
   // -- rather than a vague "unlock analytics" line. Claiming itself is free;
   // it's filling the profile in afterward that produces that look, so the
   // copy says exactly that rather than implying a paid unlock.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="claim-btn">Claim Listing</a></div></div>' : '';
+  // The one claim box (Sean, 2026-10-27: "keep it very sleek in two places", this and At a Glance): it opens the listing's
+  // claim page (the Partner Dashboard view, ?tab=brand) and says every claim is checked before it is approved.
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+pdHref(l)+'" data-pd-open class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -1473,22 +1478,6 @@ function renderSidebar(l){
       '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/passport">Get your Passport, $11 one time</a>.</p>'+
     '</div>';
 
-  // Unlock card — only for unclaimed listings; claimed listings use real tabs
-  var _lkSvg = '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
-  var unlockCard = !l.claimed_by_member_id
-    ? '<div class="side-card" style="text-align:center">'+
-        '<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="color:var(--ve-green);display:block;margin:0 auto 8px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>'+
-        '<div class="side-card-title" style="text-align:center;margin-bottom:8px">Build Out This Profile</div>'+
-        '<p style="font-size:11px;color:var(--ve-text-50);line-height:1.65;margin-bottom:12px">'+(listingKind(l) === 'place' ? 'Claimed businesses can add a menu, professional video, and a live Pulse feed, the full profile you see on our featured listings.' : 'Claimed listings can add video and a live Pulse feed, the full profile you see on our featured listings.')+'</p>'+
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">'+
-          (listingKind(l) === 'place' ? '<span class="unlock-chip">'+_lkSvg+' Menu</span>' : '')+
-          '<span class="unlock-chip">'+_lkSvg+' Video</span>'+
-          '<span class="unlock-chip">'+_lkSvg+' Pulse</span>'+
-        '</div>'+
-        '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" class="tab-locked-cta" style="display:inline-block">Claim This Listing</a>'+
-      '</div>'
-    : '';
-
   var _bbAdSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>';
   // Skyscraper ad removed (2026-09-08, Logan, Sean direction): just the two
   // smaller ads now, shown permanently rather than rotated in and out of view.
@@ -1515,7 +1504,6 @@ function renderSidebar(l){
     collabBadges+
     communityCard+
     billboardHtml+
-    unlockCard+
     claimSection+
     '<div id="ve-owner-verified"></div>'+
     '</div>';
@@ -2212,7 +2200,7 @@ function loadBrandSite(l){
     function showPartnerTabs(){
       // Partner Dashboard (Sean, 2026-10-09: "instead of getting started, it should be a dashboard... partner dashboard. And
       // then underneath it is a sub menu"). Getting started stays first; the rest are its sub views.
-      var bt = document.querySelector('.tab-btn[data-tab="brand"]'); if(bt){ var lk = bt.querySelector('.pd-lock'); if(lk) lk.remove(); }
+      var bt = document.querySelector('.tab-btn[data-tab="brand"]'); if(bt){ bt.style.display = ''; var lk = bt.querySelector('.pd-lock'); if(lk) lk.remove(); }
       PD_SUBS = [['brand', 'Getting started'], ['insights', 'Insights'], ['myproducts', 'Your products'], ['opps', 'Opportunities'], ['media', 'Media'], ['ask', 'Ask ' + NARR_NAME], ['ads', 'Ad console']];
       var sn = document.querySelector('.pd-subnav');
       if(sn) sn.innerHTML = PD_SUBS.map(function(x){ return '<button type="button" data-pd="' + x[0] + '">' + esc(x[1]) + (x[0] === 'ads' ? ' <span class="bd-tag">Coming</span>' : '') + '</button>'; }).join('');
@@ -2260,6 +2248,7 @@ function partnerLocked(l){
   return '<div class="pd-locked"><div class="pd-locked-main"><div class="pd-kicker"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg> Partner Dashboard</div>' +
     '<h2>' + (claimed ? esc(l.name) + '\'s dashboard is open to its team' : 'Is ' + esc(l.name) + ' your ' + (brand ? 'brand' : listingNoun(l)) + '?') + '</h2>' +
     '<p>' + (claimed ? 'This page has been claimed. If you are on the team, sign in with the account that claimed it.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
+    (claimed ? '' : '<p class="claim-review">' + CLAIM_REVIEW + '</p>') +
     '<ul class="pd-gets"><li><b>Your page, your way.</b> ' + (brand ? 'Your products, photos and descriptions.' : 'Your details, photos and story.') + '</li><li><b>Insights.</b> How many people find you and what they open.</li>' +
     '<li><b>Opportunities.</b> ' + (listingKind(l) === 'show' ? 'Our podcast network, promos on our shows, production.' : 'Game days, the Plant-Based Showcase, community nights.') + ' <span class="bd-tag">Coming</span></li><li><b>Liz, your Guide.</b> Ask anything; the team answers what she cannot.</li></ul>' +
     '<div class="bd-btns">' + (claimed ? '' : '<a class="bd-btn" href="' + esc(claimHref) + '">Claim ' + esc(l.name) + '</a>') + (signedIn ? '' : '<button type="button" class="bd-btn o" data-pd-signin>' + (claimed ? 'Sign in' : 'Already claimed? Sign in') + '</button>') + '</div></div>' +
@@ -2296,6 +2285,16 @@ var PODCAST_OPPS = [
   ['podcast-promos', 'Promos', 'Your promo on our shows', 'Your trailer or promo played on our own shows.'],
   ['podcast-production', 'Production', 'We produce your show', 'Editing, show notes, publishing and your release schedule, managed for you.']
 ];
+// Peace of mind for owners (Sean, 2026-10-27: "it looks so easy to claim it that somebody could claim it that doesn't own it").
+var CLAIM_REVIEW = 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.';
+function pdHref(l){ return '/directory/' + encodeURIComponent(l.slug || '') + '?tab=brand'; }
+document.addEventListener('click', function(e){
+  var a = e.target.closest && e.target.closest('[data-pd-open]'); if(!a || !window.veListingTab) return;
+  e.preventDefault();
+  veListingTab('brand');
+  var tabs = document.querySelector('.listing-tabs');
+  if(tabs) window.scrollTo({ top: Math.max(0, tabs.getBoundingClientRect().top + window.scrollY - 96), behavior: 'smooth' });
+});
 function mountPartnerLocked(el, l){
   if(!el) return;
   var side = document.querySelector('.listing-page-grid .listing-sidebar');
@@ -2317,6 +2316,7 @@ function mountPartnerLocked(el, l){
       say: 'Hi, I\'m Liz, your Guide to Vegans Explore. If this is your business, this dashboard can be yours.',
       body: '<p>' + (claimed ? 'Only ' + N + '\'s team sees inside: their plays, their saves and their opportunities. Host a Vegan ' + noun + '? Take the tour to see what yours would hold.'
         : 'Claim this page and it becomes yours: your episodes on Vegans Explore, who plays and saves them, and first word on our podcast network.') + '</p>' +
+        (claimed ? '' : '<p class="claim-review">' + CLAIM_REVIEW + '</p>') +
         '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + claimBtn + signBtn + '</div>',
       pic: '<div class="vgt-snap vgt-page" aria-hidden="true"><div class="vgt-snap-h"><span>Your ' + noun + ' on Vegans Explore</span><span>' + (claimed ? 'Claimed' : 'Not claimed yet') + '</span></div>' +
         '<div class="vgt-page-id"><i>' + esc(String(l.name || '?').trim().charAt(0)) + (l.logo_url ? '<em style="background-image:url(\'' + esc(l.logo_url) + '\')"></em>' : '') + '</i>' +
@@ -2346,6 +2346,7 @@ function mountPartnerLocked(el, l){
     { t: 'Partner Dashboard', h: claimed ? 'This is ' + N + '\'s dashboard' : 'Is ' + N + ' your ' + (brand ? 'brand' : 'business') + '?', clip: C.pt1,
       say: 'Hi, I\'m Liz, your Guide to Vegans Explore. If this is your business, this dashboard can be yours.',
       body: '<p>' + (claimed ? 'Only ' + N + '\'s team sees inside: their numbers, their menu, their ads and campaigns. Run a Vegan business? Take the tour to see what yours would hold.' : 'Claim this page and it becomes yours: your dashboard, your numbers, and a front-row seat on everything we do.') + '</p>' +
+        (claimed ? '' : '<p class="claim-review">' + CLAIM_REVIEW + '</p>') +
         '<div class="vgt-btns"><button type="button" class="vgt-btn" data-vgt-start>&#9654; Start the tour</button>' + claimBtn + signBtn + '</div>',
       pic: '<div class="vgt-snap vgt-page" aria-hidden="true"><div class="vgt-snap-h"><span>Your page on Vegans Explore</span><span>' + (claimed ? 'Claimed' : 'Not claimed yet') + '</span></div>' +
         '<div class="vgt-page-id"><i>' + esc(String(l.name || '?').trim().charAt(0)) + (l.logo_url ? '<em style="background-image:url(\'' + esc(l.logo_url) + '\')"></em>' : '') + '</i>' +
@@ -2399,6 +2400,7 @@ function loadPartnerHome(l){
   if(qs.get('preview') === 'member-owner'){ el.innerHTML = partnerUpsell(l); return; }
   if(!owner && !admin){ mountPartnerLocked(el, l); return; }
   var lk = document.querySelector('.tab-btn[data-tab="brand"] .pd-lock'); if(lk) lk.remove();
+  var pdb = document.querySelector('.tab-btn[data-tab="brand"]'); if(pdb) pdb.style.display = '';
   // Edit your page (Sean, 2026-10-10): its own view, one step at a time, ?edit=<step>.
   var editStep = qs.get('edit');
   if(editStep){ mountOwnerEditor(el, l, editStep); return; }
@@ -2892,7 +2894,8 @@ var PD_SUBS = null; // the partner's sub views, set by showPartnerTabs: [[tab, l
 function showListingTab(target){
   var btn = document.querySelector('.tab-btn[data-tab="'+target+'"]');
   var sub = PD_SUBS && PD_SUBS.some(function(x){ return x[0] === target; });
-  if(!btn || (btn.style.display === 'none' && !sub)) return;
+  // The claim page (brand) opens from its links even while its tab is hidden.
+  if(!btn || (btn.style.display === 'none' && !sub && target !== 'brand')) return;
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
   btn.classList.add('active'); btn.setAttribute('aria-selected','true');
@@ -2983,7 +2986,9 @@ function renderListing(l){
   var dirTab = catType;
 
   // Partner Dashboard's tab: after Products on a brand page, last everywhere else.
-  var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false">' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
+  // Hidden from the tab row (Sean, 2026-10-27: "remove the partner dashboard"): visitors reach it from Own this business or
+  // Claim Listing. The tab shows for the listing's owner and super admins (loadPartnerHome) and a brand's partner or link.
+  var PD_BTN = '<button class="tab-btn tab-door" data-tab="brand" role="tab" aria-selected="false"' + (l._door ? '' : ' style="display:none"') + '>' + '<svg class="pd-lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>' + 'Partner Dashboard</button>';
   // Breadcrumb
   var breadcrumb = community
     ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>'
@@ -3130,7 +3135,6 @@ function renderListing(l){
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
           // Check in shows where we know the place on the map (coordinates from Google).
           (l.latitude != null && l.longitude != null && l.business_status !== 'CLOSED_PERMANENTLY' ? '<button class="checkin-hero-btn" id="checkin-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg><span id="checkin-label">Check in &middot; +10</span></button><div class="checkin-msg" id="checkin-msg" role="status"></div>' : '')+
-          (l.claim_status !== 'verified' ? '<a href="/claim?listing='+encodeURIComponent(l.slug||'')+'" style="display:block;margin-top:10px;font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;opacity:.9;text-decoration:underline">Is this your '+esc(listingNoun(l))+'? Claim it</a>' : '')+
         '</div>'+
       '</div>'+
     '</div>'+
