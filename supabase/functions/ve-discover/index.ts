@@ -10,6 +10,15 @@
 //      list: the listing goes public with what Google gave (address, place id, website) and the category and Vegan status
 //      picked on purpose (a new listing is never 100% Vegan by default); hide: it is set aside as rejected, never deleted.
 //
+// Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"),
+// from Depot > Directory review > Add a listing and Paste a list:
+// POST { action: 'add_search', name, where }       super admin -> { places: [place summary + hours + listed {slug, name}] }
+// POST { action: 'add_create', name, category, vegan_status, place_id?, street, city, state, zip, country, lat, lng, phone,
+//        website, instagram, about, hours {Day: text}, online? }   super admin -> { slug, id }   live at once; a backlog copy of
+//        the same Google place is listed in its place instead of making a second listing
+// POST { action: 'paste_list', text }              super admin -> { added, skipped }   one business a line ("Name, City, ST" or
+//        an Instagram handle): each becomes a hidden listing and a backlog check, so it waits in New places for a decision
+//
 // Sources: Google Places API (New) text search (GOOGLE_PLACES_API_KEY) and Apify's Instagram profile scraper
 // (APIFY_API_TOKEN). Ops is the LESARUSS_ADMIN_TOKEN or the cron's x-cron-secret. verify_jwt is false: the VE app token is
 // HMAC-checked here the same way ve-cookbook checks it.
@@ -297,8 +306,57 @@ async function backlogRun(igN: number, gN: number) {
   return { checked, left: count || 0 };
 }
 
-const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Markets', 'Meal Prep', 'Catering', 'Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Health and Wellness',
-  'Beauty and Personal Care', 'Clothing and Fashion', 'Coaches and Consultants', 'Nonprofits', 'Events', 'E-Commerce & Marketplaces', 'Media', 'Podcasts'];
+// Every Directory kind (CAT_MAP in /public/ve-region-directory.js).
+const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
+  'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces',
+  'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development',
+  'AI & Automation', 'Business Operations', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
+  'Community Partner', 'Nonprofits', 'Events'];
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// ---- Adding by hand ----
+// Google's matches for a name and place, each with its week of hours and whether we already list it.
+async function searchPlaces(q: string) {
+  const key = await secret('GOOGLE_PLACES_API_KEY');
+  if (!key) throw new Error('no Google key');
+  const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': [...FIELDS, 'regularOpeningHours'].map((f) => 'places.' + f).join(',') },
+    body: JSON.stringify({ textQuery: q, maxResultCount: 6 }),
+  });
+  if (!r.ok) throw new Error(`places ${r.status}`);
+  const places = ((await r.json()).places || []) as any[];
+  const ids = places.map((p) => p.id).filter(Boolean);
+  const { data: had } = ids.length ? await db.from('listings').select('id, slug, name, status, google_place_id').in('google_place_id', ids).eq('status', 'approved') : { data: [] };
+  return Promise.all(places.map(async (p) => {
+    const s: any = placeSummary(p);
+    // "Monday: 11:00 AM – 9:00 PM" becomes { Monday: "11 AM to 9 PM" }, the way the listing editor writes hours.
+    const hours: Record<string, string> = {};
+    for (const line of (p.regularOpeningHours?.weekdayDescriptions || []) as string[]) {
+      const m = line.match(/^(\w+):\s*(.*)$/);
+      if (m && DAYS.includes(m[1])) hours[m[1]] = m[2].replace(/\u2009|\u202f/g, ' ').replace(/\s*[\u2013\u2014-]\s*/g, ' to ').replace(/:00/g, '').trim();
+    }
+    s.hours = hours;
+    let hit = (had || []).find((x: any) => x.google_place_id === p.id) as any;
+    if (!hit && s.city) {
+      const { data } = await db.from('listings').select('id, slug, name').eq('status', 'approved').eq('address_city', s.city).ilike('name', `%${String(s.name || '').replace(/[%_,()]/g, ' ').trim().slice(0, 40)}%`).limit(3);
+      hit = (data || []).find((x: any) => norm(x.name) === norm(s.name || ''));
+    }
+    s.listed = hit ? { slug: hit.slug, name: hit.name, id: hit.id } : null;
+    return s;
+  }));
+}
+function slugBase(name: string) { return name.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/&/g, ' and ').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 70) || 'listing'; }
+async function freeSlug(name: string) {
+  const base = slugBase(name);
+  const { data } = await db.from('listings').select('slug').like('slug', base + '%').eq('status', 'approved');
+  const taken = new Set((data || []).map((x: any) => x.slug));
+  let s = base, n = 2;
+  while (taken.has(s)) s = `${base}-${n++}`;
+  return s;
+}
+const initialsOf = (name: string) => name.replace(/[^A-Za-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+const handleOfText = (v: string) => { const m = String(v || '').trim().match(/(?:instagram\.com\/)?@?([A-Za-z0-9._]{2,30})\/?$/); return m ? m[1] : ''; };
 const VEGAN_STATUS = ['fully_vegan', 'vegan_options', 'vegan_friendly'];
 
 Deno.serve(async (req) => {
@@ -314,6 +372,97 @@ Deno.serve(async (req) => {
     return json(await backlogRun(Math.max(0, Math.min(+body.ig || BATCH.ig, 60)), Math.max(0, Math.min(+body.google || BATCH.google, 40))));
   }
   if (!who.ops && !who.admin) return json({ error: 'admins_only' }, 403);
+
+  if (action === 'add_search') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const name = clean(body.name, 120), where = clean(body.where, 120);
+    if (name.length < 2) return json({ error: 'name' }, 400);
+    try { return json({ ok: true, places: await searchPlaces(`${name} ${where}`.trim()) }); }
+    catch (e) { return json({ error: String((e as Error).message) }, 502); }
+  }
+
+  if (action === 'add_create') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const name = clean(body.name, 140), category = clean(body.category, 60), online = body.online === true;
+    if (name.length < 2) return json({ error: 'name', message: 'Give it a name.' }, 400);
+    if (!CATEGORIES.includes(category)) return json({ error: 'category', message: 'Pick what kind of business it is.' }, 400);
+    if (body.vegan_status != null && body.vegan_status !== '' && !VEGAN_STATUS.includes(body.vegan_status)) return json({ error: 'vegan_status' }, 400);
+    const city = online ? '' : clean(body.city, 80), state = online ? '' : clean(body.state, 40);
+    if (!online && !city) return json({ error: 'city', message: 'Give it a city, or tick Online only.' }, 400);
+    const placeId = online ? '' : clean(body.place_id, 200);
+    if (placeId) {
+      const { data: dup } = await db.from('listings').select('slug, name').eq('status', 'approved').eq('google_place_id', placeId).limit(1);
+      if (dup?.[0]) return json({ error: 'already_listed', slug: dup[0].slug, name: dup[0].name, message: `${dup[0].name} is already on the Directory.` }, 409);
+    }
+    const link = (v: unknown) => { const u = clean(v, 400); return !u ? '' : /^https?:\/\//i.test(u) ? u : 'https://' + u.replace(/^\/+/, ''); };
+    const hours: Record<string, string> = {};
+    if (!online && body.hours && typeof body.hours === 'object') for (const d of DAYS) { const t = clean(body.hours[d], 60); if (t) hours[d] = t; }
+    const by = who.admin.name || 'Sean', at = new Date().toISOString();
+    const row: Record<string, unknown> = {
+      name, category, specialty: '', description: clean(body.about, 1000), status: 'approved',
+      location: online ? 'Online' : [city, state].filter(Boolean).join(', '),
+      website: link(body.website), instagram: handleOfText(clean(body.instagram, 200)) || null, phone: online ? null : (clean(body.phone, 40) || null),
+      address_street: online ? null : (clean(body.street, 160) || null), address_city: city || null, address_state: state || null,
+      address_zip: online ? null : (clean(body.zip, 20) || null), address_country: online ? null : (clean(body.country, 4) || null),
+      latitude: online || !Number.isFinite(+body.lat) || body.lat === null ? null : +body.lat, longitude: online || !Number.isFinite(+body.lng) || body.lng === null ? null : +body.lng,
+      google_place_id: placeId || null, business_status: 'OPERATIONAL', google_hours_json: Object.keys(hours).length ? hours : null,
+      vegan_status: body.vegan_status ? body.vegan_status : null, initials: initialsOf(name), updated_at: at,
+    };
+    if (online) row.communities = ['all'];
+    const note = { at, by, kind: 'note', text: 'Added by hand in Directory review' + (placeId ? ', from Google.' : '.') };
+    // The same Google place waiting in the backlog is listed in its place, so there is one listing, not two.
+    const { data: waiting } = placeId ? await db.from('ve_backlog_checks').select('listing_id').is('decision', null).eq('place->>id', placeId).limit(1) : { data: [] };
+    const wid = (waiting || [])[0]?.listing_id;
+    if (wid) {
+      const { data: old } = await db.from('listings').select('id, details, status').eq('id', wid).maybeSingle();
+      if (old && old.status === 'quarantined') {
+        const details = { ...(old.details || {}) } as Record<string, any>;
+        details.admin_notes = [...(Array.isArray(details.admin_notes) ? details.admin_notes : []), { ...note, text: note.text + ' It was waiting in the backlog.' }];
+        details.added_by_hand = { by, at };
+        const slug = await freeSlug(name);
+        const { error } = await db.from('listings').update({ ...row, slug, details }).eq('id', wid);
+        if (error) return json({ error: error.message }, 400);
+        await db.from('ve_backlog_checks').update({ decision: 'listed', decided_by: who.admin.id, decided_at: at }).eq('listing_id', wid);
+        return json({ ok: true, id: wid, slug, from_backlog: true });
+      }
+    }
+    const slug = await freeSlug(name);
+    const { data, error } = await db.from('listings').insert({ ...row, slug, crawl_source: 'admin', details: { added_by_hand: { by, at }, admin_notes: [note] } }).select('id, slug').single();
+    if (error) return json({ error: error.message }, 400);
+    return json({ ok: true, id: data.id, slug: data.slug });
+  }
+
+  if (action === 'paste_list') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const lines = String(body.text || '').split(/\r?\n/).map((x) => x.replace(/\u0000/g, '').trim()).filter(Boolean).slice(0, 200);
+    if (!lines.length) return json({ error: 'empty', message: 'Paste one business a line.' }, 400);
+    const at = new Date().toISOString(), by = who.admin.name || 'Sean';
+    let added = 0; const skipped: { line: string; why: string }[] = [];
+    for (const line of lines) {
+      const isIg = /^@|instagram\.com\//i.test(line);
+      const handle = isIg ? handleOfText(line.split(/[\s,]+/)[0]) : '';
+      const parts = isIg ? [] : line.split(',').map((x) => x.trim()).filter(Boolean);
+      const name = isIg ? '@' + handle : (parts[0] || '').slice(0, 140);
+      if ((isIg && !handle) || name.length < 2) { skipped.push({ line, why: 'Could not read a name or handle' }); continue; }
+      const city = isIg ? '' : (parts[1] || ''), state = isIg ? '' : (parts[2] || '');
+      // Already listed (same name in the same city, or the same Instagram handle): left out.
+      const { data: dup } = isIg
+        ? await db.from('listings').select('id').in('status', ['approved', 'quarantined']).or(`ig_handle.ilike.${handle},instagram.ilike.${handle}`).limit(1)
+        : await db.from('listings').select('id, name, address_city, location').in('status', ['approved', 'quarantined']).ilike('name', name.replace(/[%_]/g, ' ')).limit(10);
+      const same = isIg ? (dup || [])[0] : (dup || []).find((x: any) => !city || String(x.address_city || x.location || '').toLowerCase().includes(city.toLowerCase()));
+      if (same) { skipped.push({ line, why: 'Already on the Directory or waiting in New places' }); continue; }
+      const { data: l, error } = await db.from('listings').insert({
+        name, category: 'Uncategorized', specialty: '', description: '', status: 'quarantined', website: '',
+        location: [city, state].filter(Boolean).join(', '), address_city: city || null, address_state: state.length <= 3 ? (state.toUpperCase() || null) : null,
+        ig_handle: handle || null, instagram: handle || null, initials: initialsOf(isIg ? handle : name), crawl_source: 'paste',
+        details: { pasted: { by, at, line } },
+      }).select('id').single();
+      if (error || !l) { skipped.push({ line, why: error?.message || 'Could not save' }); continue; }
+      await db.from('ve_backlog_checks').insert({ listing_id: l.id, track: isIg ? 'ig' : 'google', stage: 'pending', city_guess: city || null });
+      added++;
+    }
+    return json({ ok: true, added, skipped });
+  }
 
   if (action === 'backlog_summary') {
     const { data } = await db.from('ve_backlog_checks').select('verdict, decision, community_slug, stage');
