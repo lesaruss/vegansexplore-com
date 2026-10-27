@@ -136,14 +136,15 @@
     + '.vrd-root .rank-num.top3{color:#5EC47A}'
     + '.vrd-root .rank-pts{font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;text-align:center}'
     + '.vrd-root .rank-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}'
-    // The whole name shows, on up to three rows when it needs them (Sean, 2026-10-26: "right now they all have ellipses").
-    + '.vrd-root .rank-name{font-size:14px;font-weight:800;color:#1a1a1a;line-height:1.25;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}'
+    // The whole name shows, on up to four rows when it needs them (Sean, 2026-10-26: "right now they all have ellipses"; four since
+    // 2026-10-27, when a long rescue's name beside the ad rail still needed a fourth).
+    + '.vrd-root .rank-name{font-size:14px;font-weight:800;color:#1a1a1a;line-height:1.25;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}'
     + '.vrd-root .rank-meta{font-size:12px;font-weight:600;color:#555;line-height:1}'
     + '.vrd-root .rank-subcat{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#666;margin-top:2px}'
     + '.vrd-root .rank-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;flex-shrink:0;height:60px}'
     + '.vrd-root .vote-count{font-size:16px;font-weight:900;color:#1a1a1a;line-height:1}'
     + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#666}'
-    + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:4px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
+    + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
     + '.vrd-root .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A}'
     // The category and its badges wrap together, so a badge on a second line starts at the edge (2026-10-25).
     + '.vrd-root .rank-subcat{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px}'
@@ -157,6 +158,15 @@
     + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
+    // The count, then Vote as its word and its button; the admins' More menu under them (2026-10-27).
+    + '.vrd-root .rank-right{align-items:center;justify-content:center;gap:5px}'
+    + '.vrd-root .vla-more{position:relative}'
+    + '.vrd-root .vla-more>summary{list-style:none;display:block;text-align:center}'
+    + '.vrd-root .vla-more>summary::-webkit-details-marker{display:none}'
+    + '.vrd-root .vla-more>summary::after{content:" \\25BE"}'
+    + '.vrd-root .vla-menu{position:absolute;right:0;top:calc(100% + 4px);z-index:30;display:flex;flex-direction:column;gap:2px;min-width:130px;padding:6px;background:#fff;border:1px solid #e3e3e3;border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.14)}'
+    + '.vrd-root .vla-menu .vla-edit{border:0;background:none;text-align:left;padding:8px 10px;border-radius:4px;font-size:11px}'
+    + '.vrd-root .vla-menu .vla-edit:hover{background:#fffaf0}'
     + '.vrd-root .vrd-vetting{margin-top:3px;font-size:11px;font-weight:700;color:#8a5a00;line-height:1.3;white-space:nowrap}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
     + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
@@ -388,8 +398,11 @@
   function adminBtn(l) {
     if (!ADMIN) return '';
     var list = TRUST && window.VETrust && window.VETrust.pending(l, TRUST) ? 'vetting' : 'flagged';
-    return '<span class="vla-btns"><button type="button" class="vla-edit" data-vla="' + esc(l.id) + '" title="Admin only">Edit</button>' +
-      '<a class="vla-edit" data-vrd-review="#l/' + encodeURIComponent(l.id) + '/' + list + '" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener" title="Admin only: fix it in the Review tab">Review</a></span>';
+    // One small More menu instead of two buttons, so the name keeps its room (Sean, 2026-10-27: "a more drop down to replace review
+    // and edit... if we wanted to add anything else, we could add it"). A new admin action is one more item here.
+    return '<details class="vla-more"><summary class="vla-edit" title="Admin only">More</summary><div class="vla-menu" role="menu">' +
+      '<button type="button" class="vla-edit" role="menuitem" data-vla="' + esc(l.id) + '">Edit</button>' +
+      '<a class="vla-edit" role="menuitem" data-vrd-review="#l/' + encodeURIComponent(l.id) + '/' + list + '" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener">Review</a></div></details>';
   }
 
   // Paused and closed in the words of the kind of listing (Sean, 2026-10-27): a podcast is On hiatus, never Ended (it could come
@@ -433,7 +446,7 @@
       (isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
           '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + '</div>') + vettingNote(l) + '</div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '">+ Vote</button>' + adminBtn(l) + '</div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
 
@@ -924,6 +937,13 @@
   }
   function bindAdmin(root) {
     if (!ADMIN) return;
+    if (!window.__vrdMoreClose) {
+      window.__vrdMoreClose = true;
+      document.addEventListener('click', function (e) {
+        document.querySelectorAll('.vla-more[open]').forEach(function (d) { if (!d.contains(e.target)) d.removeAttribute('open'); });
+      });
+    }
+    root.querySelectorAll('.vla-menu .vla-edit').forEach(function (x) { x.addEventListener('click', function () { var d = x.closest('details'); if (d) d.removeAttribute('open'); }); });
     window.VEListingAdmin.css();
     // Review on a card opens that listing in the Review tab, when this Directory has one.
     root.querySelectorAll('a.vla-edit[data-vrd-review]').forEach(function (a) {

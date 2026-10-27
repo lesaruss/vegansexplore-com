@@ -151,7 +151,7 @@ Central Florida will have its own... all that's real estate that people can purc
 the same two landscape slots as that city hub's billboard (`<adPrefix>-landscape-1/-2`, page `/communities/<slug>`), so one
 buy runs on every page of the chapter; All cities uses `/directory`'s pair (`ve-directory-landscape-1/-2`). The rail is
 `data-ad-page="chapter"` and follows the city picker (`VEAdRail.chapter(rail, slug)`). Beside it the Directory is three cards
-across (two under 1280 px, one on phones), and a card's name shows whole, up to three rows, never cut with an ellipsis.
+across (two under 1280 px, one on phones), and a card's name shows whole, up to four rows, never cut with an ellipsis. The card's right side is the count over **Votes** (the word is the button) and, for super admins, **More** (a dropdown with Edit and Review, room for more; `adminBtn` in `ve-region-directory.js`; Sean, 2026-10-27).
 
 **One ad per page** (Sean, 2026-10-27: "it's either going to be the long one or two short ones, not both"): the Pulse
 (and its post pages, `api/pulse-article.js`), Events and the city hubs show one tall 300 x 600; the Directory and Media show
