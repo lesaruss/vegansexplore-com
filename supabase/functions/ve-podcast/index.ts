@@ -14,6 +14,16 @@
 // POST { action: 'admin_feed', listing_id, rss_url }                    a super admin: sets the feed and reads it; '' turns it off
 // POST { action: 'owner_saves', listing_id }                            the listing's owner or a super admin: who saved the show and
 //                                                                       its episodes (Sean, 2026-10-27: saves in place of check-ins)
+// POST { action: 'network_apply', application }                         a signed-in member: applies to the Vegans Explore Podcast
+//                                                                       Network (/media/network); Sean is emailed
+// POST { action: 'network_mine' }                                       a signed-in member: what they applied with
+// POST { action: 'refresh' }                                            the cron (x-cron-secret): reads up to 8 feeds older than 20
+//                                                                       hours, and sets every podcast's status from its latest episode
+//
+// A podcast's status follows its feed (Sean, 2026-10-27: "if an episode has been posted within the last 6 months, we can consider it
+// active. Anything longer than 6 months to about a year, we'll say on hiatus. And then anything past a year, we'll say ended"):
+// listings.business_status OPERATIONAL, CLOSED_TEMPORARILY or CLOSED_PERMANENTLY, set each time a feed is read and by the hourly
+// refresh, so a new episode puts it back to Active on its own.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -23,10 +33,12 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const KEEP = 300, FRESH_MS = 6 * 3600e3, MAX_BYTES = 25e6;
+const KEEP = 300, FRESH_MS = 6 * 3600e3, MAX_BYTES = 25e6, DAY = 864e5;
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const SEAN_EMAIL = 'contact@lesaruss.com';
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
 };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
@@ -95,6 +107,20 @@ async function readFeed(url: string) {
   return { title: plain(txt(ch.title), 200), image: showImg, episodes: eps.slice(0, KEEP), count: eps.length };
 }
 
+function statusOf(latest: string | null | undefined): string | null {
+  const t = latest ? Date.parse(latest) : NaN;
+  if (isNaN(t)) return null;
+  const age = Date.now() - t;
+  return age < 183 * DAY ? 'OPERATIONAL' : age < 365 * DAY ? 'CLOSED_TEMPORARILY' : 'CLOSED_PERMANENTLY';
+}
+// Only a podcast, and only when it changes. The episodes are newest first, so the first one is the latest.
+async function syncStatus(l: any, latest: string | null | undefined) {
+  const s = statusOf(latest);
+  if (!s || l.category !== 'Podcasts' || l.business_status === s) return;
+  await db.from('listings').update({ business_status: s }).eq('id', l.id);
+  l.business_status = s;
+}
+
 async function appleFeed(l: any): Promise<string> {
   const m = String(l.apple_podcasts_url || l.details?.platforms?.apple || '').match(/id(\d{5,})/);
   if (!m) return '';
@@ -124,6 +150,7 @@ async function feedFor(l: any, force = false) {
     const next = { listing_id: l.id, rss_url: url, title: f.title, image: f.image, episodes: f.episodes, episode_count: f.count,
       fetched_at: new Date().toISOString(), error: null, error_at: null };
     await db.from('ve_podcast_feeds').upsert(next);
+    await syncStatus(l, f.episodes[0]?.date);
     return next;
   } catch (e) {
     const err = String((e as Error)?.message || e).slice(0, 300);
@@ -134,7 +161,19 @@ async function feedFor(l: any, force = false) {
   }
 }
 
-const LISTING = 'id, slug, name, category, status, logo_url, rss_url, apple_podcasts_url, details';
+const LISTING = 'id, slug, name, category, status, business_status, logo_url, rss_url, apple_podcasts_url, details';
+const clean = (v: unknown, n: number) => String(v ?? '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, n);
+const esc = (v: unknown) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+async function mailTo(to: string[], subject: string, html: string, replyTo?: string) {
+  if (!RESEND_KEY) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {
+      method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [...new Set(to)], subject, html, ...(replyTo ? { reply_to: replyTo } : {}) }),
+    });
+    return r.ok;
+  } catch (e) { console.error('network email failed', e); return false; }
+}
 async function listingOf(body: any) {
   let q = db.from('listings').select(LISTING).eq('status', 'approved');
   if (isId(body.listing_id)) q = q.eq('id', body.listing_id);
@@ -153,6 +192,30 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
+
+  if (body.action === 'refresh') {
+    const cron = req.headers.get('x-cron-secret');
+    const { data: cs } = await db.from('lesaruss_secrets').select('value').eq('key', 'CRON_SECRET').maybeSingle();
+    if (!cron || !cs?.value || cron !== cs.value) return json({ error: 'no_access' }, 403);
+    // Feeds not read in 20 hours, oldest first, eight a run.
+    const { data: stale } = await db.from('ve_podcast_feeds').select('listing_id').lt('fetched_at', new Date(Date.now() - 20 * 3600e3).toISOString())
+      .order('fetched_at', { ascending: true }).limit(8);
+    let read = 0;
+    for (const r of (stale || []) as any[]) {
+      const { data: l } = await db.from('listings').select(LISTING).eq('id', r.listing_id).maybeSingle();
+      if (l && l.status === 'approved') { await feedFor(l, true); read++; }
+    }
+    // Time passes without a new episode too: every podcast's status from what we hold.
+    const { data: all } = await db.from('ve_podcast_feeds').select('listing_id, latest:episodes->0->>date, listings(id, category, business_status)');
+    let changed = 0;
+    for (const r of (all || []) as any[]) {
+      if (!r.listings) continue;
+      const before = r.listings.business_status;
+      await syncStatus(r.listings, r.latest);
+      if (r.listings.business_status !== before) changed++;
+    }
+    return json({ ok: true, read, changed });
+  }
 
   const savedFrom = async (listingId: string) => {
     if (!memberId) return undefined;
@@ -177,7 +240,7 @@ Deno.serve(async (req) => {
   }
 
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: m } = await db.from('members').select('id, membership_status, is_superadmin').eq('id', memberId).maybeSingle();
+  const { data: m } = await db.from('members').select('id, name, email, membership_status, is_superadmin').eq('id', memberId).maybeSingle();
   if (!m) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'save') {
@@ -221,6 +284,54 @@ Deno.serve(async (req) => {
       episode_saves: (es || []).length, episode_savers: new Set((es || []).map((r: any) => r.member_id)).size,
       episodes: Object.values(eps).sort((a, b) => b.n - a.n).slice(0, 20),
       recent: (es || []).slice(0, 100).map((r: any) => ({ name: short(r.members?.name), title: r.title, at: r.created_at })) });
+  }
+
+  if (body.action === 'network_apply') {
+    const a = body.application || {};
+    const name = clean(a.podcast_name, 160);
+    const rss = httpUrl(clean(a.rss_url, 500)), apple = httpUrl(clean(a.apple_url, 500));
+    if (!name) return json({ error: 'name' }, 400);
+    if (!rss && !apple) return json({ error: 'feed' }, 400);
+    const since = new Date(Date.now() - DAY).toISOString();
+    const { count } = await db.from('ve_podcast_network_applications').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gte('created_at', since);
+    if ((count || 0) >= 5) return json({ error: 'too_many' }, 429);
+    // Their Directory listing, when we have it: by the feed, the Apple id, then the name.
+    let listing: any = null;
+    if (rss) listing = (await db.from('listings').select('id, slug, name').eq('rss_url', rss).eq('status', 'approved').limit(1).maybeSingle()).data;
+    const appleId = (apple.match(/id(\d{5,})/) || [])[1];
+    if (!listing && appleId) listing = (await db.from('listings').select('id, slug, name').ilike('apple_podcasts_url', '%id' + appleId + '%').eq('status', 'approved').limit(1).maybeSingle()).data;
+    if (!listing) listing = (await db.from('listings').select('id, slug, name').ilike('name', name).eq('category', 'Podcasts').eq('status', 'approved').limit(1).maybeSingle()).data;
+    const LEVELS = ['under_1k', '1k_5k', '5k_25k', '25k_100k', 'over_100k', 'unsure'];
+    const INTERESTS = ['sponsorships', 'promotion', 'promos', 'production', 'clips'];
+    const row = {
+      member_id: memberId, listing_id: listing?.id || null, podcast_name: name, rss_url: rss || null, apple_url: apple || null,
+      website: httpUrl(clean(a.website, 500)) || null, hosts: clean(a.hosts, 200) || null,
+      monthly_downloads: LEVELS.includes(a.monthly_downloads) ? a.monthly_downloads : null, stats_source: clean(a.stats_source, 80) || null,
+      release_cadence: clean(a.release_cadence, 60) || null, audience: clean(a.audience, 300) || null,
+      socials: { instagram: clean(a.socials?.instagram, 120), tiktok: clean(a.socials?.tiktok, 120), youtube: clean(a.socials?.youtube, 200) },
+      social_followers: LEVELS.includes(a.social_followers) ? a.social_followers : null,
+      interests: (Array.isArray(a.interests) ? a.interests : []).filter((x: string) => INTERESTS.includes(x)),
+      notes: clean(a.notes, 2000) || null, contact_name: clean(a.contact_name, 120) || m.name || null, contact_email: clean(a.contact_email, 200) || m.email || null,
+      member_active: m.membership_status === 'active',
+    };
+    const { data: saved, error } = await db.from('ve_podcast_network_applications').insert(row).select('id').single();
+    if (error) return json({ error: 'save_failed' }, 500);
+    const L: Record<string, string> = { under_1k: 'Under 1,000', '1k_5k': '1,000 to 5,000', '5k_25k': '5,000 to 25,000', '25k_100k': '25,000 to 100,000', over_100k: 'Over 100,000', unsure: 'Not sure' };
+    await mailTo([SEAN_EMAIL], `Podcast network application: ${name}`,
+      `<p><b>${esc(name)}</b> applied to the Vegans Explore Podcast Network${row.member_active ? '' : ' (not a Founding Member yet)'}.</p>` +
+      `<p>${esc(row.contact_name)} &middot; ${esc(row.contact_email)}${row.hosts ? ' &middot; hosts: ' + esc(row.hosts) : ''}</p>` +
+      `<p>Monthly downloads: ${esc(L[row.monthly_downloads || ''] || 'not given')}${row.stats_source ? ' (from ' + esc(row.stats_source) + ')' : ''}<br>` +
+      `Releases: ${esc(row.release_cadence || 'not given')}<br>Listeners: ${esc(row.audience || 'not given')}<br>Social followers: ${esc(L[row.social_followers || ''] || 'not given')}<br>` +
+      `Wants: ${esc(row.interests.join(', ') || 'not given')}</p>` +
+      `<p>Feed: ${esc(rss || 'none')}<br>Apple: ${esc(apple || 'none')}<br>Website: ${esc(row.website || 'none')}</p>` +
+      (listing ? `<p>Their listing: <a href="https://vegansexplore.com/directory/${esc(listing.slug)}">${esc(listing.name)}</a></p>` : '<p>Not in the Directory yet.</p>') +
+      (row.notes ? `<p>${esc(row.notes)}</p>` : '') + `<p>Application ${saved.id}</p>`, row.contact_email || undefined);
+    return json({ ok: true, id: saved.id, member_active: row.member_active, listing: listing ? { slug: listing.slug, name: listing.name } : null });
+  }
+
+  if (body.action === 'network_mine') {
+    const { data } = await db.from('ve_podcast_network_applications').select('id, podcast_name, status, created_at').eq('member_id', memberId).order('created_at', { ascending: false }).limit(20);
+    return json({ ok: true, applications: data || [], member_active: m.membership_status === 'active' });
   }
 
   if (body.action === 'admin_feed') {
