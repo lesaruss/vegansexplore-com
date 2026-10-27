@@ -26,7 +26,9 @@
   // AI & Automation and the other agency sub-sections sit under Services now, but the SaaS
   // tools tagged 'lesaruss-ai-directory-candidate' (2026-09-07) stay off the VE hubs.
   var CAT_MAP = {
-    'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
+    // Food Trucks and Vendors are apart (Sean, 2026-10-27: "you might be just looking for a food truck"): a truck is a truck; a
+    // vendor sells at markets, pop-ups and events. The old 'Food Trucks & Vendors' rows were re-filed the same day.
+    'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks': 'food', 'Vendors': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
     'Catering': 'food', 'Meal Prep': 'food',
     // Food Brands are back under Food (Sean, 2026-10-26): sections open on their first sub-section, not All, so Food opens
     // on Restaurants and the national brands no longer mix with the local places. Nutrition & Supplements follows them.
@@ -38,14 +40,16 @@
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
     'AI & Automation': 'services', 'Business Operations': 'services',
     'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
-    'Community Partner': 'community', 'Nonprofits': 'community', 'Events': 'community',
+    // Community is the animals first (Sean, 2026-10-27: "it being about nonprofits, it being about events, it being about rescues...
+    // sanctuaries"). Community Partner was not a kind of listing; its rows were re-filed the same day.
+    'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Events': 'community', 'Community Partner': 'community',
     'Uncategorized': 'hidden'
   };
 
   var CAT_CONFIG = [
     { key: 'food', label: 'Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
       subcats: ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'] },
@@ -57,12 +61,12 @@
       subcats: ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
-      subcats: ['Community Partner', 'Nonprofits', 'Events'] },
+      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'] },
     // Being vetted (Sean, 2026-10-25): Vegan-friendly and Vegan-options food places the community has not vetted yet
     // (/public/ve-trust.js). Members only; each one moves to Food once 10 different members vote for it.
     { key: 'vetting', label: 'Being vetted', hasVF: false, membersOnly: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
     // Review (Sean, 2026-10-25: "could we have a review tab that has all of those features in there, just so I'm doing it
     // from one place? Because I rarely go into the depot"). Super admins only: Depot > Directory review, framed in the tab.
     { key: 'review', label: 'Review', hasVF: false, adminOnly: true, frame: '/admin/depot/directory-review',
@@ -295,9 +299,9 @@
   }
   // A brand that also sells in person (Sean, 2026-10-26: "they still show up at vendor... farmers markets and special events,
   // festivals... a tool for promoters who are looking to find vendors"): a Food Brand or Nutrition & Supplements listing that
-  // is also under Food Trucks & Vendors (extra_categories). It stays in its brand section and shows with the vendors too.
+  // is also under Vendors (extra_categories). It stays in its brand section and shows with the vendors too.
   var BRAND_SUBS = ['Food Brands', 'Nutrition & Supplements'];
-  function vendsAt(l) { return BRAND_SUBS.indexOf(l.category) >= 0 && sectionsOf(l).indexOf('Food Trucks & Vendors') >= 0; }
+  function vendsAt(l) { return BRAND_SUBS.indexOf(l.category) >= 0 && sectionsOf(l).indexOf('Vendors') >= 0; }
   function vendsTag(l) { return vendsAt(l) ? ' <span class="vrd-vends" title="Also sells at markets, festivals and events">Markets &amp; events</span>' : ''; }
   // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
@@ -419,7 +423,7 @@
     ['korean', 'Korean'], ['vietnamese', 'Vietnamese'], ['asian', 'Pan-Asian'], ['burgers', 'Burgers & fast food'], ['bowls', 'Bowls & salads'],
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
   var SUB_FILTERS = { 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
-    'Food Trucks & Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
+    'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
     var c = l.communities || [];

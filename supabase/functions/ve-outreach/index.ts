@@ -102,12 +102,12 @@ async function adminId(req: Request): Promise<string | null> {
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\u0000/g, '').trim().slice(0, max) : '');
 // Every Directory sub-section (CATEGORIES in ve-claims, CAT_CONFIG in /public/ve-region-directory.js).
 const LISTING_CATEGORIES = [
-  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Community Partner', 'Nonprofits', 'Events'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v);
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -665,7 +665,7 @@ Deno.serve(async (req) => {
         db.from('listings').select(COLS).eq('status', 'approved').eq('business_status', 'CLOSED_PERMANENTLY').order('updated_at', { ascending: false }).limit(300),
         db.rpc('ve_directory_review_flags'),
         trust?.value?.enabled ? db.from('listings').select(COLS + ',voter_count').eq('status', 'approved').in('vegan_status', ['vegan_friendly', 'vegan_options'])
-          .in('category', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep']).is('vetted_at', null)
+          .in('category', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep']).is('vetted_at', null)
           .neq('claim_status', 'verified').lt('voter_count', minVoters).neq('business_status', 'CLOSED_PERMANENTLY')
           .order('voter_count', { ascending: false }).order('name').limit(500) : Promise.resolve({ data: [] }),
       ]);

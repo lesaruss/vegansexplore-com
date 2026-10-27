@@ -28,7 +28,7 @@
   var OFF = { enabled: false, min_voters: 10 };
   var loading = null;
   var VETTED = { vegan_friendly: 1, vegan_options: 1 }; // the statuses the rule applies to
-  var PLACES = { 'Restaurants': 1, 'Bakeries & Cafes': 1, 'Food Trucks & Vendors': 1, 'Catering': 1, 'Meal Prep': 1 }; // and the sections
+  var PLACES = { 'Restaurants': 1, 'Bakeries & Cafes': 1, 'Food Trucks': 1, 'Vendors': 1, 'Catering': 1, 'Meal Prep': 1 }; // and the sections
 
   function load() {
     if (!loading) loading = fetch(URL_, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })

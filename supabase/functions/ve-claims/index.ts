@@ -111,12 +111,12 @@ const BRAND_CATS = /^(Food Brands|Nutrition & Supplements|Brands)$/; // product 
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
 // Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
 const CATEGORIES = [
-  'Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
+  'Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Community Partner', 'Nonprofits', 'Events', 'Uncategorized'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events', 'Uncategorized'];
 // At a Glance, which listing.html shows for restaurants and cafes.
 const ATMOSPHERES = ['casual', 'upscale', 'fine-dining', 'fast-casual', 'bar-lounge'];
 const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Reservations', 'WiFi', 'Parking', 'Dog-Friendly',
@@ -1051,7 +1051,7 @@ Deno.serve(async (req) => {
     }
 
     // owner_dashboard
-    const food = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Catering', 'Meal Prep'].includes(l.category);
+    const food = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'].includes(l.category);
     const hours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();
     const [menu, audit, cardsQ] = await Promise.all([
       db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', lid),
