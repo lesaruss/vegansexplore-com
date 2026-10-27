@@ -514,7 +514,11 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   of M / Next, their points and Copy your link in the header), ten tabs (`#/<tab>`): Overview (You were hand selected), **Why it matters** (Sean, 2026-10-27: "Did it really explain to him why being
   an ambassador matters?... he doesn't need money... He probably just wants to support the community": local places get found
   through member votes and vetting, the city comes alive, the $11 keeps the community running, their voice carries, and points as
-  support they can give away; the points are a footnote everywhere, never the pitch), Your
+  support they can give away; the points are a footnote everywhere, never the pitch; then, the same day, "balance the conversation
+  between what we're doing in a lifestyle side of things and what we're doing to provide support for the animals": two halves,
+  For the animals (rescues and sanctuaries found in the Community section, the Fosters and Rescues boards, points given to
+  organizations, and campaigns behind the cause marked Growing) and For the Vegan life; Your role and Who to invite carry the
+  animals' people too), Your
   membership (on us, points, level, what points do), Your role, Your city (home chapter, `set_home_community`, its hub, Pulse and
   Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
   with their link), Answering questions (straight answers, do and don't), Your progress (`ve-auth` `referrals`: members and waiting
