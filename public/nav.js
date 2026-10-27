@@ -118,6 +118,19 @@
     '.ve-mob-signout:hover{background:#fef2f2;}',
     '.ve-mob-lesars{display:inline-block;background:#F0FDF4;border:1px solid #BBF7D0;color:#15803D;font-size:10px;font-weight:800;letter-spacing:0.06em;padding:3px 7px;border-radius:20px;margin-left:6px;vertical-align:middle;}',
     '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}',
+    // Signed out (Sean, 2026-10-27: "the same style of navigation that we're using on the logged in version"): the dashboard's
+    // top bar. The menu shows on desktop in the dashboard's tab style; on phones it is one full-width dropdown on its own row.
+    // Log In and Join on the right. No announcement pill and no hamburger.
+    '.ve-pub-nav{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-start;margin-left:14px;}',
+    '.ve-pub-tabs{display:flex;align-items:center;gap:22px;}',
+    '.ve-pub-tabs a{font-size:12px;font-weight:800;letter-spacing:0.04em;color:rgba(26,26,26,0.68);text-decoration:none;padding:19px 2px 17px;border-bottom:2.5px solid transparent;white-space:nowrap;}',
+    '.ve-pub-tabs a:hover{color:#1a1a1a;}',
+    '.ve-pub-tabs a[aria-current="page"]{color:#2d7d31;border-bottom-color:#3A9B3E;}',
+    '.ve-pub-tabs a:focus-visible,.ve-pub-select:focus-visible{outline:3px solid #22C55E;outline-offset:2px;border-radius:4px;}',
+    '.ve-pub-select{display:none;width:100%;font-family:"Montserrat",sans-serif;font-size:13px;font-weight:800;color:#1a1a1a;background:#fff url("data:image/svg+xml;utf8,<svg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27><path d=%27M1 1l5 5 5-5%27 stroke=%27%23475569%27 stroke-width=%272%27 fill=%27none%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/></svg>") no-repeat right 16px center;border:1.5px solid rgba(0,0,0,0.09);border-radius:6px;padding:11px 44px 11px 14px;-webkit-appearance:none;-moz-appearance:none;appearance:none;cursor:pointer;}',
+    '.ve-nav-public .ve-nav-right-wrap{display:flex;gap:4px;}',
+    '@media(max-width:960px){.ve-pub-tabs{gap:16px;}.ve-pub-tabs a{font-size:11px;}}',
+    '@media(max-width:860px){.ve-nav-public .ve-nav-inner{height:auto;flex-wrap:wrap;row-gap:0;padding-top:0;padding-bottom:10px;} .ve-nav-public .ve-wordmark{height:56px;} .ve-nav-public .ve-pub-nav{order:3;flex:0 0 100%;margin-left:0;} .ve-pub-tabs{display:none;} .ve-pub-select{display:block;} .ve-nav-public .ve-nav-right-wrap{display:flex !important;margin-left:auto;}}',
     '.ve-announce-wrap{display:flex;align-items:center;min-width:0;margin-right:16px;}',
     '.ve-announce{display:flex;align-items:center;gap:8px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:30px;padding:6px 14px 6px 6px;cursor:pointer;text-decoration:none;max-width:360px;min-width:0;transition:background 0.15s,border-color 0.15s;}',
     '.ve-announce:hover{background:#e3f9e7;border-color:#9fe6ac;}',
@@ -319,20 +332,39 @@
 
   // Menu (Sean, 2026-10-26): Events is open to everyone; the Community Board left the menu (its jobs,
   // classifieds, fosters and rescues are reached through the Pulse) and so did Lead Your City.
+  // One list for the drawer and the signed-out bar. A page under a section counts as that section (/directory/<slug>).
+  var MENU = [['Guides', '/guides'], ['Pulse', '/pulse'], ['Media', '/media'], ['Communities', '/communities'], ['Directory', '/directory'], ['Events', '/events']];
+  function inSection(href) {
+    if (href === '/media' && p.indexOf('/podcast/') === 0) return true;
+    if (href === '/pulse' && isCurrent('/guides/ve-discuss')) return true;
+    return p === href || p.indexOf(href + '/') === 0;
+  }
+  var here = MENU.filter(function (m) { return inSection(m[1]); })[0];
+  // Signed out: the dashboard-style bar. A super admin viewing as the public keeps the drawer for View As.
+  var publicBar = !loggedIn;
+  var pubNavHtml = !publicBar ? '' :
+    '<div class="ve-pub-nav">' +
+      '<div class="ve-pub-tabs">' + MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') + '</div>' +
+      '<select class="ve-pub-select" id="ve-pub-select" aria-label="Menu">' +
+        (here ? '' : '<option value="" selected>Menu</option>') +
+        MENU.map(function (m) { return '<option value="' + m[1] + '"' + (here === m ? ' selected' : '') + '>' + m[0] + '</option>'; }).join('') +
+      '</select>' +
+    '</div>';
+  var showDrawer = !publicBar || !!adminPanel;
   var html =
-    '<nav class="ve-nav" role="navigation" aria-label="Main navigation">' +
+    '<nav class="ve-nav' + (publicBar ? ' ve-nav-public' : '') + '" role="navigation" aria-label="Main navigation">' +
       '<div class="ve-nav-inner">' +
         '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '>' +
           '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
         '</a>' +
-        '<div class="ve-nav-spacer"></div>' +
-        announceHtml +
+        (publicBar ? pubNavHtml : '<div class="ve-nav-spacer"></div>' + announceHtml) +
         '<div class="ve-nav-right-wrap">' + desktopRight + '</div>' +
-        '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' +
+        (showDrawer ? '<button class="ve-hamburger" id="ve-hamburger-btn" aria-label="Open navigation" aria-expanded="false" aria-controls="ve-mob-menu">' + iconMenu + '</button>' : '') +
       '</div>' +
     '</nav>' +
     '<div class="ve-mob-overlay" id="ve-mob-overlay" aria-hidden="true"></div>' +
     '<div class="ve-mob-menu" id="ve-mob-menu" role="dialog" aria-label="Navigation" aria-modal="true">' +
+      (publicBar ? '' :
       '<div class="ve-mob-section">' +
         dashboardLinkHtml +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
@@ -342,7 +374,7 @@
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/events"' + cur('/events') + '>Events</a>' +
       '</div>' +
-      mobileBottom +
+      mobileBottom) +
       adminPanel +
     '</div>';
 
@@ -511,8 +543,12 @@
     for (var _b = 0; _b < swBacks.length; _b++) swBacks[_b].addEventListener('click', function(e) { e.stopPropagation(); swBack(); });
   }
 
+  var pubSelect = document.getElementById('ve-pub-select');
+  if (pubSelect) pubSelect.addEventListener('change', function () { if (pubSelect.value) location.href = pubSelect.value; });
+
   /* ---- Hamburger + drawer toggle ---- */
   var hamburger = document.getElementById('ve-hamburger-btn');
+  if (hamburger) {
   var mobMenu   = document.getElementById('ve-mob-menu');
   var overlay   = document.getElementById('ve-mob-overlay');
 
@@ -549,6 +585,7 @@
   mobMenu.querySelectorAll('a').forEach(function (link) {
     link.addEventListener('click', function () { setMobOpen(false); });
   });
+  }
 
   /* ---- Passport gate (event delegation - runs on every page nav.js is included) ---- */
   var _gated = ['.vote-hero-btn', '.donate-btn', '#donate-btn', '.btn-join', '.star-btn', '.mobile-sticky-btn-vote', '.mobile-sticky-btn-save'];
