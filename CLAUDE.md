@@ -518,9 +518,15 @@ parent is `/directory` or a hub) and grows to fit (depot-tabs.js `ve-frame-heigh
 **Review**; Review opens that listing in the Review tab (in Being vetted when it is waiting on votes), and the listing editor has
 Open in Directory review.
 Adding listings (Sean, 2026-10-27: "I'm not sure exactly how I would do that"). Directory review's home has **Add a listing**
-(`#add/1` to `#add/4`, one step per view): Find it on Google (name and where, `ve-discover` `add_search`: up to six Google places
+(`#add/1` to `#add/5`, one step per view): Find it on Google (name and where, `ve-discover` `add_search`: up to six Google places
 with address, phone, website, hours and pin, each marked if already listed), or fill it in by hand; The details (all of it
-editable, Online only); What it is (the kind and how Vegan, both picked on purpose, "Not a Vegan business" for a store or service;
+editable, Online only, and their Instagram, Facebook and TikTok, filled from the links on their own home page, `add_site`, Sean
+2026-10-27: "you should be able to pull their social media"; builder template links like facebook.com/wix are skipped); **Logo**
+(Sean, same day: up to four pictures from their website, an `<img>` that says logo, the app icon, the share picture or the page
+icon, each 200 px or more on the shorter side and picked by eye, never automatic; or an uploaded file, `add_logo_url`, staged in
+`vegan-media/media/listings/_new/`; or the first letter for now; `add_create` copies the pick into
+`media/listings/<slug>/logo-*`, never hot-linked, with `details.logo_source` admin or website and `details.logo_checked`; SVG
+logos are not read); What it is (the kind and how Vegan, both picked on purpose, "Not a Vegan business" for a store or service;
 an optional about); Add it (`add_create`: live at once, refused as `already_listed` with the slug when the same Google place or name
 and city is on the Directory; a business waiting in the backlog with the same place goes live instead of a second copy;
 `crawl_source` `admin`, `details.added_by_hand`, a team note). The nightly essentials pass fills what is still empty. **Paste a

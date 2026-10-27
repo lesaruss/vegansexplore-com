@@ -19,7 +19,7 @@
        is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
        (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>).
        Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"):
-       Add a listing (#add/1 to #add/4: Find it on Google, The details, What it is, Add it; ve-discover add_search, add_create)
+       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create)
        and Paste a list (#paste: one business a line, checked like the backlog and waiting in New places; ve-discover paste_list). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
@@ -107,6 +107,14 @@
     .radios{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px;}
     .radios label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;margin:0;}
     .fix .radios input,.radios input{accent-color:var(--ve-green-deep);margin-top:3px;width:auto;min-height:0;padding:0;flex:0 0 auto;}
+    .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px;margin:0 0 10px;}
+    .logo-pick{display:flex;gap:10px;align-items:center;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;margin:0;}
+    .logo-pick input{accent-color:var(--ve-green-deep);flex:0 0 auto;width:auto;min-height:0;}
+    .logo-pick small{display:block;font-weight:500;color:var(--ve-text-75);}
+    .logo-img{flex:0 0 56px;width:56px;height:56px;border-radius:10px;border:1px solid var(--ve-border);background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .logo-img img{width:100%;height:100%;object-fit:contain;}
+    .logo-letter{background:var(--ve-green-deep);color:#fff;font-size:24px;font-weight:900;}
+    .logo-sum{width:56px;height:56px;object-fit:contain;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
     .radios small{display:block;font-weight:500;color:var(--ve-text-75);}
   </style>
 </head>
@@ -338,13 +346,13 @@
         });
       }
 
-      // ---- Add a listing: four steps, one per view (#add/1 to #add/4) ----
-      var ADD_STEPS = ['Find it', 'The details', 'What it is', 'Add it'];
+      // ---- Add a listing: five steps, one per view (#add/1 to #add/5) ----
+      var ADD_STEPS = ['Find it', 'The details', 'Logo', 'What it is', 'Add it'];
       var VEGAN = [['fully_vegan', '100% Vegan', 'Everything they sell is Vegan.'], ['vegan_options', 'Vegan options', 'A clear Vegan menu or section.'],
         ['vegan_friendly', 'Vegan-friendly', 'A few Vegan choices.'], ['', 'Not a Vegan business', 'A store or a service, not Vegan itself.']];
       var DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       var add = null;
-      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
+      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
       function stepHead(n) {
         return '<div class="steps">' + ADD_STEPS.map(function (t, i) { return '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
       }
@@ -355,7 +363,7 @@
       function fromPlace(p) {
         var f = add.f;
         f.name = p.name || add.q; f.street = p.street || ''; f.city = p.city || ''; f.state = p.state || ''; f.zip = p.zip || ''; f.country = p.country || '';
-        f.phone = p.phone || ''; f.website = p.website || ''; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
+        f.phone = p.phone || ''; f.website = p.website || ''; f.instagram = ''; f.facebook = ''; f.tiktok = ''; f.logo = null; add.site = null; add.logoPreview = ''; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
         if (!f.about && p.summary) f.about = p.summary;
       }
       function viewAdd(n) {
@@ -381,28 +389,45 @@
               '<div class="store"><label>Phone</label><input data-a="phone" type="text" value="' + esc(f.phone) + '" placeholder="(305) 555-0100"></div>' +
               '<div><label>Website</label><input data-a="website" type="text" value="' + esc(f.website) + '" placeholder="https://..."></div>' +
               '<div><label>Instagram</label><input data-a="instagram" type="text" value="' + esc(f.instagram) + '" placeholder="@handle"></div>' +
+              '<div><label>Facebook</label><input data-a="facebook" type="text" value="' + esc(f.facebook) + '" placeholder="facebook.com/..."></div>' +
+              '<div><label>TikTok</label><input data-a="tiktok" type="text" value="' + esc(f.tiktok) + '" placeholder="@handle"></div>' +
+              '<p class="hint wide" id="ad-site" role="status"></p>' +
               '<div class="wide store"><label>Hours</label><div class="hours">' + DAYS_ALL.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(f.hours[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') + '</div></div>' +
             '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(2, 'Next');
         } else if (n === 3) {
+          var logos = (add.site && add.site.logos) || [];
+          html += '<h2>Logo</h2><p class="hint" style="margin:0 0 10px">Pick their logo from their website, or upload the file. Check it by eye: it shows on their card and page. At least 200 px on the shorter side. With no logo, the card shows the first letter of their name.</p>' +
+            '<div class="logos" id="ad-logos">' +
+              logos.map(function (g, i) { return '<label class="logo-pick"><input type="radio" name="ad-logo" value="w' + i + '"' + (f.logo && f.logo.url === g.url ? ' checked' : '') + '><span class="logo-img"><img src="' + esc(g.url) + '" alt="" loading="lazy"></span><span>' + esc(g.from) + '<small>' + g.w + ' x ' + g.h + '</small></span></label>'; }).join('') +
+              (f.logo && f.logo.path ? '<label class="logo-pick"><input type="radio" name="ad-logo" value="up" checked><span class="logo-img"><img src="' + esc(add.logoPreview) + '" alt=""></span><span>Your upload<small>' + esc(add.logoSize || '') + '</small></span></label>' : '') +
+              '<label class="logo-pick"><input type="radio" name="ad-logo" value="none"' + (!f.logo ? ' checked' : '') + '><span class="logo-img logo-letter">' + esc((f.name || '?').charAt(0).toUpperCase()) + '</span><span>No logo for now<small>The first letter</small></span></label>' +
+            '</div>' +
+            '<p class="hint" id="ad-site" role="status">' + (!f.website ? 'No website to look at, so upload their logo if you have it.' : add.site ? (logos.length ? '' : 'Their website has no logo picture big enough; upload one if you have it.') : 'Looking at their website...') + '</p>' +
+            '<div class="fix-bar"><label class="btn btn-ghost" for="ad-file">Upload a logo</label><input type="file" id="ad-file" accept="image/png,image/jpeg,image/webp" hidden></div>' +
+            '<p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
+        } else if (n === 4) {
           html += '<h2>What it is</h2><div class="fix">' +
             '<div><label for="ad-kind">Kind</label><select id="ad-kind"><option value="">Pick one</option>' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === f.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select></div>' +
             '<div class="wide"><label>How Vegan</label><div class="radios">' + VEGAN.map(function (v) { return '<label><input type="radio" name="ad-vegan" value="' + v[0] + '"' + (f.vegan_status === v[0] ? ' checked' : '') + '><span>' + v[1] + '<small>' + v[2] + '</small></span></label>'; }).join('') + '</div></div>' +
             '<div class="wide"><label for="ad-about">About <span class="hint" style="text-transform:none;letter-spacing:0">(optional; the nightly pass writes one from their website if you leave it)</span></label><textarea id="ad-about" maxlength="400" placeholder="What they do, in a line or two.">' + esc(f.about) + '</textarea></div>' +
-            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
+            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(4, 'Next');
         } else {
           var vl = VEGAN.filter(function (v) { return v[0] === f.vegan_status; })[0];
           var hrs = DAYS_ALL.filter(function (d) { return f.hours[d]; }).map(function (d) { return d.slice(0, 3) + ' ' + f.hours[d]; }).join(', ');
           html += '<h2>Add it</h2><dl class="facts">' +
             '<dt>Name</dt><dd>' + esc(f.name) + '</dd><dt>Kind</dt><dd>' + esc(f.category) + '</dd><dt>How Vegan</dt><dd>' + esc(vl ? vl[1] : '') + '</dd>' +
             '<dt>Where</dt><dd>' + (f.online ? 'Online only, every chapter' : esc([f.street, f.city, f.state, f.zip].filter(Boolean).join(', '))) + '</dd>' +
-            '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd><dt>Instagram</dt><dd>' + esc(f.instagram || '') + '</dd>' +
+            '<dt>Logo</dt><dd>' + (f.logo ? '<img class="logo-sum" src="' + esc(f.logo.url || add.logoPreview) + '" alt="">' : 'The first letter') + '</dd>' +
+            '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd>' +
+            '<dt>Socials</dt><dd>' + esc([f.instagram && 'Instagram ' + f.instagram, f.facebook && 'Facebook ' + f.facebook.replace(/^https?:\/\/(www\.)?/, ''), f.tiktok && 'TikTok ' + f.tiktok].filter(Boolean).join(' · ') || 'None') + '</dd>' +
             (f.online ? '' : '<dt>Hours</dt><dd>' + esc(hrs) + '</dd>') + '<dt>About</dt><dd>' + esc(f.about || '') + '</dd></dl>' +
             '<p class="hint" style="margin-top:12px">It goes live on the Directory now. Food places that are Vegan options or Vegan-friendly wait in Being vetted until members vote, unless you vet them here afterwards.</p>' +
-            '<p class="msg" id="ad-msg" role="status"></p>' + stepBar(4, 'Add to the Directory');
+            '<p class="msg" id="ad-msg" role="status"></p>' + stepBar(5, 'Add to the Directory');
         }
         V().innerHTML = html + '</section>';
         if (n === 1) wireFind();
-        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); }
+        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); readSite(); }
+        if (n === 3) wireLogo();
         var nx = $('ad-next'); if (nx) nx.addEventListener('click', function () { nextStep(n); });
         if (nx && n > 1) ['input', 'change'].forEach(function (t) { nx.closest('section').addEventListener(t, function () { $('ad-msg').textContent = ''; }); });
       }
@@ -433,6 +458,64 @@
         $('ad-hand').addEventListener('click', function () { add.q = $('ad-q').value.trim(); add.f = freshAdd().f; add.f.name = add.q; location.hash = '#add/2'; });
         wirePicks();
       }
+      // Their website's socials and logo pictures (ve-discover add_site), read once per website.
+      function readSite() {
+        var f = add.f, site = f.website, out = $('ad-site');
+        if (!site) { if (out) out.textContent = ''; return; }
+        if (add.site && add.siteFor === site) return showSite();
+        if (out) out.textContent = 'Looking at their website for their socials and logo...';
+        add.siteFor = site; add.site = null;
+        disc({ action: 'add_site', website: site }).then(function (d) {
+          if (add.siteFor !== site) return;
+          add.site = d.ok ? d : { logos: [], error: d.error || 'no answer' };
+          showSite();
+        }).catch(function () { if (add.siteFor === site) { add.site = { logos: [], error: 'no answer' }; showSite(); } });
+      }
+      function showSite() {
+        var d = add.site, f = add.f, found = [], step = (location.hash.match(/^#add\/(\d)/) || [])[1];
+        [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['tiktok', 'TikTok']].forEach(function (k) {
+          if (!d[k[0]]) return;
+          var el = V().querySelector('[data-a="' + k[0] + '"]');
+          if (el && !el.value.trim()) { el.value = d[k[0]]; found.push(k[1]); }
+          if (!f[k[0]]) { f[k[0]] = d[k[0]]; if (!el && found.indexOf(k[1]) < 0) found.push(k[1]); }
+        });
+        if (step === '2' && $('ad-site')) $('ad-site').textContent = d.error ? d.error + ', so add their socials by hand if you know them.' : found.length ? 'Found ' + found.join(', ').replace(/, ([^,]*)$/, ' and $1') + ' on their website. Check they are theirs.' : 'No socials on their website. Add them by hand if you know them.';
+        if (step === '3') viewAdd(3);
+      }
+      function wireLogo() {
+        var f = add.f;
+        if (f.website && !(add.site && add.siteFor === f.website)) readSite();
+        Array.prototype.forEach.call(V().querySelectorAll('input[name="ad-logo"]'), function (r) {
+          r.addEventListener('change', function () {
+            if (r.value === 'none') f.logo = null;
+            else if (r.value === 'up') f.logo = { path: add.logoPath };
+            else f.logo = { url: add.site.logos[+r.value.slice(1)].url };
+          });
+        });
+        $('ad-file').addEventListener('change', function () {
+          var file = this.files && this.files[0], msg = $('ad-msg'); if (!file) return;
+          if (!/^image\/(png|jpeg|webp)$/.test(file.type)) { msg.textContent = 'Use a PNG, JPEG or WebP picture.'; return; }
+          if (file.size > 15728640) { msg.textContent = 'That picture is over 15 MB.'; return; }
+          var src = URL.createObjectURL(file), img = new Image();
+          img.onload = function () {
+            if (Math.min(img.naturalWidth, img.naturalHeight) < 200) { msg.textContent = 'That picture is ' + img.naturalWidth + ' x ' + img.naturalHeight + '. A logo needs to be at least 200 px on the shorter side.'; return; }
+            msg.className = 'msg'; msg.textContent = 'Uploading...';
+            disc({ action: 'add_logo_url', content_type: file.type, bytes: file.size }).then(function (u) {
+              if (!u || !u.signed_url) throw new Error(u && u.message || 'upload');
+              var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', file.type); x.setRequestHeader('x-upsert', 'true');
+              x.onload = function () {
+                if (x.status >= 300) { msg.className = 'msg err'; msg.textContent = 'The upload did not go through. Try again.'; return; }
+                add.logoPath = u.path; add.logoPreview = src; add.logoSize = img.naturalWidth + ' x ' + img.naturalHeight; f.logo = { path: u.path };
+                viewAdd(3);
+              };
+              x.onerror = function () { msg.className = 'msg err'; msg.textContent = 'The upload did not go through. Check your connection and try again.'; };
+              x.send(file);
+            }).catch(function (e) { msg.className = 'msg err'; msg.textContent = e.message === 'upload' ? 'Could not start the upload. Try again.' : e.message; });
+          };
+          img.onerror = function () { msg.textContent = 'That file did not open as a picture.'; };
+          img.src = src;
+        });
+      }
       function nextStep(n) {
         var f = add.f, msg = $('ad-msg');
         if (n === 2) {
@@ -443,19 +526,21 @@
           if (!f.online && !f.city) { msg.textContent = 'Give it a city, or tick Online only.'; return; }
           location.hash = '#add/3';
         } else if (n === 3) {
+          location.hash = '#add/4';
+        } else if (n === 4) {
           var v = V().querySelector('input[name="ad-vegan"]:checked');
           f.category = $('ad-kind').value; f.about = $('ad-about').value.trim();
           if (!f.category) { msg.textContent = 'Pick what kind of business it is.'; return; }
           if (!v) { msg.textContent = 'Pick how Vegan it is.'; return; }
           f.vegan_status = v.value;
-          location.hash = '#add/4';
-        } else if (n === 4) {
+          location.hash = '#add/5';
+        } else if (n === 5) {
           var btn = $('ad-next'); btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Adding...';
           disc(Object.assign({ action: 'add_create' }, f)).then(function (d) {
             if (!d.ok) { btn.disabled = false; msg.className = 'msg err'; msg.innerHTML = esc(d.message || d.error || 'That did not save.') + (d.slug ? ' <a href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open it</a>' : ''); return; }
             add = null;
             crumbs([['Directory review', '#'], ['Add a listing']]);
-            V().innerHTML = '<section class="card"><h2>' + esc(f.name) + ' is on the Directory</h2><p class="hint" style="margin:0 0 12px">' + (d.from_backlog ? 'It was waiting in the backlog, so that listing went live instead of a second one. ' : '') + 'The nightly pass fills in what it can find (hours, socials, about, menu) where it is still empty.</p>' +
+            V().innerHTML = '<section class="card"><h2>' + esc(f.name) + ' is on the Directory</h2>' + (d.logo_error ? '<p class="msg err" style="margin:0 0 8px">' + esc(d.logo_error) + '. Add the logo from its listing editor.</p>' : '') + '<p class="hint" style="margin:0 0 12px">' + (d.from_backlog ? 'It was waiting in the backlog, so that listing went live instead of a second one. ' : '') + 'The nightly pass fills in what it can find (hours, socials, about, menu) where it is still empty.</p>' +
               '<div class="row-btns"><a class="btn" href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open its page</a><a class="btn btn-ghost" href="#l/' + d.id + '/held">Review it here</a><a class="btn btn-ghost" href="#add/1">Add another</a></div></section>';
           }).catch(function () { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'That did not save. Try again.'; });
         }
@@ -484,7 +569,7 @@
 
       function route() {
         var h = location.hash.replace(/^#/, '').split('/');
-        if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(4, +h[1] || 1)));
+        if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(5, +h[1] || 1)));
         if (h[0] === 'paste') return viewPaste();
         if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
         viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');

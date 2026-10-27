@@ -14,8 +14,13 @@
 // from Depot > Directory review > Add a listing and Paste a list:
 // POST { action: 'add_search', name, where }       super admin -> { places: [place summary + hours + listed {slug, name}] }
 // POST { action: 'add_create', name, category, vegan_status, place_id?, street, city, state, zip, country, lat, lng, phone,
-//        website, instagram, about, hours {Day: text}, online? }   super admin -> { slug, id }   live at once; a backlog copy of
+//        website, instagram, facebook, tiktok, about, hours {Day: text}, online?, logo? { path } | { url } }   super admin -> { slug, id }   live at once; a backlog copy of
 //        the same Google place is listed in its place instead of making a second listing
+// POST { action: 'add_site', website }             super admin -> { instagram, facebook, tiktok, logos: [{ url, w, h, from }] }
+//        the socials and logo pictures their own home page carries (Sean, 2026-10-27: "you should be able to pull their
+//        social media"); a logo is only ever a suggestion the admin picks by eye, then copied into our storage
+// POST { action: 'add_logo_url', content_type, bytes }  super admin -> { path, signed_url }   a logo file to upload, staged
+//        under media/listings/_new/ until add_create moves it next to the listing
 // POST { action: 'paste_list', text }              super admin -> { added, skipped }   one business a line ("Name, City, ST" or
 //        an Instagram handle): each becomes a hidden listing and a backlog check, so it waits in New places for a decision
 //
@@ -359,6 +364,131 @@ const initialsOf = (name: string) => name.replace(/[^A-Za-z0-9 ]/g, ' ').split(/
 const handleOfText = (v: string) => { const m = String(v || '').trim().match(/(?:instagram\.com\/)?@?([A-Za-z0-9._]{2,30})\/?$/); return m ? m[1] : ''; };
 const VEGAN_STATUS = ['fully_vegan', 'vegan_options', 'vegan_friendly'];
 
+// ---- Their website: socials and logo pictures ----
+// Website builders ship their own social links in templates (facebook.com/wix, instagram.com/squarespace); a site that never
+// replaced them does not have those accounts. The same rules as ve-restaurant-audit's essentials pass.
+const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username']);
+function socialOf(u: string, kind: 'ig' | 'fb' | 'tt') {
+  let h = '';
+  if (kind === 'ig') { const m = u.match(/instagram\.com\/([A-Za-z0-9._]+)/i); h = m && !['p', 'reel', 'reels', 'explore', 'stories'].includes(m[1].toLowerCase()) ? m[1].toLowerCase() : ''; }
+  else if (kind === 'tt') { const m = u.match(/tiktok\.com\/@([A-Za-z0-9._]+)/i); h = m ? m[1].toLowerCase() : ''; }
+  else {
+    const parts = u.replace(/^https?:\/\/(?:[a-z]+\.)?facebook\.com\//i, '').split(/[/?#]/).filter(Boolean);
+    h = !parts.length || /^(profile\.php|people|groups|events|share|sharer|dialog|plugins|tr)/i.test(parts[0]) ? '' : parts[0] === 'pages' ? (parts[1] && parts[2] ? `pages/${parts[1]}/${parts[2]}` : '') : parts[0].toLowerCase();
+  }
+  return h && !TEMPLATE_HANDLES.has(h.replace(/[._-]/g, '')) ? h : '';
+}
+const BROWSER_UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
+async function fetchWithin(url: string, ms: number, accept = 'text/html,*/*') {
+  const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), ms);
+  try { return await fetch(url, { signal: ctl.signal, redirect: 'follow', headers: { 'User-Agent': BROWSER_UA, Accept: accept } }); }
+  finally { clearTimeout(t); }
+}
+function imageSize(b: Uint8Array): { w: number; h: number } | null {
+  const u16 = (i: number) => (b[i] << 8) | b[i + 1], u32 = (i: number) => ((b[i] << 24) | (b[i + 1] << 16) | (b[i + 2] << 8) | b[i + 3]) >>> 0;
+  const le16 = (i: number) => b[i] | (b[i + 1] << 8), le24 = (i: number) => b[i] | (b[i + 1] << 8) | (b[i + 2] << 16);
+  if (b.length > 24 && b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47) return { w: u32(16), h: u32(20) };
+  if (b.length > 4 && b[0] === 0xff && b[1] === 0xd8) {
+    let i = 2;
+    while (i + 9 < b.length) {
+      if (b[i] !== 0xff) { i++; continue; }
+      const m = b[i + 1];
+      if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { w: u16(i + 7), h: u16(i + 5) };
+      if (m === 0xd8 || m === 0x01 || (m >= 0xd0 && m <= 0xd7)) { i += 2; continue; }
+      i += 2 + u16(i + 2);
+    }
+    return null;
+  }
+  if (b.length > 30 && String.fromCharCode(...b.slice(0, 4)) === 'RIFF' && String.fromCharCode(...b.slice(8, 12)) === 'WEBP') {
+    const f = String.fromCharCode(...b.slice(12, 16));
+    if (f === 'VP8 ') return { w: le16(26) & 0x3fff, h: le16(28) & 0x3fff };
+    if (f === 'VP8L') { const x = b[21] | (b[22] << 8) | (b[23] << 16) | (b[24] << 24); return { w: (x & 0x3fff) + 1, h: ((x >> 14) & 0x3fff) + 1 }; }
+    if (f === 'VP8X') return { w: le24(24) + 1, h: le24(27) + 1 };
+  }
+  return null;
+}
+const IMAGE_EXT: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' };
+const LOGO_MIN = 200;
+// A picture from the web: its bytes, type and size, or why not.
+async function readImage(url: string): Promise<{ bytes: Uint8Array; type: string; w: number; h: number } | { error: string }> {
+  try {
+    const r = await fetchWithin(url, 8000, 'image/*');
+    if (!r.ok) return { error: `the picture did not open (${r.status})` };
+    const buf = new Uint8Array(await r.arrayBuffer());
+    if (buf.length > 8 * 1024 * 1024) return { error: 'the picture is over 8 MB' };
+    const size = imageSize(buf);
+    if (!size) return { error: 'not a JPEG, PNG or WebP picture' };
+    const type = buf[0] === 0x89 ? 'image/png' : buf[0] === 0xff ? 'image/jpeg' : 'image/webp';
+    return { bytes: buf, type, ...size };
+  } catch (e) { return { error: String((e as Error).message || e) }; }
+}
+async function readSite(website: string) {
+  const out = { instagram: '', facebook: '', tiktok: '', logos: [] as { url: string; w: number; h: number; from: string }[], error: '' };
+  let r: Response;
+  try { r = await fetchWithin(website, 10000); } catch (e) { out.error = 'The website did not open'; return out; }
+  if (!r.ok) { out.error = `The website answered ${r.status}`; return out; }
+  const html = (await r.text()).slice(0, 600000), base = r.url || website;
+  const abs = (u: string) => { try { return new URL(u.replace(/&amp;/g, '&').trim(), base).href; } catch { return ''; } };
+  const hrefs = [...html.matchAll(/href=["']([^"']+)["']/gi)].map((m) => m[1].replace(/&amp;/g, '&').trim());
+  const pick = (re: RegExp, kind: 'ig' | 'fb' | 'tt') => { for (const h of hrefs) if (re.test(h)) { const v = socialOf(h, kind); if (v) return v; } return ''; };
+  const ig = pick(/instagram\.com\//i, 'ig'), fb = pick(/facebook\.com\//i, 'fb'), tt = pick(/tiktok\.com\/@/i, 'tt');
+  if (ig) out.instagram = '@' + ig;
+  if (fb) out.facebook = 'https://www.facebook.com/' + fb;
+  if (tt) out.tiktok = '@' + tt;
+  // Logo pictures, most likely first: an <img> that says logo, the app icon, the share picture, the page icon.
+  const cands: { url: string; from: string }[] = [];
+  const attr = (tag: string, name: string) => (tag.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']+)["']`, 'i')) || [])[1] || '';
+  for (const m of html.matchAll(/<img\b[^>]*>/gi)) {
+    const tag = m[0]; if (!/logo/i.test(tag)) continue;
+    const src = attr(tag, 'src') || attr(tag, 'data-src') || (attr(tag, 'srcset').split(',').pop() || '').trim().split(/\s+/)[0];
+    if (src && !/^data:/i.test(src)) cands.push({ url: abs(src), from: 'The logo on their website' });
+  }
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+    const rel = attr(m[0], 'rel').toLowerCase(), href = attr(m[0], 'href');
+    if (href && /apple-touch-icon/.test(rel)) cands.push({ url: abs(href), from: 'Their app icon' });
+  }
+  for (const m of html.matchAll(/<meta\b[^>]*>/gi)) {
+    if (/property=["']og:image["']|name=["']og:image["']/i.test(m[0])) { const c = attr(m[0], 'content'); if (c) cands.push({ url: abs(c), from: 'Their share picture' }); }
+  }
+  for (const m of html.matchAll(/<link\b[^>]*>/gi)) {
+    const rel = attr(m[0], 'rel').toLowerCase(), href = attr(m[0], 'href');
+    if (href && /(^|\s)icon(\s|$)/.test(rel)) cands.push({ url: abs(href), from: 'Their page icon' });
+  }
+  const seen = new Set<string>();
+  const list = cands.filter((c) => c.url && /^https?:/i.test(c.url) && !/\.svg(\?|$)/i.test(c.url) && !seen.has(c.url) && seen.add(c.url)).slice(0, 8);
+  const read = await Promise.all(list.map(async (c) => { const img = await readImage(c.url); return 'error' in img ? null : { url: c.url, w: img.w, h: img.h, from: c.from }; }));
+  out.logos = read.filter((x): x is { url: string; w: number; h: number; from: string } => !!x && Math.min(x.w, x.h) >= LOGO_MIN).slice(0, 4);
+  return out;
+}
+// Put the picked logo next to the listing in our storage (never hot-linked) and on the listing.
+async function saveLogo(l: { id: string; slug: string; details: any }, logo: any, by: string): Promise<string> {
+  const SB = 'vegan-media';
+  let bytes: Uint8Array, type: string, w: number, h: number, source: string, staged = '';
+  if (logo?.path) {
+    staged = String(logo.path);
+    if (!/^media\/listings\/_new\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(staged)) return 'The logo upload was not ours';
+    const { data: file, error } = await db.storage.from(SB).download(staged);
+    if (error || !file) return 'The logo did not finish uploading';
+    bytes = new Uint8Array(await file.arrayBuffer());
+    const size = imageSize(bytes); if (!size) return 'The logo is not a JPEG, PNG or WebP picture';
+    ({ w, h } = size); type = bytes[0] === 0x89 ? 'image/png' : bytes[0] === 0xff ? 'image/jpeg' : 'image/webp'; source = 'admin';
+  } else if (logo?.url && /^https?:\/\//i.test(String(logo.url))) {
+    const img = await readImage(String(logo.url));
+    if ('error' in img) return 'The logo from their website: ' + img.error;
+    ({ bytes, type, w, h } = img); source = 'website';
+  } else return '';
+  if (Math.min(w, h) < LOGO_MIN) return `The logo is ${w} x ${h}; it needs to be at least ${LOGO_MIN} px on the shorter side`;
+  const path = `media/listings/${l.slug}/logo-${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.${IMAGE_EXT[type]}`;
+  const { error } = await db.storage.from(SB).upload(path, bytes, { contentType: type, upsert: false });
+  if (error) return 'The logo did not save: ' + error.message;
+  if (staged) await db.storage.from(SB).remove([staged]);
+  const url = `${SUPABASE_URL}/storage/v1/object/public/${SB}/${path}`;
+  const details = { ...(l.details || {}) } as Record<string, any>;
+  details.logo_source = source; details.logo_checked = { by, at: new Date().toISOString(), w, h, ...(source === 'website' ? { from: String(logo.url).slice(0, 400) } : {}) };
+  await db.from('listings').update({ logo_url: url, details }).eq('id', l.id);
+  return '';
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -381,6 +511,27 @@ Deno.serve(async (req) => {
     catch (e) { return json({ error: String((e as Error).message) }, 502); }
   }
 
+  if (action === 'add_site') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    let site = clean(body.website, 400);
+    if (!site) return json({ error: 'website' }, 400);
+    if (!/^https?:\/\//i.test(site)) site = 'https://' + site;
+    try { new URL(site); } catch { return json({ error: 'website' }, 400); }
+    return json({ ok: true, ...(await readSite(site)) });
+  }
+
+  if (action === 'add_logo_url') {
+    if (!who.admin) return json({ error: 'admins_only' }, 403);
+    const ext = IMAGE_EXT[String(body.content_type || '')];
+    if (!ext) return json({ error: 'file_type', message: 'A logo has to be a JPEG, PNG or WebP picture.' }, 400);
+    const bytes = Number(body.bytes) || 0;
+    if (bytes <= 0 || bytes > 15728640) return json({ error: 'file_size', message: 'A logo can be up to 15 MB.' }, 400);
+    const path = `media/listings/_new/${crypto.randomUUID()}.${ext}`;
+    const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+    if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
+    return json({ ok: true, path, signed_url: up.signedUrl });
+  }
+
   if (action === 'add_create') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
     const name = clean(body.name, 140), category = clean(body.category, 60), online = body.online === true;
@@ -401,7 +552,10 @@ Deno.serve(async (req) => {
     const row: Record<string, unknown> = {
       name, category, specialty: '', description: clean(body.about, 1000), status: 'approved',
       location: online ? 'Online' : [city, state].filter(Boolean).join(', '),
-      website: link(body.website), instagram: handleOfText(clean(body.instagram, 200)) || null, phone: online ? null : (clean(body.phone, 40) || null),
+      website: link(body.website), phone: online ? null : (clean(body.phone, 40) || null),
+      instagram: (() => { const h = handleOfText(clean(body.instagram, 200)); return h ? '@' + h.toLowerCase() : null; })(),
+      tiktok: (() => { const h = handleOfText(clean(body.tiktok, 200).replace(/^https?:\/\/(www\.)?tiktok\.com\//i, '')); return h ? '@' + h.toLowerCase() : null; })(),
+      facebook: (() => { const u = clean(body.facebook, 300); if (!u) return null; const h = socialOf(/facebook\.com/i.test(u) ? u : 'https://www.facebook.com/' + u.replace(/^@/, ''), 'fb'); return h ? 'https://www.facebook.com/' + h : null; })(),
       address_street: online ? null : (clean(body.street, 160) || null), address_city: city || null, address_state: state || null,
       address_zip: online ? null : (clean(body.zip, 20) || null), address_country: online ? null : (clean(body.country, 4) || null),
       latitude: online || !Number.isFinite(+body.lat) || body.lat === null ? null : +body.lat, longitude: online || !Number.isFinite(+body.lng) || body.lng === null ? null : +body.lng,
@@ -423,13 +577,16 @@ Deno.serve(async (req) => {
         const { error } = await db.from('listings').update({ ...row, slug, details }).eq('id', wid);
         if (error) return json({ error: error.message }, 400);
         await db.from('ve_backlog_checks').update({ decision: 'listed', decided_by: who.admin.id, decided_at: at }).eq('listing_id', wid);
-        return json({ ok: true, id: wid, slug, from_backlog: true });
+        const logo_error = body.logo ? await saveLogo({ id: wid, slug, details }, body.logo, by) : '';
+        return json({ ok: true, id: wid, slug, from_backlog: true, logo_error });
       }
     }
     const slug = await freeSlug(name);
-    const { data, error } = await db.from('listings').insert({ ...row, slug, crawl_source: 'admin', details: { added_by_hand: { by, at }, admin_notes: [note] } }).select('id, slug').single();
+    const details = { added_by_hand: { by, at }, admin_notes: [note] };
+    const { data, error } = await db.from('listings').insert({ ...row, slug, crawl_source: 'admin', details }).select('id, slug').single();
     if (error) return json({ error: error.message }, 400);
-    return json({ ok: true, id: data.id, slug: data.slug });
+    const logo_error = body.logo ? await saveLogo({ id: data.id, slug: data.slug, details }, body.logo, by) : '';
+    return json({ ok: true, id: data.id, slug: data.slug, logo_error });
   }
 
   if (action === 'paste_list') {
