@@ -915,7 +915,8 @@
     </div>
 
     <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="8" data-tab-label="Communities">
-      <p class="dash-section-title">Communities</p>
+      <!-- The same banner as /communities (Sean, 2026-10-27): picking a chapter opens it, like tapping its card. -->
+      <section id="dash-com-hero" class="dash-hero-banner"></section>
       <div class="dash-community-row" id="dash-community-row"></div>
     </div>
 
@@ -1365,8 +1366,31 @@
   // none are out of sight. Tapping one brings it up on the dashboard (city pill,
   // Directory, Leaderboard, Events, Campaigns, Daily Pulse) and opens its landing page. Joined ones come
   // first and carry a Leave link; the rest carry a Join link.
+  // Opening a chapter, from its card or the banner: it becomes the dashboard's city and its landing page opens in the window.
+  function openCommunity(slug, member) {
+    switchActiveCity(slug, member);
+    renderCommunitySection(currentMember);
+    if (window.openConsoleFrame) window.openConsoleFrame('/communities/' + slug, VE_CITY_NAMES[slug]); else location.href = '/communities/' + slug;
+  }
+  // The banner on top (Sean, 2026-10-27: "it might be easier for people to use the drop down to choose the community, especially
+  // when we get a bunch of them"). It rests on All cities; a pick goes straight to that chapter and the picker resets behind it.
+  var dashComBanner = null;
+  function renderCommunityBanner(member) {
+    if (dashComBanner || !window.VECityBanner || !document.getElementById('dash-com-hero')) return;
+    dashComBanner = VECityBanner.mount('dash-com-hero', {
+      key: 'dash-communities', param: false, hubLink: false, title: 'Vegan Communities', allTitle: 'Every City', allLabel: 'All cities',
+      sub: 'Pick a chapter to go there, or browse them all below. Join the ones you call home.',
+      onChange: function (slug) {
+        if (!slug || !VE_CITY_NAMES[slug]) return;
+        openCommunity(slug, currentMember || member);
+        dashComBanner.setQuiet('');
+      }
+    });
+  }
+
   function renderCommunitySection(member) {
     currentMember = member;
+    renderCommunityBanner(member);
     var section = document.getElementById('dash-community-section');
     var row = document.getElementById('dash-community-row');
     if (!section || !row) return;
@@ -1396,9 +1420,7 @@
       tile.addEventListener('click', function (e) {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
         e.preventDefault();
-        switchActiveCity(slug, member);
-        renderCommunitySection(currentMember);
-        if (window.openConsoleFrame) window.openConsoleFrame('/communities/' + slug, VE_CITY_NAMES[slug]); else location.href = '/communities/' + slug;
+        openCommunity(slug, member);
       });
       wrap.appendChild(tile);
 

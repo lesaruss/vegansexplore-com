@@ -375,11 +375,20 @@
     /* Cards are real links now (see .flip-card.flip-front <a> markup) -
        clicking anywhere on a card goes straight to its community page, no flip. */
 
+    // Picking a chapter goes straight to it (Sean, 2026-10-27: "if you select from the drop down Atlanta, you go directly to
+    // the Atlanta community"), never a filtered list. The banner leaves the address bar alone, so Back from the chapter lands
+    // here on All cities; an old /communities?city=<slug> link forwards to the chapter.
+    var asked = new URLSearchParams(location.search).get('city');
+    if (asked && VECityBanner.hubBySlug(asked)) { location.replace('/communities/' + asked); return; }
     var banner = VECityBanner.mount('com-hero', {
-      key: 'communities', title: 'Vegan Communities', allTitle: 'Every City', allLabel: 'All cities',
-      sub: "We're building the Vegan world's home base, city by city. Pick a city, or browse them all below.",
-      onChange: function (slug) { city = slug; applyFilter(filterNow); }
+      key: 'communities', title: 'Vegan Communities', allTitle: 'Every City', allLabel: 'All cities', param: false, hubLink: false,
+      sub: "We're building the Vegan world's home base, city by city. Pick a city to go there, or browse them all below.",
+      onChange: function (slug) { if (slug) location.href = '/communities/' + slug; }
     });
+    // Back from a chapter can restore the picker as it was left (the page cache, or the browser refilling the form): show All
+    // cities again.
+    banner.el.querySelector('select').setAttribute('autocomplete', 'off');
+    window.addEventListener('pageshow', function () { setTimeout(function () { banner.setQuiet(''); }, 0); });
     // The first click into the grid folds the banner, as on the Directory.
     document.querySelector('.grid-section').addEventListener('click', function (e) { if (e.target.closest('.filter-chip')) banner.autoFold(); });
   })();
