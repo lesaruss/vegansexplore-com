@@ -19,31 +19,29 @@
 })();
 
 (function () {
+  // Trimmed and grouped (Sean, 2026-10-27: "way too many things in there... some of the stuff could probably be removed based
+  // off... an obsolete idea"; "go"). Out of the menu, still open by their address: Logos (Directory review > Logos does it),
+  // Pulse and Pulse Cities (the old article Pulse and city news), Passport Partners (the $250 / $500 plans, replaced by the $111
+  // Partner plan), Tours (2027), Passport Challenge (not running) and Import narration
+  // (part of Onboarding). Put one back by adding its row here.
   var TABS = [
-    { href: '/admin/depot/inbox', label: 'Inbox' },
-    { href: '/admin/depot/bounties', label: 'Bounties' },
-    { href: '/admin/depot/cookbook', label: 'Cookbook' },
-    { href: '/admin/depot', label: 'Library' },
-    { href: '/admin/depot/onboarding', label: 'Onboarding' },
-    { href: '/admin/depot/preview', label: 'Preview journeys' },
-    { href: '/admin/depot/pulse', label: 'Pulse' },
-    { href: '/admin/depot/sources', label: 'Sources' },
-    { href: '/admin/depot/links', label: 'Links' },
-    { href: '/admin/depot/business-outreach', label: 'Business outreach' },
-    { href: '/admin/depot/directory-review', label: 'Directory review' },
-    { href: '/admin/depot/events', label: 'Events' },
-    { href: '/admin/depot/content-index', label: 'Content index' },
-    { href: '/admin/depot/dinners', label: 'Dinner guests' },
-    { href: '/admin/depot/pulse-cities', label: 'Pulse Cities' },
-    { href: '/admin/depot/logos', label: 'Logos' },
-    { href: '/admin/depot/community-managers', label: 'Community Managers' },
-    { href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
-    { href: '/admin/depot/claims', label: 'Claims' },
-    { href: '/admin/depot/verified', label: 'Passport Partners' },
-    { href: '/admin/depot/services', label: 'Services' },
-    { href: '/admin/depot/challenge', label: 'Passport Challenge' },
-    { href: '/admin/depot/tours', label: 'Tours' },
-    { href: '/admin/depot/narration', label: 'Import narration' }
+    { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
+    { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
+    { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
+    { group: 'Directory', href: '/admin/depot/events', label: 'Events' },
+    { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
+    { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
+    { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
+    { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
+    { group: 'Content', href: '/admin/depot', label: 'Library' },
+    { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
+    { group: 'People', href: '/admin/depot/bounties', label: 'Bounties' },
+    { group: 'People', href: '/admin/depot/dinners', label: 'Dinner guests' },
+    { group: 'People', href: '/admin/depot/links', label: 'Links' },
+    { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },
+    { group: 'Site', href: '/admin/depot/preview', label: 'Preview journeys' },
+    { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
+    { group: 'Site', href: '/admin/depot/services', label: 'Services' }
   ];
   // Sean, 2026-09-29: a drop-down to the right of the page title instead of a row of tabs,
   // so the pages feel less busy. The current page is the selected option.
@@ -67,7 +65,10 @@
     var go = document.createElement('label'); go.className = 'depot-go';
     go.innerHTML = '<span>Go to</span><select aria-label="Go to another part of the Depot">' +
       (TABS.some(function (t) { return t.href === here; }) ? '' : '<option value="" selected>Choose</option>') +
-      TABS.map(function (t) { return '<option value="' + t.href + '"' + (here === t.href ? ' selected' : '') + '>' + t.label + '</option>'; }).join('') + '</select>';
+      TABS.reduce(function (h, t, k) {
+        var open = !k || TABS[k - 1].group !== t.group, close = k === TABS.length - 1 || TABS[k + 1].group !== t.group;
+        return h + (open ? '<optgroup label="' + t.group + '">' : '') + '<option value="' + t.href + '"' + (here === t.href ? ' selected' : '') + '>' + t.label + '</option>' + (close ? '</optgroup>' : '');
+      }, '') + '</select>';
     go.querySelector('select').addEventListener('change', function () { if (this.value) location.href = this.value; });
     // Put the drop-down beside the page title when the title sits right above the old tab spot.
     var h1 = el.previousElementSibling;

@@ -112,9 +112,9 @@ begin
       google_rating = case when r.use_place and r.p->>'id' is not null then (r.p->>'rating')::numeric else google_rating end,
       google_reviews_count = case when r.use_place and r.p->>'id' is not null then coalesce((r.p->>'reviews')::int, 0) else google_reviews_count end,
       google_category = case when r.use_place and r.p->>'id' is not null then r.p->>'type_name' else google_category end,
-      location = case when r.use_place and r.p->>'id' is not null then nullif(concat_ws(', ', nullif(r.p->>'city', ''), nullif(r.p->>'state', '')), '')
-                      when r.city is not null then concat_ws(', ', r.city, r.state) else location end,
-      website = coalesce(nullif(website, ''), r.site, case when r.use_place then r.p->>'website' end, r.g->>'link'),
+      location = coalesce(case when r.use_place and r.p->>'id' is not null then nullif(concat_ws(', ', nullif(r.p->>'city', ''), nullif(r.p->>'state', '')), '')
+                      when r.city is not null then concat_ws(', ', r.city, r.state) end, location, ''),
+      website = coalesce(nullif(website, ''), r.site, case when r.use_place then r.p->>'website' end, r.g->>'link', ''),
       phone = case when r.use_place and r.p->>'phone' is not null then r.p->>'phone' else phone end,
       ig_handle = coalesce(ig_handle, r.g->>'handle'),
       details = coalesce(details, '{}'::jsonb) || jsonb_build_object(
@@ -128,3 +128,10 @@ begin
   end loop;
   raise notice 'listed %, set aside %', n_list, n_hide;
 end $$;
+
+-- Run 2026-10-27 through the one-time function ve-once-ready-list (the connector held the write): 241 listed, 18 set aside.
+-- Bare Blends and Cena Vegan Catering have no crawl_source, so the join above missed them; done as their own step:
+--   Cena Vegan Catering set aside (Cena Vegan is listed); Bare Blends listed as BARE Blends, Restaurants, 100% Vegan, from Google.
+-- Rescue Dog Network and Dharma Bear's Rescue had no address at all, which the Directory reads as online (every chapter);
+-- they got address_state 'FL' so they show in South Florida only. Final: 242 listed, 19 set aside, 11 left for Sean.
+update listings set address_state = 'FL', updated_at = now() where status = 'approved' and name in ('Rescue Dog Network', 'Dharma Bear''s Rescue') and address_state is null and address_city is null;

@@ -58,7 +58,11 @@ this list follows the rule above. A new exception goes on this list first.
 - **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
   everything in `ads/` (Sean, 2026-10-04).
 
-Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. The Depot is the dashboard's last tab, for super
+Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
+trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
+Events), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links),
+Site (Onboarding, Preview journeys, Dashboard checklist, Services). Logos, Pulse, Pulse Cities, Passport Partners, Tours, Passport
+Challenge and Import narration left the menu and still open by their address. The Depot is the dashboard's last tab, for super
 admins only (Sean, 2026-10-27): `/dashboard/depot/<page>` frames `/admin/depot/<page>` (query and #view kept in the address
 bar), and a Depot page opened on its own by a super admin moves in there (`/public/depot-tabs.js`);
 each hides them when embedded (`.ve-embedded .ve-nav, .ve-embedded
@@ -1274,6 +1278,12 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   `admin_listing` like the listing editor; **Set aside** makes it `rejected` with a note,
   never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
   newly listed business joins its city's outreach through Find emails on the city card.
+- **Ready to list, sorted by Logan** (Sean, 2026-10-27: "take a good estimated guess... populate it... once I see it up and running, I
+  can go ahead and make adjustments"; migration `20261027_ready_to_list_bulk.sql`, run through a one-time function because the
+  connector held it): 242 listed with a best-guess category and How Vegan and a note saying so, 19 set aside with why (duplicates,
+  one closed, MorningStar Farms as vegetarian, American Humane and RSPCA for their farm labels), 11 left for Sean (no location to
+  go by, or Google matched the wrong business). A listing with no address reads as online and shows in every chapter, so a local
+  group known only by its chapter gets its state as well as `communities`.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
 
 ## Guide pricing, points and levels (LOCKED by Sean 2026-10-25, playbook `ve-pricing-points-passport`)
