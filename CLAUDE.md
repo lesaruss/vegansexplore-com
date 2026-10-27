@@ -746,7 +746,11 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   communities for All cities), the page's own `action` (Events: **Submit an event**, `VEEvents` `submit()`, on `/events` and
   the dashboard), and Collapse / Expand (folds on the first click into the page unless the visitor chose; kept for the visit).
   Folded, it is three rows and two columns, the right one about a quarter, at every width: the title, the chapter under it,
-  then the picker on the left; the buttons stacked to the same height on the right. No City label shows beside the picker (it
+  then the picker on the left; the buttons on the right, each its own height, stacked and centered (Sean, 2026-10-27: one
+  button "should just be the same size as normally"). **Collapse or Expand is one choice for the whole site** (Sean,
+  2026-10-27: "let it stay collapsed when they navigate through to the different pages"; `sessionStorage` `ve_banner_hero`).
+  On the dashboard every banner runs edge to edge, square, like the public pages (`.dash-hero-banner`, and the Daily Pulse's
+  frame, `.ve-in-dash` in `pulse.html`). No City label shows beside the picker (it
   pushed it out on phones; screen readers still hear it), so the picker sits flush left under the title, and on phones a 22px
   gap keeps it clear of the buttons (Sean, 2026-10-26). Folded, the title (Vegan Directory, Vegan Events) is always one line: it
   shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). The
@@ -789,9 +793,14 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
 `/communities/<slug>/`, its slug in the rewrite, and its three `ad_placements` rows. Change a hub in
 `hub.html` once and every city gets it.
 
-- Menu: one dropdown at every width (no scrolling tab row), sections Daily Pulse, Events, Directory,
-  Opportunities, Bounties, Community Board, Members and Rewards (the last two for members). The
-  address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
+- **The banner is the shared one** (Sean, 2026-10-27: "the same look and feel as everywhere else"): `VECityBanner` (`hubBanner`),
+  **Vegan Community** over the city, its picker (another city opens its hub on the same section; All cities opens `/communities`,
+  or `/directory` from the Directory section), the rotating cities and the Preview / Member badge (`meta`), **Get your Passport**
+  (`/passport?community=<slug>#/join`; **Dashboard** signed in) and Page tour (open only). Folded it is the Directory's bar: the
+  picker, Get your Passport and Expand. The old black bar is gone.
+- **No Section menu** (Sean, 2026-10-27: "the navigation's at the top"): the dropdown under the banner is gone. Sections still
+  open by `?tab=` (news, events, directory, opportunities, bounties, board, members, rewards) and the hub's Page tour walks them.
+  The address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
   Community Partners is hidden but kept in the page; Chat was removed (it showed sample threads).
 - The Board and Bounties open inside the hub, under the community, in a frame
   (`/board?community=<slug>&hub=1`, `/bounties?...&hub=1`, which hide their own city picker). The

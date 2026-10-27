@@ -8,7 +8,7 @@
   <meta name="description" content="The Daily Pulse, every chapter's Vegan community board: today's briefing and its conversation, jobs, classifieds, fosters, rescues and topic suggestions from the Vegans Explore community.">
   <!-- Inside the dashboard window the Board drops its own nav and footer, the way the Depot
        pages do; on the public site it keeps both. -->
-  <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  <script>try { if (window.self !== window.top && window.parent.location.origin === location.origin) document.documentElement.classList.add('ve-embedded'); if (!/[?&]hub=1/.test(location.search)) document.documentElement.classList.add('ve-in-dash'); } catch (e) {}
   // Inside a city hub (?hub=1) the board is that city's, so its city picker is hidden.
   if (/[?&]hub=1/.test(location.search)) document.documentElement.classList.add('in-hub');</script>
   <style>.in-hub .hub-hide { display: none !important; }</style>
@@ -194,7 +194,11 @@
     .ve-embedded .overlay { position: absolute; min-height: 100%; padding-top: calc(var(--ve-view-top, 0px) + 24px); }
     /* The Passport window (ve-votes.js) opens where the member is looking inside the dashboard frame. */
     .ve-embedded #ve-vote-modal { position: absolute !important; min-height: 100%; align-items: flex-start !important; padding-top: calc(var(--ve-view-top, 0px) + 40px) !important; }
-    .ve-embedded .vcb { margin-top: 0; border-radius: 14px; overflow: hidden; }
+    /* In the dashboard window (not a city hub's frame, ?hub=1): the banner runs edge to edge, square, and the page lines up with the
+       dashboard's 32px sides (16px on phones), as on its other tabs (Sean, 2026-10-27). */
+    .ve-embedded .vcb { margin-top: 0; border-radius: 0; }
+    .ve-in-dash .wrap { padding: 0 32px; }
+    @media (max-width: 700px) { .ve-in-dash .wrap { padding: 0 16px; } }
 
     @media (max-width: 720px) {
       .ve-embedded .wrap { padding: 0 14px; }

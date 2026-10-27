@@ -220,28 +220,8 @@
     .btn-partner { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 11px 22px; border-radius: 4px; text-decoration: none; background: transparent; color: var(--ve-orange-dark); border: 2px solid var(--ve-orange); transition: all 0.15s; white-space: nowrap; }
     .btn-partner:hover { background: var(--ve-orange); color: #fff; }
 
-    /* STICKY MEMBER BAR */
-    .member-bar { background: #1a1a1a; padding: 14px 56px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-    .member-bar-actions { display: flex; align-items: center; gap: 14px; }
-    .member-bar-toggle { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 8px; flex-shrink: 0; background: none; border: 1px solid rgba(255,255,255,0.25); border-radius: 20px; color: rgba(255,255,255,0.85); cursor: pointer; transition: border-color 0.15s, color 0.15s; }
-    .member-bar-toggle:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
-    .member-bar-toggle:focus-visible { outline: 2px solid var(--ve-green); outline-offset: 2px; }
-    .mb-toggle-caret { flex-shrink: 0; transition: transform 0.2s ease; }
-    .member-bar.mb-collapsed .mb-toggle-caret { transform: rotate(180deg); }
-    .mb-toggle-label { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-    .member-bar-left { display: flex; align-items: center; gap: 16px; min-width: 0; flex-wrap: wrap; }
-    .mb-breadcrumb { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; }
-    .mb-breadcrumb .mb-city { max-width: 100%; min-width: 0; }
-    .mb-breadcrumb a { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); text-decoration: none; transition: color 0.15s; }
-    .mb-breadcrumb a:hover { color: rgba(255,255,255,0.85); }
-    .mb-breadcrumb span { font-size: 11px; color: rgba(255,255,255,0.25); }
-    .mb-breadcrumb .current { color: rgba(255,255,255,0.85); }
-    /* Every community from the hub (Sean, 2026-10-25): the crumb is a city picker, the way the Directory's is. */
-    .mb-city { appearance: none; -webkit-appearance: none; font-family: inherit; font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; background: rgba(255,255,255,0.08) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 14px center; border: 1px solid rgba(255,255,255,0.35); border-radius: 6px; padding: 8px 44px 8px 12px; cursor: pointer; }
-    .mb-city:hover { border-color: rgba(255,255,255,0.6); }
-    .mb-city option { color: #1a1a1a; text-transform: none; }
-    .hero { transition: max-height 0.32s ease, min-height 0.32s ease, opacity 0.25s ease; }
-    .hero.hero-collapsed { min-height: 0; max-height: 0; opacity: 0; }
+    /* The banner's line of cities and the badge (public/ve-city-banner.js meta). */
+    #hero-section .hero-meta { margin: 0; }
 
     /* FOCUS */
     :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
@@ -262,27 +242,13 @@
       .hero-overlay { background: linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.9) 45%, rgba(0,0,0,0.62) 68%, rgba(0,0,0,0.15) 92%); }
       .hero-content { padding: 0 24px 44px; text-align: center; max-width: 100%; }
       .hero-eyebrow { justify-content: center; }
-      .hero-meta { justify-content: center; }
       .hero-actions { justify-content: center; }
       .hub-section { padding: 36px 24px 56px; }
       .news-grid { grid-template-columns: 1fr; }
       .dir-grid { grid-template-columns: 1fr; }
       .partners-grid { grid-template-columns: 1fr; }
-      .member-bar { padding: 14px 24px; }
-      /* Phones (Sean, 2026-10-25): the hero's words and buttons centered on the page. The bar is one row (Sean,
-         2026-10-26): the city picker, then Collapse on the right; Get Passport or Dashboard and Page tour are in the hero. */
-      .hero-eyebrow::after { content: ''; width: 20px; height: 2px; background: var(--ve-green); }
       .hero-meta { gap: 12px 16px; }
       .hero-divider-v { display: none; }
-      .member-bar { flex-wrap: nowrap; align-items: stretch; gap: 10px; }
-      .member-bar-left { flex: 1 1 auto; flex-wrap: nowrap; gap: 10px; min-width: 0; }
-      .mb-breadcrumb { flex: 1; }
-      .mb-breadcrumb .mb-city { width: 100%; }
-      .member-bar-actions { flex: 0 0 auto; gap: 10px; }
-      .member-bar-toggle, .mb-city { min-height: 44px; box-sizing: border-box; }
-    }
-    @media (max-width: 480px) {
-      .member-bar { padding: 12px 16px; gap: 8px; }
     }
 
     /* ── Locked panel ── */
@@ -318,11 +284,6 @@
     .hub-content-grid{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start}
     @media(max-width:900px){.hub-content-grid{grid-template-columns:1fr}}
     /* ---- The shared hub (Sean, 2026-10-05: South Florida is the prototype; every city gets its layout) ---- */
-    /* One menu at every width: a dropdown (the scrolling tab row was "a little much"). */
-    .hub-menu { display: flex; align-items: center; gap: 14px; padding: 16px 56px; border-bottom: 1px solid var(--ve-border); flex-wrap: wrap; }
-    .hub-menu label { font-size: 10px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ve-text-50); }
-    .hub-menu select { min-width: 280px; font-family: 'Montserrat', sans-serif; font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 44px 12px 16px; border: 1.5px solid var(--ve-green); border-radius: 6px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%232d7d31'/%3E%3C/svg%3E") no-repeat right 16px center; color: var(--ve-green-dark); cursor: pointer; appearance: none; -webkit-appearance: none; -moz-appearance: none; }
-    .hub-menu select:focus { border-color: var(--ve-green-dark); }
     /* The billboard sits beside most sections; Members, Bounties and the Board take the full width. */
     .hub-content-sidebar { padding: 48px 40px 0 0; position: sticky; top: calc(var(--ve-nav-h, 0px) - 32px); } /* the ad stays in view, 16px under the menu */
     .hub-content-grid.hub-wide { grid-template-columns: 1fr; }
@@ -359,66 +320,40 @@
   <script src="/public/ve-region-directory.js"></script>
   <script src="/public/hub-community.js"></script>
 
-  <!-- HERO -->
-  <section class="hero" id="hero-section" aria-labelledby="hub-heading">
-    <div class="hero-photo" aria-hidden="true"><img id="hub-banner" src="" alt=""></div>
-    <div class="hero-overlay" aria-hidden="true"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow" aria-hidden="true">Community Hub</p>
-      <h1 id="hub-heading"></h1>
-      <div class="hero-meta" aria-label="Community details">
-        <span class="hero-region" id="hub-regions"></span>
-        <div class="hero-divider-v" aria-hidden="true"></div>
-        <div class="hero-access" aria-label="Membership access"><span class="access-badge passport" id="hub-access">Preview</span></div>
-      </div>
-      <div class="hero-actions">
-        <a href="/passport#/join" class="btn-join" id="hub-join">Get Passport</a>
-        <a href="/welcome" class="btn-outline-light" id="hub-second">Page tour</a>
-      </div>
-    </div>
-  </section>
+  <!-- The city's banner is the shared one (Sean, 2026-10-27: "the same look and feel as everywhere else"): open, the city, its
+       cities and the badge, Get your Passport (Dashboard when signed in) and Page tour; folded, the same bar as the Directory and
+       Events: Vegan Community over the city, the picker, Get your Passport and Expand. The Section menu under it is gone (Sean:
+       "the navigation's at the top"); ?tab= still opens a section. public/ve-city-banner.js -->
+  <script src="/public/ve-city-banner.js"></script>
+  <section id="hero-section"></section>
   <script>
     (function () {
       var h = window.HUB; if (!h) return;
-      var img = document.getElementById('hub-banner'); img.src = h.page.banner; img.alt = h.page.alt;
-      document.getElementById('hub-heading').innerHTML = h.page.short + '<br><em>Vegans</em>';
-      document.getElementById('hub-regions').innerHTML = h.page.regions;
-      // Who is looking (Sean, 2026-10-25: "anybody can be a part of any community"): signed out, Get Passport; signed in,
-      // Dashboard (Sean, 2026-10-26). Page tour is the second button for both (ve-tour.js
-      // puts it there; Sean, 2026-10-26). The badge reads Preview until they are a member.
-      var join = document.getElementById('hub-join'), second = document.getElementById('hub-second');
       var me = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? (VEAuth.getMember && VEAuth.getMember()) || {} : null;
-      if (me) {
-        join.textContent = 'Dashboard'; join.href = '/dashboard';
-        if (me.membership_status === 'active') document.getElementById('hub-access').textContent = 'Member';
-      } else {
-        join.href = '/passport?community=' + h.slug + '#/join';
-      }
+      window.hubBanner = VECityBanner.mount('hero-section', {
+        key: 'hub', eyebrow: 'Community Hub', title: 'Vegan Community', param: false, hubLink: false, initial: h.slug,
+        sub: 'Everything Vegan across ' + h.page.area + '. Pick another city any time.',
+        meta: '<div class="hero-meta" aria-label="Community details"><span class="hero-region" id="hub-regions">' + h.page.regions + '</span>' +
+          '<div class="hero-divider-v" aria-hidden="true"></div><div class="hero-access" aria-label="Membership access"><span class="access-badge passport" id="hub-access">' +
+          (me && me.membership_status === 'active' ? 'Member' : 'Preview') + '</span></div></div>',
+        // Signed out, the Passport; signed in, the dashboard. Page tour (ve-tour.js takes #hub-second) shows while it is open.
+        actions: [
+          me ? { label: 'Dashboard', href: '/dashboard', id: 'hub-join', go: true }
+             : { label: 'Get your Passport', href: '/passport?community=' + h.slug + '#/join', id: 'hub-join', go: true },
+          { label: 'Page tour', href: '/welcome', id: 'hub-second', open: true }
+        ],
+        // Another city opens its hub on the same section; All cities opens the Directory from the Directory, else every community.
+        onChange: function (slug) {
+          if (slug === h.slug) return;
+          var tab = new URLSearchParams(location.search).get('tab');
+          if (!slug) { location.href = tab === 'directory' ? '/directory' : '/communities'; return; }
+          location.href = '/communities/' + encodeURIComponent(slug) + (tab ? '?tab=' + encodeURIComponent(tab) : '');
+        }
+      });
+      // Back from another city can leave the picker on it: show this city again.
+      window.addEventListener('pageshow', function () { setTimeout(function () { window.hubBanner.setQuiet(h.slug); }, 0); });
     })();
   </script>
-
-  <!-- MEMBER BAR: collapses the hero -->
-  <div class="member-bar" id="member-bar" role="complementary" aria-label="Community hub banner control">
-    <!-- The city picker on the left, Collapse on the right, at every width (Sean, 2026-10-26). -->
-    <div class="member-bar-left">
-      <nav class="mb-breadcrumb" aria-label="Breadcrumb">
-        <label class="visually-hidden" for="hub-crumb">Community</label>
-        <select class="mb-city" id="hub-crumb" aria-current="page"></select>
-      </nav>
-    </div>
-    <div class="member-bar-actions">
-      <button type="button" class="member-bar-toggle" id="member-bar-toggle" aria-expanded="true" aria-controls="hero-section" onclick="toggleMemberBar()">
-        <svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
-        <span class="mb-toggle-label" id="member-bar-toggle-label">Collapse</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- MENU: one dropdown at every width -->
-  <div class="hub-menu">
-    <label for="hub-tab-select">Section</label>
-    <select id="hub-tab-select" onchange="switchTab(this.value)"></select>
-  </div>
 
   <div class="hub-content-grid" id="hub-content-grid">
   <div class="hub-content-main">
@@ -635,18 +570,6 @@
   })();
 
   // City words in the copy: {name}, {brand}, {area}.
-  // The crumb picks the community (Sean, 2026-10-25: "make it similar to how the directory is, where you can see the all
-  // cities option... so you can navigate between the communities"). A city keeps the section you are on; All cities
-  // opens the whole Directory from the Directory section, else the list of communities.
-  var crumb = document.getElementById('hub-crumb');
-  crumb.innerHTML = '<option value="">All cities</option>' + (window.VE_HUBS || []).map(function (h) {
-    return '<option value="' + esc(h.slug) + '"' + (h.slug === SLUG ? ' selected' : '') + '>' + esc(h.name) + '</option>';
-  }).join('');
-  crumb.addEventListener('change', function () {
-    var tab = new URLSearchParams(location.search).get('tab');
-    if (!crumb.value) { location.href = tab === 'directory' ? '/directory' : '/communities'; return; }
-    location.href = '/communities/' + encodeURIComponent(crumb.value) + (tab ? '?tab=' + encodeURIComponent(tab) : '');
-  });
   document.querySelectorAll('[data-hub-text]').forEach(function (el) {
     el.textContent = el.getAttribute('data-hub-text').replace(/\{name\}/g, HUB.name).replace(/\{brand\}/g, P.brand).replace(/\{area\}/g, P.area);
   });
@@ -664,30 +587,16 @@
     { id: 'members', label: 'Members', locked: true, wide: true },
     { id: 'rewards', label: 'Rewards', locked: true }
   ];
-  var select = document.getElementById('hub-tab-select');
-  select.innerHTML = TABS.map(function (t) {
-    return '<option value="' + t.id + '">' + (t.locked && !signedIn ? '🔒 ' : '') + esc(t.label) + '</option>';
-  }).join('');
   function tabById(id) { return TABS.filter(function (t) { return t.id === id; })[0]; }
-
-  function setMemberBarCollapsed(collapsed) {
-    var bar = document.getElementById('member-bar'), btn = document.getElementById('member-bar-toggle');
-    var label = document.getElementById('member-bar-toggle-label'), hero = document.getElementById('hero-section');
-    bar.classList.toggle('mb-collapsed', collapsed);
-    hero.classList.toggle('hero-collapsed', collapsed);
-    btn.setAttribute('aria-expanded', String(!collapsed));
-    label.textContent = collapsed ? 'Expand' : 'Collapse';
-  }
-  window.toggleMemberBar = function () { setMemberBarCollapsed(!document.getElementById('member-bar').classList.contains('mb-collapsed')); };
 
   // The address bar carries the section (?tab=), so back and shared links land on it.
   function switchTab(id, opts) {
     opts = opts || {};
     var t = tabById(id) || TABS[0]; id = t.id;
-    if (!opts.initial) setMemberBarCollapsed(true);
+    // Opening a section folds the banner, unless the visitor chose open or folded with its button.
+    if (!opts.initial && window.hubBanner) window.hubBanner.autoFold();
     document.querySelectorAll('.hub-section').forEach(function (s) { s.classList.toggle('active', s.id === 'tab-' + id); });
     document.getElementById('hub-content-grid').classList.toggle('hub-wide', !!t.wide);
-    select.value = id;
     if (t.frame) openFrame(t);
     if (!opts.noPush) {
       var u = new URL(location.href);
