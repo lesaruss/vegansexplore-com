@@ -730,7 +730,9 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   pushed it out on phones; screen readers still hear it), so the picker sits flush left under the title, and on phones a 22px
   gap keeps it clear of the buttons (Sean, 2026-10-26). Folded, the title (Vegan Directory, Vegan Events) is always one line: it
   shrinks to fit its column (down to 12px) rather than wrap, since a second line made the buttons taller (Sean, 2026-10-26). The
-  Directory, Events and Communities wear it; on `/communities` the pick narrows the city cards under it. A new browse page
+  Directory, Events and Communities wear it; on `/communities` and the dashboard's Communities tab a pick goes straight to that chapter (Sean,
+  2026-10-27: "you go directly to the Atlanta community"; `param: false`, no View community button, the picker back on All
+  cities when you come back; an old `/communities?city=<slug>` forwards to the chapter); the cards below stay for browsing. A new browse page
   with a banner uses it, never its own copy. The dashboard's Directory and Events tabs wear it too (Sean: "I want a similar
   look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city, All
   cities widens only that tab (`DASH_ALL` in center-console). The banner is the dashboard's city picker: the city pill and
