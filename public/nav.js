@@ -337,7 +337,7 @@
         dashboardLinkHtml +
         '<a href="/guides"' + cur('/guides') + '>Guides</a>' +
         '<a href="/pulse" id="ve-nav-pulse-link"' + (isCurrent('/pulse') || isCurrent('/guides/ve-discuss') ? ' aria-current="page"' : '') + '>Pulse</a>' +
-        '<a href="/podcast"' + (isCurrent('/podcast') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Podcasts</a>' +
+        '<a href="/media"' + (isCurrent('/media') || p.indexOf('/podcast/') === 0 ? ' aria-current="page"' : '') + '>Media</a>' +
         '<a href="/communities"' + cur('/communities') + '>Communities</a>' +
         '<a href="/directory"' + cur('/directory') + '>Directory</a>' +
         '<a href="/events"' + cur('/events') + '>Events</a>' +
