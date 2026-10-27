@@ -19,7 +19,7 @@
        is a form (ve-outreach listing_fix), and Being vetted lists the food places waiting on member votes, with Vetted by us
        (listing_vetted). Directory cards and the listing editor link here for admins (#l/<id>/<list>).
        Adding by hand (Sean, 2026-10-27: "I want to talk about adding new listings... I'm not sure exactly how I would do that"):
-       Add a listing (#add/1 to #add/4: Find it on Google, The details, What it is, Add it; ve-discover add_search, add_create)
+       Add a listing (#add/1 to #add/5: Find it on Google, The details with their socials, Logo, What it is, Add it; ve-discover add_search, add_site, add_logo_url, add_create). Logos (#logos, #logo/<id>): every open listing with no logo, made square in /public/ve-logo-editor.js; logo_queue, logo_fetch, logo_set, logo_skip
        and Paste a list (#paste: one business a line, checked like the backlog and waiting in New places; ve-discover paste_list). */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
@@ -107,6 +107,15 @@
     .radios{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px;}
     .radios label{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;margin:0;}
     .fix .radios input,.radios input{accent-color:var(--ve-green-deep);margin-top:3px;width:auto;min-height:0;padding:0;flex:0 0 auto;}
+    .logos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:8px;margin:0 0 10px;}
+    .logo-pick{font:inherit;background:#fff;text-align:left;display:flex;gap:10px;align-items:center;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);cursor:pointer;margin:0;}
+    .logo-pick input{accent-color:var(--ve-green-deep);flex:0 0 auto;width:auto;min-height:0;}
+    .logo-pick small{display:block;font-weight:500;color:var(--ve-text-75);}
+    .logo-img{flex:0 0 56px;width:56px;height:56px;border-radius:10px;border:1px solid var(--ve-border);background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .logo-img img{width:100%;height:100%;object-fit:contain;}
+    .logo-letter{background:var(--ve-green-deep);color:#fff;font-size:24px;font-weight:900;}
+    .logo-sum{width:56px;height:56px;object-fit:contain;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    @media (max-width:640px){.lg-bar{flex-direction:column;align-items:stretch;gap:8px;}.lg-bar>*{width:100%;text-align:center;justify-content:center;}.lg-bar #lg-save{order:-1;}.lg-bar .row-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}.lg-bar .row-btns>*{width:100%;}.lg-bar .row-btns>*:only-child{grid-column:1/-1;}}
     .radios small{display:block;font-weight:500;color:var(--ve-text-75);}
   </style>
 </head>
@@ -138,6 +147,7 @@
   </script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-logo-editor.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
@@ -178,7 +188,7 @@
         var rows = rowsOf(tab);
         var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
         V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone.</p>' +
-          '<div class="row-btns"><a class="btn" href="#add/1">Add a listing</a><a class="btn btn-ghost" href="#paste">Paste a list</a></div></div>' +
+          '<div class="row-btns"><a class="btn" href="#add/1">Add a listing</a><a class="btn btn-ghost" href="#paste">Paste a list</a><a class="btn btn-ghost" href="#logos">Logos</a></div></div>' +
           '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
           '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
@@ -338,13 +348,13 @@
         });
       }
 
-      // ---- Add a listing: four steps, one per view (#add/1 to #add/4) ----
-      var ADD_STEPS = ['Find it', 'The details', 'What it is', 'Add it'];
+      // ---- Add a listing: five steps, one per view (#add/1 to #add/5) ----
+      var ADD_STEPS = ['Find it', 'The details', 'Logo', 'What it is', 'Add it'];
       var VEGAN = [['fully_vegan', '100% Vegan', 'Everything they sell is Vegan.'], ['vegan_options', 'Vegan options', 'A clear Vegan menu or section.'],
         ['vegan_friendly', 'Vegan-friendly', 'A few Vegan choices.'], ['', 'Not a Vegan business', 'A store or a service, not Vegan itself.']];
       var DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       var add = null;
-      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
+      function freshAdd() { return { q: '', where: '', places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
       function stepHead(n) {
         return '<div class="steps">' + ADD_STEPS.map(function (t, i) { return '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
       }
@@ -355,7 +365,7 @@
       function fromPlace(p) {
         var f = add.f;
         f.name = p.name || add.q; f.street = p.street || ''; f.city = p.city || ''; f.state = p.state || ''; f.zip = p.zip || ''; f.country = p.country || '';
-        f.phone = p.phone || ''; f.website = p.website || ''; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
+        f.phone = p.phone || ''; f.website = p.website || ''; f.instagram = ''; f.facebook = ''; f.tiktok = ''; f.logo = null; add.site = null; add.logoPreview = ''; add.logoBlob = null; f.hours = p.hours || {}; f.place_id = p.id; f.lat = p.lat; f.lng = p.lng; f.online = false;
         if (!f.about && p.summary) f.about = p.summary;
       }
       function viewAdd(n) {
@@ -381,28 +391,41 @@
               '<div class="store"><label>Phone</label><input data-a="phone" type="text" value="' + esc(f.phone) + '" placeholder="(305) 555-0100"></div>' +
               '<div><label>Website</label><input data-a="website" type="text" value="' + esc(f.website) + '" placeholder="https://..."></div>' +
               '<div><label>Instagram</label><input data-a="instagram" type="text" value="' + esc(f.instagram) + '" placeholder="@handle"></div>' +
+              '<div><label>Facebook</label><input data-a="facebook" type="text" value="' + esc(f.facebook) + '" placeholder="facebook.com/..."></div>' +
+              '<div><label>TikTok</label><input data-a="tiktok" type="text" value="' + esc(f.tiktok) + '" placeholder="@handle"></div>' +
+              '<p class="hint wide" id="ad-site" role="status"></p>' +
               '<div class="wide store"><label>Hours</label><div class="hours">' + DAYS_ALL.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(f.hours[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') + '</div></div>' +
             '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(2, 'Next');
         } else if (n === 3) {
+          var logos = (add.site && add.site.logos) || [];
+          html += '<h2>Logo</h2><p class="hint" style="margin:0 0 10px">Drop in any picture of their logo and make it square here: drag it, zoom it, fill the background. Leave it empty and the card shows the first letter of their name.</p>' +
+            (logos.length ? '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:0 0 6px">From their website</p><div class="logos">' + logos.map(function (g, i) { return '<button type="button" class="logo-pick" data-site-logo="' + i + '"><span class="logo-img"><img src="' + esc(g.url) + '" alt="" loading="lazy"></span><span>' + esc(g.from) + '<small>' + (g.w ? g.w + ' x ' + g.h : 'Sharp at any size') + ' &middot; Use this</small></span></button>'; }).join('') + '</div>' : '') +
+            '<p class="hint" id="ad-site" role="status">' + (!f.website ? '' : add.site ? (logos.length ? '' : 'Their website has no logo picture we could find.') : 'Looking at their website...') + '</p>' +
+            '<div id="ad-editor"></div>' +
+            '<p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
+        } else if (n === 4) {
           html += '<h2>What it is</h2><div class="fix">' +
             '<div><label for="ad-kind">Kind</label><select id="ad-kind"><option value="">Pick one</option>' + KINDS.map(function (g) { return '<optgroup label="' + g[0] + '">' + g[1].map(function (c) { return '<option' + (c === f.category ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</optgroup>'; }).join('') + '</select></div>' +
             '<div class="wide"><label>How Vegan</label><div class="radios">' + VEGAN.map(function (v) { return '<label><input type="radio" name="ad-vegan" value="' + v[0] + '"' + (f.vegan_status === v[0] ? ' checked' : '') + '><span>' + v[1] + '<small>' + v[2] + '</small></span></label>'; }).join('') + '</div></div>' +
             '<div class="wide"><label for="ad-about">About <span class="hint" style="text-transform:none;letter-spacing:0">(optional; the nightly pass writes one from their website if you leave it)</span></label><textarea id="ad-about" maxlength="400" placeholder="What they do, in a line or two.">' + esc(f.about) + '</textarea></div>' +
-            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(3, 'Next');
+            '</div><p class="msg err" id="ad-msg" role="status"></p>' + stepBar(4, 'Next');
         } else {
           var vl = VEGAN.filter(function (v) { return v[0] === f.vegan_status; })[0];
           var hrs = DAYS_ALL.filter(function (d) { return f.hours[d]; }).map(function (d) { return d.slice(0, 3) + ' ' + f.hours[d]; }).join(', ');
           html += '<h2>Add it</h2><dl class="facts">' +
             '<dt>Name</dt><dd>' + esc(f.name) + '</dd><dt>Kind</dt><dd>' + esc(f.category) + '</dd><dt>How Vegan</dt><dd>' + esc(vl ? vl[1] : '') + '</dd>' +
             '<dt>Where</dt><dd>' + (f.online ? 'Online only, every chapter' : esc([f.street, f.city, f.state, f.zip].filter(Boolean).join(', '))) + '</dd>' +
-            '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd><dt>Instagram</dt><dd>' + esc(f.instagram || '') + '</dd>' +
+            '<dt>Logo</dt><dd>' + (f.logo ? '<img class="logo-sum" src="' + esc(add.logoPreview) + '" alt="">' : 'The first letter') + '</dd>' +
+            '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd>' +
+            '<dt>Socials</dt><dd>' + esc([f.instagram && 'Instagram ' + f.instagram, f.facebook && 'Facebook ' + f.facebook.replace(/^https?:\/\/(www\.)?/, ''), f.tiktok && 'TikTok ' + f.tiktok].filter(Boolean).join(' · ') || 'None') + '</dd>' +
             (f.online ? '' : '<dt>Hours</dt><dd>' + esc(hrs) + '</dd>') + '<dt>About</dt><dd>' + esc(f.about || '') + '</dd></dl>' +
             '<p class="hint" style="margin-top:12px">It goes live on the Directory now. Food places that are Vegan options or Vegan-friendly wait in Being vetted until members vote, unless you vet them here afterwards.</p>' +
-            '<p class="msg" id="ad-msg" role="status"></p>' + stepBar(4, 'Add to the Directory');
+            '<p class="msg" id="ad-msg" role="status"></p>' + stepBar(5, 'Add to the Directory');
         }
         V().innerHTML = html + '</section>';
         if (n === 1) wireFind();
-        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); }
+        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); readSite(); }
+        if (n === 3) wireLogo();
         var nx = $('ad-next'); if (nx) nx.addEventListener('click', function () { nextStep(n); });
         if (nx && n > 1) ['input', 'change'].forEach(function (t) { nx.closest('section').addEventListener(t, function () { $('ad-msg').textContent = ''; }); });
       }
@@ -433,6 +456,52 @@
         $('ad-hand').addEventListener('click', function () { add.q = $('ad-q').value.trim(); add.f = freshAdd().f; add.f.name = add.q; location.hash = '#add/2'; });
         wirePicks();
       }
+      // Their website's socials and logo pictures (ve-discover add_site), read once per website.
+      function readSite() {
+        var f = add.f, site = f.website, out = $('ad-site');
+        if (!site) { if (out) out.textContent = ''; return; }
+        if (add.site && add.siteFor === site) return showSite();
+        if (out) out.textContent = 'Looking at their website for their socials and logo...';
+        add.siteFor = site; add.site = null;
+        disc({ action: 'add_site', website: site }).then(function (d) {
+          if (add.siteFor !== site) return;
+          add.site = d.ok ? d : { logos: [], error: d.error || 'no answer' };
+          showSite();
+        }).catch(function () { if (add.siteFor === site) { add.site = { logos: [], error: 'no answer' }; showSite(); } });
+      }
+      function showSite() {
+        var d = add.site, f = add.f, found = [], step = (location.hash.match(/^#add\/(\d)/) || [])[1];
+        [['instagram', 'Instagram'], ['facebook', 'Facebook'], ['tiktok', 'TikTok']].forEach(function (k) {
+          if (!d[k[0]]) return;
+          var el = V().querySelector('[data-a="' + k[0] + '"]');
+          if (el && !el.value.trim()) { el.value = d[k[0]]; found.push(k[1]); }
+          if (!f[k[0]]) { f[k[0]] = d[k[0]]; if (!el && found.indexOf(k[1]) < 0) found.push(k[1]); }
+        });
+        if (step === '2' && $('ad-site')) $('ad-site').textContent = d.error ? d.error + ', so add their socials by hand if you know them.' : found.length ? 'Found ' + found.join(', ').replace(/, ([^,]*)$/, ' and $1') + ' on their website. Check they are theirs.' : 'No socials on their website. Add them by hand if you know them.';
+        if (step === '3' && !(add.editor && add.editor.ready())) viewAdd(3);
+      }
+      function logoFetch(url) { return disc({ action: 'logo_fetch', url: url }); }
+      function wireLogo() {
+        var f = add.f;
+        if (f.website && !(add.site && add.siteFor === f.website)) readSite();
+        add.editor = VELogoEditor.mount($('ad-editor'), { fetchUrl: logoFetch });
+        if (add.logoBlob) add.editor.load(add.logoBlob);
+        Array.prototype.forEach.call(V().querySelectorAll('[data-site-logo]'), function (b) {
+          b.addEventListener('click', function () { add.editor.load(add.site.logos[+b.dataset.siteLogo].url); });
+        });
+      }
+      // The editor's square, uploaded to the staging folder (add_logo_url); add_create or logo_set moves it next to the listing.
+      function uploadSquare(blob) {
+        return disc({ action: 'add_logo_url', content_type: 'image/jpeg', bytes: blob.size }).then(function (u) {
+          if (!u || !u.signed_url) throw new Error((u && u.message) || 'Could not start the upload. Try again.');
+          return new Promise(function (res, rej) {
+            var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', 'image/jpeg'); x.setRequestHeader('x-upsert', 'true');
+            x.onload = function () { if (x.status >= 300) rej(new Error('The upload did not go through. Try again.')); else res(u.path); };
+            x.onerror = function () { rej(new Error('The upload did not go through. Check your connection and try again.')); };
+            x.send(blob);
+          });
+        });
+      }
       function nextStep(n) {
         var f = add.f, msg = $('ad-msg');
         if (n === 2) {
@@ -443,19 +512,29 @@
           if (!f.online && !f.city) { msg.textContent = 'Give it a city, or tick Online only.'; return; }
           location.hash = '#add/3';
         } else if (n === 3) {
+          if (!add.editor || !add.editor.ready()) { f.logo = null; add.logoBlob = null; add.logoPreview = ''; location.hash = '#add/4'; return; }
+          var bt = $('ad-next'); bt.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving the logo...';
+          add.editor.toBlob().then(function (blob) {
+            return uploadSquare(blob).then(function (path) {
+              if (add.logoPreview) URL.revokeObjectURL(add.logoPreview);
+              add.logoBlob = blob; add.logoPreview = URL.createObjectURL(blob); f.logo = { path: path };
+              location.hash = '#add/4';
+            });
+          }).catch(function (e) { bt.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
+        } else if (n === 4) {
           var v = V().querySelector('input[name="ad-vegan"]:checked');
           f.category = $('ad-kind').value; f.about = $('ad-about').value.trim();
           if (!f.category) { msg.textContent = 'Pick what kind of business it is.'; return; }
           if (!v) { msg.textContent = 'Pick how Vegan it is.'; return; }
           f.vegan_status = v.value;
-          location.hash = '#add/4';
-        } else if (n === 4) {
+          location.hash = '#add/5';
+        } else if (n === 5) {
           var btn = $('ad-next'); btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Adding...';
           disc(Object.assign({ action: 'add_create' }, f)).then(function (d) {
             if (!d.ok) { btn.disabled = false; msg.className = 'msg err'; msg.innerHTML = esc(d.message || d.error || 'That did not save.') + (d.slug ? ' <a href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open it</a>' : ''); return; }
             add = null;
             crumbs([['Directory review', '#'], ['Add a listing']]);
-            V().innerHTML = '<section class="card"><h2>' + esc(f.name) + ' is on the Directory</h2><p class="hint" style="margin:0 0 12px">' + (d.from_backlog ? 'It was waiting in the backlog, so that listing went live instead of a second one. ' : '') + 'The nightly pass fills in what it can find (hours, socials, about, menu) where it is still empty.</p>' +
+            V().innerHTML = '<section class="card"><h2>' + esc(f.name) + ' is on the Directory</h2>' + (d.logo_error ? '<p class="msg err" style="margin:0 0 8px">' + esc(d.logo_error) + '. Add the logo from its listing editor.</p>' : '') + '<p class="hint" style="margin:0 0 12px">' + (d.from_backlog ? 'It was waiting in the backlog, so that listing went live instead of a second one. ' : '') + 'The nightly pass fills in what it can find (hours, socials, about, menu) where it is still empty.</p>' +
               '<div class="row-btns"><a class="btn" href="/directory/' + encodeURIComponent(d.slug) + '" target="_blank" rel="noopener">Open its page</a><a class="btn btn-ghost" href="#l/' + d.id + '/held">Review it here</a><a class="btn btn-ghost" href="#add/1">Add another</a></div></section>';
           }).catch(function () { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'That did not save. Try again.'; });
         }
@@ -482,10 +561,80 @@
         });
       }
 
+      // ---- Logos: every open listing with no logo, one at a time (#logos, #logo/<id>) ----
+      var lg = { rows: null, q: '', city: '', all: 0, done: 0 };
+      function loadLogos() { return disc({ action: 'logo_queue' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); lg.rows = d.rows; lg.all = d.all; lg.cities = d.cities; }); }
+      function logoRows() {
+        var q = lg.q.toLowerCase();
+        return lg.rows.filter(function (r) { return (!q || (r.name + ' ' + (r.city || '') + ' ' + (r.category || '')).toLowerCase().indexOf(q) >= 0) && (!lg.city || r.city === lg.city); });
+      }
+      function viewLogos() {
+        crumbs([['Directory review', '#'], ['Logos']]);
+        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(viewLogos).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
+        var rows = logoRows();
+        V().innerHTML = '<div class="home-head"><p class="sub">Every open listing with no logo, the most voted first. Open one, find their logo (their website, Instagram or a Google image search), drop or paste it in, and make it square right here. <strong>' + lg.rows.length + '</strong> to go' + (lg.done ? ', ' + lg.done + ' done this visit' : '') + '.</p></div>' +
+          '<div class="tools"><input type="search" id="lg-q" placeholder="Search a name, city or kind" value="' + esc(lg.q) + '" aria-label="Search">' +
+          '<select id="lg-city" aria-label="City"><option value="">Every city</option>' + (lg.cities || []).map(function (c) { return '<option' + (c === lg.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
+          '<section class="card">' + (rows.length
+            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>Where to look</div><div>Kind</div><div></div></div>' +
+              rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + (r.votes ? ' &middot; ' + r.votes + ' votes' : '') + '</small></div><div><small>' + esc([r.website && 'Website', r.instagram && 'Instagram', r.facebook && 'Facebook'].filter(Boolean).join(', ') || 'Google only') + (r.set_aside ? ' &middot; one set aside' : '') + '</small></div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#logo/' + r.id + '">Add logo</a></div></div>'; }).join('') + '</div>'
+            : '<p class="empty">' + (lg.rows.length ? 'Nothing matches.' : 'Every open listing has a logo.') + '</p>') + '</section>';
+        $('lg-q').addEventListener('input', function () { lg.q = this.value; var p = this.selectionStart; viewLogos(); var i = $('lg-q'); i.focus(); i.setSelectionRange(p, p); });
+        $('lg-city').addEventListener('change', function () { lg.city = this.value; viewLogos(); });
+      }
+      function viewLogo(id) {
+        if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
+        var rows = logoRows(), i = -1;
+        rows.forEach(function (r, k) { if (r.id === id) i = k; });
+        var r = rows[i] || lg.rows.filter(function (x) { return x.id === id; })[0];
+        if (!r) { location.hash = '#logos'; return; }
+        var next = rows[i + 1];
+        crumbs([['Directory review', '#'], ['Logos', '#logos'], [r.name]]);
+        var ig = String(r.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
+        var look = [
+          r.website && ['Their website', /^https?:/i.test(r.website) ? r.website : 'https://' + r.website],
+          ig && ['Instagram', 'https://www.instagram.com/' + ig + '/'],
+          r.facebook && ['Facebook', /^https?:/i.test(r.facebook) ? r.facebook : 'https://www.facebook.com/' + r.facebook],
+          ['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(r.name + ' ' + (r.city || '') + ' logo')],
+        ].filter(Boolean);
+        V().innerHTML = '<section class="card"><div class="home-head"><div><h2 style="margin:0 0 2px">' + esc(r.name) + '</h2><p class="hint" style="margin:0">' + esc([r.category, [r.city, r.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + (i >= 0 ? ' &middot; ' + (i + 1) + ' of ' + rows.length : '') + '</p></div>' +
+            '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Open its page</a></div></div>' +
+          '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">Find their logo</p>' +
+          '<div class="row-btns">' + look.map(function (x) { return '<a class="btn btn-ghost btn-sm" href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + '</a>'; }).join('') +
+            (r.set_aside ? '<button type="button" class="btn btn-ghost btn-sm" id="lg-aside">Load the one we set aside</button>' : '') + '</div>' +
+          '<p class="hint" style="margin:6px 0 14px">On their page, right-click the logo and Copy image, then paste it here (Ctrl+V or Cmd+V). You can also drag it in from the other tab, or save it and drop the file.</p>' +
+          '<div id="lg-editor"></div>' +
+          '<p class="msg" id="lg-msg" role="status"></p>' +
+          '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="#logos">Back to the list</a>' +
+            '<span class="row-btns" style="justify-content:center"><button type="button" class="btn btn-ghost" id="lg-skip">The letter is fine</button>' + (next ? '<a class="btn btn-ghost" href="#logo/' + next.id + '">Skip for now</a>' : '') + '</span>' +
+            '<button type="button" class="btn" id="lg-save" disabled>' + (next ? 'Save and next' : 'Save') + '</button></div></section>';
+        var msg = $('lg-msg'), save = $('lg-save');
+        var ed = VELogoEditor.mount($('lg-editor'), { fetchUrl: logoFetch, onChange: function (on) { save.disabled = !on; } });
+        if ($('lg-aside')) $('lg-aside').addEventListener('click', function () { ed.load(r.set_aside); });
+        function gone(okText) {
+          lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; });
+          if (next) location.hash = '#logo/' + next.id; else { location.hash = '#logos'; }
+          setTimeout(function () { var m = $('lg-msg'); if (m && okText) { m.className = 'msg'; m.textContent = okText; } }, 60);
+        }
+        save.addEventListener('click', function () {
+          save.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+          ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path }); }).then(function (d) {
+            if (!d.ok) throw new Error(d.message || d.error || 'That did not save.');
+            lg.done++; gone(r.name + ' has its logo.');
+          }).catch(function (e) { save.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
+        });
+        $('lg-skip').addEventListener('click', function () {
+          disc({ action: 'logo_skip', listing_id: r.id }).then(function (d) { if (!d.ok) throw new Error(d.error || 'save'); gone(r.name + ' keeps its letter.'); })
+            .catch(function (e) { msg.className = 'msg err'; msg.textContent = 'That did not save: ' + e.message; });
+        });
+      }
+
       function route() {
         var h = location.hash.replace(/^#/, '').split('/');
-        if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(4, +h[1] || 1)));
+        if (h[0] === 'add') return viewAdd(Math.max(1, Math.min(5, +h[1] || 1)));
         if (h[0] === 'paste') return viewPaste();
+        if (h[0] === 'logos') return viewLogos();
+        if (h[0] === 'logo' && h[1]) return viewLogo(h[1]);
         if (h[0] === 'l' && h[1]) return viewListing(h[1], h[2]);
         viewHome(TABS.some(function (t) { return t[0] === h[0]; }) ? h[0] : 'held');
       }
