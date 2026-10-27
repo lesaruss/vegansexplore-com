@@ -87,6 +87,12 @@
       min-height:42px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;
       background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
     .form select::-ms-expand{display:none;}
+    /* Also show it under (Sean, 2026-10-27: "they're a rescue and they're a nonprofit... they hit multiple things"). */
+    .pl-extra{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px;}
+    .pl-extra label{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:7px 10px;border:1px solid rgba(0,0,0,.2);border-radius:6px;background:#fff;cursor:pointer;}
+    .pl-extra label:has(input:checked){background:#EAF7EA;border-color:#2d7d31;color:#1f5f22;}
+    .pl-extra label[hidden]{display:none;}
+    .pl-h{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin:14px 0 2px;}
     textarea.note-in{font:inherit;font-size:14px;width:100%;min-height:72px;padding:9px 10px;border:1px solid rgba(0,0,0,.25);border-radius:6px;resize:vertical;}
   </style>
 </head>
@@ -109,11 +115,13 @@
   </div>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-logo-editor.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
       var AUD = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-restaurant-audit';
       var DISC = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-discover';
+      var CLAIMS = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims';
       function disc(body) { return fetch(DISC, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function aud(body) { return fetch(AUD, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       var $ = function (id) { return document.getElementById(id); };
@@ -635,28 +643,73 @@
             (site ? '<a class="btn btn-ghost btn-sm" href="' + esc(/^https?:/.test(site) ? site : 'https://' + site) + '" target="_blank" rel="noopener">Website</a>' : '') +
             (g.handle && !g.missing ? '<a class="btn btn-ghost btn-sm" href="https://www.instagram.com/' + encodeURIComponent(g.handle) + '/" target="_blank" rel="noopener">Instagram</a>' : '') +
 '</div>' +
-          '<h2>Your call</h2><div class="form">' +
-            '<label>Category<select id="pl-cat"><option value="">Pick one</option>' + (placeCache.cats || []).map(function (c) { return '<option' + (c === guessCat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
+          // The logo editor (Sean, 2026-10-27: "I like the ability to manipulate the logo too. So when we add the listing, it
+          // populates properly"): the same one as Directory review > Logos, saved with the listing when it is added.
+          '<h2>Logo</h2><p class="hint" style="margin:0 0 8px">Drop, paste or link their logo, or pick one from their website. Left empty, it shows the first letter.</p>' +
+          '<div class="row-btns" id="pl-look" style="margin:0 0 10px">' +
+            (g.handle && !g.missing ? '<a class="btn btn-ghost btn-sm" href="https://www.instagram.com/' + encodeURIComponent(g.handle) + '/" target="_blank" rel="noopener">Their Instagram</a>' : '') +
+            '<a class="btn btn-ghost btn-sm" href="https://www.google.com/search?tbm=isch&q=' + encodeURIComponent((l.name || '') + ' logo') + '" target="_blank" rel="noopener">Google Images</a></div>' +
+          '<div class="row-btns" id="pl-site-logos" style="margin:0 0 10px"></div>' +
+          '<div id="pl-logo"></div>' +
+          '<h2 style="margin-top:18px">Your call</h2><div class="form">' +
+            '<label>Main category<select id="pl-cat"><option value="">Pick one</option>' + (placeCache.cats || []).map(function (c) { return '<option' + (c === guessCat ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></label>' +
             '<label id="pl-vs-l">How Vegan<select id="pl-vs"><option value="">Pick one</option>' + VSTAT.map(function (v) { return '<option value="' + v[0] + '">' + v[1] + '</option>'; }).join('') + '</select></label></div>' +
+          '<p class="pl-h">Also show it under</p><div class="pl-extra" id="pl-extra">' + (placeCache.cats || []).map(function (c) {
+            return '<label data-c="' + esc(c) + '"><input type="checkbox" value="' + esc(c) + '"> ' + esc(c) + '</label>'; }).join('') + '</div>' +
           '<textarea class="note-in" id="pl-note" style="margin-top:10px" placeholder="Checked their menu: fully Vegan. (optional)"></textarea>' +
           '<div class="row-btns" style="margin-top:8px"><button type="button" class="btn btn-sm" id="pl-add">Add to the Directory</button><button type="button" class="btn btn-ghost btn-sm" id="pl-hide">Set aside</button></div>' +
-          '<p class="hint">Adding lists it with Google\'s address, phone and website, the category and Vegan status you picked, and a note. It then joins its city\'s outreach once we find its email. Set aside hides it with a note; nothing is deleted.</p>' +
+          '<p class="hint">Adding lists it with Google\'s address, phone and website, the logo you made, the main category and any others you ticked, how Vegan it is, and a note. It then joins its city\'s outreach once we find its email. Set aside hides it with a note; nothing is deleted.</p>' +
           '<p class="msg" id="pl-msg" role="status"></p></section>' +
           '<section class="card"><h2>Their website</h2>' + (site ? '<iframe class="frame" src="' + esc(/^https?:/.test(site) ? site : 'https://' + site) + '" title="' + esc(l.name) + ' website" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe><p class="hint">Some sites refuse to open inside another page; use the Website button then.</p>' : '<p class="empty">No website.</p>') + '</section></div>';
         // Rescues, sanctuaries, nonprofits and events are organizations: no How Vegan (Sean, 2026-10-27).
         var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Events'];
-        function syncVs() { $('pl-vs-l').style.display = ORGS.indexOf($('pl-cat').value) >= 0 ? 'none' : ''; }
-        $('pl-cat').addEventListener('change', syncVs); syncVs();
+        // Organizations need no How Vegan when every section they are in is one (a rescue that is also a nonprofit).
+        function picked() { return Array.prototype.map.call(V().querySelectorAll('#pl-extra input:checked'), function (x) { return x.value; }).filter(function (c) { return c !== $('pl-cat').value; }); }
+        function isOrg() { return ORGS.indexOf($('pl-cat').value) >= 0 && picked().every(function (c) { return ORGS.indexOf(c) >= 0; }); }
+        function syncVs() {
+          $('pl-vs-l').style.display = isOrg() ? 'none' : '';
+          Array.prototype.forEach.call(V().querySelectorAll('#pl-extra label'), function (lb) { var main = lb.dataset.c === $('pl-cat').value; lb.hidden = main; if (main) lb.querySelector('input').checked = false; });
+        }
+        $('pl-cat').addEventListener('change', syncVs); $('pl-extra').addEventListener('change', syncVs); syncVs();
+        var editor = window.VELogoEditor ? VELogoEditor.mount($('pl-logo'), { fetchUrl: function (u) { return disc({ action: 'logo_fetch', url: u }); } }) : null;
+        if (site && editor) disc({ action: 'add_site', website: site }).then(function (d) {
+          var logos = (d && d.logos) || [], box = $('pl-site-logos'); if (!box || !logos.length) return;
+          box.innerHTML = '<span class="hint" style="margin:0;align-self:center">From their website:</span>' + logos.slice(0, 4).map(function (x, i) {
+            return '<button type="button" class="btn btn-ghost btn-sm" data-sl="' + i + '" style="padding:4px"><img src="' + esc(x.url) + '" alt="Logo ' + (i + 1) + ' from their website" style="width:44px;height:44px;object-fit:contain;display:block"></button>'; }).join('');
+          Array.prototype.forEach.call(box.querySelectorAll('[data-sl]'), function (b) { b.addEventListener('click', function () { editor.load(logos[+b.dataset.sl].url); }); });
+        }).catch(function () {});
+        // The square goes to the staging folder (add_logo_url) and logo_set copies it next to the listing, as in Directory review.
+        function saveLogo() {
+          if (!editor || !editor.ready()) return Promise.resolve(false);
+          return editor.toBlob().then(function (blob) {
+            return disc({ action: 'add_logo_url', content_type: 'image/jpeg', bytes: blob.size }).then(function (u) {
+              if (!u || !u.signed_url) throw new Error('The logo upload did not start.');
+              return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg', 'x-upsert': 'true' }, body: blob }).then(function (r) {
+                if (!r.ok) throw new Error('The logo upload did not go through.');
+                return disc({ action: 'logo_set', listing_id: id, path: u.path });
+              });
+            });
+          }).then(function (x) { if (!x || !x.ok) throw new Error((x && x.message) || 'The logo did not save.'); return true; });
+        }
         function decide(decision) {
-          var msg = $('pl-msg'), cat = $('pl-cat').value, org = ORGS.indexOf(cat) >= 0, vs = org ? null : $('pl-vs').value;
+          var msg = $('pl-msg'), cat = $('pl-cat').value, org = isOrg(), vs = org ? null : $('pl-vs').value;
           if (decision === 'list' && (!cat || (!org && !vs))) { msg.className = 'msg err'; msg.textContent = org || !cat ? 'Pick its category first.' : 'Pick how Vegan it is first.'; return; }
           Array.prototype.forEach.call(V().querySelectorAll('#pl-add,#pl-hide'), function (b) { b.disabled = true; });
+          var extra = picked();
           disc({ action: 'backlog_decide', listing_id: id, decision: decision, category: cat, vegan_status: vs, note: $('pl-note').value.trim() }).then(function (x) {
             if (!x.ok) throw new Error(x.error === 'already_decided' ? 'Someone already decided this one.' : (x.error || 'That did not work.'));
             placeCache.rows = placeCache.rows.filter(function (y) { return y.listing_id !== id; });
-            msg.className = 'msg'; msg.textContent = decision === 'list' ? 'Added to the Directory.' : 'Set aside.';
+            if (decision !== 'list') return 'Set aside.';
+            // The other sections it shows under are saved the listing editor's way (ve-claims admin_listing, extra_categories).
+            var also = !extra.length ? Promise.resolve() : fetch(CLAIMS, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+              body: JSON.stringify({ action: 'admin_listing', listing_id: id, category: cat, extra_categories: extra }) }).then(function (r) { return r.json(); })
+              .then(function (d) { if (!d || !d.ok) throw new Error('its other sections did not save; add them with Edit listing'); });
+            return also.then(saveLogo).then(function (withLogo) { return withLogo ? 'Added to the Directory with its logo.' : 'Added to the Directory.'; },
+              function (e) { return 'Added to the Directory. One thing to fix: ' + e.message + ' (the logo in Directory review > Logos, sections with Edit listing).'; });
+          }).then(function (done) {
+            msg.className = 'msg'; msg.textContent = done;
             var nxt = placeCache.rows[0];
-            setTimeout(function () { location.hash = nxt ? '#place/' + nxt.listing_id : '#places/' + r.verdict; }, 700);
+            setTimeout(function () { location.hash = nxt ? '#place/' + nxt.listing_id : '#places/' + r.verdict; }, /One thing to fix/.test(done) ? 5000 : 700);
           }).catch(function (e) { msg.className = 'msg err'; msg.textContent = e.message; Array.prototype.forEach.call(V().querySelectorAll('#pl-add,#pl-hide'), function (b) { b.disabled = false; }); });
         }
         $('pl-add').addEventListener('click', function () { decide('list'); });

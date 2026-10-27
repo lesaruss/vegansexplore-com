@@ -1242,7 +1242,12 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
 - **Depot > Business outreach > New places** (`#places/<verdict>[/<city>]`, `#place/<listing>`, a card on the home): each
   verdict a tab with its count, by city; one business opens with what Google and Instagram said, links, and its website framed.
   **Add to the Directory** needs a category and how Vegan it is (100% Vegan, Vegan options, Vegan friendly), picked on purpose,
-  and fills Google's address, place id, phone and website (`backlog_decide`); **Set aside** makes it `rejected` with a note,
+  and fills Google's address, place id, phone and website (`backlog_decide`). Since 2026-10-27 (Sean: "they're a rescue and they're
+  a nonprofit... I should be able to add multiple categories... and to manipulate the logo with the new logo feature") the screen
+  has the **logo editor** (`VELogoEditor`, with up to four pictures from their website, `add_site`; saved after the listing through
+  `add_logo_url` and `logo_set`, so it shows in Logos > Done) and **Main category** plus **Also show it under** (any others,
+  saved as `extra_categories` through `ve-claims` `admin_listing`); How Vegan hides only when every section ticked is Rescues,
+  Sanctuaries, Nonprofits or Events; **Set aside** makes it `rejected` with a note,
   never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
   newly listed business joins its city's outreach through Find emails on the city card.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
@@ -1515,6 +1520,14 @@ if they're a pre-vegan, the dashboard set up a certain way." One `/dashboard` wi
 starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version decides only which cards join For you
 (`renderVersion` in `dashboard/center-console.html`) and the order of Your tools (`DASH_TOOLS_FIRST`); everything else is
 shared.
+
+**Every tab wears the city banner** (Sean, 2026-10-27: "the dashboard and the depot and my saves... and even guides... should have
+the same header as events directory... when you expand it to see something there, even if we still use just the city that's
+selected"): the Dashboard (Welcome back, <name>; it replaced the welcome row), Guides, My Saves and the Depot join Directory, Events,
+Communities and Media (`mountTabBanners` in center-console). The picker is the dashboard's active city on every one; open, each
+shows its own numbers (`setTabStats`: points, lifetime and level; your points and the Guides they unlock; episodes and places
+saved; Events waiting and New places ready to list, which open them). The Depot's Go to is the site's dropdown (white, 6px corner,
+our chevron; `depot-tabs.js`), and Take the tour (`ve-tour.js` `.ve-tour-launch`) has a 6px corner, not a pill.
 
 The menu (Sean, 2026-10-27): Dashboard, Directory, Events, Daily Pulse, Media, Guides, Communities, My Saves, then Depot for
 super admins (`data-tab-order` on each section; `data-tab-superadmin` hides one from everyone else and from a View As preview).

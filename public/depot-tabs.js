@@ -53,9 +53,13 @@
     '.depot-head h1{margin-bottom:0 !important;min-width:0;}' +
     '.depot-go{display:flex;align-items:center;gap:8px;flex:0 0 auto;margin-left:auto;}' +
     '.depot-go span{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(26,26,26,0.8);white-space:nowrap;}' +
-    '.depot-go select{width:auto !important;flex:0 0 auto;font:inherit;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;min-height:44px;padding:8px 40px 8px 14px;border:1.5px solid #1f5f22;border-radius:99px;background-color:#fff;cursor:pointer;max-width:100%;' +
-    '-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%231f5f22\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:12px 8px;}' +
-    '.depot-go select:hover{background-color:#EAF7EA;}';
+    // Sean, 2026-10-27: the drop-down looks like every other drop-down on the site (claim.html's select): white, a 6px corner,
+    // plain words, our green chevron 16px in from the edge. No pill.
+    '.depot-go select{width:auto !important;flex:0 0 auto;font:inherit;font-size:14px;font-weight:700;letter-spacing:0;text-transform:none;color:#1a1a1a;min-height:46px;padding:10px 46px 10px 14px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;background-color:#fff;cursor:pointer;max-width:100%;min-width:240px;' +
+    '-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'14\' height=\'9\' viewBox=\'0 0 14 9\'%3E%3Cpath d=\'M1 1l6 6 6-6\' fill=\'none\' stroke=\'%231f5f22\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:14px 9px;}' +
+    '.depot-go select:hover{border-color:rgba(0,0,0,0.4);}' +
+    '.depot-go select:focus-visible{outline:3px solid #22C55E;outline-offset:2px;}' +
+    '@media (max-width:560px){.depot-go{flex:1 1 100%;}.depot-go select{flex:1 1 auto;min-width:0;}}';
   function mount() {
     var el = document.getElementById('depot-tabs'); if (!el) return;
     if (!document.getElementById('depot-tabs-css')) { var st = document.createElement('style'); st.id = 'depot-tabs-css'; st.textContent = CSS; document.head.appendChild(st); }

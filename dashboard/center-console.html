@@ -583,8 +583,17 @@
      whose banner is the /pulse page's own. main's side padding is 32px (16px on phones). */
   .dash-hero-banner{border-radius:0;margin:0 -32px 22px;}
   #dash-pulse-host{margin:0 -32px;}
-  #dash-depot-host{margin:-24px -32px 0;}
-  @media (max-width:700px){ #dash-depot-host{margin:-24px -16px 0;} }
+  #dash-depot-host{margin:-22px -32px 0;}
+  @media (max-width:700px){ #dash-depot-host{margin:-22px -16px 0;} }
+  /* The banner's open row of numbers on the Dashboard, Guides, My Saves and the Depot (mountTabBanners). */
+  .dash-bmeta{display:flex;flex-wrap:wrap;gap:10px;}
+  .dash-bstat{display:flex;flex-direction:column;gap:2px;min-width:110px;padding:10px 14px;border-radius:6px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.22);color:#fff;text-decoration:none;}
+  a.dash-bstat:hover{border-color:#fff;}
+  .dash-bstat b{font-size:22px;font-weight:900;line-height:1.1;}
+  .dash-bstat span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.82);}
+  /* The Dashboard tab's banner says welcome, so the old welcome row steps aside. */
+  body.dash-has-banner .dash-welcome{display:none !important;}
+  body.dash-has-banner main{padding-top:24px;}
   @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
@@ -732,6 +741,10 @@
          Dashboard button in the nav alongside Directory, Events, Shows, Daily
          Pulse, Communities, Tools). -->
     <div id="dash-profile-section" style="margin-bottom:28px;" data-tab-key="profile" data-tab-order="0" data-tab-label="Dashboard">
+      <!-- The same banner as Events and the Directory on the Dashboard, Guides, My Saves and the Depot (Sean, 2026-10-27: "I just
+           want them to have similar headers... when you expand it to see something there, even if we still use just the city that's
+           selected"). mountTabBanners: the dashboard's city picker, and, open, a row of this tab's own numbers. -->
+      <section id="dash-home-hero" class="dash-hero-banner"></section>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
            tools. Superadmins see the 5 most recent Members, Event Submissions,
@@ -927,8 +940,7 @@
          icon and then the text so they can listen to it anytime... my favorites, or my saves... a section on the navigation just
          for members"): what a member saved, one box per kind, each short list scrolling inside. Filled by renderSavesTab. -->
     <div id="dash-saves-section" style="display:none;margin-bottom:28px;" data-tab-key="saves" data-tab-order="7" data-tab-label="My Saves">
-      <p class="dash-eyebrow" style="margin-bottom:2px;">My Saves</p>
-      <p class="dash-section-title">Everything you saved</p>
+      <section id="dash-saves-hero" class="dash-hero-banner"></section>
       <div class="dash-saves">
         <section class="dash-saves-box" aria-labelledby="dash-saves-ep-t"><h3 id="dash-saves-ep-t">Podcast episodes</h3><div id="dash-saves-eps" class="dash-saves-list"></div></section>
         <section class="dash-saves-box" aria-labelledby="dash-saves-l-t"><h3 id="dash-saves-l-t">Places and brands</h3><div id="dash-saves-listings" class="dash-saves-list"></div></section>
@@ -937,9 +949,8 @@
 
     <!-- Guides in the top menu (Sean, 2026-10-26: "that's going to be one of the big things that we're selling"), and in Your tools. -->
     <div id="dash-guides-section" style="display:none;margin-bottom:28px;" data-tab-key="guides" data-tab-order="5" data-tab-label="Guides">
-      <p class="dash-eyebrow" style="margin-bottom:2px;">Guides</p>
-      <p class="dash-section-title">Step-By-Step Guides</p>
-      <p class="dash-tile-desc" style="margin:-6px 0 16px;-webkit-line-clamp:unset;">Every Guide is $11 or 1,100 points, and yours to keep. The ones still being made are here too: tap Notify me to hear the day each one opens.</p>
+      <section id="dash-guides-hero" class="dash-hero-banner"></section>
+      <p class="dash-tile-desc" style="margin:0 0 16px;-webkit-line-clamp:unset;">Every Guide is $11 or 1,100 points, and yours to keep. The ones still being made are here too: tap Notify me to hear the day each one opens.</p>
       <div class="gc-grid" id="dash-guides-row" role="list" aria-label="Guide catalog"></div>
 
     </div>
@@ -949,6 +960,7 @@
          the site nav or footer; the address bar reads /dashboard/depot/<page> with the page's own view. A Depot page opened on its
          own by a super admin moves in here (/public/depot-tabs.js). -->
     <div id="dash-depot-section" style="display:none;margin-bottom:28px;" data-tab-key="depot" data-tab-order="8" data-tab-label="Depot" data-tab-superadmin="1">
+      <section id="dash-depot-hero" class="dash-hero-banner"></section>
       <div id="dash-depot-host"><iframe title="The Depot" id="dash-depot-frame" scrolling="no"></iframe></div>
     </div>
 
@@ -2172,6 +2184,11 @@
   // not a city ("no one's trying to make media just for one location"); a listing opens under the Directory tab.
   var dashMediaBanner = null;
   // My Saves (Sean, 2026-10-27): saved podcast episodes, played right here, and saved listings. Read each time the tab opens.
+  var tabSaves = { eps: null, places: null };
+  function paintSaves() {
+    var n = function (x) { return x == null ? '...' : x.toLocaleString(); };
+    setTabStats('saves', [[n(tabSaves.eps), tabSaves.eps === 1 ? 'Episode saved' : 'Episodes saved'], [n(tabSaves.places), tabSaves.places === 1 ? 'Place or brand saved' : 'Places and brands saved']]);
+  }
   function renderSavesTab() {
     var eb = document.getElementById('dash-saves-eps'), lb = document.getElementById('dash-saves-listings');
     if (!eb || !lb) return;
@@ -2182,6 +2199,7 @@
     if (!eb.children.length) eb.innerHTML = '<div class="dash-saves-empty">Loading...</div>';
     if (window.VEEpisodes) VEEpisodes.mine().then(function (d) {
       var eps = (d && d.episodes) || [];
+      tabSaves.eps = eps.length; paintSaves();
       if (!eps.length) { eb.innerHTML = '<div class="dash-saves-empty">No episodes saved yet. Open a podcast in the Directory (Media, then Podcasts) and tap Save on an episode.</div>'; return; }
       eb.innerHTML = eps.map(function (x, i) {
         return '<div class="dash-save-row"><div class="dash-save-img" style="background-image:url(\'' + e(x.image || x.show.logo || '') + '\')"></div>' +
@@ -2201,6 +2219,7 @@
     }).catch(function () { eb.innerHTML = '<div class="dash-saves-empty">Your episodes did not load. Try again in a moment.</div>'; });
     if (window.VEAuth && VEAuth.listSavedListings) VEAuth.listSavedListings().then(function (d) {
       var items = (d && d.items) || [];
+      tabSaves.places = items.length; paintSaves();
       if (!items.length) { lb.innerHTML = '<div class="dash-saves-empty">Nothing saved yet. Tap Save on any listing in the Directory.</div>'; return; }
       lb.innerHTML = items.map(function (l, i) {
         var img = l.logo_url ? 'background-image:url(\'' + e(l.logo_url) + '\');background-color:#fff;background-size:contain' : 'background-color:' + e(l.color || '#2d7d31');
@@ -2400,6 +2419,7 @@
     // filters posts by active city), so it gets the same fix here too.
     renderCampaignsSection(member);
     renderDailyPulse(member);
+    Object.keys(dashTabBanners).forEach(function (k) { dashTabBanners[k].setQuiet(slug); });
   }
   document.getElementById('dash-city-modal-close').addEventListener('click', closeCityModal);
   document.getElementById('dash-city-modal').addEventListener('click', function(e) {
@@ -2588,6 +2608,51 @@
   // well"): the Events and Directory tabs wear the shared city banner (/public/ve-city-banner.js) and Events is the same
   // calendar as /events (/public/ve-events.js). A city picked in either banner is the dashboard's active city, the same
   // as the city pill; All cities widens only that tab (DASH_ALL).
+  // The Dashboard, Guides, My Saves and Depot tabs wear the same banner (Sean, 2026-10-27). The picker is the dashboard's active
+  // city, as on Events and the Directory; open, the banner shows the tab's numbers (setTabStats), folded it is the one bar.
+  var dashTabBanners = {};
+  function setTabStats(key, stats) {
+    var el = document.getElementById('dash-' + key + '-meta'); if (!el) return;
+    el.innerHTML = stats.map(function (x) {
+      var inner = '<b>' + x[0] + '</b><span>' + x[1] + '</span>';
+      return x[2] ? '<a class="dash-bstat" href="' + x[2] + '">' + inner + '</a>' : '<div class="dash-bstat">' + inner + '</div>';
+    }).join('');
+  }
+  function mountTabBanners(member) {
+    if (!window.VECityBanner) return;
+    var first = (member.name || '').split(' ')[0] || 'there';
+    var TABS = [
+      ['home', 'Welcome back, ' + first, 'Your points, your Guides, what is new and every tool you use, in one place. Pick a city and the Directory, Events and the Daily Pulse follow it.'],
+      ['guides', 'Vegan Guides', 'Step-by-step Guides walked through by our Guides. Every Guide is $11 or 1,100 points, and yours to keep.'],
+      ['saves', 'My Saves', 'Podcast episodes and places you saved, ready whenever you are.'],
+      ['depot', 'The Depot', 'Every admin tool in one place: approvals, outreach, the Directory review and the content behind the site.']
+    ];
+    var active = getActiveCity(member) || '';
+    TABS.forEach(function (t) {
+      if (!document.getElementById('dash-' + t[0] + '-hero') || dashTabBanners[t[0]]) return;
+      var b = VECityBanner.mount('dash-' + t[0] + '-hero', {
+        key: 'dash-' + t[0], param: false, initial: active, title: t[1], allTitle: 'Every City', allLabel: 'All cities', sub: t[2],
+        meta: '<div class="dash-bmeta" id="dash-' + t[0] + '-meta"></div>',
+        onChange: function (slug) { if (dashTabBanners[t[0]] && slug) switchActiveCity(slug, member); }
+      });
+      dashTabBanners[t[0]] = b;
+    });
+    if (dashTabBanners.home) document.body.classList.add('dash-has-banner');
+    var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
+    var lv = veLevelFor(life), nextAt = VE_LEVEL_AT[lv];
+    setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1)]]);
+    setTabStats('guides', [[pts.toLocaleString(), 'Your points'], [Math.floor(pts / 1100).toLocaleString(), Math.floor(pts / 1100) === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
+    setTabStats('saves', [['...', 'Episodes saved'], ['...', 'Places and brands saved']]);
+    if (dashTabBanners.depot && member.is_superadmin) {
+      setTabStats('depot', [['...', 'Events waiting', '/dashboard/depot/events'], ['...', 'New places ready to list', '/dashboard/depot/business-outreach#places/list']]);
+      var tok = VEAuth.getToken(), depotStats = { events: '...', places: '...' };
+      var paint = function () { setTabStats('depot', [[depotStats.events, 'Events waiting', '/dashboard/depot/events'], [depotStats.places, 'New places ready to list', '/dashboard/depot/business-outreach#places/list']]); };
+      dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: tok, status: 'pending' }).then(function (d) { depotStats.events = (((d && d.items) || []).length).toLocaleString(); paint(); }).catch(function () {});
+      fetch(SUPABASE_URL + '/functions/v1/ve-discover', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify({ action: 'backlog_summary' }) })
+        .then(function (r) { return r.json(); }).then(function (d) { depotStats.places = ((d && d.open && d.open.list) || 0).toLocaleString(); paint(); }).catch(function () {});
+    }
+  }
+
   var DASH_ALL = { events: false, directory: false }, dashEvBanner = null, dashEvCal = null, dashDirBanner = null;
   // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
   function dashBannerPick(which, slug, member) {
@@ -3712,6 +3777,7 @@
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
     dashSafe(function () { renderStatsHero(member); });
+    dashSafe(function () { mountTabBanners(member); });
     dashSafe(function () { renderContribute(member); });
     dashSafe(function () { renderGuidePrompt(); });
     dashSafe(function () { renderCmCertPrompt(member); });
