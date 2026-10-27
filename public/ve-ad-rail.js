@@ -1,6 +1,6 @@
 /* ve-ad-rail.js: the right-hand advertising rail (Sean, 2026-10-04: "three-fourths being the
    content, one-fourth being the advertisement to the right ... that's a revenue stream for us").
-   Used on the Daily Pulse (/board list and post pages, the dashboard's Daily Pulse tab), the
+   Used on the Daily Pulse (/pulse, every tab and post, the dashboard's Daily Pulse tab), the
    dashboard's Events tab and the Directory (/directory and the dashboard's Directory tab).
 
    The Directory's rail is the chapter's (Sean, 2026-10-26: "those banners will appear throughout the

@@ -334,6 +334,11 @@
   ],
   "redirects": [
     {
+      "source": "/board",
+      "destination": "/pulse",
+      "permanent": false
+    },
+    {
       "source": "/10-plant-based-calcium-sources",
       "destination": "/pulse",
       "permanent": false

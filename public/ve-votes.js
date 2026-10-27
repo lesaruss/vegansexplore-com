@@ -83,6 +83,8 @@
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     bookmark: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>',
     pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/>',
+    chat: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+    briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/>',
     gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/>'
   };
   function buildModal() {
@@ -151,18 +153,36 @@
       body: 'Save the places you love to My list and find them again from your dashboard. With your Passport, <b>$11 one time</b>, you can also vote every day, check in, earn points and unlock the Guides.' },
     checkin: { icon: 'pin', title: 'Check-ins are for Passport holders',
       body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. With your Passport, <b>$11 one time</b>, you can also vote every day, save places and unlock the Guides.' },
+    // The Daily Pulse board (Sean, 2026-10-26: "you have to be a member in order to reply or comment... it should give
+    // them that pop-up"), from=board on the Passport Guide.
+    post: { icon: 'chat', from: 'board', title: 'Posting is for Passport holders',
+      body: 'Anyone can read the Daily Pulse. Members post to their city\'s board: classifieds, fosters, rescues and topic ideas. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>.' },
+    comment: { icon: 'chat', from: 'board', title: 'Comments are for Passport holders',
+      body: 'Every Daily Pulse briefing and every post has a conversation under it, and members are the ones talking. Your Passport, <b>$11 one time</b>, lets you comment, post and reach people directly.' },
+    contact: { icon: 'chat', from: 'board', title: 'Contact details are for Passport holders',
+      body: 'People share how to reach them with members only, so the board stays safe. Your Passport, <b>$11 one time</b>, shows contact details and lets you comment and post.' },
+    report: { icon: 'chat', from: 'board', title: 'Reports come from Passport holders',
+      body: 'Members keep the board safe: a report goes to your city\'s Community Manager. Your Passport is <b>$11 one time</b>.' },
+    job: { icon: 'briefcase', from: 'board', title: 'Jobs are for Passport holders',
+      body: 'Members post when they are looking for work, and businesses in the Directory post their openings: hiring is one of the perks of a listed business. Your Passport is <b>$11 one time</b>.' },
     give: { icon: 'gift', title: 'Giving points is for Passport holders',
       body: 'Members earn points by taking part, and can give them to the businesses and nonprofits they love as a boost (never money). Your Passport, <b>$11 one time</b>, comes with <b>1,100 welcome points</b>, so you can give from day one.' }
   };
-  function gatePrompt(kind) {
-    var g = GATES[kind] || GATES.vote, back = encodeURIComponent(here());
+  // o.signedIn: they are signed in but not a member yet, so no Sign in line. Inside a frame (the dashboard window) the
+  // links open in the whole window.
+  function gatePrompt(kind, o) {
+    o = o || {};
+    var g = GATES[kind] || GATES.vote, from = g.from || (GATES[kind] ? kind : 'vote');
+    var framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+    var top = framed ? ' target="_top"' : '', back = encodeURIComponent(framed ? '/dashboard/pulse' : here());
     openModal({
       icon: g.icon, eyebrow: 'Members only', title: g.title, body: g.body,
-      actions: '<a class="ve-vm-btn ve-vm-go" href="/passport?from=' + (GATES[kind] ? kind : 'vote') + '&back=' + back + '">Explore the Passport</a>' +
+      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="/passport?from=' + from + '&back=' + back + '">Explore the Passport</a>' +
                '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
-      foot: 'Already a member? <a href="/login?next=' + back + '">Sign in</a>'
+      foot: o.signedIn ? '' : 'Already a member? <a' + top + ' href="/login?next=' + back + '">Sign in</a>'
     });
   }
+  function memberPrompt(kind, o) { gatePrompt(kind, o); }
   function passportPrompt() { gatePrompt('vote'); }
   function savePrompt() { gatePrompt('save'); }
   function checkinPrompt() { gatePrompt('checkin'); }
@@ -240,6 +260,6 @@
     });
   }
   window.VEVotes = { wire: wire, cast: cast, today: listToday, tooSoon: tooSoon, nextText: nextText, onceMessage: onceMessage, notice: notice,
-    passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, givePrompt: givePrompt, votedPrompt: votedPrompt,
+    memberPrompt: memberPrompt, passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, givePrompt: givePrompt, votedPrompt: votedPrompt,
     checkedInPrompt: checkedInPrompt };
 })();

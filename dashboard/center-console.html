@@ -307,6 +307,7 @@
   #dash-console-crumb .dash-crumb-back:hover{text-decoration:underline;}
   #dash-console-crumb .dash-crumb-sep{color:var(--ve-text-50);}
   #dash-console-crumb .dash-crumb-current{color:var(--ve-text);}
+  #dash-pulse-host iframe{display:block;width:100%;height:900px;border:0;background:#fff;}
   #dash-console-host iframe{display:block;width:100%;height:min(660px,calc(100vh - 300px));min-height:440px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ #dash-console-host iframe{height:calc(100vh - 170px);min-height:520px;} }
   /* Action items that are <button>s (Set up your Guide) reuse the tour-prompt look.
@@ -937,15 +938,10 @@
       <div class="dash-community-row" id="dash-podcast-shows-row"></div>
     </div>
 
+    <!-- The Daily Pulse tab is the public /pulse page in the dashboard window (Sean, 2026-10-26: the same banner, chapters
+         and tabs signed in or out). It loads the first time the tab is on screen; the page sizes the frame (ve-frame-height). -->
     <div id="dash-pulse-section" style="display:none;margin-bottom:28px;" data-tab-key="pulse" data-tab-order="7" data-tab-label="Daily Pulse">
-      <p class="dash-eyebrow" style="margin-bottom:2px;">Feed</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <p class="dash-section-title" style="margin-top:0;">Daily Pulse</p>
-        <a class="dash-home-pulse-seeall" href="/board?lane=pulse" data-frame-label="Daily Pulse" style="text-decoration:none;">Join the conversation &rarr;</a>
-      </div>
-      <p class="dash-tile-desc" style="margin:-4px 0 14px;-webkit-line-clamp:unset;">Your city's daily briefing: what is happening, what people are talking about, what is coming up, and one thing you can do.</p>
-      <!-- Three-fourths content, one-fourth ads (Sean, 2026-10-04). public/ve-ad-rail.js -->
-      <div class="vear-layout"><div class="vear-main"><div class="dash-grid" id="dash-pulse-grid"></div></div><aside class="vear-rail" data-ad-page="pulse"></aside></div>
+      <div id="dash-pulse-host"><iframe title="Daily Pulse" id="dash-pulse-frame" scrolling="no"></iframe></div>
     </div>
 
     <!-- Guides in the top menu (Sean, 2026-10-26: "that's going to be one of the big things that we're selling"), and in Your tools. -->
@@ -1506,7 +1502,7 @@
     TILE_REGISTRY.push(
       // Community Board (Sean, 2026-09-30): requests and offers per city. Opens inside the
       // dashboard window; the public /board page is the same page outside it.
-      { key: 'community-board', href: '/board', embed: true, embedLabel: 'Community Board', img: '/public/dashboard/tools/tools-community-board.jpg', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'Ask your city and find who can help: rescue, fostering, rides, food and more.', visibility: 'all', defaultSection: 'tools' },
+      { key: 'community-board', href: '/pulse', embed: true, embedLabel: 'Daily Pulse', img: '/public/dashboard/tools/tools-community-board.jpg', iconHtml: '&#128204;', bg: 'linear-gradient(135deg,#2d7d31,#1f5f22)', title: 'Community Board', desc: 'The Daily Pulse, jobs, classifieds, fosters and rescues in every city.', visibility: 'all', defaultSection: 'tools' },
       { key: 'sa-members', href: '/dashboard/members', embed: true, embedLabel: 'Members', img: '/public/dashboard/tools/tools-members.jpg', iconHtml: SA_MEMBERS_SVG, bg: 'linear-gradient(135deg,var(--ve-green-dark),var(--ve-green))', title: 'Members', tagLabel: 'Superadmin', desc: 'Every VEGANS EXPLORE registration, with tier, points, and who has never come back.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-events', href: '/admin/depot/events', embed: true, embedLabel: 'Events', img: '/public/dashboard/tools/tools-event-submissions.jpg', iconHtml: SA_EVENTS_SVG, bg: 'linear-gradient(135deg,var(--ve-orange),#d4800f)', title: 'Event Submissions', tagLabel: 'Superadmin', badgeId: 'dash-events-pending-badge', desc: 'Approve the events members send and the crawl finds, add one from a flyer, and manage the crawl sources.', visibility: 'superadmin', defaultSection: 'superadmin' },
       { key: 'sa-leads', href: '/dashboard/leads', embed: true, embedLabel: 'Leads', img: '/public/dashboard/tools/tools-leads.jpg', iconHtml: SA_LEADS_SVG, bg: 'linear-gradient(135deg,#2D5F8A,#1a3a56)', title: 'Leads', tagLabel: 'Superadmin', badgeId: 'dash-leads-pending-badge', desc: 'Sponsor, attend, and volunteer interest from every 2026 initiative campaign, in one queue.', visibility: 'superadmin', defaultSection: 'superadmin' },
@@ -2617,8 +2613,17 @@
       grid.innerHTML = show.length ? show.map(function (t) { return VEPulse.card(t, active); }).join('') : pulseEmpty(VE_CITY_NAMES[active]);
     });
   }
+  // The Daily Pulse tab frames /pulse on the member's active city, loaded the first time the tab shows.
   function renderDailyPulse(member) {
-    renderPulseInto(document.getElementById('dash-pulse-grid'), member, function (t) { return t.slice(0, 12); });
+    var f = document.getElementById('dash-pulse-frame'), sec = document.getElementById('dash-pulse-section');
+    if (!f || !sec) return;
+    var want = '/pulse' + (getActiveCity(member) ? '?city=' + encodeURIComponent(getActiveCity(member)) : '');
+    f.setAttribute('data-src', want);
+    function go() { if (f.getAttribute('src') !== f.getAttribute('data-src')) f.setAttribute('src', f.getAttribute('data-src')); }
+    if (sec.style.display !== 'none' && sec.offsetParent) { go(); return; }
+    if (!window.IntersectionObserver || f._veWatch) return;
+    f._veWatch = new IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) go(); });
+    f._veWatch.observe(f);
   }
   // Dashboard tab: today's pair, the city's newest topic and the newest national one.
   function renderHomePulsePreview(member) {
@@ -3062,18 +3067,21 @@
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
   function consoleFrameFor(src) {
-    var f = document.querySelector('#dash-console-host iframe');
-    return f && f.contentWindow === src ? f : null;
+    var list = document.querySelectorAll('#dash-console-host iframe, #dash-pulse-host iframe');
+    for (var i = 0; i < list.length; i++) if (list[i].contentWindow === src) return list[i];
+    return null;
   }
   function consoleScroller() {
     var m = document.querySelector('.console-frame main');
     return m && m.scrollHeight > m.clientHeight + 1 && getComputedStyle(m).overflowY !== 'visible' ? m : null;
   }
   function tellFrameView() {
-    var f = document.querySelector('#dash-console-host iframe.ve-sized'); if (!f || !f.contentWindow) return;
-    var r = f.getBoundingClientRect(), m = consoleScroller(), vt = 0, vb = window.innerHeight;
-    if (m) { var mr = m.getBoundingClientRect(); vt = Math.max(0, mr.top); vb = Math.min(vb, mr.bottom); }
-    try { f.contentWindow.postMessage({ type: 've-frame-view', top: Math.max(0, vt - r.top), height: Math.max(0, Math.min(vb, r.bottom) - Math.max(vt, r.top)) }, location.origin); } catch (e) {}
+    Array.prototype.forEach.call(document.querySelectorAll('#dash-console-host iframe.ve-sized, #dash-pulse-host iframe.ve-sized'), function (f) {
+      if (!f.contentWindow || !f.offsetParent) return;
+      var r = f.getBoundingClientRect(), m = consoleScroller(), vt = 0, vb = window.innerHeight;
+      if (m) { var mr = m.getBoundingClientRect(); vt = Math.max(0, mr.top); vb = Math.min(vb, mr.bottom); }
+      try { f.contentWindow.postMessage({ type: 've-frame-view', top: Math.max(0, vt - r.top), height: Math.max(0, Math.min(vb, r.bottom) - Math.max(vt, r.top)) }, location.origin); } catch (e) {}
+    });
   }
   window.addEventListener('message', function (e) {
     if (e.origin !== location.origin || !e.data) return;
@@ -3341,7 +3349,7 @@
       { icon: 'megaphone', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
       { icon: 'target', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
       { icon: 'list', title: 'My List', desc: "Every listing you've saved from the Directory.", fn: function () { if (window.activateDashTab) activateDashTab('tools'); openMyList(); } },
-      { icon: 'pin', title: 'Community Board', desc: 'Ask your city and find who can help.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }
+      { icon: 'pin', title: 'Community Board', desc: 'The Daily Pulse, jobs, classifieds, fosters and rescues.', fn: function () { if (window.activateDashTab) window.activateDashTab('pulse'); } }
     ];
     if (admin || (member.ve_tier && member.ve_tier !== 'free')) {
       t.push({ icon: 'compass', title: 'Choose Your Guide', desc: 'Pick a dedicated guide to walk with you. A Passport benefit.', fn: function () { if (window.activateDashTab) activateDashTab('tools'); openChooseGuide(); } });
@@ -3398,7 +3406,7 @@
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       grid.appendChild(dpAccessCard({ icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', fn: function () { openConsoleFrame('/admin/depot', 'The Depot'); } }));
-      grid.appendChild(dpAccessCard({ icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/board', 'Community Board'); } }));
+      grid.appendChild(dpAccessCard({ icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/pulse', 'Community Board'); } }));
       grid.appendChild(dpAccessCard({ icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
       grid.appendChild(dpAccessCard({ icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
       grid.appendChild(dpAccessCard({ icon: 'chart', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
