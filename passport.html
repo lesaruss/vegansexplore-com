@@ -300,7 +300,7 @@
         box = '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status;
       } else {
         box = '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet. Get your Passport, $11 one time, with 1,100 welcome points.'
-          : 'Create a free account, then get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
+          : 'Create your account and get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
           '</p><button type="button" class="dg-btn" data-join>Get your Passport</button>' + status;
       }
       return head('Get your Passport', 'One time, yours to keep', 'It never renews. After that, you buy only what you want: Guides, merchandise and event tickets.') +
@@ -381,7 +381,7 @@
         '<li><b>4. Your dashboard opens</b> on your page.</li></ul>';
       var box = isMember()
         ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. ' + (LISTING ? 'Claim your page next.' : 'Find your business next.') + '</p><a class="dg-btn" href="' + CLAIM + '">' + (LISTING ? 'Claim your page' : 'Find your business') + '</a>' + status
-        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Create a free account, then get your Passport. Already a member? <a href="#" data-signin>Sign in</a>.') +
+        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Create your account and get your Passport. Already a member? <a href="#" data-signin>Sign in</a>.') +
           '</p><button type="button" class="dg-btn" data-join>Get your Passport</button><p style="margin-top:10px"><a href="' + CLAIM + '">' + (LISTING ? 'Or claim your page first' : 'Or find your business first') + '</a></p>' + status;
       return head('Get started', 'Your page, in four steps', 'Your $11 is a membership contribution, one time. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
     }
@@ -432,7 +432,7 @@
     if (!jb || !a) return;
     if (isMember()) { location.href = back || '/dashboard'; return; }
     // A new account meets the $11 window on its own after signup (ve-auth); a signed-in non-member gets it now.
-    if (!a.isLoggedIn()) a.showAuthModal('Create your free account, then get your Passport: $11 one time, with 1,100 welcome points.', function () { draw(); }, 'signup');
+    if (!a.isLoggedIn()) a.showAuthModal('Create your account and get your Passport: $11 one time, with 1,100 welcome points.', function () { draw(); }, 'signup');
     else a.showActivateModal('Your Passport: $11, one time, with 1,100 welcome points, enough for your first Guide.');
   });
   window.addEventListener('hashchange', draw);

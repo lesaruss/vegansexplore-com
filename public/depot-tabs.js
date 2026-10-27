@@ -38,6 +38,7 @@
     { group: 'People', href: '/admin/depot/bounties', label: 'Bounties' },
     { group: 'People', href: '/admin/depot/dinners', label: 'Dinner guests' },
     { group: 'People', href: '/admin/depot/links', label: 'Links' },
+    { group: 'People', href: '/admin/depot/invites', label: 'Invites' },
     { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },
     { group: 'Site', href: '/admin/depot/preview', label: 'Preview journeys' },
     { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },

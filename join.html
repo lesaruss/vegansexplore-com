@@ -164,7 +164,7 @@
           // the visitor mid-onboarding with nothing actually unlocked.
           if (d.member && d.member.membership_status === 'pending_payment') {
             setLoading(false);
-            VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
+            VEAuth.showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
             return;
           }
           window.location.replace('/onboarding');
@@ -175,7 +175,7 @@
       VEAuth.initGoogleSignIn(document.getElementById('join-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         if (d.member && d.member.membership_status === 'pending_payment') {
-          VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
+          VEAuth.showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
           return;
         }
         window.location.replace('/onboarding');

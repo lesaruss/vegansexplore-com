@@ -41,7 +41,11 @@ function getViewAs(){if(!isRealSuperAdmin())return null;try{var v=JSON.parse(loc
 function setViewAs(mode,opts){if(!isRealSuperAdmin())return;if(typeof opts==='number')opts={points:opts};opts=opts||{};try{var payload={mode:mode};if(mode==='member'){payload.points=opts.points||0;if(opts.tier)payload.tier=opts.tier;if(opts.role!==undefined)payload.role=opts.role;}localStorage.setItem('ve_view_as',JSON.stringify(payload));}catch(e){}window.location.reload();}
 function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}window.location.reload();}
 function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)}):null;}return getRealMember();}
-function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken();}
+// Registration is the Passport (Sean, 2026-10-27: "they can only register through the Passport program"). An account that has not
+// paid ('pending_payment') is only the checkout's account: the site treats it as signed out, and its token is kept just long
+// enough to pay (the $11 window, a claim's or a Guide's own checkout, an invitation's accept).
+function isPending(m){return!!(m&&m.membership_status==='pending_payment');}
+function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken()&&!isPending(getRealMember());}
 function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
 function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
@@ -67,7 +71,7 @@ function unsaveListing(listingId){return call('unsave_listing',{token:getToken()
 function listSavedListings(){return call('list_saved_listings',{token:getToken()});}
 function signOut(){try{localStorage.removeItem('ve_view_as');localStorage.removeItem('ve_switch_from');}catch(e){}clearSession();window.location.href='/';}
 function initGoogleSignIn(buttonEl,callback,community){if(!window.google||!window.google.accounts)return;window.google.accounts.id.initialize({client_id:GOOGLE_ID,auto_select:false,cancel_on_tap_outside:true,callback:function(r){loginWithGoogle(r.credential,community).then(callback);}});if(buttonEl)window.google.accounts.id.renderButton(buttonEl,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:buttonEl.offsetWidth||360});}
-function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a free Passport to do that.');}
+function requirePassport(onGranted,message){if(isLoggedIn()){onGranted();return;}showAuthModal(message||'You need a Passport to do that.');}
 // --- Pay-or-pledge gate (2026-09-17, Sean) ---------------------------------
 // A new signup now lands as membership_status 'pending_payment': browsing,
 // the Guide chat, and onboarding stay open, but posting, joining a chapter,
@@ -113,7 +117,7 @@ function showActivateModal(message){
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
 }
-function hideActivateModal(){var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}}
+function hideActivateModal(){var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
 function _buildActivateModal(){
 var s=document.createElement('style');
 s.textContent=
@@ -204,7 +208,7 @@ var _modalCb=null,_modalInited=false,_gBtnInited=false;
 // "Create a free Passport...", "Create your account first...", etc.) pass
 // 'signup' so the modal opens on the create-account tab instead of making
 // a brand-new visitor land on sign-in by default.
-function showAuthModal(message,onSuccess,mode){_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in to your Passport, or create a free one to continue.';_setAuthMode(mode==='signup'?'signup':'login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
+function showAuthModal(message,onSuccess,mode){_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in to your Passport, or get yours to continue.';_setAuthMode(mode==='signup'?'signup':'login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
 function hideAuthModal(){var m=document.getElementById('ve-auth-modal');if(m){m.style.display='none';document.body.style.overflow='';}var e=document.getElementById('ve-am-error');if(e){e.textContent='';e.style.display='none';}}
 function _onSuccess(){hideAuthModal();if(_modalCb)_modalCb();else location.reload();}
 function _showErr(msg){var e=document.getElementById('ve-am-error');if(e){e.textContent=msg;e.style.display='block';}}
@@ -219,7 +223,7 @@ hideAuthModal();
 // 2026-09-17, same bug as the email path: the field was missing from the
 // insert/lookup .select(), so this check always silently failed before).
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
+showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){_showErr('Something went wrong. Please try again.');});}});window.google.accounts.id.renderButton(el,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:el.offsetWidth||336});_gBtnInited=true;}
 // Login/Create-Account are two tabs on the SAME modal (2026-08-19, V direction:
@@ -248,9 +252,14 @@ function _setAuthMode(mode){
   var pwInput=document.getElementById('ve-am-password');
   if(pwInput)pwInput.setAttribute('autocomplete',isSignup?'new-password':'current-password');
   var submit=document.getElementById('ve-am-submit');
-  if(submit)submit.textContent=isSignup?'Create Account':'Sign In';
+  if(submit)submit.textContent=isSignup?_signupLabel():'Sign In';
+  var tab=document.getElementById('ve-am-tab-signup');if(tab)tab.textContent=_ownJoin()?'Create Account':'Get your Passport';
   _clearErr();
 }
+// A page that finishes the join itself (an invitation, a dinner seat, a Guide's own $11) sets VE_ACTIVATE_HANDLER; everywhere
+// else, making the account goes straight on to the Passport's checkout, so the button says so.
+function _ownJoin(){return typeof global.VE_ACTIVATE_HANDLER==='function';}
+function _signupLabel(){return _ownJoin()?'Create Account':'Continue to checkout';}
 function _buildModal(){
 var s=document.createElement('style');
 s.textContent=
@@ -289,7 +298,7 @@ el.innerHTML=
 '<p id="ve-am-msg">Sign in to your Passport.</p>'+
 '<div id="ve-am-tabs" role="tablist">'+
 '<button type="button" id="ve-am-tab-login" class="ve-am-tab active" role="tab" aria-selected="true">Sign In</button>'+
-'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Create Account</button>'+
+'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Get your Passport</button>'+
 '</div>'+
 '<div id="ve-am-error" role="alert"></div>'+
 '<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+
@@ -318,15 +327,15 @@ if(_authMode==='signup'){
 var name=document.getElementById('ve-am-name').value.trim();
 if(!name){_showErr('Please enter your name.');return;}
 if(pw.length<8){_showErr('Password must be at least 8 characters.');return;}
-btn.disabled=true;btn.textContent='Creating your Passport...';
+btn.disabled=true;btn.textContent='One moment...';
 signup(email,pw,name,joinCarry('ve_join_ref'),joinCarry('ve_join_community'),(document.getElementById('ve-am-website')||{}).value).then(function(d){
-btn.disabled=false;btn.textContent='Create Account';
+btn.disabled=false;btn.textContent=_signupLabel();
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
+showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
-}).catch(function(){btn.disabled=false;btn.textContent='Create Account';_showErr('Something went wrong. Please try again.');});
+}).catch(function(){btn.disabled=false;btn.textContent=_signupLabel();_showErr('Something went wrong. Please try again.');});
 return;
 }
 if(!pw){_showErr('Please enter your password.');return;}
@@ -334,6 +343,8 @@ btn.disabled=true;btn.textContent='Signing in...';
 login(email,pw).then(function(d){
 btn.disabled=false;btn.textContent='Sign In';
 if(d.error){_showErr(d.error);return;}
+// An account that never paid signs in to its Passport checkout, not to the site.
+if(isPending(d.member)){hideAuthModal();showActivateModal('Your account is waiting on its Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}

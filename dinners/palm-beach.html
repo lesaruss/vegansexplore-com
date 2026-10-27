@@ -341,7 +341,7 @@
             </div>
             <form id="sb-ask" hidden>
               <p class="sb-title">This table is by invitation.</p>
-              <p class="sb-text">If you think you belong at it, create your free account and tell us why. Sean reads every one.</p>
+              <p class="sb-text">If you think you belong at it, create your account and tell us why. Sean reads every one.</p>
               <label class="sb-label" for="sb-note">Why this table? (optional)</label><input id="sb-note" type="text" maxlength="1000">
               <input id="sb-web" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="sb-hp">
               <button type="submit" class="btn btn-primary">Ask for a seat</button>
@@ -547,7 +547,7 @@
       var b = $('sb-yes');
       if (!window.VEAuth || !VEAuth.getToken()) {
         window.VE_ACTIVATE_HANDLER = function () { hold(); };
-        VEAuth.showAuthModal((st && st.invite && st.invite.comp) ? 'Create your free account to hold your seat. Your Founding Membership is on us.' : 'Create your free account to hold your seat.', hold, 'signup');
+        VEAuth.showAuthModal((st && st.invite && st.invite.comp) ? 'Create your account to hold your seat. Your Founding Membership is on us.' : 'Create your account to hold your seat.', hold, 'signup');
         return;
       }
       busy(b, true, 'Holding your seat...');
@@ -581,7 +581,7 @@
       var b = $('sb-ask').querySelector('button');
       if (!window.VEAuth || !VEAuth.getToken()) {
         window.VE_ACTIVATE_HANDLER = function () { ask(); };
-        VEAuth.showAuthModal('Create your free account to ask for a seat. It takes a minute.', ask, 'signup');
+        VEAuth.showAuthModal('Create your account to ask for a seat. It takes a minute.', ask, 'signup');
         return;
       }
       busy(b, true);

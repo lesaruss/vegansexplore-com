@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Invites | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Invites (Sean, 2026-10-27: "they can only register through the Passport program. I do want the ability to invite people
+       to give a complimentary account with points of my choosing. I want to give a few people that paid for accounts recently on
+       our other platform"). The one way in besides the $11 Passport: a membership on us, with the points Sean picks, sent from
+       Sean. One thing per view: the list (#list/<status>), New invite (#new), one invite (#invite/<id>). Data: ve-invites
+       (create, list, preview, send, mark_copied, cancel); the claim is universe_invite_claim (migration
+       20261027_invite_points.sql). HQ > People makes the same invitations through the same function. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:110px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .chip{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;}
+    .chip:hover{border-color:var(--ve-green-deep);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a{font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .row:first-child{border-top:0;}
+    .row b{display:block;font-size:14px;}
+    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .pts{font-size:13px;font-weight:800;white-space:nowrap;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent,.t-opened{background:#e8f0fe;color:#1a4a9c}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .made{margin-top:14px;}
+    .made .row{grid-template-columns:minmax(0,1fr) auto auto;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .kv div{background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13px;}
+    .kv span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);}
+    @media (max-width:600px){.row{grid-template-columns:minmax(0,1fr) auto;}.row .pts{display:none;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Invites</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">The only way in besides the $11 Passport: a membership on us, with the points you choose, sent from you. They accept from the email by making their account with that email (or signing in to an account that never paid), and it is active at once with their points. Each invitation works once, for 30 days.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-invites';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), invites = null;
+      var STATUS = { ready: 'Not sent yet', sent: 'Sent', opened: 'Opened', joined: 'Joined', expired: 'Expired', canceled: 'Canceled' };
+      var TABS = [['all', 'All'], ['ready', 'Not sent yet'], ['sent', 'Sent'], ['opened', 'Opened'], ['joined', 'Joined'], ['expired', 'Expired'], ['canceled', 'Canceled']];
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function tag(st) { return '<span class="tag t-' + esc(st) + '">' + esc(STATUS[st] || st) + '</span>'; }
+      function copy(text, btn) {
+        var done = function () { if (btn) { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      // "Name, email", "Name <email>", or "Name, email, points" (points for that person), one per line.
+      function parsePeople(text) {
+        return text.split(/\n+/).map(function (line) {
+          line = line.trim(); if (!line) return null;
+          var p = null, m = line.match(/^(.*?)[,;\t]\s*(\d[\d,]*)\s*$/);
+          if (m && /@/.test(m[1])) { p = Number(m[2].replace(/,/g, '')); line = m[1].trim(); }
+          m = line.match(/^(.*?)[\s,]*<([^>]+)>$/) || line.match(/^(.*?)[,;\t]\s*(\S+@\S+)$/);
+          var o = m ? { name: m[1].trim(), email: m[2].trim() } : /^\S+@\S+$/.test(line) ? { name: '', email: line } : { name: line, email: '' };
+          if (p != null) o.points = p;
+          o.comp = true;
+          return o;
+        }).filter(Boolean);
+      }
+      function route() { var h = location.hash.replace(/^#/, ''); return h || 'list/all'; }
+      function go(h) { if (location.hash === '#' + h) draw(); else location.hash = h; }
+
+      function load() { return api({ action: 'list' }).then(function (d) { invites = (d && d.invites) || []; }); }
+
+      function drawList(st) {
+        var rows = invites.filter(function (i) { return st === 'all' || i.status === st; });
+        var count = function (k) { return invites.filter(function (i) { return k === 'all' || i.status === k; }).length; };
+        app.innerHTML = '<div class="bar"><nav class="tabs" aria-label="Filter by status">' + TABS.map(function (t) {
+            return '<a href="#list/' + t[0] + '" class="' + (t[0] === st ? 'on' : '') + '">' + t[1] + ' (' + count(t[0]) + ')</a>';
+          }).join('') + '</nav><a class="btn" href="#new">New invite</a></div>' +
+          '<div class="list">' + (rows.length ? rows.map(function (i) {
+            return '<div class="row"><div><b>' + esc(i.name) + '</b><small>' + esc(i.email) + ' &middot; made ' + esc(day(i.created_at)) + (i.joined_at ? ' &middot; joined ' + esc(day(i.joined_at)) : i.sent_at ? ' &middot; sent ' + esc(day(i.sent_at)) : '') + '</small></div>' +
+              '<span class="pts">' + (i.comp ? (i.points ? pts(i.points) + ' points' : 'No points') : 'Not on us') + '</span>' + tag(i.status) +
+              '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">' + (st === 'all' ? 'No invitations yet. New invite makes the first one.' : 'None here.') + '</p>') + '</div>';
+      }
+
+      function drawNew() {
+        app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a> &rsaquo; New invite</p>' +
+          '<section class="card"><h2>New invite</h2><form class="form" id="f">' +
+          '<label class="wide">Who<textarea id="f-people" required placeholder="Jordan Lee, jordan@example.com&#10;Ana Brooks &lt;ana@example.com&gt;&#10;Sam Ortiz, sam@example.com, 5000"></textarea><span class="hint">One person a line: their name and email. Add a number at the end to give that person different points.</span></label>' +
+          '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="hint">What each one starts with. 0 for none. The Passport comes with 1,100.</span><span class="chips">' +
+            [0, 1100, 2500, 5000, 10000].map(function (n) { return '<button type="button" class="chip" data-pts="' + n + '">' + (n ? pts(n) : 'None') + '</button>'; }).join('') + '</span></label>' +
+          '<label class="wide">A line from you (optional)<textarea id="f-reason" maxlength="600" placeholder="You joined LESARUSS AI this month, and I want to say thank you with a seat in Vegans Explore."></textarea><span class="hint">The first line of the email, before the rest. Leave it empty and the email starts with the invitation.</span></label>' +
+          '<div class="wide acts"><button type="submit" class="btn" id="mk">Make the invitations</button><span class="msg" id="msg" role="status"></span></div>' +
+          '</form><div class="made" id="made" hidden></div></section>';
+        app.querySelectorAll('[data-pts]').forEach(function (b) { b.addEventListener('click', function () { $('f-points').value = b.dataset.pts; }); });
+        $('f').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var people = parsePeople($('f-people').value), msg = $('msg');
+          var bad = people.filter(function (p) { return !p.name || !/^\S+@\S+\.\S+$/.test(p.email); });
+          msg.className = 'msg err';
+          if (!people.length) { msg.textContent = 'Add at least one person.'; return; }
+          if (bad.length) { msg.textContent = 'Each line needs a name and an email: ' + bad.map(function (p) { return p.name || p.email || '(blank)'; }).join(', '); return; }
+          var points = Math.max(0, Math.min(100000, Math.round(Number($('f-points').value) || 0)));
+          $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making them...';
+          api({ action: 'create', brand: 'vegans-explore', points_to: 'none', points: points, reason: $('f-reason').value.trim() || null, people: people }).then(function (d) {
+            $('mk').disabled = false;
+            if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
+            msg.textContent = d.created.length ? d.created.length + ' ready. Nothing has been sent: open each one to read its email and send it.' : 'None were made.';
+            var made = $('made'); made.hidden = false;
+            made.innerHTML = (d.created.length ? '<h2>Ready to send</h2><div class="list">' + d.created.map(function (i) {
+                return '<div class="row"><div><b>' + esc(i.name) + '</b><small>' + esc(i.email) + '</small></div><span class="pts">' + (i.points ? pts(i.points) + ' points' : 'No points') + '</span><a class="btn btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
+              }).join('') + '</div>' : '') +
+              (d.skipped.length ? '<h2 style="margin-top:16px">Left out</h2><div class="list">' + d.skipped.map(function (s) {
+                return '<div class="row"><div><b>' + esc(s.name) + '</b><small>' + esc(s.email || '') + '</small></div><span class="tag t-expired">' + esc(s.why) + '</span><span></span></div>';
+              }).join('') + '</div>' : '');
+            invites = null;
+          }).catch(function () { $('mk').disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+        });
+      }
+
+      function drawOne(id) {
+        var i = invites.filter(function (x) { return x.id === id; })[0];
+        if (!i) { app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a></p><p class="empty">That invitation is not here.</p>'; return; }
+        var open = ['ready', 'sent', 'opened'].indexOf(i.status) >= 0;
+        app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a> &rsaquo; ' + esc(i.name) + '</p>' +
+          '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(i.name) + '</h2>' + tag(i.status) + '</div>' +
+          '<div class="kv"><div><span>Email</span>' + esc(i.email) + '</div><div><span>Points</span>' + (i.comp ? (i.points ? pts(i.points) : 'None') : 'Not on us') + '</div>' +
+          '<div><span>Made</span>' + esc(day(i.created_at)) + '</div>' + (i.sent_at ? '<div><span>Sent</span>' + esc(day(i.sent_at)) + (i.sent_via === 'copied' ? ' (link copied)' : '') + '</div>' : '') +
+          (i.joined_at ? '<div><span>Joined</span>' + esc(day(i.joined_at)) + '</div>' : i.expires_at ? '<div><span>Works until</span>' + esc(day(i.expires_at)) + '</div>' : '') + '</div>' +
+          (open ? '<h2>The email</h2><div class="mail" id="mail">Loading the email...</div>' : '') +
+          '<div class="acts">' + (open ? '<button type="button" class="btn" id="send">' + (i.status === 'ready' ? 'Send it from me' : 'Send it again') + '</button><button type="button" class="btn btn-ghost" id="copy">Copy the link</button><button type="button" class="btn btn-bad" id="cancel">Cancel it</button>' : '<a class="btn btn-ghost" href="#list/all">Back to invites</a>') +
+          '<span class="msg" id="msg" role="status"></span></div></section>';
+        if (!open) return;
+        api({ action: 'preview', id: i.id }).then(function (d) {
+          var m = d && d.email; if (!m) { $('mail').textContent = 'The email did not load.'; return; }
+          $('mail').innerHTML = '<div class="subj">' + esc(m.subject) + '</div>' + m.html;
+        });
+        var msg = $('msg');
+        $('send').addEventListener('click', function () {
+          var b = this; b.disabled = true; msg.className = 'msg'; msg.textContent = 'Sending...';
+          api({ action: 'send', ids: [i.id] }).then(function (d) {
+            b.disabled = false;
+            if (d && d.sent && d.sent.length) { msg.textContent = 'Sent from you to ' + i.email + '.'; invites = null; return; }
+            msg.className = 'msg err'; msg.textContent = (d && (d.message || (d.failed && d.failed[0] && d.failed[0].why))) || 'It did not send.';
+          }).catch(function () { b.disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+        });
+        $('copy').addEventListener('click', function () {
+          var b = this;
+          api({ action: 'mark_copied', id: i.id }).then(function (d) {
+            if (d && d.link) { copy(d.link, b); msg.className = 'msg'; msg.textContent = 'Copied. It now works for 30 days.'; invites = null; }
+            else { msg.className = 'msg err'; msg.textContent = 'That did not go through.'; }
+          });
+        });
+        $('cancel').addEventListener('click', function () {
+          if (!confirm('Cancel the invitation for ' + i.name + '? Their link stops working.')) return;
+          api({ action: 'cancel', id: i.id }).then(function (d) {
+            if (d && d.ok) { invites = null; go('list/all'); } else { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; }
+          });
+        });
+      }
+
+      function draw() {
+        var r = route();
+        if (r === 'new') return drawNew();
+        if (!invites) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The invitations did not load. Refresh to try again.</p>'; }); }
+        var m = r.match(/^invite\/([0-9a-f-]{36})$/);
+        if (m) return drawOne(m[1]);
+        var s = (r.match(/^list\/([a-z]+)$/) || [])[1];
+        drawList(TABS.some(function (t) { return t[0] === s; }) ? s : 'all');
+      }
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

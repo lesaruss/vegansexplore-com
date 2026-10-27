@@ -94,6 +94,12 @@
       VEAuth.login(email, password)
         .then(function(d) {
           if (d.error) { showError(d.error); setLoading(false); return; }
+          // An account that never paid signs in to its Passport checkout, not to the site (Sean, 2026-10-27).
+          if (d.member && d.member.membership_status === 'pending_payment') {
+            setLoading(false);
+            VEAuth.showActivateModal('Your account is waiting on its Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
+            return;
+          }
           var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';
           window.location.replace(next);
         })
@@ -112,7 +118,7 @@
         // the shared auth modal's own asymmetry: only account creation
         // (or, here, an unresolved account) shows the gate up front.
         if (d.member && d.member.membership_status === 'pending_payment') {
-          VEAuth.showActivateModal('Your account is created. Become a Founding Member for $11, one time, to unlock the full community.');
+          VEAuth.showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
           return;
         }
         var next = new URLSearchParams(window.location.search).get('next') || '/dashboard';

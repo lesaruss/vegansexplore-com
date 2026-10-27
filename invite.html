@@ -62,7 +62,7 @@
         <div class="eyebrow" id="eyebrow">An invitation from Sean A. Russell</div>
         <h1 id="title">You're invited.</h1>
         <p class="reason" id="reason" hidden></p>
-        <p class="lede" id="lede">I'm building Vegans Explore, a nonprofit community for Vegans, city by city, and I'd like you to be part of it.</p>
+        <p class="lede" id="lede">I'm building Vegans Explore, a community for Vegans, city by city, and I'd like you to be part of it.</p>
         <div class="gift" id="gift" hidden>Your Founding Membership is on us</div>
         <ul class="points" id="points">
           <li>Your city's Community Board: ask your city, find who can help, and the Daily Pulse</li>
@@ -120,12 +120,18 @@
       if (inv.reason) { $('reason').textContent = inv.reason; $('reason').hidden = false; }
       $('gift').hidden = !inv.comp;
       $('pt-points').hidden = !inv.comp;
+      // The points Sean chose for this invitation (Sean, 2026-10-27).
+      if (inv.comp && inv.points > 0) {
+        var pts = Number(inv.points).toLocaleString('en-US');
+        $('gift').textContent = 'Your Founding Membership is on us, with ' + pts + ' points to start';
+        $('pt-points').textContent = 'Everything a paid member has, ' + pts + ' points to start, and more you earn by taking part';
+      }
       if (inv.points_to === 'community_manager') {
-        $('lede').textContent = 'I’m building Vegans Explore, a nonprofit community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';
       }
       if (inv.dinner) {
         $('dinner-link').href = inv.dinner.url; $('dinner-link').hidden = false;
-        $('lede').textContent = 'I’m building Vegans Explore, a nonprofit community for Vegans, city by city. I’d like you at our dinner in ' + inv.dinner.place + ' on ' + inv.dinner.date + ', and part of what we’re building.';
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city. I’d like you at our dinner in ' + inv.dinner.place + ' on ' + inv.dinner.date + ', and part of what we’re building.';
       }
       $('accept').textContent = inv.comp ? 'Accept your membership' : 'Accept your invitation';
       if (inv.expires_at) {

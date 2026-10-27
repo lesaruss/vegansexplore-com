@@ -514,7 +514,7 @@
           btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
           markDecisionMade('attend');
         }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
-      }, 'Almost there -- sign in or create a free account to join the waitlist.');
+      }, 'Almost there -- sign in or get your Passport to join the waitlist.');
     });
   }
 
@@ -547,7 +547,7 @@
             btn.classList.remove('wiz-btn-next'); btn.classList.add('wiz-btn-back'); btn.textContent = 'Interest Sent';
             markDecisionMade('sponsor');
           }).catch(function () { btn.disabled = false; btn.textContent = 'Select Interest'; alert('Could not reach the server, try again.'); });
-        }, 'Almost there -- sign in or create a free account to send your interest.');
+        }, 'Almost there -- sign in or get your Passport to send your interest.');
       });
     });
   }
@@ -598,7 +598,7 @@
             btn.outerHTML = '<div class="wiz-tag">pending</div>';
             markDecisionMade('volunteer');
           }).catch(function () { btn.disabled = false; btn.textContent = 'Apply'; alert('Could not reach the server, try again.'); });
-        }, 'Almost there -- sign in or create a free account to apply.');
+        }, 'Almost there -- sign in or get your Passport to apply.');
       });
     });
   }
@@ -839,7 +839,7 @@
             p.hidden = p.getAttribute('data-path') !== selectedPath;
           });
           if (current < total - 1) { current += 1; render(); }
-        }, 'Almost there -- sign in or create a free account to see full details for your path.');
+        }, 'Almost there -- sign in or get your Passport to see full details for your path.');
         return;
       }
       if (current < total - 1) { current += 1; render(); }

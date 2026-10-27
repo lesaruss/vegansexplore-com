@@ -278,7 +278,7 @@
   function _showGateModal(msg) {
     var _here = location.pathname + location.search + location.hash;
     if (location.pathname !== '/passport') { location.href = '/passport?back=' + encodeURIComponent(_here); return; }
-    var _msg = msg || 'You need a free Passport to do that.';
+    var _msg = msg || 'You need a Passport to do that.';
     if (window.VEAuth && typeof VEAuth.showAuthModal === 'function') {
       VEAuth.showAuthModal(_msg);
       return;
@@ -324,7 +324,7 @@
       if (t.tagName === 'A' && t.classList && t.classList.contains('topic-card') && !t.classList.contains('tc-locked')) {
         e.preventDefault();
         e.stopImmediatePropagation();
-        _showGateModal('Get your free Passport to join the discussion.');
+        _showGateModal('Get your Passport to join the discussion.');
         return;
       }
       t = t.parentElement;

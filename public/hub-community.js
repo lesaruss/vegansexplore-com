@@ -28,7 +28,7 @@
     if (!openBtn || !form) return;
 
     openBtn.addEventListener('click', function () {
-      requireAuth('Sign in with your free Passport to submit news.', function () {
+      requireAuth('Sign in with your Passport to submit news.', function () {
         closedWrap.style.display = 'none';
         form.style.display = 'block';
       });
@@ -135,7 +135,7 @@
       wrap.querySelectorAll('.hub-opp-apply-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var oppId = btn.getAttribute('data-opp-id');
-          requireAuth('Sign in with your free Passport to apply.', function () {
+          requireAuth('Sign in with your Passport to apply.', function () {
             btn.disabled = true; btn.textContent = 'Submitting...';
             fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=submit_opportunity_application', {
               method: 'POST',
@@ -171,7 +171,7 @@
       wrap.querySelectorAll('[data-redeem-id]').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var id = btn.getAttribute('data-redeem-id');
-          requireAuth('Sign in with your free Passport to redeem rewards.', function () {
+          requireAuth('Sign in with your Passport to redeem rewards.', function () {
             btn.disabled = true; btn.textContent = 'Redeeming...';
             fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=redeem_product', {
               method: 'POST',
@@ -216,7 +216,7 @@
           var amount = parseInt(amountEl.value, 10);
           var msgEl = wrap.querySelector('[data-donate-msg="' + id + '"]');
           if (!amount || amount <= 0) { msgEl.textContent = 'Enter how many points to donate.'; msgEl.style.color = '#dc2626'; return; }
-          requireAuth('Sign in with your free Passport to donate points.', function () {
+          requireAuth('Sign in with your Passport to donate points.', function () {
             btn.disabled = true; btn.textContent = 'Donating...';
             fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=donate_to_nonprofit', {
               method: 'POST',
@@ -276,7 +276,7 @@
     var form = document.getElementById('hub-partner-apply-form');
     if (!openBtn || !form) return;
     openBtn.addEventListener('click', function () {
-      requireAuth('Sign in with your free Passport to apply as a partner.', function () {
+      requireAuth('Sign in with your Passport to apply as a partner.', function () {
         form.style.display = 'block';
         openBtn.style.display = 'none';
       });

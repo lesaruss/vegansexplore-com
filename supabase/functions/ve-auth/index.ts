@@ -740,7 +740,10 @@ serve(async (req: Request) => {
 
       await ensureMemberPointsRow(member.id);
       if (referred_by) await awardReferralBounty(referred_by, member.id);
-      await sendWelcomeEmail(email.toLowerCase(), name);
+      // Registration is the Passport (Sean, 2026-10-27: "they can only register through the Passport program"): an account that
+      // has not paid is only the checkout's account, so it gets no welcome. ve-stripe-webhook's "Your Passport is active" is the
+      // welcome; an invited account that lands active here gets this one.
+      if (member.membership_status === 'active') await sendWelcomeEmail(email.toLowerCase(), name);
       const verify_token = await createEmailVerificationToken(member.id);
       await sendVerificationEmail(email.toLowerCase(), name, verify_token);
       const token = await signJWT({ sub: member.id, email: member.email, tier: 'free', brand: 'vegans-explore' });
@@ -815,7 +818,7 @@ serve(async (req: Request) => {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
       }
       await ensureMemberPointsRow(member.id);
-      await sendWelcomeEmail(gUser.email.toLowerCase(), gUser.name);
+      if (member.membership_status === 'active') await sendWelcomeEmail(gUser.email.toLowerCase(), gUser.name);
       const token = await signJWT({ sub: member.id, email: member.email, tier: 'free', brand: 'vegans-explore' });
       return new Response(JSON.stringify({ token, member: { ...member, communities: home_community ? [home_community] : [], hidden_modules: [] } }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
@@ -1677,8 +1680,12 @@ serve(async (req: Request) => {
       const decoded = token ? await decodeToken(token) : null;
 
       if (decoded) {
-        const { data: member } = await supabase.from('members').select('id, name, membership_tier').eq('id', decoded.sub).maybeSingle();
+        const { data: member } = await supabase.from('members').select('id, name, membership_tier, membership_status').eq('id', decoded.sub).maybeSingle();
         if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        // An account that has not paid is not a member yet (Sean, 2026-10-27): no Guide chat and no monthly allowance.
+        if (member.membership_status === 'pending_payment') {
+          return new Response(JSON.stringify({ error: 'payment_required' }), { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        }
 
         await ensureMemberPointsRow(member.id);
         const period = await currentMonthPeriod();

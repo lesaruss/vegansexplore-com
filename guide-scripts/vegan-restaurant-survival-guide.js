@@ -465,7 +465,7 @@
   function buyAudit(btn) {
     var tier = btn.getAttribute('data-buy'), a = auth();
     if (!token()) {
-      if (a) a.showAuthModal('Create your free account, or sign in, to buy the full audit. It is $' + (tier === 'shopper' ? '149' : '49') + ', one time.', function () { location.reload(); }, 'signup');
+      if (a) a.showAuthModal('Create your account, or sign in, to buy the full audit. It is $' + (tier === 'shopper' ? '149' : '49') + ', one time.', function () { location.reload(); }, 'signup');
       return;
     }
     var t = PICK || {}, body = { action: 'checkout', tier: tier };
@@ -711,7 +711,7 @@
       var box2 = m === 'points'
         ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
           '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create a free account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
             : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
           '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
           '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
@@ -946,7 +946,7 @@
       if (m === 'join' && onPoints()) {
         var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
         window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your free account, then get the Restaurant Guide for $11. Buying it makes you a member.', go, 'signup');
+        a.showAuthModal('Create your account, then get the Restaurant Guide for $11. Buying it makes you a member.', go, 'signup');
         return;
       }
       if (m === 'join') a.showAuthModal('Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.', function () { location.reload(); }, 'signup');

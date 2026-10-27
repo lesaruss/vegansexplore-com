@@ -449,7 +449,7 @@
     msgEl.textContent = '';
     if (!citySlug) { msgEl.textContent = 'Please select your city.'; msgEl.style.color = '#dc2626'; return; }
 
-    requireAuth('Sign in with your free Passport to apply.', function () {
+    requireAuth('Sign in with your Passport to apply.', function () {
       applyBtn.disabled = true; applyBtn.textContent = 'Submitting...';
 
       fetch(SUPABASE_URL + '/rest/v1/opportunities?select=id&city_slug=eq.' + encodeURIComponent(citySlug) + '&opportunity_type=eq.' + encodeURIComponent(selectedRole) + '&is_active=eq.true&limit=1', {

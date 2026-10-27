@@ -13,8 +13,12 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 //   POST { action: 'view', code }        the invitation page (/invite?c=<code>); marks it opened
 //   POST { action: 'accept', code }      Bearer <ve_token>: claims it for the signed-in member
 // Admin: a superadmin ve_token (Depot), or x-invites-key = lesaruss_secrets.INVITES_KEY (HQ server)
-//   POST { action: 'create', brand, reason, points_to, dinner_slug?, city_slug?, by?,
-//          people: [{ person_id?, name, email, comp }] }   -> { created, skipped }
+//   POST { action: 'create', brand, reason, points_to, dinner_slug?, city_slug?, by?, points?,
+//          people: [{ person_id?, name, email, comp, points? }] }   -> { created, skipped }
+//     points (Sean, 2026-10-27): what a membership on us brings, 0 to 100,000, granted once when it is claimed
+//     (universe_invite_claim). A person's own points win over the batch's. An email whose account never paid
+//     (pending_payment) can be invited: they accept by signing in on the invitation page.
+//   POST { action: 'list', status? }    the invitations, newest first (Depot > Invites)
 //   POST { action: 'preview', id }       the email exactly as it will go out
 //   POST { action: 'send', ids }         emails each one from Sean (Resend), up to 100 per call
 //   POST { action: 'mark_copied', id }   Sean sent the link himself
@@ -50,6 +54,7 @@ const emailOk = (e: string | null) => !!e && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 const firstName = (n: string) => String(n || '').trim().split(/\s+/)[0] || 'there';
+const pointsOf = (v: unknown) => { const n = Math.round(Number(v)); return Number.isFinite(n) ? Math.max(0, Math.min(100000, n)) : 0; };
 // Emails go through ilike for case; escape its wildcards so an underscore matches only itself.
 const likeEsc = (s: string) => s.replace(/[%_\\]/g, '\\$&');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -135,10 +140,10 @@ async function emailFor(inv: Invite) {
     : `${first}, an invitation to ${brand}`;
   const paras: string[] = [];
   if (inv.reason) paras.push(inv.reason);
-  paras.push(`I'm building ${brand}, a nonprofit community for Vegans, city by city, and I'd like you to be part of it.`);
+  paras.push(`I'm building ${brand}, a community for Vegans, city by city, and I'd like you to be part of it.`);
   if (d) paras.push(`I'd like you at our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${city ?? ''} community as its Community Manager. Your link has the details.`.replace('our  ', 'our '));
-  if (inv.comp) paras.push(`Your Founding Membership is on us. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
+  if (inv.comp) paras.push(`Your Founding Membership is on us${inv.points > 0 ? `, with ${Number(inv.points).toLocaleString('en-US')} points to start` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
   const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : 'Accept your invitation';
   const url = linkUrl(inv);
   const fine = `This invitation is just for you. It works once, until ${untilText}.`;
@@ -169,7 +174,7 @@ Deno.serve(async (req: Request) => {
       const expired = inv.status === 'expired' || (inv.status !== 'joined' && inv.expires_at && new Date(inv.expires_at) < new Date());
       const d = inv.points_to === 'dinner' ? await dinnerOf(inv.dinner_slug) : null;
       const out = {
-        first_name: firstName(inv.name), brand: inv.brand, brand_name: BRANDS[inv.brand] ?? inv.brand, comp: inv.comp, reason: inv.reason,
+        first_name: firstName(inv.name), brand: inv.brand, brand_name: BRANDS[inv.brand] ?? inv.brand, comp: inv.comp, points: inv.comp ? inv.points : 0, reason: inv.reason,
         points_to: inv.points_to, city: inv.city_slug ? CITIES[inv.city_slug] ?? null : null,
         dinner: d ? { title: d.title, date: dinnerDate(d), place: dinnerPlace(d), url: await destinationFor(inv) } : null,
         status: inv.status === 'canceled' ? 'canceled' : inv.status === 'joined' ? 'joined' : expired ? 'expired' : 'open',
@@ -226,11 +231,12 @@ Deno.serve(async (req: Request) => {
         const personId = isId(p?.person_id) ? p.person_id : null;
         if (!name || !emailOk(email)) { skipped.push({ name: name || '(no name)', email, why: 'No usable email' }); continue; }
         const [{ data: reg }, { data: sup }, { data: open }] = await Promise.all([
-          db.from('members').select('id').ilike('email', likeEsc(email!)).is('merged_into_member_id', null).limit(1),
+          db.from('members').select('id, membership_status').ilike('email', likeEsc(email!)).is('merged_into_member_id', null).limit(1),
           db.from('people_suppression').select('email').eq('email', email!).eq('active', true).limit(1),
           db.from('universe_invites').select('id').eq('brand', brand).ilike('email', likeEsc(email!)).in('status', ['ready', 'sent', 'opened']).limit(1),
         ]);
-        if (reg?.length) { skipped.push({ name, email, why: 'Already has an account' }); continue; }
+        // An account that never paid is not a member (registration is the Passport); it can still be invited.
+        if (reg?.length && reg[0].membership_status !== 'pending_payment') { skipped.push({ name, email, why: 'Already a member' }); continue; }
         if (sup?.length) { skipped.push({ name, email, why: 'On the do-not-contact list' }); continue; }
         if (open?.length) { skipped.push({ name, email, why: 'Already has an open invite' }); continue; }
         if (personId) {
@@ -239,6 +245,7 @@ Deno.serve(async (req: Request) => {
           if (per?.email_unsubscribed) { skipped.push({ name, email, why: 'Unsubscribed' }); continue; }
         }
         const comp = p?.comp !== false;
+        const points = comp ? pointsOf(p?.points ?? body.points) : 0;
 
         // A dinner seat is a guest on that dinner's list (Depot > Dinner guests).
         let dinnerInviteId: string | null = null;
@@ -262,7 +269,7 @@ Deno.serve(async (req: Request) => {
         }
 
         const { data: inv, error } = await db.from('universe_invites').insert({
-          brand, person_id: personId, name, email, comp, reason, points_to: pointsTo, dinner_slug: dinner?.slug ?? null,
+          brand, person_id: personId, name, email, comp, points, reason, points_to: pointsTo, dinner_slug: dinner?.slug ?? null,
           dinner_invite_id: dinnerInviteId, city_slug: city, batch_id: batch, created_by: by ?? actor.label,
         }).select('*').single();
         if (error || !inv) { console.error('invite insert:', error); skipped.push({ name, email, why: 'Could not save' }); continue; }
@@ -283,7 +290,19 @@ Deno.serve(async (req: Request) => {
         if (link) await db.from('universe_invites').update({ link_id: link.id, link_code: link.code }).eq('id', inv.id);
         created.push({ ...inv, link_id: link?.id ?? null, link_code: link?.code ?? null });
       }
-      return json({ ok: true, batch_id: batch, created: created.map((i) => ({ id: i.id, name: i.name, email: i.email, comp: i.comp, link: linkUrl(i) })), skipped });
+      return json({ ok: true, batch_id: batch, created: created.map((i) => ({ id: i.id, name: i.name, email: i.email, comp: i.comp, points: i.points, link: linkUrl(i) })), skipped });
+    }
+
+    if (action === 'list') {
+      let q = db.from('universe_invites').select('id, name, email, comp, points, reason, points_to, status, sent_via, sent_at, opened_at, joined_at, expires_at, created_at, created_by, link_code, code')
+        .eq('brand', 'vegans-explore').order('created_at', { ascending: false }).limit(300);
+      if (['ready', 'sent', 'opened', 'joined', 'expired', 'canceled'].includes(body.status)) q = q.eq('status', body.status);
+      const { data, error } = await q;
+      if (error) { console.error('list:', error); return json({ error: 'list_failed' }, 500); }
+      const now = Date.now();
+      return json({ ok: true, invites: (data ?? []).map((i) => ({
+        ...i, status: ['sent', 'opened'].includes(i.status) && i.expires_at && Date.parse(i.expires_at) < now ? 'expired' : i.status, link: linkUrl(i),
+      })) });
     }
 
     if (action === 'preview') {

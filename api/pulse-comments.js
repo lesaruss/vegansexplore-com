@@ -123,7 +123,7 @@ module.exports = async (req, res) => {
 
     const decoded = verifyVeToken(token);
     if (!decoded) {
-      res.status(401).json({ error: 'Sign in with your free Passport to comment.' });
+      res.status(401).json({ error: 'Sign in with your Passport to comment.' });
       return;
     }
     if (!content || content.length < 1 || content.length > 2000) {

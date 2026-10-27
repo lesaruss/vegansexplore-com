@@ -457,7 +457,7 @@
           '<dt>Event</dt><dd>' + esc(draft.title || '') + (draft.category ? ' (' + esc(CATS[draft.category]) + ')' : '') + '</dd>' +
           '<dt>When</dt><dd>' + esc(draft.start ? when({ starts_at: zonedToISO(draft.start, draft.timezone), timezone: draft.timezone }) : '') + '</dd>' +
           '<dt>Where</dt><dd>' + esc(draft.online ? 'Online' : [draft.location_name, draft.city, draft.state, countryName(draft.country)].filter(Boolean).join(', ')) + '</dd>' +
-          '</dl>' + (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or make a free account) when you send it, so we can let you know when it is live.</p>');
+          '</dl>' + (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or get your Passport) when you send it, so we can let you know when it is live.</p>');
       }
       el.innerHTML = head + '<div class="vev-form">' + body +
         '<p class="vev-note bad" data-v="err" role="alert"></p>' +
@@ -492,7 +492,7 @@
     function needSignIn(then) {
       if (signedIn()) { then(); return; }
       var back = location.pathname + location.search + location.hash;
-      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in, or make a free account, to send an event.', function () { then(); });
+      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in, or get your Passport, to send an event.', function () { then(); });
       else location.href = '/login?next=' + encodeURIComponent(back);
     }
 

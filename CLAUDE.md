@@ -60,7 +60,7 @@ this list follows the rule above. A new exception goes on this list first.
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
-Events), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links),
+Events), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links, Invites),
 Site (Onboarding, Preview journeys, Dashboard checklist, Services). Logos, Pulse, Pulse Cities, Passport Partners, Tours, Passport
 Challenge and Import narration left the menu and still open by their address. The Depot is the dashboard's last tab, for super
 admins only (Sean, 2026-10-27): `/dashboard/depot/<page>` frames `/admin/depot/<page>` (query and #view kept in the address
@@ -466,6 +466,35 @@ scanners are logged as bots and never count) and redirects with `?vl=<click id>`
 that click to the visitor's account once they are signed in (30 days). Email-system clicks on our
 links are synced every 15 minutes (`ve-links-email-sync` cron) and named by recipient. Never paste a
 bare campaign URL into outreach.
+
+## Registration is the Passport (Sean, 2026-10-27)
+
+"People can view everything without logging in. He probably wanted to become a Passport member and was just given a free
+membership. Let's fix that so they can only register through the Passport program." (Joshua Mattey had made an account with
+Continue with Google, closed the $11 window and kept a free account.) There is no free account any more:
+
+- An account that has not paid (`membership_status` `pending_payment`) is only the checkout's account. `VEAuth.isLoggedIn()` is
+  false for it (`isPending` in `/public/ve-auth.js`), so every page treats it as signed out; its token is kept only to pay.
+  Making an account (email or Google) or signing in to an unpaid one goes straight to the $11 Passport window ("One step left:
+  your Passport..."), and closing that window signs them out (`hideActivateModal`). The sign-up tab reads **Get your Passport**
+  and its button **Continue to checkout**, except on a page that finishes the join itself (`VE_ACTIVATE_HANDLER`: an invitation,
+  a dinner seat, a Guide's own $11), where they read Create Account. `/login` does the same for both sign-in paths.
+- The server agrees: `ve-auth` sends the welcome email only to an account that is active at sign-up (an invited one); the
+  webhook's "Your Passport is active" is everyone else's welcome. Guide chat refuses an unpaid account (`payment_required`, no
+  monthly allowance). Participation was already gated (`requireActiveMembership`).
+- Still working as before: Join the Directory makes the account and goes to its own $11 or Partner checkout; a Guide's $11 makes
+  the buyer a member; any $11 purchase admits (`ve_member_admit`). 12 unpaid accounts existed on 2026-10-27; they meet the
+  Passport window at their next sign-in. "Free Passport" and "free account" left the site's words the same day.
+- **The one other way in is an invitation on us** (Sean, same day: "I do want the ability to invite people to give a
+  complimentary account with points of my choosing"): **Depot > Invites** (`/admin/depot/invites`; People in the Go to menu),
+  one view at a time: the list by status (`#list/<status>`: Not sent yet, Sent, Opened, Joined, Expired, Canceled), **New invite**
+  (`#new`: one person a line, "Name, email" with an optional number for that person's points; Points for everyone, 0 to
+  100,000, quick picks None, 1,100, 2,500, 5,000, 10,000; a line from Sean that opens the email), and one invite (`#invite/<id>`:
+  the email exactly as it goes, **Send it from me**, **Copy the link**, **Cancel it**). Nothing is sent until Send. The points are
+  `universe_invites.points`, granted once at the claim through `ve_points_grant` (`comp_membership`, ref `invite:<id>`; migration
+  `20261027_invite_points.sql`); the email and `/invite` say "on us, with N points to start". An email whose account never paid
+  can be invited (they sign in on `/invite` to accept); a paid member is left out ("Already a member"). `ve-invites` `list` feeds
+  the page; HQ > People makes the same invitations with `points`.
 
 ## Invites and free memberships (Sean, 2026-10-04)
 
