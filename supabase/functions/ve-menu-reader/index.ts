@@ -7,9 +7,10 @@
 // and never guesses. A Vegan place keeps its whole menu; a place with Vegan options keeps only what the menu marks Vegan.
 // Saved through ve_menu_import_save (source import), which refuses a listing that already has a menu.
 //
-// POST { action: 'read', listing_id | slug, save?: true }  read one (save false returns what it read, saves nothing)
-// POST { action: 'sweep', limit?: 2 }                    the next ve_menu_imports rows at 'none' the reader has not tried
-//                                                        (cron ve-menu-reader, every 10 minutes; runs in the background)
+// POST { action: 'read', listing_id | slug, save?: true }  read one in the background (save false keeps what it read in
+//                                                        ve_menu_imports.reader_preview and saves nothing)
+// POST { action: 'sweep', limit?: 1 }                    the next ve_menu_imports rows at 'none' the reader has not tried
+//                                                        (cron ve-menu-reader, one every 10 minutes, in the background)
 // POST { action: 'probe', url }                           what a page gives us (status, length, pictures, PDFs, links, menu data)
 // Callers: a super admin (VE token), the LESARUSS_ADMIN_TOKEN, or the cron's x-cron-secret. verify_jwt is false.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -93,9 +94,9 @@ async function rendered(url: string): Promise<{ url: string; text: string; error
   const token = await secret('APIFY_API_TOKEN');
   if (!token) return { url, text: '', error: 'no Apify key' };
   try {
-    const r = await fetch(`https://api.apify.com/v2/acts/apify~rag-web-browser/run-sync-get-dataset-items?token=${token}&timeout=75`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(85000),
-      body: JSON.stringify({ query: url, maxResults: 1, outputFormats: ['markdown'], scrapingTool: 'browser-playwright', requestTimeoutSecs: 60, dynamicContentWaitSecs: 10, removeCookieWarnings: true }),
+    const r = await fetch(`https://api.apify.com/v2/acts/apify~rag-web-browser/run-sync-get-dataset-items?token=${token}&timeout=55`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(65000),
+      body: JSON.stringify({ query: url, maxResults: 1, outputFormats: ['markdown'], scrapingTool: 'browser-playwright', requestTimeoutSecs: 45, dynamicContentWaitSecs: 8, removeCookieWarnings: true }),
     });
     if (!r.ok) return { url, text: '', error: `browser answered ${r.status}` };
     const d = ((await r.json()) as any[])[0] || {};
@@ -200,7 +201,7 @@ async function fetchFile(url: string, kind: 'image' | 'pdf') {
 }
 
 type Source = { kind: 'text' | 'image' | 'pdf'; url: string; text?: string; type?: string; data?: string };
-async function gather(website: string) {
+async function gather(website: string, deadline: number) {
   const read: string[] = [], sources: Source[] = [];
   const home = await fetchPage(website);
   if (!home.html) { read.push(`${website}: ${home.status ? 'answered ' + home.status : home.error || 'did not open'}`); }
@@ -222,7 +223,7 @@ async function gather(website: string) {
   const squareOrder = (u: string) => { const h = hostOf(u); if (/\.square\.site$/.test(h)) offer(new URL(u).origin + '/s/order', 'order menu', 3); };
   const pics: string[] = [], pdfs: string[] = [];
   let renders = 0, url: string | undefined = base;
-  while (url && done.size < 5) {
+  while (url && done.size < 5 && Date.now() < deadline - 120000) {
     done.add(url); cand.delete(url);
     const p = url === base ? home : await fetchPage(url);
     const at = p.final || url, h = hostOf(at), menuPage = url !== base || /menu/i.test(url);
@@ -233,7 +234,7 @@ async function gather(website: string) {
       if (p.html) { for (const l of linksOf(p.html, at)) offer(l.url, l.text); pics.push(...picturesOf(p.html, at, menuPage)); pdfs.push(...pdfsOf(p.html, at)); }
       squareOrder(at);
       // Script-only pages and ordering apps: open them in a real browser (three a listing). Its links and pictures count too.
-      if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
+      if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && Date.now() < deadline - 150000 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
         renders++;
         const rr = await rendered(at);
         if (rr.text.length > text.length) { text = rr.text; read.push(`${rr.url} (opened in a browser)`); }
@@ -297,7 +298,8 @@ You get the text of their pages (some opened in a browser), menu data found on t
 - Spell Vegan with a capital V. No em dashes or en dashes in anything you write.`;
 
 async function readMenu(l: any) {
-  const g = await gather(l.website);
+  // The background run has about 400 s; the model gets the last 120.
+  const g = await gather(l.website, Date.now() + 330000);
   if (!g.sources.length) return { ok: false, why: 'nothing_read', read: g.read, note: 'Nothing on their site could be read' };
   const apiKey = await secret('ANTHROPIC_API_KEY');
   if (!apiKey) return { ok: false, why: 'no_model_key', read: g.read };
@@ -343,7 +345,7 @@ async function runOne(listingId: string, save: boolean) {
   if (count) return { ok: false, why: 'has_menu' };
   const r: any = await readMenu(l);
   const result: any = { slug: l.slug, name: l.name, ...r };
-  if (!save) return result;
+  if (!save) { await db.from('ve_menu_imports').update({ reader_preview: result }).eq('listing_id', l.id); return result; }
   await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none' }, { onConflict: 'listing_id', ignoreDuplicates: true });
   if (r.ok && r.found) {
     const { data: s, error } = await db.rpc('ve_menu_import_save', { p_listing: l.id, p_items: r.items, p_menu_url: r.source, p_note: ('Read by the menu reader. ' + (r.note || '')).slice(0, 300) });
@@ -376,17 +378,21 @@ Deno.serve(async (req) => {
     let id = String(body.listing_id || '');
     if (!id && body.slug) { const { data } = await db.from('listings').select('id').eq('slug', String(body.slug)).eq('status', 'approved').maybeSingle(); id = data?.id || ''; }
     if (!id) return json({ error: 'not_found' }, 404);
-    return json(await runOne(id, body.save !== false));
+    // A read takes longer than a request may wait (150 s), so it runs in the background; the result lands on its
+    // ve_menu_imports row (reader_note and reader_read, or reader_preview for save: false).
+    (EdgeRuntime as any).waitUntil(runOne(id, body.save !== false).catch(async (e) => {
+      await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id);
+    }));
+    return json({ ok: true, started: id });
   }
   if (body.action === 'sweep') {
-    const limit = Math.min(Math.max(+body.limit || 2, 1), 5);
+    const limit = Math.min(Math.max(+body.limit || 1, 1), 2);
     // Most voted first.
     const { data: rows } = await db.from('ve_menu_imports').select('listing_id, listings!inner(status, vote_count)').eq('status', 'none').is('reader_at', null).eq('listings.status', 'approved').limit(500);
     const ids = ((rows || []) as any[]).sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
     // Mark them first so a second run does not take the same ones.
     if (ids.length) await db.from('ve_menu_imports').update({ reader_at: new Date().toISOString(), reader_note: 'Reading' }).in('listing_id', ids);
     const work = (async () => { for (const id of ids) { try { await runOne(id, true); } catch (e) { await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id); } } })();
-    if (body.wait) { await work; return json({ ok: true, ran: ids.length }); }
     (EdgeRuntime as any).waitUntil(work);
     return json({ ok: true, started: ids.length });
   }
