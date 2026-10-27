@@ -2636,7 +2636,7 @@ function menuTabContent(items){
       '<div id="menu-blocks">'+blocks+'</div>'+
       // A menu the Background writer copied from their website says so (migration 20261024_ve_menu_import.sql).
       (items.every(function(i){ return i.source === 'import'; }) && items[0].created_at ? '<p class="menu-source">From their '+(items[0].source_url ? '<a href="'+esc(items[0].source_url)+'" target="_blank" rel="noopener">'+(/instagram\.com/i.test(items[0].source_url) ? 'Instagram' : 'website')+'</a>' : 'website')+', checked '+
-        esc(new Date(items[0].created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }))+'. Prices and dishes may have changed.</p>' : '')+
+        esc(new Date(items[0].checked_at || items[0].created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }))+'. We check it every month.</p>' : '')+
     '</div>';
   // Attach event after render (use setTimeout so DOM is ready)
   setTimeout(function(){
@@ -3904,16 +3904,24 @@ if(!slug || slug === 'listing'){
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       // A location with no menu of its own shows its main listing's.
-      // A food place shows a menu on its page only once it is claimed (theirs to keep current); before that, Menu links out.
+      // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
+      // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly
+      // re-read keeps it checked (checked_at in the last 35 days); otherwise Menu links out to wherever they post it.
       var placeMenu = PLACE_MENU_CATS.indexOf(l.category) >= 0, ownedMenu = l.claim_status === 'verified' || !!l.owner_member_id;
-      if(placeMenu && !ownedMenu){
+      var FRESH_MS = 35 * 86400000;
+      function menuLinkOut(){
         var ml = /^https?:\/\//i.test(l.menu_crawl_url || '') ? l.menu_crawl_url : '';
         var mlb = document.getElementById('tab-btn-menu-link');
         if(ml && mlb){ mlb.href = ml; mlb.style.display = ''; }
       }
-      if(!placeMenu || ownedMenu) fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
-        // A claimed place shows what its owner (or our team) entered; what we once copied from their site stays hidden.
-        if(placeMenu) items = (items || []).filter(function(i){ return i.source !== 'import'; });
+      fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
+        if(placeMenu){
+          items = (items || []).filter(function(i){
+            if(i.source !== 'import') return ownedMenu;
+            return !ownedMenu && Date.now() - Date.parse(i.checked_at || i.created_at || 0) < FRESH_MS;
+          });
+          if(!items.length){ menuLinkOut(); return; }
+        }
         if(items && items.length){
           var panel = document.getElementById('tab-menu');
           if(panel) panel.innerHTML = menuTabContent(items);

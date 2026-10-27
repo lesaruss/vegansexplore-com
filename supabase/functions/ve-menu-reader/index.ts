@@ -9,14 +9,16 @@
 //
 // POST { action: 'read', listing_id | slug, save?: true }  read one in the background (save false keeps what it read in
 //                                                        ve_menu_imports.reader_preview and saves nothing)
-// POST { action: 'sweep', limit?: 1 }                    the next ve_menu_imports rows at 'none' the reader has not tried
+// POST { action: 'sweep', limit?: 1 }  (with nothing new, the monthly re-check of a copied menu; refresh in runOne)                    the next ve_menu_imports rows at 'none' the reader has not tried
 //                                                        (cron ve-menu-reader, one every 10 minutes, in the background)
 // POST { action: 'probe', url }                           what a page gives us (status, length, pictures, PDFs, links, menu data)
 // Callers: a super admin (VE token), the LESARUSS_ADMIN_TOKEN, or the cron's x-cron-secret. verify_jwt is false.
 //
 // Menu links, not copies (Sean, 2026-10-27: "how do we know if they're updated... if she changes just one of them, we're
-// presenting wrong information... link to have a tab that says menu"). Copying is paused (cron ve-menu-reader off). An
-// unclaimed food place's Menu tab links out to listings.menu_crawl_url, which the link finder fills from their own site, no AI:
+// presenting wrong information... link to have a tab that says menu"), then: "if we can get an accurate menu, we can use that...
+// only if we can keep the menu up to date with our processes". A copied menu shows only while its monthly re-read (sweep's
+// refresh) keeps it checked; otherwise an unclaimed food place's Menu tab links out to listings.menu_crawl_url, which the link
+// finder fills from their own site, no AI:
 // POST { action: 'link', listing_id | slug }   find one now        POST { action: 'link_sweep', limit?: 15 }   cron ve-menu-links
 // It takes a menu page or menu PDF on their site, else their own ordering page (Toast, Square, Clover...), else a page on their
 // site whose link says order; never a marketplace (DoorDash, Uber Eats, Grubhub, Yelp). Only an empty menu_crawl_url is filled,
@@ -392,24 +394,30 @@ async function readMenu(l: any, menuUrl = '') {
   return { ok: true, found: !!out.found && out.own_business !== false && items.length > 0, items, all: all.length, note, source: sourceUrl, read: g.read };
 }
 
-async function runOne(listingId: string, save: boolean) {
+// refresh: the monthly re-read of a menu we copied (Sean, 2026-10-27: "only if we can keep the menu up to date with our
+// processes"). It reads again from the page the menu came from; a good read replaces the copied items (checked_at now), a failed
+// one changes nothing, so the menu ages out (35 days on the listing page) and its Menu tab links out instead.
+async function runOne(listingId: string, save: boolean, refresh = false) {
   const { data: l } = await db.from('listings').select('id, slug, name, website, category, vegan_status, address_city, status, menu_crawl_url').eq('id', listingId).maybeSingle();
   if (!l || l.status !== 'approved') return { ok: false, why: 'not_found' };
   const { data: qi } = await db.from('ve_menu_imports').select('menu_url').eq('listing_id', l.id).maybeSingle();
-  const menuUrl = qi?.menu_url || l.menu_crawl_url || '';
+  const { data: srcRow } = refresh ? await db.from('ve_menu_items').select('source_url').eq('listing_id', l.id).eq('source', 'import').not('source_url', 'is', null).limit(1).maybeSingle() : { data: null };
+  const menuUrl = srcRow?.source_url || qi?.menu_url || l.menu_crawl_url || '';
   if (!/^https?:\/\//i.test(l.website || '') && !/^https?:\/\//i.test(menuUrl)) return { ok: false, why: 'no_website' };
-  const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
+  // A menu the owner or the team entered is never replaced; a copied one only by its monthly re-read.
+  const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id).neq('source', refresh ? 'import' : '__none__');
   if (count) return { ok: false, why: 'has_menu' };
   const r: any = await readMenu(l, menuUrl);
   const result: any = { slug: l.slug, name: l.name, ...r };
   if (!save) { await db.from('ve_menu_imports').update({ reader_preview: result }).eq('listing_id', l.id); return result; }
   await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none' }, { onConflict: 'listing_id', ignoreDuplicates: true });
   if (r.ok && r.found) {
+    if (refresh) await db.from('ve_menu_items').delete().eq('listing_id', l.id).eq('source', 'import');
     const { data: s, error } = await db.rpc('ve_menu_import_save', { p_listing: l.id, p_items: r.items, p_menu_url: r.source, p_note: ('Read by the menu reader. ' + (r.note || '')).slice(0, 300) });
     result.saved = error ? { ok: false, why: error.message } : s;
   }
   await db.from('ve_menu_imports').update({
-    reader_at: new Date().toISOString(), reader_note: (r.ok && r.found ? `Copied ${r.items.length} items` : r.note || r.why || 'No menu found').slice(0, 300),
+    reader_at: new Date().toISOString(), reader_note: (r.ok && r.found ? `${refresh ? 'Re-checked' : 'Copied'} ${r.items.length} items` : (refresh ? 'Re-check failed: ' : '') + (r.note || r.why || 'No menu found')).slice(0, 300),
     reader_read: r.read || [],
   }).eq('listing_id', l.id);
   delete result.items; result.items = r.items?.length || 0;
@@ -466,10 +474,17 @@ Deno.serve(async (req) => {
     const limit = Math.min(Math.max(+body.limit || 1, 1), 2);
     // Most voted first.
     const { data: rows } = await db.from('ve_menu_imports').select('listing_id, listings!inner(status, vote_count)').eq('status', 'none').is('reader_at', null).eq('listings.status', 'approved').limit(500);
-    const ids = ((rows || []) as any[]).sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
+    let ids = ((rows || []) as any[]).sort((x, y) => (y.listings?.vote_count || 0) - (x.listings?.vote_count || 0)).slice(0, limit).map((r) => r.listing_id);
+    // Nothing new to read: the stalest copied menu due its monthly re-check (ve_menu_refresh_due).
+    let refresh = false;
+    if (!ids.length) {
+      const { data: due } = await db.rpc('ve_menu_refresh_due', { p_limit: limit });
+      ids = ((due || []) as any[]).map((r) => r.listing_id);
+      refresh = ids.length > 0;
+    }
     // Mark them first so a second run does not take the same ones.
     if (ids.length) await db.from('ve_menu_imports').update({ reader_at: new Date().toISOString(), reader_note: 'Reading' }).in('listing_id', ids);
-    const work = (async () => { for (const id of ids) { try { await runOne(id, true); } catch (e) { await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id); } } })();
+    const work = (async () => { for (const id of ids) { try { await runOne(id, true, refresh); } catch (e) { await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id); } } })();
     (EdgeRuntime as any).waitUntil(work);
     return json({ ok: true, started: ids.length });
   }
