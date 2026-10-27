@@ -179,7 +179,11 @@ function picturesOf(html: string, base: string, menuPage: boolean) {
   return found.sort((a, b) => b.score - a.score).filter((x) => { const k = x.url.split('?')[0]; if (seen.has(k)) return false; seen.add(k); return true; }).map((x) => x.url);
 }
 const pdfsOf = (html: string, base: string) => [...new Set([...html.matchAll(/href=["']([^"']+\.pdf(?:\?[^"']*)?)["']/gi)].map((m) => abs(m[1], base)).filter((u) => /^https?:/.test(u)))];
+// Image hosts that resize on the fly: ask for the original (Wix's resized copies come back as AVIF, which the model cannot read).
+const original = (u: string) => u.replace(/^(https:\/\/static\.wixstatic\.com\/media\/[^/]+)\/v1\/.*$/i, '$1')
+  .replace(/^(https:\/\/images\.squarespace-cdn\.com\/[^?]+)(\?.*)?$/i, '$1?format=1500w');
 async function fetchFile(url: string, kind: 'image' | 'pdf') {
+  url = kind === 'image' ? original(url) : url;
   try {
     const r = await fetch(url, { headers: { 'User-Agent': UA, Accept: kind === 'pdf' ? 'application/pdf,*/*' : 'image/*,*/*' }, redirect: 'follow', signal: AbortSignal.timeout(20000) });
     if (!r.ok) return null;
@@ -202,51 +206,58 @@ async function gather(website: string) {
   if (!home.html) { read.push(`${website}: ${home.status ? 'answered ' + home.status : home.error || 'did not open'}`); }
   const base = home.final || website;
   const own = hostOf(base);
-  // The pages to read: the home page, then its menu and ordering links, best first.
-  const cand = new Map<string, number>();
-  if (home.html) {
-    for (const l of linksOf(home.html, base)) {
-      const h = hostOf(l.url), t = (l.text + ' ' + l.url).toLowerCase();
-      if (MARKETPLACE.test(h)) continue;
-      const same = h === own || h.endsWith('.' + own);
-      let s = (/menu/.test(t) ? 5 : 0) + (/order/.test(t) ? 3 : 0) + (ORDER_HOSTS.test(h) ? 4 : 0) + (/food|eat|drink|brunch|lunch|dinner|bakery|treats|flavors|catering/.test(t) ? 1 : 0);
-      if (!same && !ORDER_HOSTS.test(h)) s = 0;
-      if (/\.pdf(\?|$)/i.test(l.url) || /\.(jpe?g|png|webp)(\?|$)/i.test(l.url)) s = 0; // files are read below
-      if (s > 0 && l.url !== base) cand.set(l.url, Math.max(cand.get(l.url) || 0, s));
-    }
-  }
-  const pages = [base, ...[...cand.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3).map((x) => x[0])];
-  if (!home.html && !ORDER_HOSTS.test(own)) pages.length = 1;
+  // The pages to read: the home page, then menu and ordering links (from the page, or from it opened in a browser), best first.
+  const score = (url: string, text: string) => {
+    const h = hostOf(url), t = (text + ' ' + url).toLowerCase();
+    if (!/^https?:/i.test(url) || MARKETPLACE.test(h) || /\.(pdf|jpe?g|png|webp|gif)(\?|$)/i.test(url)) return 0;
+    if (!(h === own || h.endsWith('.' + own) || ORDER_HOSTS.test(h))) return 0;
+    return (/menu/.test(t) ? 5 : 0) + (/order/.test(t) ? 3 : 0) + (ORDER_HOSTS.test(h) && h !== own ? 4 : 0) + (/food|eat|drink|brunch|lunch|dinner|bakery|treats|flavors|catering|shop/.test(t) ? 1 : 0);
+  };
+  const cand = new Map<string, number>(), done = new Set<string>();
+  const offer = (url: string, text: string, bonus = 0) => {
+    const u = url.split('#')[0], sc = score(u, text);
+    if (sc > 0 && !done.has(u)) cand.set(u, Math.max(cand.get(u) || 0, sc + bonus));
+  };
+  // Square Online keeps its menu at /s/order.
+  const squareOrder = (u: string) => { const h = hostOf(u); if (/\.square\.site$/.test(h)) offer(new URL(u).origin + '/s/order', 'order menu', 3); };
   const pics: string[] = [], pdfs: string[] = [];
-  let renders = 0;
-  for (const url of pages) {
+  let renders = 0, url: string | undefined = base;
+  while (url && done.size < 5) {
+    done.add(url); cand.delete(url);
     const p = url === base ? home : await fetchPage(url);
-    const menuPage = url !== base || /menu/i.test(url);
-    const h = hostOf(p.final || url);
-    let text = p.html ? textOf(p.html) : '';
-    const data = p.html ? menuData(p.html) : [];
-    if (p.html && /editmysite|square\.site|squareup/i.test(p.html + h)) data.push(...(await squareProducts(p.html)));
-    // Script-only pages and ordering apps: open them in a real browser (two a listing).
-    if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 2) {
-      renders++;
-      const rr = await rendered(p.final || url);
-      if (rr.text.length > text.length) { text = rr.text; read.push(`${rr.url} (opened in a browser)`); }
-      else if (rr.error) read.push(`${url}: the browser could not open it (${rr.error})`);
-    } else if (p.html) read.push(p.final || url);
-    if (text.length > 80 || data.length) sources.push({ kind: 'text', url: p.final || url, text: (data.length ? 'Menu data on the page:\n' + data.join('\n') + '\n\nThe page:\n' : '') + text.slice(0, data.length ? 15000 : 25000) });
-    if (p.html) { pics.push(...picturesOf(p.html, p.final || url, menuPage)); pdfs.push(...pdfsOf(p.html, p.final || url)); }
-    if (sources.reduce((n, s) => n + (s.text?.length || 0), 0) > 70000) break;
+    const at = p.final || url, h = hostOf(at), menuPage = url !== base || /menu/i.test(url);
+    if (p.html || url === base || ORDER_HOSTS.test(h)) {
+      let text = p.html ? textOf(p.html) : '';
+      const data = p.html ? menuData(p.html) : [];
+      if (p.html && /editmysite|square\.site|squareup/i.test(p.html + h)) data.push(...(await squareProducts(p.html)));
+      if (p.html) { for (const l of linksOf(p.html, at)) offer(l.url, l.text); pics.push(...picturesOf(p.html, at, menuPage)); pdfs.push(...pdfsOf(p.html, at)); }
+      squareOrder(at);
+      // Script-only pages and ordering apps: open them in a real browser (three a listing). Its links and pictures count too.
+      if ((text.length < 800 || ORDER_HOSTS.test(h) || (!p.html && p.status !== 404)) && renders < 3 && (p.html || url !== base || ORDER_HOSTS.test(own) || p.status === 403)) {
+        renders++;
+        const rr = await rendered(at);
+        if (rr.text.length > text.length) { text = rr.text; read.push(`${rr.url} (opened in a browser)`); }
+        else if (rr.error) read.push(`${at}: the browser could not open it (${rr.error})`);
+        for (const m of rr.text.matchAll(/!\[([^\]]*)\]\((https?:[^)\s]+)/g)) if (!/logo|icon|favicon|\.svg/i.test(m[2]) && (menuPage || /menu/i.test(m[1] + m[2]))) pics.unshift(m[2]);
+        for (const m of rr.text.matchAll(/(?<!!)\[([^\]]{0,60})\]\((https?:[^)\s]+)/g)) { offer(m[2], m[1]); if (/\.pdf(\?|$)/i.test(m[2])) pdfs.push(m[2]); }
+      } else if (p.html) read.push(at);
+      if (text.length > 80 || data.length) sources.push({ kind: 'text', url: at, text: (data.length ? 'Menu data on the page:\n' + data.join('\n') + '\n\nThe page:\n' : '') + text.slice(0, data.length ? 15000 : 25000) });
+    }
+    if (sources.reduce((n, s) => n + (s.text?.length || 0), 0) > 80000) break;
+    url = [...cand.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   }
+  // The model takes up to 32 MB a request; files go in base64 (a third larger), so 18 MB of files at most.
+  let budget = 18_000_000;
   // The menu's own files: PDFs first (a menu PDF says menu, or sits on a menu page), then its pictures.
   for (const u of [...new Set(pdfs)].sort((a, b) => (/menu/i.test(b) ? 1 : 0) - (/menu/i.test(a) ? 1 : 0)).slice(0, 2)) {
     const f = await fetchFile(u, 'pdf');
-    if (f) { sources.push({ kind: 'pdf', url: u, type: f.type, data: f.data }); read.push(`${u} (PDF)`); }
+    if (f && f.size < 10_000_000 && budget - f.size > 0) { budget -= f.size; sources.push({ kind: 'pdf', url: u, type: f.type, data: f.data }); read.push(`${u} (PDF)`); }
   }
   let n = 0;
-  for (const u of [...new Set(pics)].slice(0, 10)) {
-    if (n >= 6) break;
+  for (const u of [...new Set(pics)].slice(0, 14)) {
+    if (n >= 8) break;
     const f = await fetchFile(u, 'image');
-    if (f) { sources.push({ kind: 'image', url: u, type: f.type, data: f.data }); n++; }
+    if (f && budget - f.size > 0) { budget -= f.size; sources.push({ kind: 'image', url: u, type: f.type, data: f.data }); n++; }
   }
   if (n) read.push(`${n} picture${n === 1 ? '' : 's'} from their pages`);
   return { read, sources, base };
