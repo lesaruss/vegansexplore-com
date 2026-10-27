@@ -304,7 +304,7 @@
           '<select data-v="where" aria-label="Where">' + whereOptions() + '</select>' +
           '<select data-v="sort" aria-label="Sort by"><option value="date">Sort: Soonest</option><option value="city">Sort: City, A to Z</option></select>' +
           '<div class="vev-seg" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">Upcoming</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">Past</button></div>' +
-          '<button type="button" class="vev-btn" data-go="submit">+ Submit an event</button>' +
+          // Submit an event is the city banner's green button only (Sean, 2026-10-27: "we only need one").
         '</div>' +
         '<div class="vev-pills" data-v="pills" role="group" aria-label="Kind of event"></div>' +
         '<p class="vev-count" data-v="count" aria-live="polite">' + (all ? '' : 'Loading events…') + '</p>' +

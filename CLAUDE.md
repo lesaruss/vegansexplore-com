@@ -633,7 +633,8 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   `#submit/4`): A flyer (optional: drop it and Claude reads it), The event, When and where (in the event's own time zone),
   The official link (required), then sign-in at the button. It waits for approval; `#mine` lists what they sent (Waiting for
   approval, Live, Not approved) and they are emailed when it goes live. The city hubs' Submit an event opens the same steps
-  (`/events?city=<slug>#submit/1`); the hub's old popup is gone.
+  (`/events?city=<slug>#submit/1`); the hub's old popup is gone. The one Submit an event button is the city banner's green one
+  (the orange one in the calendar's toolbar was removed, Sean 2026-10-27).
 - **Reading flyers** (Sean: "sometimes all they have is a banner on Instagram... you could automatically tell from the banner
   of where city to put in, what state, what continent"): `ve-events` `flyer_start` (a signed upload into the private bucket
   `event-flyers`; pictures shrunk to 1600 px first) and `flyer_read` (Claude Opus 5.5, structured output: name, times with
