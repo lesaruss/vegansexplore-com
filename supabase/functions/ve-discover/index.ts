@@ -332,7 +332,7 @@ async function backlogRun(igN: number, gN: number) {
 const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
   'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development',
-  'AI & Automation', 'Business Operations', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
+  'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 

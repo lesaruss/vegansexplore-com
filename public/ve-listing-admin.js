@@ -39,7 +39,7 @@
   var SECTIONS = [
     ['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep']],
     ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
-    ['Services', ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations']],
+    ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events']]
   ];
@@ -47,6 +47,9 @@
   // A book's type (details.book_type, Sean 2026-10-27); keep in step with /public/ve-region-directory.js and ve-listing-media.
   var BOOK_TYPES = [['cookbook', 'Cookbook'], ['memoir', 'Biography & memoir'], ['educational', 'Educational'], ['health', 'Health & nutrition'],
     ['lifestyle', 'Lifestyle'], ['children', 'Children\'s']];
+  // A health professional's practice (details.health_type, Sean 2026-10-27); keep in step with ve-region-directory.js and ve-listing-media.
+  var HEALTH_TYPES = [['doctor', 'Doctors'], ['dentist', 'Dentists'], ['dietitian', 'Dietitians & nutritionists'], ['chiropractor', 'Chiropractors'],
+    ['therapist', 'Therapists & counselors'], ['other', 'Other practices']];
   var MEDIA_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-media';
   // The chapters, from /public/ve-hubs.js where the page loads it (same order and names).
   var CHAPTERS_FALLBACK = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'], ['washington-dc', 'Washington, D.C.'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['london', 'London']];
@@ -125,7 +128,7 @@
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
     '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -218,6 +221,7 @@
       '<div id="vla-p-work" hidden><h3>About the work</h3><label class="h" for="vla-year">Year it came out</label>' +
       '<input type="text" id="vla-year" inputmode="numeric" maxlength="4" placeholder="2018" value="' + esc(l.release_year || '') + '">' +
       '<div id="vla-bt-wrap"><label class="h">Type of book</label><div class="chips">' + BOOK_TYPES.map(function (k) { return chip('radio', 'vla-bt', k[0], k[1], l.book_type === k[0]); }).join('') + '</div></div></div>' +
+      '<div id="vla-p-health" hidden><h3>Kind of practice</h3><div class="chips">' + HEALTH_TYPES.map(function (k) { return chip('radio', 'vla-ht', k[0], k[1], l.health_type === k[0]); }).join('') + '</div></div>' +
       '<div id="vla-p-rss" hidden><h3>Episodes</h3><label class="h" for="vla-rss">Podcast RSS feed</label>' +
       '<input type="text" id="vla-rss" placeholder="https://feeds.example.com/show" value="' + esc(l.rss_url || '') + '">' +
       '<div class="note">Its episodes play on its page and members can save them. We find it from the Apple Podcasts link when there is one; clear it to take Episodes off.</div></div>' +
@@ -299,6 +303,7 @@
       $('#vla-p-loc').hidden = $('#vla-p-ch').hidden = $('#vla-p-vegan').hidden = media;
       $('#vla-p-locs').hidden = media || kind === 'brand';
       $('#vla-p-rss').hidden = cur !== 'Podcasts';
+      $('#vla-p-health').hidden = cur !== 'Health Professionals';
       $('#vla-p-work').hidden = kind !== 'work'; $('#vla-bt-wrap').hidden = cur !== 'Books';
       $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
       drawStatus(kind);
@@ -516,14 +521,15 @@
             : d && d.error === 'has_locations' ? 'Part of: this listing is the main listing of its own locations. Move those first.'
             : 'That did not save. Try again.' + (d && d.message ? ' (' + d.message + ')' : '')); return; }
           Object.assign(target, d.listing, { logo_url: l.logo_url });
-          // The year and the type of book are saved by ve-listing-media (admin_listing does not hold details).
-          var yr = $('#vla-year').value.trim(), bt = ($('input[name=vla-bt]:checked') || {}).value || '';
-          var work = !$('#vla-p-work').hidden && (yr !== String(l.release_year || '') || (!$('#vla-bt-wrap').hidden && bt !== (l.book_type || '')));
+          // The year, the type of book and a practice's kind are saved by ve-listing-media (admin_listing does not hold details).
+          var yr = $('#vla-year').value.trim(), bt = ($('input[name=vla-bt]:checked') || {}).value || '', ht = ($('input[name=vla-ht]:checked') || {}).value || '';
+          var health = !$('#vla-p-health').hidden && ht !== (l.health_type || '');
+          var work = health || !$('#vla-p-work').hidden && (yr !== String(l.release_year || '') || (!$('#vla-bt-wrap').hidden && bt !== (l.book_type || '')));
           (work ? fetch(MEDIA_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
-              body: JSON.stringify({ action: 'save', listing_id: l.id, release_year: yr, book_type: $('#vla-bt-wrap').hidden ? undefined : bt }) })
+              body: JSON.stringify(health ? { action: 'save', listing_id: l.id, health_type: ht } : { action: 'save', listing_id: l.id, release_year: yr, book_type: $('#vla-bt-wrap').hidden ? undefined : bt }) })
               .then(function (r) { return r.json(); }).then(function (x) {
                 if (!x || !x.ok) throw new Error(x && x.error === 'bad_year' ? 'the year should be four digits.' : 'try again.');
-                l.release_year = target.release_year = x.release_year; l.book_type = target.book_type = x.book_type;
+                l.release_year = target.release_year = x.release_year; l.book_type = target.book_type = x.book_type; l.health_type = target.health_type = x.health_type;
               }) : Promise.resolve()).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but the year and type did not: ' + e.message); });
           function afterWork() {
           // A changed feed is read at once, so a wrong one says so before the window closes.

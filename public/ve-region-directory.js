@@ -39,6 +39,10 @@
     'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
     'AI & Automation': 'services', 'Business Operations': 'services',
+    // Services trimmed (Sean, 2026-10-27: "we have too many things"): Marketing & Growth is the catch-all for agency work, and
+    // Health Professionals (doctors, dentists...) and Animal Care joined. The old agency sub-sections stay mapped for the SaaS
+    // tools tagged for the LESARUSS AI directory, which never show here.
+    'Health Professionals': 'services', 'Animal Care': 'services',
     'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
     // Community is the animals first (Sean, 2026-10-27: "it being about nonprofits, it being about events, it being about rescues...
     // sanctuaries"). Community Partner was not a kind of listing; its rows were re-filed the same day.
@@ -55,7 +59,7 @@
       subcats: ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'] },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
-      subcats: ['Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development', 'AI & Automation', 'Business Operations'] },
+      subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth'] },
     { key: 'media', label: 'Media', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0014 0"></path><line x1="12" x2="12" y1="17" y2="22"></line></svg>',
       // Media (Other media) is hidden for now (Sean, 2026-10-27: "I don't know what media is"); its listings show nowhere until re-filed.
@@ -247,6 +251,9 @@
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
       '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>' +
+      '<span class="vrd-sub" data-sub-for="htype" hidden><span class="geo-label">Practice</span>' +
+      '<select aria-label="Filter by kind of practice" class="sort-select" data-vrd-htype="' + cat.key + '"><option value="">All</option>' +
+      HEALTH_TYPES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="booktype" hidden><span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type of book" class="sort-select" data-vrd-booktype="' + cat.key + '"><option value="">All</option>' +
       BOOK_TYPES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
@@ -482,9 +489,14 @@
     ['raw', 'Raw & juice bar'], ['brunch', 'Breakfast & brunch'], ['desserts', 'Desserts & sweets'], ['global', 'Global mix']];
   var BOOK_TYPES = [['cookbook', 'Cookbook'], ['memoir', 'Biography & memoir'], ['educational', 'Educational'], ['health', 'Health & nutrition'],
     ['lifestyle', 'Lifestyle'], ['children', 'Children\'s']];
+  // A health professional's practice (details.health_type, Sean 2026-10-27: "doctors, dentists, and that could have its own sub
+  // menu"); keep in step with ve-listing-admin.js and the ve-listing-media function.
+  var HEALTH_TYPES = [['doctor', 'Doctors'], ['dentist', 'Dentists'], ['dietitian', 'Dietitians & nutritionists'], ['chiropractor', 'Chiropractors'],
+    ['therapist', 'Therapists & counselors'], ['other', 'Other practices']];
+  function healthLabel(k) { var m = HEALTH_TYPES.filter(function (x) { return x[0] === k; })[0]; return m ? m[1] : ''; }
   // Books sort by what kind of book, never by region (Sean, 2026-10-27); every media sub-section drops the location filter.
   var SUB_FILTERS = { 'Books': { geo: false, booktype: true, years: true }, 'Podcasts': { geo: false, mstat: true }, 'YouTube': { geo: false, mstat: true },
-    'News Outlets': { geo: false, mstat: true }, 'Documentaries & Films': { geo: false, years: true }, 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Restaurants': { cuisine: true },
+    'News Outlets': { geo: false, mstat: true }, 'Documentaries & Films': { geo: false, years: true }, 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Health Professionals': { htype: true }, 'Restaurants': { cuisine: true },
     'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true } };
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
@@ -501,7 +513,7 @@
   }
   function extraAttrs(l) {
     var ms = l.business_status === 'CLOSED_PERMANENTLY' || l.business_status === 'CLOSED_TEMPORARILY' ? 'hiatus' : 'active';
-    return ' data-booktype="' + esc(l.book_type || '') + '" data-year="' + esc(l.release_year || '') + '" data-mstat="' + ms + '" data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
+    return ' data-booktype="' + esc(l.book_type || '') + '" data-htype="' + esc(l.health_type || '') + '" data-year="' + esc(l.release_year || '') + '" data-mstat="' + ms + '" data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
   }
 
   // Optional in-frame open (2026-09-07, Logan, Sean direction): a caller
@@ -687,6 +699,7 @@
     // The picked sub-section's own filters; the others are hidden and cleared (syncSubFilters).
     var sf = subFiltersFor(panel, special);
     var booktypeSel = bar ? bar.querySelector('[data-vrd-booktype]') : null, booktype = sf.booktype && booktypeSel ? booktypeSel.value : '';
+    var htypeSel = bar ? bar.querySelector('[data-vrd-htype]') : null, htype = sf.htype && htypeSel ? htypeSel.value : '';
     var mstatSel = bar ? bar.querySelector('[data-vrd-mstat]') : null, mstat = sf.mstat && mstatSel ? mstatSel.value : '';
     var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
@@ -708,6 +721,7 @@
       if (geoOk && region) { var hs = card.dataset.hubs || ''; geoOk = hs === '*' || hs.split('|').indexOf(region) > -1; }
       if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
       if (booktype && card.dataset.booktype !== booktype) geoOk = false;
+      if (htype && card.dataset.htype !== htype) geoOk = false;
       if (mstat && card.dataset.mstat !== mstat) geoOk = false;
       if (chain && card.dataset.chain !== chain) geoOk = false;
       if (cuisine && (card.dataset.cuisines || '').split('|').indexOf(cuisine) < 0) geoOk = false;
@@ -846,7 +860,7 @@
         applyPanelFilters(sel.closest('.board-panel'), state, true);
       });
     });
-    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-mstat]').forEach(function (sel) {
+    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat]').forEach(function (sel) {
       sel.addEventListener('change', function () { var panel = sel.closest('.board-panel'); if (sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); applyPanelFilters(panel, state, true); });
     });
 
@@ -902,7 +916,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type&status=eq.approved&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -994,7 +1008,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l); })); })
@@ -1017,6 +1031,6 @@
     css: injectStyleOnce,
     card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
     wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
-    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type'
+    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type'
   };
 })();
