@@ -684,7 +684,13 @@ Florida's search are national organizations elsewhere, and their note says so. R
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
-`directory/logos/` files, or one an admin picked in the media library) or it is a podcast's own Apple Podcasts cover.
+`directory/logos/` files, or one an admin picked in the media library). **Every logo is our own copy** (Sean, 2026-10-27: "any
+logo that we pull, let's not use it from where it was hosted from. Let's make a copy of it immediately as part of the process
+once we've accepted it. That way nothing disappears"): every way a logo is saved copies it (`ve-discover` `logo_set`, `ve-claims`
+owner photos, `ve-media-library`), and the edge function `ve-logo-keeper` (cron `ve-logo-keeper`, hourly, x-cron-secret) copies any
+`logo_url` outside `vegan-media` into `media/listings/<slug>/logo-copied-*`, keeps the old link in `details.logo_copied_from` and logs
+a `ve_listing_edits` row; a link that fails stays, noted in `details.logo_copy_error`, and is tried again after a day. On 2026-10-27
+it copied the 55 podcasts' Apple covers, the last logos hosted elsewhere.
 Logos linked from elsewhere (Instagram pictures, whose links expire; website share images) were set aside on 2026-10-10
 into `listings.details.logo_unverified` (143 listings) and show the letter. Restore one after checking it with the line in
 `20261010_listing_logos_letter_unless_ours.sql`; a new logo is copied into our storage, never hot-linked.

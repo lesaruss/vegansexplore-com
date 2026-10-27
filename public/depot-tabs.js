@@ -57,7 +57,8 @@
     '-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'14\' height=\'9\' viewBox=\'0 0 14 9\'%3E%3Cpath d=\'M1 1l6 6 6-6\' fill=\'none\' stroke=\'%231f5f22\' stroke-width=\'2.2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:14px 9px;}' +
     '.depot-go select:hover{border-color:rgba(0,0,0,0.4);}' +
     '.depot-go select:focus-visible{outline:3px solid #22C55E;outline-offset:2px;}' +
-    '@media (max-width:560px){.depot-go{flex:1 1 100%;}.depot-go select{flex:1 1 auto;min-width:0;}}';
+    // On a phone the tour button is full width under Go to, the same size as the drop-down (Sean, 2026-10-27).
+    '@media (max-width:560px){.depot-go{flex:1 1 100%;}.depot-go select{flex:1 1 auto;min-width:0;}.depot-head .ve-tour-launch{flex:1 1 100%;min-height:46px;}}';
   function mount() {
     var el = document.getElementById('depot-tabs'); if (!el) return;
     if (!document.getElementById('depot-tabs-css')) { var st = document.createElement('style'); st.id = 'depot-tabs-css'; st.textContent = CSS; document.head.appendChild(st); }

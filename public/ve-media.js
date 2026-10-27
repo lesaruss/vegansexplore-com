@@ -109,12 +109,14 @@
   }
   function showCard(s, l) {
     var href = '/directory/' + s.slug, pl = (l && l.details && l.details.platforms) || {};
+    // The cover is the listing's logo, our own copy (ve-logo-keeper); s.img only until the listing loads.
+    var img = (l && l.logo_url) || s.img;
     var links = LISTEN.map(function (p) {
       var u = pl[p[0]] || s[p[0]];
       return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener" title="' + p[1] + '" aria-label="' + p[1] + '"><img src="/public/icons/platforms/' + p[2] + '.svg" alt="" width="20" height="20"></a>' : '';
     }).join('');
     return '<div class="vem-show">' +
-      '<a class="vem-thumb" href="' + href + '" data-vem-open="' + esc(s.slug) + '" style="background-image:url(\'' + esc(s.img) + '\')" aria-label="' + esc(s.name) + '"><span class="vem-pill">Featured</span></a>' +
+      '<a class="vem-thumb" href="' + href + '" data-vem-open="' + esc(s.slug) + '" style="background-image:url(\'' + esc(img) + '\')" aria-label="' + esc(s.name) + '"><span class="vem-pill">Featured</span></a>' +
       '<div class="vem-body"><h3 class="vem-title"><a href="' + href + '" data-vem-open="' + esc(s.slug) + '">' + esc(s.name) + '</a></h3>' +
       '<div class="vem-meta">Podcast ' + showStatus(l) + '</div>' +
       '<p class="vem-desc">' + esc(s.desc) + '</p>' +
@@ -173,7 +175,7 @@
       featured.hidden = !feat.length;
       shows.innerHTML = feat.map(function (s) { return showCard(s, null); }).join('');
       // Then each show's listing: its status from the feed and its Listen on links.
-      if (feat.length) get('listings?select=slug,business_status,details&status=eq.approved&slug=in.(' + feat.map(function (x) { return x.slug; }).join(',') + ')')
+      if (feat.length) get('listings?select=slug,logo_url,business_status,details&status=eq.approved&slug=in.(' + feat.map(function (x) { return x.slug; }).join(',') + ')')
         .then(function (rows) {
           if (mine !== seq) return;
           var by = {}; (rows || []).forEach(function (r) { by[r.slug] = r; });

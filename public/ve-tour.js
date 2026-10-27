@@ -363,7 +363,7 @@
       'background:none;border:none;cursor:pointer;text-decoration:underline;font-family:"Montserrat",sans-serif;' +
       'position:absolute;top:10px;right:14px;padding:6px 0;}' +
       '.ve-tour-launch{font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;' +
-      'border-radius:6px;padding:8px 16px;min-height:40px;cursor:pointer;background:transparent;display:inline-flex;align-items:center;gap:6px;}' +
+      'border-radius:6px;padding:8px 16px;min-height:40px;cursor:pointer;background:transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;}' +
       '.ve-tour-launch-light{color:#fff;border:1.5px solid rgba(255,255,255,0.7);}' +
       '.ve-tour-launch-light:hover{border-color:#fff;background:rgba(255,255,255,0.08);}' +
       '.ve-tour-launch-green{color:#1f5f22;border:1.5px solid #1f5f22;background:#fff;}' +
@@ -527,7 +527,8 @@
         btn.type = 'button';
         btn.id = 've-tour-launch-' + name;
         btn.className = 've-tour-launch';
-        btn.innerHTML = '<span aria-hidden="true">&#128075;</span> ' + (t.button || 'Take the tour');
+        // A flat line icon in the button's own color, never an emoji (Sean, 2026-10-27: "it has the colorful icon. It should be a flat icon").
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/></svg> ' + (t.button || 'Take the tour');
         btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); start(name); });
         if (!t.launcher(btn) && ++tries < 20) setTimeout(attempt, 250);
       })();
