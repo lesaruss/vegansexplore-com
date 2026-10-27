@@ -1367,7 +1367,11 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 - **Every Guide is $11 or 1,100 points**, yours to keep (`ve_guides.access_rule = 'points'`, `cost_lesars` 1100;
   `ve-guide-unlock` `checkout` for $11, `unlock` for points; `ve_guide_purchase_paid` admits the buyer). Free Guides (the Welcome
   Guide, the Partner Guide) stay open to everyone.
-- **Submitting a listing is $11 or 1,100 points, each listing** (Sean, 2026-10-27: "you get 1100 points when you register. So you
+- **Submitting or claiming a listing is $11 or 1,100 points, each one** (Sean, 2026-10-27, on claims: "it's like a guide or any
+  other thing... If they come in as a business wanting to claim their listing, that's what their 1100 points is used for... they
+  can ultimately decide not to use it for that thing and use it for something else"; `ve-claims` `start` takes `pay: 'points'` the
+  same way, and Join the Directory shows Use your points on a claim too. However someone comes in, the $11 is what the 1,100
+  points are for: the thing they came for, or anything else points buy. Sean, 2026-10-27, on listings: "you get 1100 points when you register. So you
   could use that for submitting your listing... if you want to submit multiple listings... 1100 points each time... or you can just
   pay for the listing"). Join the Directory's How to join, when adding a business, has **Use your points** beside the Partner plan and
   the $11 (the live balance from `ve-auth` `me`); `ve-claims` `listing_apply` `pay: 'points'` saves the application, then

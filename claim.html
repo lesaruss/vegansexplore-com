@@ -354,17 +354,19 @@
         return fetch(SB + '/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'me', token: VEAuth.getToken() }) })
           .then(function (r) { return r.json(); }).then(function (d) {
             var m = d && (d.member || d); PTS = m && typeof m.points === 'number' ? m.points : 0;
-            if (MODE === 'add' && $('plans')) renderPlans();
+            if ($('plans')) renderPlans();
           }).catch(function () {});
       }
       function pointsCard() {
         var n = myPoints();
         var text = n === null && window.VEAuth && VEAuth.isLoggedIn() ? 'Checking your points...'
-          : n === null ? 'Members get 1,100 points when they join with the Passport: enough for one listing. Sign in at the button.'
-          : n >= 1100 ? 'You have ' + n.toLocaleString() + ' points. 1,100 come off when you submit.'
+          : n === null ? 'Members get 1,100 points when they join with the Passport: enough for one ' + (MODE === 'add' ? 'listing' : 'claim') + '. Sign in at the button.'
+          : n >= 1100 ? 'You have ' + n.toLocaleString() + ' points. 1,100 come off when you ' + (MODE === 'add' ? 'submit' : 'claim it') + '.'
           : 'You have ' + n.toLocaleString() + ' points. Points come from the Passport (1,100 when you join), Bounties, the Board and campaigns.';
-        return planCard('plan', 'points', { lead: 'With your points', title: 'Use your points', price: '1,100 points', sub: 'this listing', text: text,
-          ticks: ['Your page in the Directory, once we approve it', 'Every listing you add is its own 1,100 points, or $11'] }, false);
+        // Claiming a page takes points the same way as adding one, or a Guide (Sean, 2026-10-27).
+        var ticks = MODE === 'add' ? ['Your page in the Directory, once we approve it', 'Every listing you add is its own 1,100 points, or $11']
+          : ['Your page, claimed and yours to update, once we confirm it is you', 'Your dashboard: views, visitors, calls, directions and orders', 'Each page you claim is its own 1,100 points, or $11'];
+        return planCard('plan', 'points', { lead: 'With your points', title: 'Use your points', price: '1,100 points', sub: MODE === 'add' ? 'this listing' : 'this page', text: text, ticks: ticks }, false);
       }
       function passportCards(name, f) {
         var price = function (c) { return '$' + c; }, sub = f ? 'a quarter, founding: reserve free' : 'a quarter';
@@ -376,7 +378,7 @@
         var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
         keep = keep && keep.value; keepU = keepU && keepU.value;
         var passport = !isBrand() && MODE !== 'add' && PASSPORT && !full;
-        $('plans').innerHTML = partnerCard('plan') + (passport ? passportCards('plan', f) : '') + (MODE === 'add' ? pointsCard() : '') + memberCard();
+        $('plans').innerHTML = partnerCard('plan') + (passport ? passportCards('plan', f) : '') + pointsCard() + memberCard();
         $('up-plans').innerHTML = partnerCard('uplan') + (isBrand() || full ? '' : passportCards('uplan', f));
         var note = !f || isBrand() ? '' : full ? 'Founding Passport spots in ' + OFFER.hub_name + ' are full for now. Email hello@vegansexplore.com and we will let you know when a spot opens.'
           : 'Founding Passport spots in ' + OFFER.hub_name + ': the Passport Challenge launches there in 2027. Reserve now and pay nothing until your first Challenge month starts; your founding price stays locked as long as you stay.';
@@ -387,7 +389,8 @@
       function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'brand'; }
       function uplan() { var r = document.querySelector('input[name=uplan]:checked'); return r ? r.value : 'brand'; }
       function checkoutNote(p, f) {
-        return p === 'points' ? 'Nothing is charged: 1,100 points come off your balance when you submit. We review every application by hand.'
+        return p === 'points' ? (MODE === 'add' ? 'Nothing is charged: 1,100 points come off your balance when you submit. We review every application by hand.'
+            : 'Nothing is charged: 1,100 points come off your balance when you claim it. We review every claim by hand.')
           : p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim and application by hand.'
           : f ? 'No card needed today. Your claim is confirmed with your first payment, when your first Challenge month starts. We review every claim.'
           : p === 'brand' && frontRow() ? 'Your card is saved on a secure Stripe page; nothing is charged until January 2027. To cancel, email hello@vegansexplore.com. We review every claim and application by hand.'
@@ -398,7 +401,7 @@
         var p = plan(), f = founding() && /^(verified|plus)$/.test(p);
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = !/^(verified|plus)$/.test(p);
-        $('go').textContent = p === 'points' ? 'Submit with 1,100 points' : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
+        $('go').textContent = p === 'points' ? (MODE === 'add' ? 'Submit with 1,100 points' : 'Claim with 1,100 points') : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
         $('go-note').textContent = checkoutNote(p, f);
         var u = uplan(), uf = founding() && /^(verified|plus)$/.test(u);
         $('up-go').textContent = uf ? 'Reserve my founding spot' : u === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
@@ -641,20 +644,20 @@
           }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
           return;
         }
-        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'points' ? 'Submitting your listing...' : p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
+        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'points' ? (add ? 'Submitting your listing...' : 'Claiming your page...') : p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         if (add && p !== 'claim' && p !== 'brand' && p !== 'points') p = 'brand';
         saveDraft();
         var body = add ? { action: 'listing_apply', pay: p === 'points' ? 'points' : undefined, tier: p === 'brand' ? 'brand' : undefined, offer: p === 'brand' && frontRow() ? 'front-row' : undefined,
             amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, return_url: location.origin + '/claim?add=1', business: {
             name: $('n-name').value, category: $('n-cat').value, city: $('n-city').value, state: $('n-state').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value,
             tagline: $('b-tag').value, vegan_status: vs.value, description: $('b-desc').value, contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value } }
-          : { action: 'start', listing_id: L.id, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' ? undefined : p, offer: p === 'brand' && frontRow() ? 'front-row' : undefined, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
+          : { action: 'start', listing_id: L.id, pay: p === 'points' ? 'points' : undefined, amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, tier: p === 'claim' || p === 'points' ? undefined : p, offer: p === 'brand' && frontRow() ? 'front-row' : undefined, return_url: location.origin + '/claim?listing=' + encodeURIComponent(L.slug),
             contact_name: $('c-name').value, contact_role: $('c-role').value, contact_email: $('c-email').value, contact_phone: $('c-phone').value,
             proposed: { vegan_status: vs ? vs.value : '', tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value } };
         if (add) try { sessionStorage.setItem('ve_join_name', $('n-name').value); } catch (e) {}
         api(body).then(function (d) {
           if (d && d.url) { location.href = d.url; return; }
-          if (d && d.ok && d.paid_with === 'points') { return nextStep('points', $('n-name').value); }
+          if (d && d.ok && d.paid_with === 'points') { return add ? nextStep('points', $('n-name').value) : nextStep('claim-points'); }
           if (d && d.reserved) { location.href = '/claim?listing=' + encodeURIComponent(L.slug) + '&verified=reserved'; return; }
           $('go').disabled = false; bad(errText(d));
         }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
@@ -699,6 +702,7 @@
         $('nx-h').textContent = joined ? 'You\'re in: your front-row seat is saved' : app ? 'You\'re in. Your application is locked in.' : 'You\'re in. Your claim is locked in.';
         $('nx-p').textContent = (app ? 'Thank you' + (name ? ' for adding ' + name : '') + '. Your contribution went through and you are a Founding Member. We review every application by hand and will write to you; once it is approved, your page goes live in the Directory.'
           : 'Your contribution went through and you are a Founding Member. We review every claim by hand; once we confirm it is you, ' + (L ? L.name : 'your page') + ' is yours to run.') + ' Here is what comes next.';
+        if (kind === 'claim-points') $('nx-p').textContent = '1,100 of your points went to claiming ' + (L ? L.name : 'your page') + '. We review every claim by hand; once we confirm it is you, it is yours to run. Here is what comes next.';
         if (kind === 'points') $('nx-p').textContent = 'Thank you' + (name ? ' for adding ' + name : '') + '. 1,100 of your points went to it. We review every application by hand and will write to you; once it is approved, your page goes live in the Directory. Here is what comes next.';
         if (joined) $('nx-p').textContent = 'Thank you' + (name ? ' for adding ' + name : L ? ', ' + L.name : '') + '. You are a ' + pName() + '. Nothing is charged today: your plan starts in January 2027 at $111 a quarter, and you can cancel any time before. ' +
           (app ? 'We review every application by hand; once it is approved, your page goes live in the Directory with your Partner Dashboard.' : 'We review every claim by hand; once we confirm it is you, your Partner Dashboard opens on your page.') +
@@ -727,7 +731,7 @@
           // What this listing can take today: a founding spot (before its city's Challenge launches) or a paid quarter.
           fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'offer', listing_id: L.id }) })
             .then(function (r) { return r.json(); }).then(function (o) { if (o && o.founding) { OFFER = o; renderPlans(); } }).catch(function () {});
-          renderPlans();
+          renderPlans(); loadPoints();
           if (qs.get('claim') === 'submitted') return nextStep('claim');
           if (!VEAuth.isLoggedIn() || PV) {
             if (L.claim_status === 'verified' && !PV) { $('st-claimed-signin').hidden = false; return show(['biz-card', 'st-claimed']); }
@@ -787,7 +791,7 @@
       function start() {
         if (!window.VEAuth) return setTimeout(start, 150);
         var slug = qs.get('listing'), applied = qs.get('applied');
-        if (PV) return preview(PV);
+        if (PV) { loadPoints(); return preview(PV); }
         if (applied && qs.get('claim') === 'submitted') { var nm = ''; try { nm = sessionStorage.getItem('ve_join_name') || ''; } catch (e) {} return nextStep('applied', nm); }
         if (qs.get('add') === '1') {
           var back0 = /^(cancelled|unpaid)$/.test(qs.get('claim') || qs.get('verified') || '');

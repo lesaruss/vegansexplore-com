@@ -39,3 +39,15 @@ select 'vegans-explore', 'business', 'How do I add my business to the Directory?
   'Tap Submit your listing at the top of the Directory. Each listing is $11 or 1,100 points, and the Passport''s 1,100 welcome points cover your first one. We review every listing by hand before it goes live.',
   'https://vegansexplore.com/claim?add=1', 'Submit your listing', 'live', 'logan', 'Sean, 2026-10-27: $11 or 1,100 points a listing'
 where not exists (select 1 from guide_kb_answers where question ilike 'How do I add my business to the Directory?');
+
+-- Claims too (Sean, 2026-10-27: "it's like a guide or any other thing... they can ultimately decide not to use it for that thing").
+update knowledge_records set body = jsonb_set(body, '{facts}', to_jsonb(
+  replace(replace(body->>'facts',
+    'Submitting a listing (the Directory''s Submit your listing button, vegansexplore.com/claim?add=1) is $11 or 1,100 points for each listing, and every one is reviewed by hand before it goes live.',
+    'Submitting a listing (the Directory''s Submit listing button, vegansexplore.com/claim?add=1) or claiming a business''s page is $11 or 1,100 points each, and every one is reviewed by hand. The Passport''s 1,100 welcome points can go to a first listing, a claim, a Guide or anything else points do: the member chooses.'),
+    'submit a listing to the Directory (1,100 each)', 'submit or claim a listing (1,100 each)'))),
+  updated_at = now(), change_summary = 'Claims also $11 or 1,100 points; the member chooses what the welcome points go to (Sean, 2026-10-27)'
+where slug = 've-guide-platform-facts';
+update guide_kb_answers set also_asked = also_asked || array['How do I claim my business?', 'Can I claim my listing with points?'],
+  answer = 'Tap Submit listing at the top of the Directory to add a business, or Claim on its page if it is already listed. Each one is $11 or 1,100 points, and the Passport''s 1,100 welcome points can cover your first. We review every one by hand.', updated_at = now()
+where question = 'How do I add my business to the Directory?' and not ('How do I claim my business?' = any(also_asked));

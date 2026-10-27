@@ -39,7 +39,8 @@
 //   POST { action: 'product_update', listing_id, product_id, variant_key?, image_path?, description? }  a partner swaps a
 //     product's (or a version's) photo or its description; photos under 1000 px on the short side are refused
 //   POST { action: 'listing_apply', business }  any Vegan business applies to be listed (Depot > Claims reviews it)
-//     pay: 'points' takes 1,100 of the member's points instead of a checkout (ve_listing_submit_points), one listing each time
+//     pay: 'points' takes 1,100 of the member's points instead of a checkout (ve_listing_submit_points), one listing each time;
+//     a claim ('start') takes pay: 'points' the same way
 //   POST { action: 'partner_ask', listing_id, message }  a question Maya has no saved answer for, sent to the account
 //     manager (listings.details.brand_door.account_manager_email, else Sean), Reply-To the partner
 //     (ve_listing_stats: views, products opened, stores' Vegan aisles opened, videos played) for its owner or a super admin
@@ -1195,8 +1196,12 @@ Deno.serve(async (req) => {
     if (tier && await reservedMembership(id)) return json({ error: 'already_reserved' }, 409);
     const hub = tier && tier !== 'brand' ? hubOf(listing) : null, f = tier ? await foundingState(hub) : { open: false, full: false };
     if (tier && f.open && f.full) return json({ error: 'founding_full', hub }, 409);
-    const cents = tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
-    if (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
+    // Or 1,100 of their points, like a Guide (Sean, 2026-10-27: "when they are a member, and then they want to claim their
+    // listing... it's like a guide or any other thing... they get the 1100 points to use towards something").
+    const points = !tier && body.pay === 'points';
+    if (points && Number(member.lesars_balance || 0) < 1100) return json({ error: 'not_enough_points', balance: Number(member.lesars_balance || 0) }, 400);
+    const cents = points ? 0 : tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
+    if (!points && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const contact_name = plain(body.contact_name, 120), contact_email = plain(body.contact_email, 200).toLowerCase();
     if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
     const p = body.proposed || {};
@@ -1218,6 +1223,19 @@ Deno.serve(async (req) => {
       ? await db.from('ve_listing_claims').update(row).eq('id', open.id).select('id').single()
       : await db.from('ve_listing_claims').insert(row).select('id').single();
     if (error || !claim) return json({ error: 'save_failed', message: error?.message }, 500);
+    if (points) {
+      const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claim.id });
+      if (!spent || spent.error) return json({ error: spent?.error || 'points_failed', balance: spent?.balance }, 400);
+      const now = new Date().toISOString();
+      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'points', points: 1100 }, updated_at: now }).eq('id', claim.id);
+      await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
+      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, 1,100 points`,
+        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed with <b>1,100 points</b>.</p>` +
+        `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
+        (proposed.vegan_status ? `<p>Says they are: ${esc(proposed.vegan_status.replace('_', ' '))}</p>` : '') +
+        `<p>Review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
+      return json({ ok: true, paid_with: 'points', slug: listing.slug, balance: spent.balance });
+    }
     if (tier && f.open) {
       // Founding spot with a claim: reserved free; the claim is confirmed with the first payment.
       await reserve(listing, member, tier, hub!, test, { name: contact_name, email: contact_email }, claim.id);
