@@ -25,7 +25,7 @@
 //   listing_edits  { listing_id }      what the owner changed on their page (ve_listing_edits), newest first
 //   listing_edit_undo { edit_id }     puts one change back, if nothing changed the same thing since
 //   listing_note   { contact_id | listing_id, note }   a note on the business's Directory listing (details.admin_notes)
-//   menu_retry     { listing_id }   No menu yet: read it again (the writer, then the menu reader); menu_none { listing_id, note } no menu online
+//   menu_retry     { listing_id }   No menu link: the link finder checks their site again; menu_none { listing_id, note } no menu online
 //   listing_closed { contact_id, note? }  no longer in business: the listing is marked permanently closed (shown only
 //                                         under the Directory's Closed filter, never in All) and the business leaves
 //                                         the email list
@@ -687,7 +687,7 @@ Deno.serve(async (req) => {
         db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id),
         // Members who checked in there (the team sees who; the public only counts).
         db.from('ve_checkins').select('created_at, points, distance_m, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(20),
-        db.from('ve_menu_imports').select('status, menu_url, note, done_at, reader_at, reader_note, reader_read').eq('listing_id', l.id).maybeSingle(),
+        db.from('ve_menu_imports').select('status, menu_url, note, done_at, link_checked_at, link_note').eq('listing_id', l.id).maybeSingle(),
       ]);
       const f = (flags || []).find((x: any) => x.listing_id === l.id);
       const g = a?.facts?.google || {};
@@ -748,11 +748,9 @@ Deno.serve(async (req) => {
         if (error) return json({ error: error.message }, 400);
         await db.from('ve_listing_edits').insert(changed.map((k) => ({ listing_id: l.id, member_id: me, field: k === 'google_hours_json' ? 'hours' : k,
           old_value: cur[k] ?? null, new_value: next[k] ?? null, meta: { by: 'admin', where: 'directory_review' } })));
-        // A menu link: the Background writer copies the menu from it, unless the listing has a menu already.
-        if (changed.includes('menu_crawl_url') && next.menu_crawl_url) {
-          const { count } = await db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', l.id);
-          // The writer reads it first; if it finds nothing, the menu reader tries again from this link.
-          if (!count) await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: next.menu_crawl_url, note: 'Menu link from Directory review', marked_at: null, done_at: null, reader_at: null, reader_note: null }, { onConflict: 'listing_id' });
+        // A menu link: the listing's Menu tab opens it (menus are linked, not copied, Sean 2026-10-27).
+        if (changed.includes('menu_crawl_url')) {
+          await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none', link_checked_at: new Date().toISOString(), link_note: next.menu_crawl_url ? 'Menu link from Directory review' : null }, { onConflict: 'listing_id' });
         }
       }
       if (body.live && l.status !== 'approved') {
@@ -762,16 +760,15 @@ Deno.serve(async (req) => {
       return json({ ok: true, saved: changed.filter((k) => !['address_city', 'address_state', 'location', 'latitude', 'longitude'].includes(k) || k === 'location')
         .map((k) => (k === 'google_hours_json' ? 'hours' : k === 'menu_crawl_url' ? 'menu_url' : k === 'location' ? 'online only' : k)) });
     }
-    // No menu yet (Sean, 2026-10-27). Read it again: back to the writer, then the menu reader, from the menu link if there is
-    // one. No menu online: the business publishes none, so it leaves the list (details.menu_none_ok, a team note).
+    // No menu link (Sean, 2026-10-27). Find the link again: the link finder checks their site on its next run (ve-menu-reader
+    // link_sweep). No menu online: the business publishes none, so it leaves the list (details.menu_none_ok, a team note).
     if (action === 'menu_retry' || action === 'menu_none') {
       if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
       const { data: l } = await db.from('listings').select('id, details, menu_crawl_url').eq('id', body.listing_id).maybeSingle();
       if (!l) return json({ error: 'not_found' }, 404);
       const at = new Date().toISOString();
       if (action === 'menu_retry') {
-        const { error } = await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'queued', menu_url: l.menu_crawl_url || null, note: 'Read again from Directory review',
-          items: 0, marked_at: null, done_at: null, reader_at: null, reader_note: null, reader_preview: null }, { onConflict: 'listing_id' });
+        const { error } = await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none', link_checked_at: null, link_note: null }, { onConflict: 'listing_id' });
         if (error) return json({ error: error.message }, 400);
         return json({ ok: true });
       }

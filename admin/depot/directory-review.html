@@ -209,9 +209,10 @@
       function pdate(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function logo(l) { return l && l.logo_url ? '<div class="logo" style="background-image:url(\'' + esc(l.logo_url) + '\')" aria-hidden="true"></div>' : '<div class="logo" aria-hidden="true">' + esc(((l && l.name) || '?').charAt(0)) + '</div>'; }
       // The four lists, in the order Sean works them.
-      // No menu yet (Sean, 2026-10-27): open food places with no menu on their page (ve_menu_missing), read and not found first.
-      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['menu', 'No menu yet'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
-      var MENU_STAGE = { not_found: ['Not found', 'bad'], no_website: ['No website', 'off'], reading: ['Being read', 'wait'] };
+      // No menu link (Sean, 2026-10-27: menus are linked, not copied): open food places whose Menu tab has nowhere to go
+      // (ve_menu_missing), the ones the link finder checked and found nothing first.
+      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['menu', 'No menu link'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      var MENU_STAGE = { not_found: ['Not found', 'bad'], no_website: ['No website', 'off'], waiting: ['Not checked yet', 'wait'] };
       var data = null, filt = { q: '', city: '' };
       function load() { return api({ action: 'review_list' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); data = d; }); }
       function rowsOf(tab) {
@@ -224,7 +225,7 @@
       }
       function why(r, tab) {
         if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
-        if (tab === 'menu') { var ms = MENU_STAGE[r.stage] || MENU_STAGE.reading; return '<span class="tag ' + ms[1] + '">' + ms[0] + '</span><small>' + esc(r.stage === 'reading' ? 'The menu reader gets to it soon' : r.stage === 'no_website' ? 'Add their website or a menu link' : (r.note || 'No menu could be read')) + '</small>'; }
+        if (tab === 'menu') { var ms = MENU_STAGE[r.stage] || MENU_STAGE.waiting; return '<span class="tag ' + ms[1] + '">' + ms[0] + '</span><small>' + esc(r.stage === 'waiting' ? 'The link finder checks their site soon' : r.stage === 'no_website' ? 'Add their website or a menu link' : (r.note || 'No menu link on their site')) + '</small>'; }
         if (tab === 'vetting') return '<span class="tag wait">' + (r.voter_count || 0) + ' of ' + (data.min_voters || 10) + ' member votes</span><small>Members only until then, or until you vet it</small>';
         if (tab === 'flagged') return '<div class="flags">' + (r.flags || []).map(function (x) { return '<span class="tag ' + (r.strong ? 'wait' : 'off') + '">' + esc(x) + '</span>'; }).join('') + '</div>';
         if (tab === 'removed') return '<small>Removed by ' + esc((r.removed || {}).by || '') + ' &middot; ' + esc(pdate((r.removed || {}).at)) + '</small>' + ((r.removed || {}).reason ? '<small>' + esc(r.removed.reason) + '</small>' : '');
@@ -236,7 +237,7 @@
         crumbs([['Directory review']]);
         var rows = rowsOf(tab);
         var cities = []; (data[tab] || []).forEach(function (r) { if (r.city && cities.indexOf(r.city) < 0) cities.push(r.city); }); cities.sort();
-        V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone. <strong>No menu yet</strong> is every open food place with no menu on its page: add it by hand, give the reader a menu link, or mark that they have no menu online.</p>' +
+        V().innerHTML = '<div class="home-head"><p class="sub">Every open local business is checked: Google, the monthly check-up, its website and socials. Ones with strong red flags (Google says closed, the check-up says closed or quiet, or no socials with no hours or a website that does not open) come off the Directory each night and wait here <strong>On hold</strong>. Open one, fix what you can find (website, socials, hours, menu link), and choose: back on the Directory, Removed (gone, never deleted, not shown anywhere) or Permanently closed (kept under Closed, for memory). <strong>Being vetted</strong> holds the Vegan-friendly and Vegan-options food places only members see until ' + (data.min_voters || 10) + ' members vote for them; vet one yourself and it shows to everyone. <strong>No menu link</strong> is every open food place whose Menu tab has nowhere to go: we link to their own menu instead of copying it, until they claim the page and keep it themselves. Paste the link, or mark that they have no menu online.</p>' +
           '<div class="row-btns"><a class="btn" href="#add/1">Add a listing</a><a class="btn btn-ghost" href="#paste">Paste a list</a><a class="btn btn-ghost" href="#logos">Logos</a></div></div>' +
           '<div class="tabs" role="tablist">' + TABS.map(function (t) { return '<button type="button" role="tab" aria-selected="' + (t[0] === tab) + '" data-tab="' + t[0] + '">' + t[1] + ' &middot; ' + (data[t[0]] || []).length + '</button>'; }).join('') + '</div>' +
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
@@ -281,7 +282,6 @@
           crumbs([['Directory review', '#'], [back[1], '#' + back[0]], [l.name]]);
           var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], hrs = hoursObj(l.google_hours_json);
           var hasSocial = !!(l.instagram || l.facebook || l.tiktok), mi = d.menu_import, online = !l.address_city && !l.address_state;
-          var menuNote = d.menu_items ? d.menu_items + ' items on their page' : mi && mi.status === 'queued' ? 'Waiting to be copied' + (mi.menu_url ? ' from this link' : '') : mi && mi.status === 'reading' ? 'Being copied now' : mi && mi.status === 'none' ? 'Could not copy: ' + (mi.note || 'no menu found') : '';
           // One input; marked Missing when empty (or when `need` says so), a note under it when there is one.
           function field(key, label, val, cls, kind, ph, note, need, optional) {
             var miss = need === undefined ? !val && !optional : need;
@@ -301,18 +301,17 @@
           ].filter(function (c) { return c[0] !== st; });
           // Being vetted: a Vegan-friendly or Vegan-options food place members see until enough members vote (public/ve-trust.js).
           var minV = (data && data.min_voters) || 10;
-          // The menu (No menu yet): where the readers got to, what they read, and the three ways to finish it.
+          // The menu link (Sean, 2026-10-27): an unclaimed place's Menu tab links out to their own menu; a claimed one keeps its own.
           var menuCard = '';
-          if (PLACES.indexOf(l.category) >= 0 && !d.menu_items && st === 'live') {
-            var mrow = ((data && data.menu) || []).filter(function (x) { return x.id === l.id; })[0], ms = MENU_STAGE[(mrow || {}).stage] || null;
-            var said = mi && (mi.reader_note && mi.reader_note !== 'Reading' ? mi.reader_note : mi.note);
-            menuCard = '<h2>Menu</h2><p class="hint" style="margin:0 0 8px">' + (ms ? '<span class="tag ' + ms[1] + '">' + ms[0] + '</span> ' : '') +
-                esc(mrow && mrow.stage === 'reading' ? 'Waiting for the menu reader.' : said || (l.details && l.details.menu_none_ok ? 'Marked: no menu online.' : 'No menu yet.')) + '</p>' +
-              (mi && mi.reader_read && mi.reader_read.length ? '<details style="margin:0 0 10px"><summary class="hint" style="cursor:pointer">What the reader opened</summary><ul class="notes">' + mi.reader_read.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></details>' : '') +
-              '<div class="row-btns" style="margin:0 0 6px"><a class="btn btn-sm" href="/directory/' + encodeURIComponent(l.slug) + '?tab=brand&pd=menu" target="_blank" rel="noopener">Add it by hand</a>' +
-                '<button type="button" class="btn btn-ghost btn-sm" id="dr-menu-retry">Read it again</button>' +
-                '<button type="button" class="btn btn-ghost btn-sm" id="dr-menu-none">No menu online</button></div>' +
-              '<p class="hint" style="margin:0 0 14px">Found their menu somewhere? Put the link in Menu link and Save: the reader starts there. No menu online takes it off this list (your note below goes with it).</p>' +
+          if (PLACES.indexOf(l.category) >= 0 && st === 'live') {
+            var owned = l.claim_status === 'verified';
+            menuCard = '<h2>Menu</h2><p class="hint" style="margin:0 0 8px">' + (l.menu_crawl_url
+                ? '<span class="tag on">Linked</span> Their Menu tab opens <a href="' + esc(l.menu_crawl_url) + '" target="_blank" rel="noopener">' + esc(l.menu_crawl_url.replace(/^https?:\/\/(www\.)?/, '').slice(0, 60)) + '</a>.'
+                : '<span class="tag wait">No menu link</span> ' + esc((mi && mi.link_note) || (l.details && l.details.menu_none_ok ? 'Marked: no menu online.' : 'The link finder has not checked their site yet.'))) +
+                (owned ? ' Claimed: ' + (d.menu_items ? 'they keep ' + d.menu_items + ' items on their page.' : 'they can add their menu on their dashboard.') : '') + '</p>' +
+              (l.menu_crawl_url ? '' : '<div class="row-btns" style="margin:0 0 6px"><button type="button" class="btn btn-ghost btn-sm" id="dr-menu-retry">Find the link again</button>' +
+                '<button type="button" class="btn btn-ghost btn-sm" id="dr-menu-none">No menu online</button></div>') +
+              '<p class="hint" style="margin:0 0 14px">Found where their menu lives (their menu page, a PDF, their Toast or Square page)? Put it in Menu link and Save. We link to it, never copy it, so it is always theirs and always current.</p>' +
               '<p class="msg" id="dr-menu-msg" role="status"></p>';
           }
           var vetting = st === 'live' && /^(vegan_friendly|vegan_options)$/.test(l.vegan_status || '') && PLACES.indexOf(l.category) >= 0
@@ -347,7 +346,7 @@
               field('address_street', 'Street', l.address_street, 'store', '', '123 Main St') +
               field('address_zip', 'ZIP', l.address_zip, 'store', '', '33139', '', false, true) +
               // A menu is for food places only.
-              (PLACES.indexOf(l.category) >= 0 ? field('menu_url', 'Menu link', l.menu_crawl_url, '', '', 'Their menu page or ordering page', menuNote, !d.menu_items) : '') +
+              (PLACES.indexOf(l.category) >= 0 ? field('menu_url', 'Menu link', l.menu_crawl_url, '', '', 'Their menu page, menu PDF, or Toast or Square page', 'Their Menu tab opens this.', !l.menu_crawl_url) : '') +
               '<div class="wide store' + (Object.keys(hrs).length ? '' : ' need') + '"><label>Hours' + (Object.keys(hrs).length ? '' : '<span class="missing">Missing</span>') + '</label><div class="hours">' +
                 DAYS.map(function (dy) { return '<div><span>' + dy.slice(0, 3) + '</span><input type="text" data-day="' + dy + '" value="' + esc(hrs[dy] || '') + '" placeholder="11 AM to 9 PM" aria-label="' + dy + '"></div>'; }).join('') +
               '</div><p class="hint">Write each day the way they do: 11 AM to 9 PM, or Closed. A day left empty is not shown.</p></div>' +
@@ -401,7 +400,7 @@
           $('dr-online').addEventListener('change', syncOnline); syncOnline();
           $('dr-save').addEventListener('click', function () { saveFix(false); });
           if ($('dr-save-live')) $('dr-save-live').addEventListener('click', function () { saveFix(true); });
-          [['dr-menu-retry', 'menu_retry', 'Back in line: the readers try again shortly.'], ['dr-menu-none', 'menu_none', 'Marked: no menu online.']].forEach(function (b) {
+          [['dr-menu-retry', 'menu_retry', 'Back in line: the link finder checks their site again shortly.'], ['dr-menu-none', 'menu_none', 'Marked: no menu online.']].forEach(function (b) {
             if (!$(b[0])) return;
             $(b[0]).addEventListener('click', function () {
               var msg = $('dr-menu-msg'); this.disabled = true;

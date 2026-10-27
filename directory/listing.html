@@ -215,6 +215,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 /* TABS */
 .listing-tabs{display:flex;overflow-x:auto;border-bottom:2px solid var(--ve-border);background:#fff;z-index:10;scrollbar-width:none;position:sticky;top:0}
 .listing-tabs::-webkit-scrollbar{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.tab-btn.tab-ext svg{vertical-align:1px;margin-left:2px}
 .tab-btn{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:14px 22px;border:none;background:none;color:var(--ve-text-50);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:Montserrat,sans-serif;transition:color .15s,border-color .15s;white-space:nowrap}
 .tab-btn:hover{color:var(--ve-text)}
 .tab-btn.active{color:var(--ve-green-dark);border-bottom-color:var(--ve-green)}
@@ -992,6 +994,8 @@ var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
 // Sections (Sean, 2026-09-27); keep in step with /public/ve-region-directory.js.
+// Places with a menu that changes (Sean, 2026-10-27); brands keep their Products list.
+var PLACE_MENU_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks','Vendors','Catering','Meal Prep'];
 var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks','Vendors','Markets','Food Brands','Nutrition & Supplements','Catering','Meal Prep'];
 var MEDIA_CATS = ['Podcasts','YouTube','News Outlets','Documentaries & Films','Books','Media'];
 // At a Glance (atmosphere, seating, amenities, accessibility, ownership) is for places you sit down in.
@@ -1031,7 +1035,7 @@ function fetchListing(slug){
 
 // One business, many locations (Sean, 2026-10-25; migration 20261025_listing_locations.sql). A location (parent_id set) fills
 // what it leaves empty from its main listing, which holds what they share; the page lists the group's other locations.
-var SHARED_FIELDS = ['description','tagline','logo_url','logo_alt_text','website','instagram','facebook','tiktok','youtube','booking_url','uber_eats_url','doordash_url'];
+var SHARED_FIELDS = ['description','tagline','logo_url','logo_alt_text','website','instagram','facebook','tiktok','youtube','booking_url','uber_eats_url','doordash_url','menu_crawl_url'];
 function withMain(l){
   if(!l || !l.parent_id) return Promise.resolve(l);
   var url = SUPABASE_URL + '/rest/v1/listings?id=eq.' + encodeURIComponent(l.parent_id) + '&status=eq.approved&select=*&limit=1';
@@ -3155,6 +3159,9 @@ function renderListing(l){
           (l._brandSite ? PD_BTN : '') +
           (l._brandSite ? ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<button class="tab-btn" data-tab="' + t + '" data-sub="1" role="tab" aria-selected="false" style="display:none">' + t + '</button>'; }).join('') : '')+
           '<button class="tab-btn" data-tab="menu" role="tab" aria-selected="false" id="tab-btn-menu" style="display:none">'+(l._brandSite ? 'Menu' : /^(Food Brands|Nutrition & Supplements)$/.test(l.category) ? 'Products' : 'Menu')+'</button>'+
+          // A food place's menu is theirs to keep current (Sean, 2026-10-27: "if she changes just one of them, we're presenting
+          // wrong information"): until it is claimed, Menu links out to wherever they post it (menu_crawl_url).
+          '<a class="tab-btn tab-ext" id="tab-btn-menu-link" data-menu-link href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none">Menu <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg><span class="sr-only"> (opens their menu in a new tab)</span></a>'+
           (l._brandSite || !photoHtml ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           // Video and Pulse show once they have something (renderVideoCarousel, renderPulse).
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false" id="tab-btn-video" style="display:none">Video</button>' : '')+
@@ -3517,6 +3524,7 @@ function trackActions(l){
   document.addEventListener('click', function(e){
     var t = e.target.closest && e.target.closest('a[href], .tab-btn[data-tab]'); if(!t) return;
     // A podcast's Listen on icons (Apple, Spotify, the RSS...), by the icon's name.
+    if(t.hasAttribute('data-menu-link')){ veTrack(l, 'menu'); return; }
     if(t.classList.contains('listen-icon')){ veTrack(l, 'listen', t.getAttribute('aria-label')); return; }
     if(t.classList.contains('tab-btn')){ var tab = t.dataset.tab; if(tab === 'menu' || tab === 'photos') veTrack(l, tab); return; }
     var h = t.getAttribute('href') || '', k = null;
@@ -3896,7 +3904,16 @@ if(!slug || slug === 'listing'){
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       // A location with no menu of its own shows its main listing's.
-      fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
+      // A food place shows a menu on its page only once it is claimed (theirs to keep current); before that, Menu links out.
+      var placeMenu = PLACE_MENU_CATS.indexOf(l.category) >= 0, ownedMenu = l.claim_status === 'verified' || !!l.owner_member_id;
+      if(placeMenu && !ownedMenu){
+        var ml = /^https?:\/\//i.test(l.menu_crawl_url || '') ? l.menu_crawl_url : '';
+        var mlb = document.getElementById('tab-btn-menu-link');
+        if(ml && mlb){ mlb.href = ml; mlb.style.display = ''; }
+      }
+      if(!placeMenu || ownedMenu) fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
+        // A claimed place shows what its owner (or our team) entered; what we once copied from their site stays hidden.
+        if(placeMenu) items = (items || []).filter(function(i){ return i.source !== 'import'; });
         if(items && items.length){
           var panel = document.getElementById('tab-menu');
           if(panel) panel.innerHTML = menuTabContent(items);

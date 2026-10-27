@@ -13,6 +13,14 @@
 //                                                        (cron ve-menu-reader, one every 10 minutes, in the background)
 // POST { action: 'probe', url }                           what a page gives us (status, length, pictures, PDFs, links, menu data)
 // Callers: a super admin (VE token), the LESARUSS_ADMIN_TOKEN, or the cron's x-cron-secret. verify_jwt is false.
+//
+// Menu links, not copies (Sean, 2026-10-27: "how do we know if they're updated... if she changes just one of them, we're
+// presenting wrong information... link to have a tab that says menu"). Copying is paused (cron ve-menu-reader off). An
+// unclaimed food place's Menu tab links out to listings.menu_crawl_url, which the link finder fills from their own site, no AI:
+// POST { action: 'link', listing_id | slug }   find one now        POST { action: 'link_sweep', limit?: 15 }   cron ve-menu-links
+// It takes a menu page or menu PDF on their site, else their own ordering page (Toast, Square, Clover...), else a page on their
+// site whose link says order; never a marketplace (DoorDash, Uber Eats, Grubhub, Yelp). Only an empty menu_crawl_url is filled,
+// logged in ve_listing_edits (field menu_crawl_url); ve_menu_imports.link_checked_at and link_note say what it found.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { encodeBase64 } from 'jsr:@std/encoding@1/base64';
@@ -198,6 +206,48 @@ async function fetchFile(url: string, kind: 'image' | 'pdf') {
     }
     return { url, type, data: encodeBase64(bytes), size: bytes.length };
   } catch { return null; }
+}
+
+// ---- The menu link (no AI) ----
+async function findMenuLink(website: string): Promise<{ url: string; note: string }> {
+  const home = await fetchPage(website);
+  if (!home.html) return { url: '', note: home.status ? `Their site answered ${home.status}` : 'Their site did not open' };
+  const base = home.final || website, own = hostOf(base);
+  const scoreOf = (u: string, text: string) => {
+    const h = hostOf(u), t = (text + ' ' + u).toLowerCase();
+    if (!/^https?:/i.test(u) || MARKETPLACE.test(h) || u.split('#')[0] === base) return 0;
+    const same = h === own || h.endsWith('.' + own), pdf = /\.pdf(\?|$)/i.test(u);
+    if (pdf && /menu/.test(t)) return 9;
+    if (same && /menu/.test(t)) return 8;
+    if (!same && ORDER_HOSTS.test(h)) return /menu|order/.test(t) ? 7 : 6;
+    if (same && /order/.test(t)) return 4;
+    return 0;
+  };
+  const best = (html: string, at: string) => linksOf(html, at).map((l) => ({ url: l.url.split('#')[0], s: scoreOf(l.url, l.text) })).filter((x) => x.s > 0).sort((a, b) => b.s - a.s)[0];
+  // A Square Online site keeps its menu at /s/order.
+  if (/\.square\.site$/.test(own)) return { url: new URL(base).origin + '/s/order', note: 'Their Square ordering page' };
+  let b = best(home.html, base);
+  // Their own "Order" page often just points at Toast or Square: take that one.
+  if (b && b.s === 4) {
+    const p = await fetchPage(b.url);
+    const nb = p.html ? best(p.html, p.final || b.url) : null;
+    if (nb && nb.s >= 6) b = nb;
+  }
+  if (!b) return { url: '', note: 'No menu or ordering link on their home page' };
+  return { url: b.url, note: b.s === 9 ? 'Their menu PDF' : b.s === 8 ? 'Their menu page' : b.s >= 6 ? 'Their ordering page' : 'Their order page' };
+}
+async function linkOne(listingId: string) {
+  const { data: l } = await db.from('listings').select('id, slug, name, website, menu_crawl_url, status').eq('id', listingId).maybeSingle();
+  if (!l || l.status !== 'approved') return { ok: false, why: 'not_found' };
+  const at = new Date().toISOString();
+  if (l.menu_crawl_url) { await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none', link_checked_at: at, link_note: 'Has a menu link' }, { onConflict: 'listing_id' }); return { ok: true, slug: l.slug, url: l.menu_crawl_url, kept: true }; }
+  const r = /^https?:\/\//i.test(l.website || '') ? await findMenuLink(l.website) : { url: '', note: 'No website' };
+  if (r.url) {
+    await db.from('listings').update({ menu_crawl_url: r.url, updated_at: at }).eq('id', l.id).or('menu_crawl_url.is.null,menu_crawl_url.eq.');
+    await db.from('ve_listing_edits').insert({ listing_id: l.id, field: 'menu_crawl_url', old_value: null, new_value: r.url, meta: { by: 'menu-link-finder', note: r.note } });
+  }
+  await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none', link_checked_at: at, link_note: r.note }, { onConflict: 'listing_id' });
+  return { ok: true, slug: l.slug, url: r.url, note: r.note };
 }
 
 type Source = { kind: 'text' | 'image' | 'pdf'; url: string; text?: string; type?: string; data?: string };
@@ -396,6 +446,21 @@ Deno.serve(async (req) => {
       await db.from('ve_menu_imports').update({ reader_note: 'Failed: ' + String((e as Error).message || e).slice(0, 200) }).eq('listing_id', id);
     }));
     return json({ ok: true, started: id });
+  }
+  if (body.action === 'link') {
+    let id = String(body.listing_id || '');
+    if (!id && body.slug) { const { data } = await db.from('listings').select('id').eq('slug', String(body.slug)).eq('status', 'approved').maybeSingle(); id = data?.id || ''; }
+    if (!id) return json({ error: 'not_found' }, 404);
+    return json(await linkOne(id));
+  }
+  if (body.action === 'link_sweep') {
+    // Open food places with no menu link that the finder has not checked, most voted first (ve_menu_link_due).
+    const { data: due } = await db.rpc('ve_menu_link_due', { p_limit: Math.min(Math.max(+body.limit || 15, 1), 30) });
+    const ids = ((due || []) as any[]).map((r) => r.listing_id);
+    const work = (async () => { const out = []; for (const id of ids) { try { out.push(await linkOne(id)); } catch (e) { out.push({ ok: false, why: String((e as Error).message || e).slice(0, 120) }); } } return out; })();
+    if (body.wait) return json({ ok: true, results: await work });
+    (EdgeRuntime as any).waitUntil(work);
+    return json({ ok: true, started: ids.length });
   }
   if (body.action === 'sweep') {
     const limit = Math.min(Math.max(+body.limit || 1, 1), 2);
