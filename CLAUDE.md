@@ -795,6 +795,26 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   voters, then a logo over a letter, then A to Z. Our own shows are Directory listings too and never count in the 12. The
   cards are the Directory's card, with + Vote.
 
+## Podcast episodes on a listing (Sean, 2026-10-27)
+
+"Is it possible to add an RSS of the podcast so that way it actually populates on their listing? ... people can actually just
+listen to the episodes on our platform... they can save the episodes. But it's all pulling from their RSS feed." A podcast's
+listing (category Podcasts) has an **Episodes** tab, after Overview, shown only once its feed has episodes, and Listen & Watch
+gets **Listen here**, which opens it. The list searches and shows 20 at a time (Show more); an episode opens on its own view
+(`?tab=episodes&ep=<guid>`, Episodes / title back); **Play** plays it in the player bar at the foot of the window (one at a time,
+it keeps playing across tabs; inside the dashboard's frame the bar sits above the list); **Save** is for members (anyone else
+gets the Passport window) and the saves are in My List > Episodes (`/account/my-list?view=episodes`). The audio streams from the
+show's own host; nothing is copied.
+
+- The feed is `listings.rss_url`. Left empty, `ve-podcast` finds it once from the listing's Apple Podcasts id (iTunes lookup,
+  `feedUrl`) and saves it; an empty string means the team turned it off. Set it in the listing editor's **Episodes** field (shown
+  for Podcasts), which reads the feed at once and says if it fails. On 2026-10-27, 54 of the 56 podcasts were found this way;
+  The Ellen Fisher Podcast and Vegetarian Zen have no Apple feed.
+- Edge function `ve-podcast` (`episodes`, `episode`, `save`, `saves`, `admin_feed`; verify_jwt off, the member token checked
+  inside): the latest 300 episodes are kept in `ve_podcast_feeds` and read again after 6 hours (a failing feed keeps what we
+  have); saves are `ve_episode_saves` (migration `20261027_ve_podcast_feeds.sql`). The page side is `/public/ve-episodes.js`
+  (`VEEpisodes.mount`, `play`, `save`, `row`).
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at
