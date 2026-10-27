@@ -3754,34 +3754,38 @@
     });
   }
 
+  // One section failing must never stop the rest of the dashboard (2026-10-27: a missing button in the Events tab
+  // left the menu and Your tools unbuilt).
+  function dashSafe(fn) { try { fn(); } catch (e) { console.error('Dashboard section failed:', e); } }
+
   function showDashboardNow(member) {
     document.getElementById('dash-gate').style.display = 'none';
     document.getElementById('dash-content').style.display = 'block';
-    renderStatsHero(member);
-    renderContribute(member);
-    renderGuidePrompt();
-    renderCmCertPrompt(member);
-    renderCmApplication(member);
-    renderCityPill(member);
-    initViewAsControl();
-    renderLeaderboard(member);
-    renderDirectory(member);
-    renderEventsTab(member);
-    renderDailyPulse(member);
-    renderHomePulsePreview(member);
-    initHomePulseSeeAll();
-    renderCommunitySection(member);
-    renderCampaignsSection(member);
-    renderOpportunitiesSection(member);
-    renderPodcastSection(member);
-    renderGuidesSection();
-    renderChooseGuideSection(member);
-    initToolsConsolidation();
-    renderToolSectionTiles();
-    renderDashboardPreviews(member);
-    renderVersion(member);
-    initDashTabs();
-    initBountyTopics();
+    dashSafe(function () { renderStatsHero(member); });
+    dashSafe(function () { renderContribute(member); });
+    dashSafe(function () { renderGuidePrompt(); });
+    dashSafe(function () { renderCmCertPrompt(member); });
+    dashSafe(function () { renderCmApplication(member); });
+    dashSafe(function () { renderCityPill(member); });
+    dashSafe(function () { initViewAsControl(); });
+    dashSafe(function () { renderLeaderboard(member); });
+    dashSafe(function () { renderDirectory(member); });
+    dashSafe(function () { renderEventsTab(member); });
+    dashSafe(function () { renderDailyPulse(member); });
+    dashSafe(function () { renderHomePulsePreview(member); });
+    dashSafe(function () { initHomePulseSeeAll(); });
+    dashSafe(function () { renderCommunitySection(member); });
+    dashSafe(function () { renderCampaignsSection(member); });
+    dashSafe(function () { renderOpportunitiesSection(member); });
+    dashSafe(function () { renderPodcastSection(member); });
+    dashSafe(function () { renderGuidesSection(); });
+    dashSafe(function () { renderChooseGuideSection(member); });
+    dashSafe(function () { initToolsConsolidation(); });
+    dashSafe(function () { renderToolSectionTiles(); });
+    dashSafe(function () { renderDashboardPreviews(member); });
+    dashSafe(function () { renderVersion(member); });
+    dashSafe(function () { initDashTabs(); });
+    dashSafe(function () { initBountyTopics(); });
     var firstName = member.name ? member.name.split(' ')[0] : 'there';
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
