@@ -120,7 +120,7 @@
   <script src="/public/ve-auth.js"></script>
   <script>
     if (VEAuth.isLoggedIn()) window.location.replace('/directory');
-    var VE_COMMUNITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+    var VE_COMMUNITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
     var community = new URLSearchParams(window.location.search).get('community');
     if (community && !VE_COMMUNITY_NAMES[community]) community = null;
     if (community) {

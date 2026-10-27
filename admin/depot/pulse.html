@@ -110,9 +110,9 @@
             <option>Founders Report</option><option>Sustainability &amp; Environment</option>
           </select></div>
           <div class="field"><label for="pu-city">City</label><select id="pu-city">
-            <option value="">National (every city)</option><option value="south-florida">South Florida</option><option value="central-florida">Central Florida</option>
+            <option value="">National (every city)</option><option value="south-florida">South Florida</option><option value="central-florida">Central Florida</option><option value="north-florida">North Florida</option>
             <option value="new-york">New York</option><option value="philadelphia">Philadelphia</option><option value="los-angeles">Los Angeles</option>
-            <option value="atlanta">Atlanta</option><option value="dmv">DMV</option><option value="london">London</option>
+            <option value="atlanta">Atlanta</option><option value="washington-dc">Washington, D.C.</option><option value="maryland">Maryland</option><option value="virginia">Virginia</option><option value="london">London</option>
           </select></div>
           <div class="field"><label for="pu-author">Author</label><input type="text" id="pu-author" maxlength="80" placeholder="Name shown under the title (optional)"></div>
           <div class="field wide"><span class="lbl">Cover picture</span>
@@ -153,7 +153,7 @@
     (function () {
       var $ = function (id) { return document.getElementById(id); };
       var LIB = [], pieces = [], editing = null, cover = null, type = 'article', busy = false;
-      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', atlanta: 'Atlanta', dmv: 'DMV', london: 'London' };
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', london: 'London' };
       var TYPE = { article: 'Article', video: 'Video', interview: 'Interview', podcast: 'Podcast episode' };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }

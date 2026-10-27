@@ -4,7 +4,7 @@
   "outputDirectory": ".",
   "rewrites": [
     {
-      "source": "/communities/:city(south-florida|central-florida|atlanta|dmv|new-york|philadelphia|los-angeles|london)",
+      "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|maryland|virginia|new-york|philadelphia|los-angeles|london)",
       "destination": "/communities/hub"
     },
     {
@@ -345,6 +345,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/communities/dmv",
+      "destination": "/communities/washington-dc",
+      "permanent": false
+    },
     {
       "source": "/podcast/:slug(vegans-explore-podcast|soflo-vegans-podcast|pre-vegans-podcast|vegans-who-lift-podcast)",
       "destination": "/directory/:slug",
@@ -3366,7 +3371,7 @@
     },
     {
       "source": "/regions/dmv",
-      "destination": "/communities/dmv",
+      "destination": "/communities/washington-dc",
       "permanent": true
     },
     {

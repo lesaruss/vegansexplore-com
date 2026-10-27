@@ -324,7 +324,8 @@
       var slug = status && status.home_community, hubs = window.VE_HUBS || [];
       var known = hubs.some(function(h){ return h.slug === slug; });
       slug = known ? slug : 'south-florida';
-      return '/communities/' + slug + '/' + (CITY_ART[slug] || 'banner.jpg');
+      var h = hubs.filter(function(x){ return x.slug === slug; })[0];
+      return h && h.page && h.page.banner ? h.page.banner : '/communities/' + slug + '/' + (CITY_ART[slug] || 'banner.jpg');
     }
     function renderSurvey(){
       var g = guideBySlug(status.guide_slug);

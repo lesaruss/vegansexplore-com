@@ -34,7 +34,7 @@ const REPLY_TO = 'contact@lesaruss.com';
 const DAYS = 30;
 const BRANDS: Record<string, string> = { 'vegans-explore': 'Vegans Explore' };
 const CITIES: Record<string, string> = {
-  'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'dmv': 'the DMV', 'london': 'London',
+  'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'maryland': 'Maryland', 'virginia': 'Virginia', 'london': 'London',
   'los-angeles': 'Los Angeles', 'new-york': 'New York', 'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
   'orlando-north-central-florida': 'Orlando and North Central Florida',
 };

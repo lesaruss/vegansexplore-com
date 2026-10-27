@@ -1127,8 +1127,8 @@
 <script>
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','dmv':'DMV Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
-  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','dmv':'/communities/dmv/banner.png','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.png','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/washington-dc/banner.png','north-florida':'/communities/central-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
 
   // A listing link (/dashboard/directory/<slug>) opened signed out goes to the public listing page instead.
   function listingSlugFromPath() {
@@ -1392,6 +1392,12 @@
     renderCommunitySection(currentMember);
     if (window.openConsoleFrame) window.openConsoleFrame('/communities/' + slug, VE_CITY_NAMES[slug]); else location.href = '/communities/' + slug;
   }
+  // The city banner's View community (/public/ve-city-banner.js), on any tab or inside a framed page such as the Daily Pulse:
+  // a chapter opens here like its card does, All cities opens the Communities tab, the same as the menu.
+  window.VEOpenCommunity = function (slug) {
+    if (slug && VE_CITY_NAMES[slug]) openCommunity(slug, currentMember);
+    else if (window.activateDashTab) { window.activateDashTab('communities'); window.scrollTo(0, 0); }
+  };
   // The banner on top (Sean, 2026-10-27: "it might be easier for people to use the drop down to choose the community, especially
   // when we get a bunch of them"). It rests on All cities; a pick goes straight to that chapter and the picker resets behind it.
   var dashComBanner = null;
@@ -2444,7 +2450,10 @@
   var LEADERBOARD_CITY_TERMS = {
     'atlanta': ['Atlanta', 'Decatur', 'Marietta', 'Sandy Springs', 'Alpharetta', 'Roswell', 'Smyrna', 'Stone Mountain', 'College Park'],
     'central-florida': ['Orlando', 'Central Florida', 'Kissimmee', 'Altamonte Springs', 'Winter Park', 'Clermont', 'Minneola', 'Apopka', 'Sanford', 'Deltona', 'Daytona Beach', 'Lakeland', 'The Villages', 'Winter Garden', 'Oviedo', 'Casselberry'],
-    'dmv': ['Washington', 'Maryland', 'Virginia', 'Arlington', 'Alexandria', 'Bethesda', 'Silver Spring', 'Rockville', 'Fairfax', 'Tysons'],
+    'washington-dc': ['Washington', 'Washington DC', 'Washington, DC', 'DC', 'D.C.'],
+    'maryland': ['Maryland', 'Baltimore', 'Bethesda', 'Silver Spring', 'Rockville', 'Annapolis', 'Columbia', 'Frederick', 'College Park', 'Takoma Park', 'Towson'],
+    'virginia': ['Virginia', 'Arlington', 'Alexandria', 'Fairfax', 'Tysons', 'Falls Church', 'Reston', 'Richmond', 'Virginia Beach', 'Norfolk', 'Charlottesville'],
+    'north-florida': ['North Florida', 'Jacksonville', 'Gainesville', 'Tallahassee', 'Pensacola', 'St. Augustine', 'Destin', 'Panama City'],
     'london': ['London', 'Camden', 'Hackney', 'Brixton', 'Croydon', 'Greenwich', 'Islington', 'Shoreditch'],
     'los-angeles': ['Los Angeles', 'LA', 'Santa Monica', 'Pasadena', 'Long Beach', 'Burbank', 'Glendale', 'Culver City', 'West Hollywood', 'Venice', 'Inglewood'],
     'new-york': ['New York', 'NYC', 'Brooklyn', 'Queens', 'Bronx', 'Manhattan', 'Staten Island', 'Jersey City', 'Hoboken'],
@@ -2573,32 +2582,16 @@
   // scoped to whichever communities the member has actually joined instead
   // of one hardcoded region. matchListing/counties are copied verbatim from
   // each region's own hub page so results match exactly.
-  var VE_DASH_REGION_CONFIG = {
-    'south-florida': {
-      matchListing: function (l) { return !!(l.address_city && ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade'].indexOf(l.address_city) > -1); },
-      counties: {
-        'Miami-Dade': ['Miami', 'Miami Beach', 'North Miami', 'North Miami Beach', 'Aventura', 'Bal Harbour', 'Sunny Isles Beach', 'Surfside', 'Doral', 'Hialeah', 'Miami Gardens', 'Miami Lakes', 'Miami Springs', 'Coral Gables', 'South Miami', 'Key Biscayne', 'Pinecrest', 'Palmetto Bay', 'Cutler Bay', 'Homestead', 'Florida City'],
-        'Broward': ['Fort Lauderdale', 'Hollywood', 'Sunrise', 'Pompano Beach', 'Coral Springs', 'Margate', 'Miramar', 'Pembroke Pines', 'Weston', 'Davie', 'Cooper City', 'Plantation', 'Lauderhill', 'Lauderdale Lakes', 'North Lauderdale', 'Tamarac', 'Oakland Park', 'Wilton Manors', 'Dania Beach', 'Hallandale', 'Hallandale Beach', 'Deerfield Beach', 'Lighthouse Point', 'Coconut Creek', 'Parkland', 'Lauderdale-by-the-Sea', 'Southwest Ranches'],
-        'Palm Beach': ['West Palm Beach', 'Boca Raton', 'Delray Beach', 'Boynton Beach', 'Palm Beach Gardens', 'Jupiter', 'Lake Worth', 'Lake Worth Beach', 'Tequesta', 'Loxahatchee', 'Riviera Beach', 'Royal Palm Beach', 'Wellington', 'North Palm Beach', 'Palm Beach', 'Greenacres', 'Lantana', 'Lake Park', 'Juno Beach', 'Palm Springs', 'Highland Beach', 'Belle Glade']
-      }
-    },
-    'central-florida': {
-      matchListing: function (l) { return !!(l.address_state === 'FL' && ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'].indexOf(l.address_city) > -1); },
-      counties: {
-        'Orange': ['Orlando', 'Apopka'],
-        'Seminole': ['Altamonte Springs'],
-        'Polk': ['Lakeland', 'Winter Haven'],
-        'Sumter': ['The Villages'],
-        'Marion': ['Ocala']
-      }
-    },
-    'atlanta': { matchListing: function (l) { return (l.address_state === 'GA'); } },
-    'new-york': { matchListing: function (l) { return !!(l.address_state === 'NY'); } },
-    'los-angeles': { matchListing: function (l) { return !!(['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park'].indexOf(l.address_city) > -1); } },
-    'london': { matchListing: function (l) { return !!(l.address_city === 'London'); } },
-    'philadelphia': { matchListing: function (l) { return (l.address_state === 'PA'); } },
-    'dmv': { matchListing: function (l) { return (l.address_state === 'DC' || l.address_state === 'MD' || l.address_state === 'VA'); } }
-  };
+  // Built from VE_HUBS (/public/ve-hubs.js) since 2026-10-27, when the DMV became three chapters and North Florida joined, so
+  // the dashboard and the city hubs match the same listings: each hub's match rule, and its counties where it has them.
+  var VE_DASH_REGION_CONFIG = {};
+  (window.VE_HUBS || []).forEach(function (h) {
+    var m = h.match || {};
+    VE_DASH_REGION_CONFIG[h.slug] = {
+      matchListing: function (l) { return !!((m.cities || m.states) && (!m.cities || m.cities.indexOf(l.address_city) > -1) && (!m.states || m.states.indexOf(l.address_state) > -1)); },
+      counties: h.page && h.page.counties
+    };
+  });
 
   // Events tab (2026-09-07, Sean direction): reuses the shared
   // VEHubNews.renderEvents() component already live on every community hub

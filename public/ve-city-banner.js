@@ -150,8 +150,10 @@
     var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_banner_hero';
     var current = '', chosen = null;
 
+    // A chapter's art is its VE_HUBS page.banner (a new chapter needs no entry here); ART is the fallback by file name.
     function art(slug) {
       if (mobile.matches && MOBILE_ART[slug]) return '/communities/' + slug + '/' + MOBILE_ART[slug];
+      var h = hubBySlug(slug); if (h && h.page && h.page.banner) return h.page.banner;
       return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
     }
     function paint() { el.style.backgroundImage = "url('" + (opts.art || art(current || 'new-york')) + "')"; }
@@ -172,6 +174,16 @@
       if (link) { link.href = hub ? '/communities/' + hub.slug : '/communities'; link.textContent = hub ? 'View community' : 'View communities'; }
       if (opts.onChange && !quiet) opts.onChange(current, hub);
     }
+    // View community opens the chapter the way the menu's Communities does, never inside a frame (Sean, 2026-10-27: "It doesn't
+    // take you to View Communities the way the top bar takes you"): in the dashboard (this window or the one framing this page,
+    // like the Daily Pulse tab) the dashboard opens it (VEOpenCommunity in center-console); in any other frame the whole window goes.
+    if (link && !opts.link) link.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
+      var host = null;
+      try { host = window.VEOpenCommunity ? window : window.parent !== window && window.parent.VEOpenCommunity ? window.parent : null; } catch (x) { host = null; }
+      if (host) { e.preventDefault(); host.VEOpenCommunity(current || ''); return; }
+      if (window.top !== window) { e.preventDefault(); try { window.top.location.href = link.href; } catch (x) { window.open(link.href, '_top'); } }
+    });
     function fromUrl() { return param ? new URLSearchParams(location.search).get(param) || '' : current; }
 
     select.addEventListener('change', function () {

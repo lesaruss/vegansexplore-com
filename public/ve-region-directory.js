@@ -62,7 +62,8 @@
       subcats: ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
-      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'] },
+      // All first here, the one exception (Sean, 2026-10-27: "I don't mind people seeing all of the community listings in one slot").
+      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'], allFirst: true },
     // Being vetted (Sean, 2026-10-25): Vegan-friendly and Vegan-options food places the community has not vetted yet
     // (/public/ve-trust.js). Members only; each one moves to Food once 10 different members vote for it.
     { key: 'vetting', label: 'Being vetted', hasVF: false, membersOnly: true,
@@ -256,9 +257,10 @@
   function skeletonForCat(cat, config) {
     // A framed tool (Review): the page loads the first time the tab opens.
     if (cat.frame) return '<div class="board-panel" id="board-' + cat.key + '"><div class="vrd-frame-wrap" data-vrd-frame="' + esc(cat.frame) + '"></div></div>';
-    // A section opens on its first sub-section; All comes last (Sean, 2026-10-26).
-    var subcatBtns = cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
-      '<button class="subcat-pill' + (cat.subcats.length ? '' : ' sc-active') + '" data-vrd-subcat="All">All</button>';
+    // A section opens on its first sub-section; All comes last (Sean, 2026-10-26), except where allFirst says otherwise.
+    var allBtn = '<button class="subcat-pill' + (cat.allFirst || !cat.subcats.length ? ' sc-active' : '') + '" data-vrd-subcat="All">All</button>';
+    var subcatBtns = (cat.allFirst ? allBtn : '') + cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i || cat.allFirst ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
+      (cat.allFirst ? '' : allBtn);
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
       '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(cat.label) + '&hellip;" aria-label="Search ' + esc(cat.label) + ' listings">' +
@@ -297,10 +299,27 @@
   function cardMeta(l) {
     // A grocery chain (tag ve-grocery-store, 2026-10-08) has no one address but is not an online business.
     if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
+    if ((l.communities || []).indexOf('all') >= 0) return 'Every chapter';
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
-    // Every chapter: the address stays as its headquarters.
-    if ((l.communities || []).indexOf('all') >= 0) return esc(l.address_city || l.address_state || '') + ' &middot; Every chapter';
+    // A listing that serves more than one chapter reads like a brand: where it works, not its headquarters' city (Sean,
+    // 2026-10-27: Be An Animal Hero "still says Jupiter... we could treat it like a brand").
+    var reach = reachOf(l); if (reach) return esc(reach);
     return esc(l.address_city || l.address_state || '');
+  }
+  // Every chapter, All of Florida (every chapter in a state that has more than one, VE_HUBS[].state), or the chapters by name.
+  var STATE_NAMES = { FL: 'Florida', CA: 'California', NY: 'New York', GA: 'Georgia', PA: 'Pennsylvania', DC: 'D.C.', MD: 'Maryland', VA: 'Virginia', GB: 'the UK' };
+  function reachOf(l) {
+    var c = l.communities || [];
+    if (c.indexOf('all') >= 0) return 'Every chapter';
+    var hubs = window.VE_HUBS || [], mine = hubsOf(l).split('|').filter(Boolean);
+    if (mine.length < 2) return '';
+    var names = [], used = {};
+    Object.keys(STATE_NAMES).forEach(function (st) {
+      var inState = hubs.filter(function (h) { return h.state === st; });
+      if (inState.length > 1 && inState.every(function (h) { return mine.indexOf(h.slug) >= 0; })) { names.push('All of ' + STATE_NAMES[st]); inState.forEach(function (h) { used[h.slug] = 1; }); }
+    });
+    hubs.forEach(function (h) { if (mine.indexOf(h.slug) >= 0 && !used[h.slug]) names.push(h.name); });
+    return names.length > 2 ? names.length + ' chapters' : names.join(' & ');
   }
 
   // Every section a listing is in: its main category plus any the admin editor added.

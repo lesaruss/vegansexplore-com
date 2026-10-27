@@ -126,7 +126,7 @@
     partner: 'Partner', claim: 'Listing claim', interest: 'Initiative interest', bounty: 'Bounty work',
     report: 'Board report', service: 'Service order', pulse: 'Pulse draft'
   };
-  var CITIES = { national: 'National', 'south-florida': 'South Florida', 'central-florida': 'Central Florida', atlanta: 'Atlanta', dmv: 'DMV', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+  var CITIES = { national: 'National', 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
   var STATUS = { pending: 'Pending', pending_review: 'Pending review', flagged: 'Flagged', needs_followup: 'Needs follow-up', submitted: 'Submitted', open: 'Open', new: 'New', paid: 'Paid, to schedule', written: 'Written', failed: 'Write failed', confirmed: 'Confirmed', answered: 'Answered', applied: 'Applied' };
   var items = [], view = { type: '', city: '', q: '', sort: 'oldest' };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }

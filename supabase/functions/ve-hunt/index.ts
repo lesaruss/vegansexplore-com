@@ -34,7 +34,7 @@ const SEAN_EMAIL = 'contact@lesaruss.com';
 // places more than FLAG_KM apart inside FLAG_TRAVEL_MIN.
 const FLAG_BURST = 6, FLAG_WINDOW_MIN = 60, FLAG_KM = 40, FLAG_TRAVEL_MIN = 120;
 // Each hub's time zone, which decides when its challenge starts and ends (same slugs as /public/ve-hubs.js).
-const HUB_TZ: Record<string, string> = { 'south-florida': 'America/New_York', 'central-florida': 'America/New_York', atlanta: 'America/New_York', dmv: 'America/New_York',
+const HUB_TZ: Record<string, string> = { 'south-florida': 'America/New_York', 'central-florida': 'America/New_York', 'north-florida': 'America/New_York', atlanta: 'America/New_York', 'washington-dc': 'America/New_York', maryland: 'America/New_York', virginia: 'America/New_York',
   'new-york': 'America/New_York', philadelphia: 'America/New_York', 'los-angeles': 'America/Los_Angeles', london: 'Europe/London' };
 const LAUNCH_KEY = 'challenge_launch';
 

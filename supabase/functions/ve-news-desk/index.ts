@@ -70,9 +70,12 @@ const LOOK_BACK_FROM = '2026-06-01';
 // case-sensitive on whole words, so "London" matches and "london broil" does not.
 const HUBS: { slug: string; name: string; terms: string[] }[] = [
   { slug: 'south-florida', name: 'South Florida', terms: ['South Florida', 'Miami', 'Miami Beach', 'Wynwood', 'Little Havana', 'Coral Gables', 'Coconut Grove', 'Brickell', 'Doral', 'Aventura', 'Hialeah', 'Fort Lauderdale', 'Ft. Lauderdale', 'Broward', 'Pompano Beach', 'Boca Raton', 'Delray Beach', 'West Palm Beach', 'Palm Beach', 'Boynton Beach', 'Key West', 'Florida Keys'] },
-  { slug: 'central-florida', name: 'Central Florida', terms: ['Central Florida', 'Orlando', 'Winter Park', 'Kissimmee', 'Lakeland', 'Altamonte Springs', 'Ocala', 'The Villages', 'Winter Haven'] },
+  { slug: 'central-florida', name: 'Central Florida', terms: ['Central Florida', 'Orlando', 'Winter Park', 'Kissimmee', 'Lakeland', 'Altamonte Springs', 'Ocala', 'The Villages', 'Winter Haven', 'Tampa', 'St. Petersburg', 'Clearwater', 'Sarasota', 'Daytona Beach', 'Melbourne, FL'] },
+  { slug: 'north-florida', name: 'North Florida', terms: ['North Florida', 'Jacksonville', 'Gainesville, FL', 'Gainesville, Florida', 'Tallahassee', 'Pensacola', 'St. Augustine', 'Destin', 'Panama City'] },
   { slug: 'atlanta', name: 'Atlanta', terms: ['Atlanta', 'Decatur, GA', 'Decatur, Georgia', 'Buckhead', 'Marietta'] },
-  { slug: 'dmv', name: 'DMV', terms: ['Washington, D.C.', 'Washington, DC', 'Washington DC', 'D.C.', 'the DMV', 'Arlington, VA', 'Arlington, Virginia', 'Alexandria, VA', 'Silver Spring', 'Bethesda', 'Takoma Park'] },
+  { slug: 'washington-dc', name: 'Washington, D.C.', terms: ['Washington, D.C.', 'Washington, DC', 'Washington DC', 'D.C.', 'the DMV'] },
+  { slug: 'maryland', name: 'Maryland', terms: ['Maryland', 'Baltimore', 'Silver Spring', 'Bethesda', 'Takoma Park', 'Annapolis', 'Rockville', 'Columbia, MD', 'Frederick, MD'] },
+  { slug: 'virginia', name: 'Virginia', terms: ['Arlington, VA', 'Arlington, Virginia', 'Alexandria, VA', 'Alexandria, Virginia', 'Richmond, VA', 'Richmond, Virginia', 'Virginia Beach', 'Norfolk, VA', 'Charlottesville', 'Northern Virginia'] },
   { slug: 'new-york', name: 'New York', terms: ['New York City', 'NYC', 'Manhattan', 'Brooklyn', 'Queens', 'the Bronx', 'Staten Island', 'Harlem', 'Williamsburg', 'New York(?! Times| Post| Magazine| Daily News)'] },
   { slug: 'philadelphia', name: 'Philadelphia', terms: ['Philadelphia', 'Philly'] },
   { slug: 'los-angeles', name: 'Los Angeles', terms: ['Los Angeles', 'West Hollywood', 'Silver Lake', 'Echo Park', 'Santa Monica', 'Venice Beach', 'Pasadena', 'Burbank', 'Long Beach', 'Culver City', 'Koreatown'] },

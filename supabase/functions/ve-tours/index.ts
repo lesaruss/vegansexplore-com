@@ -34,7 +34,8 @@ const LAUNCH_KEY = 'tours_launch';
 // Each hub's time zone and region for the events row (same slugs as /public/ve-hubs.js).
 const HUBS: Record<string, { tz: string; state: string | null; country: string }> = {
   'south-florida': { tz: 'America/New_York', state: 'FL', country: 'US' }, 'central-florida': { tz: 'America/New_York', state: 'FL', country: 'US' },
-  atlanta: { tz: 'America/New_York', state: 'GA', country: 'US' }, dmv: { tz: 'America/New_York', state: 'DC', country: 'US' },
+  'north-florida': { tz: 'America/New_York', state: 'FL', country: 'US' }, atlanta: { tz: 'America/New_York', state: 'GA', country: 'US' },
+  'washington-dc': { tz: 'America/New_York', state: 'DC', country: 'US' }, maryland: { tz: 'America/New_York', state: 'MD', country: 'US' }, virginia: { tz: 'America/New_York', state: 'VA', country: 'US' },
   'new-york': { tz: 'America/New_York', state: 'NY', country: 'US' }, philadelphia: { tz: 'America/New_York', state: 'PA', country: 'US' },
   'los-angeles': { tz: 'America/Los_Angeles', state: 'CA', country: 'US' }, london: { tz: 'Europe/London', state: null, country: 'GB' },
 };

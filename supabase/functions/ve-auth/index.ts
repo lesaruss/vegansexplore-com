@@ -14,7 +14,8 @@ const corsHeaders = {
 
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
-const VALID_COMMUNITIES = ['atlanta','central-florida','dmv','london','los-angeles','new-york','philadelphia','south-florida'];
+// The DMV became Washington, D.C., Maryland and Virginia, and North Florida joined (Sean, 2026-10-27; same slugs as /public/ve-hubs.js).
+const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','maryland','virginia','london','los-angeles','new-york','philadelphia','south-florida'];
 
 // Tenant the Vegans Explore front door writes to (2026-09-09, Sean, Fieldy
 // field note behind dashboard items 5-7). Both signup paths below used to
@@ -433,7 +434,7 @@ function isPlausibleCityName(raw: string): boolean {
 }
 
 const COMMUNITY_DISPLAY: Record<string, string> = {
-  'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'dmv': 'DMV',
+  'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'maryland': 'Maryland', 'virginia': 'Virginia',
   'london': 'London', 'los-angeles': 'Los Angeles', 'new-york': 'New York',
   'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
 };
@@ -475,10 +476,12 @@ const CITY_ALIASES: Record<string, string> = {
   // philadelphia
   'philly': 'philadelphia', 'king-of-prussia': 'philadelphia', 'norristown': 'philadelphia',
   'upper-darby': 'philadelphia', 'camden-nj': 'philadelphia',
-  // dmv (DC / Maryland / Northern Virginia)
-  'dc': 'dmv', 'd-c': 'dmv',
-  'washington': 'dmv', 'washington-dc': 'dmv', 'arlington': 'dmv', 'alexandria': 'dmv',
-  'bethesda': 'dmv', 'silver-spring': 'dmv', 'rockville': 'dmv', 'fairfax': 'dmv', 'tysons': 'dmv',
+  // Washington, D.C., Maryland and Virginia (the DMV until 2026-10-27; 'dmv' itself now means D.C.)
+  'dmv': 'washington-dc', 'dc': 'washington-dc', 'd-c': 'washington-dc', 'washington': 'washington-dc', 'washington-dc': 'washington-dc',
+  'maryland': 'maryland', 'baltimore': 'maryland', 'bethesda': 'maryland', 'silver-spring': 'maryland', 'rockville': 'maryland', 'annapolis': 'maryland', 'frederick': 'maryland', 'takoma-park': 'maryland', 'towson': 'maryland',
+  'virginia': 'virginia', 'arlington': 'virginia', 'alexandria': 'virginia', 'fairfax': 'virginia', 'tysons': 'virginia', 'falls-church': 'virginia', 'reston': 'virginia', 'richmond': 'virginia', 'virginia-beach': 'virginia', 'norfolk': 'virginia', 'charlottesville': 'virginia',
+  // north florida
+  'north-florida': 'north-florida', 'jacksonville': 'north-florida', 'gainesville': 'north-florida', 'tallahassee': 'north-florida', 'pensacola': 'north-florida', 'st-augustine': 'north-florida', 'saint-augustine': 'north-florida', 'destin': 'north-florida', 'panama-city': 'north-florida',
 };
 
 // City+state disambiguation (2026-09-07, Sean field note): a bare city name
