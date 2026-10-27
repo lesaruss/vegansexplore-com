@@ -1332,6 +1332,10 @@ that we're selling"), and a tile in Your tools.
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
 - Edge function `ve-dashboard` (`home`, `set_version`; verify_jwt off, the member token checked inside).
+- **A listing opened in the dashboard has its own address** (Sean, 2026-10-27: "if somebody just wanted to share a link to their
+  page"): `/dashboard/directory/<slug>` (rewrite in `vercel.json`; back and forward move between the Directory and the listing),
+  **Copy link** beside the breadcrumb copies the public `/directory/<slug>`, and the address opened signed out goes straight to
+  the public listing (`listingSlugFromPath` in center-console). The public Directory already opens `/directory/<slug>`.
 
 ## Your Guide (Sean, 2026-10-04)
 
