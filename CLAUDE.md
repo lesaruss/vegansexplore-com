@@ -1261,7 +1261,11 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   has the **logo editor** (`VELogoEditor`, with up to four pictures from their website, `add_site`; saved after the listing through
   `add_logo_url` and `logo_set`, so it shows in Logos > Done) and **Main category** plus **Also show it under** (any others,
   saved as `extra_categories` through `ve-claims` `admin_listing`); How Vegan hides only when every section ticked is Rescues,
-  Sanctuaries, Nonprofits or Events; **Set aside** makes it `rejected` with a note,
+  Sanctuaries, Nonprofits or Events; **Add the ticked** (Sean, 2026-10-27: "Build the Add all ticked button"): Ready to list has a tick box on every row
+  and its own Add as (the category from the guess, `guessCatOf`; How Vegan for anything but an organization), and one button that
+  adds every ticked row through `backlog_decide`, on whichever city tab is open. Organizations start ticked; a food place starts
+  unticked until its How Vegan is picked (never guessed), and the button waits until every ticked row is complete. The logo and
+  other sections are left to the place's own page (the logo sweep suggests a logo afterwards); **Set aside** makes it `rejected` with a note,
   never deleted. Closed, Not found, A person, Not enough to check and Already listed have **Set these aside** for the page. A
   newly listed business joins its city's outreach through Find emails on the city card.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.

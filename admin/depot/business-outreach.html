@@ -62,6 +62,16 @@
        the width (Sean, 2026-10-27: the send-day columns above gave the logo the widest column, so it sat alone in a wide gap). */
     .batches.with-logo .item{grid-template-columns:44px minmax(0,1.5fr) minmax(0,1.3fr) minmax(0,1.8fr) 110px;}
     @media (max-width:760px){.batches.with-logo .item{grid-template-columns:40px 1fr;}}
+    /* Ready to list with tick boxes (Add the ticked): the box, the logo, the business and why, what we found, Add as, Open. */
+    .batches.with-logo.pk .item{grid-template-columns:28px 44px minmax(0,1.6fr) minmax(0,1.3fr) minmax(0,1.5fr) 90px;}
+    .pk input[type=checkbox],.pk-all input{width:18px;height:18px;accent-color:#2d7d31;cursor:pointer;}
+    .pk-as{display:flex;flex-direction:column;gap:6px;}
+    .pk-as select{font:inherit;font-size:13px;padding:7px 36px 7px 10px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center;-webkit-appearance:none;appearance:none;width:100%;cursor:pointer;}
+    .pk-as select[hidden]{display:none;}
+    .pk-bar{position:sticky;top:calc(var(--ve-nav-h,0px) + 8px);z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin:0 0 10px;padding:10px 14px;background:#fff;border:1px solid var(--ve-border);border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+    .pk-all{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;}
+    .pk-bar .msg{margin:0;}
+    @media (max-width:760px){.batches.with-logo.pk .item{grid-template-columns:28px 40px 1fr;}.pk .item>div:nth-child(3),.pk .item>div:nth-child(4),.pk .item>div:nth-child(5){grid-column:3;}.pk .item .act{grid-column:1/-1;}}
     .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start;}
     @media (max-width:980px){.two{grid-template-columns:1fr;}}
     .tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
@@ -577,6 +587,16 @@
       var PV_ORDER = ['list', 'check', 'other', 'closed', 'listed', 'gone', 'person', 'thin'];
       var VSTAT = [['fully_vegan', '100% Vegan'], ['vegan_options', 'Vegan options'], ['vegan_friendly', 'Vegan friendly']];
       var placeCache = { key: '', rows: [], cats: [] };
+      // Rescues, sanctuaries, nonprofits and events are organizations: no How Vegan (Sean, 2026-10-27).
+      var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Events'];
+      // The category a place most likely is, from the community search's guess or what Google and Instagram call it.
+      function guessCatOf(r) {
+        var p = r.place || {}, g = r.ig || {}, t = p.type || g.category || '';
+        var org = /community search: looks like a (rescue|sanctuary|nonprofit)/.exec(r.reason || '');
+        return org ? { rescue: 'Rescues', sanctuary: 'Sanctuaries', nonprofit: 'Nonprofits' }[org[1]]
+          : /bakery|cafe|coffee/i.test(t) ? 'Bakeries & Cafes' : /grocery|market|supermarket/i.test(t) ? 'Markets' : /catering/i.test(t) ? 'Catering'
+          : r.verdict === 'other' ? '' : 'Restaurants';
+      }
       function placeFound(r) {
         var p = r.place, g = r.ig;
         return p ? esc(p.name) + '<small>' + esc(p.address || '') + '</small>'
@@ -592,6 +612,19 @@
           var cities = Object.keys(s.by_city || {}).filter(function (c) { return (s.by_city[c] || {})[verdict]; });
           var cname = function (c) { if (c === 'none') return 'No city we serve'; var m = (s.cities || []).filter(function (x) { return x.community_slug === c; })[0]; return m ? m.name : c; };
           var bulk = ['closed', 'gone', 'person', 'thin', 'listed'].indexOf(verdict) >= 0;
+          // Ready to list: tick and add many at once (Sean, 2026-10-27: "Build the Add all ticked button"). Each row has its own
+          // Add as: the category from the guess, and How Vegan for anything but an organization (never guessed, so a food place
+          // starts unticked until it is picked). Organizations from the community search start ticked.
+          var pick = verdict === 'list';
+          function catSel(r) {
+            var g = guessCatOf(r);
+            return '<select data-pk-cat aria-label="Category for ' + esc((r.listing || {}).name) + '"><option value="">Category</option>' +
+              (placeCache.cats || []).map(function (c) { return '<option' + (c === g ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select>';
+          }
+          function vsSel(r) {
+            return '<select data-pk-vs aria-label="How Vegan ' + esc((r.listing || {}).name) + ' is"' + (ORGS.indexOf(guessCatOf(r)) >= 0 ? ' hidden' : '') + '><option value="">How Vegan</option>' +
+              VSTAT.map(function (v) { return '<option value="' + v[0] + '">' + v[1] + '</option>'; }).join('') + '</select>';
+          }
           V().innerHTML = '<p class="sub">' + ({ list: 'Open on Google and Vegan by Google\'s own category, their name or their Instagram. Open each, pick its category and how Vegan it is, and add it.',
               check: 'Open food businesses where Vegan is not confirmed, or food businesses we could not place on Google. Look before adding; most will be set aside.',
               other: 'Businesses of another kind: brands, shops, coaches, events. Some belong in the Directory under their own category.',
@@ -603,16 +636,22 @@
               return '<button type="button" role="tab" aria-selected="' + (v === verdict) + '" data-v="' + v + '">' + esc(PV[v][0]) + ' · ' + o[v] + '</button>'; }).join('') + '</div>' +
             (cities.length > 1 ? '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + !city + '" data-c="">All cities</button>' + cities.map(function (c) {
               return '<button type="button" role="tab" aria-selected="' + (city === c) + '" data-c="' + esc(c) + '">' + esc(cname(c)) + ' · ' + s.by_city[c][verdict] + '</button>'; }).join('') + '</div>' : '') +
-            '<section class="card batches with-logo"><div class="list"><div class="item head"><div></div><div>From our list</div><div>What we found</div><div>Why</div><div></div></div>' +
-            (placeCache.rows.map(function (r) { var l = r.listing || {};
-              return '<div class="item"><div>' + logo({ name: l.name }) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.location || l.address_city, l.crawl_source === 'sfv-facebook-group' ? 'SoFlo Vegans group' : l.crawl_source].filter(Boolean).join(' · ')) + '</small></div>' +
-                '<div>' + placeFound(r) + '</div><div><small style="white-space:normal">' + esc(r.reason || '') + '</small></div>' +
+            (pick && placeCache.rows.length ? '<div class="pk-bar"><label class="pk-all"><input type="checkbox" id="pk-all"> Tick all</label>' +
+              '<button type="button" class="btn btn-sm" id="pk-add" disabled>Add the ticked</button><span class="msg" id="pk-msg" role="status"></span></div>' : '') +
+            '<section class="card batches with-logo' + (pick ? ' pk' : '') + '"><div class="list"><div class="item head">' + (pick ? '<div></div>' : '') + '<div></div><div>From our list</div><div>What we found</div><div>' + (pick ? 'Add as' : 'Why') + '</div><div></div></div>' +
+            (placeCache.rows.map(function (r) { var l = r.listing || {}, org = ORGS.indexOf(guessCatOf(r)) >= 0;
+              return '<div class="item" data-pk="' + r.listing_id + '">' + (pick ? '<div><input type="checkbox" data-pk-on aria-label="Add ' + esc(l.name) + '"' + (org ? ' checked' : '') + '></div>' : '') +
+                '<div>' + logo({ name: l.name }) + '</div><div><strong>' + esc(l.name) + '</strong><small>' + esc([l.location || l.address_city, l.crawl_source === 'sfv-facebook-group' ? 'SoFlo Vegans group' : l.crawl_source].filter(Boolean).join(' · ')) + '</small>' +
+                (pick ? '<small style="white-space:normal;margin-top:4px">' + esc(r.reason || '') + '</small>' : '') + '</div>' +
+                '<div>' + placeFound(r) + '</div>' +
+                (pick ? '<div class="pk-as">' + catSel(r) + vsSel(r) + '</div>' : '<div><small style="white-space:normal">' + esc(r.reason || '') + '</small></div>') +
                 '<div class="act"><a class="btn btn-ghost btn-sm" href="#place/' + r.listing_id + '">Open</a></div></div>';
             }).join('') || '<p class="empty">Nothing here.</p>') + '</div>' +
             (d.total > placeCache.rows.length ? '<p class="hint">Showing ' + placeCache.rows.length + ' of ' + d.total + '. Decide these and the next ones come up.</p>' : '') +
             (bulk && placeCache.rows.length ? '<div class="row-btns" style="margin-top:12px"><button type="button" class="btn btn-ghost btn-sm" id="pl-bulk">Set these ' + placeCache.rows.length + ' aside</button></div><p class="msg" id="pl-msg" role="status"></p>' : '') + '</section>';
           Array.prototype.forEach.call(V().querySelectorAll('[data-v]'), function (b) { b.addEventListener('click', function () { location.hash = '#places/' + b.dataset.v; }); });
           Array.prototype.forEach.call(V().querySelectorAll('[data-c]'), function (b) { b.addEventListener('click', function () { location.hash = '#places/' + verdict + (b.dataset.c ? '/' + b.dataset.c : ''); }); });
+          if (pick && $('pk-add')) wirePick(verdict);
           var bb = $('pl-bulk');
           if (bb) bb.addEventListener('click', function () {
             if (!confirm('Set these ' + placeCache.rows.length + ' aside? They stay in our records, hidden, with a note.')) return;
@@ -625,14 +664,59 @@
           });
         });
       }
+      // Add the ticked: each row's own category and How Vegan, one after the other through backlog_decide, the same as Add to the
+      // Directory on its own page (logo and extra sections are left to the place's own page; the logo sweep suggests a logo later).
+      function wirePick(verdict) {
+        var rowsEl = function () { return Array.prototype.slice.call(V().querySelectorAll('.pk [data-pk]')); };
+        function state(el) {
+          var cat = el.querySelector('[data-pk-cat]').value, org = ORGS.indexOf(cat) >= 0, vsEl = el.querySelector('[data-pk-vs]');
+          vsEl.hidden = org;
+          return { on: el.querySelector('[data-pk-on]').checked, cat: cat, org: org, vs: org ? null : vsEl.value, id: el.getAttribute('data-pk'), name: el.querySelector('strong').textContent };
+        }
+        function sync() {
+          var all = rowsEl().map(state), on = all.filter(function (x) { return x.on; });
+          var ready = on.filter(function (x) { return x.cat && (x.org || x.vs); });
+          var btn = $('pk-add'), msg = $('pk-msg');
+          btn.textContent = 'Add the ' + on.length + ' ticked'; btn.disabled = !on.length || ready.length !== on.length;
+          msg.className = 'msg' + (on.length && ready.length !== on.length ? ' err' : '');
+          msg.textContent = on.length && ready.length !== on.length ? (on.length - ready.length) + ' ticked still ' + (on.length - ready.length === 1 ? 'needs ' : 'need ') + (on.some(function (x) { return !x.cat; }) ? 'a category or ' : '') + 'How Vegan.' : '';
+          $('pk-all').checked = all.length && on.length === all.length;
+        }
+        V().querySelector('.pk').addEventListener('change', function (e) {
+          var row = e.target.closest('[data-pk]');
+          // Picking How Vegan or a category ticks the row; that is what you meant to add.
+          if (row && (e.target.hasAttribute('data-pk-vs') || e.target.hasAttribute('data-pk-cat')) && e.target.value) row.querySelector('[data-pk-on]').checked = true;
+          sync();
+        });
+        $('pk-all').addEventListener('change', function () { var on = this.checked; rowsEl().forEach(function (el) { el.querySelector('[data-pk-on]').checked = on; }); sync(); });
+        $('pk-add').addEventListener('click', function () {
+          var todo = rowsEl().map(state).filter(function (x) { return x.on; });
+          if (!todo.length || !confirm('Add these ' + todo.length + ' to the Directory? They go live now, each under the category you picked.')) return;
+          var btn = $('pk-add'), msg = $('pk-msg'), ok = 0, failed = [];
+          btn.disabled = true; V().querySelectorAll('.pk input, .pk select, #pk-all').forEach(function (x) { x.disabled = true; });
+          (function next() {
+            if (!todo.length) {
+              msg.className = 'msg' + (failed.length ? ' err' : '');
+              msg.textContent = 'Added ' + ok + ' to the Directory.' + (failed.length ? ' Not added: ' + failed.join(', ') + '.' : '');
+              placeCache.key = '';
+              return setTimeout(function () { viewPlaces(verdict, (location.hash.split('/')[2] || '')); }, failed.length ? 4000 : 1200);
+            }
+            var x = todo.shift();
+            msg.className = 'msg'; msg.textContent = 'Adding ' + (ok + failed.length + 1) + ' of ' + (ok + failed.length + 1 + todo.length) + ': ' + x.name + '...';
+            disc({ action: 'backlog_decide', listing_id: x.id, decision: 'list', category: x.cat, vegan_status: x.vs, note: 'Added with Add the ticked.' })
+              .then(function (d) { if (d && d.ok) { ok++; placeCache.rows = placeCache.rows.filter(function (y) { return y.listing_id !== x.id; }); } else failed.push(x.name + (d && d.error === 'already_decided' ? ' (already decided)' : '')); })
+              .catch(function () { failed.push(x.name); }).then(next);
+          })();
+        });
+        sync();
+      }
       function viewPlace(id) {
         crumbs([['Business outreach', '#'], ['New places', '#places'], ['...']]);
         var r = placeCache.rows.filter(function (x) { return x.listing_id === id; })[0];
         if (!r) { location.hash = '#places'; return; }
         var l = r.listing || {}, p = r.place || {}, g = r.ig || {}, pv = PV[r.verdict] || [r.verdict, 'off'];
         crumbs([['Business outreach', '#'], ['New places', '#places'], [PV[r.verdict] ? PV[r.verdict][0] : 'Places', '#places/' + r.verdict], [l.name]]);
-        var orgGuess = /community search: looks like a (rescue|sanctuary|nonprofit)/.exec(r.reason || '');
-        var guessCat = orgGuess ? { rescue: 'Rescues', sanctuary: 'Sanctuaries', nonprofit: 'Nonprofits' }[orgGuess[1]] : /bakery|cafe|coffee/i.test(p.type || g.category || '') ? 'Bakeries & Cafes' : /grocery|market|supermarket/i.test(p.type || g.category || '') ? 'Markets' : /catering/i.test(p.type || g.category || '') ? 'Catering' : r.verdict === 'other' ? '' : 'Restaurants';
+        var guessCat = guessCatOf(r);
         var site = p.website || g.link || l.website;
         V().innerHTML = '<div class="two"><section class="card"><h2>' + esc(l.name) + ' <span class="tag ' + pv[1] + '">' + esc(pv[0]) + '</span></h2>' +
           '<p class="hint" style="margin:0 0 12px">' + esc(r.reason || '') + '</p>' +
@@ -661,8 +745,6 @@
           '<p class="hint">Adding lists it with Google\'s address, phone and website, the logo you made, the main category and any others you ticked, how Vegan it is, and a note. It then joins its city\'s outreach once we find its email. Set aside hides it with a note; nothing is deleted.</p>' +
           '<p class="msg" id="pl-msg" role="status"></p></section>' +
           '<section class="card"><h2>Their website</h2>' + (site ? '<iframe class="frame" src="' + esc(/^https?:/.test(site) ? site : 'https://' + site) + '" title="' + esc(l.name) + ' website" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe><p class="hint">Some sites refuse to open inside another page; use the Website button then.</p>' : '<p class="empty">No website.</p>') + '</section></div>';
-        // Rescues, sanctuaries, nonprofits and events are organizations: no How Vegan (Sean, 2026-10-27).
-        var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Events'];
         // Organizations need no How Vegan when every section they are in is one (a rescue that is also a nonprofit).
         function picked() { return Array.prototype.map.call(V().querySelectorAll('#pl-extra input:checked'), function (x) { return x.value; }).filter(function (c) { return c !== $('pl-cat').value; }); }
         function isOrg() { return ORGS.indexOf($('pl-cat').value) >= 0 && picked().every(function (c) { return ORGS.indexOf(c) >= 0; }); }
