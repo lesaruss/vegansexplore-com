@@ -11,7 +11,9 @@
  *   insights  7, 30, 90 days or a year: totals against the period before, a chart, what people did, where they came
  *             from, and every day in a table that sorts by any column
  *   checkins  members who checked in at the place, and when (Sean, 2026-10-25: only a member owner whose claim we
- *             approved sees who; ve-claims owner_dashboard checkins)
+ *             approved sees who; ve-claims owner_dashboard checkins). A place only.
+ *   saves     everything but a place (Sean, 2026-10-27: "check-ins don't really apply to podcasts. We could put saves"): who
+ *             saved it and, for a podcast, its episodes, with plays (ve-podcast owner_saves)
  *   page      Edit your page (the four-step editor in directory/listing.html, opts.editPage)
  *   menu      the menu, by category; an item opens on its own (ve-claims menu_save / menu_delete)
  *   ads       their ads with impressions and clicks, and the spots they can ask about (ad_request)
@@ -25,9 +27,32 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['checkins', 'Check-ins'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
-  var MEMBERS = ['insights', 'checkins', 'ads', 'opps', 'audit', 'guides'];
+  var MEMBERS = ['insights', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
+  // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
+  function kindOf(c) {
+    if (['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
+    if (['Documentaries & Films', 'Books'].indexOf(c) >= 0) return 'work';
+    if (['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(c) >= 0) return 'brand';
+    return 'place';
+  }
+  // What people can do on the page, by kind: a podcast's visitors play episodes and open Listen on; a place's call and come in.
+  var ACTS_BY = {
+    show: [['play', 'Episodes played'], ['listen', 'Listen on clicks'], ['website', 'Website visits'], ['social', 'Social links']],
+    work: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Where to buy'], ['photos', 'Photos opened']],
+    brand: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Orders'], ['photos', 'Photos opened']]
+  };
+  var ACTS_WORDS = { show: 'Plays and clicks', work: 'Clicks', brand: 'Clicks and orders', place: 'Calls, directions, orders and clicks' };
+  // What a podcast can take part in (Sean, 2026-10-27), all Coming. directory/listing.html shows the first three on the locked tour.
+  var PODCAST_OPPS = [
+    ['podcast-network', 'Network', 'Join the Vegans Explore Podcast Network', 'Play the network tag, take part in our challenges, and be part of the sponsorships we bring in for the network.'],
+    ['podcast-promos', 'Promos', 'Your promo on our shows', 'Your trailer or promo played on our own shows.'],
+    ['podcast-production', 'Production', 'We produce your show', 'Editing, show notes, publishing and your release schedule, managed for you.'],
+    ['podcast-network-sponsors', 'Sponsors', 'Sponsorships through the network', 'When a brand sponsors the network, member shows can carry the read.'],
+    ['podcast-ads', 'Ads', 'Your show in our ad spots', 'Your artwork in ad spots across Vegans Explore: the Directory, the Daily Pulse and Media.'],
+    ['podcast-marketing', 'Marketing', 'Clips and social promotion', 'Short clips from your episodes on our Instagram and TikTok, and in the Daily Pulse.']
+  ];
   var ACTS = [['call', 'Calls'], ['directions', 'Directions'], ['website', 'Website visits'], ['order', 'Orders'], ['menu', 'Menu opened'], ['photos', 'Photos opened'], ['social', 'Social links']];
   var VIA = { page: 'The Directory and search', guide: 'Inside a Guide', link: 'A tracked link' };
   var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'], description: ['Your story', 'A few lines on what you serve and what to try first.', 'about'],
@@ -101,7 +126,8 @@
   function mount(el, l, opts) {
     opts = opts || {};
     css();
-    var D = null, days = 30, sortBy = ['day', -1], menu = null;
+    var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null;
+    var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     function go(view, extra) {
       var u = new URL(location.href);
       u.searchParams.set('tab', 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item');
@@ -122,6 +148,8 @@
       return VIEWS.filter(function (v) {
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
         if (v[0] === 'audit') return D.listing.food;
+        if (v[0] === 'checkins') return KIND === 'place';
+        if (v[0] === 'saves') return KIND !== 'place';
         return true;
       });
     }
@@ -142,8 +170,8 @@
     }
     function joinBox() {
       return '<div class="vpd-join"><b>Open your whole dashboard for $11</b>' +
-        '<p>Become a Founding Member, one time, and this dashboard opens: your numbers and what people do on your page, our campaigns and ads, ' +
-        'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu stays free.</p>' +
+        '<p>Become a Founding Member, one time, and this dashboard opens: your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
+        (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu stays free.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page stays free.') + '</p>' +
         '<button type="button" class="vpd-btn" data-vpd-join>Become a Founding Member, $11</button></div>';
     }
 
@@ -151,15 +179,17 @@
     function drawHome() {
       var out = !D.open ? joinBox() : '';
       if (D.open && D.stats) {
-        var s = D.stats, T = s.totals || {}, P = s.previous || {}, acts = ACTS.reduce(function (a, k) { return a + (T[k[0]] || 0); }, 0);
+        var s = D.stats, T = s.totals || {}, P = s.previous || {}, acts = ACTS_K.reduce(function (a, k) { return a + (T[k[0]] || 0); }, 0);
         out += '<div class="vpd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, last ' + D.days + ' days</span>' + change(T.view || 0, P.views) + '</div>' +
           '<div><b>' + n(s.visitors) + '</b><span>Visitors</span>' + change(s.visitors || 0, P.visitors) + '</div>' +
-          '<div><b>' + n(acts) + '</b><span>Calls, directions, orders and clicks</span>' + change(acts, P.actions) + '</div>' +
+          '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + change(acts, P.actions) + '</div>' +
           '<div><b>' + n(D.ads.reduce(function (a, x) { return a + x.impressions; }, 0)) + '</b><span>Ad impressions</span><em>' + (D.ads.length ? D.ads.length + ' campaign' + (D.ads.length > 1 ? 's' : '') : 'No ads yet') + '</em></div></div>' +
           '<a href="?tab=brand&pd=insights" data-vpd="insights" class="vpd-btn o sm">See every number</a>';
       }
       // What is left, as cards; what is done, on one line.
-      var todo = D.checklist.filter(function (c) { return !c.done && CHECK[c.k]; }), done = D.checklist.filter(function (c) { return c.done && CHECK[c.k]; });
+      // A podcast, a book or a brand has no hours or menu to fill in.
+      var fits = function (c) { return CHECK[c.k] && (KIND === 'place' || ['logo', 'description'].indexOf(c.k) >= 0); };
+      var todo = D.checklist.filter(function (c) { return !c.done && fits(c); }), done = D.checklist.filter(function (c) { return c.done && fits(c); });
       out += '<h4>Get your page ready</h4>' + (todo.length ? '' : '<p class="vpd-empty">Everything is in. Your page is ready for visitors.</p>') +
         (todo.length ? '<div class="vpd-grid">' + todo.map(function (c) {
           var m = CHECK[c.k];
@@ -180,7 +210,7 @@
     // ---- Insights
     function drawInsights() {
       var s = D.stats || {}, T = s.totals || {}, P = s.previous || {}, daily = s.daily || [];
-      var acts = ACTS.reduce(function (a, k) { return a + (T[k[0]] || 0); }, 0);
+      var acts = ACTS_K.reduce(function (a, k) { return a + (T[k[0]] || 0); }, 0);
       // Every day in the range, zeros included, so the chart and the table show quiet days too.
       var map = {}; daily.forEach(function (d) { map[d.day] = d; });
       var all = []; for (var i = D.days - 1; i >= 0; i--) { var dt = new Date(Date.now() - i * 864e5); var k = dt.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); all.push(map[k] || { day: k, views: 0, visitors: 0, actions: 0 }); }
@@ -190,12 +220,12 @@
       var via = s.via || {};
       return '<div class="vpd-range" role="group" aria-label="Range">' + [[7, '7 days'], [30, '30 days'], [90, '90 days'], [365, 'A year']].map(function (r) { return '<button type="button" data-vpd-days="' + r[0] + '" class="' + (r[0] === D.days ? 'on' : '') + '">' + r[1] + '</button>'; }).join('') + '</div>' +
         '<div class="vpd-tiles"><div><b>' + n(T.view) + '</b><span>Page views</span>' + change(T.view || 0, P.views) + '</div><div><b>' + n(s.visitors) + '</b><span>Visitors</span>' + change(s.visitors || 0, P.visitors) + '</div>' +
-        '<div><b>' + n(acts) + '</b><span>Calls, directions, orders and clicks</span>' + change(acts, P.actions) + '</div></div>' +
+        '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + change(acts, P.actions) + '</div></div>' +
         '<div class="vpd-chart" role="img" aria-label="Page views by day">' + all.map(function (d) { return '<i style="height:' + Math.round(d.views / max * 100) + '%" title="' + esc(day(d.day)) + ': ' + d.views + ' views"></i>'; }).join('') + '</div>' +
         '<div class="vpd-chart-x"><span>' + esc(day(all[0].day)) + '</span><span>' + esc(day(all[all.length - 1].day)) + '</span></div>' +
-        '<h4>What people did</h4><div class="vpd-rows">' + ACTS.map(function (a) { return '<div><span>' + a[1] + '</span><b>' + n(T[a[0]]) + '</b></div>'; }).join('') + '</div>' +
+        '<h4>What people did</h4><div class="vpd-rows">' + ACTS_K.map(function (a) { return '<div><span>' + a[1] + '</span><b>' + n(T[a[0]]) + '</b></div>'; }).join('') + '</div>' +
         '<h4>Where they came from</h4><div class="vpd-rows">' + Object.keys(VIA).map(function (k) { return '<div><span>' + VIA[k] + '</span><b>' + n(via[k]) + '</b></div>'; }).join('') + '</div>' +
-        '<h4>Day by day</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr>' + th('day', 'Day') + th('views', 'Views', 1) + th('visitors', 'Visitors', 1) + th('actions', 'Calls and clicks', 1) + '</tr></thead><tbody>' +
+        '<h4>Day by day</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr>' + th('day', 'Day') + th('views', 'Views', 1) + th('visitors', 'Visitors', 1) + th('actions', KIND === 'place' ? 'Calls and clicks' : ACT_WORDS, 1) + '</tr></thead><tbody>' +
         rows.map(function (d) { return '<tr><td>' + esc(new Date(d.day + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })) + '</td><td class="n">' + n(d.views) + '</td><td class="n">' + n(d.visitors) + '</td><td class="n">' + n(d.actions) + '</td></tr>'; }).join('') +
         '</tbody></table></div><p class="vpd-empty" style="padding-top:10px">' + (s.since ? 'Counting since ' + esc(new Date(s.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '. ' : '') +
         'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';
@@ -252,6 +282,29 @@
       return out + '<h4>Every check-in</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th></tr></thead><tbody>' +
         rows.slice(0, 200).map(function (r) { return '<tr><td>' + esc(new Date(r.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td><td>' + esc(r.name) + '</td></tr>'; }).join('') + '</tbody></table></div>';
     }
+    // ---- Saves (and plays, for a podcast): who keeps it, in place of check-ins.
+    function drawSaves() {
+      if (!SV) {
+        fetch(SB + '/functions/v1/ve-podcast', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify({ action: 'owner_saves', listing_id: l.id }) })
+          .then(function (r) { return r.json(); }).then(function (d) { SV = d && d.ok ? d : { ok: false }; draw(); }).catch(function () { SV = { ok: false }; draw(); });
+        return '<p class="vpd-empty">Loading your saves...</p>';
+      }
+      if (!SV.ok) return '<p class="vpd-empty">Your saves did not load. Try again in a moment.</p>';
+      if (!SV.verified) return '<p class="vpd-empty">Once we approve your claim on this page, you will see every member who saves it.</p>';
+      var T = (D.stats && D.stats.totals) || {}, pod = KIND === 'show', noun = l.category === 'Podcasts' ? 'podcast' : ({ show: 'show', work: 'page', brand: 'brand' }[KIND] || 'page');
+      var when = function (x) { return esc(new Date(x).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })); };
+      var out = '<div class="vpd-tiles"><div><b>' + n(SV.listing_saves) + '</b><span>Members who saved your ' + noun + '</span></div>' +
+        (pod ? '<div><b>' + n(SV.episode_saves) + '</b><span>Episodes saved</span><em>by ' + n(SV.episode_savers) + ' member' + (SV.episode_savers === 1 ? '' : 's') + '</em></div>' +
+          '<div><b>' + n(T.play) + '</b><span>Episodes played here, last ' + D.days + ' days</span></div><div><b>' + n(T.listen) + '</b><span>Listen on clicks, last ' + D.days + ' days</span></div>' : '') + '</div>' +
+        '<p class="vpd-empty" style="margin:0 0 12px">Members save what they want to come back to; it sits in their My Saves. These are your listeners on Vegans Explore: when you run a promo or a giveaway with us, they can hear about it first.</p>';
+      if (pod && SV.episodes.length) out += '<h4>Most saved episodes</h4><div class="vpd-list">' + SV.episodes.map(function (e) {
+        return '<div class="vpd-row"><div><b>' + esc(e.title) + '</b></div><span class="vpd-tag">' + n(e.n) + ' save' + (e.n === 1 ? '' : 's') + '</span><span></span></div>'; }).join('') + '</div>';
+      if (pod && SV.recent.length) out += '<h4>Episode saves</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th><th>Episode</th></tr></thead><tbody>' +
+        SV.recent.map(function (r) { return '<tr><td>' + when(r.at) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.title) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      out += '<h4>Saved your ' + noun + '</h4>' + (SV.savers.length ? '<div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th></tr></thead><tbody>' +
+        SV.savers.map(function (r) { return '<tr><td>' + when(r.at) + '</td><td>' + esc(r.name) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="vpd-empty">No saves yet.</p>');
+      return out;
+    }
     function drawAds() {
       var mine = D.ads.length ? '<div class="vpd-list">' + D.ads.map(function (a) {
         return '<div class="vpd-row"><div><b>' + esc(a.name) + '</b><small>' + esc([a.start_date, a.end_date].filter(Boolean).join(' to ')) + ' &middot; ' + n(a.impressions) + ' impressions &middot; ' + n(a.clicks) + ' clicks</small></div>' +
@@ -268,7 +321,7 @@
     // ---- Opportunities
     function drawOpps() {
       var ints = {}; (D.interests || []).forEach(function (k) { ints[k] = 1; });
-      var camps = CAMPAIGNS.filter(function (c) { return !c[4] || Date.now() < c[4]; });
+      var camps = KIND === 'show' ? PODCAST_OPPS : CAMPAIGNS.filter(function (c) { return !c[4] || Date.now() < c[4]; });
       return '<p class="vpd-empty">Tell us where you want in and we reach out with the details. Everything here is Coming.</p>' +
         '<div class="vpd-grid">' + camps.map(function (c) {
           return '<div class="vpd-card"><span class="vpd-tag warn">Coming &middot; ' + esc(c[1]) + '</span><b>' + esc(c[2]) + '</b><p>' + esc(c[3]) + '</p>' +
@@ -321,7 +374,7 @@
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : '$111 a quarter.')) + '</p>' +
         (D.plan ? '' : '<a class="vpd-btn sm o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand' + (FRONT_ROW ? '&offer=front-row' : '') + '">' + (FRONT_ROW ? 'Take my front-row seat' : 'Become a Partner') + '</a>') + '</div></div>';
     }
-    var VIEW_FN = { home: drawHome, insights: drawInsights, checkins: drawCheckins, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    var VIEW_FN = { home: drawHome, insights: drawInsights, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {

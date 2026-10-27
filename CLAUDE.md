@@ -814,6 +814,18 @@ picture, the title, the show, Play and remove, played in the same player bar; th
 and brands (saved listings). The nav's account menu and Your tools' My Saves open it; it replaced My List
 (`/account/my-list` still works and has Listings and Episodes).
 
+**The page speaks to what it is** (Sean, same day: "it still has coding for restaurants... is this your podcast?"). `listingKind`
+and `listingNoun` in `directory/listing.html` (place, show, work, brand; podcast, channel, book, film, brand, organization,
+business) word the claim lines, the vote line and the locked Partner Dashboard; a podcast's Liz tour is three slides (her general
+clips 1, 2 and 5) with podcast words and what is coming for podcasts. Her recorded line still says "your business" (new clips
+would need recording). The owner's dashboard (`ve-partner-dashboard.js`, `kindOf`, the same lists) shows **Saves** in place of
+Check-ins for anything but a place (who saved it; for a podcast, its saved episodes too, `ve-podcast` `owner_saves`, after the
+claim is approved), counts what fits (a podcast: Episodes played, Listen on clicks, website, social), asks only for the logo and
+the story, and a podcast's **Opportunities** are `PODCAST_OPPS`, all Coming: the Vegans Explore Podcast Network, promos on our
+shows, production, network sponsorships, ad spots, clips and social promotion (interest through `ve-claims` `partner_interest`).
+Plays (`play`, the episode's guid) and Listen on clicks (`listen`) are `ve_listing_events` kinds (migration
+`20261027_ve_listing_events_actions.sql`, which also fixed the table refusing every visitor action from 2026-10-24 to 2026-10-27).
+
 - The feed is `listings.rss_url`. Left empty, `ve-podcast` finds it once from the listing's Apple Podcasts id (iTunes lookup,
   `feedUrl`) and saves it; an empty string means the team turned it off. Set it in the listing editor's **Episodes** field (shown
   for Podcasts), which reads the feed at once and says if it fails. On 2026-10-27, 54 of the 56 podcasts were found this way;

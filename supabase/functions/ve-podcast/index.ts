@@ -12,6 +12,8 @@
 // POST { action: 'save', listing_id, guid }                             an active member: toggles the save, { ok, saved }
 // POST { action: 'saves' }                                              a signed-in member: their saved episodes, newest first
 // POST { action: 'admin_feed', listing_id, rss_url }                    a super admin: sets the feed and reads it; '' turns it off
+// POST { action: 'owner_saves', listing_id }                            the listing's owner or a super admin: who saved the show and
+//                                                                       its episodes (Sean, 2026-10-27: saves in place of check-ins)
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -200,6 +202,25 @@ Deno.serve(async (req) => {
     return json({ ok: true, episodes: (data || []).map((r: any) => ({ guid: r.guid, title: r.title, audio: r.audio_url, type: r.audio_type, date: r.published_at,
       duration: r.duration_s, image: r.image || r.listings?.logo_url || '', saved_at: r.created_at,
       show: { id: r.listings?.id, name: r.listings?.name, slug: r.listings?.slug, logo: r.listings?.logo_url } })) });
+  }
+
+  if (body.action === 'owner_saves') {
+    if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
+    const { data: l } = await db.from('listings').select('id, owner_member_id, claim_status').eq('id', body.listing_id).maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    if (l.owner_member_id !== memberId && !m.is_superadmin) return json({ error: 'not_owner' }, 403);
+    const short = (n: string) => { const p = String(n || '').trim().split(/\s+/); return p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : 'A member'; };
+    const [{ data: ls }, { data: es }] = await Promise.all([
+      db.from('ve_listing_saves').select('member_id, saved_at, members(name)').eq('listing_id', l.id).order('saved_at', { ascending: false }).limit(500),
+      db.from('ve_episode_saves').select('member_id, guid, title, created_at, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(2000),
+    ]);
+    const eps: Record<string, { guid: string; title: string; n: number }> = {};
+    for (const r of (es || []) as any[]) { (eps[r.guid] ||= { guid: r.guid, title: r.title, n: 0 }).n++; }
+    return json({ ok: true, verified: l.claim_status === 'verified' || !!m.is_superadmin,
+      listing_saves: (ls || []).length, savers: (ls || []).slice(0, 100).map((r: any) => ({ name: short(r.members?.name), at: r.saved_at })),
+      episode_saves: (es || []).length, episode_savers: new Set((es || []).map((r: any) => r.member_id)).size,
+      episodes: Object.values(eps).sort((a, b) => b.n - a.n).slice(0, 20),
+      recent: (es || []).slice(0, 100).map((r: any) => ({ name: short(r.members?.name), title: r.title, at: r.created_at })) });
   }
 
   if (body.action === 'admin_feed') {
