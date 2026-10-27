@@ -329,11 +329,11 @@ async function backlogRun(igN: number, gN: number) {
 }
 
 // Every Directory kind (CAT_MAP in /public/ve-region-directory.js).
-const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
+const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
   'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development',
   'AI & Automation', 'Business Operations', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Community Partner', 'Nonprofits', 'Events'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // ---- Adding by hand ----
