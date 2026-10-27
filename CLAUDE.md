@@ -558,6 +558,11 @@ listing by itself. Logos has two tabs: **Suggested** (`#logos/suggested`): every
 `logo_set` (`from_suggestion`, the row turns `used`), **Adjust** opens it in the editor already trimmed and on its background
 (`#logo/<id>/s`), **Not this** (`logo_suggest_reject`) sends it to To find; and **To find** (`#logos`): the rest, each with what the
 sweep said and the pictures it looked at (SVGs included, which Claude does not read) to load into the editor.
+**Done** (`#logos/done`, Sean, 2026-10-27: "Is there a way that I can see what logos have been created... I want to do some quality
+control"; `ve-discover` `logo_done`): every logo made here (`details.logo_checked`), newest first, each at full size and at card
+size, with who saved it and when, From the sweep when it was a sweep pick, and **Redo** (`#logo/<id>/redo`: the logo as it is,
+loaded into the editor; saving replaces it) and **Remove** (`logo_clear`: the letter again and back on To find, the old logo kept in
+`details.logo_removed`, a `ve_listing_edits` row, a sweep pick marked rejected so it does not come back to Suggested).
 
 Member check-ins (Sean, 2026-10-25: "making a way that members can verify listings... every time they check in, they can get
 like 10 points... We can see a record of how many people are actually visiting, which members are visiting... if a business
