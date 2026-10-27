@@ -1606,7 +1606,13 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   tried once (`reader_at`, `reader_note`, `reader_read`). Cron `ve-menu-reader`, one every 5 minutes in the background; `read`
   with `save: false` keeps a test in `reader_preview`. Proven 2026-10-27: Cafe Gratitude 144 items from its PDF, Under the Mango
   Tree 28 and Blue Tree 19 from their Square pages. Toast's own ordering pages return nothing to an automated browser, so a menu
-  that is only on Toast is still missing. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
+  that is only on Toast is still missing. **No menu yet** (Sean, 2026-10-27: "Go with the No menu yet list in Directory review";
+  migration `20261027_ve_menu_missing.sql`) is a Directory review tab (`#menu`, `ve_menu_missing()` through `ve-outreach`
+  `review_list` `menu`): every open food place with no menu (locations left out, they show their main listing's), Not found first,
+  then No website, then Being read, most voted first. A listing's **Menu** card says what the reader found and opened, and offers
+  **Add it by hand** (the business dashboard's Menu, `?tab=brand&pd=menu`), **Read it again** (`menu_retry`: the writer, then the
+  reader) and **No menu online** (`menu_none`: `details.menu_none_ok` and a team note; it leaves the list). A Menu link saved there
+  re-queues both readers, and the reader starts from it. The Menu tab says "From their website, checked <month>" for an imported menu. 168 queued on 2026-10-24.
 - **Restaurant essentials** (Sean, 2026-10-25: "just because it's vegan doesn't tell the whole story... all the restaurant listings
   have, 250 character about us... the hours... the socials... the address that you can click and go to Google Maps... and then
   the menus... media... can come later once they become members"; migration `20261025_restaurant_essentials.sql`). Food places
