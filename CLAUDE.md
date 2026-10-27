@@ -667,8 +667,13 @@ Wellness, Coaches, Beauty, Clothing; two closed for good), and the 15 with nothi
 with what we know. Rescues, sanctuaries and nonprofits are organizations: no How Vegan (`vegan_status` null). From Sean's Instagram
 list (the `ve_businesses` import) the ones Google and their own website confirm were listed (Muscovy Sanctuary of Florida, Rowdy
 Girl Sanctuary, UFAR Animals Rescue; Mercy For Animals, The Humane League and Humane World for Animals in every chapter); the 15
-known only on Instagram wait in Business outreach > New places > Ready to list for Sean to confirm and add. Next (proposed): a
-search in each of our cities for farm animal sanctuaries, rescues and Vegan nonprofits, into New places the same way.
+known only on Instagram wait in Business outreach > New places > Ready to list for Sean to confirm and add. **The community
+search** (Sean, 2026-10-27: "go"; migration `20261027_community_search.sql`): Google searches for farm animal sanctuaries, animal
+rescues and Vegan or animal rights nonprofits in all eight cities, filtered (open only; no zoos, petting or city farms, wildlife
+parks, county animal services, clinics or unrelated charities; nothing already listed or waiting), made 215 quarantined listings
+(`crawl_source` `community-search`, `details.community_search` with the hub and a guess of Rescues, Sanctuaries or Nonprofits),
+each waiting in Business outreach > New places > Ready to list with the guess in its note. Nothing went live. Six from South
+Florida's search are national organizations elsewhere, and their note says so. Run it again by city with new searches the same way.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
