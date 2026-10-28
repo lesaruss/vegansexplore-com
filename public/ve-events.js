@@ -14,6 +14,14 @@
    then lands on Promote your event (#promote/<id>): three packages and six options, each I'm interested (ve-events
    promote_interest), no prices. My events (#mine) shows what they sent and where it stands.
 
+   The event window (Sean, 2026-10-28: "go ahead with phase 2"; playbook ve-member-profiles-partner-windows). Every event has
+   its own view (#event/<id>, the tile's name): the details and, for a Passport holder, I'm going, with an unticked "Let
+   <organizer> message me about this event" when it has an organizer (25 points the first time). Its organizer opens Guests
+   and messages (#guests/<id>): how many are going, the shown profile parts of those who said yes, and messages through us
+   (3 per event a day apart, until 7 days after). A guest's email link opens the message (#message/<token>) with Stop messages
+   from <organizer> and Report this message. My events adds the events they organize, the ones they are going to (with the
+   yes to turn off) and the organizers they stopped. Server: ve-events (event, rsvp, guests, message_send, msg_*).
+
    Usage (after /public/ve-hubs.js and /public/ve-city-banner.js; /public/ve-auth.js for submitting):
      var cal = VEEvents.mount(el, { key: 'events', city: 'south-florida', urlState: true });
      cal.setCity('atlanta');   // the city banner's pick ('' is every city)
@@ -209,7 +217,42 @@
     '.vev-ask p{font-size:13px;margin:0 0 12px;color:rgba(26,26,26,.75);}',
     '.vev-review dd button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;background:none;border:0;padding:0 0 0 8px;cursor:pointer;}',
     '.vev-banner{border-radius:10px;background:#e8f5e9;color:#1f5f22;font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
-    '.vev-mine .vev-promote{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;text-decoration:none;margin-right:10px;}'
+    '.vev-mine .vev-promote{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;text-decoration:none;margin-right:10px;}',
+    // The event window (2026-10-28): an event's own view, Guests and messages, a guest's message.
+    '.vev-name a{color:inherit;text-decoration:none;}',
+    '.vev-name a:hover{text-decoration:underline;}',
+    '.vev-ev{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:18px;align-items:start;}',
+    '@media (max-width:900px){.vev-ev{grid-template-columns:1fr;}}',
+    '.vev-ev .vev-desc{font-size:14.5px;line-height:1.65;color:rgba(26,26,26,.85);white-space:pre-line;margin:0 0 16px;}',
+    '.vev-facts{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;margin:0 0 16px;}',
+    '.vev-facts span{color:rgba(26,26,26,.75);}',
+    '.vev-rsvp h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:0 0 8px;}',
+    '.vev-rsvp p{font-size:13.5px;line-height:1.55;color:rgba(26,26,26,.75);margin:0 0 12px;}',
+    '.vev-optin{display:flex;gap:10px;align-items:flex-start;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;margin:0 0 12px;cursor:pointer;}',
+    '.vev-optin input{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#2d7d31;}',
+    '.vev-optin b{display:block;font-size:14px;}',
+    '.vev-optin small{display:block;font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.7);margin-top:2px;}',
+    '.vev-going{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#1f5f22;margin:0 0 12px;}',
+    '.vev-going::before{content:"";width:10px;height:10px;border-radius:50%;background:#2d7d31;}',
+    '.vev-plain{font-family:inherit;font-size:12px;font-weight:800;color:#1f5f22;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}',
+    '.vev-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 18px;}',
+    '.vev-tiles div{background:#f7f8f7;border-radius:8px;padding:12px 14px;}',
+    '.vev-tiles b{display:block;font-size:24px;font-weight:900;line-height:1.1;}',
+    '.vev-tiles span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
+    '.vev-guests{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:10px;}',
+    '.vev-guest{border:1.5px solid rgba(0,0,0,.09);border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5;}',
+    '.vev-guest b{display:block;font-size:15px;}',
+    '.vev-guest .meta{color:rgba(26,26,26,.68);font-size:12px;font-weight:700;margin-bottom:6px;}',
+    '.vev-guest dl{margin:0;}',
+    '.vev-guest dt{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#1f5f22;margin-top:6px;}',
+    '.vev-guest dd{margin:0;}',
+    '.vev-sent{display:flex;flex-direction:column;gap:8px;}',
+    '.vev-sent div{border:1.5px solid rgba(0,0,0,.09);border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.5;}',
+    '.vev-sent small{display:block;font-size:12px;font-weight:700;color:rgba(26,26,26,.68);margin-bottom:4px;}',
+    '.vev-sent p{margin:0;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.vev-warn{border-radius:10px;background:#fff4e2;color:#6b3f00;font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
+    '.vev-msgbox{border-left:3px solid #2d7d31;background:#f7f8f7;border-radius:6px;padding:14px 16px;font-size:15px;line-height:1.65;white-space:pre-line;margin:0 0 18px;}',
+    '.vev-left{font-size:12.5px;font-weight:700;color:rgba(26,26,26,.7);}'
   ].join('');
   function injectCss() {
     if (document.getElementById('vev-css')) return;
@@ -241,7 +284,7 @@
       '<div class="vev-date" aria-hidden="true"><span class="vev-day">' + esc(dm[0]) + '</span><span class="vev-mon">' + esc(dm[1]) + '</span></div>' +
       '<div class="vev-body">' +
         '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured && !past ? ' · Featured' : '') + '</p>' +
-        '<h3 class="vev-name">' + esc(e.title) + '</h3>' +
+        '<h3 class="vev-name"><a href="#event/' + esc(e.id) + '">' + esc(e.title) + '</a></h3>' +
         '<div class="vev-details"><span>' + esc(place(e)) + '</span><span>' + esc(when(e)) + '</span>' + (e.rsvp_count && !past ? '<span>' + e.rsvp_count + ' going</span>' : '') + '</div>' +
       '</div>' +
       (cta ? '<div class="vev-cta">' + cta + '</div>' : '') +
@@ -686,17 +729,32 @@
       var head = '<nav class="vev-crumb" aria-label="Breadcrumb"><a href="#" data-go="list">' + esc(opts.listLabel || 'Events') + '</a><span>/</span><span>My events</span></nav>';
       if (!signedIn()) { el.innerHTML = head + '<div class="vev-form"><h2>My events</h2><p class="lead">Sign in to see the events you sent.</p><button type="button" class="vev-btn green" data-go="signin">Sign in</button></div>'; }
       else {
-        el.innerHTML = head + '<div class="vev-form">' + (sent ? '<h2>Thanks, it is in</h2><p class="lead">We check every event before it goes on the calendar, usually within a day or two. We will email you when it is live.</p>' : '<h2>My events</h2><p class="lead">Every event you sent, and where it stands.</p>') +
+        el.innerHTML = head + '<div class="vev-form">' + (sent ? '<h2>Thanks, it is in</h2><p class="lead">We check every event before it goes on the calendar, usually within a day or two. We will email you when it is live.</p>' : '<h2>My events</h2><p class="lead">The events you organize, the ones you are going to, and every event you sent.</p>') +
           '<div class="vev-mine" data-v="mine"><p class="vev-count">Loading…</p></div>' +
           '<div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="list">See the events</button><button type="button" class="vev-btn" data-go="submit">+ Submit another</button></div></div>';
-        (mine ? Promise.resolve({ events: mine }) : api({ action: 'mine' })).then(function (d) {
+        api({ action: 'mine' }).then(function (d) {
           mine = d.events || [];
           var box = el.querySelector('[data-v="mine"]'); if (!box) return;
           var label = { pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Cancelled' };
-          box.innerHTML = mine.length ? mine.map(function (e) {
+          var row = function (e, right) { return '<div><span><b>' + esc(e.title) + '</b><small>' + esc(when(e)) + (e.city ? ' · ' + esc(e.city) : '') + (e.status === 'rejected' && e.rejection_reason ? ' · ' + esc(e.rejection_reason) : '') + '</small></span><span>' + right + '</span></div>'; };
+          var html = '';
+          // The event window (2026-10-28): events they organize, events they are going to, organizers they stopped.
+          if ((d.organizing || []).length) html += '<p class="vev-sub">Events you organize</p>' + d.organizing.map(function (e) {
+            return row(e, '<a class="vev-promote" href="#guests/' + esc(e.id) + '">Guests and messages</a>' + (e.paused ? '<span class="vev-tag rejected">Paused</span>' : '<span class="vev-tag ' + esc(e.status) + '">' + esc(label[e.status] || e.status) + '</span>'));
+          }).join('');
+          if ((d.going || []).length) html += '<p class="vev-sub">Events you are going to</p>' + d.going.map(function (e) {
+            return row(e, (e.optin ? '<button type="button" class="vev-plain" data-off="' + esc(e.id) + '">Stop ' + esc(e.organizer || 'the organizer') + '\'s messages</button> ' : '') + '<a class="vev-promote" href="#event/' + esc(e.id) + '">Open</a>');
+          }).join('');
+          if ((d.muted || []).length) html += '<p class="vev-sub">Organizers you stopped</p>' + d.muted.map(function (x) {
+            return '<div><span><b>' + esc(x.name) + '</b><small>No messages from them, on any event</small></span><span><button type="button" class="vev-plain" data-unmute="' + esc(x.organizer) + '">Let them message me again</button></span></div>';
+          }).join('');
+          html += (html ? '<p class="vev-sub">Events you sent</p>' : '') + (mine.length ? mine.map(function (e) {
             var promo = (e.submitter_role === 'host' || e.submitter_role === 'promoter') && e.status !== 'rejected' && new Date(e.starts_at) > new Date() ? '<a class="vev-promote" href="#promote/' + esc(e.id) + '">Promote it</a>' : '';
-            return '<div><span><b>' + esc(e.title) + '</b><small>' + esc(when(e)) + (e.city ? ' · ' + esc(e.city) : '') + (e.status === 'rejected' && e.rejection_reason ? ' · ' + esc(e.rejection_reason) : '') + '</small></span><span>' + promo + '<span class="vev-tag ' + esc(e.status) + '">' + esc(label[e.status] || e.status) + '</span></span></div>';
-          }).join('') : '<p class="vev-count">Nothing yet.</p>';
+            return row(e, promo + '<span class="vev-tag ' + esc(e.status) + '">' + esc(label[e.status] || e.status) + '</span>');
+          }).join('') : '<p class="vev-count">Nothing yet.</p>');
+          box.innerHTML = html;
+          box.querySelectorAll('[data-off]').forEach(function (b) { b.addEventListener('click', function () { b.disabled = true; api({ action: 'optin_off', id: b.getAttribute('data-off') }).then(function () { drawMine(false); }); }); });
+          box.querySelectorAll('[data-unmute]').forEach(function (b) { b.addEventListener('click', function () { b.disabled = true; api({ action: 'unmute', organizer: b.getAttribute('data-unmute') }).then(function () { drawMine(false); }); }); });
         });
       }
       el.querySelectorAll('[data-go]').forEach(function (b) {
@@ -782,8 +840,141 @@
       });
     }
 
+
+    /* ---------- The event window (Sean, 2026-10-28: phase 2) ---------- */
+    // What a guest's shown answers are called on the organizer's guest list. City and journey go on the line under the name.
+    var SAID = { p_meal: 'Go-to Vegan meal', p_why: 'Why they went Vegan', p_day: 'A perfect day in their city', p_meet: 'Would love to meet people who', p_fact: 'Something surprising', q3_roles: 'What they do', q8_drivers: 'What drew them', q23_matters: 'What matters to them', q24_diet: 'How they eat' };
+    function hubName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : String(slug || '').replace(/-/g, ' '); }
+    function crumbs(parts) {
+      return '<nav class="vev-crumb" aria-label="Breadcrumb"><a href="#" data-go="list">' + esc(opts.listLabel || 'Events') + '</a>' + parts.map(function (x) { return '<span>/</span>' + (x[1] ? '<a href="' + x[1] + '">' + esc(x[0]) + '</a>' : '<span>' + esc(x[0]) + '</span>'); }).join('') + '</nav>';
+    }
+    function bindList() { el.querySelectorAll('[data-go="list"]').forEach(function (a) { a.addEventListener('click', function (ev) { ev.preventDefault(); go(''); }); }); }
+    function closes(e) { return new Date(new Date(e.ends_at || e.starts_at).getTime() + 7 * 86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
+
+    function drawEvent(id, note) {
+      el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
+      bindList();
+      api({ action: 'event', id: id }).then(function (d) {
+        var e = d.event, v = d.viewer || {};
+        if (!e) { el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><h2>That event is not on the calendar</h2><p class="lead">It may have ended or been taken down.</p><button type="button" class="vev-btn ghost" data-go="list">See the events</button></div>'; bindList(); return; }
+        var over = new Date(e.ends_at || new Date(e.starts_at).getTime() + 6 * 3600000) < new Date();
+        var link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url), org = v.organizer, member = signedIn();
+        var rsvp;
+        if (over) rsvp = '<h3>This event is over</h3><p>' + (v.going_count ? esc(v.going_count) + ' went with Vegans Explore.' : 'Thanks to everyone who went.') + '</p>';
+        else if (!member || !v.going) rsvp = '<h3>Going?</h3><p>' + (v.going_count ? esc(v.going_count) + (v.going_count === 1 ? ' member is' : ' members are') + ' going. ' : '') + 'Let us know, and it shows on My events. Tickets are on the official page.</p>' +
+          (org ? '<label class="vev-optin"><input type="checkbox" data-v="optin"><span><b>Let ' + esc(org) + ' message me about this event</b><small>Through Vegans Explore only: ' + esc(org) + ' never sees your email. Until ' + esc(closes(e)) + ', 7 days after the event. Turn it off any time. ' + (v.optin_paid ? '' : '25 points for saying yes.') + '</small></span></label>' : '') +
+          '<button type="button" class="vev-btn green" data-v="going">I\'m going</button>';
+        else rsvp = '<p class="vev-going">You\'re going</p>' +
+          (org ? '<label class="vev-optin"><input type="checkbox" data-v="optin"' + (v.optin ? ' checked' : '') + '><span><b>Let ' + esc(org) + ' message me about this event</b><small>Through Vegans Explore only: ' + esc(org) + ' never sees your email. Until ' + esc(closes(e)) + ', 7 days after the event. ' + (v.optin_paid ? '' : '25 points for saying yes.') + '</small></span></label>' : '') +
+          '<button type="button" class="vev-plain" data-v="notgoing">I can\'t make it</button>';
+        el.innerHTML = crumbs([[e.title]]) + '<div class="vev-ev"><div class="vev-form">' +
+          '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured ? ' · Featured' : '') + '</p><h2>' + esc(e.title) + '</h2>' +
+          '<div class="vev-facts"><span>' + esc(when(e)) + '</span><span>' + esc(place(e)) + (e.address && e.address !== e.location_name ? ' · ' + esc(e.address) : '') + '</span>' + (org ? '<span>Organized by ' + esc(org) + '</span>' : '') + '</div>' +
+          (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
+          (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') + '</div>' +
+          '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
+            '<p class="vev-note bad" data-v="err" role="alert"></p>' +
+            (v.organizes ? '<p style="margin-top:14px"><a class="vev-btn" href="#guests/' + esc(e.id) + '">Guests and messages</a></p>' : '') +
+            (member ? '<p style="margin-top:10px"><a class="vev-link" href="#mine">My events</a></p>' : '') + '</div></div>';
+        bindList();
+        var err = el.querySelector('[data-v="err"]'), opt = el.querySelector('[data-v="optin"]');
+        var save = function (going, optin, btn) {
+          if (!member) { needSignIn(function () { drawEvent(id); }); return; }
+          if (btn) btn.disabled = true;
+          api({ action: 'rsvp', id: id, going: going, optin: optin }).then(function (r) {
+            if (!r.ok) { if (btn) btn.disabled = false; err.textContent = r.message || 'That did not save. Try again.'; if (opt && going && v.going) opt.checked = !optin; return; }
+            mine = null;
+            var w = r.viewer || {};
+            drawEvent(id, !going ? 'Got it, you are off the list.' : w.points_now ? 'You\'re going, and 25 points are yours for letting ' + org + ' message you.' : (optin && !v.optin && v.going) ? org + ' can message you about this event now.' : (!optin && v.optin) ? org + ' won\'t message you about this event.' : !v.going ? 'You\'re going. See you there.' : '');
+          }).catch(function () { if (btn) btn.disabled = false; err.textContent = 'That did not save. Try again.'; });
+        };
+        var g = el.querySelector('[data-v="going"]');
+        if (g) g.addEventListener('click', function () { save(true, !!(opt && opt.checked), g); });
+        if (opt && v.going) opt.addEventListener('change', function () { save(true, opt.checked, null); });
+        var ng = el.querySelector('[data-v="notgoing"]');
+        if (ng) ng.addEventListener('click', function () { save(false, false, ng); });
+      });
+    }
+
+    function drawGuests(id, note) {
+      var head = function (t) { return crumbs([['My events', '#mine'], [t || 'Guests and messages']]); };
+      if (!signedIn()) { el.innerHTML = head() + '<div class="vev-form"><h2>Guests and messages</h2><p class="lead">Sign in to see your event\'s guests.</p><button type="button" class="vev-btn green" data-v="signin">Sign in</button></div>'; bindList(); el.querySelector('[data-v="signin"]').addEventListener('click', function () { needSignIn(function () { drawGuests(id); }); }); return; }
+      el.innerHTML = head() + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
+      bindList();
+      api({ action: 'guests', id: id }).then(function (d) {
+        if (!d.event) { el.innerHTML = head() + '<div class="vev-form"><h2>Guests and messages</h2><p class="lead">' + esc(d.message || 'We could not find that event in the ones you organize.') + '</p></div>'; bindList(); return; }
+        var e = d.event, L = d.limits || {}, o = d.organizer || {};
+        var why = o.paused ? 'Your messages are paused while our team looks at a guest\'s report.' : !L.open ? 'Messages for this event have closed.' : !L.left ? 'You have sent all ' + L.per_event + ' messages for this event.' : L.next_at ? 'One message a day: the next one can go ' + new Date(L.next_at).toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit' }) + '.' : !d.opted_in ? 'No guests have said you can message them yet.' : '';
+        var guest = function (g) {
+          var a = g.answers || {}, line = [a.q1_city ? hubName(a.q1_city) : '', a.q6_stage || '', /^\d{4}-\d{2}$/.test(a.q7_vegan_since || '') ? 'Vegan since ' + new Date(a.q7_vegan_since + '-15').toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : ''].filter(Boolean).join(' · ');
+          var said = Object.keys(SAID).filter(function (k) { return a[k] && (!Array.isArray(a[k]) || a[k].length); }).map(function (k) { return '<dt>' + esc(SAID[k]) + '</dt><dd>' + esc(Array.isArray(a[k]) ? a[k].join(', ') : a[k]) + '</dd>'; }).join('');
+          return '<div class="vev-guest"><b>' + esc(g.name || 'A member') + '</b>' + (line ? '<div class="meta">' + esc(line) + '</div>' : '') + (said ? '<dl>' + said + '</dl>' : '') + '</div>';
+        };
+        el.innerHTML = head(e.title) + '<div class="vev-form">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + (o.paused ? '<div class="vev-warn">' + esc(why) + ' We will be in touch.</div>' : '') +
+          '<h2>' + esc(e.title) + '</h2><p class="lead">' + esc(when(e)) + '. Guests who said you can message them hear from you through Vegans Explore, with your name on it. You never see their email, and they never see yours. Open until ' + esc(closes(e)) + ', 7 days after the event.</p>' +
+          '<div class="vev-tiles"><div><b>' + esc(d.going) + '</b><span>Going</span></div><div><b>' + esc(d.opted_in) + '</b><span>Said you can message them</span></div><div><b>' + esc(L.left) + ' of ' + esc(L.per_event) + '</b><span>Messages left</span></div></div>' +
+          '<p class="vev-sub">Send a message</p>' +
+          '<div class="vev-grid"><div class="vev-f wide"><label for="vev-msg">Your message</label><textarea id="vev-msg" maxlength="' + esc(L.max) + '"' + (why ? ' disabled' : '') + ' placeholder="Doors open at 6. Bring a friend, and a bag for the market."></textarea><small><span data-v="cnt">0</span> of ' + esc(L.max) + ' characters. It goes by email from Vegans Explore. Guests can stop your messages or report one; a report pauses your messages until our team looks.</small></div></div>' +
+          '<p class="vev-note bad" data-v="err" role="alert">' + esc(why) + '</p>' +
+          '<div class="vev-nav"><span class="vev-left">' + (L.open ? 'One message a day, ' + esc(L.per_event) + ' in all' : '') + '</span><button type="button" class="vev-btn green" data-v="send"' + (why ? ' disabled' : '') + '>Send to ' + esc(d.opted_in) + (d.opted_in === 1 ? ' guest' : ' guests') + '</button></div>' +
+          '<p class="vev-sub">Who said yes</p>' + (d.guests.length ? '<div class="vev-guests">' + d.guests.map(guest).join('') + '</div><p class="vev-left" style="margin-top:8px">Only what each guest chose to show on their profile.</p>' : '<p class="vev-count">No one yet. Guests say yes when they RSVP on the event\'s page.</p>') +
+          '<p class="vev-sub">Messages you sent</p>' + (d.messages.length ? '<div class="vev-sent">' + d.messages.map(function (m) { return '<div><small>' + esc(new Date(m.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + ' · to ' + esc(m.sent) + (m.sent === 1 ? ' guest' : ' guests') + '</small><p>' + esc(m.body) + '</p></div>'; }).join('') + '</div>' : '<p class="vev-count">None yet.</p>') +
+          '<p class="vev-sub">How guests see you</p><div class="vev-grid"><div class="vev-f"><label for="vev-oname">Your name on messages</label><input id="vev-oname" maxlength="80" value="' + esc(o.name) + '"></div></div>' +
+          '<div class="vev-nav"><span class="vev-note" data-v="nmsg" role="status"></span><button type="button" class="vev-btn ghost" data-v="oname">Save the name</button></div></div>';
+        bindList();
+        var ta = el.querySelector('#vev-msg'), cnt = el.querySelector('[data-v="cnt"]'), err = el.querySelector('[data-v="err"]');
+        ta.addEventListener('input', function () { cnt.textContent = ta.value.length; });
+        el.querySelector('[data-v="send"]').addEventListener('click', function () {
+          var b = this, t = ta.value.trim();
+          if (!t) { err.textContent = 'Write your message first.'; return; }
+          if (!confirm('Send this to ' + d.opted_in + (d.opted_in === 1 ? ' guest' : ' guests') + '? You have ' + L.left + ' of ' + L.per_event + ' left.')) return;
+          b.disabled = true; b.textContent = 'Sending…';
+          api({ action: 'message_send', id: id, body: t }).then(function (r) {
+            if (!r.ok) { b.disabled = false; b.textContent = 'Send'; err.textContent = r.message || 'That did not send. Try again.'; return; }
+            drawGuests(id, 'Sent to ' + r.sent + (r.sent === 1 ? ' guest.' : ' guests.'));
+          }).catch(function () { b.disabled = false; b.textContent = 'Send'; err.textContent = 'That did not send. Try again.'; });
+        });
+        el.querySelector('[data-v="oname"]').addEventListener('click', function () {
+          var nm = el.querySelector('[data-v="nmsg"]');
+          api({ action: 'organizer_name', id: id, name: el.querySelector('#vev-oname').value.trim() }).then(function (r) { nm.className = 'vev-note' + (r.ok ? '' : ' bad'); nm.textContent = r.ok ? 'Saved.' : (r.message || 'That did not save.'); });
+        });
+      });
+    }
+
+    // A guest's link from a message email. No sign-in: the link is theirs alone.
+    function drawMessage(tok) {
+      var head = crumbs([['A message']]);
+      el.innerHTML = head + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
+      bindList();
+      api({ action: 'msg_get', token: tok }).then(function (d) {
+        if (!d.body) { el.innerHTML = head + '<div class="vev-form"><h2>That message is not here</h2><p class="lead">The link may be incomplete. Copy the whole link from the email.</p></div>'; bindList(); return; }
+        var o = d.organizer;
+        var done = function (t) { el.querySelector('[data-v="acts"]').innerHTML = '<div class="vev-banner">' + esc(t) + '</div>'; };
+        el.innerHTML = head + '<div class="vev-form"><p class="vev-kind">From ' + esc(o) + ', through Vegans Explore</p><h2>' + esc(d.event ? d.event.title : 'Your event') + '</h2>' +
+          '<p class="lead">' + (d.event ? esc(when(d.event)) + '. ' : '') + 'Sent ' + esc(new Date(d.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '. ' + esc(o) + ' does not see your email address.</p>' +
+          '<div class="vev-msgbox">' + esc(d.body) + '</div>' +
+          '<div data-v="acts">' + (d.reported ? '<div class="vev-banner">You reported this message. Thank you.</div>' : d.muted ? '<div class="vev-banner">You stopped messages from ' + esc(o) + '.</div>' + '<button type="button" class="vev-btn ghost" data-v="report">Report this message</button>' :
+            '<div class="vev-nav" style="justify-content:flex-start"><button type="button" class="vev-btn ghost" data-v="mute">Stop messages from ' + esc(o) + '</button><button type="button" class="vev-btn ghost" data-v="report">Report this message</button></div>') + '</div>' +
+          (d.event ? '<p style="margin-top:16px"><a class="vev-link" href="#event/' + esc(d.event.id) + '">See the event</a></p>' : '') + '</div>';
+        bindList();
+        var mu = el.querySelector('[data-v="mute"]'), rp = el.querySelector('[data-v="report"]');
+        if (mu) mu.addEventListener('click', function () { mu.disabled = true; api({ action: 'msg_mute', token: tok }).then(function (r) { if (r.ok) done('Done. You won\'t get messages from ' + o + ' again, on any event. You can change that on My events.'); else mu.disabled = false; }); });
+        if (rp) rp.addEventListener('click', function () {
+          el.querySelector('[data-v="acts"]').innerHTML = '<div class="vev-grid"><div class="vev-f wide"><label for="vev-why">What was wrong with it? (optional)</label><textarea id="vev-why" maxlength="1000"></textarea><small>Our team reads every report. ' + esc(o) + '\'s messages are paused until we look, and you won\'t hear from them again.</small></div></div><div class="vev-nav"><span></span><button type="button" class="vev-btn" data-v="send">Send the report</button></div>';
+          el.querySelector('[data-v="send"]').addEventListener('click', function () {
+            var b = this; b.disabled = true;
+            api({ action: 'msg_report', token: tok, note: el.querySelector('#vev-why').value.trim() }).then(function (r) { if (r.ok) done('Thank you. ' + o + '\'s messages are paused while our team looks, and you won\'t hear from them again.'); else b.disabled = false; });
+          });
+        });
+      });
+    }
+
     function route() {
-      var h = location.hash || '', m = /^#submit\/([1-4])$/.exec(h), pm = /^#promote\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
+      var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
+      if (em) { drawEvent(em[1]); if (opts.onView) opts.onView('event'); return; }
+      if (gm) { drawGuests(gm[1]); if (opts.onView) opts.onView('guests'); return; }
+      if (mm) { drawMessage(mm[1]); if (opts.onView) opts.onView('message'); return; }
+      var m = /^#submit\/([1-4])$/.exec(h), pm = /^#promote\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
       if (pm) { drawPromote(pm[1], !!pm[2]); if (opts.onView) opts.onView('promote'); return; }
       if (m) { var s = +m[1]; if (s > 1 && !draft) { go('#submit/1'); return; } drawSubmit(s); if (opts.onView) opts.onView('submit'); }
       else if (/^#mine/.test(h)) { drawMine(h === '#mine/sent'); if (opts.onView) opts.onView('mine'); }
@@ -795,10 +986,10 @@
     window.addEventListener('hashchange', route);
 
     route();
-    load().then(function () { if (!/^#(submit|mine|promote)/.test(location.hash)) { drawList(); } });
+    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) { drawList(); } });
 
     return {
-      setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine|promote)/.test(location.hash)) drawRows(); },
+      setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) drawRows(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
       home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },

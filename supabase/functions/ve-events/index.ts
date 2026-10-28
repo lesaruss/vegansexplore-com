@@ -20,7 +20,21 @@
 // POST { action: 'promote_get', id }              -> { event }             their own event, for Promote your event
 // POST { action: 'promote_interest', id, package?, options, note? }  I'm interested in promoting it (Sean, 2026-10-28: six
 //        options, three packages; no prices yet): a ve_initiative_interest row (initiative event-promotion) and an email to Sean
+// The event window (Sean, 2026-10-28: "go ahead with phase 2"; playbook ve-member-profiles-partner-windows, migration
+// 20261028_event_window.sql). Anyone (a member token is optional):
+// POST { action: 'event', id }                    -> { event, viewer }      one live event, its organizer's name, how many are
+//        going and, signed in, the viewer's RSVP and whether they organize it
+// POST { action: 'msg_get' | 'msg_mute' | 'msg_report', token, note? }       a guest's link from a message email: read it, stop
+//        that organizer's messages (every event of theirs), or report it (pauses the organizer everywhere until the team resumes)
+// Member:
+// POST { action: 'rsvp', id, going, optin }       -> viewer                 going or not, and the unticked yes to the organizer
+//        (25 points once per event); only a paid member, only a live event that is not over
+// POST { action: 'optin_off', id } | { action: 'unmute', organizer }        from My events
+// POST { action: 'guests', id }                   -> the organizer's view: counts, the shown profile parts of guests who said yes,
+//        their messages and what is left; { action: 'organizer_name', id, name }; { action: 'message_send', id, body } through us,
+//        3 per event at least 24 hours apart, until 7 days after the event, never an email address either way
 // Super admin:
+// POST { action: 'organizers', id } | { action: 'organizer_add', id, email, name } | { action: 'organizer_remove' | 'organizer_resume', organizer_id }
 // POST { action: 'queue', status }                -> { events, counts }    pending | approved | rejected, with signed flyer links
 // POST { action: 'review', id, decision, event?, reason? }  approve or reject, saving any fixes first
 // POST { action: 'update', id, event }            edit a row in any status
@@ -298,6 +312,93 @@ async function signedFlyer(path: string | null) {
   return data?.signedUrl || null;
 }
 
+/* ---------- the event window ---------- */
+const MSG = { perEvent: 3, gapMs: DAY_MS, max: 1000, optinPoints: 25 };
+const NULL_ID = '00000000-0000-0000-0000-000000000000';
+const firstName = (n: unknown) => String(n || '').trim().split(/\s+/)[0] || 'there';
+function eventDay(ev: any) {
+  const o: Intl.DateTimeFormatOptions = ev.time_set === false ? { weekday: 'long', month: 'long', day: 'numeric' } : { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' };
+  try { return new Date(ev.starts_at).toLocaleString('en-US', { ...o, timeZone: ev.timezone || 'America/New_York' }); } catch { return new Date(ev.starts_at).toUTCString(); }
+}
+function windowCloses(ev: any) { return new Date(new Date(ev.ends_at || ev.starts_at).getTime() + 7 * DAY_MS); }
+const shortDay = (d: Date) => d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+
+// One message, as each guest gets it: from Vegans Explore with the organizer's name, their words as plain text, and the guest's
+// own link to read it, stop this organizer or report it. No email address is shown either way, and replies come to us.
+function messageEmail(org: string, ev: any, body: string, token: string, name: string) {
+  const link = `${SITE}/events#message/${token}`;
+  const words = esc(body).replace(/\r?\n/g, '<br>');
+  return `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px">` +
+    `<p style="font-size:13px;color:#555;margin:0 0 14px">A message from <b>${esc(org)}</b>, the organizer of <b>${esc(ev.title)}</b> (${esc(eventDay(ev))}), sent through Vegans Explore.</p>` +
+    `<p style="margin:0 0 12px">Hi ${esc(firstName(name))},</p>` +
+    `<div style="border-left:3px solid #3A9B3E;background:#f7f8f7;padding:14px 16px;border-radius:6px;margin:0 0 18px">${words}</div>` +
+    `<p style="font-size:13px;color:#555;margin:0 0 8px">You are getting this because you RSVP'd to ${esc(ev.title)} on Vegans Explore and said ${esc(org)} could message you about it. ${esc(org)} does not see your email address. These messages stop on ${esc(shortDay(windowCloses(ev)))}, 7 days after the event.</p>` +
+    `<p style="font-size:13px;margin:0"><a href="${link}" style="color:#1f5f22;font-weight:700">Read it on Vegans Explore</a> &middot; <a href="${link}" style="color:#1f5f22;font-weight:700">Stop messages from ${esc(org)}</a> &middot; <a href="${link}" style="color:#1f5f22;font-weight:700">Report this message</a></p>` +
+    `<p style="font-size:12px;color:#777;margin:18px 0 0">Vegans Explore, a LESARUSS brand. 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p></div>`;
+}
+async function sendBatch(items: { to: string; subject: string; html: string }[]) {
+  const ids: (string | null)[] = [];
+  for (let i = 0; i < items.length; i += 100) {
+    const chunk = items.slice(i, i + 100);
+    try {
+      const res = await fetch('https://api.resend.com/emails/batch', {
+        method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(chunk.map((m) => ({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', reply_to: SEAN_EMAIL, to: [m.to], subject: m.subject, html: m.html }))),
+      });
+      const d = res.ok ? await res.json() : null;
+      if (!res.ok) console.error('Resend batch error:', await res.text());
+      chunk.forEach((_m, k) => ids.push(d?.data?.[k]?.id || null));
+    } catch (e) { console.error('Resend batch failed:', e); chunk.forEach(() => ids.push(null)); }
+  }
+  return ids;
+}
+
+// The public side: an event's page and a guest's message link. A member token is optional here.
+async function publicAction(action: string, body: any, memberId: string | null) {
+  if (action === 'event') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status')
+      .eq('id', body.id).maybeSingle();
+    if (!ev || ev.status !== 'approved') return json({ error: 'not_found' }, 404);
+    const { data: viewer } = await db.rpc('ve_event_viewer', { p_event: ev.id, p_member: memberId || NULL_ID });
+    const { status: _s, ...out } = ev;
+    return json({ event: out, viewer: viewer || {}, signed_in: !!memberId });
+  }
+  const tok = typeof body.token === 'string' && /^[0-9a-f]{64}$/.test(body.token) ? body.token : '';
+  if (!tok) return json({ error: 'not_found' }, 404);
+  const { data: d } = await db.from('ve_event_message_deliveries').select('id, member_id, read_at, reported_at, created_at, message_id').eq('token', tok).maybeSingle();
+  if (!d) return json({ error: 'not_found' }, 404);
+  const { data: m } = await db.from('ve_event_messages').select('id, body, created_at, event_id, organizer_id').eq('id', d.message_id).maybeSingle();
+  const { data: org } = m ? await db.from('ve_event_organizers').select('id, name, member_id, event_id').eq('id', m.organizer_id).maybeSingle() : { data: null };
+  if (!m || !org) return json({ error: 'not_found' }, 404);
+  const { data: ev } = await db.from('events').select('id, title, starts_at, ends_at, timezone, time_set').eq('id', m.event_id).maybeSingle();
+  const muted = async () => { const { data: x } = await db.from('ve_partner_mutes').select('member_id').eq('member_id', d.member_id).eq('organizer_member_id', org.member_id).maybeSingle(); return !!x; };
+
+  if (action === 'msg_get') {
+    if (!d.read_at) await db.from('ve_event_message_deliveries').update({ read_at: new Date().toISOString() }).eq('id', d.id);
+    return json({ organizer: org.name, event: ev, body: m.body, sent_at: m.created_at, muted: await muted(), reported: !!d.reported_at });
+  }
+  if (action === 'msg_mute') {
+    await db.from('ve_partner_mutes').upsert({ member_id: d.member_id, organizer_member_id: org.member_id }, { onConflict: 'member_id,organizer_member_id', ignoreDuplicates: true });
+    return json({ ok: true, organizer: org.name });
+  }
+  if (action === 'msg_report') {
+    if (d.reported_at) return json({ ok: true, organizer: org.name });
+    const note = clean(body.note, 1000);
+    const at = new Date().toISOString();
+    await db.from('ve_event_message_deliveries').update({ reported_at: at, report_note: note || null }).eq('id', d.id);
+    // A report pauses the organizer everywhere and stops their messages to this guest.
+    await db.from('ve_event_organizers').update({ paused_at: at, paused_reason: `A guest reported a message about ${ev?.title || 'an event'}` }).eq('member_id', org.member_id).is('paused_at', null);
+    await db.from('ve_partner_mutes').upsert({ member_id: d.member_id, organizer_member_id: org.member_id }, { onConflict: 'member_id,organizer_member_id', ignoreDuplicates: true });
+    await sendEmail([SEAN_EMAIL], `[Events] A guest reported ${org.name}'s message`,
+      p(`A guest reported a message from <b>${esc(org.name)}</b> about <b>${esc(ev?.title || '')}</b>. ${esc(org.name)} is paused on every event until the team looks.`) +
+      p(`The message:<br>${esc(m.body).replace(/\r?\n/g, '<br>')}`) + (note ? p(`Why they reported it: ${esc(note)}`) : '') +
+      p(`<a href="${SITE}/admin/depot/events#event/${m.event_id}">Open it in Depot &gt; Events</a> to resume or remove them.`));
+    return json({ ok: true, organizer: org.name });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -307,6 +408,7 @@ Deno.serve(async (req) => {
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
+  if (['event', 'msg_get', 'msg_mute', 'msg_report'].includes(action)) return publicAction(action, body, memberId);
   if (!memberId) return json({ error: 'not_authenticated', message: 'Sign in to send an event.' }, 401);
   const { data: member } = await db.from('members').select('id, name, email, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'member_not_found' }, 404);
@@ -388,9 +490,105 @@ Deno.serve(async (req) => {
     }
 
     case 'mine': {
-      const { data } = await db.from('events').select('id, title, starts_at, timezone, time_set, city, state, country, status, rejection_reason, ticket_url, submitter_role, created_at')
-        .eq('author_id', memberId).eq('source', 'member').order('created_at', { ascending: false }).limit(50);
-      return json({ events: data || [] });
+      const cols = 'id, title, starts_at, ends_at, timezone, time_set, city, state, country, status, rejection_reason, ticket_url, submitter_role, created_at';
+      const { data } = await db.from('events').select(cols).eq('author_id', memberId).eq('source', 'member').order('created_at', { ascending: false }).limit(50);
+      // The events they organize (Guests and messages), the ones they are going to, and the organizers they stopped.
+      const { data: orgs } = await db.from('ve_event_organizers').select('event_id, paused_at').eq('member_id', memberId);
+      const { data: rs } = await db.from('event_rsvps').select('event_id, optin').eq('member_id', memberId).eq('status', 'going');
+      const ids = [...new Set([...(orgs || []).map((o) => o.event_id), ...(rs || []).map((r) => r.event_id)])];
+      const evs: Record<string, any> = {};
+      if (ids.length) { const { data: es } = await db.from('events').select(cols).in('id', ids); for (const e of es || []) evs[e.id] = e; }
+      const names: Record<string, string> = {};
+      if (rs?.length) { const { data: os } = await db.from('ve_event_organizers').select('event_id, name, created_at').in('event_id', rs.map((r) => r.event_id)).order('created_at'); for (const o of os || []) if (!names[o.event_id]) names[o.event_id] = o.name; }
+      const open = (e: any) => e && windowCloses(e).getTime() >= Date.now();
+      const organizing = (orgs || []).filter((o) => evs[o.event_id]).map((o) => ({ ...evs[o.event_id], paused: !!o.paused_at }));
+      const going = (rs || []).filter((r) => open(evs[r.event_id])).map((r) => ({ ...evs[r.event_id], optin: r.optin, organizer: names[r.event_id] || null }))
+        .sort((a, b) => String(a.starts_at).localeCompare(String(b.starts_at)));
+      const { data: mu } = await db.from('ve_partner_mutes').select('organizer_member_id, created_at').eq('member_id', memberId);
+      const muted: any[] = [];
+      for (const x of mu || []) {
+        const { data: o } = await db.from('ve_event_organizers').select('name').eq('member_id', x.organizer_member_id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+        muted.push({ organizer: x.organizer_member_id, name: o?.name || 'An organizer', at: x.created_at });
+      }
+      return json({ events: data || [], organizing, going, muted });
+    }
+
+    case 'rsvp': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data, error } = await db.rpc('ve_event_rsvp', { p_member: memberId, p_event: body.id, p_going: !!body.going, p_optin: !!body.optin });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      const why: Record<string, string> = { not_eligible: 'RSVPs are for Passport holders.', not_found: 'That event is not on the calendar.', over: 'That event is over.' };
+      if (data?.error) return json({ error: data.error, message: why[data.error] || 'That did not save.' }, data.error === 'not_eligible' ? 403 : 400);
+      return json({ ok: true, viewer: data });
+    }
+
+    case 'optin_off': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      await db.from('event_rsvps').update({ optin: false, updated_at: new Date().toISOString() }).eq('event_id', body.id).eq('member_id', memberId);
+      return json({ ok: true });
+    }
+
+    case 'unmute': {
+      if (!isId(body.organizer)) return json({ error: 'bad_id' }, 400);
+      await db.from('ve_partner_mutes').delete().eq('member_id', memberId).eq('organizer_member_id', body.organizer);
+      return json({ ok: true });
+    }
+
+    // The organizer's side (or the team's): Guests and messages.
+    case 'guests':
+    case 'organizer_name':
+    case 'message_send': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: ev } = await db.from('events').select('id, title, starts_at, ends_at, timezone, time_set, city, state, country, status').eq('id', body.id).maybeSingle();
+      if (!ev) return json({ error: 'not_found' }, 404);
+      let { data: org } = await db.from('ve_event_organizers').select('id, name, member_id, paused_at, paused_reason').eq('event_id', ev.id).eq('member_id', memberId).maybeSingle();
+      if (!org && admin) ({ data: org } = await db.from('ve_event_organizers').select('id, name, member_id, paused_at, paused_reason').eq('event_id', ev.id).order('created_at').limit(1).maybeSingle());
+      if (!org) return json({ error: 'not_found', message: admin ? 'This event has no organizer yet. Add one in Depot > Events.' : 'You do not organize this event.' }, 404);
+      const closes = windowCloses(ev);
+      const { data: sent } = await db.from('ve_event_messages').select('id, body, recipients, sent, created_at').eq('event_id', ev.id).eq('organizer_id', org.id).order('created_at', { ascending: false });
+      const last = sent?.[0] ? new Date(sent[0].created_at).getTime() : 0;
+      const left = Math.max(0, MSG.perEvent - (sent?.length || 0));
+      const nextAt = last && Date.now() - last < MSG.gapMs ? new Date(last + MSG.gapMs).toISOString() : null;
+      const open = ev.status === 'approved' && closes.getTime() >= Date.now();
+
+      if (action === 'organizer_name') {
+        const name = clean(body.name, 80);
+        if (name.length < 2) return json({ error: 'missing', message: 'Give the name guests see.' }, 400);
+        await db.from('ve_event_organizers').update({ name }).eq('id', org.id);
+        return json({ ok: true, name });
+      }
+      if (action === 'message_send') {
+        const text = clean(body.body, MSG.max + 1);
+        if (!text) return json({ error: 'missing', message: 'Write your message first.' }, 400);
+        if (text.length > MSG.max) return json({ error: 'too_long', message: `Keep it to ${MSG.max.toLocaleString('en-US')} characters.` }, 400);
+        if (org.member_id !== memberId) return json({ error: 'not_organizer', message: 'Only the organizer sends their messages.' }, 403);
+        if (org.paused_at) return json({ error: 'paused', message: 'Your messages are paused while our team looks at a guest\'s report.' }, 403);
+        if (!open) return json({ error: 'closed', message: 'Messages for this event have closed.' }, 400);
+        if (!left) return json({ error: 'cap', message: `You have sent all ${MSG.perEvent} messages for this event.` }, 429);
+        if (nextAt) return json({ error: 'wait', message: 'One message a day. You can send the next one ' + new Date(nextAt).toLocaleString('en-US', { weekday: 'short', hour: 'numeric', minute: '2-digit', timeZone: ev.timezone || 'America/New_York', timeZoneName: 'short' }) + '.' }, 429);
+        const { data: aud } = await db.rpc('ve_event_audience', { p_event: ev.id, p_organizer_member: org.member_id });
+        const ids = ((aud || []) as any[]).map((x) => (typeof x === 'string' ? x : x.ve_event_audience || Object.values(x)[0])).filter(Boolean) as string[];
+        if (!ids.length) return json({ error: 'nobody', message: 'No guests have said you can message them yet.' }, 400);
+        const { data: msg, error: me } = await db.from('ve_event_messages').insert({ event_id: ev.id, organizer_id: org.id, sender_id: memberId, body: text, recipients: ids.length }).select('id, created_at').single();
+        if (me || !msg) return json({ error: 'save_failed', message: me?.message }, 500);
+        const { data: dels } = await db.from('ve_event_message_deliveries').insert(ids.map((id) => ({ message_id: msg.id, member_id: id }))).select('id, member_id, token');
+        const { data: ms } = await db.from('members').select('id, name, email').in('id', ids);
+        const who: Record<string, any> = {}; for (const x of ms || []) who[x.id] = x;
+        const list = (dels || []).filter((x) => who[x.member_id]?.email);
+        const out = await sendBatch(list.map((x) => ({ to: who[x.member_id].email, subject: `${org.name} about ${ev.title}`, html: messageEmail(org.name, ev, text, x.token, who[x.member_id].name) })));
+        const now = new Date().toISOString();
+        await Promise.all(list.map((x, k) => db.from('ve_event_message_deliveries').update(out[k] ? { email_status: 'sent', email_id: out[k], sent_at: now } : { email_status: 'failed' }).eq('id', x.id)));
+        const ok = out.filter(Boolean).length;
+        await db.from('ve_event_messages').update({ sent: ok }).eq('id', msg.id);
+        return json({ ok: true, sent: ok, recipients: ids.length });
+      }
+      const { data: g } = await db.rpc('ve_event_guests', { p_event: ev.id, p_organizer_member: org.member_id });
+      const { status: _st, ...event } = ev;
+      return json({
+        event: { ...event, live: ev.status === 'approved' }, organizer: { name: org.name, paused: !!org.paused_at, paused_reason: org.paused_reason },
+        going: g?.going || 0, opted_in: g?.opted_in || 0, guests: g?.guests || [], messages: sent || [],
+        limits: { per_event: MSG.perEvent, left, next_at: nextAt, open, closes: closes.toISOString(), max: MSG.max },
+      });
     }
 
     // Promote your event (Sean, 2026-10-28): only the member who sent it, as its host or promoter (or the team).
@@ -457,7 +655,7 @@ Deno.serve(async (req) => {
     case 'review': {
       const gate = needAdmin(); if (gate) return gate;
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-      const { data: row } = await db.from('events').select('id, title, status, author_id, source, ticket_url, starts_at').eq('id', body.id).maybeSingle();
+      const { data: row } = await db.from('events').select('id, title, status, author_id, source, ticket_url, starts_at, submitter_role').eq('id', body.id).maybeSingle();
       if (!row) return json({ error: 'not_found' }, 404);
       const fixes = shapeEvent(body.event || {});
       const patch: Record<string, unknown> = {};
@@ -471,6 +669,11 @@ Deno.serve(async (req) => {
       if (!Object.keys(patch).length) return json({ ok: true });
       const { error } = await db.from('events').update(patch).eq('id', row.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      // Its host or promoter becomes its organizer once it is live: Guests and messages (the event window).
+      if (action === 'review' && patch.status === 'approved' && row.source === 'member' && ['host', 'promoter'].includes(row.submitter_role || '')) {
+        const { data: am } = await db.from('members').select('name').eq('id', row.author_id).maybeSingle();
+        await db.from('ve_event_organizers').upsert({ event_id: row.id, member_id: row.author_id, name: clean(am?.name, 80) || 'The organizer', added_by: memberId }, { onConflict: 'event_id,member_id', ignoreDuplicates: true });
+      }
       // A member hears back once their event is live.
       if (action === 'review' && patch.status === 'approved' && row.source === 'member' && row.status !== 'approved') {
         const { data: m } = await db.from('members').select('email, name').eq('id', row.author_id).maybeSingle();
@@ -492,6 +695,53 @@ Deno.serve(async (req) => {
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       if (!data?.ok) return json({ error: data?.why || 'save_failed', message: data?.why === 'already_listed' ? 'That event is already on the calendar.' : data?.why === 'already_over' ? 'That event is over.' : 'That did not save.' }, 400);
       return json({ ok: true, id: data.id });
+    }
+
+    // The team's view of an event's window: organizers (pause, resume, add, remove), the guests' counts, every message and report.
+    case 'organizers': {
+      const gate = needAdmin(); if (gate) return gate;
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: os } = await db.from('ve_event_organizers').select('id, name, member_id, paused_at, paused_reason, created_at').eq('event_id', body.id).order('created_at');
+      const mids = (os || []).map((o) => o.member_id);
+      const who: Record<string, any> = {};
+      if (mids.length) { const { data: ms } = await db.from('members').select('id, name, email').in('id', mids); for (const x of ms || []) who[x.id] = x; }
+      const { count: going } = await db.from('event_rsvps').select('id', { count: 'exact', head: true }).eq('event_id', body.id).eq('status', 'going');
+      const { count: optin } = await db.from('event_rsvps').select('id', { count: 'exact', head: true }).eq('event_id', body.id).eq('status', 'going').eq('optin', true);
+      const { data: msgs } = await db.from('ve_event_messages').select('id, body, recipients, sent, created_at, organizer_id').eq('event_id', body.id).order('created_at', { ascending: false });
+      const reports: Record<string, any[]> = {};
+      if (msgs?.length) {
+        const { data: rp } = await db.from('ve_event_message_deliveries').select('message_id, reported_at, report_note').in('message_id', msgs.map((m) => m.id)).not('reported_at', 'is', null);
+        for (const r of rp || []) (reports[r.message_id] = reports[r.message_id] || []).push({ at: r.reported_at, note: r.report_note });
+      }
+      const names: Record<string, string> = {}; for (const o of os || []) names[o.id] = o.name;
+      return json({
+        organizers: (os || []).map((o) => ({ ...o, member: who[o.member_id] ? { name: who[o.member_id].name, email: who[o.member_id].email } : null })),
+        going: going || 0, opted_in: optin || 0,
+        messages: (msgs || []).map((m) => ({ ...m, organizer: names[m.organizer_id] || '', reports: reports[m.id] || [] })),
+      });
+    }
+
+    case 'organizer_add': {
+      const gate = needAdmin(); if (gate) return gate;
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const email = clean(body.email, 200).toLowerCase();
+      const { data: m } = await db.from('members').select('id, name').ilike('email', email).is('merged_into_member_id', null).limit(1).maybeSingle();
+      if (!m) return json({ error: 'not_found', message: 'No account has that email. They need a Vegans Explore account first.' }, 404);
+      const { error } = await db.from('ve_event_organizers').upsert({ event_id: body.id, member_id: m.id, name: clean(body.name, 80) || clean(m.name, 80) || 'The organizer', added_by: memberId }, { onConflict: 'event_id,member_id' });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true });
+    }
+
+    case 'organizer_remove':
+    case 'organizer_resume': {
+      const gate = needAdmin(); if (gate) return gate;
+      if (!isId(body.organizer_id)) return json({ error: 'bad_id' }, 400);
+      const { data: o } = await db.from('ve_event_organizers').select('id, member_id').eq('id', body.organizer_id).maybeSingle();
+      if (!o) return json({ error: 'not_found' }, 404);
+      if (action === 'organizer_remove') await db.from('ve_event_organizers').delete().eq('id', o.id);
+      // Resuming clears the pause on every event of theirs, since a report paused them everywhere.
+      else await db.from('ve_event_organizers').update({ paused_at: null, paused_reason: null }).eq('member_id', o.member_id);
+      return json({ ok: true });
     }
 
     case 'sources': {

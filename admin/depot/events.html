@@ -47,6 +47,10 @@
     .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
     .msg.bad{color:#8a1c12;}
     .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .orow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;margin-bottom:8px;}
+    .orow.one{grid-template-columns:1fr;}
+    .orow .m{font-size:12.5px;color:var(--ve-text-75);}
+    @media (max-width:600px){.orow{grid-template-columns:1fr;}}
     .rows{display:flex;flex-direction:column;gap:8px;}
     .row{display:grid;grid-template-columns:84px minmax(0,1.6fr) minmax(0,1fr) 130px 120px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;}
     .row .d{font-size:13px;font-weight:800;color:var(--ve-green-deep);line-height:1.25;}
@@ -221,8 +225,10 @@
         '<div class="acts">' + (pend ? '<button class="btn" id="ev-ok">Approve: put it live</button><button class="btn btn-ghost" id="ev-save">Save changes</button><button class="btn btn-red" id="ev-no">Turn down</button>'
           : e.status === 'approved' ? '<button class="btn" id="ev-save">Save changes</button><button class="btn btn-red" id="ev-no">Take it off the calendar</button>'
           : '<button class="btn" id="ev-ok">Approve after all</button><button class="btn btn-ghost" id="ev-save">Save changes</button>') +
-        '<span class="msg" id="ev-msg" role="status"></span></div></div>' + sideHtml(e) + '</div>';
+        '<span class="msg" id="ev-msg" role="status"></span></div></div>' + sideHtml(e) + '</div>' +
+        (e.status === 'approved' ? '<div class="panel" id="ev-win" style="margin-top:18px"><h2>Organizers and guests</h2><p class="msg">Loading…</p></div>' : '');
       wireOnline();
+      if (e.status === 'approved') drawWindow(e);
       var msg = function (t, bad) { $('ev-msg').textContent = t; $('ev-msg').className = 'msg' + (bad ? ' bad' : ''); };
       function act(body, done) {
         app.querySelectorAll('.acts .btn').forEach(function (b) { b.disabled = true; });
@@ -245,6 +251,45 @@
         if (why === null) return;
         act({ action: 'review', id: e.id, decision: 'rejected', reason: why }, function () { go('#queue/' + e.status); });
       };
+    }
+
+    /* ---------- The event window (Sean, 2026-10-28: phase 2 of ve-member-profiles-partner-windows) ----------
+       Who organizes a live event (its host or promoter once approved, or anyone added here), how many are going and said
+       yes, every message they sent and any report. A report pauses that organizer on every event until Resume. */
+    function drawWindow(e) {
+      var box = $('ev-win');
+      api({ action: 'organizers', id: e.id }).then(function (d) {
+        if (!box || !d.organizers) { if (box) box.innerHTML = '<h2>Organizers and guests</h2><p class="msg bad">That did not load.</p>'; return; }
+        var when = function (t) { return new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); };
+        box.innerHTML = '<h2>Organizers and guests</h2>' +
+          '<p style="font-size:14px;margin-bottom:12px"><b>' + d.going + '</b> going on Vegans Explore, <b>' + d.opted_in + '</b> said the organizer can message them. <a href="/events#guests/' + esc(e.id) + '" target="_blank" rel="noopener">See it as the organizer does</a></p>' +
+          (d.organizers.length ? d.organizers.map(function (o) {
+            return '<div class="orow"><div><b>' + esc(o.name) + '</b>' + (o.member ? '<div class="m">' + esc(o.member.name || '') + ' &middot; ' + esc(o.member.email || '') + '</div>' : '') +
+              (o.paused_at ? '<div class="m" style="color:#8a1c12;font-weight:700">Paused ' + esc(when(o.paused_at)) + ': ' + esc(o.paused_reason || '') + '</div>' : '') + '</div>' +
+              '<div class="acts" style="margin:0">' + (o.paused_at ? '<button class="btn" data-resume="' + o.id + '">Resume</button>' : '') + '<button class="btn btn-ghost" data-remove="' + o.id + '">Remove</button></div></div>';
+          }).join('') : '<p class="msg">No organizer yet. Guests can RSVP, but nobody can message them.</p>') +
+          '<div class="grid" style="margin-top:12px"><div class="f"><label for="org-email">Add an organizer: their account email</label><input id="org-email" type="email"></div><div class="f"><label for="org-name">The name guests see</label><input id="org-name" maxlength="80" placeholder="Vegan Foodie Fest"></div></div>' +
+          '<div class="acts"><button class="btn btn-ghost" id="org-add">Add organizer</button><span class="msg" id="org-msg" role="status"></span></div>' +
+          '<h2 style="margin-top:18px">Messages</h2>' + (d.messages.length ? d.messages.map(function (m) {
+            return '<div class="orow one"><div><div class="m">' + esc(when(m.created_at)) + ' &middot; ' + esc(m.organizer) + ' &middot; to ' + m.sent + ' of ' + m.recipients + '</div><div style="white-space:pre-line;font-size:14px">' + esc(m.body) + '</div>' +
+              m.reports.map(function (r) { return '<div class="m" style="color:#8a1c12;font-weight:700">Reported ' + esc(when(r.at)) + (r.note ? ': ' + esc(r.note) : '') + '</div>'; }).join('') + '</div></div>';
+          }).join('') : '<p class="msg">None yet.</p>');
+        var m = function (t, bad) { $('org-msg').textContent = t; $('org-msg').className = 'msg' + (bad ? ' bad' : ''); };
+        box.querySelectorAll('[data-resume],[data-remove]').forEach(function (b) {
+          b.onclick = function () {
+            var rm = b.hasAttribute('data-remove');
+            if (rm && !confirm('Remove this organizer? They stop seeing the guests and cannot message them.')) return;
+            b.disabled = true;
+            api({ action: rm ? 'organizer_remove' : 'organizer_resume', organizer_id: b.getAttribute(rm ? 'data-remove' : 'data-resume') }).then(function () { drawWindow(e); });
+          };
+        });
+        $('org-add').onclick = function () {
+          var em = $('org-email').value.trim();
+          if (!em) { m('Add their account email.', true); return; }
+          m('Saving…');
+          api({ action: 'organizer_add', id: e.id, email: em, name: $('org-name').value.trim() }).then(function (r) { if (!r.ok) { m(r.message || 'That did not save.', true); return; } drawWindow(e); });
+        };
+      });
     }
 
     /* ---------- Add from a flyer ---------- */
