@@ -785,7 +785,8 @@
             return loadLogos().then(function () {
               redraw();
               var m = $('lg-now-msg');
-              m.textContent = d.checked ? 'Looked at ' + d.checked + ': found ' + (d.found || 0) + (d.found === 1 ? ' logo, in Suggested.' : ' logos, in Suggested.') : 'Nothing was waiting to be looked at.';
+              var chain = d.chain ? ' ' + d.chain + (d.chain === 1 ? ' location' : ' locations') + ' of a business we already have a logo for got that logo, in Suggested.' : '';
+              m.textContent = (d.checked ? 'Looked at ' + d.checked + ': found ' + (d.found || 0) + (d.found === 1 ? ' logo, in Suggested.' : ' logos, in Suggested.') : 'Nothing was waiting to be looked at.') + chain;
             });
           }).catch(function (e) { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'The sweep did not run: ' + e.message; });
         });
@@ -861,18 +862,23 @@
         }
         rows.forEach(show); count(); pump();
         if ($('sg-save')) $('sg-save').addEventListener('click', function () {
-          var pick = rows.filter(function (r) { return !lg.skip[r.id] && lg.auto[r.id] && lg.auto[r.id].ok; }), btn = this, msg = $('sg-msg'), i = 0, bad = [];
+          var pick = rows.filter(function (r) { return !lg.skip[r.id] && lg.auto[r.id] && lg.auto[r.id].ok; }), btn = this, msg = $('sg-msg'), i = 0, bad = [], chain = 0;
           if (!pick.length) return;
           btn.disabled = true; msg.className = 'msg';
           (function next() {
             if (i >= pick.length) {
               msg.className = bad.length ? 'msg err' : 'msg';
-              msg.textContent = (pick.length - bad.length) + ' saved.' + (bad.length ? ' These did not save: ' + bad.join(', ') + '.' : '');
-              btn.disabled = false; count(); return;
+              var said = (pick.length - bad.length) + ' saved.' + (bad.length ? ' These did not save: ' + bad.join(', ') + '.' : '');
+              msg.textContent = said;
+              btn.disabled = false; count();
+              // A saved logo goes to the business's other locations too (chainFill): show them here.
+              if (chain) loadLogos().then(function () { viewSuggested(); var m = $('sg-msg') || $('lg-now-msg'); if (m) { m.className = 'msg'; m.textContent = said + ' ' + chain + (chain === 1 ? ' more location' : ' more locations') + ' of the same business got the same logo, below.'; } });
+              return;
             }
             var r = pick[i++]; msg.textContent = 'Saving ' + i + ' of ' + pick.length + ': ' + r.name + '...';
             uploadSquare(lg.auto[r.id].blob).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: true }); }).then(function (d) {
               if (!d.ok) throw new Error(d.message || d.error);
+              chain += d.chain || 0;
               lg.done++; lg.rows = lg.rows.filter(function (x) { return x.id !== r.id; });
               lg.doneRows.unshift({ id: r.id, slug: r.slug, name: r.name, category: r.category, city: r.city, state: r.state, website: r.website, instagram: r.instagram,
                 facebook: r.facebook, logo_url: d.logo_url || lg.auto[r.id].url, live: true, by: 'you', at: new Date().toISOString(), sweep: r.suggest.source });

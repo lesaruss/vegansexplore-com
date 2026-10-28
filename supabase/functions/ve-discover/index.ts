@@ -33,7 +33,8 @@
 //        similarly... the clean logo, no food in the background, just the actual logo") a few listings from the queue that have
 //        no ve_logo_suggestions row: their website's logo pictures and Instagram profile picture, shown to Claude, which picks
 //        their own clean logo or none (migration 20261027_ve_logo_suggestions.sql). Nothing is saved to the listing here.
-//        One it found nothing for is looked at again after 30 days (a failed check after a day; relookDue).
+//        One it found nothing for is looked at again after 30 days (a failed check after a day; relookDue). A location of a
+//        business we hold a logo for gets that logo, no new pick (chainFill, also run after every logo_set).
 // POST { action: 'logo_suggest_reject', listing_id }  super admin   Not this: the suggestion goes, the listing stays on the list
 // POST { action: 'logo_done' }                       super admin -> { rows }   every logo made here (Sean, 2026-10-27: "Is there
 //        a way that I can see what logos have been created... I want to do some quality control"), newest first
@@ -520,6 +521,10 @@ async function judgeLogos(name: string, kind: string, city: string, pics: { from
 - Never pick a website builder's or a platform's own icon (Wix, Squarespace, Shopify, WordPress, Toast, Instagram, Facebook), a blank or generic icon, or another business's logo.
 - An Instagram profile picture counts only when it is the logo itself, not a photo.
 - When two pictures are the same logo, pick the larger, sharper one, and the full logo over a tiny cropped icon.
+- The logo must read clearly at a small size. Never pick one that is faint, low in contrast, blurry or tiny: if that is the
+  only logo there, pick -1 and say so.
+- Prefer the Instagram picture when it is the clean logo over the website's share picture (the picture made for link
+  previews), which is often a banner, or a faint wordmark on a photo or a dark background.
 - When none fits, pick -1 and say why.`,
       messages: [{ role: 'user', content }],
     } as any);
@@ -547,6 +552,63 @@ async function igPictures(handles: string[]): Promise<Record<string, string>> {
     return out;
   } catch { return {}; } finally { clearTimeout(t); }
 }
+// Chains (Sean, 2026-10-28: honeygrow's 14 locations got 14 different picks, some of them broken). A location of a business
+// we already hold a logo for gets that same logo in Suggested, with no new pick: the same business is its main listing or
+// another location of it (parent_id), or a listing with the same website or Instagram and the same name ("Bolay" and "Bolay
+// Fresh Bold Kitchen", "Mellow Mushroom Clearwater"). Runs before every sweep and after every logo saved.
+const NOT_A_SITE = /(^|\.)(instagram|facebook|fb|linktr|linktree|toasttab|square|squareup|squarespace|google|yelp|ubereats|doordash|grubhub|seamless|clover|wix|wixsite|weebly|godaddysites|business|beacons|vegansexplore|lesaruss)\.[a-z.]+$/;
+function siteKey(w: string): string {
+  const d = String(w || '').toLowerCase().trim().replace(/^https?:\/\//, '').replace(/[\/?#].*$/, '').replace(/^(www|locations|order|menu|m)\./, '');
+  return d.includes('.') && !NOT_A_SITE.test(d) ? d : '';
+}
+function chainName(n: string): string {
+  return String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/\s+[-|@]\s+|\s*\(/)[0].replace(/[^a-z0-9]/g, '');
+}
+const OUR_LOGO = '/storage/v1/object/public/vegan-media/';
+async function chainFill(): Promise<number> {
+  const { data: all } = await db.from('listings').select('id, name, website, instagram, ig_handle, parent_id, logo_url, address_city, details')
+    .eq('status', 'approved').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').limit(10000);
+  const rows = (all || []) as any[];
+  const has = rows.filter((l) => String(l.logo_url || '').includes(OUR_LOGO));
+  if (!has.length) return 0;
+  const byId = new Map(rows.map((l) => [l.id, l]));
+  const keys = (l: any) => { const k: string[] = []; const s = siteKey(l.website); if (s) k.push('w:' + s); const h = handleOf(l.ig_handle || l.instagram || ''); if (h) k.push('i:' + h.toLowerCase()); return k; };
+  const index = new Map<string, any[]>();
+  for (const l of has) for (const k of keys(l)) { if (!index.has(k)) index.set(k, []); index.get(k)!.push(l); }
+  // Same name: one is the start of the other, or they share a start long enough to be the brand ("Mellow Mushroom Ocala" and
+  // "Mellow Mushroom Clearwater", "Spicy Moon Bowery" and "Spicy Moon West Village" on spicymoonnyc.com).
+  const sameName = (a: any, b: any, site: string) => {
+    const x = chainName(a.name), y = chainName(b.name);
+    if (x.length < 4 || y.length < 4) return false;
+    if (x.startsWith(y) || y.startsWith(x)) return true;
+    let i = 0; while (i < x.length && x[i] === y[i]) i++;
+    const lcp = x.slice(0, i), label = site.split('.')[0].replace(/[^a-z0-9]/g, '');
+    return i >= 5 && (i >= 0.6 * Math.min(x.length, y.length) || (!!label && (label.startsWith(lcp) || lcp.startsWith(label))));
+  };
+  // The logo to share: the main listing's, else one checked by eye most recently.
+  const best = (list: any[]) => list.sort((a, b) => (a.parent_id ? 1 : 0) - (b.parent_id ? 1 : 0) ||
+    String(b.details?.logo_checked?.at || '').localeCompare(String(a.details?.logo_checked?.at || '')))[0];
+  const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url');
+  const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
+  let n = 0;
+  for (const l of rows) {
+    if (String(l.logo_url || '').trim() || l.details?.logo_letter_ok) continue;
+    const fam: any[] = [];
+    const main = l.parent_id ? byId.get(l.parent_id) : null;
+    if (main && String(main.logo_url || '').includes(OUR_LOGO)) fam.push(main);
+    for (const o of has) if (o.id !== l.id && (o.parent_id === l.id || (l.parent_id && o.parent_id === l.parent_id))) fam.push(o);
+    for (const k of keys(l)) for (const o of index.get(k) || []) if (o.id !== l.id && sameName(l, o, k.startsWith('w:') ? k.slice(2) : '')) fam.push(o);
+    if (!fam.length) continue;
+    const src = best(fam), s0: any = sug.get(l.id);
+    if (s0 && (s0.status === 'used' || (s0.url === src.logo_url && (s0.status === 'found' || s0.status === 'rejected')))) continue;
+    const where = src.address_city ? `${src.name}, ${src.address_city}` : src.name;
+    await db.from('ve_logo_suggestions').upsert({ listing_id: l.id, status: 'found', url: src.logo_url, source: `The logo on ${where}`,
+      background: 'match', why: `Same business as ${where}, so the same logo.`, candidates: [{ url: src.logo_url, from: 'The logo on ' + where, w: 0, h: 0 }],
+      checked_at: new Date().toISOString(), decided_by: null, decided_at: null });
+    n++;
+  }
+  return n;
+}
 // A listing the sweep found nothing for is looked at again a month later (Sean, 2026-10-28: businesses change their website and
 // Instagram), and one whose check did not run, a day later. A pick that was used or turned down is never looked at again.
 const RELOOK_DAYS = 30;
@@ -556,6 +618,7 @@ function relookDue(x: any): boolean {
   return Date.now() - new Date(x.checked_at).getTime() > days * 86400000;
 }
 async function logoSweep(n: number) {
+  const chain = await chainFill();
   const { data: q } = await db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
     .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
     .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
@@ -568,7 +631,7 @@ async function logoSweep(n: number) {
     .sort((a: any, b: any) => String(seen.get(a.id).checked_at).localeCompare(String(seen.get(b.id).checked_at)));
   const open = [...fresh, ...again];
   const batch = open.slice(0, n);
-  if (!batch.length) return { checked: 0, found: 0, left: 0 };
+  if (!batch.length) return { checked: 0, found: 0, left: 0, chain };
   const handleOf2 = (l: any) => handleOf(l.ig_handle || l.instagram || '');
   const igP = igPictures([...new Set(batch.map(handleOf2).filter(Boolean))]);
   const sites = Promise.all(batch.map(async (l: any) => {
@@ -604,7 +667,7 @@ async function logoSweep(n: number) {
     }
     await db.from('ve_logo_suggestions').upsert(row);
   }));
-  return { checked: batch.length, found, left: open.length - batch.length };
+  return { checked: batch.length, found, left: open.length - batch.length, chain };
 }
 // Put the picked logo next to the listing in our storage (never hot-linked) and on the listing.
 async function saveLogo(l: { id: string; slug: string; details: any }, logo: any, by: string, saved?: { url?: string }): Promise<string> {
@@ -787,7 +850,8 @@ Deno.serve(async (req) => {
     await db.from('ve_listing_edits').insert({ listing_id: l.id, member_id: who.admin.id, field: 'logo', old_value: l.logo_url || null, new_value: saved.url,
       meta: { by: 'admin', where: 'directory_review_logos', ...(body.from_suggestion ? { from: 'logo_sweep' } : {}) } });
     await db.from('ve_logo_suggestions').update({ status: 'used', decided_by: who.admin.id, decided_at: at }).eq('listing_id', l.id);
-    return json({ ok: true, logo_url: saved.url });
+    const chain = await chainFill();  // its other locations get this logo in Suggested
+    return json({ ok: true, logo_url: saved.url, chain });
   }
 
   if (action === 'add_create') {
