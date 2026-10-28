@@ -837,6 +837,11 @@ breeders, thrift stores and charities for people. Nothing went live. **The other
 search for the other chapters"; migration `20261028_community_search_other_chapters.sql`): 40 searches, 157 quarantined (Central
 Florida 36, South Florida 28, Los Angeles 26, New York 26, Philadelphia 25, Atlanta 15, London 1). City and county shelters are left
 out too, and a name that matches any listing, set-aside ones included, never comes back.
+**London and Philadelphia, a wider pass** the same day (Sean: "run the community search for London and Philadelphia too"; migration
+`20261028_community_search_london_philadelphia.sql`): 60 searches, London borough by borough and Pennsylvania city by city, 123
+quarantined in Ready to list (London 12, Philadelphia 111; London's big rescues, Battersea, Mayhew, Celia Hammond, Dogs Trust, were
+listed already). RSPCA is left out. Google gives many Greater London places their postal town (Croydon, Bromley), so they count as
+London and carry `communities` ['london']; the London chapter itself matches only the city London.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
