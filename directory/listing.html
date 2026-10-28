@@ -722,6 +722,39 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 @media(max-width:768px){
   .bb-wrap{order:999}
 }
+/* People (Sean, 2026-10-28): what a person did with Vegans Explore, IMDb style, and moments from their interviews. */
+.about-text + .about-text{margin-top:12px}
+.pp-src{margin-top:10px;font-size:11px;color:var(--ve-text-50)}
+.pp-sub{font-size:12px;color:var(--ve-text-50);margin:-6px 0 12px}
+.pp-links{display:flex;gap:8px;flex-wrap:wrap}
+.pp-link{display:inline-flex;align-items:center;gap:6px;padding:10px 16px;border-radius:6px;background:#1a1a1a;color:#fff;font-size:12px;font-weight:800;text-decoration:none}
+.pp-link:hover{background:#2d7d31}
+.pp-group{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-50);margin:18px 0 8px}
+.pp-group:first-child{margin-top:0}
+.pp-group span{color:#2d7d31}
+.pp-row{display:grid;grid-template-columns:128px 1fr auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--ve-border)}
+.pp-thumb{width:128px;height:72px;border-radius:8px;object-fit:cover;background:#eef2ee;display:block}
+.pp-title{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pp-meta{font-size:12px;color:var(--ve-text-50);margin-top:3px}
+.pp-note{font-size:12px;margin-top:4px}
+.pp-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.pp-act{padding:8px 14px;border-radius:6px;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff;font:800 11px Montserrat,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pp-act-2{background:#fff;color:#1a1a1a}
+.pp-empty{font-size:13px;color:var(--ve-text-50)}
+.pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
+.pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
+.pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
+.pp-mmeta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:8px;font-size:11px;color:var(--ve-text-50);flex-wrap:wrap}
+.pp-play{font-weight:800;color:#2d7d31;text-decoration:none}
+.pp-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:18px;padding:32px 40px 40px}
+.pp-vid{margin:0}
+.pp-vplay{position:relative;display:block;width:100%;aspect-ratio:16/9;border:0;padding:0;border-radius:10px;overflow:hidden;cursor:pointer;background:#000}
+.pp-vplay img{width:100%;height:100%;object-fit:cover;display:block}
+.pp-vbtn{position:absolute;inset:0;margin:auto;width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center}
+.pp-vframe{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+.pp-vframe iframe{width:100%;height:100%;border:0}
+.pp-vid figcaption{font-size:13px;font-weight:700;margin-top:8px;line-height:1.4}
+@media(max-width:640px){.pp-row{grid-template-columns:96px 1fr}.pp-thumb{width:96px;height:54px}.pp-acts{grid-column:1 / -1;justify-content:flex-start}.pp-vgrid{padding:20px 16px}}
 </style>
 <style>
 /* Campaigns on a listing (playbook ve-campaign-engine, Sean 2026-10-04): while a brand runs a
@@ -1507,6 +1540,14 @@ function renderSidebar(l){
   // the shorter ad... stationary throughout that page").
   // With a product open, its Nutrition Facts sit at the top and the billboard under them, pinned (Sean, 2026-10-08:
   // "put the barcode back on the right-hand side and push the billboard down").
+  // A person: their website and socials, the votes and points, the ad. No phone, address, delivery or claim (Sean, 2026-10-28).
+  if(isPersonL(l)){
+    var site = l.website ? '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg><a href="'+esc(/^https?:\/\//i.test(l.website) ? l.website : 'https://' + l.website)+'" target="_blank" rel="noopener">Visit Website</a></div>' : '';
+    return '<div class="listing-sidebar">'+
+      (site ? '<div class="side-card"><div class="side-card-title">Website</div>'+site+'</div>' : '')+
+      (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
+      communityCard+billboardHtml+'</div>';
+  }
   if(l._brandSite) return '<div class="listing-sidebar bsite-rail">'+(l._campaign ? campaignSideCard(l._campaign) : '')+'<div class="bsite-nf" id="bsite-nf" hidden></div>'+billboardHtml+'</div>';
   return '<div class="listing-sidebar">'+
     (l._campaign ? campaignSideCard(l._campaign) : '')+
@@ -2287,16 +2328,110 @@ function pdRail(){
   if(g) g.classList.toggle('pd-on', on);
   if(!on && PD_TOUR) PD_TOUR.stop();
 }
+// People (Sean, 2026-10-28: "a people directory... an IMDb of all the stuff that they've done with Vegans Explore"). A person is a
+// listing in the People section: no place, no phone, no address, no claim; their bio, their links, and what they did with us
+// (ve_person_credits), voted on and saved like everyone else. Keep in step with PEOPLE_CATS in /public/ve-region-directory.js.
+var PEOPLE = { 'Activists': 'Activist', 'Content Creators': 'Content creator', 'Athletes': 'Athlete', 'Physicians': 'Physician',
+  'Health Experts': 'Health expert', 'Chefs': 'Chef', 'Founders': 'Founder' };
+function isPersonL(l){ return !!(l && PEOPLE[l.category]); }
+function personOf(l){ return (l && l.details && l.details.person) || {}; }
+function personRoles(l){
+  return [l.category].concat(l.extra_categories || []).filter(function(c, i, a){ return PEOPLE[c] && a.indexOf(c) === i; }).map(function(c){ return PEOPLE[c]; });
+}
+function httpsOnly(u){ return /^https:\/\//i.test(String(u || '')) ? String(u) : ''; }
+function renderPersonOverview(l){
+  var p = personOf(l), h = '';
+  if(l.description){
+    h += '<div class="section"><h2 class="section-title">About</h2>' +
+      String(l.description).split(/\n\s*\n/).map(function(par){ return '<p class="about-text">' + esc(par.trim()) + '</p>'; }).join('') +
+      (p.bio_source === 'transcript' ? '<p class="pp-src">Written from their conversations with Vegans Explore.</p>' : '') + '</div>';
+  }
+  // Their work: an intake page, a program, a product, a book (details.person.links).
+  var links = (p.links || []).filter(function(x){ return x && httpsOnly(x.url); });
+  if(links.length) h += '<div class="section"><h2 class="section-title">Their work</h2><div class="pp-links">' +
+    links.map(function(x){ return '<a class="pp-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" data-act="website">' + esc(x.label || 'Visit') + ' <span aria-hidden="true">&#8599;</span></a>'; }).join('') + '</div></div>';
+  h += '<div class="section" id="pp-credits"><h2 class="section-title">With Vegans Explore</h2><div class="pp-list"><p class="pp-empty">Loading...</p></div></div>';
+  h += '<div class="section" id="pp-moments" hidden><h2 class="section-title">In their words</h2><p class="pp-sub">Moments from their interviews, each one playing from the second it starts.</p><div class="pp-list"></div></div>';
+  return h;
+}
+function ytThumb(id){ return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/mqdefault.jpg'; }
+function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s2).padStart(2, '0'); }
+function shortDate(d){ if(!d) return ''; var t = new Date(String(d).length === 10 ? d + 'T12:00:00' : d); return isNaN(t) ? '' : t.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
+// What they did with us, newest first, grouped like a filmography: Podcast episodes, Events, Articles, Videos.
+function loadPerson(l){
+  var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+  var sel = 'id,kind,role,title,url,happened_on,note,content:ve_pulse_content(id,title,slug,youtube_id,thumbnail_url,podcast_show,episode_number,published_at),' +
+    'event:events(id,title,starts_at,city,state,ticket_url)';
+  fetch(SUPABASE_URL + '/rest/v1/ve_person_credits?listing_id=eq.' + encodeURIComponent(l.id) + '&select=' + encodeURIComponent(sel), { headers: H })
+    .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+      rows = (rows || []).map(function(c){
+        var x = c.content || {}, e = c.event || {};
+        return { kind: c.kind, role: c.role || '', note: c.note || '',
+          title: c.title || x.title || e.title || '', when: c.happened_on || x.published_at || e.starts_at || '',
+          yt: x.youtube_id || (c.kind === 'video' ? (String(c.url || '').match(/(?:v=|youtu\.be\/|embed\/)([\w-]{11})/) || [])[1] : '') || '',
+          thumb: x.thumbnail_url || '', show: x.podcast_show || '', ep: x.episode_number,
+          href: x.slug ? '/pulse/' + encodeURIComponent(x.slug) : httpsOnly(c.url) || httpsOnly(e.ticket_url),
+          where: [e.city, e.state].filter(Boolean).join(', ') };
+      }).sort(function(a, b){ return String(b.when).localeCompare(String(a.when)); });
+      var box = document.querySelector('#pp-credits .pp-list'); if(!box) return;
+      var GROUPS = [['episode', 'Podcast episodes'], ['event', 'Events'], ['article', 'Articles'], ['video', 'Videos']];
+      box.innerHTML = rows.length ? GROUPS.map(function(g){
+        var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
+        return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3>' + list.map(personRow).join('');
+      }).join('') : '<p class="pp-empty">Nothing here yet.</p>';
+      var vids = rows.filter(function(r){ return r.yt; });
+      if(vids.length){
+        var vp = document.getElementById('tab-pvideos'), vb = document.getElementById('tab-btn-pvideos');
+        if(vp) vp.innerHTML = '<div class="pp-vgrid">' + vids.map(function(v){
+          return '<figure class="pp-vid"><button type="button" class="pp-vplay" data-pp-yt="' + esc(v.yt) + '" aria-label="Play ' + esc(v.title) + '"><img src="' + esc(ytThumb(v.yt)) + '" alt="" loading="lazy"><span class="pp-vbtn" aria-hidden="true">&#9658;</span></button><figcaption>' + esc(v.title) + '</figcaption></figure>';
+        }).join('') + '</div>';
+        if(vb) vb.style.display = '';
+      }
+    }).catch(function(){ var box = document.querySelector('#pp-credits .pp-list'); if(box) box.innerHTML = '<p class="pp-empty">Could not load this right now.</p>'; });
+  // In their words: moments from their interviews in the content index (ve_person_moments).
+  fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_moments', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
+    .then(function(r){ return r.ok ? r.json() : []; }).then(function(ms){
+      if(!ms || !ms.length) return;
+      var sec = document.getElementById('pp-moments'); if(!sec) return;
+      sec.querySelector('.pp-list').innerHTML = ms.map(function(m){
+        var at = 'https://www.youtube.com/watch?v=' + encodeURIComponent(m.youtube_id) + '&t=' + Math.floor(m.start_s || 0) + 's';
+        return '<div class="pp-moment"><blockquote>&ldquo;' + esc(m.quote) + '&rdquo;</blockquote><p>' + esc(m.summary || '') + '</p>' +
+          '<div class="pp-mmeta"><span>' + esc(m.title || '') + ' &middot; ' + clockOf(m.start_s) + '</span>' +
+          (m.youtube_id ? '<a href="' + esc(at) + '" target="_blank" rel="noopener" class="pp-play">Play from ' + clockOf(m.start_s) + '</a>' : '') + '</div></div>';
+      }).join('');
+      sec.hidden = false;
+    }).catch(function(){});
+}
+function personRow(r){
+  var pic = r.yt ? ytThumb(r.yt) : r.thumb;
+  var meta = r.kind === 'episode' ? [r.role || 'Guest', r.show ? 'on ' + r.show : '', r.ep ? 'Ep ' + r.ep : ''].filter(Boolean).join(' ')
+    : r.kind === 'event' ? [r.role, r.where].filter(Boolean).join(' &middot; ') : r.role;
+  var acts = (r.yt ? '<button type="button" class="pp-act" data-pp-watch="' + esc(r.yt) + '">Watch</button>' : '') +
+    (r.href ? '<a class="pp-act pp-act-2" href="' + esc(r.href) + '"' + (/^https:/.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' + (r.kind === 'episode' ? 'Listen' : r.kind === 'event' ? 'Event page' : 'Open') + '</a>' : '');
+  return '<div class="pp-row">' + (pic ? '<img class="pp-thumb" src="' + esc(pic) + '" alt="" loading="lazy">' : '<div class="pp-thumb pp-thumb-0" aria-hidden="true"></div>') +
+    '<div class="pp-info"><div class="pp-title">' + esc(r.title) + '</div><div class="pp-meta">' + meta + (r.when ? ' &middot; ' + esc(shortDate(r.when)) : '') + '</div>' +
+    (r.note ? '<div class="pp-note">' + esc(r.note) + '</div>' : '') + '</div><div class="pp-acts">' + acts + '</div></div>';
+}
+document.addEventListener('click', function(e){
+  var w = e.target.closest && e.target.closest('[data-pp-watch]');
+  if(w){ showListingTab('pvideos'); var b = document.querySelector('.pp-vplay[data-pp-yt="' + w.getAttribute('data-pp-watch') + '"]'); if(b){ b.scrollIntoView({ block: 'center' }); b.click(); } return; }
+  var v = e.target.closest && e.target.closest('.pp-vplay');
+  if(v){ var id = v.getAttribute('data-pp-yt'); v.outerHTML = '<div class="pp-vframe"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; }
+});
+
 // What kind of listing it is, and what to call it (Sean, 2026-10-27: "for the different types of content based off of the settings
 // and edit listings, we need to update the language on the page"). Keep the lists in step with kindOf in /public/ve-listing-admin.js.
 function listingKind(l){
   var c = l && l.category;
+  if(isPersonL(l)) return 'person';
   if(['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
   if(['Documentaries & Films', 'Books'].indexOf(c) >= 0) return 'work';
   if(['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(c) >= 0) return 'brand';
   return 'place';
 }
 function listingNoun(l){
+  if(isPersonL(l)) return 'profile';
   return ({ 'Podcasts': 'podcast', 'YouTube': 'channel', 'News Outlets': 'outlet', 'Media': 'show', 'Books': 'book', 'Documentaries & Films': 'film' })[l && l.category]
     || (listingKind(l) === 'brand' ? 'brand' : listingKind(l) === 'place' && /Nonprofit|Rescue|Sanctuar|Advocacy|Organization/i.test(l && l.category || '') ? 'organization' : 'business');
 }
@@ -3034,11 +3169,12 @@ function renderListing(l){
   l._door = l._brandSite && brandDoorOpen(l);
   if(l._featured) isSoFlo = true;
   // Media belongs to no chapter, so its breadcrumb is the Directory's (Sean, 2026-10-27).
-  var community = ['show', 'work'].indexOf(listingKind(l)) >= 0 ? null : getCommunityForListing(l);
+  var person = isPersonL(l);
+  var community = ['show', 'work', 'person'].indexOf(listingKind(l)) >= 0 ? null : getCommunityForListing(l);
   var catType = getCategoryType(l.category);
-  var dirLabel = catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
+  var dirLabel = person ? 'People' : catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
   // Food Brands and Nutrition & Supplements are back under Food in the Directory (Sean, 2026-10-26).
-  var dirTab = catType;
+  var dirTab = person ? 'people' : catType;
 
   // Partner Dashboard's tab: after Products on a brand page, last everywhere else.
   // Hidden from the tab row (Sean, 2026-10-27: "remove the partner dashboard"): visitors reach it from Own this business or
@@ -3051,7 +3187,7 @@ function renderListing(l){
 
   // Avatar
   var av = l.logo_url
-    ? '<img src="'+esc(l.logo_url)+'" alt="'+esc(l.name)+' logo"/>'
+    ? '<img src="'+esc(l.logo_url)+'" alt="'+esc(l.name)+(isPersonL(l) ? '' : ' logo')+'"/>'
     : esc(l.initials || (l.name||'').substring(0,2).toUpperCase());
   var avBg = l.logo_url ? '#111' : (l.color || '#2d7d31');
 
@@ -3077,12 +3213,12 @@ function renderListing(l){
   // What it is, where a place says its category: Podcast, News outlet, Documentary film and its year, a book's type and year.
   var BOOK_TYPES = { cookbook: 'Cookbook', memoir: 'Biography & memoir', educational: 'Educational', health: 'Health & nutrition', lifestyle: 'Lifestyle', children: 'Children\'s' };
   var _yr = (l.details && l.details.release_year) ? ' · ' + l.details.release_year : '';
-  var catLabel = !mediaKind ? l.category
+  var catLabel = person ? personRoles(l).join(' &middot; ') : !mediaKind ? l.category
     : l.category === 'Documentaries & Films' ? 'Documentary film' + _yr
     : l.category === 'Books' ? (BOOK_TYPES[l.details && l.details.book_type] || 'Book') + _yr
     : ({ 'Podcasts': 'Podcast', 'YouTube': 'YouTube channel', 'News Outlets': 'News outlet' })[l.category] || l.category;
   var statusBadge = '';
-  if(mediaKind){ /* the tag in the header says it */ }
+  if(mediaKind || person){ /* the tag in the header says it */ }
   else if(l.status === 'closed' || l.business_status === 'CLOSED_PERMANENTLY'){
     statusBadge = '<div style="background:#b71c1c;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:8px 16px;text-align:center">'+statusWords[1]+'</div>';
   } else if(l.business_status === 'CLOSED_TEMPORARILY'){
@@ -3106,7 +3242,8 @@ function renderListing(l){
 
   // OVERVIEW content
   var overviewContent = '';
-  if(!l._brandSite && (l.description || l.tagline)) {
+  if(person) {}
+  else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
 
@@ -3121,7 +3258,9 @@ function renderListing(l){
     overviewContent += '<div class="section"><h2 class="section-title">Photos</h2>'+overviewPhotoHtml+'</div>';
   }
 
-  if(catType === 'food'){
+  if(person){
+    overviewContent = renderPersonOverview(l) + (overviewPhotoHtml ? '<div class="section"><h2 class="section-title">Photos</h2>' + overviewPhotoHtml + '</div>' : '');
+  } else if(catType === 'food'){
     if(isDining(l)) overviewContent += renderAtAGlance(l);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
@@ -3153,7 +3292,7 @@ function renderListing(l){
   Object.keys(_metaMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('content',_metaMap[id]); });
   var _schema = {
     '@context':'https://schema.org',
-    '@type':l.category==='Restaurants'?'Restaurant':l.category==='Podcasts'?'PodcastSeries':l.category==='Books'?'Book':listingKind(l)==='place'?'LocalBusiness':'Organization',
+    '@type':person?'Person':l.category==='Restaurants'?'Restaurant':l.category==='Podcasts'?'PodcastSeries':l.category==='Books'?'Book':listingKind(l)==='place'?'LocalBusiness':'Organization',
     'name':l.name,
     'description':l.description||l.tagline||undefined,
     'url':window.location.href,
@@ -3176,14 +3315,14 @@ function renderListing(l){
           breadcrumb+
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
           '<div class="listing-badges">'+
-            '<span class="badge-cat">'+esc(catLabel)+'</span>'+
+            '<span class="badge-cat">'+(person ? catLabel : esc(catLabel))+'</span>'+
             // Media shows whether it is still going (Active or On hiatus; Sean, 2026-10-27), not how Vegan it is.
             (mediaKind && mediaStatus ? '<span class="badge-subcat" style="'+mediaStatus[1]+'">'+mediaStatus[0]+'</span>' : '')+
-            (!mediaKind && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
+            (!mediaKind && !person && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             cuisineLabels(l).map(function(c){ return '<span class="badge-subcat badge-cuisine" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'">'+esc(c)+'</span>'; }).join('')+
             verifiedBadge+
           '</div>'+
-          (l.tagline ? '<p class="listing-tagline">'+esc(l.tagline)+'</p>' : '')+
+          (l.tagline || (person && personOf(l).title) ? '<p class="listing-tagline">'+esc(l.tagline || personOf(l).title)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
           '<button class="vote-hero-btn" id="vote-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
@@ -3218,7 +3357,8 @@ function renderListing(l){
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false" id="tab-btn-video" style="display:none">Video</button>' : '')+
           (l._campaign && l._campaign.events ? '<button class="tab-btn" data-tab="events" role="tab" aria-selected="false">Events</button>' : '')+
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="pulse" role="tab" aria-selected="false" id="tab-btn-pulse" style="display:none">Pulse</button>' : '')+
-          (l._brandSite ? '' : PD_BTN)+
+          (l._brandSite || person ? '' : PD_BTN)+
+          (person ? '<button class="tab-btn" data-tab="pvideos" role="tab" aria-selected="false" id="tab-btn-pvideos" style="display:none">Videos</button>' : '')+
         '</nav>'+
         (l._brandSite ? '<nav class="pd-subnav" aria-label="Partner Dashboard" hidden></nav>' : '')+
         // Tab panels
@@ -3233,6 +3373,7 @@ function renderListing(l){
           : '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="pd-home"><div class="aisle-empty">Loading...</div></div></div>')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
+        (person ? '<div class="tab-panel" id="tab-pvideos" role="tabpanel"></div>' : '')+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel"></div>' : '')+
         (l._campaign && l._campaign.events ? '<div class="tab-panel" id="tab-events" role="tabpanel">'+eventsTab(l._campaign)+'</div>' : '')+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-pulse" role="tabpanel"></div>' : '')+
@@ -3957,7 +4098,8 @@ if(!slug || slug === 'listing'){
       trackActions(l);
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
-      if(!l._brandSite) loadPartnerHome(l);
+      if(isPersonL(l)) loadPerson(l);
+      else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       // A location with no menu of its own shows its main listing's.

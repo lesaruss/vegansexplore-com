@@ -576,10 +576,13 @@ async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
     if (!data || data.length < 1000) return { data: out, error: null };
   }
 }
+// People (the People section, 2026-10-28) wear their own photo, never a business logo: the logo jobs leave them out.
+const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+const notPerson = (l: any) => !PEOPLE_CATS.includes(l.category);
 async function chainFill(): Promise<number> {
-  const { data: all } = await allRows(() => db.from('listings').select('id, name, website, instagram, ig_handle, parent_id, logo_url, address_city, logo_checked:details->logo_checked, logo_letter_ok:details->logo_letter_ok')
+  const { data: all } = await allRows(() => db.from('listings').select('id, name, category, website, instagram, ig_handle, parent_id, logo_url, address_city, logo_checked:details->logo_checked, logo_letter_ok:details->logo_letter_ok')
     .eq('status', 'approved').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').order('id'));
-  const rows = (all || []) as any[];
+  const rows = ((all || []) as any[]).filter(notPerson);
   const has = rows.filter((l) => String(l.logo_url || '').includes(OUR_LOGO));
   if (!has.length) return 0;
   const byId = new Map(rows.map((l) => [l.id, l]));
@@ -635,7 +638,7 @@ async function logoSweep(n: number) {
     .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
   const { data: had } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, why, checked_at').order('listing_id'));
   const seen = new Map((had || []).map((x: any) => [x.listing_id, x]));
-  const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok);
+  const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok && notPerson(l));
   // Never looked at first, then the ones it found nothing for, looked at again once their look is due (relookDue).
   const fresh = listed.filter((l: any) => !seen.has(l.id));
   const again = listed.filter((l: any) => relookDue(seen.get(l.id)))
@@ -767,7 +770,7 @@ Deno.serve(async (req) => {
       .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
       .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
     if (error) return json({ error: error.message }, 400);
-    const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok);
+    const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok && notPerson(l));
     const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates, checked_at').order('listing_id'));
     const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
     const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
