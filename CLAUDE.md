@@ -483,8 +483,13 @@ Campaigns, Ads, Members. The address carries it (`?range=90&bots=show#communitie
   views, Members, New members, Listings, New listings, Listing views and actions, Check-ins, Pulse posts and comments, Upcoming
   events, and **Overall** (each shown column scored against the best chapter in it, best = 100, averaged). The columns are picked on
   the page and kept in the browser (`localStorage` `ve_an_chapter_cols`, `ve_an_chapter_rank`).
-- **Traffic is Google Analytics**, property 432623792 (vegansexplore.com, tag G-2B6SKSQZLX in `/analytics.js`, on 99 of 142 pages;
-  history from March 2024), read live by the edge function `ve-analytics` with the LESARUSS analytics reader
+- **Traffic is Google Analytics**, property 432623792 (vegansexplore.com, tag G-2B6SKSQZLX in `/analytics.js`; history from March
+  2024). Every public page carries it: `nav.js` loads `/analytics.js` on any page that does not, and `analytics.js` runs once a page
+  (`window.__veGA`); never on `/admin/` pages or the board consent, so the team's Depot work is not traffic (Sean, 2026-10-28).
+  **The team's visits count like anyone's** (Sean, 2026-10-28: "it's still traffic to the page... include my traffic as well";
+  Google counts each browser once as a visitor). A few hours' exclusion of super admins' browsers the same day was undone, and
+  `analytics.js` clears its old mark (`localStorage` `ve_ga_off`). Google's numbers are read live by the edge function `ve-analytics`
+  with the LESARUSS analytics reader
   (`lesaruss_secrets` `GA4_SERVICE_ACCOUNT_JSON`, `lesaruss-analytics-reader@...`, which can read every LESARUSS property), cached
   3 hours in `ve_analytics_cache` (Refresh now skips it). Our own numbers are `ve_analytics_internal(from, to, prev_from, prev_to)`
   and `ve_chapter_of(city, state)` (migration `20261028_ve_analytics.sql`).
