@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lead Your City — Vegans Explore</title>
-<meta name="description" content="VEGANS EXPLORE is looking for the people who already live the Vegan scene in their city. Two paths in: Vegan Explorer and Community Manager. One application, pick your path.">
+<meta name="description" content="VEGANS EXPLORE is looking for the people who already live the Vegan scene in their city. Every Passport holder is a Vegan Explorer. The next step is leading your city as its Community Manager.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -206,13 +206,13 @@
   <!-- 4 TWO PATHS OVERVIEW -->
   <section class="step">
     <span class="eyebrow">The Plan</span>
-    <h2>Two Ways In. <em>One Door.</em></h2>
-    <p class="lead" style="margin-top:16px;">This isn't two separate hoops to jump through. Same application either way. You just tell us which room you want to walk into.</p>
+    <h2>Two Ways In. <em>One Community.</em></h2>
+    <p class="lead" style="margin-top:16px;">Everyone with a Passport is already a Vegan Explorer. Community Managers are Explorers who step up to lead their city.</p>
     <div class="two">
       <div class="tile">
-        <div class="role-tier">Contributor Role</div>
+        <div class="role-tier">Every Passport holder</div>
         <h3 style="font-size:20px;text-transform:uppercase;">Vegan Explorer</h3>
-        <p>Low lift. Do what you already do, and get credit and points for it.</p>
+        <p>No application. Get your Passport, do what you already do, and get credit and points for it.</p>
       </div>
       <div class="tile featured">
         <div class="role-tier">Leadership Role</div>
@@ -224,17 +224,18 @@
 
   <!-- 5 VEGAN EXPLORER DETAIL -->
   <section class="step">
-    <span class="eyebrow">Path One: Vegan Explorer</span>
+    <span class="eyebrow">Every Passport Holder: Vegan Explorer</span>
     <h2>Do What You Already Do.<br><em>Get Credit For It.</em></h2>
     <p class="lead" style="margin-top:16px;">This is a low lift. Contribute as much time as you have: going to restaurants, going to events, logging what you find. We'll have different gigs, competitions, and games along the way. Support us by grabbing content, representing us, doing secret shoppers.</p>
     <p>As we land partnerships and sponsorships in your city, this grows into more: workshops, real events, reinvesting into the community that's building around you.</p>
-    <div class="comp-path"><span>Volunteer</span><span class="path-arrow">&rarr;</span><span>Points + Perks</span><span class="path-arrow">&rarr;</span><span>First Look at Leading Your City</span></div>
-    <p style="font-size:13.5px;color:var(--ink-muted);">This is a volunteer role. You earn points, levels and perks along the way, and Vegan Explorers get the first look when their city needs a Community Manager.</p>
+    <div class="comp-path"><span>Passport</span><span class="path-arrow">&rarr;</span><span>Points + Levels</span><span class="path-arrow">&rarr;</span><span>First Look at Leading Your City</span></div>
+    <p style="font-size:13.5px;color:var(--ink-muted);">There is nothing to apply for: your Passport makes you a Vegan Explorer. You earn points, levels and perks along the way, and Vegan Explorers get the first look when their city needs a Community Manager.</p>
+    <p style="margin-top:14px;"><a class="btn btn-primary" href="/passport">Get your Passport</a></p>
   </section>
 
   <!-- 6 COMMUNITY MANAGER DETAIL -->
   <section class="step">
-    <span class="eyebrow">Path Two: Community Manager</span>
+    <span class="eyebrow">The Next Step: Community Manager</span>
     <h2>The Mayor of Your City,<br><em>Inside Vegans Explore.</em></h2>
     <p class="lead" style="margin-top:16px;">You're the official face of VEGANS EXPLORE where you live. You find and onboard Vegan businesses, recruit and support Vegan Explorers, show up at events, and make sure your region is actually building. This is a leadership role, not a content role. The job is building something real that keeps growing after you leave the room.</p>
     <div class="comp-path"><span>Gig work</span><span class="path-arrow">&rarr;</span><span>Paid as your city grows</span><span class="path-arrow">&rarr;</span><span>Community Coordinator</span></div>
@@ -262,21 +263,10 @@
 
   <!-- 9 APPLY -->
   <section class="step center" id="apply-slide">
-    <span class="eyebrow">One Application, Two Paths</span>
-    <h2>Pick Your Path.</h2>
+    <span class="eyebrow">Lead Your City</span>
+    <h2>Apply to Be a Community Manager.</h2>
     <div class="apply-card">
       <div id="lead-apply-form">
-        <label class="apply-field-label">I want to be a...</label>
-        <div class="apply-role-toggle">
-          <div class="apply-role-opt active" id="role-opt-ve" data-role="vegan_explorer">
-            <div class="apply-role-opt-title">Vegan Explorer</div>
-            <div class="apply-role-opt-sub">Contributor role</div>
-          </div>
-          <div class="apply-role-opt" id="role-opt-cm" data-role="community_manager">
-            <div class="apply-role-opt-title">Community Manager</div>
-            <div class="apply-role-opt-sub">Leadership role</div>
-          </div>
-        </div>
 
         <label class="apply-field-label" for="lead-city">My city</label>
         <select class="apply-select" id="lead-city">
@@ -297,7 +287,7 @@
         </select>
 
         <label class="apply-field-label" for="lead-note">Tell us about yourself (optional)</label>
-        <textarea class="apply-textarea" id="lead-note" placeholder="What do you already do in your city's Vegan scene? Why this role?"></textarea>
+        <textarea class="apply-textarea" id="lead-note" placeholder="What do you already do in your city's Vegan scene? Why do you want to lead it?"></textarea>
 
         <button class="apply-submit" id="lead-apply-btn" type="button">Apply Now</button>
         <p class="apply-msg" id="lead-apply-msg"></p>
@@ -424,16 +414,8 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-  var selectedRole = 'vegan_explorer';
-  var optVe = document.getElementById('role-opt-ve');
-  var optCm = document.getElementById('role-opt-cm');
-  function selectRole(role) {
-    selectedRole = role;
-    optVe.classList.toggle('active', role === 'vegan_explorer');
-    optCm.classList.toggle('active', role === 'community_manager');
-  }
-  optVe.addEventListener('click', function () { selectRole('vegan_explorer'); });
-  optCm.addEventListener('click', function () { selectRole('community_manager'); });
+  // Every Passport holder is a Vegan Explorer (Sean, 2026-10-28), so the one application is for Community Manager.
+  var selectedRole = 'community_manager';
 
   function requireAuth(promptMsg, onGranted) {
     if (window.VEAuth && VEAuth.isLoggedIn()) { onGranted(); return; }

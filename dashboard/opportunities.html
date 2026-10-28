@@ -73,12 +73,12 @@
     var html = '';
 
     html += '<p class="opp-section-title">Get Involved</p><div class="opp-grid">';
-    html += tile('/dashboard/get-involved', '&#127793;', 'linear-gradient(135deg,#3A9B3E,#2d7d31)', 'Volunteer &amp; Explorer Opportunities', 'Apply to volunteer, become a Vegan Explorer, or step up as a Community Manager in your city.', null, false);
+    html += tile('/dashboard/get-involved', '&#127793;', 'linear-gradient(135deg,#3A9B3E,#2d7d31)', 'Volunteer Opportunities', 'Volunteer for events and campaigns, or step up as a Community Manager in your city. Every Passport holder is already a Vegan Explorer.', null, false);
     html += '</div>';
 
     if (isStaff) {
       html += '<p class="opp-section-title">Manage</p><div class="opp-grid">';
-      html += tile('/dashboard/applications', '&#9989;', 'linear-gradient(135deg,var(--ve-orange),#c9720f)', 'Explorer Applications', 'Review and decide Vegan Explorer applications for your city.', { label: 'Live' }, false);
+      html += tile('/dashboard/applications', '&#9989;', 'linear-gradient(135deg,var(--ve-orange),#c9720f)', 'Applications', 'Review and decide applications for your city.', { label: 'Live' }, false);
       html += tile('/dashboard/partners', '&#128241;', 'linear-gradient(135deg,#9333ea,#6b21a8)', 'Business Interest', 'Follow up with members who’ve registered as a business and want in.', { label: 'Live' }, false);
       if (member.is_superadmin) {
         html += tile('/dashboard/campaigns', '&#128227;', 'linear-gradient(135deg,#6366f1,#3730a3)', 'Campaigns', 'Live campaign briefs across every city, budget, and sponsorship status.', { label: 'Superadmin', cls: 'superadmin' }, false);

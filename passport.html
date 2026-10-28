@@ -226,7 +226,7 @@
         return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
       return (fromVote ? '<p class="dg-note"><b>Voting is for members.</b> Get your Passport, $11 one time, and vote every day for the places you love. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromSave ? '<p class="dg-note"><b>Saving is for members.</b> Get your Passport, $11 one time, and keep the places you love on My list. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromCheckin ? '<p class="dg-note"><b>Check-ins are for members.</b> Get your Passport, $11 one time, and earn 10 points every time you visit a place. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromGive ? '<p class="dg-note"><b>Giving points is for members.</b> Get your Passport, $11 one time, with 1,100 welcome points to give to the places you love. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromBoard ? '<p class="dg-note"><b>Posting and comments are for members.</b> Get your Passport, $11 one time, and join the conversation on the Daily Pulse in every city. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : '') +
-        head('Vegans Explore Passport', 'Your way into the Vegan world', 'Looking around is free for everyone. The Passport, <b>$11 one time</b>, is how you take part: vote, post, join your city, unlock Guides and build your Vegan world from your dashboard. It comes with <b>1,100 welcome points</b>, enough for your first Guide.') +
+        head('Vegans Explore Passport', 'Your way into the Vegan world', 'Looking around is free for everyone. The Passport, <b>$11 one time</b>, is how you take part: vote, post, join your city, unlock Guides and build your Vegan world from your dashboard. It comes with <b>1,100 welcome points</b>, enough for your first Guide. Everyone who holds one is a <b>Vegan Explorer</b>.') +
         '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
     },
     places: function () {
@@ -239,7 +239,7 @@
         '</div>' + joinBtns();
     },
     community: function () {
-      return head('Your community', 'A hub for your city', 'South Florida, Central Florida, Atlanta, the DMV, New York, Philadelphia, Los Angeles and London each have their own community hub.') +
+      return head('Your community', 'A hub for your city', 'Thirteen chapters, from South Florida to London, each have their own community hub.') +
         '<div class="dg-grid">' +
         card('The Daily Pulse', 'A topic every morning for your city and one for the country, to read and talk about.', 'Every day') +
         card('The Community Board', 'Requests and offers, jobs, classifieds, fosters and rescues. Members post and reply.', 'Members post') +
@@ -304,7 +304,7 @@
           : 'Create your account and get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
           '</p><button type="button" class="dg-btn" data-join>Get your Passport</button>' + status;
       }
-      return head('Get your Passport', 'One time, yours to keep', 'It never renews. After that, you buy only what you want: Guides, merchandise and event tickets.') +
+      return head('Get your Passport', 'One time, yours to keep', 'It never renews, and it makes you a Vegan Explorer. After that, you buy only what you want: Guides, merchandise and event tickets.') +
         '<div class="dg-access"><ul>' +
         '<li><b>1,100 welcome points</b>, enough for your first Guide.</li>' +
         '<li><b>Vote</b> every day for the places you love in the Directory.</li>' +

@@ -531,7 +531,10 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   Guide, the brand tour's slide 6, and since 2026-10-28 the role pages: `/lead`, the account page's Opportunities, the handbook, the
   Community Manager onboarding, the city hub's Opportunities, the recruiting deck, the role rows in `opportunities`, the Guides' facts and
   four saved answers; migration `20261028_cm_gig_work_and_affiliate_canon.sql`, which also took out the account page's "$4,000 a
-  month" promise). Vegan Explorers stay volunteers. Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
+  month" promise). **Every Passport holder is a Vegan Explorer** (Sean, 2026-10-28: "Vegan Explorers can be the name for our community members in
+  general. So everyone is a Vegan Explorer that has a passport"): no longer a role anyone applies for (its city openings are closed);
+  `/lead`'s one application is for Community Manager, the account page tells a member they already are one, the Passport Guide
+  names it, and the Guides' facts and saved answers say so (migration `20261028_vegan_explorer_is_every_member.sql`). Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
 - **Voices, not animation, for tours** (Sean, 2026-10-28: "we could still have the voices, but the animation I don't think is
   necessary... save the animation for the guides"; a lip-synced clip is about 20 to 25 Higgsfield credits, a voice line none). A brand
   tour slide can be `{audio, poster}`: her voice over the slide's still picture, beside clips on the other slides (`voiceAt` in
