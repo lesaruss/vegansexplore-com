@@ -1406,8 +1406,8 @@ function renderSidebar(l){
   // Media has no place (Sean, 2026-10-27: VegNews showed San Francisco): no address for a show, a book or a film.
   var noPlace = ['show', 'work'].indexOf(listingKind(l)) >= 0;
   if(noPlace) {}
-  else if(l.address_street) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street)+', '+esc(l.address_city)+', '+esc(l.address_state)+'</a></div>';
-  else if(l.address_city) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_city)+', '+esc(l.address_state)+'</a></div>';
+  else if(l.address_street) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street)+', '+esc(l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></div>';
+  else if(l.address_city) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></div>';
   if(l.email) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></div>';
   if(l.booking_url) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener">Book Appointment</a></div>';
 
@@ -3098,7 +3098,7 @@ function renderListing(l){
   }
   var priceDisplay = l.google_price_level || l.pricing_range || '';
   var infoChips = [];
-  if(l.address_city && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street ? l.address_street+', '+l.address_city : l.address_city)+', '+esc(l.address_state)+'</a></span>');
+  if(l.address_city && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street ? l.address_street+', '+l.address_city : l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></span>');
   if(servesLabel(l) && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'+esc(servesLabel(l))+'</span>');
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
@@ -3159,7 +3159,7 @@ function renderListing(l){
     'url':window.location.href,
     'telephone':l.phone||undefined,
     'image':l.logo_url||undefined,
-    'address':l.address_city && !mediaKind?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state,'addressCountry':'US'}:undefined,
+    'address':l.address_city && !mediaKind?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state||undefined,'addressCountry':l.address_country||'US'}:undefined,
     'sameAs':[l.instagram?'https://instagram.com/'+l.instagram.replace('@',''):null,l.facebook||null,l.twitter?'https://twitter.com/'+l.twitter:null].filter(Boolean)
   };
   var _schEl=document.getElementById('schema-ld')||document.createElement('script');

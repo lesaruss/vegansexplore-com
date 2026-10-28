@@ -1478,6 +1478,18 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   go by, or Google matched the wrong business). A listing with no address reads as online and shows in every chapter, so a local
   group known only by its chapter gets its state as well as `communities`.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
+- **The restaurant search for the newer chapters** (Sean, 2026-10-28: "Philadelphia doesn't have any restaurants, and neither does
+  London... West Virginia, Maryland, Delaware, Washington, D.C., and North Florida... do a scan of those areas and start populating
+  them"; Virginia had none either; migration `20261028_restaurant_search_new_chapters.sql`). 59 Google Places text searches ("vegan
+  restaurant / cafe / bakery in <city or neighborhood>") listed 359 places live (`crawl_source` `restaurant-search`, Google place, address
+  and map pin, a team note): **100% Vegan** when Google's main type is Vegan restaurant or the name says Vegan (not Vegetarian or -ish),
+  public at once; **Vegan options** when Google tags it Vegan or Vegetarian as a second type, so it waits in Being vetted for 10 member
+  votes. Bakeries and cafes by Google's type, caterers to Catering, the rest Restaurants; stores and places with no Vegan label left out;
+  two branches with one name in one city get their neighborhood (or street) after a dash. By chapter: London 97, Virginia 64,
+  Philadelphia 61, Maryland 54, Florida (the North Florida searches) 43, Washington, D.C. 18, Delaware 16, West Virginia 6. The logo
+  sweep, the menu link finder and reader, and the essentials pass fill them in; the essentials cron was widened the same day to every 10
+  minutes, 6 to 10 AM UTC, 30 a run (it costs nothing once nothing is due). A listing outside the US shows no empty state in its address
+  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules.
 
 ## Guide pricing, points and levels (LOCKED by Sean 2026-10-25, playbook `ve-pricing-points-passport`)
 
