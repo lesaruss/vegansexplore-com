@@ -5,7 +5,7 @@
 // the bio written from their interviews.
 //
 // Super admin (the VE app token) or ops (Bearer LESARUSS_ADMIN_TOKEN):
-// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}] }        -> { ok, person }
+// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}], bio?, website?, instagram?, facebook?, tiktok?, youtube? } -> { ok, person }
 //      { action: 'credits', listing_id }                                                 -> { ok, credits }
 //      { action: 'credit_add', listing_id, kind: episode|event|article|video, content_id? | event_id? | title, url?, happened_on?, role?, note? }
 //      { action: 'credit_remove', id }
@@ -148,9 +148,24 @@ Deno.serve(async (req) => {
       const links = body.links.slice(0, 8).map((x: any) => ({ label: clean(x?.label, 40) || 'Visit', url: httpsUrl(x?.url) })).filter((x: any) => x.url);
       if (JSON.stringify(p.links || []) !== JSON.stringify(links)) { edits.push({ field: 'person.links', old_value: p.links ?? null, new_value: links }); if (links.length) p.links = links; else delete p.links; }
     }
+    // Their bio and where to find them (Sean, 2026-10-28: "Instagram, their Facebook, TikTok if they have it, YouTube if they have it.
+    // Make sure we have their website. We don't need a phone number or an address").
+    const cols: Record<string, unknown> = {};
+    const { data: cur } = await db.from('listings').select('description, website, instagram, facebook, tiktok, youtube').eq('id', l.id).maybeSingle();
+    if (body.bio !== undefined) cols.description = String(body.bio ?? '').replace(/\r/g, '').trim().slice(0, 3000);
+    if (body.website !== undefined) { const w = String(body.website || '').trim(); cols.website = !w ? '' : httpsUrl(/^https?:\/\//i.test(w) ? w.replace(/^http:/i, 'https:') : 'https://' + w); }
+    const handleOf = (v: unknown, host: string) => String(v ?? '').trim().replace(new RegExp('^https?://(www\\.)?' + host + '/', 'i'), '').replace(/^@/, '').replace(/[\/?#].*$/, '');
+    if (body.instagram !== undefined) { const h = handleOf(body.instagram, 'instagram\\.com'); cols.instagram = h ? '@' + h.toLowerCase() : null; }
+    if (body.tiktok !== undefined) { const h = handleOf(body.tiktok, 'tiktok\\.com'); cols.tiktok = h ? '@' + h.replace(/^@/, '').toLowerCase() : null; }
+    if (body.facebook !== undefined) { const u = String(body.facebook || '').trim(); cols.facebook = !u ? null : httpsUrl(u) || 'https://www.facebook.com/' + handleOf(u, 'facebook\\.com'); }
+    if (body.youtube !== undefined) { const u = String(body.youtube || '').trim(); cols.youtube = !u ? null : httpsUrl(u) || 'https://www.youtube.com/' + (u.startsWith('@') ? u : '@' + u); }
+    for (const k of Object.keys(cols)) {
+      if (String((cur as any)?.[k] ?? '') === String(cols[k] ?? '')) delete cols[k];
+      else edits.push({ field: k, old_value: (cur as any)?.[k] ?? null, new_value: cols[k] ?? null });
+    }
     if (edits.length) {
       details.person = p;
-      const { error } = await db.from('listings').update({ details, updated_at: new Date().toISOString() }).eq('id', l.id);
+      const { error } = await db.from('listings').update({ ...cols, details, updated_at: new Date().toISOString() }).eq('id', l.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       await logEdits(l.id, by, edits);
     }
@@ -245,7 +260,7 @@ Deno.serve(async (req) => {
     if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
     const { data: l } = await db.from('listings').select('id, slug, name, category, logo_url, instagram, website, details').eq('id', body.listing_id).maybeSingle();
     if (!l || !PEOPLE_CATS.includes(l.category)) return json({ error: 'not_a_person' }, 400);
-    let pic = '', handle = '', site = '', source = '';
+    let pic = '', handle = '', site = '', source = '', alt = '', fullName = '';
     if (action === 'photo_instagram') {
       handle = String(body.handle || l.instagram || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/[\/?#].*$/, '').toLowerCase();
       if (!/^[a-z0-9._]{1,30}$/.test(handle)) return json({ error: 'handle' }, 400);
@@ -261,16 +276,21 @@ Deno.serve(async (req) => {
       const hay = `${p.fullName || ''} ${p.username || ''} ${p.biography || ''}`.toLowerCase();
       if (!body.sure && !words.some((w) => hay.includes(w)))
         return json({ error: 'not_them', message: `@${handle} is ${p.fullName || 'someone else'}.`, full_name: p.fullName || '', bio: String(p.biography || '').slice(0, 200) }, 409);
-      pic = p.profilePicUrlHD || p.profilePicUrl || ''; site = httpsUrl(p.externalUrl); source = 'instagram:@' + handle;
+      pic = p.profilePicUrlHD || p.profilePicUrl || ''; alt = p.profilePicUrl && p.profilePicUrl !== pic ? p.profilePicUrl : ''; fullName = String(p.fullName || ''); site = httpsUrl(p.externalUrl); source = 'instagram:@' + handle;
     } else {
       pic = httpsUrl(body.url); source = pic;
     }
     if (!pic) return json({ error: 'no_picture' }, 400);
-    const img = await fetch(pic, { headers: { 'User-Agent': 'Mozilla/5.0' } }).catch(() => null);
-    const type = (img?.headers.get('content-type') || '').split(';')[0];
-    if (!img || !img.ok || !/^image\/(jpeg|png|webp)$/.test(type)) return json({ error: 'picture', message: 'The picture did not load.' }, 400);
-    const bytes = new Uint8Array(await img.arrayBuffer());
-    if (bytes.length < 3000 || bytes.length > 8_000_000) return json({ error: 'picture_size' }, 400);
+    // Instagram's large picture sometimes comes back empty; its standard one is the fallback.
+    let type = '', bytes = new Uint8Array(0);
+    for (const u of [pic, alt].filter(Boolean)) {
+      const img = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36' } }).catch(() => null);
+      const t = (img?.headers.get('content-type') || '').split(';')[0];
+      if (!img || !img.ok || !/^image\/(jpeg|png|webp)$/.test(t)) continue;
+      const b = new Uint8Array(await img.arrayBuffer());
+      if (b.length >= 1500 && b.length <= 8_000_000) { type = t; bytes = b; break; }
+    }
+    if (!type) return json({ error: 'picture', message: 'The picture did not load.' }, 400);
     const path = `media/people/${l.slug}/photo-${Date.now()}.${type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg'}`;
     const { error: upErr } = await db.storage.from('vegan-media').upload(path, bytes, { contentType: type, upsert: false });
     if (upErr) return json({ error: 'upload', message: upErr.message }, 500);
@@ -283,7 +303,7 @@ Deno.serve(async (req) => {
     const { error } = await db.from('listings').update(patch).eq('id', l.id);
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     await logEdits(l.id, by, [{ field: 'logo', old_value: l.logo_url || null, new_value: url }]);
-    return json({ ok: true, logo_url: url, instagram: patch.instagram || l.instagram, website: patch.website || l.website });
+    return json({ ok: true, logo_url: url, full_name: fullName, instagram: patch.instagram || l.instagram, website: patch.website || l.website });
   }
 
   return json({ error: 'unknown_action' }, 400);

@@ -1044,6 +1044,44 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
+## People (Sean, 2026-10-28)
+
+"A people directory... people that we've actually interacted with... the incentive for organizations to want to work with us... we're
+not just going to randomly add people to it... an IMDb of all the stuff that they've done with Vegans Explore... that will be our
+doorway into making them an ambassador." The prototype, **super admins only** until Sean launches it (`adminOnly` on the `people` entry of
+`CAT_CONFIG` in `ve-region-directory.js`; drop it to launch).
+
+- **A person is a listing** in the Directory's **People** section, so votes, saves, the card and the page are everyone's: sub-sections
+  **Activists, Content Creators, Athletes, Physicians, Health Experts, Chefs, Founders** (All first), a second one in `extra_categories`.
+  No place: every chapter (`communities` `['all']`), no address, phone, hours, How Vegan, claim box, check-in or Partner Dashboard. The card's
+  line is what they do (`details.person.title`); Physicians filter by **Specialty** (`details.person.specialty`, `SPECIALTIES`). Change the
+  section list together: `CAT_MAP`/`CAT_CONFIG`/`PEOPLE_CATS` in `ve-region-directory.js`, `PEOPLE` in `directory/listing.html`, `SECTIONS` in
+  `ve-listing-admin.js`, `PEOPLE_CATS` in `ve-people` and `ve-discover`, `CATEGORIES` in `ve-claims`.
+- **The profile** (`isPersonL`, `renderPersonOverview`, `loadPerson` in `directory/listing.html`): their photo square with rounded corners
+  (`logo_url`), the roles, the one line, **About** (the bio, "Written from their conversations with Vegans Explore" when it was), **Their work**
+  (`details.person.links`: a sign-up page, a program, a product, a book), **With Vegans Explore** (IMDb style: Podcast episodes, Events,
+  Articles, Videos, newest first, each with Watch and Listen), **In their words** (moments of theirs from the content index,
+  `ve_person_moments(listing)`: their credited episodes where the speaker is them, `details.person.speaker_names`, three an episode, Play from
+  the second), a **Videos** tab (their episodes on YouTube), Photos (`gallery_urls`), and the sidebar's Website and Follow (Instagram,
+  Facebook, TikTok, YouTube).
+- **Credits** are `ve_person_credits` (migration `20261028_people_directory.sql`, public read): kind episode (`content_id`, a
+  `ve_pulse_content` row), event (`event_id`, or a title and date), article or video (title and link), with their role (Guest, Host,
+  Speaker...).
+- **`ve-people`** (super admin, or ops through `LESARUSS_ADMIN_TOKEN`): `save` (what they do, specialty, links, bio, website and socials;
+  each change a `ve_listing_edits` row), `credits`, `credit_add`, `credit_remove`, `episodes` (search ours to credit), `bio_draft` (Claude Opus
+  5.5 writes the bio from their credited episodes' transcripts and summaries, only what they say; `save` and `recategorize` apply it, its
+  section and a physician's specialty), `photo_instagram` (their Instagram picture copied into `vegan-media/media/people/<slug>/`, refused as
+  `not_them` unless a word of their name is on the account) and `photo_url`. The listing editor's **About them** (shown for People) does all of
+  it: Write it from their interviews, the links, the socials, add an episode or an event, remove a credit; the logo control reads Photo.
+  The logo sweep and chain logos leave people out (`notPerson` in `ve-discover`).
+- **The first 79** (migrations `20261028_people_seed.sql`, `_seed_2.sql`, `_fixes.sql`): every guest named on our four shows, each credited
+  with those episodes; John Thomas and Brooke Sellers as Host of every Vegans Who Lift episode; John (co-producer and host) and Ella Magers
+  (meet and greet) at Vegan Foodie Fest Miami. 14 the May Instagram import already held became their profiles (their handle kept, the backlog
+  row closed). Every bio was written from the transcripts the same day, 28 moved to the section their interview puts them in (the seed's
+  section kept as their second), 29 have their Instagram photo, checked by eye (Sailesh Rao's, Feldi's, James Wildman's and Tim James's
+  were not them and were removed). Not added: people only talked about (Tabitha Brown) and businesses (Love Life Cafe, Maizly...).
+- Not built yet: people from events and articles beyond the Foodie Fest, the Ambassador path from a profile, and a "Is this you?" for the person.
+
 ## Podcast episodes on a listing (Sean, 2026-10-27)
 
 "Is it possible to add an RSS of the podcast so that way it actually populates on their listing? ... people can actually just

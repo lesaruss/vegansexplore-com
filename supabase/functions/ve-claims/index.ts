@@ -118,7 +118,9 @@ const CATEGORIES = [
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events', 'Uncategorized'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events',
+  // People (2026-10-28): a person's profile; ve-people holds the rest of it.
+  'Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Uncategorized'];
 // At a Glance, which listing.html shows for restaurants and cafes.
 const ATMOSPHERES = ['casual', 'upscale', 'fine-dining', 'fast-casual', 'bar-lounge'];
 const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Reservations', 'WiFi', 'Parking', 'Dog-Friendly',
