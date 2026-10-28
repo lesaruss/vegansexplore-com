@@ -702,7 +702,12 @@ structured output) with the business's name: it picks the business's own clean l
 inside a photo, a builder's or a platform's icon, or another business's logo) or none, and the background to square it on
 (`match`, `white`, `black` or a color). The pick is a `ve_logo_suggestions` row (found, none, used, rejected), never saved to the
 listing by itself. One it found nothing for is looked at again 30 days later (a check that did not run, a day later; `relookDue`),
-never-looked-at ones first; a used or turned-down pick never comes back. **Look now** (Sean, 2026-10-28: "is it possible... for me to
+never-looked-at ones first; a used or turned-down pick never comes back. **Chains share one logo** (Sean, 2026-10-28: honeygrow's
+14 locations got 14 different picks, the faint ones "broken"; "same business, different location. It should have the same logo"):
+before every sweep and after every logo saved, `chainFill` gives a listing with no logo the logo we hold for the same business (its
+main listing or another of its locations, or a listing with the same website or Instagram and the same name, `siteKey` and
+`chainName`), in Suggested as "The logo on <name>, <city>", with no new pick. The pick itself never takes a faint, low-contrast or
+tiny logo, and prefers a clean Instagram picture over a website's share picture. **Look now** (Sean, 2026-10-28: "is it possible... for me to
 trigger the push?") on every Logos tab runs the sweep on the next ten at once (`logo_sweep` takes a super admin too), and the head says
 how many are waiting or when the next look again is due (`logo_queue` `sweep.relook`, `sweep.next_relook`). Logos has two tabs: **Suggested** (`#logos/suggested`): every pick squared in the browser by
 `VELogoEditor.auto` (the editor's own trim, fit and background), ticked by default, **Save the N ticked** saves them all through
@@ -843,7 +848,11 @@ group shows **More locations** in the sidebar (`loadLocations`; closed ones last
 **Locations** section: Part of (the main listing's address), this location's name, and **Add a location** (`ve-claims`
 `admin_location_add`, `ve_listing_add_location()`: copies the shared content into a new live listing named "<Business> -
 <Location>"; the nightly essentials pass fills its hours, Google place and pin). One level only. Branches are locations, never
-duplicates to merge.
+duplicates to merge. The restaurant search of 2026-10-27 added chains unlinked; on 2026-10-28 179 listings were linked under 77
+main listings (same website and same name, food places and animal organizations only; migration `20261028_chain_locations.sql`,
+each a `ve_listing_edits` row, field `parent_id`). Left unlinked on purpose: sister restaurants (Doomie's, Kitchen Mouse, Essential
+Vegan), Tofutti, Viva!, Whole Foods and Loving Hut's listing with no street. The Directory card does not read the main listing, so a
+location keeps its own `logo_url` (chainFill fills it).
 
 Duplicates (Sean, 2026-10-10: "merge the duplicates"): a listing is never deleted. A duplicate gets status `rejected` with
 `details.merged_into` (the listing that stays), `merged_at` and `status_before_merge`, and what pointed at it (outreach,
