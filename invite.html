@@ -99,7 +99,7 @@
       <div class="eyebrow">Your invitation</div>
       <h1 id="closed-title">This invitation is no longer open.</h1>
       <p class="lede" id="closed-lede">Reply to Sean's email and he can send you a new one.</p>
-      <div class="cta-row"><a class="btn btn-primary" href="/welcome">See Vegans Explore</a></div>
+      <div class="cta-row"><a class="btn btn-primary" id="closed-btn" href="/welcome">See Vegans Explore</a></div>
     </section>
   </main>
 
@@ -118,12 +118,21 @@
     }
     function show(id) { ['loading', 'invite', 'done', 'closed'].forEach(function (s) { $(s).hidden = s !== id; }); }
     function say(text, kind) { var m = $('msg'); m.textContent = text; m.className = 'msg ' + (kind || ''); m.hidden = !text; }
-    function closed(title, lede) { $('closed-title').textContent = title; $('closed-lede').textContent = lede; show('closed'); }
+    function closed(title, lede, btn) {
+      $('closed-title').textContent = title; $('closed-lede').textContent = lede;
+      if (btn) { $('closed-btn').textContent = btn[0]; $('closed-btn').href = btn[1]; }
+      show('closed');
+    }
+    // Turning down the invitation never closes the door (Sean, 2026-10-28: "redirect them to still invite them to become a member, so that
+    // way they can enjoy all of the resources that we'll be developing for the community").
+    function declinedView(lede) {
+      closed('Thank you for letting us know.', lede + ' You are still welcome as a member: the Passport is $11, one time, with 1,100 points, and everything we are building for the community.', ['Get your Passport', '/passport']);
+    }
 
     function render(inv) {
       invite = inv;
       if (inv.status === 'joined') return closed('You already accepted this invitation.', 'Sign in to Vegans Explore to pick up where you left off.');
-      if (inv.status === 'declined') return closed('You turned down this invitation.', 'Thank you for letting us know. If you change your mind, reply to Sean’s email.');
+      if (inv.status === 'declined') return declinedView('You turned down this invitation. If you change your mind about being an Ambassador, reply to Sean’s email.');
       if (inv.status === 'expired') return closed('This invitation has expired.', 'Reply to Sean’s email and he can send you a new one.');
       if (inv.status !== 'open') return closed('This invitation is no longer open.', 'Reply to Sean’s email if you think it should be.');
       $('title').textContent = inv.first_name + ', you’re invited.';
@@ -201,7 +210,7 @@
       var b = this; b.disabled = true;
       call('decline', null, { note: $('decline-note').value.trim() || null }).then(function (d) {
         b.disabled = false;
-        if (d && d.ok) return closed('Thank you for letting us know.', 'Your invitation is closed. If you change your mind, reply to Sean’s email.');
+        if (d && d.ok) return declinedView('Your invitation is closed. If you change your mind about being an Ambassador, reply to Sean’s email.');
         say((d && d.message) || 'That did not go through. Try again in a minute.', 'err');
       }).catch(function () { b.disabled = false; say('That did not go through. Check your connection and try again.', 'err'); });
     });
@@ -214,7 +223,7 @@
         reason: 'Jordan, you have been showing up for this community since day one. You are exactly who I had in mind when I built this.',
         points_to: 'ambassador', status: 'open', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), email_hint: 'j*****@example.com' };
       $('no-thanks').hidden = true;
-      if (pv === 'declined') { closed('Thank you for letting us know.', 'Your invitation is closed. If you change your mind, reply to Sean’s email.'); return; }
+      if (pv === 'declined') { declinedView('Your invitation is closed. If you change your mind about being an Ambassador, reply to Sean’s email.'); return; }
       render(sample);
       $('accept').removeEventListener('click', accept);
       $('accept').addEventListener('click', function () { say('Preview: accepting makes a real account, so it is turned off here.', 'ok'); });

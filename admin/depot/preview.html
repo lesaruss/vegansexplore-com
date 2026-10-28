@@ -45,8 +45,15 @@
     .frame{background:#111;border-radius:28px;padding:10px;box-shadow:0 18px 40px rgba(0,0,0,0.25);}
     .frame iframe{display:block;border:0;border-radius:20px;background:#fff;}
     .frame.phone iframe{width:390px;height:min(780px,calc(100vh - 150px));}
-    .frame.desk{border-radius:14px;padding:8px;}
-    .frame.desk iframe{width:min(860px,calc(100vw - 640px));height:min(560px,calc(100vh - 150px));border-radius:8px;}
+    /* Desktop renders the page at a real 1440 x 900 and scales it to fit (Sean, 2026-10-28: "it looks like it's just stretching the phone
+       view"): a frame narrower than 900 px sent every page to its phone layout. The steps narrow to a column beside it. */
+    .layout.desk{grid-template-columns:300px minmax(0,1fr);}
+    .layout.desk .stage{align-items:stretch;}
+    .frame.desk{border-radius:14px;padding:8px;width:100%;}
+    .frame.desk .fit{overflow:hidden;border-radius:8px;background:#fff;}
+    .frame.desk iframe{width:1440px;height:900px;border-radius:0;transform-origin:0 0;}
+    .layout.desk .stage-cap{max-width:none;}
+    @media (max-width:1100px){.layout.desk{grid-template-columns:minmax(0,1fr);}.layout.desk .stage{display:flex !important;order:-1;position:static;}}
     .stage-cap{font-size:12px;font-weight:700;color:var(--ve-text-75);max-width:390px;text-align:center;}
     [hidden]{display:none !important;}
   </style>
@@ -93,13 +100,13 @@
           <button type="button" data-size="desk" aria-pressed="false">Desktop</button>
         </div>
       </div>
-      <div class="layout">
+      <div class="layout" id="layout">
         <div>
           <p class="journey-intro" id="intro"></p>
           <ol class="steps" id="steps"></ol>
         </div>
         <div class="stage">
-          <div class="frame phone" id="frame"><iframe id="view" title="Step preview" src="about:blank"></iframe></div>
+          <div class="frame phone" id="frame"><div class="fit" id="fit"><iframe id="view" title="Step preview" src="about:blank"></iframe></div></div>
           <p class="stage-cap" id="cap">Click a step to see it here.</p>
         </div>
       </div>
@@ -221,7 +228,7 @@
           { t: 'Their invitation page', d: 'What Accept and get started opens: your note, their gift and level, and that it is for their email only.', u: '/invite?preview=open&profile={p}', k: 'pv' },
           { t: 'Making their account', d: 'Email or Continue with Google, with the email you invited. No checkout: the invitation covers it. It makes a real account, so it cannot be previewed.', k: 'na' },
           { t: 'If they use another email', d: 'The invitation works for their email only; the page says so and signs the other account out.', u: '/invite?preview=wrong&profile={p}', k: 'pv' },
-          { t: 'If they say No thanks', d: 'They can turn it down with a note; you see Declined with their words.', u: '/invite?preview=declined', k: 'pv' },
+          { t: 'If they say No thanks', d: 'They can turn it down with a note; you see Declined with their words. They are still invited to join as a member, with Get your Passport.', u: '/invite?preview=declined', k: 'pv' },
           { t: 'You\u2019re in', d: 'Accepted: active Founding Member, Ambassador, their points and level. Start as an Ambassador opens their Guide.', u: '/invite?preview=done&profile={p}', k: 'pv' }
         ].concat(GT.map(function (g, i) { return { t: 'Ambassador Guide ' + (i + 1) + ': ' + g[1], d: g[2] + (g[2] ? ' ' : '') + 'Shown with your own points and link.', u: '/ambassadors/welcome?profile={p}#/' + g[0], k: 'pv' }; })).concat([
           { t: 'Points and levels', d: 'In their dashboard: their level, their link, what it earned and where it goes. Shown as your own account.', u: '/levels', k: 'live' },
@@ -250,6 +257,8 @@
         $('prof-wrap').hidden = !J.profile;
         $('intro').textContent = J.intro;
         $('frame').className = 'frame ' + size;
+        $('layout').className = 'layout' + (size === 'desk' ? ' desk' : '');
+        fit();
         $('steps').innerHTML = J.steps.map(function (s, i) {
           var u = url(s);
           return '<li class="step' + (u ? '' : ' off') + (i === cur ? ' current' : '') + '" data-i="' + i + '"' + (u ? ' tabindex="0" role="button" aria-label="Show ' + esc(s.t) + ' in the frame"' : '') + '>' +
@@ -257,13 +266,22 @@
             (u ? '<a class="open" href="' + esc(u) + '" target="_blank" rel="noopener">Open</a>' : '<span></span>') + '</li>';
         }).join('');
       }
+      // Desktop: the 1440 x 900 page scaled to the frame's width, the box sized to match.
+      function fit() {
+        var f = $('fit'), v = $('view');
+        if (size !== 'desk') { f.style.width = f.style.height = ''; v.style.transform = ''; return; }
+        var w = Math.max(320, $('frame').clientWidth - 16), sc = Math.min(1, w / 1440);
+        f.style.width = w + 'px'; f.style.height = Math.round(900 * sc) + 'px'; v.style.transform = 'scale(' + sc + ')';
+        $('cap').dataset.scale = Math.round(sc * 100);
+      }
+      window.addEventListener('resize', fit);
       function pick(i) {
         var s = JOURNEYS[j].steps[i], u = url(s); if (!u) return;
         cur = i;
         // Reload the frame even when only the #slide changes, so each page starts on that slide.
         $('view').src = 'about:blank';
         setTimeout(function () { $('view').src = u; }, 30);
-        $('cap').textContent = (i + 1) + '. ' + s.t;
+        $('cap').textContent = (i + 1) + '. ' + s.t + (size === 'desk' ? ' (a 1440 x 900 screen, shown at ' + ($('cap').dataset.scale || 100) + '%)' : '');
         document.querySelectorAll('.step').forEach(function (el) { el.classList.toggle('current', +el.getAttribute('data-i') === i); });
       }
       $('steps').addEventListener('click', function (e) {
