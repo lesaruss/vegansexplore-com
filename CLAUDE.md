@@ -1094,7 +1094,8 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); North Florida (Jacksonville and
   the Main Street Bridge), Virginia (Richmond and the James River rapids), West Virginia (the Capitol in Charleston) and Delaware
   (the Wilmington riverfront) got their own on 2026-10-28 (`communities/<slug>/banner.jpg`, made in Higgsfield in the Maryland
-  banner's style; the dashboards' `VE_CITY_BANNER` maps in `center-console.html` and `cm-legacy.html` hold the same paths). VE_HUBS[].state groups chapters by
+  banner's style; Virginia and Delaware were made from words alone, since with the Maryland picture as a reference they came back
+  as Baltimore's skyline (a hub's header crops to the skyline, so check that part against the reference); the dashboards' `VE_CITY_BANNER` maps in `center-console.html` and `cm-legacy.html` hold the same paths). VE_HUBS[].state groups chapters by
   state. The chapter list also lives in `ve-auth` (`VALID_COMMUNITIES`, names, city aliases), `ve-board`, `ve-bounties`, `ve-claims`,
   `ve-hunt`, `ve-invites`, `ve-media-library`, `ve-news-desk`, `ve-tours` and the name maps in the dashboard, join, lead and Depot
   pages; the dashboard's city rules are built from VE_HUBS. A new chapter changes all of them. Large functions deploy from a commit
