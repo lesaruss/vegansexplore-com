@@ -140,7 +140,14 @@
       if (inv.comp && inv.level > 1) $('gift').textContent += ', starting at Level ' + inv.level;
       if (inv.points_to === 'ambassador') {
         $('title').textContent = inv.first_name + ', be one of our first Ambassadors.';
-        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to be one of the people who bring others in. Accept, and your Ambassador account walks you through it.';
+        // The profile Sean picked words why (Sean, 2026-10-28); the same as the email's paragraph.
+        var WHY = {
+          animals: 'one of the people who bring others in, so more people find and support the rescues, sanctuaries and organizations working for the animals',
+          community: 'one of the people who grow the community in their city, help local Vegan businesses get found and back the nonprofits behind the mission, with a link that earns as it grows',
+          creator: 'one of the people who bring others in. Your audience already trusts you; share it your way, with a link that earns as they join',
+          fitness: 'one of the people who bring the fitness and wellness crowd in, and help Vegan coaches, trainers, gyms and athletes get found'
+        };
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to be ' + (WHY[inv.profile] || 'one of the people who bring others in') + '. Accept, and your Ambassador account walks you through it.';
       }
       if (inv.points_to === 'community_manager') {
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';

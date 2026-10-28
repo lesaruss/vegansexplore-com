@@ -194,7 +194,7 @@
           '<div class="totals"><div class="tot"><b>' + n(A.length) + '</b><span>Ambassadors</span></div><div class="tot"><b>' + n(sum('visitors')) + '</b><span>People who opened their links</span></div>' +
           '<div class="tot"><b>' + n(sum('signups')) + '</b><span>Signed up with their links</span></div><div class="tot"><b>' + n(sum('members')) + '</b><span>Became members</span></div></div>' +
           '<div class="list">' + (A.length ? '<div class="row head" aria-hidden="true"><span></span><span>Ambassador</span><span class="c">Level</span><span class="c">Points</span><span class="c">Link visitors</span><span class="c">Signed up</span><span class="c">Members</span><span class="c">Earned</span><span></span></div>' + A.map(function (a) {
-            return '<div class="row">' + av(a) + '<div><b>' + esc(a.name) + '</b><small>' + esc(a.email) + ' &middot; ' + (a.membership_status === 'active' ? 'Active' : 'Not active') + (a.last_activity_at ? ', last seen ' + esc(day(a.last_activity_at)) : '') + '</small>' +
+            return '<div class="row">' + av(a) + '<div><b>' + esc(a.name) + '</b><small>' + esc(a.email) + ' &middot; ' + esc(profName(a.ambassador_profile)) + ' &middot; ' + (a.membership_status === 'active' ? 'Active' : 'Not active') + (a.last_activity_at ? ', last seen ' + esc(day(a.last_activity_at)) : '') + '</small>' +
               '<span class="mob">Level ' + a.level + ' &middot; ' + n(a.points) + ' points &middot; ' + n(a.visitors) + ' visitors &middot; ' + n(a.signups) + ' signed up &middot; ' + usd(a.earned_cents) + ' earned</span></div>' +
               '<span class="c"><span class="lvl">Level ' + a.level + '</span>' + (a.level_override && a.level_override >= a.level ? '<small>Set by you</small>' : '') + '</span>' +
               '<span class="c num">' + n(a.points) + '</span><span class="c num">' + n(a.visitors) + '</span><span class="c num">' + n(a.signups) + '</span><span class="c num">' + n(a.members) + '</span><span class="c num">' + usd(a.earned_cents) + '</span>' +
@@ -222,6 +222,8 @@
             '<div class="two">' +
             '<section class="card"><h2>Their level</h2><p class="hint" style="margin-bottom:10px">Points earn Level 2 at 2,500, Level 3 at 10,000 and Level 4 at 25,000. Their link earns 20% of the Passport from Level 2, 25% with Guides from Level 3, and 30% at Level 4. A level you set is the least they have: they still climb with points.</p>' +
               '<div class="seg" id="lv" role="group" aria-label="Level">' + [[0, 'By their points'], [2, 'Level 2'], [3, 'Level 3'], [4, 'Level 4']].map(function (o) { return '<button type="button" data-lv="' + o[0] + '" aria-pressed="' + (cur === o[0] || (!cur && !o[0])) + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+              '<h2 style="margin-top:18px">Their profile</h2><p class="hint" style="margin-bottom:10px">How their Ambassador Guide speaks to them. <a href="/ambassadors/welcome?profile=' + esc(a.ambassador_profile || '') + '" target="_blank" rel="noopener">See their Guide</a></p>' +
+              profSeg('a-prof', a.ambassador_profile) +
               '<h2 style="margin-top:18px">Give points</h2><form class="form" id="gp"><label>Points<input id="gp-n" type="number" min="1" max="100000" step="1" required><span class="chips">' +
                 [500, 1100, 2500, 5000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + n(p) + '</button>'; }).join('') + '</span><span class="hint">Spendable, added to what they have.</span></label>' +
               '<label>What for (optional)<input id="gp-note" maxlength="80" placeholder="Thank you for the Miami meetup"></label>' +
@@ -245,6 +247,15 @@
                 if (!r || !r.ok) { msg.className = 'msg err'; msg.textContent = (r && r.message) || 'That did not save.'; return; }
                 data = null; drawOne(a.id);
               });
+            });
+          });
+          wireProf($('a-prof'));
+          $('a-prof').addEventListener('click', function (e) {
+            var b = e.target.closest('[data-p]'); if (!b) return;
+            msg.className = 'msg'; msg.textContent = 'Saving...';
+            api({ action: 'ambassador_save', member_id: a.id, profile: b.dataset.p || null }).then(function (r) {
+              if (!r || !r.ok) { msg.className = 'msg err'; msg.textContent = (r && r.message) || 'That did not save.'; return; }
+              data = null; drawOne(a.id);
             });
           });
           app.querySelectorAll('[data-pts]').forEach(function (b) { b.addEventListener('click', function () { $('gp-n').value = b.dataset.pts; }); });
@@ -283,6 +294,19 @@
         return '<div class="seg" id="' + id + '" role="group" aria-label="Level">' + [1, 2, 3, 4].map(function (l) { return '<button type="button" data-l="' + l + '" aria-pressed="' + (l === cur) + '">Level ' + l + '</button>'; }).join('') + '</div>';
       }
       function wireSeg(el) { el.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { el.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }); }); }
+      // Ambassador profiles (Sean, 2026-10-28): the kind of person they are, which decides how their email, invitation page and
+      // Ambassador Guide speak to them. Balanced is the version everyone had before.
+      var PROFILES = [['', 'Balanced', 'The animals and the community, side by side.'], ['animals', 'Animals first', 'Rescues, sanctuaries and the organizations working for the animals.'],
+        ['community', 'Community builder', 'Their city, local Vegan businesses, the nonprofits behind the mission, and an income from their link.'],
+        ['creator', 'Creator', 'Their audience, something to share every day, the Podcast Network, and what their link earns.'],
+        ['fitness', 'Health and fitness', 'Coaches, trainers, gyms and athletes getting found, and fuel for the people they train.']];
+      function profName(k) { for (var x = 0; x < PROFILES.length; x++) if (PROFILES[x][0] === (k || '')) return PROFILES[x][1]; return 'Balanced'; }
+      function profSeg(id, cur) {
+        return '<div class="seg" id="' + id + '" role="group" aria-label="Profile">' + PROFILES.map(function (p) { return '<button type="button" data-p="' + p[0] + '" title="' + esc(p[2]) + '" aria-pressed="' + ((cur || '') === p[0]) + '">' + p[1] + '</button>'; }).join('') + '</div>' +
+          '<span class="hint" id="' + id + '-hint">' + esc((PROFILES.filter(function (p) { return p[0] === (cur || ''); })[0] || PROFILES[0])[2]) + '</span>';
+      }
+      function wireProf(el) { el.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { el.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); var h = $(el.id + '-hint'); if (h) h.textContent = b.title; }); }); }
+      function profVal(el) { var b = el.querySelector('[aria-pressed="true"]'); return b && b.dataset.p ? b.dataset.p : null; }
       function segVal(el) { var b = el.querySelector('[aria-pressed="true"]'); return b ? Number(b.dataset.l) : 1; }
       function noteField(id, val) {
         return '<label class="wide"><span class="note-head">Your note<button type="button" class="mic" id="' + id + '-mic">' + MIC + 'Speak</button></span>' +
@@ -296,12 +320,14 @@
           '<label>Their name<input id="f-name" required maxlength="120" autocomplete="off"></label>' +
           '<label>Their email<input id="f-email" type="email" required maxlength="200" autocomplete="off"><span class="hint">Only this email can accept it.</span></label>' +
           '<div class="lbl">Level they start at' + levelSeg('f-level', 1) + '<span class="hint">They keep it, and still climb with points.</span></div>' +
+          '<div class="lbl wide">Their profile' + profSeg('f-prof', '') + '</div>' +
           '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="chips">' +
             [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, theirs when they accept.</span></label>' +
           noteField('f-reason', '') +
           '<div class="wide acts"><button type="submit" class="btn" id="mk">See the draft</button><span class="msg" id="msg" role="status"></span></div>' +
           '</form></section>';
         wireSeg($('f-level'));
+        wireProf($('f-prof'));
         dictation($('f-reason-mic'), $('f-reason'));
         app.querySelectorAll('[data-pts]').forEach(function (b) { b.addEventListener('click', function () { $('f-points').value = b.dataset.pts; }); });
         $('f').addEventListener('submit', function (e) {
@@ -310,7 +336,7 @@
           if (!name || !/^\S+@\S+\.\S+$/.test(email)) { msg.className = 'msg err'; msg.textContent = 'Add their name and email.'; return; }
           var points = Math.max(0, Math.min(100000, Math.round(Number($('f-points').value) || 0)));
           $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making the draft...';
-          api({ action: 'create', brand: 'vegans-explore', points_to: 'ambassador', points: points, level: segVal($('f-level')), reason: $('f-reason').value.trim() || null, people: [{ name: name, email: email, comp: true }] }).then(function (d) {
+          api({ action: 'create', brand: 'vegans-explore', points_to: 'ambassador', points: points, level: segVal($('f-level')), profile: profVal($('f-prof')), reason: $('f-reason').value.trim() || null, people: [{ name: name, email: email, comp: true }] }).then(function (d) {
             $('mk').disabled = false;
             if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
             if (!d.created.length) { msg.className = 'msg err'; msg.textContent = (d.skipped[0] && d.skipped[0].why) || 'It was not made.'; return; }
@@ -337,6 +363,7 @@
           (i.claimed_member_id ? '<p style="margin-top:8px"><a class="btn btn-ghost btn-sm" href="#a/' + esc(i.claimed_member_id) + '">Open their Ambassador page</a></p>' : '') + '</section>' +
           (open ? '<div class="two"><section class="card"><h2>The draft</h2><form class="form" id="ed">' +
               '<div class="lbl">Level they start at' + levelSeg('ed-level', i.level || 1) + '</div>' +
+              '<div class="lbl wide">Their profile' + profSeg('ed-prof', i.profile) + '</div>' +
               '<label>Points<input id="ed-points" type="number" min="0" max="100000" step="1" value="' + Number(i.points || 0) + '"></label>' +
               noteField('ed-reason', i.reason) +
               '<div class="wide acts"><button type="submit" class="btn btn-ghost" id="ed-save">Save changes</button><span class="msg" id="ed-msg" role="status"></span></div></form></section>' +
@@ -353,12 +380,14 @@
         }
         preview();
         wireSeg($('ed-level'));
+        wireProf($('ed-prof'));
         dictation($('ed-reason-mic'), $('ed-reason'));
         var dirty = false;
         ['ed-reason', 'ed-points'].forEach(function (k) { $(k).addEventListener('input', function () { dirty = true; }); });
         $('ed-level').addEventListener('click', function () { dirty = true; });
+        $('ed-prof').addEventListener('click', function () { dirty = true; });
         function save() {
-          return api({ action: 'update', id: i.id, reason: $('ed-reason').value.trim() || null, points: Math.max(0, Math.min(100000, Math.round(Number($('ed-points').value) || 0))), level: segVal($('ed-level')) }).then(function (d) {
+          return api({ action: 'update', id: i.id, reason: $('ed-reason').value.trim() || null, points: Math.max(0, Math.min(100000, Math.round(Number($('ed-points').value) || 0))), level: segVal($('ed-level')), profile: profVal($('ed-prof')) }).then(function (d) {
             if (!d || !d.ok) throw new Error((d && d.message) || 'That did not save.');
             dirty = false; data = null;
           });

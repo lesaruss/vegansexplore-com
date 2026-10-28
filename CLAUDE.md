@@ -573,6 +573,18 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   - **Link visits**: `/passport?ref=<code>` (any page with `?ref=`) calls `ve_referral_visit(code, visitor)` once a visit
     (`refVisit` in `public/ve-auth.js`; the visitor is a random id in the browser, `localStorage` `ve_visitor`), one row per visitor a
     day in `ve_referral_visits`. Counting started 2026-10-28.
+  - **Profiles** (Sean, 2026-10-28: "I should be able to check the type of person they are... she might not be as moved about the
+    animal side of things... lean more on the building community, helping local businesses, supporting nonprofits that support the vegan
+    mission, and... an extra income opportunity... create different profiles"; migration `20261028_ambassador_profiles.sql`): Balanced (none),
+    **Animals first** (`animals`), **Community builder** (`community`), **Creator** (`creator`), **Health and fitness** (`fitness`), picked on
+    the invitation (`universe_invites.profile`, the claim copies it to `members.ambassador_profile`) and changeable on the Ambassador's page
+    (`ambassador_save` `profile`). It words the email's "why you" paragraph (`ambassadorWhy` in `ve-invites`), the `/invite` page's opening
+    (`WHY`), the Ambassador Guide's Overview reason, Why it matters (`PROFILES` and `BLOCKS` in `ambassadors/welcome.html`: each profile's blocks
+    in its order: animals, community, business, nonprofits, income, creator, fitness), Liz's and Dani's lines there, the first ready-to-share
+    message, and the dashboard tile's line (`AMB_LINE`). The facts and terms are the same in every profile. A super admin previews one with
+    `/ambassadors/welcome?profile=<key>` (See their Guide). From Level 2 every ready-to-share message says "I earn a little when you join with
+    my link" (the FTC rule). The invitation email spaces every paragraph inline and bolds the Ambassador ask, the membership on us, the
+    points and the level (Sean, 2026-10-28).
   - A member can be invited to be an Ambassador (only Already an Ambassador is left out); other invitation kinds still leave paid
     members out. A personal note is up to 2,000 characters, a blank line a new paragraph.
 

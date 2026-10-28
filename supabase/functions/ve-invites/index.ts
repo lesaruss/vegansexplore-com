@@ -25,11 +25,13 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 //   POST { action: 'send', ids }         emails each one from Sean (Resend), up to 100 per call
 //   POST { action: 'mark_copied', id }   Sean sent the link himself
 //   POST { action: 'cancel', id }
-//   POST { action: 'update', id, reason?, points?, level?, name? }   edit an invitation that is not accepted yet (the draft)
+//   POST { action: 'update', id, reason?, points?, level?, profile?, name? }   edit an invitation that is not accepted yet (the draft)
 // Ambassadors (Sean, 2026-10-28; Depot > People > Ambassadors):
 //   POST { action: 'ambassadors' }       every Ambassador with their numbers (ve_ambassadors_overview) and their invitations
 //   POST { action: 'ambassador', member_id }   one Ambassador: the numbers, who signed up with their link, visits by day
-//   POST { action: 'ambassador_save', member_id, level_override?, add_points?, note? }   set their level, give spendable points
+//   POST { action: 'ambassador_save', member_id, level_override?, add_points?, note?, profile? }   set their level and profile, give points
+// An Ambassador invitation's profile (animals | community | creator | fitness, or none for the balanced version) words the email's
+// "why you" paragraph (ambassadorWhy) and is copied to members.ambassador_profile at the claim.
 // Public, added 2026-10-28:
 //   POST { action: 'decline', code, note? }    "No thanks" on the invitation page
 // An invitation is for its email only: universe_invite_claim refuses any other account ('wrong_email'), so a copied link
@@ -156,6 +158,21 @@ async function destinationFor(inv: Invite): Promise<string> {
 }
 const linkUrl = (inv: Invite) => inv.link_code ? `${SITE}/go/${inv.link_code}` : `${SITE}/invite?c=${inv.code}`;
 
+// Ambassador profiles (Sean, 2026-10-28): the "why you" paragraph speaks to the kind of person they are. The terms never change.
+const PROFILES = ['animals', 'community', 'creator', 'fitness'];
+const profileOf = (v: unknown) => (typeof v === 'string' && PROFILES.includes(v) ? v : null);
+function ambassadorWhy(inv: Invite, b: (t: string) => string) {
+  const earns = (inv.level ?? 1) >= 2 ? 'From day one your link also earns' : 'As you level up, your link also earns';
+  const tail = 'Your link sets up your Ambassador account and walks you through it.';
+  switch (inv.profile) {
+    case 'animals': return `I'd like you to be one of our ${b('first Ambassadors')}: one of the people who bring others in, so more people find and support the rescues, sanctuaries and organizations working for the animals. ${tail}`;
+    case 'community': return `I'd like you to be one of our ${b('first Ambassadors')}: one of the people who ${b('grow the community in their city')}, help local Vegan businesses get found and back the nonprofits behind the mission. ${earns} a share of every Passport it brings in, an income that can help fund the things you love. ${tail}`;
+    case 'creator': return `I'd like you to be one of our ${b('first Ambassadors')}. Your audience already trusts you: share Vegans Explore your way, with the people who follow your work. ${earns} a share of every Passport it brings in. ${tail}`;
+    case 'fitness': return `I'd like you to be one of our ${b('first Ambassadors')}: one of the people who bring the fitness and wellness crowd in, and help Vegan coaches, trainers, gyms and athletes get found. ${tail}`;
+    default: return `I'd like you to be one of our ${b('first Ambassadors')}: one of the people who bring others in. ${tail}`;
+  }
+}
+
 async function emailFor(inv: Invite) {
   const first = firstName(inv.name);
   const brand = BRANDS[inv.brand] ?? 'Vegans Explore';
@@ -176,7 +193,7 @@ async function emailFor(inv: Invite) {
   paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
   if (d) paras.push(`I'd like you at ${b(`our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}`)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${esc(city ?? '')} community as its ${b('Community Manager')}. Your link has the details.`.replace('our  ', 'our '));
-  if (inv.points_to === 'ambassador') paras.push(`I'd like you to be one of our ${b('first Ambassadors')}: one of the people who bring others in. Your link sets up your Ambassador account and walks you through it.`);
+  if (inv.points_to === 'ambassador') paras.push(ambassadorWhy(inv, b));
   if (inv.comp) paras.push(`${b('Your Founding Membership is on us')}${inv.points > 0 ? `, with ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} ${b(`Level ${inv.level}`)}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
   const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : 'Accept your invitation';
   const url = linkUrl(inv);
@@ -225,7 +242,7 @@ Deno.serve(async (req: Request) => {
         points_to: inv.points_to, city: inv.city_slug ? CITIES[inv.city_slug] ?? null : null,
         dinner: d ? { title: d.title, date: dinnerDate(d), place: dinnerPlace(d), url: await destinationFor(inv) } : null,
         status: inv.status === 'canceled' ? 'canceled' : inv.status === 'joined' ? 'joined' : inv.status === 'declined' ? 'declined' : expired ? 'expired' : 'open',
-        expires_at: inv.expires_at, level: inv.level ?? null, email_hint: maskEmail(inv.email),
+        expires_at: inv.expires_at, level: inv.level ?? null, profile: inv.profile ?? null, email_hint: maskEmail(inv.email),
       };
       if (action === 'view') {
         if (inv.status === 'sent') await db.from('universe_invites').update({ status: 'opened', opened_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', inv.id).eq('status', 'sent');
@@ -298,6 +315,7 @@ Deno.serve(async (req: Request) => {
         const comp = p?.comp !== false;
         const points = comp ? pointsOf(p?.points ?? body.points) : 0;
         const level = levelOf(p?.level ?? body.level);
+        const profile = pointsTo === 'ambassador' ? profileOf(p?.profile ?? body.profile) : null;
 
         // A dinner seat is a guest on that dinner's list (Depot > Dinner guests).
         let dinnerInviteId: string | null = null;
@@ -322,7 +340,7 @@ Deno.serve(async (req: Request) => {
 
         const { data: inv, error } = await db.from('universe_invites').insert({
           brand, person_id: personId, name, email, comp, points, reason, points_to: pointsTo, dinner_slug: dinner?.slug ?? null,
-          dinner_invite_id: dinnerInviteId, city_slug: city, batch_id: batch, created_by: by ?? actor.label, level,
+          dinner_invite_id: dinnerInviteId, city_slug: city, batch_id: batch, created_by: by ?? actor.label, level, profile,
         }).select('*').single();
         if (error || !inv) { console.error('invite insert:', error); skipped.push({ name, email, why: 'Could not save' }); continue; }
 
@@ -342,11 +360,11 @@ Deno.serve(async (req: Request) => {
         if (link) await db.from('universe_invites').update({ link_id: link.id, link_code: link.code }).eq('id', inv.id);
         created.push({ ...inv, link_id: link?.id ?? null, link_code: link?.code ?? null });
       }
-      return json({ ok: true, batch_id: batch, created: created.map((i) => ({ id: i.id, name: i.name, email: i.email, comp: i.comp, points: i.points, level: i.level, link: linkUrl(i) })), skipped });
+      return json({ ok: true, batch_id: batch, created: created.map((i) => ({ id: i.id, name: i.name, email: i.email, comp: i.comp, points: i.points, level: i.level, profile: i.profile, link: linkUrl(i) })), skipped });
     }
 
     if (action === 'list') {
-      let q = db.from('universe_invites').select('id, name, email, comp, points, level, reason, points_to, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, joined_at, declined_at, decline_note, claimed_member_id, expires_at, created_at, created_by, link_code, code')
+      let q = db.from('universe_invites').select('id, name, email, comp, points, level, profile, reason, points_to, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, joined_at, declined_at, decline_note, claimed_member_id, expires_at, created_at, created_by, link_code, code')
         .eq('brand', 'vegans-explore').order('created_at', { ascending: false }).limit(300);
       if (['ready', 'sent', 'opened', 'joined', 'declined', 'expired', 'canceled'].includes(body.status)) q = q.eq('status', body.status);
       if (['none', 'dinner', 'community_manager', 'ambassador'].includes(body.points_to)) q = q.eq('points_to', body.points_to);
@@ -368,6 +386,7 @@ Deno.serve(async (req: Request) => {
       if ('reason' in body) patch.reason = clip(body.reason, 2000);
       if ('points' in body && inv.comp) patch.points = pointsOf(body.points);
       if ('level' in body) patch.level = levelOf(body.level);
+      if ('profile' in body) patch.profile = profileOf(body.profile);
       if ('name' in body && clip(body.name, 120)) patch.name = clip(body.name, 120);
       const { error } = await db.from('universe_invites').update(patch).eq('id', inv.id);
       if (error) { console.error('update:', error); return json({ error: 'update_failed', message: 'That did not save.' }, 500); }
@@ -377,7 +396,7 @@ Deno.serve(async (req: Request) => {
     if (action === 'ambassadors') {
       const [{ data: list, error }, { data: invites }] = await Promise.all([
         db.rpc('ve_ambassadors_overview'),
-        db.from('universe_invites').select('id, name, email, comp, points, level, reason, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, joined_at, declined_at, decline_note, claimed_member_id, expires_at, created_at, link_code, code')
+        db.from('universe_invites').select('id, name, email, comp, points, level, profile, reason, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, joined_at, declined_at, decline_note, claimed_member_id, expires_at, created_at, link_code, code')
           .eq('points_to', 'ambassador').order('created_at', { ascending: false }).limit(300),
       ]);
       if (error) { console.error('ambassadors:', error); return json({ error: 'list_failed' }, 500); }
@@ -409,6 +428,10 @@ Deno.serve(async (req: Request) => {
       const { data: m } = await db.from('members').select('id, ve_role').eq('id', body.member_id).maybeSingle();
       if (!m || m.ve_role !== 'ambassador') return json({ error: 'not_found' }, 404);
       const out: Record<string, unknown> = { ok: true };
+      if ('profile' in body) {
+        await db.from('members').update({ ambassador_profile: profileOf(body.profile), updated_at: new Date().toISOString() }).eq('id', m.id);
+        out.profile = profileOf(body.profile);
+      }
       if ('level_override' in body) {
         const lv = body.level_override == null || body.level_override === '' ? null : levelOf(body.level_override);
         await db.from('members').update({ level_override: lv && lv > 1 ? lv : null, updated_at: new Date().toISOString() }).eq('id', m.id);

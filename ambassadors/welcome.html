@@ -250,7 +250,8 @@
   function first() { return String((M && M.name) || '').trim().split(/\s+/)[0] || 'there'; }
   function link() { return 'https://vegansexplore.com/passport' + (M && M.referral_code ? '?ref=' + encodeURIComponent(M.referral_code) : ''); }
   function hub(slug) { return (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0] || null; }
-  function level(total) { return total >= 10000 ? 3 : total >= 2500 ? 2 : 1; }
+  var LEVEL_AT = [0, 2500, 10000, 25000];
+  function level(total) { var lv = 1; LEVEL_AT.forEach(function (at, i) { if (total >= at) lv = i + 1; }); return Math.max(lv, Math.min(4, Number(M && M.level_override) || 1)); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
   function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
@@ -261,15 +262,95 @@
     else window.prompt('Copy this', text);
   }
 
+  // Ambassador profiles (Sean, 2026-10-28: "I should be able to check the type of person they are... she might not be as moved about
+  // the animal side of things... lean more on the building community, helping local businesses, supporting nonprofits that support the
+  // vegan mission, and... an extra income opportunity"). Sean picks one on the invitation or the Ambassador's page
+  // (members.ambassador_profile); none is the balanced version. A profile changes the reasons and their order, never the facts.
+  // A super admin can preview one with ?profile=<key>.
+  var BLOCKS = {
+    animals: function () { return ['For the animals', [
+      card('Rescues and sanctuaries get found', 'The Directory\'s Community section puts the animals first: rescues, sanctuaries, nonprofits and their events, in every chapter. Every member is someone new who can find them, visit, volunteer and give. <a href="/directory?tab=community">See the Community section</a>.', 'The Directory'),
+      card('Fosters and rescues on the Board', 'Every chapter\'s Daily Pulse has a Fosters board and a Rescues board, where animals that need a foster or a rescue are posted. More members means more people who see each one. <a href="/pulse/rescues">Open Rescues</a>.', 'Every city'),
+      card('Points given to the organizations', 'Points come in as people join through you. You can give them to a rescue, sanctuary or nonprofit right from its page, where they show as support from the community.', 'Give'),
+      card('Campaigns behind the cause', 'As the community grows, our marketing and promotion grows with it: campaigns, events and promotion that put organizations in front of the people ready to support them, and help them find the support they are lacking today.', 'Growing', true)]]; },
+    community: function () { return ['For the community', [
+      card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory'),
+      card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more jobs and classifieds on the Board.', 'Community'),
+      card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Your $11 at work'),
+      card('Your voice carries', 'People listen to someone they know in a way they never listen to an ad. That is why we asked you.', 'Why you')]]; },
+    business: function () { return ['For local businesses', [
+      card('Every Vegan place gets a page', 'Every Vegan restaurant, bakery and brand in your city has a page in the Directory. Members vote it up, save it and check in when they visit.', 'The Directory'),
+      card('Owners see who comes', 'A business that claims its page gets a dashboard: its views, what visitors did, and the members who check in. <a href="/business">See what businesses get</a>.', 'For owners'),
+      card('You open the door', 'When a place you love is not in the Directory, or has not claimed its page, send them to vegansexplore.com/business. You know them; we do the rest.', 'Your part')]]; },
+    nonprofits: function () { return ['For the nonprofits behind the mission', [
+      card('They get found', 'Rescues, sanctuaries and Vegan nonprofits have their own place in the Directory\'s Community section, in every chapter. <a href="/directory?tab=community">See them</a>.', 'The Directory'),
+      card('Points become support', 'Give points to an organization from its page, where they show as support from the community.', 'Give'),
+      card('Your earnings can go to them', 'Send everything your link earns to one of them instead, in your name. <a href="/dashboard/levels#give">Choose it in Points and levels</a>.', 'Your call'),
+      card('Campaigns behind the cause', 'As the community grows, so does our promotion of the organizations doing the work.', 'Growing', true)]]; },
+    income: function () { return ['For you', [
+      card('Your link earns', 'From Level 2 your link earns 20% of every Passport bought through it, 25% at Level 3 with Guides too, and 30% at Level 4.', 'Income'),
+      card('It grows with you', 'The more people you bring in, the more it earns and the higher your level climbs. There is no salary and no guarantee: it is a share of what your community brings in.', 'Straight talk'),
+      card('Fund what you love', 'Use it for what matters to you, or send it to an organization you believe in. <a href="/dashboard/levels">Points and levels</a> shows every bit of it.', 'Your call')]]; },
+    creator: function () { return ['For your audience', [
+      card('Something to talk about, every day', 'Every chapter has a Daily Pulse topic each morning, plus events and new places: things to share with your audience, and somewhere for them to go.', 'Every day'),
+      card('One link, everywhere you post', 'Put your link in your bio and your posts. Every visit and every member it brings in counts to you.', 'Your link'),
+      card('Have a podcast?', 'Join the Vegans Explore Podcast Network: your show in our Media section and a seat in our sponsorship conversations. <a href="/media/network">Apply</a>.', 'Live'),
+      card('Featured with us', 'We are building a People section of the Directory: the creators, athletes and voices we have worked with, each with their story.', 'Growing', true)]]; },
+    fitness: function () { return ['For fitness and wellness', [
+      card('Coaches and gyms get found', 'Fitness and Athletics, Health and Wellness, and Coaches and Consultants all have their place in the Directory, where members vote them up.', 'The Directory'),
+      card('A dashboard for pros', 'A coach or trainer who joins can switch their dashboard to Coach or pro, set up for people who serve clients.', 'For pros'),
+      card('Vegans Who Lift', 'Our show for Vegan athletes and lifters. Share an episode with the people you train. <a href="/media">Listen on Media</a>.', 'Media'),
+      card('Fuel, found', 'Vegan restaurants, meal prep, and Nutrition & Supplements brands, all in the Directory and voted on by members.', 'The Directory')]]; }
+  };
+  var PROFILES = {
+    '': { reason: 'the people you have reached, the work you have done for the animals and for this community',
+      whyH: 'For the animals, and for the community', blocks: ['animals', 'community'],
+      whyLede: 'Vegans Explore is two things at once: support for the animals and the organizations that fight for them, and a community that makes the Vegan life easier, city by city. Both grow one person at a time, and the people who join because someone they trust asked them are the ones who stay and take part.' },
+    animals: { reason: 'the work you have done for the animals and the people you have moved to care about them',
+      whyH: 'For the animals', blocks: ['animals', 'community'],
+      whyLede: 'Every person who joins is someone new who can find, visit and support a rescue, a sanctuary or an organization working for the animals near them. People who join because someone they trust asked them are the ones who stay and show up.',
+      say: { overview: 'Hi, I\'m Liz. You were hand selected for what you have done for the animals. This Guide walks you through what comes with it, one tab at a time.' } },
+    community: { reason: 'the community you have built, the people you bring together and the causes you have backed',
+      whyH: 'For your city, its businesses and its causes', blocks: ['community', 'business', 'nonprofits', 'income'],
+      whyLede: 'Vegans Explore grows city by city. Every person you bring in makes your city\'s community bigger, helps local Vegan businesses get found and backs the nonprofits behind the mission. And from Level 2, your link earns a share of what they buy.',
+      say: { overview: 'Hi, I\'m Liz. You were hand selected for the community you have built. This Guide walks you through what comes with it, one tab at a time.',
+             why: 'Every person you bring in grows your city, sends people to the local Vegan places and backs the causes behind them. And your link earns as it grows.' } },
+    creator: { reason: 'the audience you have built and the voice you have given the movement',
+      whyH: 'For your audience, and for you', blocks: ['creator', 'income', 'community'],
+      whyLede: 'Your audience already trusts you. Vegans Explore gives them somewhere to go: the Vegan places, events and people in their city. Every one of them who joins makes the community bigger, and from Level 2 your link earns a share of what they buy.',
+      say: { overview: 'Hi, I\'m Liz. You were hand selected for the voice you have built. This Guide walks you through what comes with it, one tab at a time.',
+             why: 'Your audience trusts you. This gives them somewhere to go, and your link earns as they join.' } },
+    fitness: { reason: 'the people you train, coach and inspire',
+      whyH: 'For fitness, wellness and your city', blocks: ['fitness', 'community', 'income'],
+      whyLede: 'The people you train want to eat well, find their people and see that Vegan athletes are everywhere. Vegans Explore puts all of it in one place, city by city, and helps Vegan coaches, trainers and gyms get found.',
+      say: { overview: 'Hi, I\'m Liz. You were hand selected for the people you train and inspire. This Guide walks you through what comes with it, one tab at a time.',
+             why: 'The people you train want to eat well and find their people. Every one who joins helps Vegan coaches, gyms and places get found.' } }
+  };
+  function profileKey() {
+    var q = new URLSearchParams(location.search).get('profile');
+    if (q && M && M.is_superadmin && PROFILES[q]) return q;
+    return M && M.ambassador_profile && PROFILES[M.ambassador_profile] ? M.ambassador_profile : '';
+  }
+  function prof() { return PROFILES[profileKey()]; }
+
   // Ready-made words: plain, true, and every one carries their link.
   function messages() {
     var l = link(), h = M && hub(M.home_community), city = h ? h.name : 'my city';
-    return [
+    var P = profileKey(), lv = level((M && M.total_points) || 0);
+    var FIRST = {
+      animals: ['For someone who loves animals', 'Vegans Explore helps people find and support the rescues and sanctuaries near them, and the Vegan places around them, city by city. The Passport is $11, one time: ' + l],
+      community: ['For a friend who loves ' + (h ? h.name : 'our city'), 'I\'m helping build Vegans Explore in ' + city + ': the Vegan places, events and people here, voted on by members, and it backs the local businesses and nonprofits doing the work. The Passport is $11, one time: ' + l],
+      creator: ['A post for your audience', 'You ask me where to eat Vegan and how to find your people. This is where I look: Vegans Explore, a community for Vegans, city by city. $11, one time, with 1,100 points to start: ' + l],
+      fitness: ['For the people you train', 'Looking for Vegan places to fuel up, Vegan coaches and gyms, or people who train like you? Vegans Explore has them, city by city, voted on by members. $11, one time: ' + l]
+    };
+    // From Level 2 the link earns, so every message says so (the FTC's endorsement rules; /policies#membership).
+    var tell = lv >= 2 ? ' (I earn a little when you join with my link.)' : '';
+    return (FIRST[P] ? [FIRST[P]] : []).concat([
       ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. The Passport is $11, one time, and comes with 1,100 points. Here\'s my link: ' + l],
       ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Your Passport is $11, one time, with 1,100 points to start (enough for your first Guide). Join me: ' + l],
       ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, the Passport is $11, one time: ' + l],
       ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up, save and check in at. See what it offers businesses: https://vegansexplore.com/business. If you join as a member, use my link: ' + l]
-    ];
+    ]).map(function (m) { return [m[0], m[1] + tell]; });
   }
 
   var VIEWS = {
@@ -277,28 +358,21 @@
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
-      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: the people you have reached, the work you have done for the animals and for this community. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, and this Guide shows you everything that comes with it, starting with why it matters.') +
+      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: ' + prof().reason + '. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, and this Guide shows you everything that comes with it, starting with why it matters.') +
         '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
     },
     why: function () {
-      // Two halves, equal weight (Sean, 2026-10-27: "balance the conversation between what we're doing in a lifestyle side of
-      // things and what we're doing to provide support for the animals"). Planned work is marked Growing, never shown as live.
-      return head('Why it matters', 'For the animals, and for the community', 'Vegans Explore is two things at once: support for the animals and the organizations that fight for them, and a community that makes the Vegan life easier, city by city. Both grow one person at a time, and the people who join because someone they trust asked them are the ones who stay and take part.') +
-        '<h3 class="am-sec">For the animals</h3><div class="dg-grid">' +
-        card('Rescues and sanctuaries get found', 'The Directory\'s Community section puts the animals first: rescues, sanctuaries, nonprofits and their events, in every chapter. Every member is someone new who can find them, visit, volunteer and give. <a href="/directory?tab=community">See the Community section</a>.', 'The Directory') +
-        card('Fosters and rescues on the Board', 'Every chapter\'s Daily Pulse has a Fosters board and a Rescues board, where animals that need a foster or a rescue are posted. More members means more people who see each one. <a href="/pulse/rescues">Open Rescues</a>.', 'Every city') +
-        card('Points given to the organizations', 'Points come in as people join through you. You can give them to a rescue, sanctuary or nonprofit right from its page, where they show as support from the community.', 'Give') +
-        card('Campaigns behind the cause', 'As the community grows, our marketing and promotion grows with it: campaigns, events and promotion that put organizations in front of the people ready to support them, and help them find the support they are lacking today.', 'Growing', true) +
-        '</div><h3 class="am-sec">For the community</h3><div class="dg-grid">' +
-        card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory') +
-        card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more jobs and classifieds on the Board.', 'Community') +
-        card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Your $11 at work') +
-        card('Your voice carries', 'People listen to someone they know in a way they never listen to an ad. That is why we asked you.', 'Why you') +
-        '</div>' + nextBtn('account', 'Next: your membership');
+      // The profile decides which reasons come first (Sean, 2026-10-28); the default is the balance Sean set on 2026-10-27, for the
+      // animals and for the community. Planned work is marked Growing, never shown as live.
+      var P = prof();
+      return head('Why it matters', P.whyH, P.whyLede) + P.blocks.map(function (k) {
+        var b = BLOCKS[k]();
+        return '<h3 class="am-sec">' + esc(b[0]) + '</h3><div class="dg-grid">' + b[1].join('') + '</div>';
+      }).join('') + nextBtn('account', 'Next: your membership');
     },
     account: function () {
       var total = (M && M.total_points) || 0, lv = level(total);
-      var to = lv === 1 ? 2500 - total : lv === 2 ? 10000 - total : 0;
+      var to = lv < 4 ? Math.max(0, LEVEL_AT[lv] - total) : 0;
       return head('Your membership', 'A Founding Membership, on us', 'Everyone else joins with the Passport, $11 one time. Yours is our thank-you for your contributions to the movement. It is active, and everything a member has is yours: vote, save, check in, post on the Daily Pulse, join any community and build your Vegan world from your dashboard.') +
         '<div class="dg-levels">' +
         '<div class="dg-level"><b>Your points</b><strong>' + n(M && M.points) + '</strong><span>to spend or give</span></div>' +
@@ -319,7 +393,7 @@
         card('Tell us what is happening', 'Know a new place, an event or some news in your city? Send it as a hot tip in <a href="/pulse/suggest">Suggest a Topic</a>, and it can become tomorrow\'s Daily Pulse.', 'Hot tips') +
         card('Point businesses our way', 'When a Vegan place you love is not in the Directory, or has not claimed its page, send them to <a href="/business">Vegans Explore for businesses</a>.', 'Businesses') +
         card('Bring the animals\' people in', 'Know a rescue, sanctuary or animal nonprofit that is not in the Directory yet? Tell us through <a href="/pulse/suggest">Suggest a Topic</a>, and invite the people who foster, volunteer and give.', 'For the animals') +
-        card('What is next for Ambassadors', 'We are shaping what Ambassadors get beyond referral points. You will hear it here first.', 'Coming', true) +
+        card('What is next for Ambassadors', 'From Level 2 your link earns, and we are shaping more for Ambassadors. You will hear it here first.', 'Coming', true) +
         '</div>' + nextBtn('city', 'Next: your city');
     },
     city: function () {
@@ -420,7 +494,7 @@
     guideEl.setAttribute('aria-label', GUIDES[t.g] + ', one of our Guides');
     if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
     nameEl.innerHTML = '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
-    bubble.textContent = t.say;
+    bubble.textContent = (prof().say && prof().say[cur]) || t.say;
     var nav = '<a class="dg-tnav" href="#/' + TABS[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
     tourEl.innerHTML = tourM.innerHTML = nav;

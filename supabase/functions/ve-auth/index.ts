@@ -1261,7 +1261,7 @@ serve(async (req: Request) => {
       const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const { data: member } = await supabase.from('members').select('membership_status, membership_tier, mission_survey_completed_at, guest_review_status, level_override').eq('id', decoded.sub).maybeSingle();
+      const { data: member } = await supabase.from('members').select('membership_status, membership_tier, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
       if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
       return new Response(JSON.stringify({
@@ -1393,7 +1393,7 @@ serve(async (req: Request) => {
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status').eq('id', decoded.sub).maybeSingle();
+      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status, level_override, ambassador_profile').eq('id', decoded.sub).maybeSingle();
       if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const communities = await getMemberCommunities(member.id);
       const hidden_modules = await getMemberHiddenModules(member.id);
