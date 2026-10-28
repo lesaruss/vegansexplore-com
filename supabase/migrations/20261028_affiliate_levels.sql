@@ -91,14 +91,14 @@ create index if not exists ve_affiliate_commissions_aff_idx on public.ve_affilia
 -- A purchase that may pay a commission. Safe to call twice (ref is unique). Returns what happened, for the logs.
 create or replace function public.ve_affiliate_earn(p_buyer uuid, p_product text, p_product_ref text, p_ref text)
 returns jsonb language plpgsql security definer set search_path to 'public' as $$
-declare b members; a members; lv jsonb; cfg jsonb; rate numeric; sale int; cents int; id uuid;
+declare b members; a members; lv jsonb; cfg jsonb; rate numeric; sale int; cents int; v_id uuid;
 begin
   select value into cfg from ve_site_settings where key = 'affiliate_program';
-  select * into b from members where id = p_buyer;
+  select * into b from members m where m.id = p_buyer;
   if b.id is null or b.referred_by is null then return jsonb_build_object('skipped', 'not_referred'); end if;
   if b.referred_by = b.id then return jsonb_build_object('skipped', 'self'); end if;
   if b.created_at < now() - make_interval(days => coalesce((cfg->>'window_days')::int, 365)) then return jsonb_build_object('skipped', 'window'); end if;
-  select * into a from members where id = b.referred_by;
+  select * into a from members m where m.id = b.referred_by;
   if a.id is null or a.membership_status is distinct from 'active' or coalesce(a.member_class, '') = 'agent' or a.merged_into_member_id is not null then
     return jsonb_build_object('skipped', 'affiliate_not_active');
   end if;
@@ -112,8 +112,8 @@ begin
   values (a.id, b.id, p_product, p_product_ref, p_ref, sale, (lv->>'level')::smallint, rate, cents,
     a.affiliate_route, case when a.affiliate_route = 'nonprofit' then a.affiliate_listing_id end,
     now() + make_interval(days => coalesce((cfg->>'hold_days')::int, 30)))
-  on conflict (ref) do nothing returning ve_affiliate_commissions.id into id;
-  return jsonb_build_object('earned', id is not null, 'commission_cents', cents, 'affiliate', a.id);
+  on conflict (ref) do nothing returning ve_affiliate_commissions.id into v_id;
+  return jsonb_build_object('earned', v_id is not null, 'commission_cents', cents, 'affiliate', a.id);
 end $$;
 revoke all on function public.ve_affiliate_earn(uuid, text, text, text) from public, anon, authenticated;
 
