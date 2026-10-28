@@ -62,7 +62,7 @@
     .row small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
     .pts{font-size:13px;font-weight:800;white-space:nowrap;}
     .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
-    .t-ready{background:#fff4e0;color:#8a5200}.t-sent,.t-opened{background:#e8f0fe;color:#1a4a9c}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent,.t-opened,.t-accepted{background:#e8f0fe;color:#1a4a9c}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
     .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
     .made{margin-top:14px;}
     .made .row{grid-template-columns:minmax(0,1fr) auto auto;}
@@ -97,8 +97,8 @@
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-invites';
       var $ = function (id) { return document.getElementById(id); };
       var app = $('app'), invites = null;
-      var STATUS = { ready: 'Not sent yet', sent: 'Sent', opened: 'Opened', joined: 'Joined', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
-      var TABS = [['all', 'All'], ['ready', 'Not sent yet'], ['sent', 'Sent'], ['opened', 'Opened'], ['joined', 'Joined'], ['declined', 'Declined'], ['expired', 'Expired'], ['canceled', 'Canceled']];
+      var STATUS = { ready: 'Not sent yet', sent: 'Sent', opened: 'Opened', accepted: 'Said yes, not paid', joined: 'Joined', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
+      var TABS = [['all', 'All'], ['ready', 'Not sent yet'], ['sent', 'Sent'], ['opened', 'Opened'], ['accepted', 'Said yes'], ['joined', 'Joined'], ['declined', 'Declined'], ['expired', 'Expired'], ['canceled', 'Canceled']];
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
@@ -135,7 +135,7 @@
           }).join('') + '</nav><a class="btn" href="#new">New invite</a></div>' +
           '<div class="list">' + (rows.length ? rows.map(function (i) {
             return '<div class="row"><div><b>' + esc(i.name) + '</b><small>' + esc(i.email) + ' &middot; made ' + esc(day(i.created_at)) + (i.joined_at ? ' &middot; joined ' + esc(day(i.joined_at)) : i.sent_at ? ' &middot; sent ' + esc(day(i.sent_at)) : '') + '</small></div>' +
-              '<span class="pts">' + (i.points_to === 'ambassador' ? 'Ambassador &middot; ' : '') + (i.comp ? (i.points ? pts(i.points) + ' points' : 'No points') : 'Not on us') + '</span>' + tag(i.status) +
+              '<span class="pts">' + (i.points_to === 'ambassador' ? 'Ambassador &middot; ' : i.points_to === 'founding' ? 'Founding Member &middot; ' : '') + (i.comp ? (i.points ? pts(i.points) + ' points' : 'No points') : 'Not on us') + '</span>' + tag(i.status) +
               '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
           }).join('') : '<p class="empty">' + (st === 'all' ? 'No invitations yet. New invite makes the first one.' : 'None here.') + '</p>') + '</div>';
       }
@@ -185,7 +185,7 @@
         var open = ['ready', 'sent', 'opened'].indexOf(i.status) >= 0;
         app.innerHTML = '<p class="crumb"><a href="#list/all">Invites</a> &rsaquo; ' + esc(i.name) + '</p>' +
           '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(i.name) + '</h2>' + tag(i.status) + '</div>' +
-          '<div class="kv"><div><span>Email</span>' + esc(i.email) + '</div><div><span>What it is</span>' + (i.points_to === 'ambassador' ? 'An Ambassador' : i.points_to === 'none' ? 'A membership on us' : esc(i.points_to)) + '</div><div><span>Points</span>' + (i.comp ? (i.points ? pts(i.points) : 'None') : 'Not on us') + '</div>' +
+          '<div class="kv"><div><span>Email</span>' + esc(i.email) + '</div><div><span>What it is</span>' + (i.points_to === 'ambassador' ? 'An Ambassador' : i.points_to === 'none' ? 'A membership on us' : i.points_to === 'founding' ? 'A Founding Member invitation' : esc(i.points_to)) + '</div><div><span>Points</span>' + (i.comp ? (i.points ? pts(i.points) : 'None') : 'Not on us') + '</div>' +
           '<div><span>Made</span>' + esc(day(i.created_at)) + '</div>' + (i.sent_at ? '<div><span>Sent</span>' + esc(day(i.sent_at)) + (i.sent_via === 'copied' ? ' (link copied)' : '') + '</div>' : '') +
           (i.joined_at ? '<div><span>Joined</span>' + esc(day(i.joined_at)) + '</div>' : i.expires_at ? '<div><span>Works until</span>' + esc(day(i.expires_at)) + '</div>' : '') + '</div>' +
           (open ? '<h2>The email</h2><div class="mail" id="mail">Loading the email...</div>' : '') +
