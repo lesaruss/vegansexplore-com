@@ -385,7 +385,7 @@
 
       function draw() {
         var r = route(), m;
-        if (r === 'pick') { if (!data) load().catch(function () {}); return drawPick(); }
+        if (r === 'pick') { if (!data) return load().then(drawPick, drawPick); return drawPick(); }
         if (r === 'new') return drawNew();
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The invitations did not load. Refresh to try again.</p>'; }); }
         if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);

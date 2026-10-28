@@ -60,7 +60,7 @@ this list follows the rule above. A new exception goes on this list first.
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
-Events, Brand campaigns), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links, Invites),
+Events, Brand campaigns), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Ambassadors, Founding Members, Profiles, Bounties, Dinner guests, Links, Invites),
 Site (Onboarding, Preview journeys, Dashboard checklist, Services). Logos, Pulse, Pulse Cities, Passport Partners, Tours, Passport
 Challenge and Import narration left the menu and still open by their address. The Depot is the dashboard's last tab, for super
 admins only (Sean, 2026-10-27): `/dashboard/depot/<page>` frames `/admin/depot/<page>` (query and #view kept in the address
@@ -642,6 +642,32 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
     account), Points and levels, the dashboard and the Depot's Ambassadors list. A new screen gets a step in `JOURNEYS.amb`.
   - A member can be invited to be an Ambassador (only Already an Ambassador is left out); other invitation kinds still leave paid
     members out. A personal note is up to 2,000 characters, a blank line a new paragraph.
+
+## Founding Member invitations (Sean, 2026-10-28)
+
+"Reference the people that we have listed, for me to maybe eyeball a few people that will be good candidates to be the first members
+of our community... watch if they click it, if they don't, if they decline, if they don't respond... instead of it just being a bulk
+email blast"; then "go ahead with the $11 founding member invites" (migration `20261028_founding_member_invites.sql`). **Depot > People >
+Founding Members** (`/admin/depot/founding`, after Ambassadors in the Go to menu; super admins), the Ambassadors console's layout, one
+view at a time: **Invitations** (`#list/<status>`: totals Invited, Read it, Opened the link, Said yes, Joined, Declined; tabs Ready for a
+follow-up, Not sent yet, Sent, **No reply yet** (sent by email 7 days ago, never read), Read, Opened the link, **Said yes, not paid**,
+Joined, Declined, Expired, Canceled), **Pick people** (`#pick`, `ve_founding_candidates(q, pool, limit, offset)`: HQ > People with an email
+and accounts that never paid, leaving out members, anyone with an invitation already (but canceled or expired), the do-not-contact list,
+the unsubscribed, quarantined, archived and merged; each tagged where we know them from: Suggested for Vegans Explore
+(`people.recommended_brand`), On our shows (their name is a People listing), Signed up never paid, Emailed with you, SoFlo Vegans,
+Mailing list, Other lists; suggested and guests first, then most emails with Sean; search, tick, kept for the visit in `sessionStorage`
+`ve_founding_picked`), **Write to them** (`#new`: the picked, each with **On us** (free, 1,100 points), one note typed or spoken; makes drafts,
+nothing sent) and one invitation (`#invite/<id>`: Made, Sent, Read, Opened the link, Said yes, Paid the $11 and joined, or Declined with their
+note; the draft, the email as it goes, Send it from me, Copy the link, Cancel it; **Follow up**: one short note from Sean worded for where they
+stopped, at most 2, 5 days apart, each keeping the link open 14 more days, `ve-invites` `nudge` / `nudge_preview`). An invitation is
+`universe_invites.points_to` `founding` (`pool` records where they came from): the email asks them to be one of the first Founding Members at
+$11, one time, with 1,100 points; accepting on `/invite` is **Said yes** (`status` `accepted`, `accepted_at`; `universe_invite_claim` returns
+`accepted`) and the page goes straight to the $11 checkout (`ve-entry-checkout`, back to `/invite?c=<code>&paid=1`, which waits for the payment
+and says Welcome, Founding Member); a return visit says One step left with Finish joining. Paying any way (trigger
+`trg_ve_founding_invite_paid` on `members`, the account turning active) makes it **Joined** and sets `founding_member`. One on us claims like
+any comped invitation. `ve-invites` `founding`, `founding_candidates`, `nudge`, `nudge_preview`; `create` takes `points_to: 'founding'`
+(comp only when ticked) and `pool`. Proven 2026-10-28 with an internal unpaid account (draft, copied link, opened, said yes, the test-mode
+checkout opened, a payment inside a rolled-back transaction turned it Joined), then removed.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
