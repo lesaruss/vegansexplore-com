@@ -1,5 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+import Anthropic from 'npm:@anthropic-ai/sdk';
 
 // ve-invites: universe invites (Sean, 2026-10-04; playbook records 499aaebc and 296409be).
 // Sean invites people from HQ > People to a brand. Per person he decides whether the membership is
@@ -38,6 +39,9 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 // invitation page goes on to the $11 checkout, and paying makes it 'joined' (trigger trg_ve_founding_invite_paid).
 //   POST { action: 'founding' }          every Founding Member invitation, with Read copied in, and the totals
 //   POST { action: 'founding_candidates', q?, pool?, limit?, offset? }   people Sean can pick from (ve_founding_candidates)
+//   POST { action: 'draft_note', id, context? }   writes the email's personal opening (reason) in Sean's voice from what he knows about
+//                                        them (context, saved when given) and their HQ > People record (Sean, 2026-10-28: "you draft the
+//                                        message... I can let you know a little bit about that person")
 //   POST { action: 'nudge', id }         one short follow-up from Sean, at most 2, 5 days apart; keeps the link open 14 more days
 // Public, added 2026-10-28:
 //   POST { action: 'decline', code, note? }    "No thanks" on the invitation page
@@ -249,6 +253,53 @@ async function nudgeFor(inv: Invite) {
 }
 const NUDGE_MAX = 2, NUDGE_GAP_DAYS = 5;
 
+// The personal opening, written from what Sean told us about the person and what HQ > People already holds. Sean's notes come first;
+// nothing is invented. The email adds "Hi <first>," before it and the Founding Member paragraphs after it.
+const MODEL = 'claude-opus-5-5';
+const OPENING_SYSTEM = `You write the personal opening of an invitation email from Sean A. Russell, founder of Vegans Explore, a community for Vegans, city by city. Sean is hand-picking the first Founding Members and is inviting one person.
+
+Write in Sean's voice, first person, speaking to them as "you": warm, plain and specific, the way a friend writes, never salesy.
+- 2 to 4 short sentences, under 550 characters. It opens the email right after "Hi <first name>,", so no greeting and no sign-off.
+- Say how Sean knows them and why they would make a strong member of this community, using only what the sources say. Sean's own notes come first and win over anything else; the HQ summary is background an assistant wrote from Sean's emails, useful for how they know each other.
+- Never invent a fact, a date, a place or a compliment the sources do not support. If the sources are thin, write one or two simple, true sentences.
+- Do not mention the price, points, the Founding Membership or what Vegans Explore offers: the email says all of that next.
+- Never repeat anything private, sensitive or negative from the summary (money, health, conflicts, personal trouble).
+- No dashes of any kind, no exclamation marks, no emojis. Write Vegan with a capital V.`;
+const OPENING_SCHEMA = { type: 'object', additionalProperties: false, required: ['opening', 'note'], properties: {
+  opening: { type: 'string', description: 'The opening, 2 to 4 sentences.' },
+  note: { type: 'string', description: 'One short line for Sean: what you used, and anything you left out or were unsure of.' },
+} };
+async function draftOpening(inv: Invite): Promise<{ opening?: string; note?: string; error?: string }> {
+  const { data: k } = await db.from('lesaruss_secrets').select('value').eq('key', 'ANTHROPIC_API_KEY').maybeSingle();
+  const key = k?.value && k.value !== 'pending' ? String(k.value) : null;
+  let person: any = null;
+  if (inv.person_id) ({ data: person } = await db.from('people').select('first_name, last_name, organization, title, city, region, relationship_summary, last_interaction_at, email_message_count, source').eq('id', inv.person_id).maybeSingle());
+  if (!person) ({ data: person } = await db.from('people').select('first_name, last_name, organization, title, city, region, relationship_summary, last_interaction_at, email_message_count, source').ilike('email', likeEsc(inv.email)).is('merged_into', null).limit(1).maybeSingle());
+  const sources = {
+    name: inv.name,
+    seans_notes: String(inv.context || '').trim() || null,
+    hq: person ? { organization: person.organization, title: person.title, city: person.city || person.region, summary: person.relationship_summary,
+      emails_with_sean: person.email_message_count, last_contact: person.last_interaction_at ? String(person.last_interaction_at).slice(0, 10) : null } : null,
+  };
+  if (!sources.seans_notes && !sources.hq?.summary) return { error: 'nothing_to_go_on' };
+  try {
+    const client = new Anthropic(key ? { apiKey: key } : {});
+    const msg: any = await client.beta.messages.create({
+      model: MODEL, max_tokens: 800, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      output_config: { effort: 'low', format: { type: 'json_schema', schema: OPENING_SCHEMA } },
+      system: OPENING_SYSTEM,
+      messages: [{ role: 'user', content: 'The sources, as JSON:\n' + JSON.stringify(sources) }],
+    } as any);
+    if (msg.stop_reason === 'refusal') return { error: 'refused' };
+    const out = JSON.parse((msg.content || []).find((c: any) => c.type === 'text')?.text || '{}');
+    const opening = String(out.opening || '').replace(/\s*[–—]\s*/g, ', ').replace(/\s+-\s+/g, ', ').replace(/!/g, '.').replace(/\bvegan\b/g, 'Vegan').replace(/[ \t]+/g, ' ').trim().slice(0, 900);
+    return opening ? { opening, note: String(out.note || '').slice(0, 300) } : { error: 'empty' };
+  } catch (e) {
+    console.error('draft_note:', e);
+    return { error: 'writer_failed' };
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -380,6 +431,7 @@ Deno.serve(async (req: Request) => {
         const { data: inv, error } = await db.from('universe_invites').insert({
           brand, person_id: personId, name, email, comp, points, reason, points_to: pointsTo, dinner_slug: dinner?.slug ?? null,
           dinner_invite_id: dinnerInviteId, city_slug: city, batch_id: batch, created_by: by ?? actor.label, level, profile, pool: clip(p?.pool, 40),
+          context: clip(p?.context, 2000),
         }).select('*').single();
         if (error || !inv) { console.error('invite insert:', error); skipped.push({ name, email, why: 'Could not save' }); continue; }
 
@@ -423,6 +475,7 @@ Deno.serve(async (req: Request) => {
       if (!['ready', 'sent', 'opened', 'accepted'].includes(inv.status)) return json({ error: 'closed', message: 'This invitation can no longer be changed.' }, 409);
       const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if ('reason' in body) patch.reason = clip(body.reason, 2000);
+      if ('context' in body) patch.context = clip(body.context, 2000);
       if ('points' in body && inv.comp) patch.points = pointsOf(body.points);
       if ('level' in body) patch.level = levelOf(body.level);
       if ('profile' in body) patch.profile = profileOf(body.profile);
@@ -433,7 +486,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === 'founding') {
-      const { data, error } = await db.from('universe_invites').select('id, name, email, comp, points, reason, pool, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, accepted_at, joined_at, declined_at, decline_note, claimed_member_id, expires_at, nudged_at, nudge_count, created_at, link_code, code')
+      const { data, error } = await db.from('universe_invites').select('id, name, email, person_id, comp, points, reason, context, pool, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, accepted_at, joined_at, declined_at, decline_note, claimed_member_id, expires_at, nudged_at, nudge_count, created_at, link_code, code')
         .eq('brand', 'vegans-explore').eq('points_to', 'founding').order('created_at', { ascending: false }).limit(500);
       if (error) { console.error('founding:', error); return json({ error: 'list_failed' }, 500); }
       await refreshOpens(data ?? []);
@@ -460,6 +513,22 @@ Deno.serve(async (req: Request) => {
       const { data, error } = await db.rpc('ve_founding_candidates', { p_q: clip(body.q, 120), p_pool: clip(body.pool, 20), p_limit: Math.min(200, Math.max(1, Number(body.limit) || 50)), p_offset: Math.max(0, Number(body.offset) || 0) });
       if (error) { console.error('candidates:', error); return json({ error: 'list_failed' }, 500); }
       return json({ ok: true, ...(data ?? {}) });
+    }
+
+    if (action === 'draft_note') {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: inv } = await db.from('universe_invites').select('*').eq('id', body.id).maybeSingle();
+      if (!inv) return json({ error: 'not_found' }, 404);
+      if (!['ready', 'sent', 'opened'].includes(inv.status)) return json({ error: 'closed', message: 'This invitation can no longer be changed.' }, 409);
+      if ('context' in body) inv.context = clip(body.context, 2000);
+      const d = await draftOpening(inv);
+      if (d.error) {
+        if ('context' in body) await db.from('universe_invites').update({ context: inv.context, updated_at: new Date().toISOString() }).eq('id', inv.id);
+        const why: Record<string, string> = { nothing_to_go_on: 'Tell me a little about them first: how you know them, or why they would be a strong member.' };
+        return json({ error: d.error, message: why[d.error] || 'The opening did not get written. Try again in a minute.' }, d.error === 'nothing_to_go_on' ? 400 : 502);
+      }
+      await db.from('universe_invites').update({ reason: d.opening, context: inv.context ?? null, updated_at: new Date().toISOString() }).eq('id', inv.id);
+      return json({ ok: true, reason: d.opening, note: d.note });
     }
 
     if (action === 'nudge') {
