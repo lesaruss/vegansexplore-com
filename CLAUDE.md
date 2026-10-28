@@ -1897,7 +1897,8 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   would each launch thin; not "Game Day", since venues host concerts too; amphitheaters and concert venues can join later). The
   venue, its home teams, each stand with its Vegan items and where it is (section or gate). Our chapters' venues first, Hard Rock
   Stadium first (the Plant-Based Showcase). Narrator: River, after a character refresh (Sean, 2026-10-28: still in his 20s, a
-  new hairstyle and an updated look; options from his current art, Sean picks).
+  new hairstyle; of three options Sean picked short twists with a fade). His art is in the repo, `public/guides/art/river-square.webp`
+  and `river-tall.webp` (`VE_GUIDE_ART`), and `public/guides/river.jpg` (old pages) is the new mid shot.
 - **The Airport Guide**: the same layout by terminal and by before or after security. Our chapters' airports first, then the
   world. Narrator: Nori, who becomes the traveler (Sean, 2026-10-28: Liz has become the business Guide; Pascal is culinary and
   belongs on the food Guides, such as the Vegan Meat Alternatives Guide). Nori's Guide record still says Entrepreneur Guide.
