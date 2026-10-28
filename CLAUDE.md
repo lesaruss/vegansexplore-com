@@ -1489,7 +1489,10 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   Philadelphia 61, Maryland 54, Florida (the North Florida searches) 43, Washington, D.C. 18, Delaware 16, West Virginia 6. The logo
   sweep, the menu link finder and reader, and the essentials pass fill them in; the essentials cron was widened the same day to every 10
   minutes, 6 to 10 AM UTC, 30 a run (it costs nothing once nothing is due). A listing outside the US shows no empty state in its address
-  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules.
+  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules. It took the Directory past 1,000 approved listings, which
+  showed that `fetchAll` in `ve-region-directory.js` had never paged: its second request asked for the first page again, forever, and
+  every Directory view stayed empty for about 30 minutes until it was fixed (`(offset || 0) + 1000`, `order=id`). The Directory reads
+  1,000 listings a request and pages until a short page.
 
 ## Guide pricing, points and levels (LOCKED by Sean 2026-10-25, playbook `ve-pricing-points-passport`)
 
