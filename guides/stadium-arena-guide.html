@@ -430,7 +430,17 @@
     .sa-photo img{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
     .sa-kinds{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
     /* The map and Get me there (public/ve-venue-map.js draws it) */
-    .sa-map{border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px;margin:0 0 16px;}
+    .sa-vgrid2{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"form" "map" "dirs" "stands";gap:12px;}
+    .sa-g-form{grid-area:form;}.sa-g-map{grid-area:map;}.sa-g-dirs{grid-area:dirs;}.sa-g-stands{grid-area:stands;}
+    .sa-g-form,.sa-g-map{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;}
+    .sa-g-dirs:empty{display:none;}
+    .sa-g-dirs .sa-dirs{margin-top:0;}
+    @media (min-width:901px){
+      .sa-vgrid2{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"form map" "dirs map" "stands map";grid-template-rows:auto auto 1fr;gap:12px 20px;align-items:start;}
+      .sa-g-map{position:sticky;top:0;align-self:start;}
+      .sa-g-form .sa-map-h{flex-direction:column;align-items:stretch;}
+      .sa-g-form .sa-seat div{width:100%;}.sa-g-form .sa-seat input{flex:1 1 auto;}
+    }
     .sa-map-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap;margin-bottom:10px;}
     .sa-map-h h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 2px;}
     .sa-map-h p{font-size:12.5px;color:var(--ink55);margin:0;max-width:520px;}
@@ -438,7 +448,7 @@
     .sa-seat div{display:flex;gap:8px;}
     .sa-seat input{font:inherit;font-size:15px;font-weight:700;width:110px;padding:9px 12px;border:1.5px solid var(--line);border-radius:6px;}
     .sa-map-box{overflow:auto;border-radius:10px;background:#f4f6f3;}
-    @media (min-width:901px){.sa-map-box .vvm{max-height:62vh;width:auto;max-width:100%;margin:0 auto;}}
+    @media (min-width:901px){.sa-map-box .vvm{max-height:calc(100vh - 260px);width:auto;max-width:100%;margin:0 auto;}}
     .sa-dir-meta{font-weight:700;color:var(--ink75);}
     .sa-map-box.zoom .vvm{width:200%;max-width:none;}
     @media (min-width:901px){.sa-map-box.zoom .vvm{width:150%;max-height:none;}}
