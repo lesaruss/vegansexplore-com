@@ -1990,6 +1990,9 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   under a roof; a moving blue dot needs the venue's own beacons (a partnership, the Dolphins first). Hard Rock Stadium's layout was
   read from its seating chart (Sean's screenshot, 2026-10-28); the others wait on theirs (Depot > Venues > a venue > The map, JSON;
   a stand's Sections on the map).
+  **Desktop is half and half** (Sean, 2026-10-28: "put the image to the right and the information to the left... a half situation"):
+  the map sticks on the right while the left holds Get me there, the directions and the stands (`mapPanel`, `.sa-vgrid2` grid areas),
+  so a pin's stand comes up beside the map, outlined; phones keep one column (Your section, the map, the directions, the stands).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

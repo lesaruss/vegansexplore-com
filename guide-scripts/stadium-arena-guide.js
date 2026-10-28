@@ -226,8 +226,7 @@
       : '<div class="dg-chef-empty"><div><h3>Nothing Vegan is listed here yet</h3><p>Be the first: tell us what you find at ' + esc(v.name) + ', with a photo from inside, and earn points when the team accepts it.</p></div><a class="dg-btn" href="#/venue/' + esc(v.slug) + '/report/missing">Add what you find</a></div>';
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Menus change, so ask at the stand when it matters. Every item says where it came from and when a member last checked it.</p>';
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : 'Venue', esc(v.name), lede, acts) + meta +
-      (d.open && v.layout && window.VEVenueMap ? mapPanel(v, d) : '') +
-      (d.open ? stands + note : gated(stands, v.name + ' is in the full Guide', 'Every stand with Vegan food here, where it is, and when a member last checked it.'));
+      (d.open && v.layout && window.VEVenueMap ? mapPanel(v, d, stands + note) : d.open ? stands + note : gated(stands, v.name + ' is in the full Guide', 'Every stand with Vegan food here, where it is, and when a member last checked it.'));
     if (d.open && v.layout && window.VEVenueMap) { VEVenueMap.css(); drawMap(v, d); }
   }
 
@@ -235,13 +234,18 @@
   // the member's ticket (public/ve-venue-map.js), kept for the next visit in this browser.
   function seatKey(slug) { return 've_sa_seat_' + slug; }
   function mapStands(d) { return d.spots.filter(function (s) { return s.pin; }).map(function (s) { return { n: s.pin, id: s.id, name: s.name, sections: s.map_sections }; }); }
-  function mapPanel(v, d) {
+  // Desktop (Sean, 2026-10-28: "put the image to the right and the information to the left... a half situation"): the map stays
+  // on the right while the left holds Your section, the directions and the stands, so a pin's stand shows beside it. Phones keep
+  // one column: Your section, the map, the directions, then the stands.
+  function mapPanel(v, d, standsHtml) {
     var seat = ''; try { seat = localStorage.getItem(seatKey(v.slug)) || ''; } catch (e) {}
-    return '<section class="sa-map" aria-label="Map of ' + esc(v.name) + '"><div class="sa-map-h"><div><h2>Map</h2><p>Our own drawing of ' + esc(v.name) + ', from its section numbers. The pins are the stands below.</p></div>' +
+    return '<section class="sa-vgrid2" aria-label="Map of ' + esc(v.name) + '">' +
+      '<div class="sa-g-form"><div class="sa-map-h"><div><h2>Get me there</h2><p>Type the section on your ticket. The pins on the map are the stands.</p></div>' +
       '<form class="sa-seat" id="saSeat"><label for="saSeatIn">Your section</label><div><input id="saSeatIn" inputmode="text" autocomplete="off" maxlength="12" placeholder="142" value="' + esc(seat) + '">' +
-      '<button class="dg-btn" type="submit">Get me there</button></div></form></div>' +
-      '<div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>Directions start from the section on your ticket. Phone GPS is not accurate inside a stadium.</span></div>' +
-      '<div id="saDirs" aria-live="polite"></div></section>';
+      '<button class="dg-btn" type="submit">Get me there</button></div></form></div></div>' +
+      '<div class="sa-g-map"><div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>Our own drawing, from the section numbers. Phone GPS is not accurate inside a stadium.</span></div></div>' +
+      '<div class="sa-g-dirs" id="saDirs" aria-live="polite"></div>' +
+      '<div class="sa-g-stands">' + standsHtml + '</div></section>';
   }
   function drawMap(v, d) {
     var box = document.getElementById('saMapBox'); if (!box) return;
@@ -268,6 +272,7 @@
     box.addEventListener('click', function (e) {
       var g = e.target.closest && e.target.closest('[data-pin]'); if (!g) return;
       var st = stands.filter(function (x) { return String(x.n) === g.getAttribute('data-pin'); })[0];
+      [].forEach.call(box.querySelectorAll('.vvm-pin'), function (x) { x.classList.toggle('on', x.getAttribute('data-pin') === g.getAttribute('data-pin')); });
       var el = st && document.getElementById('sa-st-' + st.id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('sa-flash'); setTimeout(function () { el.classList.remove('sa-flash'); }, 1600); }
     });
     dirs.addEventListener('click', function (e) {
