@@ -80,15 +80,15 @@
       return '<span class="gc-chip' + (c.cls ? ' ' + c.cls : '') + '">' + esc(c.text) + '</span>';
     }).join('');
     var top = g.soon ? '<div class="gc-banner gc-banner-icon" aria-hidden="true">' + icon(g.icon) + '</div>'
-      : g.ambassador ? '<a class="gc-banner gc-banner-icon gc-banner-amb" href="' + esc(g.href) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '<span>Ambassador</span></a>'
-      : '<a class="gc-banner" href="' + esc(g.href) + '" data-gc-open tabindex="-1" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></a>';
+      : g.ambassador ? '<a class="gc-banner gc-banner-icon gc-banner-amb" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '<span>Ambassador</span></a>'
+      : '<a class="gc-banner" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></a>';
     var tag = g.soon ? '<span class="gc-soon-tag">Coming soon</span>' : g.tag ? '<span class="gc-new-tag">' + esc(g.tag) + '</span>' : '';
     var action = g.soon
       ? '<button type="button" class="gc-btn gc-btn-outline" data-gc-notify>Notify me</button>' +
         '<div class="gc-waitlist"><input type="email" placeholder="Your email address" aria-label="Email to be told when the ' + esc(g.title) + ' opens">' +
         '<button type="button" class="gc-btn gc-btn-primary" data-gc-join>Join the waitlist</button>' +
         '<div class="gc-waitlist-success">You\'re on the list.</div></div>'
-      : '<a href="' + esc(g.href) + '" class="gc-btn gc-btn-primary" data-gc-open>' + esc(g.cta) + '</a>';
+      : '<a href="' + esc(g.href) + '" class="gc-btn gc-btn-primary" data-frame-label="' + esc(g.title) + '" data-gc-open>' + esc(g.cta) + '</a>';
     return '<div class="gc-card' + (g.soon ? ' is-soon' : '') + '" role="listitem" data-slug="' + esc(g.slug) + '">' + top +
       '<div class="gc-topline"><span class="gc-label">' + esc(g.label) + '</span>' + tag + '</div>' +
       '<div class="gc-title">' + esc(g.title) + '</div><p class="gc-desc">' + esc(g.desc) + '</p>' +

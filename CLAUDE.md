@@ -1619,7 +1619,10 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   Vegan Dairy Guide, the Vegan Restaurant Survival Guide, then the Guides still being made: the **Vegan Meat Alternatives
   Guide** (added 2026-10-26), Entrepreneur, Creator, Nonprofit, Pre-Vegan and Seasoned Vegan. Live Guides wear their banner;
   the ones being made wear a flat line icon, say Coming soon with Notify me (`member_interest`, `guide-waitlist-<slug>`), and
-  show to signed-in members only. Choose Your Topics (mini-guides) was taken off. Add or change a Guide card there. Under the
+  show to signed-in members only. Choose Your Topics (mini-guides) was taken off. Add or change a Guide card there. On the
+  dashboard's Guides tab a Guide opens in the console frame (`openConsoleFrame`, labelled by the card's `data-frame-label`);
+  until 2026-10-28 it opened in the Tools panel, hidden on that tab, so Guides seemed not to open (Sean). A Guide laid out to
+  fill the window (`html.dg-fit`) never sizes its frame (`nav.js`): sizing it to its own height made the Ambassador Guide bounce. Under the
   cards, `/guides` ends with the Directory's Passport box ("Your first Guide is on us", hidden for active members); its old
   Passport, Vision and Ready sections are gone (Sean, 2026-10-26).
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
