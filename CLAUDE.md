@@ -60,7 +60,7 @@ this list follows the rule above. A new exception goes on this list first.
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
-Events), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links, Invites),
+Events, Brand campaigns), Content (Inbox, Sources, Cookbook, Content index, Library), People (Community Managers, Bounties, Dinner guests, Links, Invites),
 Site (Onboarding, Preview journeys, Dashboard checklist, Services). Logos, Pulse, Pulse Cities, Passport Partners, Tours, Passport
 Challenge and Import narration left the menu and still open by their address. The Depot is the dashboard's last tab, for super
 admins only (Sean, 2026-10-27): `/dashboard/depot/<page>` frames `/admin/depot/<page>` (query and #view kept in the address
@@ -685,7 +685,26 @@ organize, the ones they are going to (with Stop <organizer>'s messages) and the 
 Defaults set by Logan, Sean's to change: the box unticked everywhere (the law asks it only in London), 25 points, 3 messages a day
 apart, 1,000 characters (`MSG` in `ve-events`). Proven end to end 2026-10-28 on a [TEST] event with two internal accounts (RSVP and
 points once, the organizer's view, a real send, the second send refused, the guest's link, report, pause, Resume), then removed.
-Next: phase 3, the campaign window.
+
+**Phase 3, the campaign window, is built** (Sean, 2026-10-28: "go ahead with phase 3"; migration `20261028_campaign_window.sql`, edge
+function `ve-campaign-window`). A save is a bookmark, never consent. Saving a listing a business has claimed (`listings.owner_member_id`)
+opens a small window (`askOptin` in `directory/listing.html`) with an **unticked** "Let <name> message me during their campaigns", 25
+points once per listing (`partner_optin`, ref `optin:listing:<id>`; `ve_listing_optins`, `ve_listing_optin_set`); unsaving takes it back
+(trigger `trg_ve_listing_save_removed`), and **My Saves** has the switch on every saved listing a business claimed (`mine`). A campaign
+is a run of Eastern dates the team sets in **Depot > Brand campaigns** (`/admin/depot/brand-campaigns`, Directory in the Go to menu:
+Running / Coming / Ended, New campaign, one campaign with its counts, messages, reports, Resume and End it now; `ve_listing_campaigns`).
+The business dashboard's **Your audience** (`?tab=brand&pd=audience`, `drawAudience` in `ve-partner-dashboard.js`) shows how many saved
+them and said yes, by chapter (`ve_listing_segments`), never names; only while a campaign is live (`ve_listing_campaign_live`) does it
+show the members who said yes as `ve_profile_public` shows them, and a message box (the owner only, claim approved): by email from
+Vegans Explore with the listing's name, 1 a week, 4 a campaign, 1,000 characters (`MSG` in `ve-campaign-window`), replies to
+contact@lesaruss.com, logged (`ve_campaign_messages`, `ve_campaign_message_deliveries`). A member's email links to `/messages#c/<token>`
+(`messages.html`, no sign-in): **Stop messages from <name>** (withdraws the yes) and **Report this message** (pauses the campaign, withdraws
+the yes, emails Sean). The dashboard's **Saves** view no longer names who saved (it did since 2026-10-27; `ve-podcast` `owner_saves` sends
+dates and counts only). Check-ins still name members to the owner (Sean, 2026-10-25), a separate rule. Defaults set by Logan, Sean's to
+change: unticked, 25 points, 1 a week and 4 a campaign. Proven end to end 2026-10-28 on the Vegans Explore Podcast listing with an
+internal test account (no yes before saving, the yes and its points once, unsaving withdraws it, counts by chapter, a real send, the
+second send refused, the member's link, report, pause, Resume), then removed. Phase 4, one message to an organizer's past guests,
+waits until the first windows have run.
 
 ## Invites and free memberships (Sean, 2026-10-04)
 
