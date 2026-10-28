@@ -1901,7 +1901,9 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   and `river-tall.webp` (`VE_GUIDE_ART`), and `public/guides/river.jpg` (old pages) is the new mid shot.
 - **The Airport Guide**: the same layout by terminal and by before or after security. Our chapters' airports first, then the
   world. Narrator: Nori, who becomes the traveler (Sean, 2026-10-28: Liz has become the business Guide; Pascal is culinary and
-  belongs on the food Guides, such as the Vegan Meat Alternatives Guide). Nori's Guide record still says Entrepreneur Guide.
+  belongs on the food Guides, such as the Vegan Meat Alternatives Guide). Nori's AI Guide record (`character_agents`) is the Traveler
+  Guide since 2026-10-28 (migration `20261028_nori_traveler.sql`), and so are the Guide picker and the dashboard tiles; Liz took the
+  Entrepreneur path page (`guides/ve-path-entrepreneur.html`). Liz's own record still calls her the Explorer.
 - $11 or 1,100 points each, one venue free as the example.
 - **Members keep them accurate**: confirm an item, or report one missing, wrong or gone, with a photo and a venue-wide location
   check; each submission waits in a Depot review queue and pays only when accepted (`ve_points_grant`): the first accepted
