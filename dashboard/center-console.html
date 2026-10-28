@@ -2282,7 +2282,12 @@
         else VEEpisodes.save(x.show.id, x.guid, b).then(function (on) { if (on === false) renderSavesTab(); });
       };
     }).catch(function () { eb.innerHTML = '<div class="dash-saves-empty">Your episodes did not load. Try again in a moment.</div>'; });
-    if (window.VEAuth && VEAuth.listSavedListings) VEAuth.listSavedListings().then(function (d) {
+    // Who may message them (member profiles phase 3, Sean 2026-10-28): on a saved listing a business has claimed, the yes to
+    // hearing from it during its campaigns, turned on or off here (ve-campaign-window).
+    var CW = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-campaign-window';
+    function cw(body) { return fetch(CW, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
+    if (window.VEAuth && VEAuth.listSavedListings) Promise.all([VEAuth.listSavedListings(), cw({ action: 'mine' })]).then(function (both) {
+      var d = both[0], ow = both[1] || {}, yes = ow.optins || [], can = ow.claimed || [];
       var items = (d && d.items) || [];
       tabSaves.places = items.length; paintSaves();
       if (!items.length) { lb.innerHTML = '<div class="dash-saves-empty">Nothing saved yet. Tap Save on any listing in the Directory.</div>'; return; }
@@ -2290,9 +2295,15 @@
         var img = l.logo_url ? 'background-image:url(\'' + e(l.logo_url) + '\');background-color:#fff;background-size:contain' : 'background-color:' + e(l.color || '#2d7d31');
         return '<div class="dash-save-row"><div class="dash-save-img" style="' + img + '">' + (l.logo_url ? '' : e((l.name || '?').charAt(0))) + '</div>' +
           '<div style="min-width:0"><button type="button" class="dash-save-t" data-i="' + i + '" data-act="open">' + e(l.name) + '</button>' +
-          '<div class="dash-save-s">' + e([l.category, l.address_city].filter(Boolean).join(' · ')) + '</div></div>' +
+          '<div class="dash-save-s">' + e([l.category, l.address_city].filter(Boolean).join(' · ')) + '</div>' +
+          (can.indexOf(l.id) >= 0 ? '<label class="dash-save-s" style="display:flex;gap:6px;align-items:center;margin-top:4px;cursor:pointer"><input type="checkbox" data-optin="' + i + '"' + (yes.indexOf(l.id) >= 0 ? ' checked' : '') + ' style="width:16px;height:16px;accent-color:#2d7d31"> Let them message me during their campaigns</label>' : '') + '</div>' +
           '<div class="dash-save-acts"><button type="button" data-i="' + i + '" data-act="remove" aria-label="Remove ' + e(l.name) + ' from My Saves">' + X + '</button></div></div>';
       }).join('');
+      lb.onchange = function (ev) {
+        var c = ev.target.closest('[data-optin]'); if (!c) return;
+        var l = items[+c.getAttribute('data-optin')]; c.disabled = true;
+        cw({ action: 'optin_set', listing_id: l.id, on: c.checked }).then(function (r) { c.disabled = false; if (!r || !r.ok) c.checked = !c.checked; });
+      };
       lb.onclick = function (ev) {
         var b = ev.target.closest('[data-act]'); if (!b) return;
         var l = items[+b.getAttribute('data-i')];

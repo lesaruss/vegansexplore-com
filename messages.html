@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>A message for you — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* A member's link from a business's campaign message (member profiles phase 3, Sean 2026-10-28; playbook
+       ve-member-profiles-partner-windows). /messages#c/<token>: the message, Stop messages from <name> (takes back their yes)
+       and Report this message (pauses the campaign until the team looks). No sign-in: the link is theirs alone.
+       Server: ve-campaign-window msg_get, msg_stop, msg_report. Event organizers' messages open on /events#message/<token>. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 3px solid #F69820; outline-offset: 2px; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 44px 40px 80px; }
+    @media (max-width: 600px) { main { padding: 28px 16px 56px; } }
+    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 14px; }
+    h1 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 900; line-height: 1.1; margin-bottom: 8px; }
+    .lead { font-size: 14.5px; line-height: 1.6; color: var(--ve-text-75); max-width: 860px; margin-bottom: 18px; }
+    .msg { border-left: 3px solid var(--ve-green-dark); background: #f7f8f7; border-radius: 6px; padding: 16px 18px; font-size: 15.5px; line-height: 1.65; white-space: pre-line; max-width: 860px; margin-bottom: 20px; }
+    .acts { display: flex; flex-wrap: wrap; gap: 10px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; font-family: inherit; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 12px 18px; border-radius: 6px; border: 1.5px solid rgba(0,0,0,.18); background: #fff; color: var(--ve-green-deep); cursor: pointer; text-decoration: none; }
+    .btn.solid { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .done { border-radius: 10px; background: var(--ve-green-light); color: var(--ve-green-deep); font-size: 14px; font-weight: 700; line-height: 1.55; padding: 14px 16px; max-width: 860px; }
+    label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ve-green-deep); margin-bottom: 6px; }
+    textarea { width: 100%; max-width: 860px; min-height: 110px; font-family: inherit; font-size: 14px; padding: 12px 14px; border: 1.5px solid rgba(0,0,0,.14); border-radius: 6px; resize: vertical; margin-bottom: 6px; }
+    .hint { font-size: 12.5px; color: var(--ve-text-75); margin-bottom: 12px; max-width: 860px; }
+    .more { margin-top: 18px; font-size: 13.5px; }
+    .more a { color: var(--ve-green-deep); font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main id="app" aria-live="polite"><p class="lead">Loading…</p></main>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-campaign-window';
+    var app = document.getElementById('app');
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
+    function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    var m = /^#c\/([0-9a-f]{64})$/.exec(location.hash || '');
+    if (!m) { app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>That link is not complete</h1><p class="lead">Open the whole link from the email.</p>'; return; }
+    var tok = m[1];
+    api({ action: 'msg_get', token: tok }).then(function (d) {
+      if (!d.body) { app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>That message is not here</h1><p class="lead">The link may be incomplete. Open the whole link from the email.</p>'; return; }
+      var nm = d.name;
+      var page = d.slug ? '/directory/' + encodeURIComponent(d.slug) : '/directory';
+      app.innerHTML = '<p class="eyebrow">From ' + esc(nm) + ', through Vegans Explore</p><h1>' + esc(d.campaign ? d.campaign.name : nm) + '</h1>' +
+        '<p class="lead">Sent ' + esc(new Date(d.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '. ' + esc(nm) + ' does not see your email address.' + (d.campaign ? ' Their messages stop after ' + esc(day(d.campaign.ends_on)) + '.' : '') + '</p>' +
+        '<div class="msg">' + esc(d.body) + '</div><div id="acts">' +
+        (d.reported ? '<div class="done">You reported this message. Thank you.</div>' :
+          (d.stopped ? '<div class="done" style="margin-bottom:12px">You stopped messages from ' + esc(nm) + '.</div>' : '') +
+          '<div class="acts">' + (d.stopped ? '' : '<button type="button" class="btn" id="stop">Stop messages from ' + esc(nm) + '</button>') + '<button type="button" class="btn" id="report">Report this message</button></div>') +
+        '</div><p class="more"><a href="' + page + '">See ' + esc(nm) + ' on Vegans Explore</a> &middot; <a href="/dashboard/saves">My Saves</a></p>';
+      var acts = document.getElementById('acts');
+      var done = function (t) { acts.innerHTML = '<div class="done">' + esc(t) + '</div>'; };
+      var stop = document.getElementById('stop'), report = document.getElementById('report');
+      if (stop) stop.addEventListener('click', function () { stop.disabled = true; api({ action: 'msg_stop', token: tok }).then(function (r) { if (r.ok) done('Done. ' + nm + ' won\'t message you again. You can change that in My Saves.'); else stop.disabled = false; }); });
+      if (report) report.addEventListener('click', function () {
+        acts.innerHTML = '<label for="why">What was wrong with it? (optional)</label><textarea id="why" maxlength="1000"></textarea><p class="hint">Our team reads every report. ' + esc(nm) + '\'s messages are paused until we look, and you won\'t hear from them again.</p><button type="button" class="btn solid" id="send">Send the report</button>';
+        document.getElementById('send').addEventListener('click', function () {
+          var b = this; b.disabled = true;
+          api({ action: 'msg_report', token: tok, note: document.getElementById('why').value.trim() }).then(function (r) { if (r.ok) done('Thank you. ' + nm + '\'s messages are paused while our team looks, and you won\'t hear from them again.'); else b.disabled = false; });
+        });
+      });
+    });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

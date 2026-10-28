@@ -12,8 +12,12 @@
  *             from, and every day in a table that sorts by any column
  *   checkins  members who checked in at the place, and when (Sean, 2026-10-25: only a member owner whose claim we
  *             approved sees who; ve-claims owner_dashboard checkins). A place only.
- *   saves     everything but a place (Sean, 2026-10-27: "check-ins don't really apply to podcasts. We could put saves"): who
- *             saved it and, for a podcast, its episodes, with plays (ve-podcast owner_saves)
+ *   saves     everything but a place (Sean, 2026-10-27: "check-ins don't really apply to podcasts. We could put saves"): how
+ *             many saved it and, for a podcast, its episodes, with plays (ve-podcast owner_saves). Counts, never names (2026-10-28).
+ *   audience  Your audience (member profiles phase 3, Sean 2026-10-28; playbook ve-member-profiles-partner-windows): how many
+ *             saved it and said yes to hearing from them, by chapter, never names; while a campaign the team set is running
+ *             (ve_listing_campaigns), the shown profile parts of those who said yes and a message through us, 1 a week and 4 a
+ *             campaign (ve-campaign-window audience / message_send)
  *   page      Edit your page (the four-step editor in directory/listing.html, opts.editPage)
  *   menu      the menu, by category; an item opens on its own (ve-claims menu_save / menu_delete)
  *   ads       their ads with impressions and clicks, and the spots they can ask about (ad_request)
@@ -28,9 +32,9 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
-  var MEMBERS = ['insights', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
+  var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
   function kindOf(c) {
     if (['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
@@ -128,7 +132,7 @@
     opts = opts || {};
     css();
     var api = opts.call || call;
-    var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null;
+    var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     function go(view, extra) {
       var u = new URL(location.href);
@@ -298,13 +302,53 @@
       var out = '<div class="vpd-tiles"><div><b>' + n(SV.listing_saves) + '</b><span>Members who saved your ' + noun + '</span></div>' +
         (pod ? '<div><b>' + n(SV.episode_saves) + '</b><span>Episodes saved</span><em>by ' + n(SV.episode_savers) + ' member' + (SV.episode_savers === 1 ? '' : 's') + '</em></div>' +
           '<div><b>' + n(T.play) + '</b><span>Episodes played here, last ' + D.days + ' days</span></div><div><b>' + n(T.listen) + '</b><span>Listen on clicks, last ' + D.days + ' days</span></div>' : '') + '</div>' +
-        '<p class="vpd-empty" style="margin:0 0 12px">Members save what they want to come back to; it sits in their My Saves. These are your listeners on Vegans Explore: when you run a promo or a giveaway with us, they can hear about it first.</p>';
+        '<p class="vpd-empty" style="margin:0 0 12px">Members save what they want to come back to; it sits in their My Saves.</p>';
       if (pod && SV.episodes.length) out += '<h4>Most saved episodes</h4><div class="vpd-list">' + SV.episodes.map(function (e) {
         return '<div class="vpd-row"><div><b>' + esc(e.title) + '</b></div><span class="vpd-tag">' + n(e.n) + ' save' + (e.n === 1 ? '' : 's') + '</span><span></span></div>'; }).join('') + '</div>';
-      if (pod && SV.recent.length) out += '<h4>Episode saves</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th><th>Episode</th></tr></thead><tbody>' +
-        SV.recent.map(function (r) { return '<tr><td>' + when(r.at) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.title) + '</td></tr>'; }).join('') + '</tbody></table></div>';
-      out += '<h4>Saved your ' + noun + '</h4>' + (SV.savers.length ? '<div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th></tr></thead><tbody>' +
-        SV.savers.map(function (r) { return '<tr><td>' + when(r.at) + '</td><td>' + esc(r.name) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="vpd-empty">No saves yet.</p>');
+      if (pod && SV.recent.length) out += '<h4>Episode saves</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Episode</th></tr></thead><tbody>' +
+        SV.recent.map(function (r) { return '<tr><td>' + when(r.at) + '</td><td>' + esc(r.title) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      // A save is a bookmark, never consent (Sean locked 2026-10-28): counts here; names only on Your audience, of the members who
+      // said yes, while a campaign runs.
+      return out + '<p class="vpd-empty">We never show who saved you. The members who said you can message them are on <a href="?tab=brand&pd=audience" data-vpd="audience">Your audience</a>, and you can reach them while a campaign with us is running.</p>';
+    }
+
+    // ---- Your audience (member profiles phase 3, Sean 2026-10-28): counts by chapter for everyone; names only of the members
+    // who said yes, and only while a campaign with us is running, with a message through us.
+    var SAID = { p_meal: 'Go-to Vegan meal', p_why: 'Why they went Vegan', p_day: 'A perfect day in their city', p_meet: 'Would love to meet people who', p_fact: 'Something surprising', q3_roles: 'What they do', q8_drivers: 'What drew them', q23_matters: 'What matters to them', q24_diet: 'How they eat' };
+    function hubName(slug) { if (slug === 'none') return 'No home chapter yet'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : String(slug || '').replace(/-/g, ' '); }
+    function longDay(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    function drawAudience() {
+      if (!AU) {
+        if (opts.call) { AU = { ok: true, owner: true, verified: true, saved: 48, opted_in: 17, by_chapter: [{ chapter: 'south-florida', saved: 31, opted_in: 12 }, { chapter: 'central-florida', saved: 9, opted_in: 3 }, { chapter: 'none', saved: 8, opted_in: 2 }], campaign: null, next: null, people: [], messages: [], limits: {} }; return drawAudience(); }
+        fetch(SB + '/functions/v1/ve-campaign-window', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify({ action: 'audience', listing_id: l.id }) })
+          .then(function (r) { return r.json(); }).then(function (d) { AU = d && d.ok ? d : { ok: false }; draw(); }).catch(function () { AU = { ok: false }; draw(); });
+        return '<p class="vpd-empty">Loading your audience...</p>';
+      }
+      if (!AU.ok) return '<p class="vpd-empty">Your audience did not load. Try again in a moment.</p>';
+      var c = AU.campaign, L = AU.limits || {};
+      var out = (AUnote ? '<p class="vpd-done">' + esc(AUnote) + '</p>' : '') +
+        '<div class="vpd-tiles"><div><b>' + n(AU.saved) + '</b><span>Members who saved you</span></div><div><b>' + n(AU.opted_in) + '</b><span>Said you can message them during campaigns</span></div>' +
+        (c ? '<div><b>' + n(L.left) + ' of ' + n(L.per_campaign) + '</b><span>Messages left this campaign</span></div>' : '') + '</div>' +
+        '<p class="vpd-empty" style="margin:0 0 12px">When members save you, we ask if you can message them during your campaigns with us. We never show who saved you: you see counts, and while a campaign runs, the members who said yes, with only what they chose to show on their profile.</p>';
+      out += '<h4>By chapter</h4>' + (AU.by_chapter.length ? '<div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>Chapter</th><th>Saved you</th><th>Said yes</th></tr></thead><tbody>' +
+        AU.by_chapter.map(function (r) { return '<tr><td>' + esc(hubName(r.chapter)) + '</td><td>' + n(r.saved) + '</td><td>' + n(r.opted_in) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="vpd-empty">No saves yet.</p>');
+      if (!c) return out + '<h4>Messages</h4><p class="vpd-empty">' + (AU.next ? 'Your next campaign, ' + esc(AU.next.name) + ', runs ' + esc(longDay(AU.next.starts_on)) + ' to ' + esc(longDay(AU.next.ends_on)) + '. You can message the members who said yes while it runs.' :
+        'You can message the members who said yes while one of your campaigns with us is running. <a href="?tab=brand&pd=opps" data-vpd="opps">See our campaigns</a>.') + '</p>';
+      var why = c.paused ? 'Your campaign\'s messages are paused while our team looks at a member\'s report. We will be in touch.' : !AU.owner ? 'Only the owner sends messages.' : !AU.verified ? 'Messages open once we approve your claim.' :
+        !L.left ? 'You have sent every message for this campaign.' : L.next_at ? 'One message a week: the next one can go ' + new Date(L.next_at).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + '.' : !AU.opted_in ? 'No members have said yes yet.' : '';
+      out += '<h4>' + esc(c.name) + ', until ' + esc(longDay(c.ends_on)) + '</h4>' +
+        '<label class="vpd-f">Your message<textarea id="vpd-cmsg" maxlength="' + n(L.max).replace(/,/g, '') + '"' + (why ? ' disabled' : '') + ' placeholder="This week only: 20% off for Vegans Explore members. Show your Passport at the counter."></textarea></label>' +
+        '<p class="vpd-empty" style="margin:-6px 0 8px">It goes by email from Vegans Explore with your name on it. You never see their email, and they never see yours. They can stop your messages or report one; a report pauses the campaign\'s messages until our team looks.</p>' +
+        '<p class="vpd-msg' + (why ? ' bad' : '') + '" id="vpd-msg" role="status">' + esc(why) + '</p>' +
+        '<div class="vpd-bar"><span class="vpd-empty" style="padding:0">One a week, ' + n(L.per_campaign) + ' a campaign</span><button type="button" class="vpd-btn" data-vpd-send' + (why ? ' disabled' : '') + '>Send to ' + n(AU.opted_in) + (AU.opted_in === 1 ? ' member' : ' members') + '</button></div>';
+      out += '<h4>Who said yes</h4>' + (AU.people.length ? '<div class="vpd-grid">' + AU.people.map(function (g) {
+        var a = g.answers || {}, line = [a.q1_city ? hubName(a.q1_city) : '', a.q6_stage || ''].filter(Boolean).join(' \u00b7 ');
+        var said = Object.keys(SAID).filter(function (k) { return a[k] && (!Array.isArray(a[k]) || a[k].length); }).map(function (k) { return '<p><b style="font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:#1f5f22">' + esc(SAID[k]) + '</b><br>' + esc(Array.isArray(a[k]) ? a[k].join(', ') : a[k]) + '</p>'; }).join('');
+        return '<div class="vpd-card"><b>' + esc(g.name || 'A member') + '</b>' + (line ? '<p>' + esc(line) + '</p>' : '') + said + '</div>';
+      }).join('') + '</div>' : '<p class="vpd-empty">No one yet.</p>');
+      out += '<h4>Messages you sent</h4>' + (AU.messages.length ? '<div class="vpd-list">' + AU.messages.map(function (m) {
+        return '<div class="vpd-card"><p style="margin:0 0 4px;font-size:12px;font-weight:700;color:rgba(26,26,26,.68)">' + esc(new Date(m.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + ' &middot; to ' + n(m.sent) + '</p><p style="white-space:pre-line;margin:0">' + esc(m.body) + '</p></div>';
+      }).join('') + '</div>' : '<p class="vpd-empty">None yet.</p>');
       return out;
     }
     function drawAds() {
@@ -376,7 +420,7 @@
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : '$111 a quarter.')) + '</p>' +
         (D.plan ? '' : '<a class="vpd-btn sm o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand' + (FRONT_ROW ? '&offer=front-row' : '') + '">' + (FRONT_ROW ? 'Take my front-row seat' : 'Become a Partner') + '</a>') + '</div></div>';
     }
-    var VIEW_FN = { home: drawHome, insights: drawInsights, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    var VIEW_FN = { home: drawHome, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
@@ -408,6 +452,19 @@
           if (!d || !d.ok) return msg(d && d.error === 'menu_full' ? 'Your menu holds 300 items at most.' : 'That did not save. Try again.', true);
           menu = null; D.menu_count = Math.max(D.menu_count, 1); go('menu');
         });
+      });
+      var send = el.querySelector('[data-vpd-send]');
+      if (send) send.addEventListener('click', function () {
+        var t = (el.querySelector('#vpd-cmsg') || {}).value || '';
+        if (!t.trim()) return msg('Write your message first.', true);
+        if (opts.call) return msg('This is the sample business: nothing is sent.', true);
+        if (!confirm('Send this to ' + AU.opted_in + (AU.opted_in === 1 ? ' member' : ' members') + '? You have ' + AU.limits.left + ' of ' + AU.limits.per_campaign + ' left this campaign.')) return;
+        send.disabled = true; msg('Sending...');
+        fetch(SB + '/functions/v1/ve-campaign-window', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify({ action: 'message_send', listing_id: l.id, body: t.trim() }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            if (!d || !d.ok) { send.disabled = false; return msg((d && d.message) || 'That did not send. Try again.', true); }
+            AU = null; AUnote = 'Sent to ' + d.sent + (d.sent === 1 ? ' member.' : ' members.'); draw();
+          }).catch(function () { send.disabled = false; msg('That did not send. Try again.', true); });
       });
       var del = el.querySelector('[data-vpd-del]');
       if (del) del.addEventListener('click', function () {

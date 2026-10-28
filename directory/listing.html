@@ -943,6 +943,21 @@ body.pp-lb-on{overflow:hidden}
 }
 </style>
 <script src="/public/ve-ad-creative.js"></script>
+<style>
+/* The campaign window's question at save (2026-10-28). */
+.cw-pop{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10050}
+.cw-card{background:#fff;border-radius:12px;max-width:460px;width:100%;padding:24px;font-family:Montserrat,sans-serif;color:#1a1a1a;box-shadow:0 18px 50px rgba(0,0,0,.25)}
+.cw-card h3{font-size:18px;font-weight:900;margin:0 0 14px}
+.cw-opt{display:flex;gap:10px;align-items:flex-start;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;cursor:pointer}
+.cw-opt input{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#2d7d31}
+.cw-opt b{display:block;font-size:14px}
+.cw-opt small{display:block;font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.72);margin-top:3px}
+.cw-msg{font-size:13px;font-weight:700;color:#1f5f22;min-height:18px;margin:10px 0 0}
+.cw-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:8px}
+.cw-btn{font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;border-radius:6px;border:0;background:#2d7d31;color:#fff;cursor:pointer}
+.cw-btn.ghost{background:#fff;color:#1f5f22;border:1.5px solid rgba(0,0,0,.18)}
+.cw-btn:disabled{opacity:.5}
+</style>
 </head>
 <body>
 <script>
@@ -3631,8 +3646,43 @@ function renderListing(l){
         saveBtn.disabled = false;
         if(d && d.error){ return; }
         paintSaved(!isSaved);
+        if(!isSaved) askOptin();
       }).catch(function(){ saveBtn.disabled = false; });
     });
+
+    // The campaign window (member profiles phase 3, Sean 2026-10-28; playbook ve-member-profiles-partner-windows). A save is a
+    // bookmark, never consent: when the listing has an owner on Vegans Explore, saving asks, with an unticked box, whether they may
+    // message the member during their campaigns (25 points the first time). My Saves turns it off; unsaving takes it back.
+    var CW = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-campaign-window';
+    function cw(body){ return fetch(CW, { method:'POST', headers:{'Content-Type':'application/json', Authorization:'Bearer ' + VEAuth.getToken()}, body: JSON.stringify(body) }).then(function(r){ return r.json(); }); }
+    function askOptin(){
+      cw({ action:'optin_get', listing_id: listingId }).then(function(d){
+        var st = d && d.state; if(!st || !st.claimed || st.optin) return;
+        var nm = esc(st.name);
+        var box = document.createElement('div');
+        box.className = 'cw-pop'; box.setAttribute('role','dialog'); box.setAttribute('aria-modal','true'); box.setAttribute('aria-labelledby','cw-h');
+        box.innerHTML = '<div class="cw-card"><h3 id="cw-h">Saved to My Saves</h3>' +
+          '<label class="cw-opt"><input type="checkbox" id="cw-yes"><span><b>Let ' + nm + ' message me during their campaigns</b>' +
+          '<small>Deals, launches and events, by email through Vegans Explore only: ' + nm + ' never sees your email or your name unless you say yes here, and then only what you chose to show on your profile. Turn it off any time in My Saves.' + (st.optin_paid ? '' : ' 25 points for saying yes.') + '</small></span></label>' +
+          '<p class="cw-msg" id="cw-msg" role="status"></p><div class="cw-acts"><button type="button" class="cw-btn ghost" id="cw-no">Not now</button><button type="button" class="cw-btn" id="cw-ok">Done</button></div></div>';
+        document.body.appendChild(box);
+        var close = function(){ box.remove(); };
+        box.addEventListener('click', function(e){ if(e.target === box) close(); });
+        document.getElementById('cw-no').addEventListener('click', close);
+        document.addEventListener("keydown", function onKey(e){ if(e.key === "Escape"){ close(); document.removeEventListener("keydown", onKey); } });
+        document.getElementById('cw-ok').addEventListener('click', function(){
+          if(!document.getElementById('cw-yes').checked){ close(); return; }
+          var b = this; b.disabled = true;
+          cw({ action:'optin_set', listing_id: listingId, on: true }).then(function(r){
+            var m = document.getElementById('cw-msg');
+            if(!r || !r.ok){ b.disabled = false; m.textContent = (r && r.message) || 'That did not save. Try again.'; return; }
+            m.textContent = r.state && r.state.points_now ? 'Done, and 25 points are yours.' : 'Done.';
+            setTimeout(close, 1400);
+          }).catch(function(){ b.disabled = false; });
+        });
+        document.getElementById('cw-ok').focus();
+      }).catch(function(){});
+    }
   })();
 
   // Give points (Sean locked 2026-10-25, playbook ve-pricing-points-passport): a member gives spendable points to a

@@ -12,8 +12,9 @@
 // POST { action: 'save', listing_id, guid }                             an active member: toggles the save, { ok, saved }
 // POST { action: 'saves' }                                              a signed-in member: their saved episodes, newest first
 // POST { action: 'admin_feed', listing_id, rss_url }                    a super admin: sets the feed and reads it; '' turns it off
-// POST { action: 'owner_saves', listing_id }                            the listing's owner or a super admin: who saved the show and
-//                                                                       its episodes (Sean, 2026-10-27: saves in place of check-ins)
+// POST { action: 'owner_saves', listing_id }                            the listing's owner or a super admin: how many saved the show
+//                                                                       and its episodes (Sean, 2026-10-27: saves in place of check-ins;
+//                                                                       counts, never names, since 2026-10-28)
 // POST { action: 'network_apply', application }                         a signed-in member: applies to the Vegans Explore Podcast
 //                                                                       Network (/media/network); Sean is emailed
 // POST { action: 'network_mine' }                                       a signed-in member: what they applied with
@@ -272,18 +273,19 @@ Deno.serve(async (req) => {
     const { data: l } = await db.from('listings').select('id, owner_member_id, claim_status').eq('id', body.listing_id).maybeSingle();
     if (!l) return json({ error: 'not_found' }, 404);
     if (l.owner_member_id !== memberId && !m.is_superadmin) return json({ error: 'not_owner' }, 403);
-    const short = (n: string) => { const p = String(n || '').trim().split(/\s+/); return p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : 'A member'; };
     const [{ data: ls }, { data: es }] = await Promise.all([
-      db.from('ve_listing_saves').select('member_id, saved_at, members(name)').eq('listing_id', l.id).order('saved_at', { ascending: false }).limit(500),
-      db.from('ve_episode_saves').select('member_id, guid, title, created_at, members(name)').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(2000),
+      db.from('ve_listing_saves').select('member_id, saved_at').eq('listing_id', l.id).order('saved_at', { ascending: false }).limit(500),
+      db.from('ve_episode_saves').select('member_id, guid, title, created_at').eq('listing_id', l.id).order('created_at', { ascending: false }).limit(2000),
     ]);
     const eps: Record<string, { guid: string; title: string; n: number }> = {};
     for (const r of (es || []) as any[]) { (eps[r.guid] ||= { guid: r.guid, title: r.title, n: 0 }).n++; }
     return json({ ok: true, verified: l.claim_status === 'verified' || !!m.is_superadmin,
-      listing_saves: (ls || []).length, savers: (ls || []).slice(0, 100).map((r: any) => ({ name: short(r.members?.name), at: r.saved_at })),
+      // Counts, never names (Sean locked 2026-10-28, playbook ve-member-profiles-partner-windows: a save is a bookmark, never
+      // consent). The members who said the owner may message them are on the dashboard's Your audience, during a campaign.
+      listing_saves: (ls || []).length, savers: (ls || []).slice(0, 100).map((r: any) => ({ at: r.saved_at })),
       episode_saves: (es || []).length, episode_savers: new Set((es || []).map((r: any) => r.member_id)).size,
       episodes: Object.values(eps).sort((a, b) => b.n - a.n).slice(0, 20),
-      recent: (es || []).slice(0, 100).map((r: any) => ({ name: short(r.members?.name), title: r.title, at: r.created_at })) });
+      recent: (es || []).slice(0, 100).map((r: any) => ({ title: r.title, at: r.created_at })) });
   }
 
   if (body.action === 'network_apply') {

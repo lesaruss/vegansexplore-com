@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Brand campaigns | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Brand campaigns (member profiles phase 3, Sean 2026-10-28: "go ahead with phase 3"; playbook
+       ve-member-profiles-partner-windows). A brand or business that has claimed its listing can message the members who said
+       yes at save only while a campaign with us runs: the dates set here (ve_listing_campaigns). One thing per view: the list
+       (#list/live|coming|ended), New campaign (#new), and one campaign (#c/<id>: its dates, the counts by chapter, every
+       message and report, Resume after a report, End now). Server: ve-campaign-window. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .crumb a{color:var(--ve-green-deep);font-weight:800;text-decoration:none;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    input,textarea{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    textarea{min-height:90px;resize:vertical;line-height:1.5;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid #d9a39c;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .msg.bad{color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .rows{display:flex;flex-direction:column;gap:8px;}
+    .row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 120px 110px 90px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;}
+    .row .t{font-size:14.5px;font-weight:800;line-height:1.3;}
+    .row .m,.m{font-size:12.5px;color:var(--ve-text-75);}
+    @media (max-width:860px){.row{grid-template-columns:minmax(0,1fr) auto;}.row .hide-sm{display:none;}}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;justify-self:start;}
+    .tag.live{background:#e8f5e9;color:#1f5f22;}.tag.coming{background:#eef3fb;color:#1d3f73;}.tag.ended{background:#f1f1f1;color:#555;}.tag.paused{background:#fbeeec;color:#8a1c12;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px 14px;}
+    .f{display:flex;flex-direction:column;gap:5px;}
+    .f.wide{grid-column:1/-1;}
+    .f label{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .f small{font-size:12px;color:var(--ve-text-75);}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;}
+    .two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .pick{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:280px;overflow:auto;}
+    .pick button{font:inherit;text-align:left;border:1px solid var(--ve-border);border-radius:8px;background:#fff;padding:8px 12px;cursor:pointer;}
+    .pick button[aria-pressed="true"]{border-color:var(--ve-green-deep);background:var(--ve-green-light);}
+    .pick b{display:block;font-size:14px;}
+    table{width:100%;border-collapse:collapse;font-size:13.5px;}
+    th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--ve-border);}
+    th{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .mrow{border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;margin-bottom:8px;}
+    .mrow .b{white-space:pre-line;font-size:14px;}
+    .rep{font-size:12.5px;font-weight:700;color:#8a1c12;}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,0.2);border-radius:10px;padding:24px;text-align:center;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Brand campaigns</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">A business that has claimed its listing can message the members who said yes when they saved it, only while a campaign with us runs. Set its dates here. Everyone else, and every day outside a campaign, the business sees counts, never names.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-campaign-window';
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('app'), data = null, pick = null;
+    var WORDS = { live: 'Live', coming: 'Coming', ended: 'Ended', paused: 'Paused' };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
+    function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
+    function when(t) { return new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }); }
+    function hubName(slug) { if (slug === 'none') return 'No home chapter'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : slug; }
+    function stateOf(c, today) { if (c.ended_at || c.ends_on < today) return 'ended'; if (c.starts_on > today) return 'coming'; return c.paused_at ? 'paused' : 'live'; }
+    function go(h) { if (location.hash !== h) location.hash = h; else route(); }
+    function load() { return api({ action: 'campaigns' }).then(function (d) { if (!d.campaigns) throw new Error('load'); data = d; }); }
+
+    function drawList(tab) {
+      if (!data) { app.innerHTML = '<p class="msg">Loading…</p>'; load().then(function () { drawList(tab); }, function () { app.innerHTML = '<p class="empty">The campaigns did not load. Refresh to try again.</p>'; }); return; }
+      var all = data.campaigns.map(function (c) { return Object.assign({ st: stateOf(c, data.today) }, c); });
+      var inTab = function (c) { return tab === 'live' ? (c.st === 'live' || c.st === 'paused') : c.st === tab; };
+      var count = function (t) { return all.filter(function (c) { return t === 'live' ? (c.st === 'live' || c.st === 'paused') : c.st === t; }).length; };
+      var list = all.filter(inTab);
+      app.innerHTML = '<div class="bar"><div class="tabs">' + ['live', 'coming', 'ended'].map(function (t) { return '<a href="#list/' + t + '" class="' + (t === tab ? 'on' : '') + '">' + (t === 'live' ? 'Running' : WORDS[t]) + ' (' + count(t) + ')</a>'; }).join('') + '</div>' +
+        '<a class="btn" href="#new">New campaign</a></div>' +
+        '<div class="rows">' + (list.length ? list.map(function (c) {
+          return '<div class="row"><span><span class="t">' + esc(c.listing ? c.listing.name : 'A listing') + '</span><br><span class="m">' + esc(c.name) + '</span></span>' +
+            '<span class="m hide-sm">' + esc(day(c.starts_on)) + ' to ' + esc(day(c.ends_on)) + '</span>' +
+            '<span class="m hide-sm">' + c.messages + (c.messages === 1 ? ' message' : ' messages') + (c.reports ? ', <b style="color:#8a1c12">' + c.reports + ' reported</b>' : '') + '</span>' +
+            '<span class="tag ' + c.st + ' hide-sm">' + WORDS[c.st] + '</span><a class="btn btn-ghost" href="#c/' + c.id + '">Open</a></div>';
+        }).join('') : '<p class="empty">' + (tab === 'live' ? 'No campaign is running.' : tab === 'coming' ? 'Nothing scheduled.' : 'None yet.') + ' <a href="#new">New campaign</a></p>') + '</div>';
+    }
+
+    function drawNew() {
+      pick = null;
+      app.innerHTML = '<nav class="crumb"><a href="#list/live">Brand campaigns</a><span>/</span><span>New campaign</span></nav>' +
+        '<div class="panel"><h2>Which business</h2><input type="search" id="q" placeholder="Search the listings a business has claimed" aria-label="Search claimed listings"><div class="pick" id="results"><p class="msg">Loading…</p></div></div>' +
+        '<div class="panel"><h2>The campaign</h2><div class="grid">' +
+          '<div class="f wide"><label for="c-name">Name</label><input id="c-name" maxlength="120" placeholder="Plant-Based Showcase, game day"><small>The members who said yes see this name on the business\'s messages.</small></div>' +
+          '<div class="f"><label for="c-start">First day</label><input id="c-start" type="date"></div><div class="f"><label for="c-end">Last day</label><input id="c-end" type="date"></div>' +
+          '<div class="f wide"><label for="c-note">Note for the team (optional)</label><textarea id="c-note" maxlength="1000"></textarea></div></div>' +
+          '<div class="acts"><button class="btn" id="save">Save the campaign</button><span class="msg" id="m" role="status"></span></div></div>';
+      var t = null;
+      var search = function () {
+        api({ action: 'listings', q: $('q').value.trim() }).then(function (d) {
+          var ls = d.listings || [];
+          $('results').innerHTML = ls.length ? ls.map(function (l) { return '<button type="button" data-id="' + l.id + '" aria-pressed="' + (pick === l.id) + '"><b>' + esc(l.name) + '</b><span class="m">' + esc([l.category, l.address_city].filter(Boolean).join(' · ')) + (l.claim_status === 'verified' ? '' : ' · claim not approved yet') + '</span></button>'; }).join('') : '<p class="msg">No claimed listing matches.</p>';
+          $('results').querySelectorAll('[data-id]').forEach(function (b) { b.onclick = function () { pick = b.getAttribute('data-id'); $('results').querySelectorAll('[data-id]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }; });
+        });
+      };
+      $('q').oninput = function () { clearTimeout(t); t = setTimeout(search, 200); };
+      search();
+      $('save').onclick = function () {
+        var m = $('m'), b = this;
+        if (!pick) { m.className = 'msg bad'; m.textContent = 'Pick the business.'; return; }
+        b.disabled = true; m.className = 'msg'; m.textContent = 'Saving…';
+        api({ action: 'campaign_save', campaign: { listing_id: pick, name: $('c-name').value.trim(), starts_on: $('c-start').value, ends_on: $('c-end').value, note: $('c-note').value.trim() } }).then(function (r) {
+          b.disabled = false;
+          if (!r.ok) { m.className = 'msg bad'; m.textContent = r.message || 'That did not save.'; return; }
+          data = null; go('#c/' + r.id);
+        });
+      };
+    }
+
+    function drawOne(id) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'campaign_get', id: id }).then(function (d) {
+        if (!d.campaign) { app.innerHTML = '<p class="empty">That campaign is not here. <a href="#list/live">Back to the list</a></p>'; return; }
+        var c = d.campaign, l = d.listing || {}, today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), st = stateOf(c, today);
+        app.innerHTML = '<nav class="crumb"><a href="#list/' + (st === 'paused' ? 'live' : st) + '">Brand campaigns</a><span>/</span><span>' + esc(l.name) + '</span></nav>' +
+          (c.paused_at ? '<div class="panel" style="border-color:#d9a39c"><p class="rep">Paused ' + esc(when(c.paused_at)) + ': ' + esc(c.paused_reason || '') + '. Read the report under Messages, then Resume or End it.</p></div>' : '') +
+          '<div class="two"><div class="panel"><h2>' + esc(l.name) + ' <span class="tag ' + st + '">' + WORDS[st] + '</span></h2>' +
+            '<p class="m" style="margin-bottom:12px">Owner: ' + esc(d.owner ? d.owner.name + ' · ' + d.owner.email : 'none') + (l.claim_status === 'verified' ? '' : ' · claim not approved yet, so they cannot send') + ' · <a href="/directory/' + esc(l.slug) + '?tab=brand&pd=audience" target="_blank" rel="noopener">See their Your audience</a></p>' +
+            '<div class="grid"><div class="f wide"><label for="c-name">Name</label><input id="c-name" maxlength="120" value="' + esc(c.name) + '"></div>' +
+            '<div class="f"><label for="c-start">First day</label><input id="c-start" type="date" value="' + esc(c.starts_on) + '"></div><div class="f"><label for="c-end">Last day</label><input id="c-end" type="date" value="' + esc(c.ends_on) + '"></div>' +
+            '<div class="f wide"><label for="c-note">Note for the team</label><textarea id="c-note" maxlength="1000">' + esc(c.note || '') + '</textarea></div></div>' +
+            '<div class="acts"><button class="btn" id="save">Save changes</button>' + (c.paused_at ? '<button class="btn btn-ghost" id="resume">Resume</button>' : '') + (st !== 'ended' ? '<button class="btn btn-red" id="end">End it now</button>' : '') + '<span class="msg" id="m" role="status"></span></div></div>' +
+          '<div class="panel"><h2>Their audience</h2><p style="font-size:14px;margin-bottom:10px"><b>' + d.saved + '</b> saved them, <b>' + d.opted_in + '</b> said yes.</p>' +
+            (d.by_chapter.length ? '<table><thead><tr><th>Chapter</th><th>Saved</th><th>Said yes</th></tr></thead><tbody>' + d.by_chapter.map(function (r) { return '<tr><td>' + esc(hubName(r.chapter)) + '</td><td>' + r.saved + '</td><td>' + r.opted_in + '</td></tr>'; }).join('') + '</tbody></table>' : '<p class="m">No saves yet.</p>') + '</div></div>' +
+          '<div class="panel"><h2>Messages</h2>' + (d.messages.length ? d.messages.map(function (x) {
+            return '<div class="mrow"><p class="m">' + esc(when(x.created_at)) + ' · to ' + x.sent + ' of ' + x.recipients + '</p><p class="b">' + esc(x.body) + '</p>' + x.reports.map(function (r) { return '<p class="rep">Reported ' + esc(when(r.at)) + (r.note ? ': ' + esc(r.note) : '') + '</p>'; }).join('') + '</div>';
+          }).join('') : '<p class="m">None yet.</p>') + '</div>';
+        var m = $('m');
+        var act = function (body, ok) { m.className = 'msg'; m.textContent = 'Saving…'; api(body).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = r.message || 'That did not save.'; return; } data = null; ok ? ok() : drawOne(id); }); };
+        $('save').onclick = function () { act({ action: 'campaign_save', campaign: { id: c.id, name: $('c-name').value.trim(), starts_on: $('c-start').value, ends_on: $('c-end').value, note: $('c-note').value.trim() } }); };
+        if ($('resume')) $('resume').onclick = function () { act({ action: 'campaign_resume', id: c.id }); };
+        if ($('end')) $('end').onclick = function () { if (confirm('End this campaign now? ' + l.name + ' can no longer message anyone for it.')) act({ action: 'campaign_end', id: c.id }); };
+      });
+    }
+
+    function route() {
+      var h = location.hash || '#list/live', m;
+      if (h === '#new') drawNew();
+      else if ((m = /^#c\/([0-9a-f-]{36})$/.exec(h))) drawOne(m[1]);
+      else drawList((/^#list\/(live|coming|ended)$/.exec(h) || [0, 'live'])[1]);
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+    function start() {
+      if (!window.VEAuth) return setTimeout(start, 200);
+      var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+      if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
