@@ -547,6 +547,12 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   too (`loginWithGoogle` sends it; `ve-auth` `google` sets `referred_by`).
 - **Joshua Mattey** (joshmatteymgl@gmail.com, signed up 2026-10-27 with Google) was made an active Founding Member and Ambassador
   with 1,100 points directly (ledger `comp_membership`, ref `sean-2026-10-27`); Sean tells him on a call. He signs in with Google.
+- **The platform comes before the ask** (Sean, 2026-10-28, on Jordi Casamitjana: "their response to me sharing the website is
+  going to be how I determine if they're going to be ambassadors"). For someone Sean is weighing as an Ambassador: first we do
+  something for them and send the platform on a personal tracked link (`ve_links`, one per person); a plain thank-you means move
+  on; real interest means Sean asks them himself, "would you like to be an Ambassador?"; only a yes gets the invitation in Depot >
+  Ambassadors. Never make the invitation ahead of that. First case: Jordi, the Huge Vegan Survey as the lead national Daily Pulse
+  (2026-10-28), his link `/go/jordi-hvs`, the survey's `/go/huge-vegan-survey` (initiative `huge-vegan-survey`).
 - Not decided yet (Sean's call): what an Ambassador earns beyond the referral, and any Ambassador-only perks or levels.
 - **Depot > People > Ambassadors** (`/admin/depot/ambassadors`, after Community Managers in the Go to menu; Sean, 2026-10-28: "the
   ambassador program really is invite only... see my current ambassadors... how many people have visited their link... signed up
