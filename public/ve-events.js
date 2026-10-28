@@ -5,9 +5,14 @@
 
    The tile is the dashboard's event row: the date on the left, the kind, the name, where and when, and one button to the
    official page. Above it: search, Where (every country an event is in, by continent), Sort by (soonest or city),
-   Upcoming / Past, kinds of event, and Submit an event. Submitting is four steps, one per view (#submit/1 to #submit/4):
-   a flyer to read (optional, ve-events flyer_read), the event, when and where, and the official link. Every event waits
-   for the team in Depot > Events (/admin/depot/events). My events (#mine) shows what they sent and where it stands.
+   Upcoming / Past, kinds of event, and Submit an event. Submitting is four steps, one per view (#submit/1 to #submit/4;
+   Sean, 2026-10-28: "I would just like to be able to choose how I want to input the event... then once you pull the
+   information, you can ask clarifying questions... or... I'm just confirming it"): How to add it (drop in a flyer, paste a
+   link, or type it in; ve-events flyer_read and link_read), the event, when and where, and Check and send: what we found,
+   a question for anything missing, the official link and their role (host, promoter or going). A read flyer or link goes
+   straight to Check and send. Every event waits for the team in Depot > Events (/admin/depot/events). A host or promoter
+   then lands on Promote your event (#promote/<id>): three packages and six options, each I'm interested (ve-events
+   promote_interest), no prices. My events (#mine) shows what they sent and where it stands.
 
    Usage (after /public/ve-hubs.js and /public/ve-city-banner.js; /public/ve-auth.js for submitting):
      var cal = VEEvents.mount(el, { key: 'events', city: 'south-florida', urlState: true });
@@ -188,7 +193,23 @@
     '.vev-mine{display:flex;flex-direction:column;gap:8px;}',
     '.vev-mine div{display:flex;gap:12px;align-items:center;justify-content:space-between;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;padding:12px 14px;flex-wrap:wrap;}',
     '.vev-mine b{font-size:14px;}',
-    '.vev-mine small{display:block;font-size:12px;color:rgba(26,26,26,.68);}'
+    '.vev-mine small{display:block;font-size:12px;color:rgba(26,26,26,.68);}',
+    // How to add it, the role and Promote your event: choice cards (Sean, 2026-10-28).
+    '.vev-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:12px;margin:4px 0 16px;}',
+    '.vev-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;font-family:inherit;border:1.5px solid rgba(0,0,0,.14);border-radius:10px;padding:16px;background:#fff;color:#1a1a1a;cursor:pointer;}',
+    '.vev-card:hover{border-color:#2d7d31;}',
+    '.vev-card[aria-pressed="true"]{border-color:#2d7d31;background:#e8f5e9;box-shadow:inset 0 0 0 1px #2d7d31;}',
+    '.vev-card b{font-size:15px;font-weight:800;}',
+    '.vev-card span{font-size:13px;line-height:1.5;color:rgba(26,26,26,.75);}',
+    '.vev-card ul{margin:2px 0 0 18px;padding:0;font-size:13px;line-height:1.55;color:rgba(26,26,26,.75);}',
+    '.vev-card svg{width:26px;height:26px;color:#2d7d31;}',
+    '.vev-sub{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:20px 0 10px;}',
+    '.vev-ask{border:1.5px solid #f3c27a;background:#fff8ec;border-radius:10px;padding:16px;margin-bottom:16px;}',
+    '.vev-ask h3{font-size:15px;font-weight:800;margin:0 0 4px;}',
+    '.vev-ask p{font-size:13px;margin:0 0 12px;color:rgba(26,26,26,.75);}',
+    '.vev-review dd button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;background:none;border:0;padding:0 0 0 8px;cursor:pointer;}',
+    '.vev-banner{border-radius:10px;background:#e8f5e9;color:#1f5f22;font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
+    '.vev-mine .vev-promote{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;text-decoration:none;margin-right:10px;}'
   ].join('');
   function injectCss() {
     if (document.getElementById('vev-css')) return;
@@ -240,7 +261,7 @@
       cat: useUrl ? qs.get('cat') || '' : '', when: useUrl && qs.get('when') === 'past' ? 'past' : 'upcoming',
       sort: useUrl && qs.get('sort') === 'city' ? 'city' : 'date', shown: 40
     };
-    var all = null, draft = null, flyer = null, mine = null;
+    var all = null, draft = null, flyer = null, mine = null, how = '';
 
     function syncUrl() {
       if (!useUrl) return;
@@ -379,14 +400,23 @@
     }
 
     /* ---------- Submit an event ---------- */
-    var STEPS = ['A flyer', 'The event', 'When and where', 'The official link'];
+    var STEPS = ['How to add it', 'The event', 'When and where', 'Check and send'];
+    var ROLES = [['host', 'I\'m hosting or organizing it', 'It is our event.'], ['promoter', 'I\'m promoting it', 'I help get the word out.'], ['attending', 'I\'m going', 'I want it on the calendar.']];
+    var ICON = {
+      flyer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="M20 16l-5-5-9 9"/></svg>',
+      link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>',
+      type: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/></svg>'
+    };
     function go(hash) {
       if (location.hash !== hash) history.pushState(history.state, '', location.pathname + location.search + hash);
       route();
+      // A new step starts at its top, under the sticky menu, when the page was scrolled past it.
+      var top = el.getBoundingClientRect().top, nav = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 70;
+      if (top < nav) window.scrollTo({ top: window.pageYOffset + top - nav - 12 });
     }
     function blank() {
       var hub = st.city && window.VECityBanner ? VECityBanner.hubBySlug(st.city) : null;
-      return { title: '', category: '', description: '', start: '', end: '', timezone: (hub && hub.tz) || myTz(), online: false, location_name: '', address: '', city: '', state: '', country: hub ? (hub.slug === 'london' ? 'GB' : 'US') : '', ticket_url: '' };
+      return { title: '', category: '', description: '', start: '', end: '', timezone: (hub && hub.tz) || myTz(), online: false, location_name: '', address: '', city: '', state: '', country: hub ? (hub.slug === 'london' ? 'GB' : 'US') : '', ticket_url: '', role: '', read: '', readNote: '' };
     }
     function field(id, label, input, hint, wide) {
       return '<div class="vev-f' + (wide ? ' wide' : '') + '" data-f="' + id + '"><label for="vev-' + id + '">' + label + '</label>' + input + (hint ? '<small>' + hint + '</small>' : '') + '</div>';
@@ -405,6 +435,16 @@
       var v = function (id) { var x = el.querySelector('#vev-' + id); return x ? (x.type === 'checkbox' ? x.checked : x.value.trim()) : undefined; };
       ['title', 'category', 'description', 'start', 'end', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'ticket_url'].forEach(function (k) { var x = v(k); if (x !== undefined) draft[k] = x; });
       var o = v('online'); if (o !== undefined) draft.online = o;
+      var r = el.querySelector('[data-role][aria-pressed="true"]'); if (r) draft.role = r.getAttribute('data-role');
+    }
+    // What the event still needs, asked as questions on Check and send.
+    function gaps() {
+      var g = [];
+      if (!draft.title) g.push('title');
+      var iso = draft.start ? zonedToISO(draft.start, draft.timezone) : '';
+      if (!iso || new Date(iso) < new Date(Date.now() - 864e5)) g.push('start');
+      if (!draft.online && (!draft.city || !draft.country)) g.push('place');
+      return g;
     }
     function check(step) {
       var bad = [];
@@ -416,7 +456,11 @@
         if (!draft.online && !draft.city) bad.push('city');
         if (!draft.online && !draft.country) bad.push('country');
       }
-      if (step === 4 && !/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(draft.ticket_url || '')) bad.push('ticket_url');
+      if (step === 4) {
+        gaps().forEach(function (k) { if (k === 'place') { if (!draft.city) bad.push('city'); if (!draft.country) bad.push('country'); } else bad.push(k); });
+        if (!/^https?:\/\/[^\s.]+\.[^\s]+$/i.test(draft.ticket_url || '')) bad.push('ticket_url');
+        if (!draft.role) bad.push('role');
+      }
       el.querySelectorAll('.vev-f').forEach(function (f) { f.classList.toggle('bad', bad.indexOf(f.getAttribute('data-f')) > -1); });
       return bad;
     }
@@ -428,10 +472,22 @@
         '<div class="vev-steps">' + STEPS.map(function (s, i) { return '<span class="' + (i + 1 === step ? 'on' : i + 1 < step ? 'done' : '') + '">' + (i + 1) + '. ' + esc(s) + '</span>'; }).join('') + '</div>';
       var body = '';
       if (step === 1) {
-        body = '<h2>Have a flyer?</h2><p class="lead">Drop the event\'s flyer or Instagram banner here (a picture or a PDF) and we will read it and fill in the next steps for you. No flyer? Press Next and type it in.</p>' +
-          '<div class="vev-drop" tabindex="0" role="button" data-v="drop"><b>Drop the flyer here</b><span>or click to choose a picture or a PDF</span></div>' +
-          '<input type="file" accept="image/*,application/pdf" data-v="file" hidden>' +
-          '<div class="vev-flyer" data-v="flyer"' + (flyer ? '' : ' hidden') + '>' + (flyer && flyer.preview ? '<img src="' + esc(flyer.preview) + '" alt="Your flyer">' : '') + '<p class="vev-note" data-v="fnote">' + esc(flyer && flyer.note || '') + '</p></div>';
+        var card = function (k, t, d) { return '<button type="button" class="vev-card" data-how="' + k + '" aria-pressed="' + (how === k) + '">' + ICON[k] + '<b>' + t + '</b><span>' + d + '</span></button>'; };
+        body = '<h2>How do you want to add it?</h2><p class="lead">Pick whichever is easiest. We read a flyer or a link and fill in the rest for you, then ask about anything we could not find.</p>' +
+          '<div class="vev-cards" role="group" aria-label="How to add it">' +
+            card('flyer', 'Drop in a flyer', 'A picture, an Instagram banner or a PDF.') +
+            card('link', 'Paste a link', 'Its Eventbrite, Meetup or ticket page, its website, or an Instagram post.') +
+            card('type', 'Type it in', 'Fill in the details yourself, step by step.') +
+          '</div>' +
+          '<div data-v="pane-flyer"' + (how === 'flyer' ? '' : ' hidden') + '>' +
+            '<div class="vev-drop" tabindex="0" role="button" data-v="drop"><b>Drop the flyer here</b><span>or click to choose a picture or a PDF</span></div>' +
+            '<input type="file" accept="image/*,application/pdf" data-v="file" hidden>' +
+            '<div class="vev-flyer" data-v="flyer"' + (flyer ? '' : ' hidden') + '>' + (flyer && flyer.preview ? '<img src="' + esc(flyer.preview) + '" alt="Your flyer">' : '') + '<p class="vev-note" data-v="fnote">' + esc(flyer && flyer.note || '') + '</p></div>' +
+          '</div>' +
+          '<div data-v="pane-link"' + (how === 'link' ? '' : ' hidden') + '><div class="vev-grid">' +
+            field('link', 'The event\'s link', inp('link', draft.read === 'link' ? draft.ticket_url : '', 'url', ' placeholder="https://" maxlength="1000"'), 'We open it and read the event from it. An Instagram post is read like a flyer.', true) +
+            '</div><div class="vev-nav" style="justify-content:flex-start"><button type="button" class="vev-btn green" data-v="readlink">Read it</button><p class="vev-note" data-v="lnote"></p></div>' +
+          '</div>';
       } else if (step === 2) {
         body = '<h2>The event</h2><p class="lead">What it is, in a few words. We check every event before it goes on the calendar.</p><div class="vev-grid">' +
           field('title', 'Event name', inp('title', draft.title, 'text', ' maxlength="200" autocomplete="off"'), '', true) +
@@ -451,13 +507,33 @@
           field('country', 'Country', countrySelect(draft.country)) +
           '</div>';
       } else {
-        body = '<h2>The official link</h2><p class="lead">Where to get tickets or read more: the organizer\'s own page or its ticket page. We need it to list the event.</p><div class="vev-grid">' +
-          field('ticket_url', 'Official link', inp('ticket_url', draft.ticket_url, 'url', ' placeholder="https://" maxlength="1000"'), 'Starts with https://. An Eventbrite page, their website, or their Instagram post.', true) +
-          '</div><dl class="vev-review">' +
-          '<dt>Event</dt><dd>' + esc(draft.title || '') + (draft.category ? ' (' + esc(CATS[draft.category]) + ')' : '') + '</dd>' +
-          '<dt>When</dt><dd>' + esc(draft.start ? when({ starts_at: zonedToISO(draft.start, draft.timezone), timezone: draft.timezone }) : '') + '</dd>' +
-          '<dt>Where</dt><dd>' + esc(draft.online ? 'Online' : [draft.location_name, draft.city, draft.state, countryName(draft.country)].filter(Boolean).join(', ')) + '</dd>' +
-          '</dl>' + (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or get your Passport) when you send it, so we can let you know when it is live.</p>');
+        var g = gaps(), from = draft.read === 'flyer' ? 'your flyer' : draft.read === 'link' ? 'your link' : '';
+        var ask = '';
+        if (g.length) {
+          ask = '<div class="vev-ask"><h3>' + (from ? 'A few things we could not find' : 'A few things we still need') + '</h3><p>Answer these and it is ready to send.</p><div class="vev-grid">' +
+            (g.indexOf('title') > -1 ? field('title', 'What is the event called?', inp('title', draft.title, 'text', ' maxlength="200" autocomplete="off"'), '', true) : '') +
+            (g.indexOf('start') > -1 ? field('start', 'When does it start?', inp('start', draft.start, 'datetime-local'), draft.start ? 'That day has passed. Check the date.' : '') + field('timezone', 'In what time zone?', tzSelect(draft.timezone)) : '') +
+            (g.indexOf('place') > -1 ? field('city', 'What city is it in?', inp('city', draft.city, 'text', ' maxlength="120"')) + field('state', 'State or region', inp('state', draft.state, 'text', ' maxlength="60"')) + field('country', 'Country', countrySelect(draft.country)) +
+              '<div class="vev-f wide"><label class="vev-check"><input type="checkbox" id="vev-online"' + (draft.online ? ' checked' : '') + '> It is online only</label></div>' : '') +
+            '</div></div>';
+        }
+        var chg = function (n) { return ' <button type="button" data-go="edit' + n + '">Change</button>'; };
+        body = '<h2>' + (from ? 'What we found' : 'Check and send') + '</h2>' +
+          '<p class="lead">' + (from ? 'Here is what we read from ' + from + '. Check it, change anything we got wrong, and send it.' + (draft.readNote ? ' ' + esc(draft.readNote) : '') : 'Check it over, then send it. We check every event before it goes on the calendar.') + '</p>' +
+          ask +
+          '<dl class="vev-review">' +
+            '<dt>Event</dt><dd>' + esc(draft.title || 'Not given yet') + (draft.category ? ' (' + esc(CATS[draft.category]) + ')' : '') + chg(2) + '</dd>' +
+            (draft.description ? '<dt>About it</dt><dd>' + esc(draft.description) + chg(2) + '</dd>' : '') +
+            '<dt>When</dt><dd>' + esc(draft.start ? when({ starts_at: zonedToISO(draft.start, draft.timezone), timezone: draft.timezone }) : 'Not given yet') + chg(3) + '</dd>' +
+            '<dt>Where</dt><dd>' + esc(draft.online ? 'Online' : [draft.location_name, draft.address, draft.city, draft.state, countryName(draft.country)].filter(Boolean).join(', ') || 'Not given yet') + chg(3) + '</dd>' +
+          '</dl>' +
+          '<p class="vev-sub">The official link</p><div class="vev-grid">' +
+            field('ticket_url', 'Where to get tickets or read more', inp('ticket_url', draft.ticket_url, 'url', ' placeholder="https://" maxlength="1000"'), 'Starts with https://. The organizer\'s page, its ticket page, or their Instagram post. We need it to list the event.', true) +
+          '</div>' +
+          '<p class="vev-sub">You and this event</p><div class="vev-f" data-f="role"><div class="vev-cards" role="group" aria-label="You and this event">' +
+            ROLES.map(function (r) { return '<button type="button" class="vev-card" data-role="' + r[0] + '" aria-pressed="' + (draft.role === r[0]) + '"><b>' + r[1] + '</b><span>' + r[2] + '</span></button>'; }).join('') +
+          '</div><small>Hosting or promoting it? After you send it, we show you how we can help it fill up.</small></div>' +
+          (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or get your Passport) when you send it, so we can let you know when it is live.</p>');
       }
       el.innerHTML = head + '<div class="vev-form">' + body +
         '<p class="vev-note bad" data-v="err" role="alert"></p>' +
@@ -473,8 +549,16 @@
           if (k === 'mine') { go('#mine'); return; }
           collect();
           if (k === 'back') { go('#submit/' + (step - 1)); return; }
+          if (k === 'edit2' || k === 'edit3') { go('#submit/' + k.slice(4)); return; }
+          if (k === 'next' && step === 1) {
+            if (!how) { el.querySelector('[data-v="err"]').textContent = 'Pick how you want to add it.'; return; }
+            go(how === 'type' || !draft.read ? '#submit/2' : '#submit/4'); return;
+          }
           var bad = check(step);
-          if (bad.length) { el.querySelector('[data-v="err"]').textContent = step === 4 ? 'Add the official link (starting with https://).' : 'Fill in the fields marked in red.'; return; }
+          if (bad.length) {
+            el.querySelector('[data-v="err"]').textContent = step < 4 ? 'Fill in the fields marked in red.' : bad.indexOf('role') > -1 && bad.length === 1 ? 'Tell us how you are connected to the event.' : bad.indexOf('ticket_url') > -1 && bad.length <= 2 && !gaps().length ? 'Add the official link (starting with https://).' : 'Answer the questions marked in red.';
+            return;
+          }
           if (k === 'next') { go('#submit/' + (step + 1)); return; }
           send(b);
         });
@@ -484,7 +568,43 @@
         var tog = function () { ['location_name', 'address', 'city', 'state', 'country'].forEach(function (k) { var f = el.querySelector('[data-f="' + k + '"]'); if (f) f.hidden = online.checked; }); };
         online.addEventListener('change', tog); tog();
       }
-      if (step === 1) wireDrop();
+      if (step === 1) {
+        wireDrop();
+        el.querySelectorAll('[data-how]').forEach(function (c) {
+          c.addEventListener('click', function () {
+            how = c.getAttribute('data-how');
+            // Typing it in starts from what is there, no longer "what we found".
+            if (how === 'type') { draft.read = ''; draft.readNote = ''; go('#submit/2'); return; }
+            el.querySelectorAll('[data-how]').forEach(function (x) { x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+            el.querySelector('[data-v="pane-flyer"]').hidden = how !== 'flyer';
+            el.querySelector('[data-v="pane-link"]').hidden = how !== 'link';
+            if (how === 'link') { var li = el.querySelector('#vev-link'); if (li) li.focus(); }
+          });
+        });
+        var rl = el.querySelector('[data-v="readlink"]'), li = el.querySelector('#vev-link');
+        li.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); rl.click(); } });
+        rl.addEventListener('click', function () {
+          var url = li.value.trim(), ln = el.querySelector('[data-v="lnote"]');
+          if (!/^(https?:\/\/)?[^\s.]+\.[^\s]+$/i.test(url)) { ln.textContent = 'Paste the full link.'; ln.classList.add('bad'); return; }
+          needSignIn(function () {
+            rl.disabled = true; ln.classList.remove('bad'); ln.textContent = 'Reading it… this can take up to a minute.';
+            api({ action: 'link_read', url: url }).then(function (d) {
+              rl.disabled = false;
+              if (d.error || !d.event) { ln.classList.add('bad'); ln.textContent = d.message || d.note || 'We could not read that one. Try another, drop in the flyer, or type it in.'; return; }
+              fill(d.event, d.note, d.links);
+              draft.read = 'link';
+              go('#submit/4');
+            }).catch(function () { rl.disabled = false; ln.classList.add('bad'); ln.textContent = 'That did not go through. Try again.'; });
+          });
+        });
+      }
+      el.querySelectorAll('[data-role]').forEach(function (c) {
+        c.addEventListener('click', function () {
+          draft.role = c.getAttribute('data-role');
+          el.querySelectorAll('[data-role]').forEach(function (x) { x.setAttribute('aria-pressed', x === c ? 'true' : 'false'); });
+          var f = el.querySelector('[data-f="role"]'); if (f) f.classList.remove('bad');
+        });
+      });
       var first = el.querySelector('.vev-form input, .vev-form select, .vev-form textarea');
       if (first && step > 1) try { first.focus({ preventScroll: true }); } catch (e) {}
     }
@@ -494,6 +614,18 @@
       var back = location.pathname + location.search + location.hash;
       if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in, or get your Passport, to send an event.', function () { then(); });
       else location.href = '/login?next=' + encodeURIComponent(back);
+    }
+
+    // What a flyer or a link gave us, into the draft (kept where it says nothing).
+    function fill(x, note, links) {
+      var tz = x.timezone || draft.timezone;
+      Object.assign(draft, {
+        title: x.title || draft.title, category: x.category || draft.category, description: x.description || draft.description,
+        timezone: tz, start: x.starts_at ? isoToLocal(x.starts_at, tz) : draft.start, end: x.ends_at ? isoToLocal(x.ends_at, tz) : draft.end,
+        online: x.event_type === 'virtual', location_name: x.location_name || draft.location_name, address: x.address || draft.address,
+        city: x.city || draft.city, state: x.state || draft.state, country: x.country || draft.country, ticket_url: x.ticket_url || draft.ticket_url
+      });
+      draft.readNote = [note || '', links && !x.ticket_url ? 'Links we saw: ' + links + '.' : ''].filter(Boolean).join(' ');
     }
 
     function wireDrop() {
@@ -513,15 +645,10 @@
           }).then(function (d) {
             if (d.error) { flyer.note = d.message || 'We could not read that one. Press Next and type it in.'; note(flyer.note, true); return; }
             if (!d.event) { flyer.note = d.note || 'That does not look like an event flyer.'; note(flyer.note, true); return; }
-            var x = d.event, tz = x.timezone || draft.timezone;
-            Object.assign(draft, {
-              title: x.title || draft.title, category: x.category || draft.category, description: x.description || draft.description,
-              timezone: tz, start: x.starts_at ? isoToLocal(x.starts_at, tz) : draft.start, end: x.ends_at ? isoToLocal(x.ends_at, tz) : draft.end,
-              online: x.event_type === 'virtual', location_name: x.location_name || draft.location_name, address: x.address || draft.address,
-              city: x.city || draft.city, state: x.state || draft.state, country: x.country || draft.country, ticket_url: x.ticket_url || draft.ticket_url
-            });
-            flyer.note = 'Read it. Check each step and fix anything we got wrong.' + (d.note ? ' ' + d.note : '') + (d.links && !x.ticket_url ? ' Links on the flyer: ' + d.links + '.' : '');
-            note(flyer.note);
+            fill(d.event, d.note, d.links);
+            draft.read = 'flyer';
+            flyer.note = 'Read it.';
+            go('#submit/4');
           }).catch(function (e) { flyer.note = (e && e.message) || 'That did not upload. Try again.'; note(flyer.note, true); });
         });
       }
@@ -542,14 +669,15 @@
           timezone: draft.timezone, event_type: draft.online ? 'virtual' : 'in_person', ticket_url: draft.ticket_url
         };
         if (!draft.online) Object.assign(ev, { location_name: draft.location_name, address: draft.address, city: draft.city, state: draft.state, country: draft.country, continent: (COUNTRIES[draft.country] || [])[1] || '' });
-        api({ action: 'submit', event: ev, flyer_path: flyer && flyer.path }).then(function (d) {
+        api({ action: 'submit', event: ev, flyer_path: flyer && flyer.path, role: draft.role }).then(function (d) {
           if (!d.ok) {
             btn.disabled = false; btn.textContent = 'Send for approval';
             el.querySelector('[data-v="err"]').textContent = d.message || 'That did not send. Try again.';
             return;
           }
-          draft = null; flyer = null; mine = null;
-          go('#mine/sent');
+          var role = draft.role;
+          draft = null; flyer = null; mine = null; how = '';
+          go(role === 'host' || role === 'promoter' ? '#promote/' + d.id + '/sent' : '#mine/sent');
         }).catch(function () { btn.disabled = false; btn.textContent = 'Send for approval'; el.querySelector('[data-v="err"]').textContent = 'That did not send. Try again.'; });
       });
     }
@@ -566,7 +694,8 @@
           var box = el.querySelector('[data-v="mine"]'); if (!box) return;
           var label = { pending: 'Waiting for approval', approved: 'Live', rejected: 'Not approved', cancelled: 'Cancelled' };
           box.innerHTML = mine.length ? mine.map(function (e) {
-            return '<div><span><b>' + esc(e.title) + '</b><small>' + esc(when(e)) + (e.city ? ' · ' + esc(e.city) : '') + (e.status === 'rejected' && e.rejection_reason ? ' · ' + esc(e.rejection_reason) : '') + '</small></span><span class="vev-tag ' + esc(e.status) + '">' + esc(label[e.status] || e.status) + '</span></div>';
+            var promo = (e.submitter_role === 'host' || e.submitter_role === 'promoter') && e.status !== 'rejected' && new Date(e.starts_at) > new Date() ? '<a class="vev-promote" href="#promote/' + esc(e.id) + '">Promote it</a>' : '';
+            return '<div><span><b>' + esc(e.title) + '</b><small>' + esc(when(e)) + (e.city ? ' · ' + esc(e.city) : '') + (e.status === 'rejected' && e.rejection_reason ? ' · ' + esc(e.rejection_reason) : '') + '</small></span><span>' + promo + '<span class="vev-tag ' + esc(e.status) + '">' + esc(label[e.status] || e.status) + '</span></span></div>';
           }).join('') : '<p class="vev-count">Nothing yet.</p>';
         });
       }
@@ -580,8 +709,82 @@
       });
     }
 
+    /* ---------- Promote your event (Sean, 2026-10-28) ----------
+       For the event's host or promoter, after they send it and from My events. Three packages and six options, each only
+       I'm interested for now (no prices): ve-events promote_interest, a lead (initiative event-promotion) and an email to Sean. */
+    var PACKAGES = [
+      ['spotlight', 'Spotlight', ['Featured on the calendar and its city\'s page', 'Ads on our pages across its chapter']],
+      ['boost', 'Boost', ['Everything in Spotlight', 'Featured to our Meetup group (South Florida)', 'Graphics and posts on our social before it']],
+      ['front_row', 'Front Row', ['Everything in Boost', 'One of our members there to capture it', 'A recap video after']]
+    ];
+    var PROMO = [
+      ['feature', 'Feature it', 'At the top of the calendar and its city\'s page in the weeks before.'],
+      ['ads', 'Run ads', 'Your event in our ad spots on the pages of its chapter.'],
+      ['meetup', 'Meetup feature', 'Featured to our Meetup group, for events in South Florida.'],
+      ['social', 'Social push', 'We make the graphics and post about it before the day.'],
+      ['coverage', 'Coverage', 'A member of ours attends, captures content, and we post a recap video after.'],
+      ['coproduce', 'Co-produce it with us', 'The full service: the event\'s page, tickets, vendors and volunteers, run with a Community Manager.']
+    ];
+    function drawPromote(id, sent) {
+      var head = '<nav class="vev-crumb" aria-label="Breadcrumb"><a href="#" data-go="list">' + esc(opts.listLabel || 'Events') + '</a><span>/</span><a href="#mine" data-go="mine">My events</a><span>/</span><span>Promote your event</span></nav>';
+      var bind = function () {
+        el.querySelectorAll('[data-go]').forEach(function (b) {
+          b.addEventListener('click', function (ev) { ev.preventDefault(); var k = b.getAttribute('data-go'); if (k === 'list') go(''); else if (k === 'mine') go('#mine'); });
+        });
+      };
+      if (!signedIn()) {
+        el.innerHTML = head + '<div class="vev-form"><h2>Promote your event</h2><p class="lead">Sign in to see the ways we can promote your event.</p><button type="button" class="vev-btn green" data-v="signin">Sign in</button></div>';
+        bind(); el.querySelector('[data-v="signin"]').addEventListener('click', function () { needSignIn(function () { drawPromote(id, sent); }); });
+        return;
+      }
+      el.innerHTML = head + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
+      bind();
+      api({ action: 'promote_get', id: id }).then(function (d) {
+        var e = d.event;
+        if (!e) { el.innerHTML = head + '<div class="vev-form"><h2>Promote your event</h2><p class="lead">We could not find that event in the ones you sent as its host or promoter.</p><div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="mine">My events</button></div></div>'; bind(); return; }
+        var sf = window.VECityBanner && VECityBanner.hubBySlug ? VECityBanner.matches(VECityBanner.hubBySlug('south-florida'), { city: e.city, state: e.state }) : true;
+        var opts6 = PROMO.filter(function (o) { return o[0] !== 'meetup' || sf; });
+        var pick = { pkg: '', opts: {} };
+        el.innerHTML = head + '<div class="vev-form">' +
+          (sent ? '<div class="vev-banner">Thanks, ' + esc(e.title) + ' is in. We check every event before it goes on the calendar, usually within a day or two, and email you when it is live.</div>' : '') +
+          '<h2>Promote your event</h2><p class="lead">' + esc(e.title) + ', ' + esc(when(e)) + (e.city ? ', ' + esc(e.city) : '') + '. Here is how we can help it fill up. Pick a package, or any of the options, and our team will be in touch about what it takes. Nothing is charged here.</p>' +
+          '<p class="vev-sub">Packages</p><div class="vev-cards" role="group" aria-label="Packages">' +
+            PACKAGES.map(function (k) { return '<button type="button" class="vev-card" data-pkg="' + k[0] + '" aria-pressed="false"><b>' + esc(k[1]) + '</b><ul>' + k[2].filter(function (x) { return sf || x.indexOf('Meetup') < 0; }).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></button>'; }).join('') +
+          '</div>' +
+          '<p class="vev-sub">Or pick what you want</p><div class="vev-cards" role="group" aria-label="Options">' +
+            opts6.map(function (o) { return '<button type="button" class="vev-card" data-opt="' + o[0] + '" aria-pressed="false"><b>' + esc(o[1]) + '</b><span>' + esc(o[2]) + '</span></button>'; }).join('') +
+          '</div>' +
+          '<div class="vev-grid">' + field('pnote', 'Anything we should know?', '<textarea id="vev-pnote" maxlength="1000"></textarea>', 'Your budget, how many people you expect, what help you need most.', true) + '</div>' +
+          '<p class="vev-note bad" data-v="err" role="alert"></p>' +
+          '<div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="mine">Not now</button><button type="button" class="vev-btn green" data-v="send">I\'m interested</button></div></div>';
+        bind();
+        el.querySelectorAll('[data-pkg]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var k = b.getAttribute('data-pkg'); pick.pkg = pick.pkg === k ? '' : k;
+            el.querySelectorAll('[data-pkg]').forEach(function (x) { x.setAttribute('aria-pressed', x.getAttribute('data-pkg') === pick.pkg ? 'true' : 'false'); });
+          });
+        });
+        el.querySelectorAll('[data-opt]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            var k = b.getAttribute('data-opt'); pick.opts[k] = !pick.opts[k]; b.setAttribute('aria-pressed', pick.opts[k] ? 'true' : 'false');
+          });
+        });
+        el.querySelector('[data-v="send"]').addEventListener('click', function () {
+          var btn = this, list = Object.keys(pick.opts).filter(function (k) { return pick.opts[k]; }), err = el.querySelector('[data-v="err"]');
+          if (!pick.pkg && !list.length) { err.textContent = 'Pick a package or at least one option.'; return; }
+          btn.disabled = true; btn.textContent = 'Sending…';
+          api({ action: 'promote_interest', id: id, package: pick.pkg, options: list, note: el.querySelector('#vev-pnote').value.trim() }).then(function (r) {
+            if (!r.ok) { btn.disabled = false; btn.textContent = 'I\'m interested'; err.textContent = r.message || 'That did not send. Try again.'; return; }
+            el.innerHTML = head + '<div class="vev-form"><h2>Thanks, we will be in touch</h2><p class="lead">Our team has what you picked for ' + esc(e.title) + ' and will reach out about what it takes, usually within a couple of days.</p><div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="list">See the events</button><button type="button" class="vev-btn" data-go="mine">My events</button></div></div>';
+            bind();
+          }).catch(function () { btn.disabled = false; btn.textContent = 'I\'m interested'; err.textContent = 'That did not send. Try again.'; });
+        });
+      });
+    }
+
     function route() {
-      var h = location.hash || '', m = /^#submit\/([1-4])$/.exec(h);
+      var h = location.hash || '', m = /^#submit\/([1-4])$/.exec(h), pm = /^#promote\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
+      if (pm) { drawPromote(pm[1], !!pm[2]); if (opts.onView) opts.onView('promote'); return; }
       if (m) { var s = +m[1]; if (s > 1 && !draft) { go('#submit/1'); return; } drawSubmit(s); if (opts.onView) opts.onView('submit'); }
       else if (/^#mine/.test(h)) { drawMine(h === '#mine/sent'); if (opts.onView) opts.onView('mine'); }
       else { drawList(); if (opts.onView) opts.onView('list'); }
@@ -592,10 +795,10 @@
     window.addEventListener('hashchange', route);
 
     route();
-    load().then(function () { if (!/^#(submit|mine)/.test(location.hash)) { drawList(); } });
+    load().then(function () { if (!/^#(submit|mine|promote)/.test(location.hash)) { drawList(); } });
 
     return {
-      setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine)/.test(location.hash)) drawRows(); },
+      setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine|promote)/.test(location.hash)) drawRows(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
       home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },

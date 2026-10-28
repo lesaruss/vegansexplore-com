@@ -11,8 +11,15 @@
 // Member (Authorization: Bearer <ve_token>):
 // POST { action: 'flyer_start', type }            -> { path, upload_url }   PUT the file there (image or PDF, 15 MB)
 // POST { action: 'flyer_read', path }             -> { event, note }       Claude reads the flyer; five a day for members
-// POST { action: 'submit', event, flyer_path? }   -> { ok, id }            waits for approval; needs the official link
+// POST { action: 'link_read', url }              -> { event, note, read } (Sean, 2026-10-28: "dropping in a link... and it
+//        pulling the information from there") an event page, an Eventbrite or Meetup page, or an Instagram post (its picture
+//        is read like a flyer); counts with the flyer reads
+// POST { action: 'submit', event, flyer_path?, role }  -> { ok, id }      waits for approval; needs the official link. role is
+//        host | promoter | attending (events.submitter_role); a host or promoter is sent on to Promote your event
 // POST { action: 'mine' }                         -> { events }            what they sent and where it stands
+// POST { action: 'promote_get', id }              -> { event }             their own event, for Promote your event
+// POST { action: 'promote_interest', id, package?, options, note? }  I'm interested in promoting it (Sean, 2026-10-28: six
+//        options, three packages; no prices yet): a ve_initiative_interest row (initiative event-promotion) and an email to Sean
 // Super admin:
 // POST { action: 'queue', status }                -> { events, counts }    pending | approved | rejected, with signed flyer links
 // POST { action: 'review', id, decision, event?, reason? }  approve or reject, saving any fixes first
@@ -175,13 +182,90 @@ async function readFlyer(path: string) {
   const isPdf = type === 'application/pdf';
   // Claude takes images up to 5 MB; the pages shrink pictures before sending, so a bigger one is a stray original.
   if (!isPdf && bytes.length > 5 * 1024 * 1024) return { error: 'too_big' };
+  const media = isPdf
+    ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: toBase64(bytes) } }
+    : { type: 'image', source: { type: 'base64', media_type: type, data: toBase64(bytes) } };
+  return askReader([media, { type: 'text', text: 'Read this event flyer and fill in the event.' }]);
+}
+
+// ---- Reading a link (an event page, or an Instagram post whose picture is the flyer) ----
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
+const decode = (s: string) => s.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
+async function readPage(url: string) {
+  try {
+    const r = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': UA, Accept: 'text/html,*/*' }, signal: AbortSignal.timeout(12000) });
+    if (!r.ok) return { url, error: `The page answered ${r.status}` };
+    const html = (await r.text()).slice(0, 800000);
+    const meta = (re: RegExp) => decode((html.match(re) || [])[1] || '').trim();
+    // Event pages (Eventbrite, Meetup, most ticket sites) carry the event as structured data: the surest source.
+    const ld = [...html.matchAll(/<script[^>]+application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)].map((m) => m[1].trim()).join('\n').slice(0, 6000);
+    const text = decode(html.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<noscript[\s\S]*?<\/noscript>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim().slice(0, 7000);
+    return {
+      url: r.url || url, title: meta(/<title[^>]*>([^<]*)/i),
+      description: meta(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)/i) || meta(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']*)/i),
+      image: meta(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']*)/i), structured: ld, text,
+    };
+  } catch { return { url, error: 'The page did not open' }; }
+}
+// An Instagram post or reel through Apify's Instagram scraper (the page itself needs a sign-in): its caption, place and picture.
+async function readInstagramPost(url: string) {
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'APIFY_API_TOKEN').maybeSingle();
+  const token = data?.value as string;
+  if (!token || token === 'pending') return { error: 'no Instagram reader' };
+  try {
+    const r = await fetch(`https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items?token=${token}&timeout=90`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ directUrls: [url], resultsType: 'posts', resultsLimit: 1 }), signal: AbortSignal.timeout(100000),
+    });
+    if (!r.ok) return { error: `Instagram answered ${r.status}` };
+    const x = ((await r.json()) as any[])[0];
+    if (!x || x.error) return { error: 'Instagram did not answer' };
+    return { caption: String(x.caption || '').slice(0, 3000), place: x.locationName || '', posted: x.timestamp || '', by: x.ownerUsername || '', image: x.displayUrl || '' };
+  } catch (e) { return { error: String((e as Error).message || e).slice(0, 160) }; }
+}
+async function imagePart(url: string) {
+  try {
+    const r = await fetch(url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(12000) });
+    const type = (r.headers.get('content-type') || '').split(';')[0];
+    if (!r.ok || !/^image\/(jpeg|png|webp|gif)$/.test(type)) return null;
+    const bytes = new Uint8Array(await r.arrayBuffer());
+    if (bytes.length > 5 * 1024 * 1024) return null;
+    return { type: 'image', source: { type: 'base64', media_type: type, data: toBase64(bytes) } };
+  } catch { return null; }
+}
+async function readLink(url: string) {
+  const read: string[] = [], parts: any[] = [];
+  const ig = /instagram\.com\/(p|reel|reels|tv)\//i.test(url);
+  if (ig) {
+    const x: any = await readInstagramPost(url);
+    if (x.error) read.push('Instagram: ' + x.error);
+    else {
+      read.push('The Instagram post');
+      const pic = x.image ? await imagePart(x.image) : null;
+      if (pic) parts.push({ type: 'text', text: 'The post\'s picture (often the flyer):' }, pic);
+      parts.push({ type: 'text', text: 'The post\'s caption and details: ' + JSON.stringify({ by: x.by, place: x.place, posted: x.posted, caption: x.caption }) });
+    }
+  } else {
+    const pg: any = await readPage(url);
+    if (pg.error) read.push(pg.url + ': ' + pg.error);
+    else {
+      read.push(pg.url);
+      const pic = pg.image ? await imagePart(pg.image) : null;
+      if (pic) parts.push({ type: 'text', text: 'The page\'s share picture (sometimes the flyer):' }, pic);
+      parts.push({ type: 'text', text: 'The page we read: ' + JSON.stringify({ url: pg.url, title: pg.title, description: pg.description, structured_data: pg.structured, text: pg.text }) });
+    }
+  }
+  if (!parts.length) return { error: 'unreadable', read };
+  parts.push({ type: 'text', text: `The member's link: ${url}. If this is the event's own page or its ticket page (not an Instagram post), it is the ticket_url. Fill in the event from what the page shows.` });
+  const r: any = await askReader(parts);
+  return { ...r, read };
+}
+
+async function askReader(content: any[]) {
   const apiKey = await anthropicKey();
   if (!apiKey) return { error: 'reader_unavailable' };
   const client = new Anthropic({ apiKey });
   const today = new Date().toISOString().slice(0, 10);
-  const media = isPdf
-    ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: toBase64(bytes) } }
-    : { type: 'image', source: { type: 'base64', media_type: type, data: toBase64(bytes) } };
   try {
     const response: any = await client.beta.messages.create({
       model: MODEL,
@@ -189,13 +273,13 @@ async function readFlyer(path: string) {
       betas: ['server-side-fallback-2026-07-01'],
       fallbacks: 'default',
       output_config: { effort: 'medium', format: { type: 'json_schema', schema: FLYER_SCHEMA } },
-      system: `You read event flyers and banners (often an Instagram post) for the Vegans Explore events calendar, so the team does not have to type them in. Today is ${today}.
+      system: `You read event flyers, banners and event pages (often an Instagram post, an Eventbrite or Meetup page, or the organizer's site) for the Vegans Explore events calendar, so nobody has to type them in. Today is ${today}.
 - Copy only what the flyer shows. Never invent a venue, a price, a link or a time. A field the flyer does not give stays empty.
 - Work out what follows plainly from what is printed: the city, state, country and continent from a venue or address you recognize, the time zone from the city, and the year when only a month and day are printed (the next time that date comes, from today). Say in note what you worked out.
 - starts_at and ends_at carry the event's own UTC offset for that date. A start time with no end time leaves ends_at empty. A date with no time: use 12:00 local and say so in note.
 - ticket_url is a full link printed on the flyer (or in its QR code text, if legible). An Instagram handle or a bare domain goes in other_links, not ticket_url.
 - Write "Vegan" with a capital V. No em dashes.`,
-      messages: [{ role: 'user', content: [media, { type: 'text', text: 'Read this event flyer and fill in the event.' }] }],
+      messages: [{ role: 'user', content }],
     } as any);
     if (response.stop_reason === 'refusal') return { error: 'unreadable' };
     const text = (response.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
@@ -261,35 +345,86 @@ Deno.serve(async (req) => {
       return json({ event: ev, links: clean(x.other_links, 500), note: clean(x.note, 400) });
     }
 
+    case 'link_read': {
+      let url = clean(body.url, 1000);
+      if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+      if (!isUrl(url)) return json({ error: 'bad_url', message: 'Paste the full link (starting with https://).' }, 400);
+      if (!admin && await countSince('ve_event_flyer_reads', 'member_id', memberId) >= LIMITS.read) return json({ error: 'rate_limited', message: 'You have read five today. Fill this one in by hand, or come back tomorrow.' }, 429);
+      const r: any = await readLink(url);
+      await db.from('ve_event_flyer_reads').insert({ member_id: memberId, flyer_path: 'link:' + url.slice(0, 500), result: r.result || { error: r.error, read: r.read } });
+      if (r.error) {
+        const msg: Record<string, string> = { busy: 'The reader is busy. Try again in a minute.', unreadable: 'We could not open that link. Try another, drop in the flyer, or type it in.', reader_unavailable: 'The reader is not available right now. Type it in instead.' };
+        return json({ error: r.error, message: msg[r.error] || 'We could not read that one.', read: r.read }, r.error === 'busy' ? 429 : 400);
+      }
+      const x = r.result || {};
+      if (!x.is_event) return json({ event: null, note: 'That link does not look like an event.', read: r.read });
+      const ev = shapeEvent(x);
+      // The official page they pasted is the link we list, unless it is an Instagram post.
+      if (!ev.ticket_url && !/instagram\.com/i.test(url)) ev.ticket_url = url;
+      return json({ event: ev, links: clean(x.other_links, 500), note: clean(x.note, 400), read: r.read });
+    }
+
     case 'submit': {
       if (!admin && await countSince('events', 'author_id', memberId, (q) => q.eq('source', 'member')) >= LIMITS.submit) return json({ error: 'rate_limited', message: 'That is a lot of events for one day. Send the rest tomorrow.' }, 429);
       const ev = shapeEvent(body.event);
       const miss = missing(ev);
       if (miss.length) return json({ error: 'missing', missing: miss, message: miss.includes('ticket_url') ? 'Add the official link: where to get tickets or read more.' : 'Fill in the event\'s name, day and city.' }, 400);
       if (body.flyer_path && ownsFlyer(body.flyer_path)) ev.flyer_path = body.flyer_path;
+      const role = ['host', 'promoter', 'attending'].includes(body.role) ? body.role : '';
+      if (!role) return json({ error: 'missing', missing: ['role'], message: 'Tell us how you are connected to the event.' }, 400);
       const { data, error } = await db.rpc('ve_event_intake', { p_event: ev, p_source: 'member', p_source_id: null, p_author: memberId, p_approve: false });
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       if (!data?.ok) {
         const why: Record<string, string> = { already_listed: 'That event is already on the calendar.', already_over: 'That event is over.', no_official_link: 'Add the official link.', no_date: 'Add the day it starts.' };
         return json({ error: data?.why || 'save_failed', message: why[data?.why] || 'That did not save. Try again.' }, 400);
       }
+      await db.from('events').update({ submitter_role: role }).eq('id', data.id);
+      const roleWords: Record<string, string> = { host: 'the host or organizer', promoter: 'promoting it', attending: 'going' };
       await sendEmail([SEAN_EMAIL], `[Events] New event to approve: ${ev.title}`,
-        p(`${esc(member.name || 'A member')} sent an event for the calendar: <b>${esc(String(ev.title))}</b>, ${esc(new Date(String(ev.starts_at)).toUTCString())}, ${esc([ev.city, ev.state, ev.country].filter(Boolean).join(', '))}.`) +
+        p(`${esc(member.name || 'A member')} (${esc(roleWords[role])}) sent an event for the calendar: <b>${esc(String(ev.title))}</b>, ${esc(new Date(String(ev.starts_at)).toUTCString())}, ${esc([ev.city, ev.state, ev.country].filter(Boolean).join(', '))}.`) +
         p(`Official link: <a href="${esc(String(ev.ticket_url))}">${esc(String(ev.ticket_url))}</a>`) +
         p(`<a href="${SITE}/admin/depot/events">Review it in Depot &gt; Events</a>`));
-      return json({ ok: true, id: data.id });
+      return json({ ok: true, id: data.id, role });
     }
 
     case 'mine': {
-      const { data } = await db.from('events').select('id, title, starts_at, city, state, country, status, rejection_reason, ticket_url, created_at')
+      const { data } = await db.from('events').select('id, title, starts_at, timezone, time_set, city, state, country, status, rejection_reason, ticket_url, submitter_role, created_at')
         .eq('author_id', memberId).eq('source', 'member').order('created_at', { ascending: false }).limit(50);
       return json({ events: data || [] });
+    }
+
+    // Promote your event (Sean, 2026-10-28): only the member who sent it, as its host or promoter (or the team).
+    case 'promote_get':
+    case 'promote_interest': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: ev } = await db.from('events').select('id, title, starts_at, timezone, time_set, city, state, country, location_name, status, submitter_role, author_id, ticket_url').eq('id', body.id).maybeSingle();
+      if (!ev || (!admin && (ev.author_id !== memberId || !['host', 'promoter'].includes(ev.submitter_role || '')))) return json({ error: 'not_found' }, 404);
+      if (action === 'promote_get') { const { author_id: _a, ...out } = ev; return json({ event: out }); }
+      const OPTIONS: Record<string, string> = { feature: 'Feature it', ads: 'Run ads', meetup: 'Meetup feature', social: 'Social push', coverage: 'Coverage and a recap video', coproduce: 'Co-produce it with us' };
+      const PACKAGES: Record<string, string> = { spotlight: 'Spotlight', boost: 'Boost', front_row: 'Front Row' };
+      const opts = (Array.isArray(body.options) ? body.options : []).filter((k: string) => k in OPTIONS);
+      const pkg = body.package in PACKAGES ? body.package : '';
+      if (!opts.length && !pkg) return json({ error: 'missing', message: 'Pick a package or at least one option.' }, 400);
+      const note = clean(body.note, 1000);
+      const what = [pkg ? 'the ' + PACKAGES[pkg] + ' package' : '', ...opts.map((k: string) => OPTIONS[k])].filter(Boolean).join(', ');
+      const { error } = await db.from('ve_initiative_interest').insert({
+        initiative_slug: 'event-promotion', member_id: memberId, action_type: 'sponsor_tier', tier_label: pkg ? PACKAGES[pkg] : 'Options', status: 'new',
+        email: member.email, name: String(member.name || '').slice(0, 120), source: 'form',
+        note: (ev.title + ': ' + what + (note ? '. ' + note : '')).slice(0, 2000), tags: ['event-promotion', 'event:' + ev.id, ...(pkg ? [pkg] : []), ...opts],
+      });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      const when = new Date(String(ev.starts_at)).toUTCString();
+      await sendEmail([SEAN_EMAIL], `[Events] Promotion interest: ${ev.title}`,
+        p(`${esc(member.name || 'A member')} (${esc(member.email || '')}), the event's ${ev.submitter_role === 'host' ? 'host' : 'promoter'}, wants to talk about promoting <b>${esc(String(ev.title))}</b> (${esc(when)}, ${esc([ev.city, ev.state].filter(Boolean).join(', '))}).`) +
+        p(`Interested in: <b>${esc(what)}</b>`) + (note ? p(`Their note: ${esc(note)}`) : '') +
+        p(`The event is ${ev.status === 'approved' ? 'live' : 'waiting for approval'}: <a href="${SITE}/admin/depot/events">Depot &gt; Events</a> · <a href="${SITE}/dashboard/leads">Leads</a>`));
+      return json({ ok: true });
     }
 
     case 'queue': {
       const gate = needAdmin(); if (gate) return gate;
       const status = ['pending', 'approved', 'rejected'].includes(body.status) ? body.status : 'pending';
-      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id')
+      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id, submitter_role')
         .eq('status', status);
       // Waiting: soonest first, so nothing passes before it is seen. Approved: the upcoming ones. Turned down: newest.
       if (status === 'pending') q = q.order('starts_at', { ascending: true });

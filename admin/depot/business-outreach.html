@@ -593,6 +593,8 @@
       function guessCatOf(r) {
         var p = r.place || {}, g = r.ig || {}, t = p.type || g.category || '';
         var org = /community search: looks like a (rescue|sanctuary|nonprofit)/.exec(r.reason || '');
+        var said = /Logan's guess: ([^.]+)\./.exec(r.reason || '');
+        if (said && (placeCache.cats || []).indexOf(said[1]) >= 0) return said[1];
         return org ? { rescue: 'Rescues', sanctuary: 'Sanctuaries', nonprofit: 'Nonprofits' }[org[1]]
           : /bakery|cafe|coffee/i.test(t) ? 'Bakeries & Cafes' : /grocery|market|supermarket/i.test(t) ? 'Markets' : /catering/i.test(t) ? 'Catering'
           : r.verdict === 'other' ? '' : 'Restaurants';

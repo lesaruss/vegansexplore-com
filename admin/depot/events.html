@@ -108,6 +108,8 @@
   (function () {
     var $ = function (id) { return document.getElementById(id); };
     var app = $('ev-app'), esc = VEEvents.esc, api = VEEvents.api;
+    // Who sent a member's event (events.submitter_role, Sean 2026-10-28).
+    var ROLE = { host: 'its host', promoter: 'promoting it', attending: 'going' };
     var CATS = VEEvents.CATS, COUNTRIES = VEEvents.COUNTRIES;
     var cache = { pending: null, approved: null, rejected: null }, counts = {}, sources = null, adding = null, q = '';
     var SRC = { member: 'Member', crawl: 'Found online', flyer: 'Flyer', admin: 'Team', import: 'Earlier' };
@@ -156,7 +158,7 @@
       var box = $('ev-rows'); if (!box) return;
       box.innerHTML = list.length ? list.map(function (e) {
         return '<div class="row"><span class="d">' + esc(day(e)) + '</span>' +
-          '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span></span>' +
+          '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span></span>' +
           '<span class="m">' + esc(CATS[e.category] || 'Event') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
           '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
           '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
@@ -203,7 +205,7 @@
     }
     function sideHtml(e) {
       return '<div class="panel side"><h2>Where it came from</h2>' +
-        '<p><b>' + esc(SRC[e.source] || e.source) + '</b>' + (e.by ? ': ' + esc(e.by.name) + (e.by.email ? ' (' + esc(e.by.email) + ')' : '') : '') + (e.source_name ? ': ' + esc(e.source_name) : '') + '</p>' +
+        '<p><b>' + esc(SRC[e.source] || e.source) + '</b>' + (e.by ? ': ' + esc(e.by.name) + (e.by.email ? ' (' + esc(e.by.email) + ')' : '') + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ': ' + esc(e.source_name) : '') + '</p>' +
         (e.ticket_url ? '<p>Official link: <a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(e.ticket_url) + '</a></p>' : '<p class="msg bad">No official link yet.</p>') +
         (e.source_url && e.source_url !== e.ticket_url ? '<p>Found at: <a href="' + esc(e.source_url) + '" target="_blank" rel="noopener">' + esc(e.source_url) + '</a></p>' : '') +
         (e.flyer_url ? (/\.pdf(\?|$)/i.test(e.flyer_path || '') ? '<p><a href="' + esc(e.flyer_url) + '" target="_blank" rel="noopener">Open the flyer (PDF)</a></p>' : '<img src="' + esc(e.flyer_url) + '" alt="The flyer">') : '') +

@@ -898,6 +898,20 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   approval, Live, Not approved) and they are emailed when it goes live. The city hubs' Submit an event opens the same steps
   (`/events?city=<slug>#submit/1`); the hub's old popup is gone. The one Submit an event button is the city banner's green one
   (the orange one in the calendar's toolbar was removed, Sean 2026-10-27).
+- **How to add it, and Promote your event** (Sean, 2026-10-28: "I would just like to be able to choose how I want to input the
+  event... once you pull the information, you can ask clarifying questions... members... need to make clear if they are the owners
+  of the event, if they're the promoters... or... attending"; playbook `ve-events-platform`). Step 1 is **How do you want to add
+  it?**: Drop in a flyer, Paste a link, or Type it in. A link goes to `ve-events` `link_read` (the page's structured data and text,
+  its share picture; an Instagram post through Apify's `instagram-scraper`, its picture read like a flyer; the pasted page becomes
+  the official link unless it is Instagram; counts with the five reads a day). A flyer or link that reads goes straight to step 4,
+  **What we found** (typed in, **Check and send**): the event with Change links, a question for anything missing (the name, the
+  start, the city), the official link and **You and this event** (I'm hosting or organizing it / I'm promoting it / I'm going,
+  required; `events.submitter_role`, migration `20261028_events_submitter_role.sql`; Depot > Events shows it). A host or promoter
+  then lands on **Promote your event** (`#promote/<id>`, also Promote it in My events): three packages (Spotlight, Boost, Front
+  Row) and six options (Feature it, Run ads, Meetup feature for South Florida events only, Social push, Coverage, Co-produce),
+  no prices, **I'm interested** (`promote_interest`: a `ve_initiative_interest` row, initiative `event-promotion`, tags the
+  package, options and `event:<id>`, on `/dashboard/leads`, and an email to Sean). The Meetup group's numbers show once Sean
+  gives them. The Vegan Foodie Fest case study waits on its material.
 - **Reading flyers** (Sean: "sometimes all they have is a banner on Instagram... you could automatically tell from the banner
   of where city to put in, what state, what continent"): `ve-events` `flyer_start` (a signed upload into the private bucket
   `event-flyers`; pictures shrunk to 1600 px first) and `flyer_read` (Claude Opus 5.5, structured output: name, times with
