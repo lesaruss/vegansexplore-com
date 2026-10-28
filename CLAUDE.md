@@ -1719,8 +1719,10 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   **Depot > Ambassadors > Commissions** (`#commissions/<status>`; `ve-affiliate` `admin_list`, `admin_settle`, `admin_launch`): every
   commission, Mark paid / Mark given / Refunded, and **Launch it for members**. Until launched (`affiliate_program.live` false) members
   see only Your level and How points come, with no rates; super admins see it all marked Preview. Commissions are recorded either way.
-  At launch: add the affiliate terms to `/policies#membership` (with the disclosure that sharers must say they earn) and tell the Guides about
-  member link commissions in `ve-guide-platform-facts` (its line on pay covers Community Managers and Explorers only).
+  **Launched 2026-10-28** (Sean: "launch the affiliate program"; migration `20261028_affiliate_launch.sql`): `affiliate_program.live`
+  true, the terms in `/policies#membership` (Your link and commissions, with the FTC rule that sharers say they earn, no spam or bidding on
+  our name, rates may change going forward), the Guides' facts and a saved answer (`earn-from-my-link`), and a line in the Passport
+  Guide's Bring people in and the Ambassador Guide's Your link.
 - **Credits are retired.** `trg_ve_founding_credit` is dropped, `ve-guide-unlock` `buy_credits` answers 410, the dashboard's Buy
   Guide credits is gone. The credit tables and functions stay so history reads; no member held a credit on 2026-10-25.
 - Points live in two places (`members.lesars_balance` and `member_points.available_points`); every points function moves both
