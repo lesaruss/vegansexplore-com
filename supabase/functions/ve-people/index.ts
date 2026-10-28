@@ -11,7 +11,8 @@
 //      { action: 'credit_remove', id }
 //      { action: 'episodes', q }                                                         -> { ok, rows }   our episodes, to pick a credit
 //      { action: 'bio_draft', listing_id, save?: true, recategorize?: true }             -> { ok, bio, title, category, specialty, sources }
-//      { action: 'photo_instagram', listing_id, handle? } | { action: 'photo_url', listing_id, url }  -> { ok, logo_url }
+//      { action: 'photo_instagram', listing_id, handle?, sure? } | { action: 'photo_url', listing_id, url }  -> { ok, logo_url }
+//      (Instagram: refused as not_them unless a word of their name is in the account's name, handle or bio, or sure is true)
 // Each change to a listing is a ve_listing_edits row with the value it replaced.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
@@ -255,6 +256,11 @@ Deno.serve(async (req) => {
       }).catch(() => null);
       const p: any = r && r.ok ? ((await r.json()) as any[])[0] : null;
       if (!p || p.error) return json({ error: 'not_found', message: `@${handle} did not come back from Instagram.` }, 404);
+      // The account has to be theirs: a word of their name (3 letters or more) in its name, handle or bio, unless the caller is sure.
+      const words = String(l.name).toLowerCase().replace(/^(dr|chef)\.?\s+/, '').match(/[a-zÀ-ɏ]{3,}/g) || [];
+      const hay = `${p.fullName || ''} ${p.username || ''} ${p.biography || ''}`.toLowerCase();
+      if (!body.sure && !words.some((w) => hay.includes(w)))
+        return json({ error: 'not_them', message: `@${handle} is ${p.fullName || 'someone else'}.`, full_name: p.fullName || '', bio: String(p.biography || '').slice(0, 200) }, 409);
       pic = p.profilePicUrlHD || p.profilePicUrl || ''; site = httpsUrl(p.externalUrl); source = 'instagram:@' + handle;
     } else {
       pic = httpsUrl(body.url); source = pic;
