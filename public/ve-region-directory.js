@@ -72,8 +72,8 @@
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
       // All first here, the one exception (Sean, 2026-10-27: "I don't mind people seeing all of the community listings in one slot").
       subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'], allFirst: true },
-    // People, All first like Community. Super admins only until Sean launches it (the prototype, 2026-10-28): drop adminOnly then.
-    { key: 'people', label: 'People', hasVF: false, adminOnly: true,
+    // People, All first like Community. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
+    { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
       subcats: ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'], allFirst: true },
     // Being vetted (Sean, 2026-10-25): Vegan-friendly and Vegan-options food places the community has not vetted yet

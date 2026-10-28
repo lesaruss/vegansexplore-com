@@ -1227,8 +1227,8 @@ there, never something members add or follow (the Follow Shows tiles and modal a
 
 "A people directory... people that we've actually interacted with... the incentive for organizations to want to work with us... we're
 not just going to randomly add people to it... an IMDb of all the stuff that they've done with Vegans Explore... that will be our
-doorway into making them an ambassador." The prototype, **super admins only** until Sean launches it (`adminOnly` on the `people` entry of
-`CAT_CONFIG` in `ve-region-directory.js`; drop it to launch).
+doorway into making them an ambassador." **Launched to everyone 2026-10-28** (Sean: "launch the people directory"; the `people` entry of
+`CAT_CONFIG` in `ve-region-directory.js` lost its `adminOnly`), on `/directory` and the dashboard's Directory tab.
 
 - **A person is a listing** in the Directory's **People** section, so votes, saves, the card and the page are everyone's: sub-sections
   **Activists, Content Creators, Athletes, Physicians, Health Experts, Chefs, Founders** (All first), a second one in `extra_categories`.
