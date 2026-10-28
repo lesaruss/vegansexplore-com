@@ -822,7 +822,10 @@ Florida's search are national organizations elsewhere, and their note says so. R
 `20261028_community_search_new_chapters.sql`): 24 searches in North Florida, D.C., Maryland, Virginia, Delaware and West Virginia,
 each place in the chapter of its own state, 146 quarantined in Ready to list (North Florida 45, Virginia 34, Maryland 27, West
 Virginia 21, Delaware 14, D.C. 5). The filter also leaves out working and petting farms, wildlife rehab, pet stores, boarding,
-breeders, thrift stores and charities for people. Nothing went live.
+breeders, thrift stores and charities for people. Nothing went live. **The other seven chapters** got a wider second pass the same day (Sean: "run the community
+search for the other chapters"; migration `20261028_community_search_other_chapters.sql`): 40 searches, 157 quarantined (Central
+Florida 36, South Florida 28, Los Angeles 26, New York 26, Philadelphia 25, Atlanta 15, London 1). City and county shelters are left
+out too, and a name that matches any listing, set-aside ones included, never comes back.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
