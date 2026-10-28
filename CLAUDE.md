@@ -2067,6 +2067,14 @@ off, run each step with `curl -X POST .../functions/v1/ve-once-<task>?step=<name
 with a plain SELECT (reads and deploys never prompt), then redeploy it as the 410 stub. The SQL still goes in a migration
 file in the repo. A step runs in one transaction, so a failed step changes nothing.
 
+## pg_net stalls (2026-10-28)
+
+Every cron that calls an edge function, and `ve-function-deploy` called from SQL, goes through pg_net's one worker. On 2026-10-28
+it sat on one batch for 12 minutes (`net.http_request_queue` growing, `max(id)` in `net._http_response` not moving, the worker's
+`state_change` in `pg_stat_activity` old). `net.worker_restart()` did not free it; `pg_terminate_backend` on the `pg_net%` worker
+did, a minute later a new worker drained the queue (requests waiting in the queue are kept). Check that first when a cron's work
+stops landing.
+
 ## Deploy
 
 Push to `main` on `lesaruss/vegansexplore-com`. Vercel auto-deploys.
