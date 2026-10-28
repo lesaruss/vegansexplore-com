@@ -8,6 +8,16 @@
 -- point is earned (mission_survey_completed_at). The old survey's 250 never paid anyone: award_points_bounty had no
 -- mission_survey_completed rule, so it returned no_active_rule. The two members who finished it are paid for their answers here.
 
+-- 0. The ledger takes the new reason (its list never had the old survey's mission_survey either).
+alter table public.points_ledger drop constraint if exists points_ledger_reason_check;
+alter table public.points_ledger add constraint points_ledger_reason_check check (reason = any (array['signup', 'referral', 'daily_login',
+  'listing_like', 'listing_create', 'discussion_post', 'discussion_reply', 'discussion_vote', 'event_attend', 'profile_complete',
+  'profile_field', 'admin_adjust', 'purchase', 'redemption', 'vote_given', 'vote_received', 'vote_refunded', 'featured_purchase',
+  'transfer_sent', 'transfer_received', 'store_purchase', 'store_refund', 'points_purchase', 'bartering', 'boost_purchase',
+  'seed_initial', 'Welcome bonus + early activity', 'campaign_back', 'questionnaire', 'wizard_redeem', 've_hunt_complete',
+  've_hunt_anchor', 'guide_redeem', 'cycle_grant', 'bounty', 'comp_membership', 'recipe_approved', 'guide_chat_spend',
+  'credit_exchange', 'checkin', 'welcome', 'purchase_thanks', 'points_contribution', 'listing_submit', 'profile_answer'])) not valid;
+
 -- 1. The questions and what each is worth. The words live in /public/ve-mission-survey.js (STEPS); the points live here.
 --    p_ prompts are the profile's own lines (300 characters), worth the most.
 create or replace function public.ve_profile_questions()
