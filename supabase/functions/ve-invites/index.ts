@@ -202,12 +202,13 @@ async function emailFor(inv: Invite) {
   const b = (t: string) => `<strong>${esc(t)}</strong>`;
   const paras: string[] = [];
   if (inv.reason) for (const p of String(inv.reason).split(/\n\s*\n/)) if (p.trim()) paras.push(esc(p.trim()).replace(/\n/g, '<br>'));
-  paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
+  // A Founding Member invitation says what Vegans Explore is in its own paragraph, after the personal opening.
+  if (inv.points_to !== 'founding') paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
   if (d) paras.push(`I'd like you at ${b(`our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}`)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${esc(city ?? '')} community as its ${b('Community Manager')}. Your link has the details.`.replace('our  ', 'our '));
   if (inv.points_to === 'ambassador') paras.push(ambassadorWhy(inv, b));
   if (inv.points_to === 'founding') {
-    paras.push(`I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives. You were one of the first people I thought of.`);
+    paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives.${inv.reason ? '' : ' You were one of the first people I thought of.'}`);
     if (!inv.comp) paras.push(`It's ${b('$11, one time')}, with ${b('1,100 points')} to start: vote for the places you love, get the Daily Pulse in your city, check in, and unlock the Guides. Your $11 keeps the community running.`);
   }
   if (inv.comp) paras.push(`${b('Your Founding Membership is on us')}${inv.points > 0 ? `, with ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} ${b(`Level ${inv.level}`)}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
@@ -262,7 +263,7 @@ Write in Sean's voice, first person, speaking to them as "you": warm, plain and 
 - 2 to 4 short sentences, under 550 characters. It opens the email right after "Hi <first name>,", so no greeting and no sign-off.
 - Say how Sean knows them and why they would make a strong member of this community, using only what the sources say. Sean's own notes come first and win over anything else; the HQ summary is background an assistant wrote from Sean's emails, useful for how they know each other.
 - Never invent a fact, a date, a place or a compliment the sources do not support. If the sources are thin, write one or two simple, true sentences.
-- Do not mention the price, points, the Founding Membership or what Vegans Explore offers: the email says all of that next.
+- Do not describe Vegans Explore or mention the price, points, the Founding Membership, "city by city" or "the first members": the email says all of that next. End on the person, why they belong, not on the invitation.
 - Never repeat anything private, sensitive or negative from the summary (money, health, conflicts, personal trouble).
 - No dashes of any kind, no exclamation marks, no emojis. Write Vegan with a capital V.`;
 const OPENING_SCHEMA = { type: 'object', additionalProperties: false, required: ['opening', 'note'], properties: {
