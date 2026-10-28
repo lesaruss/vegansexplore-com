@@ -486,9 +486,10 @@ Campaigns, Ads, Members. The address carries it (`?range=90&bots=show#communitie
 - **Traffic is Google Analytics**, property 432623792 (vegansexplore.com, tag G-2B6SKSQZLX in `/analytics.js`; history from March
   2024). Every public page carries it: `nav.js` loads `/analytics.js` on any page that does not, and `analytics.js` runs once a page
   (`window.__veGA`); never on `/admin/` pages or the board consent, so the team's Depot work is not traffic (Sean, 2026-10-28).
-  **The team's own visits are not counted** (Sean, 2026-10-28): a browser where a super admin signs in, or that holds a Sign In As
-  session, is marked (`localStorage` `ve_ga_off`) and `analytics.js` sends nothing from it again, signed in or out; `?ga=off` marks a
-  browser by hand and `?ga=on` clears it (a super admin sign-in marks it again). Visits before 2026-10-28 still include the team's, read live by the edge function `ve-analytics` with the LESARUSS analytics reader
+  **The team's visits count like anyone's** (Sean, 2026-10-28: "it's still traffic to the page... include my traffic as well";
+  Google counts each browser once as a visitor). A few hours' exclusion of super admins' browsers the same day was undone, and
+  `analytics.js` clears its old mark (`localStorage` `ve_ga_off`). Google's numbers are read live by the edge function `ve-analytics`
+  with the LESARUSS analytics reader
   (`lesaruss_secrets` `GA4_SERVICE_ACCOUNT_JSON`, `lesaruss-analytics-reader@...`, which can read every LESARUSS property), cached
   3 hours in `ve_analytics_cache` (Refresh now skips it). Our own numbers are `ve_analytics_internal(from, to, prev_from, prev_to)`
   and `ve_chapter_of(city, state)` (migration `20261028_ve_analytics.sql`).
