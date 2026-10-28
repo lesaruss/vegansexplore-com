@@ -694,7 +694,10 @@ logo pictures from its website (`readSite`) and its Instagram profile picture (A
 structured output) with the business's name: it picks the business's own clean logo (never food, a storefront, people, a logo
 inside a photo, a builder's or a platform's icon, or another business's logo) or none, and the background to square it on
 (`match`, `white`, `black` or a color). The pick is a `ve_logo_suggestions` row (found, none, used, rejected), never saved to the
-listing by itself. Logos has two tabs: **Suggested** (`#logos/suggested`): every pick squared in the browser by
+listing by itself. One it found nothing for is looked at again 30 days later (a check that did not run, a day later; `relookDue`),
+never-looked-at ones first; a used or turned-down pick never comes back. **Look now** (Sean, 2026-10-28: "is it possible... for me to
+trigger the push?") on every Logos tab runs the sweep on the next ten at once (`logo_sweep` takes a super admin too), and the head says
+how many are waiting or when the next look again is due (`logo_queue` `sweep.relook`, `sweep.next_relook`). Logos has two tabs: **Suggested** (`#logos/suggested`): every pick squared in the browser by
 `VELogoEditor.auto` (the editor's own trim, fit and background), ticked by default, **Save the N ticked** saves them all through
 `logo_set` (`from_suggestion`, the row turns `used`), **Adjust** opens it in the editor already trimmed and on its background
 (`#logo/<id>/s`), **Not this** (`logo_suggest_reject`) sends it to To find; and **To find** (`#logos`): the rest, each with what the

@@ -761,10 +761,14 @@
         });
       }
       function logosHead(tab) {
-        var sug = lg.rows.filter(isSuggested).length, find = lg.rows.length - sug, sw = lg.sweep || { checked: 0, left: 0 };
-        return '<div class="home-head"><p class="sub">Every open listing with no logo. The sweep looks at each one\'s website and Instagram and picks their own clean logo when it finds one: those wait in <strong>Suggested</strong>, already squared, for you to tick and save. <strong>To find</strong> holds the rest, one at a time with the editor.' +
-          (sw.left ? ' The sweep has looked at ' + sw.checked + ' so far and looks at five more every five minutes (' + sw.left + ' to go).' : ' The sweep has looked at every one.') +
-          (lg.done ? ' ' + lg.done + ' done this visit.' : '') + '</p></div>' +
+        var sug = lg.rows.filter(isSuggested).length, find = lg.rows.length - sug, sw = lg.sweep || { checked: 0, left: 0 }, due = (sw.left || 0) + (sw.relook || 0);
+        var nextOn = sw.next_relook ? new Date(sw.next_relook).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
+        return '<div class="home-head"><p class="sub">Every open listing with no logo. The sweep looks at each one\'s website and Instagram and picks their own clean logo when it finds one: those wait in <strong>Suggested</strong>, already squared, for you to tick and save. <strong>To find</strong> holds the rest, one at a time with the editor. One it found nothing for is looked at again a month later.' +
+          (due ? ' ' + due + ' waiting to be looked at' + (sw.relook ? ' (' + sw.relook + ' of them again)' : '') + ', five every five minutes, or press Look now.'
+            : ' Nothing waiting to be looked at' + (nextOn ? '; the next look again is ' + esc(nextOn) : '') + '.') +
+          (lg.done ? ' ' + lg.done + ' done this visit.' : '') + '</p>' +
+          '<div class="row-btns"><button type="button" class="btn btn-sm" id="lg-now"' + (due ? '' : ' disabled') + '>Look now</button></div></div>' +
+          '<p class="msg" id="lg-now-msg" aria-live="polite"></p>' +
           '<div class="tabs" role="tablist"><button type="button" role="tab" aria-selected="' + (tab === 'suggested') + '" data-lt="suggested">Suggested &middot; ' + sug + '</button>' +
           '<button type="button" role="tab" aria-selected="' + (tab === 'find') + '" data-lt="find">To find &middot; ' + find + '</button>' +
           '<button type="button" role="tab" aria-selected="' + (tab === 'done') + '" data-lt="done">Done &middot; ' + lg.doneRows.length + '</button></div>' +
@@ -772,6 +776,19 @@
           '<select id="lg-city" aria-label="City"><option value="">Every city</option>' + (lg.cities || []).map(function (c) { return '<option' + (c === lg.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>';
       }
       function wireLogosHead(tab, redraw) {
+        // Look now (Sean, 2026-10-28): the sweep on the next ten, now, rather than five on the next five-minute run.
+        $('lg-now').addEventListener('click', function () {
+          var btn = this, msg = $('lg-now-msg');
+          btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Looking at the next ten. This takes about a minute...';
+          disc({ action: 'logo_sweep', n: 10 }).then(function (d) {
+            if (d.error) throw new Error(d.message || d.error);
+            return loadLogos().then(function () {
+              redraw();
+              var m = $('lg-now-msg');
+              m.textContent = d.checked ? 'Looked at ' + d.checked + ': found ' + (d.found || 0) + (d.found === 1 ? ' logo, in Suggested.' : ' logos, in Suggested.') : 'Nothing was waiting to be looked at.';
+            });
+          }).catch(function (e) { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'The sweep did not run: ' + e.message; });
+        });
         Array.prototype.forEach.call(V().querySelectorAll('[data-lt]'), function (b) { b.addEventListener('click', function () { location.hash = b.dataset.lt === 'find' ? '#logos' : '#logos/' + b.dataset.lt; }); });
         $('lg-q').addEventListener('input', function () { lg.q = this.value; var p = this.selectionStart; redraw(); var i = $('lg-q'); i.focus(); i.setSelectionRange(p, p); });
         $('lg-city').addEventListener('change', function () { lg.city = this.value; redraw(); });
@@ -807,7 +824,7 @@
                 '<small class="sg-why">' + esc((r.suggest.source || '') + (r.suggest.why ? ': ' + r.suggest.why : '')) + '</small>' +
                 '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="#logo/' + r.id + '/s">Adjust</a><button type="button" class="btn btn-ghost btn-sm" data-nope="' + r.id + '">Not this</button></div></div>';
             }).join('') + '</div>'
-          : '<section class="card"><p class="empty">' + (lg.sweep && lg.sweep.left ? 'Nothing suggested yet. The sweep is still looking; come back in a few minutes.' : 'Nothing waiting.') + '</p></section>');
+          : '<section class="card"><p class="empty">' + (lg.sweep && (lg.sweep.left || lg.sweep.relook) ? 'Nothing suggested yet. The sweep is still looking; come back in a few minutes.' : 'Nothing waiting.') + '</p></section>');
         wireLogosHead('suggested', viewSuggested);
         Array.prototype.forEach.call(V().querySelectorAll('[data-tick]'), function (c) { c.addEventListener('change', function () { if (c.checked) delete lg.skip[c.dataset.tick]; else lg.skip[c.dataset.tick] = 1; count(); }); });
         Array.prototype.forEach.call(V().querySelectorAll('[data-nope]'), function (b) {

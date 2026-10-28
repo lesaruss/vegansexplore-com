@@ -29,10 +29,11 @@
 //        editor's canvas is never tainted (JPEG, PNG, WebP, GIF or SVG, up to 8 MB)
 // POST { action: 'logo_set', listing_id, path }      super admin   the editor's square (staged by add_logo_url) becomes the logo
 // POST { action: 'logo_skip', listing_id, undo? }    super admin   the first letter is fine for this one
-// POST { action: 'logo_sweep', n? }                  cron or ops   (Sean, 2026-10-27: "do a sweep and see which ones you can do
+// POST { action: 'logo_sweep', n? }                  cron, ops or super admin (Look now, up to 10)   (Sean, 2026-10-27: "do a sweep and see which ones you can do
 //        similarly... the clean logo, no food in the background, just the actual logo") a few listings from the queue that have
 //        no ve_logo_suggestions row: their website's logo pictures and Instagram profile picture, shown to Claude, which picks
 //        their own clean logo or none (migration 20261027_ve_logo_suggestions.sql). Nothing is saved to the listing here.
+//        One it found nothing for is looked at again after 30 days (a failed check after a day; relookDue).
 // POST { action: 'logo_suggest_reject', listing_id }  super admin   Not this: the suggestion goes, the listing stays on the list
 // POST { action: 'logo_done' }                       super admin -> { rows }   every logo made here (Sean, 2026-10-27: "Is there
 //        a way that I can see what logos have been created... I want to do some quality control"), newest first
@@ -546,15 +547,28 @@ async function igPictures(handles: string[]): Promise<Record<string, string>> {
     return out;
   } catch { return {}; } finally { clearTimeout(t); }
 }
+// A listing the sweep found nothing for is looked at again a month later (Sean, 2026-10-28: businesses change their website and
+// Instagram), and one whose check did not run, a day later. A pick that was used or turned down is never looked at again.
+const RELOOK_DAYS = 30;
+function relookDue(x: any): boolean {
+  if (!x || x.status !== 'none') return false;
+  const days = String(x.why || '').startsWith('The check did not run') ? 1 : RELOOK_DAYS;
+  return Date.now() - new Date(x.checked_at).getTime() > days * 86400000;
+}
 async function logoSweep(n: number) {
   const { data: q } = await db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
     .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
     .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
-  const { data: had } = await db.from('ve_logo_suggestions').select('listing_id');
-  const seen = new Set((had || []).map((x: any) => x.listing_id));
-  const open = (q || []).filter((l: any) => !l.details?.logo_letter_ok && !seen.has(l.id));
+  const { data: had } = await db.from('ve_logo_suggestions').select('listing_id, status, why, checked_at');
+  const seen = new Map((had || []).map((x: any) => [x.listing_id, x]));
+  const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok);
+  // Never looked at first, then the ones it found nothing for, looked at again once their look is due (relookDue).
+  const fresh = listed.filter((l: any) => !seen.has(l.id));
+  const again = listed.filter((l: any) => relookDue(seen.get(l.id)))
+    .sort((a: any, b: any) => String(seen.get(a.id).checked_at).localeCompare(String(seen.get(b.id).checked_at)));
+  const open = [...fresh, ...again];
   const batch = open.slice(0, n);
-  if (!batch.length) return { checked: 0, left: 0 };
+  if (!batch.length) return { checked: 0, found: 0, left: 0 };
   const handleOf2 = (l: any) => handleOf(l.ig_handle || l.instagram || '');
   const igP = igPictures([...new Set(batch.map(handleOf2).filter(Boolean))]);
   const sites = Promise.all(batch.map(async (l: any) => {
@@ -639,7 +653,7 @@ Deno.serve(async (req) => {
     return json(await backlogRun(Math.max(0, Math.min(+body.ig || BATCH.ig, 60)), Math.max(0, Math.min(+body.google || BATCH.google, 40))));
   }
   if (action === 'logo_sweep') {
-    if (!who.ops) return json({ error: 'ops_only' }, 403);
+    if (!who.ops && !who.admin) return json({ error: 'admins_only' }, 403);
     return json(await logoSweep(Math.max(1, Math.min(+body.n || 5, 10))));
   }
   if (!who.ops && !who.admin) return json({ error: 'admins_only' }, 403);
@@ -680,7 +694,7 @@ Deno.serve(async (req) => {
       .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
     if (error) return json({ error: error.message }, 400);
     const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok);
-    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates');
+    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates, checked_at');
     const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
     const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
     const q = clean(body.q, 80).toLowerCase(), city = clean(body.city, 80);
@@ -689,7 +703,13 @@ Deno.serve(async (req) => {
         facebook: l.facebook, tiktok: l.tiktok, votes: l.vote_count || 0, set_aside: l.details?.logo_unverified || null,
         suggest: (() => { const x: any = sug.get(l.id); return x ? { status: x.status, url: x.url, source: x.source, background: x.background, why: x.why, candidates: x.candidates || [] } : null; })() }));
     const swept = all.filter((l: any) => sug.has(l.id)).length;
-    return json({ ok: true, total: rows.length, all: all.length, cities, rows, sweep: { checked: swept, left: all.length - swept } });
+    const relook = all.filter((l: any) => relookDue(sug.get(l.id))).length;
+    // When the next look again comes due: the oldest "found nothing" a month on (a failed check a day on).
+    const nextAt = (sg || []).filter((x: any) => x.status === 'none' && all.some((l: any) => l.id === x.listing_id) && !relookDue(x))
+      .map((x: any) => new Date(x.checked_at).getTime() + (String(x.why || '').startsWith('The check did not run') ? 1 : RELOOK_DAYS) * 86400000)
+      .sort((a: number, b: number) => a - b)[0];
+    return json({ ok: true, total: rows.length, all: all.length, cities, rows,
+      sweep: { checked: swept, left: all.length - swept, relook, next_relook: nextAt ? new Date(nextAt).toISOString() : null } });
   }
 
   if (action === 'logo_fetch') {
