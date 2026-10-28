@@ -202,7 +202,8 @@
     var dir = s.listing ? ' &middot; <a href="/directory/' + esc(s.listing.slug) + '" style="color:var(--g);font-weight:800;font-size:13px">Their Directory page</a>' : '';
     var body = open ? (s.items.length ? s.items.map(function (it) { return itemRow(v, it); }).join('') : '<p class="dg-empty">Nothing listed here yet.</p>')
       : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
-    return '<div class="sa-stand"><div class="sa-stand-h"><div><h3>' + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.where || '') + '</span>' + dir + '</div>' + zone + '</div>' + body + '</div>';
+    var num = s.pin ? '<span class="sa-pinno" aria-label="Pin ' + s.pin + ' on the map">' + s.pin + '</span>' : '';
+    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.where || '') + '</span>' + dir + '</div>' + zone + '</div>' + body + '</div>';
   }
   function viewVenue(slug, rest) {
     var r = (rest || '').split('/');
@@ -219,11 +220,63 @@
     var meta = '<div class="sa-vhead">' + (v.maps ? '<a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Map</a>' : '') +
       (v.note ? '<span>' + esc(v.note) + (v.note_source_url ? ' <a href="' + esc(v.note_source_url) + '" target="_blank" rel="noopener">Source</a>' : '') + '</span>' : '') + '</div>';
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
+    var pins = 0;
+    d.spots.forEach(function (s) { s.pin = d.open && v.layout && (s.map_sections || []).length ? ++pins : 0; });
     var stands = d.spots.length ? d.spots.map(function (s) { return standCard(v, s, d.open); }).join('')
       : '<div class="dg-chef-empty"><div><h3>Nothing Vegan is listed here yet</h3><p>Be the first: tell us what you find at ' + esc(v.name) + ', with a photo from inside, and earn points when the team accepts it.</p></div><a class="dg-btn" href="#/venue/' + esc(v.slug) + '/report/missing">Add what you find</a></div>';
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Menus change, so ask at the stand when it matters. Every item says where it came from and when a member last checked it.</p>';
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : 'Venue', esc(v.name), lede, acts) + meta +
+      (d.open && v.layout && window.VEVenueMap ? mapPanel(v, d) : '') +
       (d.open ? stands + note : gated(stands, v.name + ' is in the full Guide', 'Every stand with Vegan food here, where it is, and when a member last checked it.'));
+    if (d.open && v.layout && window.VEVenueMap) { VEVenueMap.css(); drawMap(v, d); }
+  }
+
+  // The map and Get me there (Sean, 2026-10-28). Pins are the stands we know the sections of; directions start from the section on
+  // the member's ticket (public/ve-venue-map.js), kept for the next visit in this browser.
+  function seatKey(slug) { return 've_sa_seat_' + slug; }
+  function mapStands(d) { return d.spots.filter(function (s) { return s.pin; }).map(function (s) { return { n: s.pin, id: s.id, name: s.name, sections: s.map_sections }; }); }
+  function mapPanel(v, d) {
+    var seat = ''; try { seat = localStorage.getItem(seatKey(v.slug)) || ''; } catch (e) {}
+    return '<section class="sa-map" aria-label="Map of ' + esc(v.name) + '"><div class="sa-map-h"><div><h2>Map</h2><p>Our own drawing of ' + esc(v.name) + ', from its section numbers. The pins are the stands below.</p></div>' +
+      '<form class="sa-seat" id="saSeat"><label for="saSeatIn">Your section</label><div><input id="saSeatIn" inputmode="text" autocomplete="off" maxlength="12" placeholder="142" value="' + esc(seat) + '">' +
+      '<button class="dg-btn" type="submit">Get me there</button></div></form></div>' +
+      '<div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>Directions start from the section on your ticket. Phone GPS is not accurate inside a stadium.</span></div>' +
+      '<div id="saDirs" aria-live="polite"></div></section>';
+  }
+  function drawMap(v, d) {
+    var box = document.getElementById('saMapBox'); if (!box) return;
+    var form = document.getElementById('saSeat'), inp = document.getElementById('saSeatIn'), dirs = document.getElementById('saDirs');
+    var stands = mapStands(d);
+    var levelOnly = d.spots.filter(function (s) { return !s.pin && s.map_level && s.zone !== 'suites'; });
+    var levelName = function (lv) { var L = VEVenueMap.levels(v.layout), i = VEVenueMap.levelOf(v.layout, lv); return i >= 0 ? L[i].name : lv + ' level'; };
+    var paint = function () {
+      var seat = inp.value.trim(), you = seat ? VEVenueMap.find(v.layout, seat) : null, r = you ? VEVenueMap.route(v.layout, you, stands) : null;
+      box.innerHTML = VEVenueMap.svg(v.layout, stands, { you: you, route: r, title: 'Map of ' + v.name });
+      var html = '';
+      if (seat && !you) html = '<p class="sa-dir-miss">We could not find section ' + esc(seat) + ' at ' + esc(v.name) + '. Check the number on your ticket.</p>';
+      else if (r) {
+        html = '<ol class="sa-dirs">' + r.routes.map(function (x) {
+          return '<li><button type="button" class="sa-dir-go" data-st="' + esc(x.stand.id) + '"><span class="sa-pinno">' + x.stand.n + '</span><b>' + esc(x.stand.name) + '</b> &middot; section ' + esc(x.section) +
+            ' &middot; about ' + x.minutes + ' min</button><p>' + x.steps.map(esc).join(' ') + '</p></li>';
+        }).join('') + '</ol>';
+        if (!you.exact && you.exact !== undefined) html = '<p class="sa-dir-miss">Section ' + esc(seat) + ' is not on our map yet, so this starts from the nearest one we have.</p>' + html;
+      } else html = '<p class="sa-dir-hint">Type the section on your ticket and press Get me there.</p>';
+      if (levelOnly.length) html += '<p class="sa-dir-hint">' + levelOnly.map(function (s) { return '<b>' + esc(s.name) + '</b> is on the ' + esc(levelName(s.map_level)) + '; we do not know the section yet, so ask a stadium worker there.'; }).join(' ') + '</p>';
+      dirs.innerHTML = html;
+    };
+    form.addEventListener('submit', function (e) { e.preventDefault(); try { localStorage.setItem(seatKey(v.slug), inp.value.trim()); } catch (er) {} paint(); });
+    box.addEventListener('click', function (e) {
+      var g = e.target.closest && e.target.closest('[data-pin]'); if (!g) return;
+      var st = stands.filter(function (x) { return String(x.n) === g.getAttribute('data-pin'); })[0];
+      var el = st && document.getElementById('sa-st-' + st.id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('sa-flash'); setTimeout(function () { el.classList.remove('sa-flash'); }, 1600); }
+    });
+    dirs.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-st]'); if (!b) return;
+      var el = document.getElementById('sa-st-' + b.getAttribute('data-st')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    var z = document.getElementById('saZoom');
+    z.addEventListener('click', function () { var on = box.classList.toggle('zoom'); z.setAttribute('aria-pressed', on); z.textContent = on ? 'Smaller map' : 'Bigger map'; });
+    paint();
   }
 
   function viewReportTab() {
