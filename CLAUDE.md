@@ -542,6 +542,33 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
 - **Joshua Mattey** (joshmatteymgl@gmail.com, signed up 2026-10-27 with Google) was made an active Founding Member and Ambassador
   with 1,100 points directly (ledger `comp_membership`, ref `sean-2026-10-27`); Sean tells him on a call. He signs in with Google.
 - Not decided yet (Sean's call): what an Ambassador earns beyond the referral, and any Ambassador-only perks or levels.
+- **Depot > People > Ambassadors** (`/admin/depot/ambassadors`, after Community Managers in the Go to menu; Sean, 2026-10-28: "the
+  ambassador program really is invite only... see my current ambassadors... how many people have visited their link... signed up
+  underneath them, what level they're on... adjust... invite at level two... see the draft... voice dictate it... see when they've
+  read it... accepted it... declined it... copying the link, but it would only be assigned to their email address"; migration
+  `20261028_ambassadors_console.sql`). One view at a time: **Ambassadors** (`#list`: totals, then each one's level, points, link
+  visitors, signed up, became members; `ve_ambassadors_overview()`), one Ambassador (`#a/<member>`: the numbers, their link, **Their
+  level** (By their points, Level 2, Level 3) and **Give points** (spendable, `ve_points_grant` reason `admin_adjust`, ref
+  `ambassador:<uuid>:<note>`), visitors by day for 30 days, who signed up with their link, their points), **Invitations**
+  (`#invites/<status>`: Not sent yet, Sent, Read, Opened the link, Accepted, Declined, Expired, Canceled), **Invite an Ambassador**
+  (`#new`: name, email, the level they start at, points, and a note typed or spoken, Speak using the browser's speech recognition)
+  and one invitation (`#invite/<id>`: Made, Sent, Read, Opened the link, Accepted or Declined with their note; the draft is editable
+  until accepted, `ve-invites` `update`; the email as it goes; Send it from me, Copy the link, Cancel it). All through `ve-invites`
+  (`ambassadors`, `ambassador`, `ambassador_save`), super admin only.
+  - **Levels set by the team**: `members.level_override` (1 to 3) is the least they have; `ve_member_level` returns the higher of it
+    and what lifetime points earn (`set_by_team`, `earned_level`), and the dashboard's `veLevelFor(lifetime, member.level_override)`
+    agrees (`ve-auth` `me` returns it). An invitation's `level` sets it at the claim.
+  - **Read** is the email opened: `send` keeps the email's provider id (`universe_invites.resend_email_id`) and `list` / `ambassadors`
+    copy its first `email.opened` from `email_events` into `email_opened_at`. A copied link has no Read; Opened the link is `/invite` seen.
+  - **One email only**: `universe_invite_claim` returns `wrong_email` unless the account's email is the invitation's, so a copied link
+    works for that person alone; the email names the address and `/invite` shows it masked (`email_hint`) and signs a different
+    account out. **No thanks** on `/invite` (`ve-invites` `decline`, with an optional note) closes it as Declined (status `declined`,
+    `declined_at`, `decline_note`; the Invites page has the tab too).
+  - **Link visits**: `/passport?ref=<code>` (any page with `?ref=`) calls `ve_referral_visit(code, visitor)` once a visit
+    (`refVisit` in `public/ve-auth.js`; the visitor is a random id in the browser, `localStorage` `ve_visitor`), one row per visitor a
+    day in `ve_referral_visits`. Counting started 2026-10-28.
+  - A member can be invited to be an Ambassador (only Already an Ambassador is left out); other invitation kinds still leave paid
+    members out. A personal note is up to 2,000 characters, a blank line a new paragraph.
 
 ## Invites and free memberships (Sean, 2026-10-04)
 

@@ -173,7 +173,7 @@ async function emailFor(inv: Invite) {
   if (d) paras.push(`I'd like you at our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${city ?? ''} community as its Community Manager. Your link has the details.`.replace('our  ', 'our '));
   if (inv.points_to === 'ambassador') paras.push(`I'd like you to be one of our first Ambassadors: one of the people who bring others in. Your link sets up your Ambassador account and walks you through it.`);
-  if (inv.comp) paras.push(`Your Founding Membership is on us${inv.points > 0 ? `, with ${Number(inv.points).toLocaleString('en-US')} points to start` : ''}${inv.level > 1 ? `${inv.points > 0 ? ' and' : ','} starting at Level ${inv.level}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
+  if (inv.comp) paras.push(`Your Founding Membership is on us${inv.points > 0 ? `, with ${Number(inv.points).toLocaleString('en-US')} points to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} Level ${inv.level}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
   const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : 'Accept your invitation';
   const url = linkUrl(inv);
   const fine = `This invitation is just for you, at ${inv.email}. It works once, until ${untilText}.`;
