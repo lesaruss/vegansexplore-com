@@ -5,10 +5,14 @@
 // columns so finishing the survey completes the profile, keeps the open-text
 // answer in mission_survey_response, and awards the 250-point reward once.
 //
-// 2026-10-28 (Sean: "They could save it and come back to it. It's not meant to be a quick one and done thing"): drafts.
-//   POST ?action=draft       { token }                 -> { ok, completed, draft: { answers, at, saved_at } | null }
-//   POST ?action=draft_save  { token, answers, at }    -> { ok }   members.mission_survey_draft, overwritten each time
-//   POST ?action=submit      { token, response_text, answers }   as before; clears the draft
+// 2026-10-28, the survey is the member's profile (Sean: "treat it like a dating profile where it asks different questions about
+// themselves that will be added to their profile... a combined 250 points for every question they answer with some questions being
+// worth more than others"; migration 20261028_member_profile_points.sql). Every answer is saved at once and pays its own points once,
+// all in the database (ve_profile_answer; the points are ve_profile_questions):
+//   POST ?action=profile     { token }                          -> { ok, answers, at, points, paid, earned, total, completed }
+//   POST ?action=answer      { token, id, value, at? }          -> { ok, points, paid_now, earned, total }
+//   POST ?action=save        { token, answers, at? }            -> saves each one the same way (the step-by-step view's Next)
+//   draft and draft_save are the same as profile and save (pages cached from the morning); submit saves every answer.
 //
 // Scope: the dashboard prompt only shows for ACTIVE, non-guest members, so this
 // handles that path only. The guest-application path stays in ve-auth's
@@ -54,8 +58,8 @@ function cleanAnswers(raw: unknown): Record<string, unknown> | null {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-    if (!/^q\d{1,2}_[a-z_]{1,24}$/.test(k)) continue;
-    if (typeof v === 'string') out[k] = v.slice(0, 4000);
+    if (!/^[pq]\d{0,2}_[a-z_]{1,24}$/.test(k)) continue;
+    if (typeof v === 'string') out[k] = v.slice(0, k.startsWith('p_') ? 300 : 4000);
     else if (typeof v === 'number' && Number.isFinite(v)) out[k] = v;
     else if (Array.isArray(v)) out[k] = v.filter((x) => typeof x === 'string').slice(0, 20).map((x) => (x as string).slice(0, 120));
   }
@@ -66,77 +70,63 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   try {
     const url = new URL(req.url);
-    const action = url.searchParams.get('action') || 'submit';
-    if (!['submit', 'draft', 'draft_save'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    let action = url.searchParams.get('action') || 'submit';
+    if (action === 'draft') action = 'profile';
+    if (action === 'draft_save') action = 'save';
+    if (!['profile', 'answer', 'save', 'submit'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
     if (!token) return json({ error: 'No token' }, 401);
     const decoded = await verifyToken(token);
     if (!decoded) return json({ error: 'Invalid or expired token' }, 401);
+    const memberId = decoded.sub;
 
-    const { data: member } = await supabase.from('members')
-      .select('id, membership_status, membership_tier, mission_survey_completed_at, mission_survey_draft')
-      .eq('id', decoded.sub).maybeSingle();
-    if (!member) return json({ error: 'Member not found' }, 404);
-    const eligible = member.membership_status === 'active' && member.membership_tier !== 'guest';
-
-    if (action === 'draft') {
-      return json({ ok: true, eligible, completed: !!member.mission_survey_completed_at, draft: member.mission_survey_completed_at ? null : (member.mission_survey_draft ?? null) });
+    const state = async () => {
+      const { data, error } = await supabase.rpc('ve_profile_state', { p_member: memberId });
+      if (error || !data) throw new Error('state: ' + (error?.message ?? 'none'));
+      return data as Record<string, unknown>;
+    };
+    if (action === 'profile') {
+      const st = await state();
+      // Old clients read completed and draft.
+      return json({ ok: true, ...st, draft: { answers: st.answers, at: st.at } });
     }
 
-    if (action === 'draft_save') {
-      if (member.mission_survey_completed_at) return json({ error: 'already_completed' }, 409);
-      if (!eligible) return json({ error: 'not_eligible' }, 403);
-      const answers = cleanAnswers(body.answers) ?? {};
-      const at = Math.max(0, Math.min(99, Math.floor(Number(body.at) || 0)));
-      const draft = { answers, at, saved_at: new Date().toISOString() };
-      const { error } = await supabase.from('members').update({ mission_survey_draft: draft }).eq('id', member.id);
-      if (error) return json({ error: 'save_failed' }, 500);
-      return json({ ok: true, saved_at: draft.saved_at });
+    const at = Math.max(0, Math.min(99, Math.floor(Number(body.at) || 0)));
+    const saveOne = async (id: string, value: unknown) => {
+      const v = cleanAnswers({ [id]: value }) ?? {};
+      const { data, error } = await supabase.rpc('ve_profile_answer', { p_member: memberId, p_question: id, p_value: id in v ? v[id] : null });
+      if (error) throw new Error('answer: ' + error.message);
+      return data as Record<string, unknown>;
+    };
+    const keepPlace = async () => {
+      if (body.at === undefined) return;
+      await supabase.from('members').update({ mission_survey_draft: { at, saved_at: new Date().toISOString() } }).eq('id', memberId).is('mission_survey_completed_at', null);
+    };
+
+    if (action === 'answer') {
+      const id = String(body.id ?? '');
+      if (!/^[pq]\d{0,2}_[a-z_]{1,24}$/.test(id)) return json({ error: 'unknown_question' }, 400);
+      const r = await saveOne(id, body.value);
+      if (r?.error) return json(r, r.error === 'not_eligible' ? 403 : 400);
+      await keepPlace();
+      return json(r);
     }
 
-    const responseText = typeof body.response_text === 'string' ? body.response_text.trim() : '';
-    if (!responseText) return json({ error: 'A response is required.' }, 400);
-
-    const answers = cleanAnswers(body.answers);
-    const profileUpdates: Record<string, unknown> = {};
-    if (answers) {
-      const s = (v: unknown) => (typeof v === 'string' ? v.trim() : '');
-      if (s(answers.q1_city)) profileUpdates.home_community = s(answers.q1_city);
-      if (s(answers.q2_zip)) profileUpdates.profile_location = s(answers.q2_zip);
-      const roles = Array.isArray(answers.q3_roles) ? (answers.q3_roles as unknown[]).filter((x) => typeof x === 'string') : [];
-      if (roles.length) profileUpdates.member_type = roles[0];
-      if (s(answers.q4_website)) profileUpdates.profile_website = s(answers.q4_website);
-      if (s(answers.q5_instagram)) profileUpdates.instagram_handle = s(answers.q5_instagram);
-      const vs = s(answers.q7_vegan_since);
-      if (/^\d{4}-\d{2}(-\d{2})?$/.test(vs)) profileUpdates.vegan_since = vs.length === 7 ? vs + '-01' : vs;
+    // save / submit: every answer given, each paid once.
+    const answers = cleanAnswers(body.answers) ?? {};
+    let last: Record<string, unknown> | null = null;
+    for (const [id, value] of Object.entries(answers)) {
+      const r = await saveOne(id, value);
+      if (r?.error === 'not_eligible') return json(r, 403);
+      if (!r?.error) last = r;
     }
-
-    if (member.mission_survey_completed_at) return json({ error: 'already_completed' }, 409);
-    if (!eligible) return json({ error: 'not_eligible' }, 403);
-
-    const { error: updateErr } = await supabase.from('members').update({
-      mission_survey_response: responseText,
-      mission_survey_answers: answers,
-      mission_survey_draft: null,
-      ...profileUpdates,
-      mission_survey_completed_at: new Date().toISOString(),
-    }).eq('id', member.id);
-    if (updateErr) return json({ error: 'update_failed', detail: updateErr.message }, 500);
-
-    let points: unknown = null;
-    try {
-      const { data } = await supabase.rpc('award_points_bounty', {
-        p_member_id: member.id, p_brand: 'vegans-explore',
-        p_action_type: 'mission_survey_completed',
-        p_ref_id: `mission_survey_completed:${member.id}`, p_reason: 'mission_survey',
-      });
-      points = data;
-    } catch (e) { console.error('mission survey points award failed:', e); }
-
-    return json({ ok: true, points });
+    await keepPlace();
+    const st = await state();
+    return json({ ok: true, earned: st.earned, total: st.total, completed: st.completed, saved: !!last });
   } catch (e) {
-    return json({ error: 'server_error', detail: String(e) }, 500);
+    console.error('ve-mission-survey:', e);
+    return json({ error: 'server_error' }, 500);
   }
 });

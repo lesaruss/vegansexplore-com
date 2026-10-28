@@ -308,13 +308,16 @@
     }
 
     // ---- 2. Tell your Guide about you (the Mission Survey) ----------------------------------------
-    var SURVEY_LINES = [
-      'First, the basics, so I know where you are and what you do.',
-      'Now your Vegan journey. There are no wrong answers.',
-      'Tell me about where you live. This shapes what we build in your city.',
-      'How can I and Vegans Explore be most useful to you?',
-      'Last bit, in your own words.'
-    ];
+    // One line for each part of the profile, by its title (/public/ve-mission-survey.js STEPS).
+    var SURVEY_LINES = {
+      'About you': 'First, the basics, so I know where you are and what you do.',
+      'In your words': 'Now a few lines in your own words. These go on your profile and are worth the most points.',
+      'Your Vegan journey': 'Now your Vegan journey. There are no wrong answers.',
+      'What matters to you': 'What matters most to you? It shapes what I show you first.',
+      'Your community & region': 'Tell me about where you live. This shapes what we build in your city.',
+      'How we can serve you': 'How can I and Vegans Explore be most useful to you?',
+      'Last bit': 'Last bit, in your own words.'
+    };
     // One question at a time on a dark stage, the Guide beside it (Sean, 2026-10-05: five stacked
     // full-width fields read "blown out"). The Community Manager application's layout: the question
     // and its answer on the left, the Guide on the right with a line for each part, over the member's
@@ -337,7 +340,7 @@
             // The square mid shot, filling the card on desktop and a small square in the phone strip.
             '<img src="' + art(g, 'square') + '" alt="">' +
             '<div class="gk-who"><div class="gk-name">' + g.name + ' is getting to know you</div>' +
-            '<div class="gk-meta">About 3 minutes &middot; earns 250 points</div>' +
+            '<div class="gk-meta">Points for every answer, up to 250 &middot; skip any</div>' +
             '<div class="gk-line" id="gkLine"></div></div>' +
           '</aside>' +
         '</div></div>';
@@ -349,8 +352,10 @@
           if (info.stepIndex === lastStep) return;
           lastStep = info.stepIndex;
           var hi = info.index === 0 && firstName() ? 'Hi ' + firstName() + '! ' : '';
-          line.textContent = hi + (SURVEY_LINES[info.stepIndex] || '');
+          line.textContent = hi + (SURVEY_LINES[info.step.title] || '');
         },
+        // Save and finish later moves the setup on; the rest waits on their profile (/dashboard/survey).
+        onLater: function(){ tellParent('ve-guide-progress'); show('uses'); },
         onDone: function(){
           status.survey.completed = true;
           tellParent('ve-guide-progress');

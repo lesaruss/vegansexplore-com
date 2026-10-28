@@ -2047,11 +2047,22 @@ don't get the drop down... we should know who they are... using a survey to figu
 a detailed survey where they can get 250 points... They could save it and come back to it"; migration
 `20261028_member_survey_drafts.sql`): the version switch is gone and `members.dashboard_version` is no longer read (`ve-dashboard`
 `home` returns `ve_dashboard_version()` and `survey {completed, at, active}`). **Your survey** is the Mission Survey on its own page,
-`/dashboard/survey` (`survey.html`, `openSurvey`), the first For you tile until it is done (Tell us about you, or Finish your survey
-at question N), 250 points. Every Next saves a draft (`ve-mission-survey` `draft_save`, `members.mission_survey_draft`), **Save and
-finish later** saves and stops, and opening it again picks up there (`draft`); submit clears it. **What matters to you** (q23 what
-matters most, q24 how they eat, q25 who they eat with, q26 the work they do) was added the same day; Health or medicine and Coaching
-or fitness count as Coach or pro. `ve-mission-survey` is in the repo since that day.
+`/dashboard/survey` (`survey.html`, `openSurvey`), the first For you tile until it is done. **It is the member's profile, built like a
+dating profile** (Sean, the same day: "treat it like a dating profile where it asks different questions about themselves that will be
+added to their profile... a combined 250 points for every question they answer with some questions being worth more than others";
+migration `20261028_member_profile_points.sql`): **Your profile** (`VEMissionSurvey.profile`) shows every question as a card, answered
+in any order, one question per view (`#q/<id>`, Save and next, Save, Back to your profile), with points earned out of 250 and Answer
+the next one. 31 questions: **In your words** (`p_meal`, `p_why`, `p_day`, `p_meet`, `p_fact`, 300 characters, 15 points each) and
+the old survey's, now none required; the ones marked `team` (market research) sit under **Help us build your city**, "for the team,
+not your profile". The points live in `ve_profile_questions()` (`PTS` in the script only draws them); `ve_profile_answer` saves each
+answer the moment it is given (`members.mission_survey_answers` and the columns it maps to) and pays it once (`ve_points_grant`,
+reason `profile_answer`, ref `profile:<question>`), never again on a change; complete (`mission_survey_completed_at`) means all 250
+earned. `ve-mission-survey` `profile`, `answer`, `save` (`draft`, `draft_save` and `submit` still work). The Guide's setup asks the
+same questions one after another (`VEMissionSurvey.mount`, each Next saves and pays that answer, Save and finish later moves the setup
+on). The For you tile reads Build your profile / Keep building your profile with the points left (`ve-dashboard` `survey {earned,
+total}`). The old survey's 250 had never paid anyone (`award_points_bounty` had no `mission_survey_completed` rule); its two finishers
+were paid for their answers by the migration. No other member sees a profile yet. **What matters to you** (q23 to q26) counts Health or
+medicine and Coaching or fitness as Coach or pro. `ve-mission-survey` is in the repo since 2026-10-28.
 **Your numbers** (Sean, 2026-10-28: "under your role, it says platform health... For the members... what are the three things that
 they're going to want to see... their points and their level. And if they're an ambassador, their... commissions"): every member but a
 super admin gets three tiles on the Dashboard tab, Your points, Your level (points to the next) and, for an Ambassador, **Earned in

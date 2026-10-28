@@ -28,7 +28,7 @@
     { key: 'tour', group: 'Dashboard tab', label: 'Take the tour', note: 'The guided tour prompt.', today: [M, C, S], sel: ['#dash-tour-prompt'] },
     // Set up your Guide replaced the Mission Survey item on 2026-10-04 (the Guide asks the survey now). The
     // key stays 'survey' so the visibility already saved for it carries over.
-    { key: 'survey', group: 'Dashboard tab', label: 'Set up your Guide', note: 'The Guide asks the Mission Survey (250 points), then shows how it helps. Shown until setup is done.', today: [M, C, S], sel: ['#dash-guide-prompt'] },
+    { key: 'survey', group: 'Dashboard tab', label: 'Set up your Guide', note: 'The Guide asks the profile questions (up to 250 points), then shows how it helps. Shown until setup is done.', today: [M, C, S], sel: ['#dash-guide-prompt'] },
     { key: 'membership', group: 'Dashboard tab', label: 'Challenge Badges', note: 'Badges earned, beside Points and Level at the top. The membership itself shows above the name.', today: [M, C, S], sel: ['#dash-hero-badges-tile'] },
     { key: 'admin-previews', group: 'Dashboard tab', label: 'Your tools', note: 'Three across under Action items. Superadmins see Recent Members, Event Submissions, Recent Leads, Guest Reviews.', today: [S], sel: ['#dash-previews'] },
     { key: 'role-stats', group: 'Dashboard tab', label: 'Your Role: health, submissions, this week', note: 'Superadmin: Platform Health, Pending Submissions, This Week. Community Manager: Today\'s Pulse, their city\'s submissions, this week in their city.', today: [C, S], sel: ['#dash-role-label', '#dash-stats-row'] },

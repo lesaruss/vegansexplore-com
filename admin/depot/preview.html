@@ -187,7 +187,7 @@
           { t: 'Dashboard: Set up your Guide', d: 'The first action item until setup is done. The Guide icon in the dock opens the same thing.', u: '/dashboard', k: 'live' },
           { t: '1. Meet your Guide: Passport', d: 'Passport members choose from the six Guides.', u: '/guide?preview=meet', k: 'pv' },
           { t: '1. Meet your Guide: everyone else', d: 'Their Guide is Liz, with a note that Passport members can choose.', u: '/guide?preview=meet-liz', k: 'pv' },
-          { t: '2. Tell your Guide about you', d: 'The Mission Survey, five steps, in the Guide\u2019s voice. Only if they have not taken it. Earns 250 points. Answers are not sent in preview.', u: '/guide?preview=survey', k: 'pv' },
+          { t: '2. Tell your Guide about you', d: 'Their profile questions, one at a time, in the Guide\u2019s voice: points for each answer, up to 250, and Save and finish later moves on. Answers are not sent in preview.', u: '/guide?preview=survey', k: 'pv' },
           { t: '3. How your Guide helps', d: 'Restaurants, things to do in their city, finding something, anything Vegan. Each idea is a question they can send.', u: '/guide?preview=uses', k: 'pv' },
           { t: 'Talking to your Guide', d: 'What the dock\u2019s Guide icon opens once setup is done. In preview the Guide gives a sample reply.', u: '/guide?preview=talk', k: 'pv' },
           { t: 'Signed out', d: 'Your Guide is for members: sign in or join.', u: '/guide?preview=gate', k: 'pv' }
@@ -234,6 +234,7 @@
           { t: 'You\u2019re in', d: 'Accepted: active Founding Member, Ambassador, their points and level. Start as an Ambassador opens their Guide.', u: '/invite?preview=done&profile={p}', k: 'pv' }
         ].concat(GT.map(function (g, i) { return { t: 'Ambassador Guide ' + (i + 1) + ': ' + g[1], d: g[2] + (g[2] ? ' ' : '') + 'Shown with your own points and link.', u: '/ambassadors/welcome?profile={p}#/' + g[0], k: 'pv' }; })).concat([
           { t: 'Points and levels', d: 'In their dashboard: their level, their link, what it earned and where it goes. Shown as your own account.', u: '/levels', k: 'live' },
+          { t: 'Their profile', d: 'Questions about them, any order, each with its own points: 250 in all, the ones in their own words worth the most. First in For you until every point is earned. A preview: nothing is saved.', u: '/survey?view_as=ambassador&profile={p}', k: 'pv' },
           { t: 'Their dashboard', d: 'Shown as an Ambassador with this profile: Your numbers (points, level, earned this year), the Ambassador Guide first in Your tools and in Guides. The numbers are your own account\u2019s.', u: '/dashboard?view_as=ambassador&profile={p}', k: 'pv' },
           { t: 'What you see', d: 'Depot > Ambassadors: their status, profile, level, points, link visitors, who joined and what they earned.', u: '/admin/depot/ambassadors#list', k: 'live' }
         ])

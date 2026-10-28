@@ -7,19 +7,20 @@
     (function () {
       var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
       var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
-      if (alone && signedIn) location.replace('/dashboard/survey');
+      if (alone && signedIn) location.replace('/dashboard/survey' + location.search + location.hash);
     })();
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Survey | Vegans Explore</title>
+  <title>Your Profile | Vegans Explore</title>
   <meta name="robots" content="noindex">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <!-- Your survey (Sean, 2026-10-28: "That should be one of the first things they everybody submits, is a detailed survey where they
-       can get 250 points. But the survey is going to give us everything we need to know about them. They could save it and come back
-       to it"). The Mission Survey (/public/ve-mission-survey.js, the only copy of the questions), one question at a time, saved as
-       they go. Its answers set the dashboard version (ve_dashboard_version) and fill their profile. -->
+  <!-- Your profile (Sean, 2026-10-28: "a detailed survey where they can get 250 points... They could save it and come back to it",
+       then "treat it like a dating profile where it asks different questions about themselves that will be added to their profile...
+       a combined 250 points for every question they answer with some questions being worth more than others"). VEMissionSurvey.profile
+       (/public/ve-mission-survey.js, the only copy of the questions): every question a card, answered in any order, one per view
+       (#q/<id>), each saved and paid the moment it is answered. The answers set the dashboard version (ve_dashboard_version). -->
   <style>
     :root{--g:#1f5f22;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--line:rgba(0,0,0,.1);}
     *,*::before,*::after{box-sizing:border-box;}
@@ -45,11 +46,11 @@
 <script src="/public/nav.js"></script>
 <main>
   <p class="k">Dashboard</p>
-  <h1>Tell us about you</h1>
-  <p class="lede" id="lede">The more we know, the better your dashboard fits you: the places, Guides, events and ways to take part that matter to you. It takes about 10 minutes, every answer is saved as you go, and you earn 250 points when you finish.</p>
-  <div class="why" id="why"><span>250 points</span><span>Saved as you go</span><span>Shapes your dashboard</span><span>Only the team sees your answers</span></div>
+  <h1>Your profile</h1>
+  <p class="lede" id="lede">Tell us about yourself, one question at a time, in any order. Every answer goes on your profile, shapes your dashboard around you, and earns points the moment you give it: 250 in all, and the ones in your own words are worth the most.</p>
+  <div class="why" id="why"><span>Up to 250 points</span><span>Any order</span><span>Saved as you go</span><span>Change answers any time</span></div>
   <div id="gate" class="gate" hidden></div>
-  <div class="card" id="host" hidden></div>
+  <div id="host" hidden></div>
 </main>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-mission-survey.js"></script>
@@ -62,32 +63,18 @@
     try { window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin); } catch (e) {}
   }
   if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
-  function dash(path) {
-    // Back to the dashboard: the window around this page when there is one.
-    try { if (inFrame()) { window.top.location.href = path; return; } } catch (e) {}
-    location.href = path;
-  }
-  function done(res) {
-    $('why').hidden = true;
-    $('lede').hidden = true;
-    $('host').innerHTML = '<div class="done">' + (res && res.already_completed
-      ? '<h2>You have already taken it</h2><p>Thank you. Your answers shape your dashboard, and the 250 points are in your balance.</p>'
-      : '<h2>Thank you</h2><p>Your answers are in, 250 points are on their way to your balance, and your dashboard now fits what you told us.</p>') +
-      '<button type="button" class="btn" id="back">Back to your dashboard</button></div>';
-    $('back').onclick = function () { dash('/dashboard'); };
-  }
   function start() {
     if (!window.VEAuth || !window.VEMissionSurvey) return setTimeout(start, 200);
-    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to take your survey.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
-    if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'The survey opens once your Passport is active.'; return; }
+    if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
     $('host').hidden = false;
     // A super admin previewing as someone else sees the questions with nothing sent.
     var preview = !!(VEAuth.getViewAs && VEAuth.getViewAs());
-    VEMissionSurvey.mount($('host'), {
+    VEMissionSurvey.profile($('host'), {
       preview: preview,
-      onDone: done,
-      onQuestion: function () { try { window.scrollTo(0, 0); } catch (e) {} tellParent(); }
+      // One question per view: the page's introduction shows on the cards only.
+      onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); }
     });
   }
   start();

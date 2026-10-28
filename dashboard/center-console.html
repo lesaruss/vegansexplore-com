@@ -2378,7 +2378,7 @@
         var icon = document.getElementById('dash-guide-prompt-icon');
         if (icon && window.VEGuideImage) icon.style.backgroundImage = "url('" + window.VEGuideImage() + "')";
         var desc = document.getElementById('dash-guide-prompt-desc');
-        if (desc && d.survey && d.survey.eligible && !d.survey.completed) desc.textContent = 'Tell your Guide about you (250 points), then see how it helps: places to eat, things to do, and finding what you need.';
+        if (desc && d.survey && d.survey.eligible && !d.survey.completed) desc.textContent = 'Tell your Guide about you (up to 250 points), then see how it helps: places to eat, things to do, and finding what you need.';
         prompt.style.display = d.setup_at ? 'none' : 'flex';
       }).catch(function () {});
   }
@@ -3137,10 +3137,10 @@
     else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'levels' }, '', url);
   }
   window.openLevels = openLevels;
-  // The survey (Sean, 2026-10-28): its own page in the dashboard window, first in For you until it is done.
+  // Your profile (Sean, 2026-10-28): its own page in the dashboard window, first in For you until every point is earned.
   function openSurvey(noPush) {
     if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
-    openConsoleFrame('/survey', 'Your survey');
+    openConsoleFrame('/survey', 'Your profile');
     if (noPush) history.replaceState({ tabKey: 'tools', frame: 'survey' }, '', '/dashboard/survey');
     else if (location.pathname !== '/dashboard/survey') history.pushState({ tabKey: 'tools', frame: 'survey' }, '', '/dashboard/survey');
   }
@@ -3401,11 +3401,11 @@
       DASH_VERSION = d.version;
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
       var TAG = { offer: 'Offer' }, out = '';
-      // The survey first until it is done: 250 points, saved as they go (Sean, 2026-10-28).
-      var sv = d.survey || {};
-      if (sv.active && !sv.completed) out += dvTile({ title: sv.at ? 'Finish your survey' : 'Tell us about you', cta_url: '/dashboard/survey',
-        body: sv.at ? 'Your answers are saved. Pick up at question ' + (sv.at + 1) + ' and earn 250 points.' : 'About 10 minutes, and it shapes your dashboard around you. Save it and come back any time. 250 points when you finish.' },
-        FICON('list'), '250 points').replace('class="dash-tour-prompt dv-tile"', 'class="dash-tour-prompt dv-tile" data-survey');
+      // Your profile first until every point is earned: questions about them, any order, each with its own points (Sean, 2026-10-28).
+      var sv = d.survey || {}, left = Math.max(0, (sv.total || 250) - (sv.earned || 0));
+      if (sv.active && !sv.completed && left > 0) out += dvTile({ title: sv.earned ? 'Keep building your profile' : 'Build your profile', cta_url: '/dashboard/survey',
+        body: sv.earned ? 'You have ' + sv.earned + ' of ' + (sv.total || 250) + ' points. Answer a few more about yourself, in any order.' : 'Questions about you, answered in any order. Every answer goes on your profile and earns points: 250 in all.' },
+        FICON('list'), '+' + left + ' points').replace('class="dash-tour-prompt dv-tile"', 'class="dash-tour-prompt dv-tile" data-survey');
       // Business: each listing they own opens its business dashboard (/directory/<slug>?tab=brand), else Join the Directory.
       if (d.version === 'business') out += d.listings.length ? d.listings.map(function (l) {
           return dvTile({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit.', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' }, FICON('store'), l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval');
