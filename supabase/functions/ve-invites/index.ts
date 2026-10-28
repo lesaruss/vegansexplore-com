@@ -287,7 +287,7 @@ async function draftOpening(inv: Invite): Promise<{ opening?: string; note?: str
     const client = new Anthropic(key ? { apiKey: key } : {});
     const msg: any = await client.beta.messages.create({
       model: MODEL, max_tokens: 800, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
-      output_config: { effort: 'low', format: { type: 'json_schema', schema: OPENING_SCHEMA } },
+      output_config: { effort: 'medium', format: { type: 'json_schema', schema: OPENING_SCHEMA } },
       system: OPENING_SYSTEM,
       messages: [{ role: 'user', content: 'The sources, as JSON:\n' + JSON.stringify(sources) }],
     } as any);
