@@ -85,6 +85,7 @@
     pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/>',
     chat: '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
     briefcase: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/>',
+    ticket: '<path d="M3 9V7a2 2 0 012-2h14a2 2 0 012 2v2a3 3 0 000 6v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2a3 3 0 000-6z"/><path d="M14 5v2M14 11v2M14 17v2"/>',
     gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 010-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 010 5"/>'
   };
   function buildModal() {
@@ -165,6 +166,10 @@
       body: 'Members keep the board safe: a report goes to your city\'s Community Manager. Your Passport is <b>$11 one time</b>.' },
     job: { icon: 'briefcase', from: 'board', title: 'Jobs are for Passport holders',
       body: 'Members post when they are looking for work, and businesses in the Directory post their openings: hiring is one of the perks of a listed business. Your Passport is <b>$11 one time</b>.' },
+    // Members-only tickets (Sean, 2026-10-28, the Dolphins game: "this is a member-only event. You must be a member in order to
+    // access the tickets"): an event whose tickets come through our group link, opened signed out.
+    tickets: { icon: 'ticket', title: 'This is a members-only event',
+      body: 'Tickets come through our Vegans Explore group link, and you must be a member to get them. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>. Join, and we take you straight to the tickets.' },
     give: { icon: 'gift', title: 'Giving points is for Passport holders',
       body: 'Members earn points by taking part, and can give them to the businesses and nonprofits they love as a boost (never money). Your Passport, <b>$11 one time</b>, comes with <b>1,100 welcome points</b>, so you can give from day one.' }
   };

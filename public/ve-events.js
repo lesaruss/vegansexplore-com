@@ -863,13 +863,21 @@
         api({ action: 'tickets', id: id }).then(function (r) {
           if (r && r.ok && r.url) { location.href = r.url; return; }
           if (btn) { btn.disabled = false; btn.textContent = 'Get tickets'; }
-          if (err) err.innerHTML = esc((r && r.message) || 'The tickets did not open. Try again.') + (r && r.error === 'not_eligible' ? ' <a class="vev-link" href="/passport?back=' + encodeURIComponent(location.pathname + location.search + location.hash) + '">Get your Passport</a>' : '');
+          if (r && r.error === 'not_eligible') { membersOnly({ signedIn: true }); return; }
+          if (r && r.error === 'not_authenticated') { membersOnly(); return; }
+          if (err) err.textContent = (r && r.message) || 'The tickets did not open. Try again.';
         }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = 'Get tickets'; } if (err) err.textContent = 'The tickets did not open. Try again.'; });
       };
       if (signedIn()) { go2(); return; }
-      var back = location.pathname + location.search + '#event/' + id + '/tickets';
-      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Tickets through our Vegans Explore group link are for Passport holders. Sign in, or get your Passport, and we take you straight to them.', function () { go2(); });
-      else location.href = '/login?next=' + encodeURIComponent(back);
+      membersOnly();
+    }
+    // Signed out: the members-only window the Directory uses (ve-votes.js, loaded on first need), Explore the Passport or Sign in,
+    // both coming back to #event/<id>/tickets, which takes a member straight on to the tickets (Sean, 2026-10-28).
+    function membersOnly(o) {
+      if (location.hash.indexOf('/tickets') < 0 && /^#event\/[0-9a-f-]{36}$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + location.hash + '/tickets');
+      var show = function () { if (window.VEVotes && VEVotes.memberPrompt) VEVotes.memberPrompt('tickets', o); else location.href = '/passport?from=tickets&back=' + encodeURIComponent(location.pathname + location.search + location.hash); };
+      if (window.VEVotes) { show(); return; }
+      var sc = document.createElement('script'); sc.src = '/public/ve-votes.js'; sc.onload = show; sc.onerror = show; document.head.appendChild(sc);
     }
 
     function drawEvent(id, note, autoTix) {
@@ -882,7 +890,7 @@
         var tix = !!d.member_tickets && !over, link = tix ? '' : (safeUrl(e.ticket_url) || safeUrl(e.virtual_url)), org = v.organizer, member = signedIn();
         var rsvp;
         if (over) rsvp = '<h3>This event is over</h3><p>' + (v.going_count ? esc(v.going_count) + ' went with Vegans Explore.' : 'Thanks to everyone who went.') + '</p>';
-        else if (!member || !v.going) rsvp = '<h3>Going?</h3><p>' + (v.going_count ? esc(v.going_count) + (v.going_count === 1 ? ' member is' : ' members are') + ' going. ' : '') + 'Let us know, and it shows on My events. Tickets are on the official page.</p>' +
+        else if (!member || !v.going) rsvp = '<h3>Going?</h3><p>' + (v.going_count ? esc(v.going_count) + (v.going_count === 1 ? ' member is' : ' members are') + ' going. ' : '') + 'Let us know, and it shows on My events. ' + (tix ? 'Get your tickets through our group link.' : 'Tickets are on the official page.') + '</p>' +
           (org ? '<label class="vev-optin"><input type="checkbox" data-v="optin"><span><b>Let ' + esc(org) + ' message me about this event</b><small>Through Vegans Explore only: ' + esc(org) + ' never sees your email. Until ' + esc(closes(e)) + ', 7 days after the event. Turn it off any time. ' + (v.optin_paid ? '' : '25 points for saying yes.') + '</small></span></label>' : '') +
           '<button type="button" class="vev-btn green" data-v="going">I\'m going</button>';
         else rsvp = '<p class="vev-going">You\'re going</p>' +

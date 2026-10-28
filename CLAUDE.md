@@ -714,7 +714,7 @@ Dolphins playbook: gated to signed-in members, after the public link leaked last
 `/events#event/<id>/tickets`. The event view shows **Get tickets** ("Through our Vegans Explore group link, for Passport holders") in place
 of the official link (`ve-events` `event` returns `member_tickets`, never the url); `ve-events` `tickets` gives the url only to an active
 Passport holder or a super admin (else `not_eligible`), logs a `ve_initiative_interest` row (tags `event-tickets`, `event:<id>`), and the
-page goes there. Signed out, `#event/<id>/tickets` opens the sign-in window and goes on to the tickets after it. First: the Plant-Based
+page goes there. Signed out (Sean, 2026-10-28: "this is a member-only event. You must be a member in order to access the tickets"), Get tickets, the tile, a city hub's RSVP and `#event/<id>/tickets` open the Directory's members-only window (`VEVotes.memberPrompt('tickets')`, loaded on first need): This is a members-only event, Explore the Passport (`/passport?from=tickets`, with its own note) or Sign in, both coming back to `#event/<id>/tickets`, which takes a member on to the tickets. First: the Plant-Based
 Showcase, Miami Dolphins game day (event `3f6a7e2e-efff-4b0e-80ce-580428d3cb52`, Fevo `Vegansexplore2`, $15 a ticket to LESARUSS Inc.,
 organizer Vegans Explore); its campaign page's attend step is **Get Tickets** on the same link (`campaigns/plant-based-showcase-dolphins.html`).
 
