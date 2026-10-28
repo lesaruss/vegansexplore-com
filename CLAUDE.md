@@ -1974,6 +1974,17 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   (too far refused; 100, 25, 10 and 0 paid; Still accurate marked the item checked); it found the ledger refusing
   `venue_report`, fixed the same day. The `ve_guides` row `stadium-arena-guide` stays `published` false (the buy button reads
   Coming soon; super admins see every venue) until Sean approves River's lines and his clips are made (`CLIPS` is empty).
+- **The map and Get me there** (Sean, 2026-10-28: "show a map of the stadium and where these things are with a locator icon...
+  be anywhere in the stadium and... show me where exactly to go"; migration `20261028_venue_maps.sql`). `/public/ve-venue-map.js`
+  (`VEVenueMap.svg`, `find`, `route`) draws our own map of the bowl from `ve_venues.layout` (each level's sections in clockwise order
+  by side: top, tr, right, br, bottom, bl, left, tl; innermost level first), never the venue's seating chart, with a numbered pin for
+  each stand's `ve_venue_spots.map_sections` ("122A" sits behind 122; `map_level` for a stand we only know the level of). On an open
+  venue, **Your section** + **Get me there** routes from the section on the ticket (kept in `localStorage` `ve_sa_seat_<slug>`):
+  the nearest spot of each stand, up or down a level, then "walk with the field on your right/left, past ..." and minutes (60 m a
+  minute around `layout.ring_m`, 3 a level), drawn on the map. Not GPS: inside a stadium it is off by several sections and worse
+  under a roof; a moving blue dot needs the venue's own beacons (a partnership, the Dolphins first). Hard Rock Stadium's layout was
+  read from its seating chart (Sean's screenshot, 2026-10-28); the others wait on theirs (Depot > Venues > a venue > The map, JSON;
+  a stand's Sections on the map).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

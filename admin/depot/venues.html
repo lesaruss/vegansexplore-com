@@ -226,6 +226,9 @@
             '<div class="acts"><button class="btn" id="save">Save</button><a class="btn btn-ghost" href="/guides/stadium-arena-guide#/venue/' + esc(v.slug) + '" target="_blank" rel="noopener">See it in the Guide</a><span class="msg" id="m" role="status"></span></div></div>' +
           '<div><div class="panel"><h2>On the map</h2><p style="font-size:14px">' + (v.can_report ? esc(v.address || '') + (v.maps ? ' · <a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Google Maps</a>' : '') : '<b style="color:#8a1c12">No location yet, so members cannot send reports here.</b>') + '</p>' +
             '<div class="acts"><button class="btn btn-ghost" id="locate">' + (v.can_report ? 'Find it on Google again' : 'Find it on Google') + '</button><span class="msg" id="lm" role="status"></span></div></div>' +
+          '<div class="panel"><h2>The map</h2><p class="m">Each level\'s sections in clockwise order by side, read from the venue\'s seating chart (see public/ve-venue-map.js). ' + (v.layout ? (v.layout.levels || []).length + ' levels.' : 'None yet, so the Guide shows no map here.') + '</p>' +
+            '<div class="f wide" style="margin-top:8px"><label for="v-layout">Layout (JSON)</label><textarea id="v-layout" style="min-height:140px;font-family:monospace;font-size:12px">' + esc(v.layout ? JSON.stringify(v.layout) : '') + '</textarea></div>' +
+            '<div class="acts"><button class="btn btn-ghost" id="layout">Save the map</button><span class="msg" id="ym" role="status"></span></div></div>' +
           '<div class="panel"><h2>New season</h2><p class="m">Every item here shows Not checked this season until a member confirms it again.' + (v.season_reset_at ? ' Last new season: ' + esc(when(v.season_reset_at)) + '.' : '') + '</p>' +
             '<div class="acts"><button class="btn btn-red" id="season">Start a new season</button><span class="msg" id="sm" role="status"></span></div></div></div></div>' +
           '<div class="panel"><div class="bar"><h2 style="margin:0">Stands and items</h2><a class="btn" href="#venue/' + esc(v.slug) + '/stand/new">Add a stand</a></div>' +
@@ -241,6 +244,12 @@
         $('locate').onclick = function () {
           var m = $('lm'); m.className = 'msg'; m.textContent = 'Looking…';
           api({ action: 'locate', slug: v.slug }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = 'Google did not find it. Check the name and city.'; return; } drawVenue(v.slug); });
+        };
+        $('layout').onclick = function () {
+          var m = $('ym'), raw = $('v-layout').value.trim(), lay = null;
+          if (raw) { try { lay = JSON.parse(raw); } catch (e) { m.className = 'msg bad'; m.textContent = 'That is not valid JSON.'; return; } }
+          m.className = 'msg'; m.textContent = 'Saving…';
+          api({ action: 'venue_save', venue: { slug: v.slug, layout: lay } }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } m.textContent = 'Saved.'; });
         };
         $('season').onclick = function () {
           if (!confirm('Start a new season at ' + v.name + '? Every item shows Not checked this season until a member confirms it.')) return;
@@ -261,12 +270,15 @@
             '<div class="f"><label for="s-name">Name</label><input id="s-name" maxlength="200" value="' + esc(s.name) + '"></div>' +
             '<div class="f"><label for="s-where">Where it is</label><input id="s-where" maxlength="200" value="' + esc(s.where) + '" placeholder="Section 105"></div>' +
             '<div class="f"><label for="s-zone">Who can reach it</label>' + sel('s-zone', ZONE, s.zone || 'concourse') + '</div>' +
+            '<div class="f"><label for="s-map">Sections on the map</label><input id="s-map" value="' + esc((s.map_sections || []).join(', ')) + '" placeholder="122A, 150A"><small>Each one puts a pin. Separate with commas.</small></div>' +
+            '<div class="f"><label for="s-level">Level, when we do not know the section</label><input id="s-level" value="' + esc(s.map_level || '') + '" placeholder="200"></div>' +
             '<div class="f wide"><label for="s-note">Note</label><textarea id="s-note" maxlength="300">' + esc(s.note) + '</textarea></div></div>' +
           '<div class="acts"><button class="btn" id="save">Save</button>' + (s.id ? '<button class="btn btn-red" id="gone">Take it out</button>' : '') + '<span class="msg" id="m" role="status"></span></div></div>';
         var m = $('m');
         var save = function (extra) {
           m.className = 'msg'; m.textContent = 'Saving…';
-          var row = Object.assign({ id: s.id, venue: slug, name: $('s-name').value.trim(), where_text: $('s-where').value.trim(), zone: $('s-zone').value, note: $('s-note').value.trim() }, extra || {});
+          var row = Object.assign({ id: s.id, venue: slug, name: $('s-name').value.trim(), where_text: $('s-where').value.trim(), zone: $('s-zone').value, note: $('s-note').value.trim(),
+            map_sections: $('s-map').value, map_level: $('s-level').value.trim() }, extra || {});
           api({ action: 'spot_save', spot: row }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } go('#venue/' + slug); });
         };
         $('save').onclick = function () { save(); };

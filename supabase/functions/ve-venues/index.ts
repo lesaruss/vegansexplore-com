@@ -5,6 +5,8 @@
 //   { action: 'list' }                         every live venue: name, kind, city, teams, counts, which one is free; and the viewer
 //   { action: 'venue', slug }                  one venue. Its stands and items for the Guide's owners, a super admin, or anyone on
 //                                              the free example (Hard Rock Stadium); everyone else gets the outline (locked: true)
+//                                              An open venue also carries its map: venue.layout (each level's sections by side) and
+//                                              each stand's map_sections and map_level (migration 20261028_venue_maps.sql)
 // An active member (any Passport holder may report, Guide or not):
 //   { action: 'report_start' }                 -> { path, upload_url }   PUT the photo (JPEG, shrunk in the browser) there
 //   { action: 'report', venue, item?, spot?, kind, note?, path, lat, lng, accuracy }
@@ -125,7 +127,7 @@ Deno.serve(async (req) => {
     if (!v) return json({ error: 'not_found' }, 404);
     const open = owns || v.free_example;
     const [{ data: spots }, { data: items }] = await Promise.all([
-      db.from('ve_venue_spots').select('id, name, where_text, zone, listing_id, note, sort_order').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
+      db.from('ve_venue_spots').select('id, name, where_text, zone, listing_id, note, sort_order, map_sections, map_level').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
       db.from('ve_venue_items').select('id, spot_id, name, description, vegan, sources, last_confirmed_at, confirmed_count, photo_url, photo_illustrative, sort_order')
         .eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
     ]);
@@ -140,11 +142,13 @@ Deno.serve(async (req) => {
     const venue = { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, teams: v.teams, address: v.address,
       maps: v.google_place_id ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name)}&query_place_id=${v.google_place_id}` : null,
       note: v.note, note_source_url: v.note_source_url, free: v.free_example, can_report: v.latitude != null, radius_m: v.radius_m,
-      season_reset_at: v.season_reset_at };
+      season_reset_at: v.season_reset_at, layout: open ? v.layout : null };
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
       return {
         id: s.id, name: s.name, where: s.where_text, zone: s.zone, note: s.note,
+        // The map's pins and level only for an open venue, like its items.
+        map_sections: open ? (s.map_sections || []) : [], map_level: open ? s.map_level : null,
         listing: s.listing_id && listings[s.listing_id] ? { slug: listings[s.listing_id].slug, name: listings[s.listing_id].name, logo_url: listings[s.listing_id].logo_url } : null,
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
@@ -275,6 +279,7 @@ Deno.serve(async (req) => {
     if ('teams' in v) row.teams = (Array.isArray(v.teams) ? v.teams : String(v.teams || '').split(',')).map((t: any) => str(t, 80)).filter(Boolean).slice(0, 12);
     if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 3000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }
     if ('status' in v) row.status = v.status === 'hidden' ? 'hidden' : 'live';
+    if ('layout' in v) { if (v.layout !== null && (typeof v.layout !== 'object' || !Array.isArray(v.layout.levels))) return json({ error: 'bad_layout' }, 400); row.layout = v.layout; }
     if ('new_season' in v && v.new_season === true) row.season_reset_at = new Date().toISOString();
     row.updated_at = new Date().toISOString();
     if (v.slug && (await db.from('ve_venues').select('id').eq('slug', v.slug).maybeSingle()).data) {
@@ -294,6 +299,8 @@ Deno.serve(async (req) => {
     if ('zone' in s) { if (!['concourse', 'club', 'suites', 'outside'].includes(s.zone)) return json({ error: 'bad_zone' }, 400); row.zone = s.zone; }
     if ('status' in s) row.status = s.status === 'gone' ? 'gone' : 'live';
     if ('sort_order' in s) row.sort_order = Math.round(num(s.sort_order) || 0);
+    if ('map_sections' in s) row.map_sections = (Array.isArray(s.map_sections) ? s.map_sections : String(s.map_sections || '').split(',')).map((x: any) => str(x, 20)).filter(Boolean).slice(0, 30);
+    if ('map_level' in s) row.map_level = str(s.map_level, 20) || null;
     if (isId(s.id)) { const { error } = await db.from('ve_venue_spots').update(row).eq('id', s.id); return error ? json({ error: 'save_failed', message: error.message }, 500) : json({ ok: true, id: s.id }); }
     const { data: v } = await db.from('ve_venues').select('id').eq('slug', str(s.venue, 80)).maybeSingle();
     if (!v || !row.name) return json({ error: 'venue_name_required' }, 400);

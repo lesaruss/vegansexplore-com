@@ -429,6 +429,29 @@
     .sa-photo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
     .sa-photo img{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
     .sa-kinds{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
+    /* The map and Get me there (public/ve-venue-map.js draws it) */
+    .sa-map{border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px;margin:0 0 16px;}
+    .sa-map-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px 20px;flex-wrap:wrap;margin-bottom:10px;}
+    .sa-map-h h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 2px;}
+    .sa-map-h p{font-size:12.5px;color:var(--ink55);margin:0;max-width:520px;}
+    .sa-seat label{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
+    .sa-seat div{display:flex;gap:8px;}
+    .sa-seat input{font:inherit;font-size:15px;font-weight:700;width:110px;padding:9px 12px;border:1.5px solid var(--line);border-radius:6px;}
+    .sa-map-box{overflow:auto;border-radius:10px;background:#f4f6f3;}
+    @media (min-width:901px){.sa-map-box .vvm{max-height:62vh;width:auto;max-width:100%;margin:0 auto;}}
+    .sa-dir-meta{font-weight:700;color:var(--ink75);}
+    .sa-map-box.zoom .vvm{width:200%;max-width:none;}
+    @media (min-width:901px){.sa-map-box.zoom .vvm{width:150%;max-height:none;}}
+    .sa-map-foot{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--ink55);}
+    .sa-dirs{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px;}
+    .sa-dirs li{border:1px solid var(--gm);background:var(--gl);border-radius:10px;padding:10px 12px;}
+    .sa-dirs p{font-size:13.5px;line-height:1.5;margin:4px 0 0;color:var(--ink);}
+    .sa-dir-go{all:unset;cursor:pointer;display:flex;align-items:flex-start;font-size:13.5px;line-height:1.45;}
+    .sa-dir-go:focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    .sa-dir-hint,.sa-dir-miss{font-size:13px;color:var(--ink75);margin:10px 0 0;}
+    .sa-dir-miss{color:#8a1c12;font-weight:700;}
+    .sa-pinno{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:11px;background:#1a1a1a;color:#fff;font-size:11.5px;font-weight:900;margin-right:8px;vertical-align:2px;}
+    .sa-flash{box-shadow:0 0 0 3px #F69820;transition:box-shadow .3s;}
     @media (max-width:360px){.dg-joinbox .dg-btn{padding-left:10px;padding-right:10px;font-size:11px;letter-spacing:.04em;}}
     @media (max-width:480px){.sa-item{gap:10px;}.sa-acts .sa-mini span{display:none;}}
   </style>
@@ -476,6 +499,7 @@
 </div>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
+<script src="/public/ve-venue-map.js"></script>
 <script src="/guide-scripts/stadium-arena-guide.js"></script>
 </body>
 </html>
