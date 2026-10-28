@@ -72,13 +72,13 @@
     .row:first-child{border-top:0;}
     .row.head{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);padding-top:10px;padding-bottom:10px;background:#fafbfa;position:sticky;top:0;z-index:1;}
     .row b{display:block;font-size:14px;}
-    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
     .num{font-size:14px;font-weight:800;white-space:nowrap;}
     .av{width:44px;height:44px;border-radius:8px;background:#e7efe7 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--ve-green-deep);}
     .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
     .irow:first-child{border-top:0;}
     .irow b{display:block;font-size:14px;}
-    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
     .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
     .t-ready{background:#fff4e0;color:#8a5200}.t-sent{background:#e8f0fe;color:#1a4a9c}.t-read,.t-opened{background:#e6f4f6;color:#0d5c66}.t-joined,.t-active{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled,.t-quiet{background:#f1f1f1;color:#555}
     .lvl{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;background:#1a1a1a;color:#fff;white-space:nowrap;}
@@ -106,13 +106,13 @@
     .ledger{font-size:13px;}
     .ledger div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--ve-border);}
     .ledger div:first-child{border-top:0;}
+    .row .mob{display:none;font-size:12px;color:var(--ve-text-75);}
     @media (max-width:900px){
       .row{grid-template-columns:44px minmax(0,1fr) auto;}
       .row .c{display:none;}
       .row.head{display:none;}
       .row .mob{display:block;}
     }
-    .row .mob{display:none;font-size:12px;color:var(--ve-text-75);}
     @media (max-width:600px){.irow{grid-template-columns:minmax(0,1fr) auto;}.irow .c{display:none;}}
   </style>
 </head>
