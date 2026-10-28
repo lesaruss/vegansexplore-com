@@ -16,11 +16,11 @@ language sql stable security definer set search_path to 'public' as $$
 $$;
 revoke all on function public.ve_listing_about_due(int) from public, anon, authenticated;
 
--- Every 5 minutes, six at a time (about 70 an hour); with nothing queued it costs nothing.
-select cron.schedule('ve-listing-about', '*/5 * * * *', $c$
+-- Every 2 minutes, twelve at a time (about 360 an hour); with nothing queued it costs nothing.
+select cron.schedule('ve-listing-about', '*/2 * * * *', $c$
   select net.http_post(
     url := 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-about',
     headers := jsonb_build_object('Content-Type', 'application/json',
       'x-cron-secret', (select value from lesaruss_secrets where key = 'CRON_SECRET')),
-    body := '{"action":"sweep","limit":6}'::jsonb, timeout_milliseconds := 30000);
+    body := '{"action":"sweep","limit":12}'::jsonb, timeout_milliseconds := 30000);
 $c$);

@@ -605,6 +605,17 @@ Muscovy Sanctuary of Florida all of Florida, sixteen national advocacy groups (A
 Movement...) every chapter, and the listing page adds "Serves every chapter" or "Also serves Central Florida". Set it in the listing
 editor's Chapters section (`ve-listing-admin.js`, saved by `ve-claims` `admin_listing`). Passport Challenge and Tours stops
 still go by address.
+**PETA and the national organizations** (Sean, 2026-10-28: "PETA. I haven't seen it on the website at all... that's a glaring
+omission"; migration `20261028_national_organizations.sql`). PETA, the Physicians Committee, Sea Shepherd, Vegan Outreach, The Vegan
+Society, DxE and Anonymous for the Voiceless had sat quarantined since the June Instagram import: the backlog check filed them as
+"A person" (Instagram leaves the business flag off big accounts) or "Not a restaurant", lists that only offer Set aside. They were listed
+and fifteen missing ones added (Animal Legal Defense Fund, Best Friends, In Defense of Animals, Compassion in World Farming, United
+Poultry Concerns, Born Free, Sentient Media, Animal Outlook, Last Chance for Animals, Food Empowerment Project, The Good Food Institute,
+Veganuary, Faunalytics, Nonhuman Rights Project, and Animal Place, a sanctuary in Grass Valley): headquarters from Google Places where
+Google has them, the rest online, every chapter (Animal Place by address only), each with an About from its own description. Ten smaller
+animal groups the same check buried (Fish Defender, UnchainedTV, Karma Farm Sanctuary, Hogs & Kisses...) went to New places > Ready to
+list for Sean to confirm. Before trusting "A person" or "Not a restaurant" on an Instagram row, read its bio: an organization's
+account often has no business flag.
 
 Vetting (Sean, 2026-10-25: "they're not all vetted... it requires 10 different people, not one person 10 times... Otherwise,
 it's just... in its own section that only shows up for members... I can overrule that"). A Vegan-friendly or Vegan-options food
@@ -1519,6 +1530,24 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   showed that `fetchAll` in `ve-region-directory.js` had never paged: its second request asked for the first page again, forever, and
   every Directory view stayed empty for about 30 minutes until it was fixed (`(offset || 0) + 1000`, `order=id`). The Directory reads
   1,000 listings a request and pages until a short page.
+  **London and Philadelphia, a second pass** the same day (Sean: "run the restaurant search for London and Philadelphia again... make
+  sure that there's something in each listing"; migration `20261028_restaurant_search_london_philadelphia_2.sql`): 88 searches by
+  neighborhood (and Pennsylvania's other cities, since the chapter is the whole state), 102 live, London 62 and Philadelphia 40. The
+  field mask now asks for `regularOpeningHours`, so hours are saved at insert from Google's opening periods (never from its display
+  text, which writes "12:00 to 11:00 PM" for noon), and a name we set aside never comes back. **Every new listing has something in
+  it** (Sean: "when people click in it, that they're actually getting something... hours... basic information, and a menu"): hours
+  and phone from Google at insert, the About line and kinds of food from **`ve-listing-about`** (below), and a Menu tab: their menu
+  link when the link finder found one, else their own website (a food place with no menu link; `menuLinkOut` in
+  `directory/listing.html`, "opens their website, where they post their menu").
+- **The About reader** (Sean, 2026-10-28; edge function `ve-listing-about`, migration `20261028_ve_listing_about.sql`). The Background
+  writer's `listing_essentials` pass had fallen 850 behind, so new listings showed no About. This does that job on the server: it reads
+  the business's home and about pages, asks Google Places for the place's own summary and what it serves, and Claude (Opus 5.5,
+  structured output) writes one or two plain sentences (130 to 240 characters, Vegan capitalized, no dashes, never upgrading how Vegan
+  our listing says it is) and one to four cuisines, saved through `ve_listing_essentials_save` (only empty fields, never over an owner's
+  words, a `ve_listing_edits` row each). A site that cannot be read gets a line from Google and our listing only, said so in its note.
+  Queue: `ve_listing_about_due()` (ve_listing_essentials rows still queued, restaurant-search listings first); cron `ve-listing-about`,
+  12 every 2 minutes. `one` (`slug`, `save: false` to preview) for a single listing. Its notes flag a How Vegan that disagrees with
+  their own site (Sweet Love: "many Vegan options", listed 100% Vegan).
 
 ## Guide pricing, points and levels (LOCKED by Sean 2026-10-25, playbook `ve-pricing-points-passport`)
 

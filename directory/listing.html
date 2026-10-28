@@ -3966,10 +3966,16 @@ if(!slug || slug === 'listing'){
       // re-read keeps it checked (checked_at in the last 35 days); otherwise Menu links out to wherever they post it.
       var placeMenu = PLACE_MENU_CATS.indexOf(l.category) >= 0, ownedMenu = l.claim_status === 'verified' || !!l.owner_member_id;
       var FRESH_MS = 35 * 86400000;
+      // With no menu link found, Menu opens their own website, where a small place usually posts it (Sean, 2026-10-28: "we can,
+      // if we want to, honestly, just go with using their existing menu where people can click through").
       function menuLinkOut(){
         var ml = /^https?:\/\//i.test(l.menu_crawl_url || '') ? l.menu_crawl_url : '';
+        var site = !ml && placeMenu && /^https?:\/\//i.test(l.website || '') ? l.website : '';
         var mlb = document.getElementById('tab-btn-menu-link');
-        if(ml && mlb){ mlb.href = ml; mlb.style.display = ''; }
+        if((ml || site) && mlb){
+          mlb.href = ml || site; mlb.style.display = '';
+          if(site){ var sr = mlb.querySelector('.sr-only'); if(sr) sr.textContent = ' (opens their website, where they post their menu)'; mlb.title = 'Their menu is on their website'; }
+        }
       }
       fetchMenuItems(l.id).then(function(items){ return (items && items.length) || !l.parent_id ? items : fetchMenuItems(l.parent_id); }).then(function(items){
         if(placeMenu){
