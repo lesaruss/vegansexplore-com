@@ -1239,9 +1239,9 @@ doorway into making them an ambassador." The prototype, **super admins only** un
 - **The profile** (`isPersonL`, `renderPersonOverview`, `loadPerson` in `directory/listing.html`): their photo square with rounded corners
   (`logo_url`), the roles, the one line, **About** (the bio, "Written from their conversations with Vegans Explore" when it was), **Their work**
   (`details.person.links`: a sign-up page, a program, a product, a book), **With Vegans Explore** (IMDb style: Podcast episodes, Events,
-  Articles, Videos, newest first, each with Watch and Listen), **In their words** (moments of theirs from the content index,
+  Articles, newest first), **In their words** (moments of theirs from the content index,
   `ve_person_moments(listing)`: their credited episodes where the speaker is them, `details.person.speaker_names`, three an episode, Play from
-  the second), a **Videos** tab (their episodes on YouTube), Photos (`gallery_urls`), and the sidebar's Website and Follow (Instagram,
+  the second), Photos (`gallery_urls`), and the sidebar's Website and Follow (Instagram,
   Facebook, TikTok, YouTube).
 - **Credits** are `ve_person_credits` (migration `20261028_people_directory.sql`, public read): kind episode (`content_id`, a
   `ve_pulse_content` row), event (`event_id`, or a title and date), article or video (title and link), with their role (Guest, Host,
@@ -1349,11 +1349,16 @@ commits to, its share of a sponsorship) is not set yet; the review of applicatio
 then you can scroll within... if they click listen, it's going to open up a player. And if they click watch, it could open up a light
 box... I want to keep people in this environment." On a person's page (People section, `renderPersonOverview` and `loadPerson` in
 `directory/listing.html`), every podcast episode is the podcast listing's own row (`VEEpisodes.row` through `ppEpRow`: the show's square
-artwork, **Play** and **Save**, plus Watch when it is on YouTube; no search, the lists are short). Play opens the player **docked above the
+artwork, **Play** and **Save**; no search, the lists are short). **Audio only** (Sean, 2026-10-28: "let's just keep it simple and only
+have the audio... All our videos is just still images with music playing over it... I'll let you know which videos I feel are worth
+sharing"): no Watch, no Videos tab, no video lightbox, and video credits are not listed. Play opens the player **docked above the
 podcast sections** (`.vep-dock[data-vep-always]`, before Their podcast and With Vegans Explore; Sean, 2026-10-28: "it puts it at the very
 bottom and you don't see it right away"), each Play changes it, and it scrolls into view when off screen (`inView` in `ve-episodes.js`,
-which a podcast listing in the dashboard's frame gets too). **Watch** and the In their words moments open YouTube in a lightbox
-(`ppLightbox`, a moment from its second), **Save** saves the episode like a show page's, and every list shows about ten rows and
+which a podcast listing in the dashboard's frame gets too). An In their words moment plays its episode's audio from its second
+(`VEEpisodes.play(ep, show, {start})`), only when the moment's episode is matched to the feed and the audio runs within 15 s of the
+YouTube transcript it was timed on (`ve_person_moments` returns `transcript_end`, migration `20261028_person_moments_transcript_end.sql`);
+otherwise the quote shows with no Play (Dr. Klaper's "Moving Medicine Forward" audio is 47 s shorter than its video). **Save** saves the
+episode like a show page's, and every list shows about ten rows and
 scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcast** (a show they host that is in
 our Media section, `details.person.shows`, its latest 30 episodes, with The show's page), **With Vegans Explore** (their episodes on our
 four shows, then events, articles, videos), **On other podcasts** (other Directory shows that had them on), In their words.

@@ -5,7 +5,8 @@
  *
  *   VEEpisodes.mount(el, { listing: {id, slug, name, logo_url}, onReady(total) })   the list (search, 20 a page, ?epage=),
  *       and one episode on its own view (?ep=<guid> in the address bar, Episodes / title to go back)
- *   VEEpisodes.play(ep, show)        plays in the player bar at the foot of the window (one at a time, keeps playing across tabs)
+ *   VEEpisodes.play(ep, show, o)     plays in the player bar at the foot of the window (one at a time, keeps playing across tabs);
+ *                                    o.start plays from that second (a person's moment)
  *   VEEpisodes.save(listingId, guid) toggles a member's save; the Passport window for anyone else
  *   VEEpisodes.row(ep, show, opts)   one episode row's markup; VEEpisodes.css() adds the styles
  */
@@ -67,10 +68,15 @@
       b.innerHTML = (on ? I.pause + 'Pause' : I.play + 'Play'); b.setAttribute('aria-label', (on ? 'Pause ' : 'Play ') + (b.getAttribute('data-title') || ''));
     });
   }
-  function play(ep, show) {
+  function play(ep, show, o) {
     css();
-    var key = keyOf(ep, show), bar = document.getElementById('vep-player');
-    if (now && now.key === key && bar) { var a0 = bar.querySelector('audio'); if (a0.paused) a0.play(); else a0.pause(); return; }
+    var key = keyOf(ep, show), bar = document.getElementById('vep-player'), start = o && o.start != null ? o.start : null;
+    if (now && now.key === key && bar) {
+      var a0 = bar.querySelector('audio');
+      if (start != null) { a0.currentTime = start; a0.play(); } else if (a0.paused) a0.play(); else a0.pause();
+      if (bar.classList.contains('docked') && !inView(bar)) bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     if (!bar) {
       bar = document.createElement('div'); bar.id = 'vep-player'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Episode player');
       // Inside the dashboard's frame the window's foot can be far off screen, so the player sits above the list instead. A page
@@ -86,6 +92,7 @@
       '<button type="button" class="vx" aria-label="Close the player">' + I.x + '</button>';
     if (!bar.classList.contains('docked')) document.body.classList.add('vep-on');
     var audio = bar.querySelector('audio');
+    if (start) audio.addEventListener('loadedmetadata', function () { audio.currentTime = start; }, { once: true });
     ['play', 'pause', 'ended'].forEach(function (e) { audio.addEventListener(e, syncButtons); });
     bar.querySelector('.vx').onclick = function () { audio.pause(); bar.remove(); now = null; document.body.classList.remove('vep-on'); syncButtons(); };
     if ('mediaSession' in navigator && window.MediaMetadata) {
