@@ -585,6 +585,11 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
     `/ambassadors/welcome?profile=<key>` (See their Guide). From Level 2 every ready-to-share message says "I earn a little when you join with
     my link" (the FTC rule). The invitation email spaces every paragraph inline and bolds the Ambassador ask, the membership on us, the
     points and the level (Sean, 2026-10-28).
+  - **Depot > Preview journeys > Ambassador** (Sean, 2026-10-28: "I would like to see every step from top to bottom for ambassadors... without
+    me having to sign up and register"), with a Profile picker: You invite them (`#new`), The email they get (`#sample/<profile>`, `ve-invites`
+    `sample`: `emailFor` on a sample person, never saved), their invitation page, another email, No thanks and You're in (`/invite?preview=
+    open|wrong|declined|done&profile=`, a sample invitation, Accept turned off), the Ambassador Guide's ten tabs (`?profile=`, as your own
+    account), Points and levels, the dashboard and the Depot's Ambassadors list. A new screen gets a step in `JOURNEYS.amb`.
   - A member can be invited to be an Ambassador (only Already an Ambassador is left out); other invitation kinds still leave paid
     members out. A personal note is up to 2,000 characters, a blank line a new paragraph.
 

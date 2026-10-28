@@ -472,6 +472,17 @@
         });
       }
 
+      // The email an Ambassador gets, for a profile, with a sample person (Depot > Preview journeys > Ambassador). Nothing is saved.
+      function drawSample(p) {
+        var key = PROFILES.some(function (x) { return x[0] === p; }) ? p : '';
+        app.innerHTML = '<p class="crumb"><a href="#list">Ambassadors</a> &rsaquo; Sample email</p><section class="card"><h2>The email, as it goes: ' + esc(profName(key)) + '</h2>' +
+          '<p class="hint">A sample person (Jordan Lee) at Level 2 with 1,100 points. Nothing is saved or sent.</p><div class="mail" id="mail">Loading the email...</div></section>';
+        api({ action: 'sample', profile: key || null }).then(function (d) {
+          var m = d && d.email; if (!m) { $('mail').textContent = 'The email did not load.'; return; }
+          $('mail').innerHTML = '<div class="subj">' + esc(m.subject) + '</div>' + m.html;
+        });
+      }
+
       function draw() {
         var r = route();
         if (r === 'new') return drawNew();
@@ -481,6 +492,7 @@
         if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);
         if ((m = r.match(/^invites\/([a-z]+)$/))) return drawInvites(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
         if ((m = r.match(/^commissions\/([a-z]+)$/))) return drawCommissions(m[1]);
+        if ((m = r.match(/^sample\/([a-z]*)$/))) return drawSample(m[1]);
         drawList();
       }
 

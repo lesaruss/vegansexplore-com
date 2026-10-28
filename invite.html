@@ -205,6 +205,28 @@
         say((d && d.message) || 'That did not go through. Try again in a minute.', 'err');
       }).catch(function () { b.disabled = false; say('That did not go through. Check your connection and try again.', 'err'); });
     });
+    // Previews for Depot > Preview journeys > Ambassador (?preview=open|wrong|done|declined&profile=): a sample invitation, nothing
+    // is read, saved or accepted.
+    var pv = new URLSearchParams(location.search).get('preview');
+    if (pv) {
+      var prof = new URLSearchParams(location.search).get('profile') || null;
+      var sample = { first_name: 'Jordan', brand: 'vegans-explore', brand_name: 'Vegans Explore', comp: true, points: 1100, level: 2, profile: prof,
+        reason: 'Jordan, you have been showing up for this community since day one. You are exactly who I had in mind when I built this.',
+        points_to: 'ambassador', status: 'open', expires_at: new Date(Date.now() + 30 * 86400000).toISOString(), email_hint: 'j*****@example.com' };
+      $('no-thanks').hidden = true;
+      if (pv === 'declined') { closed('Thank you for letting us know.', 'Your invitation is closed. If you change your mind, reply to Sean’s email.'); return; }
+      render(sample);
+      $('accept').removeEventListener('click', accept);
+      $('accept').addEventListener('click', function () { say('Preview: accepting makes a real account, so it is turned off here.', 'ok'); });
+      if (pv === 'wrong') say('This invitation is for j*****@example.com. Sign in or create your account with that email to accept it. We signed you out of the other account: press Accept and use that email.', 'err');
+      if (pv === 'done') {
+        $('done-next').href = '/ambassadors/welcome' + (prof ? '?profile=' + encodeURIComponent(prof) : '');
+        $('done-next').textContent = 'Start as an Ambassador';
+        $('done-lede').textContent = 'Your Founding Membership is active. Thank you for what you do for this community.';
+        show('done');
+      }
+      return;
+    }
     if (!code) { closed('This link is missing its invitation.', 'Open the link from Sean’s email again, or reply to it and he can send a new one.'); return; }
     call('view').then(function (d) {
       if (d && d.invite) render(d.invite);

@@ -25,7 +25,8 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 //   POST { action: 'send', ids }         emails each one from Sean (Resend), up to 100 per call
 //   POST { action: 'mark_copied', id }   Sean sent the link himself
 //   POST { action: 'cancel', id }
-//   POST { action: 'update', id, reason?, points?, level?, profile?, name? }   edit an invitation that is not accepted yet (the draft)
+//   POST { action: 'update', id, reason?, points?, level?, profile?, name? }
+//   POST { action: 'sample', profile?, level?, points?, reason? }   a sample Ambassador email, never saved (Preview journeys)   edit an invitation that is not accepted yet (the draft)
 // Ambassadors (Sean, 2026-10-28; Depot > People > Ambassadors):
 //   POST { action: 'ambassadors' }       every Ambassador with their numbers (ve_ambassadors_overview) and their invitations
 //   POST { action: 'ambassador', member_id }   one Ambassador: the numbers, who signed up with their link, visits by day
@@ -447,6 +448,15 @@ Deno.serve(async (req: Request) => {
       const { data: lv } = await db.rpc('ve_member_level', { p_member: m.id });
       out.level = lv;
       return json(out);
+    }
+
+    // A sample Ambassador email for Depot > Preview journeys > Ambassador: built by emailFor from an invitation that is never saved.
+    if (action === 'sample') {
+      const inv: Invite = { name: 'Jordan Lee', email: 'jordan@example.com', brand: 'vegans-explore', points_to: 'ambassador', comp: true,
+        points: pointsOf(body.points ?? 1100), level: levelOf(body.level ?? 2) ?? 2, profile: profileOf(body.profile), code: 'sample', link_code: null,
+        reason: clip(body.reason, 2000) ?? 'Jordan, you have been showing up for this community since day one. You are exactly who I had in mind when I built this.',
+        expires_at: new Date(Date.now() + DAYS * 86400000).toISOString() };
+      return json({ ok: true, email: await emailFor(inv) });
     }
 
     if (action === 'preview') {

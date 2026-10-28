@@ -72,7 +72,15 @@
           <button type="button" data-j="cm" aria-pressed="false">Community Manager</button>
           <button type="button" data-j="guide" aria-pressed="false">Your Guide</button>
           <button type="button" data-j="join" aria-pressed="false">Join the Directory</button>
+          <button type="button" data-j="amb" aria-pressed="false">Ambassador</button>
         </div>
+        <label id="prof-wrap" hidden>Profile <select id="prof">
+          <option value="">Balanced</option>
+          <option value="animals">Animals first</option>
+          <option value="community">Community builder</option>
+          <option value="creator">Creator</option>
+          <option value="fitness">Health and fitness</option>
+        </select></label>
         <label id="city-wrap" hidden>City <select id="city">
           <option value="south-florida">South Florida</option>
           <option value="orlando-north-central-florida">Orlando and North Central Florida</option>
@@ -197,12 +205,37 @@
           { t: 'A member owner\u2019s Partner Dashboard', d: 'Once approved, a member keeps the page current; the numbers, the Guide and the campaigns are the Partner side, offered here.', u: '/directory/cinnaholic?tab=brand&preview=member-owner', k: 'pv' }
         ]
       };
+      // Ambassador (Sean, 2026-10-28: "I would like to see every step from top to bottom for ambassadors... without me having to sign
+      // up and register"). From the invitation to their first day, for the profile picked above ({p} in a step's address). The Guide's
+      // tabs open as your own account in that profile (?profile=, super admins only), so the points and link shown are yours.
+      var GT = [['overview', 'Overview', 'Why they were picked, in their profile\u2019s words.'], ['why', 'Why it matters', 'The reasons, in their profile\u2019s order.'],
+        ['account', 'Your membership', 'On us: their points and level.'], ['role', 'Your role', 'What an Ambassador does.'], ['city', 'Your city', 'Their home chapter.'],
+        ['link', 'Your link', 'How it counts, and what it earns from Level 2.'], ['who', 'Who to invite', ''], ['share', 'What to share', 'Ready-made messages; their profile\u2019s comes first.'],
+        ['questions', 'Answering questions', ''], ['progress', 'Your progress', 'Who joined through them.']];
+      JOURNEYS.amb = {
+        intro: 'Someone you invite to be an Ambassador, from your invitation to their first day. Pick the profile above to see that version of every step. Nothing is sent, saved or accepted.',
+        profile: true,
+        steps: [
+          { t: 'You invite them', d: 'Depot > Ambassadors > Invite an Ambassador: their name and email, level, points, profile and your note. Nothing sends until you press Send.', u: '/admin/depot/ambassadors#new', k: 'live' },
+          { t: 'The email they get', d: 'From you: your note, the Ambassador ask in their profile\u2019s words, what is on us, and Accept and get started. Shown with a sample person.', u: '/admin/depot/ambassadors#sample/{p}', k: 'pv' },
+          { t: 'Their invitation page', d: 'What Accept and get started opens: your note, their gift and level, and that it is for their email only.', u: '/invite?preview=open&profile={p}', k: 'pv' },
+          { t: 'Making their account', d: 'Email or Continue with Google, with the email you invited. No checkout: the invitation covers it. It makes a real account, so it cannot be previewed.', k: 'na' },
+          { t: 'If they use another email', d: 'The invitation works for their email only; the page says so and signs the other account out.', u: '/invite?preview=wrong&profile={p}', k: 'pv' },
+          { t: 'If they say No thanks', d: 'They can turn it down with a note; you see Declined with their words.', u: '/invite?preview=declined', k: 'pv' },
+          { t: 'You\u2019re in', d: 'Accepted: active Founding Member, Ambassador, their points and level. Start as an Ambassador opens their Guide.', u: '/invite?preview=done&profile={p}', k: 'pv' }
+        ].concat(GT.map(function (g, i) { return { t: 'Ambassador Guide ' + (i + 1) + ': ' + g[1], d: g[2] + (g[2] ? ' ' : '') + 'Shown with your own points and link.', u: '/ambassadors/welcome?profile={p}#/' + g[0], k: 'pv' }; })).concat([
+          { t: 'Points and levels', d: 'In their dashboard: their level, their link, what it earned and where it goes. Shown as your own account.', u: '/levels', k: 'live' },
+          { t: 'Their dashboard', d: 'The Ambassador Guide is first in Your tools, with their profile\u2019s line. You see your own dashboard here.', u: '/dashboard', k: 'live' },
+          { t: 'What you see', d: 'Depot > Ambassadors: their status, profile, level, points, link visitors, who joined and what they earned.', u: '/admin/depot/ambassadors#list', k: 'live' }
+        ])
+      };
       var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };
       var j = 'member', size = 'phone', cur = -1;
       try { var saved = JSON.parse(localStorage.getItem('ve_depot_preview') || 'null'); if (saved) { if (JOURNEYS[saved.j]) j = saved.j; if (saved.size === 'desk') size = 'desk'; } } catch (e) {}
       function remember() { try { localStorage.setItem('ve_depot_preview', JSON.stringify({ j: j, size: size })); } catch (e) {} }
       function url(s) {
         if (!s.u) return '';
+        if (j === 'amb') { var pk = $('prof').value; return s.u.replace('#sample/{p}', '#sample/' + pk).replace('{p}', encodeURIComponent(pk)); }
         if (j !== 'cm') return s.u;
         var city = $('city').value; if (city === 'south-florida') return s.u;
         var hash = s.u.indexOf('#') >= 0 ? s.u.slice(s.u.indexOf('#')) : '', base = hash ? s.u.slice(0, s.u.indexOf('#')) : s.u;
@@ -214,6 +247,7 @@
         document.querySelectorAll('[data-j]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-j') === j ? 'true' : 'false'); });
         document.querySelectorAll('[data-size]').forEach(function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-size') === size ? 'true' : 'false'); });
         $('city-wrap').hidden = !J.city;
+        $('prof-wrap').hidden = !J.profile;
         $('intro').textContent = J.intro;
         $('frame').className = 'frame ' + size;
         $('steps').innerHTML = J.steps.map(function (s, i) {
@@ -243,6 +277,7 @@
       document.querySelectorAll('[data-j]').forEach(function (b) { b.addEventListener('click', function () { j = b.getAttribute('data-j'); cur = -1; remember(); render(); pick(0); }); });
       document.querySelectorAll('[data-size]').forEach(function (b) { b.addEventListener('click', function () { size = b.getAttribute('data-size'); remember(); render(); }); });
       $('city').addEventListener('change', function () { render(); if (cur >= 0) pick(cur); });
+      $('prof').addEventListener('change', function () { render(); if (cur >= 0) pick(cur); });
 
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
