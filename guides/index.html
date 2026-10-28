@@ -331,7 +331,8 @@
 
       function gcRender() {
         var member = !!(window.VEAuth && VEAuth.isLoggedIn());
-        VEGuideCatalog.render(document.getElementById('gc-grid'), { member: member, source: 'guides-live-catalog' });
+        var m = member && VEAuth.getMember && VEAuth.getMember();
+        VEGuideCatalog.render(document.getElementById('gc-grid'), { member: member, ambassador: !!(m && (m.ve_role === 'ambassador' || m.is_superadmin)), source: 'guides-live-catalog' });
         document.getElementById('gc-note').textContent = member
           ? 'New Guides open as they are finished. Tap Notify me on any of them to hear the day it opens.'
           : 'More Guides are on the way. Members see what is coming and hear the day each one opens.';

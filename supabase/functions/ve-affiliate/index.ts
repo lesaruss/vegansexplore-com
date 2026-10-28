@@ -66,7 +66,7 @@ Deno.serve(async (req: Request) => {
       if (error || !data) { console.error('me:', error); return json({ error: 'load_failed' }, 500); }
       const live = !!data.program?.live;
       return json({ ok: true, live, can_see: live || admin, member: me.membership_status === 'active', ...data,
-        link: data.referral_code ? `${SITE}/passport?ref=${data.referral_code}` : null });
+        link: data.referral_code ? `${SITE}/r/${data.referral_code}` : null });
     }
 
     if (action === 'route') {

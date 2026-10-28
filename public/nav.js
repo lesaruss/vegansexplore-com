@@ -145,7 +145,9 @@
   var viewAs = null;
   if (isRealSuperAdmin) {
     try {
-      var _va = JSON.parse(localStorage.getItem('ve_view_as') || 'null');
+      // ?view_as= previews one page without saving the choice (ve-auth.js urlViewAs).
+      var _vk = new URLSearchParams(location.search).get('view_as');
+      var _va = _vk === 'ambassador' ? { mode: 'member', role: 'ambassador' } : _vk === 'member' ? { mode: 'member', role: null } : _vk === 'cm' ? { mode: 'member', role: 'community_manager' } : JSON.parse(localStorage.getItem('ve_view_as') || 'null');
       if (_va && (_va.mode === 'public' || _va.mode === 'member')) viewAs = _va;
     } catch (e) {}
   }

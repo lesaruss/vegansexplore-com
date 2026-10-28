@@ -5,6 +5,13 @@
  * Guide asks it, as the first part of setting up their Guide (/guide.html), so the questions live here,
  * once, instead of in a dashboard pop-up.
  *
+ * Save and come back (Sean, 2026-10-28: "a detailed survey where they can get 250 points... They could save it and come back to it.
+ * It's not meant to be a quick one and done thing"). Every Next saves the answers so far and the question they are on
+ * (ve-mission-survey draft_save, members.mission_survey_draft), Save and finish later does the same and stops, and mounting it
+ * again picks up where they left off. It has its own page, /dashboard/survey (/survey.html), first in the dashboard's For you
+ * until it is done, and its answers set the dashboard version (ve_dashboard_version; the version dropdown is gone). What matters
+ * to you (q23 to q26) was added the same day to tailor the experience.
+ *
  * One question at a time (Sean, 2026-10-05: five stacked full-width fields read "blown out"), the way
  * the Community Manager application asks: the question large, its answer under it, Back and Next.
  * One button moves on (Sean, 2026-10-05: auto-advance plus Next plus Skip read as three ways to do one
@@ -19,7 +26,8 @@
  *   })
  */
 (function () {
-  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=submit';
+  var FN_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=';
+  var FN = FN_BASE + 'submit';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','delaware':'Delaware Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','west-virginia':'West Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
   var STEPS = [
@@ -35,6 +43,12 @@
       { id: 'q7_vegan_since', label: 'Roughly when did you go (or start going) Vegan?', hint: 'optional', type: 'month' },
       { id: 'q8_drivers', label: 'What first drew you to it?', hint: 'select all that apply', type: 'multi', options: ['Animals / ethics', 'Health', 'Environment', 'Faith / spirituality', 'Cost', 'Taste / curiosity', 'Family / friends'] },
       { id: 'q9_challenges', label: 'Biggest challenge staying Vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
+    ] },
+    { title: 'What matters to you', qs: [
+      { id: 'q23_matters', label: 'What matters most to you?', hint: 'select all that apply', type: 'multi', required: true, options: ['The animals', 'My health and fitness', 'Building community', 'Supporting local Vegan businesses', 'Supporting nonprofits and rescues', 'Creating content', 'Earning extra income'] },
+      { id: 'q24_diet', label: 'Any of these for how you eat?', hint: 'select all that apply', type: 'multi', options: ['Gluten-free', 'Nut allergy', 'Soy-free', 'Oil-free', 'Whole-food plant-based', 'Raw', 'High protein'] },
+      { id: 'q25_household', label: 'Who do you cook and eat with at home?', hint: 'optional', type: 'single', options: ['Just me', 'A partner', 'Kids', 'People who are not Vegan', 'Roommates or family'] },
+      { id: 'q26_work', label: 'Do you work in any of these?', hint: 'optional', type: 'single', options: ['Health or medicine', 'Coaching or fitness', 'Food: a chef, a restaurant or a brand', 'Content or media', 'A nonprofit or rescue', 'None of these'] }
     ] },
     { title: 'Your community & region', qs: [
       { id: 'q10_options_rating', label: 'How would you rate Vegan options in your area today?', hint: '1 = poor, 5 = excellent', type: 'scale', scale: [1, 2, 3, 4, 5] },
@@ -66,10 +80,13 @@
     + '.vms-hint{display:block;font-size:13px;font-weight:600;color:rgba(26,26,26,.6);margin-bottom:16px}'
     + '.vms-ans{margin-top:16px;max-width:620px}'
     + '.vms-opts{display:flex;flex-wrap:wrap;gap:10px}'
-    + '.vms-opt{border:1.5px solid rgba(0,0,0,.15);border-radius:100px;padding:11px 18px;font:inherit;font-size:14px;font-weight:700;color:#1a1a1a;cursor:pointer;background:#fff}'
+    + '.vms-opt{border:1.5px solid rgba(0,0,0,.15);border-radius:6px;padding:11px 18px;font:inherit;font-size:14px;font-weight:700;color:#1a1a1a;cursor:pointer;background:#fff}'
     + '.vms-opt:hover{border-color:#3A9B3E}.vms-opt[aria-pressed="true"]{background:#22C55E;border-color:#22C55E;color:#03170a}'
     + '.vms-scale .vms-opt{min-width:48px;padding:11px 0;text-align:center}'
     + '.vms-input{width:100%;padding:14px 16px;border:1.5px solid rgba(0,0,0,.15);border-radius:10px;font:inherit;font-size:15px;box-sizing:border-box;background:#fff;color:#1a1a1a}'
+    + 'select.vms-input{appearance:none;-webkit-appearance:none;padding-right:46px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%272%27/%3E%3C/svg%3E") no-repeat right 16px center}'
+    + '.vms-saved{background:#e8f5e9;border:1px solid #b8ddb9;border-radius:6px;padding:10px 12px;font-size:13px;font-weight:700;color:#1f5f22;margin:0 0 16px;max-width:620px}'
+    + '.vms.dark .vms-saved{background:rgba(34,197,94,.15);border-color:rgba(134,239,172,.5);color:#bbf7d0}'
     + '.vms-input:focus{outline:none;border-color:#22C55E}textarea.vms-input{min-height:130px;resize:vertical}'
     + '.vms-nav{display:flex;align-items:center;gap:14px;margin-top:22px;flex-wrap:wrap}'
     + '.vms-btn{min-height:46px;padding:13px 26px;border-radius:6px;border:none;font:inherit;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:#22C55E;color:#03170a}'
@@ -101,6 +118,17 @@
     opts = opts || {};
     injectCss();
     var answers = {}, at = 0, sending = false, monthPicked = false; // monthPicked: question 7 had a month, not just a year
+    var resumed = false, lastSaved = ''; // resumed: the first question shown came from a saved draft
+
+    // Save the answers so far and where they are (fire and forget on Next; Save and finish later waits for it).
+    function saveDraft() {
+      if (opts.preview || !token()) return Promise.resolve({ ok: true });
+      var body = JSON.stringify({ token: token(), answers: answers, at: at });
+      if (body === lastSaved) return Promise.resolve({ ok: true });
+      return fetch(FN_BASE + 'draft_save', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: body })
+        .then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) lastSaved = body; return d || {}; })
+        .catch(function () { return { error: 'offline' }; });
+    }
 
     function empty(a) { return a === undefined || a === null || a === '' || (Array.isArray(a) && !a.length); }
 
@@ -178,25 +206,38 @@
       if (q.type === 'scale' && q.hint) hint = q.hint.replace(/^(\d+) = /, '$1 is ').replace(/, (\d+) = /, ', $1 is ') + '.';
       root.innerHTML =
         '<div class="vms-meta">Question ' + (at + 1) + ' of ' + QUESTIONS.length + ' &middot; ' + esc(item.step.title) + '</div>' +
+        (resumed ? '<div class="vms-saved">Welcome back. Your answers were saved, so you are picking up where you left off.</div>' : '') +
         '<div class="vms-bar" aria-hidden="true"><i style="width:' + Math.round((at + 1) / QUESTIONS.length * 100) + '%"></i></div>' +
         '<label class="vms-qh" id="vms-qh" for="vms-' + q.id + '">' + esc(q.label) + '</label>' +
         (hint ? '<span class="vms-hint">' + esc(hint) + '</span>' : '') +
         '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' +
         '<div class="vms-nav"><button type="button" class="vms-link" data-back' + (at ? '' : ' hidden') + '>Back</button>' +
-        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button></div>';
+        '<button type="button" class="vms-btn" data-next>' + (last ? 'Send my answers' : 'Next') + '</button>' +
+        (opts.preview ? '' : '<button type="button" class="vms-link" data-later>Save and finish later</button>') + '</div>';
       host.appendChild(root);
       var err = root.querySelector('.vms-err');
       function fail(t) { err.textContent = t; err.style.display = 'block'; }
       function next() {
         if (sending) return;
         if (q.required && empty(answers[q.id])) return fail(q.type === 'longtext' || q.type === 'text' ? 'Please answer this one; it is the one we read most closely.' : 'Please pick an answer.');
-        if (!last) { at++; render(); return; }
+        if (!last) { at++; saveDraft(); render(); return; }
         submit(root.querySelector('[data-next]'), fail);
       }
       var ctl = control(q, next);
       root.querySelector('.vms-ans').appendChild(ctl);
       root.querySelector('[data-next]').onclick = next;
       root.querySelector('[data-back]').onclick = function () { if (at) { at--; render(); } };
+      var later = root.querySelector('[data-later]');
+      if (later) later.onclick = function () {
+        later.disabled = true; later.textContent = 'Saving...';
+        saveDraft().then(function (d) {
+          if (d && d.error) { later.disabled = false; later.textContent = 'Save and finish later'; return fail('Could not save right now. Please try again.'); }
+          if (opts.onLater) return opts.onLater({ index: at, total: QUESTIONS.length });
+          host.innerHTML = '<div class="vms' + (opts.theme === 'dark' ? ' dark' : '') + '"><div class="vms-meta">Saved</div><p class="vms-qh">Your answers are saved.</p>' +
+            '<span class="vms-hint">Come back any time from your dashboard and you will pick up at question ' + (at + 1) + ' of ' + QUESTIONS.length + '.</span></div>';
+        });
+      };
+      resumed = false;
       if (opts.onQuestion) opts.onQuestion({ index: at, total: QUESTIONS.length, stepIndex: item.stepIndex, step: item.step });
       if (ctl.focus && (ctl.tagName === 'INPUT' || ctl.tagName === 'TEXTAREA')) { try { ctl.focus({ preventScroll: true }); } catch (e) {} }
     }
@@ -216,7 +257,21 @@
       }).catch(function () { sending = false; btn.disabled = false; btn.textContent = 'Send my answers'; fail('Could not reach the server. Please try again.'); });
     }
 
-    render();
+    // Pick up a saved draft first (the member's own, from the server).
+    if (opts.preview || !token()) return render();
+    host.innerHTML = '<div class="vms' + (opts.theme === 'dark' ? ' dark' : '') + '"><span class="vms-hint">Loading your survey...</span></div>';
+    fetch(FN_BASE + 'draft', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ token: token() }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.completed) return opts.onDone && opts.onDone({ ok: true, already_completed: true });
+        if (d && d.draft && d.draft.answers && typeof d.draft.answers === 'object') {
+          answers = d.draft.answers;
+          if (/^\d{4}-\d{2}$/.test(answers.q7_vegan_since || '')) monthPicked = true;
+          at = Math.max(0, Math.min(QUESTIONS.length - 1, Number(d.draft.at) || 0));
+          resumed = at > 0;
+          lastSaved = JSON.stringify({ token: token(), answers: answers, at: at });
+        }
+        render();
+      }).catch(function () { render(); });
   }
 
   window.VEMissionSurvey = { mount: mount, steps: STEPS, count: QUESTIONS.length };

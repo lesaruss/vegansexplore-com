@@ -48,7 +48,7 @@
       "destination": "/dashboard/center-console"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels|survey)",
       "destination": "/dashboard/center-console"
     },
     {
@@ -353,6 +353,7 @@
     }
   ],
   "redirects": [
+    { "source": "/r/:code([A-Za-z0-9]{4,16})", "destination": "/passport?ref=:code", "permanent": false },
     {
       "source": "/communities/dmv",
       "destination": "/communities/washington-dc",

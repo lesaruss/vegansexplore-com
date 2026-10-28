@@ -541,6 +541,16 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   `loadBrandSite`). Oatly's slide 6 is `brand-door/oatly/v6-slide-6.mp3` (el-media `tts`, Maya's voice, levelled to the clips, about
   -13.5 LUFS, a 0.25 s lead-in; checked word for word with `stt`), the old clip kept in `replaced`. New tour lines are voice only;
   a Guide gets at most one animated welcome.
+- **The short link and ready-to-send messages** (Sean, 2026-10-28: "make this URL a little bit shorter and easier to read... at the
+  very least separate it from the text... So they don't have to make any adjustments on their end"). Every member's link reads
+  `vegansexplore.com/r/<referral_code>` (a redirect in `vercel.json` to `/passport?ref=<code>`, where the visit is counted): the
+  Ambassador Guide (`link()`), Points and levels (`ve-affiliate` `me`) and the Depot's Ambassador page (`ve-invites` `ambassador`).
+  What to share shows each message's words, then **Your link** in its own box, with **Copy message** (the words, a blank line, the
+  link) and **Copy link** (`messages()` returns `{title, text, link}`, `messageText`).
+- **The Ambassador Guide is in Guides** (Sean, 2026-10-28: "this should show up on their guides, under their guide section. Only
+  available to them"): first in the catalog for Ambassadors (and super admins), a green megaphone banner, Ambassadors only, opening
+  `/ambassadors/welcome` as its own page (`AMBASSADOR` in `ve-guide-catalog.js`, `render` option `ambassador`), on `/guides` and the
+  dashboard's Guides tab, besides its tile in Your tools.
 - **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
   `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
   friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`
@@ -1018,7 +1028,8 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   admins (`/dashboard/depot`), then the avatar and badge. No announcement pill, no hamburger. **The avatar opens the account
   menu** (`/public/ve-account-menu.js`, `VEAccountMenu.attach`, the same menu on the dashboard's avatar): name, email and
   membership, My Account, My Saves, Contribute, Sign out; a super admin also gets **View as** (My account, The public, Member,
-  Community Manager; `ve_view_as`) and **Sign in as** (`ve-switch-account`). While a preview or a switch is on, a pill at the
+  Ambassador, Community Manager; `ve_view_as`; or one page only with `?view_as=member|ambassador|cm`, plus `&profile=` for an
+  Ambassador, read once as the page loads, `urlViewAs` in `ve-auth.js`, which Preview journeys > Ambassador > Their dashboard uses) and **Sign in as** (`ve-switch-account`). While a preview or a switch is on, a pill at the
   bottom left says so, with Back to my account.
 - The menu (`public/nav.js`, Sean, 2026-10-27): signed out, Directory, Events, Daily Pulse, Media, Guides, Communities, the signed-in
   order without Dashboard, My Saves and the Depot ("My Saves and Depot are logged in versions only"). The Community Board left it ("the
@@ -2031,7 +2042,21 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
 
 "The dashboard could actually be the main dashboard, and then we have different versions of it. So if they're a coach...
 if they're a pre-vegan, the dashboard set up a certain way." One `/dashboard` with four versions: **Business**, **Just
-starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. A version decides only which cards join For you
+starting** (`pre_vegan`), **Coach or pro** (`coach`) and **Member**. **The survey picks it, not a dropdown** (Sean, 2026-10-28: "I
+don't get the drop down... we should know who they are... using a survey to figure out how to tailor this experience for them...
+a detailed survey where they can get 250 points... They could save it and come back to it"; migration
+`20261028_member_survey_drafts.sql`): the version switch is gone and `members.dashboard_version` is no longer read (`ve-dashboard`
+`home` returns `ve_dashboard_version()` and `survey {completed, at, active}`). **Your survey** is the Mission Survey on its own page,
+`/dashboard/survey` (`survey.html`, `openSurvey`), the first For you tile until it is done (Tell us about you, or Finish your survey
+at question N), 250 points. Every Next saves a draft (`ve-mission-survey` `draft_save`, `members.mission_survey_draft`), **Save and
+finish later** saves and stops, and opening it again picks up there (`draft`); submit clears it. **What matters to you** (q23 what
+matters most, q24 how they eat, q25 who they eat with, q26 the work they do) was added the same day; Health or medicine and Coaching
+or fitness count as Coach or pro. `ve-mission-survey` is in the repo since that day.
+**Your numbers** (Sean, 2026-10-28: "under your role, it says platform health... For the members... what are the three things that
+they're going to want to see... their points and their level. And if they're an ambassador, their... commissions"): every member but a
+super admin gets three tiles on the Dashboard tab, Your points, Your level (points to the next) and, for an Ambassador, **Earned in
+<year>** (this year's commissions but refunds, from `ve-affiliate` `me`), else Joined with your link (`renderMyNumbers`; each opens
+Points and levels). Your Role (Platform Health) stays for super admins, Today's Pulse for Community Managers. A version decides only which cards join For you
 (`renderVersion` in `dashboard/center-console.html`) and the order of Your tools (`DASH_TOOLS_FIRST`); everything else is
 shared.
 

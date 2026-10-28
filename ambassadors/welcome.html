@@ -133,6 +133,11 @@
     .am-msg{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;}
     .am-msg b{display:block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
     .am-msg p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;white-space:pre-line;flex:1;}
+    .am-msg-link{display:flex;flex-direction:column;gap:2px;background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:8px 12px;margin:0 0 12px;}
+    .am-msg-link span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink75);}
+    .am-msg-link code{font-family:inherit;font-size:14px;font-weight:800;color:var(--g);word-break:break-all;}
+    .am-msg-acts{display:flex;flex-wrap:wrap;gap:8px;}
+    .am-sm-on{background:var(--g) !important;color:#fff !important;border-color:var(--g) !important;}
     .am-sm{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:38px;border-radius:6px;cursor:pointer;border:1px solid var(--gm);background:#fff;color:var(--g);align-self:flex-start;}
     .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
     .am-steps li{counter-increment:s;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
@@ -248,7 +253,9 @@
   function n(v) { return Number(v || 0).toLocaleString('en-US'); }
   function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
   function first() { return String((M && M.name) || '').trim().split(/\s+/)[0] || 'there'; }
-  function link() { return 'https://vegansexplore.com/passport' + (M && M.referral_code ? '?ref=' + encodeURIComponent(M.referral_code) : ''); }
+  // The short link (Sean, 2026-10-28: "make this URL a little bit shorter and easier to read"): vegansexplore.com/r/<code> forwards to
+  // /passport?ref=<code> (vercel.json), where the visit is counted. Without a code it is the Passport itself.
+  function link() { return 'vegansexplore.com/' + (M && M.referral_code ? 'r/' + encodeURIComponent(M.referral_code) : 'passport'); }
   function hub(slug) { return (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0] || null; }
   var LEVEL_AT = [0, 2500, 10000, 25000];
   function level(total) { var lv = 1; LEVEL_AT.forEach(function (at, i) { if (total >= at) lv = i + 1; }); return Math.max(lv, Math.min(4, Number(M && M.level_override) || 1)); }
@@ -333,25 +340,28 @@
   }
   function prof() { return PROFILES[profileKey()]; }
 
-  // Ready-made words: plain, true, and every one carries their link.
+  // Ready-made words: plain, true, and every one goes out with their link on its own line (Sean, 2026-10-28: "separate it from
+  // the text... so they don't have to make any adjustments on their end"). Copy message copies the words, a blank line and the
+  // short link; Copy link copies the link alone.
   function messages() {
-    var l = link(), h = M && hub(M.home_community), city = h ? h.name : 'my city';
+    var h = M && hub(M.home_community), city = h ? h.name : 'my city';
     var P = profileKey(), lv = level((M && M.total_points) || 0);
     var FIRST = {
-      animals: ['For someone who loves animals', 'Vegans Explore helps people find and support the rescues and sanctuaries near them, and the Vegan places around them, city by city. The Passport is $11, one time: ' + l],
-      community: ['For a friend who loves ' + (h ? h.name : 'our city'), 'I\'m helping build Vegans Explore in ' + city + ': the Vegan places, events and people here, voted on by members, and it backs the local businesses and nonprofits doing the work. The Passport is $11, one time: ' + l],
-      creator: ['A post for your audience', 'You ask me where to eat Vegan and how to find your people. This is where I look: Vegans Explore, a community for Vegans, city by city. $11, one time, with 1,100 points to start: ' + l],
-      fitness: ['For the people you train', 'Looking for Vegan places to fuel up, Vegan coaches and gyms, or people who train like you? Vegans Explore has them, city by city, voted on by members. $11, one time: ' + l]
+      animals: ['For someone who loves animals', 'Vegans Explore helps people find and support the rescues and sanctuaries near them, and the Vegan places around them, city by city. The Passport is $11, one time.'],
+      community: ['For a friend who loves ' + (h ? h.name : 'our city'), 'I\'m helping build Vegans Explore in ' + city + ': the Vegan places, events and people here, voted on by members, and it backs the local businesses and nonprofits doing the work. The Passport is $11, one time.'],
+      creator: ['A post for your audience', 'You ask me where to eat Vegan and how to find your people. This is where I look: Vegans Explore, a community for Vegans, city by city. $11, one time, with 1,100 points to start.'],
+      fitness: ['For the people you train', 'Looking for Vegan places to fuel up, Vegan coaches and gyms, or people who train like you? Vegans Explore has them, city by city, voted on by members. $11, one time.']
     };
     // From Level 2 the link earns, so every message says so (the FTC's endorsement rules; /policies#membership).
-    var tell = lv >= 2 ? ' (I earn a little when you join with my link.)' : '';
+    var tell = lv >= 2 ? ' I earn a little when you join with my link.' : '';
     return (FIRST[P] ? [FIRST[P]] : []).concat([
-      ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. The Passport is $11, one time, and comes with 1,100 points. Here\'s my link: ' + l],
-      ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Your Passport is $11, one time, with 1,100 points to start (enough for your first Guide). Join me: ' + l],
-      ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, the Passport is $11, one time: ' + l],
-      ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up, save and check in at. See what it offers businesses: https://vegansexplore.com/business. If you join as a member, use my link: ' + l]
-    ]).map(function (m) { return [m[0], m[1] + tell]; });
+      ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. The Passport is $11, one time, and comes with 1,100 points. Here\'s my link.'],
+      ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Your Passport is $11, one time, with 1,100 points to start (enough for your first Guide). Join me.'],
+      ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, the Passport is $11, one time.'],
+      ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up, save and check in at. See what it offers businesses at vegansexplore.com/business, and if you join as a member, use my link.']
+    ]).map(function (m) { return { title: m[0], text: m[1] + tell, link: link() }; });
   }
+  function messageText(m) { return m.text + '\n\n' + m.link; }
 
   var VIEWS = {
     overview: function () {
@@ -436,9 +446,11 @@
         '</div>' + nextBtn('share', 'Next: what to share');
     },
     share: function () {
-      return head('What to share', 'Ready to send', 'Each one has your link in it. Copy it, change anything you like, and send it.') +
+      return head('What to share', 'Ready to send', 'Copy message gives you the words with your link on its own line, ready to paste. Change anything you like.') +
         '<div class="dg-grid">' + messages().map(function (m, i) {
-          return '<div class="am-msg"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p><button type="button" class="am-sm" data-copy="' + i + '">Copy</button></div>';
+          return '<div class="am-msg"><b>' + esc(m.title) + '</b><p>' + esc(m.text) + '</p>' +
+            '<div class="am-msg-link"><span>Your link</span><code>' + esc(m.link) + '</code></div>' +
+            '<div class="am-msg-acts"><button type="button" class="am-sm am-sm-on" data-copy="' + i + '">Copy message</button><button type="button" class="am-sm" data-copy-link>Copy link</button></div></div>';
         }).join('') + '</div>' + nextBtn('questions', 'Next: answering questions');
     },
     questions: function () {
@@ -506,7 +518,7 @@
   document.addEventListener('click', function (e) {
     var b;
     if ((b = e.target.closest('[data-copy-link]'))) return copy(link(), b);
-    if ((b = e.target.closest('[data-copy]'))) return copy(messages()[+b.dataset.copy][1], b);
+    if ((b = e.target.closest('[data-copy]'))) return copy(messageText(messages()[+b.dataset.copy]), b);
     if (e.target.closest('#amCitySave')) {
       var v = $('amCity').value, note = $('amCityNote'), btn = $('amCitySave');
       if (!v) { note.className = 'am-note bad'; note.textContent = 'Pick your city first.'; return; }

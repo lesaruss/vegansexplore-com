@@ -40,10 +40,14 @@ function clearSession(){try{localStorage.removeItem('ve_token');localStorage.rem
 // account -- and signOut() below clears it so a preview never survives
 // logout, per Sean's explicit requirement.
 function isRealSuperAdmin(){var m=getRealMember();return!!(m&&m.is_superadmin);}
-function getViewAs(){if(!isRealSuperAdmin())return null;try{var v=JSON.parse(localStorage.getItem('ve_view_as')||'null');if(!v||(v.mode!=='public'&&v.mode!=='member'))return null;return v;}catch(e){return null;}}
+// ?view_as=member|ambassador|cm in the address, read once as the page loads, previews that page without saving the choice (Depot > Preview journeys; Sean,
+// 2026-10-28). &profile= sets an Ambassador's profile for it.
+function urlViewAs(){try{var q=new URLSearchParams(location.search),k=q.get('view_as');if(k==='ambassador')return{mode:'member',points:0,tier:'free',role:'ambassador',profile:q.get('profile')||null,url:true};if(k==='member')return{mode:'member',points:0,tier:'free',role:null,url:true};if(k==='cm')return{mode:'member',points:0,tier:'free',role:'community_manager',url:true};}catch(e){}return null;}
+var URL_VIEW_AS=urlViewAs();
+function getViewAs(){if(!isRealSuperAdmin())return null;if(URL_VIEW_AS)return URL_VIEW_AS;try{var v=JSON.parse(localStorage.getItem('ve_view_as')||'null');if(!v||(v.mode!=='public'&&v.mode!=='member'))return null;return v;}catch(e){return null;}}
 function setViewAs(mode,opts){if(!isRealSuperAdmin())return;if(typeof opts==='number')opts={points:opts};opts=opts||{};try{var payload={mode:mode};if(mode==='member'){payload.points=opts.points||0;if(opts.tier)payload.tier=opts.tier;if(opts.role!==undefined)payload.role=opts.role;}localStorage.setItem('ve_view_as',JSON.stringify(payload));}catch(e){}window.location.reload();}
 function clearViewAs(){try{localStorage.removeItem('ve_view_as');}catch(e){}window.location.reload();}
-function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)}):null;}return getRealMember();}
+function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;var real=getRealMember();return real?Object.assign({},real,{lesars_balance:v.points||0,is_superadmin:false,ve_tier:v.tier||real.ve_tier,ve_role:(v.role!==undefined?v.role:null)},v.role==='ambassador'?{ambassador_profile:v.profile!==undefined?v.profile:real.ambassador_profile}:{}):null;}return getRealMember();}
 // Registration is the Passport (Sean, 2026-10-27: "they can only register through the Passport program"). An account that has not
 // paid ('pending_payment') is only the checkout's account: the site treats it as signed out, and its token is kept just long
 // enough to pay (the $11 window, a claim's or a Guide's own checkout, an invitation's accept).

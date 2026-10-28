@@ -421,7 +421,7 @@ Deno.serve(async (req: Request) => {
       ]);
       const byDay: Record<string, number> = {};
       for (const v of (visits ?? []) as any[]) byDay[v.day] = (byDay[v.day] || 0) + 1;
-      return json({ ok: true, ambassador: a, referred: referred ?? [], visits_by_day: byDay, ledger: ledger ?? [], link: a.referral_code ? `${SITE}/passport?ref=${a.referral_code}` : null });
+      return json({ ok: true, ambassador: a, referred: referred ?? [], visits_by_day: byDay, ledger: ledger ?? [], link: a.referral_code ? `${SITE}/r/${a.referral_code}` : null });
     }
 
     if (action === 'ambassador_save') {

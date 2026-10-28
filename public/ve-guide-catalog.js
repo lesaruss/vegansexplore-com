@@ -6,7 +6,7 @@
    Notify me; signed out, /guides shows only the live ones. The Welcome Guide is the Passport Guide (/passport), free.
 
    Usage (the page supplies the .gc-* card styles; this file adds the banner and icon rules):
-     VEGuideCatalog.render(el, { member: true|false, source: 'guides-live-catalog', open: function (guide, event) {} });
+     VEGuideCatalog.render(el, { member: true|false, ambassador: true|false, source: 'guides-live-catalog', open: function (guide, event) {} });
    `open` is optional: the dashboard passes one to open a Guide inside its window.
 */
 (function () {
@@ -22,8 +22,16 @@
     camera: '<rect x="3" y="6" width="13" height="12" rx="2"/><path d="M16 10l5-3v10l-5-3"/>',
     heart: '<path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z"/>',
     sprout: '<path d="M12 20v-8M12 12c0-4 3-6 7-6 0 4-3 6-7 6zM12 14c0-3-2-5-6-5 0 3 2 5 6 5z"/>',
+    megaphone: '<path d="M3 10v4a1 1 0 001 1h2l5 4V5L6 9H4a1 1 0 00-1 1zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/>',
     globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/>'
   };
+
+  // The Ambassador Guide (Sean, 2026-10-28: "this should show up on their guides, under their guide section. Only available to
+  // them"): first, for Ambassadors only (render's opts.ambassador; super admins see it too, marked Ambassadors only). It opens as
+  // its own page, never inside the dashboard's frame.
+  var AMBASSADOR = { slug: 'ambassador', ambassador: true, full: true, icon: 'megaphone', label: 'For Ambassadors', tag: 'Yours', title: 'The Ambassador Guide',
+    href: '/ambassadors/welcome', desc: 'Why it matters, your role, your city, your link and what it earns, who to invite, what to share and who joined through you.',
+    chips: [{ text: 'Ambassadors only' }, { text: 'On us', cls: 'free' }], cta: 'Open your Guide' };
 
   // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, then what is coming.
   var GUIDES = [
@@ -55,6 +63,7 @@
     '.gc-card:hover .gc-banner img{transform:scale(1.02);}' +
     '.gc-banner-icon{display:flex;align-items:center;justify-content:center;background:#F2F5F2;color:#1f5f22;}' +
     '.gc-banner-icon svg{width:48px;height:48px;}' +
+    '.gc-banner-amb{background:#1f5f22;color:#fff;}.gc-banner-amb svg{width:64px;height:64px;}' +
     '.gc-new-tag{font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:#1f5f22;border-radius:20px;padding:3px 10px;}' +
     '.gc-waitlist{display:none;margin-top:6px;}.gc-waitlist.open{display:flex;flex-direction:column;gap:8px;}' +
     '.gc-waitlist input{padding:9px 12px;border:1.5px solid rgba(0,0,0,.12);border-radius:6px;font-family:Montserrat,sans-serif;font-size:12px;}' +
@@ -70,6 +79,7 @@
       return '<span class="gc-chip' + (c.cls ? ' ' + c.cls : '') + '">' + esc(c.text) + '</span>';
     }).join('');
     var top = g.soon ? '<div class="gc-banner gc-banner-icon" aria-hidden="true">' + icon(g.icon) + '</div>'
+      : g.ambassador ? '<a class="gc-banner gc-banner-icon gc-banner-amb" href="' + esc(g.href) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '</a>'
       : '<a class="gc-banner" href="' + esc(g.href) + '" data-gc-open tabindex="-1" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></a>';
     var tag = g.soon ? '<span class="gc-soon-tag">Coming soon</span>' : g.tag ? '<span class="gc-new-tag">' + esc(g.tag) + '</span>' : '';
     var action = g.soon
@@ -91,11 +101,12 @@
       var st = document.createElement('style'); st.id = 've-guide-catalog-css'; st.textContent = CSS; document.head.appendChild(st);
     }
     // Guides still being made are for members only (Sean, 2026-10-26).
-    var list = GUIDES.filter(function (g) { return !g.soon || opts.member; });
+    var all = (opts.ambassador ? [AMBASSADOR] : []).concat(GUIDES);
+    var list = all.filter(function (g) { return !g.soon || opts.member; });
     el.innerHTML = list.map(card).join('');
     Array.prototype.forEach.call(el.querySelectorAll('.gc-card'), function (c) {
-      var g = GUIDES.filter(function (x) { return x.slug === c.getAttribute('data-slug'); })[0];
-      if (opts.open) Array.prototype.forEach.call(c.querySelectorAll('[data-gc-open]'), function (a) {
+      var g = all.filter(function (x) { return x.slug === c.getAttribute('data-slug'); })[0];
+      if (opts.open && !g.full) Array.prototype.forEach.call(c.querySelectorAll('[data-gc-open]'), function (a) {
         a.addEventListener('click', function (e) { e.preventDefault(); opts.open(g, e); });
       });
       var notify = c.querySelector('[data-gc-notify]');

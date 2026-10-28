@@ -234,7 +234,7 @@
           { t: 'You\u2019re in', d: 'Accepted: active Founding Member, Ambassador, their points and level. Start as an Ambassador opens their Guide.', u: '/invite?preview=done&profile={p}', k: 'pv' }
         ].concat(GT.map(function (g, i) { return { t: 'Ambassador Guide ' + (i + 1) + ': ' + g[1], d: g[2] + (g[2] ? ' ' : '') + 'Shown with your own points and link.', u: '/ambassadors/welcome?profile={p}#/' + g[0], k: 'pv' }; })).concat([
           { t: 'Points and levels', d: 'In their dashboard: their level, their link, what it earned and where it goes. Shown as your own account.', u: '/levels', k: 'live' },
-          { t: 'Their dashboard', d: 'The Ambassador Guide is first in Your tools, with their profile\u2019s line. You see your own dashboard here.', u: '/dashboard', k: 'live' },
+          { t: 'Their dashboard', d: 'Shown as an Ambassador with this profile: Your numbers (points, level, earned this year), the Ambassador Guide first in Your tools and in Guides. The numbers are your own account\u2019s.', u: '/dashboard?view_as=ambassador&profile={p}', k: 'pv' },
           { t: 'What you see', d: 'Depot > Ambassadors: their status, profile, level, points, link visitors, who joined and what they earned.', u: '/admin/depot/ambassadors#list', k: 'live' }
         ])
       };

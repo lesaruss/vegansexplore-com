@@ -261,8 +261,6 @@
   .dv-tile .dv-tag{display:inline-block;margin-left:6px;vertical-align:1px;}
   .dash-foryou-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:12px;min-height:32px;}
   .dash-foryou-head .dash-section-title{margin:0;}
-  .dash-foryou-head .dv-pick{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);}
-  .dash-foryou-head .dv-pick[hidden]{display:none;}
   .dash-foryou-head select{appearance:none;-webkit-appearance:none;font:inherit;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);border:1px solid var(--ve-border);border-radius:6px;padding:6px 44px 6px 10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;cursor:pointer;}
   .dash-lb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;min-height:32px;}
   .dash-lb-head .dash-section-title{margin:0;}
@@ -276,7 +274,6 @@
   #dash-version{margin:8px 0 28px;}
   #dash-version .dv-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px;margin-bottom:12px;}
   #dash-version .dv-head .dash-section-title{margin:0;}
-  #dash-version .dv-pick{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);}
   #dash-version select{appearance:none;-webkit-appearance:none;font:inherit;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);border:1px solid var(--ve-border);border-radius:6px;padding:8px 44px 8px 12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;cursor:pointer;}
   .dv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
   .dv-card{border:1.5px solid var(--ve-border);border-radius:14px;padding:16px 18px;background:#fff;display:flex;flex-direction:column;gap:6px;text-decoration:none;color:var(--ve-text);}
@@ -779,6 +776,16 @@
         <a class="dash-stat" href="/dashboard/submissions" onclick="openConsoleFrame('/dashboard/submissions', 'Submissions'); return false;"><div class="dash-stat-label">Pending Submissions</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div><div class="dash-stat-sub" id="dash-stat-pending-sub">&nbsp;</div></a>
         <a class="dash-stat" id="dash-role-week" href="/dashboard/members" onclick="openConsoleFrame('/dashboard/members', 'Members'); return false;"><div class="dash-stat-label" id="dash-role-week-label">This Week</div><div class="dash-stat-value" id="dash-role-week-value">--</div><div class="dash-stat-sub" id="dash-role-week-sub">&nbsp;</div></a>
       </div>
+      <!-- Your numbers (Sean, 2026-10-28: "what are the three things that they're going to want to see... their points and their
+           level. And if they're an ambassador, their... commissions to date for 2027, whatever the year is"). Every member but a
+           super admin (whose Your Role row is Platform Health): points, level, and an Ambassador's earnings this year, else the
+           people who joined with their link. Filled by renderMyNumbers(); each opens Points and levels. -->
+      <p class="dash-section-title" id="dash-mine-label" style="display:none;">Your numbers</p>
+      <div class="dash-stats" id="dash-mine-row" style="display:none;">
+        <a class="dash-stat" href="/dashboard/levels" data-levels=""><div class="dash-stat-label">Your points</div><div class="dash-stat-value" id="dash-mine-points">--</div><div class="dash-stat-sub">To spend or give</div></a>
+        <a class="dash-stat" href="/dashboard/levels" data-levels=""><div class="dash-stat-label">Your level</div><div class="dash-stat-value" id="dash-mine-level">--</div><div class="dash-stat-sub" id="dash-mine-level-sub">&nbsp;</div></a>
+        <a class="dash-stat" href="/dashboard/levels" data-levels="earned"><div class="dash-stat-label" id="dash-mine-third-label">Joined with your link</div><div class="dash-stat-value" id="dash-mine-third">--</div><div class="dash-stat-sub" id="dash-mine-third-sub">&nbsp;</div></a>
+      </div>
       <!-- Home layout (Sean, 2026-10-04): Membership and Challenge Badges on top, then Action items
            (the preview cards) and the Leaderboard side by side. The Daily Pulse preview left the
            home tab; the Daily Pulse tab has it. -->
@@ -786,9 +793,9 @@
       <div class="dash-home-actions">
       <!-- For you (Sean, 2026-10-26: "I want the action items to change to for you, and then I want those to be listed as
            tiles"): the checklist tiles, then the dashboard version's cards (ve_dashboard_cards) as the same tiles, from
-           renderVersion(). Five show, the rest scroll; the version switch sits beside the title. -->
-      <div class="dash-foryou-head"><p class="dash-section-title">For you</p>
-        <label class="dv-pick" for="dv-select" id="dv-pick" hidden>Your dashboard <select id="dv-select"></select></label></div>
+           renderVersion(). Five show, the rest scroll. The version switch is gone (Sean, 2026-10-28: "we should know who they are...
+           using a survey to figure out how to tailor this experience"): the survey sets it, and it is the first tile until done. -->
+      <div class="dash-foryou-head"><p class="dash-section-title">For you</p></div>
       <div class="dash-action-list" id="dash-action-list">
       <!-- Set up your Guide (Sean, 2026-10-04): the first action item until it is done. The Guide gets
            to know the member (the Mission Survey, when they have not taken it; this replaced the survey's
@@ -1311,6 +1318,39 @@
     });
   }
 
+  function renderMyNumbers(member) {
+    if (member.is_superadmin) return;
+    document.getElementById('dash-mine-label').style.display = 'block';
+    var row = document.getElementById('dash-mine-row'); row.style.display = 'grid';
+    Array.prototype.forEach.call(row.querySelectorAll('[data-levels]'), function (a) {
+      a.onclick = function (e) { e.preventDefault(); openLevels(a.getAttribute('data-levels')); };
+    });
+    var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
+    var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
+    document.getElementById('dash-mine-points').textContent = pts.toLocaleString();
+    document.getElementById('dash-mine-level').textContent = 'Level ' + lv;
+    document.getElementById('dash-mine-level-sub').textContent = nextAt == null ? 'The top level' : Math.max(0, nextAt - life).toLocaleString() + ' points to Level ' + (lv + 1);
+    var amb = member.ve_role === 'ambassador', year = new Date().getFullYear();
+    if (amb) document.getElementById('dash-mine-third-label').textContent = 'Earned in ' + year;
+    fetch(SUPABASE_URL + '/functions/v1/ve-affiliate', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+      body: JSON.stringify({ action: 'me' })
+    }).then(function (r) { return r.json(); }).then(function (d) {
+      if (!d || !d.ok) throw new Error('no data');
+      var joined = Number(d.joined_members) || 0;
+      if (amb) {
+        // This year's commissions, whatever their status, except a refunded one.
+        var cents = (d.commissions || []).filter(function (c) { return c.status !== 'reversed' && new Date(c.created_at).getFullYear() === year; })
+          .reduce(function (t, c) { return t + (Number(c.commission_cents) || 0); }, 0);
+        document.getElementById('dash-mine-third').textContent = '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('dash-mine-third-sub').textContent = joined + (joined === 1 ? ' member' : ' members') + ' joined with your link' + (d.route === 'nonprofit' ? ', given in your name' : '');
+      } else {
+        document.getElementById('dash-mine-third').textContent = joined.toLocaleString();
+        document.getElementById('dash-mine-third-sub').textContent = joined ? 'Members who joined with your link' : 'Share your link: 111 points a friend';
+      }
+    }).catch(function () { document.getElementById('dash-mine-third').textContent = '--'; });
+  }
+
   // "Your Communities" row (2026-08-18, V direction): every member picks a
   // home_community at signup (public.members.home_community); surface it as
   // its own row on the dashboard rather than burying it inside the nav-page
@@ -1396,7 +1436,8 @@
   function renderGuidesSection() {
     var row = document.getElementById('dash-guides-row');
     if (!row || !window.VEGuideCatalog) return;
-    VEGuideCatalog.render(row, { member: true, source: 'dashboard-guides-tab', open: function (g) { openToolInFrame(g.title, g.href, false); } });
+    var gm = window.VEAuth && VEAuth.getMember && VEAuth.getMember();
+    VEGuideCatalog.render(row, { member: true, ambassador: !!(gm && (gm.ve_role === 'ambassador' || gm.is_superadmin)), source: 'dashboard-guides-tab', open: function (g) { openToolInFrame(g.title, g.href, false); } });
   }
 
   // Communities tab (Sean 2026-09-26): every community shows, four across, so
@@ -3095,6 +3136,14 @@
     else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'levels' }, '', url);
   }
   window.openLevels = openLevels;
+  // The survey (Sean, 2026-10-28): its own page in the dashboard window, first in For you until it is done.
+  function openSurvey(noPush) {
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/survey', 'Your survey');
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'survey' }, '', '/dashboard/survey');
+    else if (location.pathname !== '/dashboard/survey') history.pushState({ tabKey: 'tools', frame: 'survey' }, '', '/dashboard/survey');
+  }
+  window.openSurvey = openSurvey;
   // A page inside the frame can size it (the Depot pages do, /public/depot-tabs.js), so a tall
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
@@ -3347,19 +3396,15 @@
     var list = document.getElementById('dash-action-list'); if (!list) return;
     dvCall({ action: 'home' }).then(function (d) {
       Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { t.remove(); });
-      var pick = document.getElementById('dv-pick');
-      if (!d || !d.ok) { if (pick) pick.hidden = true; return; }
+      if (!d || !d.ok) return;
       DASH_VERSION = d.version;
-      var sel = document.getElementById('dv-select');
-      sel.innerHTML = d.versions.map(function (v) { return '<option value="' + v.k + '"' + (v.k === d.version ? ' selected' : '') + '>' + dvEsc(v.label) + (v.k === d.auto ? ' (suggested)' : '') + '</option>'; }).join('');
-      sel.onchange = function () {
-        sel.disabled = true;
-        // Picking the worked-out one again clears the choice, so it follows them if their listings or answers change.
-        dvCall({ action: 'set_version', version: sel.value === d.auto ? null : sel.value }).then(function () { sel.disabled = false; renderVersion(member); });
-      };
-      if (pick) pick.hidden = false;
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
       var TAG = { offer: 'Offer' }, out = '';
+      // The survey first until it is done: 250 points, saved as they go (Sean, 2026-10-28).
+      var sv = d.survey || {};
+      if (sv.active && !sv.completed) out += dvTile({ title: sv.at ? 'Finish your survey' : 'Tell us about you', cta_url: '/dashboard/survey',
+        body: sv.at ? 'Your answers are saved. Pick up at question ' + (sv.at + 1) + ' and earn 250 points.' : 'About 10 minutes, and it shapes your dashboard around you. Save it and come back any time. 250 points when you finish.' },
+        FICON('list'), '250 points').replace('class="dash-tour-prompt dv-tile"', 'class="dash-tour-prompt dv-tile" data-survey');
       // Business: each listing they own opens its business dashboard (/directory/<slug>?tab=brand), else Join the Directory.
       if (d.version === 'business') out += d.listings.length ? d.listings.map(function (l) {
           return dvTile({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit.', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' }, FICON('store'), l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval');
@@ -3370,6 +3415,8 @@
       var tmp = document.createElement('div'); tmp.innerHTML = out;
       var empty = document.getElementById('dash-action-empty');
       while (tmp.firstChild) list.insertBefore(tmp.firstChild, empty);
+      var svTile = list.querySelector('[data-survey]');
+      if (svTile) { list.insertBefore(svTile, list.firstChild); svTile.onclick = function (e) { e.preventDefault(); openSurvey(); }; }
       if (window.ResizeObserver && list._ro) Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { list._ro.observe(t); });
       if (!member.is_superadmin) renderDashboardPreviews(member);
     });
@@ -3671,6 +3718,7 @@
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
       if (/^\/dashboard\/levels\/?$/.test(location.pathname)) { openLevels(location.hash, true); return; }
+      if (/^\/dashboard\/survey\/?$/.test(location.pathname)) { openSurvey(true); return; }
       // Back and forward between the Directory and a listing.
       if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
       if (/^\/dashboard\/directory\/?$/.test(location.pathname)) closeDashboardListing(true);
@@ -3692,6 +3740,7 @@
     if (/^\/dashboard\/guide\/?$/.test(location.pathname)) openGuide(location.search, true);
     if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
     if (/^\/dashboard\/levels\/?$/.test(location.pathname)) openLevels(location.hash, true);
+    if (/^\/dashboard\/survey\/?$/.test(location.pathname)) openSurvey(true);
   }
 
   // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is
@@ -3863,6 +3912,7 @@
     dashSafe(function () { renderToolSectionTiles(); });
     dashSafe(function () { renderDashboardPreviews(member); });
     dashSafe(function () { renderVersion(member); });
+    dashSafe(function () { renderMyNumbers(member); });
     dashSafe(function () { initDashTabs(); });
     dashSafe(function () { initBountyTopics(); });
     var firstName = member.name ? member.name.split(' ')[0] : 'there';

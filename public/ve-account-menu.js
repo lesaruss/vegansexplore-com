@@ -5,7 +5,7 @@
  *   VEAccountMenu.attach(buttonEl)   the button opens and closes the menu under it
  *
  * Everyone signed in: their name, email and membership, My Account, My Saves, Contribute (active members), Sign out.
- * A super admin also gets View As (the public, a member, a Community Manager; ve_view_as, the same overlay
+ * A super admin also gets View As (the public, a member, an Ambassador, a Community Manager; ve_view_as, the same overlay
  * public/ve-auth.js reads) and Sign In As (ve-switch-account, a real sign-in as one of the ve_switch_accounts).
  * While a preview or a switch is on, a pill at the bottom left says so, with Back to my account.
  * Reads localStorage directly, like nav.js, so it works on pages that never load ve-auth.js. */
@@ -16,6 +16,7 @@
     { key: 'real', label: 'My account' },
     { key: 'public', label: 'The public (signed out)' },
     { key: 'member', label: 'Member' },
+    { key: 'amb', label: 'Ambassador' },
     { key: 'cm', label: 'Community Manager' }
   ];
 
@@ -30,14 +31,15 @@
     var v = read('ve_view_as');
     if (!v) return 'real';
     if (v.mode === 'public') return 'public';
-    if (v.mode === 'member') return v.role === 'community_manager' ? 'cm' : 'member';
+    if (v.mode === 'member') return v.role === 'community_manager' ? 'cm' : v.role === 'ambassador' ? 'amb' : 'member';
     return 'real';
   }
-  function viewLabel(k) { return { 'public': 'the public', member: 'a member', cm: 'a Community Manager' }[k] || ''; }
+  function viewLabel(k) { return { 'public': 'the public', member: 'a member', amb: 'an Ambassador', cm: 'a Community Manager' }[k] || ''; }
   function badge(m) {
     if (!m) return '';
     if (m.is_superadmin) return 'Super admin';
     if (m.ve_role === 'community_manager') return 'Community Manager';
+    if (m.ve_role === 'ambassador') return 'Ambassador';
     return m.membership_status === 'active' ? 'Founding Member' : 'Member';
   }
 
@@ -46,6 +48,7 @@
       if (k === 'real') localStorage.removeItem('ve_view_as');
       else if (k === 'public') localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'public' }));
       else if (k === 'member') localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'member', points: 0, tier: 'free', role: null }));
+      else if (k === 'amb') localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'member', points: 0, tier: 'free', role: 'ambassador' }));
       else if (k === 'cm') localStorage.setItem('ve_view_as', JSON.stringify({ mode: 'member', points: 0, tier: 'free', role: 'community_manager' }));
     } catch (e) {}
     // The dashboard is for members, so the public view opens the homepage.

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // The survey lives in the dashboard window. Opened on its own by someone signed in, the page moves into /dashboard/survey;
+    // signed out, it shows a sign-in gate.
+    (function () {
+      var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
+      var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
+      if (alone && signedIn) location.replace('/dashboard/survey');
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Survey | Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Your survey (Sean, 2026-10-28: "That should be one of the first things they everybody submits, is a detailed survey where they
+       can get 250 points. But the survey is going to give us everything we need to know about them. They could save it and come back
+       to it"). The Mission Survey (/public/ve-mission-survey.js, the only copy of the questions), one question at a time, saved as
+       they go. Its answers set the dashboard version (ve_dashboard_version) and fill their profile. -->
+  <style>
+    :root{--g:#1f5f22;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--line:rgba(0,0,0,.1);}
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:#f7f8f7;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:32px 40px 80px;}
+    @media (max-width:600px){main{padding:22px 16px 56px;}}
+    [hidden]{display:none !important;}
+    .k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g);}
+    h1{font-size:clamp(22px,2.4vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-.01em;}
+    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 28px 30px;}
+    @media (max-width:600px){.card{padding:20px 16px 22px;}}
+    .why{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;}
+    .why span{font-size:12px;font-weight:800;background:var(--gl);color:var(--g);border-radius:6px;padding:6px 10px;}
+    .btn{display:inline-block;min-height:44px;padding:12px 22px;border-radius:6px;background:#22C55E;color:#03170a;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;font-family:inherit;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .done h2{font-size:24px;font-weight:900;margin:0 0 8px;}
+    .done p{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:720px;}
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main>
+  <p class="k">Dashboard</p>
+  <h1>Tell us about you</h1>
+  <p class="lede" id="lede">The more we know, the better your dashboard fits you: the places, Guides, events and ways to take part that matter to you. It takes about 10 minutes, every answer is saved as you go, and you earn 250 points when you finish.</p>
+  <div class="why" id="why"><span>250 points</span><span>Saved as you go</span><span>Shapes your dashboard</span><span>Only the team sees your answers</span></div>
+  <div id="gate" class="gate" hidden></div>
+  <div class="card" id="host" hidden></div>
+</main>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-mission-survey.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
+  function tellParent() {
+    if (!inFrame()) return;
+    try { window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin); } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
+  function dash(path) {
+    // Back to the dashboard: the window around this page when there is one.
+    try { if (inFrame()) { window.top.location.href = path; return; } } catch (e) {}
+    location.href = path;
+  }
+  function done(res) {
+    $('why').hidden = true;
+    $('lede').hidden = true;
+    $('host').innerHTML = '<div class="done">' + (res && res.already_completed
+      ? '<h2>You have already taken it</h2><p>Thank you. Your answers shape your dashboard, and the 250 points are in your balance.</p>'
+      : '<h2>Thank you</h2><p>Your answers are in, 250 points are on their way to your balance, and your dashboard now fits what you told us.</p>') +
+      '<button type="button" class="btn" id="back">Back to your dashboard</button></div>';
+    $('back').onclick = function () { dash('/dashboard'); };
+  }
+  function start() {
+    if (!window.VEAuth || !window.VEMissionSurvey) return setTimeout(start, 200);
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to take your survey.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
+    var m = VEAuth.getMember();
+    if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'The survey opens once your Passport is active.'; return; }
+    $('host').hidden = false;
+    // A super admin previewing as someone else sees the questions with nothing sent.
+    var preview = !!(VEAuth.getViewAs && VEAuth.getViewAs());
+    VEMissionSurvey.mount($('host'), {
+      preview: preview,
+      onDone: done,
+      onQuestion: function () { try { window.scrollTo(0, 0); } catch (e) {} tellParent(); }
+    });
+  }
+  start();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

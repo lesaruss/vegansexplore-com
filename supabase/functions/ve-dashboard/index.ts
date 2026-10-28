@@ -7,7 +7,10 @@
 //   version is the member's choice (members.dashboard_version) or ve_dashboard_version(); cards are ve_dashboard_cards for that
 //   version and 'all', live now, in order. A business card's link that starts with ? opens on their first listing's dashboard.
 //   level: { lifetime, level, next_at } from ve_member_level (Levels 1 to 3 on lifetime points, Sean 2026-10-25).
-// POST { action: 'set_version', version }   'business' | 'coach' | 'pre_vegan' | 'member', or null to go back to the worked-out one
+//   survey: { completed, at, total_hint } so the dashboard can put the survey first until it is done (Sean, 2026-10-28).
+//   The version follows the survey and their listings only: the dropdown is gone (Sean, 2026-10-28: "we should know who they are...
+//   using a survey to figure out how to tailor this experience"), so members.dashboard_version is no longer read.
+// POST { action: 'set_version', version }   kept for old pages; it no longer changes what home returns
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -50,7 +53,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, dashboard_version').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, dashboard_version, membership_status, mission_survey_completed_at, mission_survey_draft').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'set_version') {
@@ -67,7 +70,7 @@ Deno.serve(async (req) => {
       db.from('listings').select('name, slug, claim_status').eq('status', 'approved').or(`owner_member_id.eq.${memberId},claimed_by_member_id.eq.${memberId}`).order('name').limit(20),
       db.rpc('ve_member_level', { p_member: memberId }),
     ]);
-    const version = member.dashboard_version || auto || 'member';
+    const version = auto || 'member';
     const now = Date.now();
     const { data: rows } = await db.from('ve_dashboard_cards').select('kind, title, body, cta_label, cta_url, starts_at, ends_at').in('audience', [version, 'all']).order('sort');
     const first = (listings || [])[0];
@@ -78,7 +81,8 @@ Deno.serve(async (req) => {
         return { kind: c.kind, title: c.title, body: c.body, cta_label: c.cta_label, cta_url: url };
       });
     return json({ ok: true, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
-      listings: listings || [], cards, level: level || null });
+      listings: listings || [], cards, level: level || null,
+      survey: { completed: !!member.mission_survey_completed_at, at: member.mission_survey_draft?.at ?? null, active: member.membership_status === 'active' } });
   }
 
   return json({ error: 'unknown_action' }, 400);
