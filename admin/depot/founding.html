@@ -275,7 +275,7 @@
         if (!picked.length) { app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p><section class="card"><p class="empty">No one picked yet.</p><a class="btn" href="#pick">Pick people</a></section>'; return; }
         app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p>' +
           '<div class="why">Tell me a little about each person: how you know them, something good only you would know, why they would make a strong member. I write each one\'s opening in your voice from that and what HQ already knows. Nothing is sent: each one waits in Not sent yet for you to read, change and send.</div>' +
-          '<div class="pgrid" id="plist"></div>' +
+          '<div class="pgrid" id="plist"></div><p class="hint" style="margin-top:10px">On us makes that one person\'s Founding Membership free, with 1,100 points. Everyone else is invited at $11.</p>' +
           '<div class="picked"><b>' + picked.length + (picked.length === 1 ? ' person' : ' people') + '</b><span class="acts"><span class="msg" id="msg" role="status" style="color:#fff"></span><button type="button" class="btn" id="mk">Write ' + (picked.length === 1 ? 'the invitation' : 'their invitations') + '</button></span></div>';
         $('plist').innerHTML = picked.map(function (p, k) {
           var kn = p.known || {}, who = [kn.title, kn.organization].filter(Boolean).join(', ');
@@ -283,7 +283,7 @@
             '<span class="acts"><label class="comp"><input type="checkbox" data-comp="' + k + '"' + (p.comp ? ' checked' : '') + '>On us</label><button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></span></div>' +
             (kn.summary ? '<p class="known"><b>What HQ knows</b>' + esc(kn.summary) + (kn.messages ? ' <span class="hint">(' + n(kn.messages) + ' emails' + (kn.last ? ', last ' + esc(day(kn.last)) : '') + ')</span>' : '') + '</p>' : '<p class="known hint">HQ has no notes on them. What you say is all the opening will use.</p>') +
             '<div class="form">' + ctxField('ctx-' + k, p.context) + '</div></section>';
-        }).join('') + '<p class="hint">On us makes that one person\'s Founding Membership free, with 1,100 points. Everyone else is invited at $11.</p>';
+        }).join('');
         picked.forEach(function (p, k) {
           dictation($('ctx-' + k + '-mic'), $('ctx-' + k));
           $('ctx-' + k).addEventListener('input', function () { picked[k].context = this.value; savePicked(); });
