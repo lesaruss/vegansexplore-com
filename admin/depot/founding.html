@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Founding Members | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Founding Members (Sean, 2026-10-28: "reference the people that we have listed, for me to maybe eyeball a few people that will be
+       good candidates to be the first members of our community... watch if they click it, if they don't, if they decline, if they
+       don't respond, just get a good gauge instead of it just being a bulk email blast"; then "go ahead with the $11 founding member
+       invites"). The Ambassadors console's layout. One thing per view: Invitations (#list/<status>), Pick people (#pick), the draft
+       (#new), one invitation (#invite/<id>). Data: ve-invites (founding, founding_candidates, create, update, preview, send,
+       mark_copied, cancel, nudge, nudge_preview); migration 20261028_founding_member_invites.sql. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label,.lbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea,.search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:150px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .mic{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;min-height:36px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,0,0,.25);background:#fff;color:var(--ve-text);display:inline-flex;align-items:center;gap:6px;}
+    .mic svg{width:16px;height:16px;}
+    .mic.on{background:#a61b1b;border-color:#a61b1b;color:#fff;}
+    .note-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a,.tabs button{font:inherit;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;border:0;cursor:pointer;}
+    .tabs a.on,.tabs button.on{background:var(--ve-green-deep);color:#fff;}
+    .views{display:flex;gap:6px;flex-wrap:wrap;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .totals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:1000px){.totals{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media (max-width:520px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    /* A candidate: tick, who they are, where we know them from, and how much you have written with them. */
+    .crow{display:grid;grid-template-columns:28px minmax(0,1fr) 140px;gap:12px;align-items:start;padding:12px 14px;border-top:1px solid var(--ve-border);cursor:pointer;}
+    .crow:first-child{border-top:0;}
+    .crow.on{background:#f3faf3;}
+    .crow input{width:20px;height:20px;margin-top:3px;accent-color:var(--ve-green-deep);}
+    .crow b{font-size:14px;}
+    .crow .who{font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    .crow .sum{font-size:12.5px;color:var(--ve-text);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .crow .meta{font-size:12px;color:var(--ve-text-75);text-align:right;}
+    .crow .meta b{display:block;font-size:16px;color:var(--ve-text);}
+    @media (max-width:640px){.crow{grid-template-columns:28px minmax(0,1fr);}.crow .meta{grid-column:2;text-align:left;}.crow .meta b{display:inline;font-size:13px;}}
+    .pool{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;background:#eef1ee;color:#333;margin:4px 4px 0 0;white-space:nowrap;}
+    .pool.suggested{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pool.guest{background:#fff4e0;color:#8a5200;}
+    .pool.unpaid{background:#e8f0fe;color:#1a4a9c;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent{background:#e8f0fe;color:#1a4a9c}.t-read,.t-opened{background:#e6f4f6;color:#0d5c66}.t-quiet{background:#f3ecf9;color:#5b2a86}.t-accepted{background:#fff0d6;color:#7a4b00}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:18px;}
+    .two>.card{margin:0;}
+    .steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+    .steps li{display:flex;gap:10px;align-items:center;font-size:13.5px;}
+    .steps i{width:12px;height:12px;border-radius:50%;background:#d6d9d6;flex:none;}
+    .steps li.done i{background:var(--ve-green-deep);}
+    .steps li.bad i{background:#a61b1b;}
+    .steps li:not(.done):not(.bad){color:var(--ve-text-75);}
+    .picked{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#1a1a1a;color:#fff;border-radius:10px;padding:10px 14px;margin-top:12px;}
+    .picked b{font-size:14px;}
+    .prow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ve-border);}
+    .prow:first-child{border-top:0;}
+    .prow small{display:block;font-size:12.5px;color:var(--ve-text-75);}
+    .comp{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .comp input{width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .tools{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0 0 12px;}
+    .why{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 12px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Founding Members</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Hand-picked, one person at a time. Pick people you know, write to them in your words, and watch each one: read it, opened the link, said yes, joined, or turned it down. The invitation is $11, one time, unless you make it on us for that person.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-invites';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null, picked = [];
+      var DAY = 86400000, QUIET_DAYS = 7;
+      // Where each one stands, in plain words. No reply yet: sent a week ago and never read. Read is the email opened (from the
+      // email provider); Opened the link is the invitation page seen; Said yes is they accepted and have not paid the $11 yet.
+      var WORDS = { ready: 'Not sent yet', sent: 'Sent', quiet: 'No reply yet', read: 'Read', opened: 'Opened the link', accepted: 'Said yes, not paid', joined: 'Joined', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
+      var TABS = ['all', 'nudge', 'ready', 'sent', 'quiet', 'read', 'opened', 'accepted', 'joined', 'declined', 'expired', 'canceled'];
+      var POOLS = [['', 'Everyone'], ['suggested', 'Suggested for Vegans Explore'], ['guest', 'On our shows'], ['unpaid', 'Signed up, never paid'], ['email', 'Emailed with you'], ['soflo', 'SoFlo Vegans'], ['mailing', 'Mailing list'], ['other', 'Other lists']];
+      var POOL_WORDS = {}; POOLS.forEach(function (p) { POOL_WORDS[p[0]] = p[1]; });
+      var MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function when(d) { return d ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+      function stOf(i) {
+        if (i.status === 'sent') return i.email_opened_at ? 'read' : (i.sent_via === 'email' && Date.now() - Date.parse(i.nudged_at || i.sent_at) >= QUIET_DAYS * DAY ? 'quiet' : 'sent');
+        return i.status;
+      }
+      function inTab(i, t) { return t === 'all' || (t === 'nudge' ? !!i.can_nudge : stOf(i) === t); }
+      function tag(st) { return '<span class="tag t-' + esc(st) + '">' + esc(WORDS[st] || st) + '</span>'; }
+      function poolTags(list) { return (list || []).map(function (p) { return '<span class="pool ' + esc(p) + '">' + esc(POOL_WORDS[p] || p) + '</span>'; }).join(''); }
+      function copy(text, btn) {
+        var done = function () { if (btn) { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      function route() { return location.hash.replace(/^#/, '') || 'list/all'; }
+      function go(h) { if (location.hash === '#' + h) draw(); else location.hash = h; }
+      function load() { return api({ action: 'founding' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
+      function savePicked() { try { sessionStorage.setItem('ve_founding_picked', JSON.stringify(picked)); } catch (e) {} }
+      try { picked = JSON.parse(sessionStorage.getItem('ve_founding_picked') || '[]') || []; } catch (e) { picked = []; }
+      function views(on) {
+        return '<nav class="views" aria-label="Founding Members"><a href="#list/all" class="' + (on === 'list' ? 'on' : '') + '">Invitations (' + (data ? data.invites.length : 0) + ')</a>' +
+          '<a href="#pick" class="' + (on === 'pick' ? 'on' : '') + '">Pick people</a></nav>';
+      }
+
+      // Speak instead of typing: the browser's own speech recognition, added to the note as it hears it.
+      function dictation(btn, area) {
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) { btn.hidden = true; return; }
+        var rec = null, base = '';
+        btn.addEventListener('click', function () {
+          if (rec) { rec.stop(); return; }
+          rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+          base = area.value ? area.value.replace(/\s*$/, '') + (/\n$/.test(area.value) ? '' : ' ') : '';
+          rec.onresult = function (e) {
+            var text = '';
+            for (var k = 0; k < e.results.length; k++) text += e.results[k][0].transcript;
+            area.value = (base + text.replace(/^\s+/, '')).slice(0, 2000);
+            area.dispatchEvent(new Event('input'));
+          };
+          rec.onend = function () { rec = null; btn.classList.remove('on'); btn.innerHTML = MIC + 'Speak'; };
+          rec.onerror = function () { if (rec) rec.stop(); };
+          rec.start(); btn.classList.add('on'); btn.innerHTML = MIC + 'Stop';
+        });
+      }
+      function noteField(id, val, ph) {
+        return '<label class="wide"><span class="note-head">Your note<button type="button" class="mic" id="' + id + '-mic">' + MIC + 'Speak</button></span>' +
+          '<textarea id="' + id + '" maxlength="2000" placeholder="' + esc(ph || 'Susan, you have been showing up for the animals since the day I met you...') + '">' + esc(val || '') + '</textarea>' +
+          '<span class="hint">The start of the email, in your words. Type it or press Speak and say it. A blank line starts a new paragraph. The invitation itself follows.</span></label>';
+      }
+
+      // ---- Invitations ----
+      function drawList(st) {
+        var I = data.invites, T = data.totals || {};
+        var rows = I.filter(function (i) { return inTab(i, st); });
+        app.innerHTML = '<div class="bar">' + views('list') + '<a class="btn" href="#pick">Pick people</a></div>' +
+          '<div class="totals"><div class="tot"><b>' + n(T.invited) + '</b><span>Invited</span></div><div class="tot"><b>' + n(T.read) + '</b><span>Read it</span></div>' +
+            '<div class="tot"><b>' + n(T.clicked) + '</b><span>Opened the link</span></div><div class="tot"><b>' + n(T.said_yes) + '</b><span>Said yes</span></div>' +
+            '<div class="tot"><b>' + n(T.joined) + '</b><span>Joined</span></div><div class="tot"><b>' + n(T.declined) + '</b><span>Declined</span></div></div>' +
+          '<div class="bar"><nav class="tabs" aria-label="Filter by where they stand">' + TABS.map(function (t) {
+            var c = I.filter(function (i) { return inTab(i, t); }).length;
+            if (t !== 'all' && !c && t !== st) return '';
+            return '<a href="#list/' + t + '" class="' + (t === st ? 'on' : '') + '">' + (t === 'all' ? 'All' : t === 'nudge' ? 'Ready for a follow-up' : WORDS[t]) + ' (' + c + ')</a>';
+          }).join('') + '</nav></div>' +
+          '<div class="list">' + (rows.length ? rows.map(function (i) {
+            var s = stOf(i), last = i.joined_at ? 'joined ' + day(i.joined_at) : i.accepted_at ? 'said yes ' + day(i.accepted_at) : i.declined_at ? 'declined ' + day(i.declined_at)
+              : i.opened_at ? 'opened the link ' + day(i.opened_at) : i.email_opened_at ? 'read ' + day(i.email_opened_at) : i.sent_at ? 'sent ' + day(i.sent_at) : 'made ' + day(i.created_at);
+            return '<div class="irow"><div><b>' + esc(i.name) + (i.comp ? ' <span class="pool suggested">On us</span>' : '') + '</b><small>' + esc(i.email) + ' &middot; ' + esc(last) +
+              (i.nudge_count ? ' &middot; ' + i.nudge_count + ' follow-up' + (i.nudge_count > 1 ? 's' : '') : '') + (i.pool ? ' &middot; ' + esc(POOL_WORDS[i.pool] || i.pool) : '') + '</small></div>' +
+              tag(s) + '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">' + (st === 'all' ? 'No Founding Member invitations yet. Pick the first people.' : 'None here.') + '</p>') + '</div>';
+      }
+
+      // ---- Pick people ----
+      var pick = { q: '', pool: '', offset: 0, rows: [], total: 0, pools: {} };
+      function isPicked(email) { return picked.some(function (p) { return p.email === email; }); }
+      function drawPick() {
+        app.innerHTML = '<div class="bar">' + views('pick') + '</div>' +
+          '<div class="why">Everyone here has an email we hold and is not a member, already invited, unsubscribed or on the do-not-contact list. Suggested for Vegans Explore and On our shows come first, then the people you have written with most.</div>' +
+          '<div class="tools"><input class="search" id="q" type="search" placeholder="Search a name, email, organization, city or what you know about them" value="' + esc(pick.q) + '">' +
+          '<nav class="tabs" id="pools" aria-label="Where you know them from">' + POOLS.map(function (p) {
+            var c = p[0] ? (pick.pools[p[0]] || 0) : null;
+            return '<button type="button" data-pool="' + p[0] + '" class="' + (p[0] === pick.pool ? 'on' : '') + '">' + esc(p[1]) + (c != null ? ' (' + n(c) + ')' : '') + '</button>';
+          }).join('') + '</nav></div>' +
+          '<p class="hint" id="count" style="margin:0 0 8px"></p><div class="list" id="clist"><p class="empty">Loading...</p></div>' +
+          '<p style="margin-top:10px"><button type="button" class="btn btn-ghost" id="more" hidden>Show more</button></p>' +
+          '<div class="picked" id="picked"' + (picked.length ? '' : ' hidden') + '><b id="pcount"></b><span class="acts"><button type="button" class="btn btn-ghost btn-sm" id="clear" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.4)">Clear</button><a class="btn" href="#new">Write to them</a></span></div>';
+        var t = null;
+        $('q').addEventListener('input', function () { clearTimeout(t); var v = this.value; t = setTimeout(function () { pick.q = v.trim(); fetchPick(true); }, 300); });
+        $('pools').addEventListener('click', function (e) { var b = e.target.closest('[data-pool]'); if (!b) return; pick.pool = b.dataset.pool; $('pools').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); fetchPick(true); });
+        $('more').addEventListener('click', function () { fetchPick(false); });
+        $('clear').addEventListener('click', function () { picked = []; savePicked(); paintPick(); });
+        $('clist').addEventListener('click', function (e) {
+          var r = e.target.closest('.crow'); if (!r) return;
+          var c = pick.rows[Number(r.dataset.k)];
+          if (isPicked(c.email)) picked = picked.filter(function (p) { return p.email !== c.email; });
+          else picked.push({ name: c.name, email: c.email, person_id: c.person_id, pool: (c.pools || [])[0] || null, comp: false });
+          savePicked(); paintPick();
+        });
+        if (pick.rows.length) paintPick(); else fetchPick(true);
+      }
+      function fetchPick(reset) {
+        if (reset) { pick.offset = 0; pick.rows = []; }
+        api({ action: 'founding_candidates', q: pick.q || null, pool: pick.pool || null, limit: 50, offset: pick.offset }).then(function (d) {
+          if (!d || !d.ok) { $('clist').innerHTML = '<p class="empty">The list did not load.</p>'; return; }
+          pick.rows = pick.rows.concat(d.rows || []); pick.total = d.total || 0; pick.offset = pick.rows.length;
+          var hadPools = Object.keys(pick.pools).length; pick.pools = d.pools || {};
+          if (!hadPools && $('pools')) $('pools').querySelectorAll('button').forEach(function (b) { var p = b.dataset.pool; if (p) b.textContent = POOL_WORDS[p] + ' (' + n(pick.pools[p] || 0) + ')'; });
+          paintPick();
+        });
+      }
+      function paintPick() {
+        if (!$('clist')) return;
+        $('count').textContent = n(pick.total) + (pick.total === 1 ? ' person' : ' people') + (pick.q || pick.pool ? ' match' : '') + '. Tick the ones you want to invite.';
+        $('clist').innerHTML = pick.rows.length ? pick.rows.map(function (c, k) {
+          var on = isPicked(c.email);
+          return '<div class="crow' + (on ? ' on' : '') + '" data-k="' + k + '"><input type="checkbox" tabindex="-1" aria-label="Pick ' + esc(c.name) + '"' + (on ? ' checked' : '') + '>' +
+            '<div><b>' + esc(c.name) + '</b><div class="who">' + esc([c.title, c.organization].filter(Boolean).join(', ')) + (c.title || c.organization ? ' &middot; ' : '') + esc(c.email) + (c.city ? ' &middot; ' + esc(c.city) : '') + '</div>' +
+              (c.summary ? '<div class="sum">' + esc(c.summary) + '</div>' : '') + '<div>' + poolTags(c.pools) + (c.guest_slug ? ' <a class="hint" href="/directory/' + esc(c.guest_slug) + '" target="_blank" rel="noopener">Their page</a>' : '') + '</div></div>' +
+            '<div class="meta">' + (c.messages ? '<b>' + n(c.messages) + '</b> emails with you' : 'No emails yet') + (c.last_interaction_at ? '<br>last ' + esc(day(c.last_interaction_at)) : '') + '</div></div>';
+        }).join('') : '<p class="empty">No one matches.</p>';
+        $('more').hidden = pick.rows.length >= pick.total;
+        $('picked').hidden = !picked.length;
+        $('pcount').textContent = picked.length + (picked.length === 1 ? ' person picked' : ' people picked');
+      }
+
+      // ---- The draft for the people picked ----
+      function drawNew() {
+        if (!picked.length) { app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p><section class="card"><p class="empty">No one picked yet.</p><a class="btn" href="#pick">Pick people</a></section>'; return; }
+        app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p>' +
+          '<div class="two"><section class="card"><h2>Who</h2><div id="plist"></div><p class="hint" style="margin-top:10px">On us makes that one person\'s Founding Membership free, with 1,100 points. Everyone else is invited at $11.</p></section>' +
+          '<section class="card"><h2>Your note</h2><form class="form" id="f">' + noteField('f-reason', '', picked.length === 1 ? null : 'One note for everyone here. For a personal one each, write to them one at a time.') +
+          '<div class="wide acts"><button type="submit" class="btn" id="mk">See the draft' + (picked.length > 1 ? 's' : '') + '</button><span class="msg" id="msg" role="status"></span></div></form>' +
+          '<p class="hint">Nothing is sent yet. Each invitation waits in Not sent yet for you to read and send.</p></section></div>';
+        function paintP() {
+          $('plist').innerHTML = picked.map(function (p, k) {
+            return '<div class="prow"><div><b>' + esc(p.name) + '</b><small>' + esc(p.email) + '</small></div>' +
+              '<label class="comp"><input type="checkbox" data-comp="' + k + '"' + (p.comp ? ' checked' : '') + '>On us</label>' +
+              '<button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></div>';
+          }).join('');
+        }
+        paintP();
+        $('plist').addEventListener('change', function (e) { var c = e.target.closest('[data-comp]'); if (c) { picked[Number(c.dataset.comp)].comp = c.checked; savePicked(); } });
+        $('plist').addEventListener('click', function (e) { var b = e.target.closest('[data-rm]'); if (!b) return; picked.splice(Number(b.dataset.rm), 1); savePicked(); if (!picked.length) return drawNew(); paintP(); });
+        dictation($('f-reason-mic'), $('f-reason'));
+        $('f').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var msg = $('msg'); $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making the draft' + (picked.length > 1 ? 's' : '') + '...';
+          api({ action: 'create', brand: 'vegans-explore', points_to: 'founding', reason: $('f-reason').value.trim() || null,
+            people: picked.map(function (p) { return { name: p.name, email: p.email, person_id: p.person_id || null, comp: !!p.comp, points: p.comp ? 1100 : 0, pool: p.pool }; }) }).then(function (d) {
+            $('mk').disabled = false;
+            if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
+            if (!d.created.length) { msg.className = 'msg err'; msg.textContent = (d.skipped[0] && d.skipped[0].name + ': ' + d.skipped[0].why) || 'None were made.'; return; }
+            picked = []; savePicked(); pick.rows = []; data = null;
+            if (d.skipped.length) alert('Left out: ' + d.skipped.map(function (s) { return s.name + ' (' + s.why + ')'; }).join(', '));
+            go(d.created.length === 1 ? 'invite/' + d.created[0].id : 'list/ready');
+          }).catch(function () { $('mk').disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+        });
+      }
+
+      // ---- One invitation ----
+      function drawInvite(id) {
+        var i = data.invites.filter(function (x) { return x.id === id; })[0];
+        if (!i) { app.innerHTML = '<p class="crumb"><a href="#list/all">Invitations</a></p><p class="empty">That invitation is not here.</p>'; return; }
+        var s = stOf(i), draft = ['ready', 'sent', 'opened'].indexOf(i.status) >= 0, waiting = ['sent', 'opened', 'accepted'].indexOf(i.status) >= 0;
+        var steps = [
+          ['Made', i.created_at, true],
+          ['Sent' + (i.sent_via === 'copied' ? ' (you copied the link)' : ''), i.sent_at, !!i.sent_at],
+          ['Read the email', i.email_opened_at, !!i.email_opened_at],
+          ['Opened the link', i.opened_at, !!i.opened_at],
+        ];
+        if (i.status === 'declined') steps.push(['Declined' + (i.decline_note ? ': "' + i.decline_note + '"' : ''), i.declined_at, 'bad']);
+        else { if (!i.comp) steps.push(['Said yes', i.accepted_at, !!i.accepted_at]); steps.push([i.comp ? 'Accepted, on us' : 'Paid the $11 and joined', i.joined_at, !!i.joined_at]); }
+        if (i.nudge_count) steps.splice(2, 0, ['Follow-up' + (i.nudge_count > 1 ? 's' : '') + ' sent: ' + i.nudge_count, i.nudged_at, true]);
+        var nextNudge = i.sent_at ? new Date(Date.parse(i.nudged_at || i.sent_at) + 5 * DAY) : null;
+        app.innerHTML = '<p class="crumb"><a href="#list/all">Invitations</a> &rsaquo; ' + esc(i.name) + '</p>' +
+          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(i.name) + (i.comp ? ' <span class="pool suggested">On us</span>' : '') + '</h2><small class="hint">' + esc(i.email) + ', the only email that can accept it' + (i.pool ? ' &middot; ' + esc(POOL_WORDS[i.pool] || i.pool) : '') + '</small></div>' + tag(s) + '</div>' +
+          '<ol class="steps">' + steps.map(function (x) { return '<li class="' + (x[2] === 'bad' ? 'bad' : x[2] ? 'done' : '') + '"><i></i><span>' + esc(x[0]) + (x[1] ? ' &middot; ' + esc(when(x[1])) : '') + '</span></li>'; }).join('') + '</ol>' +
+          (i.sent_via === 'copied' ? '<p class="hint">Read shows only for emails we send; a copied link shows from Opened the link.</p>' : '') + '</section>' +
+          (waiting && i.sent_via === 'email' ? '<section class="card"><h2>Follow up</h2><p class="hint" style="margin-bottom:10px">One short note from you, worded for where they stopped. At most 2, 5 days apart; it keeps their link open 14 more days. ' +
+              (i.can_nudge ? 'It can go now.' : i.nudge_count >= 2 ? 'They have had 2 already.' : nextNudge ? 'The next one can go ' + esc(day(nextNudge)) + '.' : '') + '</p>' +
+              '<div class="mail" id="nmail">Loading the follow-up...</div><div class="acts"><button type="button" class="btn" id="nudge"' + (i.can_nudge ? '' : ' disabled') + '>Send the follow-up</button><span class="msg" id="nmsg" role="status"></span></div></section>' : '') +
+          (draft ? '<div class="two"><section class="card"><h2>The draft</h2><form class="form" id="ed">' + noteField('ed-reason', i.reason) +
+              '<div class="wide acts"><button type="submit" class="btn btn-ghost" id="ed-save">Save changes</button><span class="msg" id="ed-msg" role="status"></span></div></form></section>' +
+            '<section class="card"><h2>The email, as it goes</h2><div class="mail" id="mail">Loading the email...</div>' +
+              '<div class="acts"><button type="button" class="btn" id="send">' + (i.status === 'ready' ? 'Send it from me' : 'Send it again') + '</button><button type="button" class="btn btn-ghost" id="copy">Copy the link</button><button type="button" class="btn btn-bad" id="cancel">Cancel it</button>' +
+              '<span class="msg" id="msg" role="status"></span></div><p class="hint" style="margin-top:8px">The link works only for ' + esc(i.email) + ': anyone else who opens it is asked to sign in with that email.</p></section></div>'
+            : '<p><a class="btn btn-ghost" href="#list/all">Back to invitations</a></p>');
+        if ($('nmail')) api({ action: 'nudge_preview', id: i.id }).then(function (d) { var m = d && d.email; $('nmail').innerHTML = m ? '<div class="subj">' + esc(m.subject) + '</div>' + m.html : 'The follow-up did not load.'; });
+        if ($('nudge')) $('nudge').addEventListener('click', function () {
+          if (!confirm('Send ' + i.name + ' the follow-up?')) return;
+          var b = this, m = $('nmsg'); b.disabled = true; m.className = 'msg'; m.textContent = 'Sending...';
+          api({ action: 'nudge', id: i.id }).then(function (d) {
+            if (d && d.ok) { m.textContent = 'Sent from you.'; data = null; setTimeout(function () { load().then(draw); }, 600); return; }
+            b.disabled = false; m.className = 'msg err'; m.textContent = (d && d.message) || 'It did not send.';
+          });
+        });
+        if (!draft) return;
+        function preview() {
+          api({ action: 'preview', id: i.id }).then(function (d) {
+            var m = d && d.email; if (!m) { $('mail').textContent = 'The email did not load.'; return; }
+            $('mail').innerHTML = '<div class="subj">' + esc(m.subject) + '</div>' + m.html;
+          });
+        }
+        preview();
+        dictation($('ed-reason-mic'), $('ed-reason'));
+        var dirty = false;
+        $('ed-reason').addEventListener('input', function () { dirty = true; });
+        function save() {
+          return api({ action: 'update', id: i.id, reason: $('ed-reason').value.trim() || null }).then(function (d) {
+            if (!d || !d.ok) throw new Error((d && d.message) || 'That did not save.');
+            dirty = false; data = null;
+          });
+        }
+        $('ed').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var m = $('ed-msg'); $('ed-save').disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+          save().then(function () { $('ed-save').disabled = false; m.textContent = 'Saved. The email shows it.'; preview(); }, function (err) { $('ed-save').disabled = false; m.className = 'msg err'; m.textContent = err.message; });
+        });
+        var msg = $('msg');
+        $('send').addEventListener('click', function () {
+          var b = this; b.disabled = true; msg.className = 'msg'; msg.textContent = dirty ? 'Saving your changes...' : 'Sending...';
+          (dirty ? save() : Promise.resolve()).then(function () {
+            msg.textContent = 'Sending...';
+            return api({ action: 'send', ids: [i.id] });
+          }).then(function (d) {
+            b.disabled = false;
+            if (d && d.sent && d.sent.length) { msg.textContent = 'Sent from you to ' + i.email + '.'; data = null; return; }
+            msg.className = 'msg err'; msg.textContent = (d && (d.message || (d.failed && d.failed[0] && d.failed[0].why))) || 'It did not send.';
+          }).catch(function (err) { b.disabled = false; msg.className = 'msg err'; msg.textContent = (err && err.message) || 'Could not reach the server.'; });
+        });
+        $('copy').addEventListener('click', function () {
+          var b = this;
+          (dirty ? save() : Promise.resolve()).then(function () { return api({ action: 'mark_copied', id: i.id }); }).then(function (d) {
+            if (d && d.link) { copy(d.link, b); msg.className = 'msg'; msg.textContent = 'Copied. It works for 30 days, for ' + i.email + ' only.'; data = null; }
+            else { msg.className = 'msg err'; msg.textContent = 'That did not go through.'; }
+          }).catch(function (err) { msg.className = 'msg err'; msg.textContent = err.message; });
+        });
+        $('cancel').addEventListener('click', function () {
+          if (!confirm('Cancel the invitation for ' + i.name + '? Their link stops working.')) return;
+          api({ action: 'cancel', id: i.id }).then(function (d) {
+            if (d && d.ok) { data = null; go('list/all'); } else { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; }
+          });
+        });
+      }
+
+      function draw() {
+        var r = route(), m;
+        if (r === 'pick') { if (!data) load().catch(function () {}); return drawPick(); }
+        if (r === 'new') return drawNew();
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The invitations did not load. Refresh to try again.</p>'; }); }
+        if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);
+        if ((m = r.match(/^list\/([a-z]+)$/))) return drawList(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
+        drawList('all');
+      }
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
