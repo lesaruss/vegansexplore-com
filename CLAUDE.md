@@ -818,6 +818,11 @@ parks, county animal services, clinics or unrelated charities; nothing already l
 each waiting in Business outreach > New places > Ready to list with the guess in its note and its category picked from it
 (Rescues, Sanctuaries, Nonprofits and Events hide How Vegan there and list with none). Nothing went live. Six from South
 Florida's search are national organizations elsewhere, and their note says so. Run it again by city with new searches the same way.
+**The newer chapters** got the same search on 2026-10-28 (Sean: "run the community search for the newer chapters"; migration
+`20261028_community_search_new_chapters.sql`): 24 searches in North Florida, D.C., Maryland, Virginia, Delaware and West Virginia,
+each place in the chapter of its own state, 146 quarantined in Ready to list (North Florida 45, Virginia 34, Maryland 27, West
+Virginia 21, Delaware 14, D.C. 5). The filter also leaves out working and petting farms, wildlife rehab, pet stores, boarding,
+breeders, thrift stores and charities for people. Nothing went live.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
