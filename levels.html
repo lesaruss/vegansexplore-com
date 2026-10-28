@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // Points and levels live in the dashboard window. Opened on its own by someone signed in, the page moves into
+    // /dashboard/levels; signed out, it shows a sign-in gate.
+    (function () {
+      var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
+      var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
+      if (alone && signedIn) location.replace('/dashboard/levels' + location.search + location.hash);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Points and Levels | Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Points and levels (Sean, 2026-10-28: "I want the levels to be part of the affiliate structure... a page that explains how points
+       and levels work that is in their dashboard. And then we can continue to make updates to that... for people who aren't motivated
+       by money... route their commissions to a nonprofit of their choosing"). One view at a time: #levels (your level and the ladder),
+       #points (how points come), #earnings (what your link has earned), #give (keep it, or give it to an organization in your name).
+       The ladder, rates and rules come from the database (ve_affiliate_levels, ve_site_settings affiliate_program) through
+       ve-affiliate, so a change there changes this page. Until Sean launches the program (affiliate_program.live) members see the
+       points and levels only; super admins see it all, marked Preview. -->
+  <style>
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--ink55:rgba(26,26,26,.62);--line:rgba(0,0,0,.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:#f7f8f7;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:32px 40px 80px;}
+    @media (max-width:600px){main{padding:22px 16px 56px;}}
+    [hidden]{display:none !important;}
+    .k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g);}
+    h1{font-size:clamp(22px,2.4vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-.01em;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;}
+    .tabs a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ink);text-decoration:none;background:#fff;}
+    .tabs a.on{border-color:var(--g);box-shadow:inset 0 -3px 0 var(--g);}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px;}
+    .preview{background:var(--warm);border:1px solid var(--warmline);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;margin:0 0 16px;}
+    .now{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;}
+    .badge{width:84px;height:84px;border-radius:14px;background:var(--g);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;}
+    .badge small{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;}
+    .badge b{font-size:34px;line-height:1;}
+    .now p{margin:0 0 6px;font-size:14.5px;line-height:1.55;color:var(--ink75);}
+    .bar{height:10px;border-radius:6px;background:#e3e7e3;overflow:hidden;margin:8px 0 4px;}
+    .bar i{display:block;height:100%;background:var(--g2);}
+    .ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+    @media (max-width:1100px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:560px){.ladder{grid-template-columns:1fr;}}
+    .step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+    .step.you{border-color:var(--g);box-shadow:0 0 0 2px var(--gl);}
+    .step .lv{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .step .at{font-size:22px;font-weight:900;line-height:1.1;}
+    .step .at small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .step ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .step .you-tag{align-self:flex-start;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;}
+    .rate{font-size:28px;font-weight:900;color:var(--g);line-height:1;}
+    .rate small{font-size:12px;font-weight:700;color:var(--ink55);}
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;}
+    .item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;gap:12px;align-items:center;}
+    .item b{display:block;font-size:14.5px;}
+    .item span{font-size:13px;color:var(--ink75);}
+    .pts{font-size:18px;font-weight:900;white-space:nowrap;color:var(--g);}
+    .fine{font-size:13.5px;line-height:1.6;color:var(--ink75);margin:0;padding-left:18px;}
+    .fine li{margin:0 0 4px;}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .rows{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;max-height:60vh;overflow-y:auto;}
+    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);font-size:13.5px;}
+    .r:first-child{border-top:0;}
+    .r b{display:block;font-size:14px;}
+    .r small{color:var(--ink55);}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-pending{background:#fff4e0;color:#8a5200}.t-ready{background:#e8f0fe;color:#1a4a9c}.t-paid,.t-given{background:var(--gl);color:var(--g)}.t-reversed{background:#f1f1f1;color:#555}
+    .linkbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13.5px;word-break:break-all;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ink);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(0,0,0,.2);border-radius:8px;padding:14px;cursor:pointer;font-size:13.5px;line-height:1.5;background:#fff;}
+    .choice label b{display:block;font-size:15px;}
+    .choice input{width:18px;height:18px;margin-top:2px;accent-color:var(--g);flex:none;}
+    .search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:520px;}
+    .orgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:8px;margin-top:10px;max-height:420px;overflow-y:auto;}
+    .org{display:flex;gap:10px;align-items:center;text-align:left;font:inherit;font-size:13.5px;background:#fff;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:10px;cursor:pointer;color:var(--ink);}
+    .org[aria-pressed="true"]{border-color:var(--g);box-shadow:0 0 0 2px var(--gl);}
+    .org i{width:40px;height:40px;border-radius:8px;background:#e7efe7 center/cover no-repeat;flex:none;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;color:var(--g);}
+    .org small{display:block;color:var(--ink55);}
+    .msg{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin-top:8px;}
+    .msg.err{color:#a61b1b;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main>
+  <p class="k">Dashboard</p>
+  <h1>Points and levels</h1>
+  <p class="lede" id="lede">Points come from taking part. Your lifetime points set your level, and your level never goes down.</p>
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden></div>
+</main>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-affiliate';
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $('app'), D = null;
+  var PRODUCT = { passport: 'the Passport', guide: 'every Guide' };
+  var STATUS = { pending: 'On hold', ready: 'Ready', paid: 'Paid to you', given: 'Given', reversed: 'Refunded' };
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function usd(c) { return '$' + (Number(c || 0) / 100).toFixed(2); }
+  function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
+  function tellParent() {
+    if (!inFrame()) return;
+    try {
+      window.parent.postMessage({ type: 've-frame-url', path: '/levels' + location.hash }, location.origin);
+      window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin);
+    } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
+  function copy(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+    else window.prompt('Copy this', text);
+  }
+  function views() {
+    var v = [['levels', 'Your level'], ['points', 'How points come']];
+    if (D.can_see) v.push(['earnings', 'What your link earned'], ['give', 'Where it goes']);
+    var cur = route();
+    return '<nav class="tabs" aria-label="Points and levels">' + v.map(function (x) { return '<a href="#' + x[0] + '" class="' + (x[0] === cur ? 'on' : '') + '">' + x[1] + '</a>'; }).join('') + '</nav>' +
+      (D.can_see && !D.live ? '<p class="preview">Preview: the earnings part is not launched. Members see Your level and How points come, without the commissions, until it goes live in Depot &gt; Ambassadors &gt; Commissions. Commissions are already being recorded.</p>' : '');
+  }
+  function route() { var h = location.hash.replace(/^#/, ''); return ['levels', 'points', 'earnings', 'give'].indexOf(h) >= 0 && (D.can_see || ['levels', 'points'].indexOf(h) >= 0) ? h : 'levels'; }
+
+  function ladderStep(l, mine) {
+    var earns = D.can_see && Number(l.rate_pct) > 0;
+    var pts = [];
+    if (l.level === 1) pts.push('Share your link: 111 points each time a friend becomes a member', 'Points from everything you take part in move you up');
+    else pts.push('Everything at Level ' + (l.level - 1));
+    if (earns) pts.push(Number(l.rate_pct) + '% of ' + (l.products || []).map(function (p) { return PRODUCT[p] || p; }).join(' and ') + ' bought through your link (' + usd(1100 * l.rate_pct / 100) + ' on $11)');
+    if (l.level === 4 && earns) pts.push('The top rate');
+    return '<div class="step' + (mine ? ' you' : '') + '">' + (mine ? '<span class="you-tag">You are here</span>' : '') +
+      '<span class="lv">Level ' + l.level + '</span><span class="at">' + (l.min_lifetime ? n(l.min_lifetime) : 'Every member') + (l.min_lifetime ? '<small>lifetime points</small>' : '<small>from the day you join</small>') + '</span>' +
+      (earns ? '<span class="rate">' + Number(l.rate_pct) + '%<small> commission</small></span>' : '') +
+      '<ul>' + pts.map(function (p) { return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div>';
+  }
+
+  function drawLevels() {
+    var L = D.level, cur = L.level, life = L.lifetime, next = L.next_at, prevAt = 0;
+    (D.ladder || []).forEach(function (l) { if (l.level === cur) prevAt = l.min_lifetime; });
+    var pct = next ? Math.max(0, Math.min(100, Math.round((life - Math.min(prevAt, life)) / (next - Math.min(prevAt, life)) * 100))) : 100;
+    app.innerHTML = views() +
+      '<section class="card"><div class="now"><div class="badge"><small>Level</small><b>' + cur + '</b></div><div>' +
+        '<p><b>' + n(life) + ' lifetime points.</b> ' + (next ? n(next - life) + ' more to Level ' + (cur + 1) + '.' : 'You are at the top level.') + '</p>' +
+        (next ? '<div class="bar" aria-hidden="true"><i style="width:' + pct + '%"></i></div>' : '') +
+        (L.set_by_team ? '<p>We started you at Level ' + cur + ' because of what you bring to this community. Your points still count toward the next one.</p>' : '') +
+        (D.can_see && Number(L.rate_pct) > 0 ? '<p>Your link earns <b>' + Number(L.rate_pct) + '%</b> of ' + (L.products || []).map(function (p) { return PRODUCT[p] || p; }).join(' and ') + ' bought through it.</p>' : '') +
+      '</div></div>' +
+      (D.link ? '<div class="linkbox" style="margin-top:14px"><span style="flex:1">' + esc(D.link) + '</span><button type="button" class="btn btn-ghost btn-sm" id="cp">Copy your link</button></div>' : '') + '</section>' +
+      '<h2>The levels</h2><div class="ladder">' + (D.ladder || []).map(function (l) { return ladderStep(l, l.level === cur); }).join('') + '</div>' +
+      '<section class="card" style="margin-top:16px"><h2>How levels work</h2><ul class="fine">' +
+        '<li>Your level goes by lifetime points: every point you have ever earned. Spending points on a Guide or giving them to a business never lowers it.</li>' +
+        '<li>Some members start at a higher level because the team invited them there. They still climb with points.</li>' +
+        (D.can_see ? '<li>From Level 2, your link earns a share of what the people you bring in buy. The higher your level, the bigger the share, up to 30%. See What your link earned.</li>' : '') +
+        '<li>We keep adding to what each level opens. This page always shows what is live.</li></ul></section>';
+    if ($('cp')) $('cp').addEventListener('click', function () { copy(D.link, this); });
+  }
+
+  function drawPoints() {
+    var W = [
+      ['Join with the Passport', '1,100', 'Welcome points, once.'],
+      ['Bring a friend in', '111', 'When someone who used your link becomes a member.'],
+      ['Check in where you go', '10', 'At a place in the Directory, up to five places a day.'],
+      ['Share a recipe', '50', 'When the Cookbook team approves it.'],
+      ['Take the Mission Survey', '250', 'Once, with your Guide.'],
+      ['Every purchase', '25', 'A thank-you on anything you buy.'],
+      ['Bounties, campaigns and competitions', 'Varies', 'Each one says what it pays.'],
+    ];
+    app.innerHTML = views() +
+      '<div class="list">' + W.map(function (w) { return '<div class="item"><div><b>' + esc(w[0]) + '</b><span>' + esc(w[2]) + '</span></div><span class="pts">' + esc(w[1]) + '</span></div>'; }).join('') + '</div>' +
+      '<section class="card" style="margin-top:16px"><h2>What points do</h2><ul class="fine">' +
+        '<li>Unlock a Guide: 1,100 points, or $11. It is yours to keep.</li>' +
+        '<li>Talk to your Guide: 4 points a message.</li>' +
+        '<li>Give them to a business or nonprofit in the Directory as a boost. Giving points never lowers your level.</li>' +
+        '<li>Points are given for taking part, never sold.</li></ul></section>';
+  }
+
+  function drawEarnings() {
+    var T = D.totals || {}, C = D.commissions || [], P = D.program || {};
+    app.innerHTML = views() +
+      '<div class="totals"><div class="tot"><b>' + usd(T.pending) + '</b><span>On hold (30 days)</span></div><div class="tot"><b>' + usd(T.ready) + '</b><span>Ready</span></div>' +
+        '<div class="tot"><b>' + usd(T.paid) + '</b><span>Paid to you</span></div><div class="tot"><b>' + usd(T.given) + '</b><span>Given in your name</span></div></div>' +
+      '<section class="card"><h2>From your link</h2><p class="lede" style="margin-bottom:12px">' + n(D.joined) + ' people signed up with your link and ' + n(D.joined_members) + ' became members, which paid you ' + n(D.referral_points) + ' points.' +
+        (D.route === 'nonprofit' && D.route_listing ? ' Your earnings go to <b>' + esc(D.route_listing.name) + '</b>.' : '') + '</p>' +
+        '<div class="rows">' + (C.length ? C.map(function (c) {
+          return '<div class="r"><div><b>' + esc(c.buyer || 'A member') + ' bought ' + (c.product === 'guide' ? 'a Guide' : 'the Passport') + '</b><small>' + esc(day(c.created_at)) + ' &middot; ' + Number(c.rate_pct) + '% of ' + usd(c.sale_cents) +
+            (c.status === 'pending' ? ' &middot; ready ' + esc(day(c.hold_until)) : '') + (c.route === 'nonprofit' ? ' &middot; to your organization' : '') + '</small></div>' +
+            '<span class="tag t-' + esc(c.status) + '">' + esc(STATUS[c.status] || c.status) + '</span><b>' + usd(c.commission_cents) + '</b></div>';
+        }).join('') : '<p style="padding:16px;margin:0;color:var(--ink75)">Nothing yet. ' + (Number(D.level.rate_pct) > 0 ? 'Share your link: what people buy through it shows here.' : 'Your link earns from Level 2. Until then each friend who joins pays you 111 points, which gets you there faster.') + '</p>') + '</div></section>' +
+      '<section class="card"><h2>The rules</h2><ul class="fine">' +
+        '<li>A commission is your level\'s share of the $11 price, never of anything someone gives on top.</li>' +
+        '<li>It counts for purchases by people who joined with your link, for ' + Math.round((P.window_days || 365) / 30) + ' months after they join: their Passport from Level 2, and every Guide they buy with money from Level 3.</li>' +
+        '<li>Your rate is your level on the day of the purchase. Your own purchases never earn a commission.</li>' +
+        '<li>Each one waits ' + (P.hold_days || 30) + ' days, in case of a refund, then it is ready. A refunded purchase takes its commission back.</li>' +
+        '<li>We pay once you have ' + usd(P.min_payout_cents || 2500) + ' ready. US tax rules mean we ask for a W-9 before the first payment.</li>' +
+        '<li>When you share your link, say you earn from it, for example "I earn a little when you join with my link." It is the law, and it keeps trust.</li></ul></section>';
+  }
+
+  function drawGive() {
+    var nonprofit = D.route === 'nonprofit' && D.route_listing, picked = nonprofit ? D.route_listing : null;
+    app.innerHTML = views() +
+      '<section class="card"><h2>Not in it for the money?</h2><p class="lede">Plenty of people share Vegans Explore because they believe in it, not for a check. You can send everything your link earns to a nonprofit, rescue or sanctuary in our Directory instead. We send it in your name and tell them it came from you.</p>' +
+      '<div class="choice" role="radiogroup" aria-label="Where your earnings go">' +
+        '<label><input type="radio" name="rt" value="self"' + (nonprofit ? '' : ' checked') + '><span><b>Pay me</b>Your earnings come to you once ' + usd((D.program || {}).min_payout_cents || 2500) + ' is ready.</span></label>' +
+        '<label><input type="radio" name="rt" value="nonprofit"' + (nonprofit ? ' checked' : '') + '><span><b>Give it to an organization</b>Pick one below. Earnings on hold or ready go there too; what was already paid stays as it was.</span></label></div>' +
+      '<div id="pick"' + (nonprofit ? '' : ' hidden') + '><label class="k" for="q">Find an organization</label><br><input id="q" class="search" type="search" placeholder="A rescue, a sanctuary, a nonprofit..." autocomplete="off">' +
+        '<div class="orgs" id="orgs"></div></div>' +
+      '<div style="margin-top:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><button type="button" class="btn" id="save">Save</button><span class="msg" id="msg" role="status">' + (picked ? 'Now going to ' + esc(picked.name) + '.' : '') + '</span></div>' +
+      '<p style="font-size:12.5px;color:var(--ink55);margin:14px 0 0">The organization receives it from Vegans Explore, in your name. How it counts for your taxes is a question for your tax advisor.</p></section>';
+    var sel = picked ? picked.id : null, timer = null;
+    function orgs(q) {
+      api({ action: 'orgs', q: q }).then(function (d) {
+        var list = (d && d.orgs) || [];
+        $('orgs').innerHTML = list.length ? list.map(function (o) {
+          var pic = o.logo_url ? '<i style="background-image:url(\'' + esc(o.logo_url) + '\')"></i>' : '<i>' + esc(String(o.name || '?').charAt(0)) + '</i>';
+          return '<button type="button" class="org" data-id="' + esc(o.id) + '" data-name="' + esc(o.name) + '" aria-pressed="' + (o.id === sel) + '">' + pic + '<span>' + esc(o.name) + '<small>' + esc(o.category) + (o.city ? ' &middot; ' + esc(o.city) : '') + '</small></span></button>';
+        }).join('') : '<p style="color:var(--ink75)">None found. Try another name.</p>';
+        tellParent();
+      });
+    }
+    app.querySelectorAll('input[name="rt"]').forEach(function (r) { r.addEventListener('change', function () { $('pick').hidden = r.value !== 'nonprofit' || !r.checked; if (!$('pick').hidden && !$('orgs').innerHTML) orgs(''); tellParent(); }); });
+    if (nonprofit) orgs('');
+    $('q').addEventListener('input', function () { clearTimeout(timer); var q = this.value.trim(); timer = setTimeout(function () { orgs(q); }, 250); });
+    $('orgs').addEventListener('click', function (e) {
+      var b = e.target.closest('.org'); if (!b) return;
+      sel = b.dataset.id; $('orgs').querySelectorAll('.org').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+      $('msg').className = 'msg'; $('msg').textContent = b.dataset.name + ' picked. Press Save.';
+    });
+    $('save').addEventListener('click', function () {
+      var rt = (app.querySelector('input[name="rt"]:checked') || {}).value, msg = $('msg'), btn = this;
+      if (rt === 'nonprofit' && !sel) { msg.className = 'msg err'; msg.textContent = 'Pick an organization first.'; return; }
+      btn.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+      api(rt === 'nonprofit' ? { action: 'route', route: 'nonprofit', listing_id: sel } : { action: 'route', route: 'self' }).then(function (d) {
+        btn.disabled = false;
+        if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not save.'; return; }
+        D.route = d.route; D.route_listing = d.listing || null;
+        msg.textContent = d.route === 'nonprofit' ? 'Saved. Your earnings now go to ' + d.listing.name + ', in your name.' : 'Saved. Your earnings come to you.';
+      }).catch(function () { btn.disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+    });
+  }
+
+  function draw() {
+    var r = route();
+    if (r === 'points') drawPoints(); else if (r === 'earnings') drawEarnings(); else if (r === 'give') drawGive(); else drawLevels();
+    tellParent();
+  }
+
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 200);
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to see your points and level.</p><p><a class="btn" href="/login?next=/dashboard/levels">Sign in</a></p>'; return; }
+    api({ action: 'me' }).then(function (d) {
+      if (!d || !d.ok) { $('gate').hidden = false; $('gate').textContent = 'This did not load. Refresh to try again.'; return; }
+      D = d; app.hidden = false;
+      if (d.can_see) $('lede').textContent = 'Points come from taking part, and your lifetime points set your level. From Level 2 your link also earns a share of what the people you bring in buy: keep it, or give it to an organization you care about.';
+      window.addEventListener('hashchange', draw);
+      draw();
+    }).catch(function () { $('gate').hidden = false; $('gate').textContent = 'Could not reach the server. Refresh to try again.'; });
+  }
+  start();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

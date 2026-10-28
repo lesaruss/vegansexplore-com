@@ -2278,16 +2278,16 @@
   // the real tier. Badges is the member's real Passport Challenge badge count (ve-hunt
   // 'badges', 2026-09-27), fetched below.
   // Level is driven by LIFETIME points, not the spendable balance, so
-  // redeeming points can never demote a member. Levels 1 to 3 (Sean locked 2026-10-25, playbook
-  // ve-pricing-points-passport): Level 2 from 2,500 lifetime points, Level 3 from 10,000. The same
-  // thresholds as ve_member_level in the database; change both together.
-  var VE_LEVEL_AT = [0, 2500, 10000];
+  // redeeming points can never demote a member. Levels 1 to 4 (Sean, 2026-10-28; Level 4 added when levels became
+  // the affiliate ladder): Level 2 from 2,500 lifetime points, Level 3 from 10,000, Level 4 from 25,000. The same
+  // thresholds as ve_affiliate_levels in the database; change both together.
+  var VE_LEVEL_AT = [0, 2500, 10000, 25000];
   // A level the team set (members.level_override, Depot > Ambassadors; Sean 2026-10-28) is the least they have.
   function veLevelFor(lifetimePoints, floorLevel) {
     var lifetime = typeof lifetimePoints === 'number' && lifetimePoints > 0 ? lifetimePoints : 0;
     var lv = 1;
     VE_LEVEL_AT.forEach(function (at, i) { if (lifetime >= at) lv = i + 1; });
-    return Math.max(lv, Math.min(3, Number(floorLevel) || 1));
+    return Math.max(lv, Math.min(4, Number(floorLevel) || 1));
   }
 
   function renderStatsHero(member) {
@@ -2656,7 +2656,7 @@
     if (dashTabBanners.home) document.body.classList.add('dash-has-banner');
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
     var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
-    setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1)]]);
+    setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1), '/dashboard/levels']]);
     setTabStats('guides', [[pts.toLocaleString(), 'Your points'], [Math.floor(pts / 1100).toLocaleString(), Math.floor(pts / 1100) === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
     setTabStats('saves', [['...', 'Episodes saved'], ['...', 'Places and brands saved']]);
     if (dashTabBanners.depot && member.is_superadmin) {
@@ -3085,6 +3085,16 @@
     else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'secret-shopper' }, '', url);
   }
   window.openShopper = openShopper;
+  // Points and levels (Sean, 2026-10-28): the level ladder, how points come, what a member's link earned and where it goes.
+  function openLevels(hash, noPush) {
+    var h = String(hash || '').replace(/^#?/, '');
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/levels' + (h ? '#' + h : ''), 'Points and levels');
+    var url = '/dashboard/levels' + (h ? '#' + h : '');
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'levels' }, '', url);
+    else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'levels' }, '', url);
+  }
+  window.openLevels = openLevels;
   // A page inside the frame can size it (the Depot pages do, /public/depot-tabs.js), so a tall
   // page scrolls with the dashboard instead of inside a fixed-height box (Sean, 2026-09-29).
   // The page is told which part of it is on screen, so its pop-ups open in view.
@@ -3114,6 +3124,10 @@
       tellFrameView();
     } else if (e.data.type === 've-frame-url') {
       var fp = String(e.data.path || '');
+      if (/^\/levels(#|$)/.test(fp) && /^\/dashboard\/levels/.test(location.pathname)) {
+        var wantL = '/dashboard/levels' + fp.replace(/^\/levels/, '');
+        if (location.pathname + location.hash !== wantL) history.replaceState(history.state, '', wantL);
+      }
       if (/^\/secret-shopper(#|$)/.test(fp) && /^\/dashboard\/secret-shopper/.test(location.pathname)) {
         var wantS = '/dashboard/secret-shopper' + fp.replace(/^\/secret-shopper/, '');
         if (location.pathname + location.hash !== wantS) history.replaceState(history.state, '', wantS);
@@ -3371,6 +3385,7 @@
       { icon: 'megaphone', title: 'Campaigns', desc: 'Campaigns to attend, sponsor, or volunteer for.', fn: function () { gotoToolSection('dash-campaigns-section', 'Your Campaigns'); } },
       { icon: 'target', title: 'Opportunities', desc: 'Ways to get involved and lead in your city.', fn: function () { gotoToolSection('dash-opportunities-section', 'Your Opportunities'); } },
       { icon: 'list', title: 'My Saves', desc: 'The episodes and listings you saved.', fn: function () { openMyList(); } },
+      { icon: 'target', title: 'Points and levels', desc: 'Your level, how points come, and what your link earns.', fn: function () { openLevels(''); } },
       { icon: 'pin', title: 'Community Board', desc: 'The Daily Pulse, jobs, classifieds, fosters and rescues.', fn: function () { if (window.activateDashTab) window.activateDashTab('pulse'); } }
     ];
     if (admin || (member.ve_tier && member.ve_tier !== 'free')) {
@@ -3652,6 +3667,7 @@
       if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
+      if (/^\/dashboard\/levels\/?$/.test(location.pathname)) { openLevels(location.hash, true); return; }
       // Back and forward between the Directory and a listing.
       if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
       if (/^\/dashboard\/directory\/?$/.test(location.pathname)) closeDashboardListing(true);
@@ -3672,6 +3688,7 @@
     if (landedOnBounties !== null) openBounties(landedOnBounties, true);
     if (/^\/dashboard\/guide\/?$/.test(location.pathname)) openGuide(location.search, true);
     if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
+    if (/^\/dashboard\/levels\/?$/.test(location.pathname)) openLevels(location.hash, true);
   }
 
   // Bounties topic toggle (2026-09-07, Logan, Sean direction). Only "All" is

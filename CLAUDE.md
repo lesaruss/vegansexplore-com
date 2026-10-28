@@ -1688,9 +1688,33 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   Community Board, referrals. They unlock Guides, pay for Guide chat (4 a message) and can be **given to a business or
   nonprofit as a boost, never money** (`ve-votes` `contribute`, `ve_listing_contribute`, 1 to 10,000; the listing's total is
   `ve-votes` `points`, `ve_listing_points`; the Give box on every listing page).
-- **Levels 1 to 3 on lifetime points** (`member_points.total_points`, which never goes down): Level 2 from 2,500, Level 3 from
-  10,000 (`ve_member_level`; the dashboard's `VE_LEVEL_AT`; change both together). Spending or giving points never lowers a level.
-  Sean confirmed the thresholds on 2026-10-25: "go with 2,500 and 10,000 for the levels." The perks of each level come later.
+- **Levels 1 to 4 on lifetime points** (`member_points.total_points`, which never goes down): Level 2 from 2,500, Level 3 from
+  10,000, Level 4 from 25,000 (`ve_affiliate_levels.min_lifetime`, read by `ve_member_level`; the dashboard's `VE_LEVEL_AT`; change
+  both together). Spending or giving points never lowers a level. Sean confirmed 2,500 and 10,000 on 2026-10-25; Level 4 came with
+  the affiliate ladder (below), its 25,000 a default Logan set. A level the team sets (`members.level_override`) is the least they have.
+- **Levels are the affiliate ladder** (Sean, 2026-10-28: "level one, with your link, you get points and allows you to level up
+  quicker to level two, where you can start getting commissions... 20%... level three... 25%... level four... 30%, and we max out at
+  30%... when they get level three... the guides now become open... route their commissions to a nonprofit of their choosing... So they
+  get the credit for the donation"; migration `20261028_affiliate_levels.sql`, run through `ve-once-affiliate`, now the 410 stub). Every
+  member's link is `/passport?ref=<referral_code>`. Level 1: 111 points when a friend becomes a member. Level 2: 20% of the Passport
+  bought through the link; Level 3: 25%, and Guides bought with money too; Level 4: 30%, the top (`ve_affiliate_levels`: `rate_pct`,
+  `products`, one row a level; change a rate or what a level opens there). Defaults Logan set, Sean's to change: the commission is a
+  share of the $11 price (`sale_cents`), never of anything given on top; it counts for purchases by someone who joined with the link
+  within 12 months of joining (`window_days`), at the referrer's level on the day; it waits 30 days for refunds (`hold_days`), then
+  turns Ready (cron `ve-affiliate-release`, daily); it is paid once $25 is ready (`min_payout_cents`) and after a W-9 (the finance
+  module's `finance_payees`, `finance_request_payout`, `finance_1099_list`); never on your own purchases or for a Guide account (all in
+  `ve_site_settings` `affiliate_program`). `ve_affiliate_earn(buyer, product, product_ref, ref)` writes `ve_affiliate_commissions` (one
+  row a sale, once per ref): the Passport from `ve-stripe-webhook` `entry_contribution` (first join only, ref `passport:<member>`), a
+  Guide from `ve_guide_purchase_paid` (ref `guide:<member>:<guide>`). Statuses: pending, ready, paid, given, reversed (a refund, marked
+  by hand for now). **Where it goes** (`members.affiliate_route` self | nonprofit, `affiliate_listing_id`): a member can send everything
+  their link earns to a Nonprofit, Rescue or Sanctuary in the Directory, given in their name (we never call it tax-deductible to them).
+  **Points and levels** (`/dashboard/levels`, `levels.html`, a Your tools tile and the Dashboard banner's Level; `ve-affiliate` `me`,
+  `route`, `orgs`): Your level (the ladder, their progress, their link), How points come, What your link earned, Where it goes.
+  **Depot > Ambassadors > Commissions** (`#commissions/<status>`; `ve-affiliate` `admin_list`, `admin_settle`, `admin_launch`): every
+  commission, Mark paid / Mark given / Refunded, and **Launch it for members**. Until launched (`affiliate_program.live` false) members
+  see only Your level and How points come, with no rates; super admins see it all marked Preview. Commissions are recorded either way.
+  At launch: add the affiliate terms to `/policies#membership` (with the disclosure that sharers must say they earn) and correct
+  `ve-guide-platform-facts`, which still says never to offer commissions.
 - **Credits are retired.** `trg_ve_founding_credit` is dropped, `ve-guide-unlock` `buy_credits` answers 410, the dashboard's Buy
   Guide credits is gone. The credit tables and functions stay so history reads; no member held a credit on 2026-10-25.
 - Points live in two places (`members.lesars_balance` and `member_points.available_points`); every points function moves both
