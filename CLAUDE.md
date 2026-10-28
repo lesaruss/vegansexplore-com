@@ -468,6 +468,35 @@ that click to the visitor's account once they are signed in (30 days). Email-sys
 links are synced every 15 minutes (`ve-links-email-sync` cron) and named by recipient. Never paste a
 bare campaign URL into outreach.
 
+## Analytics (Sean, 2026-10-28)
+
+"Use the same exact structure as the analytics section in BCPS Marcom... put it in our depot... see what's popular, what's
+working, which communities are growing the most... break it down by our communities... a ranking based off certain metrics."
+**Depot > Analytics** (`/admin/depot/analytics`, first in the Go to menu, group Insights; super admins only), laid out like
+bcpsmarcomm's `AnalyticsPage.tsx`: the period (Last 7 / 30 / 90 days, This year, Custom; always against the period just before),
+four tiles two by two beside the traffic graph (Visitors, Page views, New members, Top source), then tabs (a dropdown on phones),
+each a searchable, sortable, ranked and paged table: Top pages, **Communities**, Daily Pulse, Directory, Traffic sources, Places,
+Campaigns, Ads, Members. The address carries it (`?range=90&bots=show#communities`).
+
+- **Communities** ranks every chapter by any column (Rank by, or a column head): Visitors (Google places them in the chapter: by
+  city for a chapter with a city list, by state for a whole-state chapter; `chapterOf` in `ve-analytics`), Visitor growth, Hub page
+  views, Members, New members, Listings, New listings, Listing views and actions, Check-ins, Pulse posts and comments, Upcoming
+  events, and **Overall** (each shown column scored against the best chapter in it, best = 100, averaged). The columns are picked on
+  the page and kept in the browser (`localStorage` `ve_an_chapter_cols`, `ve_an_chapter_rank`).
+- **Traffic is Google Analytics**, property 432623792 (vegansexplore.com, tag G-2B6SKSQZLX in `/analytics.js`, on 99 of 142 pages;
+  history from March 2024), read live by the edge function `ve-analytics` with the LESARUSS analytics reader
+  (`lesaruss_secrets` `GA4_SERVICE_ACCOUNT_JSON`, `lesaruss-analytics-reader@...`, which can read every LESARUSS property), cached
+  3 hours in `ve_analytics_cache` (Refresh now skips it). Our own numbers are `ve_analytics_internal(from, to, prev_from, prev_to)`
+  and `ve_chapter_of(city, state)` (migration `20261028_ve_analytics.sql`).
+- **Likely bots are left out by default** (the box on the page; `bots: 'show'` counts everything): visits with no city, from cloud
+  data-center cities (`BOT_CITIES`) and from China. Found 2026-10-28: about 6,400 of October's 7,000 Google "visitors" were a
+  Frankfurt data center with no city hitting `/join` about 200 times a day (it stopped when `/join` began forwarding to
+  `/passport`), plus crawlers in China and Singapore. Real visitors, Sep 29 to Oct 28: 221.
+- **Members** count `member_class` 'member' only (9 active on 2026-10-28): not the Guides (`agent`), the team and its test logins
+  (`internal`), or seed and spam sign-ups (`quarantined`). 43 rows are `active` in all. Most members have no home chapter, so
+  Communities leans on visitors and activity more than members.
+- Pulse topic views are Google's views of the post's own address (`?post=<id>`); comments leave out the opening reply.
+
 ## Registration is the Passport (Sean, 2026-10-27)
 
 "People can view everything without logging in. He probably wanted to become a Passport member and was just given a free
@@ -557,6 +586,12 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   too (`loginWithGoogle` sends it; `ve-auth` `google` sets `referred_by`).
 - **Joshua Mattey** (joshmatteymgl@gmail.com, signed up 2026-10-27 with Google) was made an active Founding Member and Ambassador
   with 1,100 points directly (ledger `comp_membership`, ref `sean-2026-10-27`); Sean tells him on a call. He signs in with Google.
+- **The platform comes before the ask** (Sean, 2026-10-28, on Jordi Casamitjana: "their response to me sharing the website is
+  going to be how I determine if they're going to be ambassadors"). For someone Sean is weighing as an Ambassador: first we do
+  something for them and send the platform on a personal tracked link (`ve_links`, one per person); a plain thank-you means move
+  on; real interest means Sean asks them himself, "would you like to be an Ambassador?"; only a yes gets the invitation in Depot >
+  Ambassadors. Never make the invitation ahead of that. First case: Jordi, the Huge Vegan Survey as the lead national Daily Pulse
+  (2026-10-28), his link `/go/jordi-hvs`, the survey's `/go/huge-vegan-survey` (initiative `huge-vegan-survey`).
 - Not decided yet (Sean's call): what an Ambassador earns beyond the referral, and any Ambassador-only perks or levels.
 - **Depot > People > Ambassadors** (`/admin/depot/ambassadors`, after Community Managers in the Go to menu; Sean, 2026-10-28: "the
   ambassador program really is invite only... see my current ambassadors... how many people have visited their link... signed up
