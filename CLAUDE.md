@@ -527,8 +527,11 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   the matching tab. For Ambassadors and super admins only; the dashboard's tile is The Ambassador Guide. No Higgsfield art or clips. The Overview's tiles wear flat line icons (`ICONS`), never Guide pictures (Sean, 2026-10-27: "I don't like the guide icons... Liz in the
   corner... works well").
 - **Community Managers are never volunteers** (Sean, 2026-10-27: "we're for profit and we intend to pay them. More like gig work"):
-  the site's words call it gig work, paid as the community grows (the Passport's What your $11 supports, the Ambassador Guide, the
-  brand tour's slide 6). Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
+  the site's words call it gig work, paid as the community grows, never an amount (the Passport's What your $11 supports, the Ambassador
+  Guide, the brand tour's slide 6, and since 2026-10-28 the role pages: `/lead`, the account page's Opportunities, the handbook, the
+  Community Manager onboarding, the city hub's Opportunities, the recruiting deck, the role rows in `opportunities`, the Guides' facts and
+  four saved answers; migration `20261028_cm_gig_work_and_affiliate_canon.sql`, which also took out the account page's "$4,000 a
+  month" promise). Vegan Explorers stay volunteers. Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
 - **Voices, not animation, for tours** (Sean, 2026-10-28: "we could still have the voices, but the animation I don't think is
   necessary... save the animation for the guides"; a lip-synced clip is about 20 to 25 Higgsfield credits, a voice line none). A brand
   tour slide can be `{audio, poster}`: her voice over the slide's still picture, beside clips on the other slides (`voiceAt` in
@@ -555,7 +558,7 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   and one invitation (`#invite/<id>`: Made, Sent, Read, Opened the link, Accepted or Declined with their note; the draft is editable
   until accepted, `ve-invites` `update`; the email as it goes; Send it from me, Copy the link, Cancel it). All through `ve-invites`
   (`ambassadors`, `ambassador`, `ambassador_save`), super admin only.
-  - **Levels set by the team**: `members.level_override` (1 to 3) is the least they have; `ve_member_level` returns the higher of it
+  - **Levels set by the team**: `members.level_override` (1 to 4) is the least they have; `ve_member_level` returns the higher of it
     and what lifetime points earn (`set_by_team`, `earned_level`), and the dashboard's `veLevelFor(lifetime, member.level_override)`
     agrees (`ve-auth` `me` returns it). An invitation's `level` sets it at the claim.
   - **Read** is the email opened: `send` keeps the email's provider id (`universe_invites.resend_email_id`) and `list` / `ambassadors`
@@ -1713,8 +1716,8 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   **Depot > Ambassadors > Commissions** (`#commissions/<status>`; `ve-affiliate` `admin_list`, `admin_settle`, `admin_launch`): every
   commission, Mark paid / Mark given / Refunded, and **Launch it for members**. Until launched (`affiliate_program.live` false) members
   see only Your level and How points come, with no rates; super admins see it all marked Preview. Commissions are recorded either way.
-  At launch: add the affiliate terms to `/policies#membership` (with the disclosure that sharers must say they earn) and correct
-  `ve-guide-platform-facts`, which still says never to offer commissions.
+  At launch: add the affiliate terms to `/policies#membership` (with the disclosure that sharers must say they earn) and tell the Guides about
+  member link commissions in `ve-guide-platform-facts` (its line on pay covers Community Managers and Explorers only).
 - **Credits are retired.** `trg_ve_founding_credit` is dropped, `ve-guide-unlock` `buy_credits` answers 410, the dashboard's Buy
   Guide credits is gone. The credit tables and functions stay so history reads; no member held a credit on 2026-10-25.
 - Points live in two places (`members.lesars_balance` and `member_points.available_points`); every points function moves both
@@ -1787,7 +1790,7 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Stadium, Sunday, November 29, 2026; community nights from November; the World Vegan Expo, city and date not set; our
   Q1 2027 campaigns; a dated card drops off once it passes) and what a partner picks in each (products, a featured Guide
   spot, ad slots on chosen pages, their own ads or ours, a spend to their budget, an assigned campaign manager);
-  6. where the membership goes (events, volunteer Community Managers, the apps) and how they see it (live dashboard, a
+  6. where the membership goes (events, Community Managers doing gig work, the apps) and how they see it (live dashboard, a
   report within 7 days of every event they join), Live now beside Brand Partners only; 7. **Front Row Start** (the early
   offer, named by the panel): join before January 1, 2027 and the rest of 2026 is on us, no charge today, the first $111 in
   January for Q1 2027 with a front-row seat on its campaigns. The button goes to `/claim?...&plan=brand&offer=front-row`;
