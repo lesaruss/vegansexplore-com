@@ -17,16 +17,16 @@
  *   boardAreas      the areas a Community Board post can be for, and readers filter by (Sean, 2026-10-10)
  */
 (function () {
-  var SF = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade',
+  var SF = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Naranja','North Bay Village','Opa-locka','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade',
     // The Treasure Coast and the Keys (Sean, 2026-10-27: "we're just kind of closing out the state of Florida").
     'Port St. Lucie','Port Saint Lucie','Stuart','Palm City','Jensen Beach','Hobe Sound','Fort Pierce','Vero Beach','Sebastian','Loxahatchee Groves','South Florida',
-    'Key West','Key Largo','Marathon','Islamorada'];
+    'Key West','Key Largo','Marathon','Islamorada','Tavernier','Stock Island'];
   // South Florida's three counties, for its Directory grouping.
   var SF_COUNTIES = {
-    'Miami-Dade': SF.slice(0, 21),
-    'Broward': SF.slice(21, 48),
-    'Palm Beach': SF.slice(48, 70),
-    'Treasure Coast and Keys': SF.slice(70)
+    'Miami-Dade': SF.slice(0, 24),
+    'Broward': SF.slice(24, 51),
+    'Palm Beach': SF.slice(51, 73),
+    'Treasure Coast and Keys': SF.slice(73)
   };
   // Central Florida closes out the middle of the state (Sean, 2026-10-27): Greater Orlando, Tampa Bay, the Space Coast, Volusia
   // and the southwest Gulf coast. North Florida (NF) is Jacksonville to the Panhandle. Every Florida city should be in one of the three.

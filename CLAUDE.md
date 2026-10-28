@@ -1495,7 +1495,10 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   Glendale, Culver City...; `LA` in `ve-hubs.js`, `LA_CITIES` in `directory/listing.html`, `HUBS` in `ve-claims`, `ve_outreach_cities`). **New York and Central
   Florida** the same day (migration `20261028_restaurant_search_new_york_central_florida.sql`): 191 live, New York 105 (a borough with no
   city of its own takes the borough, Brooklyn, Queens, Bronx, Staten Island) and Central Florida 86 (13 nearby cities joined `CF`, and
-  `CFL_CITIES` in `directory/listing.html` is now the whole list). It took the Directory past 1,000 approved listings, which
+  `CFL_CITIES` in `directory/listing.html` is now the whole list). **South Florida** the same day (migration
+  `20261028_restaurant_search_south_florida.sql`): 101 live (18 100% Vegan, 83 Vegan options; most of its Vegan places were listed
+  already), and Naranja, North Bay Village, Opa-locka, Tavernier and Stock Island joined `SF` (the county slices in `SF_COUNTIES` moved
+  with them; `SF_CITIES` in `directory/listing.html` is now the whole list). It took the Directory past 1,000 approved listings, which
   showed that `fetchAll` in `ve-region-directory.js` had never paged: its second request asked for the first page again, forever, and
   every Directory view stayed empty for about 30 minutes until it was fixed (`(offset || 0) + 1000`, `order=id`). The Directory reads
   1,000 listings a request and pages until a short page.
