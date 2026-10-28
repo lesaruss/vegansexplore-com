@@ -25,6 +25,7 @@
   // Partner plan), Tours (2027), Passport Challenge (not running) and Import narration
   // (part of Onboarding). Put one back by adding its row here.
   var TABS = [
+    { group: 'Insights', href: '/admin/depot/analytics', label: 'Analytics' },
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
     { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
     { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
