@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Profiles | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Profiles (phase 1 of the playbook ve-member-profiles-partner-windows, locked by Sean 2026-10-28: "we, by default, see the full
+       profile... the member can hide and select what they want the public to see"). The team's view of every member's profile: one
+       thing per view, the list (#list) and one member (#m/<id>) with every answer, who can see it (Can be shown, Just for Vegans
+       Explore, Team only) and exactly what anyone outside the team could see (ve_profile_public). Read only: the member's switches
+       are theirs. Data: ve-mission-survey admin_list and admin_get (super admins). The questions' words: /public/ve-mission-survey.js. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:110px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .kind{border:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:10px;}
+    .kind legend{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:6px;}
+    .kind label{display:flex;flex-direction:row;gap:10px;align-items:flex-start;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:12px;cursor:pointer;font-size:13px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--ve-text);}
+    .kind label b{display:block;font-size:14px;}
+    .kind input{width:18px;height:18px;min-height:0;margin-top:2px;accent-color:var(--ve-green-deep);flex:none;}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .chip{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;}
+    .chip:hover{border-color:var(--ve-green-deep);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a{font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .row:first-child{border-top:0;}
+    .row b{display:block;font-size:14px;}
+    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .pts{font-size:13px;font-weight:800;white-space:nowrap;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent,.t-opened{background:#e8f0fe;color:#1a4a9c}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .made{margin-top:14px;}
+    .made .row{grid-template-columns:minmax(0,1fr) auto auto;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .kv div{background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13px;}
+    .kv span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);}
+    @media (max-width:600px){.row{grid-template-columns:minmax(0,1fr) auto;}.row .pts{display:none;}}
+    .row{grid-template-columns:minmax(0,1fr) auto auto auto;}
+    .filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .filters input,.filters select{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;}
+    .filters select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .t-shown{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-private{background:#eef1ee;color:#4a4f4a}.t-team{background:#fff4e0;color:#8a5200}
+    .qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;margin:0 0 18px;}
+    .qa div{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
+    .qa .q{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);}
+    .qa .a{font-size:14.5px;font-weight:600;}
+    .qa .a.none{color:rgba(26,26,26,.45);font-weight:500;}
+    .sec{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin:18px 0 8px;}
+    .pub{background:#f4fbf4;border:1px solid #b8ddb9;}
+    .pub p{font-size:13.5px;margin:0 0 6px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Profiles</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every member's profile in full, the way only our team sees it, with who can see each answer. Members choose Can be shown or Just for Vegans Explore on each answer about themselves; the market research and contact details are always team only. Nobody browses profiles: a shown answer appears only where the member takes part.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-mission-survey.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), people = null, filt = { q: '', city: '' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(action, body) {
+        return fetch(FN + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON },
+          body: JSON.stringify(Object.assign({ token: VEAuth.getToken() }, body || {})) }).then(function (r) { return r.json(); });
+      }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function city(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : (slug || 'No city'); }
+      var TOTAL_Q = VEMissionSurvey.count;
+      function route() { return location.hash.replace(/^#/, '') || 'list'; }
+
+      function drawList() {
+        var cities = {};
+        people.forEach(function (p) { if (p.home_community) cities[p.home_community] = 1; });
+        var q = filt.q.toLowerCase();
+        var rows = people.filter(function (p) {
+          return (!filt.city || p.home_community === filt.city) && (!q || (String(p.name || '') + ' ' + String(p.email || '')).toLowerCase().indexOf(q) >= 0);
+        });
+        app.innerHTML = '<div class="bar"><div class="filters"><input id="fq" type="search" placeholder="Search a name or email" aria-label="Search" value="' + esc(filt.q) + '">' +
+          '<select id="fc" aria-label="City"><option value="">Every city</option>' + Object.keys(cities).sort().map(function (c) { return '<option value="' + esc(c) + '"' + (c === filt.city ? ' selected' : '') + '>' + esc(city(c)) + '</option>'; }).join('') + '</select></div>' +
+          '<span class="hint">' + rows.length + ' of ' + people.length + ' members with answers</span></div>' +
+          '<div class="list">' + (rows.length ? rows.map(function (p) {
+            return '<div class="row"><div><b>' + esc(p.name || 'No name') + '</b><small>' + esc(p.email) + ' &middot; ' + esc(city(p.home_community)) + (p.last_answer_at ? ' &middot; last answer ' + esc(day(p.last_answer_at)) : '') + '</small></div>' +
+              '<span class="pts">' + p.answered + ' of ' + TOTAL_Q + ' answered</span><span class="tag ' + (p.earned >= 250 ? 't-shown' : 't-private') + '">' + p.earned + ' of 250 points</span>' +
+              '<a class="btn btn-ghost btn-sm" href="#m/' + esc(p.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">No one matches.</p>') + '</div>';
+        $('fq').oninput = function () { filt.q = this.value; var c = this.selectionStart; drawList(); var f = $('fq'); f.focus(); try { f.setSelectionRange(c, c); } catch (e) {} };
+        $('fc').onchange = function () { filt.city = this.value; drawList(); };
+      }
+
+      function drawOne(id) {
+        app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / Loading...</p>';
+        api('admin_get', { member_id: id }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a></p><p class="empty">This profile did not load.</p>'; return; }
+          var P = d.profile, m = P.member || {}, ans = P.answers || {}, shown = P.shown || {}, pub = P.public || {};
+          function tagFor(q) {
+            if (q.team) return '<span class="tag t-team">Team only</span>';
+            if (!(q.id in shown)) return '<span class="tag t-private">Just for Vegans Explore, no switch</span>';
+            return shown[q.id] ? '<span class="tag t-shown">Can be shown</span>' : '<span class="tag t-private">Just for Vegans Explore</span>';
+          }
+          var secs = VEMissionSurvey.steps.map(function (st) {
+            return '<h3 class="sec">' + esc(st.title) + '</h3><div class="qa">' + st.qs.map(function (q) {
+              var v = ans[q.id], has = v !== undefined && v !== null && v !== '' && !(Array.isArray(v) && !v.length);
+              return '<div><span class="q">' + esc(q.label) + '</span><span class="a' + (has ? '' : ' none') + '">' + (has ? esc(VEMissionSurvey.said(q, v)) : 'Not answered') + '</span>' + tagFor(q) + '</div>';
+            }).join('') + '</div>';
+          }).join('');
+          var pubKeys = Object.keys(pub.answers || {});
+          app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / ' + esc(m.name || 'Member') + '</p>' +
+            '<div class="kv"><div><span>Name</span>' + esc(m.name) + '</div><div><span>Email</span>' + esc(m.email) + '</div><div><span>City</span>' + esc(city(m.home_community)) + '</div>' +
+            '<div><span>Role</span>' + esc(m.ve_role || 'Member') + '</div><div><span>Member since</span>' + esc(day(m.entry_paid_at || m.created_at)) + '</div>' +
+            '<div><span>Profile points</span>' + Number(P.earned || 0) + ' of ' + Number(P.total || 250) + '</div></div>' +
+            '<div class="card pub"><h2>What anyone outside the team could see</h2><p><b>' + esc(pub.name || '') + '</b></p>' +
+            (pubKeys.length ? '<p>' + pubKeys.map(function (k) { var x = VEMissionSurvey.steps.reduce(function (f, st) { return f || st.qs.filter(function (q) { return q.id === k; })[0]; }, null); return x ? esc(x.label) + ' <b>' + esc(VEMissionSurvey.said(x, pub.answers[k])) + '</b>' : ''; }).join('<br>') + '</p>' : '<p>Nothing yet: no answer they marked Can be shown.</p>') +
+            '<p class="hint">Shown only inside a window we open (an event they RSVP to, a campaign they opt into), never in a public list.</p></div>' + secs;
+        });
+      }
+
+      function draw() {
+        var r = route(), m = r.match(/^m\/([0-9a-f-]{36})$/);
+        if (m) return drawOne(m[1]);
+        if (!people) { app.innerHTML = '<p class="empty">Loading...</p>'; return api('admin_list').then(function (d) { people = (d && d.members) || []; drawList(); }, function () { app.innerHTML = '<p class="empty">The profiles did not load. Refresh to try again.</p>'; }); }
+        drawList();
+      }
+
+      function start() {
+        if (!window.VEAuth || !window.VEMissionSurvey) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

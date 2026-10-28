@@ -13,6 +13,12 @@
  *   VEMissionSurvey.mount(host, { theme, onQuestion, onDone, preview })   one question after another, Back and Next, as the
  *                                                          Guide's setup asks it (/guide.html); every Next saves that answer
  *
+ * Who sees what (phase 1 of the playbook ve-member-profiles-partner-windows, Sean 2026-10-28: "we should be able to decide what's
+ * seen only by us and what's seen by the public... the member can hide and select what they want the public to see, but we, by
+ * default, see the full profile"). Every answer about the member has a switch, Can be shown or Just for Vegans Explore (ve-mission-survey
+ * shown, members.profile_shown; SHOWN is the default, the server's ve_profile_switchable the rule). The team's questions and the
+ * Instagram handle have none and are never shown. Nobody browses profiles: a shown answer appears only where the member takes part.
+ *
  * One question at a time (Sean, 2026-10-05): the question large, its answer under it. A tap only marks an answer; Next or Save moves
  * on. Question 7 is a Month and a Year list, sent as YYYY-MM.
  */
@@ -74,6 +80,9 @@
     q10_options_rating: 5, q11_missing: 5, q12_business_types: 5, q13_eatout_freq: 5, q14_spend: 5, q15_local_spots: 10,
     q16_wants: 10, q17_connect: 5, q18_events: 5, q19_nps: 5, q20_contribute: 5, q21_open: 15, q22_goal: 10 };
   var PROMPT_MAX = 300;
+  // The answers with a switch, and whether each starts as Can be shown (ve_profile_switchable holds the rule).
+  var SHOWN = { p_meal: true, p_why: true, p_day: true, p_meet: true, p_fact: true, q1_city: true, q6_stage: true, q7_vegan_since: true,
+    q3_roles: false, q8_drivers: false, q23_matters: false, q24_diet: false };
 
   var CSS = ''
     + '.vms{font-family:Montserrat,sans-serif;color:#1a1a1a}'
@@ -129,6 +138,13 @@
     + '.vmp-card .vmp-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}'
     + '.vmp-card .vmp-foot .vms-pts{margin:0}.vmp-card .vmp-foot em{font-style:normal;color:#2d7d31}'
     + '.vmp-crumb{font-size:13px;font-weight:700;margin:0 0 14px}.vmp-crumb a{color:#1f5f22}'
+    + '.vmp-vis{font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:none;border-radius:4px;padding:2px 8px;background:#eef1ee;color:#4a4f4a}'
+    + '.vmp-vis.on{background:#e8f5e9;color:#1f5f22}'
+    + '.vmp-who{margin-top:22px;max-width:620px;border-top:1px solid rgba(0,0,0,.1);padding-top:16px}'
+    + '.vmp-who b{display:block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}'
+    + '.vmp-who .vms-opts{margin-bottom:8px}.vmp-who p{font-size:13px;line-height:1.55;color:rgba(26,26,26,.65);margin:0}'
+    + '.vmp-who em{font-style:normal;font-weight:700;color:#1f5f22;margin-left:8px}'
+    + '.vmp-note{font-size:13.5px;line-height:1.6;color:rgba(26,26,26,.7);max-width:860px;margin:0 0 6px}'
     + '.vmp-done{background:#e8f5e9;border:1px solid #b8ddb9;border-radius:10px;padding:14px 16px;font-size:14px;font-weight:700;color:#1f5f22;margin:0 0 8px}';
   function injectCss() {
     if (document.getElementById('vms-css')) return;
@@ -241,7 +257,8 @@
   function newState(d) {
     d = d || {};
     return { answers: d.answers && typeof d.answers === 'object' ? d.answers : {}, points: d.points || PTS, paid: d.paid || [],
-      earned: Number(d.earned) || 0, total: Number(d.total) || 250, at: Number(d.at) || 0, completed: !!d.completed };
+      earned: Number(d.earned) || 0, total: Number(d.total) || 250, at: Number(d.at) || 0, completed: !!d.completed,
+      shown: Object.assign({}, SHOWN, d.shown || {}) };
   }
   // Save one answer; the server pays its points once.
   function saveAnswer(S, id, value, opts, extra) {
@@ -285,12 +302,17 @@
       if (m && find(m[1])) return drawQuestion(find(m[1]));
       drawCards();
     }
+    function visTag(q) {
+      if (q.team) return '';
+      var on = q.id in SHOWN && S.shown[q.id];
+      return '<span class="vmp-vis' + (on ? ' on' : '') + '">' + (on ? 'Can be shown' : 'Just for Vegans Explore') + '</span>';
+    }
     function card(x) {
       var q = x.q, v = S.answers[q.id], has = !empty(v);
       return '<button type="button" class="vmp-card' + (q.type === 'prompt' ? ' prompt' : '') + (has ? '' : ' empty') + '" data-q="' + q.id + '">' +
         '<span class="vmp-q">' + esc(q.label) + '</span>' +
         '<span class="vmp-a">' + (has ? esc(said(q, v)) : 'Not answered yet') + '</span>' +
-        '<span class="vmp-foot">' + ptsTag(q, S) + '<em>' + (has ? 'Edit' : 'Answer') + '</em></span></button>';
+        '<span class="vmp-foot">' + ptsTag(q, S) + visTag(q) + '<em>' + (has ? 'Edit' : 'Answer') + '</em></span></button>';
     }
     function drawCards() {
       var answered = QUESTIONS.filter(function (x) { return !empty(S.answers[x.q.id]); }).length;
@@ -306,11 +328,21 @@
         (open ? '<button type="button" class="vms-btn" data-q="' + open + '">Answer the next one</button>' : '') + '</div>' +
         '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.min(100, Math.round(S.earned / S.total * 100)) + '%"></i></div>' +
         (open ? '' : '<div class="vmp-done">Your profile is complete. Change any answer whenever you like.</div>') +
+        '<p class="vmp-note">You choose who sees each answer. <b>Can be shown</b> means it may appear where you take part, like the guest list of an event you join. <b>Just for Vegans Explore</b> means only our team sees it, to make your experience better. Nobody browses profiles, and we never sell your information.</p>' +
         mine.join('') +
         '<h3 class="vmp-sec">Help us build your city</h3><p class="vmp-secnote">These are for the team, not your profile: they tell us what to build next where you live.</p>' +
         '<div class="vmp-grid">' + team.map(card).join('') + '</div></div>';
       Array.prototype.forEach.call(host.querySelectorAll('[data-q]'), function (b) { b.onclick = function () { location.hash = '#q/' + b.getAttribute('data-q'); }; });
       changed();
+    }
+    function whoBox(q) {
+      if (q.team) return '';
+      if (!(q.id in SHOWN)) return '<div class="vmp-who"><b>Who can see this answer</b><p>Just for Vegans Explore. Contact details are never shown to anyone outside our team.</p></div>';
+      var on = !!S.shown[q.id];
+      return '<div class="vmp-who" data-who role="group" aria-label="Who can see this answer"><b>Who can see this answer</b><div class="vms-opts">' +
+        '<button type="button" class="vms-opt" data-v="1" aria-pressed="' + on + '">Can be shown</button>' +
+        '<button type="button" class="vms-opt" data-v="0" aria-pressed="' + !on + '">Just for Vegans Explore</button><em role="status"></em></div>' +
+        '<p>Can be shown: it may appear only where you take part, like the guest list of an event you join. Nobody browses profiles. Our team always sees your full profile, only to make your experience better.</p></div>';
     }
     function drawQuestion(x) {
       var q = x.q, value = S.answers[q.id], open = nextOpen(q.id), hint = hintFor(q);
@@ -321,7 +353,7 @@
         '<label class="vms-qh" id="vms-qh" for="vms-' + q.id + '">' + esc(q.label) + '</label>' +
         (q.team ? '<span class="vms-hint">Only the team sees this.</span>' : '') +
         (hint ? '<span class="vms-hint">' + esc(hint) + '</span>' : '') +
-        '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' +
+        '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' + whoBox(q) +
         '<div class="vms-nav">' + (open && open !== q.id ? '<button type="button" class="vms-btn" data-save-next>Save and next</button>' : '') +
         '<button type="button" class="' + (open && open !== q.id ? 'vms-link' : 'vms-btn') + '" data-save>Save</button>' +
         '<button type="button" class="vms-link" data-back>Back to your profile</button></div></div>';
@@ -342,6 +374,17 @@
           if (!to && flash) { var t = flash; setTimeout(function () { var el = host.querySelector('.vmp-top span'); if (el) el.textContent = t + ' earned. ' + el.textContent; }, 0); flash = ''; }
         }).catch(function () { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block'; err.textContent = 'Could not reach the server. Please try again.'; });
       }
+      var who = host.querySelector('[data-who]');
+      if (who) Array.prototype.forEach.call(who.querySelectorAll('button'), function (b) {
+        b.onclick = function () {
+          var want = b.getAttribute('data-v') === '1', note = who.querySelector('em');
+          Array.prototype.forEach.call(who.querySelectorAll('button'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          S.shown[q.id] = want; note.textContent = 'Saving...';
+          var done = function (d) { note.textContent = d && d.ok ? 'Saved' : 'Could not save. Try again.'; };
+          if (opts.preview || !token()) return done({ ok: true });
+          api('shown', { id: q.id, shown: want }).then(done, function () { done(null); });
+        };
+      });
       var sn = host.querySelector('[data-save-next]'); if (sn) sn.onclick = function () { save(true); };
       host.querySelector('[data-save]').onclick = function () { save(false); };
       host.querySelector('[data-back]').onclick = function () { location.hash = '#'; };
@@ -421,5 +464,5 @@
     });
   }
 
-  window.VEMissionSurvey = { mount: mount, profile: profile, steps: STEPS, count: QUESTIONS.length, points: PTS };
+  window.VEMissionSurvey = { mount: mount, profile: profile, steps: STEPS, count: QUESTIONS.length, points: PTS, shown: SHOWN, said: said };
 })();

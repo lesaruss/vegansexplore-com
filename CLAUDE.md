@@ -616,7 +616,16 @@ in to hear from it, for its campaign's run dates; a one-time message to past gue
 an explicit, rewarded opt-in at RSVP and at save ("Let <organizer or brand> message me about this"); a save alone is never consent,
 and the UK (London) needs an unticked opt-in. Without consent partners get counts and segments, never names. The Policies page says
 it before any of it goes live. Build order: 1. the switches and the team view in the Depot, 2. the event window, 3. the campaign
-window, 4. past guests. Nothing of it is built yet beyond Your profile.
+window, 4. past guests. **Phase 1 is built** (Sean, 2026-10-28: "go ahead with phase 1"; migration `20261028_profile_visibility.sql`):
+every answer about the member has **Who can see this answer** in Your profile (Can be shown / Just for Vegans Explore, saved at once,
+`ve-mission-survey` `shown`, `members.profile_shown`) and a tag on its card; the rule is the database's (`ve_profile_switchable()`: the
+prompts, city, journey and Vegan since start shown; roles, what drew them, what matters and how they eat start private; the `team`
+questions and the Instagram handle have no switch and are never shown), and `ve_profile_public(member)` (first name, last initial and
+the shown answers) is the only way a profile may leave the team, for the windows of the next phases. **Depot > People > Profiles**
+(`/admin/depot/profiles`, `ve-mission-survey` `admin_list` / `admin_get`, super admins): everyone who has answered (search, city,
+answered of 31, points of 250), and one member (`#m/<id>`): every answer with Can be shown, Just for Vegans Explore or Team only, and
+What anyone outside the team could see. The Policies page's Privacy says all of it (profile answers, who sees what, partners only
+through us in a window they said yes to). Next: phase 2, the event window.
 
 ## Invites and free memberships (Sean, 2026-10-04)
 

@@ -12,6 +12,13 @@
 //   POST ?action=profile     { token }                          -> { ok, answers, at, points, paid, earned, total, completed }
 //   POST ?action=answer      { token, id, value, at? }          -> { ok, points, paid_now, earned, total }
 //   POST ?action=save        { token, answers, at? }            -> saves each one the same way (the step-by-step view's Next)
+//   POST ?action=shown       { token, id, shown }               -> { ok }   the member's switch on one answer: Can be shown (true) or
+//                                                                 Just for Vegans Explore (false); ve_profile_set_shown refuses the
+//                                                                 team's questions and contact details (phase 1 of the playbook
+//                                                                 ve-member-profiles-partner-windows, 2026-10-28)
+//   POST ?action=admin_list  { token }                          -> { ok, members }   super admins: everyone who has answered
+//   POST ?action=admin_get   { token, member_id }               -> { ok, profile }   super admins: every answer, their switches
+//                                                                 and what anyone outside the team could see
 //   draft and draft_save are the same as profile and save (pages cached from the morning); submit saves every answer.
 //
 // Scope: the dashboard prompt only shows for ACTIVE, non-guest members, so this
@@ -73,7 +80,7 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'admin_list', 'admin_get'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
@@ -87,6 +94,29 @@ Deno.serve(async (req) => {
       if (error || !data) throw new Error('state: ' + (error?.message ?? 'none'));
       return data as Record<string, unknown>;
     };
+    if (action === 'shown') {
+      const id = String(body.id ?? '');
+      const { data, error } = await supabase.rpc('ve_profile_set_shown', { p_member: memberId, p_question: id, p_shown: body.shown === true });
+      if (error) throw new Error('shown: ' + error.message);
+      if (data?.error) return json(data, 400);
+      return json(data);
+    }
+    if (action === 'admin_list' || action === 'admin_get') {
+      const { data: me } = await supabase.from('members').select('is_superadmin').eq('id', memberId).maybeSingle();
+      if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
+      if (action === 'admin_list') {
+        const { data, error } = await supabase.rpc('ve_profile_admin_list');
+        if (error) throw new Error('admin_list: ' + error.message);
+        return json({ ok: true, members: data ?? [] });
+      }
+      const mid = String(body.member_id ?? '');
+      if (!/^[0-9a-f-]{36}$/i.test(mid)) return json({ error: 'bad_request' }, 400);
+      const { data, error } = await supabase.rpc('ve_profile_admin_get', { p_member: mid });
+      if (error) throw new Error('admin_get: ' + error.message);
+      if (!data) return json({ error: 'not_found' }, 404);
+      return json({ ok: true, profile: data });
+    }
+
     if (action === 'profile') {
       const st = await state();
       // Old clients read completed and draft.
