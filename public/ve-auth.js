@@ -5,7 +5,10 @@ var SUPABASE_URL='https://fwbhwfxpncrsfhttimna.supabase.co';
 var FN_URL=SUPABASE_URL+'/functions/v1/ve-auth';
 // An invite code (?ref=) or a city (?community=) in the link is kept for the visit, so the sign-up window counts it the way
 // the old /join page did (Sean, 2026-10-25: the Passport Guide at /passport is the one Passport; /join forwards there).
-(function(){try{var q=new URLSearchParams(location.search),r=(q.get('ref')||'').trim().toUpperCase(),c=(q.get('community')||'').trim().toLowerCase();if(/^[A-Z0-9-]{3,24}$/.test(r))sessionStorage.setItem('ve_join_ref',r);if(/^[a-z0-9-]{2,40}$/.test(c))sessionStorage.setItem('ve_join_community',c);}catch(e){}})();
+(function(){try{var q=new URLSearchParams(location.search),r=(q.get('ref')||'').trim().toUpperCase(),c=(q.get('community')||'').trim().toLowerCase();if(/^[A-Z0-9-]{3,24}$/.test(r)){sessionStorage.setItem('ve_join_ref',r);refVisit(r);}if(/^[a-z0-9-]{2,40}$/.test(c))sessionStorage.setItem('ve_join_community',c);}catch(e){}})();
+// A visit to an Ambassador's link counts once a visitor a day (ve_referral_visit; Depot > Ambassadors, Sean 2026-10-28). The visitor
+// is a random id kept in this browser, nothing about the person.
+function refVisit(r){try{if(sessionStorage.getItem('ve_ref_seen')===r)return;sessionStorage.setItem('ve_ref_seen',r);var v=localStorage.getItem('ve_visitor');if(!v||!/^[A-Za-z0-9-]{8,64}$/.test(v)){v=(global.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2,12);localStorage.setItem('ve_visitor',v);}if(/bot|crawl|spider|preview|HeadlessChrome/i.test(navigator.userAgent||''))return;fetch(SUPABASE_URL+'/rest/v1/rpc/ve_referral_visit',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON,Authorization:'Bearer '+SUPABASE_ANON},body:JSON.stringify({p_code:r,p_visitor:v,p_path:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}}
 function joinCarry(k){try{return sessionStorage.getItem(k)||null;}catch(e){return null;}}
 var GOOGLE_ID='554053879127-o0vp4rrjp5qgeoq4fbje3qtbrvlupt59.apps.googleusercontent.com';
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}

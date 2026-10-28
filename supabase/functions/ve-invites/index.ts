@@ -274,12 +274,14 @@ Deno.serve(async (req: Request) => {
         const personId = isId(p?.person_id) ? p.person_id : null;
         if (!name || !emailOk(email)) { skipped.push({ name: name || '(no name)', email, why: 'No usable email' }); continue; }
         const [{ data: reg }, { data: sup }, { data: open }] = await Promise.all([
-          db.from('members').select('id, membership_status').ilike('email', likeEsc(email!)).is('merged_into_member_id', null).limit(1),
+          db.from('members').select('id, membership_status, ve_role').ilike('email', likeEsc(email!)).is('merged_into_member_id', null).limit(1),
           db.from('people_suppression').select('email').eq('email', email!).eq('active', true).limit(1),
           db.from('universe_invites').select('id').eq('brand', brand).ilike('email', likeEsc(email!)).in('status', ['ready', 'sent', 'opened']).limit(1),
         ]);
         // An account that never paid is not a member (registration is the Passport); it can still be invited.
-        if (reg?.length && reg[0].membership_status !== 'pending_payment') { skipped.push({ name, email, why: 'Already a member' }); continue; }
+        // A member can still be asked to be an Ambassador (Sean, 2026-10-28: Depot > Ambassadors); never one who already is.
+        if (reg?.length && reg[0].ve_role === 'ambassador') { skipped.push({ name, email, why: 'Already an Ambassador' }); continue; }
+        if (reg?.length && reg[0].membership_status !== 'pending_payment' && pointsTo !== 'ambassador') { skipped.push({ name, email, why: 'Already a member' }); continue; }
         if (sup?.length) { skipped.push({ name, email, why: 'On the do-not-contact list' }); continue; }
         if (open?.length) { skipped.push({ name, email, why: 'Already has an open invite' }); continue; }
         if (personId) {

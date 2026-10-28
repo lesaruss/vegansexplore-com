@@ -35,6 +35,7 @@
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
     { group: 'Content', href: '/admin/depot', label: 'Library' },
     { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
+    { group: 'People', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
     { group: 'People', href: '/admin/depot/bounties', label: 'Bounties' },
     { group: 'People', href: '/admin/depot/dinners', label: 'Dinner guests' },
     { group: 'People', href: '/admin/depot/links', label: 'Links' },

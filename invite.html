@@ -23,7 +23,7 @@
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
     h1{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;font-size:clamp(32px,4.4vw,56px);margin-bottom:20px;}
     .lede{font-size:17px;color:var(--ve-text-75);margin-bottom:16px;max-width:640px;}
-    .reason{font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;margin:0 0 20px;max-width:640px;}
+    .reason{white-space:pre-line;font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;margin:0 0 20px;max-width:640px;}
     .gift{display:inline-flex;align-items:center;gap:10px;background:var(--ve-green-light);color:var(--ve-green-deep);border:1px solid rgba(58,155,62,0.25);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:800;margin-bottom:18px;}
     .points{list-style:none;display:grid;gap:10px;margin:6px 0 22px;max-width:640px;}
     .points li{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:600;line-height:1.45;}
@@ -34,6 +34,9 @@
     .btn-primary:disabled{background:#9CA3AF;color:#fff;cursor:default;}
     .btn-link{background:none;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
     .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .decline{margin-top:16px;max-width:640px;}
+    .decline textarea{font:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;margin:6px 0 10px;resize:vertical;}
+    .decline label{font-size:13px;font-weight:700;}
     .fine{font-size:12.5px;color:#6b6b6b;margin-top:14px;max-width:640px;}
     .msg{font-size:14px;font-weight:700;margin-top:14px;max-width:640px;}
     .msg.err{color:#b42318;}
@@ -72,6 +75,12 @@
         <div class="cta-row">
           <button class="btn btn-primary" id="accept" type="button">Accept your invitation</button>
           <a class="btn btn-link" id="dinner-link" href="#" hidden>See your seat</a>
+          <button class="btn btn-link" id="no-thanks" type="button">No thanks</button>
+        </div>
+        <div class="decline" id="decline" hidden>
+          <label for="decline-note">Anything you'd like Sean to know? (optional)</label>
+          <textarea id="decline-note" maxlength="500"></textarea>
+          <div class="cta-row"><button class="btn btn-primary" id="decline-go" type="button">Turn down the invitation</button><button class="btn btn-link" id="decline-back" type="button">Go back</button></div>
         </div>
         <p class="msg" id="msg" role="status" hidden></p>
         <p class="fine" id="fine"></p>
@@ -103,8 +112,8 @@
     var $ = function (id) { return document.getElementById(id); };
     var invite = null;
 
-    function call(action, token) {
-      return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (token || ANON) }, body: JSON.stringify({ action: action, code: code }) })
+    function call(action, token, extra) {
+      return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (token || ANON) }, body: JSON.stringify(Object.assign({ action: action, code: code }, extra || {})) })
         .then(function (r) { return r.json(); });
     }
     function show(id) { ['loading', 'invite', 'done', 'closed'].forEach(function (s) { $(s).hidden = s !== id; }); }
@@ -114,6 +123,7 @@
     function render(inv) {
       invite = inv;
       if (inv.status === 'joined') return closed('You already accepted this invitation.', 'Sign in to Vegans Explore to pick up where you left off.');
+      if (inv.status === 'declined') return closed('You turned down this invitation.', 'Thank you for letting us know. If you change your mind, reply to Sean’s email.');
       if (inv.status === 'expired') return closed('This invitation has expired.', 'Reply to Sean’s email and he can send you a new one.');
       if (inv.status !== 'open') return closed('This invitation is no longer open.', 'Reply to Sean’s email if you think it should be.');
       $('title').textContent = inv.first_name + ', you’re invited.';
@@ -126,6 +136,8 @@
         $('gift').textContent = 'Your Founding Membership is on us, with ' + pts + ' points to start';
         $('pt-points').textContent = 'Everything a paid member has, ' + pts + ' points to start, and more you earn by taking part';
       }
+      // The level Sean chose (Sean, 2026-10-28).
+      if (inv.comp && inv.level > 1) $('gift').textContent += ', starting at Level ' + inv.level;
       if (inv.points_to === 'ambassador') {
         $('title').textContent = inv.first_name + ', be one of our first Ambassadors.';
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to be one of the people who bring others in. Accept, and your Ambassador account walks you through it.';
@@ -140,7 +152,7 @@
       $('accept').textContent = inv.comp ? 'Accept your membership' : 'Accept your invitation';
       if (inv.expires_at) {
         var d = new Date(inv.expires_at);
-        $('fine').textContent = 'This invitation is just for you. It works once, until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.' + (inv.comp ? ' Nothing to pay, nothing owed.' : '');
+        $('fine').textContent = 'This invitation is just for you' + (inv.email_hint ? ', at ' + inv.email_hint + '. Accept it with that email' : '') + '. It works once, until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.' + (inv.comp ? ' Nothing to pay, nothing owed.' : '');
       }
       show('invite');
     }
@@ -168,11 +180,24 @@
           return;
         }
         if (d && d.error === 'not_authenticated') { try { VEAuth.clearSession(); } catch (e) {} accept(); return; }
+        // Signed in with another email: the invitation is for one email only (Sean, 2026-10-28).
+        if (d && d.error === 'wrong_email') { say(d.message + ' We signed you out of the other account: press Accept and use that email.', 'err'); try { VEAuth.clearSession(); } catch (e) {} return; }
         say((d && d.message) || 'That did not go through. Try again in a minute.', 'err');
       }).catch(function () { $('accept').disabled = false; say('That did not go through. Check your connection and try again.', 'err'); });
     }
 
     $('accept').addEventListener('click', accept);
+    // No thanks: Sean sees it as Declined in Depot > Ambassadors and Invites (Sean, 2026-10-28).
+    $('no-thanks').addEventListener('click', function () { $('decline').hidden = false; $('no-thanks').hidden = true; $('decline-note').focus(); });
+    $('decline-back').addEventListener('click', function () { $('decline').hidden = true; $('no-thanks').hidden = false; });
+    $('decline-go').addEventListener('click', function () {
+      var b = this; b.disabled = true;
+      call('decline', null, { note: $('decline-note').value.trim() || null }).then(function (d) {
+        b.disabled = false;
+        if (d && d.ok) return closed('Thank you for letting us know.', 'Your invitation is closed. If you change your mind, reply to Sean’s email.');
+        say((d && d.message) || 'That did not go through. Try again in a minute.', 'err');
+      }).catch(function () { b.disabled = false; say('That did not go through. Check your connection and try again.', 'err'); });
+    });
     if (!code) { closed('This link is missing its invitation.', 'Open the link from Sean’s email again, or reply to it and he can send a new one.'); return; }
     call('view').then(function (d) {
       if (d && d.invite) render(d.invite);

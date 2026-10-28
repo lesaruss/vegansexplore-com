@@ -2282,11 +2282,12 @@
   // ve-pricing-points-passport): Level 2 from 2,500 lifetime points, Level 3 from 10,000. The same
   // thresholds as ve_member_level in the database; change both together.
   var VE_LEVEL_AT = [0, 2500, 10000];
-  function veLevelFor(lifetimePoints) {
+  // A level the team set (members.level_override, Depot > Ambassadors; Sean 2026-10-28) is the least they have.
+  function veLevelFor(lifetimePoints, floorLevel) {
     var lifetime = typeof lifetimePoints === 'number' && lifetimePoints > 0 ? lifetimePoints : 0;
     var lv = 1;
     VE_LEVEL_AT.forEach(function (at, i) { if (lifetime >= at) lv = i + 1; });
-    return lv;
+    return Math.max(lv, Math.min(3, Number(floorLevel) || 1));
   }
 
   function renderStatsHero(member) {
@@ -2302,7 +2303,7 @@
     if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport'
       : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
       : member.membership_status === 'active' ? 'Founding Member Passport' : 'Free';
-    if (levelEl) levelEl.textContent = veLevelFor(member.total_points).toLocaleString();
+    if (levelEl) levelEl.textContent = veLevelFor(member.total_points, member.level_override).toLocaleString();
     // Passport Challenge badges (playbook ve-verified-tours-hunt group C; "The Hunt" until
     // Sean renamed it 2026-09-27): one per monthly challenge completed.
     var badgesEl = document.getElementById('dash-hero-badges');
@@ -2313,7 +2314,7 @@
     var levelProgressEl = document.getElementById('dash-hero-level-progress');
     if (levelProgressEl) {
       var lifetimeForProgress = typeof member.total_points === 'number' && member.total_points > 0 ? member.total_points : 0;
-      var lvNow = veLevelFor(lifetimeForProgress), nextAt = VE_LEVEL_AT[lvNow];
+      var lvNow = veLevelFor(lifetimeForProgress, member.level_override), nextAt = VE_LEVEL_AT[lvNow];
       levelProgressEl.textContent = nextAt == null ? 'Top level' : lifetimeForProgress.toLocaleString() + ' / ' + nextAt.toLocaleString() + ' to Lv ' + (lvNow + 1);
     }
   }
@@ -2654,7 +2655,7 @@
     });
     if (dashTabBanners.home) document.body.classList.add('dash-has-banner');
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
-    var lv = veLevelFor(life), nextAt = VE_LEVEL_AT[lv];
+    var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
     setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1)]]);
     setTabStats('guides', [[pts.toLocaleString(), 'Your points'], [Math.floor(pts / 1100).toLocaleString(), Math.floor(pts / 1100) === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
     setTabStats('saves', [['...', 'Episodes saved'], ['...', 'Places and brands saved']]);

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ambassadors | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Ambassadors (Sean, 2026-10-28: "the ambassador program really is invite only... see my current ambassadors... their status,
+       how many people they've enrolled... how many people have visited their link, how many people have signed up underneath them,
+       what level they're on, how many points they have... adjust that information... invite at level two... give them X amount of
+       points... send the invitation right from there... see the draft... personalize it... voice dictate it... see when they've read
+       it... accepted it... declined it... copying the link, but it would only be assigned to their email address").
+       One thing per view: Ambassadors (#list), one Ambassador (#a/<member>), Invitations (#invites/<status>), New invitation (#new),
+       one invitation (#invite/<id>). Data: ve-invites (ambassadors, ambassador, ambassador_save, create, update, preview, send,
+       mark_copied, cancel); migration 20261028_ambassadors_console.sql. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label,.lbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:150px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+    .chip{font:inherit;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--ve-text);}
+    .chip:hover{border-color:var(--ve-green-deep);}
+    .seg{display:flex;flex-wrap:wrap;gap:6px;}
+    .seg button{font:inherit;font-size:13px;font-weight:700;padding:9px 14px;min-height:42px;border-radius:6px;border:1px solid rgba(0,0,0,.25);background:#fff;cursor:pointer;color:var(--ve-text);text-transform:none;letter-spacing:0;}
+    .seg button[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .mic{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;min-height:36px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,0,0,.25);background:#fff;color:var(--ve-text);display:inline-flex;align-items:center;gap:6px;}
+    .mic svg{width:16px;height:16px;}
+    .mic.on{background:#a61b1b;border-color:#a61b1b;color:#fff;}
+    .note-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a{font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;}
+    .views{display:flex;gap:6px;margin:0 0 14px;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .row{display:grid;grid-template-columns:44px minmax(0,1.6fr) repeat(5,minmax(70px,.6fr)) auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .row:first-child{border-top:0;}
+    .row.head{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);padding-top:10px;padding-bottom:10px;background:#fafbfa;position:sticky;top:0;z-index:1;}
+    .row b{display:block;font-size:14px;}
+    .row small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .num{font-size:14px;font-weight:800;white-space:nowrap;}
+    .av{width:44px;height:44px;border-radius:8px;background:#e7efe7 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--ve-green-deep);}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);word-break:break-all;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent{background:#e8f0fe;color:#1a4a9c}.t-read,.t-opened{background:#e6f4f6;color:#0d5c66}.t-joined,.t-active{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled,.t-quiet{background:#f1f1f1;color:#555}
+    .lvl{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;background:#1a1a1a;color:#fff;white-space:nowrap;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .kv div{background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13px;}
+    .kv span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);}
+    .kv b{font-size:20px;font-weight:900;display:block;line-height:1.2;}
+    .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:18px;}
+    .two>.card{margin:0;}
+    .steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+    .steps li{display:flex;gap:10px;align-items:center;font-size:13.5px;}
+    .steps i{width:12px;height:12px;border-radius:50%;background:#d6d9d6;flex:none;}
+    .steps li.done i{background:var(--ve-green-deep);}
+    .steps li.bad i{background:#a61b1b;}
+    .steps li:not(.done):not(.bad){color:var(--ve-text-75);}
+    .chart{display:flex;align-items:flex-end;gap:3px;height:90px;border-bottom:1px solid var(--ve-border);margin:6px 0 4px;}
+    .chart div{flex:1;background:var(--ve-green-deep);border-radius:3px 3px 0 0;min-height:2px;}
+    .chart div.zero{background:#e3e7e3;}
+    .axis{display:flex;justify-content:space-between;font-size:11px;color:var(--ve-text-75);}
+    .linkbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13px;word-break:break-all;}
+    .ledger{font-size:13px;}
+    .ledger div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-top:1px solid var(--ve-border);}
+    .ledger div:first-child{border-top:0;}
+    @media (max-width:900px){
+      .row{grid-template-columns:44px minmax(0,1fr) auto;}
+      .row .c{display:none;}
+      .row.head{display:none;}
+      .row .mob{display:block;}
+    }
+    .row .mob{display:none;font-size:12px;color:var(--ve-text-75);}
+    @media (max-width:600px){.irow{grid-template-columns:minmax(0,1fr) auto;}.irow .c{display:none;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Ambassadors</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Invite only. Every Ambassador with who they have brought in, set their level and give them points, and invite the next one: write it in your words, send it from you or copy their link. An invitation works only for the email it was made for.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-invites';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null;
+      // An invitation's status, in plain words. Read is the email opened (from the email provider); Opened the link is /invite seen.
+      var WORDS = { ready: 'Not sent yet', sent: 'Sent', read: 'Read', opened: 'Opened the link', joined: 'Accepted', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
+      var TABS = ['all', 'ready', 'sent', 'read', 'opened', 'joined', 'declined', 'expired', 'canceled'];
+      var MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function when(d) { return d ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+      function stOf(i) { return i.status === 'sent' && i.email_opened_at ? 'read' : i.status; }
+      function tag(st) { return '<span class="tag t-' + esc(st) + '">' + esc(WORDS[st] || st) + '</span>'; }
+      function initial(name) { return esc(String(name || '?').trim().charAt(0).toUpperCase()); }
+      function av(a) { return a.avatar_url ? '<span class="av" style="background-image:url(\'' + esc(a.avatar_url) + '\')" aria-hidden="true"></span>' : '<span class="av" aria-hidden="true">' + initial(a.name) + '</span>'; }
+      function copy(text, btn) {
+        var done = function () { if (btn) { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); } };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      function route() { return location.hash.replace(/^#/, '') || 'list'; }
+      function go(h) { if (location.hash === '#' + h) draw(); else location.hash = h; }
+      function load() { return api({ action: 'ambassadors' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
+      function views(on) {
+        return '<nav class="views" aria-label="Ambassadors"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Ambassadors (' + data.ambassadors.length + ')</a>' +
+          '<a href="#invites/all" class="' + (on === 'invites' ? 'on' : '') + '">Invitations (' + data.invites.length + ')</a></nav>';
+      }
+
+      // Speak instead of typing: the browser's own speech recognition, added to the note as it hears it. Phones' keyboards have a mic too.
+      function dictation(btn, area) {
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SR) { btn.hidden = true; return; }
+        var rec = null, base = '';
+        btn.addEventListener('click', function () {
+          if (rec) { rec.stop(); return; }
+          rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+          base = area.value ? area.value.replace(/\s*$/, '') + (/\n$/.test(area.value) ? '' : ' ') : '';
+          rec.onresult = function (e) {
+            var text = '';
+            for (var k = 0; k < e.results.length; k++) text += e.results[k][0].transcript;
+            area.value = (base + text.replace(/^\s+/, '')).slice(0, 2000);
+            area.dispatchEvent(new Event('input'));
+          };
+          rec.onend = function () { rec = null; btn.classList.remove('on'); btn.innerHTML = MIC + 'Speak'; };
+          rec.onerror = function () { if (rec) rec.stop(); };
+          rec.start(); btn.classList.add('on'); btn.innerHTML = MIC + 'Stop';
+        });
+      }
+
+      function drawList() {
+        var A = data.ambassadors;
+        var sum = function (k) { return A.reduce(function (s, a) { return s + Number(a[k] || 0); }, 0); };
+        app.innerHTML = '<div class="bar">' + views('list') + '<a class="btn" href="#new">Invite an Ambassador</a></div>' +
+          '<div class="totals"><div class="tot"><b>' + n(A.length) + '</b><span>Ambassadors</span></div><div class="tot"><b>' + n(sum('visitors')) + '</b><span>People who opened their links</span></div>' +
+          '<div class="tot"><b>' + n(sum('signups')) + '</b><span>Signed up with their links</span></div><div class="tot"><b>' + n(sum('members')) + '</b><span>Became members</span></div></div>' +
+          '<div class="list">' + (A.length ? '<div class="row head" aria-hidden="true"><span></span><span>Ambassador</span><span class="c">Level</span><span class="c">Points</span><span class="c">Link visitors</span><span class="c">Signed up</span><span class="c">Members</span><span></span></div>' + A.map(function (a) {
+            return '<div class="row">' + av(a) + '<div><b>' + esc(a.name) + '</b><small>' + esc(a.email) + ' &middot; ' + (a.membership_status === 'active' ? 'Active' : 'Not active') + (a.last_activity_at ? ', last seen ' + esc(day(a.last_activity_at)) : '') + '</small>' +
+              '<span class="mob">Level ' + a.level + ' &middot; ' + n(a.points) + ' points &middot; ' + n(a.visitors) + ' visitors &middot; ' + n(a.signups) + ' signed up</span></div>' +
+              '<span class="c"><span class="lvl">Level ' + a.level + '</span>' + (a.level_override && a.level_override >= a.level ? '<small>Set by you</small>' : '') + '</span>' +
+              '<span class="c num">' + n(a.points) + '</span><span class="c num">' + n(a.visitors) + '</span><span class="c num">' + n(a.signups) + '</span><span class="c num">' + n(a.members) + '</span>' +
+              '<a class="btn btn-ghost btn-sm" href="#a/' + esc(a.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">No Ambassadors yet. Invite the first one.</p>') + '</div>';
+      }
+
+      function drawOne(id) {
+        app.innerHTML = '<p class="crumb"><a href="#list">Ambassadors</a> &rsaquo; ...</p><p class="empty">Loading...</p>';
+        api({ action: 'ambassador', member_id: id }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#list">Ambassadors</a></p><p class="empty">That Ambassador is not here.</p>'; return; }
+          var a = d.ambassador, inv = a.invite;
+          var days = [], max = 0;
+          for (var k = 29; k >= 0; k--) { var dt = new Date(Date.now() - k * 86400000); var key = dt.toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); var v = d.visits_by_day[key] || 0; max = Math.max(max, v); days.push([key, v]); }
+          var cur = a.level_override || 0;
+          app.innerHTML = '<p class="crumb"><a href="#list">Ambassadors</a> &rsaquo; ' + esc(a.name) + '</p>' +
+            '<section class="card"><div class="bar"><div style="display:flex;gap:12px;align-items:center">' + av(a) + '<div><h2 style="margin:0">' + esc(a.name) + '</h2><small class="hint">' + esc(a.email) + '</small></div></div>' +
+              '<span><span class="lvl">Level ' + a.level + '</span> ' + (a.membership_status === 'active' ? '<span class="tag t-active">Active</span>' : '<span class="tag t-quiet">Not active</span>') + '</span></div>' +
+            '<div class="kv"><div><span>Points to spend</span><b>' + n(a.points) + '</b></div><div><span>Lifetime points</span><b>' + n(a.lifetime) + '</b></div>' +
+              '<div><span>Link visitors</span><b>' + n(a.visitors) + '</b>' + n(a.visitors_30d) + ' in 30 days</div><div><span>Signed up</span><b>' + n(a.signups) + '</b></div>' +
+              '<div><span>Became members</span><b>' + n(a.members) + '</b></div><div><span>Referral points</span><b>' + n(a.referral_points) + '</b></div></div>' +
+            (d.link ? '<div class="linkbox"><span style="flex:1">' + esc(d.link) + '</span><button type="button" class="btn btn-ghost btn-sm" id="cp">Copy their link</button></div>' : '') +
+            '<p class="hint" style="margin-top:8px">Ambassador since ' + esc(day(inv && inv.joined_at || a.created_at)) + (inv ? ', from an invitation' + (inv.level > 1 ? ' at Level ' + inv.level : '') : '') + (a.home_community ? ' &middot; home chapter ' + esc(a.home_community) : '') + '</p></section>' +
+            '<div class="two">' +
+            '<section class="card"><h2>Their level</h2><p class="hint" style="margin-bottom:10px">Points earn Level 2 at 2,500 and Level 3 at 10,000. A level you set is the least they have: they still climb with points.</p>' +
+              '<div class="seg" id="lv" role="group" aria-label="Level">' + [[0, 'By their points'], [2, 'Level 2'], [3, 'Level 3']].map(function (o) { return '<button type="button" data-lv="' + o[0] + '" aria-pressed="' + (cur === o[0] || (!cur && !o[0])) + '">' + o[1] + '</button>'; }).join('') + '</div>' +
+              '<h2 style="margin-top:18px">Give points</h2><form class="form" id="gp"><label>Points<input id="gp-n" type="number" min="1" max="100000" step="1" required><span class="chips">' +
+                [500, 1100, 2500, 5000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + n(p) + '</button>'; }).join('') + '</span><span class="hint">Spendable, added to what they have.</span></label>' +
+              '<label>What for (optional)<input id="gp-note" maxlength="80" placeholder="Thank you for the Miami meetup"></label>' +
+              '<div class="wide acts"><button type="submit" class="btn" id="gp-go">Give the points</button><span class="msg" id="msg" role="status"></span></div></form></section>' +
+            '<section class="card"><h2>Visitors to their link, last 30 days</h2><div class="chart" role="img" aria-label="' + n(a.visitors_30d) + ' visitors in 30 days">' + days.map(function (x) {
+                return '<div class="' + (x[1] ? '' : 'zero') + '" style="height:' + (x[1] ? Math.max(6, Math.round(x[1] / max * 100)) : 2) + '%" title="' + esc(x[0]) + ': ' + x[1] + '"></div>';
+              }).join('') + '</div><div class="axis"><span>' + esc(day(days[0][0] + 'T12:00')) + '</span><span>Today</span></div>' +
+              '<h2 style="margin-top:18px">Who signed up with their link</h2>' + (d.referred.length ? '<div class="ledger">' + d.referred.map(function (r) {
+                return '<div><span>' + esc(r.name || r.email) + '</span><span>' + (r.membership_status === 'active' ? 'Member since ' + esc(day(r.entry_paid_at || r.created_at)) : 'Signed up ' + esc(day(r.created_at)) + ', not paid yet') + '</span></div>';
+              }).join('') + '</div>' : '<p class="hint">No one yet.</p>') +
+              '<h2 style="margin-top:18px">Their points</h2><div class="ledger">' + (d.ledger.length ? d.ledger.map(function (l) {
+                return '<div><span>' + esc(String(l.reason || '').replace(/_/g, ' ')) + ' &middot; ' + esc(day(l.created_at)) + '</span><b>' + (l.delta > 0 ? '+' : '') + n(l.delta) + '</b></div>';
+              }).join('') : '<p class="hint">None yet.</p>') + '</div></section></div>';
+          if ($('cp')) $('cp').addEventListener('click', function () { copy(d.link, this); });
+          var msg = $('msg');
+          app.querySelectorAll('[data-lv]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var lv = Number(b.dataset.lv);
+              msg.className = 'msg'; msg.textContent = 'Saving...';
+              api({ action: 'ambassador_save', member_id: a.id, level_override: lv || null }).then(function (r) {
+                if (!r || !r.ok) { msg.className = 'msg err'; msg.textContent = (r && r.message) || 'That did not save.'; return; }
+                data = null; drawOne(a.id);
+              });
+            });
+          });
+          app.querySelectorAll('[data-pts]').forEach(function (b) { b.addEventListener('click', function () { $('gp-n').value = b.dataset.pts; }); });
+          $('gp').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var p = Math.round(Number($('gp-n').value) || 0);
+            if (p < 1 || p > 100000) { msg.className = 'msg err'; msg.textContent = 'Give between 1 and 100,000 points.'; return; }
+            if (!confirm('Give ' + a.name + ' ' + n(p) + ' points?')) return;
+            $('gp-go').disabled = true; msg.className = 'msg'; msg.textContent = 'Giving...';
+            api({ action: 'ambassador_save', member_id: a.id, add_points: p, note: $('gp-note').value.trim() || null }).then(function (r) {
+              $('gp-go').disabled = false;
+              if (!r || !r.ok) { msg.className = 'msg err'; msg.textContent = (r && r.message) || 'That did not go through.'; return; }
+              data = null; drawOne(a.id);
+            }).catch(function () { $('gp-go').disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+          });
+        });
+      }
+
+      function drawInvites(st) {
+        var I = data.invites;
+        var count = function (k) { return I.filter(function (i) { return k === 'all' || stOf(i) === k; }).length; };
+        var rows = I.filter(function (i) { return st === 'all' || stOf(i) === st; });
+        app.innerHTML = '<div class="bar">' + views('invites') + '<a class="btn" href="#new">Invite an Ambassador</a></div>' +
+          '<div class="bar"><nav class="tabs" aria-label="Filter by status">' + TABS.map(function (t) {
+            return '<a href="#invites/' + t + '" class="' + (t === st ? 'on' : '') + '">' + (t === 'all' ? 'All' : WORDS[t]) + ' (' + count(t) + ')</a>';
+          }).join('') + '</nav></div>' +
+          '<div class="list">' + (rows.length ? rows.map(function (i) {
+            var s = stOf(i), last = i.joined_at ? 'accepted ' + day(i.joined_at) : i.declined_at ? 'declined ' + day(i.declined_at) : i.opened_at ? 'opened the link ' + day(i.opened_at) : i.email_opened_at ? 'read ' + day(i.email_opened_at) : i.sent_at ? 'sent ' + day(i.sent_at) : 'made ' + day(i.created_at);
+            return '<div class="irow"><div><b>' + esc(i.name) + '</b><small>' + esc(i.email) + ' &middot; ' + esc(last) + '</small></div>' +
+              '<span class="c num">' + (i.level > 1 ? 'Level ' + i.level + ' &middot; ' : '') + (i.points ? n(i.points) + ' points' : 'No points') + '</span>' + tag(s) +
+              '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">' + (st === 'all' ? 'No Ambassador invitations yet.' : 'None here.') + '</p>') + '</div>';
+      }
+
+      function levelSeg(id, cur) {
+        return '<div class="seg" id="' + id + '" role="group" aria-label="Level">' + [1, 2, 3].map(function (l) { return '<button type="button" data-l="' + l + '" aria-pressed="' + (l === cur) + '">Level ' + l + '</button>'; }).join('') + '</div>';
+      }
+      function wireSeg(el) { el.querySelectorAll('button').forEach(function (b) { b.addEventListener('click', function () { el.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); }); }); }); }
+      function segVal(el) { var b = el.querySelector('[aria-pressed="true"]'); return b ? Number(b.dataset.l) : 1; }
+      function noteField(id, val) {
+        return '<label class="wide"><span class="note-head">Your note<button type="button" class="mic" id="' + id + '-mic">' + MIC + 'Speak</button></span>' +
+          '<textarea id="' + id + '" maxlength="2000" placeholder="Josh, you have been showing up for this community since day one...">' + esc(val || '') + '</textarea>' +
+          '<span class="hint">The start of the email, in your words. Type it or press Speak and say it. A blank line starts a new paragraph. The invitation itself follows.</span></label>';
+      }
+
+      function drawNew() {
+        app.innerHTML = '<p class="crumb"><a href="#list">Ambassadors</a> &rsaquo; Invite an Ambassador</p>' +
+          '<section class="card"><h2>Invite an Ambassador</h2><form class="form" id="f">' +
+          '<label>Their name<input id="f-name" required maxlength="120" autocomplete="off"></label>' +
+          '<label>Their email<input id="f-email" type="email" required maxlength="200" autocomplete="off"><span class="hint">Only this email can accept it.</span></label>' +
+          '<div class="lbl">Level they start at' + levelSeg('f-level', 1) + '<span class="hint">They keep it, and still climb with points.</span></div>' +
+          '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="chips">' +
+            [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, theirs when they accept.</span></label>' +
+          noteField('f-reason', '') +
+          '<div class="wide acts"><button type="submit" class="btn" id="mk">See the draft</button><span class="msg" id="msg" role="status"></span></div>' +
+          '</form></section>';
+        wireSeg($('f-level'));
+        dictation($('f-reason-mic'), $('f-reason'));
+        app.querySelectorAll('[data-pts]').forEach(function (b) { b.addEventListener('click', function () { $('f-points').value = b.dataset.pts; }); });
+        $('f').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var msg = $('msg'), name = $('f-name').value.trim(), email = $('f-email').value.trim();
+          if (!name || !/^\S+@\S+\.\S+$/.test(email)) { msg.className = 'msg err'; msg.textContent = 'Add their name and email.'; return; }
+          var points = Math.max(0, Math.min(100000, Math.round(Number($('f-points').value) || 0)));
+          $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making the draft...';
+          api({ action: 'create', brand: 'vegans-explore', points_to: 'ambassador', points: points, level: segVal($('f-level')), reason: $('f-reason').value.trim() || null, people: [{ name: name, email: email, comp: true }] }).then(function (d) {
+            $('mk').disabled = false;
+            if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
+            if (!d.created.length) { msg.className = 'msg err'; msg.textContent = (d.skipped[0] && d.skipped[0].why) || 'It was not made.'; return; }
+            data = null; go('invite/' + d.created[0].id);
+          }).catch(function () { $('mk').disabled = false; msg.className = 'msg err'; msg.textContent = 'Could not reach the server.'; });
+        });
+      }
+
+      function drawInvite(id) {
+        var i = data.invites.filter(function (x) { return x.id === id; })[0];
+        if (!i) { app.innerHTML = '<p class="crumb"><a href="#invites/all">Invitations</a></p><p class="empty">That invitation is not here.</p>'; return; }
+        var s = stOf(i), open = ['ready', 'sent', 'opened'].indexOf(i.status) >= 0;
+        var steps = [
+          ['Made', i.created_at, true],
+          ['Sent' + (i.sent_via === 'copied' ? ' (you copied the link)' : ''), i.sent_at, !!i.sent_at],
+          ['Read the email', i.email_opened_at, !!i.email_opened_at],
+          ['Opened the link', i.opened_at, !!i.opened_at],
+          i.status === 'declined' ? ['Declined' + (i.decline_note ? ': "' + i.decline_note + '"' : ''), i.declined_at, 'bad'] : ['Accepted', i.joined_at, !!i.joined_at],
+        ];
+        app.innerHTML = '<p class="crumb"><a href="#invites/all">Invitations</a> &rsaquo; ' + esc(i.name) + '</p>' +
+          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(i.name) + '</h2><small class="hint">' + esc(i.email) + ', the only email that can accept it</small></div>' + tag(s) + '</div>' +
+          '<ol class="steps">' + steps.map(function (x) { return '<li class="' + (x[2] === 'bad' ? 'bad' : x[2] ? 'done' : '') + '"><i></i><span>' + esc(x[0]) + (x[1] ? ' &middot; ' + esc(when(x[1])) : '') + '</span></li>'; }).join('') + '</ol>' +
+          (i.sent_via === 'copied' ? '<p class="hint">Read shows only for emails we send; a copied link shows from Opened the link.</p>' : '') +
+          (i.claimed_member_id ? '<p style="margin-top:8px"><a class="btn btn-ghost btn-sm" href="#a/' + esc(i.claimed_member_id) + '">Open their Ambassador page</a></p>' : '') + '</section>' +
+          (open ? '<div class="two"><section class="card"><h2>The draft</h2><form class="form" id="ed">' +
+              '<div class="lbl">Level they start at' + levelSeg('ed-level', i.level || 1) + '</div>' +
+              '<label>Points<input id="ed-points" type="number" min="0" max="100000" step="1" value="' + Number(i.points || 0) + '"></label>' +
+              noteField('ed-reason', i.reason) +
+              '<div class="wide acts"><button type="submit" class="btn btn-ghost" id="ed-save">Save changes</button><span class="msg" id="ed-msg" role="status"></span></div></form></section>' +
+            '<section class="card"><h2>The email, as it goes</h2><div class="mail" id="mail">Loading the email...</div>' +
+              '<div class="acts"><button type="button" class="btn" id="send">' + (i.status === 'ready' ? 'Send it from me' : 'Send it again') + '</button><button type="button" class="btn btn-ghost" id="copy">Copy the link</button><button type="button" class="btn btn-bad" id="cancel">Cancel it</button>' +
+              '<span class="msg" id="msg" role="status"></span></div><p class="hint" style="margin-top:8px">The link works only for ' + esc(i.email) + ': anyone else who opens it is asked to sign in with that email.</p></section></div>'
+            : '<p><a class="btn btn-ghost" href="#invites/all">Back to invitations</a></p>');
+        if (!open) return;
+        function preview() {
+          api({ action: 'preview', id: i.id }).then(function (d) {
+            var m = d && d.email; if (!m) { $('mail').textContent = 'The email did not load.'; return; }
+            $('mail').innerHTML = '<div class="subj">' + esc(m.subject) + '</div>' + m.html;
+          });
+        }
+        preview();
+        wireSeg($('ed-level'));
+        dictation($('ed-reason-mic'), $('ed-reason'));
+        var dirty = false;
+        ['ed-reason', 'ed-points'].forEach(function (k) { $(k).addEventListener('input', function () { dirty = true; }); });
+        $('ed-level').addEventListener('click', function () { dirty = true; });
+        function save() {
+          return api({ action: 'update', id: i.id, reason: $('ed-reason').value.trim() || null, points: Math.max(0, Math.min(100000, Math.round(Number($('ed-points').value) || 0))), level: segVal($('ed-level')) }).then(function (d) {
+            if (!d || !d.ok) throw new Error((d && d.message) || 'That did not save.');
+            dirty = false; data = null;
+          });
+        }
+        $('ed').addEventListener('submit', function (e) {
+          e.preventDefault();
+          var m = $('ed-msg'); $('ed-save').disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+          save().then(function () { $('ed-save').disabled = false; m.textContent = 'Saved. The email shows it.'; preview(); }, function (err) { $('ed-save').disabled = false; m.className = 'msg err'; m.textContent = err.message; });
+        });
+        var msg = $('msg');
+        $('send').addEventListener('click', function () {
+          var b = this; b.disabled = true; msg.className = 'msg'; msg.textContent = dirty ? 'Saving your changes...' : 'Sending...';
+          (dirty ? save() : Promise.resolve()).then(function () {
+            msg.textContent = 'Sending...';
+            return api({ action: 'send', ids: [i.id] });
+          }).then(function (d) {
+            b.disabled = false;
+            if (d && d.sent && d.sent.length) { msg.textContent = 'Sent from you to ' + i.email + '.'; data = null; return; }
+            msg.className = 'msg err'; msg.textContent = (d && (d.message || (d.failed && d.failed[0] && d.failed[0].why))) || 'It did not send.';
+          }).catch(function (err) { b.disabled = false; msg.className = 'msg err'; msg.textContent = (err && err.message) || 'Could not reach the server.'; });
+        });
+        $('copy').addEventListener('click', function () {
+          var b = this;
+          (dirty ? save() : Promise.resolve()).then(function () { return api({ action: 'mark_copied', id: i.id }); }).then(function (d) {
+            if (d && d.link) { copy(d.link, b); msg.className = 'msg'; msg.textContent = 'Copied. It works for 30 days, for ' + i.email + ' only.'; data = null; }
+            else { msg.className = 'msg err'; msg.textContent = 'That did not go through.'; }
+          }).catch(function (err) { msg.className = 'msg err'; msg.textContent = err.message; });
+        });
+        $('cancel').addEventListener('click', function () {
+          if (!confirm('Cancel the invitation for ' + i.name + '? Their link stops working.')) return;
+          api({ action: 'cancel', id: i.id }).then(function (d) {
+            if (d && d.ok) { data = null; go('invites/all'); } else { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; }
+          });
+        });
+      }
+
+      function draw() {
+        var r = route();
+        if (r === 'new') return drawNew();
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The Ambassadors did not load. Refresh to try again.</p>'; }); }
+        var m;
+        if ((m = r.match(/^a\/([0-9a-f-]{36})$/))) return drawOne(m[1]);
+        if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);
+        if ((m = r.match(/^invites\/([a-z]+)$/))) return drawInvites(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
+        drawList();
+      }
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
