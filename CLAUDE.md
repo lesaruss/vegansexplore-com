@@ -1489,7 +1489,10 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   Philadelphia 61, Maryland 54, Florida (the North Florida searches) 43, Washington, D.C. 18, Delaware 16, West Virginia 6. The logo
   sweep, the menu link finder and reader, and the essentials pass fill them in; the essentials cron was widened the same day to every 10
   minutes, 6 to 10 AM UTC, 30 a run (it costs nothing once nothing is due). A listing outside the US shows no empty state in its address
-  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules. It took the Directory past 1,000 approved listings, which
+  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules. **Atlanta and Los Angeles** got the same search the same day (Sean: "run the restaurant search for Atlanta and Los
+  Angeles"; migration `20261028_restaurant_search_atlanta_los_angeles.sql`): 194 live, Atlanta 64 and Los Angeles 130. The Los Angeles
+  chapter matched only five city names, so its list was widened to the cities found (Pasadena, Long Beach, Santa Monica, Burbank,
+  Glendale, Culver City...; `LA` in `ve-hubs.js`, `LA_CITIES` in `directory/listing.html`, `HUBS` in `ve-claims`, `ve_outreach_cities`). It took the Directory past 1,000 approved listings, which
   showed that `fetchAll` in `ve-region-directory.js` had never paged: its second request asked for the first page again, forever, and
   every Directory view stayed empty for about 30 minutes until it was fixed (`(offset || 0) + 1000`, `order=id`). The Directory reads
   1,000 listings a request and pages until a short page.
