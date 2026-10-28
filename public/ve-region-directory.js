@@ -1041,12 +1041,14 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type&status=eq.approved&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type&status=eq.approved&order=id&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         acc = acc.concat(data || []);
-        if (data && data.length === 1000) { fetchAll(root, config, offset + 1000, acc); }
+        // offset starts undefined, so (offset || 0): undefined + 1000 is NaN, which the address turned back into 0 and the
+        // first page loaded forever once the Directory passed 1,000 listings (2026-10-28).
+        if (Array.isArray(data) && data.length === 1000) { fetchAll(root, config, (offset || 0) + 1000, acc); }
         else {
           var approved = acc.filter(function (l) { return inRegion(config, l) && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; });
           // The public directory rule (/public/ve-trust.js): unvetted vegan-friendly listings
