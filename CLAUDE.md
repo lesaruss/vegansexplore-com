@@ -384,8 +384,9 @@ for businesses that is a squeeze page for them."
   `/claim`'s previews), never a database row, marked Sample with `noindex`. Its bar switches **A visitor** / **The owner**
   (`sampleView`); The owner, Claim Listing, or `?tab=brand` open **Your dashboard**, the real business dashboard
   (`VEPartnerDash.mount` with `call`, answered by the demo file's `dashboard()` on seeded sample numbers, and `onJoin`); anything
-  that would save says so in a toast, and joining goes to `/business#/start`. Its logo and photos are left for Higgsfield art
-  (credits ran out 2026-10-27), so its dashboard shows them under Get your page ready, the way a new owner sees it.
+  that would save says so in a toast, and joining goes to `/business#/start`. Its logo and four photos (`business/sample/img/`,
+  made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
+  page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
@@ -1090,8 +1091,10 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   South Florida adds the Treasure Coast and the Keys, Central Florida Greater Orlando, Tampa Bay, the Space Coast, Volusia and the
   southwest Gulf, North Florida Jacksonville to the Panhandle (`SF`, `CF`, `NF` in `ve-hubs.js`; `ve-claims` `HUBS` and
   `ve_outreach_cities` hold the same lists). A chapter's art is `VE_HUBS[].page.banner` (the banner, the guide and the listing header
-  read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); Virginia and West Virginia wear
-  D.C.'s, Delaware Philadelphia's and North Florida Central Florida's until their own are made (Higgsfield credits ran out 2026-10-27). VE_HUBS[].state groups chapters by
+  read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); North Florida (Jacksonville and
+  the Main Street Bridge), Virginia (Richmond and the James River rapids), West Virginia (the Capitol in Charleston) and Delaware
+  (the Wilmington riverfront) got their own on 2026-10-28 (`communities/<slug>/banner.jpg`, made in Higgsfield in the Maryland
+  banner's style; the dashboards' `VE_CITY_BANNER` maps in `center-console.html` and `cm-legacy.html` hold the same paths). VE_HUBS[].state groups chapters by
   state. The chapter list also lives in `ve-auth` (`VALID_COMMUNITIES`, names, city aliases), `ve-board`, `ve-bounties`, `ve-claims`,
   `ve-hunt`, `ve-invites`, `ve-media-library`, `ve-news-desk`, `ve-tours` and the name maps in the dashboard, join, lead and Depot
   pages; the dashboard's city rules are built from VE_HUBS. A new chapter changes all of them. Large functions deploy from a commit
