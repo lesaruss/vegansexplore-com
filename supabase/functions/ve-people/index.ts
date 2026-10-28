@@ -260,7 +260,7 @@ Deno.serve(async (req) => {
     if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
     const { data: l } = await db.from('listings').select('id, slug, name, category, logo_url, instagram, website, details').eq('id', body.listing_id).maybeSingle();
     if (!l || !PEOPLE_CATS.includes(l.category)) return json({ error: 'not_a_person' }, 400);
-    let pic = '', handle = '', site = '', source = '';
+    let pic = '', handle = '', site = '', source = '', alt = '', fullName = '';
     if (action === 'photo_instagram') {
       handle = String(body.handle || l.instagram || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/[\/?#].*$/, '').toLowerCase();
       if (!/^[a-z0-9._]{1,30}$/.test(handle)) return json({ error: 'handle' }, 400);
@@ -276,16 +276,21 @@ Deno.serve(async (req) => {
       const hay = `${p.fullName || ''} ${p.username || ''} ${p.biography || ''}`.toLowerCase();
       if (!body.sure && !words.some((w) => hay.includes(w)))
         return json({ error: 'not_them', message: `@${handle} is ${p.fullName || 'someone else'}.`, full_name: p.fullName || '', bio: String(p.biography || '').slice(0, 200) }, 409);
-      pic = p.profilePicUrlHD || p.profilePicUrl || ''; site = httpsUrl(p.externalUrl); source = 'instagram:@' + handle;
+      pic = p.profilePicUrlHD || p.profilePicUrl || ''; alt = p.profilePicUrl && p.profilePicUrl !== pic ? p.profilePicUrl : ''; fullName = String(p.fullName || ''); site = httpsUrl(p.externalUrl); source = 'instagram:@' + handle;
     } else {
       pic = httpsUrl(body.url); source = pic;
     }
     if (!pic) return json({ error: 'no_picture' }, 400);
-    const img = await fetch(pic, { headers: { 'User-Agent': 'Mozilla/5.0' } }).catch(() => null);
-    const type = (img?.headers.get('content-type') || '').split(';')[0];
-    if (!img || !img.ok || !/^image\/(jpeg|png|webp)$/.test(type)) return json({ error: 'picture', message: 'The picture did not load.' }, 400);
-    const bytes = new Uint8Array(await img.arrayBuffer());
-    if (bytes.length < 3000 || bytes.length > 8_000_000) return json({ error: 'picture_size' }, 400);
+    // Instagram's large picture sometimes comes back empty; its standard one is the fallback.
+    let type = '', bytes = new Uint8Array(0);
+    for (const u of [pic, alt].filter(Boolean)) {
+      const img = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36' } }).catch(() => null);
+      const t = (img?.headers.get('content-type') || '').split(';')[0];
+      if (!img || !img.ok || !/^image\/(jpeg|png|webp)$/.test(t)) continue;
+      const b = new Uint8Array(await img.arrayBuffer());
+      if (b.length >= 1500 && b.length <= 8_000_000) { type = t; bytes = b; break; }
+    }
+    if (!type) return json({ error: 'picture', message: 'The picture did not load.' }, 400);
     const path = `media/people/${l.slug}/photo-${Date.now()}.${type === 'image/png' ? 'png' : type === 'image/webp' ? 'webp' : 'jpg'}`;
     const { error: upErr } = await db.storage.from('vegan-media').upload(path, bytes, { contentType: type, upsert: false });
     if (upErr) return json({ error: 'upload', message: upErr.message }, 500);
@@ -298,7 +303,7 @@ Deno.serve(async (req) => {
     const { error } = await db.from('listings').update(patch).eq('id', l.id);
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     await logEdits(l.id, by, [{ field: 'logo', old_value: l.logo_url || null, new_value: url }]);
-    return json({ ok: true, logo_url: url, instagram: patch.instagram || l.instagram, website: patch.website || l.website });
+    return json({ ok: true, logo_url: url, full_name: fullName, instagram: patch.instagram || l.instagram, website: patch.website || l.website });
   }
 
   return json({ error: 'unknown_action' }, 400);
