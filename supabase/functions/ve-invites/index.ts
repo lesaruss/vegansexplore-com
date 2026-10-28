@@ -167,24 +167,30 @@ async function emailFor(inv: Invite) {
     : inv.points_to === 'community_manager' ? `${first}, lead ${city ?? 'your city'} with ${brand}`
     : inv.points_to === 'ambassador' ? `${first}, be a ${brand} Ambassador`
     : `${first}, an invitation to ${brand}`;
+  // Each paragraph is HTML built from escaped text, with what matters in bold (Sean, 2026-10-28: "Each paragraph should have a space.
+  // Bold things that you feel should be bolded"). Spacing is inline on every paragraph, so it holds in every email app and in the
+  // Depot's preview, whose page resets margins.
+  const b = (t: string) => `<strong>${esc(t)}</strong>`;
   const paras: string[] = [];
-  if (inv.reason) for (const p of String(inv.reason).split(/\n\s*\n/)) if (p.trim()) paras.push(p.trim());
-  paras.push(`I'm building ${brand}, a community for Vegans, city by city, and I'd like you to be part of it.`);
-  if (d) paras.push(`I'd like you at our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}: a small table, set by name. Your link holds your seat.`);
-  if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${city ?? ''} community as its Community Manager. Your link has the details.`.replace('our  ', 'our '));
-  if (inv.points_to === 'ambassador') paras.push(`I'd like you to be one of our first Ambassadors: one of the people who bring others in. Your link sets up your Ambassador account and walks you through it.`);
-  if (inv.comp) paras.push(`Your Founding Membership is on us${inv.points > 0 ? `, with ${Number(inv.points).toLocaleString('en-US')} points to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} Level ${inv.level}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
+  if (inv.reason) for (const p of String(inv.reason).split(/\n\s*\n/)) if (p.trim()) paras.push(esc(p.trim()).replace(/\n/g, '<br>'));
+  paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
+  if (d) paras.push(`I'd like you at ${b(`our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}`)}: a small table, set by name. Your link holds your seat.`);
+  if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${esc(city ?? '')} community as its ${b('Community Manager')}. Your link has the details.`.replace('our  ', 'our '));
+  if (inv.points_to === 'ambassador') paras.push(`I'd like you to be one of our ${b('first Ambassadors')}: one of the people who bring others in. Your link sets up your Ambassador account and walks you through it.`);
+  if (inv.comp) paras.push(`${b('Your Founding Membership is on us')}${inv.points > 0 ? `, with ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} ${b(`Level ${inv.level}`)}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
   const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : 'Accept your invitation';
   const url = linkUrl(inv);
   const fine = `This invitation is just for you, at ${inv.email}. It works once, until ${untilText}.`;
-  const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a;font-size:15px;line-height:1.6">
-<p>Hi ${esc(first)},</p>
-${paras.map((p) => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('\n')}
-<p style="margin:28px 0"><a href="${esc(url)}" style="display:inline-block;background:#22C55E;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:14px 26px;border-radius:6px;text-decoration:none">${esc(cta)}</a></p>
-<p>Sean A. Russell<br>Founder, ${esc(brand)}</p>
-<p style="font-size:12px;color:#777">${esc(fine)}</p>
+  const P = 'margin:0 0 18px;font-size:15px;line-height:1.65;color:#1a1a1a';
+  const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;margin:0 auto;padding:8px 0;color:#1a1a1a;font-size:15px;line-height:1.65">
+<p style="${P};margin:0 0 22px">Hi ${esc(first)},</p>
+${paras.map((x) => `<p style="${P}">${x}</p>`).join('\n')}
+<p style="margin:30px 0"><a href="${esc(url)}" style="display:inline-block;background:#22C55E;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:14px 26px;border-radius:6px;text-decoration:none">${esc(cta)}</a></p>
+<p style="${P}">Sean A. Russell<br>Founder, ${esc(brand)}</p>
+<p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#777">${esc(fine)}</p>
 </div>`;
-  const text = [`Hi ${first},`, ...paras, `${cta}: ${url}`, `Sean A. Russell\nFounder, ${brand}`, fine].join('\n\n');
+  const plain = (x: string) => x.replace(/<br>/g, '\n').replace(/<[^>]+>/g, '').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  const text = [`Hi ${first},`, ...paras.map(plain), `${cta}: ${url}`, `Sean A. Russell\nFounder, ${brand}`, fine].join('\n\n');
   return { subject, html, text, to: inv.email, from: FROM, link: url };
 }
 
