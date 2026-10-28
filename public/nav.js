@@ -1,3 +1,13 @@
+/* ---- Google Analytics on every page (Sean, 2026-10-28: "add the tag to the missing pages") ----
+ * 43 of 142 pages had no /analytics.js, among them Join the Directory and both Guides. nav.js is on every page, so it loads the
+ * tag where a page does not (analytics.js runs once either way). Not on our own admin pages (/admin/, the board consent), so the
+ * team's work in the Depot is not counted as traffic. */
+(function () {
+  if (window.__veGA || /^\/(admin\/|board-consent)/.test(location.pathname)) return;
+  var s = document.createElement('script'); s.src = '/analytics.js'; s.async = true;
+  (document.head || document.documentElement).appendChild(s);
+})();
+
 /* ---- Inside the dashboard window (Sean, 2026-10-04) ----
  * Any page the dashboard opens in its console frame drops its own nav and footer (the dashboard
  * keeps its own around it) and tells the dashboard its height, so the frame grows to fit and
