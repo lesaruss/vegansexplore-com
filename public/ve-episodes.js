@@ -73,8 +73,9 @@
     if (now && now.key === key && bar) { var a0 = bar.querySelector('audio'); if (a0.paused) a0.play(); else a0.pause(); return; }
     if (!bar) {
       bar = document.createElement('div'); bar.id = 'vep-player'; bar.setAttribute('role', 'region'); bar.setAttribute('aria-label', 'Episode player');
-      // Inside the dashboard's frame the window's foot can be far off screen, so the player sits above the list instead.
-      var dock = document.documentElement.classList.contains('ve-embedded') && document.querySelector('.vep-dock');
+      // Inside the dashboard's frame the window's foot can be far off screen, so the player sits above the list instead. A page
+      // can ask for that everywhere with .vep-dock[data-vep-always] (a person's page, Sean 2026-10-28: the player above the episodes).
+      var dock = document.querySelector('.vep-dock[data-vep-always]') || (document.documentElement.classList.contains('ve-embedded') && document.querySelector('.vep-dock'));
       if (dock) { bar.className = 'docked'; dock.appendChild(bar); } else document.body.appendChild(bar);
     }
     now = { key: key, ep: ep, show: show };
@@ -91,6 +92,14 @@
       try { navigator.mediaSession.metadata = new MediaMetadata({ title: ep.title, artist: (show && show.name) || '', artwork: (ep.image || (show && show.image)) ? [{ src: ep.image || show.image, sizes: '512x512' }] : [] }); } catch (e) {}
     }
     audio.play().catch(function () {}); syncButtons();
+    if (bar.classList.contains('docked') && !inView(bar)) bar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  // Whether the docked player shows on screen, under the sticky menu, counting the dashboard's frame around the page.
+  function inView(el) {
+    var r = el.getBoundingClientRect(), top = r.top, bottom = r.bottom, w = window;
+    try { while (w.frameElement) { var f = w.frameElement.getBoundingClientRect(); top += f.top; bottom += f.top; w = w.parent; } } catch (e) {}
+    var navH = 72; try { navH = parseInt(getComputedStyle(w.document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 72; } catch (e) {}
+    return top >= navH && bottom <= w.innerHeight;
   }
 
   // ---- saving ----
@@ -110,6 +119,8 @@
   function CSS_ESC(s) { return window.CSS && window.CSS.escape ? window.CSS.escape(s) : String(s).replace(/["\\]/g, '\\$&'); }
   function saveLook(b, on) { b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.innerHTML = (on ? I.saved + 'Saved' : I.save + 'Save'); }
 
+  // o: saved, href (the title opens the episode), showName (the show in the meta line), pre (words before it, a person's role),
+  // acts (more buttons after Play and Save). Play shows only for an episode with audio, Save only with a show and a guid.
   function row(ep, show, o) {
     o = o || {};
     var key = keyOf(ep, show), saved = !!o.saved;
@@ -117,11 +128,12 @@
       '<div class="vep-img" style="background-image:url(\'' + esc(ep.image || show.image || '') + '\')" role="img" aria-label=""></div>' +
       '<div style="min-width:0">' +
         (o.href ? '<a class="vep-t" href="' + esc(o.href) + '" data-vep-open="' + esc(ep.guid) + '">' + esc(ep.title) + '</a>' : '<div class="vep-t">' + esc(ep.title) + '</div>') +
-        '<div class="vep-meta">' + esc([o.showName ? show.name : '', when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
+        '<div class="vep-meta">' + esc([[o.pre, o.showName ? show.name : ''].filter(Boolean).join(' on '), when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
         (ep.summary ? '<div class="vep-sum">' + esc(ep.summary) + '</div>' : '') +
       '</div>' +
-      '<div class="vep-acts"><button type="button" class="vep-btn go" data-vep-play="' + esc(key) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' +
-        '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + saved + '">' + (saved ? I.saved + 'Saved' : I.save + 'Save') + '</button></div>' +
+      '<div class="vep-acts">' + (ep.audio ? '<button type="button" class="vep-btn go" data-vep-play="' + esc(key) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' : '') +
+        (show.id && ep.guid ? '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + saved + '">' + (saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' : '') +
+        (o.acts || '') + '</div>' +
     '</div>';
   }
 

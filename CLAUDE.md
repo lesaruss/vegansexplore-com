@@ -1348,8 +1348,11 @@ commits to, its share of a sponsorship) is not set yet; the review of applicatio
 "Use the squared with the rounded corners logo thumbnails for the podcast... I don't want it to be like a long scroll... 10 episodes and
 then you can scroll within... if they click listen, it's going to open up a player. And if they click watch, it could open up a light
 box... I want to keep people in this environment." On a person's page (People section, `renderPersonOverview` and `loadPerson` in
-`directory/listing.html`), every podcast episode wears its show's square artwork (72 px, 8 px corners; `ppEpRow`), **Listen** plays it in
-the player bar (`VEEpisodes.play`, from the show's own feed), **Watch** and the In their words moments open YouTube in a lightbox
+`directory/listing.html`), every podcast episode is the podcast listing's own row (`VEEpisodes.row` through `ppEpRow`: the show's square
+artwork, **Play** and **Save**, plus Watch when it is on YouTube; no search, the lists are short). Play opens the player **docked above the
+podcast sections** (`.vep-dock[data-vep-always]`, before Their podcast and With Vegans Explore; Sean, 2026-10-28: "it puts it at the very
+bottom and you don't see it right away"), each Play changes it, and it scrolls into view when off screen (`inView` in `ve-episodes.js`,
+which a podcast listing in the dashboard's frame gets too). **Watch** and the In their words moments open YouTube in a lightbox
 (`ppLightbox`, a moment from its second), **Save** saves the episode like a show page's, and every list shows about ten rows and
 scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcast** (a show they host that is in
 our Media section, `details.person.shows`, its latest 30 episodes, with The show's page), **With Vegans Explore** (their episodes on our

@@ -2381,6 +2381,8 @@ function renderPersonOverview(l){
   if(links.length) h += '<div class="section"><h2 class="section-title">Their work</h2><div class="pp-links">' +
     links.map(function(x){ return '<a class="pp-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" data-act="website">' + esc(x.label || 'Visit') + ' <span aria-hidden="true">&#8599;</span></a>'; }).join('') + '</div></div>';
   // Their own show, when it is in our Media section (details.person.shows), filled by loadPerson.
+  // The player docks here, above every podcast list on the page, and changes with each Play (the podcast listing's player).
+  h += '<div class="vep-dock" data-vep-always></div>';
   h += '<div id="pp-shows"></div>';
   h += '<div class="section" id="pp-credits"><h2 class="section-title">With Vegans Explore</h2><div class="pp-list"><p class="pp-empty">Loading...</p></div></div>';
   h += '<div class="section" id="pp-elsewhere" hidden><h2 class="section-title">On other podcasts</h2><p class="pp-sub">Shows in our Directory that have had them on, from each show\'s own feed.</p><div class="pp-scroll"></div></div>';
@@ -2396,7 +2398,7 @@ function shortDate(d){ if(!d) return ''; var t = new Date(String(d).length === 1
 // artwork, Listen plays it in the player bar (/public/ve-episodes.js), Watch opens the video in a lightbox, and a long list shows
 // ten and scrolls inside its box. ve_person_episodes(listing) gives their episodes on our shows matched to each show's own feed,
 // their episodes on other shows in the Directory, and the shows they host (details.person.shows).
-var PP_EPS = [];
+var PP_EPS = {};
 function loadPerson(l){
   var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
   var sel = 'id,kind,role,title,url,happened_on,note,content:ve_pulse_content(id,title,slug,youtube_id,thumbnail_url,podcast_show,episode_number,published_at),' +
@@ -2420,7 +2422,7 @@ function loadPerson(l){
       var ours = pe.ours || [];
       var box = document.querySelector('#pp-credits .pp-list'); if(!box) return;
       var GROUPS = [['event', 'Events'], ['article', 'Articles'], ['video', 'Videos']];
-      var html = (ours.length ? '<h3 class="pp-group">Podcast episodes <span>' + ours.length + '</span></h3><div class="pp-scroll">' + ours.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div>' : '') +
+      var html = (ours.length ? '<h3 class="pp-group">Podcast episodes <span>' + ours.length + '</span></h3><div class="pp-scroll"><div class="vep-list">' + ours.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div></div>' : '') +
         GROUPS.map(function(g){
           var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
           return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3><div class="pp-scroll">' + list.map(personRow).join('') + '</div>';
@@ -2434,10 +2436,10 @@ function loadPerson(l){
           '<span class="pp-sq pp-sq-lg" style="background-image:url(\'' + esc(show.image || '') + '\')" aria-hidden="true"></span>' +
           '<div><div class="pp-showname">' + esc(show.name) + '</div><div class="pp-meta">' + (list.length ? 'The latest ' + (list.length === 1 ? 'episode' : list.length + ' episodes') + ', from its own feed' : 'From its own feed') + '</div></div>' +
           '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(show.slug) + '">The show\'s page</a></div>' +
-          (list.length ? '<div class="pp-scroll">' + list.map(function(ep){ ep.show = { id: show.id, slug: show.slug, name: show.name, image: show.image }; return ppEpRow(ep, 'Host'); }).join('') + '</div>' : '') + '</div>';
+          (list.length ? '<div class="pp-scroll"><div class="vep-list">' + list.map(function(ep){ ep.show = { id: show.id, slug: show.slug, name: show.name, image: show.image }; return ppEpRow(ep, 'Host'); }).join('') + '</div></div>' : '') + '</div>';
       }).join('');
       var other = pe.elsewhere || [], os = document.getElementById('pp-elsewhere');
-      if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join(''); os.hidden = false; }
+      if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = '<div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join('') + '</div>'; os.hidden = false; }
       var vids = rows.filter(function(r){ return r.yt; });
       ours.forEach(function(ep){ if(ep.youtube_id && !vids.some(function(v){ return v.yt === ep.youtube_id; })) vids.push({ yt: ep.youtube_id, title: ep.title }); });
       if(vids.length){
@@ -2461,16 +2463,13 @@ function loadPerson(l){
       sec.hidden = false;
     }).catch(function(){});
 }
-// One podcast episode: the show's square artwork, the title, the role and show, Listen (plays here), Watch (lightbox), Save.
+// One podcast episode, the podcast listing's row (VEEpisodes.row): the show's square artwork, the title, the role and show, Play (in the
+// player docked above the lists), Save, and Watch (the lightbox) when it is on YouTube.
 function ppEpRow(ep, role){
-  var show = ep.show || {}, i = PP_EPS.push(ep) - 1, pic = show.image || ep.image || '';
-  var len = window.VEEpisodes && ep.duration ? VEEpisodes.len(ep.duration) : '';
-  var acts = (ep.audio ? '<button type="button" class="pp-act" data-pp-listen="' + i + '">Listen</button>' : '') +
-    (ep.youtube_id ? '<button type="button" class="pp-act' + (ep.audio ? ' pp-act-2' : '') + '" data-pp-watch="' + esc(ep.youtube_id) + '">Watch</button>' : '') +
-    (ep.audio && ep.guid && show.id ? '<button type="button" class="pp-act pp-act-2" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" data-pp-save="' + i + '" aria-pressed="false">Save</button>' : '');
-  return '<div class="pp-row pp-row-sq"><span class="pp-sq" style="background-image:url(\'' + esc(pic) + '\')" role="img" aria-label="' + esc(show.name || '') + '"></span>' +
-    '<div class="pp-info"><div class="pp-title">' + esc(ep.title) + '</div><div class="pp-meta">' + esc([role, show.name ? 'on ' + show.name : ''].filter(Boolean).join(' ')) +
-    (ep.date ? ' &middot; ' + esc(shortDate(ep.date)) : '') + (len ? ' &middot; ' + esc(len) : '') + '</div></div><div class="pp-acts">' + acts + '</div></div>';
+  var show = ep.show || {}; PP_EPS[(show.id || '') + '|' + ep.guid] = ep;
+  if(!window.VEEpisodes) return '';
+  return VEEpisodes.row(Object.assign({}, ep, { image: show.image || ep.image || '' }), show, { pre: role, showName: !!show.name,
+    acts: ep.youtube_id ? '<button type="button" class="vep-btn" data-pp-watch="' + esc(ep.youtube_id) + '">Watch</button>' : '' });
 }
 function personRow(r){
   var pic = r.yt ? ytThumb(r.yt) : r.thumb;
@@ -2498,10 +2497,11 @@ document.addEventListener('keydown', function(e){ if(e.key === 'Escape') ppLight
 document.addEventListener('click', function(e){
   var w = e.target.closest && e.target.closest('[data-pp-watch]');
   if(w){ ppLightbox(w.getAttribute('data-pp-watch'), +w.getAttribute('data-pp-start') || 0, +w.getAttribute('data-pp-end') || 0); return; }
-  var li = e.target.closest && e.target.closest('[data-pp-listen]');
-  if(li && window.VEEpisodes){ var ep = PP_EPS[+li.getAttribute('data-pp-listen')]; if(ep) VEEpisodes.play(ep, ep.show || {}); return; }
-  var sv = e.target.closest && e.target.closest('[data-pp-save]');
-  if(sv && window.VEEpisodes){ var ep2 = PP_EPS[+sv.getAttribute('data-pp-save')]; if(ep2) VEEpisodes.save(ep2.show.id, ep2.guid, sv).then(function(on){ if(on != null) sv.textContent = on ? 'Saved' : 'Save'; }); }
+  // A person's episodes (ppEpRow): Play and Save, the same as a podcast listing's. The podcast listing wires its own rows.
+  var pl = e.target.closest && e.target.closest('[data-vep-play]');
+  if(pl && window.VEEpisodes && PP_EPS[pl.getAttribute('data-vep-play')]){ var ep = PP_EPS[pl.getAttribute('data-vep-play')]; VEEpisodes.play(ep, ep.show || {}); return; }
+  var sv = e.target.closest && e.target.closest('[data-vep-save]');
+  if(sv && window.VEEpisodes && PP_EPS[sv.getAttribute('data-vep-save')]){ var ep2 = PP_EPS[sv.getAttribute('data-vep-save')]; VEEpisodes.save(ep2.show.id, ep2.guid, sv); }
 });
 
 // What kind of listing it is, and what to call it (Sean, 2026-10-27: "for the different types of content based off of the settings
