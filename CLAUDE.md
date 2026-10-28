@@ -1596,6 +1596,11 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   clips (about -15 LUFS). On phones (900 px and under) she is full width on top with her words under her and a **Hide Maya /
   Show Maya** switch (`#dgFold`, kept for the visit), and Back / N of M / Next sit under the content (`#dgTourM`); Next goes
   back up to her.
+- **Minimize the Guide** (Sean, 2026-10-28: "if I'm using this tool, I don't want to see River on the right-hand side... he just
+  becomes like a little icon of his thumbnail... when you click it, it opens up and pushes... everything to the left"). Every Guide
+  page loads `/public/ve-guide-min.js` after its script: on desktop the Guide's Hide button (`#dgFold`, under the picture) folds the
+  rail to a round thumbnail (`.dg-mini`, the rail's `data-guide` through `VEGuideArt`) and the content takes the width; the
+  thumbnail opens it again. Phones keep Hide / Show. A new Guide page sets `data-guide` on `#dgRail` and loads the script.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   stacked at the top right (`.dg-acts`, one above the other so the words keep their room on a phone; Sean, 2026-10-10). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
