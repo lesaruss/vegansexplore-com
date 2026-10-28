@@ -1927,7 +1927,8 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
-Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). Not built yet. Two
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
+Guide is built and waiting on River's lines (below); the Airport Guide is not built. Two
 Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 
 - **The Stadium & Arena Guide**: one Guide for both, with a Stadiums / Arenas filter (same fan, same concessionaires, and two
@@ -1947,6 +1948,26 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   check; each submission waits in a Depot review queue and pays only when accepted (`ve_points_grant`): the first accepted
   correction 100 points, later ones that agree 25 (told who was first), "Still accurate" 10, at most 5 paid a day. Every item
   shows when it was last confirmed and ages out at 35 days; a new season marks a stadium's items stale until confirmed.
+- **The Stadium & Arena Guide, built 2026-10-28** (Sean: "go"; migrations `20261028_ve_venue_guides.sql`,
+  `20261028_venue_report_points_reason.sql`; edge function `ve-venues`). Page `guides/stadium-arena-guide.html` and
+  `guide-scripts/stadium-arena-guide.js` (the Dairy Guide's layout, River on the right, `noindex`): Overview, **Venues**
+  (`#/venues[/stadiums|arenas]`, one venue per view `#/venue/<slug>`: each stand, where it is, its items with Vegan / Vegan on
+  request / Ask before you order, where we read it, and Checked <date> / Not checked this season / Not checked by a member yet),
+  **Help keep it right** (`#/venue/<slug>/report/confirm|wrong|gone|missing[/<item>]`: a photo shrunk to 1600 px into the private
+  bucket `venue-reports`, the phone's location, then `ve_venue_report_save`, which refuses a phone outside the venue's
+  `radius_m` plus up to 100 m of its accuracy, a fix worse than 500 m, 20 a day, the same item and kind twice a day), My list
+  (`ve_guide_saves` kinds `venue`, `venue_item`) and Get access. Data: `ve_venues` (kind stadium | arena | airport, `free_example`,
+  `radius_m`, `season_reset_at`, Google place and pin), `ve_venue_spots` (stands, `zone`), `ve_venue_items` (`sources`,
+  `last_confirmed_at`), `ve_venue_reports`; RLS on with no policies, everything through `ve-venues`. Seeded from published
+  sources (Upfront, The Leftovers Miami, the suite catering menu, Axios, Veggl): Hard Rock Stadium (the free one), Kaseya Center,
+  loanDepot park, Amerant Bank Arena (no items yet). **Depot > Venues** (`/admin/depot/venues`, Directory in the Go to menu):
+  the reports (`#list/pending|accepted|agreed|declined`), one report (`#r/<id>`: the photo, how far away, the item, the other
+  reports on it, **Accept**, **Agrees with the first**, **Decline** with a note; `ve_venue_report_review`, grant reason
+  `venue_report`), and the venues, stands and items to edit, with Find it on Google and Start a new season. Accepting a
+  correction pays; the team changes the item itself. Proven 2026-10-28 in a rolled-back transaction with two internal accounts
+  (too far refused; 100, 25, 10 and 0 paid; Still accurate marked the item checked); it found the ledger refusing
+  `venue_report`, fixed the same day. The `ve_guides` row `stadium-arena-guide` stays `published` false (the buy button reads
+  Coming soon; super admins see every venue) until Sean approves River's lines and his clips are made (`CLIPS` is empty).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
