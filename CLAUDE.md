@@ -656,9 +656,15 @@ and accounts that never paid, leaving out members, anyone with an invitation alr
 the unsubscribed, quarantined, archived and merged; each tagged where we know them from: Suggested for Vegans Explore
 (`people.recommended_brand`), On our shows (their name is a People listing), Signed up never paid, Emailed with you, SoFlo Vegans,
 Mailing list, Other lists; suggested and guests first, then most emails with Sean; search, tick, kept for the visit in `sessionStorage`
-`ve_founding_picked`), **Write to them** (`#new`: the picked, each with **On us** (free, 1,100 points), one note typed or spoken; makes drafts,
-nothing sent) and one invitation (`#invite/<id>`: Made, Sent, Read, Opened the link, Said yes, Paid the $11 and joined, or Declined with their
-note; the draft, the email as it goes, Send it from me, Copy the link, Cancel it; **Follow up**: one short note from Sean worded for where they
+`ve_founding_picked`), **Write to them** (`#new`: one card per person picked, with what HQ already knows about them, **On us** (free, 1,100 points) and
+**What you know about them**, typed or spoken; Sean, 2026-10-28: "I don't want to focus on the structuring of the sentence. I can let you
+know a little bit about that person... something positive that only I would know"; no note shared by everyone. **Write their invitations**
+makes the drafts, then `ve-invites` `draft_note` writes each one's personal opening (`reason`) in Sean's voice from his notes
+(`universe_invites.context`, migration `20261028_founding_invite_context.sql`) and the person's HQ > People record, one at a time with
+progress: Claude Opus 5.5, effort medium, 2 to 4 sentences, his notes first, nothing invented (no feelings, favorites or superlatives he did
+not say), nothing private from the summary, no description of Vegans Explore since the email says that next; about 7 s a person. Nothing
+sent) and one invitation (`#invite/<id>`: Made, Sent, Read, Opened the link, Said yes, Paid the $11 and joined, or Declined with their
+note; the draft: What you told me about them (Speak), **Write it again**, and **Their opening**, any word changeable; the email as it goes, Send it from me, Copy the link, Cancel it; **Follow up**: one short note from Sean worded for where they
 stopped, at most 2, 5 days apart, each keeping the link open 14 more days, `ve-invites` `nudge` / `nudge_preview`). An invitation is
 `universe_invites.points_to` `founding` (`pool` records where they came from): the email asks them to be one of the first Founding Members at
 $11, one time, with 1,100 points; accepting on `/invite` is **Said yes** (`status` `accepted`, `accepted_at`; `universe_invite_claim` returns
