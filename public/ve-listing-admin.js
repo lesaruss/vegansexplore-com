@@ -436,7 +436,8 @@
       var box = $('#vla-logo'), u = l.logo_url || '';
       if (u) { box.style.backgroundImage = 'url("' + u.replace(/"/g, '%22') + '")'; box.style.backgroundColor = '#fff'; box.textContent = ''; box.setAttribute('aria-label', 'Current logo'); }
       else { box.style.backgroundImage = ''; box.style.backgroundColor = l.color || '#1f5f22'; box.textContent = l.initials || String(l.name || '?').slice(0, 2).toUpperCase(); box.setAttribute('aria-label', 'No logo yet, the initials show instead'); }
-      $('#vla-up').textContent = u ? 'Replace the logo' : 'Upload a logo';
+      var pic = kindOf($('#vla-sub').value) === 'person' ? 'photo' : 'logo';
+      $('#vla-up').textContent = u ? 'Replace the ' + pic : 'Upload a ' + pic;
       $('#vla-copy').hidden = !u || u.indexOf(OURS) === 0; // still hotlinked from the business's site
       $('#vla-rm').hidden = !u;
       var m = $('#vla-lmsg');
