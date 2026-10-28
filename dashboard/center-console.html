@@ -678,7 +678,7 @@
 <div class="console-frame" id="console-frame">
   <div class="console-titlebar">
     <div class="console-titlebar-dots">
-      <a class="console-light console-light-close" id="console-light-close" href="https://hq.lesaruss.ai/studio" aria-label="Close, back to all LESARUSS projects" title="Back to all LESARUSS projects"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4"/></svg></a>
+      <a class="console-light console-light-close" id="console-light-close" href="https://lesaruss.com/projects" aria-label="Close, see all LESARUSS brands" title="See all LESARUSS brands"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4"/></svg></a>
       <button type="button" class="console-light console-light-min" id="console-light-min" aria-label="Exit full screen" aria-disabled="true" title="Already in the window"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.5 5h5"/></svg></button>
       <button type="button" class="console-light console-light-max" id="console-light-max" aria-label="Full screen" aria-disabled="false" title="Full screen"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 6.5V3h3.5M7 3.5V7H3.5"/></svg></button>
     </div>
@@ -4264,16 +4264,13 @@
   // same setup as LESARUSS HQ). Same behaviour as HQ's window:
   //   green  full screen: frame, gutter and shadow go, title bar and nav stay
   //   yellow back into the window (does nothing while already in it)
-  //   red    out to the LESARUSS projects page on HQ, signed in: mint a
-  //          one-time handoff through lr-shell, the same one the bar's .HQ
-  //          uses, and land on /studio. HQ sends anyone who is not staff to
-  //          their own home from there. Signed out, or if the mint fails, the
-  //          link still goes to HQ and HQ asks them to sign in.
+  //   red    out to lesaruss.com/projects, the page with all of the brands
+  //          (Sean, 2026-10-28: "that should be the default page that they
+  //          see"), a plain link. It used to sign them in to HQ's studio page.
   // Full screen is remembered in localStorage, like HQ, so it survives a
   // reload; storage can throw, and the window is the safe answer then.
   (function initWindowLights() {
     var frame = document.getElementById('console-frame');
-    var close = document.getElementById('console-light-close');
     var min = document.getElementById('console-light-min');
     var max = document.getElementById('console-light-max');
     if (!frame || !min || !max) return;
@@ -4297,23 +4294,6 @@
     max.addEventListener('click', function () { if (!frame.classList.contains('is-fullscreen')) set(true); });
     min.addEventListener('click', function () { if (frame.classList.contains('is-fullscreen')) set(false); });
 
-    if (close) {
-      close.addEventListener('click', function (e) {
-        var token = window.VEAuth ? VEAuth.getToken() : null;
-        if (!token) return; // plain link: HQ asks them to sign in
-        e.preventDefault();
-        var fallback = close.href;
-        fetch(SUPABASE_URL + '/functions/v1/lr-shell?action=handoff', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + ANON_KEY, 'apikey': ANON_KEY },
-          body: JSON.stringify({ token: token }),
-        }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-          window.location.href = d && d.token
-            ? 'https://hq.lesaruss.ai/api/shell/sso?lrsso=' + encodeURIComponent(d.token) + '&next=' + encodeURIComponent('/studio')
-            : fallback;
-        }).catch(function () { window.location.href = fallback; });
-      });
-    }
   })();
 
   function init() {
