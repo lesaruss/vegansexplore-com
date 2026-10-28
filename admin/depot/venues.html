@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Venues | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Venues (the Stadium & Arena Guide; Sean, 2026-10-28: "lock it, go with your defaults"; playbook ve-venue-guides).
+       Members check a venue's Vegan items from inside it, with a photo; nothing pays until the team decides here. One thing per
+       view: the reports (#list/pending|accepted|agreed|declined), one report (#r/<id>: the photo, how far from the venue, the item,
+       the other reports on it, Accept, Agrees with the first, Decline), the venues (#venues), one venue (#venue/<slug>: its details,
+       New season, Find it on Google, its stands and items), a stand (#venue/<slug>/stand/<id>|new) and an item
+       (#venue/<slug>/item/<id> or #venue/<slug>/stand/<id>/item/new). Points: 10 Still accurate, 100 the first accepted correction,
+       25 a later one that agrees, at most 5 paid a member a day (ve_venue_report_review). Server: ve-venues. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    a{color:var(--ve-green-deep);}
+    .crumb a{color:var(--ve-green-deep);font-weight:800;text-decoration:none;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    input,textarea,select{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;}
+    textarea{min-height:80px;resize:vertical;line-height:1.5;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid #d9a39c;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .msg.bad{color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .rows{display:flex;flex-direction:column;gap:8px;}
+    .row{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 150px 120px 90px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;}
+    .row .t{font-size:14.5px;font-weight:800;line-height:1.3;}
+    .m{font-size:12.5px;color:var(--ve-text-75);}
+    @media (max-width:860px){.row{grid-template-columns:minmax(0,1fr) auto;}.row .hide-sm{display:none;}}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;justify-self:start;display:inline-block;}
+    .tag.pending{background:#fff4e0;color:#7a4a00;}.tag.accepted,.tag.agreed{background:#e8f5e9;color:#1f5f22;}.tag.declined{background:#f1f1f1;color:#555;}
+    .tag.far{background:#fbeeec;color:#8a1c12;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px 14px;}
+    .f{display:flex;flex-direction:column;gap:5px;}
+    .f.wide{grid-column:1/-1;}
+    .f label{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .f small{font-size:12px;color:var(--ve-text-75);}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;}
+    .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .photo{width:100%;max-height:560px;object-fit:contain;background:#111;border-radius:10px;display:block;}
+    .kv{display:grid;grid-template-columns:140px minmax(0,1fr);gap:6px 12px;font-size:14px;}
+    .kv dt{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);padding-top:2px;}
+    .note{white-space:pre-line;background:#fafafa;border:1px solid var(--ve-border);border-radius:8px;padding:10px 12px;font-size:14px;}
+    .orow{border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start;}
+    .orow input{width:auto;margin-top:4px;}
+    .stand{border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;margin-bottom:10px;}
+    .stand-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap;margin-bottom:6px;}
+    .stand-h b{font-size:15px;}
+    .irow{display:flex;justify-content:space-between;gap:10px;align-items:center;border-top:1px solid var(--ve-border);padding:8px 0;font-size:14px;}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,0.2);border-radius:10px;padding:24px;text-align:center;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Venues</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">The Stadium &amp; Arena Guide. Members check what is still there from inside a venue, with a photo. Nothing pays until you decide: Still accurate pays 10 points, the first accepted correction 100, a later one that agrees 25, at most 5 paid to a member a day.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-venues';
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('app');
+    var STATUS = { pending: 'Waiting', accepted: 'Accepted', agreed: 'Agreed', declined: 'Declined' };
+    var KIND = { confirm: 'Still accurate', wrong: 'Something is wrong', gone: 'Not there anymore', missing: 'Something missing' };
+    var VEGAN = { vegan: 'Vegan', on_request: 'Vegan on request', ask: 'Ask before you order' };
+    var ZONE = { concourse: 'Concourse', club: 'Club level', suites: 'Suites', outside: 'Outside' };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
+    function when(t) { return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+    function go(h) { if (location.hash !== h) location.hash = h; else route(); }
+    function fail(r) { return r.message || r.why || r.error || 'That did not save.'; }
+    function sel(id, map, val) { return '<select id="' + id + '">' + Object.keys(map).map(function (k) { return '<option value="' + k + '"' + (k === val ? ' selected' : '') + '>' + esc(map[k]) + '</option>'; }).join('') + '</select>'; }
+    function topTabs(on) {
+      return '<div class="tabs" style="margin-bottom:14px"><a href="#list/pending" class="' + (on === 'reports' ? 'on' : '') + '">Reports</a><a href="#venues" class="' + (on === 'venues' ? 'on' : '') + '">Venues</a></div>';
+    }
+    // How far from the venue, against the fence the save allowed (radius plus up to 100 m of the phone's own uncertainty).
+    function distLine(r) { return r.distance_m == null ? 'No location' : Math.round(r.distance_m) + ' m from the venue\'s center (phone accurate to ' + Math.round(r.accuracy_m || 0) + ' m)'; }
+
+    function drawList(st) {
+      app.innerHTML = topTabs('reports') + '<p class="msg">Loading…</p>';
+      api({ action: 'queue', status: st }).then(function (d) {
+        if (!d.reports) { app.innerHTML = topTabs('reports') + '<p class="empty">The reports did not load. Refresh to try again.</p>'; return; }
+        var c = d.counts || {};
+        app.innerHTML = topTabs('reports') + '<div class="bar"><div class="tabs">' + Object.keys(STATUS).map(function (t) { return '<a href="#list/' + t + '" class="' + (t === st ? 'on' : '') + '">' + STATUS[t] + ' (' + (c[t] || 0) + ')</a>'; }).join('') + '</div></div>' +
+          '<div class="rows">' + (d.reports.length ? d.reports.map(function (r) {
+            return '<div class="row"><span><span class="t">' + esc(KIND[r.kind]) + (r.item ? ': ' + esc(r.item) : '') + '</span><br><span class="m">' + esc(r.venue) + (r.spot ? ' · ' + esc(r.spot) : '') + '</span></span>' +
+              '<span class="m hide-sm">' + esc(r.member || 'A member') + ' · ' + esc(when(r.at)) + '</span>' +
+              '<span class="m hide-sm">' + (r.distance_m == null ? '' : Math.round(r.distance_m) + ' m away') + '</span>' +
+              '<span class="tag ' + r.status + ' hide-sm">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span><a class="btn btn-ghost" href="#r/' + r.id + '">Open</a></div>';
+          }).join('') : '<p class="empty">' + (st === 'pending' ? 'Nothing waiting. Every report has a decision.' : 'None yet.') + '</p>') + '</div>';
+      });
+    }
+
+    function drawReport(id) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'report_get', id: id }).then(function (d) {
+        var r = d.report;
+        if (!r) { app.innerHTML = '<p class="empty">That report is not here. <a href="#list/pending">Back to the reports</a></p>'; return; }
+        var v = r.venue || {}, it = r.item, sp = r.spot;
+        var firsts = (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm'; });
+        var pays = r.kind === 'confirm' ? 10 : 100, capped = r.paid_that_day >= 5;
+        app.innerHTML = '<nav class="crumb"><a href="#list/' + r.status + '">Reports</a><span>/</span><span>' + esc(KIND[r.kind]) + '</span></nav>' +
+          '<div class="two"><div class="panel">' + (r.photo ? '<img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo.</p>') + '</div>' +
+          '<div><div class="panel"><h2>' + esc(KIND[r.kind]) + ' <span class="tag ' + r.status + '">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span></h2><dl class="kv">' +
+            '<dt>Venue</dt><dd><a href="#venue/' + esc(v.slug) + '">' + esc(v.name) + '</a></dd>' +
+            (sp ? '<dt>Stand</dt><dd>' + esc(sp.name) + (sp.where_text ? ' · ' + esc(sp.where_text) : '') + '</dd>' : '') +
+            (it ? '<dt>Item</dt><dd><a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">' + esc(it.name) + '</a><br><span class="m">' + esc(VEGAN[it.vegan] || '') + (it.last_confirmed_at ? ' · last checked ' + esc(when(it.last_confirmed_at)) : ' · never checked by a member') + '</span></dd>' : '') +
+            '<dt>From</dt><dd>' + esc(r.member.name || '') + '<br><span class="m">' + esc(r.member.email || '') + '</span></dd>' +
+            '<dt>Sent</dt><dd>' + esc(when(r.at)) + '</dd>' +
+            '<dt>Where</dt><dd>' + esc(distLine(r)) + '</dd>' +
+            '<dt>Paid that day</dt><dd>' + r.paid_that_day + ' of 5' + (capped && r.status === 'pending' ? ' <span class="tag far">accepting pays nothing</span>' : '') + '</dd></dl>' +
+            (r.note ? '<p class="note" style="margin-top:12px">' + esc(r.note) + '</p>' : '') +
+            (r.review_note ? '<p class="m" style="margin-top:10px">Your note: ' + esc(r.review_note) + '</p>' : '') + '</div>' +
+          (r.status === 'pending' ? '<div class="panel"><h2>Decide</h2>' +
+            (firsts.length ? '<p class="m" style="margin-bottom:8px">Someone reported this first. If this one says the same, pick theirs and choose Agrees with the first (25 points; they are told who was first).</p>' +
+              firsts.map(function (o, i) { return '<label class="orow"><input type="radio" name="first" value="' + o.id + '"' + (i === 0 ? ' checked' : '') + '><span><b>' + esc(o.member || 'A member') + '</b> · ' + esc(when(o.at)) + '<br><span class="m">' + esc(KIND[o.kind]) + (o.note ? ': ' + esc(o.note) : '') + '</span></span></label>'; }).join('') : '') +
+            '<div class="f wide" style="margin-top:8px"><label for="rnote">Note to the member (needed to decline)</label><textarea id="rnote" maxlength="600"></textarea></div>' +
+            '<div class="acts"><button class="btn" id="accept">Accept' + (capped ? '' : ' (' + pays + ' pts)') + '</button>' +
+            (firsts.length ? '<button class="btn btn-ghost" id="agree">Agrees with the first' + (capped ? '' : ' (25 pts)') + '</button>' : '') +
+            '<button class="btn btn-red" id="decline">Decline</button><span class="msg" id="m" role="status"></span></div>' +
+            '<p class="m" style="margin-top:10px">' + (r.kind === 'confirm' ? 'Accepting marks the item checked today.' : 'Accepting pays the member. Change the Guide yourself: ' + (it ? '<a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">edit the item</a>' : sp ? '<a href="#venue/' + esc(v.slug) + '/stand/' + sp.id + '/item/new">add the item</a>' : '<a href="#venue/' + esc(v.slug) + '">open the venue</a>') + '.') + '</p></div>' : '') +
+          ((d.others || []).length ? '<div class="panel"><h2>Other reports on this</h2>' + d.others.map(function (o) { return '<div class="orow"><span><a href="#r/' + o.id + '"><b>' + esc(o.member || 'A member') + '</b></a> · ' + esc(when(o.at)) + ' <span class="tag ' + o.status + '">' + STATUS[o.status] + (o.points ? ' · ' + o.points + ' pts' : '') + '</span><br><span class="m">' + esc(KIND[o.kind]) + (o.note ? ': ' + esc(o.note) : '') + '</span></span></div>'; }).join('') + '</div>' : '') +
+          '</div></div>';
+        if (r.status !== 'pending') return;
+        var m = $('m');
+        var decide = function (decision) {
+          var note = $('rnote').value.trim(), first = (document.querySelector('input[name="first"]:checked') || {}).value;
+          if (decision === 'decline' && note.length < 3) { m.className = 'msg bad'; m.textContent = 'Tell them why in the note.'; return; }
+          m.className = 'msg'; m.textContent = 'Saving…';
+          api({ action: 'review', id: r.id, decision: decision, note: note, first: decision === 'agree' ? first : null }).then(function (x) {
+            if (!x.ok) { m.className = 'msg bad'; m.textContent = fail(x); return; }
+            drawReport(r.id);
+          });
+        };
+        $('accept').onclick = function () { decide('accept'); };
+        if ($('agree')) $('agree').onclick = function () { decide('agree'); };
+        $('decline').onclick = function () { decide('decline'); };
+      });
+    }
+
+    function drawVenues() {
+      app.innerHTML = topTabs('venues') + '<p class="msg">Loading…</p>';
+      api({ action: 'list' }).then(function (d) {
+        var vs = d.venues || [];
+        app.innerHTML = topTabs('venues') + '<div class="bar"><span class="m">Live venues in Guide order. Hard Rock Stadium is the free one.</span><a class="btn" href="#venue-new">New venue</a></div><div class="rows">' +
+          (vs.length ? vs.map(function (v) {
+            return '<div class="row"><span><span class="t">' + esc(v.name) + '</span><br><span class="m">' + esc((v.kind === 'arena' ? 'Arena' : v.kind === 'airport' ? 'Airport' : 'Stadium') + ' · ' + [v.city, v.state].filter(Boolean).join(', ')) + '</span></span>' +
+              '<span class="m hide-sm">' + v.items + ' items, ' + v.confirmed + ' checked by members</span>' +
+              '<span class="m hide-sm">' + (v.can_report ? 'On the map' : '<b style="color:#8a1c12">No location yet</b>') + '</span>' +
+              '<span class="hide-sm">' + (v.free ? '<span class="tag accepted">Free</span>' : '') + '</span><a class="btn btn-ghost" href="#venue/' + esc(v.slug) + '">Open</a></div>';
+          }).join('') : '<p class="empty">No venues yet.</p>') + '</div>';
+      });
+    }
+
+    function venueForm(v) {
+      v = v || {};
+      return '<div class="grid"><div class="f"><label for="v-name">Name</label><input id="v-name" maxlength="200" value="' + esc(v.name) + '"></div>' +
+        '<div class="f"><label for="v-kind">Kind</label>' + sel('v-kind', { stadium: 'Stadium', arena: 'Arena', airport: 'Airport' }, v.kind || 'stadium') + '</div>' +
+        '<div class="f"><label for="v-city">City</label><input id="v-city" value="' + esc(v.city) + '"></div>' +
+        '<div class="f"><label for="v-state">State</label><input id="v-state" value="' + esc(v.state) + '"></div>' +
+        '<div class="f"><label for="v-hub">Chapter (hub slug)</label><input id="v-hub" value="' + esc(v.hub) + '" placeholder="south-florida"></div>' +
+        '<div class="f"><label for="v-teams">Home teams</label><input id="v-teams" value="' + esc((v.teams || []).join(', ')) + '"><small>Separate with commas.</small></div>' +
+        '<div class="f"><label for="v-radius">Check-in distance (m)</label><input id="v-radius" type="number" min="50" max="3000" value="' + esc(v.radius_m || 300) + '"><small>From the venue\'s center; the whole venue must fit.</small></div>' +
+        '<div class="f wide"><label for="v-note">Note for fans</label><textarea id="v-note" maxlength="400">' + esc(v.note) + '</textarea></div>' +
+        '<div class="f wide"><label for="v-src">Where the note comes from (link)</label><input id="v-src" value="' + esc(v.note_source_url) + '"></div></div>';
+    }
+    function venueVals(slug) {
+      return { slug: slug, name: $('v-name').value.trim(), kind: $('v-kind').value, city: $('v-city').value.trim(), state: $('v-state').value.trim(),
+        hub: $('v-hub').value.trim(), teams: $('v-teams').value, radius_m: Number($('v-radius').value), note: $('v-note').value.trim(), note_source_url: $('v-src').value.trim() };
+    }
+
+    function drawVenueNew() {
+      app.innerHTML = '<nav class="crumb"><a href="#venues">Venues</a><span>/</span><span>New venue</span></nav><div class="panel"><h2>New venue</h2>' + venueForm() +
+        '<div class="acts"><button class="btn" id="save">Save and find it on Google</button><span class="msg" id="m" role="status"></span></div></div>';
+      $('save').onclick = function () {
+        var m = $('m'), vals = venueVals(null); delete vals.slug;
+        if (!vals.name) { m.className = 'msg bad'; m.textContent = 'Give it a name.'; return; }
+        m.className = 'msg'; m.textContent = 'Saving…';
+        api({ action: 'venue_save', venue: vals }).then(function (r) {
+          if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; }
+          api({ action: 'locate', slug: r.slug }).then(function () { go('#venue/' + r.slug); });
+        });
+      };
+    }
+
+    function drawVenue(slug) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'venue', slug: slug }).then(function (d) {
+        var v = d.venue;
+        if (!v) { app.innerHTML = '<p class="empty">That venue is not here. <a href="#venues">Back to the venues</a></p>'; return; }
+        app.innerHTML = '<nav class="crumb"><a href="#venues">Venues</a><span>/</span><span>' + esc(v.name) + '</span></nav>' +
+          '<div class="two"><div class="panel"><h2>' + esc(v.name) + (v.free ? ' <span class="tag accepted">Free</span>' : '') + '</h2>' + venueForm(v) +
+            '<div class="acts"><button class="btn" id="save">Save</button><a class="btn btn-ghost" href="/guides/stadium-arena-guide#/venue/' + esc(v.slug) + '" target="_blank" rel="noopener">See it in the Guide</a><span class="msg" id="m" role="status"></span></div></div>' +
+          '<div><div class="panel"><h2>On the map</h2><p style="font-size:14px">' + (v.can_report ? esc(v.address || '') + (v.maps ? ' · <a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Google Maps</a>' : '') : '<b style="color:#8a1c12">No location yet, so members cannot send reports here.</b>') + '</p>' +
+            '<div class="acts"><button class="btn btn-ghost" id="locate">' + (v.can_report ? 'Find it on Google again' : 'Find it on Google') + '</button><span class="msg" id="lm" role="status"></span></div></div>' +
+          '<div class="panel"><h2>New season</h2><p class="m">Every item here shows Not checked this season until a member confirms it again.' + (v.season_reset_at ? ' Last new season: ' + esc(when(v.season_reset_at)) + '.' : '') + '</p>' +
+            '<div class="acts"><button class="btn btn-red" id="season">Start a new season</button><span class="msg" id="sm" role="status"></span></div></div></div></div>' +
+          '<div class="panel"><div class="bar"><h2 style="margin:0">Stands and items</h2><a class="btn" href="#venue/' + esc(v.slug) + '/stand/new">Add a stand</a></div>' +
+          (d.spots.length ? d.spots.map(function (s) {
+            return '<div class="stand"><div class="stand-h"><span><b>' + esc(s.name) + '</b><br><span class="m">' + esc(s.where || '') + ' · ' + esc(ZONE[s.zone] || '') + '</span></span>' +
+              '<span class="acts" style="margin:0"><a class="btn btn-ghost" href="#venue/' + esc(v.slug) + '/stand/' + s.id + '">Edit stand</a><a class="btn btn-ghost" href="#venue/' + esc(v.slug) + '/stand/' + s.id + '/item/new">Add an item</a></span></div>' +
+              (s.items.length ? s.items.map(function (it) { return '<div class="irow"><span>' + esc(it.name) + '<br><span class="m">' + esc(VEGAN[it.vegan] || '') + ' · ' + (it.last_confirmed_at ? 'checked ' + esc(when(it.last_confirmed_at)) : 'not checked by a member yet') + '</span></span><a class="btn btn-ghost" href="#venue/' + esc(v.slug) + '/item/' + it.id + '">Edit</a></div>'; }).join('') : '<p class="m">No items.</p>') + '</div>';
+          }).join('') : '<p class="empty">No stands yet.</p>') + '</div>';
+        $('save').onclick = function () {
+          var m = $('m'); m.className = 'msg'; m.textContent = 'Saving…';
+          api({ action: 'venue_save', venue: venueVals(v.slug) }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } m.textContent = 'Saved.'; });
+        };
+        $('locate').onclick = function () {
+          var m = $('lm'); m.className = 'msg'; m.textContent = 'Looking…';
+          api({ action: 'locate', slug: v.slug }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = 'Google did not find it. Check the name and city.'; return; } drawVenue(v.slug); });
+        };
+        $('season').onclick = function () {
+          if (!confirm('Start a new season at ' + v.name + '? Every item shows Not checked this season until a member confirms it.')) return;
+          var m = $('sm'); m.className = 'msg'; m.textContent = 'Saving…';
+          api({ action: 'venue_save', venue: { slug: v.slug, new_season: true } }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } drawVenue(v.slug); });
+        };
+      });
+    }
+
+    function drawStand(slug, id) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'venue', slug: slug }).then(function (d) {
+        var v = d.venue; if (!v) { app.innerHTML = '<p class="empty">That venue is not here.</p>'; return; }
+        var s = id === 'new' ? {} : (d.spots.filter(function (x) { return x.id === id; })[0]);
+        if (!s) { app.innerHTML = '<p class="empty">That stand is not here. <a href="#venue/' + esc(slug) + '">Back to ' + esc(v.name) + '</a></p>'; return; }
+        app.innerHTML = '<nav class="crumb"><a href="#venues">Venues</a><span>/</span><a href="#venue/' + esc(slug) + '">' + esc(v.name) + '</a><span>/</span><span>' + (s.id ? esc(s.name) : 'New stand') + '</span></nav>' +
+          '<div class="panel"><h2>' + (s.id ? 'Stand' : 'New stand') + '</h2><div class="grid">' +
+            '<div class="f"><label for="s-name">Name</label><input id="s-name" maxlength="200" value="' + esc(s.name) + '"></div>' +
+            '<div class="f"><label for="s-where">Where it is</label><input id="s-where" maxlength="200" value="' + esc(s.where) + '" placeholder="Section 105"></div>' +
+            '<div class="f"><label for="s-zone">Who can reach it</label>' + sel('s-zone', ZONE, s.zone || 'concourse') + '</div>' +
+            '<div class="f wide"><label for="s-note">Note</label><textarea id="s-note" maxlength="300">' + esc(s.note) + '</textarea></div></div>' +
+          '<div class="acts"><button class="btn" id="save">Save</button>' + (s.id ? '<button class="btn btn-red" id="gone">Take it out</button>' : '') + '<span class="msg" id="m" role="status"></span></div></div>';
+        var m = $('m');
+        var save = function (extra) {
+          m.className = 'msg'; m.textContent = 'Saving…';
+          var row = Object.assign({ id: s.id, venue: slug, name: $('s-name').value.trim(), where_text: $('s-where').value.trim(), zone: $('s-zone').value, note: $('s-note').value.trim() }, extra || {});
+          api({ action: 'spot_save', spot: row }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } go('#venue/' + slug); });
+        };
+        $('save').onclick = function () { save(); };
+        if ($('gone')) $('gone').onclick = function () { if (confirm('Take ' + s.name + ' out of the Guide? Its items go with it.')) save({ status: 'gone' }); };
+      });
+    }
+
+    function drawItem(slug, id, standId) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'venue', slug: slug }).then(function (d) {
+        var v = d.venue; if (!v) { app.innerHTML = '<p class="empty">That venue is not here.</p>'; return; }
+        var it = null, s = null;
+        d.spots.forEach(function (sp) { sp.items.forEach(function (x) { if (x.id === id) { it = x; s = sp; } }); if (sp.id === standId) s = sp; });
+        if (!s || (id && !it)) { app.innerHTML = '<p class="empty">That item is not here. <a href="#venue/' + esc(slug) + '">Back to ' + esc(v.name) + '</a></p>'; return; }
+        it = it || { sources: [] };
+        var srcs = (it.sources || []).map(function (x) { return [x.label, x.url, x.date].filter(Boolean).join(' | '); }).join('\n');
+        app.innerHTML = '<nav class="crumb"><a href="#venues">Venues</a><span>/</span><a href="#venue/' + esc(slug) + '">' + esc(v.name) + '</a><span>/</span><span>' + esc(s.name) + '</span><span>/</span><span>' + (it.id ? esc(it.name) : 'New item') + '</span></nav>' +
+          '<div class="panel"><h2>' + (it.id ? 'Item' : 'New item') + '</h2><div class="grid">' +
+            '<div class="f"><label for="i-name">Name</label><input id="i-name" maxlength="200" value="' + esc(it.name) + '"></div>' +
+            '<div class="f"><label for="i-vegan">How Vegan</label>' + sel('i-vegan', VEGAN, it.vegan || 'vegan') + '</div>' +
+            '<div class="f wide"><label for="i-desc">What it is</label><textarea id="i-desc" maxlength="500">' + esc(it.description) + '</textarea></div>' +
+            '<div class="f wide"><label for="i-src">Where we read it</label><textarea id="i-src">' + esc(srcs) + '</textarea><small>One a line: label | link | date. A member\'s accepted report is a source too.</small></div>' +
+            '<div class="f wide"><label><input type="checkbox" id="i-conf" style="width:auto"> Checked today (by you or a report you accepted)</label></div></div>' +
+          '<div class="acts"><button class="btn" id="save">Save</button>' + (it.id ? '<button class="btn btn-red" id="gone">Not there anymore</button>' : '') + '<span class="msg" id="m" role="status"></span></div></div>';
+        var m = $('m');
+        var save = function (extra) {
+          var sources = $('i-src').value.split('\n').map(function (l) { var p = l.split('|').map(function (x) { return x.trim(); }); return { label: p[0], url: p[1] || '', date: p[2] || '' }; }).filter(function (x) { return x.label; });
+          var row = Object.assign({ id: it.id, spot: s.id, name: $('i-name').value.trim(), vegan: $('i-vegan').value, description: $('i-desc').value.trim(), sources: sources, confirm_now: $('i-conf').checked }, extra || {});
+          if (!row.name) { m.className = 'msg bad'; m.textContent = 'Give it a name.'; return; }
+          m.className = 'msg'; m.textContent = 'Saving…';
+          api({ action: 'item_save', item: row }).then(function (r) { if (!r.ok) { m.className = 'msg bad'; m.textContent = fail(r); return; } go('#venue/' + slug); });
+        };
+        $('save').onclick = function () { save(); };
+        if ($('gone')) $('gone').onclick = function () { if (confirm('Take ' + it.name + ' out of the Guide?')) save({ status: 'gone' }); };
+      });
+    }
+
+    function route() {
+      var h = location.hash || '#list/pending', m;
+      if ((m = /^#r\/([0-9a-f-]{36})$/.exec(h))) drawReport(m[1]);
+      else if (h === '#venues') drawVenues();
+      else if (h === '#venue-new') drawVenueNew();
+      else if ((m = /^#venue\/([a-z0-9-]+)\/stand\/([0-9a-f-]{36})\/item\/new$/.exec(h))) drawItem(m[1], null, m[2]);
+      else if ((m = /^#venue\/([a-z0-9-]+)\/stand\/([0-9a-f-]{36}|new)$/.exec(h))) drawStand(m[1], m[2]);
+      else if ((m = /^#venue\/([a-z0-9-]+)\/item\/([0-9a-f-]{36})$/.exec(h))) drawItem(m[1], m[2], null);
+      else if ((m = /^#venue\/([a-z0-9-]+)$/.exec(h))) drawVenue(m[1]);
+      else drawList((/^#list\/(pending|accepted|agreed|declined)$/.exec(h) || [0, 'pending'])[1]);
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+    function start() {
+      if (!window.VEAuth) return setTimeout(start, 200);
+      var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+      if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
