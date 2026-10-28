@@ -33,6 +33,11 @@
   function veContentHeight(){var b=document.body;if(!b)return 0;var h=b.scrollHeight;Array.prototype.forEach.call(document.querySelectorAll('dialog[open],.overlay,[role="dialog"]'),function(el){var cs=getComputedStyle(el);if(cs.display==='none'||cs.visibility==='hidden'||cs.position==='fixed')return;var r=el.getBoundingClientRect();if(r.height)h=Math.max(h,Math.ceil(r.bottom+window.scrollY));});return Math.ceil(h);}
   function send() {
     if (stopped || !document.body) return;
+    // A Guide laid out to fill the window (html.dg-fit: the Guides, the Passport, the Ambassador Guide) is as tall as its
+    // frame, so sizing the frame to it chases itself and the page bounces (Sean, 2026-10-28). It keeps the normal frame.
+    if (document.documentElement.classList.contains('dg-fit')) {
+      stopped = true; if (lastH) window.parent.postMessage({ type: 've-frame-unsize' }, location.origin); return;
+    }
     var h = veContentHeight(), vh = window.innerHeight;
     if (lastH && vh !== lastVH && h > lastH && Math.abs((h - lastH) - (vh - lastVH)) < 3) {
       stopped = true; window.parent.postMessage({ type: 've-frame-unsize' }, location.origin); return;

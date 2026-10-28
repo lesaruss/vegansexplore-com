@@ -1433,12 +1433,13 @@
   });
 
   // The Guide cards are /public/ve-guide-catalog.js (Sean, 2026-10-26: the same cards as /guides). A member sees the
-  // Guides still being made too; a Guide opens inside the dashboard window.
+  // Guides still being made too; a Guide opens inside the dashboard window, in the console frame over this tab (Sean,
+  // 2026-10-28: the Tools panel it used to open in is hidden on the Guides tab, so a Guide seemed not to open).
   function renderGuidesSection() {
     var row = document.getElementById('dash-guides-row');
     if (!row || !window.VEGuideCatalog) return;
     var gm = window.VEAuth && VEAuth.getMember && VEAuth.getMember();
-    VEGuideCatalog.render(row, { member: true, ambassador: !!(gm && (gm.ve_role === 'ambassador' || gm.is_superadmin)), source: 'dashboard-guides-tab', open: function (g) { openToolInFrame(g.title, g.href, false); } });
+    VEGuideCatalog.render(row, { member: true, ambassador: !!(gm && (gm.ve_role === 'ambassador' || gm.is_superadmin)), source: 'dashboard-guides-tab', open: function (g) { openConsoleFrame(g.href, g.title); } });
   }
 
   // Communities tab (Sean 2026-09-26): every community shows, four across, so
