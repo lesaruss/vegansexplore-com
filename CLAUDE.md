@@ -518,7 +518,7 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   support they can give away; the points are a footnote everywhere, never the pitch; then, the same day, "balance the conversation
   between what we're doing in a lifestyle side of things and what we're doing to provide support for the animals": two halves,
   For the animals (rescues and sanctuaries found in the Community section, the Fosters and Rescues boards, points given to
-  organizations, and campaigns behind the cause marked Growing) and For the Vegan life; Your role and Who to invite carry the
+  organizations, and campaigns behind the cause marked Growing) and For the community; Your role and Who to invite carry the
   animals' people too), Your
   membership (on us, points, level, what points do), Your role, Your city (home chapter, `set_home_community`, its hub, Pulse and
   Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
