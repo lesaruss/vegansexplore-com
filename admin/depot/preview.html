@@ -29,6 +29,8 @@
     @media (max-width:1100px){.layout{grid-template-columns:minmax(0,1fr);}.stage{display:none !important;}}
     .journey-intro{font-size:14px;color:var(--ve-text-75);margin-bottom:12px;max-width:760px;}
     ol.steps{list-style:none;counter-reset:step;}
+    /* The steps scroll inside a box as tall as the preview beside them, so the page and the preview stay put (Sean, 2026-10-28). */
+    ol.steps.boxed{position:relative;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
     .step{counter-increment:step;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:start;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;}
     .step::before{content:counter(step);width:28px;height:28px;border-radius:50%;background:var(--ve-green-light);color:var(--ve-green-deep);font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;margin-top:2px;}
     .step.current{border-color:var(--ve-green-deep);box-shadow:0 0 0 2px var(--ve-green-deep) inset;}
@@ -266,13 +268,23 @@
             (u ? '<a class="open" href="' + esc(u) + '" target="_blank" rel="noopener">Open</a>' : '<span></span>') + '</li>';
         }).join('');
       }
+      // The step list as tall as the preview beside it, scrolling inside (the frame and its caption, less the intro above the list).
+      function boxSteps() {
+        var list = $('steps'), stage = document.querySelector('.stage');
+        var side = stage && getComputedStyle(stage).display !== 'none' && getComputedStyle($('layout')).gridTemplateColumns.split(' ').length > 1;
+        if (!side) { list.classList.remove('boxed'); list.style.maxHeight = ''; return; }
+        list.classList.add('boxed');
+        list.style.maxHeight = Math.max(280, stage.offsetHeight - $('intro').offsetHeight - 12) + 'px';
+      }
+      window.addEventListener('resize', function () { boxSteps(); });
       // Desktop: the 1440 x 900 page scaled to the frame's width, the box sized to match.
       function fit() {
         var f = $('fit'), v = $('view');
-        if (size !== 'desk') { f.style.width = f.style.height = ''; v.style.transform = ''; return; }
+        if (size !== 'desk') { f.style.width = f.style.height = ''; v.style.transform = ''; boxSteps(); return; }
         var w = Math.max(320, $('frame').clientWidth - 16), sc = Math.min(1, w / 1440);
         f.style.width = w + 'px'; f.style.height = Math.round(900 * sc) + 'px'; v.style.transform = 'scale(' + sc + ')';
         $('cap').dataset.scale = Math.round(sc * 100);
+        boxSteps();
       }
       window.addEventListener('resize', fit);
       function pick(i) {
@@ -283,6 +295,11 @@
         setTimeout(function () { $('view').src = u; }, 30);
         $('cap').textContent = (i + 1) + '. ' + s.t + (size === 'desk' ? ' (a 1440 x 900 screen, shown at ' + ($('cap').dataset.scale || 100) + '%)' : '');
         document.querySelectorAll('.step').forEach(function (el) { el.classList.toggle('current', +el.getAttribute('data-i') === i); });
+        var list = $('steps'), li = list.querySelector('.step.current');
+        if (li && list.classList.contains('boxed')) {
+          var top = li.offsetTop, bottom = top + li.offsetHeight;
+          if (top < list.scrollTop) list.scrollTop = top; else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight;
+        }
       }
       $('steps').addEventListener('click', function (e) {
         if (e.target.closest('a')) return;
