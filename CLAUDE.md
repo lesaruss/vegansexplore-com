@@ -603,6 +603,21 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   - A member can be invited to be an Ambassador (only Already an Ambassador is left out); other invitation kinds still leave paid
     members out. A personal note is up to 2,000 characters, a blank line a new paragraph.
 
+## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
+seen; the member chooses what is in it.** The team sees every profile answer, used only to improve the member's experience, never
+sold or handed over. Each answer is **Can be shown** or **Just for Vegans Explore** (the In your words prompts, city and journey
+shareable by default; the `team` market research questions never, with no switch). No open browsing: a profile shows, only its
+shareable parts, inside a window we open: an event's guest list, a campaign, a sponsor invite. **Partner windows**: an event
+organizer messages the members who RSVP and opted in, from the RSVP until 7 days after the event; a brand messages members who opted
+in to hear from it, for its campaign's run dates; a one-time message to past guests is phase 4. Every message goes through us
+(partners never see an email, phone or handle), logged, capped per window, with Mute and Report (reports pause the partner). Consent is
+an explicit, rewarded opt-in at RSVP and at save ("Let <organizer or brand> message me about this"); a save alone is never consent,
+and the UK (London) needs an unticked opt-in. Without consent partners get counts and segments, never names. The Policies page says
+it before any of it goes live. Build order: 1. the switches and the team view in the Depot, 2. the event window, 3. the campaign
+window, 4. past guests. Nothing of it is built yet beyond Your profile.
+
 ## Invites and free memberships (Sean, 2026-10-04)
 
 Sean invites people who aren't confirmed yet (no account anywhere in the universe) from HQ > People
