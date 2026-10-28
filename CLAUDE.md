@@ -1896,9 +1896,11 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 - **The Stadium & Arena Guide**: one Guide for both, with a Stadiums / Arenas filter (same fan, same concessionaires, and two
   would each launch thin; not "Game Day", since venues host concerts too; amphitheaters and concert venues can join later). The
   venue, its home teams, each stand with its Vegan items and where it is (section or gate). Our chapters' venues first, Hard Rock
-  Stadium first (the Plant-Based Showcase). Narrator: River by default, Sean's to change.
+  Stadium first (the Plant-Based Showcase). Narrator: River, after a character refresh (Sean, 2026-10-28: still in his 20s, a
+  new hairstyle and an updated look; options from his current art, Sean picks).
 - **The Airport Guide**: the same layout by terminal and by before or after security. Our chapters' airports first, then the
-  world. Narrator: Pascal.
+  world. Narrator: Nori, who becomes the traveler (Sean, 2026-10-28: Liz has become the business Guide; Pascal is culinary and
+  belongs on the food Guides, such as the Vegan Meat Alternatives Guide). Nori's Guide record still says Entrepreneur Guide.
 - $11 or 1,100 points each, one venue free as the example.
 - **Members keep them accurate**: confirm an item, or report one missing, wrong or gone, with a photo and a venue-wide location
   check; each submission waits in a Depot review queue and pays only when accepted (`ve_points_grant`): the first accepted
