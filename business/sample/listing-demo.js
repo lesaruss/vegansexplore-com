@@ -3,8 +3,7 @@
  * an invented restaurant, the same sample business /claim's previews use. This file feeds the real Directory listing page
  * (/directory/listing.html) through its demo mode at /business/sample: the visitor's page, and with The owner, the real
  * business dashboard (/public/ve-partner-dashboard.js) on the numbers below. Nothing here is read from or written to the
- * database. The logo and photos wait for Higgsfield art, so the dashboard shows them as next steps, the way a new owner
- * sees it.
+ * database. Its logo and photos (business/sample/img/, made in Higgsfield 2026-10-28) are illustrative, like the restaurant.
  */
 (function () {
   var NAMES = ['Sam R.', 'Maria L.', 'Andre T.', 'Priya K.', 'Jordan B.', 'Nia H.', 'Carlos R.', 'Jess T.', 'Omar F.', 'Bri L.', 'Theo N.', 'Ivy C.'];
@@ -59,7 +58,7 @@
     ok: true,
     listing: { id: 'sample-green-leaf-kitchen', name: 'Green Leaf Kitchen', slug: 'sample', category: 'Restaurants', food: true, hub: 'south-florida', claim_status: 'verified' },
     open: true, owner: true, admin: false, member_active: true,
-    checklist: [{ k: 'logo', done: false }, { k: 'description', done: true }, { k: 'photos', done: false }, { k: 'hours', done: true }, { k: 'menu', done: true }, { k: 'audit', done: false }],
+    checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: true }, { k: 'hours', done: true }, { k: 'menu', done: true }, { k: 'audit', done: false }],
     cards: [
       { kind: 'new', title: 'Check-ins are live', body: 'Members check in from your page when they visit. See who comes back under Check-ins.', cta_label: 'See check-ins', cta_url: '?pd=checkins' },
       { kind: 'offer', title: 'Front Row Start', body: 'Become a Partner before January 1: nothing today, the rest of 2026 on us, then $111 a quarter.', cta_label: 'See the plan', cta_url: '?pd=plan' },
@@ -111,7 +110,9 @@
       claim_status: 'verified',
       vote_count: 238,
       voter_count: 61,
-      gallery_urls: []
+      logo_url: '/business/sample/img/logo.jpg',
+      logo_alt_text: 'Green Leaf Kitchen logo',
+      gallery_urls: ['/business/sample/img/photo-1.jpg', '/business/sample/img/photo-2.jpg', '/business/sample/img/photo-3.jpg', '/business/sample/img/photo-4.jpg']
     },
     menu: MENU,
     // The business dashboard's server calls, answered here. Anything that would save says so instead.

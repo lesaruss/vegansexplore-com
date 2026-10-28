@@ -221,7 +221,7 @@
     { k: 'progress', label: 'Your progress', g: 'liz', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
   ];
   var BLURB = {
-    why: 'For the animals, and for the Vegan life.', account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
+    why: 'For the animals, and for the community.', account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
     city: 'The city you represent.', link: 'Your link, and how it counts.', who: 'Where to start.',
     share: 'Ready-made words, with your link.', questions: 'Straight answers to what people ask.', progress: 'Who joined through you.'
   };
@@ -283,13 +283,13 @@
     why: function () {
       // Two halves, equal weight (Sean, 2026-10-27: "balance the conversation between what we're doing in a lifestyle side of
       // things and what we're doing to provide support for the animals"). Planned work is marked Growing, never shown as live.
-      return head('Why it matters', 'For the animals, and for the people living Vegan', 'Vegans Explore is two things at once: support for the animals and the organizations that fight for them, and a community that makes the Vegan life easier, city by city. Both grow one person at a time, and the people who join because someone they trust asked them are the ones who stay and take part.') +
+      return head('Why it matters', 'For the animals, and for the community', 'Vegans Explore is two things at once: support for the animals and the organizations that fight for them, and a community that makes the Vegan life easier, city by city. Both grow one person at a time, and the people who join because someone they trust asked them are the ones who stay and take part.') +
         '<h3 class="am-sec">For the animals</h3><div class="dg-grid">' +
         card('Rescues and sanctuaries get found', 'The Directory\'s Community section puts the animals first: rescues, sanctuaries, nonprofits and their events, in every chapter. Every member is someone new who can find them, visit, volunteer and give. <a href="/directory?tab=community">See the Community section</a>.', 'The Directory') +
         card('Fosters and rescues on the Board', 'Every chapter\'s Daily Pulse has a Fosters board and a Rescues board, where animals that need a foster or a rescue are posted. More members means more people who see each one. <a href="/pulse/rescues">Open Rescues</a>.', 'Every city') +
         card('Points given to the organizations', 'Points come in as people join through you. You can give them to a rescue, sanctuary or nonprofit right from its page, where they show as support from the community.', 'Give') +
         card('Campaigns behind the cause', 'As the community grows, our marketing and promotion grows with it: campaigns, events and promotion that put organizations in front of the people ready to support them, and help them find the support they are lacking today.', 'Growing', true) +
-        '</div><h3 class="am-sec">For the Vegan life</h3><div class="dg-grid">' +
+        '</div><h3 class="am-sec">For the community</h3><div class="dg-grid">' +
         card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory') +
         card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more jobs and classifieds on the Board.', 'Community') +
         card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Your $11 at work') +
@@ -312,7 +312,7 @@
         '</div>' + nextBtn('role', 'Next: your role');
     },
     role: function () {
-      return head('Your role', 'What an Ambassador does', 'You were chosen because people already listen to you. There is no quota and no script: you bring Vegans Explore to the people who trust you, in your own words.') +
+      return head('Your role', 'What an Ambassador does', 'You were chosen because people already listen to you. Share Vegans Explore your way, with the people you think would love it.') +
         '<div class="dg-grid">' +
         card('Bring people in', 'Share your link with friends, family and anyone who would love it. Every member makes the Directory sharper and the hubs busier.', 'The heart of it') +
         card('Be a voice for your city', 'Vote for the places you love, check in when you visit, and join the conversation on the Daily Pulse. People follow what members do.', 'Every day') +

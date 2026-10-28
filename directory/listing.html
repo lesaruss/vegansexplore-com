@@ -1406,8 +1406,8 @@ function renderSidebar(l){
   // Media has no place (Sean, 2026-10-27: VegNews showed San Francisco): no address for a show, a book or a film.
   var noPlace = ['show', 'work'].indexOf(listingKind(l)) >= 0;
   if(noPlace) {}
-  else if(l.address_street) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street)+', '+esc(l.address_city)+', '+esc(l.address_state)+'</a></div>';
-  else if(l.address_city) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_city)+', '+esc(l.address_state)+'</a></div>';
+  else if(l.address_street) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street)+', '+esc(l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></div>';
+  else if(l.address_city) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></div>';
   if(l.email) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><a href="mailto:'+esc(l.email)+'">'+esc(l.email)+'</a></div>';
   if(l.booking_url) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><a href="'+esc(l.booking_url)+'" target="_blank" rel="noopener">Book Appointment</a></div>';
 
@@ -1801,7 +1801,7 @@ function loadBrandSite(l){
         pic: '<div class="bd-camps">' + CAMPAIGNS.map(function(c){ return '<div><span class="bd-tag">Coming</span><b>' + c[0] + '</b><span>' + c[1] + '</span><em>' + c[2] + '</em></div>'; }).join('') + '</div>' },
       // Why the membership matters, told as what the brand gets to see (talk versus walk).
       { t: 'Why it matters', h: 'Where your membership goes, and how you see it',
-        say: 'Your membership keeps us at events, backs our volunteer Community Managers, and builds our apps. Join an event, and you get a report within a week.',
+        say: 'Your membership keeps us at events, backs our Community Managers in every city, and builds our apps. Join an event, and you get a report within a week.',
         body: '<p>Your membership:</p><ul class="bd-list"><li>Keeps us at events, in person</li><li>Backs our Community Managers, city by city</li><li>Builds our apps</li></ul>' +
           '<p><b>Walk, not talk.</b> Your dashboard is live, and after every campaign event you join, you get a report within 7 days.</p>',
         pic: '<div class="bd-now"><div><h3>Working for ' + B + ' today</h3><ul><li>Your page, kept up with your products</li>' + (firstGuide ? '<li>Your products in the Vegan ' + esc(firstGuide[0]) + '</li>' : '') +
@@ -1865,20 +1865,25 @@ function loadBrandSite(l){
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
     // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
-    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
+    // A slide can also be her voice alone over its still picture ({audio, poster}; Sean, 2026-10-28: "we could still have the
+    // voices, but the animation I don't think is necessary"), so a line can be re-recorded without a new lip-synced clip.
+    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && (x.video || x.audio); }) ? c : null; }
     var TOUR = PARTNER ? (Array.isArray(BD.start_tour) ? BD.start_tour.slice() : null) : Array.isArray(BD.tour) ? BD.tour.slice() : null;
     if(TOUR && !PARTNER && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
     var CLIPS = fits(TOUR) || fits(BD.clips);
-    var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
+    var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video || null; }) : null;
+    var VOICE = CLIPS && CLIPS.some(function(c){ return c.audio && !c.video; }) ? new Audio() : null;
+    function voiceAt(i){ return VOICE && CLIPS[i] && !CLIPS[i].video ? CLIPS[i].audio : null; }
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
     var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
     var player = null;
     if(VIDEO){
       player = document.createElement('video'); player.className = 'bd-vid'; player.preload = 'metadata'; player.playsInline = true;
-      player.setAttribute('playsinline', ''); player.poster = posterAt(0); player.src = VIDEO[0];
+      player.setAttribute('playsinline', ''); player.poster = posterAt(0); if(VIDEO[0]) player.src = VIDEO[0];
       player.addEventListener('click', function(){ if(!DOOR.started){ startTour(); return; } if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
     } else if(AUDIO){ player = new Audio(); player.preload = 'none'; }
     if(player) player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); });
+    if(VOICE){ VOICE.preload = 'none'; VOICE.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); }); }
     var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
     var narr = null;
     if(rail && door){ narr = document.createElement('div'); narr.className = 'bd-narr'; narr.id = 'bd-narr'; rail.insertBefore(narr, rail.firstChild); }
@@ -1903,15 +1908,19 @@ function loadBrandSite(l){
     }
     function play(){
       if(!player) return;
+      var v = voiceAt(DOOR.i);
+      if(v){ player.pause(); if(VOICE.getAttribute('src') !== v) VOICE.src = v; VOICE.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); }); return; }
       var src = (VIDEO || AUDIO)[DOOR.i];
       if(player.getAttribute('src') !== src) player.src = src;
       player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); });
     }
-    function stop(){ if(player){ player.pause(); } DOOR.playing = false; }
+    function stop(){ if(player){ player.pause(); } if(VOICE) VOICE.pause(); DOOR.playing = false; }
     // A new slide shows Maya's next pose, with a small shift so she reads as moving (Sean, 2026-10-09).
     function cue(){
       if(!VIDEO) return;
-      if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
+      if(VOICE && !VOICE.paused){ VOICE.pause(); DOOR.playing = false; }
+      if(!VIDEO[DOOR.i]){ player.pause(); player.removeAttribute('src'); player.poster = posterAt(DOOR.i); player.load(); }
+      else if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
       player.classList.remove('bd-shift', 'alt'); void player.offsetWidth; player.classList.add('bd-shift'); if(DOOR.i % 2) player.classList.add('alt');
     }
     // Start the tour (Sean, 2026-10-09: "the button says start the tour... when they start the tour, she starts to
@@ -2666,9 +2675,9 @@ function menuTabContent(items){
   return html;
 }
 
-var SF_CITIES = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade'];
-var CFL_CITIES = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala'];
-var LA_CITIES = ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park'];
+var SF_CITIES = ['Miami','Miami Beach','North Miami','North Miami Beach','Aventura','Bal Harbour','Sunny Isles Beach','Surfside','Doral','Hialeah','Miami Gardens','Miami Lakes','Miami Springs','Coral Gables','South Miami','Key Biscayne','Pinecrest','Palmetto Bay','Cutler Bay','Homestead','Florida City','Naranja','North Bay Village','Opa-locka','Fort Lauderdale','Hollywood','Sunrise','Pompano Beach','Coral Springs','Margate','Miramar','Pembroke Pines','Weston','Davie','Cooper City','Plantation','Lauderhill','Lauderdale Lakes','North Lauderdale','Tamarac','Oakland Park','Wilton Manors','Dania Beach','Hallandale','Hallandale Beach','Deerfield Beach','Lighthouse Point','Coconut Creek','Parkland','Lauderdale-by-the-Sea','Southwest Ranches','West Palm Beach','Boca Raton','Delray Beach','Boynton Beach','Palm Beach Gardens','Jupiter','Lake Worth','Lake Worth Beach','Tequesta','Loxahatchee','Riviera Beach','Royal Palm Beach','Wellington','North Palm Beach','Palm Beach','Greenacres','Lantana','Lake Park','Juno Beach','Palm Springs','Highland Beach','Belle Glade','Port St. Lucie','Port Saint Lucie','Stuart','Palm City','Jensen Beach','Hobe Sound','Fort Pierce','Vero Beach','Sebastian','Loxahatchee Groves','South Florida','Key West','Key Largo','Marathon','Islamorada','Tavernier','Stock Island'];
+var CFL_CITIES = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala', 'Sanford','Oviedo','Winter Park','Winter Garden','Kissimmee','Celebration','Clermont','Maitland','Longwood','Casselberry','Lake Mary','Windermere','Ocoee','Leesburg','Mount Dora','Eustis','Haines City','Bartow','Davenport','Sebring', 'Tampa','St. Petersburg','Saint Petersburg','Clearwater','Clearwater Beach','Largo','Dunedin','Palm Harbor','Tarpon Springs','Brandon','Riverview','Wesley Chapel','Land O\' Lakes','Lutz','Plant City','Temple Terrace','New Port Richey', 'Bradenton','Sarasota','Venice','North Port','Myakka City','Duette','Punta Gorda','Port Charlotte','Fort Myers','Cape Coral','Naples','Bonita Springs','Estero', 'Daytona Beach','Ormond Beach','Port Orange','New Smyrna Beach','DeLand','Deltona','Melbourne','Titusville','Cocoa','Cocoa Beach','Palm Bay', 'Cape Canaveral','Lake Buena Vista','Nokomis','Gulfport','Pinellas Park','Poinciana','Sand Lake','Indialantic','Rockledge','Indian Harbour Beach','Belleair Bluffs','Daytona Beach Shores','South Daytona'];
+var LA_CITIES = ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park','Beverly Hills','Burbank','Glendale','Pasadena','Santa Monica','Culver City','Marina del Rey','Long Beach','East Los Angeles','Cerritos','Pomona','Santa Clarita','Fullerton'];
 
 // Which community hub (if any) a listing belongs to, for breadcrumb routing.
 // Mirrors the matchListing() predicates already used by public/ve-region-directory.js
@@ -3089,7 +3098,7 @@ function renderListing(l){
   }
   var priceDisplay = l.google_price_level || l.pricing_range || '';
   var infoChips = [];
-  if(l.address_city && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street ? l.address_street+', '+l.address_city : l.address_city)+', '+esc(l.address_state)+'</a></span>');
+  if(l.address_city && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street ? l.address_street+', '+l.address_city : l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></span>');
   if(servesLabel(l) && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'+esc(servesLabel(l))+'</span>');
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
@@ -3106,7 +3115,7 @@ function renderListing(l){
   // business or Vegans Explore own go here; the column is kept, just not shown.
   // gallery_urls holds photos Vegans Explore owns: approved bounty work from a host night, licensed
   // to us by the creator (Sean, 2026-10-04, playbook ve-bounties-lifecycle).
-  var ownPhotos = (l.gallery_urls || []).filter(function (u) { return /^https:\/\//.test(u); });
+  var ownPhotos = (l.gallery_urls || []).filter(function (u) { return /^https:\/\//.test(u) || /^\/(?!\/)/.test(u); }); // or a file on this site (the sample business)
   var overviewPhotoHtml = renderPhotos(ownPhotos, 'ov');
   if(overviewPhotoHtml){
     overviewContent += '<div class="section"><h2 class="section-title">Photos</h2>'+overviewPhotoHtml+'</div>';
@@ -3150,7 +3159,7 @@ function renderListing(l){
     'url':window.location.href,
     'telephone':l.phone||undefined,
     'image':l.logo_url||undefined,
-    'address':l.address_city && !mediaKind?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state,'addressCountry':'US'}:undefined,
+    'address':l.address_city && !mediaKind?{'@type':'PostalAddress','streetAddress':l.address_street||undefined,'addressLocality':l.address_city,'addressRegion':l.address_state||undefined,'addressCountry':l.address_country||'US'}:undefined,
     'sameAs':[l.instagram?'https://instagram.com/'+l.instagram.replace('@',''):null,l.facebook||null,l.twitter?'https://twitter.com/'+l.twitter:null].filter(Boolean)
   };
   var _schEl=document.getElementById('schema-ld')||document.createElement('script');

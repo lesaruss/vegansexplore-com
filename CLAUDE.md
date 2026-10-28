@@ -384,8 +384,9 @@ for businesses that is a squeeze page for them."
   `/claim`'s previews), never a database row, marked Sample with `noindex`. Its bar switches **A visitor** / **The owner**
   (`sampleView`); The owner, Claim Listing, or `?tab=brand` open **Your dashboard**, the real business dashboard
   (`VEPartnerDash.mount` with `call`, answered by the demo file's `dashboard()` on seeded sample numbers, and `onJoin`); anything
-  that would save says so in a toast, and joining goes to `/business#/start`. Its logo and photos are left for Higgsfield art
-  (credits ran out 2026-10-27), so its dashboard shows them under Get your page ready, the way a new owner sees it.
+  that would save says so in a toast, and joining goes to `/business#/start`. Its logo and four photos (`business/sample/img/`,
+  made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
+  page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
@@ -517,7 +518,7 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   support they can give away; the points are a footnote everywhere, never the pitch; then, the same day, "balance the conversation
   between what we're doing in a lifestyle side of things and what we're doing to provide support for the animals": two halves,
   For the animals (rescues and sanctuaries found in the Community section, the Fosters and Rescues boards, points given to
-  organizations, and campaigns behind the cause marked Growing) and For the Vegan life; Your role and Who to invite carry the
+  organizations, and campaigns behind the cause marked Growing) and For the community; Your role and Who to invite carry the
   animals' people too), Your
   membership (on us, points, level, what points do), Your role, Your city (home chapter, `set_home_community`, its hub, Pulse and
   Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
@@ -527,7 +528,13 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   corner... works well").
 - **Community Managers are never volunteers** (Sean, 2026-10-27: "we're for profit and we intend to pay them. More like gig work"):
   the site's words call it gig work, paid as the community grows (the Passport's What your $11 supports, the Ambassador Guide, the
-  brand tour's slide 6). Maya's recorded line on that slide still says "volunteer Community Managers"; it needs a new recording.
+  brand tour's slide 6). Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
+- **Voices, not animation, for tours** (Sean, 2026-10-28: "we could still have the voices, but the animation I don't think is
+  necessary... save the animation for the guides"; a lip-synced clip is about 20 to 25 Higgsfield credits, a voice line none). A brand
+  tour slide can be `{audio, poster}`: her voice over the slide's still picture, beside clips on the other slides (`voiceAt` in
+  `loadBrandSite`). Oatly's slide 6 is `brand-door/oatly/v6-slide-6.mp3` (el-media `tts`, Maya's voice, levelled to the clips, about
+  -13.5 LUFS, a 0.25 s lead-in; checked word for word with `stt`), the old clip kept in `replaced`. New tour lines are voice only;
+  a Guide gets at most one animated welcome.
 - **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
   `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
   friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`
@@ -1099,8 +1106,11 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   South Florida adds the Treasure Coast and the Keys, Central Florida Greater Orlando, Tampa Bay, the Space Coast, Volusia and the
   southwest Gulf, North Florida Jacksonville to the Panhandle (`SF`, `CF`, `NF` in `ve-hubs.js`; `ve-claims` `HUBS` and
   `ve_outreach_cities` hold the same lists). A chapter's art is `VE_HUBS[].page.banner` (the banner, the guide and the listing header
-  read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); Virginia and West Virginia wear
-  D.C.'s, Delaware Philadelphia's and North Florida Central Florida's until their own are made (Higgsfield credits ran out 2026-10-27). VE_HUBS[].state groups chapters by
+  read it): Maryland's is Baltimore's Inner Harbor (`vegan-media/media/communities/maryland/banner.jpg`); North Florida (Jacksonville and
+  the Main Street Bridge), Virginia (Richmond and the James River rapids), West Virginia (the Capitol in Charleston) and Delaware
+  (the Wilmington riverfront) got their own on 2026-10-28 (`communities/<slug>/banner.jpg`, made in Higgsfield in the Maryland
+  banner's style; Virginia and Delaware were made from words alone, since with the Maryland picture as a reference they came back
+  as Baltimore's skyline (a hub's header crops to the skyline, so check that part against the reference); the dashboards' `VE_CITY_BANNER` maps in `center-console.html` and `cm-legacy.html` hold the same paths). VE_HUBS[].state groups chapters by
   state. The chapter list also lives in `ve-auth` (`VALID_COMMUNITIES`, names, city aliases), `ve-board`, `ve-bounties`, `ve-claims`,
   `ve-hunt`, `ve-invites`, `ve-media-library`, `ve-news-desk`, `ve-tours` and the name maps in the dashboard, join, lead and Depot
   pages; the dashboard's city rules are built from VE_HUBS. A new chapter changes all of them. Large functions deploy from a commit
@@ -1477,6 +1487,30 @@ until someone decides (migration `20261010_ve_backlog_checks.sql`, table `ve_bac
   go by, or Google matched the wrong business). A listing with no address reads as online and shows in every chapter, so a local
   group known only by its chapter gets its state as well as `communities`.
 - Next (approved by Sean the same day): the monthly search for new places in each city, after the check-ups.
+- **The restaurant search for the newer chapters** (Sean, 2026-10-28: "Philadelphia doesn't have any restaurants, and neither does
+  London... West Virginia, Maryland, Delaware, Washington, D.C., and North Florida... do a scan of those areas and start populating
+  them"; Virginia had none either; migration `20261028_restaurant_search_new_chapters.sql`). 59 Google Places text searches ("vegan
+  restaurant / cafe / bakery in <city or neighborhood>") listed 359 places live (`crawl_source` `restaurant-search`, Google place, address
+  and map pin, a team note): **100% Vegan** when Google's main type is Vegan restaurant or the name says Vegan (not Vegetarian or -ish),
+  public at once; **Vegan options** when Google tags it Vegan or Vegetarian as a second type, so it waits in Being vetted for 10 member
+  votes. Bakeries and cafes by Google's type, caterers to Catering, the rest Restaurants; stores and places with no Vegan label left out;
+  two branches with one name in one city get their neighborhood (or street) after a dash. By chapter: London 97, Virginia 64,
+  Philadelphia 61, Maryland 54, Florida (the North Florida searches) 43, Washington, D.C. 18, Delaware 16, West Virginia 6. The logo
+  sweep, the menu link finder and reader, and the essentials pass fill them in; the essentials cron was widened the same day to every 10
+  minutes, 6 to 10 AM UTC, 30 a run (it costs nothing once nothing is due). A listing outside the US shows no empty state in its address
+  (`directory/listing.html`). Run it again for a new chapter the same way: searches, then the same rules. **Atlanta and Los Angeles** got the same search the same day (Sean: "run the restaurant search for Atlanta and Los
+  Angeles"; migration `20261028_restaurant_search_atlanta_los_angeles.sql`): 194 live, Atlanta 64 and Los Angeles 130. The Los Angeles
+  chapter matched only five city names, so its list was widened to the cities found (Pasadena, Long Beach, Santa Monica, Burbank,
+  Glendale, Culver City...; `LA` in `ve-hubs.js`, `LA_CITIES` in `directory/listing.html`, `HUBS` in `ve-claims`, `ve_outreach_cities`). **New York and Central
+  Florida** the same day (migration `20261028_restaurant_search_new_york_central_florida.sql`): 191 live, New York 105 (a borough with no
+  city of its own takes the borough, Brooklyn, Queens, Bronx, Staten Island) and Central Florida 86 (13 nearby cities joined `CF`, and
+  `CFL_CITIES` in `directory/listing.html` is now the whole list). **South Florida** the same day (migration
+  `20261028_restaurant_search_south_florida.sql`): 101 live (18 100% Vegan, 83 Vegan options; most of its Vegan places were listed
+  already), and Naranja, North Bay Village, Opa-locka, Tavernier and Stock Island joined `SF` (the county slices in `SF_COUNTIES` moved
+  with them; `SF_CITIES` in `directory/listing.html` is now the whole list). It took the Directory past 1,000 approved listings, which
+  showed that `fetchAll` in `ve-region-directory.js` had never paged: its second request asked for the first page again, forever, and
+  every Directory view stayed empty for about 30 minutes until it was fixed (`(offset || 0) + 1000`, `order=id`). The Directory reads
+  1,000 listings a request and pages until a short page.
 
 ## Guide pricing, points and levels (LOCKED by Sean 2026-10-25, playbook `ve-pricing-points-passport`)
 
