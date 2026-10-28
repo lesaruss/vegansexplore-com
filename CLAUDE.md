@@ -842,6 +842,10 @@ out too, and a name that matches any listing, set-aside ones included, never com
 quarantined in Ready to list (London 12, Philadelphia 111; London's big rescues, Battersea, Mayhew, Celia Hammond, Dogs Trust, were
 listed already). RSPCA is left out. Google gives many Greater London places their postal town (Croydon, Bromley), so they count as
 London and carry `communities` ['london']; the London chapter itself matches only the city London.
+Philadelphia's ticked Ready to list (Sean: "add the ticked ones from Ready to list for Philadelphia") went live the same day, all 136
+through `backlog_decide` as Add the ticked does (88 Rescues, 25 Sanctuaries, 23 Nonprofits, no How Vegan). Sent all at once from SQL,
+31 of the calls failed to boot the function (503 BOOT_ERROR) and nothing saved; re-sent, all landed. Six had no town from Google
+and got it from Google's address.
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
