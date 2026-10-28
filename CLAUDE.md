@@ -660,7 +660,27 @@ the shown answers) is the only way a profile may leave the team, for the windows
 (`/admin/depot/profiles`, `ve-mission-survey` `admin_list` / `admin_get`, super admins): everyone who has answered (search, city,
 answered of 31, points of 250), and one member (`#m/<id>`): every answer with Can be shown, Just for Vegans Explore or Team only, and
 What anyone outside the team could see. The Policies page's Privacy says all of it (profile answers, who sees what, partners only
-through us in a window they said yes to). Next: phase 2, the event window.
+through us in a window they said yes to).
+
+**Phase 2, the event window, is built** (Sean, 2026-10-28: "go ahead with phase 2"; migration `20261028_event_window.sql`, `ve-events`,
+`public/ve-events.js`). Every live event has its own view (`/events#event/<id>`, the tile's name; the dashboard's Events tab too):
+the details and, for a Passport holder, **I'm going** (`event_rsvps`, which had never been used: every RSVP linked out). When the
+event has an organizer (`ve_event_organizers`: the member who sent it as its host or promoter, made on approval, or anyone added in
+Depot > Events by account email, with the name guests see), the RSVP offers an **unticked** "Let <organizer> message me about this
+event", 25 points once per event (`ve_points_grant` reason `partner_optin`, ref `optin:<event>`; `ve_event_rsvp`). The organizer's
+**Guests and messages** (`#guests/<id>`, linked from My events and the event): going, said yes, the shown profile parts of those who
+said yes (`ve_event_guests`, `ve_profile_public` only), and messages through us (`message_send`): by email from Vegans Explore with
+their name, plain text up to 1,000 characters, 3 per event at least 24 hours apart, until 7 days after the event
+(`ve_event_window_open`), never an email address either way (replies come to contact@lesaruss.com), each one logged
+(`ve_event_messages`, `ve_event_message_deliveries`). Only the organizer sends; the team reads. A guest's email links to
+`/events#message/<token>` (no sign-in): **Stop messages from <organizer>** (`ve_partner_mutes`, every event of theirs) and **Report
+this message**, which pauses that organizer on every event (`paused_at`), stops them for the reporter and emails Sean; Depot > Events
+shows each live event's **Organizers and guests** with the messages, reports, **Resume** and **Remove**. My events lists the events they
+organize, the ones they are going to (with Stop <organizer>'s messages) and the organizers they stopped (Let them message me again).
+Defaults set by Logan, Sean's to change: the box unticked everywhere (the law asks it only in London), 25 points, 3 messages a day
+apart, 1,000 characters (`MSG` in `ve-events`). Proven end to end 2026-10-28 on a [TEST] event with two internal accounts (RSVP and
+points once, the organizer's view, a real send, the second send refused, the guest's link, report, pause, Resume), then removed.
+Next: phase 3, the campaign window.
 
 ## Invites and free memberships (Sean, 2026-10-04)
 
