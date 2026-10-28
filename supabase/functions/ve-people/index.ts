@@ -5,7 +5,7 @@
 // the bio written from their interviews.
 //
 // Super admin (the VE app token) or ops (Bearer LESARUSS_ADMIN_TOKEN):
-// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}] }        -> { ok, person }
+// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}], bio?, website?, instagram?, facebook?, tiktok?, youtube? } -> { ok, person }
 //      { action: 'credits', listing_id }                                                 -> { ok, credits }
 //      { action: 'credit_add', listing_id, kind: episode|event|article|video, content_id? | event_id? | title, url?, happened_on?, role?, note? }
 //      { action: 'credit_remove', id }
@@ -148,9 +148,24 @@ Deno.serve(async (req) => {
       const links = body.links.slice(0, 8).map((x: any) => ({ label: clean(x?.label, 40) || 'Visit', url: httpsUrl(x?.url) })).filter((x: any) => x.url);
       if (JSON.stringify(p.links || []) !== JSON.stringify(links)) { edits.push({ field: 'person.links', old_value: p.links ?? null, new_value: links }); if (links.length) p.links = links; else delete p.links; }
     }
+    // Their bio and where to find them (Sean, 2026-10-28: "Instagram, their Facebook, TikTok if they have it, YouTube if they have it.
+    // Make sure we have their website. We don't need a phone number or an address").
+    const cols: Record<string, unknown> = {};
+    const { data: cur } = await db.from('listings').select('description, website, instagram, facebook, tiktok, youtube').eq('id', l.id).maybeSingle();
+    if (body.bio !== undefined) cols.description = String(body.bio ?? '').replace(/\r/g, '').trim().slice(0, 3000);
+    if (body.website !== undefined) { const w = String(body.website || '').trim(); cols.website = !w ? '' : httpsUrl(/^https?:\/\//i.test(w) ? w.replace(/^http:/i, 'https:') : 'https://' + w); }
+    const handleOf = (v: unknown, host: string) => String(v ?? '').trim().replace(new RegExp('^https?://(www\\.)?' + host + '/', 'i'), '').replace(/^@/, '').replace(/[\/?#].*$/, '');
+    if (body.instagram !== undefined) { const h = handleOf(body.instagram, 'instagram\\.com'); cols.instagram = h ? '@' + h.toLowerCase() : null; }
+    if (body.tiktok !== undefined) { const h = handleOf(body.tiktok, 'tiktok\\.com'); cols.tiktok = h ? '@' + h.replace(/^@/, '').toLowerCase() : null; }
+    if (body.facebook !== undefined) { const u = String(body.facebook || '').trim(); cols.facebook = !u ? null : httpsUrl(u) || 'https://www.facebook.com/' + handleOf(u, 'facebook\\.com'); }
+    if (body.youtube !== undefined) { const u = String(body.youtube || '').trim(); cols.youtube = !u ? null : httpsUrl(u) || 'https://www.youtube.com/' + (u.startsWith('@') ? u : '@' + u); }
+    for (const k of Object.keys(cols)) {
+      if (String((cur as any)?.[k] ?? '') === String(cols[k] ?? '')) delete cols[k];
+      else edits.push({ field: k, old_value: (cur as any)?.[k] ?? null, new_value: cols[k] ?? null });
+    }
     if (edits.length) {
       details.person = p;
-      const { error } = await db.from('listings').update({ details, updated_at: new Date().toISOString() }).eq('id', l.id);
+      const { error } = await db.from('listings').update({ ...cols, details, updated_at: new Date().toISOString() }).eq('id', l.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       await logEdits(l.id, by, edits);
     }

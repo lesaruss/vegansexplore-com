@@ -41,8 +41,18 @@
     ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
-    ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events']]
+    ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events']],
+    // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.
+    ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders']]
   ];
+  // A physician's specialty (details.person.specialty); keep in step with SPECIALTIES in /public/ve-region-directory.js and ve-people.
+  var SPECIALTIES = [['cardiology', 'Cardiology'], ['gastroenterology', 'Gastroenterology'], ['internal', 'Internal medicine'], ['family', 'Family medicine'],
+    ['lifestyle', 'Lifestyle medicine'], ['psychiatry', 'Psychiatry'], ['urology', 'Urology'], ['surgery', 'Surgery'], ['other', 'Other specialties']];
+  var PEOPLE_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-people';
+  function people(body) {
+    return fetch(PEOPLE_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); });
+  }
   var SUB_LABEL = { 'Media': 'Other media' };
   // A book's type (details.book_type, Sean 2026-10-27); keep in step with /public/ve-region-directory.js and ve-listing-media.
   var BOOK_TYPES = [['cookbook', 'Cookbook'], ['memoir', 'Biography & memoir'], ['educational', 'Educational'], ['health', 'Health & nutrition'],
@@ -83,7 +93,7 @@
   // /public/ve-region-directory.js and statusWords in /directory/listing.html.
   var MEDIA_SHOWS = ['Podcasts', 'YouTube', 'News Outlets', 'Media'], MEDIA_WORKS = ['Documentaries & Films', 'Books'];
   var BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'];
-  function kindOf(cat) { return MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
+  function kindOf(cat) { return (SECTIONS[5][1].indexOf(cat) >= 0) ? 'person' : MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
   var STATUS = {
     place: { title: 'Open or closed', opts: OPEN },
     // Never Ended (Sean, 2026-10-27: "it could come back 3 years later").
@@ -128,7 +138,7 @@
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
     '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,description,tiktok,youtube,person:details->person';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -200,7 +210,7 @@
       '<h2 id="vla-t">Edit listing</h2><div class="who">Admin only. Changes are live as soon as you save.</div>' +
       '<label class="h" for="vla-name" id="vla-name-l">Business name</label><input type="text" id="vla-name" maxlength="160" value="' + esc(l.name) + '">' +
 
-      '<h3>Logo</h3><div class="logo"><div class="logo-img" id="vla-logo"></div><div class="logo-btns">' +
+      '<h3 id="vla-logo-t">Logo</h3><div class="logo"><div class="logo-img" id="vla-logo"></div><div class="logo-btns">' +
       '<button type="button" id="vla-up">Upload a logo</button><button type="button" id="vla-copy" hidden>Copy it into our storage</button><button type="button" class="rm" id="vla-rm" hidden>Remove</button>' +
       '</div><div class="logo-msg" id="vla-lmsg" role="status"></div></div><div class="ledit" id="vla-ledit" hidden></div>' +
 
@@ -221,6 +231,30 @@
       '<div id="vla-p-work" hidden><h3>About the work</h3><label class="h" for="vla-year">Year it came out</label>' +
       '<input type="text" id="vla-year" inputmode="numeric" maxlength="4" placeholder="2018" value="' + esc(l.release_year || '') + '">' +
       '<div id="vla-bt-wrap"><label class="h">Type of book</label><div class="chips">' + BOOK_TYPES.map(function (k) { return chip('radio', 'vla-bt', k[0], k[1], l.book_type === k[0]); }).join('') + '</div></div></div>' +
+      // A person (Sean, 2026-10-28): what they do, a physician's specialty, their bio (written from their interviews), where to find
+      // them, links to their work, and what they did with us. No phone or address.
+      '<div id="vla-p-person" hidden><h3>About them</h3>' +
+      '<label class="h" for="vla-ptitle">What they do, in a line</label><input type="text" id="vla-ptitle" maxlength="90" placeholder="Cardiologist and author" value="' + esc((l.person || {}).title || '') + '">' +
+      '<div id="vla-spec-wrap"><label class="h">Specialty</label><div class="chips">' + SPECIALTIES.map(function (k) { return chip('radio', 'vla-spec', k[0], k[1], (l.person || {}).specialty === k[0]); }).join('') + '</div></div>' +
+      '<label class="h" for="vla-pbio">Bio</label><textarea id="vla-pbio" rows="9" style="width:100%;font:13px/1.6 Montserrat,sans-serif;padding:10px;border:1px solid #ccc;border-radius:6px">' + esc(l.description || '') + '</textarea>' +
+      '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-pbio-go">Write it from their interviews</button></div>' +
+      '<div class="note">Written only from what they said with us (their episodes\' transcripts). Read it before you save.</div>' +
+      '<div class="row2"><div><label class="h" for="vla-pweb">Website</label><input type="text" id="vla-pweb" value="' + esc(l.website || '') + '"></div>' +
+      '<div><label class="h" for="vla-pig">Instagram</label><input type="text" id="vla-pig" placeholder="@handle" value="' + esc(l.instagram || '') + '"></div></div>' +
+      '<div class="row2"><div><label class="h" for="vla-pfb">Facebook</label><input type="text" id="vla-pfb" value="' + esc(l.facebook || '') + '"></div>' +
+      '<div><label class="h" for="vla-ptt">TikTok</label><input type="text" id="vla-ptt" placeholder="@handle" value="' + esc(l.tiktok || '') + '"></div></div>' +
+      '<label class="h" for="vla-pyt">YouTube</label><input type="text" id="vla-pyt" placeholder="@channel or a link" value="' + esc(l.youtube || '') + '">' +
+      '<label class="h">Their work (a sign-up page, a program, a product, a book)</label>' +
+      [0, 1, 2].map(function (i) { var x = ((l.person || {}).links || [])[i] || {};
+        return '<div class="row2"><div><input type="text" class="vla-plink-l" maxlength="40" placeholder="Label, like Work with me" value="' + esc(x.label || '') + '"></div><div><input type="text" class="vla-plink-u" placeholder="https://" value="' + esc(x.url || '') + '"></div></div>'; }).join('') +
+      '<h3>With Vegans Explore</h3><div id="vla-pcred" class="note">Loading...</div>' +
+      '<label class="h" for="vla-pep">Add an episode</label><input type="text" id="vla-pep" placeholder="Search our episodes by title or guest"><div id="vla-pep-res" class="note"></div>' +
+      '<label class="h">Add an event, article or video</label>' +
+      '<div class="row2"><div><select id="vla-pck"><option value="event">Event</option><option value="article">Article</option><option value="video">Video</option></select></div>' +
+      '<div><input type="text" id="vla-pcrole" maxlength="40" placeholder="Their role, like Speaker"></div></div>' +
+      '<input type="text" id="vla-pct" maxlength="200" placeholder="Title, like Vegan Foodie Fest Miami" style="margin-top:6px">' +
+      '<div class="row2"><div><input type="text" id="vla-pcu" placeholder="Link (optional)"></div><div><input type="date" id="vla-pcd"></div></div>' +
+      '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-pcadd">Add it</button></div></div>' +
       '<div id="vla-p-health" hidden><h3>Kind of practice</h3><div class="chips">' + HEALTH_TYPES.map(function (k) { return chip('radio', 'vla-ht', k[0], k[1], l.health_type === k[0]); }).join('') + '</div></div>' +
       '<div id="vla-p-rss" hidden><h3>Episodes</h3><label class="h" for="vla-rss">Podcast RSS feed</label>' +
       '<input type="text" id="vla-rss" placeholder="https://feeds.example.com/show" value="' + esc(l.rss_url || '') + '">' +
@@ -298,15 +332,18 @@
       $('#vla-kinds-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })).indexOf('Food Brands') < 0;
       // The rest follows from what it is (Sean, 2026-10-27): nothing until a section is picked; media serves every chapter and has no
       // address, locations or How Vegan; a brand has no locations.
-      var picked = !!($('input[name=vla-sec]:checked') || {}).value, kind = kindOf(cur), media = kind === 'show' || kind === 'work';
+      var picked = !!($('input[name=vla-sec]:checked') || {}).value, kind = kindOf(cur), person = kind === 'person', media = kind === 'show' || kind === 'work' || person;
       $('#vla-first').hidden = picked; $('#vla-rest').hidden = !picked;
       $('#vla-p-loc').hidden = $('#vla-p-ch').hidden = $('#vla-p-vegan').hidden = media;
       $('#vla-p-locs').hidden = media || kind === 'brand';
+      $('#vla-p-person').hidden = !person; $('#vla-spec-wrap').hidden = cur !== 'Physicians';
+      $('#vla-bs-t').hidden = $('#vla-bs').hidden = person;
+      $('#vla-logo-t').textContent = person ? 'Photo' : 'Logo';
       $('#vla-p-rss').hidden = cur !== 'Podcasts';
       $('#vla-p-health').hidden = cur !== 'Health Professionals';
       $('#vla-p-work').hidden = kind !== 'work'; $('#vla-bt-wrap').hidden = cur !== 'Books';
       $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
-      drawStatus(kind);
+      drawStatus(person ? 'place' : kind);
     }
     // Status words fit the kind: a podcast is Active or On hiatus; a brand In business, Paused or Out of business.
     function drawStatus(kind) {
@@ -330,6 +367,49 @@
     $('#vla-sub').addEventListener('change', syncSub);
     $('#vla-extra').addEventListener('change', syncSub);
     drawSubs(l.category);
+    // People: credits, adding an episode or an event, and the bio from their interviews.
+    function drawCredits() {
+      var box = $('#vla-pcred'); if (!box || $('#vla-p-person').hidden) return;
+      people({ action: 'credits', listing_id: l.id }).then(function (d) {
+        var rows = (d && d.credits) || [];
+        box.innerHTML = rows.length ? rows.map(function (c) {
+          var t = (c.content && c.content.title) || (c.event && c.event.title) || c.title || '';
+          var w = (c.content && [c.content.podcast_show, c.content.episode_number ? 'Ep ' + c.content.episode_number : ''].filter(Boolean).join(' ')) || c.kind;
+          return '<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;padding:4px 0;border-top:1px solid #eee"><span><b>' + esc(t) + '</b> &middot; ' + esc(w) + (c.role ? ' &middot; ' + esc(c.role) : '') + '</span>' +
+            '<button type="button" class="cancel" data-pcred-rm="' + esc(c.id) + '" style="padding:4px 10px">Remove</button></div>'; }).join('') : 'Nothing yet.';
+      });
+    }
+    if (!$('#vla-p-person').hidden) drawCredits();
+    $('#vla-sub').addEventListener('change', drawCredits);
+    wrap.addEventListener('click', function (e) {
+      var rm = e.target.closest('[data-pcred-rm]');
+      if (rm) { rm.disabled = true; people({ action: 'credit_remove', id: rm.getAttribute('data-pcred-rm') }).then(drawCredits); return; }
+      var ep = e.target.closest('[data-pep]');
+      if (ep) { ep.disabled = true; people({ action: 'credit_add', listing_id: l.id, kind: 'episode', content_id: ep.getAttribute('data-pep'), role: 'Guest' }).then(function (d) {
+        $('#vla-pep-res').textContent = d && d.ok ? 'Added.' : d && d.error === 'already_credited' ? 'Already on their page.' : 'That did not save.'; drawCredits(); }); }
+    });
+    var pepT;
+    $('#vla-pep').addEventListener('input', function () {
+      clearTimeout(pepT); var q = this.value.trim(); if (q.length < 3) { $('#vla-pep-res').innerHTML = ''; return; }
+      pepT = setTimeout(function () { people({ action: 'episodes', q: q }).then(function (d) {
+        $('#vla-pep-res').innerHTML = ((d && d.rows) || []).map(function (r) { return '<div style="display:flex;gap:8px;align-items:center;justify-content:space-between;padding:3px 0">' +
+          '<span>' + esc(r.title) + ' &middot; ' + esc(r.podcast_show || '') + '</span><button type="button" class="cancel" data-pep="' + esc(r.id) + '" style="padding:4px 10px">Add</button></div>'; }).join('') || 'No episode matches.';
+      }); }, 300);
+    });
+    $('#vla-pcadd').onclick = function () {
+      var t = $('#vla-pct').value.trim(), msg = $('#vla-msg'); if (!t) { msg.className = 'msg bad'; msg.textContent = 'Give it a title.'; return; }
+      people({ action: 'credit_add', listing_id: l.id, kind: $('#vla-pck').value, title: t, url: $('#vla-pcu').value.trim(), happened_on: $('#vla-pcd').value, role: $('#vla-pcrole').value.trim() })
+        .then(function (d) { if (d && d.ok) { $('#vla-pct').value = $('#vla-pcu').value = $('#vla-pcd').value = $('#vla-pcrole').value = ''; drawCredits(); } else { msg.className = 'msg bad'; msg.textContent = 'That did not save. ' + ((d && d.error) || ''); } });
+    };
+    $('#vla-pbio-go').onclick = function () {
+      var b = this, msg = $('#vla-msg'); b.disabled = true; msg.className = 'msg'; msg.textContent = 'Reading their interviews...';
+      people({ action: 'bio_draft', listing_id: l.id }).then(function (d) {
+        b.disabled = false;
+        if (!d || !d.ok) { msg.className = 'msg bad'; msg.textContent = (d && d.message) || 'That did not work. Try again.'; return; }
+        $('#vla-pbio').value = d.bio; if (!$('#vla-ptitle').value.trim() && d.title) $('#vla-ptitle').value = d.title;
+        msg.textContent = 'Written from ' + (d.sources || []).length + ' episode(s). Read it, then Save.';
+      }).catch(function () { b.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Could not connect.'; });
+    };
     // Chapters: the address's own chapter is always on; Every chapter covers the rest.
     function syncChapters() {
       var all = $('#vla-all').checked, online = $('#vla-online').checked;
@@ -499,7 +579,7 @@
       if (hasLoc) body.address = isOnline ? { online: true } : { street: $('#vla-st').value, city: $('#vla-city').value, state: $('#vla-state').value, zip: $('#vla-zip').value };
       var v = wrap.querySelector('input[name=vla-vs]:checked'); if (v && !$('#vla-p-vegan').hidden) body.vegan_status = v.value;
       // The home chapter comes from the address, so only the extra ones are saved.
-      if (kind === 'show' || kind === 'work') body.communities = ['all'];
+      if (kind === 'show' || kind === 'work' || kind === 'person') body.communities = ['all'];
       else if (!$('#vla-p-ch').hidden) body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
       if (!$('#vla-kinds-wrap').hidden) body.product_kinds = vals('vla-kind');
       if (!$('#vla-cuis-wrap').hidden) body.cuisines = vals('vla-cuis');
@@ -530,7 +610,16 @@
               .then(function (r) { return r.json(); }).then(function (x) {
                 if (!x || !x.ok) throw new Error(x && x.error === 'bad_year' ? 'the year should be four digits.' : 'try again.');
                 l.release_year = target.release_year = x.release_year; l.book_type = target.book_type = x.book_type; l.health_type = target.health_type = x.health_type;
-              }) : Promise.resolve()).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but the year and type did not: ' + e.message); });
+              }) : Promise.resolve()).then(savePerson).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but ' + e.message); });
+          // A person's profile, links and socials go to ve-people.
+          function savePerson() {
+            if (kindOf($('#vla-sub').value) !== 'person') return;
+            var links = Array.prototype.map.call(wrap.querySelectorAll('.vla-plink-u'), function (u, i) {
+              return { label: wrap.querySelectorAll('.vla-plink-l')[i].value.trim(), url: u.value.trim() }; }).filter(function (x) { return x.url; });
+            return people({ action: 'save', listing_id: l.id, title: $('#vla-ptitle').value.trim(), specialty: $('#vla-spec-wrap').hidden ? '' : (($('input[name=vla-spec]:checked') || {}).value || ''),
+              links: links, bio: $('#vla-pbio').value, website: $('#vla-pweb').value.trim(), instagram: $('#vla-pig').value.trim(), facebook: $('#vla-pfb').value.trim(),
+              tiktok: $('#vla-ptt').value.trim(), youtube: $('#vla-pyt').value.trim() }).then(function (x) { if (!x || !x.ok) throw new Error('their profile did not: ' + ((x && (x.message || x.error)) || 'try again.')); });
+          }
           function afterWork() {
           // A changed feed is read at once, so a wrong one says so before the window closes.
           var rss = $('#vla-rss').value.trim();

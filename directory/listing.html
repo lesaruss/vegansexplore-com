@@ -2409,7 +2409,7 @@ function personRow(r){
     : r.kind === 'event' ? [r.role, r.where].filter(Boolean).join(' &middot; ') : r.role;
   var acts = (r.yt ? '<button type="button" class="pp-act" data-pp-watch="' + esc(r.yt) + '">Watch</button>' : '') +
     (r.href ? '<a class="pp-act pp-act-2" href="' + esc(r.href) + '"' + (/^https:/.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' + (r.kind === 'episode' ? 'Listen' : r.kind === 'event' ? 'Event page' : 'Open') + '</a>' : '');
-  return '<div class="pp-row">' + (pic ? '<img class="pp-thumb" src="' + esc(pic) + '" alt="" loading="lazy">' : '<div class="pp-thumb pp-thumb-0" aria-hidden="true"></div>') +
+  return '<div class="pp-row">' + (pic ? '<img class="pp-thumb" src="' + esc(pic) + '" alt="" loading="lazy" onerror="this.outerHTML=\'<div class=&quot;pp-thumb pp-thumb-0&quot; aria-hidden=&quot;true&quot;></div>\'">' : '<div class="pp-thumb pp-thumb-0" aria-hidden="true"></div>') +
     '<div class="pp-info"><div class="pp-title">' + esc(r.title) + '</div><div class="pp-meta">' + meta + (r.when ? ' &middot; ' + esc(shortDate(r.when)) : '') + '</div>' +
     (r.note ? '<div class="pp-note">' + esc(r.note) + '</div>' : '') + '</div><div class="pp-acts">' + acts + '</div></div>';
 }
@@ -3235,7 +3235,7 @@ function renderListing(l){
   var priceDisplay = l.google_price_level || l.pricing_range || '';
   var infoChips = [];
   if(l.address_city && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg><a href="'+esc(mapsUrl(l))+'" target="_blank" rel="noopener">'+esc(l.address_street ? l.address_street+', '+l.address_city : l.address_city)+(l.address_state?', '+esc(l.address_state):'')+'</a></span>');
-  if(servesLabel(l) && !mediaKind) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'+esc(servesLabel(l))+'</span>');
+  if(servesLabel(l) && !mediaKind && !person) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'+esc(servesLabel(l))+'</span>');
   if(todayHours) infoChips.push('<span class="info-chip open-now"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'+esc(todayHours)+'</span>');
   if(priceDisplay) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>'+esc(priceDisplay)+'</span>');
   if(l.website) infoChips.push('<span class="info-chip"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/></svg><a href="'+esc(l.website)+'" target="_blank" rel="noopener">Website</a></span>');
