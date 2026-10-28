@@ -365,10 +365,13 @@
           <div class="wiz-eyebrow">Attending</div>
           <h1>Come Experience It.</h1>
           <ul class="wiz-steps-list" id="wiz-attend-highlights"></ul>
+          <!-- Tickets are open (Sean, 2026-10-28): our Fevo group link from the Dolphins, for Passport holders only. The link is
+               never on this page: the button opens the event on /events, which takes a member straight to it (ve-events tickets)
+               and asks anyone else to sign in or get their Passport first. -->
           <div class="wiz-card lead" style="margin-top:20px;">
-            <h4>Join The Waitlist</h4>
-            <p id="wiz-attend-note"></p>
-            <button class="wiz-btn wiz-btn-next" id="wiz-attend-btn" style="margin-top:12px;">Join The Waitlist</button>
+            <h4>Get Your Tickets</h4>
+            <p>Your game ticket gets you into the Garage. Get it through our Vegans Explore group link and come with the community. The link is for Passport holders: sign in, or get your Passport, and we take you straight to it.</p>
+            <a class="wiz-btn wiz-btn-next" id="wiz-attend-btn" href="/events#event/3f6a7e2e-efff-4b0e-80ce-580428d3cb52/tickets" style="margin-top:12px;display:inline-flex;text-decoration:none;">Get Tickets</a>
           </div>
         </div>
 
@@ -502,20 +505,11 @@
     document.getElementById('wiz-attend-highlights').innerHTML = (attend.highlights || []).map(function (h) {
       return '<li>' + esc(h) + '</li>';
     }).join('');
-    document.getElementById('wiz-attend-note').textContent = attend.cta_note || '';
-    var already = (d.my_interest || []).some(function (i) { return i.action_type === 'ticket'; });
+    // Tickets are open (2026-10-28): the button goes to the event on /events, which hands a member the group link. Anyone on the
+    // old waitlist counts as having chosen this path.
+    if ((d.my_interest || []).some(function (i) { return i.action_type === 'ticket'; })) markDecisionMade('attend');
     var btn = document.getElementById('wiz-attend-btn');
-    if (already) { btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>'; markDecisionMade('attend'); return; }
-    btn.addEventListener('click', function () {
-      requireLoginThen(function () {
-        btn.disabled = true; btn.textContent = 'Submitting...';
-        callAPI('submit_initiative_interest', { initiative_slug: INITIATIVE_SLUG, action_type: 'ticket' }).then(function (r) {
-          if (r && r.error) { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not submit: ' + r.error); return; }
-          btn.outerHTML = '<div class="wiz-tag" style="margin-top:14px;">You&rsquo;re On The Waitlist</div>';
-          markDecisionMade('attend');
-        }).catch(function () { btn.disabled = false; btn.textContent = 'Join The Waitlist'; alert('Could not reach the server, try again.'); });
-      }, 'Almost there -- sign in or get your Passport to join the waitlist.');
-    });
+    if (btn) btn.addEventListener('click', function () { markDecisionMade('attend'); });
   }
 
   function renderSponsorPanel(d) {

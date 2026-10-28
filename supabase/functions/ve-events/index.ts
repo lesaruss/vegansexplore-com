@@ -27,6 +27,8 @@
 // POST { action: 'msg_get' | 'msg_mute' | 'msg_report', token, note? }       a guest's link from a message email: read it, stop
 //        that organizer's messages (every event of theirs), or report it (pauses the organizer everywhere until the team resumes)
 // Member:
+// POST { action: 'tickets', id }                 -> { url }               a members-only ticket link (ve_event_member_tickets), for an
+//        active Passport holder only, each click a lead on the event's campaign
 // POST { action: 'rsvp', id, going, optin }       -> viewer                 going or not, and the unticked yes to the organizer
 //        (25 points once per event); only a paid member, only a live event that is not over
 // POST { action: 'optin_off', id } | { action: 'unmute', organizer }        from My events
@@ -361,8 +363,10 @@ async function publicAction(action: string, body: any, memberId: string | null) 
       .eq('id', body.id).maybeSingle();
     if (!ev || ev.status !== 'approved') return json({ error: 'not_found' }, 404);
     const { data: viewer } = await db.rpc('ve_event_viewer', { p_event: ev.id, p_member: memberId || NULL_ID });
+    const { data: mt } = await db.from('ve_event_member_tickets').select('event_id').eq('event_id', ev.id).maybeSingle();
     const { status: _s, ...out } = ev;
-    return json({ event: out, viewer: viewer || {}, signed_in: !!memberId });
+    // A members-only ticket link: the page learns there is one, never the link itself (that is `tickets`, for members).
+    return json({ event: out, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
   }
   const tok = typeof body.token === 'string' && /^[0-9a-f]{64}$/.test(body.token) ? body.token : '';
   if (!tok) return json({ error: 'not_found' }, 404);
@@ -511,6 +515,24 @@ Deno.serve(async (req) => {
         muted.push({ organizer: x.organizer_member_id, name: o?.name || 'An organizer', at: x.created_at });
       }
       return json({ events: data || [], organizing, going, muted });
+    }
+
+    // Members-only tickets (Sean, 2026-10-28, the Dolphins game: "open up tickets... so that it takes them directly there when they
+    // log in"; migration 20261028_dolphins_member_tickets.sql). The link is handed only to an active Passport holder, never put on
+    // the public event, and every click is a lead on the event's campaign (ve_initiative_interest, link_click).
+    case 'tickets': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: t } = await db.from('ve_event_member_tickets').select('url, initiative_slug').eq('event_id', body.id).maybeSingle();
+      if (!t) return json({ error: 'not_found', message: 'This event has no member tickets.' }, 404);
+      const { data: mm } = await db.from('members').select('membership_status, membership_tier, member_class').eq('id', memberId).maybeSingle();
+      if (!(mm?.membership_status === 'active' && mm?.membership_tier !== 'guest') && !admin) return json({ error: 'not_eligible', message: 'Tickets through our group link are for Passport holders.' }, 403);
+      const { data: ev } = await db.from('events').select('title').eq('id', body.id).maybeSingle();
+      await db.from('ve_initiative_interest').insert({
+        initiative_slug: t.initiative_slug || 'event-tickets', member_id: memberId, action_type: 'link_click', status: 'new', source: 'link',
+        email: member.email, name: String(member.name || '').slice(0, 120), note: ('Opened the member ticket link: ' + (ev?.title || '')).slice(0, 500),
+        tags: ['event-tickets', 'event:' + body.id],
+      });
+      return json({ ok: true, url: t.url });
     }
 
     case 'rsvp': {

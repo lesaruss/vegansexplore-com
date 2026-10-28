@@ -276,9 +276,13 @@
     var cc = norm(e.country);
     return [e.location_name, [e.city, cc === 'US' ? e.state : (e.state && cc !== 'GB' ? e.state : '')].filter(Boolean).join(', '), cc && cc !== 'US' ? countryName(cc) : ''].filter(Boolean).join(' · ');
   }
+  // An event whose tickets are members-only points its ticket_url at our own page, /events#event/<id>/tickets (Sean, 2026-10-28,
+  // the Dolphins game): the tile opens that view in place, which takes a member straight to the tickets.
+  function memberTix(u) { var m = /^https:\/\/(www\.)?vegansexplore\.com\/events(#event\/[0-9a-f-]{36}\/tickets)$/i.exec(u || ''); return m ? m[2] : ''; }
   function tile(e, past) {
-    var dm = dayMon(e), link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url);
+    var dm = dayMon(e), link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url), own = memberTix(e.ticket_url);
     var cta = past ? (safeUrl(e.recording_url) ? '<a class="vev-go" href="' + esc(e.recording_url) + '" target="_blank" rel="noopener noreferrer">Watch</a>' : '')
+      : own ? '<a class="vev-go" href="' + esc(own) + '" aria-label="Get tickets for ' + esc(e.title) + '">Get tickets</a>'
       : (link ? '<a class="vev-go" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Tickets and details for ' + esc(e.title) + '">Tickets &amp; info</a>' : '<span class="vev-go off">Details soon</span>');
     return '<article class="vev-row" aria-label="' + esc(e.title) + '">' +
       '<div class="vev-date" aria-hidden="true"><span class="vev-day">' + esc(dm[0]) + '</span><span class="vev-mon">' + esc(dm[1]) + '</span></div>' +
@@ -851,14 +855,31 @@
     function bindList() { el.querySelectorAll('[data-go="list"]').forEach(function (a) { a.addEventListener('click', function (ev) { ev.preventDefault(); go(''); }); }); }
     function closes(e) { return new Date(new Date(e.ends_at || e.starts_at).getTime() + 7 * 86400000).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); }
 
-    function drawEvent(id, note) {
+    // Members-only tickets: an active Passport holder goes straight to the link (ve-events tickets); anyone else signs in or gets
+    // their Passport first and then goes on to it.
+    function getTickets(id, btn, err) {
+      var go2 = function () {
+        if (btn) { btn.disabled = true; btn.textContent = 'Opening the tickets…'; }
+        api({ action: 'tickets', id: id }).then(function (r) {
+          if (r && r.ok && r.url) { location.href = r.url; return; }
+          if (btn) { btn.disabled = false; btn.textContent = 'Get tickets'; }
+          if (err) err.innerHTML = esc((r && r.message) || 'The tickets did not open. Try again.') + (r && r.error === 'not_eligible' ? ' <a class="vev-link" href="/passport?back=' + encodeURIComponent(location.pathname + location.search + location.hash) + '">Get your Passport</a>' : '');
+        }).catch(function () { if (btn) { btn.disabled = false; btn.textContent = 'Get tickets'; } if (err) err.textContent = 'The tickets did not open. Try again.'; });
+      };
+      if (signedIn()) { go2(); return; }
+      var back = location.pathname + location.search + '#event/' + id + '/tickets';
+      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Tickets through our Vegans Explore group link are for Passport holders. Sign in, or get your Passport, and we take you straight to them.', function () { go2(); });
+      else location.href = '/login?next=' + encodeURIComponent(back);
+    }
+
+    function drawEvent(id, note, autoTix) {
       el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
       bindList();
       api({ action: 'event', id: id }).then(function (d) {
         var e = d.event, v = d.viewer || {};
         if (!e) { el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><h2>That event is not on the calendar</h2><p class="lead">It may have ended or been taken down.</p><button type="button" class="vev-btn ghost" data-go="list">See the events</button></div>'; bindList(); return; }
         var over = new Date(e.ends_at || new Date(e.starts_at).getTime() + 6 * 3600000) < new Date();
-        var link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url), org = v.organizer, member = signedIn();
+        var tix = !!d.member_tickets && !over, link = tix ? '' : (safeUrl(e.ticket_url) || safeUrl(e.virtual_url)), org = v.organizer, member = signedIn();
         var rsvp;
         if (over) rsvp = '<h3>This event is over</h3><p>' + (v.going_count ? esc(v.going_count) + ' went with Vegans Explore.' : 'Thanks to everyone who went.') + '</p>';
         else if (!member || !v.going) rsvp = '<h3>Going?</h3><p>' + (v.going_count ? esc(v.going_count) + (v.going_count === 1 ? ' member is' : ' members are') + ' going. ' : '') + 'Let us know, and it shows on My events. Tickets are on the official page.</p>' +
@@ -871,6 +892,7 @@
           '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured ? ' · Featured' : '') + '</p><h2>' + esc(e.title) + '</h2>' +
           '<div class="vev-facts"><span>' + esc(when(e)) + '</span><span>' + esc(place(e)) + (e.address && e.address !== e.location_name ? ' · ' + esc(e.address) : '') + '</span>' + (org ? '<span>Organized by ' + esc(org) + '</span>' : '') + '</div>' +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
+          (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for Passport holders.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
           (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') + '</div>' +
           '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
             '<p class="vev-note bad" data-v="err" role="alert"></p>' +
@@ -893,6 +915,11 @@
         if (opt && v.going) opt.addEventListener('change', function () { save(true, opt.checked, null); });
         var ng = el.querySelector('[data-v="notgoing"]');
         if (ng) ng.addEventListener('click', function () { save(false, false, ng); });
+        var tb = el.querySelector('[data-v="tix"]');
+        if (tb) {
+          tb.addEventListener('click', function () { getTickets(id, tb, el.querySelector('[data-v="tixerr"]')); });
+          if (autoTix) getTickets(id, tb, el.querySelector('[data-v="tixerr"]'));
+        }
       });
     }
 
@@ -970,8 +997,8 @@
     }
 
     function route() {
-      var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
-      if (em) { drawEvent(em[1]); if (opts.onView) opts.onView('event'); return; }
+      var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})(\/tickets)?$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
+      if (em) { drawEvent(em[1], null, !!em[2]); if (opts.onView) opts.onView('event'); return; }
       if (gm) { drawGuests(gm[1]); if (opts.onView) opts.onView('guests'); return; }
       if (mm) { drawMessage(mm[1]); if (opts.onView) opts.onView('message'); return; }
       var m = /^#submit\/([1-4])$/.exec(h), pm = /^#promote\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
