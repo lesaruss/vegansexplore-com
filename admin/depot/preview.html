@@ -274,7 +274,9 @@
         var side = stage && getComputedStyle(stage).display !== 'none' && getComputedStyle($('layout')).gridTemplateColumns.split(' ').length > 1;
         if (!side) { list.classList.remove('boxed'); list.style.maxHeight = ''; return; }
         list.classList.add('boxed');
-        list.style.maxHeight = Math.max(280, stage.offsetHeight - $('intro').offsetHeight - 12) + 'px';
+        // From the list's top to the preview's bottom (the stage starts at the layout's top; it is sticky, so not its live position).
+        var lay = $('layout').getBoundingClientRect(), lt = list.getBoundingClientRect().top;
+        list.style.maxHeight = Math.max(280, Math.round(lay.top + stage.offsetHeight - lt)) + 'px';
       }
       window.addEventListener('resize', function () { boxSteps(); });
       // Desktop: the 1440 x 900 page scaled to the frame's width, the box sized to match.
