@@ -37,9 +37,17 @@
       rows.push({ at: new Date(at).toISOString(), member_id: 'sample-' + who, name: NAMES[who] });
     }
     rows.sort(function (a, b) { return Date.parse(b.at) - Date.parse(a.at); });
-    var since30 = Date.now() - 30 * 864e5, people = {};
-    rows.forEach(function (x) { people[x.member_id] = 1; });
-    return { verified: true, rows: rows, total: rows.length, last_30_days: rows.filter(function (x) { return Date.parse(x.at) > since30; }).length, people: Object.keys(people).length };
+    // Counts only, the shape ve-claims sends (Sean, 2026-10-28: the business never sees who checked in).
+    var since30 = Date.now() - 30 * 864e5, per = {};
+    rows.forEach(function (x) { per[x.member_id] = (per[x.member_id] || 0) + 1; });
+    var monday = function (d) { var x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toISOString().slice(0, 10); };
+    var weeks = {}; for (var w = 11; w >= 0; w--) weeks[monday(Date.now() - w * 7 * 864e5)] = 0;
+    rows.forEach(function (x) { var k = monday(Date.parse(x.at)); if (k in weeks) weeks[k]++; });
+    var people = Object.keys(per).length;
+    return { verified: true, total: rows.length, last_30_days: rows.filter(function (x) { return Date.parse(x.at) > since30; }).length, people: people,
+      returning: Object.keys(per).filter(function (k) { return per[k] > 1; }).length, last_at: rows[0].at,
+      by_week: Object.keys(weeks).map(function (k) { return { week: k, n: weeks[k] }; }),
+      by_chapter: [{ chapter: 'south-florida', people: Math.round(people * 0.7) }, { chapter: 'central-florida', people: Math.round(people * 0.15) }, { chapter: 'none', people: people - Math.round(people * 0.7) - Math.round(people * 0.15) }] };
   }
 
   var MENU = [
@@ -60,7 +68,7 @@
     open: true, owner: true, admin: false, member_active: true,
     checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: true }, { k: 'hours', done: true }, { k: 'menu', done: true }, { k: 'audit', done: false }],
     cards: [
-      { kind: 'new', title: 'Check-ins are live', body: 'Members check in from your page when they visit. See who comes back under Check-ins.', cta_label: 'See check-ins', cta_url: '?pd=checkins' },
+      { kind: 'new', title: 'Check-ins are live', body: 'Members check in from your page when they visit. See how many come back under Check-ins.', cta_label: 'See check-ins', cta_url: '?pd=checkins' },
       { kind: 'offer', title: 'Front Row Start', body: 'Become a Partner before January 1: nothing today, the rest of 2026 on us, then $111 a quarter.', cta_label: 'See the plan', cta_url: '?pd=plan' },
       { kind: 'tip', title: 'Menus get opened first', body: 'Keep your menu current and mark your favorites as Featured.', cta_label: 'Open your menu', cta_url: '?pd=menu' }
     ],

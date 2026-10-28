@@ -700,7 +700,7 @@ Vegans Explore with the listing's name, 1 a week, 4 a campaign, 1,000 characters
 contact@lesaruss.com, logged (`ve_campaign_messages`, `ve_campaign_message_deliveries`). A member's email links to `/messages#c/<token>`
 (`messages.html`, no sign-in): **Stop messages from <name>** (withdraws the yes) and **Report this message** (pauses the campaign, withdraws
 the yes, emails Sean). The dashboard's **Saves** view no longer names who saved (it did since 2026-10-27; `ve-podcast` `owner_saves` sends
-dates and counts only). Check-ins still name members to the owner (Sean, 2026-10-25), a separate rule. Defaults set by Logan, Sean's to
+dates and counts only). Check-ins are counts only for the owner too (Sean, 2026-10-28: "treat check-ins the same way"). Defaults set by Logan, Sean's to
 change: unticked, 25 points, 1 a week and 4 a campaign. Proven end to end 2026-10-28 on the Vegans Explore Podcast listing with an
 internal test account (no yes before saving, the yes and its points once, unsaving withdraws it, counts by chapter, a real send, the
 second send refused, the member's link, report, pause, Resume), then removed. Phase 4, one message to an organizer's past guests,
@@ -906,10 +906,11 @@ businesses who've claimed their listings can see that information... You can cho
 people to see where you've checked in. So we can leave it on by default"): the public sees counts only ("Member check-in N
 days ago · N members this month", `ve_listing_checkins`); members also see "Recently here: Sam R., Maria L. and 3 more", only
 members who leave **Show my check-ins to other members** on (My Account > Privacy, `members.show_checkins`, on by default,
-`ve-checkin` `privacy`); the owner of a claimed listing (claim approved, member or plan) sees everyone, whatever the setting,
-on the business dashboard's **Check-ins** view (`ve-claims` `owner_dashboard` `checkins`: last 30 days, members, who comes
-back, every check-in); the team sees who in Depot > Directory review (`review_get` `checkins`). The rows are the list for
-targeting a business's promotions. A check-in in the last 30 days keeps a place from
+`ve-checkin` `privacy`); the owner of a claimed listing (claim approved, member or plan) sees **counts only, never who**
+(Sean, 2026-10-28: "treat check-ins the same way" as saves, the locked rule of `ve-member-profiles-partner-windows`) on the
+business dashboard's **Check-ins** view (`ve-claims` `owner_dashboard` `checkins`: last 30 days, members, members who came back,
+12 months, by week and by the members' home chapter; no names or member ids leave the function); a business reaches members only
+through the yes at save, during a campaign (Your audience). The team sees who in Depot > Directory review (`review_get` `checkins`). A check-in in the last 30 days keeps a place from
 being held automatically. On `/bounties` it is the always-open first card in every city (**Check in where you go**,
 `?campaign=check-ins`): how it works, Open the Directory, and the member's own check-ins (`ve-checkin` `mine`).
 

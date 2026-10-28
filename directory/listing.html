@@ -3555,8 +3555,8 @@ function renderListing(l){
 
   // Check in (Sean, 2026-10-25): a member at the place checks in for 10 points (ve-checkin; the rules are in
   // ve_checkin_save: within 150 m, once a day per place, points on up to 5 places a day). Everyone sees when members last
-  // checked in; members also see who (members who keep Show my check-ins on, Sean 2026-10-25), and the owner sees everyone
-  // on the business dashboard. Signed out or not a member: the same sign-in and membership offers as voting.
+  // checked in; members also see who (members who keep Show my check-ins on, Sean 2026-10-25); the owner sees counts only on the
+  // business dashboard, never who (Sean, 2026-10-28). Signed out or not a member: the same sign-in and membership offers as voting.
   (function(){
     var CK = SUPABASE_URL + '/functions/v1/ve-checkin';
     var btn = document.getElementById('checkin-btn'), msg = document.getElementById('checkin-msg'), label = document.getElementById('checkin-label');

@@ -1124,17 +1124,30 @@ Deno.serve(async (req) => {
       spots[k].slots++; spots[k].views = Math.max(spots[k].views, p.estimated_monthly_views || 0);
     }
     const owned = new Set((ownedQ.data || []).map((x: any) => x.guide_id));
-    // Member check-ins (Sean, 2026-10-25: "Only registered member businesses who've claimed their listings can see that
-    // information"): who checked in and when, whatever the member's own setting, once the claim is approved.
+    // Member check-ins, counts only (Sean, 2026-10-28: "treat check-ins the same way", the rule locked for saves in playbook
+    // ve-member-profiles-partner-windows: the business never sees who, only how many). Once the claim is approved: visits,
+    // members, members who came back, by week and by the members' home chapter. Names and member ids never leave here; the
+    // members who said yes are on the dashboard's Your audience, during a campaign.
     async function ownerCheckins() {
       if (l.claim_status !== 'verified' && !member.is_superadmin) return { verified: false };
-      const { data } = await db.from('ve_checkins').select('created_at, member_id, members(name)').eq('listing_id', lid)
-        .gte('created_at', new Date(Date.now() - 365 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(500);
-      const short = (n: string) => { const p = String(n || '').trim().split(/\s+/); return p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : 'A member'; };
-      const rows = (data || []).map((c: any) => ({ at: c.created_at, member_id: c.member_id, name: short(c.members?.name) }));
+      const { data } = await db.from('ve_checkins').select('created_at, member_id, members(home_community)').eq('listing_id', lid)
+        .gte('created_at', new Date(Date.now() - 365 * 864e5).toISOString()).order('created_at', { ascending: false }).limit(5000);
+      const rows = data || [];
       const since30 = Date.now() - 30 * 864e5;
-      return { verified: true, rows, total: rows.length, last_30_days: rows.filter((r: any) => Date.parse(r.at) > since30).length,
-        people: new Set(rows.map((r: any) => r.member_id)).size };
+      const per: Record<string, number> = {}, home: Record<string, string> = {};
+      for (const c of rows as any[]) { per[c.member_id] = (per[c.member_id] || 0) + 1; home[c.member_id] = c.members?.home_community || 'none'; }
+      const chapters: Record<string, number> = {};
+      for (const m of Object.keys(home)) chapters[home[m]] = (chapters[home[m]] || 0) + 1;
+      // The last 12 weeks, Monday to Sunday (Eastern), oldest first.
+      const monday = (d: Date) => { const x = new Date(d.toLocaleString('en-US', { timeZone: 'America/New_York' })); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toISOString().slice(0, 10); };
+      const weeks: Record<string, number> = {};
+      for (let i = 11; i >= 0; i--) weeks[monday(new Date(Date.now() - i * 7 * 864e5))] = 0;
+      for (const c of rows as any[]) { const w = monday(new Date(c.created_at)); if (w in weeks) weeks[w]++; }
+      return { verified: true, total: rows.length, last_30_days: rows.filter((r: any) => Date.parse(r.created_at) > since30).length,
+        people: Object.keys(per).length, returning: Object.values(per).filter((n) => n > 1).length,
+        last_at: rows[0]?.created_at || null,
+        by_chapter: Object.entries(chapters).map(([chapter, people]) => ({ chapter, people })).sort((a, b) => b.people - a.people),
+        by_week: Object.entries(weeks).map(([week, n]) => ({ week, n })) };
     }
     return json({ ...base, days, stats: statsQ.data || null,
       plan: plan ? { tier: plan.tier, name: TIERS[plan.tier]?.name, status: plan.status, renews_at: plan.renews_at } : null,

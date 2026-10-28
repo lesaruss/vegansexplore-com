@@ -10,8 +10,8 @@
  *   home      the numbers at a glance, Get your page ready, What's new (ve_dashboard_cards, audience business)
  *   insights  7, 30, 90 days or a year: totals against the period before, a chart, what people did, where they came
  *             from, and every day in a table that sorts by any column
- *   checkins  members who checked in at the place, and when (Sean, 2026-10-25: only a member owner whose claim we
- *             approved sees who; ve-claims owner_dashboard checkins). A place only.
+ *   checkins  how many members check in at the place, by week and home chapter, never who (Sean, 2026-10-28: "treat
+ *             check-ins the same way" as saves; ve-claims owner_dashboard checkins, after the claim is approved). A place only.
  *   saves     everything but a place (Sean, 2026-10-27: "check-ins don't really apply to podcasts. We could put saves"): how
  *             many saved it and, for a podcast, its episodes, with plays (ve-podcast owner_saves). Counts, never names (2026-10-28).
  *   audience  Your audience (member profiles phase 3, Sean 2026-10-28; playbook ve-member-profiles-partner-windows): how many
@@ -276,17 +276,19 @@
     // ---- Ads
     // ---- Check-ins: the members who came in, newest first, with who comes back most.
     function drawCheckins() {
+      // Counts only (Sean, 2026-10-28: "treat check-ins the same way" as saves): never who checked in.
       var c = D.checkins || {};
-      if (!c.verified) return '<p class="vpd-empty">Once we approve your claim on this page, you will see every member who checks in here, and when.</p>';
-      var rows = c.rows || [];
-      var out = '<div class="vpd-tiles"><div><b>' + n(c.last_30_days) + '</b><span>Check-ins, last 30 days</span></div><div><b>' + n(c.people) + '</b><span>Members who have checked in</span></div><div><b>' + n(c.total) + '</b><span>Check-ins, last 12 months</span></div></div>' +
-        '<p class="vpd-empty" style="margin:0 0 12px">Members check in from your page when they are here, and earn points for it. These are your regulars: when you run a deal or a giveaway with us, they can hear about it first.</p>';
-      if (!rows.length) return out + '<p class="vpd-empty">No check-ins yet.</p>';
-      var by = {}; rows.forEach(function (r) { var k = r.member_id; by[k] = by[k] || { name: r.name, n: 0, last: r.at }; by[k].n++; });
-      var reg = Object.keys(by).map(function (k) { return by[k]; }).filter(function (x) { return x.n > 1; }).sort(function (a, b) { return b.n - a.n; });
-      if (reg.length) out += '<h4>Coming back</h4><div class="vpd-grid">' + reg.slice(0, 8).map(function (x) { return '<div class="vpd-card"><b>' + esc(x.name) + '</b><p>' + x.n + ' visits, last ' + esc(new Date(x.last).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</p></div>'; }).join('') + '</div>';
-      return out + '<h4>Every check-in</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>When</th><th>Member</th></tr></thead><tbody>' +
-        rows.slice(0, 200).map(function (r) { return '<tr><td>' + esc(new Date(r.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</td><td>' + esc(r.name) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+      if (!c.verified) return '<p class="vpd-empty">Once we approve your claim on this page, you will see how many members check in here, and when.</p>';
+      var chap = function (s) { if (s === 'none') return 'No home chapter yet'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === s; })[0]; return h ? h.name : String(s || '').replace(/-/g, ' '); };
+      var out = '<div class="vpd-tiles"><div><b>' + n(c.last_30_days) + '</b><span>Check-ins, last 30 days</span></div><div><b>' + n(c.people) + '</b><span>Members who have checked in</span></div>' +
+        '<div><b>' + n(c.returning) + '</b><span>Members who came back</span></div><div><b>' + n(c.total) + '</b><span>Check-ins, last 12 months</span></div></div>' +
+        '<p class="vpd-empty" style="margin:0 0 12px">Members check in from your page when they are here, and earn points for it. We never show who checked in. The members who said you can message them are on <a href="?tab=brand&pd=audience" data-vpd="audience">Your audience</a>, and you can reach them while a campaign with us is running.</p>';
+      if (!c.total) return out + '<p class="vpd-empty">No check-ins yet.</p>';
+      var wk = function (d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); };
+      return out + '<h4>By week</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>Week of</th><th>Check-ins</th></tr></thead><tbody>' +
+        (c.by_week || []).slice().reverse().map(function (r) { return '<tr><td>' + esc(wk(r.week)) + '</td><td>' + n(r.n) + '</td></tr>'; }).join('') + '</tbody></table></div>' +
+        '<h4>Where they are from</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr><th>Home chapter</th><th>Members</th></tr></thead><tbody>' +
+        (c.by_chapter || []).map(function (r) { return '<tr><td>' + esc(chap(r.chapter)) + '</td><td>' + n(r.people) + '</td></tr>'; }).join('') + '</tbody></table></div>';
     }
     // ---- Saves (and plays, for a podcast): who keeps it, in place of check-ins.
     function drawSaves() {
