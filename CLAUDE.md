@@ -1126,6 +1126,26 @@ commits to, its share of a sponsorship) is not set yet; the review of applicatio
   have); saves are `ve_episode_saves` (migration `20261027_ve_podcast_feeds.sql`). The page side is `/public/ve-episodes.js`
   (`VEEpisodes.mount`, `play`, `save`, `row`).
 
+## People pages: podcasts played in place (Sean, 2026-10-28)
+
+"Use the squared with the rounded corners logo thumbnails for the podcast... I don't want it to be like a long scroll... 10 episodes and
+then you can scroll within... if they click listen, it's going to open up a player. And if they click watch, it could open up a light
+box... I want to keep people in this environment." On a person's page (People section, `renderPersonOverview` and `loadPerson` in
+`directory/listing.html`), every podcast episode wears its show's square artwork (72 px, 8 px corners; `ppEpRow`), **Listen** plays it in
+the player bar (`VEEpisodes.play`, from the show's own feed), **Watch** and the In their words moments open YouTube in a lightbox
+(`ppLightbox`, a moment from its second), **Save** saves the episode like a show page's, and every list shows about ten rows and
+scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcast** (a show they host that is in
+our Media section, `details.person.shows`, its latest 30 episodes, with The show's page), **With Vegans Explore** (their episodes on our
+four shows, then events, articles, videos), **On other podcasts** (other Directory shows that had them on), In their words.
+The data is `ve_person_episodes(listing)` (migration `20261028_person_podcasts.sql`): our episodes matched to each show's feed
+(`ve_podcast_feeds`: the feed episode names them and came out within 60 days, or the titles are close), other shows' episodes with their
+name in the title or named as the guest in the description ("with", "joined by", "<name> joins us"; a passing mention does not count),
+and their shows. Built ahead (`ve_person_episodes_build`, about 3.5 s, past a visitor's 3 s limit) into `ve_person_episodes_cache`,
+rebuilt every 6 hours by cron `ve-person-episodes`. Hosts set 2026-10-28 from each show's own description: Maxime Sigouin, Giacomo
+Marchese and Dani Taylor (Muscles by Brussels Radio), Dotsie Bausch (Switch4Good), Jason Kartalian (Vegan Hacks), Brighde Reed (World
+Vegan Travel), Neal Barnard (The Exam Room); John Thomas and Brooke Sellers host Vegans Who Lift, one of ours, so theirs are under With
+Vegans Explore. A person with another name on other shows gets it in `details.person.aka`.
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at

@@ -753,6 +753,21 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-vbtn{position:absolute;inset:0;margin:auto;width:56px;height:56px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center}
 .pp-vframe{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
 .pp-vframe iframe{width:100%;height:100%;border:0}
+.pp-scroll{max-height:880px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+.pp-row.pp-row-sq{grid-template-columns:72px 1fr auto}
+.pp-sq{width:72px;height:72px;border-radius:8px;background:#eef2ee center/cover no-repeat;display:block;flex:none}
+.pp-sq-lg{width:96px;height:96px;border-radius:10px}
+.pp-showhead{display:grid;grid-template-columns:96px 1fr auto;gap:16px;align-items:center;margin-bottom:6px}
+.pp-showname{font-size:18px;font-weight:900;line-height:1.25}
+button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;color:#2d7d31;cursor:pointer}
+#pp-lb{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;padding:24px}
+.pp-lb-in{position:relative;width:min(1100px,100%)}
+.pp-lb-frame{aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000}
+.pp-lb-frame iframe{width:100%;height:100%;border:0;display:block}
+.pp-lb-x{position:absolute;top:-44px;right:0;width:36px;height:36px;border-radius:6px;border:0;background:#fff;color:#1a1a1a;font-size:24px;line-height:1;cursor:pointer}
+body.pp-lb-on{overflow:hidden}
+@media(max-width:640px){.pp-row.pp-row-sq{grid-template-columns:56px 1fr}.pp-row.pp-row-sq .pp-acts{grid-column:1/-1;justify-content:flex-start}.pp-sq{width:56px;height:56px}
+  .pp-showhead{grid-template-columns:64px 1fr}.pp-showhead .pp-act{grid-column:1/-1;justify-self:start}.pp-sq-lg{width:64px;height:64px}}
 .pp-vid figcaption{font-size:13px;font-weight:700;margin-top:8px;line-height:1.4}
 @media(max-width:640px){.pp-row{grid-template-columns:96px 1fr}.pp-thumb{width:96px;height:54px}.pp-acts{grid-column:1 / -1;justify-content:flex-start}.pp-vgrid{padding:20px 16px}}
 </style>
@@ -2350,7 +2365,10 @@ function renderPersonOverview(l){
   var links = (p.links || []).filter(function(x){ return x && httpsOnly(x.url); });
   if(links.length) h += '<div class="section"><h2 class="section-title">Their work</h2><div class="pp-links">' +
     links.map(function(x){ return '<a class="pp-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" data-act="website">' + esc(x.label || 'Visit') + ' <span aria-hidden="true">&#8599;</span></a>'; }).join('') + '</div></div>';
+  // Their own show, when it is in our Media section (details.person.shows), filled by loadPerson.
+  h += '<div id="pp-shows"></div>';
   h += '<div class="section" id="pp-credits"><h2 class="section-title">With Vegans Explore</h2><div class="pp-list"><p class="pp-empty">Loading...</p></div></div>';
+  h += '<div class="section" id="pp-elsewhere" hidden><h2 class="section-title">On other podcasts</h2><p class="pp-sub">Shows in our Directory that have had them on, from each show\'s own feed.</p><div class="pp-scroll"></div></div>';
   h += '<div class="section" id="pp-moments" hidden><h2 class="section-title">In their words</h2><p class="pp-sub">Moments from their interviews, each one playing from the second it starts.</p><div class="pp-list"></div></div>';
   return h;
 }
@@ -2359,13 +2377,23 @@ function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.flo
   return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s2).padStart(2, '0'); }
 function shortDate(d){ if(!d) return ''; var t = new Date(String(d).length === 10 ? d + 'T12:00:00' : d); return isNaN(t) ? '' : t.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
 // What they did with us, newest first, grouped like a filmography: Podcast episodes, Events, Articles, Videos.
+// Podcasts stay on the page (Sean, 2026-10-28: "I want to keep people in this environment"): every episode wears its show's square
+// artwork, Listen plays it in the player bar (/public/ve-episodes.js), Watch opens the video in a lightbox, and a long list shows
+// ten and scrolls inside its box. ve_person_episodes(listing) gives their episodes on our shows matched to each show's own feed,
+// their episodes on other shows in the Directory, and the shows they host (details.person.shows).
+var PP_EPS = [];
 function loadPerson(l){
   var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
   var sel = 'id,kind,role,title,url,happened_on,note,content:ve_pulse_content(id,title,slug,youtube_id,thumbnail_url,podcast_show,episode_number,published_at),' +
     'event:events(id,title,starts_at,city,state,ticket_url)';
-  fetch(SUPABASE_URL + '/rest/v1/ve_person_credits?listing_id=eq.' + encodeURIComponent(l.id) + '&select=' + encodeURIComponent(sel), { headers: H })
-    .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
-      rows = (rows || []).map(function(c){
+  if(window.VEEpisodes) VEEpisodes.css();
+  var credits = fetch(SUPABASE_URL + '/rest/v1/ve_person_credits?listing_id=eq.' + encodeURIComponent(l.id) + '&select=' + encodeURIComponent(sel), { headers: H })
+    .then(function(r){ return r.ok ? r.json() : []; });
+  var eps = fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_episodes', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
+    .then(function(r){ return r.ok ? r.json() : {}; }).catch(function(){ return {}; });
+  Promise.all([credits, eps]).then(function(x){
+      var rows = x[0] || [], pe = x[1] || {};
+      rows = rows.map(function(c){
         var x = c.content || {}, e = c.event || {};
         return { kind: c.kind, role: c.role || '', note: c.note || '',
           title: c.title || x.title || e.title || '', when: c.happened_on || x.published_at || e.starts_at || '',
@@ -2374,50 +2402,91 @@ function loadPerson(l){
           href: x.slug ? '/pulse/' + encodeURIComponent(x.slug) : httpsOnly(c.url) || httpsOnly(e.ticket_url),
           where: [e.city, e.state].filter(Boolean).join(', ') };
       }).sort(function(a, b){ return String(b.when).localeCompare(String(a.when)); });
+      var ours = pe.ours || [];
       var box = document.querySelector('#pp-credits .pp-list'); if(!box) return;
-      var GROUPS = [['episode', 'Podcast episodes'], ['event', 'Events'], ['article', 'Articles'], ['video', 'Videos']];
-      box.innerHTML = rows.length ? GROUPS.map(function(g){
-        var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
-        return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3>' + list.map(personRow).join('');
-      }).join('') : '<p class="pp-empty">Nothing here yet.</p>';
+      var GROUPS = [['event', 'Events'], ['article', 'Articles'], ['video', 'Videos']];
+      var html = (ours.length ? '<h3 class="pp-group">Podcast episodes <span>' + ours.length + '</span></h3><div class="pp-scroll">' + ours.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div>' : '') +
+        GROUPS.map(function(g){
+          var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
+          return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3><div class="pp-scroll">' + list.map(personRow).join('') + '</div>';
+        }).join('');
+      box.innerHTML = html || '<p class="pp-empty">Nothing here yet.</p>';
+      // Their own show, on its own (Sean: "if the person has a podcast that's featured in our media section... in its own section").
+      var sh = document.getElementById('pp-shows');
+      if(sh) sh.innerHTML = (pe.shows || []).map(function(show){
+        var list = show.episodes || [];
+        return '<div class="section pp-show"><h2 class="section-title">Their podcast</h2><div class="pp-showhead">' +
+          '<span class="pp-sq pp-sq-lg" style="background-image:url(\'' + esc(show.image || '') + '\')" aria-hidden="true"></span>' +
+          '<div><div class="pp-showname">' + esc(show.name) + '</div><div class="pp-meta">' + (list.length ? 'The latest ' + (list.length === 1 ? 'episode' : list.length + ' episodes') + ', from its own feed' : 'From its own feed') + '</div></div>' +
+          '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(show.slug) + '">The show\'s page</a></div>' +
+          (list.length ? '<div class="pp-scroll">' + list.map(function(ep){ ep.show = { id: show.id, slug: show.slug, name: show.name, image: show.image }; return ppEpRow(ep, 'Host'); }).join('') + '</div>' : '') + '</div>';
+      }).join('');
+      var other = pe.elsewhere || [], os = document.getElementById('pp-elsewhere');
+      if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join(''); os.hidden = false; }
       var vids = rows.filter(function(r){ return r.yt; });
+      ours.forEach(function(ep){ if(ep.youtube_id && !vids.some(function(v){ return v.yt === ep.youtube_id; })) vids.push({ yt: ep.youtube_id, title: ep.title }); });
       if(vids.length){
         var vp = document.getElementById('tab-pvideos'), vb = document.getElementById('tab-btn-pvideos');
         if(vp) vp.innerHTML = '<div class="pp-vgrid">' + vids.map(function(v){
-          return '<figure class="pp-vid"><button type="button" class="pp-vplay" data-pp-yt="' + esc(v.yt) + '" aria-label="Play ' + esc(v.title) + '"><img src="' + esc(ytThumb(v.yt)) + '" alt="" loading="lazy"><span class="pp-vbtn" aria-hidden="true">&#9658;</span></button><figcaption>' + esc(v.title) + '</figcaption></figure>';
+          return '<figure class="pp-vid"><button type="button" class="pp-vplay" data-pp-watch="' + esc(v.yt) + '" aria-label="Play ' + esc(v.title) + '"><img src="' + esc(ytThumb(v.yt)) + '" alt="" loading="lazy"><span class="pp-vbtn" aria-hidden="true">&#9658;</span></button><figcaption>' + esc(v.title) + '</figcaption></figure>';
         }).join('') + '</div>';
         if(vb) vb.style.display = '';
       }
     }).catch(function(){ var box = document.querySelector('#pp-credits .pp-list'); if(box) box.innerHTML = '<p class="pp-empty">Could not load this right now.</p>'; });
-  // In their words: moments from their interviews in the content index (ve_person_moments).
+  // In their words: moments from their interviews in the content index (ve_person_moments), played in the lightbox from their second.
   fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_moments', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(ms){
       if(!ms || !ms.length) return;
       var sec = document.getElementById('pp-moments'); if(!sec) return;
       sec.querySelector('.pp-list').innerHTML = ms.map(function(m){
-        var at = 'https://www.youtube.com/watch?v=' + encodeURIComponent(m.youtube_id) + '&t=' + Math.floor(m.start_s || 0) + 's';
         return '<div class="pp-moment"><blockquote>&ldquo;' + esc(m.quote) + '&rdquo;</blockquote><p>' + esc(m.summary || '') + '</p>' +
           '<div class="pp-mmeta"><span>' + esc(m.title || '') + ' &middot; ' + clockOf(m.start_s) + '</span>' +
-          (m.youtube_id ? '<a href="' + esc(at) + '" target="_blank" rel="noopener" class="pp-play">Play from ' + clockOf(m.start_s) + '</a>' : '') + '</div></div>';
+          (m.youtube_id ? '<button type="button" class="pp-play" data-pp-watch="' + esc(m.youtube_id) + '" data-pp-start="' + Math.floor(m.start_s || 0) + '"' + (m.end_s ? ' data-pp-end="' + Math.ceil(m.end_s) + '"' : '') + '>Play from ' + clockOf(m.start_s) + '</button>' : '') + '</div></div>';
       }).join('');
       sec.hidden = false;
     }).catch(function(){});
 }
+// One podcast episode: the show's square artwork, the title, the role and show, Listen (plays here), Watch (lightbox), Save.
+function ppEpRow(ep, role){
+  var show = ep.show || {}, i = PP_EPS.push(ep) - 1, pic = show.image || ep.image || '';
+  var len = window.VEEpisodes && ep.duration ? VEEpisodes.len(ep.duration) : '';
+  var acts = (ep.audio ? '<button type="button" class="pp-act" data-pp-listen="' + i + '">Listen</button>' : '') +
+    (ep.youtube_id ? '<button type="button" class="pp-act' + (ep.audio ? ' pp-act-2' : '') + '" data-pp-watch="' + esc(ep.youtube_id) + '">Watch</button>' : '') +
+    (ep.audio && ep.guid && show.id ? '<button type="button" class="pp-act pp-act-2" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" data-pp-save="' + i + '" aria-pressed="false">Save</button>' : '');
+  return '<div class="pp-row pp-row-sq"><span class="pp-sq" style="background-image:url(\'' + esc(pic) + '\')" role="img" aria-label="' + esc(show.name || '') + '"></span>' +
+    '<div class="pp-info"><div class="pp-title">' + esc(ep.title) + '</div><div class="pp-meta">' + esc([role, show.name ? 'on ' + show.name : ''].filter(Boolean).join(' ')) +
+    (ep.date ? ' &middot; ' + esc(shortDate(ep.date)) : '') + (len ? ' &middot; ' + esc(len) : '') + '</div></div><div class="pp-acts">' + acts + '</div></div>';
+}
 function personRow(r){
   var pic = r.yt ? ytThumb(r.yt) : r.thumb;
-  var meta = r.kind === 'episode' ? [r.role || 'Guest', r.show ? 'on ' + r.show : '', r.ep ? 'Ep ' + r.ep : ''].filter(Boolean).join(' ')
-    : r.kind === 'event' ? [r.role, r.where].filter(Boolean).join(' &middot; ') : r.role;
+  var meta = r.kind === 'event' ? [r.role, r.where].filter(Boolean).join(' &middot; ') : r.role;
   var acts = (r.yt ? '<button type="button" class="pp-act" data-pp-watch="' + esc(r.yt) + '">Watch</button>' : '') +
-    (r.href ? '<a class="pp-act pp-act-2" href="' + esc(r.href) + '"' + (/^https:/.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' + (r.kind === 'episode' ? 'Listen' : r.kind === 'event' ? 'Event page' : 'Open') + '</a>' : '');
+    (!r.yt && r.href ? '<a class="pp-act pp-act-2" href="' + esc(r.href) + '"' + (/^https:/.test(r.href) ? ' target="_blank" rel="noopener"' : '') + '>' + (r.kind === 'event' ? 'Event page' : 'Open') + '</a>' : '');
   return '<div class="pp-row">' + (pic ? '<img class="pp-thumb" src="' + esc(pic) + '" alt="" loading="lazy">' : '<div class="pp-thumb pp-thumb-0" aria-hidden="true"></div>') +
     '<div class="pp-info"><div class="pp-title">' + esc(r.title) + '</div><div class="pp-meta">' + meta + (r.when ? ' &middot; ' + esc(shortDate(r.when)) : '') + '</div>' +
     (r.note ? '<div class="pp-note">' + esc(r.note) + '</div>' : '') + '</div><div class="pp-acts">' + acts + '</div></div>';
 }
+// The video lightbox: YouTube (no cookies) over the page, from a second when a moment asks; Escape, the X or the backdrop close it.
+function ppLightbox(id, start, end){
+  ppLightboxClose();
+  var q = 'autoplay=1&rel=0&modestbranding=1' + (start ? '&start=' + start : '') + (end ? '&end=' + end : '');
+  var box = document.createElement('div'); box.id = 'pp-lb'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', 'Video');
+  box.innerHTML = '<div class="pp-lb-in"><button type="button" class="pp-lb-x" aria-label="Close the video">&times;</button><div class="pp-lb-frame"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?' + q + '" title="Video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div></div>';
+  box.addEventListener('click', function(e){ if(e.target === box || e.target.closest('.pp-lb-x')) ppLightboxClose(); });
+  document.body.appendChild(box); document.body.classList.add('pp-lb-on');
+  // A podcast playing in the player bar pauses while the video plays.
+  var a = document.querySelector('#vep-player audio'); if(a && !a.paused) a.pause();
+  box.querySelector('.pp-lb-x').focus();
+}
+function ppLightboxClose(){ var b = document.getElementById('pp-lb'); if(b){ b.remove(); document.body.classList.remove('pp-lb-on'); } }
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') ppLightboxClose(); });
 document.addEventListener('click', function(e){
   var w = e.target.closest && e.target.closest('[data-pp-watch]');
-  if(w){ showListingTab('pvideos'); var b = document.querySelector('.pp-vplay[data-pp-yt="' + w.getAttribute('data-pp-watch') + '"]'); if(b){ b.scrollIntoView({ block: 'center' }); b.click(); } return; }
-  var v = e.target.closest && e.target.closest('.pp-vplay');
-  if(v){ var id = v.getAttribute('data-pp-yt'); v.outerHTML = '<div class="pp-vframe"><iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0" title="Video" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>'; }
+  if(w){ ppLightbox(w.getAttribute('data-pp-watch'), +w.getAttribute('data-pp-start') || 0, +w.getAttribute('data-pp-end') || 0); return; }
+  var li = e.target.closest && e.target.closest('[data-pp-listen]');
+  if(li && window.VEEpisodes){ var ep = PP_EPS[+li.getAttribute('data-pp-listen')]; if(ep) VEEpisodes.play(ep, ep.show || {}); return; }
+  var sv = e.target.closest && e.target.closest('[data-pp-save]');
+  if(sv && window.VEEpisodes){ var ep2 = PP_EPS[+sv.getAttribute('data-pp-save')]; if(ep2) VEEpisodes.save(ep2.show.id, ep2.guid, sv).then(function(on){ if(on != null) sv.textContent = on ? 'Saved' : 'Save'; }); }
 });
 
 // What kind of listing it is, and what to call it (Sean, 2026-10-27: "for the different types of content based off of the settings
