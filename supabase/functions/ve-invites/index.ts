@@ -33,7 +33,7 @@ import { createClient } from 'jsr:@supabase/supabase-js@2';
 // Public, added 2026-10-28:
 //   POST { action: 'decline', code, note? }    "No thanks" on the invitation page
 // An invitation is for its email only: universe_invite_claim refuses any other account ('wrong_email'), so a copied link
-// works for that person alone. A level (1 to 3) on an invitation sets members.level_override at the claim. Each email's
+// works for that person alone. A level (1 to 4) on an invitation sets members.level_override at the claim. Each email's
 // provider id is kept (resend_email_id), so its first open (email_events) shows as Read.
 //
 // verify_jwt is off; tokens are checked here, the way ve-dinner-seats and ve-links check them.
@@ -70,7 +70,7 @@ const pointsOf = (v: unknown) => { const n = Math.round(Number(v)); return Numbe
 // Emails go through ilike for case; escape its wildcards so an underscore matches only itself.
 const likeEsc = (s: string) => s.replace(/[%_\\]/g, '\\$&');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-const levelOf = (v: unknown) => { const n = Math.round(Number(v)); return n >= 1 && n <= 3 ? n : null; };
+const levelOf = (v: unknown) => { const n = Math.round(Number(v)); return n >= 1 && n <= 4 ? n : null; };
 const maskEmail = (e: string) => { const [u, d] = String(e || '').split('@'); return u && d ? `${u.slice(0, 1)}${'*'.repeat(Math.max(2, Math.min(6, u.length - 1)))}@${d}` : ''; };
 
 // Read: the first time the email was opened, from the provider's events (email_events), saved on the invitation.

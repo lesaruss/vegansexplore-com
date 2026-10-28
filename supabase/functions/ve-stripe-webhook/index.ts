@@ -970,6 +970,12 @@ Deno.serve(async (req: Request) => {
       }
       const { error: tErr } = await supabase.rpc('ve_purchase_thanks', { p_member: memberId, p_ref: `stripe:${session.id}` })
       if (tErr) console.error('purchase thanks error:', tErr)
+      // The Passport pays the link that brought them, from Level 2 (Sean, 2026-10-28; ve_affiliate_earn, once per member).
+      if (!repeat) {
+        const { data: aff, error: aErr } = await supabase.rpc('ve_affiliate_earn', { p_buyer: memberId, p_product: 'passport', p_product_ref: 'passport', p_ref: `passport:${memberId}` })
+        if (aErr) console.error('affiliate commission error:', aErr)
+        else if (aff?.earned) console.log('Affiliate commission:', aff)
+      }
       console.log('Entry contribution activated membership:', memberId, points, repeat ? 'contribution' : 'join')
 
       try {
