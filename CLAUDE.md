@@ -1896,6 +1896,28 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
 
+## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
+
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). Not built yet. Two
+Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
+
+- **The Stadium & Arena Guide**: one Guide for both, with a Stadiums / Arenas filter (same fan, same concessionaires, and two
+  would each launch thin; not "Game Day", since venues host concerts too; amphitheaters and concert venues can join later). The
+  venue, its home teams, each stand with its Vegan items and where it is (section or gate). Our chapters' venues first, Hard Rock
+  Stadium first (the Plant-Based Showcase). Narrator: River, after a character refresh (Sean, 2026-10-28: still in his 20s, a
+  new hairstyle; of three options Sean picked short twists with a fade). His art is in the repo, `public/guides/art/river-square.webp`
+  and `river-tall.webp` (`VE_GUIDE_ART`), and `public/guides/river.jpg` (old pages) is the new mid shot.
+- **The Airport Guide**: the same layout by terminal and by before or after security. Our chapters' airports first, then the
+  world. Narrator: Nori, who becomes the traveler (Sean, 2026-10-28: Liz has become the business Guide; Pascal is culinary and
+  belongs on the food Guides, such as the Vegan Meat Alternatives Guide). Nori's AI Guide record (`character_agents`) is the Traveler
+  Guide since 2026-10-28 (migration `20261028_nori_traveler.sql`), and so are the Guide picker and the dashboard tiles; Liz took the
+  Entrepreneur path page (`guides/ve-path-entrepreneur.html`). Liz's own record still calls her the Explorer.
+- $11 or 1,100 points each, one venue free as the example.
+- **Members keep them accurate**: confirm an item, or report one missing, wrong or gone, with a photo and a venue-wide location
+  check; each submission waits in a Depot review queue and pays only when accepted (`ve_points_grant`): the first accepted
+  correction 100 points, later ones that agree 25 (told who was first), "Still accurate" 10, at most 5 paid a day. Every item
+  shows when it was last confirmed and ages out at 35 days; a new season marks a stadium's items stale until confirmed.
+
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
 "As we're bringing different products into these guides, it should automatically map to a supermarket

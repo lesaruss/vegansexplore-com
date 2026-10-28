@@ -84,8 +84,9 @@
     // Dani uses a wheelchair; she is always drawn seated in it.
     dani:   { square: ART + 'hf_20261005_024303_76de8533-470a-4b1d-bb44-e5f56174e262_min.webp',
               tall:   ART + 'hf_20261005_024303_762a3532-8e91-4be2-b1bb-0a12465f4c06_min.webp' },
-    river:  { square: ART + 'hf_20261005_024303_7f42e72b-fb79-4ee2-8ead-08a2709889ed_min.webp',
-              tall:   ART + 'hf_20261005_021227_3462df28-bdbf-44e8-966b-be725c189a21_min.webp' },
+    // River's refresh (Sean, 2026-10-28): in his 20s, short twists with a fade. Kept in the repo.
+    river:  { square: '/public/guides/art/river-square.webp',
+              tall:   '/public/guides/art/river-tall.webp' },
     // Pascal, the Cultural Bridge (the guide chat demo and the pitches); not in the member picker.
     pascal: { square: ART + 'hf_20261005_024303_7798f249-b17f-47e7-b7c5-704a8aae5ba5_min.webp',
               tall:   ART + 'hf_20261005_024304_5e1634a6-d9de-43d5-919a-1af4001dbf45_min.webp' }
