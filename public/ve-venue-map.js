@@ -63,7 +63,7 @@
           var poly = [pt(side, f0, d0 + 1.5), pt(side, f1, d0 + 1.5), pt(side, f1, d1 - 1.5), pt(side, f0, d1 - 1.5)];
           var c = pt(side, (f0 + f1) / 2, (d0 + d1) / 2);
           secs.push({ label: String(label), key: norm(label), num: numOf(label), side: side, poly: poly, x: c[0], y: c[1],
-            angle: Math.atan2(c[1] - CY, c[0] - CX), level: li, out: pt(side, (f0 + f1) / 2, d1 - 8) });
+            angle: Math.atan2(c[1] - CY, c[0] - CX), level: li });
         });
       });
       out.push({ level: String(lv.level), name: lv.name || (lv.level + ' level'), d0: d0, d1: d1, mid: (d0 + d1) / 2, secs: secs });
@@ -129,7 +129,7 @@
   }
 
   function pinSvg(x, y, n, on) {
-    return '<g class="vvm-pin' + (on ? ' on' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' +
+    return '<g class="vvm-pin' + (on ? ' on' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(1.35)">' +
       '<path d="M0 0 C-4 -9 -15 -16 -15 -27 A15 15 0 1 1 15 -27 C15 -16 4 -9 0 0Z"/><text x="0" y="-22" text-anchor="middle">' + n + '</text></g>';
   }
   function fieldSvg(kind) {
@@ -163,11 +163,11 @@
     (pins || []).forEach(function (p) {
       (p.sections || []).forEach(function (raw) {
         var s = find(layout, raw); if (!s) return;
-        body += pinSvg(s.out[0], s.out[1], p.n, r && r.routes.length && r.routes[0].stand.n === p.n && r.routes[0].target.key === s.key && r.routes[0].target.level === s.level);
+        body += pinSvg(s.x, s.y, p.n, r && r.routes.length && r.routes[0].stand.n === p.n && r.routes[0].target.key === s.key && r.routes[0].target.level === s.level);
       });
     });
     if (you) body += '<g class="vvm-you" transform="translate(' + you.x.toFixed(1) + ' ' + you.y.toFixed(1) + ')"><circle r="15"/><text y="5" text-anchor="middle">YOU</text></g>';
-    return '<svg class="vvm" viewBox="50 20 900 760" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
+    return '<svg class="vvm" viewBox="40 -40 920 830" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
   }
 
   var CSS = '.vvm{display:block;width:100%;height:auto;font-family:Montserrat,sans-serif;}' +

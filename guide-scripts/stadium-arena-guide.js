@@ -256,8 +256,8 @@
       if (seat && !you) html = '<p class="sa-dir-miss">We could not find section ' + esc(seat) + ' at ' + esc(v.name) + '. Check the number on your ticket.</p>';
       else if (r) {
         html = '<ol class="sa-dirs">' + r.routes.map(function (x) {
-          return '<li><button type="button" class="sa-dir-go" data-st="' + esc(x.stand.id) + '"><span class="sa-pinno">' + x.stand.n + '</span><b>' + esc(x.stand.name) + '</b> &middot; section ' + esc(x.section) +
-            ' &middot; about ' + x.minutes + ' min</button><p>' + x.steps.map(esc).join(' ') + '</p></li>';
+          return '<li><button type="button" class="sa-dir-go" data-st="' + esc(x.stand.id) + '"><span class="sa-pinno">' + x.stand.n + '</span><span><b>' + esc(x.stand.name) + '</b> <span class="sa-dir-meta">section ' + esc(x.section) +
+            ' &middot; about ' + x.minutes + ' min</span></span></button><p>' + x.steps.map(esc).join(' ') + '</p></li>';
         }).join('') + '</ol>';
         if (!you.exact && you.exact !== undefined) html = '<p class="sa-dir-miss">Section ' + esc(seat) + ' is not on our map yet, so this starts from the nearest one we have.</p>' + html;
       } else html = '<p class="sa-dir-hint">Type the section on your ticket and press Get me there.</p>';
