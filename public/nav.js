@@ -183,7 +183,7 @@
       : '<span>' + swEsc(member.initials || '?') + '</span>';
     // 2026-10-03 (Sean): the badge names the membership a person actually has. Membership is
     // the one-time Founding Membership; Community Manager appears once Sean approves them.
-    var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager'
+    var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador'
       : (member.membership_status === 'active' ? 'Founding Member' : 'Member');
     desktopRight =
       '<button type="button" class="ve-nav-member" id="ve-nav-member-chip" aria-label="Your account, ' + swEsc(member.name || '') + '">' +

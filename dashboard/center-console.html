@@ -228,6 +228,7 @@
   a.dash-stat:hover{border-color:var(--ve-green);background:var(--ve-green-light);}
   a.dash-stat:not([href]):hover{border-color:var(--ve-border);background:none;}
   @media (max-width:640px){ .dash-stats{grid-template-columns:1fr 1fr;} }
+  @media (max-width:640px){ #dash-mine-row .dash-stat:last-child{grid-column:1 / -1;} }
   .dash-stat-sub{font-size:11px;font-weight:600;color:var(--ve-text-50);margin-top:4px;line-height:1.4;}
   .dash-stat-value.is-ok{color:var(--ve-green-dark);} .dash-stat-value.is-warn{color:#7d4a00;} .dash-stat-value.is-alert{color:#991b1b;}
 
