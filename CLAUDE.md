@@ -1002,7 +1002,9 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   phone (900 px and under) the stacked buttons are taller than the title, so the title and the line under it grow to fill that
   height (Sean, 2026-10-27: "make the title big enough where it's filling in that gap, but not adjusting anything else"; `fitTitle`):
   the biggest size at which every word fits the column, the line under it stays one line, and title, line and picker are no taller
-  than the buttons. Button labels stay one row on a phone (Submit listing, not Submit your listing). The line under the title is
+  than the buttons. **Desktop does the same since 2026-10-28** (Sean: "I want it to look exactly like how it looks on mobile in relation to
+  the title and subtitle and the dropdown"): folded, the title and the line under it grow until they and the picker fill the buttons'
+  height, 8px apart like the buttons (Vegan Directory 31px, Food 24px at 1366 and 1440); the title stays one line there. Button labels stay one row on a phone (Submit listing, not Submit your listing). The line under the title is
   the city unless the page names something else (`setLabel`): **the Directory names its section** there (Food, Services, Media,
   Community, Being vetted, Review; Sean, 2026-10-27: "is it redundant for us to have the title as well as the dropdown?"), the city
   being in the picker (`onSection` in `VERegionDirectory.init`). The

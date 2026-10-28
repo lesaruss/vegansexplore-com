@@ -212,8 +212,8 @@
     if (mobile.addEventListener) mobile.addEventListener('change', paint);
 
     // Expanded on landing; autoFold() folds it on the first click into the page, unless the visitor chose with the button.
-    // Folded, shrink the title until it fits its column on one line (fitTitle), never below 12px. On a phone the buttons
-    // stack taller than the title, so the title and the line under it grow to fill that height instead (Sean, 2026-10-27:
+    // Folded, shrink the title until it fits its column on one line (fitTitle), never below 12px. The buttons stack taller
+    // than the title (on a phone and, since 2026-10-28, on a desktop), so the title and the line under it grow to fill that height instead (Sean, 2026-10-27:
     // "make the title big enough where it's filling in that gap, but not adjusting anything else"): the biggest size at which
     // every word still fits the column, the line under it stays one line, and the title, that line and the picker together are
     // no taller than the buttons.
@@ -227,14 +227,17 @@
         var size = parseFloat(getComputedStyle(title).fontSize) || 18;
         while (title.scrollWidth > title.clientWidth + 1 && size > 12) { size -= 0.5; title.style.fontSize = size + 'px'; }
         var acts = el.querySelector('.vcb-actions');
-        if (phone.matches && acts) {
+        // Desktop too (Sean, 2026-10-28: "I want it to look exactly like how it looks on mobile in relation to the title and subtitle
+        // and the dropdown"): folded, the title and the line under it grow until they and the picker fill the buttons' height, the
+        // same 8px apart as the buttons. A phone lets the title wrap; a desktop keeps it on one line.
+        if (acts && acts.offsetHeight) {
           var room = acts.offsetHeight, ratio = (parseFloat(getComputedStyle(cityEl).fontSize) || 15) / size;
           var fits = function (n) {
             title.style.fontSize = n + 'px'; cityEl.style.fontSize = Math.round(n * ratio * 2) / 2 + 'px';
             var words = title.scrollWidth <= title.clientWidth + 1 && cityEl.scrollWidth <= cityEl.clientWidth + 1;
             return words && h1.offsetHeight + pick.offsetHeight + 8 <= room;
           };
-          title.style.whiteSpace = 'normal'; title.style.lineHeight = '1.05';
+          if (phone.matches) { title.style.whiteSpace = 'normal'; title.style.lineHeight = '1.05'; }
           var best = size;
           for (var n = size + 1; n <= 44; n++) { if (fits(n)) best = n; else break; }
           if (best === size) { title.style.whiteSpace = ''; title.style.lineHeight = ''; }
