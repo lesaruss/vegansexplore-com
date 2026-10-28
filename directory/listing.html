@@ -1801,7 +1801,7 @@ function loadBrandSite(l){
         pic: '<div class="bd-camps">' + CAMPAIGNS.map(function(c){ return '<div><span class="bd-tag">Coming</span><b>' + c[0] + '</b><span>' + c[1] + '</span><em>' + c[2] + '</em></div>'; }).join('') + '</div>' },
       // Why the membership matters, told as what the brand gets to see (talk versus walk).
       { t: 'Why it matters', h: 'Where your membership goes, and how you see it',
-        say: 'Your membership keeps us at events, backs our volunteer Community Managers, and builds our apps. Join an event, and you get a report within a week.',
+        say: 'Your membership keeps us at events, backs our Community Managers in every city, and builds our apps. Join an event, and you get a report within a week.',
         body: '<p>Your membership:</p><ul class="bd-list"><li>Keeps us at events, in person</li><li>Backs our Community Managers, city by city</li><li>Builds our apps</li></ul>' +
           '<p><b>Walk, not talk.</b> Your dashboard is live, and after every campaign event you join, you get a report within 7 days.</p>',
         pic: '<div class="bd-now"><div><h3>Working for ' + B + ' today</h3><ul><li>Your page, kept up with your products</li>' + (firstGuide ? '<li>Your products in the Vegan ' + esc(firstGuide[0]) + '</li>' : '') +
@@ -1865,20 +1865,25 @@ function loadBrandSite(l){
     // under 10 seconds, no b-roll; Sean, 2026-10-09; files in vegan-media/media/brand-door/<brand>/), else her voice
     // alone (brand_door.audio). The poster is the clip's first frame, so a slide shows her new pose before it plays.
     // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
-    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && x.video; }) ? c : null; }
+    // A slide can also be her voice alone over its still picture ({audio, poster}; Sean, 2026-10-28: "we could still have the
+    // voices, but the animation I don't think is necessary"), so a line can be re-recorded without a new lip-synced clip.
+    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && (x.video || x.audio); }) ? c : null; }
     var TOUR = PARTNER ? (Array.isArray(BD.start_tour) ? BD.start_tour.slice() : null) : Array.isArray(BD.tour) ? BD.tour.slice() : null;
     if(TOUR && !PARTNER && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
     var CLIPS = fits(TOUR) || fits(BD.clips);
-    var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video; }) : null;
+    var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video || null; }) : null;
+    var VOICE = CLIPS && CLIPS.some(function(c){ return c.audio && !c.video; }) ? new Audio() : null;
+    function voiceAt(i){ return VOICE && CLIPS[i] && !CLIPS[i].video ? CLIPS[i].audio : null; }
     function posterAt(i){ return (CLIPS && CLIPS[i].poster) || narrArt; }
     var AUDIO = !VIDEO && Array.isArray(BD.audio) && BD.audio.length === SLIDES.length ? BD.audio : null;
     var player = null;
     if(VIDEO){
       player = document.createElement('video'); player.className = 'bd-vid'; player.preload = 'metadata'; player.playsInline = true;
-      player.setAttribute('playsinline', ''); player.poster = posterAt(0); player.src = VIDEO[0];
+      player.setAttribute('playsinline', ''); player.poster = posterAt(0); if(VIDEO[0]) player.src = VIDEO[0];
       player.addEventListener('click', function(){ if(!DOOR.started){ startTour(); return; } if(DOOR.playing){ DOOR.paused = true; stop(); drawNarr(); } else { DOOR.paused = false; play(); } });
     } else if(AUDIO){ player = new Audio(); player.preload = 'none'; }
     if(player) player.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); });
+    if(VOICE){ VOICE.preload = 'none'; VOICE.addEventListener('ended', function(){ DOOR.playing = false; drawNarr(); }); }
     var grid = document.querySelector('.listing-page-grid'), rail = document.querySelector('.bsite-rail');
     var narr = null;
     if(rail && door){ narr = document.createElement('div'); narr.className = 'bd-narr'; narr.id = 'bd-narr'; rail.insertBefore(narr, rail.firstChild); }
@@ -1903,15 +1908,19 @@ function loadBrandSite(l){
     }
     function play(){
       if(!player) return;
+      var v = voiceAt(DOOR.i);
+      if(v){ player.pause(); if(VOICE.getAttribute('src') !== v) VOICE.src = v; VOICE.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); }); return; }
       var src = (VIDEO || AUDIO)[DOOR.i];
       if(player.getAttribute('src') !== src) player.src = src;
       player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); });
     }
-    function stop(){ if(player){ player.pause(); } DOOR.playing = false; }
+    function stop(){ if(player){ player.pause(); } if(VOICE) VOICE.pause(); DOOR.playing = false; }
     // A new slide shows Maya's next pose, with a small shift so she reads as moving (Sean, 2026-10-09).
     function cue(){
       if(!VIDEO) return;
-      if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
+      if(VOICE && !VOICE.paused){ VOICE.pause(); DOOR.playing = false; }
+      if(!VIDEO[DOOR.i]){ player.pause(); player.removeAttribute('src'); player.poster = posterAt(DOOR.i); player.load(); }
+      else if(player.getAttribute('src') !== VIDEO[DOOR.i]){ player.poster = posterAt(DOOR.i); player.src = VIDEO[DOOR.i]; }
       player.classList.remove('bd-shift', 'alt'); void player.offsetWidth; player.classList.add('bd-shift'); if(DOOR.i % 2) player.classList.add('alt');
     }
     // Start the tour (Sean, 2026-10-09: "the button says start the tour... when they start the tour, she starts to

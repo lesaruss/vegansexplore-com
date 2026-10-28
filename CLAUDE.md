@@ -528,7 +528,13 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   corner... works well").
 - **Community Managers are never volunteers** (Sean, 2026-10-27: "we're for profit and we intend to pay them. More like gig work"):
   the site's words call it gig work, paid as the community grows (the Passport's What your $11 supports, the Ambassador Guide, the
-  brand tour's slide 6). Maya's recorded line on that slide still says "volunteer Community Managers"; it needs a new recording.
+  brand tour's slide 6). Maya's line on that slide was re-recorded voice only on 2026-10-28 (below).
+- **Voices, not animation, for tours** (Sean, 2026-10-28: "we could still have the voices, but the animation I don't think is
+  necessary... save the animation for the guides"; a lip-synced clip is about 20 to 25 Higgsfield credits, a voice line none). A brand
+  tour slide can be `{audio, poster}`: her voice over the slide's still picture, beside clips on the other slides (`voiceAt` in
+  `loadBrandSite`). Oatly's slide 6 is `brand-door/oatly/v6-slide-6.mp3` (el-media `tts`, Maya's voice, levelled to the clips, about
+  -13.5 LUFS, a 0.25 s lead-in; checked word for word with `stt`), the old clip kept in `replaced`. New tour lines are voice only;
+  a Guide gets at most one animated welcome.
 - **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
   `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
   friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`
