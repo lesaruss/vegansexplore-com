@@ -160,6 +160,7 @@
     .am-gate p{margin:0 0 16px;color:var(--ink75);line-height:1.6;}
     @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
     .am-sec{margin:20px 0 10px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .dg-tile .am-ic{display:flex;align-items:center;justify-content:center;color:var(--g);border:1px solid var(--gm);background:#fff;}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -224,6 +225,20 @@
     city: 'The city you represent.', link: 'Your link, and how it counts.', who: 'Where to start.',
     share: 'Ready-made words, with your link.', questions: 'Straight answers to what people ask.', progress: 'Who joined through you.'
   };
+  // Flat line icons on the Overview's tiles (Sean, 2026-10-27: "I don't like the guide icons... flat icons that represent those
+  // things instead"); the Guide stays on the right of every tab.
+  var ICONS = {
+    why: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+    account: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/>',
+    role: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+    city: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+    who: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/>',
+    share: '<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+    questions: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M9.8 9.5a2.3 2.3 0 0 1 4.4 1c0 1.5-2.2 2-2.2 3.2"/><path d="M12 16.5h.01"/>',
+    progress: '<path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M21 16V5"/>'
+  };
+  function icon(k) { return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[k] || '') + '</svg>'; }
   var $ = function (id) { return document.getElementById(id); };
   var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect');
   var guideEl = $('dgGuide'), nameEl = $('dgGuideName'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
@@ -260,7 +275,7 @@
   var VIEWS = {
     overview: function () {
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
       return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: the people you have reached, the work you have done for the animals and for this community. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, and this Guide shows you everything that comes with it, starting with why it matters.') +
         '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
@@ -277,7 +292,7 @@
         '</div><h3 class="am-sec">For the Vegan life</h3><div class="dg-grid">' +
         card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory') +
         card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more jobs and classifieds on the Board.', 'Community') +
-        card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the volunteer Community Managers in each city and the tools members use.', 'Your $11 at work') +
+        card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Your $11 at work') +
         card('Your voice carries', 'People listen to someone they know in a way they never listen to an ad. That is why we asked you.', 'Why you') +
         '</div>' + nextBtn('account', 'Next: your membership');
     },

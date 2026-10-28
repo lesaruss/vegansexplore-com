@@ -523,7 +523,11 @@ process." (Migration `20261027_ambassadors.sql`, run through `ve-once-ambassador
   Events), Your link (`/passport?ref=<referral_code>`, the four steps to the 111 points), Who to invite, What to share (four messages
   with their link), Answering questions (straight answers, do and don't), Your progress (`ve-auth` `referrals`: members and waiting
   accounts who signed up with their link, first name and last initial, and the referral points paid). Old `?step=1..4` links land on
-  the matching tab. For Ambassadors and super admins only; the dashboard's tile is The Ambassador Guide. No Higgsfield art or clips.
+  the matching tab. For Ambassadors and super admins only; the dashboard's tile is The Ambassador Guide. No Higgsfield art or clips. The Overview's tiles wear flat line icons (`ICONS`), never Guide pictures (Sean, 2026-10-27: "I don't like the guide icons... Liz in the
+  corner... works well").
+- **Community Managers are never volunteers** (Sean, 2026-10-27: "we're for profit and we intend to pay them. More like gig work"):
+  the site's words call it gig work, paid as the community grows (the Passport's What your $11 supports, the Ambassador Guide, the
+  brand tour's slide 6). Maya's recorded line on that slide still says "volunteer Community Managers"; it needs a new recording.
 - **Referrals pay when the friend becomes a member** (111 points, `points_earn_rules` `referral_signup`): trigger
   `trg_zz_referral_on_admit` on `members` (insert or `membership_status` turning active) through `award_points_bounty`, once per
   friend; `ve-auth` no longer pays at sign-up, since an unpaid account is not a member. Continue with Google now keeps the `?ref=`
@@ -1683,7 +1687,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   live between `starts_at` and `ends_at`): a new tool reaches every dashboard as a row, no code. Every listing counts what a
   visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
-  (migration `20261024_partner_dashboard.sql`). A listing's Photos, Video and Pulse tabs show only once they have something
+  (migration `20261024_partner_dashboard.sql`). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
+  Sean, 2026-10-27: it "pushes the other buttons to the left"), the text button under Vote and Save on desktop. A listing's Photos, Video and Pulse tabs show only once they have something
   in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
 - **Menus are linked, not copied** (Sean, 2026-10-27, replacing the copying below: "how do we know if they're updated?... if
   she changes just one of them, we're presenting wrong information... a tab that says menu, and... when they click it, it takes
