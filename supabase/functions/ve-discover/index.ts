@@ -565,9 +565,20 @@ function chainName(n: string): string {
   return String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/\s+[-|@]\s+|\s*\(/)[0].replace(/[^a-z0-9]/g, '');
 }
 const OUR_LOGO = '/storage/v1/object/public/vegan-media/';
+// Every row, a page of 1,000 at a time: the API stops at 1,000 rows a request, and the Directory is past 3,000 (2026-10-28,
+// honeygrow's locations were never seen). The query is made fresh for each page; give it a stable order.
+async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
+  const out: any[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await make().range(from, from + 999);
+    if (error) return { data: out, error };
+    out.push(...(data || []));
+    if (!data || data.length < 1000) return { data: out, error: null };
+  }
+}
 async function chainFill(): Promise<number> {
-  const { data: all } = await db.from('listings').select('id, name, website, instagram, ig_handle, parent_id, logo_url, address_city, details')
-    .eq('status', 'approved').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').limit(10000);
+  const { data: all } = await allRows(() => db.from('listings').select('id, name, website, instagram, ig_handle, parent_id, logo_url, address_city, logo_checked:details->logo_checked, logo_letter_ok:details->logo_letter_ok')
+    .eq('status', 'approved').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').order('id'));
   const rows = (all || []) as any[];
   const has = rows.filter((l) => String(l.logo_url || '').includes(OUR_LOGO));
   if (!has.length) return 0;
@@ -587,12 +598,12 @@ async function chainFill(): Promise<number> {
   };
   // The logo to share: the main listing's, else one checked by eye most recently.
   const best = (list: any[]) => list.sort((a, b) => (a.parent_id ? 1 : 0) - (b.parent_id ? 1 : 0) ||
-    String(b.details?.logo_checked?.at || '').localeCompare(String(a.details?.logo_checked?.at || '')))[0];
-  const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url');
+    String(b.logo_checked?.at || '').localeCompare(String(a.logo_checked?.at || '')))[0];
+  const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, url').order('listing_id'));
   const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
   let n = 0;
   for (const l of rows) {
-    if (String(l.logo_url || '').trim() || l.details?.logo_letter_ok) continue;
+    if (String(l.logo_url || '').trim() || l.logo_letter_ok) continue;
     const fam: any[] = [];
     const main = l.parent_id ? byId.get(l.parent_id) : null;
     if (main && String(main.logo_url || '').includes(OUR_LOGO)) fam.push(main);
@@ -619,10 +630,10 @@ function relookDue(x: any): boolean {
 }
 async function logoSweep(n: number) {
   const chain = await chainFill();
-  const { data: q } = await db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
+  const { data: q } = await allRows(() => db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
     .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
-    .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
-  const { data: had } = await db.from('ve_logo_suggestions').select('listing_id, status, why, checked_at');
+    .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
+  const { data: had } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, why, checked_at').order('listing_id'));
   const seen = new Map((had || []).map((x: any) => [x.listing_id, x]));
   const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok);
   // Never looked at first, then the ones it found nothing for, looked at again once their look is due (relookDue).
@@ -752,12 +763,12 @@ Deno.serve(async (req) => {
 
   if (action === 'logo_queue') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
-    const { data, error } = await db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, tiktok, vote_count, details')
+    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, tiktok, vote_count, details')
       .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
-      .order('vote_count', { ascending: false, nullsFirst: false }).order('name').limit(2000);
+      .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
     if (error) return json({ error: error.message }, 400);
     const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok);
-    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates, checked_at');
+    const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates, checked_at').order('listing_id'));
     const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
     const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
     const q = clean(body.q, 80).toLowerCase(), city = clean(body.city, 80);
@@ -795,10 +806,10 @@ Deno.serve(async (req) => {
 
   if (action === 'logo_done') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
-    const { data, error } = await db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, logo_url, status, details')
-      .not('details->logo_checked', 'is', null).limit(2000);
+    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, logo_url, status, details')
+      .not('details->logo_checked', 'is', null).order('id'));
     if (error) return json({ error: error.message }, 400);
-    const { data: sg } = await db.from('ve_logo_suggestions').select('listing_id, status, source').eq('status', 'used');
+    const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, source').eq('status', 'used').order('listing_id'));
     const swept = new Map((sg || []).map((x: any) => [x.listing_id, x.source]));
     const rows = (data || []).filter((l: any) => l.logo_url).map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city,
       state: l.address_state, website: l.website, instagram: l.instagram, facebook: l.facebook, logo_url: l.logo_url, live: l.status === 'approved',
