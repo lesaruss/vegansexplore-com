@@ -34,7 +34,8 @@
     'Sanford','Oviedo','Winter Park','Winter Garden','Kissimmee','Celebration','Clermont','Maitland','Longwood','Casselberry','Lake Mary','Windermere','Ocoee','Leesburg','Mount Dora','Eustis','Haines City','Bartow','Davenport','Sebring',
     'Tampa','St. Petersburg','Saint Petersburg','Clearwater','Clearwater Beach','Largo','Dunedin','Palm Harbor','Tarpon Springs','Brandon','Riverview','Wesley Chapel','Land O\' Lakes','Lutz','Plant City','Temple Terrace','New Port Richey',
     'Bradenton','Sarasota','Venice','North Port','Myakka City','Duette','Punta Gorda','Port Charlotte','Fort Myers','Cape Coral','Naples','Bonita Springs','Estero',
-    'Daytona Beach','Ormond Beach','Port Orange','New Smyrna Beach','DeLand','Deltona','Melbourne','Titusville','Cocoa','Cocoa Beach','Palm Bay'];
+    'Daytona Beach','Ormond Beach','Port Orange','New Smyrna Beach','DeLand','Deltona','Melbourne','Titusville','Cocoa','Cocoa Beach','Palm Bay',
+    'Cape Canaveral','Lake Buena Vista','Nokomis','Gulfport','Pinellas Park','Poinciana','Sand Lake','Indialantic','Rockledge','Indian Harbour Beach','Belleair Bluffs','Daytona Beach Shores','South Daytona'];
   var NF = ['Jacksonville','Jacksonville Beach','Atlantic Beach','Neptune Beach','Ponte Vedra','Ponte Vedra Beach','St. Augustine','Saint Augustine','St. Augustine Beach','Fernandina Beach','Amelia Island','Yulee','Orange Park','Fleming Island','Middleburg',
     'Palm Coast','Flagler Beach','Gainesville','Alachua','Newberry','High Springs','Micanopy','Lake City','Live Oak','Tallahassee','Quincy',
     'Pensacola','Pensacola Beach','Gulf Breeze','Navarre','Milton','Pace','Fort Walton Beach','Destin','Niceville','Crestview','Santa Rosa Beach','Miramar Beach','Panama City','Panama City Beach','Lynn Haven','Port St. Joe','Apalachicola'];
