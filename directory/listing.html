@@ -112,6 +112,11 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .he-name:hover{text-decoration:underline}
 .he-body span{font-size:13px;color:rgba(26,26,26,.68)}
 .he-go{flex:none;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#2d7d31;color:#fff;text-decoration:none;white-space:nowrap}
+.he-tabs{display:flex;gap:6px;margin:0 0 12px}
+.he-tabs button{font:inherit;font-size:13px;font-weight:800;padding:8px 14px;border-radius:6px;border:1px solid var(--ve-border,rgba(0,0,0,.12));background:#fff;color:inherit;cursor:pointer}
+.he-tabs button[aria-selected="true"]{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
+.he-go.ghost{background:#fff;color:#1f5f22;border:1px solid rgba(31,95,34,.35)}
+.he-link{font:inherit;font-weight:700;color:#1f5f22;background:none;border:0;padding:0;text-decoration:underline;cursor:pointer}
 .he-sub{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px;color:rgba(26,26,26,.68)}
 @media (max-width:560px){.he-row{flex-wrap:wrap}.he-body{flex-basis:calc(100% - 58px)}.he-go{margin-left:58px}}
 .loc-row{display:block;padding:9px 0;border-top:1px solid rgba(0,0,0,.07);text-decoration:none;color:inherit;font-size:13px;line-height:1.4}
@@ -1165,32 +1170,48 @@ function withMain(l){
   }, function(){ return l; });
 }
 // Events this listing hosts (events.host_listing_id; Sean, 2026-10-29: "all of their events will be tied to their profile, and
-// their profile will be tied to all their events"). Upcoming ones first, soonest first, then the last six that have passed. A group
-// always shows the section; any other listing only once it has hosted something. Each opens on the events calendar.
+// their profile will be tied to all their events"). Two tabs: Upcoming (shown first, soonest first) and Past (newest first; Sean,
+// 2026-10-29: "a good indicator to people that it's a good group to join if they have a lot of past events"), each with its count,
+// each list scrolling in its own box. A group always shows the section; any other listing only once it has hosted something. A name
+// opens the event on our calendar; the button goes to their own page (an old one may no longer open, which is fine for the record).
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
-  var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=200';
+  var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
   fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
     rows = Array.isArray(rows) ? rows : [];
     var now = Date.now(), endOf = function(e){ return new Date(e.ends_at || new Date(e.starts_at).getTime() + 4 * 3600000).getTime(); };
-    var up = rows.filter(function(e){ return endOf(e) >= now; }), past = rows.filter(function(e){ return endOf(e) < now; }).reverse().slice(0, 6);
+    var up = rows.filter(function(e){ return endOf(e) >= now; }), past = rows.filter(function(e){ return endOf(e) < now; }).reverse();
     var isGroup = l.category === 'Groups';
     if(!up.length && !past.length && !isGroup) return;
+    var thisYear = new Date().getFullYear();
     var fmt = function(e, o){ try { return new Date(e.starts_at).toLocaleString('en-US', Object.assign({ timeZone: e.timezone || undefined }, o)); } catch(x){ return new Date(e.starts_at).toLocaleString('en-US', o); } };
     var row = function(e, old){
-      var when = fmt(e, { weekday: 'short', month: 'short', day: 'numeric' }) + (e.time_set === false ? ' · Time to be announced' : ' · ' + fmt(e, { hour: 'numeric', minute: '2-digit' }));
+      var yr = +fmt(e, { year: 'numeric' }) !== thisYear;
+      var when = fmt(e, Object.assign({ weekday: 'short', month: 'short', day: 'numeric' }, yr ? { year: 'numeric' } : {})) + (e.time_set === false ? ' · Time to be announced' : ' · ' + fmt(e, { hour: 'numeric', minute: '2-digit' }));
       var where = e.event_type === 'virtual' && !e.city ? 'Online' : [e.location_name, e.city].filter(Boolean).join(', ');
       var link = /^https?:\/\//.test(e.ticket_url || '') ? e.ticket_url : /^https?:\/\//.test(e.virtual_url || '') ? e.virtual_url : '';
       return '<div class="he-row' + (old ? ' he-past' : '') + '"><div class="he-date" aria-hidden="true"><b>' + esc(fmt(e, { day: 'numeric' })) + '</b><span>' + esc(fmt(e, { month: 'short' })) + '</span></div>' +
         '<div class="he-body"><a class="he-name" href="/events#event/' + esc(e.id) + '">' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + '</span></div>' +
-        (!old && link ? '<a class="he-go" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Tickets and details for ' + esc(e.title) + '">Tickets &amp; info</a>' : '') + '</div>';
+        (link ? '<a class="he-go' + (old ? ' ghost' : '') + '" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + (old ? 'Event page for ' : 'Tickets and details for ') + esc(e.title) + '">' + (old ? 'Event page' : 'Tickets &amp; info') + '</a>' : '') + '</div>';
+    };
+    var lists = {
+      up: up.length ? '<div class="he-list he-scroll">' + up.map(function(e){ return row(e, false); }).join('') + '</div>'
+        : '<p class="about-text">No upcoming events on our calendar yet. ' + (isGroup ? 'We add their events as they post them. ' : '') +
+          (past.length ? '<button type="button" class="he-link" data-he="past">See their ' + past.length + ' past event' + (past.length === 1 ? '' : 's') + '</button>' : '<a href="/events">See every event</a>') + '</p>',
+      past: past.length ? '<div class="he-list he-scroll">' + past.map(function(e){ return row(e, true); }).join('') + '</div>' : '<p class="about-text">No past events on our calendar yet.</p>'
     };
     box.hidden = false;
     box.className = 'section';
-    box.innerHTML = '<h2 class="section-title">Upcoming events</h2>' +
-      (up.length ? '<div class="he-list he-scroll">' + up.map(function(e){ return row(e, false); }).join('') + '</div>'
-        : '<p class="about-text">No upcoming events on our calendar yet. ' + (isGroup ? 'We add their events as they post them.' : '') + ' <a href="/events">See every event</a></p>') +
-      (past.length ? '<h3 class="he-sub">Past events</h3><div class="he-list">' + past.map(function(e){ return row(e, true); }).join('') + '</div>' : '');
+    box.innerHTML = '<h2 class="section-title">Events</h2>' +
+      '<div class="he-tabs" role="tablist"><button type="button" role="tab" data-he="up" aria-selected="true">Upcoming (' + up.length + ')</button>' +
+      '<button type="button" role="tab" data-he="past" aria-selected="false">Past (' + past.length + ')</button></div><div class="he-pane"></div>';
+    var show = function(k){
+      box.querySelectorAll('.he-tabs [data-he]').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-he') === k ? 'true' : 'false'); });
+      box.querySelector('.he-pane').innerHTML = lists[k];
+      var more = box.querySelector('.he-pane [data-he]'); if(more) more.onclick = function(){ show('past'); };
+    };
+    box.querySelectorAll('.he-tabs [data-he]').forEach(function(b){ b.onclick = function(){ show(b.getAttribute('data-he')); }; });
+    show('up');
   }).catch(function(){});
 }
 

@@ -1150,6 +1150,18 @@ Club** (Sean gave its Partiful, `partiful.com/u/VrM8jI2gyGMs9BJWvXNi`; migration
 same day with its 32 upcoming Partiful events. Partiful is readable from the database server (pg_net) though not from the build
 session: a host page's `__NEXT_DATA__` lists `initialPublishedEvents`, and each `partiful.com/e/<id>` has the description and an
 approximate place (`locationInfo.mapsInfo.approximateLocation`, the neighborhood; the address only after an RSVP). North Florida, Delaware and West Virginia had none confirmed.
+**A group's history counts** (Sean, 2026-10-29: "show past, because it's a good indicator to people that it's a good group to join
+if they have a lot of past events... by default, it shows upcoming, and then they would have to click past"; migration
+`20261029_group_past_events.sql`). The page's Events has two tabs, **Upcoming (N)** first and **Past (N)**, newest first, each scrolling in
+its box; a past row's button is **Event page**, their own page, kept even if it no longer opens. `ve_event_intake` saves an event that is
+over only with `past: true`, a host listing and a start on or after 2020-01-01; anything else over is still `already_over`. The 2026
+history went in the same day: 709 Meetup events for the 16 Meetup groups (2026 to date and the next 180 days; Vegan Social Clubs' weekly
+market is scheduled years out), read from Meetup's GraphQL (`https://api.meetup.com/gql-ext`, no sign-in: `groupByUrlname(urlname)
+{ timezone events(filter:{status: PAST|ACTIVE, afterDateTime, beforeDateTime}, first: 100) }`, no more than 100 a call, so split a busy year
+by date range); Philly Vegan Social Club's 36 from Partiful; and from Instagram (Apify `instagram-scraper`, posts since 2026-01-01) 16 for
+the Vegan Social Club (its Partiful host is a personal account with no public list) and 9 for Vegan Club RVA, each linking to its post,
+a recap with no announced date dated the day it was posted with Time to be announced. Afro Vegan Social, Center City Philly Vegans,
+LGBTQ+ Vegans London and London Vegans went live then (Meetup shows 2026 events); Vegan Squad stays on hold.
 The goal, not built yet: a group runs its community on Vegans Explore (its members, its events, its board).
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
