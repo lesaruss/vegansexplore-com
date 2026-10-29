@@ -11,6 +11,8 @@
 // POST { action: 'probe' }                             whether Google Books and Open Library answer our server
 //   These take the cron's x-cron-secret, the LESARUSS_ADMIN_TOKEN or a super admin's VE token; wait: true answers with the results.
 // POST { action: 'episode', listing_id, guid } | { action: 'episode', content_id }   public: the episode's referenced books
+// POST { action: 'book', listing_id }                  public: the episodes that talked about a Books listing
+// POST { action: 'admin_list', status } | 'admin_get', id | 'admin_set', id, to: set_aside|retry|list   Depot > Books
 // verify_jwt is false.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -105,7 +107,7 @@ const SEARCH_FIELDS = 'key,title,subtitle,author_name,first_publish_year,edition
 // ---- Google Books (the API key we hold for Google, which has the Books API) and Open Library, in one shape ----
 // A candidate is one book: its editions grouped by title and author's last name.
 type Cand = { title: string; subtitle: string; authors: string[]; year: number | null; editions: number; publishers: string[]; subjects: string[];
-  isbns: string[]; isbnPub: Record<string, string>; description: string; ol_work?: string };
+  isbns: string[]; isbnPub: Record<string, string>; description: string; ol_work?: string; covers: { id: string; isbn: string; publisher: string }[] };
 async function gb(q: string, max = 40): Promise<any[]> {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) throw new Error('No Google key');
@@ -130,7 +132,7 @@ function groupGB(items: any[]): Cand[] {
     if (!v.title) continue;
     const k = words(String(v.title).split(':')[0]) + '|' + words((v.authors || [])[0] || '').split(' ').pop();
     let g = by.get(k);
-    if (!g) { g = { title: v.title, subtitle: v.subtitle || '', authors: v.authors || [], year: null, editions: 0, publishers: [], subjects: [], isbns: [], isbnPub: {}, description: '' }; by.set(k, g); }
+    if (!g) { g = { title: v.title, subtitle: v.subtitle || '', authors: v.authors || [], year: null, editions: 0, publishers: [], subjects: [], isbns: [], isbnPub: {}, description: '', covers: [] }; by.set(k, g); }
     g.editions++;
     const y = parseInt(String(v.publishedDate || '').slice(0, 4));
     if (y && (!g.year || y < g.year)) g.year = y;
@@ -141,12 +143,14 @@ function groupGB(items: any[]): Cand[] {
     }
     const d = String(v.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (d.length > g.description.length) g.description = d;
+    // An edition Google has a cover picture for (imageLinks), kept for when Amazon has none.
+    if (v.imageLinks && it.id && (v.language || 'en') === 'en') g.covers.push({ id: it.id, isbn: ((v.industryIdentifiers || []).find((x: any) => x.type === 'ISBN_13') || {}).identifier || '', publisher: v.publisher || '' });
   }
   return [...by.values()];
 }
 function fromOL(docs: any[]): Cand[] {
   return docs.map((d: any) => ({ title: d.title, subtitle: d.subtitle || '', authors: d.author_name || [], year: d.first_publish_year || null, editions: d.edition_count || 0,
-    publishers: (d.publisher || []).slice(0, 5), subjects: (d.subject || []).slice(0, 12), isbns: [], isbnPub: {}, description: '', ol_work: String(d.key).replace('/works/', '') }));
+    publishers: (d.publisher || []).slice(0, 5), subjects: (d.subject || []).slice(0, 12), isbns: [], isbnPub: {}, description: '', covers: [], ol_work: String(d.key).replace('/works/', '') }));
 }
 const quoteQ = (s: string) => '"' + String(s).replace(/"/g, '').trim() + '"';
 const lastName = (s: string) => String(s || '').replace(/,.*$/, '').replace(/\s+(MD|PhD|RD|DO|Jr\.?|Sr\.?)$/i, '').trim().split(/\s+/).pop() || '';
@@ -406,14 +410,18 @@ async function buildOne(bookId: string) {
     const wk = await ol(`/works/${d.ol_work}.json`);
     d.description = typeof wk?.description === 'string' ? wk.description : wk?.description?.value || '';
   }
-  // An English edition whose cover Amazon has.
-  let cover: Uint8Array | null = null, i13 = '', i10 = '', publisher = '';
+  // An English edition whose cover Amazon has; else Google's own cover picture of an English edition.
+  let cover: Uint8Array | null = null, i13 = '', i10 = '', publisher = '', coverFrom = '';
   for (const x of d.isbns.slice(0, 10)) {
     const t = isbn10(x); if (!t) continue;
     const img = await amazonCover(t);
-    if (img) { cover = img; i13 = x; i10 = t; publisher = d.isbnPub[x] || d.publishers[0] || ''; break; }
+    if (img) { cover = img; i13 = x; i10 = t; publisher = d.isbnPub[x] || d.publishers[0] || ''; coverFrom = `Amazon cover for ISBN ${x}`; break; }
   }
-  if (!cover) return fail('not_found', `No English edition with a cover on Amazon (${found.via})`);
+  if (!cover) for (const c of (d.covers || []).slice(0, 4)) {
+    const img = await googleCover(c.id);
+    if (img) { cover = img; i13 = /^97[89]\d{10}$/.test(c.isbn) ? c.isbn : (d.isbns[0] || ''); i10 = isbn10(i13) || ''; publisher = c.publisher || d.publishers[0] || ''; coverFrom = `Google Books cover, volume ${c.id}`; break; }
+  }
+  if (!cover) return fail('not_found', `No English edition with a cover on Amazon or Google Books (${found.via})`);
 
   const authorName = b.author || d.authors[0] || '';
   const wrote = await ask(WRITE_SYSTEM, JSON.stringify({
@@ -421,37 +429,59 @@ async function buildOne(bookId: string) {
     publisher_description: String(d.description).replace(/\[.*?\]\(.*?\)/g, '').slice(0, 4000), subjects: d.subjects.slice(0, 12), said_on_our_podcasts: ments || [],
   }), WRITE_SCHEMA);
   const title = String(d.title || b.title).trim();
-  const work = d.ol_work || null;
   const slug = slugify(`${title} by ${authorName}`);
   const { error: upErr } = await db.storage.from('vegan-media').upload(`media/logos/books/${slug}.jpg`, cover, { contentType: 'image/jpeg', upsert: true, cacheControl: '86400' });
   if (upErr) return fail('found', 'Cover upload: ' + upErr.message);
-  const coverUrl = COVERS + slug + '.jpg';
-  const buy = `/go/book-${i10.toLowerCase()}`;
-  await db.from('ve_links').upsert({ code: `book-${i10.toLowerCase()}`, label: `Buy on Amazon: ${title}`.slice(0, 120), destination: `https://www.amazon.com/dp/${i10}`,
-    initiative_slug: 'books', tags: ['book', 'amazon', ...(author ? [author.slug] : [])].slice(0, 12), channel: 'other' }, { onConflict: 'code', ignoreDuplicates: true });
   const facts = {
-    title, author: authorName, isbn13: i13, isbn10: i10, publisher, year: d.year, ol_work: work, cover_url: coverUrl,
-    description: clean(wrote.description).slice(0, 240), summary: clean(wrote.summary), book_type: pick.book_type, vegan_related: !!pick.vegan_related, buy_link: buy,
+    title, author: authorName, isbn13: i13 || null, isbn10: i10 || null, publisher, year: d.year, ol_work: d.ol_work || null, cover_url: COVERS + slug + '.jpg',
+    description: clean(wrote.description).slice(0, 240), summary: clean(wrote.summary), book_type: pick.book_type, vegan_related: !!pick.vegan_related,
+    buy_link: await buyLink(title, authorName, i10, slug, author),
   };
-  if (!pick.vegan_related && !author) {
+  // Make it a listing (the Depot) counts as Vegan related.
+  if (!pick.vegan_related && !author && b.vegan_related !== true) {
     await db.from('ve_books').update({ ...facts, status: 'referenced', note: String(wrote.note || '').slice(0, 300), updated_at: new Date().toISOString() }).eq('id', bookId);
     return { book_id: bookId, title, ok: true, status: 'referenced' };
   }
-  const fam = author ? await familyOf(author) : null;
-  const name = `${title} by ${authorName}`;
-  const initials = (title.replace(/^(The|A|An)\s+/i, '').match(/\b[A-Za-z0-9]/g) || ['B']).slice(0, 2).join('').toUpperCase();
-  const { data: made, error } = await db.from('listings').insert({
-    tenant_id: TENANT, name, slug, category: 'Books', specialty: 'Books', status: 'approved', description: facts.description, logo_url: coverUrl,
-    website: `https://www.amazon.com/dp/${i10}`, location: 'United States', address_country: 'US', vegan_status: 'fully_vegan', business_status: 'OPERATIONAL',
-    communities: ['all'], initials,
-    details: { ...(fam ? { family: fam } : {}), creator: authorName, isbn: i13, publisher, release_year: d.year, book_type: pick.book_type,
-      media_type: 'book', summary: facts.summary, buy_link: buy, cover_source: `Amazon cover for ISBN ${i13}`, cover_checked: false, book_facts_from: found.via,
-      added_by: 've-books', book_source: b.source },
-  }).select('id, slug').single();
-  if (error) return fail('found', 'Listing: ' + error.message);
-  await db.from('ve_books').update({ ...facts, status: 'built', listing_id: made.id, note: String(wrote.note || '').slice(0, 300), updated_at: new Date().toISOString() }).eq('id', bookId);
+  const made = await makeListing({ ...b, ...facts }, author, { cover_source: coverFrom, book_facts_from: found.via, note: wrote.note });
+  if (!made.ok) return fail('found', 'Listing: ' + made.why);
   return { book_id: bookId, title, ok: true, status: 'built', listing: made.slug };
 }
+// Google's own cover picture of a volume, as large as it gives it.
+async function googleCover(id: string): Promise<Uint8Array | null> {
+  try {
+    const r = await fetch(`https://books.google.com/books/content?id=${encodeURIComponent(id)}&printsec=frontcover&img=1&zoom=1&fife=w800`, { signal: AbortSignal.timeout(12000) });
+    const buf = new Uint8Array(await r.arrayBuffer());
+    return r.ok && /jpeg/.test(r.headers.get('content-type') || '') && buf.length > 8000 ? buf : null;
+  } catch { return null; }
+}
+// The tracked Amazon link: the book's own page by ISBN-10, else an Amazon search for it (ve-links adds our Associates tag).
+async function buyLink(title: string, author: string, i10: string, slug: string, person: any): Promise<string> {
+  const code = i10 ? `book-${i10.toLowerCase()}` : `book-${slug}`.slice(0, 48).replace(/-+$/, '');
+  const destination = i10 ? `https://www.amazon.com/dp/${i10}` : `https://www.amazon.com/s?k=${encodeURIComponent(`${title} ${author}`.trim())}&i=stripbooks`;
+  await db.from('ve_links').upsert({ code, label: `Buy on Amazon: ${title}`.slice(0, 120), destination, initiative_slug: 'books',
+    tags: ['book', 'amazon', ...(person ? [person.slug] : [])].slice(0, 12), channel: 'other' }, { onConflict: 'code', ignoreDuplicates: true });
+  return '/go/' + code;
+}
+// A book from the list becomes a Books listing (in its author's family when we know them).
+async function makeListing(b: any, author: any, extra: { cover_source?: string; book_facts_from?: string; note?: string } = {}) {
+  const fam = author ? await familyOf(author) : null;
+  const authorName = b.author || '';
+  const slug = slugify(`${b.title} by ${authorName}`);
+  const initials = (String(b.title).replace(/^(The|A|An)\s+/i, '').match(/\b[A-Za-z0-9]/g) || ['B']).slice(0, 2).join('').toUpperCase();
+  const { data: made, error } = await db.from('listings').insert({
+    tenant_id: TENANT, name: `${b.title} by ${authorName}`, slug, category: 'Books', specialty: 'Books', status: 'approved', description: b.description, logo_url: b.cover_url,
+    website: b.buy_link ? `https://vegansexplore.com${b.buy_link}` : null, location: 'United States', address_country: 'US', vegan_status: 'fully_vegan', business_status: 'OPERATIONAL',
+    communities: ['all'], initials,
+    details: { ...(fam ? { family: fam } : {}), creator: authorName, isbn: b.isbn13, publisher: b.publisher, release_year: b.year, book_type: b.book_type,
+      media_type: 'book', summary: b.summary, buy_link: b.buy_link, cover_source: extra.cover_source || 'Copied when the book was built', cover_checked: false,
+      book_facts_from: extra.book_facts_from || null, added_by: 've-books', book_source: b.source },
+  }).select('id, slug').single();
+  if (error) return { ok: false, why: error.message };
+  await db.from('ve_books').update({ ...pickFacts(b), status: 'built', listing_id: made.id, note: String(extra.note || b.note || '').slice(0, 300), updated_at: new Date().toISOString() }).eq('id', b.id);
+  return { ok: true, slug: made.slug, id: made.id };
+}
+const pickFacts = (b: any) => ({ title: b.title, author: b.author, isbn13: b.isbn13, isbn10: b.isbn10, publisher: b.publisher, year: b.year, ol_work: b.ol_work,
+  cover_url: b.cover_url, description: b.description, summary: b.summary, book_type: b.book_type, vegan_related: b.vegan_related, buy_link: b.buy_link });
 // The author's family (details.family), made from their slug when they have none, so the book shows on their Books tab.
 async function familyOf(author: any): Promise<string> {
   const fam = author.details?.family;
@@ -486,13 +516,78 @@ async function episodeBooks(body: any) {
   };
 }
 
+// ---- a book's episodes (public): where our shows talked about it, for its page and the Books tab ----
+async function bookTalks(listingId: string) {
+  const { data: rows } = await db.from('ve_books').select('id').eq('listing_id', listingId);
+  const ids = (rows || []).map((r: any) => r.id);
+  if (!ids.length) return { ok: true, episodes: [] };
+  const { data } = await db.from('ve_book_mentions')
+    .select('second, speaker, context, quote, guid, content:content_id(title, slug, published_at, episode_number, podcast_show), show:show_listing_id(slug, name, logo_url)')
+    .in('book_id', ids).limit(40);
+  const episodes = (data || []).map((m: any) => ({
+    title: m.content?.title || '', date: m.content?.published_at || null, show: m.show?.name || m.content?.podcast_show || '',
+    image: m.show?.logo_url || '', speaker: m.speaker, context: m.context, quote: m.quote,
+    href: m.show?.slug && m.guid ? `/directory/${m.show.slug}?ep=${encodeURIComponent(m.guid)}` : m.content?.slug ? `/pulse/${m.content.slug}` : null,
+  })).sort((a: any, b: any) => String(b.date || '').localeCompare(String(a.date || '')));
+  return { ok: true, episodes };
+}
+
+// ---- Depot > Books (super admin) ----
+const LIST_COLS = 'id, title, author, status, source, vegan_related, cover_url, note, tries, year, listing_id, author_listing_id, updated_at, created_at';
+async function adminList(body: any) {
+  const status = String(body.status || 'built');
+  const { data: books } = await db.from('ve_books').select(LIST_COLS).in('status', status === 'waiting' ? ['found', 'building'] : [status])
+    .order('updated_at', { ascending: false }).limit(500);
+  const ids = (books || []).map((b: any) => b.id);
+  const { data: ms } = ids.length ? await db.from('ve_book_mentions').select('book_id').in('book_id', ids) : { data: [] as any[] };
+  const count: Record<string, number> = {}; (ms || []).forEach((m: any) => { count[m.book_id] = (count[m.book_id] || 0) + 1; });
+  const lids = [...new Set((books || []).flatMap((b: any) => [b.listing_id, b.author_listing_id]).filter(Boolean))];
+  const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name').in('id', lids) : { data: [] as any[] };
+  const L: Record<string, any> = {}; (ls || []).forEach((l: any) => { L[l.id] = l; });
+  const { data: st } = await db.rpc('ve_books_status');
+  return { ok: true, status: st, books: (books || []).map((b: any) => ({ ...b, mentions: count[b.id] || 0, listing: L[b.listing_id] || null, person: L[b.author_listing_id] || null })) };
+}
+async function adminGet(id: string) {
+  const { data: b } = await db.from('ve_books').select('*').eq('id', id).maybeSingle();
+  if (!b) return { ok: false, why: 'not_found' };
+  const { data: ms } = await db.from('ve_book_mentions')
+    .select('second, speaker, context, quote, guid, content:content_id(title, slug, published_at, podcast_show), show:show_listing_id(slug, name)').eq('book_id', id);
+  const lids = [b.listing_id, b.author_listing_id].filter(Boolean);
+  const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name').in('id', lids) : { data: [] as any[] };
+  const L: Record<string, any> = {}; (ls || []).forEach((l: any) => { L[l.id] = l; });
+  return { ok: true, book: b, listing: L[b.listing_id] || null, person: L[b.author_listing_id] || null, mentions: ms || [] };
+}
+// set_aside, retry (back to the builder), list (make it a Books listing: now, from what the builder found, or on its next build).
+async function adminSet(id: string, to: string) {
+  const { data: b } = await db.from('ve_books').select('*').eq('id', id).maybeSingle();
+  if (!b) return { ok: false, why: 'not_found' };
+  const now = new Date().toISOString();
+  if (to === 'set_aside') { await db.from('ve_books').update({ status: 'set_aside', note: 'Set aside by the team', updated_at: now }).eq('id', id); return { ok: true }; }
+  if (to === 'retry') { await db.from('ve_books').update({ status: 'found', tries: 0, note: 'Sent back to the builder by the team', updated_at: now }).eq('id', id); return { ok: true }; }
+  if (to === 'list') {
+    if (b.listing_id) return { ok: true, already: true };
+    if (b.status === 'referenced' && b.cover_url && b.summary) {
+      const { data: author } = b.author_listing_id ? await db.from('listings').select('id, slug, name, details').eq('id', b.author_listing_id).maybeSingle() : { data: null as any };
+      const made = await makeListing({ ...b, vegan_related: true }, author, { cover_source: 'Copied when the book was built', note: 'Made a listing by the team' });
+      return made.ok ? { ok: true, slug: made.slug } : { ok: false, why: made.why };
+    }
+    await db.from('ve_books').update({ status: 'found', tries: 0, vegan_related: true, note: 'To be listed (the team)', updated_at: now }).eq('id', id);
+    return { ok: true, queued: true };
+  }
+  return { ok: false, why: 'unknown' };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   if (body.action === 'episode') return json(await episodeBooks(body));
+  if (body.action === 'book') return json(/^[0-9a-f-]{36}$/.test(String(body.listing_id || '')) ? await bookTalks(String(body.listing_id)) : { ok: false, episodes: [] });
   if (!(await allowed(req))) return json({ error: 'not_allowed' }, 403);
+  if (body.action === 'admin_list') return json(await adminList(body));
+  if (body.action === 'admin_get') return json(await adminGet(String(body.id || '')));
+  if (body.action === 'admin_set') return json(await adminSet(String(body.id || ''), String(body.to || '')));
 
   if (body.action === 'probe') {
     const out: any = {};

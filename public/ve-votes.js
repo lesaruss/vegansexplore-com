@@ -170,6 +170,9 @@
     // access the tickets"): an event whose tickets come through our group link, opened signed out.
     tickets: { icon: 'ticket', title: 'This is a members-only event',
       body: 'Tickets come through our Vegans Explore group link, and you must be a member to get them. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>. Join, and we take you straight to the tickets.' },
+    // A group (Sean, 2026-10-29): joining one, and getting its announcements, is for members.
+    group: { icon: 'heart', title: 'Groups are for Passport holders',
+      body: 'Join any group, in any city: its events, its announcements and its people. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>.' },
     give: { icon: 'gift', title: 'Giving points is for Passport holders',
       body: 'Members earn points by taking part, and can give them to the businesses and nonprofits they love as a boost (never money). Your Passport, <b>$11 one time</b>, comes with <b>1,100 welcome points</b>, so you can give from day one.' }
   };

@@ -277,6 +277,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bk-author{margin-top:8px}.bk-author-row{display:flex;gap:14px;align-items:flex-start}
 .bk-author-row img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex:none}
 .bk-author-row b{font-size:14px;font-weight:800}.bk-author-row p{font-size:13px;line-height:1.6;margin:4px 0 6px}
+.bk-tlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:10px}
+.bk-talk{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:10px;text-decoration:none;color:var(--ve-text);background:#fff}
+.bk-talk img,.bk-timg{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#EAF7EA;display:block}
+.bk-talk b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;font-weight:800;line-height:1.35}
+.bk-talk small{display:block;font-size:12px;color:var(--ve-text-75)}.bk-talk em{display:block;font-style:normal;font-size:11.5px;font-weight:700;color:#1f5f22}
+.bk-talk:hover b{text-decoration:underline}.bk-talks{margin-top:24px}
 .bk-more{background:none;border:0;padding:0;font:800 12px Montserrat,sans-serif;color:#2d7d31;cursor:pointer;text-decoration:underline}
 @media(max-width:640px){.bk-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.bk-detail{grid-template-columns:minmax(0,1fr)}.bk-cover-lg{max-width:200px}}
 .tab-btn{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:14px 22px;border:none;background:none;color:var(--ve-text-50);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:Montserrat,sans-serif;transition:color .15s,border-color .15s;white-space:nowrap}
@@ -804,8 +810,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
-#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(max-width:560px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
+#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:560px){#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1002,8 +1008,29 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .gd-join .gd-n{font-size:14px;margin:0 0 8px}.gd-join .gd-n b{font-size:24px;font-weight:900}
 .gd-faces{display:flex;margin:0 0 10px}.gd-faces i{width:30px;height:30px;border-radius:50%;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;margin-left:-6px}.gd-faces i:first-child{margin-left:0}
 .gd-join p{font-size:13px;line-height:1.5;margin:0 0 12px}.gd-join .dm-go{width:100%}
-.gd-post{border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 12px;margin:0 0 8px;background:#fff}.gd-post.host{background:#f6faf6}
-.gd-post b{font-size:14px}.gd-post span{font-size:12px;color:rgba(26,26,26,.6);margin-left:8px}.gd-post p{margin:4px 0 0;font-size:14px;line-height:1.5}
+.gd-ann{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:14px 16px;margin:0 0 10px;background:#fff}.gd-ann.pin{border-color:#2d7d31;background:#f6faf6}
+.gd-ann-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gd-ann-h b{font-size:15px}.gd-ann-h em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#fff3d6;color:#7a5200;padding:2px 8px;border-radius:6px}
+.gd-ann-h span{margin-left:auto;font-size:12px;color:rgba(26,26,26,.68)}.gd-ann p{margin:6px 0 4px;font-size:14px;line-height:1.55}.gd-ann small{font-size:12px;color:rgba(26,26,26,.68)}
+.gd-ann-more{font-size:13px;color:rgba(26,26,26,.68);margin:4px 0 0}.gd-ann-more a{color:#1f5a23;font-weight:700}
+.gd-opt{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;margin:8px 0 12px;cursor:pointer}.gd-opt input{width:18px;height:18px;flex:none;margin-top:1px}
+.gd-pad{padding:32px 40px 40px}@media(max-width:700px){.gd-pad{padding:20px 16px 28px}}
+.gd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 16px}.gd-head .dm-go{width:auto}
+.gd-sub{margin:4px 0 16px;font-size:14px;color:rgba(26,26,26,.68)}.gd-head .gd-sub{margin-bottom:0}
+.gd-post{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:14px 16px;margin:0 0 12px;background:#fff}.gd-post.host{background:#f6faf6}
+.gd-by{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gd-by i{width:30px;height:30px;border-radius:6px;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:13px;display:grid;place-items:center}
+.gd-by b{font-size:14px}.gd-by em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#e5f1e5;color:#1f5a23;padding:2px 8px;border-radius:6px}.gd-by em.pin{background:#fff3d6;color:#7a5200}
+.gd-by span{font-size:12px;color:rgba(26,26,26,.68);margin-left:auto}.gd-post>p{margin:8px 0 0;font-size:14px;line-height:1.55}
+.gd-replies{margin:12px 0 0 38px;display:grid;gap:8px}.gd-reply{border-left:3px solid #d9e6d9;padding:2px 0 2px 12px}.gd-reply.host{border-left-color:#2d7d31}
+.gd-reply b{font-size:13px}.gd-reply span{font-size:12px;color:rgba(26,26,26,.68);margin-left:8px}.gd-reply p{margin:2px 0 0;font-size:14px;line-height:1.5}
+.gd-rep{margin:10px 0 0 38px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:6px 12px;font:600 13px Montserrat,system-ui,sans-serif;cursor:pointer}
+@media(max-width:600px){.gd-replies,.gd-rep{margin-left:0}}
+.gd-albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
+.gd-album{display:grid;gap:4px;text-decoration:none;color:inherit}.gd-album img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block;margin:0 0 6px}
+.gd-album b{font-size:16px}.gd-album span{font-size:13px;color:rgba(26,26,26,.68)}.gd-album:hover b{text-decoration:underline}
+.gd-crumb{font-size:13px;margin:0 0 10px;color:rgba(26,26,26,.68)}.gd-crumb a{color:#1f5a23;font-weight:700}
+.gd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px}
+.gd-photo{display:grid;gap:6px;padding:0;border:0;background:none;cursor:zoom-in;text-align:left;font:500 13px Montserrat,system-ui,sans-serif;color:rgba(26,26,26,.75)}
+.gd-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}.gd-photo:focus-visible{outline:3px solid #2d7d31;outline-offset:3px}
 .demo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:1000001}
 .demo-toast.show{opacity:1}
 @media(max-width:768px){
@@ -1198,6 +1225,65 @@ function withMain(l){
 // 2026-10-29: "a good indicator to people that it's a good group to join if they have a lot of past events"), each with its count,
 // each list scrolling in its own box. A group always shows the section; any other listing only once it has hosted something. A name
 // opens the event on our calendar; the button goes to their own page (an old one may no longer open, which is fine for the record).
+// A real group's announcements and members (Sean, 2026-10-29: "build the live announcements for real groups"; ve-group). The
+// newest three, a pinned one first, under About; the sidebar's card joins or leaves the group, with its own unticked yes to the
+// group's emails (canon-ve-member-profiles-partner-windows). The organizer writes them on the dashboard's Announcements.
+function loadGroupLive(l){
+  var he = document.getElementById('hosted-events'), side = document.querySelector('.listing-page-grid .listing-sidebar');
+  if(!he) return;
+  var an = document.createElement('div'); an.className = 'section'; an.id = 'gd-ann'; an.hidden = true; he.parentNode.insertBefore(an, he);
+  var card = null;
+  if(side){ card = document.createElement('div'); card.className = 'side-card gd-join'; card.hidden = true; side.insertBefore(card, side.firstChild); }
+  function api(body){
+    var tok = window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null;
+    return fetch(SUPABASE_URL + '/functions/v1/ve-group', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}),
+      body: JSON.stringify(Object.assign({ listing_id: l.id }, body)) }).then(function(r){ return r.json(); }).catch(function(){ return {}; });
+  }
+  function draw(d){
+    var A = d.announcements || [];
+    an.hidden = !A.length && !d.can_post;
+    an.innerHTML = '<h2 class="section-title">Announcements</h2>' + (A.length ? A.map(function(x){
+      return '<article class="gd-ann' + (x.pinned ? ' pin' : '') + '"><div class="gd-ann-h"><b>' + esc(x.title) + '</b>' + (x.pinned ? '<em>Pinned</em>' : '') +
+        '<span>' + esc(new Date(x.at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' })) + '</span></div><p>' + esc(x.body) + '</p><small>From the organizer</small></article>';
+    }).join('') + (d.total > 3 ? '<p class="gd-ann-more">The latest three. Members who said yes get every announcement by email.</p>' : '')
+      : '<p class="gd-ann-more">Nothing posted yet. Write your first one from your dashboard\'s Announcements; it shows here.</p>') +
+      (d.can_post ? '<p class="gd-ann-more"><a href="?tab=brand&pd=announce&item=new" data-gd-write>Write an announcement</a></p>' : '');
+    if(!card) return;
+    var v = d.viewer || {};
+    card.hidden = false;
+    card.innerHTML = (d.partner ? '<div class="gd-badge">Group Partner</div>' : '') + '<div class="gd-n"><b>' + (d.members || 0) + '</b> member' + (d.members === 1 ? '' : 's') + ' on Vegans Explore</div>' +
+      (v.joined ? '<p>You\'re in the group.</p><label class="gd-opt"><input type="checkbox" data-gd-email' + (v.email_ok ? ' checked' : '') + '> Email me ' + esc(l.name) + '\'s announcements</label>' +
+          '<button type="button" class="he-go ghost" data-gd-leave>Leave the group</button>'
+        : '<p>Join to follow its events and announcements, from any city.</p><button type="button" class="dm-go" data-gd-join>Join the group</button>');
+  }
+  function join(){
+    if(!(window.VEAuth && VEAuth.isLoggedIn()) || !(VEAuth.getMember() || {}).membership_status || (VEAuth.getMember() || {}).membership_status !== 'active'){
+      if(window.VEVotes) VEVotes.memberPrompt('group', { signedIn: !!(window.VEAuth && VEAuth.isLoggedIn()) }); return;
+    }
+    demoModal('<p class="dm-kicker">' + esc(l.name) + '</p><h3>Join the group</h3><p>You follow its events and see its announcements here, from any city.</p>' +
+      '<label class="gd-opt"><input type="checkbox" id="gd-email-ok"> Email me ' + esc(l.name) + '\'s announcements (through Vegans Explore; they never see your email address)</label>' +
+      '<p class="dm-err" id="gd-err" role="alert"></p><div class="dm-acts"><button type="button" class="dm-go" id="gd-go">Join the group</button></div>', function(m){
+        m.querySelector('#gd-go').onclick = function(){
+          var b = this; b.disabled = true;
+          api({ action: 'join', email_ok: m.querySelector('#gd-email-ok').checked }).then(function(r){
+            b.disabled = false;
+            if(!r.ok){ m.querySelector('#gd-err').textContent = r.message || 'That did not go through. Try again.'; return; }
+            closeDemoModal(); refresh();
+          });
+        };
+      });
+  }
+  function refresh(){ return api({ action: 'page' }).then(function(d){ if(d && !d.error) draw(d); }); }
+  document.getElementById('listing-root').addEventListener('click', function(e){
+    if(e.target.closest('[data-gd-join]')){ join(); return; }
+    var lv = e.target.closest('[data-gd-leave]'); if(lv){ lv.disabled = true; api({ action: 'leave' }).then(refresh); return; }
+    var w = e.target.closest('[data-gd-write]'); if(w){ e.preventDefault(); if(window.veListingTab){ history.replaceState(history.state, '', w.getAttribute('href')); veListingTab('brand'); } }
+  });
+  document.getElementById('listing-root').addEventListener('change', function(e){
+    if(e.target && e.target.hasAttribute && e.target.hasAttribute('data-gd-email')) api({ action: 'email_pref', email_ok: e.target.checked });
+  });
+  refresh();
+}
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
   var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
@@ -1544,6 +1630,17 @@ function loadFilmPeople(l){
       });
   }).catch(function(){ var sec = document.getElementById('film-people'); if(sec) sec.hidden = true; });
 }
+// A book's Featured people (Pre-Vegans, 2026-10-29): the People whose stories are in it, details.film_people as on a film, drawn by
+// loadFilmPeople into a section added to the book's Overview.
+function bookPeople(l){
+  var list = (l.details || {}).film_people, host = document.querySelector('#tab-overview > div');
+  if(!Array.isArray(list) || !list.length || !host || document.getElementById('film-people')) return;
+  var sec = document.createElement('div'); sec.className = 'section'; sec.id = 'film-people';
+  sec.innerHTML = '<h2 class="section-title">Featured people</h2><p class="pp-sub">The people whose stories are in this book. Vote for them like any listing.</p>' +
+    '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
+  host.appendChild(sec);
+  loadFilmPeople(l);
+}
 // On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
 // these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
 // is read through ve-podcast `episode` and drawn as a person page's row (ppEpRow: Play in the docked player, Save), the directors first,
@@ -1685,7 +1782,8 @@ function drawBooks(slug, push){
       '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(b.slug) + '">The book\'s page</a></div>' +
       (b.buy ? '<div class="bk-note">As an Amazon Associate we earn from qualifying purchases.</div>' : '') + '</div></div></div>';
   }
-  S.panel.innerHTML = '<div style="padding:32px 40px 40px">' + html + aboutAuthor(a) + '</div>';
+  S.panel.innerHTML = '<div style="padding:32px 40px 40px">' + html + (b ? '<div id="bk-talks-host"></div>' : '') + aboutAuthor(a) + '</div>';
+  if(b) loadBookTalks(b.id, document.getElementById('bk-talks-host'));
 }
 document.addEventListener('click', function(e){
   if(!BOOK_STATE || !e.target.closest) return;
@@ -1696,6 +1794,25 @@ document.addEventListener('click', function(e){
   var t = document.querySelector('.listing-tabs'), navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 64;
   if(t){ var r = t.getBoundingClientRect(); if(r.top < navH) window.scrollTo({ top: window.scrollY + r.top - navH - 8 }); }
 });
+// Talked about on our podcasts (Sean, 2026-10-29: "cross-referencing that content with what we have in our directory. So it's kind of
+// building each other"): the episodes whose transcripts name this book (ve-books book, from ve_book_mentions), each opening the
+// episode on its show's page. On a book's own page and on the Books tab's book view; nothing shows when no episode named it.
+function loadBookTalks(listingId, host){
+  if(!host || !/^[0-9a-f-]{36}$/.test(String(listingId || ''))) return;
+  fetch(SUPABASE_URL + '/functions/v1/ve-books', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'book', listing_id: listingId }) })
+    .then(function(r){ return r.json(); }).then(function(d){
+      var eps = (d && d.episodes) || []; if(!eps.length || !host.isConnected) return;
+      var WHY = { their_own: 'Their own book', recommended: 'Recommended', discussed: 'Talked about', mentioned: 'Mentioned' };
+      var sec = document.createElement('div'); sec.className = 'section bk-talks';
+      sec.innerHTML = '<h2 class="section-title">Talked about on our podcasts</h2><div class="bk-tlist">' + eps.map(function(e){
+        var when = e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        var who = e.speaker && !/^(host|guest)$/i.test(e.speaker) ? ' by ' + e.speaker : '';
+        return '<a class="bk-talk" href="' + esc(e.href || '#') + '">' + (e.image ? '<img src="' + esc(e.image) + '" alt="" loading="lazy">' : '<span class="bk-timg"></span>') +
+          '<span><b>' + esc(e.title) + '</b><small>' + esc([e.show, when].filter(Boolean).join(' · ')) + '</small><em>' + esc((WHY[e.context] || 'Mentioned') + who) + '</em></span></a>';
+      }).join('') + '</div>';
+      host.appendChild(sec);
+    }).catch(function(){});
+}
 window.addEventListener('popstate', function(){
   if(!BOOK_STATE) return;
   var q = new URLSearchParams(location.search);
@@ -2827,24 +2944,24 @@ function loadPerson(l){
           where: [e.city, e.state].filter(Boolean).join(', ') };
       }).sort(function(a, b){ return String(b.when).localeCompare(String(a.when)); });
       var ours = pe.ours || [];
+      // A show they host is its tile, not its episodes (Sean, 2026-10-29: "we should just have their podcast listing little tile...
+      // it's just going to be this long, long page"): their hosted episodes on our shows leave With Vegans Explore, and the tile
+      // opens the show's own page, where every episode is. Their appearances as a guest stay as episodes.
+      var guest = ours.filter(function(ep){ return ep.role !== 'Host'; });
       var box = document.querySelector('#pp-credits .pp-list'); if(!box) return;
       var GROUPS = [['event', 'Events'], ['article', 'Articles']];
-      var html = (ours.length ? '<h3 class="pp-group">Podcast episodes <span>' + ours.length + '</span></h3><div class="pp-scroll"><div class="vep-list">' + ours.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div></div>' : '') +
+      var html = (guest.length ? '<h3 class="pp-group">Podcast episodes <span>' + guest.length + '</span></h3><div class="pp-scroll"><div class="vep-list">' + guest.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div></div>' : '') +
         GROUPS.map(function(g){
           var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
           return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3><div class="pp-scroll">' + list.map(personRow).join('') + '</div>';
         }).join('');
-      box.innerHTML = html || '<p class="pp-empty">Nothing here yet.</p>';
-      // Their own show, on its own (Sean: "if the person has a podcast that's featured in our media section... in its own section").
-      var sh = document.getElementById('pp-shows');
-      if(sh) sh.innerHTML = (pe.shows || []).map(function(show){
-        var list = show.episodes || [];
-        return '<div class="section pp-show"><h2 class="section-title">Their podcast</h2><div class="pp-showhead">' +
-          '<span class="pp-sq pp-sq-lg" style="background-image:url(\'' + esc(show.image || '') + '\')" aria-hidden="true"></span>' +
-          '<div><div class="pp-showname">' + esc(show.name) + '</div><div class="pp-meta">' + (list.length ? 'The latest ' + (list.length === 1 ? 'episode' : list.length + ' episodes') + ', from its own feed' : 'From its own feed') + '</div></div>' +
-          '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(show.slug) + '">The show\'s page</a></div>' +
-          (list.length ? '<div class="pp-scroll"><div class="vep-list">' + list.map(function(ep){ ep.show = { id: show.id, slug: show.slug, name: show.name, image: show.image }; return ppEpRow(ep, 'Host'); }).join('') + '</div></div>' : '') + '</div>';
-      }).join('');
+      var credSec = document.getElementById('pp-credits');
+      if(html) box.innerHTML = html; else if(credSec) credSec.hidden = true;
+      // Their podcasts: the shows they host (details.person.shows, and our shows they host), each the Directory's own card.
+      var hosted = (pe.shows || []).map(function(sh){ return sh.slug; }), count = {};
+      ours.forEach(function(ep){ if(ep.role === 'Host' && ep.show && ep.show.slug){ count[ep.show.slug] = (count[ep.show.slug] || 0) + 1; } });
+      Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).forEach(function(s2){ if(hosted.indexOf(s2) < 0) hosted.push(s2); });
+      ppShowTiles(hosted);
       var other = pe.elsewhere || [], os = document.getElementById('pp-elsewhere');
       if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = '<div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join('') + '</div>'; os.hidden = false; }
       // In their words: moments from their interviews in the content index (ve_person_moments), played from the episode's audio at
@@ -2862,6 +2979,29 @@ function loadPerson(l){
         sec.hidden = false;
       }
     }).catch(function(){ var box = document.querySelector('#pp-credits .pp-list'); if(box) box.innerHTML = '<p class="pp-empty">Could not load this right now.</p>'; });
+}
+// The shows a person hosts, drawn with the Directory's card and votes (VERegionDirectory, loaded on first need, as loadFilmPeople does).
+function ppShowTiles(slugs){
+  var sh = document.getElementById('pp-shows'); if(!sh || !slugs.length) return;
+  sh.innerHTML = '<div class="section pp-show"><h2 class="section-title">' + (slugs.length > 1 ? 'Their podcasts' : 'Their podcast') + '</h2>' +
+    '<p class="pp-sub">Open a show for every episode.</p><div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>';
+  var grid = sh.querySelector('.rank-grid');
+  var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+    var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+  });
+  ready.then(function(){
+    if(!window.VERegionDirectory) throw new Error('directory');
+    VERegionDirectory.css();
+    var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&select=' + encodeURIComponent(VERegionDirectory.FIELDS), { headers: H })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+        var by = {}; (rows || []).forEach(function(r){ by[r.slug] = r; });
+        var cards = slugs.map(function(s2){ return by[s2]; }).filter(Boolean);
+        if(!cards.length){ sh.innerHTML = ''; return; }
+        grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
+        VERegionDirectory.wire(grid.parentNode);
+      });
+  }).catch(function(){ sh.innerHTML = ''; });
 }
 // One podcast episode, the podcast listing's row (VEEpisodes.row): the show's square artwork, the title, the role and show, Play (in the
 // player docked above the lists) and Save. Audio only (Sean, 2026-10-28: "let's just keep it simple and only have the audio").
@@ -3355,7 +3495,7 @@ function demoSlug(){
 // restaurant with a Visitor / Owner switch that opens the real business dashboard on sample numbers.
 function demoSrc(){
   if(/^\/business\/sample\/?$/.test(location.pathname)) return '/business/sample/listing-demo.js';
-  // The sample group (Sean, 2026-10-29): Sprout Social Club, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
+  // The sample group (Sean, 2026-10-29): Sprout Social Society, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
   if(/^\/groups\/sample\/?$/.test(location.pathname)) return '/groups/sample/listing-demo.js';
   var s = demoSlug(); return s ? '/campaign-engine/' + s + '/listing-demo.js' : '';
 }
@@ -4624,12 +4764,14 @@ if(!slug || slug === 'listing'){
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isYouTubeL(l) && !DEMO) loadYouTube(l);
+      if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       if(!DEMO || DEMO.events) loadHostedEvents(l);
+      if(!DEMO && l.category === 'Groups') loadGroupLive(l);
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
       // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly
@@ -4707,7 +4849,7 @@ function closeDemoModal(){ var m = document.getElementById('demo-modal'); if(m){
 function groupDemoLogin(l){
   var L = DEMO.login || {};
   demoModal('<p class="dm-kicker">Sample group</p><h3>Sign in as the organizer</h3>' +
-    '<p>Use the demo sign-in to see what Sprout Social Club\'s organizer sees. It opens this sample only, in this browser.</p>' +
+    '<p>Use the demo sign-in to see what Sprout Social Society\'s organizer sees. It opens this sample only, in this browser.</p>' +
     '<label class="dm-f">Email<input id="dm-email" type="email" autocomplete="off" placeholder="' + esc(L.email || '') + '"></label>' +
     '<label class="dm-f">Password<input id="dm-pass" type="password" autocomplete="off"></label>' +
     '<p class="dm-hint">Demo sign-in: <b>' + esc(L.email || '') + '</b> / <b>' + esc(L.password || '') + '</b></p><p class="dm-err" id="dm-err" role="alert"></p>' +
@@ -4729,7 +4871,7 @@ function demoEvent(id){
   var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0]; if(!e) return;
   var past = Date.parse(e.ends_at || e.starts_at) < Date.now();
   var when = new Date(e.starts_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Club</p><h3>' + esc(e.title) + '</h3>' +
+  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Society</p><h3>' + esc(e.title) + '</h3>' +
     '<p class="dm-meta">' + esc(when) + ' · ' + esc(e.location_name) + ', ' + esc(e.city) + '</p>' + (e.description ? '<p>' + esc(e.description) + '</p>' : '');
   if(past){ demoModal(head + '<p class="dm-note">' + e.going + ' went. Past events stay on the group\'s page, so newcomers can see how active it is.</p>'); return; }
   var draw = function(){
@@ -4754,7 +4896,7 @@ function demoEvent(id){
       a.onclick = function(){
         var k = a.getAttribute('data-act');
         if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
-        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Club, so the group earns its share of your $11.'; }
+        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Society, so the group earns its share of your $11.'; }
         else if(k === 'buy'){ GDEMO.going[e.id] = 'Your ticket is in My events. The group gets the ticket price less our 5%.'; }
         else GDEMO.going[e.id] = 'It is on My events, and the organizer can message the guests who say yes.';
         draw();
@@ -4767,8 +4909,8 @@ function demoJoinGroup(){
   var g = DEMO.group || {};
   var draw = function(){
     var done = GDEMO.joinedGroup;
-    demoModal('<p class="dm-kicker">Sprout Social Club</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
-      (done ? '<div class="dm-done"><b>Welcome to Sprout Social Club.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
+    demoModal('<p class="dm-kicker">Sprout Social Society</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
+      (done ? '<div class="dm-done"><b>Welcome to Sprout Social Society.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
         : '<p>' + (g.members_total || '') + ' members. Joining a group is free for Passport holders: its board, its events first, and its members, from any city.</p>' +
           (GDEMO.who === 'member' ? '<button type="button" class="dm-go" data-act="j">Join the group</button>'
             : '<div class="dm-pass"><b>Groups are for Passport holders.</b><span>Your first free event is on a guest pass. To join a group, the Passport: $11, one time, with 1,100 points.</span></div><button type="button" class="dm-go" data-act="jp">Get the Passport and join</button>')), function(m){
@@ -4777,8 +4919,78 @@ function demoJoinGroup(){
   };
   draw();
 }
+// The sample group's Board (Message Board) and Media (Photo Gallery) tabs (Sean, 2026-10-29), after Overview. Media is one card per
+// event; an album opens in the tab (?tab=media&album=<id>, Media > event) and each photo in the page's lightbox.
+function gdAgo(d){ return d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d + ' days ago'; }
+function gdDate(id){
+  var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0];
+  return e ? new Date(e.starts_at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' }) : '';
+}
+function gdBoard(){
+  return '<div class="gd-pad"><div class="gd-head"><div><h2 class="section-title">Message Board</h2><p class="gd-sub">Posts from the group\'s members. Members post and reply; anyone can read.</p></div>' +
+    '<button type="button" class="dm-go" data-demo-board>Write a post</button></div>' +
+    (DEMO.board || []).map(function(p){
+      var r = p.replies || [];
+      return '<article class="gd-post' + (p.host ? ' host' : '') + '"><div class="gd-by"><i aria-hidden="true">' + esc(p.who.charAt(0)) + '</i><b>' + esc(p.who) + '</b>' +
+        (p.host ? '<em>Organizer</em>' : '') + (p.pinned ? '<em class="pin">Pinned</em>' : '') + '<span>' + gdAgo(p.when) + '</span></div><p>' + esc(p.text) + '</p>' +
+        (r.length ? '<div class="gd-replies">' + r.map(function(x){
+          return '<div class="gd-reply' + (x.host ? ' host' : '') + '"><b>' + esc(x.who) + '</b><span>' + gdAgo(x.when) + '</span><p>' + esc(x.text) + '</p></div>';
+        }).join('') + '</div>' : '') +
+        '<button type="button" class="gd-rep" data-demo-board>Reply' + (r.length ? ' (' + r.length + ')' : '') + '</button></article>';
+    }).join('') + '</div>';
+}
+function gdMedia(id){
+  var gs = DEMO.galleries || [], g = gs.filter(function(x){ return x.id === id; })[0];
+  if(!g) return '<div class="gd-pad"><h2 class="section-title">Photo Gallery</h2><p class="gd-sub">Photos from the group\'s past events. Open an event to see them all.</p>' +
+    '<div class="gd-albums">' + gs.map(function(x){
+      return '<a href="?tab=media&album=' + x.id + '" class="gd-album" data-gd-album="' + x.id + '"><img src="' + esc(x.photos[0][0]) + '" alt="" loading="lazy">' +
+        '<b>' + esc(x.title) + '</b><span>' + esc(gdDate(x.event)) + ' · ' + x.photos.length + ' photos</span></a>';
+    }).join('') + '</div></div>';
+  _lbReg['gd-' + g.id] = g.photos.map(function(p){ return p[0]; });
+  return '<div class="gd-pad"><nav class="gd-crumb" aria-label="Breadcrumb"><a href="?tab=media" data-gd-album="">Media</a> &rsaquo; <span>' + esc(g.title) + '</span></nav>' +
+    '<h2 class="section-title">' + esc(g.title) + '</h2><p class="gd-sub">' + esc(gdDate(g.event)) + ' · ' + g.photos.length + ' photos</p><div class="gd-photos">' +
+    g.photos.map(function(p, i){
+      return '<button type="button" class="gd-photo" data-gd-key="gd-' + g.id + '" data-gd-photo="' + i + '"><img src="' + esc(p[0]) + '" alt="' + esc(p[1]) + '" loading="lazy"><span>' + esc(p[1]) + '</span></button>';
+    }).join('') + '</div></div>';
+}
+function gdAlbum(id){
+  var panel = document.getElementById('tab-media'); if(!panel) return;
+  panel.innerHTML = gdMedia(id);
+  var u = new URL(location.href); u.searchParams.set('tab', 'media'); if(id) u.searchParams.set('album', id); else u.searchParams.delete('album');
+  history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+  var tabs = document.querySelector('.listing-tabs'); if(tabs && tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block: 'start' });
+}
+function groupDemoTabs(){
+  var nav = document.querySelector('.listing-tabs'), ovBtn = nav && nav.querySelector('[data-tab="overview"]'), ov = document.getElementById('tab-overview');
+  if(!ovBtn || !ov) return;
+  var q = new URLSearchParams(location.search);
+  [['media', 'Media', gdMedia(q.get('album'))], ['board', 'Board', gdBoard()]].forEach(function(t){
+    var b = document.createElement('button'); b.className = 'tab-btn'; b.setAttribute('data-tab', t[0]); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.textContent = t[1];
+    b.addEventListener('click', function(){ if(t[0] === 'media') gdAlbum(''); showListingTab(t[0]); });
+    ovBtn.insertAdjacentElement('afterend', b);
+    var p = document.createElement('div'); p.className = 'tab-panel'; p.id = 'tab-' + t[0]; p.setAttribute('role', 'tabpanel'); p.innerHTML = t[2];
+    ov.insertAdjacentElement('afterend', p);
+  });
+  var t = q.get('tab'); if(t === 'board' || t === 'media') showListingTab(t);
+  if(t === 'media' && q.get('album')){ var u = new URL(location.href); u.searchParams.set('album', q.get('album')); history.replaceState(history.state, '', u.pathname + u.search + u.hash); }
+}
+// Announcements on the sample group's Overview, under About (Sean, 2026-10-29): the newest three, a pinned one first, from the
+// organizer's dashboard (Announcements); what the organizer sends in the sample shows here for the visit.
+function gdAnnRender(){
+  var box = document.getElementById('gd-ann'), A = typeof DEMO.announcements === 'function' ? DEMO.announcements() : (DEMO.announcements || []);
+  if(!box) return;
+  box.hidden = !A.length;
+  box.innerHTML = '<h2 class="section-title">Announcements</h2>' + A.slice(0, 3).map(function(x){
+    return '<article class="gd-ann' + (x.pinned ? ' pin' : '') + '"><div class="gd-ann-h"><b>' + esc(x.title) + '</b>' + (x.pinned ? '<em>Pinned</em>' : '') +
+      '<span>' + esc(new Date(x.at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' })) + '</span></div><p>' + esc(x.body) + '</p>' +
+      '<small>From the organizer</small></article>';
+  }).join('') + (A.length > 3 ? '<p class="gd-ann-more">The latest three. Members of the group get every announcement in their email.</p>' : '');
+}
+window.gdAnnRender = gdAnnRender;
 function renderGroupDemo(l){
   loadHostedEvents(l);
+  var he = document.getElementById('hosted-events');
+  if(he){ var an = document.createElement('div'); an.className = 'section'; an.id = 'gd-ann'; he.parentNode.insertBefore(an, he); gdAnnRender(); }
   var g = DEMO.group || {}, side = document.querySelector('.listing-page-grid .listing-sidebar');
   if(side){
     var c = document.createElement('div'); c.className = 'side-card gd-join';
@@ -4787,19 +4999,14 @@ function renderGroupDemo(l){
       '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>';
     side.insertBefore(c, side.firstChild);
   }
-  var ov = document.getElementById('hosted-events');
-  if(ov && DEMO.board){
-    var b = document.createElement('div'); b.className = 'section gd-board';
-    b.innerHTML = '<h2 class="section-title">From the group\'s board</h2>' + DEMO.board.map(function(p){
-      return '<div class="gd-post' + (p.host ? ' host' : '') + '"><b>' + esc(p.who) + '</b><span>' + p.when + ' days ago</span><p>' + esc(p.text) + '</p></div>';
-    }).join('') + '<button type="button" class="he-go ghost" data-demo-board>Write on the board</button>';
-    ov.parentNode.insertBefore(b, ov.nextSibling);
-  }
+  groupDemoTabs();
   var root = document.getElementById('listing-root');
   root.addEventListener('click', function(e){
     var ev = e.target.closest('[data-demo-ev]'); if(ev){ e.preventDefault(); demoEvent(ev.getAttribute('data-demo-ev')); return; }
     if(e.target.closest('[data-demo-join]')){ demoJoinGroup(); return; }
-    if(e.target.closest('[data-demo-board]')){ demoToast('Sample: members of the group post and comment here. Nothing is saved.'); return; }
+    if(e.target.closest('[data-demo-board]')){ demoToast('Sample: members of the group post and reply here. Nothing is saved.'); return; }
+    var al = e.target.closest('[data-gd-album]'); if(al){ e.preventDefault(); gdAlbum(al.getAttribute('data-gd-album')); return; }
+    var ph = e.target.closest('[data-gd-photo]'); if(ph){ openLightbox(ph.getAttribute('data-gd-key'), +ph.getAttribute('data-gd-photo')); return; }
     if(e.target.closest('#demo-signout')){ try { sessionStorage.removeItem('ve_group_demo'); } catch(x){} setDemoView('member', l); }
   });
   document.addEventListener('click', function(e){ if(e.target.closest('#demo-modal [data-demo-join]')) demoJoinGroup(); });

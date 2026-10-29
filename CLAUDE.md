@@ -771,10 +771,51 @@ own mock club so people can go through it... the same way we did the business...
 a groups one, where I could... personalize the message, select people... do a crawl for all these community groups... send them
 messages one by one... it lays out pretty much as a guide... they can click on what it would be like from a user perspective... from
 the owner's perspective").
-- **`/groups/sample`** is Sprout Social Club, an invented group (never a database row, marked Sample, `noindex`): the real listing page
+- **`/groups/sample`** is Sprout Social Society, an invented group (never a database row, marked Sample, `noindex`): the real listing page
   (`directory/listing.html`, rewrite in `vercel.json`) in demo mode (`demoSrc`), fed `/groups/sample/listing-demo.js` (`VE_DEMO.group`).
-  Its bar switches **A member** / **The organizer**. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past),
-  the group's board, a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
+  Its bar switches **A member** / **The organizer**. Its logo (Sean picked option A from a look book, 2026-10-29) and photos are in
+  `groups/sample/img/`, the photos realistic, as a real group would post them (never our illustrated Guides). Tabs (Sean, 2026-10-29):
+  Overview, **Board** (the Message Board: posts with replies, the organizer's pinned welcome, `VE_DEMO.board`) and **Media** (the Photo
+  Gallery: one album per past event, Halloween Costume Potluck and Sunday Brunch in the Park, five photos each, `VE_DEMO.galleries`;
+  `?tab=media&album=<id>`, Media > event, each photo in the page's lightbox; `groupDemoTabs` in `directory/listing.html`). The brunch
+  is at George English Park, on the Intracoastal, to match its photos. **Announcements** (Sean, 2026-10-29: "send messages to their members and have it appear
+  on the overview page below About"): the organizer's dashboard has an Announcements view (`drawAnnounce` in `ve-partner-dashboard.js`,
+  `?tab=brand&pd=announce`, New announcement: title, message up to 1,000 characters, Also email it to your members, Pin it to the top),
+  sent through `group_announce`; the Overview shows the newest three under About, one pinned first (`gdAnnRender`). The sample answers
+  `group_announce` itself and keeps what is sent for the visit (`sessionStorage` `ve_group_ann`); a live group's version (a table, the
+  email through us, the page section for real listings) is part of the Group Partners build.
+- **Groups, live** (Sean, 2026-10-29: "build the live announcements for real groups"; migration `20261029_group_live.sql`, run through the
+  one-time `ve-once-group-live`; edge function `ve-group`, verify_jwt off, the member token checked inside, ops by the admin token with
+  `as_member`). **Joining**: every Groups listing's sidebar has a Join card (`loadGroupLive` in `directory/listing.html`): Passport holders
+  join (`ve_group_members`), with an **unticked** "Email me <group>'s announcements" (`email_ok`), and leave or change it there; signed out it
+  is the members-only window (`VEVotes.memberPrompt('group')`). **Announcements** (`ve_group_announcements`): the listing's owner, the
+  Group Partner lead or a super admin writes them on the dashboard's Announcements (any group's dashboard, `drawAnnounce`); the newest three
+  show under About, a pinned one first; ticked, they go by email from Vegans Explore with the group's name to the members who said yes
+  (`ve_group_announcement_deliveries`, replies to us), at most 2 emails in 7 days and 5 posts a day (`ve_site_settings`
+  `group_partner_program`). The email's link is `/messages#g/<token>`: Stop these emails, Leave the group, Report this (a report pauses the
+  group's emails, `ve_group_mail_holds`, and emails Sean; delete its row to resume). **Group Partner earnings**: a partnership gets its code at
+  onboarding (`ve_group_partners.code`, `/r/<code>`, `trg_ve_group_partner_code`); `ve-auth` sets `members.referred_by_group` for a sign-up
+  through it; `ve_affiliate_earn` pays the group the ladder's rate on the day (`ve_group_rate`: lifetime members brought in, 20% to 50%),
+  rows with `group_partner_id`, route `group`, held 30 days like every commission. The dashboard's Group Partner views read the real numbers
+  (`ve_group_dash`). **Gift a membership** (Sean, same day: "It would cost whatever our half of the $11 would be based on where they are in
+  the commission split... deducted from their payout... an invite link to a specific address"): the lead's dashboard view `gift`
+  (`drawGift`): our share of the $11 at the group's rate today ($8.80 at 20%, $5.50 at 50%), taken from the group's earnings at once as a
+  negative commission row (product `gift`, ref `gift:<invite>`). **Only cleared earnings count** (Sean, same day: "that balance will only
+  count after the 30-day period... If they're in a negative, they should get a prompt to purchase the membership"; migration
+  `20261029_group_gift_cleared_balance.sql`): `ve_group_balance` is commissions past their 30-day hold (`ready`), not paid out, less gifts,
+  so a gift never takes it below zero (`gift_credit_cents` 0). Short of it, the dashboard says what is on hold and when the next of it
+  clears, and offers **Pay $X by card**, the same price (`ve-group` `gift_checkout`, Stripe; `GET ?confirm=` from the return trip and
+  ve-stripe-webhook makes the gift once, `universe_invites.paid_session` and `paid_cents`; no commission row). A card gift that expires, is
+  canceled or declined goes to the group's balance (a `ready` row, ref `gift-back:<invite>`) for its next gift (Logan's default, Sean's to
+  change: a card refund). Gift rows are settled with the group's payout in Depot > Ambassadors > Commissions (mark them paid with it). A `universe_invites` row (`points_to` `gift`, the group's `listing_id`, 1,100 points, 30 days, one email), emailed from
+  Vegans Explore with the organizer's name or a link they copy; `/invite` words it as their gift. Accepting makes them a Founding Member, one
+  the group brought in (it counts toward the rate) and a member of the group (`trg_ve_group_gift_status`); expired (nightly
+  `ve-group-gift-sweep`), canceled or declined gives the cost back (the row turns `reversed`). Not for a member who already has a Passport.
+  Proven 2026-10-29 on a [TEST] group with internal accounts (join, the organizer-only post, a real email, the email link, gift pricing,
+  balance, cancel giving back, the claim, a commission at 20%), then removed. The cleared rule the same way: held money refused with the card
+offer, a test-mode checkout opened, an unpaid return sent back, a gift from cleared money, a card gift's cancel crediting the balance and a
+second confirm of one session refused (the card form itself was not paid: checkout.stripe.com is blocked from the build session). The real dashboard's views were checked in the sample, which
+  draws the same code. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
   window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
   Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
   sign-in** (`VE_DEMO.login`: demo@vegansexplore.com / explore11, `groupDemoLogin`, kept for the visit in `sessionStorage`
@@ -1487,14 +1528,15 @@ book's tracked link, `details.buy_link`, `/go/book-<ISBN-10>`) and The book's pa
 Vegan, each cover copied from Amazon's image for its ISBN into `vegan-media/media/logos/books/` and checked by eye (Badass Vegan's stored
 ISBN was wrong; Reversing Diabetes uses the revised edition in print). Open Library and Google Books refuse our server after a few calls, so
 book facts came from Open Library's search before it closed. **Amazon Associates**: every `/go/` link to an Amazon store leaves with our
-tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`); the tag is empty
-until Sean gives it, so the links work untagged until then.
+tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`, read with a 5-minute
+cache). Our US tag is `vegansexplore-20` (Sean, 2026-10-29); other Amazon stores (amazon.co.uk for London) go untagged until a tag for
+that store is added under `tags`.
 **Referenced books and the book crawl** (Sean, 2026-10-29: "any books that are mentioned in the podcast, we put on... a background list to be
 built out and put into the page. And any books from any of the people... we do a crawl"; migrations `20261029_ve_books_crawl.sql`,
 `20261029_book_covers_buy_links.sql`; edge function `ve-books`). `ve_books` is the list: every book we know of (source `listing`, the 33
 already listed; `transcript`; `author_crawl`), one row per title and author's last name (`ve_book_key`, `ve_book_author_key`,
 `ve_book_upsert`, so a caption's "Bolshevitz" still finds Bulsiewicz's book). Three crons call `ve-books`: **scan** (`ve-books-scan`, two
-transcripts every 10 minutes, `ve_content_transcripts.books_status`, requeued when a transcript is replaced) has Claude name the books said
+transcripts every 5 minutes, `ve_content_transcripts.books_status`, requeued when a transcript is replaced) has Claude name the books said
 in a transcript, keeps a mention only when its quote is really in the transcript within two minutes of its second, and saves it in
 `ve_book_mentions` with the show's feed guid (`ve_content_feed_episode`); **crawl** (`ve-books-crawl`, two People every 10 minutes, again
 after 180 days, `ve_book_author_checks`) looks a person up by name and keeps the books Claude confirms are theirs (`author_listing_id`);
@@ -1513,8 +1555,27 @@ A source that does not answer does not use up a book's tries. A book whose Engli
 1987 Pregnancy, Children, and the Vegan Diet). Proven 2026-10-29 on two episodes: the cookbook
 countdown named its ten books, all matched to their listings, and John Lewis's named Badass Vegan, A New Earth and The Art of War (the last
 two queued; once Google answered, A New Earth and The Art of War became referenced books and Dr. Klaper's Moving Medicine Forward, named in
-his episode, a listing on his new Books tab). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
-(its author's logo) was set aside for the letter.
+his episode, a listing on his new Books tab). **Building each other** (Sean, 2026-10-29: "we're mining for content to put into our
+directory and then cross-referencing that content with what we have in our directory"): every book's page and the Books tab's book view
+show **Talked about on our podcasts** (`loadBookTalks` in `directory/listing.html`, `ve-books` `book`, public): the episodes that named it,
+with who and how (Their own book, Recommended, Talked about, Mentioned), each opening the episode on its show's page. Books not about Vegan
+living stay out of the Directory (Logan's default, Sean's to change) and show only as Referenced books; **Depot > Content > Books**
+(`/admin/depot/books`, after Content index in the Go to menu; `ve-books` `admin_list`, `admin_get`, `admin_set`) lists the book list by
+status (Waiting, In the Directory, Referenced only, Not found, Set aside) with the scan and crawl progress, and one book (`#b/<id>`) with
+why it stands where it does, the episodes that named it, and **Make it a listing** (a referenced book becomes a listing at once from what
+the builder found; any other is built as Vegan related on its next run, `vegan_related` true), **Try again** and **Set aside**. When Amazon
+has no cover for any English edition, the builder takes Google's own cover picture of one (`googleCover`, `books.google.com/books/content`,
+800 px wide); a book with no ISBN-10 gets an Amazon search as its tracked link (`buyLink`). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
+(its author's logo) was set aside for the letter. **Pre-Vegans** (Sean's book, 2026-10-29; migration `20261029_pre_vegans_book_spitz_fix.sql`) has a
+979 ISBN, so no ISBN-10 and no Amazon cover by ISBN, and the builder could not find it: it was added by hand from its Amazon page
+(`pre-vegans-by-sean-russell`, `/go/book-b0b1cd57rw`), in the family `pre-vegans` with the Pre-Vegans Podcast, Featured in Media > Books
+(`SHOWS` in `ve-media.js`), and its eight People in it show as its **Featured people** (`details.film_people` on a book too, `bookPeople` in
+`directory/listing.html`). A book with a 979 ISBN goes the same way. Google Books had Dr. Aaron Spitz as "Splitz"; his book's listing was
+corrected the same day. Sean got his own People profile the same day (`sean-russell`, Founders, migration
+`20261029_people_sean_russell.sql`): the May import's quarantined @seanarussell82 row promoted, Host of every Vegans Explore, SoFlo
+Vegans and Pre-Vegans episode (221 credits), in the family `sean-russell` with the Vegans Explore, SoFlo Vegans and Pre-Vegans podcasts and the book (migration
+`20261029_sean_russell_family.sql`; no YouTube page joins it until Sean has video he wants to promote); his website is seanarussell.com,
+first in Their work.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
@@ -1689,9 +1750,11 @@ which a podcast listing in the dashboard's frame gets too). An In their words mo
 YouTube transcript it was timed on (`ve_person_moments` returns `transcript_end`, migration `20261028_person_moments_transcript_end.sql`);
 otherwise the quote shows with no Play (Dr. Klaper's "Moving Medicine Forward" audio is 47 s shorter than its video). **Save** saves the
 episode like a show page's, and every list shows about ten rows and
-scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcast** (a show they host that is in
-our Media section, `details.person.shows`, its latest 30 episodes, with The show's page), **With Vegans Explore** (their episodes on our
-four shows, then events, articles, videos), **On other podcasts** (other Directory shows that had them on), In their words.
+scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcasts** (the shows they host, each
+the Directory's own card with votes, opening the show's page where every episode is; `ppShowTiles`: `details.person.shows` and our shows
+they hold Host credits on, most episodes first; Sean, 2026-10-29: "we should just have their podcast listing little tile... it's just going
+to be this long, long page"), **With Vegans Explore** (their guest episodes on our four shows, never the ones they host, then events,
+articles, videos; hidden when empty), **On other podcasts** (other Directory shows that had them on), In their words.
 The data is `ve_person_episodes(listing)` (migration `20261028_person_podcasts.sql`): our episodes matched to each show's feed
 (`ve_podcast_feeds`: the feed episode names them and came out within 60 days, or the titles are close), other shows' episodes with their
 name in the title or named as the guest in the description ("with", "joined by", "<name> joins us"; a passing mention does not count),
@@ -2669,8 +2732,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   token) looks at and copies pictures; it writes no rows.
 - A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
   not a Vegan business), or the Directory calls it 100% Vegan.
-- Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
-  Amazon Associates is settled.
+- Next: the sponsorship offer to a store (its page with deals for our members). Amazon Associates is set (`vegansexplore-20`,
+  2026-10-29): a product's Amazon link made as a `/go/` link carries it.
 
 ## Dashboard versions (Sean, 2026-10-24; built 2026-10-25)
 

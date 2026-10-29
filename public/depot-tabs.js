@@ -36,6 +36,7 @@
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
+    { group: 'Content', href: '/admin/depot/books', label: 'Books' },
     { group: 'Content', href: '/admin/depot', label: 'Library' },
     { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
     { group: 'People', href: '/admin/depot/ambassadors', label: 'Ambassadors' },

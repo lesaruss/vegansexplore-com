@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Books | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Books (Sean, 2026-10-29: "we're mining for content to put into our directory and then cross-referencing that content
+       with what we have in our directory"). The book list (ve_books) that ve-books fills from our podcast transcripts and from a crawl
+       of our People: one view at a time, the list by status (#list/waiting|built|referenced|not_found|set_aside) with the scan and
+       crawl progress, and one book (#b/<id>: what we know, why it stands where it does, the episodes that named it, and Make it a
+       listing, Try again, Set aside). Server: ve-books admin_list, admin_get, admin_set (super admin). */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .crumb a{color:var(--ve-green-deep);font-weight:800;text-decoration:none;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    input,textarea{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    textarea{min-height:90px;resize:vertical;line-height:1.5;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid #d9a39c;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
+    .msg.bad{color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .rows{display:flex;flex-direction:column;gap:8px;}
+    .row{display:grid;grid-template-columns:44px minmax(0,1.4fr) minmax(0,1fr) 90px 130px 90px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;}
+    .row .t{font-size:14.5px;font-weight:800;line-height:1.3;}
+    .row .m,.m{font-size:12.5px;color:var(--ve-text-75);}
+    @media (max-width:860px){.row{grid-template-columns:44px minmax(0,1fr) auto;}.row .hide-sm{display:none;}}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;justify-self:start;}
+    .cov{width:44px;height:66px;border-radius:4px;object-fit:cover;background:#EAF7EA;display:block}
+    .cov-lg{width:160px;height:240px;border-radius:8px;object-fit:cover;background:#EAF7EA;display:block;box-shadow:0 2px 10px rgba(0,0,0,.14)}
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;margin-bottom:16px}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px}.stat b{display:block;font-size:24px;font-weight:900}.stat span{font-size:12px;color:var(--ve-text-75)}
+    .tag.built{background:#e8f5e9;color:#1f5f22;}.tag.waiting{background:#eef3fb;color:#1d3f73;}.tag.referenced{background:#fff4e0;color:#7a4a00;}.tag.not_found,.tag.set_aside{background:#f1f1f1;color:#555;}
+    .search{max-width:420px}
+    .one{display:grid;grid-template-columns:160px minmax(0,1fr);gap:22px;align-items:start}@media (max-width:640px){.one{grid-template-columns:1fr}}
+    .tag.live{background:#e8f5e9;color:#1f5f22;}.tag.coming{background:#eef3fb;color:#1d3f73;}.tag.ended{background:#f1f1f1;color:#555;}.tag.paused{background:#fbeeec;color:#8a1c12;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px 14px;}
+    .f{display:flex;flex-direction:column;gap:5px;}
+    .f.wide{grid-column:1/-1;}
+    .f label{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .f small{font-size:12px;color:var(--ve-text-75);}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center;}
+    .two{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:18px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .pick{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:280px;overflow:auto;}
+    .pick button{font:inherit;text-align:left;border:1px solid var(--ve-border);border-radius:8px;background:#fff;padding:8px 12px;cursor:pointer;}
+    .pick button[aria-pressed="true"]{border-color:var(--ve-green-deep);background:var(--ve-green-light);}
+    .pick b{display:block;font-size:14px;}
+    table{width:100%;border-collapse:collapse;font-size:13.5px;}
+    th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--ve-border);}
+    th{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .mrow{border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;margin-bottom:8px;}
+    .mrow .b{white-space:pre-line;font-size:14px;}
+    .rep{font-size:12.5px;font-weight:700;color:#8a1c12;}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,0.2);border-radius:10px;padding:24px;text-align:center;color:var(--ve-text-75);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Books</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every book we know of: the ones named on our podcasts and the ones our People wrote. Books about Vegan living, food, health or animals, or by one of our People, go into the Directory on their own and join the author's Books tab. Others show only under Referenced books on the episodes that name them. Make one a listing, send one back to the builder, or set one aside here.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-books';
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('app'), q = '';
+    var TABS = [['waiting', 'Waiting'], ['built', 'In the Directory'], ['referenced', 'Referenced only'], ['not_found', 'Not found'], ['set_aside', 'Set aside']];
+    var WORDS = { found: 'Waiting', building: 'Being built', built: 'In the Directory', referenced: 'Referenced only', not_found: 'Not found', set_aside: 'Set aside' };
+    var TAGS = { found: 'waiting', building: 'waiting', built: 'built', referenced: 'referenced', not_found: 'not_found', set_aside: 'set_aside' };
+    var WHY = {
+      found: 'Waiting for the builder, which matches it on Google Books, takes its cover and writes its page.',
+      building: 'The builder is working on it now.',
+      built: 'It is in the Directory, and on its author\'s Books tab when they are one of our People.',
+      referenced: 'It is not about Vegan living, food, health or animals, so it shows only under Referenced books on the episodes that name it. Make it a listing to put it in the Directory anyway.',
+      not_found: 'The builder could not find an English edition with a cover. Try again, or set it aside.',
+      set_aside: 'Set aside: it shows nowhere.'
+    };
+    var CTX = { their_own: 'Their own book', recommended: 'Recommended', discussed: 'Talked about', mentioned: 'Mentioned' };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
+    function day(t) { return t ? new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+    function cover(b, cls) { return b.cover_url ? '<img class="' + cls + '" src="' + esc(b.cover_url) + '" alt="" loading="lazy">' : '<span class="' + cls + '"></span>'; }
+    function fromWords(b) {
+      if (b.source === 'transcript') return 'Named on ' + (b.mentions === 1 ? 'an episode' : (b.mentions || 0) + ' episodes');
+      if (b.source === 'author_crawl') return 'Written by ' + (b.person ? b.person.name : 'one of our People');
+      if (b.source === 'listing') return 'Already in the Directory' + (b.mentions ? ', named on ' + b.mentions + (b.mentions === 1 ? ' episode' : ' episodes') : '');
+      return 'Added by the team';
+    }
+    function go(h) { if (location.hash !== h) location.hash = h; else route(); }
+
+    function drawList(tab) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'admin_list', status: tab }).then(function (d) {
+        if (!d.books) { app.innerHTML = '<p class="empty">The books did not load. Refresh to try again.</p>'; return; }
+        var st = d.status || {}, bs = st.books || {}, tr = st.transcripts || {};
+        var scanned = (tr.scanned || 0) + (tr.failed || 0), allTr = scanned + (tr.queued || 0) + (tr.scanning || 0);
+        var n = function (t) { return t === 'waiting' ? (bs.found || 0) + (bs.building || 0) : (bs[t] || 0); };
+        var list = d.books.filter(function (b) { return !q || (b.title + ' ' + (b.author || '')).toLowerCase().indexOf(q.toLowerCase()) >= 0; });
+        app.innerHTML = '<div class="stats">' +
+            '<div class="stat"><b>' + scanned + ' of ' + allTr + '</b><span>Podcast transcripts read for books</span></div>' +
+            '<div class="stat"><b>' + (st.people_checked || 0) + ' of ' + (st.people || 0) + '</b><span>People checked for books they wrote (' + (st.people_with_books || 0) + ' with books)</span></div>' +
+            '<div class="stat"><b>' + (st.mentions || 0) + '</b><span>Times a book was named on an episode</span></div>' +
+            '<div class="stat"><b>' + n('built') + '</b><span>Books in the Directory</span></div></div>' +
+          '<div class="bar"><div class="tabs">' + TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === tab ? 'on' : '') + '">' + t[1] + ' (' + n(t[0]) + ')</a>'; }).join('') + '</div>' +
+          '<input type="search" class="search" id="q" placeholder="Search a title or author" aria-label="Search books" value="' + esc(q) + '"></div>' +
+          '<div class="rows">' + (list.length ? list.map(function (b) {
+            return '<div class="row">' + cover(b, 'cov') + '<span><span class="t">' + esc(b.title) + '</span><br><span class="m">' + esc(b.author || 'Author not known yet') + (b.year ? ' · ' + b.year : '') + '</span></span>' +
+              '<span class="m hide-sm">' + esc(fromWords(b)) + '</span><span class="m hide-sm">' + esc(day(b.updated_at)) + '</span>' +
+              '<span class="tag ' + TAGS[b.status] + ' hide-sm">' + WORDS[b.status] + '</span><a class="btn btn-ghost" href="#b/' + b.id + '">Open</a></div>';
+          }).join('') : '<p class="empty">' + (q ? 'No book matches that search.' : 'Nothing here right now.') + '</p>') + '</div>';
+        var t = null; $('q').oninput = function () { clearTimeout(t); var v = this.value; t = setTimeout(function () { q = v.trim(); drawList(tab); setTimeout(function () { var i = $('q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0); }, 250); };
+      });
+    }
+
+    function drawOne(id) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'admin_get', id: id }).then(function (d) {
+        if (!d.book) { app.innerHTML = '<p class="empty">That book is not here. <a href="#list/waiting">Back to the list</a></p>'; return; }
+        var b = d.book, back = TAGS[b.status] === 'waiting' ? 'waiting' : b.status;
+        var acts = [];
+        if (b.status !== 'built') acts.push('<button class="btn" data-to="list">Make it a listing</button>');
+        if (b.status === 'not_found' || b.status === 'set_aside' || b.status === 'referenced') acts.push('<button class="btn btn-ghost" data-to="retry">Try again</button>');
+        if (b.status !== 'set_aside' && b.status !== 'built') acts.push('<button class="btn btn-red" data-to="set_aside">Set aside</button>');
+        var paras = String(b.summary || b.description || '').split(/\n\s*\n/).filter(Boolean);
+        app.innerHTML = '<nav class="crumb"><a href="#list/' + back + '">Books</a><span>/</span><span>' + esc(b.title) + '</span></nav>' +
+          '<div class="panel"><div class="one">' + cover(b, 'cov-lg') + '<div>' +
+            '<h2>' + esc(b.title) + ' <span class="tag ' + TAGS[b.status] + '">' + WORDS[b.status] + '</span></h2>' +
+            '<p class="m" style="margin-bottom:10px">' + esc([b.author || 'Author not known yet', b.year, b.publisher, b.isbn13 ? 'ISBN ' + b.isbn13 : ''].filter(Boolean).join(' · ')) + '</p>' +
+            (d.listing ? '<p class="m">In the Directory: <a href="/directory/' + esc(d.listing.slug) + '" target="_blank" rel="noopener">' + esc(d.listing.name) + '</a></p>' : '') +
+            (d.person ? '<p class="m">On the Books tab of <a href="/directory/' + esc(d.person.slug) + '?tab=books" target="_blank" rel="noopener">' + esc(d.person.name) + '</a></p>' : '') +
+            (b.buy_link ? '<p class="m">Amazon link: <a href="' + esc(b.buy_link) + '" target="_blank" rel="noopener">vegansexplore.com' + esc(b.buy_link) + '</a></p>' : '') +
+            '<p class="m" style="margin-top:10px"><b>Why it is here:</b> ' + esc(WHY[b.status] || '') + '</p>' +
+            (b.note ? '<p class="m"><b>Builder\'s note:</b> ' + esc(b.note) + '</p>' : '') +
+            (paras.length ? '<div style="margin-top:12px">' + paras.map(function (p) { return '<p style="font-size:14px;margin-bottom:8px">' + esc(p) + '</p>'; }).join('') + '</div>' : '') +
+            (acts.length ? '<div class="acts">' + acts.join('') + '<span class="msg" id="m" role="status"></span></div>' : '') +
+          '</div></div></div>' +
+          '<div class="panel"><h2>Named on our podcasts</h2>' + (d.mentions.length ? d.mentions.map(function (m) {
+            var c = m.content || {}, href = m.show && m.guid ? '/directory/' + m.show.slug + '?ep=' + encodeURIComponent(m.guid) : (c.slug ? '/pulse/' + c.slug : '');
+            return '<div class="mrow"><p class="m">' + esc([c.podcast_show, day(c.published_at), (CTX[m.context] || 'Mentioned') + (m.speaker ? ' by ' + m.speaker : '')].filter(Boolean).join(' · ')) + '</p>' +
+              '<p class="b"><b>' + (href ? '<a href="' + esc(href) + '" target="_blank" rel="noopener">' + esc(c.title) + '</a>' : esc(c.title)) + '</b></p>' + (m.quote ? '<p class="m">"' + esc(m.quote) + '"</p>' : '') + '</div>';
+          }).join('') : '<p class="m">No episode has named it yet' + (b.source === 'author_crawl' ? '; it was found because one of our People wrote it.' : '.') + '</p>') + '</div>';
+        app.querySelectorAll('[data-to]').forEach(function (btn) {
+          btn.onclick = function () {
+            var to = btn.getAttribute('data-to'), m = $('m');
+            if (to === 'set_aside' && !confirm('Set "' + b.title + '" aside? It stops showing anywhere.')) return;
+            m.className = 'msg'; m.textContent = 'Saving…';
+            api({ action: 'admin_set', id: b.id, to: to }).then(function (r) {
+              if (!r.ok) { m.className = 'msg bad'; m.textContent = r.why || 'That did not save.'; return; }
+              m.textContent = to === 'list' ? (r.slug ? 'Listed.' : 'It goes to the builder and becomes a listing on its next run.') : to === 'retry' ? 'Sent back to the builder.' : 'Set aside.';
+              setTimeout(function () { drawOne(b.id); }, 900);
+            });
+          };
+        });
+      });
+    }
+
+    function route() {
+      var h = location.hash || '#list/waiting', m;
+      if ((m = /^#b\/([0-9a-f-]{36})$/.exec(h))) drawOne(m[1]);
+      else drawList((/^#list\/(waiting|built|referenced|not_found|set_aside)$/.exec(h) || [0, 'waiting'])[1]);
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+    function start() {
+      if (!window.VEAuth) return setTimeout(start, 200);
+      var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+      if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
