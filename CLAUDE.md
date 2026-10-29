@@ -1615,6 +1615,13 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   clips (about -15 LUFS). On phones (900 px and under) she is full width on top with her words under her and a **Hide Maya /
   Show Maya** switch (`#dgFold`, kept for the visit), and Back / N of M / Next sit under the content (`#dgTourM`); Next goes
   back up to her.
+- **Minimize the Guide** (Sean, 2026-10-28: "if I'm using this tool, I don't want to see River on the right-hand side"; then "let's
+  make him actually overlap at the bottom of the page and not create a whole column... a square... with rounded corners... show
+  me, hide me... if the name's long, it's going to throw it off... the hide me... below the pagination, like a rectangular button").
+  Every Guide page loads `/public/ve-guide-min.js` after its script: it moves the page's `#dgFold` under Back / N of M / Next as one
+  full-width **Hide me** button; folded, the rail is gone and the content takes the whole width, and the Guide floats as a rounded
+  square in the bottom right corner of the screen, **Show me** (`.dg-mini`, the rail's `data-guide` through `VEGuideArt`), on desktop
+  and phones alike. A new Guide page sets `data-guide` on `#dgRail` and loads the script.
 - **One tile** (Sean, 2026-10-10: "I want the tile to be the same on both... I like the top right hand corner look"): swaps,
   recipes, What can I make? and episodes share `row()` in the Guide script: the square picture left, the words, vote and Save
   stacked at the top right (`.dg-acts`, one above the other so the words keep their room on a phone; Sean, 2026-10-10). A recipe tile shows its time, its counts and what you need (two rows). Brands and cookbooks
@@ -1987,6 +1994,20 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   (too far refused; 100, 25, 10 and 0 paid; Still accurate marked the item checked); it found the ledger refusing
   `venue_report`, fixed the same day. The `ve_guides` row `stadium-arena-guide` stays `published` false (the buy button reads
   Coming soon; super admins see every venue) until Sean approves River's lines and his clips are made (`CLIPS` is empty).
+- **The map and Get me there** (Sean, 2026-10-28: "show a map of the stadium and where these things are with a locator icon...
+  be anywhere in the stadium and... show me where exactly to go"; migration `20261028_venue_maps.sql`). `/public/ve-venue-map.js`
+  (`VEVenueMap.svg`, `find`, `route`) draws our own map of the bowl from `ve_venues.layout` (each level's sections in clockwise order
+  by side: top, tr, right, br, bottom, bl, left, tl; innermost level first), never the venue's seating chart, with a numbered pin for
+  each stand's `ve_venue_spots.map_sections` ("122A" sits behind 122; `map_level` for a stand we only know the level of). On an open
+  venue, **Your section** + **Get me there** routes from the section on the ticket (kept in `localStorage` `ve_sa_seat_<slug>`):
+  the nearest spot of each stand, up or down a level, then "walk with the field on your right/left, past ..." and minutes (60 m a
+  minute around `layout.ring_m`, 3 a level), drawn on the map. Not GPS: inside a stadium it is off by several sections and worse
+  under a roof; a moving blue dot needs the venue's own beacons (a partnership, the Dolphins first). Hard Rock Stadium's layout was
+  read from its seating chart (Sean's screenshot, 2026-10-28); the others wait on theirs (Depot > Venues > a venue > The map, JSON;
+  a stand's Sections on the map).
+  **Desktop is half and half** (Sean, 2026-10-28: "put the image to the right and the information to the left... a half situation"):
+  the map sticks on the right while the left holds Get me there, the directions and the stands (`mapPanel`, `.sa-vgrid2` grid areas),
+  so a pin's stand comes up beside the map, outlined; phones keep one column (Your section, the map, the directions, the stands).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
