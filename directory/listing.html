@@ -131,6 +131,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listen-icon span{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ve-border);background:#fff;transition:.15s}
 .listen-icon:hover span{border-color:#5EC47A;transform:translateY(-1px)}.listen-icon:focus-visible{outline:2px solid #5EC47A;outline-offset:3px;border-radius:12px}
 .listen-icon small{font-size:10.5px;font-weight:700;text-align:center;line-height:1.25;color:var(--ve-text-75)}
+.listen-icon em{font-style:normal;font-size:10px;font-weight:600;color:var(--ve-text-75);margin-top:-4px;text-align:center}
+/* A film's Overview (Sean, 2026-10-29): where to watch, then the video on the left and About on the right; stacked on phones */
+.film-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:start}
+.film-video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.film-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.film-cap{font-size:11.5px;font-weight:700;color:var(--ve-text-75);margin-top:8px}
+.film-facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:12.5px;color:var(--ve-text-75)}
+.film-facts b{font-weight:800;color:var(--ve-text)}
+@media(max-width:900px){.film-grid{grid-template-columns:minmax(0,1fr);gap:18px}}
 .platform-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;text-decoration:none;color:var(--ve-text);font-family:Montserrat,sans-serif;transition:.15s;cursor:pointer}
 .platform-btn:hover{border-color:#5EC47A;background:var(--ve-green-light)}
 .platform-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}
@@ -1343,6 +1352,34 @@ function renderPodcastOverview(l){
       return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span'+(file ? '' : ' style="background:'+x.color+'1a"')+'>'+ic+'</span><small>'+esc(x.label)+'</small></a>';
     }).join('') + '</div></div>' : '') +
     '<div class="section" id="ep-section" hidden><h2 class="section-title">Episodes</h2><div id="ep-host"></div></div>';
+}
+// A film's Overview (Sean, 2026-10-29: "a trailer from like YouTube... a little bit more of a summary... where it can be viewed, like
+// if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the text on the right").
+// details.watch [{kind, url, note}] (website, youtube, netflix, apple_tv; each link checked to open that film), details.video {id, kind:
+// trailer | film} (a YouTube upload from the filmmakers or their distributor, checked by YouTube oEmbed), details.summary (longer than
+// the card's description), details.director and details.runtime_minutes. The import's details.streaming_platforms had no links and was
+// never checked, so it is not shown.
+var WATCH = {
+  website: ['Official site', null, '#2d7d31'],
+  youtube: ['YouTube', 'youtube'],
+  netflix: ['Netflix', 'netflix'],
+  apple_tv: ['Apple TV', 'apple-tv']
+};
+function renderFilmOverview(l){
+  var d = l.details || {}, v = d.video && /^[\w-]{11}$/.test(d.video.id || '') ? d.video : null;
+  var watch = (Array.isArray(d.watch) ? d.watch : []).filter(function(w){ return WATCH[w.kind] && /^https:\/\//.test(w.url || ''); });
+  var globe = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>';
+  var icons = watch.length ? '<div class="section"><h2 class="section-title">Where to watch</h2><div class="listen-icons">' + watch.map(function(w){
+      var m = WATCH[w.kind], ic = m[1] ? '<img src="/public/icons/platforms/'+m[1]+'.svg" alt="" width="28" height="28">' : globe;
+      return '<a href="'+esc(w.url)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(m[0] + (w.note ? ', ' + w.note : ''))+'" aria-label="'+esc(m[0])+'"><span'+(m[1] ? '' : ' style="background:'+m[2]+'1a"')+'>'+ic+'</span><small>'+esc(m[0])+'</small>'+(w.note ? '<em>'+esc(w.note)+'</em>' : '')+'</a>';
+    }).join('') + '</div></div>' : '';
+  var text = d.summary || l.description || l.tagline || '';
+  var facts = [['Directed by', d.director], ['Released', d.release_year], ['Runtime', d.runtime_minutes ? d.runtime_minutes + ' min' : '']].filter(function(f){ return f[1]; });
+  var about = '<div><h2 class="section-title">About</h2>' + (text ? '<p class="about-text">'+esc(text)+'</p>' : '') +
+    (facts.length ? '<div class="film-facts">' + facts.map(function(f){ return '<span>'+esc(f[0])+' <b>'+esc(f[1])+'</b></span>'; }).join('') + '</div>' : '') + '</div>';
+  var video = v ? '<div><div class="film-video"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.id)+'?rel=0" title="'+esc(l.name + (v.kind === 'film' ? ', the full film' : ', trailer'))+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>' +
+    '<div class="film-cap">'+(v.kind === 'film' ? 'The full film, shared free by its makers' : 'Official trailer')+'</div></div>' : '';
+  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>';
 }
 function platformList(l){
   var platforms = [];
@@ -3293,6 +3330,7 @@ function renderListing(l){
   // OVERVIEW content
   var overviewContent = '';
   if(person) {}
+  else if(l.category === 'Documentaries & Films' && !DEMO) {}
   else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
@@ -3316,7 +3354,7 @@ function renderListing(l){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
   } else if(catType === 'media'){
-    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : renderPlatforms(l);
+    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : l.category === 'Documentaries & Films' && !DEMO ? renderFilmOverview(l) : renderPlatforms(l);
     if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
   } else {
     if(l.core_services && l.core_services.length){

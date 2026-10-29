@@ -1297,6 +1297,22 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
+**Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
+where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
+text on the right"; migration `20261029_film_pages.sql`). A Documentaries & Films listing's Overview (`renderFilmOverview` in
+`directory/listing.html`) is **Where to watch** (square icons like a podcast's Listen on, each with Free, Rent or buy or Stream under it;
+`details.watch` `[{kind: website|youtube|netflix|apple_tv, url, note}]`, `WATCH` in the page; marks in `/public/icons/platforms/`), then the
+video on the left (`details.video` `{id, kind: trailer|film, channel}`, a `youtube-nocookie` embed that goes full screen, captioned Official
+trailer or The full film, shared free by its makers) and **About** on the right (`details.summary`, longer than the card's description, then
+Directed by, Released, Runtime); stacked on phones. Every video is a YouTube upload from the filmmakers, their distributor or Netflix,
+checked with `ve-off-lookup` `yt` (YouTube oEmbed: title and channel), and every link opened with `ve-off-lookup` `page`, never taken from
+the import's `details.streaming_platforms` (names only, never checked, not shown). Netflix is listed only for its originals (Seaspiracy):
+its pages do not say what streams in the US. On 2026-10-29: 13 of 18 have a video (Earthlings, Forks Over Knives, Dominion, Meet Your Meat and
+PlantPure Nation the full film, free from their makers), 15 have where-to-watch links; They're Trying to Kill Us, Vegucated, Christspiracy,
+Live and Let Live and The End of Meat have no upload from their makers yet. The same check found four film websites gone (letlivefilm.com
+and theendofmeat.com now serve gambling sites; gamechangersmovie.com and aprayerforcompassion.com no longer exist), cleared with a
+`ve_listing_edits` row each. Not yet: Amazon (Prime Video links not checked) and fields for these in the listing editor.
+
 ## People (Sean, 2026-10-28)
 
 "A people directory... people that we've actually interacted with... the incentive for organizations to want to work with us... we're
