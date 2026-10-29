@@ -462,7 +462,10 @@ Deno.serve(async (req) => {
 
   if (body.action === 'probe') {
     const out: any = {};
-    try { out.google = { ok: true, results: (await gb('intitle:"cheese trap" inauthor:barnard', 3)).length }; } catch (e) { out.google = { ok: false, why: String((e as Error).message || e) }; }
+    try {
+      const items = await gb(body.q ? String(body.q).slice(0, 200) : 'intitle:"cheese trap" inauthor:barnard', 10);
+      out.google = { ok: true, results: items.length, titles: items.slice(0, 10).map((it: any) => `${it.volumeInfo?.title} / ${(it.volumeInfo?.authors || []).join(', ')}`) };
+    } catch (e) { out.google = { ok: false, why: String((e as Error).message || e) }; }
     try { out.openlibrary = { ok: true, results: ((await ol('/search.json?title=cheese+trap&limit=3&fields=key'))?.docs || []).length }; } catch (e) { out.openlibrary = { ok: false, why: String((e as Error).message || e) }; }
     return json(out);
   }
