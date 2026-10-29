@@ -79,6 +79,7 @@
         return true;
       };
     }
+    var lastSection = null;
     function show(slug, hub) {
       if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dir-ad-rail'), hub ? hub.slug : '');
       try { sessionStorage.setItem('ve_dir_city', slug || ''); } catch (e) {}
@@ -86,7 +87,7 @@
       if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub), url: '/directory',
         // The line under Vegan Directory names the section on show (Sean, 2026-10-27: "is it redundant for us to have the title as
         // well as the dropdown?"): the city is in the picker.
-        onSection: function (key, label) { if (banner) banner.setLabel(label); } });
+        onSection: function (key, label, subs) { lastSection = [key, label, subs]; if (banner) { banner.setLabel(label); mediaPick(key, subs); } } });
     }
     // The city is not in the address (Sean, 2026-10-27: "it could be the same URL for North Florida, Atlanta... it would just show
     // different things based off of what location it's pulling"): the pick is kept for the visit, and an old ?city= link still
@@ -105,8 +106,16 @@
       actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }],
       onChange: show
     });
-    // The first draw ran while the banner was being made: name its section now.
-    var t0 = document.querySelector('#ve-region-directory .cat-tab.active'); if (t0) banner.setLabel(t0.textContent.trim());
+    // Media is not about a city (Sean, 2026-10-29: "the drop down shows the cities, and instead it should show the different
+    // types... podcasts, YouTube, news outlets, documentary films, books, and any new thing"): on Media the picker lists its kinds
+    // and picks one; every other section has the cities back.
+    function mediaPick(key, subs) {
+      if (key === 'media' && subs && subs.list.length) banner.setChoices(subs.list, subs.active, subs.pick, 'Kind of media');
+      else banner.setChoices(null);
+    }
+    // The first draw ran while the banner was being made: name its section now (and, on Media, list its kinds).
+    if (lastSection) { banner.setLabel(lastSection[1]); mediaPick(lastSection[0], lastSection[2]); }
+    else { var t0 = document.querySelector('#ve-region-directory .cat-tab.active'); if (t0) banner.setLabel(t0.textContent.trim()); }
     document.getElementById('ve-region-directory').addEventListener('click', function (e) {
       if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) banner.autoFold();
     });

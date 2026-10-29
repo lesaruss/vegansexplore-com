@@ -25,6 +25,7 @@
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
      banner.setAction('Post a job');   // the page's own button can change with what the page shows (the Pulse's tabs)
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
+     banner.setChoices([{value, label}], value, pick) lists something else for a while (Media's kinds); setChoices(null) puts the cities back.
    Options for the dashboard: initial (the city when the address bar has none) and param: false (leave the address bar alone).
    A page that is not about a city (Media, Sean 2026-10-27: "no one's trying to make media just for one location") picks from
    its own list instead: choices: [{value, label}] (no All option; the picked label goes under the title), pickLabel (what
@@ -200,7 +201,16 @@
     });
     function fromUrl() { return param ? new URLSearchParams(location.search).get(param) || '' : current; }
 
+    // setChoices(list, value, pick): the picker lists something other than the cities for a while (the Directory's Media section
+    // lists its kinds, Sean 2026-10-29), and a pick goes to pick(value), not to the page's onChange. setChoices(null) puts the
+    // cities (or the page's own choices) back as they were.
+    var swapped = null, cityLabel = el.querySelector('.vcb-pick label');
+    function fillSelect(list, all) {
+      select.innerHTML = (all ? '<option value="">' + esc(opts.allLabel || 'All cities') + '</option>' : '') +
+        list.map(function (c) { return '<option value="' + esc(c.value) + '">' + esc(c.label) + '</option>'; }).join('');
+    }
     select.addEventListener('change', function () {
+      if (swapped) { swapped.pick(select.value); return; }
       if (!param) { show(select.value); return; }
       var q = new URLSearchParams(location.search);
       if (select.value) q.set(param, select.value); else q.delete(param);
@@ -289,7 +299,21 @@
       autoFold: function () { if (!chosen) { autoFolded = true; fold(true); } },
       setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
       setHome: function (href) { if (homeBtn && href) homeBtn.href = href; },
-      setLabel: function (text) { label = text || ''; show(current, true); },
+      setLabel: function (text) { label = text || ''; if (swapped) { cityEl.textContent = label; fitTitle(); return; } show(current, true); },
+      setChoices: function (list, value, pick, pickLabel) {
+        if (list && list.length) {
+          if (!swapped || JSON.stringify(swapped.list) !== JSON.stringify(list)) fillSelect(list, false);
+          swapped = { list: list, pick: pick || function () {} };
+          select.value = value || list[0].value;
+          if (cityLabel) cityLabel.textContent = pickLabel || 'Kind';
+          return;
+        }
+        if (!swapped) return;
+        swapped = null;
+        fillSelect(choices || hubs().map(function (h) { return { value: h.slug, label: h.name }; }), !choices);
+        if (cityLabel) cityLabel.textContent = opts.pickLabel || 'City';
+        select.value = current;
+      },
       matches: matches
     };
     show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');

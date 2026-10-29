@@ -137,6 +137,20 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .film-video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
 .film-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .film-cap{font-size:11.5px;font-weight:700;color:var(--ve-text-75);margin-top:8px}
+.yt-stats{font-size:12px;font-weight:700;color:var(--ve-text-75);margin:10px 0 18px}
+.yt-stats:empty{display:none}
+.yt-sub{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-75);margin:4px 0 12px}
+.yt-wait{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;opacity:.8}
+.yt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:16px}
+.yt-card{display:block;width:100%;padding:0;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:var(--ve-text)}
+.yt-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#111;transition:.15s}
+.yt-card:hover img{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.yt-card.on img{outline:3px solid #5EC47A;outline-offset:2px}
+.yt-card:focus-visible{outline:2px solid #5EC47A;outline-offset:3px;border-radius:10px}
+.yt-card b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;line-height:1.35;margin-top:8px}
+.yt-card small{display:block;font-size:11.5px;font-weight:600;color:var(--ve-text-75);margin-top:3px}
+.yt-more{margin-top:16px}
+@media(max-width:560px){.yt-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.yt-card b{font-size:12px}}
 .film-facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:12.5px;color:var(--ve-text-75)}
 .film-facts b{font-weight:800;color:var(--ve-text)}
 @media(max-width:900px){.film-grid{grid-template-columns:minmax(0,1fr);gap:18px}}
@@ -1449,6 +1463,68 @@ function loadFilmPods(l){
       return window.VEEpisodes ? VEEpisodes.row(o.ep, show, { pre: o.x.with + ' · ' + show.name }) : '';
     }).join('');
   });
+}
+// A YouTube channel's page (Sean, 2026-10-29: "the video on the left, and then a summary, like a 250 character summary... we'll have all
+// their Instagrams, all that stuff. But below it, you will see thumbnails of their latest videos fed right through it. So you can just
+// watch everything on this page"). The latest video plays on the left (youtube-nocookie), About and Find them on sit on the right, and
+// Latest videos is a grid of thumbnails that play in that same player. The videos come from ve-youtube (YouTube's Data API, kept
+// fresh every 6 hours, details.youtube_channel_id), so a new upload shows up on its own.
+function ytSocial(v, prefix){ v = String(v || '').trim(); if(!v) return ''; return /^https:\/\//i.test(v) ? v : /^http:/i.test(v) ? v.replace(/^http:/i, 'https:') : prefix + v.replace(/^@/, ''); }
+function renderYouTubeOverview(l){
+  var d = l.details || {}, ch = /^UC[\w-]{22}$/.test(d.youtube_channel_id || '') ? d.youtube_channel_id : '';
+  var links = [
+    ['YouTube', 'youtube', ytSocial(l.youtube, 'https://www.youtube.com/') || (ch ? 'https://www.youtube.com/channel/' + ch : '')],
+    ['Instagram', 'instagram', ytSocial(l.instagram, 'https://www.instagram.com/')],
+    ['TikTok', 'tiktok', ytSocial(l.tiktok, 'https://www.tiktok.com/@')],
+    ['Facebook', 'facebook', ytSocial(l.facebook, 'https://www.facebook.com/')],
+    ['Website', '', ytSocial(l.website, 'https://')]
+  ].filter(function(x){ return x[2]; });
+  var globe = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>';
+  var icons = links.length ? '<div class="yt-sub">Find them on</div><div class="listen-icons">' + links.map(function(x){
+      return '<a href="'+esc(x[2])+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x[0])+'" aria-label="'+esc(x[0])+'" data-act="social"><span'+(x[1] ? '' : ' style="background:#2d7d311a"')+'>'+
+        (x[1] ? '<img src="/public/icons/platforms/'+x[1]+'.svg" alt="" width="28" height="28">' : globe)+'</span><small>'+esc(x[0])+'</small></a>';
+    }).join('') + '</div>' : '';
+  var text = l.description || l.tagline || '';
+  var about = '<div><h2 class="section-title">About</h2>' + (text ? '<p class="about-text">'+esc(text)+'</p>' : '') + '<div class="yt-stats" id="yt-stats"></div>' + icons + '</div>';
+  var video = '<div id="yt-main"><div class="film-video" id="yt-player"><div class="yt-wait">Loading their latest video&hellip;</div></div><div class="film-cap" id="yt-cap"></div></div>';
+  return '<div class="section"><div class="film-grid" id="yt-top">' + video + about + '</div>' + renderOwnership(l) + '</div>' +
+    '<div class="section" id="yt-latest" hidden><h2 class="section-title">Latest videos</h2><div class="yt-grid"></div>' +
+    '<button type="button" class="pp-act pp-act-2 yt-more" hidden>Show more</button></div>';
+}
+function loadYouTube(l){
+  var top = document.getElementById('yt-top'); if(!top) return;
+  var player = document.getElementById('yt-player'), cap = document.getElementById('yt-cap'), sec = document.getElementById('yt-latest');
+  var grid = sec.querySelector('.yt-grid'), more = sec.querySelector('.yt-more'), shown = 12, VIDS = [], on = '';
+  function when(iso){ var t = iso ? new Date(iso) : null; return t && !isNaN(t) ? t.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function play(v, auto){
+    on = v.id;
+    player.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.id)+'?rel=0'+(auto ? '&autoplay=1' : '')+'" title="'+esc(v.title)+'" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+    cap.textContent = v.title + (v.published ? ' · ' + when(v.published) : '');
+    Array.prototype.forEach.call(grid.querySelectorAll('.yt-card'), function(b){ var is = b.getAttribute('data-yt') === on; b.classList.toggle('on', is); b.setAttribute('aria-pressed', is ? 'true' : 'false'); });
+  }
+  function draw(){
+    grid.innerHTML = VIDS.slice(0, shown).map(function(v){
+      return '<button type="button" class="yt-card'+(v.id === on ? ' on' : '')+'" data-yt="'+esc(v.id)+'" aria-pressed="'+(v.id === on)+'">' +
+        '<img src="https://i.ytimg.com/vi/'+encodeURIComponent(v.id)+'/mqdefault.jpg" alt="" loading="lazy"><b>'+esc(v.title)+'</b><small>'+esc(when(v.published))+'</small></button>';
+    }).join('');
+    more.hidden = VIDS.length <= shown;
+  }
+  grid.addEventListener('click', function(e){
+    var b = e.target.closest('[data-yt]'); if(!b) return;
+    var v = VIDS.filter(function(x){ return x.id === b.getAttribute('data-yt'); })[0]; if(!v) return;
+    play(v, true);
+    var r = player.getBoundingClientRect(), navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 64;
+    if(r.top < navH || r.bottom > window.innerHeight) window.scrollTo({ top: window.scrollY + r.top - navH - 16, behavior: 'smooth' });
+  });
+  more.addEventListener('click', function(){ shown += 12; draw(); });
+  fetch(SUPABASE_URL + '/functions/v1/ve-youtube', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'videos', slug: l.slug }) })
+    .then(function(r){ return r.json(); }).then(function(d){
+      VIDS = (d && d.videos || []).filter(function(v){ return v && /^[\w-]{11}$/.test(v.id || ''); });
+      var c = d && d.channel || {}, st = document.getElementById('yt-stats');
+      if(st && (c.subscribers || c.video_count)) st.textContent = [c.subscribers ? Number(c.subscribers).toLocaleString('en-US') + ' subscribers' : '', c.video_count ? Number(c.video_count).toLocaleString('en-US') + ' videos' : ''].filter(Boolean).join(' · ');
+      if(!VIDS.length){ var m = document.getElementById('yt-main'); if(m) m.remove(); top.style.gridTemplateColumns = '1fr'; return; }
+      play(VIDS[0], false); draw(); sec.hidden = false;
+    }).catch(function(){ var m = document.getElementById('yt-main'); if(m) m.remove(); top.style.gridTemplateColumns = '1fr'; });
 }
 function platformList(l){
   var platforms = [];
@@ -3402,7 +3478,7 @@ function renderListing(l){
   // OVERVIEW content
   var overviewContent = '';
   if(person) {}
-  else if(l.category === 'Documentaries & Films' && !DEMO) {}
+  else if((l.category === 'Documentaries & Films' || l.category === 'YouTube') && !DEMO) {}
   else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
@@ -3426,7 +3502,7 @@ function renderListing(l){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
   } else if(catType === 'media'){
-    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : l.category === 'Documentaries & Films' && !DEMO ? renderFilmOverview(l) : renderPlatforms(l);
+    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : l.category === 'Documentaries & Films' && !DEMO ? renderFilmOverview(l) : l.category === 'YouTube' && !DEMO ? renderYouTubeOverview(l) : renderPlatforms(l);
     if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
   } else {
     if(l.core_services && l.core_services.length){
@@ -4294,6 +4370,7 @@ if(!slug || slug === 'listing'){
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
+      if(l.category === 'YouTube' && !DEMO) loadYouTube(l);
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them

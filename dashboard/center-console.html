@@ -2724,6 +2724,14 @@
   }
 
   var DASH_ALL = { events: false, directory: false }, dashEvBanner = null, dashEvCal = null, dashDirBanner = null;
+  // The Directory tab's banner names the section on show, and on Media its picker lists the kinds of media instead of the cities
+  // (Sean, 2026-10-29), the same as /directory.
+  function dashDirSection(k, label, subs) {
+    if (!dashDirBanner) return;
+    dashDirBanner.setLabel(label);
+    if (k === 'media' && subs && subs.list.length) dashDirBanner.setChoices(subs.list, subs.active, subs.pick, 'Kind of media');
+    else dashDirBanner.setChoices(null);
+  }
   // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
   function dashBannerPick(which, slug, member) {
     if (!slug) {
@@ -3550,7 +3558,7 @@
     }
     // All cities: every listing, by region, the same as /directory.
     if (!active && window.VERegionDirectory) {
-      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory', onSection: function (k, label) { if (dashDirBanner) dashDirBanner.setLabel(label); } });
+      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory', onSection: dashDirSection });
       return;
     }
     var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
@@ -3568,7 +3576,7 @@
       matchListing: cfg.matchListing,
       onOpenListing: openDashboardListing,
       url: '/dashboard/directory',
-      onSection: function (k, label) { if (dashDirBanner) dashDirBanner.setLabel(label); }
+      onSection: dashDirSection
     };
     if (cfg.counties) initConfig.counties = cfg.counties;
     window.VERegionDirectory.init(initConfig);
