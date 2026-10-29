@@ -16,7 +16,7 @@
  * goes through ve-guide-unlock (status, unlock, checkout) with slug stadium-arena-guide; until that row is published the
  * offer reads Coming soon.
  *
- * Reports: any Passport holder, Guide or not, inside the venue (the browser's location, checked on the server against the
+ * Reports: a Passport holder who owns the Guide (bounties unlock with it), inside the venue (the browser's location, checked on the server against the
  * venue's circle), with a photo (shrunk to 1600 px JPEG here, which drops its location data). The team accepts them in
  * Depot > Venues. The points are ve_venue_report_points: Still here pays a bounty to the first member to confirm an item no member
  * has checked in 35 days (Sean, 2026-10-29: "you want to be first to action"), then its usual amount; the limits are
@@ -197,7 +197,7 @@
     var badge = v.free && !owner() ? tagHtml('Free to everyone', 'sa-tag-free') : locked ? tagHtml('Members', 'sa-tag-lock') : '';
     var tags = tagHtml(v.items ? v.items + ' Vegan item' + (v.items === 1 ? '' : 's') : 'Nothing listed yet', v.items ? 'sa-tag-new' : 'sa-tag-stale') +
       (v.last ? tagHtml('Checked ' + fmtDate(v.last), 'sa-tag-fresh') : '') +
-      (v.bounties ? tagHtml(v.bounties + (v.bounties === 1 ? ' bounty' : ' bounties') + ' open', 'sa-tag-bounty') : '');
+      (v.bounties && owner() ? tagHtml(v.bounties + (v.bounties === 1 ? ' bounty' : ' bounties') + ' open', 'sa-tag-bounty') : '');
     var pic = v.image ? '<span class="sa-vimg" style="background-image:url(\'' + esc(v.image) + '\')" role="img" aria-label="' + esc(v.name) + ', illustrated">' + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>'
       : '<span class="sa-vimg sa-vimg-none">' + (ICON[v.kind] || ICON.stadium) + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>';
     return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '">' + pic + '<span class="sa-vbody"><h3>' + esc(v.name) + '</h3>' +
@@ -220,7 +220,7 @@
   }
   // The first member to confirm an item no one has checked lately earns the bounty; after that Still here pays its usual amount.
   function firstPts() { var p = POINTS.confirm; return p && p.first_with_photo ? p.first_with_photo : 0; }
-  function bountyTag(it) { return it && it.bounty && firstPts() ? tagHtml('Bounty: first to confirm, ' + pts(firstPts()) + ' points', 'sa-tag-bounty') : ''; }
+  function bountyTag(it) { return owner() && it && it.bounty && firstPts() ? tagHtml('Bounty: first to confirm, ' + pts(firstPts()) + ' points', 'sa-tag-bounty') : ''; }
   function srcLine(it) {
     var s = it.sources || [];
     if (!s.length) return '';
@@ -358,7 +358,7 @@
       ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
       ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
     ];
-    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Any Passport holder can send one, with or without the Guide.') +
+    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Bounties are part of the Guide: once it is yours, every report you send from inside earns points.') +
       '<div class="sa-ptable" role="table" aria-label="Points for each kind of report"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader">With a photo</span><span role="columnheader">Without</span></div>' +
       rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span><span role="cell"><b>' + pts(r[2]) + '</b> points</span><span role="cell"><b>' + pts(r[3]) + '</b> points</span></div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open the venue while you are there and tap <b>Still here</b>, <b>Update</b> or <b>Comment</b> on an item, or <b>Add something missing</b>.</li>' +
@@ -399,7 +399,9 @@
     if (kind === 'choose' && item) return viewChoose(v, item, back);
     if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
-      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>' : '';
+      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+      // Bounties unlock with the Guide (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock").
+      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + ', ' + esc(item.spot.where || '') + '</p>' : '';
     var kinds = item ? '<div class="sa-kinds">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
@@ -446,6 +448,7 @@
     no_position: function () { return 'We need your location once to check you are inside the venue.'; },
     no_location: function (d, v) { return 'Reports for ' + v.name + ' open soon.'; },
     already_today: function () { return 'You already sent this report today. Thank you!'; },
+    guide_required: function () { return 'Bounties unlock with the Guide. Get it under Get access.'; },
     daily_limit: function () { return 'That is the most reports for one day. Thank you, and come back next game.'; },
     note_required: function () { return 'Add a few words first.'; },
     bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
@@ -503,7 +506,7 @@
     var m = mode();
     var list = '<div class="dg-access"><ul>' +
       '<li><b>Every venue:</b> the stadiums and arenas in our cities, each with its stands with Vegan food and where they are.</li>' +
-      '<li><b>Checked by members:</b> every item says when a member last confirmed it from inside, and where it came from.</li>' +
+      '<li><b>Bounties:</b> earn points for checking what is still there, and be first to confirm an item for the bounty.</li><li><b>Checked by members:</b> every item says when a member last confirmed it from inside, and where it came from.</li>' +
       '<li><b>My list:</b> save the venues you go to and the items you want to find.</li>' +
       '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
