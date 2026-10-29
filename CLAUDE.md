@@ -1305,6 +1305,43 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
+**Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
+where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
+text on the right"; migration `20261029_film_pages.sql`). A Documentaries & Films listing's Overview (`renderFilmOverview` in
+`directory/listing.html`) is **Where to watch** (square icons like a podcast's Listen on, each with Free, Rent or buy or Stream under it;
+`details.watch` `[{kind: website|youtube|netflix|apple_tv, url, note}]`, `WATCH` in the page; marks in `/public/icons/platforms/`), then the
+video on the left (`details.video` `{id, kind: trailer|film, channel}`, a `youtube-nocookie` embed that goes full screen, captioned Official
+trailer or The full film, shared free by its makers) and **About** on the right (`details.summary`, longer than the card's description, then
+Directed by, Released, Runtime); stacked on phones. Every video is a YouTube upload from the filmmakers, their distributor or Netflix,
+checked with `ve-off-lookup` `yt` (YouTube oEmbed: title and channel), and every link opened with `ve-off-lookup` `page`, never taken from
+the import's `details.streaming_platforms` (names only, never checked, not shown). Netflix is listed only for its originals (Seaspiracy):
+its pages do not say what streams in the US. On 2026-10-29: 13 of 18 have a video (Earthlings, Forks Over Knives, Dominion, Meet Your Meat and
+PlantPure Nation the full film, free from their makers), 15 have where-to-watch links; They're Trying to Kill Us, Vegucated, Christspiracy,
+Live and Let Live and The End of Meat have no upload from their makers yet. The same check found four film websites gone (letlivefilm.com
+and theendofmeat.com now serve gambling sites; gamechangersmovie.com and aprayerforcompassion.com no longer exist), cleared with a
+`ve_listing_edits` row each. Not yet: Amazon (Prime Video links not checked) and fields for these in the listing editor.
+**On our podcast** (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
+these films as well... anyone else that's been in a documentary"; migration `20261029_film_podcasts.sql`): under About, a film lists our
+episodes with the people who made it or are in it (`details.film_podcasts` `[{show, guid, with, person?}]`: the show's Directory slug, the
+feed guid, "Keegan Kuhn, co-director" or "Dr. Michael Klaper, in the film", and their People slug), read through `ve-podcast` `episode`
+(`loadFilmPods` in `directory/listing.html`), two across on desktop, the directors first, Play in a player docked above, with their People tiles above it. The directors panel (Vegans Explore Podcast 57: Shaun Monson, Louie Psihoyos, Marc Pierschel,
+Keegan Kuhn) is on Earthlings, The Game Changers, Live and Let Live, The End of Meat, Cowspiracy, What the Health and They're Trying to Kill
+Us; John Lewis on They're Trying to Kill Us; Klaper on Cowspiracy and What the Health; Barnard on What the Health, Forks Over Knives, Eating
+You Alive and They're Trying to Kill Us; Dotsie Bausch on The Game Changers. Who is in which film is checked against its cast before a row
+goes in (Klaper is not in Forks Over Knives or Eating You Alive). The four directors got People profiles the same day (Sean: "Can you
+create people profiles for those directors?"; migration `20261029_people_directors.sql`): Shaun Monson, Louie Psihoyos and Marc Pierschel
+were quarantined rows from the May Instagram import and became the profiles (handles kept), Keegan Kuhn is new; Content Creators, credited
+as Panelist on episode 57, their films as Their work (our own pages open in place), bios from the panel's transcript (recorded in spring
+2020, so read for dated lines), moments by the content index's speaker labels. Photos: Shaun and Louie from their Instagram; Marc's
+account is his studio's rabbit logo (removed) and Keegan's was not found, so both show their letter.
+**Featured people** (named People in this film until Sean's "people featured people" the same day; Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even vote
+for them"; migration `20261029_film_people.sql`): above On our podcast, the People listings who made the film or are in it
+(`details.film_people` `[{person, role}]`) as the Directory's own card with Votes (`loadFilmPeople`, which loads
+`/public/ve-region-directory.js` on first need), two columns (Sean, 2026-10-29: three squished the words), one on phones. What the Health: Joel Kahn, Klaper, Barnard;
+Cowspiracy: Klaper; Forks Over Knives and Eating You Alive: Barnard; They're Trying to Kill Us: John Lewis, Barnard; The Game Changers: Dotsie
+Bausch; and since the same day the four directors as Director or Co-director, sorted first. IMDb and Wikipedia do not resolve from the build session, so casts were checked through published cast listings; Torre Washington
+was not found in The Game Changers' cast and is left out until it is confirmed.
+
 ## People (Sean, 2026-10-28)
 
 "A people directory... people that we've actually interacted with... the incentive for organizations to want to work with us... we're
@@ -2111,7 +2148,30 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   60; were 5 paid and 20 sent). The Guides tag each open item **Bounty: first to confirm** and each venue card **N bounties open**;
   `/bounties` has the always-open card **Be first at the stadiums** (`?campaign=venues`, `ve-venues` `bounties`: by city, each venue's
   open items and points, no item names, only Guides that are published). Defaults Logan set, Sean's to change.
-- **The Airport Guide, built 2026-10-29, not published** (Sean: "Let's look at the airport guide now"; migrations
+  **Bounties unlock with the Guide** (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock"):
+  only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
+  the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
+  waiting, with Get the Guide) to everyone else. Every Guide's Get access lists Bounties.
+  **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
+  they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
+  open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
+  **Try it** (a working Get me there on the free venue from a set start, D7 at FLL, section 124 at Hard Rock), How to use it (pick,
+  type your gate or section, save), Built with you (we started with what we could find; members keep it right) beside the
+  Bounties card (live points from `bounties`), Newly added (the four latest, `list` `added`), and Get every venue.
+  Reworked the same day (Sean: "a little jumbled... have the image... to the right... six different airports... all the way across... if
+  Nori's visible... four, but full width"): Try it is its words and result beside the free venue's picture (both open it, starting
+  from the demo gate or section), then How to use it, Get every venue, Built with you and Bounties, and Newly added: six across with
+  the Guide hidden (`.dg-min`), four with it showing, two on phones. The full list
+  with the city filter is the Airports / Venues tab only. Nori's and River's Overview lines are text drafts for Sean.
+  **Queued by Sean, not built** (2026-10-29: "let's not steer too far away from the airport guide... we can always cue this for
+  later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
+  evergreen bounties (check in where you go, volunteer with a nonprofit, is this place still open?); paid jobs such as attending an
+  event for us, Level 2 and up, with a stipend; and past event jobs leaving the list once claims close.
+- **The Airport Guide, launched 2026-10-29** (Sean: "I love it. Let's lock it and let's launch the airport guide"; migration
+  `20261029_airport_guide_launch.sql`; the Overview locked the same day, canon `canon-ve-venue-guides` v3): published, indexed, its
+  card fifth in the Guide catalog (label Travel, banner `public/guides/airport-guide.jpg`: Nori in the black tee with a boarding pass
+  and a coffee, the locked banner style), its airports in the venue bounties. Nori's lines show as text; `CLIPS` is still empty.
+  Built (Sean: "Let's look at the airport guide now"; migrations
   `20261029_airport_guide.sql`, `20261029_airports_seed.sql`, run through the one-time `ve-once-airports`, now the 410 stub). The same
   engine: `ve-venues` serves both Guides (`GUIDES`, the body's `guide`; a venue's kind picks its Guide), the same reports, points, saves
   and Depot > Venues. Page `guides/airport-guide.html` and `guide-scripts/airport-guide.js` (`noindex`, Nori on the right, her lines
@@ -2123,6 +2183,12 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   PBI, MCO, TPA, JAX, ATL, DCA, IAD, BWI, PHL, JFK, LGA, EWR, LAX, LHR; 114 spots, 153 items), each pinned from Google (`locate`) with
   its illustration (`public/guides/airports/<slug>.webp`). Gate ranges no source confirmed are left empty (EWR Terminal B, LAX, LHR,
   JFK Terminal 5, LGA Terminal C, TPA Airside E). Launch = the `ve_guides` row `airport-guide` published, `noindex` off, a catalog card.
+  **Tampa's gates** came from its own gate map (Sean's upload, May 2024; migration `20261029_tpa_gates.sql`): A 1 to 18, C 20 to 45,
+  E 62 to 75, F 78 to 90; Panda Express pinned at E69. **The rest as a research bounty** (Sean, 2026-10-29: "let's experiment with
+  getting the rest of these items as one bounty that a person can complete for like 150 points"; migration
+  `20261029_bounty_map_the_venues.sql`): the Bounties campaign `map-the-venues` (ongoing, South Florida, until 2026-11-12), one bundle
+  job, 150 points, one person, seven parts (EWR Terminal B, LAX, JFK Terminal 5, LGA Terminal C, Heathrow, Yankee Stadium, UBS Arena):
+  each an official map dated 2024 or later with its link, checked against the official site in Depot > Bounties before paying.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

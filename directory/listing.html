@@ -131,6 +131,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listen-icon span{width:56px;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--ve-border);background:#fff;transition:.15s}
 .listen-icon:hover span{border-color:#5EC47A;transform:translateY(-1px)}.listen-icon:focus-visible{outline:2px solid #5EC47A;outline-offset:3px;border-radius:12px}
 .listen-icon small{font-size:10.5px;font-weight:700;text-align:center;line-height:1.25;color:var(--ve-text-75)}
+.listen-icon em{font-style:normal;font-size:10px;font-weight:600;color:var(--ve-text-75);margin-top:-4px;text-align:center}
+/* A film's Overview (Sean, 2026-10-29): where to watch, then the video on the left and About on the right; stacked on phones */
+.film-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:start}
+.film-video{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000}
+.film-video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.film-cap{font-size:11.5px;font-weight:700;color:var(--ve-text-75);margin-top:8px}
+.film-facts{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-size:12.5px;color:var(--ve-text-75)}
+.film-facts b{font-weight:800;color:var(--ve-text)}
+@media(max-width:900px){.film-grid{grid-template-columns:minmax(0,1fr);gap:18px}}
 .platform-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;text-decoration:none;color:var(--ve-text);font-family:Montserrat,sans-serif;transition:.15s;cursor:pointer}
 .platform-btn:hover{border-color:#5EC47A;background:var(--ve-green-light)}
 .platform-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}
@@ -741,6 +750,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-act{padding:8px 14px;border-radius:6px;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff;font:800 11px Montserrat,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
 .pp-act-2{background:#fff;color:#1a1a1a}
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
+#film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
+#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:560px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1343,6 +1356,99 @@ function renderPodcastOverview(l){
       return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span'+(file ? '' : ' style="background:'+x.color+'1a"')+'>'+ic+'</span><small>'+esc(x.label)+'</small></a>';
     }).join('') + '</div></div>' : '') +
     '<div class="section" id="ep-section" hidden><h2 class="section-title">Episodes</h2><div id="ep-host"></div></div>';
+}
+// A film's Overview (Sean, 2026-10-29: "a trailer from like YouTube... a little bit more of a summary... where it can be viewed, like
+// if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the text on the right").
+// details.watch [{kind, url, note}] (website, youtube, netflix, apple_tv; each link checked to open that film), details.video {id, kind:
+// trailer | film} (a YouTube upload from the filmmakers or their distributor, checked by YouTube oEmbed), details.summary (longer than
+// the card's description), details.director and details.runtime_minutes. The import's details.streaming_platforms had no links and was
+// never checked, so it is not shown.
+var WATCH = {
+  website: ['Official site', null, '#2d7d31'],
+  youtube: ['YouTube', 'youtube'],
+  netflix: ['Netflix', 'netflix'],
+  apple_tv: ['Apple TV', 'apple-tv']
+};
+function renderFilmOverview(l){
+  var d = l.details || {}, v = d.video && /^[\w-]{11}$/.test(d.video.id || '') ? d.video : null;
+  var watch = (Array.isArray(d.watch) ? d.watch : []).filter(function(w){ return WATCH[w.kind] && /^https:\/\//.test(w.url || ''); });
+  var globe = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>';
+  var icons = watch.length ? '<div class="section"><h2 class="section-title">Where to watch</h2><div class="listen-icons">' + watch.map(function(w){
+      var m = WATCH[w.kind], ic = m[1] ? '<img src="/public/icons/platforms/'+m[1]+'.svg" alt="" width="28" height="28">' : globe;
+      return '<a href="'+esc(w.url)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(m[0] + (w.note ? ', ' + w.note : ''))+'" aria-label="'+esc(m[0])+'"><span'+(m[1] ? '' : ' style="background:'+m[2]+'1a"')+'>'+ic+'</span><small>'+esc(m[0])+'</small>'+(w.note ? '<em>'+esc(w.note)+'</em>' : '')+'</a>';
+    }).join('') + '</div></div>' : '';
+  var text = d.summary || l.description || l.tagline || '';
+  var facts = [['Directed by', d.director], ['Released', d.release_year], ['Runtime', d.runtime_minutes ? d.runtime_minutes + ' min' : '']].filter(function(f){ return f[1]; });
+  var about = '<div><h2 class="section-title">About</h2>' + (text ? '<p class="about-text">'+esc(text)+'</p>' : '') +
+    (facts.length ? '<div class="film-facts">' + facts.map(function(f){ return '<span>'+esc(f[0])+' <b>'+esc(f[1])+'</b></span>'; }).join('') + '</div>' : '') + '</div>';
+  var video = v ? '<div><div class="film-video"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.id)+'?rel=0" title="'+esc(l.name + (v.kind === 'film' ? ', the full film' : ', trailer'))+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>' +
+    '<div class="film-cap">'+(v.kind === 'film' ? 'The full film, shared free by its makers' : 'Official trailer')+'</div></div>' : '';
+  var pods = Array.isArray(d.film_podcasts) && d.film_podcasts.length ? '<div class="section" id="film-pods"><h2 class="section-title">On our podcast</h2>' +
+    '<p class="pp-sub">Our conversations with the people who made this film or appear in it.</p><div class="vep-dock" data-vep-always></div>' +
+    '<div class="pp-scroll"><div class="vep-list"><p class="pp-empty">Loading...</p></div></div></div>' : '';
+  var people = Array.isArray(d.film_people) && d.film_people.length ? '<div class="section" id="film-people"><h2 class="section-title">Featured people</h2>' +
+    '<p class="pp-sub">The people who made it or appear in it that we have interviewed. Vote for them like any listing.</p>' +
+    '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>' : '';
+  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + people + pods;
+}
+// Featured people (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
+// vote for them"). details.film_people [{person, role}] are People listings, drawn with the Directory's own card and votes
+// (VERegionDirectory.card / wire, loaded on first need), two columns beside the sidebar (Sean, 2026-10-29: three squished the words), one on phones: directors, co-directors, then the rest.
+function loadFilmPeople(l){
+  var RANK = { 'Director': 0, 'Co-director': 1 };
+  var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; })
+    .map(function(x, i){ return [x, i]; }).sort(function(a, b){ var ra = RANK[a[0].role] == null ? 2 : RANK[a[0].role], rb = RANK[b[0].role] == null ? 2 : RANK[b[0].role]; return ra - rb || a[1] - b[1]; })
+    .map(function(p){ return p[0]; });
+  var grid = document.querySelector('#film-people .rank-grid'); if(!grid || !list.length) return;
+  var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+    var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+  });
+  ready.then(function(){
+    if(!window.VERegionDirectory) return;
+    VERegionDirectory.css();
+    var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    var sel = VERegionDirectory.FIELDS + ',person_title:details->person->>title,specialty:details->person->>specialty';
+    return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + list.map(function(x){ return encodeURIComponent(x.person); }).join(',') + ')&select=' + encodeURIComponent(sel), { headers: H })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+        var by = {}; (rows || []).forEach(function(r){ by[r.slug] = r; });
+        var cards = list.map(function(x){ return by[x.person]; }).filter(Boolean);
+        if(!cards.length){ document.getElementById('film-people').hidden = true; return; }
+        grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
+        VERegionDirectory.wire(grid.parentNode);
+      });
+  }).catch(function(){ var sec = document.getElementById('film-people'); if(sec) sec.hidden = true; });
+}
+// On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
+// these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
+// is read through ve-podcast `episode` and drawn as a person page's row (ppEpRow: Play in the docked player, Save), the directors first,
+// then the newest, two across on desktop. Their People profiles are the tiles above it (loadFilmPeople).
+function loadFilmPods(l){
+  var list = ((l.details || {}).film_podcasts || []).filter(function(x){ return x && x.show && x.guid; });
+  var box = document.querySelector('#film-pods .vep-list'); if(!box || !list.length) return;
+  if(window.VEEpisodes) VEEpisodes.css();
+  var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+  var slugs = list.map(function(x){ return x.show; }).filter(function(v, i, a){ return a.indexOf(v) === i; });
+  var shows = fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&select=id,slug,name,logo_url', { headers: H })
+    .then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+  var eps = Promise.all(list.map(function(x){
+    return fetch(SUPABASE_URL + '/functions/v1/ve-podcast', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ action: 'episode', slug: x.show, guid: x.guid }) })
+      .then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ return d && d.episode; }).catch(function(){ return null; });
+  }));
+  Promise.all([shows, eps]).then(function(r){
+    var sh = {}; (r[0] || []).forEach(function(s){ sh[s.slug] = { id: s.id, slug: s.slug, name: s.name, image: s.logo_url || '' }; });
+    var rows = list.map(function(x, i){
+      var ep = r[1][i], show = sh[x.show]; if(!ep || !ep.audio || !show) return null;
+      return { x: x, ep: Object.assign({}, ep, { summary: '', show: show }) };
+    }).filter(Boolean).sort(function(a, b){
+      var da = /director/i.test(a.x.with), db = /director/i.test(b.x.with);
+      return da !== db ? (da ? -1 : 1) : String(b.ep.date || '').localeCompare(String(a.ep.date || ''));
+    });
+    if(!rows.length){ var sec = document.getElementById('film-pods'); if(sec) sec.hidden = true; return; }
+    box.innerHTML = rows.map(function(o){
+      var show = o.ep.show; o.ep.image = show.image || o.ep.image || ''; PP_EPS[show.id + '|' + o.ep.guid] = o.ep;
+      return window.VEEpisodes ? VEEpisodes.row(o.ep, show, { pre: o.x.with + ' · ' + show.name }) : '';
+    }).join('');
+  });
 }
 function platformList(l){
   var platforms = [];
@@ -2365,7 +2471,10 @@ function renderPersonOverview(l){
   // Their work: an intake page, a program, a product, a book (details.person.links).
   var links = (p.links || []).filter(function(x){ return x && httpsOnly(x.url); });
   if(links.length) h += '<div class="section"><h2 class="section-title">Their work</h2><div class="pp-links">' +
-    links.map(function(x){ return '<a class="pp-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" data-act="website">' + esc(x.label || 'Visit') + ' <span aria-hidden="true">&#8599;</span></a>'; }).join('') + '</div></div>';
+    links.map(function(x){
+      // Our own pages (a director's films in the Directory) open in place; anything else in a new tab.
+      var ours = /^https:\/\/(www\.)?vegansexplore\.com\//i.test(x.url), href = ours ? x.url.replace(/^https:\/\/(www\.)?vegansexplore\.com/i, '') : x.url;
+      return '<a class="pp-link" href="' + esc(href) + '"' + (ours ? '' : ' target="_blank" rel="noopener" data-act="website"') + '>' + esc(x.label || 'Visit') + (ours ? '' : ' <span aria-hidden="true">&#8599;</span>') + '</a>'; }).join('') + '</div></div>';
   // Their own show, when it is in our Media section (details.person.shows), filled by loadPerson.
   // The player docks here, above every podcast list on the page, and changes with each Play (the podcast listing's player).
   h += '<div class="vep-dock" data-vep-always></div>';
@@ -3293,6 +3402,7 @@ function renderListing(l){
   // OVERVIEW content
   var overviewContent = '';
   if(person) {}
+  else if(l.category === 'Documentaries & Films' && !DEMO) {}
   else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
@@ -3316,7 +3426,7 @@ function renderListing(l){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }
   } else if(catType === 'media'){
-    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : renderPlatforms(l);
+    overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : l.category === 'Documentaries & Films' && !DEMO ? renderFilmOverview(l) : renderPlatforms(l);
     if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';
   } else {
     if(l.core_services && l.core_services.length){
@@ -4183,6 +4293,7 @@ if(!slug || slug === 'listing'){
       trackActions(l);
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
+      if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them

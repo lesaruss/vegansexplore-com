@@ -16,7 +16,7 @@
  * goes through ve-guide-unlock (status, unlock, checkout) with slug stadium-arena-guide; until that row is published the
  * offer reads Coming soon.
  *
- * Reports: any Passport holder, Guide or not, inside the venue (the browser's location, checked on the server against the
+ * Reports: a Passport holder who owns the Guide (bounties unlock with it), inside the venue (the browser's location, checked on the server against the
  * venue's circle), with a photo (shrunk to 1600 px JPEG here, which drops its location data). The team accepts them in
  * Depot > Venues. The points are ve_venue_report_points: Still here pays a bounty to the first member to confirm an item no member
  * has checked in 35 days (Sean, 2026-10-29: "you want to be first to action"), then its usual amount; the limits are
@@ -26,7 +26,7 @@
  * before that (CLIPS stays empty, and the bubble carries the words). No counts in anything River says.
  */
 (function () {
-  var SLUG = 'stadium-arena-guide';
+  var SLUG = 'stadium-arena-guide', FREE = 'hard-rock-stadium';
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var API = SB + '/functions/v1/ve-venues';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
@@ -34,8 +34,8 @@
 
   // The tabs, in tour order, and what River says on each (drafts for Sean's approval, 2026-10-28).
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. This is your Guide to Vegan food at the stadiums and arenas in our cities, stand by stand.',
-      sayMember: 'It\'s all yours now. Pick your venue before the game, and save the stands you want to hit.' },
+    { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. Type your section and I\'ll show you the closest Vegan food in the building. Try it right here at Hard Rock Stadium.',
+      sayMember: 'It\'s all yours. Save the stands for game day, and if something changed, tell us and earn points.' },
     { k: 'venues', label: 'Venues', say: 'Pick a venue to see every stand with Vegan food, where it is, and when a member last checked it. Hard Rock Stadium is free.',
       sayMember: 'Open a venue before you go. Every item shows where it is and when a member last checked it.' },
     { k: 'report', label: 'Help keep it right', say: 'Members keep this Guide right from their seats. Snap a photo inside the venue, tell us what changed, and earn points.',
@@ -176,19 +176,66 @@
     var el = document.getElementById('saCity'); if (!el) return;
     el.addEventListener('change', function () { try { sessionStorage.setItem('sa_city', el.value); } catch (e) {} route(); });
   }
+  // The Overview (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... how to use it... stress
+  // the idea that they can save the listings... the members help keep it accurate... make them excited about getting into it"):
+  // the promise, a working Get me there on the free venue, how to use it, built with members, bounties, newly added, and the way in.
+  // The list of every venue with its city filter lives on its own tab.
+  var OV = {"lib": "VEVenueMap", "demo": "124", "freeName": "Hard Rock Stadium", "place": "venue", "listHash": "#/venues", "venueHash": "#/venue/", "kicker": "The Stadium & Arena Guide", "choose": "Choose your venue", "promise": "Vegan food at the game, section by section.", "lede": "Every stand with Vegan food at the stadiums and arenas in our cities, and where it is. Type the section on your ticket and see the closest one, with the walk.", "tryTitle": "You are in section 124 at Hard Rock Stadium", "tryLede": "Here is what Get me there shows you: the closest Vegan food, the walk and the minutes. Open it to see the map of the bowl.", "step1": ["Pick your venue", "Choose your stadium or arena, before the game or once you are in your seat."], "step2": ["Type your section", "Enter the section on your ticket and press Get me there for the closest Vegan food, with the walk."], "step3": "Tap Save on a venue or an item and it waits in My list, ready on game day.", "built": "We started with what we could find: venue and team pages, menus and news from the last two years. From here it is our members who keep it right and fill in what is missing, every game they go to.", "newTitle": "The latest venues in the Guide", "joinTitle": "Get every venue", "getThere": "Get me there from your seat"};
+  var OV_ICON = {
+    pick: '<svg width="26" height="26" viewBox="0 0 24 24" ' + S + '><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
+    go: '<svg width="26" height="26" viewBox="0 0 24 24" ' + S + '><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
+    save: '<svg width="26" height="26" viewBox="0 0 24 24" ' + S + '><path d="M6 3h12v18l-6-4-6 4z"/></svg>'
+  };
   function viewOverview() {
-    var grid = !VENUES ? '<div class="dg-loading">Loading the venues...</div>'
-      : cityPicker() + '<div class="sa-vgrid">' + VENUES.filter(inCity).map(venueCard).join('') + '</div>';
-    var more = [
-      ['#/report', '/public/guides/venues/river-report.webp', 'Help keep it right', 'At the game? Confirm what is still there, update what changed, or leave a comment and a photo. The team checks each one, and accepted ones earn points.'],
-      owner() ? ['#/mylist', '', 'My list', 'The venues and items you saved.'] : ['#/join', '', 'Get every venue', 'The Guide is $11 or ' + pts(ST.cost) + ' points, yours to keep. Hard Rock Stadium is free to everyone.']
-    ];
-    main.innerHTML = head('Stadium & Arena Guide', 'Choose your stadium', 'Every stand with Vegan food at the stadiums and arenas in our cities, where it is, and how to get there from your seat.') +
-      grid + '<div class="sa-more">' + more.map(function (m) {
-        return '<a class="sa-morecard' + (m[1] ? '' : ' sa-noimg') + '" href="' + m[0] + '">' + (m[1] ? '<span class="sa-vimg" style="background-image:url(\'' + m[1] + '\')"></span>' : '<span class="sa-moreic">' + ICON.list + '</span>') +
-          '<span class="sa-vbody"><h3>' + esc(m[2]) + '</h3><span class="sa-vmeta">' + esc(m[3]) + '</span></span></a>';
-      }).join('') + '</div>';
-    wireCity();
+    var own = owner();
+    var cta = own ? '<div class="dg-btns"><a class="dg-btn" href="' + OV.listHash + '">' + esc(OV.choose) + '</a><a class="dg-btn dg-ghost" href="#/mylist">My list</a></div>'
+      : '<div class="dg-btns"><a class="dg-btn" href="#/join">Get the Guide: $11 or ' + pts(ST.cost) + ' points</a><a class="dg-btn dg-ghost" href="' + OV.venueHash + FREE + '">Try ' + esc(OV.freeName) + ' free</a></div>';
+    var newest = !VENUES ? '<div class="dg-loading">Loading...</div>'
+      : '<div class="sa-vgrid ov-new">' + VENUES.slice().sort(function (a, b) { return String(b.added || '').localeCompare(String(a.added || '')) || (b.sort_order || 0) - (a.sort_order || 0); }).slice(0, 6).map(venueCard).join('') + '</div>';
+    main.innerHTML =
+      '<section class="ov-hero"><div class="dg-k">' + esc(OV.kicker) + '</div><h2 class="dg-h1">' + esc(OV.promise) + '</h2><p class="dg-lede">' + OV.lede + '</p>' + cta + '</section>' +
+      '<section class="ov-sec ov-try" aria-label="Try Get me there"><div class="ov-try-l"><div class="dg-k">Try it</div><h3>' + OV.tryTitle + '</h3><p>' + OV.tryLede + '</p><div id="ovDirs"><div class="dg-loading">Finding the closest Vegan food...</div></div>' +
+        '<a class="dg-btn" href="' + OV.venueHash + FREE + '">Open ' + esc(OV.freeName) + '</a></div>' +
+        '<a class="ov-try-img" href="' + OV.venueHash + FREE + '" aria-label="Open ' + esc(OV.freeName) + '"' + (freeImg() ? ' style="background-image:url(\'' + esc(freeImg()) + '\')"' : '') + '><span>Open ' + esc(OV.freeName) + '</span></a></section>' +
+      '<section class="ov-sec"><div class="dg-k">How to use it</div><h3 class="ov-h">Three steps, wherever you are</h3><div class="ov-steps">' +
+        [['pick', OV.step1[0], OV.step1[1]], ['go', OV.step2[0], OV.step2[1]], ['save', 'Save it for later', OV.step3]].map(function (s, i) {
+          return '<div class="ov-step"><span class="ov-ic">' + OV_ICON[s[0]] + '</span><b><span class="ov-n">' + (i + 1) + '</span>' + esc(s[1]) + '</b><p>' + esc(s[2]) + '</p></div>'; }).join('') + '</div></section>' +
+      (own ? '' : '<section class="ov-sec ov-join"><div><div class="dg-k">Get access</div><h3 class="ov-h">' + esc(OV.joinTitle) + '</h3><p>Every ' + esc(OV.place) + ' with ' + esc(OV.getThere) + ', My list, and the bounties. $11 or ' + pts(ST.cost) + ' points, yours to keep. Buying a Guide makes you a member of Vegans Explore.</p></div><a class="dg-btn" href="#/join">Get the Guide</a></section>') +
+      '<section class="ov-sec ov-built"><div><div class="dg-k">Built with you</div><h3 class="ov-h">Members keep it right</h3><p>' + OV.built + '</p>' +
+        '<ul class="ov-list"><li><b>Still here:</b> it is still sold, as written.</li><li><b>Something changed:</b> a new price, a new name, or it is gone.</li><li><b>Something missing:</b> a Vegan item or a spot that is not in the Guide yet.</li></ul>' +
+        '<p class="ov-small">Every item says where it came from and when a member last checked it, so you know what is fresh.</p></div>' +
+        '<a class="ov-bounty" href="' + (own ? '#/report' : '#/join') + '"><span class="ov-bk">Bounties</span><b>Be first to confirm an item and earn the bounty</b><span id="ovBounty">' + (own ? 'Every report you send from inside earns points, and the first to confirm an item earns the most.' : 'Bounties unlock with the Guide. Every report you send from inside earns points, and the first to confirm an item earns the most.') + '</span><i>' + (own ? 'How it works' : 'Get the Guide') + '</i></a></section>' +
+      '<section class="ov-sec"><div class="dg-k">Newly added</div><h3 class="ov-h">' + esc(OV.newTitle) + '</h3>' + newest + '<p class="ov-small"><a href="' + OV.listHash + '">See every ' + esc(OV.place) + ', by city</a></p></section>';
+    tryIt();
+    bountyLine(own);
+    // Opening the free one from Try it starts it where the demo stood, so the directions are already there.
+    [].forEach.call(main.querySelectorAll('.ov-try a'), function (l) { l.addEventListener('click', function () {
+      try { if (!localStorage.getItem(seatKey(FREE))) localStorage.setItem(seatKey(FREE), OV.demo); } catch (e) {}
+    }); });
+  }
+  function freeImg() { var v = (VENUES || []).filter(function (x) { return x.slug === FREE; })[0]; return v && v.image; }
+  // A working Get me there on the free one, from a set starting point, with the two closest spots.
+  function tryIt() {
+    var d = VENUE[FREE];
+    if (!d) { api({ action: 'venue', slug: FREE }).then(function (x) { VENUE[FREE] = x; if (!curView() || curView() === 'overview') tryIt(); }); return; }
+    var dirs = document.getElementById('ovDirs'); if (!dirs || !d.venue || !d.venue.layout || !window[OV.lib]) return;
+    var L = window[OV.lib];
+    var stands = d.spots.map(function (s, i) { return { n: i + 1, id: s.id, name: s.name, sections: s.map_sections, level: s.map_level, zone: s.zone }; })
+      .filter(function (s) { return (s.sections || []).length || s.level; });
+    var you = L.find(d.venue.layout, OV.demo), r = you ? L.route(d.venue.layout, you, stands) : null;
+    var best = r ? r.routes.filter(function (x) { return !x.rescreen; }).slice(0, 2) : [];
+    dirs.innerHTML = best.length ? '<ol class="sa-dirs">' + best.map(function (x) {
+      return '<li><span class="sa-dir-go" style="cursor:default"><span class="sa-pinno">' + x.stand.n + '</span><span><b>' + esc(x.stand.name) + '</b> <span class="sa-dir-meta">about ' + x.minutes + ' min</span></span></span><p>' + x.steps.map(esc).join(' ') + '</p></li>'; }).join('') + '</ol>' : '';
+  }
+  // What the bounties hold right now: an owner's open points, or what is waiting for anyone who gets the Guide.
+  function bountyLine(own) {
+    api({ action: 'bounties', hub: 'all' }).then(function (d) {
+      var el = document.getElementById('ovBounty'); if (!el || !d) return;
+      var mine = (d.venues || []).filter(function (v) { return v.guide === SLUG; }).reduce(function (n, v) { return n + (v.points || 0); }, 0);
+      var lock = (d.locked || []).filter(function (g) { return g.guide === SLUG; })[0];
+      if (own && mine) el.textContent = pts(mine) + ' points of bounties are open right now. The first to confirm an item earns the most.';
+      else if (!own && lock && lock.points) el.textContent = pts(lock.points) + ' points of bounties are waiting. They unlock with the Guide.';
+    }).catch(function () {});
   }
 
   // A venue is its picture (our own illustration, ve_venues.image_url), then its name, teams and what we know.
@@ -197,7 +244,7 @@
     var badge = v.free && !owner() ? tagHtml('Free to everyone', 'sa-tag-free') : locked ? tagHtml('Members', 'sa-tag-lock') : '';
     var tags = tagHtml(v.items ? v.items + ' Vegan item' + (v.items === 1 ? '' : 's') : 'Nothing listed yet', v.items ? 'sa-tag-new' : 'sa-tag-stale') +
       (v.last ? tagHtml('Checked ' + fmtDate(v.last), 'sa-tag-fresh') : '') +
-      (v.bounties ? tagHtml(v.bounties + (v.bounties === 1 ? ' bounty' : ' bounties') + ' open', 'sa-tag-bounty') : '');
+      (v.bounties && owner() ? tagHtml(v.bounties + (v.bounties === 1 ? ' bounty' : ' bounties') + ' open', 'sa-tag-bounty') : '');
     var pic = v.image ? '<span class="sa-vimg" style="background-image:url(\'' + esc(v.image) + '\')" role="img" aria-label="' + esc(v.name) + ', illustrated">' + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>'
       : '<span class="sa-vimg sa-vimg-none">' + (ICON[v.kind] || ICON.stadium) + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>';
     return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '">' + pic + '<span class="sa-vbody"><h3>' + esc(v.name) + '</h3>' +
@@ -220,7 +267,7 @@
   }
   // The first member to confirm an item no one has checked lately earns the bounty; after that Still here pays its usual amount.
   function firstPts() { var p = POINTS.confirm; return p && p.first_with_photo ? p.first_with_photo : 0; }
-  function bountyTag(it) { return it && it.bounty && firstPts() ? tagHtml('Bounty: first to confirm, ' + pts(firstPts()) + ' points', 'sa-tag-bounty') : ''; }
+  function bountyTag(it) { return owner() && it && it.bounty && firstPts() ? tagHtml('Bounty: first to confirm, ' + pts(firstPts()) + ' points', 'sa-tag-bounty') : ''; }
   function srcLine(it) {
     var s = it.sources || [];
     if (!s.length) return '';
@@ -358,7 +405,7 @@
       ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
       ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
     ];
-    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Any Passport holder can send one, with or without the Guide.') +
+    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Bounties are part of the Guide: once it is yours, every report you send from inside earns points.') +
       '<div class="sa-ptable" role="table" aria-label="Points for each kind of report"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader">With a photo</span><span role="columnheader">Without</span></div>' +
       rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span><span role="cell"><b>' + pts(r[2]) + '</b> points</span><span role="cell"><b>' + pts(r[3]) + '</b> points</span></div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open the venue while you are there and tap <b>Still here</b>, <b>Update</b> or <b>Comment</b> on an item, or <b>Add something missing</b>.</li>' +
@@ -399,7 +446,9 @@
     if (kind === 'choose' && item) return viewChoose(v, item, back);
     if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
-      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>' : '';
+      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+      // Bounties unlock with the Guide (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock").
+      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + ', ' + esc(item.spot.where || '') + '</p>' : '';
     var kinds = item ? '<div class="sa-kinds">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
@@ -446,6 +495,7 @@
     no_position: function () { return 'We need your location once to check you are inside the venue.'; },
     no_location: function (d, v) { return 'Reports for ' + v.name + ' open soon.'; },
     already_today: function () { return 'You already sent this report today. Thank you!'; },
+    guide_required: function () { return 'Bounties unlock with the Guide. Get it under Get access.'; },
     daily_limit: function () { return 'That is the most reports for one day. Thank you, and come back next game.'; },
     note_required: function () { return 'Add a few words first.'; },
     bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
@@ -503,7 +553,7 @@
     var m = mode();
     var list = '<div class="dg-access"><ul>' +
       '<li><b>Every venue:</b> the stadiums and arenas in our cities, each with its stands with Vegan food and where they are.</li>' +
-      '<li><b>Checked by members:</b> every item says when a member last confirmed it from inside, and where it came from.</li>' +
+      '<li><b>Bounties:</b> earn points for checking what is still there, and be first to confirm an item for the bounty.</li><li><b>Checked by members:</b> every item says when a member last confirmed it from inside, and where it came from.</li>' +
       '<li><b>My list:</b> save the venues you go to and the items you want to find.</li>' +
       '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
