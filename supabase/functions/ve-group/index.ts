@@ -392,6 +392,9 @@ Deno.serve(async (req) => {
     const { data: types } = await db.from('ve_ticket_types').select('id, name, price_cents, quantity, sold, pass_fee, active, sort').eq('event_id', e.id).eq('active', true)
       .order('sort').order('price_cents');
     const paid = (types || []).length > 0;
+    // Seats left count open checkouts too (held 35 minutes; ve_ticket_left), so the page never offers a seat someone is paying for.
+    const leftOf: Record<string, number | null> = {};
+    if (paid) { const { data: lf } = await db.rpc('ve_ticket_left', { p_event: e.id }); for (const r of lf || []) leftOf[r.type_id] = r.left_count; }
 
     if (action === 'event_tickets') {
       let mine: string[] = [], pass: string | null = null;
@@ -405,7 +408,7 @@ Deno.serve(async (req) => {
       }
       return json({ sale: true, group: { name: hg.name, slug: hg.slug }, over, refund_policy: e.refund_policy || '', fee_pct: feePct, max: Number(cfg.ticket_max_per_order ?? 10),
         types: (types || []).map((t: any) => ({ id: t.id, name: t.name, price_cents: t.price_cents, buyer_cents: priceFor(t.price_cents, 1, t.pass_fee, feePct).total,
-          left: t.quantity == null ? null : Math.max(0, t.quantity - t.sold) })),
+          left: t.quantity == null ? null : (leftOf[t.id] ?? Math.max(0, t.quantity - t.sold)) })),
         guest_pass: !paid && !over, viewer: { signed_in: !!member, active, tickets: mine, guest_pass: pass } });
     }
 
@@ -418,12 +421,14 @@ Deno.serve(async (req) => {
       if (!t) return json({ error: 'not_found', message: 'That ticket is not on sale.' }, 404);
       const qty = Math.floor(Number(body.quantity) || 1), max = Number(cfg.ticket_max_per_order ?? 10);
       if (qty < 1 || qty > max) return json({ error: 'quantity', message: `Up to ${max} tickets at a time.` }, 400);
-      if (t.quantity != null && t.sold + qty > t.quantity) return json({ error: 'sold_out', message: t.sold >= t.quantity ? 'Those tickets are sold out.' : `Only ${t.quantity - t.sold} left.` }, 409);
       const pr = priceFor(t.price_cents, qty, t.pass_fee, feePct);
       const test = await isTestAccount(member.email);
-      const { data: o, error: oe } = await db.from('ve_ticket_orders').insert({ event_id: e.id, ticket_type_id: t.id, member_id: member.id, group_partner_id: hp.id, quantity: qty,
-        unit_cents: t.price_cents, fee_cents: pr.fee, processing_cents: pr.processing, total_cents: pr.total, group_cents: pr.group, pass_fee: t.pass_fee, test }).select('id').single();
-      if (oe || !o) return json({ error: 'save_failed' }, 500);
+      // The order is written with the type's row locked, counting open checkouts, so the last seat is sold once (ve_ticket_order_open).
+      const { data: op, error: oe } = await db.rpc('ve_ticket_order_open', { p: { ticket_type_id: t.id, member_id: member.id, group_partner_id: hp.id, quantity: qty,
+        fee_cents: pr.fee, processing_cents: pr.processing, total_cents: pr.total, group_cents: pr.group, test } });
+      if (op?.error === 'sold_out') return json({ error: 'sold_out', message: op.left ? `Only ${op.left} left.` : 'Those tickets are sold out, or someone is paying for the last ones. Try again in a few minutes.' }, 409);
+      if (oe || !op?.ok) return json({ error: 'save_failed' }, 500);
+      const o = { id: op.id as string };
       const params = new URLSearchParams({
         mode: 'payment',
         'line_items[0][price_data][currency]': 'usd',
