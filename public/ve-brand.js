@@ -43,11 +43,13 @@
     name: 'LESARUSS.ai',
     home: 'https://lesaruss.ai',
     assetOrigin: 'https://vegansexplore.com',
-    // Votes on lesaruss.ai are for LESARUSS members: the $11 LESARUSS Passport (today it comes with a claim) or a Diplomat
-    // ($111, /join). Members sign in with Continue with LESARUSS (ve-auth.js, client 'lesaruss-ai', ve-lesaruss-sso), which
-    // lets in only a LESARUSS member (lr_member_entitled), and ve-votes counts their vote in the same pool as Vegans Explore.
-    passportUrl: '/join',
-    passportLabel: 'Become a Diplomat',
+    // Votes on lesaruss.ai are for LESARUSS members: the $11 LESARUSS Passport (lesaruss.ai/passport, paid through HQ's
+    // /api/passport, or with a claim) or a Diplomat ($111, /join). Members sign in with Continue with LESARUSS (ve-auth.js,
+    // client 'lesaruss-ai', ve-lesaruss-sso), which lets in only a LESARUSS member (lr_member_entitled), and ve-votes counts
+    // their vote in the same pool as Vegans Explore. The members window sends ?from= and ?back= to the Passport page.
+    passportUrl: '/passport',
+    passportLabel: 'Get the Passport, $11',
+    passportApi: HQ + '/api/passport',
     loginUrl: HQ + '/login',
     signIn: 'lesaruss',
     ssoClient: 'lesaruss-ai',
@@ -78,7 +80,7 @@
     claimUrl: function (slug) { return '/claim?listing=' + encodeURIComponent(slug || ''); },
     gates: {
       vote: { icon: 'heart', title: 'Voting is for LESARUSS members',
-        body: 'Member votes decide which businesses lead every list. Diplomats (<b>$111 for 111 days</b>) vote every day for the studios, venues and services they trust, and so does the owner who claims a listing with the <b>$11</b> LESARUSS Passport.' },
+        body: 'Member votes decide which businesses lead every list. A LESARUSS Passport, <b>$11 one time</b>, lets you vote every day for the studios, venues and services you trust. <a href="/join">Diplomats</a> vote too.' },
       save: { icon: 'bookmark', title: 'Saving is for Passport holders',
         body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' }
     },
