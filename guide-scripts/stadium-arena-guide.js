@@ -149,9 +149,34 @@
   // ---------- views ----------
   // The front page leads with the venues (Sean, 2026-10-29: "they need to see that visual of these are the different stadiums...
   // Choose your stadium"): one line on what it is for, the venue pictures, then what else is in the Guide, each with a picture.
+  // Choose the city (Sean, 2026-10-29: "the drop down underneath choose your stadium... they can choose their next city"): the
+  // chapters that have venues, kept for the visit, South Florida first.
+  var HUB_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'atlanta': 'Atlanta', 'philadelphia': 'Philadelphia', 'new-york': 'New York' };
+  function hubName(h) { var x = (window.VE_HUBS || []).filter(function (v) { return v.slug === h; })[0]; return x ? x.name : HUB_NAMES[h] || h; }
+  function cities() {
+    var seen = {}, out = [];
+    (VENUES || []).forEach(function (v) { if (v.hub && !seen[v.hub]) { seen[v.hub] = 1; out.push(v.hub); } });
+    return out;
+  }
+  function city() {
+    var c = ''; try { c = sessionStorage.getItem('sa_city') || ''; } catch (e) {}
+    var list = cities();
+    return c === 'all' || list.indexOf(c) >= 0 ? c : (list.indexOf('south-florida') >= 0 ? 'south-florida' : list[0] || 'all');
+  }
+  function cityPicker() {
+    var list = cities(); if (list.length < 2) return '';
+    var c = city();
+    return '<label class="sa-city"><span>City</span><select id="saCity">' + list.map(function (h) { return '<option value="' + esc(h) + '"' + (h === c ? ' selected' : '') + '>' + esc(hubName(h)) + '</option>'; }).join('') +
+      '<option value="all"' + (c === 'all' ? ' selected' : '') + '>All cities</option></select></label>';
+  }
+  function inCity(v) { var c = city(); return c === 'all' || v.hub === c; }
+  function wireCity() {
+    var el = document.getElementById('saCity'); if (!el) return;
+    el.addEventListener('change', function () { try { sessionStorage.setItem('sa_city', el.value); } catch (e) {} route(); });
+  }
   function viewOverview() {
     var grid = !VENUES ? '<div class="dg-loading">Loading the venues...</div>'
-      : '<div class="sa-vgrid">' + VENUES.map(venueCard).join('') + '</div>';
+      : cityPicker() + '<div class="sa-vgrid">' + VENUES.filter(inCity).map(venueCard).join('') + '</div>';
     var more = [
       ['#/report', '/public/guides/venues/river-report.webp', 'Help keep it right', 'At the game? Confirm what is still there, update what changed, or leave a comment and a photo. The team checks each one, and accepted ones earn points.'],
       owner() ? ['#/mylist', '', 'My list', 'The venues and items you saved.'] : ['#/join', '', 'Get every venue', 'The Guide is $11 or ' + pts(ST.cost) + ' points, yours to keep. Hard Rock Stadium is free to everyone.']
@@ -161,6 +186,7 @@
         return '<a class="sa-morecard' + (m[1] ? '' : ' sa-noimg') + '" href="' + m[0] + '">' + (m[1] ? '<span class="sa-vimg" style="background-image:url(\'' + m[1] + '\')"></span>' : '<span class="sa-moreic">' + ICON.list + '</span>') +
           '<span class="sa-vbody"><h3>' + esc(m[2]) + '</h3><span class="sa-vmeta">' + esc(m[3]) + '</span></span></a>';
       }).join('') + '</div>';
+    wireCity();
   }
 
   // A venue is its picture (our own illustration, ve_venues.image_url), then its name, teams and what we know.
@@ -179,9 +205,10 @@
     var f = sub === 'stadiums' ? 'stadium' : sub === 'arenas' ? 'arena' : '';
     var t = toggles([['All', '#/venues'], ['Stadiums', '#/venues/stadiums'], ['Arenas', '#/venues/arenas']], f === 'stadium' ? 'Stadiums' : f === 'arena' ? 'Arenas' : 'All');
     if (!VENUES) { main.innerHTML = head('Venues', 'Pick your venue', '', t) + '<div class="dg-loading">Loading the venues...</div>'; return; }
-    var list = VENUES.filter(function (v) { return !f || v.kind === f; });
-    main.innerHTML = head('Venues', 'Choose your stadium', 'South Florida first, then every city we are in. Each venue lists its stands with Vegan food and where to find them.', t) +
-      (list.length ? '<div class="sa-vgrid">' + list.map(venueCard).join('') + '</div>' : '<p class="dg-empty">No venues here yet.</p>');
+    var list = VENUES.filter(function (v) { return (!f || v.kind === f) && inCity(v); });
+    main.innerHTML = head('Venues', 'Choose your stadium', 'Pick your city, then your venue. Each one lists its stands with Vegan food and where to find them.', t) +
+      cityPicker() + (list.length ? '<div class="sa-vgrid">' + list.map(venueCard).join('') + '</div>' : '<p class="dg-empty">No venues here yet.</p>');
+    wireCity();
   }
 
   function freshTag(it) {
@@ -494,6 +521,12 @@
     if (view === 'mylist' && !owner()) view = 'overview';
     document.body.classList.toggle('dg-member', owner());
     drawJoinbox();
+    // River greets on arrival, then steps aside the first time they head into the venues (Sean, 2026-10-29: "if they're moving around
+    // at that point, then they're not interested in the tour. But if they are, they can always click on it"). Once a visit.
+    if ((view === 'venues' || view === 'venue') && !railEl.classList.contains('dg-folded')) {
+      var auto = ''; try { auto = sessionStorage.getItem('sa_river_auto') || ''; } catch (e) {}
+      if (!auto) { try { sessionStorage.setItem('sa_river_auto', '1'); } catch (e) {} setFold(true); }
+    }
     var key = view === 'venue' ? 'venues' : view === 'join' && owner() ? 'overview' : view;
     drawMenu(key);
     if (view === 'venue') { var s = sub.split('/'); viewVenue(s[0], s.slice(1).join('/')); }

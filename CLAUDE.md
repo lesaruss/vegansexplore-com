@@ -2029,6 +2029,19 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   ticket, C27) and 300; loanDepot drawn with home plate at the bottom (Promenade 1 to 40, Legends 200s, Vista 300s and the Home Run
   Porch on top). The middle is a court, a rink or a diamond (`fieldSvg`), and directions say the court or the rink. Their stands are
   pinned by section (Kaseya 105 and 117; loanDepot 19, 205 and 40); two stands at one section sit side by side.
+- **Up the East Coast** (Sean, 2026-10-29: "Central Florida... Atlanta... Philly... New York... then we can launch the guide";
+  migration `20261029_venues_east_coast.sql`, run through the one-time `ve-once-venues-east`, now the 410 stub, since it was too
+  long to paste). 18 more venues, each with its illustration and Google place: Central Florida (Camping World Stadium, Kia
+  Center, Inter&Co Stadium, Raymond James Stadium, Benchmark International Arena), Atlanta (Mercedes-Benz Stadium, State Farm
+  Arena, Truist Park), Philadelphia (Lincoln Financial Field, Citizens Bank Park, Xfinity Mobile Arena, Subaru Park) and New York
+  (MetLife Stadium, Yankee Stadium, Citi Field, Madison Square Garden, Barclays Center, UBS Arena). Items come from 2024 to 2026
+  sources (venue pages, team sites, PETA, VegNews, Veggl, local news) read through search, since those sites are not reachable
+  from the build session; anything known only from before 2024 was left out and anything unclear is Ask before you order.
+  Camping World Stadium, Inter&Co Stadium, Subaru Park and Barclays Center have no confirmed Vegan stand yet. Their maps wait on
+  seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
+  cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
+  time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
+  (`inset` box-shadow), so the scrolling column never clips it.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
