@@ -9,7 +9,8 @@
 //                                                   so a trailer is checked before a listing names it (2026-10-29).
 //   { action: 'page', urls: [...] (25) }          -> each page's status, final address and <title>, so a where-to-watch link
 //                                                   is checked to open that film (2026-10-29), and the YouTube ids the page
-//                                                   names (yt: links, embeds, TMDB's data-id, "videoId" in YouTube's pages).
+//                                                   names (yt: links, embeds, TMDB's data-id, "videoId" in YouTube's pages), and a
+//                                                   YouTube channel page's own channel id (channel), for its feed.
 //   { run, brands: [[key, offBrandTag], ...] }     -> Open Food Facts lookups, one brand at a time (6 at most),
 //                                                   saved to vegan-media/media/off/<run>.json.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -78,7 +79,9 @@ Deno.serve(async (req) => {
         const t = (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '';
         const og = (html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)/i) || [])[1] || '';
         const yt = [...new Set([...html.matchAll(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/)|youtu\.be\/|data-site="YouTube"[^>]*data-id="|data-id="(?=[\w-]{11}"[^>]*data-site="YouTube")|"videoId":\s*")([\w-]{11})/g)].map((m) => m[1]))].slice(0, 40);
-        out[u] = { status: r.status, final: r.url, title: t.trim().slice(0, 200), og_title: og.slice(0, 200), yt };
+        // A YouTube channel page names its own channel id (the canonical /channel/UC... link, "externalId"), for its feed (2026-10-29).
+        const channel = (html.match(/<link[^>]+rel=["']canonical["'][^>]+href=["']https:\/\/www\.youtube\.com\/channel\/(UC[\w-]{22})/i) || html.match(/"externalId":"(UC[\w-]{22})"/) || [])[1] || '';
+        out[u] = { status: r.status, final: r.url, title: t.trim().slice(0, 200), og_title: og.slice(0, 200), yt, channel };
       } catch (e) { out[u] = { error: String((e as Error).message || e) }; }
     }));
     return json(out);
