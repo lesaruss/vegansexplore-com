@@ -401,7 +401,7 @@ async function buildOne(bookId: string) {
   const d = cands[pick.match];
   if (!d || pick.match < 0) return fail('not_found', `No match (${found.via}): ` + String(pick.note || '').slice(0, 300));
   // English editions only (a Spanish La Promesa Del Meñique got through on 2026-10-29): Google's own word, then the match's.
-  if (!pick.english) return fail('set_aside', `Not an English edition: ${d.title}`);
+  if (!pick.english) return fail('not_found', `Only an edition in another language: ${d.title}`);
 
   // Open Library's editions when that is where it came from.
   if (!d.isbns.length && d.ol_work) {
