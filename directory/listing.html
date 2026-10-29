@@ -113,7 +113,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .he-body span{font-size:13px;color:rgba(26,26,26,.68)}
 .he-go{flex:none;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#2d7d31;color:#fff;text-decoration:none;white-space:nowrap}
 .he-sub{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px;color:rgba(26,26,26,.68)}
-@media (max-width:560px){.he-row{flex-wrap:wrap}.he-go{margin-left:58px}}
+@media (max-width:560px){.he-row{flex-wrap:wrap}.he-body{flex-basis:calc(100% - 58px)}.he-go{margin-left:58px}}
 .loc-row{display:block;padding:9px 0;border-top:1px solid rgba(0,0,0,.07);text-decoration:none;color:inherit;font-size:13px;line-height:1.4}
 .loc-row:first-of-type{border-top:0}
 .loc-row strong{color:#1f5f22}
@@ -3163,11 +3163,15 @@ function servesLabel(l){
   var c = l.communities || [];
   if(c.indexOf('all') > -1) return 'Serves every chapter';
   var home = getCommunityForListing(Object.assign({}, l, {communities: []}));
-  var names = c.filter(function(x){ return !home || x !== home.slug; }).map(function(x){
+  // The chapter its address is in by VE_HUBS[].match, for the chapters getCommunityForListing does not know (Virginia, Philadelphia...),
+  // so a Richmond group serving Virginia does not read "Also serves Virginia".
+  var byAddr = window.VE_HUBS && (l.address_city || l.address_state) ? VE_HUBS.filter(function(x){ var m = x.match || {};
+    return (!m.cities || m.cities.indexOf(l.address_city) > -1) && (!m.states || m.states.indexOf(l.address_state) > -1) && (m.cities || m.states); })[0] : null;
+  var names = c.filter(function(x){ return (!home || x !== home.slug) && (!byAddr || x !== byAddr.slug); }).map(function(x){
     var h = window.VE_HUBS ? VE_HUBS.filter(function(y){ return y.slug === x; })[0] : null; return h ? h.name : '';
   }).filter(Boolean);
   if(!names.length) return '';
-  return 'Also serves ' + (names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]);
+  return (home || byAddr || l.address_city ? 'Also serves ' : 'Serves ') + (names.length > 1 ? names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1] : names[0]);
 }
 
 
