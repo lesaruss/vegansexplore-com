@@ -156,6 +156,7 @@
     css();
     var api = opts.call || call, gapi = opts.call || callGroup;
     var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
+    var TK = {}, TKform = null, TKnote = '';
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     // Get your page ready, in a group's or an organization's words.
     var CK = KIND === 'org' ? Object.assign({}, CHECK, { description: ['Your story', 'A few lines on who you are, who it is for and what your events are like.', 'about'],
@@ -522,7 +523,8 @@
           (REAL ? '' : '<div class="vpd-card"><b>Check people in</b><p>At the door, tick guests off on your phone. A guest pass is used when they check in.</p><button type="button" class="vpd-btn sm" data-vpd-demo="At the door this opens your guest list to tick people in.">Open the guest list</button></div>') +
           '<div class="vpd-card"><b>Share it</b><p>Your event\'s own link, with your group link inside, so everyone who joins counts toward your rate.</p>' +
           (REAL ? '<button type="button" class="vpd-btn sm" data-vpd-copy="https://vegansexplore.com/events?ref=' + esc(G.code || '') + '#event/' + esc(e.id) + '">Copy the event link</button>'
-            : '<button type="button" class="vpd-btn sm" data-vpd-demo="Your event link is copied, ready to post.">Copy the event link</button>') + '</div></div>';
+            : '<button type="button" class="vpd-btn sm" data-vpd-demo="Your event link is copied, ready to post.">Copy the event link</button>') + '</div></div>' +
+          (REAL ? ticketsPanel(e) : '');
       }
       var row = function (e) {
         return '<div class="vpd-row"><div><b>' + esc(e.title) + '</b><small>' + dt(e.starts_at, Date.parse(e.starts_at) < now) + ' &middot; ' + esc(e.location_name || '') + ' &middot; ' + price(e) + '</small></div>' +
@@ -631,6 +633,58 @@
         }).join('') + '</div>' : '<p class="vpd-empty">No gifts yet. A gift is a Passport for someone you want in your group, paid from your cleared earnings or by card.</p>');
     }
 
+    // Tickets on a real Group Partner event (Sean, 2026-10-29; canon-ve-group-partners): the ticket types, the refund policy, the door
+    // list with check-in by code, and the orders with Refund. From ve-group 'tickets'; every change returns the whole view.
+    function ticketsPanel(e) {
+      var T = TK[e.id];
+      if (!T) {
+        gapi({ action: 'tickets', listing_id: l.id, event_id: e.id }).then(function (d) { TK[e.id] = d && d.ok ? d : { ok: false }; if (q('item') === e.id) draw(); });
+        return '<h4>Tickets</h4><p class="vpd-empty">Loading your tickets...</p>';
+      }
+      if (!T.ok) return '<h4>Tickets</h4><p class="vpd-empty">Your tickets did not load. Try again in a moment.</p>';
+      var tot = T.totals, out = '<h4>Tickets</h4>' + (TKnote ? '<p class="vpd-done">' + esc(TKnote) + '</p>' : '') +
+        '<p class="vpd-msg" id="vpd-msg" role="status"></p>';
+      out += '<div class="vpd-tiles"><div><b>' + n(tot.sold) + '</b><span>Tickets sold</span></div><div><b>' + money(tot.yours_cents) + '</b><span>Yours from tickets</span><em>Held 30 days, then paid with your earnings</em></div>' +
+        '<div><b>' + n(tot.guest_passes) + '</b><span>Guest passes</span></div><div><b>' + n(tot.checked_in) + '</b><span>Checked in</span></div></div>';
+      if (!T.can_sell) out += '<p class="vpd-empty">Selling tickets is part of the Group Partnership. <a href="/groups/welcome">See what it includes</a>.</p>';
+      else {
+        out += (T.types.length ? '<div class="vpd-list">' + T.types.map(function (t) {
+          return '<div class="vpd-row"><div><b>' + esc(t.name) + '</b><small>' + money(t.price_cents) + ' a ticket &middot; the buyer pays ' + money(t.buyer_cents) + ' &middot; yours ' + money(t.yours_cents) +
+            ' &middot; ' + n(t.sold) + (t.quantity ? ' of ' + n(t.quantity) : '') + ' sold</small></div><span class="vpd-tag' + (t.active ? '' : ' off') + '">' + (t.active ? 'On sale' : 'Not on sale') + '</span>' +
+            (T.event.over ? '<span></span>' : '<button type="button" class="vpd-btn sm o" data-vpd-tkedit="' + esc(t.id) + '">Edit</button>') + '</div>';
+        }).join('') + '</div>' : '<p class="vpd-empty">No tickets yet: a free event needs none. Guests say they are going, and someone new comes on their one guest pass.</p>');
+        if (!T.event.over) {
+          var f = TKform && TKform.event === e.id ? TKform : null, t0 = f && f.id ? T.types.filter(function (x) { return x.id === f.id; })[0] || {} : {};
+          out += f ? '<div class="vpd-form" style="margin:12px 0 18px"><b>' + (f.id ? 'Edit ' + esc(t0.name) : 'A new ticket type') + '</b>' +
+            '<label>Name<input id="vpd-tk-name" maxlength="80" placeholder="General admission" value="' + esc(t0.name || '') + '"></label>' +
+            '<label>Price (dollars)<input id="vpd-tk-price" inputmode="decimal" placeholder="15" value="' + (t0.price_cents ? (t0.price_cents / 100).toFixed(2).replace(/\.00$/, '') : '') + '"' + (t0.sold ? ' disabled' : '') + '></label>' +
+            (t0.sold ? '<p class="vpd-empty" style="margin:-6px 0 8px">Tickets of this type are sold, so its price stays.</p>' : '') +
+            '<label>How many (leave empty for no limit)<input id="vpd-tk-qty" inputmode="numeric" placeholder="40" value="' + (t0.quantity || '') + '"></label>' +
+            '<label class="vpd-check"><input type="checkbox" id="vpd-tk-pass"' + (t0.pass_fee ? ' checked' : '') + '> Pass our ' + n(T.fee_pct) + '% on to the buyer (you keep the whole ticket price)</label>' +
+            '<label class="vpd-check"><input type="checkbox" id="vpd-tk-on"' + (t0.active === false ? '' : ' checked') + '> On sale</label>' +
+            '<p class="vpd-empty">The buyer pays card processing. Without passing our ' + n(T.fee_pct) + '% on, it comes out of the ticket price.</p>' +
+            '<div class="vpd-bar"><button type="button" class="vpd-btn o" data-vpd-tkcancel>Cancel</button><button type="button" class="vpd-btn" data-vpd-tksave="' + esc(f.id || '') + '">Save</button></div></div>'
+            : '<p style="margin:10px 0 18px"><button type="button" class="vpd-btn sm" data-vpd-tknew>Add a ticket type</button></p>';
+        }
+        out += '<label class="vpd-f">Your refund policy<textarea id="vpd-tk-refund" maxlength="600" rows="2" placeholder="Full refunds up to 48 hours before the event.">' + esc(T.event.refund_policy) + '</textarea></label>' +
+          '<p class="vpd-empty" style="margin:-6px 0 8px">Buyers see it before they pay. A refund gives back the ticket price, our ' + n(T.fee_pct) + '% included; card processing is not refunded.</p>' +
+          '<p style="margin:0 0 18px"><button type="button" class="vpd-btn sm o" data-vpd-tkpolicy>Save the policy</button></p>';
+      }
+      out += '<h4>At the door</h4><div class="vpd-bar" style="justify-content:flex-start;gap:8px;margin:0 0 10px"><input id="vpd-tk-code" maxlength="8" placeholder="Door code" style="text-transform:uppercase;font:inherit;padding:10px 12px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;max-width:180px">' +
+        '<button type="button" class="vpd-btn" data-vpd-tkin>Check in</button></div>' +
+        (T.door.length ? '<div class="vpd-list vpd-scroll">' + T.door.map(function (x) {
+          return '<div class="vpd-row"><div><b>' + esc(x.name) + '</b><small>' + esc(x.what) + ' &middot; ' + esc(x.code) + (x.checked_in_at ? ' &middot; in at ' + new Date(x.checked_in_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) : '') + '</small></div>' +
+            '<span class="vpd-tag' + (x.checked_in_at ? '' : ' off') + '">' + (x.checked_in_at ? 'Checked in' : 'Not in yet') + '</span>' +
+            '<button type="button" class="vpd-btn sm' + (x.checked_in_at ? ' o' : '') + '" data-vpd-tkcode="' + esc(x.code) + '"' + (x.checked_in_at ? ' data-undo="1">Undo' : '>Check in') + '</button></div>';
+        }).join('') + '</div>' : '<p class="vpd-empty">No tickets or guest passes yet.</p>');
+      if (T.orders.length) out += '<h4>Orders</h4><div class="vpd-list vpd-scroll">' + T.orders.map(function (o) {
+        return '<div class="vpd-row"><div><b>' + esc(o.name) + (o.test ? ' (test)' : '') + '</b><small>' + n(o.quantity) + ' x ' + esc(o.type) + ' &middot; paid ' + money(o.total_cents) + ' &middot; yours ' + money(o.group_cents) +
+          (o.refunded_at ? ' &middot; refunded ' + money(o.refund_cents) : '') + '</small></div><span class="vpd-tag' + (o.status === 'paid' ? '' : ' off') + '">' + (o.status === 'paid' ? 'Paid' : 'Refunded') + '</span>' +
+          (o.status === 'paid' ? '<button type="button" class="vpd-btn sm o" data-vpd-tkrefund="' + esc(o.id) + '">Refund</button>' : '<span></span>') + '</div>';
+      }).join('') + '</div>';
+      return out;
+    }
+
     var VIEW_FN = { gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
@@ -719,6 +773,46 @@
           gapi({ action: cancel ? 'gift_cancel' : 'gift_send', listing_id: l.id, id: b.dataset.vpdGiftcancel || b.dataset.vpdGiftsend }).then(function (d) {
             if (!d || !d.ok) { b.disabled = false; return; }
             mergeGroup(d); draw();
+          });
+        });
+      });
+      // Tickets (ticketsPanel): every action returns the whole tickets view for the event open.
+      var tkEv = q('item'), tk = function (body, btn, done) {
+        if (btn) btn.disabled = true;
+        gapi(Object.assign({ listing_id: l.id, event_id: tkEv }, body)).then(function (d) {
+          if (btn) btn.disabled = false;
+          if (!d || !d.ok) return msg((d && d.message) || 'That did not go through. Try again.', true);
+          TK[tkEv] = d; TKnote = done || ''; draw();
+        });
+      };
+      el.querySelectorAll('[data-vpd-tknew],[data-vpd-tkedit]').forEach(function (b) { b.addEventListener('click', function () { TKform = { event: tkEv, id: b.dataset.vpdTkedit || null }; TKnote = ''; draw(); }); });
+      var tkc = el.querySelector('[data-vpd-tkcancel]'); if (tkc) tkc.addEventListener('click', function () { TKform = null; draw(); });
+      var tks = el.querySelector('[data-vpd-tksave]');
+      if (tks) tks.addEventListener('click', function () {
+        var v = function (k) { return ((el.querySelector('#vpd-tk-' + k) || {}).value || '').trim(); }, c = function (k) { return !!(el.querySelector('#vpd-tk-' + k) || {}).checked; };
+        var price = Math.round(parseFloat(v('price').replace(/[$,]/g, '')) * 100);
+        if (!v('name')) return msg('Give the ticket a name.', true);
+        if (!(price >= 100)) return msg('A ticket is at least $1.', true);
+        TKform = null;
+        tk({ action: 'ticket_type_save', id: tks.dataset.vpdTksave || undefined, name: v('name'), price_cents: price, quantity: v('qty') ? Number(v('qty')) : null, pass_fee: c('pass'), active: c('on') }, tks, 'Saved.');
+      });
+      var tkp = el.querySelector('[data-vpd-tkpolicy]');
+      if (tkp) tkp.addEventListener('click', function () { tk({ action: 'refund_policy_save', text: (el.querySelector('#vpd-tk-refund') || {}).value || '' }, tkp, 'Your refund policy is saved.'); });
+      var tki = el.querySelector('[data-vpd-tkin]');
+      if (tki) tki.addEventListener('click', function () {
+        var code = ((el.querySelector('#vpd-tk-code') || {}).value || '').trim().toUpperCase();
+        if (!/^[A-Z2-9]{8}$/.test(code)) return msg('A door code is 8 letters and numbers.', true);
+        tk({ action: 'checkin', code: code }, tki, code + ' is checked in.');
+      });
+      el.querySelectorAll('[data-vpd-tkcode]').forEach(function (b) {
+        b.addEventListener('click', function () { var undo = !!b.dataset.undo; tk({ action: 'checkin', code: b.dataset.vpdTkcode, undo: undo }, b, undo ? 'Check-in undone.' : b.dataset.vpdTkcode + ' is checked in.'); });
+      });
+      el.querySelectorAll('[data-vpd-tkrefund]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          if (!confirm('Refund this order? The buyer gets the ticket price back, our fee included; card processing is not refunded. This cannot be undone.')) return;
+          gapi({ action: 'ticket_refund', listing_id: l.id, order_id: b.dataset.vpdTkrefund }).then(function (d) {
+            if (!d || !d.ok) return msg((d && d.message) || 'The refund did not go through. Try again.', true);
+            TK[tkEv] = d; TKnote = 'Refunded. The buyer is emailed.'; draw();
           });
         });
       });

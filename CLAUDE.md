@@ -503,7 +503,12 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   no account, refuses anyone else with `membership_needed`, and signs a token with `brand: 'lesaruss-ai'`. `ve-votes` takes such a
   token only for a listing in the LESARUSS.ai Directory (`lr_listing_in_directory`) and only while `lr_member_entitled`, counts it
   in the same pool (`listing_daily_votes`, once a day per listing), and refuses its `contribute` (points are ours). A Vegans Explore
-  Passport alone does not vote there (each community is its own $11); a Diplomat votes on both. Proven 2026-10-29: a free LESARUSS
+  Passport alone does not vote there (each community is its own $11); a Diplomat votes on both. **The $11 LESARUSS Passport on its own** (Sean, 2026-10-29: "Build the $11 LESARUSS Passport checkout"): the members window's
+  button (`VE_BRAND.passportUrl` `/passport`, with `?from=` and `?back=`) opens lesaruss.ai/passport (lesaruss-ai-site `app/passport`),
+  which pays through HQ `/api/passport` (`lib/passportCheckout.ts`, table `lr_passport_checkouts`, migration 060) and, once Stripe says
+  paid, records `brand_memberships` 'lesaruss-ai' passport (source `passport_checkout`) on the email's one members row, makes its HQ
+  sign-in (no password: the 6-digit code on /login sets one), emails the steps, and offers Sign in with LESARUSS back to the listing.
+  It is confirmed on the return from Stripe (the LESARUSS.ai Stripe account has no webhook to HQ, the same as claims). Proven 2026-10-29: a free LESARUSS
   account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
 ## Analytics (Sean, 2026-10-28)
@@ -800,9 +805,33 @@ Passport; paid-ticket events need the Passport from the start. **Exclusivity is 
 link unlocks the ladder, featured status, our ads and bounties; every group stays listed regardless. Payouts after a W-9 (the
 organizer's when the group has no entity) at $25, 30-day hold, worded as referral earnings. Named Group Partners, never Community
 Partner. Prototype: the Vegan Social Club (South Florida), then Philly Vegan Social Club; our own communities use the same structure
-later. To build: our own ticketing (Stripe Connect, ticket types, refunds, check-in), the group community page, the guest pass, the
-ladder on `ve_affiliate_earn`, the invitation, the policy text and the Guides' facts. Not decided: whether counts reset, what featured
-placement and ad support include, ticket refunds. The dashboard's Host your group on Vegans Explore card collects interest until then.
+later. To build: Stripe Connect for ticket money, the group community page, the policy text and the Guides' facts. Not decided: whether
+counts reset, what featured placement and ad support include. The dashboard's Host your group on Vegans Explore card collects interest until then.
+
+**Tickets, guest passes and check-in, live 2026-10-29** (Sean: "Move forward"; migration `20261029_group_tickets.sql`, applied through
+the one-time `ve-once-group-tickets`, now off; `ve-group`; `public/ve-events.js` `drawSale`; the dashboard's Events views in
+`ve-partner-dashboard.js`). Only on an approved event hosted by a Groups listing whose Group Partnership is onboarding or active
+(`saleOf`). **Ticket types** (`ve_ticket_types`, up to six an event, $1 to $1,000, an optional limit, `pass_fee`; a type's price is
+fixed once one sells), set by the lead, the owner or a super admin (`ticket_type_save`). **Buying** is for active Passport holders only
+(`ticket_checkout`, up to 10 an order, `ticket_max_per_order`): the buyer pays the tickets, our 5% only when the group passes it on, and
+card processing (2.9% + 30 cents, grossed up so it is covered: a $20 ticket is $20.91, or $21.94 with the fee passed on); the money
+lands on the Vegans Explore Stripe account (no Connect yet). The return trip and ve-stripe-webhook (`metadata.type` `ve_ticket`,
+`confirm_fn` `ve-group`) run `ve_ticket_order_paid` once: an 8-character door code per ticket (`ve_tickets`, no 0, O, 1, I or L),
+emailed, the buyer going and in the group (`via` event), and the group's share as a commission row (product `ticket`, route `group`,
+held 30 days like every commission; `ve_ticket_orders.group_cents`). **Guest pass** (`guest_pass`, `ve_guest_passes`): a free event
+(no ticket types) and someone without a Passport, one pass a person ever at any group (unique on the email), its code emailed;
+someone who came on one and later joins counts toward the group's rate (`trg_ve_guest_pass_ref` sets `referred_by_group`).
+**The door** (`checkin`, `undo`): a ticket or guest pass by its code, once; a refunded code says so. **Refunds** (Sean, 2026-10-29):
+the group writes its own policy (`events.refund_policy`, shown at checkout and in the ticket email); a refund (`ticket_refund`, the
+organizer) gives back what the tickets cost, our 5% included, never card processing, through Stripe first, then
+`ve_ticket_order_refunded` voids the codes, puts the count back, cancels the RSVP and reverses the group's commission (a negative row
+if it was already paid out). `ve_group_dash` shows each event's price, tickets sold, going and guest passes, ticket earnings and our fee.
+Proven 2026-10-29 on a [TEST] group with internal accounts: guards (non-organizer, unpaid account, 11 tickets, a guest pass at a paid event
+or for a Passport holder's email, a second pass at another group event), a test-mode checkout ($41.51 for two $20 tickets) and its
+unpaid return refused, paid twice in a rolled-back transaction (once only, wrong session refused), then a real Stripe test payment
+marked paid, the door, the dashboard, and a Stripe test refund of $40.00 with $1.51 kept; then removed. The Stripe card form itself
+was not paid (checkout.stripe.com and api.stripe.com are blocked from the build session; the test payment went through pg_net).
+Not yet: a check on the type's limit at the moment of payment (two buyers paying for the last ticket at once both get one).
 
 **The sample group, the Guide and the console** (Sean, 2026-10-29: "Let's not bank on Vegan Social Club... I want us to create our
 own mock club so people can go through it... the same way we did the business... a general username and password... in the depot...
@@ -1595,7 +1624,7 @@ episode is titled with it; The Penis Book and iWant stay, migration `20261029_bo
 view (`?ep=<guid>`) shows **Referenced books** under it (`books` in `public/ve-episodes.js`, `ve-books` `episode`, public): the cover,
 title, author and Recommended / Their book / Talked about / Mentioned, opening the book's page, or Amazon for a referenced one. `ve-books`
 `status` counts the list, `probe` says whether the sources answer. **Sources**: Google Books first, read with our Google key (`GOOGLE_PLACES_API_KEY`; Sean added the Books API to the key 2026-10-29),
-English results only (`langRestrict=en`), retried when it answers 503, and searched looser until something comes back (its operators miss
+English results only (`langRestrict=en`, an edition counted only when Google says its language is English, and the match itself judged English or not; a book found only in another language is Not found, since a Spanish La Promesa Del Meñique got through on 2026-10-29), retried when it answers 503, and searched looser until something comes back (its operators miss
 some books a plain search finds); then Open Library, which refused our server's connections that day. A crawl that finds nothing under the
 listing's name asks Claude what name they publish under (Earthling Ed writes as Ed Winters) and saves the book under the name on its cover.
 A source that does not answer does not use up a book's tries. A book whose English editions have no cover on Amazon is `not_found` (Klaper's

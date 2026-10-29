@@ -54,6 +54,12 @@
   function signedIn() { return !!token() && !!(window.VEAuth ? VEAuth.isLoggedIn() : true); }
   function myTz() { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York'; } catch (e) { return 'America/New_York'; } }
 
+  // A group's tickets and guest passes live in ve-group (Group Partners, 2026-10-29).
+  function gapi(body) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-group', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token() || '') }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return { error: 'bad_response' }; }); });
+  }
+  function money(c) { return '$' + (Number(c || 0) / 100).toFixed(2).replace(/\.00$/, ''); }
   function api(body) {
     return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token() || '') }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return { error: 'bad_response' }; }); });
@@ -228,6 +234,13 @@
     '.vev-facts span{color:rgba(26,26,26,.75);}',
     '.vev-rsvp h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:0 0 8px;}',
     '.vev-rsvp p{font-size:13.5px;line-height:1.55;color:rgba(26,26,26,.75);margin:0 0 12px;}',
+    '.vev-sale h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:18px 0 8px;}',
+    '.vev-tix{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;margin:0 0 10px;}',
+    '.vev-tix b{display:block;font-size:15px;}.vev-tix small{font-size:12.5px;color:rgba(26,26,26,.7);}',
+    '.vev-tix select{appearance:none;-webkit-appearance:none;font:inherit;font-weight:700;padding:10px 40px 10px 12px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%231a1a1a%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 16px center;}',
+    '.vev-codes{font:800 20px/1.5 ui-monospace,Menlo,monospace;letter-spacing:.12em;margin:0 0 4px;}',
+    '.vev-gp{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;}.vev-gp input{font:inherit;padding:11px 12px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;min-width:0;}',
+    '@media(max-width:640px){.vev-gp{grid-template-columns:1fr}.vev-tix{grid-template-columns:1fr auto}.vev-tix>div{grid-column:1/-1}}',
     '.vev-optin{display:flex;gap:10px;align-items:flex-start;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;margin:0 0 12px;cursor:pointer;}',
     '.vev-optin input{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#2d7d31;}',
     '.vev-optin b{display:block;font-size:14px;}',
@@ -888,6 +901,62 @@
       var sc = document.createElement('script'); sc.src = '/public/ve-votes.js'; sc.onload = show; sc.onerror = show; document.head.appendChild(sc);
     }
 
+    // A Group Partner's event (Sean, 2026-10-29; canon-ve-group-partners): its tickets, bought by Passport holders through us, or, for
+    // a free event, the guest pass: someone without a Passport comes to one free event as our guest. Codes for the door come by email.
+    function drawSale(e, box) {
+      if (!box) return;
+      var back = new URLSearchParams(location.search).get('tickets');
+      if (back) { var u = new URL(location.href); u.searchParams.delete('tickets'); history.replaceState(null, '', u.pathname + u.search + u.hash); }
+      gapi({ action: 'event_tickets', event_id: e.id }).then(function (d) {
+        if (!d || !d.sale) return;
+        var v = d.viewer || {}, h = '';
+        var banner = back === 'paid' ? 'Your tickets are ready: the codes are below and in your email.' : back === 'canceled' ? 'Checkout was canceled. Nothing was charged.' : back === 'unpaid' || back === 'error' ? 'That payment did not finish. If you were charged, write to contact@lesaruss.com.' : '';
+        if (banner) h += '<div class="vev-banner">' + esc(banner) + '</div>';
+        if (v.tickets && v.tickets.length) h += '<h3>Your tickets</h3><p class="vev-codes">' + v.tickets.map(esc).join('<br>') + '</p><p class="vev-note" style="font-weight:600">Show ' + (v.tickets.length === 1 ? 'this code' : 'these codes') + ' at the door.</p>';
+        if (v.guest_pass) h += '<h3>Your guest pass</h3><p class="vev-codes">' + esc(v.guest_pass) + '</p><p class="vev-note" style="font-weight:600">Show this code at the door.</p>';
+        if (d.types.length && !d.over) {
+          h += '<h3>Tickets</h3>' + d.types.map(function (t) {
+            var left = t.left == null ? 10 : t.left, opts = '';
+            for (var i = 1; i <= Math.min(d.max || 10, left); i++) opts += '<option value="' + i + '">' + i + '</option>';
+            return '<div class="vev-tix"><div><b>' + esc(t.name) + '</b><small>' + esc(money(t.buyer_cents)) + ' each, card processing included' + (t.left != null ? ' &middot; ' + (left ? left + ' left' : 'Sold out') : '') + '</small></div>' +
+              (left ? '<select data-q="' + esc(t.id) + '" aria-label="How many">' + opts + '</select><button type="button" class="vev-btn green" data-buy="' + esc(t.id) + '">Buy</button>' : '<span class="vev-note">Sold out</span>') + '</div>';
+          }).join('') + '<p class="vev-note" style="font-weight:600">Tickets are for Passport holders, sold through Vegans Explore for ' + esc(d.group.name) + '.' + (d.refund_policy ? ' Refunds: ' + esc(d.refund_policy) : '') + '</p>';
+        } else if (d.guest_pass && !v.active && !v.guest_pass) {
+          h += '<h3>Your first event is on us</h3><p class="vev-desc" style="margin:0 0 10px">No Passport yet? Come to one free event as our guest. From your second, you join with the $11 Passport.</p>' +
+            '<div class="vev-gp"><input data-gp="name" placeholder="Your name" autocomplete="name"><input data-gp="email" type="email" placeholder="Your email" autocomplete="email">' +
+            '<button type="button" class="vev-btn green" data-gp="go">Get my guest pass</button></div>';
+        }
+        h += '<p class="vev-note bad" data-v="saleerr" role="alert"></p>';
+        box.innerHTML = h;
+        var err = box.querySelector('[data-v="saleerr"]');
+        box.querySelectorAll('[data-buy]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            if (!signedIn()) { membersOnly(); return; }
+            var q = box.querySelector('[data-q="' + b.dataset.buy + '"]');
+            b.disabled = true; b.textContent = 'Opening checkout…';
+            gapi({ action: 'ticket_checkout', event_id: e.id, type_id: b.dataset.buy, quantity: q ? Number(q.value) : 1 }).then(function (r) {
+              if (r && r.ok && r.url) { location.href = r.url; return; }
+              b.disabled = false; b.textContent = 'Buy';
+              if (r && (r.error === 'members_only' || r.error === 'not_authenticated')) { membersOnly(r.error === 'members_only' ? { signedIn: true } : undefined); return; }
+              err.textContent = (r && r.message) || 'Checkout did not open. Try again.';
+            });
+          });
+        });
+        var gb = box.querySelector('[data-gp="go"]');
+        if (gb) gb.addEventListener('click', function () {
+          var name = box.querySelector('[data-gp="name"]').value.trim(), email = box.querySelector('[data-gp="email"]').value.trim();
+          if (!name) { err.textContent = 'Your name, please.'; return; }
+          if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) { err.textContent = 'That email does not look right.'; return; }
+          gb.disabled = true; err.textContent = '';
+          gapi({ action: 'guest_pass', event_id: e.id, name: name, email: email }).then(function (r) {
+            gb.disabled = false;
+            if (r && r.ok) { box.innerHTML = '<h3>You\'re on the guest list</h3><p class="vev-codes">' + esc(r.code) + '</p><p class="vev-note" style="font-weight:600">Show this code at the door. It\'s in your email too.</p>'; return; }
+            err.textContent = (r && r.message) || 'That did not go through. Try again.';
+          });
+        });
+      });
+    }
+
     function drawEvent(id, note, autoTix) {
       el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
       bindList();
@@ -910,6 +979,7 @@
           // The group that hosts it, linked to its page in the Directory (Sean, 2026-10-29: "their profile will be tied to all their events").
           (e.host && e.host.slug ? '<a class="vev-host" href="/directory/' + encodeURIComponent(e.host.slug) + '">' + (e.host.logo_url ? '<img src="' + esc(e.host.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((e.host.name || '?').charAt(0)) + '</i>') + '<span><small>Hosted by</small><b>' + esc(e.host.name) + '</b></span><em>See their page and events</em></a>' : '') +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
+          (e.host && e.host.category === 'Groups' ? '<div class="vev-sale" data-v="sale"></div>' : '') +
           (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for Passport holders.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
           (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') + '</div>' +
           '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
@@ -933,6 +1003,7 @@
         if (opt && v.going) opt.addEventListener('change', function () { save(true, opt.checked, null); });
         var ng = el.querySelector('[data-v="notgoing"]');
         if (ng) ng.addEventListener('click', function () { save(false, false, ng); });
+        if (e.host && e.host.category === 'Groups') drawSale(e, el.querySelector('[data-v="sale"]'));
         var tb = el.querySelector('[data-v="tix"]');
         if (tb) {
           tb.addEventListener('click', function () { getTickets(id, tb, el.querySelector('[data-v="tixerr"]')); });

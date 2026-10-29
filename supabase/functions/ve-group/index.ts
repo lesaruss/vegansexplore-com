@@ -27,6 +27,21 @@
 //        return trip and ve-stripe-webhook) makes the gift once (universe_invites.paid_session) and goes back to the dashboard
 //   POST { action: 'gift_send', listing_id, id } | { action: 'gift_cancel', listing_id, id }   cancel gives the cost back (to the group's
 //        balance for a gift bought by card)
+// Tickets, guest passes and check-in (Sean, 2026-10-29: "Move forward"; migration 20261029_group_tickets.sql). On an event hosted by a
+// Group Partner (onboarding or active):
+//   POST { action: 'event_tickets', event_id }  public: its ticket types with what a buyer pays, the refund policy, whether a guest pass
+//        is open (a free event), and the viewer's own tickets and guest pass
+//   POST { action: 'ticket_checkout', event_id, type_id, quantity }  an active Passport holder only -> { url }: Stripe checkout for the
+//        ticket price, our 5% when the group passes it on, and card processing; GET ?confirm=<session> (the return trip and
+//        ve-stripe-webhook) makes the tickets once (ve_ticket_order_paid) and emails the door codes
+//   POST { action: 'guest_pass', event_id, name, email }  a free event, someone without a Passport, one guest pass a person ever
+// The organizer (as above):
+//   POST { action: 'tickets', listing_id, event_id }  ticket types, orders, the door list (tickets and guest passes), the refund policy
+//   POST { action: 'ticket_type_save', listing_id, event_id, id?, name, price_cents, quantity?, pass_fee, active }  a Group Partner's
+//        events only; the price is fixed once a ticket of the type is sold
+//   POST { action: 'refund_policy_save', listing_id, event_id, text }
+//   POST { action: 'checkin', listing_id, event_id, code, undo? }  a ticket or a guest pass by its door code
+//   POST { action: 'ticket_refund', listing_id, order_id }  gives back what the tickets cost, our 5% included, not card processing
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -249,12 +264,85 @@ async function confirmGift(sessionId: string): Promise<Response> {
   return go(`${back}&gift=paid&code=${r.inv.code}${r.emailed || (r.dup && r.inv.resend_email_id) ? '&emailed=1' : ''}`);
 }
 
+// ---- Tickets
+// What a buyer pays and what the group keeps: our fee is a share of the tickets (5%), passed on to the buyer when the group chooses;
+// card processing (2.9% + 30 cents on what is charged) is always the buyer's, worked out so the processing is covered in full.
+function priceFor(unit: number, qty: number, passFee: boolean, feePct: number) {
+  const tickets = unit * qty;
+  const fee = Math.round(tickets * feePct / 100);
+  const base = tickets + (passFee ? fee : 0);
+  const total = Math.ceil((base + 30) / (1 - 0.029));
+  return { tickets, fee, processing: total - base, total, group: tickets - (passFee ? 0 : fee) };
+}
+const isOver = (e: any) => new Date(e.ends_at || new Date(e.starts_at).getTime() + 6 * 3600000).getTime() < Date.now();
+const whenText = (e: any) => new Date(e.starts_at).toLocaleString('en-US', { weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: e.timezone || 'America/New_York' });
+const codeOk = (v: unknown) => typeof v === 'string' && /^[A-Z2-9]{8}$/.test(v.trim().toUpperCase());
+
+// An event that sells through us: approved, hosted by a Groups listing whose Group Partnership is onboarding or active.
+async function saleOf(eventId: unknown) {
+  if (!isId(eventId)) return null;
+  const { data: e } = await db.from('events').select('id, title, starts_at, ends_at, timezone, location_name, address, city, status, host_listing_id, refund_policy, tenant_id')
+    .eq('id', eventId).maybeSingle();
+  if (!e || e.status !== 'approved' || !e.host_listing_id) return null;
+  const g = await groupOf(e.host_listing_id);
+  if (!g) return null;
+  const partner = await partnerOf(g.id);
+  return { e, g, partner: partner && ['onboarding', 'active'].includes(partner.status) ? partner : null };
+}
+
+function ticketEmail(e: any, g: any, codes: string[], name: string) {
+  return `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px">` +
+    `<p style="margin:0 0 12px">Hi ${esc(firstName(name))},</p>` +
+    `<p style="margin:0 0 12px">You're going to <b>${esc(e.title)}</b> with <b>${esc(g.name)}</b>: ${esc(whenText(e))}${e.location_name ? `, ${esc(e.location_name)}` : ''}${e.city ? `, ${esc(e.city)}` : ''}.</p>` +
+    `<p style="margin:0 0 8px">Your ${codes.length === 1 ? 'ticket. Show this code' : codes.length + ' tickets. Show these codes'} at the door:</p>` +
+    `<p style="font:800 22px/1.5 monospace;letter-spacing:.12em;margin:0 0 14px">${codes.map(esc).join('<br>')}</p>` +
+    (e.refund_policy ? `<p style="font-size:13px;color:#555;margin:0 0 12px"><b>Refunds:</b> ${esc(e.refund_policy)}</p>` : '') +
+    `<p style="margin:0 0 12px"><a href="${SITE}/events#event/${e.id}" style="color:#1f5f22;font-weight:700">The event and your tickets</a></p>${FOOT}</div>`;
+}
+function guestPassEmail(e: any, g: any, code: string, name: string) {
+  return `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px">` +
+    `<p style="margin:0 0 12px">Hi ${esc(firstName(name))},</p>` +
+    `<p style="margin:0 0 12px">You're on the guest list for <b>${esc(e.title)}</b> with <b>${esc(g.name)}</b>: ${esc(whenText(e))}${e.location_name ? `, ${esc(e.location_name)}` : ''}${e.city ? `, ${esc(e.city)}` : ''}.</p>` +
+    `<p style="margin:0 0 8px">This is your guest pass, your one free event as our guest. Show this code at the door:</p>` +
+    `<p style="font:800 22px/1.5 monospace;letter-spacing:.12em;margin:0 0 14px">${esc(code)}</p>` +
+    `<p style="margin:0 0 12px">Want to keep coming? From your next event, you join with the Vegans Explore Passport: $11, one time, with 1,100 points, and every group and event in every city opens.</p>` +
+    `<p style="margin:0 0 12px"><a href="${SITE}/passport" style="color:#1f5f22;font-weight:700">See the Passport</a> &middot; <a href="${SITE}/events#event/${e.id}" style="color:#1f5f22;font-weight:700">The event</a></p>${FOOT}</div>`;
+}
+
+// A ticket checkout came back (the buyer, or ve-stripe-webhook): check it is paid and for this order, make the tickets once, email
+// the codes, and go back to the event.
+async function confirmTicket(s: any): Promise<Response> {
+  const go = (u: string) => new Response(null, { status: 302, headers: { Location: u } });
+  const m = s.metadata || {};
+  const { data: o } = isId(m.order_id) ? await db.from('ve_ticket_orders').select('*').eq('id', m.order_id).maybeSingle() : { data: null };
+  if (!o) return go(SITE + '/events');
+  const back = `${SITE}/events#event/${o.event_id}`;
+  if (s.payment_status !== 'paid' || Number(s.amount_total) !== o.total_cents) return go(`${SITE}/events?tickets=unpaid#event/${o.event_id}`);
+  const intent = typeof s.payment_intent === 'string' ? s.payment_intent : s.payment_intent?.id || null;
+  const { data: r } = await db.rpc('ve_ticket_order_paid', { p_order: o.id, p_session: s.id, p_intent: intent });
+  if (!r?.ok) { console.error('ticket order not made', o.id, r); return go(`${SITE}/events?tickets=error#event/${o.event_id}`); }
+  if (!r.dup) {
+    const x = await saleOf(o.event_id);
+    const { data: buyer } = await db.from('members').select('name, email').eq('id', o.member_id).maybeSingle();
+    if (x && buyer?.email) await sendOne(buyer.email, `Your tickets: ${x.e.title}`, ticketEmail(x.e, x.g, (r.codes || []) as string[], buyer.name));
+  }
+  return go(`${SITE}/events?tickets=paid#event/${o.event_id}`);
+}
+async function confirmSession(sessionId: string): Promise<Response> {
+  const test = sessionId.startsWith('cs_test_');
+  const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, { headers: { Authorization: `Bearer ${await stripeKey(test)}` } });
+  if (!res.ok) return new Response(null, { status: 302, headers: { Location: SITE } });
+  const s = await res.json();
+  if (s.metadata?.type === 've_ticket') return await confirmTicket(s);
+  return await confirmGift(sessionId);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
   if (req.method === 'GET' && url.searchParams.get('confirm')) {
-    try { return await confirmGift(url.searchParams.get('confirm')!); }
-    catch (e) { console.error('gift confirm failed', e); return new Response(null, { status: 302, headers: { Location: SITE } }); }
+    try { return await confirmSession(url.searchParams.get('confirm')!); }
+    catch (e) { console.error('confirm failed', e); return new Response(null, { status: 302, headers: { Location: SITE } }); }
   }
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
   let body: any = {};
@@ -293,6 +381,86 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
     return json({ error: 'unknown_action' }, 400);
+  }
+
+  // ---- Tickets and guest passes, on the event (no listing_id).
+  if (['event_tickets', 'ticket_checkout', 'guest_pass'].includes(action)) {
+    const x = await saleOf(body.event_id);
+    if (!x || !x.partner) return json({ sale: false });
+    const { e, g: hg, partner: hp } = x;
+    const cfg = await settings(), feePct = Number(cfg.ticket_fee_pct ?? 5), over = isOver(e);
+    const { data: types } = await db.from('ve_ticket_types').select('id, name, price_cents, quantity, sold, pass_fee, active, sort').eq('event_id', e.id).eq('active', true)
+      .order('sort').order('price_cents');
+    const paid = (types || []).length > 0;
+
+    if (action === 'event_tickets') {
+      let mine: string[] = [], pass: string | null = null;
+      if (member) {
+        const { data: os } = await db.from('ve_ticket_orders').select('id').eq('event_id', e.id).eq('member_id', member.id).eq('status', 'paid');
+        if (os?.length) {
+          const { data: ts } = await db.from('ve_tickets').select('code').in('order_id', os.map((o: any) => o.id)).is('voided_at', null).order('created_at');
+          mine = (ts || []).map((t: any) => t.code);
+        }
+        if (member.email) { const { data: gp } = await db.from('ve_guest_passes').select('code').eq('event_id', e.id).ilike('email', member.email).maybeSingle(); pass = gp?.code || null; }
+      }
+      return json({ sale: true, group: { name: hg.name, slug: hg.slug }, over, refund_policy: e.refund_policy || '', fee_pct: feePct, max: Number(cfg.ticket_max_per_order ?? 10),
+        types: (types || []).map((t: any) => ({ id: t.id, name: t.name, price_cents: t.price_cents, buyer_cents: priceFor(t.price_cents, 1, t.pass_fee, feePct).total,
+          left: t.quantity == null ? null : Math.max(0, t.quantity - t.sold) })),
+        guest_pass: !paid && !over, viewer: { signed_in: !!member, active, tickets: mine, guest_pass: pass } });
+    }
+
+    if (over) return json({ error: 'over', message: 'This event is over.' }, 400);
+
+    if (action === 'ticket_checkout') {
+      if (!member) return json({ error: 'not_authenticated' }, 401);
+      if (!active) return json({ error: 'members_only', message: 'Tickets are for Passport holders.' }, 403);
+      const t = (types || []).find((y: any) => y.id === body.type_id);
+      if (!t) return json({ error: 'not_found', message: 'That ticket is not on sale.' }, 404);
+      const qty = Math.floor(Number(body.quantity) || 1), max = Number(cfg.ticket_max_per_order ?? 10);
+      if (qty < 1 || qty > max) return json({ error: 'quantity', message: `Up to ${max} tickets at a time.` }, 400);
+      if (t.quantity != null && t.sold + qty > t.quantity) return json({ error: 'sold_out', message: t.sold >= t.quantity ? 'Those tickets are sold out.' : `Only ${t.quantity - t.sold} left.` }, 409);
+      const pr = priceFor(t.price_cents, qty, t.pass_fee, feePct);
+      const test = await isTestAccount(member.email);
+      const { data: o, error: oe } = await db.from('ve_ticket_orders').insert({ event_id: e.id, ticket_type_id: t.id, member_id: member.id, group_partner_id: hp.id, quantity: qty,
+        unit_cents: t.price_cents, fee_cents: pr.fee, processing_cents: pr.processing, total_cents: pr.total, group_cents: pr.group, pass_fee: t.pass_fee, test }).select('id').single();
+      if (oe || !o) return json({ error: 'save_failed' }, 500);
+      const params = new URLSearchParams({
+        mode: 'payment',
+        'line_items[0][price_data][currency]': 'usd',
+        'line_items[0][price_data][product_data][name]': ((test ? '[TEST] ' : '') + `${qty} x ${t.name}: ${e.title}`).slice(0, 120),
+        'line_items[0][price_data][product_data][description]': `${money(pr.tickets)} in tickets${t.pass_fee ? `, ${money(pr.fee)} service fee` : ''}, ${money(pr.processing)} card processing. Hosted by ${hg.name}.`.slice(0, 300),
+        'line_items[0][price_data][unit_amount]': String(pr.total),
+        'line_items[0][quantity]': '1',
+        success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${SITE}/events?tickets=canceled#event/${e.id}`,
+        'metadata[type]': 've_ticket', 'metadata[confirm_fn]': 've-group', 'metadata[order_id]': o.id, 'metadata[event_id]': e.id,
+        expires_at: String(Math.floor(Date.now() / 1000) + 30 * 60),
+      });
+      if (member.email) { params.set('customer_email', member.email); params.set('payment_intent_data[receipt_email]', member.email); }
+      if (test) params.set('metadata[test]', 'true');
+      const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+      const sj = await sres.json();
+      if (!sres.ok) { console.error('stripe', sj); await db.from('ve_ticket_orders').update({ status: 'canceled' }).eq('id', o.id); return json({ error: 'stripe', message: 'Checkout did not open. Try again in a minute.' }, 400); }
+      await db.from('ve_ticket_orders').update({ stripe_session: sj.id }).eq('id', o.id);
+      return json({ ok: true, url: sj.url, total_cents: pr.total, test_mode: test });
+    }
+
+    // guest_pass: someone without a Passport, at a free event, once.
+    if (paid) return json({ error: 'paid_event', message: 'This event has tickets. Tickets are for Passport holders.' }, 400);
+    if (active) return json({ error: 'member', message: 'You have a Passport: tap I\'m going instead.' }, 400);
+    const name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase();
+    if (!name) return json({ error: 'missing', message: 'Your name, please.' }, 400);
+    if (!isEmail(email)) return json({ error: 'bad_email', message: 'That email does not look right.' }, 400);
+    const { data: reg } = await db.from('members').select('membership_status').ilike('email', email).limit(1);
+    if (reg?.length && reg[0].membership_status === 'active') return json({ error: 'member', message: 'That email has a Passport. Sign in and tap I\'m going.' }, 400);
+    const { data: had } = await db.from('ve_guest_passes').select('event_id, created_at').ilike('email', email).maybeSingle();
+    if (had) return json({ error: 'used', message: had.event_id === e.id ? 'You are already on the guest list. Your code is in your email.' :
+      'Your guest pass has been used. From your second event, you join with the Vegans Explore Passport: $11, one time.' }, 409);
+    const { data: c } = await db.rpc('ve_ticket_code');
+    const { error: ge } = await db.from('ve_guest_passes').insert({ email, name, event_id: e.id, listing_id: hg.id, member_id: member?.id || null, code: c });
+    if (ge) return json({ error: (ge as any).code === '23505' ? 'used' : 'save_failed', message: 'Your guest pass has been used.' }, (ge as any).code === '23505' ? 409 : 500);
+    await sendOne(email, `Your guest pass: ${e.title}`, guestPassEmail(e, hg, String(c), name));
+    return json({ ok: true, code: c });
   }
 
   const g = await groupOf(body.listing_id);
@@ -385,6 +553,108 @@ Deno.serve(async (req) => {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     await db.from('ve_group_announcements').update({ removed_at: new Date().toISOString(), removed_by: member.id, pinned: false }).eq('id', body.id).eq('listing_id', g.id);
     return json({ ok: true, ...(await dash()) });
+  }
+
+  // ---- Tickets: the organizer's side, on one of the group's events.
+  if (['tickets', 'ticket_type_save', 'refund_policy_save', 'checkin', 'ticket_refund'].includes(action)) {
+    let eventId = body.event_id;
+    if (action === 'ticket_refund') {
+      const { data: oo } = isId(body.order_id) ? await db.from('ve_ticket_orders').select('event_id').eq('id', body.order_id).maybeSingle() : { data: null };
+      eventId = oo?.event_id;
+    }
+    const x = await saleOf(eventId);
+    if (!x || x.g.id !== g.id) return json({ error: 'not_found', message: 'That event is not one of your group\'s.' }, 404);
+    const e = x.e, cfg = await settings(), feePct = Number(cfg.ticket_fee_pct ?? 5);
+    const view = async () => {
+      const [{ data: types }, { data: orders }, { data: tix }, { data: passes }] = await Promise.all([
+        db.from('ve_ticket_types').select('id, name, price_cents, quantity, sold, pass_fee, active, sort').eq('event_id', e.id).order('sort').order('price_cents'),
+        db.from('ve_ticket_orders').select('id, ticket_type_id, member_id, quantity, total_cents, group_cents, fee_cents, status, paid_at, refunded_at, refund_cents, test').eq('event_id', e.id).in('status', ['paid', 'refunded']).order('paid_at', { ascending: false }),
+        db.from('ve_tickets').select('id, order_id, code, checked_in_at, voided_at').eq('event_id', e.id),
+        db.from('ve_guest_passes').select('id, name, code, checked_in_at, created_at, email').eq('event_id', e.id).order('created_at'),
+      ]);
+      const ids = [...new Set((orders || []).map((o: any) => o.member_id))];
+      const { data: ms } = ids.length ? await db.from('members').select('id, name').in('id', ids) : { data: [] };
+      const nm: Record<string, string> = {}; for (const m2 of ms || []) nm[m2.id] = shortName(m2.name || 'A member');
+      const tname: Record<string, string> = {}; for (const t of types || []) tname[t.id] = t.name;
+      const byOrder: Record<string, any> = {}; for (const o of orders || []) byOrder[o.id] = o;
+      const door = [
+        ...(tix || []).filter((t: any) => !t.voided_at && byOrder[t.order_id]).map((t: any) => ({ kind: 'ticket', id: t.id, code: t.code, name: nm[byOrder[t.order_id].member_id] || 'A member',
+          what: tname[byOrder[t.order_id].ticket_type_id] || 'Ticket', checked_in_at: t.checked_in_at })),
+        ...(passes || []).map((p2: any) => ({ kind: 'guest_pass', id: p2.id, code: p2.code, name: shortName(p2.name), what: 'Guest pass', checked_in_at: p2.checked_in_at })),
+      ].sort((a, b) => a.name.localeCompare(b.name));
+      const paidO = (orders || []).filter((o: any) => o.status === 'paid');
+      return { ok: true, event: { id: e.id, title: e.title, starts_at: e.starts_at, over: isOver(e), refund_policy: e.refund_policy || '' }, can_sell: !!x.partner, fee_pct: feePct,
+        types: (types || []).map((t: any) => ({ ...t, buyer_cents: priceFor(t.price_cents, 1, t.pass_fee, feePct).total, yours_cents: priceFor(t.price_cents, 1, t.pass_fee, feePct).group })),
+        orders: (orders || []).map((o: any) => ({ id: o.id, name: nm[o.member_id] || 'A member', type: tname[o.ticket_type_id] || 'Ticket', quantity: o.quantity, total_cents: o.total_cents,
+          group_cents: o.group_cents, status: o.status, paid_at: o.paid_at, refunded_at: o.refunded_at, refund_cents: o.refund_cents, test: o.test })),
+        door, totals: { sold: paidO.reduce((t: number, o: any) => t + o.quantity, 0), yours_cents: paidO.reduce((t: number, o: any) => t + o.group_cents, 0),
+          fee_cents: paidO.reduce((t: number, o: any) => t + o.fee_cents, 0), guest_passes: (passes || []).length, checked_in: door.filter((d) => d.checked_in_at).length } };
+    };
+
+    if (action === 'tickets') return json(await view());
+
+    if (action === 'ticket_type_save') {
+      if (!x.partner) return json({ error: 'not_partner', message: 'Tickets are for Group Partners. Ask us about the partnership.' }, 403);
+      if (isOver(e)) return json({ error: 'over', message: 'This event is over.' }, 400);
+      const name = clean(body.name, 81), price = Math.round(Number(body.price_cents)), qty = body.quantity == null || body.quantity === '' ? null : Math.floor(Number(body.quantity));
+      if (!name || name.length > 80) return json({ error: 'name', message: 'Give the ticket a name, up to 80 characters (General admission).' }, 400);
+      if (!Number.isFinite(price) || price < 100 || price > 100000) return json({ error: 'price', message: 'A ticket is $1 to $1,000. A free event needs no tickets: guests just say they are going.' }, 400);
+      if (qty != null && (!Number.isFinite(qty) || qty < 1 || qty > 10000)) return json({ error: 'quantity', message: 'How many, 1 to 10,000, or leave it empty for no limit.' }, 400);
+      const row = { name, quantity: qty, pass_fee: body.pass_fee === true, active: body.active !== false, updated_at: new Date().toISOString() };
+      if (isId(body.id)) {
+        const { data: t } = await db.from('ve_ticket_types').select('id, price_cents, sold').eq('id', body.id).eq('event_id', e.id).maybeSingle();
+        if (!t) return json({ error: 'not_found' }, 404);
+        if (t.sold > 0 && t.price_cents !== price) return json({ error: 'price_locked', message: 'Tickets of this type are sold, so its price stays. Add a new ticket type for a new price.' }, 409);
+        if (qty != null && qty < t.sold) return json({ error: 'quantity', message: `${t.sold} are already sold.` }, 400);
+        await db.from('ve_ticket_types').update({ ...row, price_cents: price }).eq('id', t.id);
+      } else {
+        const { count } = await db.from('ve_ticket_types').select('id', { count: 'exact', head: true }).eq('event_id', e.id);
+        if ((count || 0) >= 6) return json({ error: 'too_many', message: 'Six ticket types at most.' }, 400);
+        await db.from('ve_ticket_types').insert({ ...row, event_id: e.id, price_cents: price, sort: count || 0, created_by: member.id });
+      }
+      return json(await view());
+    }
+
+    if (action === 'refund_policy_save') {
+      const t = clean(body.text, 601);
+      if (t.length > 600) return json({ error: 'too_long', message: 'Keep it to 600 characters.' }, 400);
+      await db.from('events').update({ refund_policy: t || null }).eq('id', e.id);
+      e.refund_policy = t || null;
+      return json(await view());
+    }
+
+    if (action === 'checkin') {
+      if (!codeOk(body.code)) return json({ error: 'code', message: 'A door code is 8 letters and numbers.' }, 400);
+      const code = String(body.code).trim().toUpperCase(), at = body.undo === true ? null : new Date().toISOString(), by = body.undo === true ? null : member.id;
+      const { data: t } = await db.from('ve_tickets').select('id, checked_in_at, voided_at').eq('event_id', e.id).eq('code', code).maybeSingle();
+      if (t) {
+        if (t.voided_at) return json({ error: 'void', message: 'That ticket was refunded.' }, 409);
+        if (at && t.checked_in_at) return json({ error: 'already', message: `Already checked in at ${new Date(t.checked_in_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: e.timezone || 'America/New_York' })}.` }, 409);
+        await db.from('ve_tickets').update({ checked_in_at: at, checked_in_by: by }).eq('id', t.id);
+        return json(await view());
+      }
+      const { data: p2 } = await db.from('ve_guest_passes').select('id, checked_in_at').eq('event_id', e.id).eq('code', code).maybeSingle();
+      if (!p2) return json({ error: 'not_found', message: 'No ticket or guest pass with that code for this event.' }, 404);
+      if (at && p2.checked_in_at) return json({ error: 'already', message: 'That guest pass is already checked in.' }, 409);
+      await db.from('ve_guest_passes').update({ checked_in_at: at, checked_in_by: by }).eq('id', p2.id);
+      return json(await view());
+    }
+
+    // ticket_refund: the tickets' cost back to the card (our 5% included), not card processing; then the order is refunded here.
+    const { data: o } = await db.from('ve_ticket_orders').select('*').eq('id', body.order_id).maybeSingle();
+    if (!o || o.status !== 'paid') return json({ error: 'status', message: 'Only a paid order can be refunded.' }, 409);
+    if (!o.payment_intent) return json({ error: 'no_payment', message: 'We could not find the payment for this order. Write to contact@lesaruss.com.' }, 409);
+    const amount = o.total_cents - o.processing_cents;
+    const rres = await fetch('https://api.stripe.com/v1/refunds', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(o.test)}`, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ payment_intent: o.payment_intent, amount: String(amount), 'metadata[order_id]': o.id, 'metadata[by]': member.id }).toString() });
+    const rj = await rres.json();
+    if (!rres.ok) { console.error('refund', rj); return json({ error: 'stripe', message: rj?.error?.message || 'The refund did not go through. Try again in a minute.' }, 400); }
+    const { data: rr } = await db.rpc('ve_ticket_order_refunded', { p_order: o.id, p_refund_cents: amount, p_by: member.id });
+    if (!rr?.ok) console.error('refund recorded?', o.id, rr);
+    const { data: buyer } = await db.from('members').select('name, email').eq('id', o.member_id).maybeSingle();
+    if (buyer?.email) await sendOne(buyer.email, `Refunded: ${e.title}`, `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px"><p>Hi ${esc(firstName(buyer.name))},</p>` +
+      `<p>${esc(g.name)} refunded your ${o.quantity === 1 ? 'ticket' : o.quantity + ' tickets'} to <b>${esc(e.title)}</b>: ${money(amount)} back to your card in the next few days. Card processing is not refunded.</p>${FOOT}</div>`);
+    return json(await view());
   }
 
   // ---- Gifts: the Group Partner's lead only, from the group's cleared earnings, or by card.
