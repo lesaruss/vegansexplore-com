@@ -157,7 +157,7 @@ begin
   return jsonb_build_object('earned', v_id is not null, 'commission_cents', cents, 'affiliate', a.id);
 end $function$;
 
--- What the group can spend on gifts: everything it has earned and not been paid (waiting or ready), less its gifts.
+-- What the group can spend on gifts (changed the same day by 20261029_group_gift_cleared_balance.sql: cleared earnings only).
 create or replace function public.ve_group_balance(p_group uuid)
 returns int language sql stable security definer set search_path to 'public' as $function$
   select coalesce(sum(commission_cents), 0)::int from ve_affiliate_commissions where group_partner_id = p_group and status in ('pending', 'ready');

@@ -105,7 +105,7 @@
     members_total: 214, brought: BROUGHT, new_this_month: 14, ladder: LADDER, rate_pct: 30,
     guest_passes: { used: 96, joined_after: 51 },
     members: MEMBERS, events: EVENTS,
-    gift: { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 18240 + 6380, credit_cents: 0, points: 1100, days: 30, can: true },
+    gift: { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 18240, holding_cents: 6380, next_clear_at: at(9, 12), credit_cents: 0, points: 1100, days: 30, can: true, can_buy: true },
     earnings: {
       // Commissions: the group's share of each $11 Passport bought through it, at the rate on the day. Tickets: what buyers paid, less our 5%.
       passports_cents: 25 * 220 + 50 * 275 + 37 * 330, tickets_cents: Math.round(ticketGross * 0.95), fee_cents: Math.round(ticketGross * 0.05),
@@ -221,6 +221,10 @@
     },
     dashboard: function (body, toast) {
       var a = body && body.action;
+      if (a === 'gift_checkout') {
+        toast('Sample: this opens a card checkout for $' + (GIFT_COST / 100).toFixed(2) + ', then makes the gift. Nothing is charged here.');
+        return Promise.resolve({ ok: false, demo: true });
+      }
       if (a === 'group_gift' || a === 'gift_send' || a === 'gift_cancel') {
         var mine = []; try { mine = JSON.parse(sessionStorage.getItem('ve_group_gifts') || '[]'); } catch (e) {}
         var save = function () { try { sessionStorage.setItem('ve_group_gifts', JSON.stringify(mine)); } catch (e) {} GROUP.gifts = giftsAll(); };

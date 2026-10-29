@@ -586,10 +586,18 @@
     function drawGift() {
       var G = D.group, F = G.gift || {}, list = G.gifts || [];
       var STATUS = { sent: 'Waiting', opened: 'Opened', ready: 'Waiting', joined: 'Joined', accepted: 'Joined', expired: 'Expired', canceled: 'Canceled', declined: 'Turned down' };
-      var head = '<div class="vpd-tiles"><div><b>' + money(F.cost_cents || 0) + '</b><span>A gift today</span><em>Our share of the $11 at your ' + (F.rate_pct || G.rate_pct) + '% rate</em></div>' +
-        '<div><b>' + money(Math.max(0, F.balance_cents || 0)) + '</b><span>Your earnings to give from</span><em>Waiting and ready, less your gifts</em></div>' +
+      var cost = money(F.cost_cents || 0), bal = money(Math.max(0, F.balance_cents || 0));
+      // Gifts come from cleared earnings: past their 30-day hold, not paid out, less gifts. Money on hold never counts.
+      var clears = (F.holding_cents || 0) > 0 ? money(F.holding_cents) + ' more is on its 30-day hold' + (F.next_clear_at ? '; the next of it clears ' + dt(F.next_clear_at) : '') + '.' : '';
+      var head = '<div class="vpd-tiles"><div><b>' + cost + '</b><span>A gift today</span><em>Our share of the $11 at your ' + (F.rate_pct || G.rate_pct) + '% rate</em></div>' +
+        '<div><b>' + bal + '</b><span>Cleared earnings to give from</span><em>' + ((F.holding_cents || 0) > 0 ? money(F.holding_cents) + ' more on its 30-day hold' : 'Earnings count 30 days after each sale') + '</em></div>' +
         '<div><b>' + n(F.points || 1100) + '</b><span>Points they get</span><em>Like any Passport</em></div>' +
         '<div><b>' + n(list.filter(function (x) { return x.status === 'joined'; }).length) + '</b><span>Gifts used</span><em>Each one counts toward your rate</em></div></div>';
+      var short = 'A gift costs ' + cost + ', and your cleared earnings are ' + bal + '. Earnings count 30 days after each sale' + (clears ? ': ' + clears : '.');
+      var crumb = '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / New gift</p>';
+      var paid = q('gift') === 'paid' && q('code') ? '<div class="vpd-card"><b>Paid. Your gift is ready.</b><p>' + (q('emailed') ? 'We emailed it from Vegans Explore with your name. ' : 'Send them the link yourself. ') + 'It works only for their email, once.</p>' +
+        '<p style="word-break:break-all"><b>https://vegansexplore.com/invite?c=' + esc(q('code')) + '</b></p><button type="button" class="vpd-btn sm" data-vpd-copy="https://vegansexplore.com/invite?c=' + esc(q('code')) + '">Copy the link</button></div>' : '';
+      if (q('gift') === 'error') paid = '<p class="vpd-empty">Your payment went through but the gift was not made. We have been told and will make it for you.</p>';
       if (q('item') === 'new') {
         if (GIFT_LINK) {
           var made = GIFT_LINK; GIFT_LINK = null;
@@ -597,26 +605,30 @@
             '<p>' + (made.emailed ? 'We emailed it from Vegans Explore with your name. You can also send the link yourself:' : 'Send it to them yourself. It works only for ' + esc(made.email) + ', once, for ' + (F.days || 30) + ' days.') + '</p>' +
             '<p style="word-break:break-all"><b>' + esc(made.url) + '</b></p><button type="button" class="vpd-btn sm" data-vpd-copy="' + esc(made.url) + '">Copy the link</button> <a class="vpd-btn sm o" href="?tab=brand&pd=gift" data-vpd="gift">Back to your gifts</a></div>';
         }
-        if (!F.can) return '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / New gift</p>' + head +
-          '<p class="vpd-empty">A gift costs ' + money(F.cost_cents || 0) + ' from your earnings, and you have ' + money(Math.max(0, F.balance_cents || 0)) + '. Gifts come out of what your group has earned through its link.</p>';
-        return '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / New gift</p>' +
+        var card = !F.can;
+        if (card && !F.can_buy) return crumb + head + '<p class="vpd-empty">' + short + '</p>';
+        return crumb + (card ? '<div class="vpd-card"><b>Pay for this one by card</b><p>' + short + ' You can pay ' + cost + ' by card instead, the same price, and the gift goes out the moment it is paid.</p></div>' : '') +
           '<div class="vpd-form vpd-ann-form"><label>Their name<input id="vpd-gf-name" maxlength="120" placeholder="Jordan Lee"></label>' +
           '<label>Their email<input id="vpd-gf-email" type="email" maxlength="200" placeholder="jordan@example.com"></label>' +
           '<label>A note from you (optional)<textarea id="vpd-gf-note" rows="3" maxlength="500" placeholder="Come to brunch with us on Sunday!"></textarea></label>' +
-          '<p class="vpd-empty">They get a Passport on you, with ' + n(F.points || 1100) + ' points, and join your group. ' + money(F.cost_cents || 0) + ' comes out of your earnings now; if they do not accept within ' + (F.days || 30) + ' days, or you cancel, it comes back. The link works only for their email.</p>' +
-          '<p id="vpd-msg" class="vpd-msg" role="status"></p><p><button type="button" class="vpd-btn" data-vpd-gift="email">Email it to them</button> <button type="button" class="vpd-btn o" data-vpd-gift="link">Make the link to send myself</button></p></div>';
+          '<p class="vpd-empty">They get a Passport on you, with ' + n(F.points || 1100) + ' points, and join your group. ' +
+          (card ? cost + ' is charged to your card now. If they do not accept within ' + (F.days || 30) + ' days, or you cancel, it goes to your balance for your next gift.'
+            : cost + ' comes out of your cleared earnings now; if they do not accept within ' + (F.days || 30) + ' days, or you cancel, it comes back.') + ' The link works only for their email.</p>' +
+          '<p id="vpd-msg" class="vpd-msg" role="status"></p><p>' + (card
+            ? '<button type="button" class="vpd-btn" data-vpd-gift="email" data-vpd-card="1">Pay ' + cost + ' and email it to them</button> <button type="button" class="vpd-btn o" data-vpd-gift="link" data-vpd-card="1">Pay ' + cost + ' and make the link</button>'
+            : '<button type="button" class="vpd-btn" data-vpd-gift="email">Email it to them</button> <button type="button" class="vpd-btn o" data-vpd-gift="link">Make the link to send myself</button>') + '</p></div>';
       }
-      return head + '<p style="margin:0 0 14px">' + (F.can ? '<a class="vpd-btn" href="?tab=brand&pd=gift&item=new" data-vpd="gift" data-vpd-item="new">Gift a membership</a>'
-          : '<span class="vpd-empty">A gift costs ' + money(F.cost_cents || 0) + ' from your earnings, and you have ' + money(Math.max(0, F.balance_cents || 0)) + '. Gifts open up as your link earns.</span>') + '</p>' +
+      return paid + head + '<p style="margin:0 0 14px">' + (F.can || F.can_buy ? '<a class="vpd-btn" href="?tab=brand&pd=gift&item=new" data-vpd="gift" data-vpd-item="new">Gift a membership</a>' : '') +
+          (!F.can ? '<span class="vpd-empty" style="display:block;margin-top:8px">' + short + (F.can_buy ? ' Until it clears, you can pay for a gift by card.' : '') + '</span>' : '') + '</p>' +
         '<h4>Your gifts</h4>' + (list.length ? '<div class="vpd-list">' + list.map(function (x) {
           var open = ['ready', 'sent', 'opened'].indexOf(x.status) >= 0, url = 'https://vegansexplore.com/invite?c=' + x.code;
           return '<div class="vpd-row"><div><b>' + esc(x.name) + '</b><small>' + esc(x.email) + ' &middot; ' + dt(x.created_at, true) + ' &middot; ' + money(x.cost_cents || 0) +
-            (x.given_back ? ', given back' : '') + (open ? ' &middot; open until ' + dt(x.expires_at) : '') + '</small></div>' +
+            (x.by_card ? ' by card' : '') + (x.given_back ? (x.by_card ? ', back to your balance' : ', given back') : '') + (open ? ' &middot; open until ' + dt(x.expires_at) : '') + '</small></div>' +
             '<span class="vpd-tag">' + esc(STATUS[x.status] || x.status) + '</span>' +
             (open ? '<button type="button" class="vpd-btn sm o" data-vpd-copy="' + esc(url) + '">Copy the link</button>' +
               (x.sent_via !== 'email' ? ' <button type="button" class="vpd-btn sm o" data-vpd-giftsend="' + esc(x.id) + '">Email it</button>' : '') +
               ' <button type="button" class="vpd-btn sm o" data-vpd-giftcancel="' + esc(x.id) + '">Cancel</button>' : '') + '</div>';
-        }).join('') + '</div>' : '<p class="vpd-empty">No gifts yet. A gift is a Passport for someone you want in your group, paid from your earnings.</p>');
+        }).join('') + '</div>' : '<p class="vpd-empty">No gifts yet. A gift is a Passport for someone you want in your group, paid from your cleared earnings or by card.</p>');
     }
 
     var VIEW_FN = { gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
@@ -680,9 +692,20 @@
           var v = function (k) { return ((el.querySelector('#vpd-gf-' + k) || {}).value || '').trim(); };
           if (!v('name')) return msg('Who is it for? Give their name.', true);
           if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v('email'))) return msg('That email does not look right.', true);
-          el.querySelectorAll('[data-vpd-gift]').forEach(function (x) { x.disabled = true; }); msg('Making your gift...');
-          gapi({ action: 'group_gift', listing_id: l.id, name: v('name'), email: v('email'), note: v('note'), send: b.dataset.vpdGift === 'email' }).then(function (d) {
+          var byCard = !!b.dataset.vpdCard;
+          el.querySelectorAll('[data-vpd-gift]').forEach(function (x) { x.disabled = true; }); msg(byCard ? 'Opening checkout...' : 'Making your gift...');
+          gapi({ action: byCard ? 'gift_checkout' : 'group_gift', listing_id: l.id, name: v('name'), email: v('email'), note: v('note'), send: b.dataset.vpdGift === 'email' }).then(function (d) {
+            if (byCard && d && d.ok && d.url) { location.href = d.url; return; }
             el.querySelectorAll('[data-vpd-gift]').forEach(function (x) { x.disabled = false; });
+            if (d && d.demo) return msg('');
+            // Short of cleared earnings (they changed since the page loaded): offer the card, keeping what they typed.
+            if (d && d.error === 'balance' && d.can_buy && D.group && D.group.gift) {
+              var keep = { name: v('name'), email: v('email'), note: v('note') };
+              Object.assign(D.group.gift, { can: false, can_buy: true, balance_cents: d.balance_cents, holding_cents: d.holding_cents, next_clear_at: d.next_clear_at });
+              draw();
+              ['name', 'email', 'note'].forEach(function (k) { var f = el.querySelector('#vpd-gf-' + k); if (f) f.value = keep[k]; });
+              return;
+            }
             if (!d || !d.ok) return msg((d && d.message) || 'That did not go through. Try again.', true);
             mergeGroup(d);
             GIFT_LINK = { url: d.url, email: v('email'), emailed: !!d.emailed }; draw();
