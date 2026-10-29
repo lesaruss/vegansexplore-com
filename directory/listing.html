@@ -3355,7 +3355,7 @@ function demoSlug(){
 // restaurant with a Visitor / Owner switch that opens the real business dashboard on sample numbers.
 function demoSrc(){
   if(/^\/business\/sample\/?$/.test(location.pathname)) return '/business/sample/listing-demo.js';
-  // The sample group (Sean, 2026-10-29): Sprout Social Club, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
+  // The sample group (Sean, 2026-10-29): Sprout Social Society, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
   if(/^\/groups\/sample\/?$/.test(location.pathname)) return '/groups/sample/listing-demo.js';
   var s = demoSlug(); return s ? '/campaign-engine/' + s + '/listing-demo.js' : '';
 }
@@ -4707,7 +4707,7 @@ function closeDemoModal(){ var m = document.getElementById('demo-modal'); if(m){
 function groupDemoLogin(l){
   var L = DEMO.login || {};
   demoModal('<p class="dm-kicker">Sample group</p><h3>Sign in as the organizer</h3>' +
-    '<p>Use the demo sign-in to see what Sprout Social Club\'s organizer sees. It opens this sample only, in this browser.</p>' +
+    '<p>Use the demo sign-in to see what Sprout Social Society\'s organizer sees. It opens this sample only, in this browser.</p>' +
     '<label class="dm-f">Email<input id="dm-email" type="email" autocomplete="off" placeholder="' + esc(L.email || '') + '"></label>' +
     '<label class="dm-f">Password<input id="dm-pass" type="password" autocomplete="off"></label>' +
     '<p class="dm-hint">Demo sign-in: <b>' + esc(L.email || '') + '</b> / <b>' + esc(L.password || '') + '</b></p><p class="dm-err" id="dm-err" role="alert"></p>' +
@@ -4729,7 +4729,7 @@ function demoEvent(id){
   var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0]; if(!e) return;
   var past = Date.parse(e.ends_at || e.starts_at) < Date.now();
   var when = new Date(e.starts_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Club</p><h3>' + esc(e.title) + '</h3>' +
+  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Society</p><h3>' + esc(e.title) + '</h3>' +
     '<p class="dm-meta">' + esc(when) + ' · ' + esc(e.location_name) + ', ' + esc(e.city) + '</p>' + (e.description ? '<p>' + esc(e.description) + '</p>' : '');
   if(past){ demoModal(head + '<p class="dm-note">' + e.going + ' went. Past events stay on the group\'s page, so newcomers can see how active it is.</p>'); return; }
   var draw = function(){
@@ -4754,7 +4754,7 @@ function demoEvent(id){
       a.onclick = function(){
         var k = a.getAttribute('data-act');
         if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
-        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Club, so the group earns its share of your $11.'; }
+        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Society, so the group earns its share of your $11.'; }
         else if(k === 'buy'){ GDEMO.going[e.id] = 'Your ticket is in My events. The group gets the ticket price less our 5%.'; }
         else GDEMO.going[e.id] = 'It is on My events, and the organizer can message the guests who say yes.';
         draw();
@@ -4767,8 +4767,8 @@ function demoJoinGroup(){
   var g = DEMO.group || {};
   var draw = function(){
     var done = GDEMO.joinedGroup;
-    demoModal('<p class="dm-kicker">Sprout Social Club</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
-      (done ? '<div class="dm-done"><b>Welcome to Sprout Social Club.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
+    demoModal('<p class="dm-kicker">Sprout Social Society</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
+      (done ? '<div class="dm-done"><b>Welcome to Sprout Social Society.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
         : '<p>' + (g.members_total || '') + ' members. Joining a group is free for Passport holders: its board, its events first, and its members, from any city.</p>' +
           (GDEMO.who === 'member' ? '<button type="button" class="dm-go" data-act="j">Join the group</button>'
             : '<div class="dm-pass"><b>Groups are for Passport holders.</b><span>Your first free event is on a guest pass. To join a group, the Passport: $11, one time, with 1,100 points.</span></div><button type="button" class="dm-go" data-act="jp">Get the Passport and join</button>')), function(m){

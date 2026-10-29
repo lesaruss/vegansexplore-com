@@ -1,6 +1,6 @@
 /* The sample group (Sean, 2026-10-29: "create our own mock club so people can go through it... demo it... the same way we did the
  * business... they can click around... see what the back end looks like... a general username and password... what it would be like
- * from a user perspective... from the owner's perspective"). Sprout Social Club is invented, never a database row. This file feeds the
+ * from a user perspective... from the owner's perspective"). Sprout Social Society is invented, never a database row. This file feeds the
  * real Directory listing page (/directory/listing.html) through its demo mode at /groups/sample: a member's view of a Group Partner's
  * page (its events, the guest pass, tickets, joining, its board) and, signed in with the demo login, the organizer's dashboard
  * (/public/ve-partner-dashboard.js) with the Group Partner views (members, events, earnings) on the numbers below. Every rate and rule
@@ -76,7 +76,7 @@
   ].map(function (x) { return { at: new Date(Date.now() + x[0] * DAY).toISOString(), kind: x[1], what: x[2], cents: x[3] }; });
 
   var GROUP = {
-    name: 'Sprout Social Club', status: 'active', code: 'SPROUT-SOCIAL-CLUB', link: 'vegansexplore.com/r/SPROUT-SOCIAL-CLUB',
+    name: 'Sprout Social Society', status: 'active', code: 'SPROUT-SOCIAL-SOCIETY', link: 'vegansexplore.com/r/SPROUT-SOCIAL-SOCIETY',
     members_total: 214, brought: BROUGHT, new_this_month: 14, ladder: LADDER, rate_pct: 30,
     guest_passes: { used: 96, joined_after: 51 },
     members: MEMBERS, events: EVENTS,
@@ -114,7 +114,7 @@
   }
   var D = {
     ok: true,
-    listing: { id: 'sample-sprout-social-club', name: 'Sprout Social Club', slug: 'sample', category: 'Groups', food: false, kind: 'group', hub: 'south-florida', claim_status: 'verified' },
+    listing: { id: 'sample-sprout-social-society', name: 'Sprout Social Society', slug: 'sample', category: 'Groups', food: false, kind: 'group', hub: 'south-florida', claim_status: 'verified' },
     open: true, owner: true, admin: false, member_active: true,
     checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: false }],
     cards: [
@@ -134,7 +134,7 @@
     business: true,
     group: true,
     tour: false,
-    label: 'Sprout Social Club is a made-up group. Everything around it is the real page and the real dashboard, so you can see what a Group Partner gets. Nothing is charged or saved.',
+    label: 'Sprout Social Society is a made-up group. Everything around it is the real page and the real dashboard, so you can see what a Group Partner gets. Nothing is charged or saved.',
     // The demo sign-in (Sean: "a general username and password that they can use"). It only opens the organizer's side of this sample,
     // in this browser; it is not an account.
     login: { email: 'demo@vegansexplore.com', password: 'explore11' },
@@ -144,18 +144,18 @@
     board: [
       { who: 'Nia H.', when: 2, text: 'Who is carpooling to the beach cleanup from Plantation? I have three seats.' },
       { who: 'Andre T.', when: 4, text: 'Seedling just posted the supper club menu. The mushroom course looks unreal.' },
-      { who: 'Sprout Social Club', when: 6, text: 'Thank you for 54 costumes on Halloween! Photos are in the group album.', host: true }
+      { who: 'Sprout Social Society', when: 6, text: 'Thank you for 54 costumes on Halloween! Photos are in the group album.', host: true }
     ],
     listing: {
-      id: 'sample-sprout-social-club',
+      id: 'sample-sprout-social-society',
       slug: 'sample',
-      name: 'Sprout Social Club',
+      name: 'Sprout Social Society',
       initials: 'SS',
       color: '#2d7d31',
       category: 'Groups',
       vegan_status: null,
       tagline: 'Fort Lauderdale\'s Vegan social club: dinners, brunches, game nights and good people.',
-      description: 'Sprout Social Club is a sample group made up for this page. Picture a few hundred Vegans and Vegan-curious friends in Broward who get together every week: taco nights, park brunches, a monthly supper club with a local chef, game nights and beach cleanups. Anyone can come to their first free event on a guest pass.',
+      description: 'Sprout Social Society is a sample group made up for this page. Picture a few hundred Vegans and Vegan-curious friends in Broward who get together every week: taco nights, park brunches, a monthly supper club with a local chef, game nights and beach cleanups. Anyone can come to their first free event on a guest pass.',
       website: '',
       instagram: '',
       address_city: 'Fort Lauderdale',

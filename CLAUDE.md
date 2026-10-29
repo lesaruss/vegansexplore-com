@@ -771,7 +771,7 @@ own mock club so people can go through it... the same way we did the business...
 a groups one, where I could... personalize the message, select people... do a crawl for all these community groups... send them
 messages one by one... it lays out pretty much as a guide... they can click on what it would be like from a user perspective... from
 the owner's perspective").
-- **`/groups/sample`** is Sprout Social Club, an invented group (never a database row, marked Sample, `noindex`): the real listing page
+- **`/groups/sample`** is Sprout Social Society, an invented group (never a database row, marked Sample, `noindex`): the real listing page
   (`directory/listing.html`, rewrite in `vercel.json`) in demo mode (`demoSrc`), fed `/groups/sample/listing-demo.js` (`VE_DEMO.group`).
   Its bar switches **A member** / **The organizer**. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past),
   the group's board, a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
