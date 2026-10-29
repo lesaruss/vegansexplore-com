@@ -942,9 +942,42 @@ existing consoles become each pathway's detail view.
   per person (like Founding Members), the day's batch approved by Sean (like Business outreach send days). **Instagram is never
   automated** (its rules forbid automated first messages; the account is at risk): a task in Today with the message written, Copy and
   open Instagram, Mark sent.
-- **Content Creators**: offer not decided (V's recommendation: featured in Media, their own link at a creator commission, the Podcast
-  Network for podcasters, the Creator Guide); until then invited as Ambassadors with the Creator profile. Coaches wait for Creators.
-  Each pathway's LESARUSS.AI step is shaped later. Mailing list reactivation is a separate project.
+- **Content Creators is not its own program** (Sean, 2026-10-29; see Ambassadors for everyone, below): it is a lead finder feeding the
+  Ambassador pathway with the Creator profile set. Coaches wait. Each pathway's LESARUSS.AI step is shaped later. Mailing list
+  reactivation is a separate project.
+
+## Ambassadors for everyone, the talent bench and the shop (LOCKED by Sean 2026-10-29, playbook `ve-ambassadors-talent-shop`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-ambassadors-talent-shop`; migration
+`20261029_ambassadors_talent_shop_canon.sql`). **Not built yet.** Sean: "the ambassador program being for everyone and you fitting in
+based off of your results"; "these prices will be coming from LESARUSS.ai... any discount will come from them using points"; "a shop...
+if they choose this, this is what happens"; "turn into a marketing agency for the 21st century."
+- **One Ambassador program, never a separate Creators program.** The team sets each Ambassador's profile (Balanced, Animals first,
+  Community builder, Creator, Health and fitness) and can change it in the background. People climb by results (levels, jobs, campaigns).
+- **One Opportunities board**: points jobs (every Ambassador), perk jobs (a dinner, a ticket, a cause, plus points), paid jobs (invited,
+  active Ambassadors with a rate card). From Level 2, bounties include professional work (social, editing, design, outreach), skill
+  tagged, vetted with a small paid trial job. The Community Manager is the client's one contact.
+- **Activation for paid work**, a self-updating checklist: profile, platforms (numbers read where we can), rates (team only), get paid
+  (Stripe Connect hosted onboarding; W-9 and 1099s through Stripe's W-8/W-9 product, in preview and to be requested, else its manual
+  W-9 request). Not active yet until all four; reminders Day 2, Day 7, then weekly; Active with a notification when done.
+- **Scouting**: our own campaigns, dinners, events and tours; HARO (Featured.com's free reporter requests) matched by topic; other
+  marketplaces only as heads-ups from public posts, never scraping logged-in platforms.
+- **We produce campaigns**: we pick the talent (a brand may hand-pick for 10% more), creators get their full rate, 50% on yes and 50% when
+  their posts are live, the brand pays creator fees up front (held until delivered), our fee 25% on top; FTC disclosure on sponsored posts;
+  rates and numbers stay with the team, names go to a brand only after a creator says yes.
+- **The shop** is the LESARUSS.ai service list, one price list for every brand: each item a workflow (intake, deposit, assignment, a
+  Community Manager, delivery, sign-off), offered **AI-led** or **people-led** (vetted Vegan professionals, about 1.5 times). AI-led
+  rate card: press release written and pitched $500; PR outreach $750 a month; social media, one platform, $400 a month; brand or product
+  launch quoted from $1,500; custom agency work quoted per project. Members (Partners, Diplomats, Ambassadors Level 2 and up) save 20%;
+  points (1 point = 1 cent, earned by promoting us) cover up to half. Prices may be tuned to delivery cost before each service opens.
+- The Partner plan is on us for Creator-profile Ambassadors at Level 2 and up while active; they earn 20% commission from day one.
+- **We make it right**: a professional who fails to deliver is replaced and we finish it; refunds stay deposit only. Contractors are judged
+  on deliverables and deadlines, never hours or methods (a labor attorney reviews the agreement once).
+- **Reveal bit by bit**: now the door (the Guide, the account, the profile, the checklist); then one service at a time with its case study
+  and a Daily Pulse announcement: books (Bob Leonard, then Brooke), courses (Dr. Klaper), event promotion, PR, social, brand launch.
+- **First**: Torre Washington; Gabriela Reyes once the platform comes first (confirm her name and handle); then Philly's creators ahead
+  of a dinner. **Build**: the Creator Guide from Sean's Canva Vegan Content Creator Survival Guide (`DAGx86FyHyw`), profile claim and
+  the checklist, the Opportunities board, Stripe Connect and campaign production, the shop, the lead finder by city.
 - **Build order**: 1. the hub and journey view for the five that exist (shows every gap); 2. the board, Today, Instagram tasks and the
   report on those five; 3. a lead finder per pathway; 4. Content Creators; 5. Coaches. Reuse `ve-outreach` (lists, sender, sync,
   warm-up), `universe_invites` and its consoles, `ve-invites` `draft_note` and Preview journeys.
