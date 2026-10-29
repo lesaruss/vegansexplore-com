@@ -2054,6 +2054,13 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
   the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
   waiting, with Get the Guide) to everyone else. Every Guide's Get access lists Bounties.
+  **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
+  they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
+  open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
+  **Try it** (a working Get me there on the free venue from a set start, D7 at FLL, section 124 at Hard Rock), How to use it (pick,
+  type your gate or section, save), Built with you (we started with what we could find; members keep it right) beside the
+  Bounties card (live points from `bounties`), Newly added (the four latest, `list` `added`), and Get every venue. The full list
+  with the city filter is the Airports / Venues tab only. Nori's and River's Overview lines are text drafts for Sean.
   **Queued by Sean, not built** (2026-10-29: "let's not steer too far away from the airport guide... we can always cue this for
   later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
   evergreen bounties (check in where you go, volunteer with a nonprofit, is this place still open?); paid jobs such as attending an
