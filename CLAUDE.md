@@ -773,8 +773,12 @@ messages one by one... it lays out pretty much as a guide... they can click on w
 the owner's perspective").
 - **`/groups/sample`** is Sprout Social Society, an invented group (never a database row, marked Sample, `noindex`): the real listing page
   (`directory/listing.html`, rewrite in `vercel.json`) in demo mode (`demoSrc`), fed `/groups/sample/listing-demo.js` (`VE_DEMO.group`).
-  Its bar switches **A member** / **The organizer**. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past),
-  the group's board, a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
+  Its bar switches **A member** / **The organizer**. Its logo (Sean picked option A from a look book, 2026-10-29) and photos are in
+  `groups/sample/img/`, the photos realistic, as a real group would post them (never our illustrated Guides). Tabs (Sean, 2026-10-29):
+  Overview, **Board** (the Message Board: posts with replies, the organizer's pinned welcome, `VE_DEMO.board`) and **Media** (the Photo
+  Gallery: one album per past event, Halloween Costume Potluck and Sunday Brunch in the Park, five photos each, `VE_DEMO.galleries`;
+  `?tab=media&album=<id>`, Media > event, each photo in the page's lightbox; `groupDemoTabs` in `directory/listing.html`). The brunch
+  is at George English Park, on the Intracoastal, to match its photos. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
   window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
   Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
   sign-in** (`VE_DEMO.login`: demo@vegansexplore.com / explore11, `groupDemoLogin`, kept for the visit in `sessionStorage`
