@@ -1,4 +1,7 @@
-// ve-venues: the Stadium & Arena Guide (Sean, 2026-10-28; playbook ve-venue-guides, migration 20261028_ve_venue_guides.sql).
+// ve-venues: the Stadium & Arena Guide (Sean, 2026-10-28; playbook ve-venue-guides, migration 20261028_ve_venue_guides.sql) and the
+// Airport Guide (Sean, 2026-10-29; migration 20261029_airport_guide.sql). Every call names its Guide (guide: 'stadium-arena-guide' |
+// 'airport-guide', the Stadium Guide when left out): list shows that Guide's kinds of venue, and owning, My list and the free
+// example go by that Guide. A venue's own Guide follows from its kind (airport, or stadium and arena).
 // A venue mapped to the Vegan food inside it, kept accurate by members who report from inside for points.
 //
 // Anyone:
@@ -21,6 +24,8 @@
 //   { action: 'report_get', id }               one report with its photo (a signed link), the item, the other reports on it
 //   { action: 'review', id, decision, note?, first? }   accept | agree (with first, the accepted one) | decline; points paid there
 //   { action: 'venue_save', venue }            add or change a venue; { action: 'spot_save', spot }; { action: 'item_save', item }
+//   (an airport's layout is { terminals: [{ id, name, concourses: [{ id, name, gates: ['A1', ...], airside: <group> }] }] }, its stands'
+//    zone airside | landside, their gates in map_sections and their concourse in map_level; public/ve-airport-map.js reads it)
 //   { action: 'locate', slug }                 fills the venue's place, address and pin from Google Places (never typed in)
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
@@ -29,7 +34,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
-const GUIDE = 'stadium-arena-guide';
+const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'] };
+const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : 'stadium-arena-guide');
 const BUCKET = 'venue-reports';
 const SAVE_CAP = 500;
 
@@ -106,14 +112,20 @@ Deno.serve(async (req) => {
     }
   }
   const admin = ops || !!viewer?.admin;
+  let GUIDE = GUIDES[String(body.guide || '')] ? String(body.guide) : 'stadium-arena-guide';
+  // The venue's own Guide decides who it is open to, whatever page asked.
+  if (action === 'venue') {
+    const { data: vk } = await db.from('ve_venues').select('kind').eq('slug', str(body.slug, 80)).maybeSingle();
+    if (vk?.kind) GUIDE = guideOfKind(vk.kind);
+  }
   let owns = admin;
   if (!owns && viewer) { const { data } = await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: GUIDE }); owns = !!data; }
-  const me = viewer ? { signed_in: true, active: viewer.active, owns, admin } : { signed_in: false, active: false, owns: admin, admin };
+  const me = viewer ? { signed_in: true, active: viewer.active, owns, admin, guide: GUIDE } : { signed_in: false, active: false, owns: admin, admin, guide: GUIDE };
 
   // ---------- anyone ----------
   if (action === 'list') {
     const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url')
-      .eq('status', 'live').order('sort_order');
+      .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const ids = (vs || []).map((v) => v.id);
     const { data: its } = ids.length ? await db.from('ve_venue_items').select('venue_id, last_confirmed_at').in('venue_id', ids).eq('status', 'live') : { data: [] as any[] };
@@ -229,8 +241,8 @@ Deno.serve(async (req) => {
       const itemIds = (data || []).filter((x) => x.kind === 'venue_item').map((x) => x.item_key);
       const venueSlugs = (data || []).filter((x) => x.kind === 'venue').map((x) => x.item_key);
       const [{ data: its }, { data: vs }] = await Promise.all([
-        itemIds.length ? db.from('ve_venue_items').select('id, name, vegan, last_confirmed_at, ve_venue_spots(name, where_text), ve_venues(slug, name)').in('id', itemIds) : Promise.resolve({ data: [] as any[] }),
-        venueSlugs.length ? db.from('ve_venues').select('slug, name, kind, city, state, teams, image_url').in('slug', venueSlugs) : Promise.resolve({ data: [] as any[] }),
+        itemIds.length ? db.from('ve_venue_items').select('id, name, vegan, last_confirmed_at, ve_venue_spots(name, where_text), ve_venues!inner(slug, name, kind)').in('id', itemIds).in('ve_venues.kind', GUIDES[GUIDE]) : Promise.resolve({ data: [] as any[] }),
+        venueSlugs.length ? db.from('ve_venues').select('slug, name, kind, city, state, teams, image_url').in('slug', venueSlugs).in('kind', GUIDES[GUIDE]) : Promise.resolve({ data: [] as any[] }),
       ]);
       return json({ venues: venueSlugs.map((s) => (vs || []).find((v: any) => v.slug === s)).filter(Boolean),
         items: itemIds.map((id) => (its || []).find((i: any) => i.id === id)).filter(Boolean).map((i: any) => ({ id: i.id, name: i.name,
@@ -299,9 +311,9 @@ Deno.serve(async (req) => {
     for (const k of ['name', 'city', 'state', 'hub', 'note', 'note_source_url', 'address', 'image_url']) if (k in v) row[k] = str(v[k], 400) || null;
     if ('kind' in v) { if (!['stadium', 'arena', 'airport'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
     if ('teams' in v) row.teams = (Array.isArray(v.teams) ? v.teams : String(v.teams || '').split(',')).map((t: any) => str(t, 80)).filter(Boolean).slice(0, 12);
-    if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 3000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }
+    if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 5000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }
     if ('status' in v) row.status = v.status === 'hidden' ? 'hidden' : 'live';
-    if ('layout' in v) { if (v.layout !== null && (typeof v.layout !== 'object' || !Array.isArray(v.layout.levels))) return json({ error: 'bad_layout' }, 400); row.layout = v.layout; }
+    if ('layout' in v) { if (v.layout !== null && (typeof v.layout !== 'object' || !(Array.isArray(v.layout.levels) || Array.isArray(v.layout.terminals)))) return json({ error: 'bad_layout' }, 400); row.layout = v.layout; }
     if ('new_season' in v && v.new_season === true) row.season_reset_at = new Date().toISOString();
     row.updated_at = new Date().toISOString();
     if (v.slug && (await db.from('ve_venues').select('id').eq('slug', v.slug).maybeSingle()).data) {
@@ -318,7 +330,7 @@ Deno.serve(async (req) => {
     const s = body.spot || {};
     const row: Record<string, unknown> = { updated_at: new Date().toISOString() };
     for (const k of ['name', 'where_text', 'note']) if (k in s) row[k] = str(s[k], 300) || null;
-    if ('zone' in s) { if (!['concourse', 'club', 'suites', 'outside'].includes(s.zone)) return json({ error: 'bad_zone' }, 400); row.zone = s.zone; }
+    if ('zone' in s) { if (!['concourse', 'club', 'suites', 'outside', 'airside', 'landside'].includes(s.zone)) return json({ error: 'bad_zone' }, 400); row.zone = s.zone; }
     if ('status' in s) row.status = s.status === 'gone' ? 'gone' : 'live';
     if ('sort_order' in s) row.sort_order = Math.round(num(s.sort_order) || 0);
     if ('map_sections' in s) row.map_sections = (Array.isArray(s.map_sections) ? s.map_sections : String(s.map_sections || '').split(',')).map((x: any) => str(x, 20)).filter(Boolean).slice(0, 30);
