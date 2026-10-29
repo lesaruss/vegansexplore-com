@@ -1144,9 +1144,12 @@ Partiful or Linktree, which this build session cannot reach; the Background writ
 (Vegan Social Club in South Florida, from the June Instagram import; NYC Vegetarian & Vegan Meetup, NYC Vegan Spirituality, Plant Powered
 Metro New York; Veg Society of DC, serving D.C., Maryland and Virginia; Baltimore Veg/Vegan Meetup; Vegan Club RVA; Vegan Social Clubs and
 Atlanta Veggie Eats; Vegetarians of Central Florida; Vegan Spirituality Group of Philadelphia; Los Angeles Vegan Gatherings, Vegans of
-Los Angeles; London Vegan Meetup), each with a dated 2025 or 2026 event, and 6 On hold for review in Directory review with why (Philly
-Social Club, which search could not tie to Vegan, its Instagram @phillysocialclub empty; Afro Vegan Social, Center City Philly Vegans,
-LGBTQ+ Vegans London, London Vegans, Vegan Squad: no dated event seen). North Florida, Delaware and West Virginia had none confirmed.
+Los Angeles; London Vegan Meetup), each with a dated 2025 or 2026 event, and 5 On hold for review in Directory review with why (Afro
+Vegan Social, Center City Philly Vegans, LGBTQ+ Vegans London, London Vegans, Vegan Squad: no dated event seen). **Philly Vegan Social
+Club** (Sean gave its Partiful, `partiful.com/u/VrM8jI2gyGMs9BJWvXNi`; migration `20261029_philly_vegan_social_club.sql`) went live the
+same day with its 32 upcoming Partiful events. Partiful is readable from the database server (pg_net) though not from the build
+session: a host page's `__NEXT_DATA__` lists `initialPublishedEvents`, and each `partiful.com/e/<id>` has the description and an
+approximate place (`locationInfo.mapsInfo.approximateLocation`, the neighborhood; the address only after an RSVP). North Florida, Delaware and West Virginia had none confirmed.
 The goal, not built yet: a group runs its community on Vegans Explore (its members, its events, its board).
 
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
