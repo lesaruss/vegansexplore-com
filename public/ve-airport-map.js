@@ -71,6 +71,17 @@
   }
   function at(C, ci, j, exact) { var c = C[ci]; return { key: c.keys[j], label: c.gates[j], level: ci, concourse: c.level, terminal: c.terminal, index: j, exact: exact }; }
 
+  // Where a stand is on a concourse: its gates we can find, else the middle of its concourse (a concourse whose gates no source
+  // confirmed is drawn without them).
+  function spots(layout, st) {
+    var C = build(layout), out = [];
+    (st.sections || []).forEach(function (g) { var t = find(layout, g); if (t) out.push(t); });
+    if (!out.length && st.level) {
+      var ci = levelOf(layout, st.level);
+      if (ci >= 0) { var c = C[ci], j = Math.floor(Math.max(c.gates.length - 1, 0) / 2); out.push({ key: c.keys[j] || ('MID-' + c.level), label: c.gates[j] || '', level: ci, concourse: c.level, terminal: c.terminal, index: j, mid: true }); }
+    }
+    return out;
+  }
   function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
 
   // The way from a gate to each stand's nearest place: the same concourse, a concourse connected after security, or out through
@@ -84,20 +95,17 @@
         opts.push({ minutes: RESCREEN_MIN, rescreen: true, section: '', target: { level: -1, terminal: tid },
           steps: ['It is before security in ' + tn + '.', tid === here.terminal ? 'You would leave and go through security again.' : 'You would leave, go to ' + tn + ' and go through security again.'] });
       } else {
-        var gates = st.sections || [];
-        if (!gates.length && st.level) { var ci0 = levelOf(layout, st.level); if (ci0 >= 0) gates = [C[ci0].gates[Math.floor(C[ci0].gates.length / 2)]]; }
-        gates.forEach(function (g) {
-          var t = find(layout, g); if (!t) return;
-          var c = C[t.level], apart = Math.abs(t.index - from.index);
+        spots(layout, st).forEach(function (t) {
+          var c = C[t.level], apart = Math.abs(t.index - from.index), at = t.mid ? 'Ask for ' + st.name + ' in ' + c.name + '.' : 'Then walk to gate ' + t.label + '.';
           if (t.level === from.level) {
-            opts.push({ minutes: Math.max(1, Math.round(apart * MIN_PER_GATE)), rescreen: false, section: t.label, target: t,
-              steps: [apart <= 1 ? 'It is right by your gate, at gate ' + t.label + '.' : 'You are in ' + here.name + '. Walk toward gate ' + t.label + ', ' + plural(apart, 'gate') + ' from yours.'] });
+            opts.push({ minutes: Math.max(1, Math.round(apart * MIN_PER_GATE)), rescreen: false, section: t.mid ? '' : t.label, target: t,
+              steps: [t.mid ? 'It is in ' + here.name + ', the concourse you are in; ask there for ' + st.name + '.' : apart <= 1 ? 'It is right by your gate, at gate ' + t.label + '.' : 'You are in ' + here.name + '. Walk toward gate ' + t.label + ', ' + plural(apart, 'gate') + ' from yours.'] });
           } else if (c.airside === here.airside) {
-            opts.push({ minutes: HOP_MIN + Math.round(t.index * MIN_PER_GATE / 2), rescreen: false, section: t.label, target: t,
-              steps: ['Follow the signs to ' + c.name + (c.terminal !== here.terminal ? ' in ' + c.tname : '') + '. You stay after security, with no new screening.', 'Then walk to gate ' + t.label + '.'] });
+            opts.push({ minutes: HOP_MIN + Math.round(t.index * MIN_PER_GATE / 2), rescreen: false, section: t.mid ? '' : t.label, target: t,
+              steps: ['Follow the signs to ' + c.name + (c.terminal !== here.terminal ? ' in ' + c.tname : '') + '. You stay after security, with no new screening.', at] });
           } else {
-            opts.push({ minutes: RESCREEN_MIN + Math.round(t.index * MIN_PER_GATE / 2), rescreen: true, section: t.label, target: t,
-              steps: [c.name + (c.terminal !== here.terminal ? ' in ' + c.tname : '') + ' is not connected to yours after security.', 'You would leave, go through security again there, then walk to gate ' + t.label + '.'] });
+            opts.push({ minutes: RESCREEN_MIN + Math.round(t.index * MIN_PER_GATE / 2), rescreen: true, section: t.mid ? '' : t.label, target: t,
+              steps: [c.name + (c.terminal !== here.terminal ? ' in ' + c.tname : '') + ' is not connected to yours after security.', 'You would leave and go through security again there. ' + at] });
           }
         });
       }
@@ -119,7 +127,7 @@
     });
     return { C: C, rows: rows, strips: strips, heads: heads, h: y };
   }
-  function gateX(c, j) { var n = c.gates.length; return n <= 1 ? (LX + RX) / 2 : LX + 18 + (RX - LX - 36) * j / (n - 1); }
+  function gateX(c, j) { var n = c.gates.length; if (!n) return (LX + RX) / 2; return n <= 1 ? (LX + RX) / 2 : LX + 18 + (RX - LX - 36) * j / (n - 1); }
 
   function pinSvg(x, y, n, on) {
     return '<g class="vam-pin' + (on ? ' on' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' +
@@ -160,10 +168,7 @@
         body += pinSvg(LX + 30 + (k2 - 1) * 34, G.strips[tid] + 20, p.n, best && best.stand.n === p.n);
         return;
       }
-      var gates = p.sections || [];
-      if (!gates.length && p.level) { var ci1 = levelOf(layout, p.level); if (ci1 >= 0) gates = [C[ci1].gates[Math.floor(C[ci1].gates.length / 2)]]; }
-      gates.forEach(function (raw) {
-        var t = find(layout, raw); if (!t) return;
+      spots(layout, p).forEach(function (t) {
         var key = t.level + ':' + t.key, nth = seen[key] = (seen[key] || 0) + 1;
         body += pinSvg(gateX(C[t.level], t.index) + (nth - 1) * 26, G.rows[t.level] + 36, p.n,
           best && best.stand.n === p.n && best.target.level === t.level && best.target.key === t.key);
