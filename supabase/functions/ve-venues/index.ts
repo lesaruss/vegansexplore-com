@@ -9,9 +9,10 @@
 //                                              each stand's map_sections and map_level (migration 20261028_venue_maps.sql)
 // An active member (any Passport holder may report, Guide or not):
 //   { action: 'report_start' }                 -> { path, upload_url }   PUT the photo (JPEG, shrunk in the browser) there
-//   { action: 'report', venue, item?, spot?, kind, note?, path, lat, lng, accuracy }
-//                                              kind confirm | wrong | missing | gone; checked in ve_venue_report_save (inside the
-//                                              venue's circle, the photo uploaded, 20 a day) and left for the team
+//   { action: 'report', venue, item?, spot?, kind, note?, path?, lat, lng, accuracy }
+//                                              kind confirm | wrong | missing | gone | comment; the photo is optional and pays more
+//                                              (ve_venue_report_points); checked in ve_venue_report_save (inside the venue's circle,
+//                                              20 a day) and left for the team. Accepted comments show on the item.
 //   { action: 'mine' }                         their reports, newest first, with what the team decided and the points
 // A Guide owner:
 //   { action: 'saves' } / { action: 'save', kind: 'venue'|'venue_item', key, on }   My list (ve_guide_saves)
@@ -73,6 +74,11 @@ async function secret(key: string): Promise<string | null> {
 
 // Where an item stands: confirmed by a member in the last 35 days (and since the season began), confirmed earlier, or only
 // from the sources.
+// What each report pays (with a photo, without; and for agreeing with the first), Sean's to change in ve_venue_report_points.
+async function reportPoints() {
+  const { data } = await db.from('ve_venue_report_points').select('kind, with_photo, no_photo, agree_with_photo, agree_no_photo').order('sort_order');
+  return data || [];
+}
 const FRESH_DAYS = 35;
 function freshness(it: any, v: any) {
   const at = it.last_confirmed_at ? new Date(it.last_confirmed_at).getTime() : 0;
@@ -106,7 +112,7 @@ Deno.serve(async (req) => {
 
   // ---------- anyone ----------
   if (action === 'list') {
-    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order')
+    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url')
       .eq('status', 'live').order('sort_order');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const ids = (vs || []).map((v) => v.id);
@@ -118,7 +124,8 @@ Deno.serve(async (req) => {
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
-      teams: v.teams, free: v.free_example, can_report: v.latitude != null, ...(counts[v.id] || { items: 0, confirmed: 0, last: null }) })) });
+      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, ...(counts[v.id] || { items: 0, confirmed: 0, last: null }) })),
+      points: await reportPoints() });
   }
 
   if (action === 'venue') {
@@ -134,6 +141,17 @@ Deno.serve(async (req) => {
     const lids = [...new Set((spots || []).map((s) => s.listing_id).filter(Boolean))];
     const listings: Record<string, any> = {};
     if (lids.length) { const { data: ls } = await db.from('listings').select('id, slug, name, logo_url').in('id', lids); for (const l of ls || []) listings[l.id] = l; }
+    // What members said about each item: accepted comments, newest first, with their photo (a signed link) when they sent one.
+    const comments: Record<string, any[]> = {};
+    if (open) {
+      const { data: cs } = await db.from('ve_venue_reports').select('id, item_id, note, photo_path, created_at, members(name)')
+        .eq('venue_id', v.id).eq('kind', 'comment').eq('status', 'accepted').order('created_at', { ascending: false }).limit(60);
+      for (const c of cs || []) {
+        let photo: string | null = null;
+        if (c.photo_path) { const { data: su } = await db.storage.from(BUCKET).createSignedUrl(c.photo_path, 3600); photo = su?.signedUrl || null; }
+        (comments[c.item_id] ||= []).push({ id: c.id, note: c.note, photo, at: c.created_at, member: shortName((c as any).members?.name) });
+      }
+    }
     let saved: string[] = [];
     if (viewer && owns) {
       const { data: sv } = await db.from('ve_guide_saves').select('kind, item_key').eq('guide_slug', GUIDE).eq('member_id', viewer.id).in('kind', ['venue', 'venue_item']);
@@ -142,7 +160,7 @@ Deno.serve(async (req) => {
     const venue = { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, teams: v.teams, address: v.address,
       maps: v.google_place_id ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name)}&query_place_id=${v.google_place_id}` : null,
       note: v.note, note_source_url: v.note_source_url, free: v.free_example, can_report: v.latitude != null, radius_m: v.radius_m,
-      season_reset_at: v.season_reset_at, layout: open ? v.layout : null };
+      season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url };
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
       return {
@@ -153,10 +171,11 @@ Deno.serve(async (req) => {
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
           last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v),
-          photo_url: i.photo_url, photo_illustrative: i.photo_illustrative, saved: saved.includes('venue_item:' + i.id) })) : [],
+          photo_url: i.photo_url, photo_illustrative: i.photo_illustrative, saved: saved.includes('venue_item:' + i.id),
+          comments: (comments[i.id] || []).slice(0, 5) })) : [],
       };
     });
-    return json({ me, open, locked: !open, saved: saved.includes('venue:' + v.slug), venue, spots: outSpots });
+    return json({ me, open, locked: !open, saved: saved.includes('venue:' + v.slug), venue, spots: outSpots, points: await reportPoints() });
   }
 
   // ---------- members ----------
@@ -173,15 +192,18 @@ Deno.serve(async (req) => {
 
   if (action === 'report') {
     const gate = needActive(); if (gate) return gate;
+    // A photo is optional (it pays more); when one is named, it must be theirs and uploaded.
     const path = str(body.path, 200);
-    if (!path.startsWith(viewer!.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(path)) return json({ error: 'photo_required' }, 400);
-    const { data: listed } = await db.storage.from(BUCKET).list(viewer!.id, { search: path.split('/')[1] });
-    if (!(listed || []).some((f) => f.name === path.split('/')[1])) return json({ error: 'photo_required', message: 'Add a photo first.' }, 400);
+    if (path) {
+      if (!path.startsWith(viewer!.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(path)) return json({ error: 'bad_photo' }, 400);
+      const { data: listed } = await db.storage.from(BUCKET).list(viewer!.id, { search: path.split('/')[1] });
+      if (!(listed || []).some((f) => f.name === path.split('/')[1])) return json({ error: 'bad_photo', message: 'The photo did not finish uploading. Try again.' }, 400);
+    }
     const { data: v } = await db.from('ve_venues').select('id').eq('slug', str(body.venue, 80)).maybeSingle();
     if (!v) return json({ error: 'not_found' }, 404);
     const { data, error } = await db.rpc('ve_venue_report_save', {
       p_member: viewer!.id, p_venue: v.id, p_spot: isId(body.spot) ? body.spot : null, p_item: isId(body.item) ? body.item : null,
-      p_kind: str(body.kind, 20), p_note: str(body.note, 600), p_photo: path,
+      p_kind: str(body.kind, 20), p_note: str(body.note, 600), p_photo: path || null,
       p_lat: num(body.lat), p_lng: num(body.lng), p_accuracy: num(body.accuracy),
     });
     if (error) return json({ error: 'report_failed', message: error.message }, 500);
@@ -208,7 +230,7 @@ Deno.serve(async (req) => {
       const venueSlugs = (data || []).filter((x) => x.kind === 'venue').map((x) => x.item_key);
       const [{ data: its }, { data: vs }] = await Promise.all([
         itemIds.length ? db.from('ve_venue_items').select('id, name, vegan, last_confirmed_at, ve_venue_spots(name, where_text), ve_venues(slug, name)').in('id', itemIds) : Promise.resolve({ data: [] as any[] }),
-        venueSlugs.length ? db.from('ve_venues').select('slug, name, kind, city, state, teams').in('slug', venueSlugs) : Promise.resolve({ data: [] as any[] }),
+        venueSlugs.length ? db.from('ve_venues').select('slug, name, kind, city, state, teams, image_url').in('slug', venueSlugs) : Promise.resolve({ data: [] as any[] }),
       ]);
       return json({ venues: venueSlugs.map((s) => (vs || []).find((v: any) => v.slug === s)).filter(Boolean),
         items: itemIds.map((id) => (its || []).find((i: any) => i.id === id)).filter(Boolean).map((i: any) => ({ id: i.id, name: i.name,
@@ -233,14 +255,14 @@ Deno.serve(async (req) => {
   if (action === 'queue') {
     const status = ['pending', 'accepted', 'agreed', 'declined'].includes(body.status) ? body.status : 'pending';
     const { data, error } = await db.from('ve_venue_reports')
-      .select('id, kind, note, status, points, distance_m, accuracy_m, created_at, reviewed_at, member_id, item_id, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
+      .select('id, kind, note, status, points, distance_m, accuracy_m, created_at, reviewed_at, member_id, item_id, photo_path, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
       .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(300);
     if (error) return json({ error: 'queue_failed', message: error.message }, 500);
     const { data: counts } = await db.from('ve_venue_reports').select('status');
     const tally: Record<string, number> = { pending: 0, accepted: 0, agreed: 0, declined: 0 };
     for (const c of counts || []) tally[c.status] = (tally[c.status] || 0) + 1;
     return json({ counts: tally, reports: (data || []).map((r: any) => ({ id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points,
-      distance_m: r.distance_m, accuracy_m: r.accuracy_m, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name),
+      distance_m: r.distance_m, accuracy_m: r.accuracy_m, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name), photo: !!r.photo_path,
       venue: r.ve_venues?.name, venue_slug: r.ve_venues?.slug, item: r.ve_venue_items?.name || null, spot: r.ve_venue_spots?.name || null })) });
   }
 
@@ -250,7 +272,7 @@ Deno.serve(async (req) => {
       .select('*, members(name, email), ve_venues(slug, name), ve_venue_items(id, name, description, vegan, last_confirmed_at), ve_venue_spots(id, name, where_text)')
       .eq('id', body.id).maybeSingle();
     if (!r) return json({ error: 'not_found' }, 404);
-    const { data: signed } = await db.storage.from(BUCKET).createSignedUrl(r.photo_path, 3600);
+    const { data: signed } = r.photo_path ? await db.storage.from(BUCKET).createSignedUrl(r.photo_path, 3600) : { data: null as any };
     let others: any[] = [];
     const q = db.from('ve_venue_reports').select('id, kind, note, status, points, created_at, members(name)').eq('venue_id', r.venue_id).neq('id', r.id)
       .order('created_at').limit(50);
@@ -260,7 +282,7 @@ Deno.serve(async (req) => {
     return json({ report: { id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points, distance_m: r.distance_m, accuracy_m: r.accuracy_m,
       at: r.created_at, local_day: r.local_day, review_note: r.review_note, first_report_id: r.first_report_id,
       member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, paid_that_day: (paid || []).length,
-      venue: r.ve_venues, item: r.ve_venue_items, spot: r.ve_venue_spots }, others });
+      venue: r.ve_venues, item: r.ve_venue_items, spot: r.ve_venue_spots }, others, points: await reportPoints() });
   }
 
   if (action === 'review') {
@@ -274,7 +296,7 @@ Deno.serve(async (req) => {
   if (action === 'venue_save') {
     const v = body.venue || {};
     const row: Record<string, unknown> = {};
-    for (const k of ['name', 'city', 'state', 'hub', 'note', 'note_source_url', 'address']) if (k in v) row[k] = str(v[k], 400) || null;
+    for (const k of ['name', 'city', 'state', 'hub', 'note', 'note_source_url', 'address', 'image_url']) if (k in v) row[k] = str(v[k], 400) || null;
     if ('kind' in v) { if (!['stadium', 'arena', 'airport'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
     if ('teams' in v) row.teams = (Array.isArray(v.teams) ? v.teams : String(v.teams || '').split(',')).map((t: any) => str(t, 80)).filter(Boolean).slice(0, 12);
     if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 3000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }

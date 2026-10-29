@@ -390,13 +390,23 @@
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
 
     /* The Stadium & Arena Guide: venue cards, stands, items with their freshness, and the report form. */
-    .sa-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px;}
-    .sa-vcard{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s;}
-    .sa-vcard:hover{border-color:var(--g2);}
-    .sa-vic{flex:0 0 56px;height:56px;border-radius:12px;background:var(--gl);display:flex;align-items:center;justify-content:center;color:var(--g);}
-    .sa-vcard h3{font-size:15.5px;font-weight:900;margin:0 0 3px;line-height:1.3;}
-    .sa-vmeta{font-size:12.5px;color:var(--ink55);line-height:1.45;}
+    .sa-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;}
+    /* Desktop: two venues across beside River, four across once he is hidden (Sean, 2026-10-29: no big empty gap either way). */
+    @media (min-width:901px){.dg-app:not(.dg-min) .sa-vgrid{grid-template-columns:repeat(2,minmax(0,1fr));}.dg-app.dg-min .sa-vgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}}
+    .sa-vcard,.sa-morecard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s,transform .15s;}
+    .sa-vcard:hover,.sa-morecard:hover{border-color:var(--g2);box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-1px);}
+    .sa-vimg{position:relative;display:block;aspect-ratio:16/9;background:#eef3ee center/cover no-repeat;}
+    .sa-vimg-none{display:flex;align-items:center;justify-content:center;color:var(--g);}
+    .sa-vbadge{position:absolute;top:10px;left:10px;}
+    .sa-vbody{display:block;padding:12px 14px 14px;}
+    .sa-vcard h3,.sa-morecard h3{font-size:16px;font-weight:900;margin:0 0 3px;line-height:1.3;}
+    .sa-vmeta{display:block;font-size:12.5px;color:var(--ink55);line-height:1.45;}
     .sa-vtags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+    .sa-more{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px;margin-top:18px;}
+    .sa-morecard.sa-noimg{background:var(--gl);border-color:var(--gm);justify-content:center;}
+    .sa-moreic{display:flex;align-items:center;justify-content:flex-start;padding:16px 14px 0;color:var(--g);}
+    @media (min-width:901px){.sa-more .sa-morecard:not(.sa-noimg){flex-direction:row;}.sa-more .sa-morecard:not(.sa-noimg) .sa-vimg{flex:0 0 46%;aspect-ratio:auto;min-height:150px;}.sa-more .sa-vbody{align-self:center;}}
+    @media (max-width:700px){.sa-more{grid-template-columns:minmax(0,1fr);}}
     .sa-stand{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;margin-bottom:12px;}
     .sa-stand-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
     .sa-stand-h h3{font-size:16px;font-weight:900;margin:0;}
@@ -462,6 +472,21 @@
     .sa-dir-miss{color:#8a1c12;font-weight:700;}
     .sa-pinno{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:11px;background:#1a1a1a;color:#fff;font-size:11.5px;font-weight:900;margin-right:8px;vertical-align:2px;}
     .sa-flash{box-shadow:0 0 0 3px #F69820;transition:box-shadow .3s;}
+    /* Points by kind, comments on an item, the earn line on the form */
+    .sa-ptable{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 16px;background:#fff;}
+    .sa-ptr{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,.7fr) minmax(0,.7fr);gap:10px;padding:10px 14px;border-top:1px solid var(--line);align-items:center;font-size:13.5px;}
+    .sa-ptr:first-child{border-top:0;}
+    .sa-pth{background:var(--gl);font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .sa-ptr b{font-weight:900;}
+    .sa-ptr i{display:block;font-style:normal;font-size:12px;color:var(--ink55);}
+    .sa-ptr span:not(:first-child) b{font-size:18px;color:var(--g);}
+    .sa-earn{font-size:13px;font-weight:700;color:var(--g);background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:8px 12px;margin:0 0 12px;}
+    .sa-cmts{flex-basis:100%;display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+    .sa-item{flex-wrap:wrap;}.sa-item>.sa-item-b{flex:1 1 0;}
+    .sa-cmt{display:flex;gap:10px;align-items:flex-start;background:#fafbfa;border:1px solid var(--line);border-radius:10px;padding:8px 10px;}
+    .sa-cmt img{width:56px;height:56px;object-fit:cover;border-radius:8px;display:block;}
+    .sa-cmt p{margin:0;font-size:13px;line-height:1.5;color:var(--ink);}
+    .sa-cmt span{display:block;font-size:11.5px;color:var(--ink55);margin-top:2px;}
     @media (max-width:360px){.dg-joinbox .dg-btn{padding-left:10px;padding-right:10px;font-size:11px;letter-spacing:.04em;}}
     @media (max-width:480px){.sa-item{gap:10px;}.sa-acts .sa-mini span{display:none;}}
   </style>

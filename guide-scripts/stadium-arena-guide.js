@@ -46,11 +46,14 @@
 
   var KIND = { stadium: 'Stadium', arena: 'Arena', airport: 'Airport' };
   var VEGAN = { vegan: ['Vegan', 'vegan'], on_request: ['Vegan on request', 'ask'], ask: ['Ask before you order', 'ask'] };
+  // What a member can send about an item (Sean, 2026-10-29: "maybe it's update... maybe it's comment... leave a photo, leave a
+  // comment. And each thing could have its own amount of points"). Update is two kinds underneath: it changed, or it is gone.
   var REPORT = {
-    confirm: ['Still here', 'It is still sold, as written here.'],
-    wrong: ['Something is wrong', 'The name, the price, where it is, or whether it is Vegan.'],
-    gone: ['It is gone', 'This stand or item is not there anymore.'],
-    missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet.']
+    confirm: ['Still here', 'It is still sold, as written here.', 'Still here'],
+    wrong: ['Update', 'Something changed: the name, the price, where it is, or whether it is Vegan.', 'Something changed'],
+    gone: ['Update', 'This stand or item is not there anymore.', 'Not there anymore'],
+    comment: ['Comment', 'Tell other fans what you thought of it. A photo makes it even better.', 'Comment'],
+    missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet.', 'Something missing']
   };
   var STATUS = { pending: ['Waiting for the team', 'wait'], accepted: ['Accepted', 'live'], agreed: ['Accepted', 'live'], declined: ['Not accepted', 'off'] };
 
@@ -71,7 +74,7 @@
 
   var ME = { signed_in: false, active: false, owns: false, admin: false };
   var ST = { published: true, cost: 1100, balance: 0, active: false };
-  var VENUES = null, VENUE = {}, curTab = 'overview', checked = false;
+  var VENUES = null, VENUE = {}, curTab = 'overview', checked = false, POINTS = {};
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
@@ -144,26 +147,32 @@
   }
 
   // ---------- views ----------
+  // The front page leads with the venues (Sean, 2026-10-29: "they need to see that visual of these are the different stadiums...
+  // Choose your stadium"): one line on what it is for, the venue pictures, then what else is in the Guide, each with a picture.
   function viewOverview() {
-    var tiles = [
-      ['#/venues', ICON.stadium, 'Venues', 'Every stadium and arena in our cities, stand by stand.'],
-      ['#/report', ICON.camera, 'Help keep it right', 'Report from inside the venue and earn points.'],
-      owner() ? ['#/mylist', ICON.list, 'My list', 'The venues and items you saved.'] : ['#/join', ICON.list, 'Get access', '$11 or ' + pts(ST.cost) + ' points, yours to keep.']
+    var grid = !VENUES ? '<div class="dg-loading">Loading the venues...</div>'
+      : '<div class="sa-vgrid">' + VENUES.map(venueCard).join('') + '</div>';
+    var more = [
+      ['#/report', '/public/guides/venues/river-report.webp', 'Help keep it right', 'At the game? Confirm what is still there, update what changed, or leave a comment and a photo. The team checks each one, and accepted ones earn points.'],
+      owner() ? ['#/mylist', '', 'My list', 'The venues and items you saved.'] : ['#/join', '', 'Get every venue', 'The Guide is $11 or ' + pts(ST.cost) + ' points, yours to keep. Hard Rock Stadium is free to everyone.']
     ];
-    main.innerHTML = head('Overview', 'Vegan food at the game', 'Stadiums and arenas are hard places to eat Vegan: you are hungry, the lines are long, and the menus online are out of date. This Guide shows every stand with Vegan food, where it is, and when a member last checked it.') +
-      '<div class="dg-tiles">' + tiles.map(function (t, i) {
-        return '<a class="dg-tile' + (i === 2 && !owner() ? ' dg-warm' : '') + '" href="' + t[0] + '"><span class="dg-ic" style="color:var(--g)">' + t[1] + '</span><span><b>' + esc(t[2]) + '</b><span>' + esc(t[3]) + '</span></span></a>';
-      }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/venue/hard-rock-stadium">Open Hard Rock Stadium</a><p>Free to everyone, so you can see how it works.</p></div>';
+    main.innerHTML = head('Stadium & Arena Guide', 'Choose your stadium', 'Every stand with Vegan food at the stadiums and arenas in our cities, where it is, and how to get there from your seat.') +
+      grid + '<div class="sa-more">' + more.map(function (m) {
+        return '<a class="sa-morecard' + (m[1] ? '' : ' sa-noimg') + '" href="' + m[0] + '">' + (m[1] ? '<span class="sa-vimg" style="background-image:url(\'' + m[1] + '\')"></span>' : '<span class="sa-moreic">' + ICON.list + '</span>') +
+          '<span class="sa-vbody"><h3>' + esc(m[2]) + '</h3><span class="sa-vmeta">' + esc(m[3]) + '</span></span></a>';
+      }).join('') + '</div>';
   }
 
+  // A venue is its picture (our own illustration, ve_venues.image_url), then its name, teams and what we know.
   function venueCard(v) {
     var locked = !owner() && !v.free;
-    var tags = (v.free && !owner() ? tagHtml('Free to everyone', 'sa-tag-free') : '') + (locked ? tagHtml('Members', 'sa-tag-lock') : '') +
-      tagHtml(v.items ? v.items + ' Vegan item' + (v.items === 1 ? '' : 's') : 'Nothing listed yet', v.items ? 'sa-tag-new' : 'sa-tag-stale') +
+    var badge = v.free && !owner() ? tagHtml('Free to everyone', 'sa-tag-free') : locked ? tagHtml('Members', 'sa-tag-lock') : '';
+    var tags = tagHtml(v.items ? v.items + ' Vegan item' + (v.items === 1 ? '' : 's') : 'Nothing listed yet', v.items ? 'sa-tag-new' : 'sa-tag-stale') +
       (v.last ? tagHtml('Checked ' + fmtDate(v.last), 'sa-tag-fresh') : '');
-    return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '"><span class="sa-vic">' + (ICON[v.kind] || ICON.stadium) + '</span><span style="min-width:0"><h3>' + esc(v.name) + '</h3>' +
-      '<span class="sa-vmeta">' + esc(KIND[v.kind] || '') + ' &middot; ' + esc(v.city || '') + (v.state ? ', ' + esc(v.state) : '') + '<br>' + esc((v.teams || []).join(', ')) + '</span>' +
+    var pic = v.image ? '<span class="sa-vimg" style="background-image:url(\'' + esc(v.image) + '\')" role="img" aria-label="' + esc(v.name) + ', illustrated">' + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>'
+      : '<span class="sa-vimg sa-vimg-none">' + (ICON[v.kind] || ICON.stadium) + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>';
+    return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '">' + pic + '<span class="sa-vbody"><h3>' + esc(v.name) + '</h3>' +
+      '<span class="sa-vmeta">' + esc(KIND[v.kind] || '') + ' &middot; ' + esc(v.city || '') + (v.state ? ', ' + esc(v.state) : '') + (v.teams && v.teams.length ? ' &middot; ' + esc(v.teams.join(', ')) : '') + '</span>' +
       '<span class="sa-vtags">' + tags + '</span></span></a>';
   }
   function viewVenues(sub) {
@@ -171,7 +180,7 @@
     var t = toggles([['All', '#/venues'], ['Stadiums', '#/venues/stadiums'], ['Arenas', '#/venues/arenas']], f === 'stadium' ? 'Stadiums' : f === 'arena' ? 'Arenas' : 'All');
     if (!VENUES) { main.innerHTML = head('Venues', 'Pick your venue', '', t) + '<div class="dg-loading">Loading the venues...</div>'; return; }
     var list = VENUES.filter(function (v) { return !f || v.kind === f; });
-    main.innerHTML = head('Venues', 'Pick your venue', 'South Florida first, then every city we are in. Each venue lists its stands with Vegan food and where to find them.', t) +
+    main.innerHTML = head('Venues', 'Choose your stadium', 'South Florida first, then every city we are in. Each venue lists its stands with Vegan food and where to find them.', t) +
       (list.length ? '<div class="sa-vgrid">' + list.map(venueCard).join('') + '</div>' : '<p class="dg-empty">No venues here yet.</p>');
   }
 
@@ -195,7 +204,21 @@
       '<div class="sa-vtags" style="margin:0 0 6px">' + tagHtml(vg[0], 'sa-tag-' + vg[1]) + freshTag(it) + '</div>' + srcLine(it) + '</div>' +
       '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) +
       '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/confirm/' + it.id + '">Still here</a>' +
-      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/wrong/' + it.id + '">Wrong?</a></div></div>';
+      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/wrong/' + it.id + '">Update</a>' +
+      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/comment/' + it.id + '">Comment</a></div>' + commentsHtml(it) + '</div>';
+  }
+  // What members said: comments the team accepted, with the photo when there is one.
+  function commentsHtml(it) {
+    var cs = it.comments || [];
+    if (!cs.length) return '';
+    return '<div class="sa-cmts">' + cs.map(function (c) {
+      return '<div class="sa-cmt">' + (c.photo ? '<a href="' + esc(c.photo) + '" target="_blank" rel="noopener"><img alt="A member\'s photo" src="' + esc(c.photo) + '" loading="lazy"></a>' : '') +
+        '<p>&ldquo;' + esc(c.note || '') + '&rdquo;<span>' + esc(c.member || 'A member') + ' &middot; ' + esc(fmtDate(c.at)) + '</span></p></div>';
+    }).join('') + '</div>';
+  }
+  function ptsLine(kind) {
+    var p = POINTS[kind]; if (!p) return '';
+    return pts(p.with_photo) + ' points with a photo, ' + pts(p.no_photo) + ' without';
   }
   function standCard(v, s, open) {
     var zone = s.zone === 'suites' ? tagHtml('Suites only', 'sa-tag-ask') : s.zone === 'club' ? tagHtml('Club level', 'sa-tag-ask') : '';
@@ -286,13 +309,21 @@
 
   function viewReportTab() {
     var signedIn = !!token();
-    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there and what changed, with a photo from inside. Any Passport holder can report, with or without the Guide.') +
-      '<div class="sa-pts"><div class="sa-pt"><b>100</b><span>points for the first accepted report of something wrong, gone or missing</span></div>' +
-      '<div class="sa-pt"><b>25</b><span>points when your report agrees with one the team already accepted</span></div>' +
-      '<div class="sa-pt"><b>10</b><span>points for confirming an item is still there</span></div></div>' +
-      '<ol class="sa-steps"><li>Open the venue while you are there and tap <b>Still here</b> or <b>Wrong?</b> on an item, or <b>Add something missing</b>.</li>' +
-      '<li>Take a photo of the menu board or the food. Your phone shares your location once, to show you are inside the venue.</li>' +
-      '<li>The team checks every report. Points land when it is accepted, up to five paid reports a day.</li></ol>' +
+    // The points come from ve_venue_report_points (Sean's to change), so this table never disagrees with what is paid.
+    var P = function (k, f, d) { return POINTS[k] ? POINTS[k][f] : d; };
+    var rows = [
+      ['Update', 'Something changed or is gone, the first accepted report', P('wrong', 'with_photo', 100), P('wrong', 'no_photo', 50)],
+      ['Something missing', 'A Vegan item or stand that is not in the Guide yet', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50)],
+      ['Agrees with the first', 'An update the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15)],
+      ['Still here', 'It is still sold, as written', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
+      ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
+    ];
+    main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Any Passport holder can send one, with or without the Guide.') +
+      '<div class="sa-ptable" role="table" aria-label="Points for each kind of report"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader">With a photo</span><span role="columnheader">Without</span></div>' +
+      rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span><span role="cell"><b>' + pts(r[2]) + '</b> points</span><span role="cell"><b>' + pts(r[3]) + '</b> points</span></div>'; }).join('') + '</div>' +
+      '<ol class="sa-steps"><li>Open the venue while you are there and tap <b>Still here</b>, <b>Update</b> or <b>Comment</b> on an item, or <b>Add something missing</b>.</li>' +
+      '<li>Add a photo of the menu board or the food if you can. Your phone shares your location once, to show you are inside the venue.</li>' +
+      '<li>The team checks every one, so a photo that does not help is not paid. Points land when it is accepted, up to five paid a day.</li></ol>' +
       '<div class="dg-btns" style="margin-bottom:18px"><a class="dg-btn" href="#/venues">Pick a venue</a></div>' +
       (signedIn ? '<h3 class="dg-k" style="margin:6px 0 10px">Your reports</h3><div id="saMine"><div class="dg-loading">Loading your reports...</div></div>' : '');
     if (signedIn) api({ action: 'mine' }).then(function (d) {
@@ -319,16 +350,19 @@
       : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + ', ' + esc(item.spot.where || '') + '</p>' : '';
-    var kinds = item ? '<div class="sa-kinds">' + ['confirm', 'wrong', 'gone'].map(function (k) {
-      return '<a class="dg-chip" aria-pressed="' + (k === kind) + '" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '">' + esc(REPORT[k][0]) + '</a>'; }).join('') + '</div>' : '';
-    var noteLabel = kind === 'missing' ? 'What is missing? <i>The item, the stand and where it is (section or gate)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>' : 'What changed?';
+    var kinds = item ? '<div class="sa-kinds">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
+      return '<a class="dg-chip" aria-pressed="' + (k === kind) + '" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '">' + esc(REPORT[k][2]) + '</a>'; }).join('') + '</div>' : '';
+    var noteLabel = kind === 'missing' ? 'What is missing? <i>The item, the stand and where it is (section or gate)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
+      : kind === 'comment' ? 'Your comment <i>(what you thought, a tip for other fans)</i>' : kind === 'gone' ? 'Anything to add? <i>(optional)</i>' : 'What needs to be updated?';
+    var earn = ptsLine(kind);
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], [REPORT[kind][0], '']]) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
-        '<div class="dg-field"><span>A photo from inside <i>(the menu board or the food)</i></span><div class="sa-photo"><label class="dg-btn dg-ghost" style="cursor:pointer">Take or choose a photo<input type="file" id="saPhoto" accept="image/*" capture="environment" hidden></label><span id="saPrev"></span></div></div>' +
+        (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +
+        '<div class="dg-field"><span>A photo <i>(optional: the menu board or the food, and it earns more)</i></span><div class="sa-photo"><label class="dg-btn dg-ghost" style="cursor:pointer">Take or choose a photo<input type="file" id="saPhoto" accept="image/*" capture="environment" hidden></label><span id="saPrev"></span></div></div>' +
         '<span class="dg-status" id="saStatus" role="status"></span>' +
         '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a><button type="button" class="dg-btn" id="saSend">Send report</button></div>' +
-        '<p class="dg-lede" style="font-size:12.5px;margin-top:12px">Sending asks for your location once, to check you are inside ' + esc(v.name) + '. We keep where you were, rounded, with the report; the photo is seen only by the team.</p></div>'));
+        '<p class="dg-lede" style="font-size:12.5px;margin-top:12px">Sending asks for your location once, to check you are inside ' + esc(v.name) + '. We keep where you were, rounded, with the report. The team checks every one; a comment they accept shows on the item with your first name and photo.</p></div>'));
     PHOTO = null;
     var inp = document.getElementById('saPhoto');
     if (inp) inp.addEventListener('change', function () {
@@ -361,27 +395,31 @@
     no_location: function (d, v) { return 'Reports for ' + v.name + ' open soon.'; },
     already_today: function () { return 'You already sent this report today. Thank you!'; },
     daily_limit: function () { return 'That is the most reports for one day. Thank you, and come back next game.'; },
-    note_required: function () { return 'Tell us what is missing: the item, the stand and where it is.'; },
-    photo_required: function () { return 'Add a photo first.'; }
+    note_required: function () { return 'Add a few words first.'; },
+    bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
   };
   function sendReport(v, kind, item) {
     var note = (document.getElementById('saNote') || {}).value || '';
-    if (!PHOTO) { setStatus('Add a photo first.'); return; }
-    if (kind === 'missing' && note.trim().length < 3) { setStatus(WHY.note_required()); return; }
-    if (kind === 'wrong' && note.trim().length < 3) { setStatus('Tell us what changed.'); return; }
+    if (kind === 'missing' && note.trim().length < 3) { setStatus('Tell us what is missing: the item, the stand and where it is.'); return; }
+    if (kind === 'wrong' && note.trim().length < 3) { setStatus('Tell us what needs to be updated.'); return; }
+    if (kind === 'comment' && note.trim().length < 3) { setStatus('Write your comment first.'); return; }
     if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
     var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = 'Finding you...';
     var fail = function (msg) { btn.disabled = false; btn.textContent = 'Send report'; setStatus(msg); };
     navigator.geolocation.getCurrentPosition(function (pos) {
       btn.textContent = 'Sending...';
-      api({ action: 'report_start' }).then(function (s) {
+      // The photo is optional: upload it first when there is one.
+      var send = function (path) {
+        return api({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
+          note: note, path: path || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+      };
+      (PHOTO ? api({ action: 'report_start' }).then(function (s) {
         if (!s || !s.upload_url) throw s || {};
         return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: PHOTO }).then(function (r) {
           if (!r.ok) throw {};
-          return api({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
-            note: note, path: s.path, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+          return send(s.path);
         });
-      }).then(function (d) {
+      }) : send(null)).then(function (d) {
         if (d && d.ok) {
           main.innerHTML = crumb([['Venues', '#/venues'], [v.name, '#/venue/' + v.slug], ['Sent', '']]) +
             '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks every report. Points land when yours is accepted, and you can follow it under Help keep it right.</p>' +
@@ -400,7 +438,8 @@
       var vs = (d && d.venues) || [], its = (d && d.items) || [];
       if (!vs.length && !its.length) { el.innerHTML = '<p class="dg-empty">Nothing saved yet. Open a venue and tap Save.</p>'; return; }
       el.innerHTML = (vs.length ? '<h3 class="dg-k" style="margin:0 0 10px">Venues</h3><div class="sa-vgrid" style="margin-bottom:18px">' + vs.map(function (v) {
-        return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '"><span class="sa-vic">' + (ICON[v.kind] || ICON.stadium) + '</span><span><h3>' + esc(v.name) + '</h3><span class="sa-vmeta">' + esc(v.city || '') + ' &middot; ' + esc((v.teams || []).join(', ')) + '</span></span></a>'; }).join('') + '</div>' : '') +
+        return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '">' + (v.image_url ? '<span class="sa-vimg" style="background-image:url(\'' + esc(v.image_url) + '\')"></span>' : '<span class="sa-vimg sa-vimg-none">' + (ICON[v.kind] || ICON.stadium) + '</span>') +
+          '<span class="sa-vbody"><h3>' + esc(v.name) + '</h3><span class="sa-vmeta">' + esc(v.city || '') + ' &middot; ' + esc((v.teams || []).join(', ')) + '</span></span></a>'; }).join('') + '</div>' : '') +
         (its.length ? '<h3 class="dg-k" style="margin:0 0 10px">Items</h3><div class="dg-rows">' + its.map(function (i) {
           return '<a class="dg-row" style="grid-template-columns:minmax(0,1fr) auto;text-decoration:none;color:inherit" href="#/venue/' + esc(i.venue_slug) + '"><div class="dg-row-main"><b>' + esc(i.name) + '</b><span>' + esc(i.spot || '') + (i.where ? ', ' + esc(i.where) : '') + ' &middot; ' + esc(i.venue || '') + '</span></div>' +
             tagHtml((VEGAN[i.vegan] || VEGAN.vegan)[0], 'sa-tag-' + (VEGAN[i.vegan] || VEGAN.vegan)[1]) + '</a>'; }).join('') + '</div>' : '');
@@ -520,6 +559,7 @@
     api({ action: 'list' }).then(function (d) {
       if (d && d.me) ME = d.me;
       VENUES = (d && d.venues) || [];
+      ((d && d.points) || []).forEach(function (p) { POINTS[p.kind] = p; });
       route();
     }).catch(function () { VENUES = []; route(); });
     unlockApi('status').then(function (d) {
