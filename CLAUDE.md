@@ -1419,7 +1419,9 @@ has no cover for any English edition, the builder takes Google's own cover pictu
 `directory/listing.html`). A book with a 979 ISBN goes the same way. Google Books had Dr. Aaron Spitz as "Splitz"; his book's listing was
 corrected the same day. Sean got his own People profile the same day (`sean-russell`, Founders, migration
 `20261029_people_sean_russell.sql`): the May import's quarantined @seanarussell82 row promoted, Host of every Vegans Explore, SoFlo
-Vegans and Pre-Vegans episode (221 credits), in the family `pre-vegans` (Overview, Podcast, Books with Pre-Vegans).
+Vegans and Pre-Vegans episode (221 credits), in the family `sean-russell` with the Vegans Explore, SoFlo Vegans and Pre-Vegans podcasts and the book (migration
+`20261029_sean_russell_family.sql`; no YouTube page joins it until Sean has video he wants to promote); his website is seanarussell.com,
+first in Their work.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
@@ -1594,9 +1596,11 @@ which a podcast listing in the dashboard's frame gets too). An In their words mo
 YouTube transcript it was timed on (`ve_person_moments` returns `transcript_end`, migration `20261028_person_moments_transcript_end.sql`);
 otherwise the quote shows with no Play (Dr. Klaper's "Moving Medicine Forward" audio is 47 s shorter than its video). **Save** saves the
 episode like a show page's, and every list shows about ten rows and
-scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcast** (a show they host that is in
-our Media section, `details.person.shows`, its latest 30 episodes, with The show's page), **With Vegans Explore** (their episodes on our
-four shows, then events, articles, videos), **On other podcasts** (other Directory shows that had them on), In their words.
+scrolls inside its box (`.pp-scroll`). Nothing on it links away to listen. The sections: **Their podcasts** (the shows they host, each
+the Directory's own card with votes, opening the show's page where every episode is; `ppShowTiles`: `details.person.shows` and our shows
+they hold Host credits on, most episodes first; Sean, 2026-10-29: "we should just have their podcast listing little tile... it's just going
+to be this long, long page"), **With Vegans Explore** (their guest episodes on our four shows, never the ones they host, then events,
+articles, videos; hidden when empty), **On other podcasts** (other Directory shows that had them on), In their words.
 The data is `ve_person_episodes(listing)` (migration `20261028_person_podcasts.sql`): our episodes matched to each show's feed
 (`ve_podcast_feeds`: the feed episode names them and came out within 60 days, or the titles are close), other shows' episodes with their
 name in the title or named as the guest in the description ("with", "joined by", "<name> joins us"; a passing mention does not count),

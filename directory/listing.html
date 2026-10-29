@@ -791,8 +791,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
-#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(max-width:560px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
+#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:560px){#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -2771,24 +2771,24 @@ function loadPerson(l){
           where: [e.city, e.state].filter(Boolean).join(', ') };
       }).sort(function(a, b){ return String(b.when).localeCompare(String(a.when)); });
       var ours = pe.ours || [];
+      // A show they host is its tile, not its episodes (Sean, 2026-10-29: "we should just have their podcast listing little tile...
+      // it's just going to be this long, long page"): their hosted episodes on our shows leave With Vegans Explore, and the tile
+      // opens the show's own page, where every episode is. Their appearances as a guest stay as episodes.
+      var guest = ours.filter(function(ep){ return ep.role !== 'Host'; });
       var box = document.querySelector('#pp-credits .pp-list'); if(!box) return;
       var GROUPS = [['event', 'Events'], ['article', 'Articles']];
-      var html = (ours.length ? '<h3 class="pp-group">Podcast episodes <span>' + ours.length + '</span></h3><div class="pp-scroll"><div class="vep-list">' + ours.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div></div>' : '') +
+      var html = (guest.length ? '<h3 class="pp-group">Podcast episodes <span>' + guest.length + '</span></h3><div class="pp-scroll"><div class="vep-list">' + guest.map(function(ep){ return ppEpRow(ep, ep.role || 'Guest'); }).join('') + '</div></div>' : '') +
         GROUPS.map(function(g){
           var list = rows.filter(function(r){ return r.kind === g[0]; }); if(!list.length) return '';
           return '<h3 class="pp-group">' + g[1] + ' <span>' + list.length + '</span></h3><div class="pp-scroll">' + list.map(personRow).join('') + '</div>';
         }).join('');
-      box.innerHTML = html || '<p class="pp-empty">Nothing here yet.</p>';
-      // Their own show, on its own (Sean: "if the person has a podcast that's featured in our media section... in its own section").
-      var sh = document.getElementById('pp-shows');
-      if(sh) sh.innerHTML = (pe.shows || []).map(function(show){
-        var list = show.episodes || [];
-        return '<div class="section pp-show"><h2 class="section-title">Their podcast</h2><div class="pp-showhead">' +
-          '<span class="pp-sq pp-sq-lg" style="background-image:url(\'' + esc(show.image || '') + '\')" aria-hidden="true"></span>' +
-          '<div><div class="pp-showname">' + esc(show.name) + '</div><div class="pp-meta">' + (list.length ? 'The latest ' + (list.length === 1 ? 'episode' : list.length + ' episodes') + ', from its own feed' : 'From its own feed') + '</div></div>' +
-          '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(show.slug) + '">The show\'s page</a></div>' +
-          (list.length ? '<div class="pp-scroll"><div class="vep-list">' + list.map(function(ep){ ep.show = { id: show.id, slug: show.slug, name: show.name, image: show.image }; return ppEpRow(ep, 'Host'); }).join('') + '</div></div>' : '') + '</div>';
-      }).join('');
+      var credSec = document.getElementById('pp-credits');
+      if(html) box.innerHTML = html; else if(credSec) credSec.hidden = true;
+      // Their podcasts: the shows they host (details.person.shows, and our shows they host), each the Directory's own card.
+      var hosted = (pe.shows || []).map(function(sh){ return sh.slug; }), count = {};
+      ours.forEach(function(ep){ if(ep.role === 'Host' && ep.show && ep.show.slug){ count[ep.show.slug] = (count[ep.show.slug] || 0) + 1; } });
+      Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).forEach(function(s2){ if(hosted.indexOf(s2) < 0) hosted.push(s2); });
+      ppShowTiles(hosted);
       var other = pe.elsewhere || [], os = document.getElementById('pp-elsewhere');
       if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = '<div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join('') + '</div>'; os.hidden = false; }
       // In their words: moments from their interviews in the content index (ve_person_moments), played from the episode's audio at
@@ -2806,6 +2806,29 @@ function loadPerson(l){
         sec.hidden = false;
       }
     }).catch(function(){ var box = document.querySelector('#pp-credits .pp-list'); if(box) box.innerHTML = '<p class="pp-empty">Could not load this right now.</p>'; });
+}
+// The shows a person hosts, drawn with the Directory's card and votes (VERegionDirectory, loaded on first need, as loadFilmPeople does).
+function ppShowTiles(slugs){
+  var sh = document.getElementById('pp-shows'); if(!sh || !slugs.length) return;
+  sh.innerHTML = '<div class="section pp-show"><h2 class="section-title">' + (slugs.length > 1 ? 'Their podcasts' : 'Their podcast') + '</h2>' +
+    '<p class="pp-sub">Open a show for every episode.</p><div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>';
+  var grid = sh.querySelector('.rank-grid');
+  var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+    var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+  });
+  ready.then(function(){
+    if(!window.VERegionDirectory) throw new Error('directory');
+    VERegionDirectory.css();
+    var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&select=' + encodeURIComponent(VERegionDirectory.FIELDS), { headers: H })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+        var by = {}; (rows || []).forEach(function(r){ by[r.slug] = r; });
+        var cards = slugs.map(function(s2){ return by[s2]; }).filter(Boolean);
+        if(!cards.length){ sh.innerHTML = ''; return; }
+        grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
+        VERegionDirectory.wire(grid.parentNode);
+      });
+  }).catch(function(){ sh.innerHTML = ''; });
 }
 // One podcast episode, the podcast listing's row (VEEpisodes.row): the show's square artwork, the title, the role and show, Play (in the
 // player docked above the lists) and Save. Audio only (Sean, 2026-10-28: "let's just keep it simple and only have the audio").
