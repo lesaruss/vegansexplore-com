@@ -42,6 +42,19 @@
 // Sean after approval, outside the points ledger), and can be held for one person first
 // (reserved_email until reserved_until): Run the city dinner, $150 + points, first dibs to the city's
 // Community Manager. Members see that it is held, never for whom.
+// Paid jobs (Sean, 2026-10-29: "attend an event on our behalf... those might actually come with a paid stipend, but you might
+// have to be level 2 in order to be eligible"): ve_bounties.min_level; a claim below it is refused ('level'); job_update sets it
+// and the stipend (cash, in dollars, into cash_cents).
+// The bounties board (Sean, 2026-10-29): list leaves out a job once its claims close, unless the viewer holds it. Evergreen
+// bounties, location-checked like a check-in and paid only when the team accepts them (migration 20261029_bounties_board.sql):
+// POST { action: 'evergreen', community }            signed in: what each evergreen bounty pays and how many places wait here
+// POST { action: 'field_places', kind, community }   signed in: kind volunteer (Nonprofits, Rescues, Sanctuaries) or still_open
+//                                                     (places we flagged as maybe closed, ve_still_open_places)
+// POST { action: 'field_photo_start' }               Passport holder -> { path, url } (PUT the JPEG there)
+// POST { action: 'field_report', kind, listing_id, lat, lng, accuracy, hours?, answer?, note?, path? }   Passport holder
+// POST { action: 'field_mine' }                      signed in: their field reports
+// POST { action: 'field_review_list', status? }      reviewers (their cities)
+// POST { action: 'field_review', id, decision: 'accept'|'decline', note?, hours? }
 // Cron (x-cron-secret, hourly): reminders, no-shows, auto-submit, lapsed change requests, ends
 // featured runs that bounties started
 // POST { action: 'cron' }
@@ -168,7 +181,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, min_level';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -343,6 +356,42 @@ async function once(submissionId: string, kind: string) {
   return !error;
 }
 
+// Evergreen bounties (migration 20261029_bounties_board.sql): the amounts are ve_site_settings 'evergreen_bounties', Sean's to change.
+async function evergreenSettings() {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'evergreen_bounties').maybeSingle();
+  return { volunteer_per_hour: 25, volunteer_max_hours: 8, volunteer_photo_bonus: 10, still_open_first: 100, still_open_after: 20, daily_reports: 10, ...(data?.value || {}) };
+}
+// The chapter a place is in, the way ve_chapter_of decides it: a chapter's city list first, then a whole-state chapter.
+let CHAPTERS: { slug: string; cities: string[] | null; states: string[] | null }[] | null = null;
+async function chapterOf(city?: string | null, state?: string | null) {
+  if (!CHAPTERS) {
+    const { data } = await db.from('ve_outreach_cities').select('community_slug, cities, states').eq('kind', 'city');
+    CHAPTERS = (data || []).map((r) => ({ slug: r.community_slug, cities: r.cities, states: r.states }));
+  }
+  const c = String(city || '').trim().toLowerCase(), st = String(state || '').trim().toUpperCase();
+  const byCity = CHAPTERS.find((x) => x.cities && x.cities.some((y) => y.toLowerCase() === c));
+  if (byCity) return byCity.slug;
+  const byState = CHAPTERS.find((x) => !x.cities && x.states && x.states.includes(st));
+  return byState ? byState.slug : null;
+}
+const ORG_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
+// Where an evergreen bounty can be done in a chapter: organizations to volunteer with, or places we are not sure are open.
+async function fieldPlaces(kind: string, community: string) {
+  const all = !community || community === 'all';
+  if (kind === 'still_open') {
+    const { data } = await db.rpc('ve_still_open_places', { p_hub: all ? null : community });
+    return (data || []).map((p: any) => ({ id: p.listing_id, slug: p.slug, name: p.name, category: p.category, city: [p.city, p.state].filter(Boolean).join(', '), logo: p.logo_url, reasons: p.reasons || [], waiting: p.answered || 0 }));
+  }
+  const { data } = await db.from('listings').select('id, slug, name, category, address_city, address_state, logo_url')
+    .eq('status', 'approved').in('category', ORG_CATS).not('latitude', 'is', null).or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').order('name').limit(1000);
+  const out = [];
+  for (const l of data || []) {
+    if (!all && (await chapterOf(l.address_city, l.address_state)) !== community) continue;
+    out.push({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: [l.address_city, l.address_state].filter(Boolean).join(', '), logo: l.logo_url });
+  }
+  return out;
+}
+
 async function cron() {
   const now = Date.now();
   // A host's 90-day featured run ends; listings featured some other way never carry featured_until.
@@ -418,7 +467,8 @@ Deno.serve(async (req) => {
   }
 
   const viewer = await loadViewer(req);
-  const viewerInfo = async () => viewer ? { signed_in: true, passport: viewer.passport, standing: await standing(viewer.id) } : { signed_in: false };
+  const viewerLevel = async () => { if (!viewer) return 1; const { data } = await db.rpc('ve_member_level', { p_member: viewer.id }); return Number(data?.level) || 1; };
+  const viewerInfo = async () => viewer ? { signed_in: true, passport: viewer.passport, standing: await standing(viewer.id), level: await viewerLevel(), admin: viewer.admin } : { signed_in: false };
 
   switch (body.action) {
     case 'list': {
@@ -431,8 +481,9 @@ Deno.serve(async (req) => {
         const { data: subs } = await db.from('ve_bounty_submissions').select('bounty_id, status, points_awarded').eq('member_id', viewer.id).in('bounty_id', (data || []).map((b) => b.id));
         for (const s of subs || []) mine[s.bounty_id] = s;
       }
-      // Past the deadline, a bounty only stays on the list for the people who claimed it.
-      const rows = (data || []).filter((b) => (b.status === 'open' && (!b.due_at || Date.now() < ms(b.due_at))) || (mine[b.id] && mine[b.id].status !== 'released'));
+      // Once claims close, a job only stays on the list for the people who claimed it (Sean, 2026-10-29: "it's showing some
+      // bounties for some old events").
+      const rows = (data || []).filter((b) => (claimsOpen(b) && (!b.due_at || Date.now() < ms(b.due_at))) || (mine[b.id] && mine[b.id].status !== 'released'));
       const bounties = await withCampaigns(await withEvents(rows));
       const taken = await takenCounts(bounties.map((b) => b.id));
       const forMe = await heldForViewer(bounties.filter(heldNow).map((b) => b.id), viewer);
@@ -504,6 +555,7 @@ Deno.serve(async (req) => {
           event_limit: 'You can hold up to 2 bounties per event, so more people get a turn.',
           not_eligible: st.paused ? 'Your bounties are paused after missed deadlines. Reply to your strike email or ask your Community Manager.' : `You can claim bounties again after ${st.until ? new Date(st.until).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : 'your cooldown'}.`,
           not_found: 'This bounty is not available.',
+          level: `This job is for Level ${r.min_level} and up. You are Level ${r.level}: points from bounties, check-ins and the Daily Pulse move you up.`,
         };
         return json({ error: r.error, message: msg[r.error] || 'That did not go through.' }, 409);
       }
@@ -599,6 +651,137 @@ Deno.serve(async (req) => {
         await db.from('ve_bounty_messages').insert({ community_slug: b.community_slug, event_key: eventKey(b), member_id: viewer.id, body: text, staff: access === 'staff' });
       }
       return json({ messages: await loadThread(b), open: access === 'staff' || !eventStarted(b), staff: access === 'staff' });
+    }
+
+    // ---- Evergreen field reports: volunteer hours and "is it still open?" (Sean, 2026-10-29) -------------------------------
+    case 'evergreen': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to see bounties.' }, 401);
+      const community = clean(body.community, 40);
+      const set = await evergreenSettings();
+      const [orgs, flagged] = await Promise.all([fieldPlaces('volunteer', community), fieldPlaces('still_open', community)]);
+      const { data: mine } = await db.from('ve_field_reports').select('kind, status').eq('member_id', viewer.id);
+      const count = (k: string, st: string) => (mine || []).filter((r) => r.kind === k && r.status === st).length;
+      return json({
+        settings: set,
+        volunteer: { places: orgs.length, waiting: count('volunteer', 'pending'), accepted: count('volunteer', 'accepted') },
+        still_open: { places: flagged.length, waiting: count('still_open', 'pending'), accepted: count('still_open', 'accepted') },
+        viewer: await viewerInfo(),
+      });
+    }
+
+    case 'field_places': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to see bounties.' }, 401);
+      const kind = body.kind === 'still_open' ? 'still_open' : 'volunteer';
+      const places = await fieldPlaces(kind, clean(body.community, 40));
+      const { data: mine } = await db.from('ve_field_reports').select('id, kind, listing_id, status, points, hours, answer, created_at, review_note, listings(name, slug)')
+        .eq('member_id', viewer.id).eq('kind', kind).order('created_at', { ascending: false }).limit(100);
+      return json({ places, settings: await evergreenSettings(), mine: (mine || []).map((r: any) => ({ id: r.id, listing_id: r.listing_id, name: r.listings?.name, slug: r.listings?.slug, status: r.status, points: r.points, hours: r.hours, answer: r.answer, at: r.created_at, review_note: r.review_note })), viewer: await viewerInfo() });
+    }
+
+    case 'field_photo_start': {
+      if (!viewer) return json({ error: 'not_authenticated' }, 401);
+      if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders.' }, 403);
+      const path = `field/${viewer.id}/${crypto.randomUUID()}.jpg`;
+      const { data, error } = await db.storage.from(BUCKET).createSignedUploadUrl(path);
+      if (error || !data) return json({ error: 'upload_failed', message: error?.message }, 500);
+      return json({ path, url: data.signedUrl });
+    }
+
+    case 'field_report': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in first.' }, 401);
+      if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders. Get your Passport to take part.' }, 403);
+      if (!isId(body.listing_id)) return json({ error: 'bad_id' }, 400);
+      const kind = body.kind === 'still_open' ? 'still_open' : body.kind === 'volunteer' ? 'volunteer' : '';
+      if (!kind) return json({ error: 'bad_kind' }, 400);
+      const st = await standing(viewer.id);
+      if (st && st.ok === false) return json({ error: 'not_eligible', message: 'Your bounties are paused for now. Ask your Community Manager.' }, 409);
+      const path = clean(body.path, 200);
+      if (path) {
+        const name = path.split('/').pop() || '';
+        if (!path.startsWith(`field/${viewer.id}/`) || !/^[0-9a-f-]{36}\.jpg$/.test(name)) return json({ error: 'bad_photo' }, 400);
+        const { data: listed } = await db.storage.from(BUCKET).list(`field/${viewer.id}`, { search: name });
+        if (!(listed || []).some((f) => f.name === name)) return json({ error: 'bad_photo', message: 'The photo did not finish uploading. Try again.' }, 400);
+      }
+      const num = (v: unknown) => (v === null || v === undefined || v === '' ? null : isFinite(Number(v)) ? Number(v) : null);
+      const { data, error } = await db.rpc('ve_field_report_save', { p_member: viewer.id, p_kind: kind, p_listing: body.listing_id,
+        p_lat: num(body.lat), p_lng: num(body.lng), p_accuracy: num(body.accuracy), p_hours: num(body.hours),
+        p_answer: clean(body.answer, 10) || null, p_note: clean(body.note, 1000) || null, p_photo: path || null });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      if (!data?.ok) {
+        const why: Record<string, string> = {
+          too_far: `Your phone puts you about ${data?.distance_m ? Number(data.distance_m).toLocaleString() + ' m' : 'too far'} away. Send it while you are there.`,
+          not_precise: 'Your phone could not tell where you are closely enough. Step outside or turn on precise location, then try again.',
+          no_position: 'We need your location once, to show you are there. Allow it and try again.',
+          no_location: 'This place has no map pin yet, so we cannot check you in here. Tell us and we will add it.',
+          hours: 'Say how many hours you gave, from half an hour to 12.',
+          answer: 'Pick Open or Closed.',
+          photo_required: 'Add a photo of what you found: the front, the door, the sign.',
+          already_reported: 'You already told us about this place this month. Thank you.',
+          already_today: 'You already sent this one today.',
+          daily_limit: 'That is the most field reports for one day. Pick it up tomorrow.',
+          not_flagged: 'Someone already settled this one. Pick another place.',
+          not_an_organization: 'Volunteer hours are for nonprofits, rescues and sanctuaries.',
+          not_found: 'This place is not on the Directory.',
+        };
+        return json({ error: data?.why || 'failed', message: why[data?.why] || 'That did not go through.' }, 409);
+      }
+      return json({ ok: true, id: data.id });
+    }
+
+    case 'field_mine': {
+      if (!viewer) return json({ error: 'not_authenticated' }, 401);
+      const { data } = await db.from('ve_field_reports').select('id, kind, status, points, hours, answer, created_at, review_note, listings(name, slug)')
+        .eq('member_id', viewer.id).order('created_at', { ascending: false }).limit(100);
+      return json({ reports: (data || []).map((r: any) => ({ id: r.id, kind: r.kind, status: r.status, points: r.points, hours: r.hours, answer: r.answer, at: r.created_at, review_note: r.review_note, name: r.listings?.name, slug: r.listings?.slug })) });
+    }
+
+    case 'field_review_list': {
+      const cities = await reviewCities(viewer);
+      if (!cities.length) return json({ error: 'forbidden' }, 403);
+      const status = ['pending', 'accepted', 'declined'].includes(body.status) ? body.status : 'pending';
+      const { data } = await db.from('ve_field_reports').select('*, listings(name, slug, category, address_city, address_state, latitude, longitude), members!ve_field_reports_member_id_fkey(name, email)')
+        .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(200);
+      const all = [];
+      for (const r of (data || []) as any[]) {
+        const hub = await chapterOf(r.listings?.address_city, r.listings?.address_state);
+        if (!viewer!.admin && !(hub && cities.includes(hub))) continue;
+        let photo: string | null = null;
+        if (r.photo_path) { const { data: su } = await db.storage.from(BUCKET).createSignedUrl(r.photo_path, 3600); photo = su?.signedUrl || null; }
+        all.push({ id: r.id, kind: r.kind, status: r.status, hours: r.hours, answer: r.answer, note: r.note, photo, distance_m: r.distance_m, accuracy_m: r.accuracy_m,
+          at: r.created_at, points: r.points, first: r.first, review_note: r.review_note, reviewed_at: r.reviewed_at, hub,
+          listing: r.listings ? { id: r.listing_id, name: r.listings.name, slug: r.listings.slug, category: r.listings.category, city: [r.listings.address_city, r.listings.address_state].filter(Boolean).join(', ') } : null,
+          member: r.members ? { name: r.members.name, email: r.members.email } : null });
+      }
+      const { data: counts } = await db.from('ve_field_reports').select('status');
+      const n: Record<string, number> = {}; for (const c of counts || []) n[c.status] = (n[c.status] || 0) + 1;
+      return json({ reports: all, counts: n, settings: await evergreenSettings() });
+    }
+
+    case 'field_review': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: r } = await db.from('ve_field_reports').select('id, kind, member_id, answer, hours, listings(name, slug, address_city, address_state)').eq('id', body.id).maybeSingle();
+      if (!r) return json({ error: 'not_found' }, 404);
+      const l: any = (r as any).listings || {};
+      const hub = await chapterOf(l.address_city, l.address_state);
+      const cities = await reviewCities(viewer);
+      if (!viewer?.admin && !(hub && cities.includes(hub))) return json({ error: 'forbidden' }, 403);
+      const decision = body.decision === 'accept' ? 'accept' : body.decision === 'decline' ? 'decline' : '';
+      if (!decision) return json({ error: 'bad_decision' }, 400);
+      const note = clean(body.note, 1000);
+      const hours = body.hours === undefined || body.hours === '' || body.hours === null ? null : Number(body.hours);
+      const { data: out, error } = await db.rpc('ve_field_report_review', { p_report: r.id, p_decision: decision, p_reviewer: viewer!.id, p_note: note || null, p_hours: hours });
+      if (error) return json({ error: 'review_failed', message: error.message }, 500);
+      if (!out?.ok) {
+        const why: Record<string, string> = { earlier_pending: 'An earlier answer on this place is waiting. Decide that one first: first to answer is first paid.', note_required: 'Say why it pays for fewer hours.', hours: 'Hours are at least half an hour.', already_reviewed: 'This one is already decided.' };
+        return json({ error: out?.why || 'failed', message: why[out?.why] || 'That did not go through.' }, 409);
+      }
+      const c = await memberContact(r.member_id);
+      const what = r.kind === 'volunteer' ? `your volunteer hours at <b>${esc(l.name || 'the organization')}</b>` : `your visit to <b>${esc(l.name || 'the place')}</b>`;
+      if (decision === 'accept') await sendEmail(c.email, `You earned ${Number(out.points || 0).toLocaleString()} points`,
+        P(`Hi ${esc(c.first)},`) + P(`Thank you for ${what}. It is approved, and <b>${Number(out.points || 0).toLocaleString()} points</b> are in your account.${r.kind === 'still_open' && out.first ? ' You were first to tell us, so it paid the full bounty.' : ''}`) + (note ? P(esc(note)) : '') + P(`<a href="${SITE}/bounties">More bounties</a>`));
+      else await sendEmail(c.email, 'About your field report',
+        P(`Hi ${esc(c.first)},`) + P(`Thank you for ${what}. We could not approve this one.`) + (note ? P(esc(note)) : '') + P(`<a href="${SITE}/bounties">See your bounties</a>`));
+      return json({ ok: true, points: out.points, first: out.first });
     }
 
     case 'review_list': {
@@ -781,7 +964,7 @@ Deno.serve(async (req) => {
           proposer: c.proposed_by && who[c.proposed_by] ? who[c.proposed_by].name : null,
           host: h ? { id: h.id, name: h.name, slug: h.slug, city: h.address_city, featured: h.is_featured, featured_until: h.featured_until, photos: (h.gallery_urls || []).length } : null,
           host_member: hm ? { name: hm.name, email: hm.email, active: hm.membership_status === 'active' } : null,
-          jobs: (jobs || []).filter((b) => b.campaign_id === c.id).map((b) => ({ id: b.id, kind: b.kind, title: b.title, points: b.points, slots: b.slots, brief: b.brief, deliverable: b.deliverable, parts: b.parts || [], status: b.status, taken: taken[b.id] || 0 })),
+          jobs: (jobs || []).filter((b) => b.campaign_id === c.id).map((b) => ({ id: b.id, kind: b.kind, title: b.title, points: b.points, cash_cents: b.cash_cents, min_level: b.min_level, slots: b.slots, brief: b.brief, deliverable: b.deliverable, parts: b.parts || [], status: b.status, taken: taken[b.id] || 0 })),
           details: ((jobs || []).find((b) => b.campaign_id === c.id) || {}).event_details || '',
         });
       }
@@ -931,6 +1114,9 @@ Deno.serve(async (req) => {
       if (body.points != null) { const n = Math.round(Number(body.points)); if (!(n >= 1 && n <= 10000)) return json({ error: 'points', message: 'Points are between 1 and 10,000.' }, 400); patch.points = n; }
       if ('slots' in body) { const n = Math.floor(Number(body.slots)); patch.slots = n > 0 ? Math.min(n, 500) : null; }
       if (Array.isArray(body.parts)) patch.parts = body.parts.map((x: unknown) => clean(x, 300)).filter(Boolean).slice(0, 12);
+      // A paid job: the stipend in dollars and the level it takes to claim it.
+      if ('cash' in body) { const d = body.cash === '' || body.cash == null ? 0 : Number(body.cash); if (!(d >= 0 && d <= 5000)) return json({ error: 'cash', message: 'The stipend is between $0 and $5,000.' }, 400); patch.cash_cents = d ? Math.round(d * 100) : null; }
+      if ('min_level' in body) { const n = Math.floor(Number(body.min_level)) || 1; if (!(n >= 1 && n <= 4)) return json({ error: 'min_level', message: 'Pick a level from 1 to 4.' }, 400); patch.min_level = n > 1 ? n : null; }
       if (body.remove === true) {
         const { data: held } = await db.from('ve_bounty_submissions').select('id').eq('bounty_id', j.id).neq('status', 'released').limit(1);
         if (held && held.length) return json({ error: 'held', message: 'Someone holds a spot on this job, so it stays.' }, 409);

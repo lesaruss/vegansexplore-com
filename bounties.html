@@ -26,7 +26,10 @@
        Every call goes to ve-bounties.
        Campaigns (Sean, 2026-10-04, worked through with V): the page shows campaign cards only, four
        across, soonest deadline first. A card opens the campaign: its story, then its jobs. A job with
-       parts is one bundle and pays only when every part is done. -->
+       parts is one bundle and pays only when every part is done.
+       The board (Sean, 2026-10-29): one list of rows, two across, with search, Type, Guide and Sort: every open job (a job leaves
+       once its claims close, unless you hold it), the evergreen bounties (check-ins, volunteer hours, is it still open?) and the
+       Guides' venue bounties. Each row opens its own view. -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-orange: #F69820; --ve-orange-ink: #8a4b00; --ve-orange-light: #fff4e5; --ve-border: rgba(0,0,0,0.12); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.78); --ve-text-60: #595959; --ve-bg: #f7f7f5; --ve-danger: #a61b1b; }
@@ -39,9 +42,11 @@
     .row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 20px; }
     .label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ve-text-60); }
     select, input, textarea { font-family: inherit; }
-    .select, .input, textarea { border: 1.5px solid var(--ve-border); border-radius: 10px; background: #fff; color: var(--ve-text); font-size: 15px; padding: 11px 14px; max-width: 100%; }
+    .select, .input, textarea { border: 1.5px solid var(--ve-border); border-radius: 6px; background: #fff; color: var(--ve-text); font-size: 15px; padding: 11px 14px; max-width: 100%; }
+    .select { -webkit-appearance: none; -moz-appearance: none; appearance: none; padding-right: 46px; cursor: pointer; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 14px 9px; }
+    .select::-ms-expand { display: none; }
     textarea { width: 100%; resize: vertical; min-height: 120px; line-height: 1.55; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 10px; font-size: 14px; font-weight: 800; padding: 12px 20px; cursor: pointer; min-height: 44px; text-decoration: none; font-family: inherit; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 6px; font-size: 14px; font-weight: 800; padding: 12px 20px; cursor: pointer; min-height: 44px; text-decoration: none; font-family: inherit; }
     .btn-primary { background: var(--ve-green-dark); color: #fff; }
     .btn-primary:hover { background: var(--ve-green-deep); }
     .btn-primary:disabled { opacity: 0.55; cursor: default; }
@@ -187,6 +192,37 @@
     .qa .who { display: block; font-size: 11.5px; font-weight: 800; color: var(--ve-text-60); margin-bottom: 2px; white-space: normal; }
     .check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; line-height: 1.5; margin-top: 14px; }
     .check input { width: 20px; height: 20px; margin-top: 1px; flex: 0 0 auto; }
+    /* The board (Sean, 2026-10-29): the people page's podcast rows, two across. */
+    .bb-tools { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 0; align-items: center; }
+    .bb-search { flex: 1 1 280px; display: block; }
+    .bb-search input { width: 100%; font: inherit; font-size: 15px; padding: 11px 14px; border: 1.5px solid var(--ve-border); border-radius: 6px; background: #fff; min-height: 46px; }
+    .bb-tools .select { min-height: 46px; }
+    .bb-count { font-size: 12px; font-weight: 700; color: var(--ve-text-60); margin: 12px 0 8px; }
+    .bb-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (max-width: 900px) { .bb-list { grid-template-columns: minmax(0, 1fr); } }
+    .bb-row { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 14px; align-items: start; border: 1px solid rgba(0,0,0,.1); border-radius: 10px; padding: 12px; background: #fff; color: inherit; text-decoration: none; }
+    a.bb-row:hover { border-color: var(--ve-text-60); }
+    a.bb-row:focus-visible { outline: 2px solid var(--ve-text); outline-offset: 2px; }
+    .bb-static { grid-template-columns: minmax(0, 1fr) auto; }
+    .bb-img { width: 72px; height: 72px; border-radius: 8px; background: var(--ve-green-light) center / cover no-repeat; display: flex; align-items: center; justify-content: center; }
+    .bb-ico svg { width: 34px; height: 34px; fill: none; stroke: var(--ve-green-deep); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .bb-txt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .bb-t { font-size: 14.5px; font-weight: 800; line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .bb-meta { font-size: 12px; font-weight: 700; color: var(--ve-text-60); line-height: 1.45; }
+    .bb-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
+    .bb-side { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+    .bb-pts { font-size: 13px; font-weight: 900; color: var(--ve-orange-ink); white-space: nowrap; text-align: right; }
+    .bb-btn { display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; padding: 8px 14px; min-height: 36px; border: 1px solid rgba(0,0,0,.22); background: #fff; color: var(--ve-green-deep); }
+    a.bb-row:hover .bb-btn { background: var(--ve-green-deep); border-color: var(--ve-green-deep); color: #fff; }
+    @media (max-width: 640px) { .bb-row { grid-template-columns: 56px minmax(0, 1fr); } .bb-img { width: 56px; height: 56px; } .bb-side { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: center; } }
+    .pp-scroll { max-height: 880px; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+    .fh { font-size: clamp(22px, 3vw, 30px); font-weight: 900; line-height: 1.15; margin: 10px 0 8px; }
+    .fh3 { font-size: 13px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ve-text-60); margin: 28px 0 10px; }
+    .sub-p { font-size: 15px; line-height: 1.65; color: var(--ve-text-75); max-width: 860px; }
+    .steps { margin: 12px 0 0 20px; max-width: 860px; line-height: 1.7; font-size: 14.5px; }
+    .ff-ans { display: flex; gap: 10px; flex-wrap: wrap; }
+    .ff-ans label { display: inline-flex; align-items: center; gap: 8px; border: 1.5px solid var(--ve-border); border-radius: 6px; padding: 10px 16px; font-weight: 800; cursor: pointer; min-height: 44px; }
+    .ff-ans label:has(input:checked) { border-color: var(--ve-green-deep); background: var(--ve-green-light); }
     .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     [hidden] { display: none !important; }
     .gated .head .row { display: none; }
@@ -206,8 +242,8 @@
     <header class="head">
       <div class="wrap">
         <p class="eyebrow">Bounties</p>
-        <h1>Cover your city. Earn points.</h1>
-        <p class="lede">Help tell the story of what Vegans are building here. Claim a spot, show up, capture it, and send it in. When it is approved, the points are yours.</p>
+        <h1>Bounties. Show up, earn points.</h1>
+        <p class="lede">Check in where you go, volunteer, check on places, cover events and keep the Guides right. When the team accepts it, the points are yours.</p>
         <div class="row">
           <label class="label" for="city">Your city</label>
           <select id="city" class="select"></select>
@@ -221,6 +257,7 @@
       <div id="list"></div>
       <div id="checkins" hidden></div>
       <div id="venueb" hidden></div>
+      <div id="field" hidden></div>
       <div id="campaign" hidden>
         <div class="cintro">
           <div class="ctext"><span class="ckind-tag" id="c-kind"></span><h2 id="c-title"></h2><p class="cwhen" id="c-meta"></p><p class="cstory" id="c-story"></p><div id="c-note"></div></div>
@@ -276,7 +313,7 @@
           </aside>
         </div>
       </div>
-      <div class="how" id="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
+      <div class="how" id="how"><strong>How it works.</strong> Evergreen bounties are always open: check in where you go, volunteer with a nonprofit, or tell us whether a quiet place is still open. Guide bounties unlock with the Guide you own. For an event job, each job has a few spots and a clock: claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. A paid job pays a stipend on top of the points and can ask for a level. Bounties are for Passport holders.</div>
     </section>
   </main>
 
@@ -302,7 +339,9 @@
     // In the dashboard window the dashboard scrolls, and its address bar follows this page.
     function toTop() { if (embedded) { try { window.parent.postMessage({ type: 've-frame-scroll', top: 0 }, location.origin); } catch (e) {} } else window.scrollTo(0, 0); }
     function tellParent() { if (embedded) { try { window.parent.postMessage({ type: 've-frame-url', path: location.pathname.replace(/\.html$/, '') + location.search }, location.origin); } catch (e) {} } }
-    var state = { city: '', bounties: [], campaigns: [], cslug: params.get('campaign') || '', jobId: params.get('id') || '', view: '', cfilter: 'all', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
+    var state = { city: '', bounties: [], campaigns: [], rows: [], evergreen: null, venues: null, field: null, place: params.get('place') || '',
+      f: { type: ['evergreen', 'guides', 'events'].indexOf(params.get('type')) > -1 ? params.get('type') : '', guide: params.get('guide') || '', sort: ['soonest', 'az'].indexOf(params.get('sort')) > -1 ? params.get('sort') : 'points', q: params.get('q') || '' },
+      cslug: params.get('campaign') || '', jobId: params.get('id') || '', view: '', cfilter: 'all', current: null, mine: null, viewer: { signed_in: false }, uploading: 0 };
     var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
     var HOLDS = ['claimed', 'submitted', 'changes', 'approved', 'rejected'];
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -334,13 +373,16 @@
     if (!hubs.some(function (h) { return h.slug === wanted; })) wanted = 'south-florida';
     $('city').innerHTML = hubs.map(function (h) { return '<option value="' + h.slug + '">' + esc(h.name) + '</option>'; }).join('');
     $('city').value = wanted; state.city = wanted;
-    $('city').addEventListener('change', function () { state.city = this.value; state.cslug = ''; state.jobId = ''; setUrl(true); load(); });
+    $('city').addEventListener('change', function () { state.city = this.value; state.cslug = ''; state.jobId = ''; state.place = ''; state.field = null; setUrl(true); load(); });
     // The address bar follows the view: ?campaign=<slug> for a campaign, &id=<job> for a job.
     function setUrl(push) {
       var u = new URL(location.href);
       u.searchParams.set('community', state.city);
       if (state.cslug) u.searchParams.set('campaign', state.cslug); else u.searchParams.delete('campaign');
       if (state.jobId) u.searchParams.set('id', state.jobId); else u.searchParams.delete('id');
+      if (state.place && FIELD[state.cslug]) u.searchParams.set('place', state.place); else u.searchParams.delete('place');
+      // The board's filters stay in the address only on the board itself.
+      if (state.cslug || state.jobId) ['type', 'guide', 'sort', 'q'].forEach(function (k) { u.searchParams.delete(k); });
       (push ? history.pushState : history.replaceState).call(history, null, '', u.pathname + u.search);
       tellParent();
     }
@@ -387,14 +429,19 @@
     setInterval(tick, 1000);
 
     function load() {
-      $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading campaigns&hellip;</p>';
-      return call({ action: 'list', community: state.city }).then(function (d) {
+      $('list').innerHTML = '<p class="meta" style="margin:24px 0">Loading bounties&hellip;</p>';
+      var venues = fetch(VFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token() || '') }, body: JSON.stringify({ action: 'bounties', hub: state.city || 'all' }) })
+        .then(function (r) { return r.json(); }).catch(function () { return {}; });
+      var evergreen = call({ action: 'evergreen', community: state.city }).catch(function () { return {}; });
+      return Promise.all([call({ action: 'list', community: state.city }), evergreen, venues]).then(function (all) {
+        var d = all[0]; state.evergreen = all[1] || {}; state.venues = all[2] || {};
         state.bounties = d.bounties || []; state.viewer = d.viewer || { signed_in: false };
         state.campaigns = (d.campaigns || []).slice();
         // Jobs that belong to no campaign still show, under one card of their own.
         var loose = state.bounties.filter(function (b) { return !b.campaign_id; });
         if (loose.length) state.campaigns.push({ slug: '_more', kind: 'ongoing', title: 'More jobs', story: 'Jobs that are not part of a campaign.', jobs: loose.length, jobs_open: loose.filter(function (b) { return b.claims_open; }).length, max_points: loose.reduce(function (n, b) { return Math.max(n, b.points); }, 0), mine: loose.filter(function (b) { return b.mine && b.mine.status !== 'released'; }).length });
         renderStanding();
+        buildRows();
         route();
       }).catch(function () { $('list').innerHTML = '<div class="empty"><strong>Bounties could not load.</strong>Please refresh the page.</div>'; });
     }
@@ -408,12 +455,13 @@
     // one campaign, one job.
     function setView(v) {
       state.view = v;
-      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list'; $('checkins').hidden = v !== 'checkins'; $('venueb').hidden = v !== 'venueb';
+      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list'; $('checkins').hidden = v !== 'checkins'; $('venueb').hidden = v !== 'venueb'; $('field').hidden = v !== 'field';
       document.body.classList.toggle('sub-view', v !== 'list');
       var c = campOf(state.cslug), items = [['Bounties', href('', '')]];
       if (v === 'checkins') items.push([CHECKINS.title, '']);
       if (v === 'venueb') items.push([VENUEB.title, '']);
-      if (v !== 'list' && c) items.push([c.title, href(c.slug, '')]);
+      if (v === 'field' && FIELD[state.cslug]) { items.push([FIELD[state.cslug].title, state.place ? href(state.cslug, '') : '']); if (state.place && state.placeName) items.push([state.placeName, '']); }
+      if (v !== 'list' && v !== 'field' && c) items.push([c.title, href(c.slug, '')]);
       if (v === 'job' && state.current) items.push([short(state.current.title), '']);
       $('crumbs').hidden = v === 'list';
       $('crumbs').innerHTML = items.map(function (it, i) {
@@ -423,6 +471,7 @@
     function route() {
       if (state.cslug === CHECKINS.slug) { renderCheckins(); return; }
       if (state.cslug === VENUEB.slug) { renderVenueBounties(); return; }
+      if (FIELD[state.cslug]) { if (state.place) renderFieldForm(state.cslug, state.place); else { state.placeName = ''; renderField(state.cslug); } return; }
       if (state.jobId) { open(state.jobId); return; }
       var c = state.cslug && campOf(state.cslug);
       if (c) renderCampaign(c); else { state.cslug = ''; renderList(); }
@@ -432,11 +481,6 @@
     // places you visit, 10 points each. It sits first in every city and opens its own view; the check-in itself happens on the
     // place's Directory page (ve-checkin).
     var CHECKINS = { slug: 'check-ins', title: 'Check in where you go' };
-    function checkinCard() {
-      return '<a class="ccard" href="' + esc(href(CHECKINS.slug, '')) + '" data-slug="' + CHECKINS.slug + '"><span class="ccover k-ongoing"><span class="ckind">Always open</span></span>' +
-        '<span class="cbody"><span class="ctitle">' + CHECKINS.title + '</span><span class="cmeta">Anytime, at any listed place</span>' +
-        '<span class="cjobs">10 points a visit &middot; up to 50 a day</span></span></a>';
-    }
     function renderCheckins() {
       setView('checkins');
       var dir = '/directory?city=' + encodeURIComponent(state.city || '');
@@ -461,11 +505,6 @@
     // confirmation, by venue, from ve-venues bounties. The first to confirm one earns the bounty; after that it pays less.
     var VENUEB = { slug: 'venues', title: 'Be first at the stadiums' };
     var VFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-venues';
-    function venueCard() {
-      return '<a class="ccard" href="' + esc(href(VENUEB.slug, '')) + '" data-slug="' + VENUEB.slug + '"><span class="ccover k-ongoing" style="background-image:url(\'/public/guides/venues/river-report.webp\');background-size:cover;background-position:center"><span class="ckind">Always open</span></span>' +
-        '<span class="cbody"><span class="ctitle">' + VENUEB.title + '</span><span class="cmeta">Stadiums and arenas in your city</span>' +
-        '<span class="cjobs">First to confirm an item &middot; 50 points</span></span></a>';
-    }
     function renderVenueBounties() {
       setView('venueb');
       $('venueb').innerHTML = '<div style="margin-top:16px"><p class="ckind" style="position:static;display:inline-block;margin-bottom:8px">Always open</p><h2 style="font-size:24px;font-weight:900;margin:0 0 8px">' + VENUEB.title + '</h2>' +
@@ -491,22 +530,219 @@
           $('vb-list').innerHTML = lockHtml + $('vb-list').innerHTML;
         }).catch(function () { $('vb-list').innerHTML = '<p class="empty">Could not load the venue bounties.</p>'; });
     }
+    // ---- The board (Sean, 2026-10-29: "a little bit more simplified, almost like how we have the podcast into two columns on the
+    // people listing... you can search, it's filterable... sort it by the guides"). One list of rows, two across: every open job,
+    // the evergreen bounties and the Guides' venue bounties. Each row opens its own view. Filters live in the address bar
+    // (?type=evergreen|guides|events&guide=<slug>&sort=points|soonest|az&q=).
+    var ICON = {
+      checkin: '<svg viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><path d="M9 10l2 2 4-4"/></svg>',
+      volunteer: '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M3 21h5l3-2"/></svg>',
+      stillopen: '<svg viewBox="0 0 24 24"><path d="M4 10h16v10H4z"/><path d="M3 10l2-5h14l2 5"/><path d="M10 14a2 2 0 1 1 3 1.7c-.6.4-1 .8-1 1.3"/><path d="M12 19.2v.1"/></svg>',
+      event: '<svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>',
+      guide: '<svg viewBox="0 0 24 24"><path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z"/><path d="M20 5h-6a3 3 0 0 0-3 3"/><path d="M20 5v13h-7"/></svg>',
+    };
+    var TYPES = [['', 'All bounties'], ['evergreen', 'Evergreen'], ['guides', 'Guides'], ['events', 'Events and campaigns']];
+    var SORTS = [['points', 'Most points'], ['soonest', 'Soonest'], ['az', 'A to Z']];
+    var GUIDE_NAME = { 'stadium-arena-guide': 'Stadium & Arena Guide', 'airport-guide': 'Airport Guide' };
+    var VOLUNTEER = { slug: 'volunteer', title: 'Volunteer with a nonprofit' };
+    var STILLOPEN = { slug: 'still-open', title: 'Is it still open?' };
+    function cityName() { var h = hubs.filter(function (x) { return x.slug === state.city; })[0]; return h ? h.name : 'your city'; }
+    function buildRows() {
+      var rows = [], eg = state.evergreen || {}, set = eg.settings || {};
+      rows.push({ key: 'ev-checkin', type: 'evergreen', title: CHECKINS.title, line: 'Evergreen · Any place in the Directory · Anytime', pts: 10, ptsText: '10 a visit', icon: 'checkin', slug: CHECKINS.slug });
+      var vn = eg.volunteer ? eg.volunteer.places : 0, sn = eg.still_open ? eg.still_open.places : 0;
+      rows.push({ key: 'ev-volunteer', type: 'evergreen', title: VOLUNTEER.title, line: 'Evergreen · ' + (vn ? vn + (vn === 1 ? ' organization' : ' organizations') + ' in ' + cityName() : 'Nonprofits, rescues and sanctuaries'), pts: (set.volunteer_per_hour || 25), ptsText: (set.volunteer_per_hour || 25) + ' an hour', icon: 'volunteer', slug: VOLUNTEER.slug, tags: eg.volunteer && eg.volunteer.waiting ? [['In review: ' + eg.volunteer.waiting, 't-wait']] : [] });
+      rows.push({ key: 'ev-stillopen', type: 'evergreen', title: STILLOPEN.title, line: 'Evergreen · ' + (sn ? sn + (sn === 1 ? ' place' : ' places') + ' to check in ' + cityName() : 'None to check in ' + cityName() + ' right now'), pts: set.still_open_first || 100, ptsText: 'Up to ' + (set.still_open_first || 100), icon: 'stillopen', slug: STILLOPEN.slug, tags: sn ? [['First to answer earns the most', 't-live']] : [] });
+      var vd = state.venues || {};
+      (vd.venues || []).forEach(function (v) {
+        rows.push({ key: 'vn-' + v.slug, type: 'guides', guide: v.guide, title: v.name, line: (GUIDE_NAME[v.guide] || 'Guide') + ' · ' + [v.city, v.state].filter(Boolean).join(', ') + ' · ' + (v.empty ? 'Be first to add what is there' : v.open + (v.open === 1 ? ' item' : ' items') + ' waiting'), pts: v.points || 0, ptsText: 'Up to ' + (v.points || 0).toLocaleString(), img: v.image, icon: 'guide',
+          ext: '/guides/' + v.guide + '#/' + (v.kind === 'airport' ? 'airport' : 'venue') + '/' + encodeURIComponent(v.slug) });
+      });
+      (vd.locked || []).forEach(function (g) {
+        rows.push({ key: 'lk-' + g.guide, type: 'guides', guide: g.guide, title: (GUIDE_NAME[g.guide] || 'Guide') + ' bounties', line: 'Unlocks with the Guide · ' + g.venues + (g.venues === 1 ? ' venue' : ' venues') + ' in ' + cityName(), pts: g.points || 0, ptsText: (g.points || 0).toLocaleString() + ' waiting', icon: 'guide', ext: '/guides/' + g.guide + '#/join', tags: [['Get the Guide: $11 or 1,100 points', 't-off']] });
+      });
+      state.bounties.filter(function (b) { return b.status !== 'canceled'; }).forEach(function (b) {
+        var c = b.campaign_id ? state.campaigns.filter(function (x) { return x.id === b.campaign_id; })[0] : null;
+        var st = jobStatus(b), tags = [[st[0], st[1]]];
+        if (b.cash_cents) tags.push(['Paid', 't-live']);
+        if (b.min_level > 1) tags.push(['Level ' + b.min_level + ' and up', (state.viewer.level || 1) >= b.min_level ? 't-off' : 't-bad']);
+        var whenAt = b.event_starts_at || (c && c.starts_at) || b.due_at;
+        rows.push({ key: 'job-' + b.id, type: 'events', title: b.title, line: [c ? (KIND[c.kind] || 'Campaign') : 'Job', cityName(), whenAt ? day(whenAt) : ''].filter(Boolean).join(' · '),
+          pts: b.points + (b.cash_cents ? b.cash_cents / 10 : 0), ptsText: pay(b) + (b.cash_cents ? '' : ' points'), img: c && c.cover_url, icon: 'event', soon: b.claims_close_at ? new Date(b.claims_close_at).getTime() : (b.due_at ? new Date(b.due_at).getTime() : 0),
+          job: b.id, cslug: c ? c.slug : '_more', tags: tags });
+      });
+      state.rows = rows;
+    }
+    function filtered() {
+      var f = state.f, q = f.q.trim().toLowerCase();
+      var out = state.rows.filter(function (r) {
+        if (f.guide && r.guide !== f.guide) return false;
+        if (f.type && r.type !== f.type) return false;
+        return !q || (r.title + ' ' + r.line).toLowerCase().indexOf(q) > -1;
+      });
+      var never = Number.MAX_SAFE_INTEGER;
+      out.sort(function (a, b) {
+        if (f.sort === 'az') return a.title.localeCompare(b.title);
+        if (f.sort === 'soonest') return ((a.soon || never) - (b.soon || never)) || b.pts - a.pts;
+        return b.pts - a.pts || a.title.localeCompare(b.title);
+      });
+      return out;
+    }
+    function rowHtml(r) {
+      var pic = r.img ? ' style="background-image:url(\'' + esc(r.img).replace(/'/g, '%27') + '\')"' : '';
+      var link = r.ext ? esc(r.ext) + '" target="_top' : esc(r.job ? href(r.cslug, r.job) : href(r.slug, ''));
+      return '<a class="bb-row" href="' + link + '" data-key="' + esc(r.key) + '">' +
+        '<span class="bb-img' + (r.img ? '' : ' bb-ico') + '"' + pic + ' aria-hidden="true">' + (r.img ? '' : ICON[r.icon] || '') + '</span>' +
+        '<span class="bb-txt"><span class="bb-t">' + esc(r.title) + '</span><span class="bb-meta">' + esc(r.line) + '</span>' +
+        ((r.tags || []).length ? '<span class="bb-tags">' + r.tags.map(function (t) { return '<span class="tag ' + t[1] + '">' + esc(t[0]) + '</span>'; }).join('') + '</span>' : '') + '</span>' +
+        '<span class="bb-side"><span class="bb-pts">' + esc(r.ptsText) + '</span><span class="bb-btn">Open</span></span></a>';
+    }
+    function drawRows() {
+      var list = filtered();
+      $('bb-count').textContent = list.length + (list.length === 1 ? ' bounty' : ' bounties');
+      $('bb-rows').innerHTML = list.length ? list.map(rowHtml).join('') : '<p class="empty" style="grid-column:1/-1">Nothing matches. Try another type, or clear the search.</p>';
+    }
+    function filterUrl() {
+      var u = new URL(location.href), f = state.f;
+      [['type', f.type], ['guide', f.guide], ['sort', f.sort === 'points' ? '' : f.sort], ['q', f.q.trim()]].forEach(function (x) { if (x[1]) u.searchParams.set(x[0], x[1]); else u.searchParams.delete(x[0]); });
+      history.replaceState(null, '', u.pathname + u.search); tellParent();
+    }
     function renderList() {
       setView('list');
-      if (!state.campaigns.length) { $('list').innerHTML = '<div class="cgrid">' + checkinCard() + venueCard() + '</div><div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
-      var mineN = state.campaigns.filter(function (c) { return c.mine; }).length;
-      if (!mineN) state.cfilter = 'all';
-      var list = state.cfilter === 'mine' ? state.campaigns.filter(function (c) { return c.mine; }) : state.campaigns;
-      $('list').innerHTML = (mineN ? '<div class="filters" role="group" aria-label="Show"><button type="button" data-cf="all" aria-pressed="' + (state.cfilter !== 'mine') + '">All campaigns (' + state.campaigns.length + ')</button><button type="button" data-cf="mine" aria-pressed="' + (state.cfilter === 'mine') + '">You are in (' + mineN + ')</button></div>' : '') +
-        '<div class="cgrid">' + (state.cfilter === 'mine' ? '' : checkinCard() + venueCard()) + list.map(function (c) {
-        var cover = c.cover_url ? ' style="background-image:linear-gradient(to top,rgba(0,0,0,0.25),rgba(0,0,0,0)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
-        return '<a class="ccard" href="' + esc(href(c.slug, '')) + '" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
-          '<span class="cbody"><span class="ctitle">' + esc(c.title) + '</span>' +
-          '<span class="cmeta">' + esc(dateLine(c)) + (c.place_name ? '<br>' + esc(c.place_name) : '') + (c.host ? '<br>Hosted by ' + esc(c.host.name) : '') + '</span>' +
-          (c.mine ? '<span class="cmine">You are in</span>' : '') +
-          '<span class="cjobs">' + c.jobs + (c.jobs === 1 ? ' job' : ' jobs') + ' &middot; up to ' + (c.max_points || 0).toLocaleString() + ' points</span>' +
-          (c.slug === '_more' ? '' : '<span class="clock" data-cclock="' + esc(c.slug) + '"></span>') + '</span></a>';
-      }).join('') + '</div>';
+      var f = state.f, guides = [];
+      state.rows.forEach(function (r) { if (r.guide && guides.indexOf(r.guide) < 0) guides.push(r.guide); });
+      if (f.guide && guides.indexOf(f.guide) < 0) guides.push(f.guide);
+      var opt = function (list, v) { return list.map(function (x) { return '<option value="' + esc(x[0]) + '"' + (x[0] === v ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join(''); };
+      $('list').innerHTML = '<div class="bb-tools">' +
+        '<label class="bb-search"><span class="visually-hidden">Search bounties</span><input id="bb-q" type="search" placeholder="Search bounties" value="' + esc(f.q) + '"></label>' +
+        '<label><span class="visually-hidden">Type</span><select id="bb-type" class="select">' + opt(TYPES, f.type) + '</select></label>' +
+        '<label><span class="visually-hidden">Guide</span><select id="bb-guide" class="select">' + opt([['', 'All Guides']].concat(guides.map(function (g) { return [g, GUIDE_NAME[g] || g]; })), f.guide) + '</select></label>' +
+        '<label><span class="visually-hidden">Sort by</span><select id="bb-sort" class="select">' + opt(SORTS, f.sort) + '</select></label>' +
+        '</div><p class="bb-count" id="bb-count" aria-live="polite"></p><div class="bb-list" id="bb-rows"></div>';
+      drawRows();
+      $('bb-q').addEventListener('input', function () { f.q = this.value; drawRows(); filterUrl(); });
+      $('bb-type').addEventListener('change', function () { f.type = this.value; if (f.type !== 'guides' && f.type) f.guide = ''; $('bb-guide').value = f.guide; drawRows(); filterUrl(); });
+      $('bb-guide').addEventListener('change', function () { f.guide = this.value; if (f.guide) { f.type = 'guides'; $('bb-type').value = 'guides'; } drawRows(); filterUrl(); });
+      $('bb-sort').addEventListener('change', function () { f.sort = this.value; drawRows(); filterUrl(); });
+    }
+
+    // ---- Evergreen field bounties: volunteer hours, and "is it still open?" (migration 20261029_bounties_board.sql). A list of
+    // places in the city, then one place per view with its form (?campaign=volunteer|still-open&place=<listing id>).
+    var FIELD = {};
+    FIELD[VOLUNTEER.slug] = { kind: 'volunteer', title: VOLUNTEER.title };
+    FIELD[STILLOPEN.slug] = { kind: 'still_open', title: STILLOPEN.title };
+    var RLABEL = { pending: ['In review', 't-wait'], accepted: ['Paid', 't-live'], declined: ['Not approved', 't-bad'] };
+    function fieldIntro(kind, set) {
+      if (kind === 'volunteer') return '<p class="sub-p">Give your time to a nonprofit, rescue or sanctuary in the Directory and tell us while you are there. Every hour you give earns <strong>' + set.volunteer_per_hour + ' points</strong>, up to ' + set.volunteer_max_hours + ' hours a visit, and a photo adds ' + set.volunteer_photo_bonus + ' more. The team checks it with the organization when it needs to, and the points land when it is accepted.</p>' +
+        '<ol class="steps"><li>Pick the organization below and volunteer with them.</li><li>While you are there, open it here and send your hours. Your phone shares its location once, to show you are there.</li><li>The team reviews it. Accepted hours pay.</li></ol>';
+      return '<p class="sub-p">These places look quiet online: no hours, no website, or Google says they may be closed. Go and see. Tell us <strong>Open</strong> or <strong>Closed</strong> with a photo of the front, from right there. The <strong>first</strong> member whose answer is accepted earns <strong>' + set.still_open_first + ' points</strong>; later answers that agree earn ' + set.still_open_after + '. Closed places come off the Directory after the team checks.</p>';
+    }
+    function renderField(slug) {
+      var F = FIELD[slug]; setView('field');
+      $('field').innerHTML = '<div style="margin-top:16px"><span class="tag t-live">Evergreen</span><h2 class="fh">' + esc(F.title) + '</h2><div id="f-intro"></div>' +
+        '<label class="bb-search" style="max-width:520px;margin-top:14px"><span class="visually-hidden">Search places</span><input id="f-q" type="search" placeholder="Search places"></label>' +
+        '<p class="bb-count" id="f-count"></p><div class="pp-scroll"><div class="bb-list" id="f-list"><p class="meta">Loading...</p></div></div>' +
+        '<h3 class="fh3">Your reports</h3><div id="f-mine"></div></div>';
+      return call({ action: 'field_places', kind: F.kind, community: state.city }).then(function (d) {
+        state.field = { slug: slug, places: d.places || [], set: d.settings || {}, mine: d.mine || [] };
+        $('f-intro').innerHTML = fieldIntro(F.kind, state.field.set);
+        var draw = function () {
+          var q = $('f-q').value.trim().toLowerCase(), list = state.field.places.filter(function (p) { return !q || (p.name + ' ' + p.city + ' ' + (p.category || '')).toLowerCase().indexOf(q) > -1; });
+          $('f-count').textContent = list.length + (list.length === 1 ? ' place' : ' places') + ' in ' + cityName();
+          $('f-list').innerHTML = list.length ? list.map(function (p) {
+            var pic = p.logo ? ' style="background-image:url(\'' + esc(p.logo).replace(/'/g, '%27') + '\')"' : '';
+            var line = F.kind === 'volunteer' ? [p.category, p.city].filter(Boolean).join(' · ') : [p.city].concat((p.reasons || []).slice(0, 2)).filter(Boolean).join(' · ');
+            return '<a class="bb-row" href="' + esc(href(slug, '') + '&place=' + p.id) + '" data-place="' + esc(p.id) + '"><span class="bb-img' + (p.logo ? '' : ' bb-ico') + '"' + pic + ' aria-hidden="true">' + (p.logo ? '' : ICON[F.kind === 'volunteer' ? 'volunteer' : 'stillopen']) + '</span>' +
+              '<span class="bb-txt"><span class="bb-t">' + esc(p.name) + '</span><span class="bb-meta">' + esc(line) + '</span>' + (p.waiting ? '<span class="bb-tags"><span class="tag t-wait">An answer is in review</span></span>' : '') + '</span>' +
+              '<span class="bb-side"><span class="bb-pts">' + (F.kind === 'volunteer' ? state.field.set.volunteer_per_hour + ' an hour' : 'Up to ' + state.field.set.still_open_first) + '</span><span class="bb-btn">Open</span></span></a>';
+          }).join('') : '<p class="empty" style="grid-column:1/-1">' + (state.field.places.length ? 'Nothing matches your search.' : F.kind === 'volunteer' ? 'No organizations with a map pin in ' + esc(cityName()) + ' yet. Pick another city.' : 'Nothing to check in ' + esc(cityName()) + ' right now. Pick another city, or check back after the monthly check-up.') + '</p>';
+        };
+        $('f-q').addEventListener('input', draw); draw();
+        var mine = state.field.mine;
+        $('f-mine').innerHTML = mine.length ? '<div class="bb-list">' + mine.map(function (r) {
+          var st = RLABEL[r.status] || [r.status, 't-off'];
+          var what = F.kind === 'volunteer' ? r.hours + (Number(r.hours) === 1 ? ' hour' : ' hours') : (r.answer === 'closed' ? 'You said Closed' : 'You said Open');
+          return '<div class="bb-row bb-static"><span class="bb-txt"><span class="bb-t">' + esc(r.name || 'A place') + '</span><span class="bb-meta">' + esc(what + ' · ' + day(r.at)) + '</span>' + (r.review_note ? '<span class="bb-meta">' + esc(r.review_note) + '</span>' : '') + '<span class="bb-tags"><span class="tag ' + st[1] + '">' + esc(st[0]) + '</span></span></span><span class="bb-side"><span class="bb-pts">' + (r.points ? '+' + r.points : '') + '</span></span></div>';
+        }).join('') + '</div>' : '<p class="meta">Nothing yet.</p>';
+      }).catch(function () { $('f-list').innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; });
+    }
+    function placeOf(id) { return state.field && (state.field.places || []).filter(function (p) { return p.id === id; })[0]; }
+    function renderFieldForm(slug, id) {
+      var F = FIELD[slug];
+      var go = function () {
+        var p = placeOf(id);
+        if (!p) { state.place = ''; setUrl(false); return renderField(slug); }
+        setView('field'); state.placeName = p.name; setView('field');
+        var set = state.field.set, v = state.viewer, vol = F.kind === 'volunteer';
+        var hours = []; for (var h = 0.5; h <= 12; h += 0.5) hours.push(h);
+        var gate = !v.passport ? '<div class="note info">Bounties are for Passport holders. <a href="/passport" target="_top" style="color:inherit;font-weight:800">Get your Passport</a></div>' : '';
+        $('field').innerHTML = '<div class="jlayout" style="margin-top:16px"><div class="jmain"><span class="tag t-live">' + esc(F.title) + '</span><h2 class="fh">' + esc(p.name) + '</h2>' +
+          '<p class="meta">' + esc([p.category, p.city].filter(Boolean).join(' · ')) + ' &middot; <a href="/directory/' + esc(p.slug) + '" target="_top">See it in the Directory</a></p>' +
+          (!vol && (p.reasons || []).length ? '<div class="note info"><strong>Why we are asking:</strong> ' + esc(p.reasons.join('; ')) + '.</div>' : '') + gate +
+          '<div class="box"><h3>' + (vol ? 'Send your hours' : 'What did you find?') + '</h3>' +
+          (vol ? '<label class="f" for="ff-hours">Hours you gave today<select id="ff-hours" class="select" style="max-width:220px">' + hours.map(function (x) { return '<option value="' + x + '"' + (x === 2 ? ' selected' : '') + '>' + (x === 0.5 ? 'Half an hour' : x + (x === 1 ? ' hour' : ' hours')) + '</option>'; }).join('') + '</select></label>' +
+            '<label class="f" for="ff-note">What you did <span class="hint">Who you helped, what you did. Optional.</span><textarea id="ff-note" rows="3" style="min-height:80px" maxlength="1000"></textarea></label>'
+          : '<div class="ff-ans" role="radiogroup" aria-label="Open or closed"><label><input type="radio" name="ff-ans" value="open"> Open</label><label><input type="radio" name="ff-ans" value="closed"> Closed</label></div>' +
+            '<label class="f" for="ff-note">Anything we should know <span class="hint">A sign on the door, new name, new hours. Optional.</span><textarea id="ff-note" rows="3" style="min-height:80px" maxlength="1000"></textarea></label>') +
+          '<label class="f" for="ff-photo">' + (vol ? 'A photo <span class="hint">Optional, ' + set.volunteer_photo_bonus + ' more points. Only people who said yes.</span>' : 'A photo of the front <span class="hint">Required: the door, the sign, the window.</span>') + '<input id="ff-photo" type="file" accept="image/*" capture="environment"></label>' +
+          '<div style="margin-top:14px"><button type="button" class="btn btn-primary" id="ff-send"' + (v.passport ? '' : ' disabled') + '>' + (vol ? 'I am here: send my hours' : 'I am here: send what I found') + '</button></div>' +
+          '<p class="fine">Your phone shares its location once, when you send, to show you are at the place. Up to ' + set.daily_reports + ' field reports a day. Nothing pays until the team accepts it.</p>' +
+          '<p class="msg" id="ff-msg" role="status" aria-live="polite"></p></div></div>' +
+          '<aside class="jside"><div class="box" style="margin-top:18px"><h3>At a glance</h3><dl class="facts">' +
+          (vol ? '<div><dt>Pays</dt><dd>' + set.volunteer_per_hour + ' points an hour, up to ' + set.volunteer_max_hours + ' hours</dd></div><div><dt>Photo</dt><dd>' + set.volunteer_photo_bonus + ' more points</dd></div>'
+               : '<div><dt>Pays</dt><dd>' + set.still_open_first + ' points to the first accepted answer, ' + set.still_open_after + ' after</dd></div><div><dt>Photo</dt><dd>Required</dd></div>') +
+          '<div><dt>Where</dt><dd>' + esc(p.city || '') + '</dd></div></dl></div></aside></div>';
+        $('ff-send').addEventListener('click', function () { sendField(F, p); });
+      };
+      if (state.field && state.field.slug === slug) go(); else renderField(slug).then(go);
+    }
+    // A photo is shrunk in the browser to 1600 px (which also drops its location data) before it goes up.
+    function shrink(file) {
+      return new Promise(function (resolve, reject) {
+        var img = new Image(), url = URL.createObjectURL(file);
+        img.onload = function () {
+          var k = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+          c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+          c.toBlob(function (b) { b ? resolve(b) : reject(new Error('That photo could not be read.')); }, 'image/jpeg', 0.85);
+        };
+        img.onerror = function () { reject(new Error('That photo could not be read. Try another.')); };
+        img.src = url;
+      });
+    }
+    function where() {
+      return new Promise(function (resolve, reject) {
+        if (!navigator.geolocation) return reject(new Error('This browser cannot share your location. Try your phone.'));
+        navigator.geolocation.getCurrentPosition(function (p) { resolve(p.coords); }, function () { reject(new Error('We need your location once, to show you are there. Allow it and try again.')); }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+      });
+    }
+    function sendField(F, p) {
+      var msg = $('ff-msg'), btn = $('ff-send'), file = $('ff-photo').files[0], vol = F.kind === 'volunteer';
+      var ans = document.querySelector('input[name="ff-ans"]:checked');
+      var fail = function (t) { msg.className = 'msg'; msg.textContent = t; btn.disabled = false; };
+      if (!vol && !ans) return fail('Pick Open or Closed.');
+      if (!vol && !file) return fail('Add a photo of the front.');
+      btn.disabled = true; msg.className = 'msg ok'; msg.textContent = 'Finding where you are...';
+      var coords;
+      where().then(function (c) {
+        coords = c;
+        if (!file) return '';
+        msg.textContent = 'Sending your photo...';
+        return shrink(file).then(function (blob) {
+          return call({ action: 'field_photo_start' }).then(function (d) {
+            if (!d.url) throw new Error(d.message || 'The photo could not start uploading.');
+            return fetch(d.url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg', 'x-upsert': 'false' }, body: blob }).then(function (r) { if (!r.ok) throw new Error('The photo did not upload. Try again.'); return d.path; });
+          });
+        });
+      }).then(function (path) {
+        msg.textContent = 'Sending...';
+        return call({ action: 'field_report', kind: F.kind, listing_id: p.id, lat: coords.latitude, lng: coords.longitude, accuracy: coords.accuracy,
+          hours: vol ? Number($('ff-hours').value) : undefined, answer: ans ? ans.value : undefined, note: $('ff-note').value, path: path || undefined });
+      }).then(function (d) {
+        if (d.error) return fail(d.message || 'That did not go through.');
+        msg.className = 'msg ok'; msg.textContent = 'Sent. Thank you. The team checks it, and the points land when it is accepted.';
+        state.field = null;
+      }).catch(function (e) { fail(e.message || 'That did not go through.'); });
     }
     // Plain words for where a job stands, for you.
     function jobStatus(b) {
@@ -523,7 +759,7 @@
     function jobRow(b) {
       var st = jobStatus(b);
       return '<a class="jrow" href="' + esc(href(state.cslug, b.id)) + '" data-id="' + b.id + '"><span class="jname"><b>' + esc(short(b.title)) + '</b><small>' + esc(b.deliverable) + '</small>' +
-        '<small>' + ((b.parts || []).length ? 'Bundle: ' + b.parts.length + ' parts, all needed to earn the points' : 'Pays on its own') + '</small><span class="clock" data-clock="' + b.id + '"></span></span>' +
+        '<small>' + ((b.parts || []).length ? 'Bundle: ' + b.parts.length + ' parts, all needed to earn the points' : 'Pays on its own') + (b.min_level > 1 ? ' &middot; Level ' + b.min_level + ' and up' : '') + '</small><span class="clock" data-clock="' + b.id + '"></span></span>' +
         '<span data-l="Points">' + pay(b) + '</span>' +
         '<span data-l="Spots">' + (b.slots == null ? 'No limit' : b.spots_left + ' of ' + b.slots + ' left') + '</span>' +
         '<span data-l="Status"><span class="tag ' + st[1] + '">' + esc(st[0]) + '</span></span>' +
@@ -544,20 +780,28 @@
       $('c-jobs-h').textContent = jobs.length === 1 ? 'The job' : 'The jobs (' + jobs.length + ')';
       $('c-jobs').innerHTML = jobs.length ? '<div class="jrows"><div class="jrow jhead" aria-hidden="true"><span>Job</span><span>Points</span><span>Spots</span><span>Status</span><span></span></div>' + jobs.map(jobRow).join('') + '</div>' : '<p class="meta">No jobs open right now.</p>';
     }
-    function openCampaign(slug) { state.cslug = slug; state.jobId = ''; setUrl(true); route(); toTop(); }
+    function openCampaign(slug) { state.cslug = slug; state.jobId = ''; state.place = ''; setUrl(true); route(); toTop(); }
     function openJob(id) { state.jobId = id; setUrl(true); open(id).then(toTop); }
     // Leaving a job reloads the list, so a claim or a submission shows on the way back.
-    function backTo(which) { var was = state.view; state.jobId = ''; if (which === 'list') state.cslug = ''; setUrl(true); toTop(); if (was === 'job') load(); else route(); }
+    function backTo(which) { var was = state.view; state.jobId = ''; state.place = ''; if (which === 'list') state.cslug = ''; setUrl(true); toTop(); if (was === 'job' || was === 'field') load(); else route(); }
     var plain = function (e) { return !(e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1); };
     $('list').addEventListener('click', function (e) {
       var f = e.target.closest('[data-cf]'); if (f) { state.cfilter = f.getAttribute('data-cf'); renderList(); tick(); return; }
-      var c = e.target.closest('.ccard'); if (c && plain(e)) { e.preventDefault(); openCampaign(c.getAttribute('data-slug')); }
+      var c = e.target.closest('.ccard'); if (c && plain(e)) { e.preventDefault(); openCampaign(c.getAttribute('data-slug')); return; }
+      var a = e.target.closest('.bb-row[data-key]'); if (!a || !plain(e)) return;
+      var r = state.rows.filter(function (x) { return x.key === a.getAttribute('data-key'); })[0]; if (!r || r.ext) return;
+      e.preventDefault();
+      if (r.job) { state.cslug = r.cslug; openJob(r.job); } else openCampaign(r.slug);
+    });
+    $('field').addEventListener('click', function (e) {
+      var a = e.target.closest('[data-place]'); if (!a || !plain(e)) return;
+      e.preventDefault(); state.place = a.getAttribute('data-place'); setUrl(true); route(); toTop();
     });
     $('c-jobs').addEventListener('click', function (e) { var row = e.target.closest('[data-id]'); if (row && plain(e)) { e.preventDefault(); openJob(row.getAttribute('data-id')); } });
     $('crumbs').addEventListener('click', function (e) { var a = e.target.closest('[data-nav]'); if (a && plain(e)) { e.preventDefault(); backTo(a.getAttribute('data-nav')); } });
     window.addEventListener('popstate', function () {
       var p = new URLSearchParams(location.search), was = state.view;
-      state.cslug = p.get('campaign') || ''; state.jobId = p.get('id') || '';
+      state.cslug = p.get('campaign') || ''; state.jobId = p.get('id') || ''; state.place = p.get('place') || '';
       tellParent();
       if (was === 'job' && !state.jobId) load(); else route();
     });
@@ -588,6 +832,7 @@
       if (b.claims_close_at) facts.push(['Claims close', esc(when(b.claims_close_at))]);
       facts.push(['Due', esc(when(b.due_at))]);
       if (b.slots != null && !mine) facts.push(['Spots', spotsHtml(b)]);
+      if (b.min_level > 1) facts.push(['Who can claim', 'Level ' + b.min_level + ' and up']);
       if (b.example_url) facts.push(['Example', '<a href="' + esc(b.example_url) + '" target="_blank" rel="noopener noreferrer">See an example</a>']);
       // The campaign's banner sits above At a glance on every job, so each job carries its event (Sean, 2026-10-04).
       var cc = campOf(state.cslug), art = $('d-art');
@@ -647,6 +892,8 @@
       else if (b.held && !b.held_for_you) body = '<p>This one is held for the city&rsquo;s Community Manager first. If they pass, it opens to everyone.</p>';
       else if (!v.signed_in) body = '<p>Sign in to claim a spot.</p><div class="claimrow"><button type="button" class="btn btn-primary" data-act="signin">Sign in or join</button></div>' + fine;
       else if (!v.passport) body = '<p>Bounties are for Passport holders.</p><div class="claimrow"><a class="btn btn-primary" href="/passport">Get your Passport</a></div>';
+      // A paid job asks for a level (Sean, 2026-10-29).
+      else if (b.min_level > 1 && (v.level || 1) < b.min_level) body = '<p>This job is for <strong>Level ' + b.min_level + '</strong> and up. You are Level ' + (v.level || 1) + '. Points from bounties, check-ins and the Daily Pulse move you up.</p><div class="claimrow"><a class="btn btn-ghost" href="/dashboard/levels" target="_top">See your level</a></div>';
       else if (v.standing && v.standing.ok === false) body = '<p>' + (v.standing.paused ? 'Your bounties are paused after missed deadlines.' : 'You can claim again after ' + esc(day(v.standing.until)) + '.') + '</p>';
       else body = '<div class="claimrow"><button type="button" class="btn btn-primary" data-act="claim">Claim a spot</button>' + spotsHtml(b) + '</div>' + fine;
       el.innerHTML = '<h3>Take this on</h3>' + body + '<p class="msg" id="claim-msg" role="status" aria-live="polite"></p>';

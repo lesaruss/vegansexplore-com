@@ -176,6 +176,7 @@
       function loadAll() {
         var ps = [api({ action: 'campaign_admin_list' }).then(function (d) { state.camps = d.campaigns ? d : { campaigns: [], cities: [], admin: false, families: [] }; })];
         if (state.reviewer) ps.push(api({ action: 'review_list', status: 'submitted' }).then(function (d) { state.review = d.submissions ? d : null; }));
+        if (state.reviewer) ps.push(api({ action: 'field_review_list', status: 'pending' }).then(function (d) { state.fieldWaiting = (d.reports || []).length; }).catch(function () {}));
         return Promise.all(ps);
       }
       function camp(id) { return (state.camps.campaigns || []).filter(function (c) { return c.id === id; })[0] || null; }
@@ -217,6 +218,7 @@
         }
         if (p[0] === 'review' && state.reviewer) return viewReview(p[1] || '');
         if (p[0] === 'strikes' && state.reviewer) return viewStrikes();
+        if (p[0] === 'field' && state.reviewer) return viewField(p[1] || 'pending');
         return viewHome();
       }
       window.addEventListener('hashchange', route);
@@ -224,7 +226,7 @@
       function reloadTo(h) { return loadAll().then(function () { go(h); }); }
       // After a save, show the result for a moment, then reload; never pull someone back from a view they moved on to.
       function soon(h, ms) { var at = location.hash; setTimeout(function () { if (location.hash === at) reloadTo(h); else loadAll(); }, ms); }
-      function show(html) { $('view').innerHTML = html; }
+      function show(html) { $('view').onclick = null; $('view').innerHTML = html; }
       function say(el, r, okText) {
         if (r && r.error) { el.className = 'msg err'; el.textContent = r.message || 'That did not go through.'; return false; }
         el.className = 'msg'; el.textContent = okText; return true;
@@ -245,7 +247,7 @@
         show(crumbs([['Campaigns']]) +
           '<p class="sub">Members see live campaigns at <a href="/bounties" target="_blank" rel="noopener">vegansexplore.com/bounties</a>. Any leadership member proposes a campaign; the city\'s Community Manager decides.</p>' +
           '<div class="bar"><div class="filters" id="cfilter" role="group" aria-label="Show">' + chips + '</div><a class="btn" href="#new">New campaign</a></div>' +
-          (state.reviewer ? '<p class="meta quick"><a href="#review">Work to review (' + waiting + ')</a> &middot; <a href="#strikes">Open strikes (' + strikes + ')</a></p>' : '') +
+          (state.reviewer ? '<p class="meta quick"><a href="#review">Work to review (' + waiting + ')</a> &middot; <a href="#field">Field reports (' + (state.fieldWaiting || 0) + ')</a> &middot; <a href="#strikes">Open strikes (' + strikes + ')</a></p>' : '') +
           (list.length ? '<div class="cgrid">' + list.map(campCard).join('') + '</div>' : '<p class="empty">No campaigns here. <a href="#new">Start a new one.</a></p>'));
         $('cfilter').addEventListener('click', function (e) { var b = e.target.closest('[data-filter]'); if (!b) return; state.filter = b.getAttribute('data-filter'); viewHome(); });
       }
@@ -328,7 +330,7 @@
           return '<div class="jrow"><span class="jname"><b>' + esc(short(j.title)) + '</b>' +
             ((j.parts || []).length ? '<small>Bundle: ' + j.parts.length + ' parts, all needed to earn the points</small>' : '<small>Pays on its own</small>') +
             (holders.length ? '<small>Claimed by ' + holders.map(function (h) { return esc(h.name) + ' (' + esc((LABEL[h.status] || h.status).toLowerCase()) + ')'; }).join(', ') + '</small>' : '') + '</span>' +
-            '<span data-l="Points">' + (j.points || 0).toLocaleString() + '</span>' +
+            '<span data-l="Points">' + (j.cash_cents ? '$' + (j.cash_cents / 100).toLocaleString('en-US') + ' + ' : '') + (j.points || 0).toLocaleString() + (j.min_level > 1 ? '<small>Level ' + j.min_level + ' and up</small>' : '') + '</span>' +
             '<span data-l="Spots">' + (j.taken || 0) + (j.slots != null ? ' of ' + j.slots : ' (no limit)') + '</span>' +
             '<span data-l="Status">' + tag(j.status, 'job') + '</span>' +
             '<span class="jact">' + (ed ? '<a class="btn btn-ghost btn-sm" href="#campaign/' + c.id + '/job/' + j.id + '">Edit</a>' : '') + '</span></div>';
@@ -345,6 +347,9 @@
           '<label class="wide">Name<input id="j-title" maxlength="120" value="' + esc(short(j.title)) + '" required></label>' +
           '<label>Points<input id="j-points" type="number" min="1" max="10000" value="' + j.points + '"></label>' +
           '<label>Spots<input id="j-slots" type="number" min="1" max="500" value="' + (j.slots || '') + '"><span class="hint">Leave empty for no limit.</span></label>' +
+          // A paid job (Sean, 2026-10-29: "attend an event on our behalf... a paid stipend, but you might have to be level 2").
+          '<label>Stipend ($)<input id="j-cash" type="number" min="0" max="5000" step="1" value="' + (j.cash_cents ? j.cash_cents / 100 : '') + '"><span class="hint">Paid by Sean after approval, on top of the points. Leave empty for points only.</span></label>' +
+          '<label>Who can claim<select id="j-level">' + [[1, 'Any member'], [2, 'Level 2 and up'], [3, 'Level 3 and up'], [4, 'Level 4']].map(function (x) { return '<option value="' + x[0] + '"' + ((j.min_level || 1) === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select></label>' +
           '<label class="wide">What to deliver<input id="j-deliverable" maxlength="400" value="' + esc(j.deliverable) + '"></label>' +
           '<label class="wide">Brief<textarea id="j-brief" maxlength="4000">' + esc(j.brief) + '</textarea></label>' +
           '<label class="wide">Parts, one per line<textarea id="j-parts">' + esc((j.parts || []).join('\n')) + '</textarea><span class="hint">With parts, this job is a bundle: every part is needed to earn the points. Leave empty for a job that pays on its own.</span></label>' +
@@ -353,7 +358,7 @@
           '<section class="panel danger"><h2>Remove this job</h2><p class="meta">It comes off the campaign. A job someone holds a spot on stays.</p><div class="acts"><button type="button" class="btn btn-no" id="j-remove">Remove job</button></div><p class="msg" id="jmsg2" role="status"></p></section>');
         $('jf').addEventListener('submit', function (e) {
           e.preventDefault();
-          api({ action: 'job_update', id: j.id, title: c.title + ': ' + $('j-title').value.trim(), points: $('j-points').value, slots: $('j-slots').value, deliverable: $('j-deliverable').value, brief: $('j-brief').value,
+          api({ action: 'job_update', id: j.id, title: c.title + ': ' + $('j-title').value.trim(), points: $('j-points').value, slots: $('j-slots').value, cash: $('j-cash').value, min_level: $('j-level').value, deliverable: $('j-deliverable').value, brief: $('j-brief').value,
             parts: $('j-parts').value.split('\n').map(function (x) { return x.trim(); }).filter(Boolean) }).then(function (r) { if (say($('jmsg'), r, 'Saved.')) soon('campaign/' + c.id, 500); });
         });
         $('j-remove').addEventListener('click', function () {
@@ -533,6 +538,52 @@
           var card = e.target.closest('[data-strike]'); e.target.disabled = true;
           api({ action: 'strike_clear', id: id, note: card.querySelector('input').value.trim() }).then(function (r) { if (r.error) { e.target.disabled = false; alert(r.message || 'That did not go through.'); return; } reloadTo('strikes'); });
         });
+      }
+
+      // ---- Field reports: the evergreen bounties (Sean, 2026-10-29; migration 20261029_bounties_board.sql) ---------------------
+      // Volunteer hours at a nonprofit, rescue or sanctuary, and "is it still open?" answers, each sent from the place (the phone's
+      // location is checked). Accept pays (ve_field_report_review); the first accepted still-open answer pays the most, and an
+      // accepted Closed holds the listing in Directory review. #field/<pending|accepted|declined>.
+      var FKIND = { volunteer: 'Volunteer hours', still_open: 'Is it still open?' };
+      function viewField(status) {
+        var chips = [['pending', 'To review'], ['accepted', 'Accepted'], ['declined', 'Declined']].map(function (x) {
+          return '<a class="btn ' + (x[0] === status ? '' : 'btn-ghost') + '" href="#field/' + x[0] + '">' + x[1] + ' <span data-fc="' + x[0] + '"></span></a>';
+        }).join(' ');
+        show(crumbs([['Campaigns', ''], ['Field reports']]) +
+          '<p class="sub">Evergreen bounties members send from the place. Nothing pays until you accept it. For a still-open answer, the first one accepted earns the most; an accepted Closed puts the listing on hold in Directory review.</p>' +
+          '<div class="acts" style="margin:0 0 14px">' + chips + '</div><div id="fr"><p class="empty">Loading...</p></div>');
+        api({ action: 'field_review_list', status: status }).then(function (d) {
+          if (d.error) { $('fr').innerHTML = '<p class="empty">' + esc(d.message || 'This is for reviewers.') + '</p>'; return; }
+          Array.prototype.forEach.call(document.querySelectorAll('[data-fc]'), function (el) { var n = (d.counts || {})[el.getAttribute('data-fc')]; el.textContent = n ? '(' + n + ')' : ''; });
+          var set = d.settings || {};
+          $('fr').innerHTML = (d.reports || []).length ? d.reports.map(function (r) {
+            var l = r.listing || {}, vol = r.kind === 'volunteer';
+            var what = vol ? r.hours + (Number(r.hours) === 1 ? ' hour' : ' hours') : (r.answer === 'closed' ? 'Says it is CLOSED' : 'Says it is open');
+            var pays = vol ? 'Pays ' + set.volunteer_per_hour + ' an hour' + (r.photo ? ' + ' + set.volunteer_photo_bonus + ' for the photo' : '') : 'Pays ' + set.still_open_first + ' if it is the first accepted answer, else ' + set.still_open_after;
+            return '<section class="panel" data-id="' + r.id + '"><h2>' + esc(FKIND[r.kind] || r.kind) + '</h2>' +
+              '<p><b>' + esc(l.name || 'A place') + '</b> &middot; ' + esc([l.category, l.city].filter(Boolean).join(' · ')) + (l.slug ? ' &middot; <a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">Listing</a>' : '') + '</p>' +
+              '<p class="meta">' + esc((r.member && r.member.name) || 'Member') + (r.member && r.member.email ? ' (' + esc(r.member.email) + ')' : '') + ' &middot; ' + esc(day(r.at, r.hub)) + ' &middot; ' + (r.distance_m != null ? r.distance_m + ' m from the pin' + (r.accuracy_m ? ', phone sure to ' + r.accuracy_m + ' m' : '') : '') + '</p>' +
+              '<p style="font-size:16px;font-weight:800;margin-top:8px">' + esc(what) + '</p>' + (r.note ? '<p class="story">' + esc(r.note) + '</p>' : '') +
+              (r.photo ? '<p><a href="' + esc(r.photo) + '" target="_blank" rel="noopener"><img src="' + esc(r.photo) + '" alt="Their photo" style="max-width:min(420px,100%);border-radius:8px;margin-top:8px"></a></p>' : '<p class="meta">No photo.</p>') +
+              (status === 'pending' ? '<p class="meta">' + esc(pays) + '.</p><form class="cform" style="margin-top:10px">' +
+                (vol ? '<label>Hours to pay<input type="number" data-f="hours" min="0.5" max="' + r.hours + '" step="0.5" value="' + r.hours + '"><span class="hint">Fewer than they sent needs a note.</span></label>' : '') +
+                '<label class="wide">Note to them<textarea data-f="note" style="min-height:70px" maxlength="1000"></textarea></label>' +
+                '<div class="wide acts" style="margin-top:0"><button type="button" class="btn" data-d="accept">Accept and pay</button><button type="button" class="btn btn-no" data-d="decline">Decline</button></div>' +
+                '<p class="msg wide" role="status"></p></form>'
+              : '<p class="meta">' + (r.status === 'accepted' ? 'Paid ' + r.points + ' points' + (r.first ? ' (first answer)' : '') : 'Declined') + (r.review_note ? ': ' + esc(r.review_note) : '') + '</p>') + '</section>';
+          }).join('') : '<p class="empty">Nothing here.</p>';
+        });
+        $('view').onclick = function (e) {
+          var b = e.target.closest('[data-d]'); if (!b) return;
+          var card = b.closest('[data-id]'), msg = card.querySelector('.msg');
+          var f = function (k) { var el = card.querySelector('[data-f="' + k + '"]'); return el ? el.value.trim() : ''; };
+          Array.prototype.forEach.call(card.querySelectorAll('button'), function (x) { x.disabled = true; });
+          api({ action: 'field_review', id: card.getAttribute('data-id'), decision: b.getAttribute('data-d'), note: f('note'), hours: f('hours') }).then(function (r) {
+            if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(card.querySelectorAll('button'), function (x) { x.disabled = false; }); return; }
+            msg.className = 'msg'; msg.textContent = b.getAttribute('data-d') === 'accept' ? 'Accepted. ' + r.points + ' points paid' + (r.first ? ' (first answer)' : '') + '.' : 'Declined.';
+            setTimeout(function () { loadAll().then(function () { viewField(status); }); }, 900);
+          });
+        };
       }
 
       function start() {
