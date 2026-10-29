@@ -988,6 +988,19 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
 - **First**: Torre Washington; Gabriela Reyes once the platform comes first (confirm her name and handle); then Philly's creators ahead
   of a dinner. **Build**: the Creator Guide from Sean's Canva Vegan Content Creator Survival Guide (`DAGx86FyHyw`), profile claim and
   the checklist, the Opportunities board, Stripe Connect and campaign production, the shop, the lead finder by city.
+- **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
+  `guide-scripts/creator-guide.js`, the Nonprofit Guide's shell, River narrating in text (no clips), indexed, seventh in the
+  Guide catalog (label Creators, banner `public/guides/creator-guide.jpg`), in the sitemap. Tabs: Overview, **The 10 tips** (`#/tips/<id>`:
+  the Canva's principle, In Action and three action items word for word, the action items as This week, kept in the browser
+  `cg_checks`; On Vegans Explore; an episode; tip 1, purpose, free), **People doing it** (People > Content Creators and the Directory's
+  YouTube channels, the Directory's card, a listing framed in the Guide), **Pulse** (`PULSE_PICKS`: our episodes with creators, Building a
+  platform and The craft, each matched to its show's feed and played in place), **Your next step** (become an Ambassador: invitation only,
+  one program by results, points, perk and paid jobs, the paid-work checklist (Live, `/ambassadors/door`) and services one at a time, each marked Live or Coming, no
+  prices; Tell us about you mails contact@lesaruss.com; Already an Ambassador opens `/ambassadors/welcome`), My list (`ve-cookbook` kinds
+  fix, episode, listing) and Get access. Tips 2 to 10 are `ve_guides.content_html` (`<script id="cg-data">`), never in the repo. $11 or
+  1,100 points; **an active Ambassador has it included** (`ve-guide-unlock` and `ve-cookbook`: `members.ve_role` `ambassador` and active,
+  `via` `ambassador`, no purchase row). From the Canva: tip 3's example is Pick Up Limes (Gaz Oakley is no longer Vegan), and its closing
+  survey and one-week free trial are left out.
 
 **The Ambassador door, built 2026-10-29** (Sean: "Build the ambassador door"; migration `20261029_ambassador_door.sql`, edge function
 `ve-ambassador`, verify_jwt off, the member token checked inside, ops by the admin token with `as_member`). `/ambassadors/door`

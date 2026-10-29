@@ -35,13 +35,13 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-survival-guide': 'The Vegan Restaurant Survival Guide',
-  'nonprofit-guide': 'The Nonprofit Guide' };
+  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
 // The Restaurant Guide adds its fixes and promotions (migration 20261010_ve_audit_orders.sql). The Nonprofit Guide (2026-10-29) saves
-// its tips as kind fix, its episodes and Directory listings.
+// its tips as kind fix, its episodes and Directory listings, and so does the Creator Guide (2026-10-29).
 const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode', 'fix', 'promo'], SAVE_CAP = 500;
 const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo'];
 
@@ -73,14 +73,14 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
-type Viewer = { id: string; name: string | null; email: string | null; active: boolean; admin: boolean } | null;
+type Viewer = { id: string; name: string | null; email: string | null; active: boolean; admin: boolean; ambassador: boolean } | null;
 async function loadViewer(req: Request): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const id = token ? await verifyToken(token) : null;
   if (!id) return null;
-  const { data: m } = await db.from('members').select('id, name, email, membership_status, is_superadmin').eq('id', id).maybeSingle();
+  const { data: m } = await db.from('members').select('id, name, email, membership_status, is_superadmin, ve_role').eq('id', id).maybeSingle();
   if (!m) return null;
-  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active', admin: !!m.is_superadmin };
+  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active', admin: !!m.is_superadmin, ambassador: m.ve_role === 'ambassador' };
 }
 
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\u0000/g, '').replace(/\s*—\s*/g, ', ').trim().slice(0, max) : '');
@@ -150,6 +150,8 @@ Deno.serve(async (req) => {
   let owns = false;
   if (viewer && guide) {
     if (viewer.admin) owns = true;
+    // The Creator Guide comes with being an active Ambassador, as in ve-guide-unlock (canon-ve-ambassadors-talent-shop).
+    else if (guide === 'creator-guide' && viewer.ambassador && viewer.active) owns = true;
     else { const { data } = await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: guide }); owns = !!data; }
   }
   const isMember = () => !!viewer && (guide ? owns : viewer.active);
