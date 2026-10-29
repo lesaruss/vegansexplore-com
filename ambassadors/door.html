@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Paid work: your checklist — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Ambassador door (Sean, 2026-10-29: "Build the ambassador door"; canon canon-ve-ambassadors-talent-shop). Paid work
+       needs activation, a checklist that keeps itself up to date: 1. Your profile (their People listing, claimed and approved,
+       with a photo, what they do and a bio), 2. Your platforms, 3. Your rates (the team only), 4. Get paid (Stripe Connect
+       Express, on Stripe's own pages). One step per view (?step=profile|platforms|rates|paid), the checklist first, Back /
+       Step N of M / Next. Everything goes through the edge function ve-ambassador; the photo through ve-claims
+       owner_photo_url / owner_photo_done, like any owner's logo. Not active yet until all four; Active when done. */
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.62);--line:rgba(0,0,0,0.12);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
+    .ad-top{background:linear-gradient(120deg,rgba(10,18,12,0.94) 0%,rgba(16,40,22,0.84) 55%,rgba(31,95,34,0.6) 100%),url('/communities/new-york/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:26px 40px 0;}
+    .ad-k{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .ad-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;margin:4px 0 6px;text-transform:uppercase;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .ad-sub{font-size:14px;line-height:1.55;color:#e6f4e7;margin:0 0 14px;max-width:860px;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:5px 10px;border-radius:6px;vertical-align:middle;}
+    .tag.on{background:#d9f7dc;color:#14501a;}
+    .tag.off{background:#fff1d6;color:#7a4b00;}
+    .tag.wait{background:#e8eefc;color:#1e3a8a;}
+    .ad-steps{display:flex;gap:2px;overflow-x:auto;}
+    .ad-steps a{display:flex;align-items:center;gap:8px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .ad-steps a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .ad-steps a[aria-current="page"]{background:#fff;color:var(--g);}
+    .ad-steps .dot{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;display:inline-flex;align-items:center;justify-content:center;font-size:10px;line-height:1;}
+    .ad-steps .dot.done{background:#7ee08a;border-color:#7ee08a;color:#0d3312;}
+    .ad-steps a[aria-current="page"] .dot.done{background:var(--g);border-color:var(--g);color:#fff;}
+    main{padding:28px 40px 60px;min-height:52vh;}
+    .h1{font-size:clamp(20px,2vw,26px);font-weight:900;margin:0 0 6px;}
+    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:16px;}
+    .card{border:1px solid var(--line);border-radius:10px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:8px;}
+    .card h3{margin:0;font-size:16px;font-weight:900;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+    .card p{margin:0;font-size:14px;line-height:1.55;color:var(--ink75);}
+    .card .act{margin-top:auto;padding-top:6px;}
+    .btn{font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:11px 16px;border-radius:6px;border:1.5px solid var(--g);background:var(--g);color:#fff;cursor:pointer;text-decoration:none;display:inline-block;}
+    .btn.ghost{background:#fff;color:var(--g);}
+    .btn.plain{border-color:var(--line);background:#fff;color:var(--ink);}
+    .btn[disabled]{opacity:0.5;cursor:default;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .form{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px 18px;max-width:1200px;}
+    .form .wide{grid-column:1/-1;}
+    label.f{display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:800;letter-spacing:0.04em;color:var(--ink);}
+    label.f small{font-weight:600;color:var(--ink55);letter-spacing:0;font-size:12px;}
+    input[type=text],input[type=number],input[type=url],textarea,select{font-family:inherit;font-size:14px;padding:11px 12px;border:1.5px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);width:100%;}
+    textarea{min-height:120px;resize:vertical;line-height:1.5;}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;}
+    input:focus,textarea:focus,select:focus{outline:2px solid var(--g2);outline-offset:1px;}
+    .note{background:var(--gl);border:1px solid var(--gm);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;max-width:860px;margin:0 0 16px;}
+    .note.warm{background:var(--warm);border-color:var(--warmline);color:#5a3b00;}
+    .msg{font-size:13px;font-weight:700;min-height:18px;margin-top:8px;}
+    .msg.err{color:#b42318;}
+    .msg.ok{color:var(--g);}
+    .pick{display:flex;flex-wrap:wrap;gap:8px;}
+    .pick label{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;font-size:13px;font-weight:700;cursor:pointer;}
+    .pick input{accent-color:var(--g);}
+    .pick label:has(input:checked){border-color:var(--g);background:var(--gl);}
+    .res{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+    .res .pic{width:48px;height:48px;border-radius:8px;background:#eef3ee center/cover no-repeat;flex:0 0 48px;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--g);}
+    .res .who{flex:1;min-width:0;font-size:14px;}
+    .res .who b{display:block;}
+    .res .who span{color:var(--ink55);font-size:13px;}
+    .photo{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+    .photo .pic{width:120px;height:120px;border-radius:12px;background:#eef3ee center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;color:var(--g);}
+    .plat{display:grid;grid-template-columns:140px minmax(0,1fr) 180px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);max-width:1000px;}
+    .plat b{font-size:14px;}
+    .plat .v{font-size:12px;color:var(--g);font-weight:700;}
+    .pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:28px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;font-weight:800;color:var(--ink55);}
+    .gate{max-width:640px;}
+    @media (max-width:760px){
+      .ad-top{padding:20px 16px 0;}
+      main{padding:22px 16px 48px;}
+      .plat{grid-template-columns:1fr;gap:6px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <header class="ad-top">
+    <div class="ad-k">Ambassadors · Paid work</div>
+    <div class="ad-title"><span>Your checklist</span> <span id="adStatus"></span></div>
+    <p class="ad-sub" id="adSub">Four steps to be active for paid work: campaigns, events and press that pay. Do them in any order.</p>
+    <nav class="ad-steps" id="adSteps" aria-label="Steps"></nav>
+  </header>
+
+  <main id="adMain"><p class="lede">Loading your checklist...</p></main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script>
+  (function () {
+    var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/';
+    var STEPS = [
+      { key: 'profile', name: 'Your profile' },
+      { key: 'platforms', name: 'Your platforms' },
+      { key: 'rates', name: 'Your rates' },
+      { key: 'paid', name: 'Get paid' }
+    ];
+    var KIND_NAMES = { instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', facebook: 'Facebook', podcast: 'Podcast' };
+    var RATE_NAMES = { post: 'A feed post', reel: 'A reel or short video', story: 'A story set', appearance: 'An appearance (up to 2 hours)', hosting: 'Hosting an event', social_day: 'A day of social work' };
+    var SKILL_NAMES = { recipes: 'Recipes and cooking', fitness: 'Fitness', hosting: 'Hosting', speaking: 'Speaking', ugc: 'Videos for brands (UGC)', photo: 'Photography', video_edit: 'Video editing', design: 'Design', social: 'Running social accounts', writing: 'Writing', outreach: 'Outreach' };
+    var D = null;
+    var main = document.getElementById('adMain');
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function token() { return window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : null; }
+    function call(fn, body) {
+      return fetch(API + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+    }
+    function amb(body) { return call('ve-ambassador', body); }
+    function stepNow() { var s = new URLSearchParams(location.search).get('step'); return STEPS.some(function (x) { return x.key === s; }) ? s : ''; }
+    function go(step, replace) {
+      var u = new URL(location.href);
+      if (step) u.searchParams.set('step', step); else u.searchParams.delete('step');
+      u.searchParams.delete('stripe');
+      history[replace ? 'replaceState' : 'pushState'](null, '', u.pathname + u.search);
+      draw(); window.scrollTo(0, 0);
+    }
+    function fmt(n) { n = Number(n) || 0; return n >= 1e6 ? (n / 1e6).toFixed(n >= 1e7 ? 0 : 1).replace(/\.0$/, '') + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : n.toLocaleString(); }
+    function msg(el, text, ok) { el.textContent = text || ''; el.className = 'msg ' + (ok ? 'ok' : 'err'); }
+
+    function head() {
+      var st = document.getElementById('adStatus');
+      st.innerHTML = D.active ? '<span class="tag on">Active</span>' : '<span class="tag off">Not active yet</span>';
+      var done = STEPS.filter(function (s) { return D.steps[s.key]; }).length;
+      document.getElementById('adSub').textContent = D.active
+        ? 'You are active for paid work. Keep your rates and numbers current so the right work finds you.'
+        : done + ' of 4 done. Four steps to be active for paid work: campaigns, events and press that pay. Do them in any order.';
+      var cur = stepNow();
+      document.getElementById('adSteps').innerHTML =
+        '<a href="?"' + (!cur ? ' aria-current="page"' : '') + ' data-go="">Checklist</a>' +
+        STEPS.map(function (s, i) {
+          return '<a href="?step=' + s.key + '"' + (cur === s.key ? ' aria-current="page"' : '') + ' data-go="' + s.key + '"><span class="dot' + (D.steps[s.key] ? ' done' : '') + '">' + (D.steps[s.key] ? '✓' : (i + 1)) + '</span>' + s.name + '</a>';
+        }).join('');
+    }
+
+    function pager(step) {
+      var i = STEPS.map(function (s) { return s.key; }).indexOf(step);
+      var prev = i > 0 ? STEPS[i - 1].key : '';
+      var next = i < STEPS.length - 1 ? STEPS[i + 1].key : '';
+      return '<div class="pager"><button class="btn plain" data-go="' + prev + '">Back</button><span>Step ' + (i + 1) + ' of 4</span>' +
+        (next ? '<button class="btn" data-next="' + next + '">Next</button>' : '<button class="btn" data-go="">Done</button>') + '</div>';
+    }
+
+    // ---- The checklist
+    function home() {
+      var cards = [
+        { key: 'profile', p: D.profile ? (D.steps.profile ? 'Your profile in the Directory has a photo, what you do and your bio.' : 'Your profile is yours. Add ' + [!D.profile.logo_url && 'a photo', !D.profile.title && 'what you do', (D.profile.bio || '').length < D.lists.bio_min && 'a bio'].filter(Boolean).join(', ') + '.')
+          : D.claim && D.claim.status === 'pending' ? 'Your request is with our team. We will email you once it is yours.' : 'Claim your profile in our People directory, or ask us to make one.' },
+        { key: 'platforms', p: D.steps.platforms ? D.platforms.filter(function (x) { return x.handle; }).map(function (x) { return KIND_NAMES[x.kind] + ' ' + fmt(x.followers); }).join(' · ') : 'Where you post and how many people follow you.' },
+        { key: 'rates', p: D.steps.rates ? 'Your rates are in. Only our team sees them.' : 'What you charge for a post, a reel, an appearance. Only our team sees them.' },
+        { key: 'paid', p: D.steps.paid ? 'Payouts are on.' : D.payouts.started ? 'You started with Stripe. Finish there to switch payouts on.' : 'Your bank and tax details, on Stripe\'s own pages. We never see them.' }
+      ];
+      main.innerHTML = '<h1 class="h1">' + (D.active ? 'You are active for paid work' : 'Get active for paid work') + '</h1>' +
+        '<p class="lede">Everyone in the Ambassador program helps with points, perks and the causes they care about. Paid work is for those who finish these four steps: when a brand campaign, an event or a reporter needs someone like you, we bring it to you with what it pays and what it asks. Nothing is posted for you and nothing is promised; you say yes to each one.</p>' +
+        '<div class="grid">' + cards.map(function (c, i) {
+          var s = STEPS[i];
+          var tag = D.steps[c.key] ? '<span class="tag on">Done</span>' : (c.key === 'profile' && D.claim && D.claim.status === 'pending' && !D.profile) ? '<span class="tag wait">Waiting for approval</span>' : '<span class="tag off">To do</span>';
+          return '<div class="card"><h3><span>' + (i + 1) + '. ' + s.name + '</span>' + tag + '</h3><p>' + esc(c.p) + '</p><div class="act"><button class="btn' + (D.steps[c.key] ? ' ghost' : '') + '" data-go="' + c.key + '">' + (D.steps[c.key] ? 'Update' : 'Start') + '</button></div></div>';
+        }).join('') + '</div>' +
+        '<p class="lede" style="margin-top:20px;font-size:13px">Questions? Write to <a href="mailto:contact@lesaruss.com?subject=Ambassador%20paid%20work">contact@lesaruss.com</a>. Back to <a href="/ambassadors/welcome">the Ambassador Guide</a>.</p>';
+    }
+
+    // ---- 1. Your profile
+    function profile() {
+      var h = '<h1 class="h1">Your profile</h1>';
+      if (D.profile) {
+        var p = D.profile;
+        h += '<p class="lede">This is your page in our People directory (<a href="/directory/' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">see it</a>). Brands and organizers see it first, so keep it current. A photo, what you do and a bio of at least ' + D.lists.bio_min + ' characters finish this step.</p>' +
+          '<div class="form">' +
+          '<div class="wide"><div class="photo"><div class="pic" id="pPic" style="' + (p.logo_url ? 'background-image:url(\'' + esc(p.logo_url) + '\')' : '') + '">' + (p.logo_url ? '' : esc((p.name || '?').charAt(0))) + '</div>' +
+          '<div><label class="btn ghost" style="cursor:pointer">' + (p.logo_url ? 'Change your photo' : 'Add your photo') + '<input type="file" id="pFile" accept="image/jpeg,image/png,image/webp" hidden></label>' +
+          '<div style="font-size:12px;color:var(--ink55);margin-top:6px">A clear photo of you, at least 400 px on its shorter side.</div><div class="msg" id="pPicMsg"></div></div></div></div>' +
+          '<label class="f">What you do<small>One line, like "Chef and recipe creator" or "Vegan bodybuilder and coach".</small><input type="text" id="pTitle" maxlength="200" value="' + esc(p.title) + '"></label>' +
+          '<label class="f">Your website<small>Optional.</small><input type="url" id="pSite" maxlength="500" value="' + esc(p.website) + '"></label>' +
+          '<label class="f">Your Instagram<small>Your handle, without the @.</small><input type="text" id="pIg" maxlength="60" value="' + esc(p.instagram) + '"></label>' +
+          '<label class="f wide">Your bio<small>Who you are and what you do for the movement, in your own words. <span id="pCount"></span></small><textarea id="pBio" maxlength="2000">' + esc(p.bio) + '</textarea></label>' +
+          '</div><div class="row" style="margin-top:14px"><button class="btn" id="pSave">Save</button><span class="msg" id="pMsg"></span></div>';
+      } else if (D.claim && D.claim.status === 'pending') {
+        var c = D.claim;
+        h += '<p class="lede">Your request is with our team. We will email you once your profile is yours, usually within two days.</p>' +
+          '<div class="note">' + (c.listing ? 'You asked for <b>' + esc(c.listing.name) + '</b>.' : 'You asked us to make a profile for <b>' + esc(c.new_profile && c.new_profile.name) + '</b>, ' + esc(c.new_profile && c.new_profile.title) + '.') + '</div>' +
+          '<button class="btn plain" id="pWithdraw">Take it back</button><span class="msg" id="pMsg"></span>';
+      } else {
+        h += '<p class="lede">Your profile lives in our People directory, beside the activists, creators, athletes and chefs we have worked with. Many are there already from our shows and events. Find yours and claim it; if you are not there yet, ask us to make it.</p>' +
+          (D.claim && D.claim.status === 'declined' ? '<div class="note warm">We could not give you the profile you asked for' + (D.claim.decision_note ? ': ' + esc(D.claim.decision_note) : '.') + ' Try again, or write to us.</div>' : '') +
+          '<label class="f" style="max-width:640px">Find yourself<input type="text" id="pQ" placeholder="Your name" autocomplete="off"></label>' +
+          '<div id="pRes" style="display:grid;gap:8px;max-width:640px;margin-top:10px"></div>' +
+          '<div style="margin-top:22px;max-width:860px"><button class="btn ghost" id="pNewOpen">I\'m not in the Directory yet</button></div>' +
+          '<div id="pNew" hidden style="margin-top:16px"><div class="form">' +
+          '<label class="f">Your name<small>As people know you.</small><input type="text" id="nName" maxlength="120" value="' + esc(D.member.name || '') + '"></label>' +
+          '<label class="f">What you do<small>One line.</small><input type="text" id="nTitle" maxlength="200"></label>' +
+          '<label class="f wide">Your bio<small>Optional now; you can finish it once the profile is yours.</small><textarea id="nBio" maxlength="2000"></textarea></label>' +
+          '</div><div class="row" style="margin-top:12px"><button class="btn" id="nSend">Ask for my profile</button></div></div>' +
+          '<div class="msg" id="pMsg"></div>';
+      }
+      main.innerHTML = h + pager('profile');
+      wireProfile();
+    }
+    function wireProfile() {
+      var m = document.getElementById('pMsg');
+      var bio = document.getElementById('pBio');
+      if (bio) {
+        var cnt = document.getElementById('pCount');
+        var upd = function () { var n = bio.value.trim().length; cnt.textContent = n < D.lists.bio_min ? '(' + n + ' of at least ' + D.lists.bio_min + ')' : '(' + n + ')'; };
+        bio.addEventListener('input', upd); upd();
+        document.getElementById('pSave').onclick = function () { saveProfile().then(function (ok) { if (ok) msg(m, 'Saved.', true); }); };
+        document.getElementById('pFile').onchange = function (e) { var f = e.target.files[0]; if (f) uploadPhoto(f); e.target.value = ''; };
+      }
+      var w = document.getElementById('pWithdraw');
+      if (w) w.onclick = function () { amb({ action: 'profile_withdraw' }).then(function (d) { if (d.ok) { D = d; draw(); } else msg(m, d.message || 'That did not work.'); }); };
+      var q = document.getElementById('pQ');
+      if (q) {
+        var t;
+        q.addEventListener('input', function () { clearTimeout(t); t = setTimeout(search, 300); });
+        document.getElementById('pNewOpen').onclick = function () { document.getElementById('pNew').hidden = false; document.getElementById('nTitle').focus(); };
+        document.getElementById('nSend').onclick = function () {
+          var name = document.getElementById('nName').value.trim(), title = document.getElementById('nTitle').value.trim();
+          if (!name || !title) return msg(m, 'Give your name and what you do.');
+          this.disabled = true;
+          amb({ action: 'profile_claim', name: name, title: title, bio: document.getElementById('nBio').value.trim() }).then(function (d) { if (d.ok) { D = d; draw(); } else { msg(m, d.message || 'That did not work.'); document.getElementById('nSend').disabled = false; } });
+        };
+      }
+    }
+    function search() {
+      var q = document.getElementById('pQ').value.trim(), box = document.getElementById('pRes');
+      if (q.length < 2) { box.innerHTML = ''; return; }
+      amb({ action: 'profile_search', q: q }).then(function (d) {
+        var r = d.results || [];
+        box.innerHTML = r.length ? r.map(function (x) {
+          return '<div class="res"><div class="pic" style="' + (x.logo_url ? 'background-image:url(\'' + esc(x.logo_url) + '\')' : '') + '">' + (x.logo_url ? '' : esc(x.name.charAt(0))) + '</div>' +
+            '<div class="who"><b>' + esc(x.name) + '</b><span>' + esc(x.title || x.category) + '</span></div>' +
+            (x.taken ? '<span class="tag off">Claimed</span>' : '<button class="btn" data-claim="' + esc(x.id) + '">This is me</button>') + '</div>';
+        }).join('') : '<p style="font-size:14px;color:var(--ink55);margin:0">No one by that name yet. Use "I\'m not in the Directory yet" below.</p>';
+        box.querySelectorAll('[data-claim]').forEach(function (b) {
+          b.onclick = function () { b.disabled = true; amb({ action: 'profile_claim', listing_id: b.getAttribute('data-claim') }).then(function (d) { if (d.ok) { D = d; draw(); } else { msg(document.getElementById('pMsg'), d.message || 'That did not work.'); b.disabled = false; } }); };
+        });
+      });
+    }
+    function saveProfile() {
+      var m = document.getElementById('pMsg');
+      return amb({ action: 'profile_save', title: document.getElementById('pTitle').value, bio: document.getElementById('pBio').value,
+        website: document.getElementById('pSite').value, instagram: document.getElementById('pIg').value }).then(function (d) {
+        if (!d.ok) { msg(m, d.message || 'That did not save.'); return false; }
+        D = d; head(); return true;
+      });
+    }
+    function uploadPhoto(file) {
+      var m = document.getElementById('pPicMsg'), lid = D.profile.id;
+      if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return msg(m, 'Use a JPEG, PNG or WebP picture.');
+      var img = new Image(), url = URL.createObjectURL(file);
+      img.onload = function () {
+        URL.revokeObjectURL(url);
+        if (Math.min(img.naturalWidth, img.naturalHeight) < 400) return msg(m, 'That picture is ' + img.naturalWidth + ' x ' + img.naturalHeight + '. Use one at least 400 px on its shorter side.');
+        msg(m, 'Uploading...', true);
+        call('ve-claims', { action: 'owner_photo_url', listing_id: lid, kind: 'logo', content_type: file.type, bytes: file.size }).then(function (u) {
+          if (!u.signed_url) throw new Error(u.error || 'upload');
+          return new Promise(function (res, rej) {
+            var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', file.type); x.setRequestHeader('x-upsert', 'true');
+            x.onload = function () { x.status < 300 ? res(u.path) : rej(new Error('put')); }; x.onerror = function () { rej(new Error('put')); }; x.send(file);
+          });
+        }).then(function (path) {
+          return call('ve-claims', { action: 'owner_photo_done', listing_id: lid, kind: 'logo', path: path });
+        }).then(function (d) {
+          if (d.error) throw new Error(d.error === 'low_quality' ? 'low' : d.error);
+          return amb({ action: 'door' });
+        }).then(function (d) { D = d; draw(); }).catch(function (e) { msg(m, e.message === 'low' ? 'That picture is too small. Use one at least 400 px on its shorter side.' : 'The upload did not finish. Try again.'); });
+      };
+      img.onerror = function () { msg(m, 'That file did not open as a picture.'); };
+      img.src = url;
+    }
+
+    // ---- 2. Your platforms
+    function platforms() {
+      main.innerHTML = '<h1 class="h1">Your platforms</h1>' +
+        '<p class="lede">Where you post and how many people follow you. We read YouTube from YouTube; for the rest, type what your profile shows today. Brands never see these numbers unless you say yes to their campaign.</p>' +
+        D.platforms.map(function (p) {
+          return '<div class="plat"><b>' + KIND_NAMES[p.kind] + '</b>' +
+            '<input type="text" data-h="' + p.kind + '" value="' + esc(p.handle) + '" placeholder="' + (p.kind === 'podcast' ? 'Your show\'s link' : 'Your handle') + '">' +
+            (p.kind === 'youtube'
+              ? '<span class="v">' + (p.verified ? fmt(p.followers) + ' subscribers, from YouTube' : 'We read your subscribers') + '</span>'
+              : '<input type="number" min="0" data-n="' + p.kind + '" value="' + (p.followers || '') + '" placeholder="' + (p.kind === 'podcast' ? 'Downloads a month' : 'Followers') + '">') + '</div>';
+        }).join('') +
+        '<div class="row" style="margin-top:16px"><button class="btn" id="plSave">Save</button><span class="msg" id="plMsg"></span></div>' + pager('platforms');
+      document.getElementById('plSave').onclick = function () { savePlatforms().then(function (ok) { if (ok) msg(document.getElementById('plMsg'), 'Saved.', true); }); };
+    }
+    function savePlatforms() {
+      var list = D.platforms.map(function (p) {
+        var h = main.querySelector('[data-h="' + p.kind + '"]'), n = main.querySelector('[data-n="' + p.kind + '"]');
+        return { kind: p.kind, handle: h ? h.value.trim() : '', followers: n ? Number(n.value) || 0 : 0 };
+      });
+      return amb({ action: 'platforms_save', platforms: list }).then(function (d) {
+        if (!d.ok) { msg(document.getElementById('plMsg'), d.message || 'That did not save.'); return false; }
+        D = d; head(); return true;
+      });
+    }
+
+    // ---- 3. Your rates
+    function rates() {
+      var r = D.rates || {};
+      var hubs = (window.VE_HUBS || []).filter(function (x) { return D.lists.chapters.indexOf(x.slug) >= 0; });
+      main.innerHTML = '<h1 class="h1">Your rates</h1>' +
+        '<p class="lede">What you charge, in US dollars. Only our team sees your rates; a brand sees a package price, never yours. You always get your full rate, and you can change it any time. Leave blank what you do not offer.</p>' +
+        '<div class="form">' + D.lists.rate_keys.map(function (k) {
+          return '<label class="f">' + RATE_NAMES[k] + '<input type="number" min="0" max="100000" step="1" data-r="' + k + '" value="' + (r[k] || '') + '" placeholder="$"></label>';
+        }).join('') +
+        '<label class="f wide">Anything we should know<small>Usage rights, travel, packages, what you will not do.</small><textarea id="rNotes" maxlength="500" style="min-height:80px">' + esc(r.notes || '') + '</textarea></label></div>' +
+        '<h2 style="font-size:16px;font-weight:900;margin:24px 0 8px">What you do</h2><div class="pick">' + D.lists.skills.map(function (k) {
+          return '<label><input type="checkbox" data-s="' + k + '"' + (D.skills.indexOf(k) >= 0 ? ' checked' : '') + '>' + esc(SKILL_NAMES[k] || k) + '</label>';
+        }).join('') + '</div>' +
+        '<h2 style="font-size:16px;font-weight:900;margin:24px 0 8px">Where you can show up in person</h2><div class="pick">' + hubs.map(function (x) {
+          return '<label><input type="checkbox" data-c="' + x.slug + '"' + (D.chapters.indexOf(x.slug) >= 0 ? ' checked' : '') + '>' + esc(x.name) + '</label>';
+        }).join('') + '</div>' +
+        '<div class="row" style="margin-top:18px"><button class="btn" id="rSave">Save</button><span class="msg" id="rMsg"></span></div>' + pager('rates');
+      document.getElementById('rSave').onclick = function () { saveRates().then(function (ok) { if (ok) msg(document.getElementById('rMsg'), 'Saved.', true); }); };
+    }
+    function saveRates() {
+      var r = {};
+      main.querySelectorAll('[data-r]').forEach(function (i) { if (Number(i.value) > 0) r[i.getAttribute('data-r')] = Number(i.value); });
+      r.notes = document.getElementById('rNotes').value;
+      var skills = [].map.call(main.querySelectorAll('[data-s]:checked'), function (i) { return i.getAttribute('data-s'); });
+      var chapters = [].map.call(main.querySelectorAll('[data-c]:checked'), function (i) { return i.getAttribute('data-c'); });
+      return amb({ action: 'rates_save', rates: r, skills: skills, chapters: chapters }).then(function (d) {
+        if (!d.ok) { msg(document.getElementById('rMsg'), d.message || 'That did not save.'); return false; }
+        D = d; head(); return true;
+      });
+    }
+
+    // ---- 4. Get paid
+    function paid() {
+      var p = D.payouts;
+      main.innerHTML = '<h1 class="h1">Get paid</h1>' +
+        '<p class="lede">We pay through Stripe. You add your bank and your tax details (the W-9) on Stripe\'s own pages; we never see your bank or Social Security number. It takes about five minutes.</p>' +
+        (p.ready ? '<div class="note">Payouts are on. Paid work lands in your bank through Stripe.</div>'
+          : p.started ? '<div class="note warm">You started with Stripe but have not finished. Pick up where you left off.</div>' : '') +
+        (p.test ? '<div class="note warm">Test account: this opens Stripe in test mode.</div>' : '') +
+        '<div class="row"><button class="btn" id="payGo">' + (p.ready ? 'Update your details on Stripe' : p.started ? 'Finish on Stripe' : 'Set up payouts on Stripe') + '</button>' +
+        (p.started && !p.ready ? '<button class="btn plain" id="payCheck">I finished, check again</button>' : '') + '<span class="msg" id="payMsg"></span></div>' + pager('paid');
+      var m = document.getElementById('payMsg');
+      document.getElementById('payGo').onclick = function () {
+        var b = this; b.disabled = true; msg(m, 'Opening Stripe...', true);
+        amb({ action: 'payout_start' }).then(function (d) { if (d.url) location.href = d.url; else { msg(m, d.message || 'Stripe did not open.'); b.disabled = false; } });
+      };
+      var c = document.getElementById('payCheck');
+      if (c) c.onclick = checkPayouts;
+    }
+    function checkPayouts() {
+      var m = document.getElementById('payMsg'); if (m) msg(m, 'Checking with Stripe...', true);
+      return amb({ action: 'payout_status' }).then(function (d) { if (d.ok) { D = d; draw(); var m2 = document.getElementById('payMsg'); if (m2) msg(m2, d.payouts.ready ? 'Payouts are on.' : 'Stripe still needs a few details from you.', d.payouts.ready); } });
+    }
+
+    // Next saves what is on the page first, so nothing typed is lost.
+    main.addEventListener('click', function (e) {
+      var g = e.target.closest('[data-go]'), n = e.target.closest('[data-next]');
+      if (g) { e.preventDefault(); go(g.getAttribute('data-go')); return; }
+      if (n) {
+        e.preventDefault();
+        var step = stepNow(), to = n.getAttribute('data-next');
+        var save = step === 'platforms' ? savePlatforms() : step === 'rates' ? saveRates() : step === 'profile' && D.profile ? saveProfile() : Promise.resolve(true);
+        save.then(function (ok) { if (ok) go(to); });
+      }
+    });
+    document.getElementById('adSteps').addEventListener('click', function (e) {
+      var a = e.target.closest('[data-go]'); if (!a) return;
+      e.preventDefault(); go(a.getAttribute('data-go'));
+    });
+    window.addEventListener('popstate', draw);
+
+    function draw() {
+      if (!D) return;
+      head();
+      ({ profile: profile, platforms: platforms, rates: rates, paid: paid }[stepNow()] || home)();
+    }
+
+    function gate(html) { document.getElementById('adSteps').innerHTML = ''; document.getElementById('adStatus').innerHTML = ''; main.innerHTML = '<div class="gate">' + html + '</div>'; }
+    function start() {
+      if (!window.VEAuth || !VEAuth.isLoggedIn || !VEAuth.isLoggedIn()) {
+        gate('<h1 class="h1">Sign in to see your checklist</h1><p class="lede">This page is for Vegans Explore Ambassadors.</p><button class="btn" id="gSign">Sign in</button>');
+        document.getElementById('gSign').onclick = function () { VEAuth.showAuthModal('Sign in to see your checklist', function () { location.reload(); }, 'login'); };
+        return;
+      }
+      amb({ action: 'door' }).then(function (d) {
+        if (d.error === 'ambassadors_only') return gate('<h1 class="h1">This page is for Ambassadors</h1><p class="lede">Ambassadors are invited by our team. If you would like to be one, write to <a href="mailto:contact@lesaruss.com?subject=Becoming%20an%20Ambassador">contact@lesaruss.com</a>.</p>');
+        if (!d.ok) return gate('<h1 class="h1">Your checklist did not open</h1><p class="lede">Try again in a minute.</p>');
+        D = d;
+        if (new URLSearchParams(location.search).get('stripe') && D.payouts.started) { draw(); checkPayouts().then(function () { go('paid', true); }); return; }
+        draw();
+      });
+    }
+    var tries = 0;
+    (function wait() { if (window.VEAuth || tries++ > 40) start(); else setTimeout(wait, 100); })();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

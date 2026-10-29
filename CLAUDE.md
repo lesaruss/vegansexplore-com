@@ -945,11 +945,14 @@ existing consoles become each pathway's detail view.
 - **Content Creators is not its own program** (Sean, 2026-10-29; see Ambassadors for everyone, below): it is a lead finder feeding the
   Ambassador pathway with the Creator profile set. Coaches wait. Each pathway's LESARUSS.AI step is shaped later. Mailing list
   reactivation is a separate project.
+- **Build order**: 1. the hub and journey view for the five that exist (shows every gap); 2. the board, Today, Instagram tasks and the
+  report on those five; 3. a lead finder per pathway; 4. Content Creators; 5. Coaches. Reuse `ve-outreach` (lists, sender, sync,
+  warm-up), `universe_invites` and its consoles, `ve-invites` `draft_note` and Preview journeys.
 
 ## Ambassadors for everyone, the talent bench and the shop (LOCKED by Sean 2026-10-29, playbook `ve-ambassadors-talent-shop`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-ambassadors-talent-shop`; migration
-`20261029_ambassadors_talent_shop_canon.sql`). **Not built yet.** Sean: "the ambassador program being for everyone and you fitting in
+`20261029_ambassadors_talent_shop_canon.sql`). **The door is built (below); the rest is not built yet.** Sean: "the ambassador program being for everyone and you fitting in
 based off of your results"; "these prices will be coming from LESARUSS.ai... any discount will come from them using points"; "a shop...
 if they choose this, this is what happens"; "turn into a marketing agency for the 21st century."
 - **One Ambassador program, never a separate Creators program.** The team sets each Ambassador's profile (Balanced, Animals first,
@@ -978,9 +981,28 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
 - **First**: Torre Washington; Gabriela Reyes once the platform comes first (confirm her name and handle); then Philly's creators ahead
   of a dinner. **Build**: the Creator Guide from Sean's Canva Vegan Content Creator Survival Guide (`DAGx86FyHyw`), profile claim and
   the checklist, the Opportunities board, Stripe Connect and campaign production, the shop, the lead finder by city.
-- **Build order**: 1. the hub and journey view for the five that exist (shows every gap); 2. the board, Today, Instagram tasks and the
-  report on those five; 3. a lead finder per pathway; 4. Content Creators; 5. Coaches. Reuse `ve-outreach` (lists, sender, sync,
-  warm-up), `universe_invites` and its consoles, `ve-invites` `draft_note` and Preview journeys.
+
+**The Ambassador door, built 2026-10-29** (Sean: "Build the ambassador door"; migration `20261029_ambassador_door.sql`, edge function
+`ve-ambassador`, verify_jwt off, the member token checked inside, ops by the admin token with `as_member`). `/ambassadors/door`
+(`ambassadors/door.html`, `noindex`): **Paid work: your checklist**, Not active yet or Active in the header, the checklist first, then one
+step per view (`?step=profile|platforms|rates|paid`, Back / Step N of M / Next, Next saves the step): **Your profile** (their People
+listing: search and **This is me**, or **I'm not in the Directory yet** with their name, what they do and a bio; either waits as a
+`ve_profile_claims` row for the team; once theirs, what they do, website, Instagram and a bio of 80 characters or more, each change a
+`ve_listing_edits` row, and a photo through `ve-claims` `owner_photo_url` / `owner_photo_done`, 400 px or more), **Your platforms**
+(Instagram, TikTok, YouTube, Facebook, podcast; YouTube subscribers read from YouTube's Data API, the rest as they type them), **Your
+rates** (post, reel, story, appearance, hosting, a day of social work, notes; what they do and the chapters they can show up in; the team
+only) and **Get paid** (Stripe Connect Express onboarding on Stripe's pages, back to `?step=paid&stripe=return`, which asks Stripe whether
+payouts are on). A step is done when: a photo, what they do and the bio; one platform with followers; one rate; payouts on. All four make
+them Active (`ve_ambassador_door.active_at`) with an email to them and Sean. Reminders (cron `ve-ambassador-remind`, 14:17 UTC): Day 2,
+Day 7, then every 7 days, at most 10, naming what is missing, counted from the day they first open the door. Linked from the dashboard's
+Your tools (after The Ambassador Guide) and the Guide's Your role (Paid work). **Depot > Ambassadors > Paid work** (`#door`, `admin_list`,
+`claim_decide`): totals, the profile requests to **Approve** (an existing People listing becomes theirs, `owner_member_id`, or a new
+Content Creators listing is made, every chapter, `crawl_source` `ambassador`) or **Decline** with a note they get by email, and every
+Ambassador's checklist with their platforms, rates and skills. **Stripe Connect is not switched on** on the LESARUSS account (Stripe:
+"signed up for Connect"); until Sean turns it on (dashboard.stripe.com/connect, Express accounts), Get paid answers "Payouts are not
+switched on yet". Proven 2026-10-29 with the internal QA account as an Ambassador (search, a new-profile request, approval making the
+listing, the profile, platforms with YouTube read live, rates, Next saving, Stripe refused, the Depot view, reminders due none), then
+removed.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 

@@ -172,6 +172,7 @@
       function views(on) {
         return '<nav class="views" aria-label="Ambassadors"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Ambassadors (' + data.ambassadors.length + ')</a>' +
           '<a href="#invites/all" class="' + (on === 'invites' ? 'on' : '') + '">Invitations (' + data.invites.length + ')</a>' +
+          '<a href="#door" class="' + (on === 'door' ? 'on' : '') + '">Paid work</a>' +
           '<a href="#commissions/all" class="' + (on === 'commissions' ? 'on' : '') + '">Commissions</a></nav>';
       }
 
@@ -482,6 +483,53 @@
         });
       }
 
+      // Paid work (Sean, 2026-10-29: "Build the ambassador door"; canon canon-ve-ambassadors-talent-shop). Every Ambassador's checklist
+      // (profile, platforms, rates, get paid; Active when all four are done) and the profile requests to approve. ve-ambassador
+      // admin_list / claim_decide. Approving gives them the People listing, or makes one under Content Creators.
+      var DFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ambassador';
+      var DSTEPS = [['profile', 'Profile'], ['platforms', 'Platforms'], ['rates', 'Rates'], ['paid', 'Paid']];
+      var DRATES = { post: 'Post', reel: 'Reel', story: 'Story', appearance: 'Appearance', hosting: 'Hosting', social_day: 'Social day' };
+      function dapi(body) { return fetch(DFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function drawDoor() {
+        app.innerHTML = '<div class="bar">' + views('door') + '</div><p class="empty">Loading...</p>';
+        dapi({ action: 'admin_list' }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<div class="bar">' + views('door') + '</div><p class="empty">Paid work did not load.</p>'; return; }
+          var A = d.ambassadors || [], Q = d.claims || [];
+          var active = A.filter(function (a) { return a.active; }).length, started = A.filter(function (a) { return a.started; }).length;
+          app.innerHTML = '<div class="bar">' + views('door') + '</div>' +
+            '<p class="sub">Paid work is for Ambassadors who finish their checklist at <a href="/ambassadors/door" target="_blank" rel="noopener">/ambassadors/door</a>: their profile, platforms, rates and payouts. They are reminded on Day 2, Day 7, then weekly. Rates stay with the team.</p>' +
+            '<div class="totals"><div class="tot"><b>' + n(A.length) + '</b><span>Ambassadors</span></div><div class="tot"><b>' + n(started) + '</b><span>Opened their checklist</span></div>' +
+              '<div class="tot"><b>' + n(active) + '</b><span>Active for paid work</span></div><div class="tot"><b>' + n(Q.length) + '</b><span>Profile requests waiting</span></div></div>' +
+            '<section class="card"><h2>Profile requests</h2>' + (Q.length ? '<div class="list">' + Q.map(function (c) {
+              var what = c.listing ? 'Claims <a href="/directory/' + encodeURIComponent(c.listing.slug) + '" target="_blank" rel="noopener">' + esc(c.listing.name) + '</a>'
+                : 'Asks for a new profile: <b>' + esc(c.new_profile && c.new_profile.name) + '</b>, ' + esc(c.new_profile && c.new_profile.title) + (c.new_profile && c.new_profile.bio ? '<br><span class="hint">' + esc(c.new_profile.bio) + '</span>' : '');
+              return '<div class="irow"><div><b>' + esc(c.member ? c.member.name : 'An Ambassador') + '</b> <small>' + esc(c.member ? c.member.email : '') + ' &middot; ' + esc(day(c.created_at)) + '</small><div style="font-size:13.5px;margin-top:4px">' + what + '</div>' +
+                (c.note ? '<small>Their note: ' + esc(c.note) + '</small>' : '') + '</div><span></span>' +
+                '<button type="button" class="btn btn-sm" data-dec="' + esc(c.id) + '" data-ok="1">Approve</button><button type="button" class="btn btn-bad btn-sm" data-dec="' + esc(c.id) + '" data-ok="0">Decline</button></div>';
+            }).join('') + '</div>' : '<p class="empty">None waiting.</p>') + '<span class="msg" id="dmsg" role="status"></span></section>' +
+            '<section class="card"><h2>Their checklists</h2><div class="list">' + (A.length ? A.map(function (a) {
+              var steps = DSTEPS.map(function (s) { return '<span class="tag ' + (a.steps[s[0]] ? 't-joined' : 't-ready') + '">' + (a.steps[s[0]] ? '&#10003; ' : '') + s[1] + '</span>'; }).join(' ');
+              var rates = Object.keys(DRATES).filter(function (k) { return a.rates && a.rates[k]; }).map(function (k) { return DRATES[k] + ' $' + n(a.rates[k]); }).join(', ');
+              var plats = (a.platforms || []).map(function (p) { return esc(p.kind) + ' ' + n(p.followers) + (p.verified ? ' (read)' : ''); }).join(', ');
+              return '<div class="irow"><div>' + av(a) + ' <b>' + esc(a.name) + '</b> <small>' + esc(a.email) + (a.listing ? ' &middot; <a href="/directory/' + encodeURIComponent(a.listing.slug) + '" target="_blank" rel="noopener">their profile</a>' : '') + '</small>' +
+                '<div style="margin-top:6px">' + steps + '</div>' +
+                '<small>' + (a.started ? 'Opened ' + esc(day(a.started_at)) + (a.reminders ? ' &middot; ' + a.reminders + ' reminder' + (a.reminders === 1 ? '' : 's') : '') : 'Has not opened the checklist') +
+                (plats ? ' &middot; ' + plats : '') + (rates ? ' &middot; ' + esc(rates) : '') + ((a.skills || []).length ? ' &middot; ' + esc(a.skills.join(', ')) : '') + '</small></div>' +
+                '<span class="tag ' + (a.active ? 't-joined' : 't-ready') + '">' + (a.active ? 'Active' : 'Not active yet') + '</span><span></span></div>';
+            }).join('') : '<p class="empty">No Ambassadors yet.</p>') + '</div></section>';
+          app.querySelectorAll('[data-dec]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var ok = b.dataset.ok === '1', note = window.prompt(ok ? 'Approve: a note for them (optional)' : 'Decline: tell them why (they get this in the email)', '');
+              if (note === null) return;
+              b.disabled = true;
+              dapi({ action: 'claim_decide', id: b.dataset.dec, approve: ok, note: note || null }).then(function (r) {
+                if (r && r.ok) drawDoor(); else { b.disabled = false; $('dmsg').className = 'msg err'; $('dmsg').textContent = (r && r.message) || 'That did not save.'; }
+              });
+            });
+          });
+        });
+      }
+
       // The email an Ambassador gets, for a profile, with a sample person (Depot > Preview journeys > Ambassador). Nothing is saved.
       function drawSample(p) {
         var key = PROFILES.some(function (x) { return x[0] === p; }) ? p : '';
@@ -501,6 +549,7 @@
         if ((m = r.match(/^a\/([0-9a-f-]{36})$/))) return drawOne(m[1]);
         if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);
         if ((m = r.match(/^invites\/([a-z]+)$/))) return drawInvites(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
+        if (r === 'door') return drawDoor();
         if ((m = r.match(/^commissions\/([a-z]+)$/))) return drawCommissions(m[1]);
         if ((m = r.match(/^sample\/([a-z]*)$/))) return drawSample(m[1]);
         drawList();

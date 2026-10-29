@@ -3494,6 +3494,8 @@
     // Its line follows the Ambassador's profile (Sean, 2026-10-28).
     var AMB_LINE = { animals: 'Your link, the rescues and sanctuaries near you, and what to share.', community: 'Your link, your city, what it earns and what to share.',
       creator: 'Your link, something to share every day, and what it earns.', fitness: 'Your link, the fitness and wellness crowd, and what to share.' };
+    // The Ambassador door (Sean, 2026-10-29): the checklist for paid work, after the Guide.
+    if (member.ve_role === 'ambassador') t.unshift({ icon: 'clipboard', title: 'Paid work: your checklist', desc: 'Your profile, platforms, rates and payouts. Finish all four to be active for paid work.', fn: function () { location.href = '/ambassadors/door'; } });
     if (member.ve_role === 'ambassador') t.unshift({ icon: 'megaphone', title: 'The Ambassador Guide', desc: AMB_LINE[member.ambassador_profile] || 'Your link, what to share and who joined through you.', fn: function () { location.href = '/ambassadors/welcome'; } });
     if (!admin && member.ve_role === 'community_manager') t.push({ icon: 'eye', title: 'Secret Shopper', desc: 'Restaurant visits in your city: set the day, then write the report.', fn: function () { openShopper(''); } });
     if (staff) {
