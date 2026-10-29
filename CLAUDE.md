@@ -1314,9 +1314,13 @@ thumbnails 12 at a time (Show more), each playing in that player. `ve-youtube` `
 `ve_youtube_feeds`, read again after 6 hours (cron `ve-youtube-refresh`, hourly, 20 a run), which sets Active / On hiatus like a podcast;
 `resolve` (ops) looks a channel up by handle or id. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
 for every channel, Google's own included; checked 2026-10-29), so it reads YouTube's Data API v3 with `YOUTUBE_API_KEY`, else
-`GOOGLE_PLACES_API_KEY`. On 2026-10-29 that key answered "Requests to this API youtube... are blocked": the YouTube Data API has to be
-enabled on its Google Cloud project and allowed in the key's API restrictions (Sean's step). No YouTube listing exists yet; the channels
-are added once it answers.
+`GOOGLE_PLACES_API_KEY` (Sean turned the YouTube Data API on for it the same day). A News Outlet with a channel gets the same page
+(`isYouTubeL`: Plant Based News, which also shows under YouTube). **The first 12** (migration `20261029_youtube_channels.sql`, each found
+through `resolve`, its About written from the channel's own description, links only the ones the channel publishes, its own picture as the
+logo): Pick Up Limes, Rainbow Plant Life, Mic the Vegan, NutritionFacts.org, Earthling Ed (YouTube) (one listing a name: his People profile is
+Earthling Ed), Sweet Simple Vegan, Cheap Lazy Vegan, Simnett Nutrition, BOSH!, Sarah's Vegan Kitchen, The Happy Pear (from the May import)
+and Plant Based News. Left out: Avant-Garde Vegan (Gaz Oakley is no longer Vegan), Sauce Stache (now Mark Stache, a general health
+channel), We Cook Vegan (uploads not public).
 
  "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
