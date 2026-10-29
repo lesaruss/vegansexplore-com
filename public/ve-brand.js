@@ -43,9 +43,14 @@
     name: 'LESARUSS.ai',
     home: 'https://lesaruss.ai',
     assetOrigin: 'https://vegansexplore.com',
+    // Votes on lesaruss.ai are for LESARUSS members: the $11 LESARUSS Passport (today it comes with a claim) or a Diplomat
+    // ($111, /join). Members sign in with Continue with LESARUSS (ve-auth.js, client 'lesaruss-ai', ve-lesaruss-sso), which
+    // lets in only a LESARUSS member (lr_member_entitled), and ve-votes counts their vote in the same pool as Vegans Explore.
     passportUrl: '/join',
-    passportLabel: 'See the LESARUSS Passport',
+    passportLabel: 'Become a Diplomat',
     loginUrl: HQ + '/login',
+    signIn: 'lesaruss',
+    ssoClient: 'lesaruss-ai',
     contact: 'contact@lesaruss.com',
     tags: TAGS,
     sharedCategories: SHARED,
@@ -72,8 +77,8 @@
     // Claim this listing: Join the Directory, here on lesaruss.ai, in LESARUSS colors.
     claimUrl: function (slug) { return '/claim?listing=' + encodeURIComponent(slug || ''); },
     gates: {
-      vote: { icon: 'heart', title: 'Voting is for Passport holders',
-        body: 'Member votes decide which businesses lead every list. With a LESARUSS Passport, <b>$11 one time</b>, you vote every day for the studios, venues and services you trust.' },
+      vote: { icon: 'heart', title: 'Voting is for LESARUSS members',
+        body: 'Member votes decide which businesses lead every list. Diplomats (<b>$111 for 111 days</b>) vote every day for the studios, venues and services they trust, and so does the owner who claims a listing with the <b>$11</b> LESARUSS Passport.' },
       save: { icon: 'bookmark', title: 'Saving is for Passport holders',
         body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' }
     },

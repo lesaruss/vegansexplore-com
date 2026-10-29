@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
   <title>Signing you in — Vegans Explore</title>
+  <script src="/public/ve-brand.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     body { margin: 0; font-family: 'Montserrat', sans-serif; background: #f5f5f5; color: #1a1a1a; }
     .page-frame { min-height: 100vh; display: flex; flex-direction: column; background: #fff; }
     main { flex: 1; display: grid; place-items: center; padding: 44px 16px 80px; }
-    .card { width: 100%; max-width: 480px; border: 1px solid rgba(0,0,0,.1); border-radius: 12px; padding: 28px; text-align: center; }
+    .card { box-sizing: border-box; width: 100%; max-width: 480px; border: 1px solid rgba(0,0,0,.1); border-radius: 12px; padding: 28px; text-align: center; }
     .card h1 { font-size: 22px; font-weight: 900; margin: 0 0 10px; }
     .card p { font-size: 15px; line-height: 1.6; color: rgba(26,26,26,.75); margin: 0 0 16px; }
     .acts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
@@ -40,6 +41,9 @@
   <script>
   (function () {
     var box = document.getElementById('sso');
+    // On another brand's site (lesaruss.ai, which serves this page through its proxy) the way back and the links are its own.
+    var VB = window.VE_BRAND || null;
+    if (VB) document.title = 'Signing you in — ' + VB.name;
     function show(title, text, acts) {
       box.innerHTML = '<h1></h1><p></p><div class="acts"></div>';
       box.querySelector('h1').textContent = title;
@@ -50,12 +54,13 @@
       var b = '';
       try { b = sessionStorage.getItem('ve_lesaruss_back') || ''; sessionStorage.removeItem('ve_lesaruss_back'); } catch (e) {}
       // Our own pages only.
-      return /^\/(?!\/)/.test(b) && !/^\/auth\/lesaruss/.test(b) ? b : '/dashboard';
+      return /^\/(?!\/)/.test(b) && !/^\/auth\/lesaruss/.test(b) ? b : (VB ? '/directory' : '/dashboard');
     }
+    var retry = VB ? '<a class="btn dark" href="/directory">Back to the Directory</a>' : '<a class="btn dark" href="/login">Back to sign in</a>';
     var q = new URLSearchParams(location.search);
     var code = q.get('code') || '', state = q.get('state') || '';
     history.replaceState(null, '', '/auth/lesaruss');
-    if (!code) { show('Nothing to sign in', 'Start from the Sign in window and press Continue with LESARUSS.', '<a class="btn dark" href="/login">Sign in</a>'); return; }
+    if (!code) { show('Nothing to sign in', VB ? 'Start from a Vote button and press Sign in with LESARUSS.' : 'Start from the Sign in window and press Continue with LESARUSS.', retry); return; }
     VEAuth.finishLesaruss(code, state).then(function (d) {
       if (d && d.token) {
         var to = back();
@@ -67,14 +72,19 @@
         location.replace(to);
         return;
       }
+      if (d && d.error === 'membership_needed') {
+        show('Voting is for LESARUSS members', d.message,
+          '<a class="btn dark" href="' + (VB ? VB.passportUrl : 'https://lesaruss.ai/join') + '">Become a Diplomat</a><a class="btn line" href="/directory">Back to the Directory</a>');
+        return;
+      }
       if (d && d.error === 'passport_needed') {
         show('Your Passport opens Vegans Explore', d.message,
           '<a class="btn dark" href="' + (/^https:\/\/checkout\.stripe\.com\//.test(d.checkout_url || '') ? d.checkout_url : '/passport#/join') + '">Get your Passport, $11</a><a class="btn line" href="https://lesaruss.ai/join">Become a Diplomat</a>');
         return;
       }
-      show('That sign-in did not finish', (d && d.message) || 'Please try again.', '<a class="btn dark" href="/login">Back to sign in</a>');
+      show('That sign-in did not finish', (d && d.message) || 'Please try again.', retry);
     }).catch(function () {
-      show('That sign-in did not finish', 'Something went wrong. Please try again.', '<a class="btn dark" href="/login">Back to sign in</a>');
+      show('That sign-in did not finish', 'Something went wrong. Please try again.', retry);
     });
   })();
   </script>

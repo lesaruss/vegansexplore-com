@@ -20,6 +20,12 @@
 // backstop (two votes 24 hours apart never share a date). The trg_listing_vote_count trigger
 // keeps listings.vote_count, which every directory shows and sorts by. verify_jwt is false:
 // the VE app token is checked here the same way ve-auth and ve-media-library check it.
+//
+// LESARUSS.ai (Sean, 2026-10-29; migration 20261029_lesaruss_ai_votes.sql): lesaruss.ai runs our Directory in its colors, and
+// its members sign in with Continue with LESARUSS as the 'lesaruss-ai' client (ve-lesaruss-sso), whose token carries
+// brand 'lesaruss-ai'. Such a token votes, in the same pool, only for a listing in the LESARUSS.ai Directory
+// (lr_listing_in_directory) and only while its holder is a LESARUSS member (lr_member_entitled: a Diplomat, a LESARUSS
+// Passport or a super admin), and gives no points (points are ours).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -41,7 +47,7 @@ function b64urlDecodeToBytes(s: string): Uint8Array {
   return out;
 }
 // Same key derivation as ve-auth's signJWT / decodeToken.
-async function verifyToken(token: string): Promise<string | null> {
+async function verifyToken(token: string): Promise<{ sub: string; brand: string } | null> {
   try {
     const [header, payload, sig] = token.split('.');
     if (!header || !payload || !sig) return null;
@@ -49,7 +55,7 @@ async function verifyToken(token: string): Promise<string | null> {
     const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
     if (!(await crypto.subtle.verify('HMAC', key, b64urlDecodeToBytes(sig), new TextEncoder().encode(`${header}.${payload}`)))) return null;
     const d = JSON.parse(new TextDecoder().decode(b64urlDecodeToBytes(payload)));
-    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? { sub: d.sub, brand: typeof d.brand === 'string' ? d.brand : 'vegans-explore' } : null;
   } catch { return null; }
 }
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
@@ -71,10 +77,12 @@ Deno.serve(async (req) => {
   }
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const memberId = token ? await verifyToken(token) : null;
-  if (!memberId) return json({ error: 'not_authenticated' }, 401);
+  const who = token ? await verifyToken(token) : null;
+  if (!who) return json({ error: 'not_authenticated' }, 401);
+  const memberId = who.sub, lesaruss = who.brand === 'lesaruss-ai';
 
   if (body.action === 'contribute') {
+    if (lesaruss) return json({ error: 'not_available' }, 403);
     const id = String(body.listing_id || '');
     const points = Math.round(Number(body.points));
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
@@ -97,13 +105,22 @@ Deno.serve(async (req) => {
   if (body.action === 'vote') {
     const id = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
-    // Members only: the same gate as ve-auth's requireActiveMembership (Guest Passport included).
-    const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
-    if (!member || member.membership_status !== 'active') {
-      return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the places you love every day.' }, 402);
+    if (lesaruss) {
+      const [{ data: entitled }, { data: inDir }] = await Promise.all([
+        db.rpc('lr_member_entitled', { p_member: memberId }),
+        db.rpc('lr_listing_in_directory', { p_listing: id }),
+      ]);
+      if (entitled !== true) return json({ error: 'payment_required', message: 'Voting on LESARUSS.ai is for LESARUSS members: Diplomats and LESARUSS Passport holders.' }, 402);
+      if (inDir !== true) return json({ error: 'not_found' }, 404);
+    } else {
+      // Members only: the same gate as ve-auth's requireActiveMembership (Guest Passport included).
+      const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+      if (!member || member.membership_status !== 'active') {
+        return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the places you love every day.' }, 402);
+      }
+      const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
+      if (!listing) return json({ error: 'not_found' }, 404);
     }
-    const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
-    if (!listing) return json({ error: 'not_found' }, 404);
     // Once every 24 hours, from their last vote for this listing.
     const { data: last } = await db.from('listing_daily_votes').select('created_at').eq('member_id', memberId).eq('listing_id', id)
       .order('created_at', { ascending: false }).limit(1).maybeSingle();
