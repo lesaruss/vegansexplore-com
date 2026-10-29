@@ -33,7 +33,8 @@
     href: '/ambassadors/welcome', desc: 'Why it matters, your role, your city, your link and what it earns, who to invite, what to share and who joined through you.',
     chips: [{ text: 'Ambassadors only' }, { text: 'On us', cls: 'free' }], cta: 'Open your Guide' };
 
-  // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, then what is coming.
+  // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, the Stadium & Arena Guide
+  // (launched 2026-10-29), then what is coming.
   var GUIDES = [
     { slug: 'welcome', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg', href: '/passport',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
@@ -44,6 +45,9 @@
     { slug: 'vegan-restaurant-survival-guide', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Survival Guide', banner: BANNERS + 'vegan-restaurant-survival-guide.jpg', href: '/guides/vegan-restaurant-survival-guide',
       desc: 'What may be quietly hurting your restaurant, and how to fix it: a free check of your Google listing, website and social, the fixes in your order, our interviews with business owners, and how to get featured, with Liz walking you through it.',
       chips: [{ text: 'Walked through by Liz' }, { text: 'Free check' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+    { slug: 'stadium-arena-guide', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/stadium-arena-guide.jpg', href: '/guides/stadium-arena-guide',
+      desc: 'Where to eat Vegan at the game: every stand and what it serves, a map of the bowl that takes you from your seat to the food, and fans keeping it right, with River walking you through it. Hard Rock Stadium is free.',
+      chips: [{ text: 'Walked through by River' }, { text: 'Hard Rock Stadium free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'vegan-meat-alternatives', soon: true, icon: 'burger', label: 'Food', title: 'The Vegan Meat Alternatives Guide',
       desc: 'Burgers, chicken, sausage, deli slices and more made from plants: the brands to buy, how to cook them and where to find them.' },
     { slug: 'entrepreneur', soon: true, icon: 'briefcase', label: 'Entrepreneur Path', title: 'Entrepreneur Guide',

@@ -1932,7 +1932,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
-Guide is built and waiting on River's lines (below); the Airport Guide is not built. Two
+Guide launched 2026-10-29 (below); the Airport Guide is not built. Two
 Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 
 - **The Stadium & Arena Guide**: one Guide for both, with a Stadiums / Arenas filter (same fan, same concessionaires, and two
@@ -1970,8 +1970,10 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   `venue_report`), and the venues, stands and items to edit, with Find it on Google and Start a new season. Accepting a
   correction pays; the team changes the item itself. Proven 2026-10-28 in a rolled-back transaction with two internal accounts
   (too far refused; 100, 25, 10 and 0 paid; Still accurate marked the item checked); it found the ledger refusing
-  `venue_report`, fixed the same day. The `ve_guides` row `stadium-arena-guide` stays `published` false (the buy button reads
-  Coming soon; super admins see every venue) until Sean approves River's lines and his clips are made (`CLIPS` is empty).
+  `venue_report`, fixed the same day. **Launched 2026-10-29** (Sean: "launch"; migration `20261029_stadium_guide_launch.sql`): the
+  `ve_guides` row `stadium-arena-guide` is published ($11 or 1,100 points, Hard Rock Stadium free), the page is indexed, and its card
+  is fourth in the Guide catalog (`ve-guide-catalog.js`, label Game Day, banner `public/guides/stadium-arena-guide.jpg`: River in the
+  black tee holding a plant-based hot dog and nachos, the locked banner style). River's lines show as text; `CLIPS` is still empty.
 - **The map and Get me there** (Sean, 2026-10-28: "show a map of the stadium and where these things are with a locator icon...
   be anywhere in the stadium and... show me where exactly to go"; migration `20261028_venue_maps.sql`). `/public/ve-venue-map.js`
   (`VEVenueMap.svg`, `find`, `route`) draws our own map of the bowl from `ve_venues.layout` (each level's sections in clockwise order
