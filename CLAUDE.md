@@ -747,6 +747,25 @@ examples say only what their own pages show. **Launched 2026-10-29** (Sean: "goo
 `20261029_nonprofit_guide_launch.sql`): indexed, its card sixth in the Guide catalog (label Nonprofits, replacing the Coming soon
 card; `ve-guide-catalog.js`), in the sitemap. Susan Hargreaves' invitation can go out now. Dani's lines are still text drafts.
 
+## Group Partners (LOCKED by Sean 2026-10-29, playbook `ve-group-partners`)
+
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-group-partners`; migration
+`20261029_group_partners_canon.sql`). **Not built yet.** A community group (Community > Groups) hosts its community and events on
+Vegans Explore and brings us members; the group is the partner, its organizer the lead, comped a Founding Membership with their own
+standing unchanged. The group gets a community page (members, events, board), its events and history on its page and the calendar, our
+ads, featured status, preferential bounties, and anyone anywhere can join it. **Commission** on Passports and Guides bought through its
+link, by lifetime members brought in: 20%, then 25% at 25, 30% at 75, 35% at 150, 40% at 300, 45% at 600, 50% at 1,000 (the cap), from
+the day reached, never back-paid. **Tickets**: our fee 5% of a paid ticket (free events free, card processing passed to the buyer, the
+group may pass our fee on too), the rest to the group (2026 market: Eventbrite 3.7% + $1.79 plus processing, Luma 5%, Posh 10% + $0.99,
+Partiful reportedly about 10% + $2). **Guest pass**: a non-member comes to one free event; from the second they join with the $11
+Passport; paid-ticket events need the Passport from the start. **Exclusivity is earned into**: hosting exclusively here and sharing the
+link unlocks the ladder, featured status, our ads and bounties; every group stays listed regardless. Payouts after a W-9 (the
+organizer's when the group has no entity) at $25, 30-day hold, worded as referral earnings. Named Group Partners, never Community
+Partner. Prototype: the Vegan Social Club (South Florida), then Philly Vegan Social Club; our own communities use the same structure
+later. To build: our own ticketing (Stripe Connect, ticket types, refunds, check-in), the group community page, the guest pass, the
+ladder on `ve_affiliate_earn`, the invitation, the policy text and the Guides' facts. Not decided: whether counts reset, what featured
+placement and ad support include, ticket refunds. The dashboard's Host your group on Vegans Explore card collects interest until then.
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
