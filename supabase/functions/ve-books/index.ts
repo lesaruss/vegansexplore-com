@@ -111,7 +111,7 @@ async function gb(q: string, max = 40): Promise<any[]> {
   if (!key) throw new Error('No Google key');
   // Google Books answers 503 now and then; a short wait and it answers.
   for (let attempt = 0; ; attempt++) {
-    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${max}&printType=books&key=${key}`, { signal: AbortSignal.timeout(15000) });
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${max}&printType=books&langRestrict=en&key=${key}`, { signal: AbortSignal.timeout(15000) });
     if (r.ok) return (await r.json()).items || [];
     const text = (await r.text()).replace(/\s+/g, ' ').slice(0, 160);
     if (attempt < 3 && [429, 500, 502, 503].includes(r.status)) { await sleep(1500 * (attempt + 1)); continue; }
@@ -298,10 +298,12 @@ async function crawlOne(listingId: string) {
     return await ask(CRAWL_SYSTEM, JSON.stringify({ person: { name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }, results: list }), CRAWL_SCHEMA, 'medium');
   };
   let out: any = cands.length ? await run() : { books: [] };
+  const penNames: string[] = [];
   if (!(out.books || []).length) {
     const alt = await ask(PEN_SYSTEM, JSON.stringify({ name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }), PEN_SCHEMA);
     const more = ((alt.names || []) as string[]).map((n) => String(n).trim()).filter((n) => /\S\s+\S/.test(n) && !names.some((x) => words(x) === words(n))).slice(0, 2);
     for (const n of more) {
+      penNames.push(n);
       const r = await findAuthor(n); via = r.via;
       for (const c of r.cands) if (!cands.some((x) => words(x.title) === words(c.title))) cands.push(c);
     }
@@ -311,7 +313,10 @@ async function crawlOne(listingId: string) {
     const titles: string[] = [];
     for (const b of out.books || []) {
       const c = cands[b.index]; if (!c) continue;
-      const id = await upsertBook(String(b.title || c.title).trim(), name, 'author_crawl', p.id);
+      // The name on the cover, the one of its authors that is this person (Ed Winters, not Earthling Ed).
+      const tried = [...names, ...penNames].map((n) => words(lastName(n)));
+      const who = c.authors.find((a) => tried.includes(words(lastName(a)))) || c.authors[0] || name;
+      const id = await upsertBook(String(b.title || c.title).trim(), who, 'author_crawl', p.id);
       if (!id) continue;
       found++; titles.push(b.title || c.title);
       if (c.ol_work) await db.from('ve_books').update({ ol_work: c.ol_work }).eq('id', id).is('ol_work', null);
@@ -345,11 +350,11 @@ const WRITE_SCHEMA = {
   properties: {
     description: { type: 'string', description: 'One sentence, 80 to 200 characters, for the book\'s card.' },
     summary: { type: 'string', description: 'The synopsis: one to three short paragraphs separated by a blank line, 250 to 900 characters in all.' },
-    note: { type: 'string', description: 'Where the facts came from, one short sentence for the team.' },
+    note: { type: 'string', description: 'Where the facts came from (say the publisher\'s description, the subjects or the podcast), one short sentence for the team.' },
   },
 };
 const WRITE_SYSTEM = `You write the card line and the synopsis for a book's page in the Vegans Explore Directory.
-- Use only what the sources say: the publisher's description from Open Library, the subtitle, the subjects, and what was said about it on our podcasts. Never invent a claim, an award, a bestseller list, a number or a quote.
+- Use only what the sources say: the publisher's description (from Google Books or Open Library), the subtitle, the subjects, and what was said about it on our podcasts. Never invent a claim, an award, a bestseller list, a number or a quote.
 - When the sources say little, keep it short and plain: what the book is and who wrote it.
 - Third person, present tense, warm and plain, no hype words (best, amazing, must read). Name the author once.
 - Spell Vegan with a capital V. No dashes of any kind (no em or en dash, no hyphen used as a dash); use commas or periods.`;
