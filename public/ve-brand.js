@@ -13,7 +13,8 @@
  */
 (function () {
   if (window.VE_BRAND) return;
-  var on = /(^|\.)lesaruss\.ai$/.test(location.hostname);
+  // lesaruss.ai, and its branch previews on Vercel.
+  var on = /(^|\.)lesaruss\.ai$/.test(location.hostname) || /^lesaruss-ai-site[a-z0-9-]*\.vercel\.app$/.test(location.hostname);
   try {
     var q = new URLSearchParams(location.search).get('brand');
     if (q === 'lesaruss') sessionStorage.setItem('ve_brand', 'lesaruss');
