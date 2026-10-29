@@ -187,7 +187,9 @@
       });
     });
     if (you) body += '<g class="vvm-you" transform="translate(' + you.x.toFixed(1) + ' ' + you.y.toFixed(1) + ')"><circle r="15"/><text y="5" text-anchor="middle">YOU</text></g>';
-    return '<svg class="vvm" viewBox="40 -40 920 830" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
+    // The frame fits the outermost ring (a fourth or fifth level used to run off the edge), with room above for a pin.
+    var dOut = (L.length ? L[L.length - 1].d1 : 200) + 8, vx = CX - FW - dOut, vy = CY - FH - dOut - 44;
+    return '<svg class="vvm" viewBox="' + vx + ' ' + vy + ' ' + 2 * (FW + dOut) + ' ' + (2 * (FH + dOut) + 52) + '" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
   }
 
   var CSS = '.vvm{display:block;width:100%;height:auto;font-family:Montserrat,sans-serif;}' +
