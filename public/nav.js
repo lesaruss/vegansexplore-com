@@ -3,7 +3,8 @@
  * tag where a page does not (analytics.js runs once either way). Not on our own admin pages (/admin/, the board consent), so the
  * team's work in the Depot is not counted as traffic. */
 (function () {
-  if (window.__veGA || /^\/(admin\/|board-consent)/.test(location.pathname)) return;
+  // Another brand's site (window.VE_BRAND, /public/ve-brand.js) keeps its own analytics.
+  if (window.__veGA || window.VE_BRAND || /^\/(admin\/|board-consent)/.test(location.pathname)) return;
   var s = document.createElement('script'); s.src = '/analytics.js'; s.async = true;
   (document.head || document.documentElement).appendChild(s);
 })();
@@ -90,6 +91,8 @@
 })();
 
 (function () {
+  // Another brand's site draws its own header (ve-brand.js drawNav), in this script's place.
+  if (window.VE_BRAND && window.VE_BRAND.drawNav) { window.VE_BRAND.drawNav(); return; }
   /* ---- Styles ---- */
   var css = [
     '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);}',

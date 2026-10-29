@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join the Directory — Vegans Explore</title>
+<script src="/public/ve-brand.js"></script>
   <meta name="description" content="Any Vegan business, anywhere: find yours in the Vegans Explore Directory and claim it, or add it. $11 locks it in.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -271,12 +272,17 @@
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var FN = SB + '/functions/v1/ve-claims';
-      var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status';
+      var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status,tags';
       var $ = function (id) { return document.getElementById(id); };
       var qs = new URLSearchParams(location.search), L = null;
       // Depot > Preview journeys > Join the Directory opens any step here with sample details (?preview=<step>), signed
       // out, so Sean sees every screen without filling the form. Nothing is saved, sent or charged in preview.
       var PV = qs.get('preview') || '';
+      // Another brand's site (window.VE_BRAND, /public/ve-brand.js; lesaruss.ai serves this page through its proxy, Sean 2026-10-29:
+      // "one framework throughout all of them"). The same page and steps in its colors and words: only its own listings, no How
+      // Vegan, no Vegans Explore account or points, and one way to join, its $11 Passport, paid through its own checkout
+      // (VB.claimApi: HQ's /api/claim, which records the claim for review in Depot > Claims). Adding a business goes to VB.applyUrl.
+      var VB = window.VE_BRAND || null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function rest(q) { return fetch(SB + '/rest/v1/listings?' + q, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }); }
       function logo(l) {
@@ -373,7 +379,12 @@
         return planCard(name, 'verified', { lead: 'On the map', title: 'Passport Stop', price: price(250), sub: sub, ticks: PERKS.verified.map(esc) }, false) +
           planCard(name, 'plus', { lead: 'On the map', title: 'Passport Anchor', price: price(500), sub: sub, ticks: PERKS.plus.map(esc) }, false);
       }
+      function brandCard() {
+        return planCard('plan', 'passport', { lead: 'Your page, claimed', title: VB.passportName, price: '$11', sub: 'one time',
+          text: 'One payment. No subscription.', ticks: VB.claimTicks }, true);
+      }
       function renderPlans() {
+        if (VB) { $('plans').innerHTML = brandCard(); $('up-plans').innerHTML = ''; ['c-founding', 'up-founding'].forEach(function (id) { $(id).hidden = true; }); return syncPlan(); }
         var f = founding(), full = f && OFFER.founding.full;
         var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
         keep = keep && keep.value; keepU = keepU && keepU.value;
@@ -389,6 +400,7 @@
       function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'brand'; }
       function uplan() { var r = document.querySelector('input[name=uplan]:checked'); return r ? r.value : 'brand'; }
       function checkoutNote(p, f) {
+        if (VB) return 'You will finish on a secure Stripe page. We review every claim by hand before it is approved.';
         return p === 'points' ? (MODE === 'add' ? 'Nothing is charged: 1,100 points come off your balance when you submit. We review every application by hand.'
             : 'Nothing is charged: 1,100 points come off your balance when you claim it. We review every claim by hand.')
           : p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim and application by hand.'
@@ -401,7 +413,7 @@
         var p = plan(), f = founding() && /^(verified|plus)$/.test(p);
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = !/^(verified|plus)$/.test(p);
-        $('go').textContent = p === 'points' ? (MODE === 'add' ? 'Submit with 1,100 points' : 'Claim with 1,100 points') : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
+        $('go').textContent = VB ? 'Continue to secure checkout' : p === 'points' ? (MODE === 'add' ? 'Submit with 1,100 points' : 'Claim with 1,100 points') : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
         $('go-note').textContent = checkoutNote(p, f);
         var u = uplan(), uf = founding() && /^(verified|plus)$/.test(u);
         $('up-go').textContent = uf ? 'Reserve my founding spot' : u === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
@@ -483,7 +495,7 @@
       // Next, Next checks the step first, and the address bar carries the step (?step=) so the browser's Back works.
       var STEP = 'find';
       var STEP_NAME = { find: 'Find it', newbiz: 'Your business', business: 'The details', you: 'About you', join: 'How to join' };
-      function stepList() { return MODE === 'add' ? ['find', 'newbiz', 'business', 'you', 'join'] : !isBrand() ? ['find', 'business', 'you', 'join'] : ['find', 'you', 'join']; }
+      function stepList() { if (VB) return ['find', 'business', 'you', 'join']; return MODE === 'add' ? ['find', 'newbiz', 'business', 'you', 'join'] : !isBrand() ? ['find', 'business', 'you', 'join'] : ['find', 'you', 'join']; }
       function stepUrl(name, push) {
         var u = new URL(location.href);
         if (name === 'find') u.searchParams.delete('step'); else u.searchParams.set('step', name);
@@ -497,7 +509,7 @@
         $('lede').hidden = name !== 'find';
         [].forEach.call(document.querySelectorAll('#claim [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
         $('new-biz').hidden = MODE !== 'add';
-        $('acct').hidden = VEAuth.isLoggedIn() && !PV;
+        $('acct').hidden = !!VB || (VEAuth.isLoggedIn() && !PV);
         var at = list.indexOf(name);
         $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + STEP_NAME[k] + '</li>'; }).join('');
         $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + list.length;
@@ -524,13 +536,13 @@
         }
         if (name === 'business') {
           // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
-          if ((add || !isBrand()) && !vs) return bad('Please choose how Vegan the business is.');
+          if (!VB && (add || !isBrand()) && !vs) return bad('Please choose how Vegan the business is.');
           if ((add || !isBrand()) && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
         }
         if (name === 'you') {
           if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
           if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) return bad('Please add an email we can reach you at.', $('c-email'));
-          if (!VEAuth.isLoggedIn() && $('c-pw').value.length < 8) return bad('Please create a password of 8 or more characters, or sign in instead.', $('c-pw'));
+          if (!VB && !VEAuth.isLoggedIn() && $('c-pw').value.length < 8) return bad('Please create a password of 8 or more characters, or sign in instead.', $('c-pw'));
         }
         if (name === 'join' && plan() === 'claim' && (!amount || amount < 11)) return bad('Please choose a contribution of $11 or more.', $('amt'));
         return true;
@@ -557,7 +569,7 @@
         clearTimeout(t); var v = $('q').value.trim();
         if (v.length < 2) { $('results').innerHTML = ''; return; }
         t = setTimeout(function () {
-          rest('select=' + COLS + '&status=eq.approved&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12').then(function (rows) {
+          rest('select=' + COLS + '&status=eq.approved' + (VB ? '&or=(tags.ov.{' + VB.tags.join(',') + '},category.in.(' + VB.sharedCategories.join(',') + '))' : '') + '&name=ilike.*' + encodeURIComponent(v.replace(/[*,()]/g, ' ')) + '*&order=name&limit=12').then(function (rows) {
             $('results').innerHTML = (rows || []).length ? rows.map(function (l) {
               return '<a href="/claim?listing=' + encodeURIComponent(l.slug) + '" data-pick="' + esc(l.slug) + '">' + logo(l) + '<div><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.category].filter(Boolean).join(' · ')) + (l.claim_status === 'verified' ? ' · already claimed' : '') + '</span></div></a>';
             }).join('') : '<p class="note" style="margin-top:12px">No match for that name yet. Add your business below.</p>';
@@ -586,7 +598,7 @@
         var m = me(); if (m) { if (!$('c-name').value) $('c-name').value = m.name || ''; if (!$('c-email').value) $('c-email').value = m.email || ''; }
         renderPlans(); loadPoints(); goStep(arguments[0] || 'newbiz', !arguments[0]);
       }
-      $('add-btn').onclick = function () { addMode(); };
+      $('add-btn').onclick = function () { if (VB) { location.href = VB.applyUrl; return; } addMode(); };
 
       // ---- The form.
       var amount = null;
@@ -632,6 +644,7 @@
         var list = stepList();
         for (var n = 0; n < list.length; n++) { if (!checkStep(list[n])) { if (STEP !== list[n]) { goStep(list[n], true); checkStep(list[n]); } return; } }
         var p = plan();
+        if (VB) return brandSubmit();
         // Signed out: make the account from what they already typed (name, email, the password on About you), then go on.
         // An email that already has an account is offered Sign in instead, with the email filled in.
         if (!VEAuth.isLoggedIn()) {
@@ -663,6 +676,17 @@
         }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
       }
       // Just signed in on a claim: they may already hold it (then they get its plans) or have claimed it.
+      function brandSubmit() {
+        $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Taking you to the secure checkout...';
+        saveDraft();
+        fetch(VB.claimApi, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'start', listing: L.slug,
+          contact_name: $('c-name').value, contact_role: $('c-role').value, email: $('c-email').value, contact_phone: $('c-phone').value,
+          tagline: $('b-tag').value, description: $('b-desc').value, website: $('b-web').value, instagram: $('b-ig').value, phone: $('b-phone').value }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            if (d && d.url) { location.href = d.url; return; }
+            $('go').disabled = false; bad((d && d.error) || 'That did not go through. Please try again.');
+          }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
+      }
       function afterSignIn() {
         if (MODE !== 'claim' || !L) return submit();
         api({ action: 'mine', listing_id: L.id }).catch(function () { return {}; }).then(function (d) {
@@ -697,6 +721,16 @@
       // ads... and then the next step is to enter a campaign, a larger sponsorship"). Nothing that is not live is shown as live.
       var FRONT_ROW_OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
       function nextStep(kind, name) {
+        if (VB) {
+          try { sessionStorage.removeItem(DRAFT); } catch (e) {}
+          $('nx-h').textContent = 'You\'re in. Your claim is locked in.';
+          $('nx-p').textContent = 'Your ' + VB.passportName + ' went through. We review every claim by hand; once we confirm it is you, ' + (L ? L.name : 'your page') + ' is yours to run. Here is what comes next.';
+          $('nx-grid').innerHTML = VB.claimNext(L ? L.slug : '').map(function (c) {
+            return (c.href ? '<a class="nx" href="' + esc(c.href) + '">' : '<div class="nx' + (c.soon ? ' soon' : '') + '">') + (c.soon ? '<span class="tag">Coming</span>' : '<small>' + esc(c.small) + '</small>') +
+              '<b>' + esc(c.title) + '</b><span>' + esc(c.text) + '</span>' + (c.href ? '</a>' : '</div>');
+          }).join('');
+          return show(L ? ['biz-card', 'st-next'] : ['st-next']);
+        }
         var app = kind === 'applied' || kind === 'points', brand = !app && isBrand(), slug = L ? L.slug : '', joined = qs.get('joined') === 'partner';
         try { sessionStorage.removeItem(DRAFT); } catch (e) {}
         $('nx-h').textContent = joined ? 'You\'re in: your front-row seat is saved' : app ? 'You\'re in. Your application is locked in.' : 'You\'re in. Your claim is locked in.';
@@ -728,6 +762,7 @@
           if (qs.get('listing') !== L.slug) setUrl({ listing: L.slug });
           $('biz').innerHTML = logo(L) + '<div><b>' + esc(L.name) + '</b><span>' + esc([L.address_city, L.category].filter(Boolean).join(' · ')) + '</span></div>';
           $('st-verified-view').href = '/directory/' + encodeURIComponent(L.slug);
+          if (VB) return brandPick();
           // What this listing can take today: a founding spot (before its city's Challenge launches) or a paid quarter.
           fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'offer', listing_id: L.id }) })
             .then(function (r) { return r.json(); }).then(function (o) { if (o && o.founding) { OFFER = o; renderPlans(); } }).catch(function () {});
@@ -766,6 +801,25 @@
       }
 
       // ---- Preview (Depot > Preview journeys): a sample owner, Alex, and for a new business a sample one.
+      function brandPick() {
+        if (!VB.ownsListing(L)) { location.replace('https://vegansexplore.com/claim?listing=' + encodeURIComponent(L.slug)); return; }
+        renderPlans();
+        var sid = qs.get('session_id');
+        if (qs.get('paid') === '1' && sid) {
+          show(['biz-card']); $('msg').className = 'msg'; $('msg').textContent = 'Confirming your payment...';
+          return fetch(VB.claimApi, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'confirm', session_id: sid }) })
+            .then(function (r) { return r.json(); }).then(function (d) {
+              $('msg').textContent = '';
+              if (d && d.ok) return nextStep('claim');
+              fill(L); loadDraft(); goStep('join'); bad('We could not confirm the payment yet. If you were charged, email ' + VB.contact + ' and we will sort it out.');
+            }).catch(function () { $('msg').textContent = ''; bad('Could not connect. Please refresh the page.'); });
+        }
+        if (L.claim_status === 'verified') return show(['biz-card', 'st-claimed']);
+        if (L.claim_status === 'pending') { show(['biz-card']); return bad('A claim for this listing is already waiting for review. If it is yours, email ' + VB.contact + '.'); }
+        fill(L);
+        if (qs.get('cancelled') === '1') { loadDraft(); goStep('join'); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; return; }
+        goStep(qs.get('step') || 'find');
+      }
       function sampleYou() { $('c-name').value = 'Alex Rivera'; $('c-role').value = 'Owner'; $('c-email').value = 'alex@example.com'; }
       function preview(pv) {
         var note = document.createElement('p'); note.className = 'founding-note';
@@ -788,8 +842,20 @@
       }
 
       // ---- Start.
+      if (VB) {
+        document.title = 'Claim your listing — ' + VB.name;
+        document.querySelector('.wrap h1').textContent = 'Claim your listing';
+        $('lede').textContent = VB.claimLede;
+        document.querySelector('.jl-side').hidden = true; document.querySelector('.jl').style.gridTemplateColumns = 'minmax(0,1fr)';
+        var vsl = $('vs-l'); if (vsl) { vsl.hidden = true; vsl.nextElementSibling.hidden = true; }
+        $('st-claimed').querySelector('.note').innerHTML = 'If this is your business and you did not claim it, email us at <a href="mailto:' + VB.contact + '">' + VB.contact + '</a> and we will sort it out.';
+        $('st-claimed-signin').remove();
+        $('add-btn').textContent = 'Add your business';
+        document.querySelector('#plans-card h2').textContent = 'Your Passport';
+      }
       function start() {
-        if (!window.VEAuth) return setTimeout(start, 150);
+        if (!VB && !window.VEAuth) return setTimeout(start, 150);
+        if (VB && qs.get('add') === '1') { location.replace(VB.applyUrl); return; }
         var slug = qs.get('listing'), applied = qs.get('applied');
         if (PV) { loadPoints(); return preview(PV); }
         if (applied && qs.get('claim') === 'submitted') { var nm = ''; try { nm = sessionStorage.getItem('ve_join_name') || ''; } catch (e) {} return nextStep('applied', nm); }

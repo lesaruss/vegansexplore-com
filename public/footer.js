@@ -1,4 +1,6 @@
 (function () {
+  // Another brand's site draws its own footer (ve-brand.js drawFooter), in this script's place.
+  if (window.VE_BRAND && window.VE_BRAND.drawFooter) { window.VE_BRAND.drawFooter(); return; }
   /* ── Styles ── */
   var css = [
     '.ve-footer{background:#1A1A1A;}',
