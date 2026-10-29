@@ -1515,7 +1515,12 @@ why it stands where it does, the episodes that named it, and **Make it a listing
 the builder found; any other is built as Vegan related on its next run, `vegan_related` true), **Try again** and **Set aside**. When Amazon
 has no cover for any English edition, the builder takes Google's own cover picture of one (`googleCover`, `books.google.com/books/content`,
 800 px wide); a book with no ISBN-10 gets an Amazon search as its tracked link (`buyLink`). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
-(its author's logo) was set aside for the letter.
+(its author's logo) was set aside for the letter. **Pre-Vegans** (Sean's book, 2026-10-29; migration `20261029_pre_vegans_book_spitz_fix.sql`) has a
+979 ISBN, so no ISBN-10 and no Amazon cover by ISBN, and the builder could not find it: it was added by hand from its Amazon page
+(`pre-vegans-by-sean-russell`, `/go/book-b0b1cd57rw`), in the family `pre-vegans` with the Pre-Vegans Podcast, Featured in Media > Books
+(`SHOWS` in `ve-media.js`), and its eight People in it show as its **Featured people** (`details.film_people` on a book too, `bookPeople` in
+`directory/listing.html`). A book with a 979 ISBN goes the same way. Google Books had Dr. Aaron Spitz as "Splitz"; his book's listing was
+corrected the same day.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the

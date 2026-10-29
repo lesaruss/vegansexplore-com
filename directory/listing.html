@@ -1566,6 +1566,17 @@ function loadFilmPeople(l){
       });
   }).catch(function(){ var sec = document.getElementById('film-people'); if(sec) sec.hidden = true; });
 }
+// A book's Featured people (Pre-Vegans, 2026-10-29): the People whose stories are in it, details.film_people as on a film, drawn by
+// loadFilmPeople into a section added to the book's Overview.
+function bookPeople(l){
+  var list = (l.details || {}).film_people, host = document.querySelector('#tab-overview > div');
+  if(!Array.isArray(list) || !list.length || !host || document.getElementById('film-people')) return;
+  var sec = document.createElement('div'); sec.className = 'section'; sec.id = 'film-people';
+  sec.innerHTML = '<h2 class="section-title">Featured people</h2><p class="pp-sub">The people whose stories are in this book. Vote for them like any listing.</p>' +
+    '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
+  host.appendChild(sec);
+  loadFilmPeople(l);
+}
 // On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
 // these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
 // is read through ve-podcast `episode` and drawn as a person page's row (ppEpRow: Play in the docked player, Save), the directors first,
@@ -4666,7 +4677,7 @@ if(!slug || slug === 'listing'){
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isYouTubeL(l) && !DEMO) loadYouTube(l);
-      if(l.category === 'Books' && !DEMO) loadBookTalks(l.id, document.querySelector('#tab-overview > div'));
+      if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);

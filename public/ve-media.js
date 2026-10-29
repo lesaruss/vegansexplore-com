@@ -36,7 +36,8 @@
     { type: 'podcasts', slug: 'vegans-explore-podcast', name: 'Vegans Explore Podcast' },
     { type: 'podcasts', slug: 'soflo-vegans-podcast', name: 'SoFlo Vegans Podcast' },
     { type: 'podcasts', slug: 'pre-vegans-podcast', name: 'Pre-Vegans Podcast' },
-    { type: 'podcasts', slug: 'vegans-who-lift-podcast', name: 'Vegans Who Lift Podcast' }
+    { type: 'podcasts', slug: 'vegans-who-lift-podcast', name: 'Vegans Who Lift Podcast' },
+    { type: 'books', slug: 'pre-vegans-by-sean-russell', name: 'Pre-Vegans' }
   ];
   var OURS = SHOWS.map(function (s) { return s.slug; });
 
@@ -123,7 +124,7 @@
           shows.innerHTML = list.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
           VERegionDirectory.wire(shows.parentNode, opts.onOpenListing || null);
         }).catch(function () { if (mine === seq) featured.hidden = true; });
-      el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our own shows. Open one to listen here, or on Spotify, Apple Podcasts, Amazon Music and YouTube.' : 'Our picks.';
+      el.querySelector('[data-vem-fsub]').textContent = t.key === 'podcasts' ? 'Our own shows. Open one to listen here, or on Spotify, Apple Podcasts, Amazon Music and YouTube.' : t.key === 'books' ? 'From Vegans Explore.' : 'Our picks.';
       el.querySelector('[data-vem-searchbox]').hidden = t.key !== 'podcasts';
       title.textContent = 'Top ' + TOP + ' ' + t.label;
       // No "See every book in the Directory" line (Sean, 2026-10-27): the banner's See in the Directory does that.
