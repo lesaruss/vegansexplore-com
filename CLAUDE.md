@@ -717,6 +717,14 @@ once, the lead's own earnings and Level 1 untouched, pause and resume, points, t
 day `ve-affiliate` `orgs` was fixed: it asked for `city` and `state`, which listings does not have, so the organization search (also
 Points and levels' Where it goes picker) had always come back empty.
 
+**The Nonprofit Guide** (LOCKED by Sean 2026-10-29, playbook `ve-nonprofit-guide`, canon `canon-ve-nonprofit-guide`; not built
+yet). The Dairy Guide's layout for people who run Vegan nonprofits, rescues and sanctuaries, built from Sean's Canva **Vegan Nonprofit
+Survival Guide** (design `DAGx8V9AvKE`): the 10 tips one per view (Tip 1 free), the Pulse (Vegans Explore Podcast 111 and 123 to 127,
+the nonprofit leaders on our shows, played in place), the Directory's Nonprofits, Rescues and Sanctuaries, Get found, Business
+partners, Events, a peer-to-peer kit, burnout and support, My list, and **Become a Nonprofit Partner** at the end. $11 or 1,100
+points, included for Nonprofit Partner leads; Dani narrates; it replaces the Coming soon card. Susan Hargreaves is invited only
+once it is live.
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
