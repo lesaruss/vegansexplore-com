@@ -83,6 +83,8 @@ alter table ve_affiliate_commissions drop constraint if exists ve_affiliate_comm
 alter table ve_affiliate_commissions add constraint ve_affiliate_commissions_route_check check (route = any (array['self', 'nonprofit', 'partner', 'group']));
 alter table ve_affiliate_commissions drop constraint if exists ve_affiliate_commissions_product_check;
 alter table ve_affiliate_commissions add constraint ve_affiliate_commissions_product_check check (product = any (array['passport', 'guide', 'gift']));
+-- A gift's row has no buyer until someone accepts it (ve_group_gift_status fills it in).
+alter table ve_affiliate_commissions alter column buyer_id drop not null;
 create index if not exists ve_affiliate_commissions_group_idx on ve_affiliate_commissions (group_partner_id) where group_partner_id is not null;
 
 -- The group's place on the ladder today: lifetime members brought in (joined with its link or its gift), its rate and the next rung.

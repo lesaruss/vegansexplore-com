@@ -783,7 +783,31 @@ the owner's perspective").
   `?tab=brand&pd=announce`, New announcement: title, message up to 1,000 characters, Also email it to your members, Pin it to the top),
   sent through `group_announce`; the Overview shows the newest three under About, one pinned first (`gdAnnRender`). The sample answers
   `group_announce` itself and keeps what is sent for the visit (`sessionStorage` `ve_group_ann`); a live group's version (a table, the
-  email through us, the page section for real listings) is part of the Group Partners build. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
+  email through us, the page section for real listings) is part of the Group Partners build.
+- **Groups, live** (Sean, 2026-10-29: "build the live announcements for real groups"; migration `20261029_group_live.sql`, run through the
+  one-time `ve-once-group-live`; edge function `ve-group`, verify_jwt off, the member token checked inside, ops by the admin token with
+  `as_member`). **Joining**: every Groups listing's sidebar has a Join card (`loadGroupLive` in `directory/listing.html`): Passport holders
+  join (`ve_group_members`), with an **unticked** "Email me <group>'s announcements" (`email_ok`), and leave or change it there; signed out it
+  is the members-only window (`VEVotes.memberPrompt('group')`). **Announcements** (`ve_group_announcements`): the listing's owner, the
+  Group Partner lead or a super admin writes them on the dashboard's Announcements (any group's dashboard, `drawAnnounce`); the newest three
+  show under About, a pinned one first; ticked, they go by email from Vegans Explore with the group's name to the members who said yes
+  (`ve_group_announcement_deliveries`, replies to us), at most 2 emails in 7 days and 5 posts a day (`ve_site_settings`
+  `group_partner_program`). The email's link is `/messages#g/<token>`: Stop these emails, Leave the group, Report this (a report pauses the
+  group's emails, `ve_group_mail_holds`, and emails Sean; delete its row to resume). **Group Partner earnings**: a partnership gets its code at
+  onboarding (`ve_group_partners.code`, `/r/<code>`, `trg_ve_group_partner_code`); `ve-auth` sets `members.referred_by_group` for a sign-up
+  through it; `ve_affiliate_earn` pays the group the ladder's rate on the day (`ve_group_rate`: lifetime members brought in, 20% to 50%),
+  rows with `group_partner_id`, route `group`, held 30 days like every commission. The dashboard's Group Partner views read the real numbers
+  (`ve_group_dash`). **Gift a membership** (Sean, same day: "It would cost whatever our half of the $11 would be based on where they are in
+  the commission split... deducted from their payout... an invite link to a specific address"): the lead's dashboard view `gift`
+  (`drawGift`): our share of the $11 at the group's rate today ($8.80 at 20%, $5.50 at 50%), taken from the group's earnings at once as a
+  negative commission row (product `gift`, ref `gift:<invite>`), only while the earnings cover it (`gift_credit_cents` 0, Logan's default,
+  Sean's to change); a `universe_invites` row (`points_to` `gift`, the group's `listing_id`, 1,100 points, 30 days, one email), emailed from
+  Vegans Explore with the organizer's name or a link they copy; `/invite` words it as their gift. Accepting makes them a Founding Member, one
+  the group brought in (it counts toward the rate) and a member of the group (`trg_ve_group_gift_status`); expired (nightly
+  `ve-group-gift-sweep`), canceled or declined gives the cost back (the row turns `reversed`). Not for a member who already has a Passport.
+  Proven 2026-10-29 on a [TEST] group with internal accounts (join, the organizer-only post, a real email, the email link, gift pricing,
+  balance, cancel giving back, the claim, a commission at 20%), then removed. The real dashboard's views were checked in the sample, which
+  draws the same code. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
   window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
   Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
   sign-in** (`VE_DEMO.login`: demo@vegansexplore.com / explore11, `groupDemoLogin`, kept for the visit in `sessionStorage`
