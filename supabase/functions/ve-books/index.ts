@@ -447,7 +447,8 @@ async function buildOne(bookId: string) {
     buy_link: await buyLink(title, authorName, i10, slug, author),
   };
   // Make it a listing (the Depot) counts as Vegan related.
-  if (!pick.vegan_related && !author && b.vegan_related !== true) {
+  // Only books about Vegan living become listings, our People's included (Sean, 2026-10-29: "Only the books relevant to Veganism").
+  if (!pick.vegan_related && b.vegan_related !== true) {
     await db.from('ve_books').update({ ...facts, status: 'referenced', note: String(wrote.note || '').slice(0, 300), updated_at: new Date().toISOString() }).eq('id', bookId);
     return { book_id: bookId, title, ok: true, status: 'referenced' };
   }

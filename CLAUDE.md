@@ -1389,7 +1389,9 @@ in a transcript, keeps a mention only when its quote is really in the transcript
 after 180 days, `ve_book_author_checks`) looks a person up by name and keeps the books Claude confirms are theirs (`author_listing_id`);
 **build** (`ve-books-build`, three every 5 minutes, three tries) matches a found book, takes an English edition whose cover Amazon has,
 copies the cover into `media/logos/books/`, has Claude write the card line and synopsis only from the publisher's description, and makes its
-tracked Amazon link. A book about Vegan or plant-based living, food, health or animals, or by one of our People, becomes a Books listing
+tracked Amazon link. A book about Vegan or plant-based living, food, health or animals becomes a Books listing (one of our People's books too,
+but only when it is about Vegan living: Sean, 2026-10-29, "Only the books relevant to Veganism"; six were taken off that day, migration
+`20261029_books_vegan_only.sql`, among them Jane Velez-Mitchell's true crime books and the What the Health book; The Penis Book stays, Sean's call)
 (`built`, in its author's family, so it is on their Books tab; a person with no family gets their slug as one); any other book is
 `referenced`, shown only on the episodes that name it. An existing listing of the same title is linked, never copied. A podcast episode's
 view (`?ep=<guid>`) shows **Referenced books** under it (`books` in `public/ve-episodes.js`, `ve-books` `episode`, public): the cover,
