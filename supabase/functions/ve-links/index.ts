@@ -85,6 +85,30 @@ function withClick(dest: string, clickId: string) {
   } catch { return absolute(dest); }
 }
 
+// Amazon Associates (Sean, 2026-10-29: "whenever you're posting an Amazon link, you can automatically pull from a designated
+// Associates account"). Every /go/ link to Amazon leaves with our tracking ID from ve_site_settings amazon_associates
+// ({ tag, tags: { 'amazon.co.uk': '...' } }; one tag per Amazon store), replacing any tag already in the link. An empty tag
+// leaves the link as it is. Read once every 5 minutes.
+let AMZ: { at: number; tag: string; tags: Record<string, string> } | null = null;
+async function amazonTags() {
+  if (AMZ && Date.now() - AMZ.at < 300_000) return AMZ;
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'amazon_associates').maybeSingle();
+  const v = (data?.value || {}) as { tag?: string; tags?: Record<string, string> };
+  AMZ = { at: Date.now(), tag: String(v.tag || '').trim(), tags: v.tags && typeof v.tags === 'object' ? v.tags : {} };
+  return AMZ;
+}
+async function withAffiliate(dest: string) {
+  let u: URL;
+  try { u = new URL(dest); } catch { return dest; }
+  const host = u.hostname.replace(/^(www|smile)\./, '');
+  if (!/^amazon\.[a-z.]{2,6}$/.test(host)) return dest;
+  const t = await amazonTags().catch(() => null);
+  const tag = t ? String(t.tags[host] || (host === 'amazon.com' ? t.tag : '') || '').trim() : '';
+  if (!/^[\w-]{3,40}$/.test(tag)) return dest;
+  u.searchParams.set('tag', tag);
+  return u.toString();
+}
+
 type Who = { member_id: string | null; email: string | null; name: string | null };
 async function memberByEmail(email: string) {
   const { data } = await db.from('members').select('id, name, email').eq('tenant_id', VE_TENANT_ID).ilike('email', email).is('merged_into_member_id', null).limit(1).maybeSingle();
@@ -149,7 +173,7 @@ Deno.serve(async (req) => {
       if (!code) return json(fallback);
       const { data: link } = await db.from('ve_links').select('*').eq('code', code).maybeSingle();
       if (!link) return json(fallback);
-      if (!link.active) return json({ destination: absolute(link.destination) });
+      if (!link.active) return json({ destination: await withAffiliate(absolute(link.destination)) });
       const ua = clean(body.ua, 400);
       const bot = !ua || BOT_UA.test(ua) || String(body.method || 'GET').toUpperCase() === 'HEAD';
       const at = new Date().toISOString();
@@ -157,12 +181,12 @@ Deno.serve(async (req) => {
         link_id: link.id, initiative_slug: link.initiative_slug, member_id: link.recipient_member_id, email: link.recipient_email,
         source: 'click', is_bot: bot, user_agent: ua || null, referrer: clean(body.referrer, 400) || null,
       }).select('id').single();
-      if (bot) return json({ destination: absolute(link.destination) });
+      if (bot) return json({ destination: await withAffiliate(absolute(link.destination)) });
       await db.from('ve_links').update({ clicks: (link.clicks || 0) + 1, last_click_at: at }).eq('id', link.id);
       if (link.recipient_member_id || link.recipient_email) {
         await recordInterest(link.initiative_slug, { member_id: link.recipient_member_id, email: link.recipient_email, name: link.recipient_name }, link.tags || [], 'link', link.id, link.label, at);
       }
-      return json({ destination: click ? withClick(link.destination, click.id) : absolute(link.destination) });
+      return json({ destination: await withAffiliate(click ? withClick(link.destination, click.id) : absolute(link.destination)) });
     }
 
     if (action === 'claim') {

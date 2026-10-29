@@ -1362,6 +1362,21 @@ Ed (profile, The Disclosure Podcast, his channel), John Lewis (profile, BadAssVe
 Torre Washington (YouTube)), and each host and their show (Neal Barnard, Dotsie Bausch, Jason Kartalian, Brighde Reed, Maxime Sigouin,
 Muscles by Brussels). Neither John Lewis nor Torre Washington hosts a podcast of his own (checked, Sean asked); their channels were added
 (`badassvegan-youtube`, `torre-washington-youtube`). A new family is the same `details.family` value on each listing.
+**The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
+in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
+Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
+super admins, `loadPartnerHome`). With a person in the family, all its books are one **Books** tab on the person's page (`?tab=books`; from
+the podcast, YouTube or a book's own page it links there): the covers, newest first, then **About the author** (their description cut to 150
+characters, Read their profile); a cover opens that book in the same space (`?book=<slug>`, pushed so back works): a breadcrumb in the page
+(Books > title), the cover, by, year, type and publisher, the synopsis (`details.summary`, else the description), **Buy on Amazon** (the
+book's tracked link, `details.buy_link`, `/go/book-<ISBN-10>`) and The book's page (`drawBooks` in `directory/listing.html`). On 2026-10-29
+(migration `20261029_author_books.sql`): Earthling Ed's three books, eight of Dr. Barnard's (The Cheese Trap joined his family) and Badass
+Vegan, each cover copied from Amazon's image for its ISBN into `vegan-media/media/logos/books/` and checked by eye (Badass Vegan's stored
+ISBN was wrong; Reversing Diabetes uses the revised edition in print). Open Library and Google Books refuse our server after a few calls, so
+book facts came from Open Library's search before it closed. **Amazon Associates**: every `/go/` link to an Amazon store leaves with our
+tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`); the tag is empty
+until Sean gives it, so the links work untagged until then. Not built yet: books referenced in an episode's transcript and a search for every
+book our People have written.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
