@@ -9,7 +9,7 @@
  *                 to fix right away; then the full audit, $49, or $149 with a Secret Shopper visit (Sean, 2026-10-10)
  *   The fixes     the mistakes that close Vegan restaurants, one per view; members get them in the order their audit puts
  *                 them. "Outdated or hard-to-find information" is open to everyone (the free example)
- *   Pulse         the research (sourced facts) and our interviews with business owners (ve_pulse_content, PULSE_PICKS)
+ *   Pulse         the research (sourced facts) and our interviews with business owners as podcast episodes (PULSE_PICKS, ve-podcast)
  *   Get featured  how the Directory works and how a restaurant gets featured: listed, claimed, the Partner plan
  *   Promotions    what we run that brings members through the door, each marked Live or Coming
  *   Test yourself the quiz; 80% or better earns the Entrepreneur Track badge
@@ -31,22 +31,28 @@
   var LISTING_FIELDS = (window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status') + ',initials,website';
   // Restaurants members vote for, shown on Get featured as the Directory's own cards.
   var TOP_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Restaurants&vegan_status=eq.fully_vegan&order=vote_count.desc.nullslast&limit=6';
-  // Our interviews with business owners, in this order. A new one is its ve_pulse_content slug here.
+  // Our interviews with business owners, in this order, as their podcast episodes (Sean, 2026-10-29: "instead of videos, I want to
+  // show the podcast version... the way we're doing it in the people directory listings"). Each is [ve_pulse_content slug, the show's
+  // Directory slug, the episode's guid in that show's feed (ve_podcast_feeds)]; a new one is a row here. Matched by title and date
+  // 2026-10-29; Ingrid Newkirk's and Susan Hargreaves's feed titles differ from ours, and both feed episodes name Charles Grippo too.
   var PULSE_PICKS = [
-    'why-some-vegan-businesses-struggle-while-others-thrive',
-    'the-business-of-being-vegan-who-actually-profits',
-    'vegan-restaurants-adding-meat-death-spiral',
-    'sen-saigon-vegan-vietnamese-nyc',
-    'love-life-cafe-and-the-long-game-of-vegan-community',
-    'allen-zelden-changing-the-game-for-vegan-entrepreneurs-soflo-vegans-podcast',
-    'chef-babette-stuff-i-eat-healing-purpose',
-    'conscious-business-and-compassion-with-veronica-menin-e108-soflo-vegans-podcast',
-    'chef-robyn-corporate-chef-of-future-foods-paow-soflo-vegans-podcast',
-    'ingrid-newkirk-peta-green-bar-kitchen-ep003-soflo-vegans-podcast',
-    'susan-hargraves-animal-hero-kids-charles-grippo-ep007-soflo-vegans-podcast',
-    'top-vegan-restaurants-in-broward-e107-soflo-vegans-podcast'
+    ['why-some-vegan-businesses-struggle-while-others-thrive', 'vegans-explore-podcast', '58240239-2262-4aa3-bfec-a66d187b641e'],
+    ['the-business-of-being-vegan-who-actually-profits', 'vegans-explore-podcast', 'd7d6e339-3572-4e2b-b1e1-b0154758f638'],
+    ['vegan-restaurants-adding-meat-death-spiral', 'vegans-explore-podcast', '593875f5-772c-4645-b5fb-f29f2ac79774'],
+    ['sen-saigon-vegan-vietnamese-nyc', 'vegans-explore-podcast', '3450fd2f-027d-44df-b438-e1f2abea9bce'],
+    ['love-life-cafe-and-the-long-game-of-vegan-community', 'vegans-explore-podcast', 'ba6387fb-db3f-467a-ab17-f8b777822f50'],
+    ['allen-zelden-changing-the-game-for-vegan-entrepreneurs-soflo-vegans-podcast', 'soflo-vegans-podcast', '2332e733-f95b-4613-be93-99510014bbab'],
+    ['chef-babette-stuff-i-eat-healing-purpose', 'vegans-explore-podcast', '18c20ea8-3712-4bb6-9bf8-5b7399656cb1'],
+    ['conscious-business-and-compassion-with-veronica-menin-e108-soflo-vegans-podcast', 'soflo-vegans-podcast', '03c7a387-a57f-443a-af64-1d7fa92d0938'],
+    ['chef-robyn-corporate-chef-of-future-foods-paow-soflo-vegans-podcast', 'soflo-vegans-podcast', '2ba64e18-29e0-41bb-89b6-c97165e7ff09'],
+    ['ingrid-newkirk-peta-green-bar-kitchen-ep003-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/473962515'],
+    ['susan-hargraves-animal-hero-kids-charles-grippo-ep007-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/486535308'],
+    ['top-vegan-restaurants-in-broward-e107-soflo-vegans-podcast', 'soflo-vegans-podcast', '01c7986a-a00a-4538-8102-ccc319ecefd9']
   ];
-  var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,youtube_id,thumbnail_url,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.join(',') + ')';
+  var PODCAST_FN = SB + '/functions/v1/ve-podcast';
+  var SHOW_SLUGS = PULSE_PICKS.map(function (x) { return x[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+  var SHOWS_URL = SB + '/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=in.(' + SHOW_SLUGS.join(',') + ')';
+  var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,youtube_id,thumbnail_url,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.map(function (x) { return x[0]; }).join(',') + ')';
 
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
@@ -531,14 +537,31 @@
 
   // ---------- the Pulse: research and our interviews ----------
   var LOCKED_FACTS = ['Replying to reviews wins customers', 'Restaurants last longer than the myth says'];
+  // An interview is its podcast episode, the row a person's page uses (VEEpisodes.row): the show's square artwork, the title, the
+  // show, date and length, Play in the player docked above the list, then our vote and Save (My list). Two across.
   function podCard(p) {
-    return '<div class="dg-pod-w"><a class="dg-pod" href="#/pulse/watch/' + encodeURIComponent(p.slug) + '"><div class="dg-pod-img" style="background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>' +
-      '<div class="dg-pod-b"><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + '</div><div class="dg-pod-t">' + esc(p.title) + '</div><div class="dg-pod-s">' + esc(p.summary || '') + '</div></div></a>' +
-      (member() ? '<div class="dg-acts dg-pod-acts">' + gvoteBtn(p.slug) + saveBtn('episode', p.slug) + '</div>' : '') + '</div>';
+    var ep = p.ep;
+    if (!ep || !window.VEEpisodes) return '';
+    var show = { name: p.show.name, image: p.show.logo_url || '' };
+    return VEEpisodes.row(Object.assign({}, ep, { summary: '', image: show.image || ep.image || '' }), show,
+      { showName: true, acts: member() ? gvoteBtn(p.slug) + saveBtn('episode', p.slug) : '' });
+  }
+  function podKey(p) { return '|' + p.ep.guid; }
+  function playPod(slug) {
+    var p = (PODS || []).filter(function (x) { return x.slug === slug; })[0];
+    if (p && p.ep && window.VEEpisodes) VEEpisodes.play(Object.assign({}, p.ep, { image: p.show.logo_url || p.ep.image || '' }), { name: p.show.name, image: p.show.logo_url || '' });
+  }
+  // The Pulse redraws when votes load, which would drop a playing episode: the player moves into the new dock (a move in the same
+  // task keeps it playing) or, off the Pulse, to the foot of the window.
+  function keepPlayer(bar) {
+    if (!bar) return;
+    var dock = main.querySelector('.vep-dock[data-vep-always]');
+    if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
+    else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }
   }
   function viewPulse(sub) {
     var parts = String(sub || '').split('/'), m = parts[0] === 'research' || parts[0] === 'fact' ? 'research' : 'listen';
-    if (parts[0] === 'watch' && parts[1]) return viewWatch(decodeURIComponent(parts[1]));
+    if ((parts[0] === 'watch' || parts[0] === 'listen') && parts[1]) { viewPulse(''); playPod(decodeURIComponent(parts[1])); return; }
     var t = toggles([['Interviews', '#/pulse'], ['The research', '#/pulse/research']], m === 'research' ? 'The research' : 'Interviews');
     var html = head('The Restaurant Pulse', m === 'research' ? 'What the research says' : 'Interviews with business owners',
       m === 'research' ? 'Every fact with its source linked.' : 'Owners and founders on what worked, what did not, and what they would do again. New ones keep coming.', t);
@@ -553,24 +576,11 @@
           (n < facts.length - 1 ? '<a class="dg-fact-next" href="#/pulse/fact/' + (n + 1) + '">Next fact &rsaquo;</a>' : '')) + '</div></div>';
     } else {
       var pods = PODS ? PODS.map(function (x, i) { return [x, i]; }).sort(function (a, b) { return gvCount(b[0].slug) - gvCount(a[0].slug) || a[1] - b[1]; }).map(function (x) { return x[0]; }) : null;
-      var grid = pods ? (pods.map(podCard).join('') || '<p class="dg-empty">No interviews yet.</p>') : '<div class="dg-loading">Loading...</div>';
+      var grid = pods ? (pods.length ? '<div class="vep-list">' + pods.map(podCard).join('') + '</div>' : '<p class="dg-empty">No interviews yet.</p>') : '<div class="dg-loading">Loading...</div>';
       if (member() && !gvLoaded) loadGVotes(function () { if (curTab === 'pulse' && !/research|fact/.test(location.hash)) viewPulse(''); });
-      html += member() ? '<div class="dg-pods">' + grid + '</div>' : gated('<div class="dg-pods">' + grid + '</div>', 'Every interview with business owners', 'Watch them right here in the Guide.');
+      html += member() ? '<div class="vep-dock" data-vep-always></div><div class="rg-eps">' + grid + '</div>' : gated('<div class="rg-eps">' + grid + '</div>', 'Every interview with business owners', 'Listen to them right here in the Guide.');
     }
     main.innerHTML = html;
-  }
-  function viewWatch(slug) {
-    if (access === 'checking') { main.innerHTML = '<div class="dg-loading">Loading...</div>'; return; }
-    if (!member()) { location.replace('#/pulse'); return; }
-    var p = null; (PODS || []).forEach(function (x) { if (x.slug === slug) p = x; });
-    if (!p) { main.innerHTML = crumb([['Pulse', '#/pulse']]) + '<div class="dg-loading">' + (PODS ? 'That interview is not in the Guide.' : 'Loading...') + '</div>'; return; }
-    var date = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-    main.innerHTML = crumb([['Pulse', '#/pulse'], [p.title]]) +
-      '<div class="dg-watch"><div>' + (p.youtube_id
-        ? '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(p.youtube_id) + '?rel=0" title="' + esc(p.title) + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>'
-        : '<div class="dg-pod-img" style="border-radius:12px;background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>') + '</div>' +
-      '<div><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + (date ? ' &middot; ' + esc(date) : '') + '</div><h2 class="dg-h1" style="font-size:22px">' + esc(p.title) + '</h2><p>' + esc(p.summary || '') + '</p>' +
-      '<div class="dg-btns">' + gvoteBtn(p.slug) + saveBtn('episode', p.slug) + '<a class="dg-btn dg-ghost" href="/pulse/' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">' + (p.youtube_id ? 'Episode notes' : 'Listen to the episode') + '</a></div></div></div>';
   }
 
   // ---------- Get featured: the Directory ----------
@@ -685,7 +695,7 @@
       var keys = SV_ORDER.filter(function (x) { return x.kind === sec[2]; }).map(function (x) { return x.key; }), html = '', items = [];
       if (sec[2] === 'fix') { var all = allFixes(); items = keys.map(function (k) { return all.filter(function (f) { return f.id === k; })[0]; }).filter(Boolean);
         html = '<div class="dg-srows">' + items.map(function (f) { return row({ icon: fixIcon(f.id), title: f.title, href: '#/fixes/' + f.id, body: '<p class="dg-srow-p">' + esc(f.problem || '') + '</p>', acts: saveBtn('fix', f.id) }); }).join('') + '</div>'; }
-      else if (sec[2] === 'episode') { items = keys.map(function (k) { return (PODS || []).filter(function (p) { return p.slug === k; })[0]; }).filter(Boolean); html = '<div class="dg-pods">' + items.map(podCard).join('') + '</div>'; }
+      else if (sec[2] === 'episode') { items = keys.map(function (k) { return (PODS || []).filter(function (p) { return p.slug === k; })[0]; }).filter(Boolean); html = '<div class="vep-dock" data-vep-always></div><div class="rg-eps"><div class="vep-list">' + items.map(podCard).join('') + '</div></div>'; }
       else { items = keys.map(function (k) { return PROMOS.filter(function (p) { return p.k === k; })[0]; }).filter(Boolean);
         html = '<div class="dg-srows">' + items.map(function (p) { return row({ icon: ICON.promos, title: p.t, href: '#/promos/' + p.k, body: '<p class="dg-srow-p">' + esc(p.what) + '</p>', acts: saveBtn('promo', p.k) }); }).join('') + '</div>'; }
       el.innerHTML = items.length ? html : '<p class="dg-empty">Nothing saved here yet. Tap Save on any of the <a href="' + sec[3] + '">' + esc(sec[0].toLowerCase()) + '</a> and it shows up here.</p>';
@@ -755,7 +765,7 @@
     PUB.why.concat(MEM ? MEM.why : []).forEach(function (w) { out.push({ t: 'Pulse', title: w.title, text: w.text, href: '#/pulse/research' }); });
     if (!MEM) return out;
     allFixes().forEach(function (f) { out.push({ t: 'The fixes', title: f.title, text: [f.problem].concat(f.list || []).concat([f.action]).join(' '), href: '#/fixes/' + f.id }); });
-    (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/watch/' + encodeURIComponent(p.slug) }); });
+    (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/listen/' + encodeURIComponent(p.slug) }); });
     PROMOS.forEach(function (p) { out.push({ t: 'Promotions', title: p.t, text: p.what + ' ' + p.why, href: '#/promos/' + p.k }); });
     return out;
   }
@@ -857,9 +867,11 @@
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     if (view !== 'audit') auditView++;
+    var bar = document.getElementById('vep-player');
     ({ overview: viewOverview, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); },
        featured: function () { viewFeatured(sub); }, promos: function () { viewPromos(sub); }, quiz: function () { viewQuiz(sub); },
        mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+    keepPlayer(bar);
     var moved = key !== curTab;
     curTab = key;
     cueLiz(key);
@@ -882,12 +894,22 @@
     access = MEM ? 'member' : 'pending';
     route();
   }
+  // Each interview's podcast episode comes from its show's own feed through ve-podcast (the audio streams from the show's host).
+  function feedEp(show, guid) {
+    return fetch(PODCAST_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'episode', slug: show, guid: guid }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d && d.episode; }).catch(function () { return null; });
+  }
   function loadPublic() {
-    Promise.all([rest(PULSE_URL).catch(function () { return []; }), rest(TOP_URL).catch(function () { return []; })]).then(function (r) {
-      var pods = Array.isArray(r[0]) ? r[0] : [];
-      PODS = PULSE_PICKS.map(function (s) { return pods.filter(function (p) { return p.slug === s; })[0]; }).filter(Boolean);
+    if (window.VEEpisodes) VEEpisodes.css();
+    var eps = Promise.all(PULSE_PICKS.map(function (x) { return feedEp(x[1], x[2]); }));
+    Promise.all([rest(PULSE_URL).catch(function () { return []; }), rest(TOP_URL).catch(function () { return []; }), rest(SHOWS_URL).catch(function () { return []; }), eps]).then(function (r) {
+      var pods = Array.isArray(r[0]) ? r[0] : [], shows = Array.isArray(r[2]) ? r[2] : [];
+      PODS = PULSE_PICKS.map(function (x, i) {
+        var p = pods.filter(function (y) { return y.slug === x[0]; })[0], show = shows.filter(function (y) { return y.slug === x[1]; })[0], ep = r[3][i];
+        return p && show && ep && ep.audio ? Object.assign({}, p, { show: show, ep: ep }) : null;
+      }).filter(Boolean);
       TOP = Array.isArray(r[1]) ? r[1] : [];
-      if (curTab === 'pulse' || curTab === 'featured') route();
+      if (curTab === 'pulse' || curTab === 'featured' || curTab === 'mylist') route();
     });
   }
   function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
@@ -902,6 +924,10 @@
       [].forEach.call(el.parentNode.querySelectorAll('[data-ans]'), function (b) { b.setAttribute('aria-pressed', String(b === el)); });
       var nx = document.getElementById('rgQNext'); if (nx) { nx.removeAttribute('aria-disabled'); nx.style.opacity = ''; nx.style.pointerEvents = ''; }
       return;
+    }
+    if ((el = e.target.closest('[data-vep-play]'))) {
+      var pp = (PODS || []).filter(function (x) { return x.ep && podKey(x) === el.getAttribute('data-vep-play'); })[0];
+      if (pp) playPod(pp.slug); return;
     }
     if (e.target.closest('[data-retake]')) { ANS = {}; keepAns(); return; }
     if ((el = e.target.closest('[data-done]'))) {
