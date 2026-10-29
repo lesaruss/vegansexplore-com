@@ -508,7 +508,10 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   which pays through HQ `/api/passport` (`lib/passportCheckout.ts`, table `lr_passport_checkouts`, migration 060) and, once Stripe says
   paid, records `brand_memberships` 'lesaruss-ai' passport (source `passport_checkout`) on the email's one members row, makes its HQ
   sign-in (no password: the 6-digit code on /login sets one), emails the steps, and offers Sign in with LESARUSS back to the listing.
-  It is confirmed on the return from Stripe (the LESARUSS.ai Stripe account has no webhook to HQ, the same as claims). Proven 2026-10-29: a free LESARUSS
+  It is confirmed on the return from Stripe and by HQ's Stripe webhook (`/api/stripe/lesaruss-ai`, endpoint `we_1UW0D0JqP8HzdnUnp89MSa8n`
+  on the LESARUSS account, 2026-10-29: `checkout.session.completed`, `async_payment_succeeded` and `expired` run the same confirm for the
+  Passport, listing claims and Guide orders, so paying and closing the tab still records it; its signing secret is
+  `lesaruss_secrets.LESARUSS_AI_STRIPE_WEBHOOK_SECRET`). Proven 2026-10-29: a free LESARUSS
   account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
 ## Analytics (Sean, 2026-10-28)
