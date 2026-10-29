@@ -2040,6 +2040,16 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   <item>` (`viewChoose`): Still here, Something changed, Not there anymore and Comment, each with its points, then its form. A stand
   can carry a warning (`ve_venue_spots.note`, shown on the card): Full Bloom at Kaseya Center, whose Miami Beach restaurant closed in
   2025, says check it is still open and its items are Ask before you order (migration `20261029_full_bloom_kaseya_note.sql`).
+- **Bounties: first to confirm** (Sean, 2026-10-29: "a higher bounty for the first time somebody... confirms the information, and
+  then afterwards the price goes down... you want to be first to action... somebody can go around an airport in one afternoon and
+  probably get 1,000 points"; migration `20261029_venue_bounties.sql`). Both venue Guides. Still here on an item no member has
+  confirmed in 35 days (or ever, or since the new season; `ve_venue_item_bounty_open`) pays the bounty
+  (`ve_venue_report_points.first_with_photo` / `first_no_photo`, 50 / 25), then its usual 10 / 5 until it goes stale again; the
+  paid report is `bounty` true. First is by submission: `ve_venue_report_review` refuses a confirmation while an earlier one on the
+  same item waits (`earlier_pending`). Limits in `ve_site_settings` `venue_bounties` (fresh_days 35, daily_paid_cap 40, daily_reports
+  60; were 5 paid and 20 sent). The Guides tag each open item **Bounty: first to confirm** and each venue card **N bounties open**;
+  `/bounties` has the always-open card **Be first at the stadiums** (`?campaign=venues`, `ve-venues` `bounties`: by city, each venue's
+  open items and points, no item names, only Guides that are published). Defaults Logan set, Sean's to change.
 - **The Airport Guide, built 2026-10-29, not published** (Sean: "Let's look at the airport guide now"; migrations
   `20261029_airport_guide.sql`, `20261029_airports_seed.sql`, run through the one-time `ve-once-airports`, now the 410 stub). The same
   engine: `ve-venues` serves both Guides (`GUIDES`, the body's `guide`; a venue's kind picks its Guide), the same reports, points, saves
