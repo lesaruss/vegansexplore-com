@@ -177,10 +177,10 @@ create or replace function public.ve_books_status() returns jsonb language sql s
     'people_with_books', (select count(*) from ve_book_author_checks where found > 0));
 $$;
 
--- The crons: scan two transcripts and crawl two people every 10 minutes, build three books every 5. Each costs nothing once
+-- The crons: scan two transcripts every 5 minutes (it was 10 until 2026-10-29 afternoon), crawl two people every 10, build three books every 5. Each costs nothing once
 -- nothing is due. Open Library refuses a burst, so ve-books spaces its calls and a run is small.
 select cron.unschedule(j.jobid) from cron.job j where j.jobname in ('ve-books-scan', 've-books-crawl', 've-books-build');
-select cron.schedule('ve-books-scan', '3-59/10 * * * *', $c$
+select cron.schedule('ve-books-scan', '3-59/5 * * * *', $c$
   select net.http_post(url := 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-books',
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select value from lesaruss_secrets where key = 'CRON_SECRET')),
     body := '{"action":"scan","limit":2}'::jsonb, timeout_milliseconds := 30000);

@@ -277,6 +277,12 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bk-author{margin-top:8px}.bk-author-row{display:flex;gap:14px;align-items:flex-start}
 .bk-author-row img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex:none}
 .bk-author-row b{font-size:14px;font-weight:800}.bk-author-row p{font-size:13px;line-height:1.6;margin:4px 0 6px}
+.bk-tlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:10px}
+.bk-talk{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:10px;text-decoration:none;color:var(--ve-text);background:#fff}
+.bk-talk img,.bk-timg{width:56px;height:56px;border-radius:8px;object-fit:cover;background:#EAF7EA;display:block}
+.bk-talk b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;font-weight:800;line-height:1.35}
+.bk-talk small{display:block;font-size:12px;color:var(--ve-text-75)}.bk-talk em{display:block;font-style:normal;font-size:11.5px;font-weight:700;color:#1f5f22}
+.bk-talk:hover b{text-decoration:underline}.bk-talks{margin-top:24px}
 .bk-more{background:none;border:0;padding:0;font:800 12px Montserrat,sans-serif;color:#2d7d31;cursor:pointer;text-decoration:underline}
 @media(max-width:640px){.bk-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.bk-detail{grid-template-columns:minmax(0,1fr)}.bk-cover-lg{max-width:200px}}
 .tab-btn{flex-shrink:0;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:14px 22px;border:none;background:none;color:var(--ve-text-50);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:Montserrat,sans-serif;transition:color .15s,border-color .15s;white-space:nowrap}
@@ -1685,7 +1691,8 @@ function drawBooks(slug, push){
       '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(b.slug) + '">The book\'s page</a></div>' +
       (b.buy ? '<div class="bk-note">As an Amazon Associate we earn from qualifying purchases.</div>' : '') + '</div></div></div>';
   }
-  S.panel.innerHTML = '<div style="padding:32px 40px 40px">' + html + aboutAuthor(a) + '</div>';
+  S.panel.innerHTML = '<div style="padding:32px 40px 40px">' + html + (b ? '<div id="bk-talks-host"></div>' : '') + aboutAuthor(a) + '</div>';
+  if(b) loadBookTalks(b.id, document.getElementById('bk-talks-host'));
 }
 document.addEventListener('click', function(e){
   if(!BOOK_STATE || !e.target.closest) return;
@@ -1696,6 +1703,25 @@ document.addEventListener('click', function(e){
   var t = document.querySelector('.listing-tabs'), navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 64;
   if(t){ var r = t.getBoundingClientRect(); if(r.top < navH) window.scrollTo({ top: window.scrollY + r.top - navH - 8 }); }
 });
+// Talked about on our podcasts (Sean, 2026-10-29: "cross-referencing that content with what we have in our directory. So it's kind of
+// building each other"): the episodes whose transcripts name this book (ve-books book, from ve_book_mentions), each opening the
+// episode on its show's page. On a book's own page and on the Books tab's book view; nothing shows when no episode named it.
+function loadBookTalks(listingId, host){
+  if(!host || !/^[0-9a-f-]{36}$/.test(String(listingId || ''))) return;
+  fetch(SUPABASE_URL + '/functions/v1/ve-books', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'book', listing_id: listingId }) })
+    .then(function(r){ return r.json(); }).then(function(d){
+      var eps = (d && d.episodes) || []; if(!eps.length || !host.isConnected) return;
+      var WHY = { their_own: 'Their own book', recommended: 'Recommended', discussed: 'Talked about', mentioned: 'Mentioned' };
+      var sec = document.createElement('div'); sec.className = 'section bk-talks';
+      sec.innerHTML = '<h2 class="section-title">Talked about on our podcasts</h2><div class="bk-tlist">' + eps.map(function(e){
+        var when = e.date ? new Date(e.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+        var who = e.speaker && !/^(host|guest)$/i.test(e.speaker) ? ' by ' + e.speaker : '';
+        return '<a class="bk-talk" href="' + esc(e.href || '#') + '">' + (e.image ? '<img src="' + esc(e.image) + '" alt="" loading="lazy">' : '<span class="bk-timg"></span>') +
+          '<span><b>' + esc(e.title) + '</b><small>' + esc([e.show, when].filter(Boolean).join(' · ')) + '</small><em>' + esc((WHY[e.context] || 'Mentioned') + who) + '</em></span></a>';
+      }).join('') + '</div>';
+      host.appendChild(sec);
+    }).catch(function(){});
+}
 window.addEventListener('popstate', function(){
   if(!BOOK_STATE) return;
   var q = new URLSearchParams(location.search);
@@ -4624,6 +4650,7 @@ if(!slug || slug === 'listing'){
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
       if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isYouTubeL(l) && !DEMO) loadYouTube(l);
+      if(l.category === 'Books' && !DEMO) loadBookTalks(l.id, document.querySelector('#tab-overview > div'));
       if(!DEMO) loadFamily(l);
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
