@@ -790,6 +790,24 @@ the owner's perspective").
   `/groups/sample` and `/groups/sample?view=owner` in a new tab, with the demo sign-in), Your part, Questions, Say yes (`?c=<code>` goes
   to `/invite?c=<code>`; without one, mail links to contact@lesaruss.com).
 - A listing's sidebar shows Follow only when it has a social link (it was an empty card on listings with none).
+- **Depot > People > Group Partners** (`/admin/depot/group-partners`, after Nonprofit Partners; migration `20261029_group_partners.sql`,
+  run through the one-time `ve-once-group-partners`, now the 410 stub; edge function `ve-groups`, super admin or the admin token). One view
+  at a time: **#list/<tab>** (every Groups listing: chapter, contact email or No email yet, events past and upcoming, invitation and
+  partner status; tabs All, No email yet, Ready to invite, Not sent yet, Sent, Opened the link, Said yes, Declined; search and chapter),
+  **#g/<listing>** (the organizer's name and email, **Find their email** (`find_contact`: their own site's home, contact and about pages,
+  then the Instagram bio through Apify; only an email they publish, with where it was found), the partnership's status and note, and the
+  invitation: What you know about them, typed or spoken, Write their opening (`ve-invites` `draft_note`), the email as it goes, Send it
+  from me, Copy the link, Cancel, Follow up), **#pick** then **#new** (tick several groups, one card each), and **#discover** (`discover`:
+  Meetup's public group search around each chapter's centers for Vegan or plant-based groups active since 2025, not ours or already held;
+  each saved quarantined, `crawl_source` `group-discover`, until **Add to the Directory** (approves it, makes its Meetup events page its
+  crawl source and brings in this year's past events and the next 180 days) or **Set aside**). A group invitation is
+  `universe_invites.points_to` `group` with `listing_id` (an approved Groups listing not already onboarding, active or paused); the email
+  and `/invite` are worded for a group and link the Guide (`/groups/welcome?c=<code>`) and the demo (`/groups/sample`). Sending it makes the
+  group `invited` (`trg_ve_group_invite_sent`); accepting (`universe_invite_claim`) comps the organizer a Founding Membership and 1,100
+  points if they were not a member, makes them the lead and the group `onboarding` in `ve_group_partners` (an active or paused group keeps
+  its status), and emails Sean. Proven 2026-10-29 in a rolled-back transaction (wrong email refused, the comp and the lead, an existing
+  member gets no points). The first discover (South Florida) found six for review, a yoga group among them: discover's filter is a first
+  pass, so read each before adding it.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
