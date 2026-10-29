@@ -2042,8 +2042,10 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   sections and 200s; Kia Center's 100s, lettered club sections and 200s; Inter&Co a soccer pitch, `field` `soccer`, lower 2 to 36 and
   upper 100s; Raymond James 100s to 300s; Benchmark 100s, club C1 to C9, 200s and 300s). Atlanta's three and Lincoln Financial Field the same day (migration
   `20261029_venue_maps_atlanta_lincoln.sql`; Truist Park with home plate at the bottom, its infield boxes 10 to 42 on the 100 level;
-  The Mac Shac's club pin is C238). The map's frame fits its outermost ring (a fourth level used to run off the edge). Citizens Bank
-  Park, Xfinity Mobile Arena, Subaru Park and New York's six wait on seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
+  The Mac Shac's club pin is C238). The map's frame fits its outermost ring (a fourth level used to run off the edge). Philadelphia's
+  other three the same day (migration `20261029_venue_maps_philadelphia.sql`: Xfinity Mobile Arena as a court, its loge boxes 1 to 82
+  and A to R left off; Citizens Bank Park with home plate at the bottom and its lettered sections B to F on the 100 level; Subaru Park a
+  soccer pitch). New York's six wait on seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
   (`inset` box-shadow), so the scrolling column never clips it.
