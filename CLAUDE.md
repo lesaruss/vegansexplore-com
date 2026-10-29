@@ -677,7 +677,7 @@ checkout opened, a payment inside a rolled-back transaction turned it Joined), t
 
 ## Nonprofit Partners (LOCKED by Sean 2026-10-29, playbook `ve-nonprofit-partners`)
 
-Concept session with V, locked by Sean: "lock it" (canon `canon-ve-nonprofit-partners`). Not built yet. **The organization is the
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-nonprofit-partners`). **The organization is the
 partner** (its Directory listing: Nonprofits, Rescues or Sanctuaries), never a person: its own link (separate from the lead's), a
 flat 20% of the $11 Passport and Guides bought through it (the opportunity's rate, not a member level), points it holds for our
 services (Sean sets the amount on the invitation; members can give it more), a marketing kit (ready-to-post messages, a website button
@@ -688,6 +688,34 @@ individual status. They just happen to be the person assigned as the lead") gets
 organization says yes and keeps their own standing (Level 1, their own link and points). Invitation only, from Depot > People >
 Founding Members (Founding Member, Ambassador or Nonprofit Partner). First: Susan Hargreaves, Animal Hero Kids (`be-an-animal-hero`), at animalherokidsrock@gmail.com (Sean, 2026-10-29: the address he uses, the
 most reliable; HQ holds three others for her).
+
+**Built 2026-10-29** (Sean: "go"; migrations `20261029_nonprofit_partners.sql`, `20261029_nonprofit_partner_code_words.sql`; edge function
+`ve-nonprofit`). `ve_nonprofit_partners` (one row per organization: `listing_id`, `lead_member_id`, `code`, `rate_pct` 20, `products`
+passport and guide, `points`, `status` active | paused | ended) and `ve_nonprofit_partner_points` (the organization's points, through
+`ve_partner_points_grant`). Its link is `/r/<code>` (`ve_partner_code`: the name in capitals, whole words, BE-AN-ANIMAL-HERO); `ve-auth`
+sets `members.referred_by_partner` when a sign-up's `?ref=` is an organization's (`partnerFromCode`), `ve_referral_visit` counts its
+visits, and `ve_affiliate_earn` writes its commissions (`ve_affiliate_commissions.partner_id`, route `partner`, no `affiliate_id`, the
+partnership's rate), shown in Depot > Ambassadors > Commissions under the organization's name and marked paid there. The invitation is
+`universe_invites.points_to` `nonprofit` with `listing_id` (a Nonprofits, Rescues or Sanctuaries listing, not already a partner; members
+can be invited): **Founding Members > Write to them** has **Invite as** for each person (Founding Member, Ambassador, Their organization as a
+Nonprofit Partner, with the organization picked from the Directory and its points; Ambassadors get a level and points), and the
+Founding Members list shows all three kinds (`founding` returns Nonprofit Partner invitations and Ambassadors picked there, `pool` set).
+The email, `/invite`, the opening writer and the follow-up are worded for an organization. Accepting (`universe_invite_claim`) joins the
+invitation, comps the lead (a Founding Membership and 1,100 points, only if they were not a member) and runs
+`ve_nonprofit_partner_start` (the partner, its code, the invitation's points as the organization's, the listing tag
+`ve-nonprofit-partner`, which draws the **Nonprofit Partner** badge on the listing page and the Directory card, `partnerTag`). The lead's
+**Nonprofit Partner Guide** is `/nonprofits/welcome` (the Ambassador Guide's layout; Overview, Why it matters, Your link, Your kit (four
+messages, a website button and a banner as HTML to copy), Your numbers, Where the money goes, Your points (Ask to use our points:
+`ve-nonprofit` `use_points`, a `ve_initiative_interest` row, initiative `nonprofit-partners`, and an email to Sean), Your account; super
+admins preview one with `?partner=<id>`). **Depot > People > Nonprofit Partners** (`/admin/depot/nonprofit-partners`, after Founding
+Members): every partner with its numbers and the open invitations, and one partner (`#p/<id>`): its link, status (Paused or Ended takes the
+badge off and stops its link earning), rate, code, a new lead by account email, team note, Give points, who joined and its earnings.
+`/policies#membership` has Nonprofit Partners; the Guides' facts and a saved answer (Can my nonprofit partner with Vegans Explore?) say
+it. Proven 2026-10-29 end to end with a [TEST] organization and the internal QA account (the invitation and its email and opening, the
+accept, the partnership with its points and badge, a visit and a sign-up through its link, a Passport paying $2.20 to the organization
+once, the lead's own earnings and Level 1 untouched, pause and resume, points, the Guide, the badge, the picker), then removed. The same
+day `ve-affiliate` `orgs` was fixed: it asked for `city` and `state`, which listings does not have, so the organization search (also
+Points and levels' Where it goes picker) had always come back empty.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
