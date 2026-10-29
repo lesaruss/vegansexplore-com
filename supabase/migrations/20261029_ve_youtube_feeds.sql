@@ -15,3 +15,10 @@ create table if not exists public.ve_youtube_feeds (
   error text
 );
 alter table public.ve_youtube_feeds enable row level security;
+
+-- Hourly: ve-youtube reads up to 20 channels whose videos are older than 6 hours.
+select cron.schedule('ve-youtube-refresh', '43 * * * *', $$
+  select net.http_post(url := 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-youtube',
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select value from public.lesaruss_secrets where key = 'CRON_SECRET')),
+    body := '{"action":"refresh"}'::jsonb, timeout_milliseconds := 150000)
+$$);

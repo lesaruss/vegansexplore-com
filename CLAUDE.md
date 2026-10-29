@@ -1297,7 +1297,28 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
-**Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
+**The Directory's Media picker lists the kinds of media** (Sean, 2026-10-29: "the drop down shows the cities, and instead it should
+show the different types... podcasts, YouTube, news outlets, documentary films, books, and any new thing"). On the Directory's Media
+section (`/directory` and the dashboard's Directory tab) the banner's picker is Podcasts, YouTube, News Outlets, Documentaries & Films,
+Books and All media, the section's own pills (`tellSection` in `ve-region-directory.js` passes them to `onSection(key, label, subs)`), so a
+new sub-section joins it; a pick opens that pill, a pill updates the picker, and any other section has the cities back
+(`VECityBanner` `setChoices(list, value, pick)`, `setChoices(null)`; `mediaPick` in `directory/index.html`, `dashDirSection` in center-console).
+
+**YouTube channels** (Sean, 2026-10-29: "find some popular YouTube vegan channels... any new video that pops up will show on their page...
+the video on the left, and then a summary, like a 250 character summary... all their Instagrams... below it, you will see thumbnails of
+their latest videos... watch everything on this page"; migration `20261029_ve_youtube_feeds.sql`, edge function `ve-youtube`). A YouTube
+listing names its channel in `details.youtube_channel_id`; its Overview (`renderYouTubeOverview`, `loadYouTube` in `directory/listing.html`)
+plays the latest video on the left (`youtube-nocookie`), About (the listing's description, up to 250 characters), subscribers and videos,
+and **Find them on** (YouTube, Instagram, TikTok, Facebook, website; marks in `/public/icons/platforms/`) on the right, then **Latest videos**,
+thumbnails 12 at a time (Show more), each playing in that player. `ve-youtube` `videos` serves the latest 50 uploads from
+`ve_youtube_feeds`, read again after 6 hours (cron `ve-youtube-refresh`, hourly, 20 a run), which sets Active / On hiatus like a podcast;
+`resolve` (ops) looks a channel up by handle or id. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
+for every channel, Google's own included; checked 2026-10-29), so it reads YouTube's Data API v3 with `YOUTUBE_API_KEY`, else
+`GOOGLE_PLACES_API_KEY`. On 2026-10-29 that key answered "Requests to this API youtube... are blocked": the YouTube Data API has to be
+enabled on its Google Cloud project and allowed in the key's API restrictions (Sean's step). No YouTube listing exists yet; the channels
+are added once it answers.
+
+ "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
 text on the right"; migration `20261029_film_pages.sql`). A Documentaries & Films listing's Overview (`renderFilmOverview` in
 `directory/listing.html`) is **Where to watch** (square icons like a podcast's Listen on, each with Free, Rent or buy or Stream under it;
