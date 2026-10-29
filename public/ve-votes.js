@@ -189,7 +189,7 @@
       icon: g.icon, eyebrow: 'Members only', title: g.title, body: g.body,
       // Another brand's site (window.VE_BRAND: { passportUrl, passportLabel, loginUrl, gates }) sends people to its own Passport
       // and sign-in, in its own words; Vegans Explore sets none.
-      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
+      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from + '&back=' + back : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
                '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
       // A brand that signs in with LESARUSS (VB.signIn 'lesaruss') starts Continue with LESARUSS here (ve-auth.js, data-ve-lesaruss),
       // coming back to this page.
