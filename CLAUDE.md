@@ -2164,6 +2164,12 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   PBI, MCO, TPA, JAX, ATL, DCA, IAD, BWI, PHL, JFK, LGA, EWR, LAX, LHR; 114 spots, 153 items), each pinned from Google (`locate`) with
   its illustration (`public/guides/airports/<slug>.webp`). Gate ranges no source confirmed are left empty (EWR Terminal B, LAX, LHR,
   JFK Terminal 5, LGA Terminal C, TPA Airside E). Launch = the `ve_guides` row `airport-guide` published, `noindex` off, a catalog card.
+  **Tampa's gates** came from its own gate map (Sean's upload, May 2024; migration `20261029_tpa_gates.sql`): A 1 to 18, C 20 to 45,
+  E 62 to 75, F 78 to 90; Panda Express pinned at E69. **The rest as a research bounty** (Sean, 2026-10-29: "let's experiment with
+  getting the rest of these items as one bounty that a person can complete for like 150 points"; migration
+  `20261029_bounty_map_the_venues.sql`): the Bounties campaign `map-the-venues` (ongoing, South Florida, until 2026-11-12), one bundle
+  job, 150 points, one person, seven parts (EWR Terminal B, LAX, JFK Terminal 5, LGA Terminal C, Heathrow, Yankee Stadium, UBS Arena):
+  each an official map dated 2024 or later with its link, checked against the official site in Depot > Bounties before paying.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
