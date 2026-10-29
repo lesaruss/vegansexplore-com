@@ -1519,12 +1519,14 @@ function loadFamily(l){
   var fam = (l.details || {}).family, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
   if(!fam || !ov || !/^[a-z0-9-]{1,80}$/.test(fam)) return;
   fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&details->>family=eq.' + encodeURIComponent(fam) +
-    '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link&limit=40',
+    '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link,ford:details->>family_order&limit=40',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
       rows = (rows || []).map(function(x){ x.details = { youtube_channel_id: x.yt }; return x; });
       if(rows.length < 2 || !rows.some(function(x){ return x.id === l.id; })) return;
-      rows.sort(function(a, b){ return familyKind(a) - familyKind(b) || String(a.name).localeCompare(String(b.name)); });
+      // Within a kind, details.family_order puts one first (Sean, 2026-10-29: Vegans Explore Podcast before his other shows), then A to Z.
+      function ford(x){ var n = parseInt(x.ford, 10); return isNaN(n) ? 999 : n; }
+      rows.sort(function(a, b){ return familyKind(a) - familyKind(b) || ford(a) - ford(b) || String(a.name).localeCompare(String(b.name)); });
       var people = rows.filter(function(x){ return familyKind(x) === 0; }), books = rows.filter(function(x){ return familyKind(x) === 3; });
       // The person whose page holds the Books tab: this page's when it is a person, else the first one.
       var author = isPersonL(l) ? l : people[0];

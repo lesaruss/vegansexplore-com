@@ -1361,7 +1361,8 @@ Giacomo Marchese, Podcast); with no person it is Podcast and YouTube (Nutrition 
 Ed (profile, The Disclosure Podcast, his channel), John Lewis (profile, BadAssVegan, the book Badass Vegan), Torre Washington (profile,
 Torre Washington (YouTube)), and each host and their show (Neal Barnard, Dotsie Bausch, Jason Kartalian, Brighde Reed, Maxime Sigouin,
 Muscles by Brussels). Neither John Lewis nor Torre Washington hosts a podcast of his own (checked, Sean asked); their channels were added
-(`badassvegan-youtube`, `torre-washington-youtube`). A new family is the same `details.family` value on each listing.
+(`badassvegan-youtube`, `torre-washington-youtube`). A new family is the same `details.family` value on each listing; two of the same
+kind run A to Z unless `details.family_order` puts one first (lower first; the Vegans Explore Podcast is 1 in Sean's family).
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
