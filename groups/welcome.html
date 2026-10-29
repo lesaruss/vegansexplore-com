@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>The Group Partner Guide — Vegans Explore</title>
+  <meta name="description" content="For the people who run Vegan social clubs, meetup, potluck and dinner groups: what it means to host your group on Vegans Explore.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Group Partner Guide (LOCKED by Sean 2026-10-29, canon canon-ve-group-partners, playbook ve-group-partners). The pitch an
+       organizer reads when Sean invites their group: what a Group Partner is, the numbers, the guest pass, and the demo club at
+       /groups/sample. The Nonprofit Partner Guide's layout (nonprofits/welcome.html, its dg-* and am-* rules copied here): the tabs are
+       the tour, Dani's picture and words on the right, the content on the left, Back / N of M / Next, Hide me (ve-guide-min.js). Open to
+       everyone, no sign-in: nothing here reads or saves anything. ?c=<invite code> is kept, and Say yes then opens /invite?c=<code>. */
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
+
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/south-florida/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .dg-brand-mark{flex:1 1 280px;min-width:0;}
+    .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .dg-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:4px 0 0;text-transform:uppercase;}
+    .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
+    .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
+    .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
+    .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
+    .dg-menu{display:flex;gap:2px;margin-top:12px;overflow:hidden;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-join-tab{margin-left:auto;color:#c5f2c7;}
+    .dg-menu-select{display:none;}
+
+    .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
+    .dg-main{min-width:0;}
+    .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
+    .dg-guide{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
+    .dg-guide.dg-shift{animation:dgShift .55s ease-out;}
+    @keyframes dgShift{from{transform:scale(1.03) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
+    @media (prefers-reduced-motion:reduce){.dg-guide.dg-shift{animation:none;}}
+    .dg-guide-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
+    .dg-guide-name b{color:var(--ink);}
+    .dg-bubble{background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;}
+    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-tour.dg-tour-m{display:none;}
+    .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
+    .dg-tnav[aria-disabled="true"]{opacity:0.35;pointer-events:none;}
+
+    .dg-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-h1{font-size:clamp(22px,2.2vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-0.01em;line-height:1.15;}
+    .dg-lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:860px;}
+    .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
+    .dg-btn:hover{background:#4ade80;}
+    .dg-btn[disabled]{opacity:.6;cursor:default;}
+    .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;}
+    .dg-note{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5;margin:0 0 16px;}
+    .dg-note b{font-weight:900;}
+    .dg-status{display:block;font-size:13px;font-weight:700;color:#8a5a00;margin-top:10px;}
+    .dg-status:empty{display:none;}
+
+    .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;}
+    .dg-tile{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
+    .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
+    .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
+    .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
+    .dg-card .dg-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);margin-bottom:8px;}
+    .dg-card .dg-tag.soon{background:#f2f4f2;color:var(--ink55);}
+    .dg-card a{color:var(--g);font-weight:800;}
+    .dg-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+    .dg-level{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px;text-align:center;}
+    .dg-level b{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .dg-level strong{display:block;font-size:28px;font-weight:900;margin:4px 0 2px;}
+    .dg-level span{font-size:12.5px;color:var(--ink75);}
+
+    .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
+    .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
+    .dg-access li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
+    .dg-access li b{color:var(--ink);}
+    .dg-pricebox{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:24px;text-align:center;}
+    .dg-pricebox .dg-big{font-size:52px;font-weight:900;line-height:1;}
+    .dg-pricebox .dg-big small{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-pricebox p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:10px 0 16px;}
+    .dg-pricebox .dg-btn{width:100%;}
+    .dg-pricebox a{color:var(--g);font-weight:800;}
+
+    @media (min-width:901px) and (min-height:600px){
+      html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
+      html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
+      html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
+      html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
+      html.dg-fit .dg-rail{overflow:hidden;}
+      html.dg-fit .dg-guide{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
+    }
+    @media (max-width:1280px){.dg-menu a{padding:10px 10px 11px;font-size:10.5px;letter-spacing:.05em;}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-access{grid-template-columns:minmax(0,1fr);}.dg-menu{display:none;}
+      .dg-menu-select{display:block;margin:12px 0 14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}}
+    @media (max-width:900px){
+      .dg-top{padding:16px 16px 2px;}
+      .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
+      .dg-joinbox .dg-btn{width:100%;}
+      .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
+      .dg-joinbox .dg-jb-in br{display:none;}
+      .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
+      .dg-rail{order:-1;}
+      .dg-guide{aspect-ratio:1/1;width:100%;max-width:280px;margin:0 auto;}
+      .dg-rail .dg-tour{display:none;}
+      .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
+      .dg-levels{grid-template-columns:minmax(0,1fr);}
+    }
+    @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
+    /* The Nonprofit Partner Guide's extras on the Guide layout, kept for the same look. */
+    .dg-joinbox .dg-jb-price b{font-size:30px;}
+    .am-link{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+    .am-link code{font-family:inherit;font-size:15px;font-weight:800;color:var(--g);word-break:break-all;flex:1;min-width:220px;}
+    .am-msg{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;}
+    .am-msg b{display:block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+    .am-msg p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;white-space:pre-line;flex:1;}
+    .am-msg-link{display:flex;flex-direction:column;gap:2px;background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:8px 12px;margin:0 0 12px;}
+    .am-msg-link span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink75);}
+    .am-msg-link code{font-family:inherit;font-size:14px;font-weight:800;color:var(--g);word-break:break-all;}
+    .am-msg-acts{display:flex;flex-wrap:wrap;gap:8px;}
+    .am-sm-on{background:var(--g) !important;color:#fff !important;border-color:var(--g) !important;}
+    .am-sm{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:38px;border-radius:6px;cursor:pointer;border:1px solid var(--gm);background:#fff;color:var(--g);align-self:flex-start;}
+    .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
+    .am-steps li{counter-increment:s;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
+    .am-steps li::before{content:counter(s);display:inline-flex;width:26px;height:26px;border-radius:6px;background:var(--g);color:#fff;font-weight:900;font-size:13px;align-items:center;justify-content:center;margin-bottom:8px;}
+    .am-steps li b{display:block;color:var(--ink);font-size:14.5px;}
+    .am-field{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px;}
+    .am-select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;max-width:420px;color:var(--ink);}
+    .am-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .am-row .dg-btn{min-height:46px;}
+    .am-note{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin:8px 0 16px;}
+    .am-note.bad{color:#a61b1b;}
+    .am-qa{border-bottom:1px solid var(--line);padding:12px 0;}
+    .am-qa b{display:block;font-size:14.5px;font-weight:900;margin-bottom:3px;}
+    .am-qa p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .am-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px;}
+    .am-list{border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+    .am-list h3{margin:0 0 6px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .am-list ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--ink75);}
+    .am-people{list-style:none;margin:12px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;max-height:260px;overflow:auto;}
+    .am-people li{display:flex;justify-content:space-between;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;}
+    .am-people li:last-child{border-bottom:0;}
+    .am-tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);white-space:nowrap;}
+    .am-tag.wait{background:var(--warm);color:#8a5a00;}
+    .am-gate{max-width:560px;margin:48px auto;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .am-gate p{margin:0 0 16px;color:var(--ink75);line-height:1.6;}
+    @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
+    .am-sec{margin:20px 0 10px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .dg-tile .am-ic{display:flex;align-items:center;justify-content:center;color:var(--g);border:1px solid var(--gm);background:#fff;}
+    .dg-fold{display:none;align-items:center;gap:6px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink75);cursor:pointer;}
+    .dg-rail.dg-folded .dg-guide,.dg-rail.dg-folded .dg-guide-name,.dg-rail.dg-folded .dg-bubble{display:none;}
+    /* The Group Partner Guide's own parts. */
+    .gp-ladder{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--gm);border-radius:12px;overflow:hidden;margin:0 0 16px;font-size:14px;}
+    .gp-ladder th,.gp-ladder td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--gm);}
+    .gp-ladder th{background:var(--g);color:#fff;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+    .gp-ladder td:last-child,.gp-ladder th:last-child{text-align:right;}
+    .gp-ladder tr:last-child td{border-bottom:0;}
+    .gp-ladder tbody tr:nth-child(odd) td{background:var(--gl);}
+    .gp-ladder td b{font-size:17px;font-weight:900;color:var(--g);}
+    .gp-fees{list-style:none;margin:0 0 16px;padding:0;border:1px solid var(--line);border-radius:12px;}
+    .gp-fees li{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;}
+    .gp-fees li:last-child{border-bottom:0;}
+    .gp-fees li.us{background:var(--gl);font-weight:800;}
+    .gp-fees li span:last-child{text-align:right;color:var(--ink75);}
+    .gp-fees li.us span:last-child{color:var(--g);}
+    .gp-demo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0 0 16px;}
+    .gp-demo a{display:flex;flex-direction:column;gap:6px;padding:22px;border-radius:12px;text-decoration:none;color:#fff;background:var(--g);min-height:150px;justify-content:flex-end;transition:transform .12s,box-shadow .12s;}
+    .gp-demo a.alt{background:#14301c;}
+    .gp-demo a:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.15);}
+    .gp-demo a small{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;}
+    .gp-demo a b{font-size:22px;font-weight:900;line-height:1.15;}
+    .gp-demo a span{font-size:13.5px;line-height:1.5;color:#e6f4e7;}
+    .gp-login{border:1px dashed var(--gm);border-radius:12px;padding:16px 18px;background:#fff;margin:0 0 16px;}
+    .gp-login dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin:8px 0 10px;font-size:14px;}
+    .gp-login dt{font-weight:800;color:var(--ink55);font-size:11px;letter-spacing:.1em;text-transform:uppercase;align-self:center;}
+    .gp-login dd{margin:0;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:700;color:var(--g);}
+    .gp-login p{margin:0;font-size:13px;line-height:1.5;color:var(--ink75);}
+    @media (max-width:700px){.gp-demo{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:900px){.dg-fold{display:inline-flex;}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<header class="dg-top">
+  <div class="dg-top-row">
+    <div class="dg-brand-mark">
+      <div class="dg-eyebrow">For the people who run Vegan groups</div>
+      <h1 class="dg-title">The Group Partner Guide</h1>
+    </div>
+    <div class="dg-joinbox">
+      <div class="dg-jb-price"><small>Your share,<br>up to</small><b>50%</b></div>
+      <a class="dg-btn" href="#/demo">Try the demo</a>
+    </div>
+  </div>
+  <nav class="dg-menu" id="dgMenu" aria-label="Group Partner Guide tabs"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Group Partner Guide tabs"></select>
+</header>
+
+<div class="dg-app" id="dgApp">
+  <main class="dg-main" id="dgMain" aria-live="polite"></main>
+  <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
+  <aside class="dg-rail" id="dgRail" data-guide="dani" aria-label="Dani, your Guide">
+    <div class="dg-guide" id="dgGuide" role="img" aria-label="Dani, one of our Guides"></div>
+    <div class="dg-guide-name"><b>Dani</b> &middot; Your Guide</div>
+    <div class="dg-bubble" id="dgBubble"></div>
+    <div class="dg-tour" id="dgTour"></div>
+    <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Dani</button>
+  </aside>
+</div>
+
+<script src="/public/footer.js"></script>
+</div>
+<script>
+(function () {
+  // Every term here is the locked one (canon canon-ve-group-partners, CLAUDE.md Group Partners). Change them there first, then here.
+  var TABS = [
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Dani. If you run a Vegan social club, a meetup, a potluck or a dinner group, this is for you. One tab at a time.' },
+    { k: 'why', label: 'Why it matters', say: 'You already bring people together. We give your group a home, bring more people to it, and pay you as it grows.' },
+    { k: 'gets', label: 'What your group gets', say: 'Here is everything your group gets as a Group Partner, and none of it costs you anything.' },
+    { k: 'numbers', label: 'The numbers', say: 'The more members your group brings in, the bigger your share. It starts at twenty percent and climbs to fifty.' },
+    { k: 'guest', label: 'The guest pass', say: 'Nobody has to pay to try you out. A newcomer comes to one free event first, then joins if they love it.' },
+    { k: 'demo', label: 'Try the demo', say: 'See it for yourself. Open our sample club as a member, then as the organizer. Click around, nothing is real.' },
+    { k: 'part', label: 'Your part', say: 'Your part is simple: share your link and host your events here. The more you do, the more it unlocks.' },
+    { k: 'questions', label: 'Questions', say: 'Here are straight answers to what organizers ask us most.' },
+    { k: 'yes', label: 'Say yes', say: 'Ready? Say yes and we set your group up. And if you want to talk it through first, we are here.' }
+  ];
+  var BLURB = {
+    why: 'What it does for your group.', gets: 'Your page, your events, our promotion.', numbers: 'Your share, from 20% up to 50%.',
+    guest: 'One free event, then the Passport.', demo: 'Our sample club, as a member and as the organizer.', part: 'Share your link, host here.',
+    questions: 'Straight answers.', yes: 'Set your group up.'
+  };
+  var ICONS = {
+    why: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+    gets: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+    numbers: '<path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M21 16V5"/>',
+    guest: '<path d="M3 9a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 0 0-4V4H3z"/><path d="M13 4v14"/>',
+    demo: '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M10 8l5 3-5 3z"/>',
+    part: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+    questions: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>',
+    yes: '<path d="M20 6 9 17l-5-5"/>'
+  };
+  var LADDER = [['Start', '20%'], ['25', '25%'], ['75', '30%'], ['150', '35%'], ['300', '40%'], ['600', '45%'], ['1,000', '50%']];
+  var FEES = [['Vegans Explore', '5% of a paid ticket. Free events free.', 1], ['Eventbrite', '3.7% + $1.79 a ticket, plus card processing'],
+    ['Luma (free plan)', '5% a ticket'], ['Posh', '10% + $0.99 a ticket'], ['Partiful', 'reported at about 10% + $2 a ticket']];
+  var DEMO = '/groups/sample';
+  var code = (new URLSearchParams(location.search).get('c') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
+
+  function icon(k) { return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[k] || '') + '</svg>'; }
+  var $ = function (id) { return document.getElementById(id); };
+  var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect'), guideEl = $('dgGuide'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
+  var cur = 'overview';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
+  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
+  function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '">' + esc(label) + '</a></div>'; }
+  function qa(q, a) { return '<div class="am-qa"><b>' + esc(q) + '</b><p>' + a + '</p></div>'; }
+  function mail(subject, label, ghost) { return '<a class="dg-btn' + (ghost ? ' dg-ghost' : '') + '" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent(subject) + '">' + esc(label) + '</a>'; }
+
+  var VIEWS = {
+    overview: function () {
+      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
+        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+      }).join('');
+      return head('Welcome', 'Host your group on Vegans Explore', 'A <b>Group Partner</b> is a Vegan group that makes Vegans Explore its home: your members, your events and your board in one place, with us promoting you. Your group earns a share of every member it brings in, from <b>20% up to 50%</b>. It is for Vegan social clubs, meetup groups, potlucks and dinner clubs.') +
+        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
+    },
+    why: function () {
+      return head('Why it matters', 'You bring people together. We help you do more of it', 'Running a group takes time, and the tools you use today were not made for Vegans. Vegans Explore is a community for Vegans, city by city, and your group gets a real home in it.') +
+        '<div class="dg-grid">' +
+        card('Your members get a home', 'One place for your events, your people and your conversation, plus everything a Passport opens: the Vegan places near them, the Daily Pulse, Guides and points.', 'Your members') +
+        card('You get paid for growing', 'Every person who joins Vegans Explore through your group earns your group a share of their Passport, from 20% up to 50% as you grow.', 'Income') +
+        card('We promote you', 'We run our own ads to send people to the groups on Vegans Explore, and feature the groups that host here.', 'Promotion') +
+        card('Anyone, anywhere, can join you', 'A member in California who visits South Florida often can join your group. Your community is not limited to who lives nearby.', 'Reach') +
+        '</div>' + nextBtn('gets', 'Next: what your group gets');
+    },
+    gets: function () {
+      return head('What your group gets', 'Everything, on us', 'None of this costs your group anything.') +
+        '<div class="dg-grid">' +
+        card('A community page', 'Your group\'s own page: your members, your events and your board, where your people talk between events.', 'Your page') +
+        card('Your events, and your history', 'Every event on your page and on our events calendar, and every past event stays, so newcomers see a group that shows up.', 'Events') +
+        card('Our ads, driving people to you', 'We put our own ad money behind the groups on Vegans Explore, in your city and beyond.', 'Promotion') +
+        card('Featured community', 'Groups that host here are featured where members look for something to do.', 'Featured') +
+        card('Bounties first', 'Your group gets first pick of bounties: paid points for real things, like hosting a meetup at a new Vegan spot.', 'Bounties') +
+        card('Your organizer, on us', 'The person who runs your group gets a Founding Membership on us: the full Passport and 1,100 points, theirs to keep.', 'Founding Membership') +
+        '</div>' + nextBtn('numbers', 'Next: the numbers');
+    },
+    numbers: function () {
+      return head('The numbers', 'Your share grows with your group', 'Your group earns a share of every $11 Passport (and Guide) bought by someone who joins through your group\'s link. The share is set by how many members your group has brought in, all time, and a new share counts from the day you reach it.') +
+        '<table class="gp-ladder"><thead><tr><th>Members brought in</th><th>Your share</th></tr></thead><tbody>' +
+        LADDER.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td><b>' + esc(r[1]) + '</b></td></tr>'; }).join('') + '</tbody></table>' +
+        '<h3 class="am-sec">Tickets</h3><p class="dg-lede">When you sell tickets here, <b>we take 5% of a paid ticket</b> and the rest is yours. Free events are free. The card processing is paid by the buyer, and you can pass our 5% on to them too.</p>' +
+        '<ul class="gp-fees">' + FEES.map(function (f) { return '<li' + (f[2] ? ' class="us"' : '') + '><span>' + esc(f[0]) + '</span><span>' + esc(f[1]) + '</span></li>'; }).join('') + '</ul>' +
+        '<p class="dg-lede" style="font-size:13px">Other platforms\' fees as published in 2026. Partiful does not publish its fee; the figure is what has been reported.</p>' +
+        '<div class="dg-grid">' +
+        card('When you get paid', 'Each payment waits 30 days in case of a refund, then it is ready. We pay once $25 is ready.', 'Timing') +
+        card('What we need first', 'A W-9 before the first payment: your group\'s, or the organizer\'s if the group is not its own company.', 'Before the first payment') +
+        card('What it is', 'Referral earnings paid by LESARUSS Inc. When you share your link, say that your group earns when people join with it.', 'Straight talk') +
+        '</div>' + nextBtn('guest', 'Next: the guest pass');
+    },
+    guest: function () {
+      return head('The guest pass', 'Nobody pays to try you out', 'A free event should feel free. So newcomers get a guest pass.') +
+        '<ol class="am-steps">' +
+        '<li><b>Their first free event</b>A newcomer comes to one of your free events as a guest. No account needed to try you out.</li>' +
+        '<li><b>From their second</b>They join Vegans Explore with the Passport: $11, one time, with 1,100 points to start.</li>' +
+        '<li><b>Your group earns</b>Your share of their Passport, when they join through your group.</li>' +
+        '<li><b>Paid events</b>A paid ticket needs the Passport from the start.</li></ol>' +
+        '<p class="dg-lede">It is $11 once, not a monthly fee, and it opens every group, every city and every Guide on Vegans Explore.</p>' + nextBtn('demo', 'Next: try the demo');
+    },
+    demo: function () {
+      return head('Try the demo', 'Click around our sample club', 'We built a sample group so you can see exactly what your members would see, and what you would see running it. It opens in a new tab.') +
+        '<div class="gp-demo">' +
+        '<a href="' + DEMO + '" target="_blank" rel="noopener"><small>As a member</small><b>See it as a member</b><span>The group\'s page, its events, the board, joining and RSVPs.</span></a>' +
+        '<a class="alt" href="' + DEMO + '?view=owner" target="_blank" rel="noopener"><small>As the organizer</small><b>See it as the organizer</b><span>Your members, your events, your earnings and your link.</span></a></div>' +
+        '<div class="gp-login"><div class="dg-k">The demo sign-in</div><dl><dt>Username</dt><dd>demo@vegansexplore.com</dd><dt>Password</dt><dd>explore11</dd></dl>' +
+        '<p>Use it if the demo asks you to sign in. It is a simulation: nothing is charged, nothing is sent and nothing you do is saved.</p></div>' +
+        nextBtn('part', 'Next: your part');
+    },
+    part: function () {
+      return head('Your part', 'Share your link, host here', 'Every group stays listed on Vegans Explore with its events, whatever it decides. Being a Group Partner is about hosting here.') +
+        '<div class="dg-grid">' +
+        card('Share your link', 'Your group has its own link. Put it in your bio, your posts and your event messages. Everyone who joins through it counts to your group.', 'Your link') +
+        card('Host your events here', 'Post your events on Vegans Explore, and send your people here to RSVP and buy tickets.', 'Your events') +
+        card('Hosting only here unlocks more', 'When your group hosts its events only on Vegans Explore, it unlocks the share ladder, featured status, our ads and first pick of bounties.', 'Earned, not required') +
+        '</div>' + nextBtn('questions', 'Next: questions');
+    },
+    questions: function () {
+      return head('Questions', 'Straight answers') +
+        qa('Does it cost our group anything?', 'No. Your page, your events, our promotion and your organizer\'s Founding Membership are all on us.') +
+        qa('Do our members have to pay?', 'For free events, a newcomer\'s first one is free. From their second, they join with the Passport: $11, one time. Paid events need the Passport from the start.') +
+        qa('Can we keep using Meetup or Partiful?', 'Yes. Your group stays listed here with its events either way. The share ladder, featured status and our promotion come with hosting your events here.') +
+        qa('How much does our group earn?', 'From 20% of each Passport bought through your group\'s link, up to 50% once you have brought in 1,000 members. See The numbers.') +
+        qa('When do we get paid?', 'Each payment waits 30 days in case of a refund. We pay once $25 is ready, after we have your W-9.') +
+        qa('What do you take from tickets?', '5% of a paid ticket. Free events are free, and card processing is paid by the buyer.') +
+        qa('What if our organizer changes?', 'The group is the partner, not one person. If someone new takes over, your page, your link and your earnings stay with the group.') +
+        nextBtn('yes', 'Next: say yes');
+    },
+    yes: function () {
+      if (code) return head('Say yes', 'Welcome your group to Vegans Explore', 'Open your invitation to say yes. We set up your group\'s page and your organizer\'s Founding Membership, on us.') +
+        '<div class="dg-btns"><a class="dg-btn" href="/invite?c=' + encodeURIComponent(code) + '">Open my invitation</a>' + mail('Our group and Vegans Explore', 'Talk to Sean first', true) + '</div>';
+      return head('Say yes', 'Tell us about your group', 'Send us a few lines about your group: its name, its city, where you post your events, and how many people come. Sean will write back himself.') +
+        '<div class="dg-btns">' + mail('Our group wants to be a Group Partner', 'Tell us about your group') + mail('A question about Group Partners', 'Talk to Sean', true) + '</div>' +
+        '<p class="dg-lede" style="margin-top:14px">Both go to contact@lesaruss.com.</p>';
+    }
+  };
+
+  function draw() {
+    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    cur = VIEWS[k] ? k : 'overview';
+    var t = tab(cur), i = TABS.indexOf(t);
+    main.innerHTML = VIEWS[cur]();
+    main.scrollTop = 0;
+    menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
+    var pic = window.VEGuideArt ? VEGuideArt('dani', 'square') : null;
+    guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
+    bubble.textContent = t.say;
+    var nav = '<a class="dg-tnav" href="#/' + TABS[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
+      '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = nav;
+  }
+
+  // Hide Dani (ve-guide-min.js turns it into Hide me / Show me and floats her in the corner when folded).
+  var foldBtn = $('dgFold'), railEl = $('dgRail');
+  function setFold(folded) {
+    railEl.classList.toggle('dg-folded', folded);
+    foldBtn.textContent = folded ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!folded));
+    try { sessionStorage.setItem('gp_dani_folded', folded ? '1' : ''); } catch (e) {}
+  }
+  foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
+  try { if (sessionStorage.getItem('gp_dani_folded')) setFold(true); } catch (e) {}
+
+  sel.addEventListener('change', function () { location.hash = '#/' + sel.value; });
+  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
+  window.addEventListener('hashchange', draw);
+  document.documentElement.classList.add('dg-fit');
+  draw();
+})();
+</script>
+<script src="/public/ve-guide-min.js"></script>
+
+</body>
+</html>

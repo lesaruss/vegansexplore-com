@@ -766,6 +766,31 @@ later. To build: our own ticketing (Stripe Connect, ticket types, refunds, check
 ladder on `ve_affiliate_earn`, the invitation, the policy text and the Guides' facts. Not decided: whether counts reset, what featured
 placement and ad support include, ticket refunds. The dashboard's Host your group on Vegans Explore card collects interest until then.
 
+**The sample group, the Guide and the console** (Sean, 2026-10-29: "Let's not bank on Vegan Social Club... I want us to create our
+own mock club so people can go through it... the same way we did the business... a general username and password... in the depot...
+a groups one, where I could... personalize the message, select people... do a crawl for all these community groups... send them
+messages one by one... it lays out pretty much as a guide... they can click on what it would be like from a user perspective... from
+the owner's perspective").
+- **`/groups/sample`** is Sprout Social Club, an invented group (never a database row, marked Sample, `noindex`): the real listing page
+  (`directory/listing.html`, rewrite in `vercel.json`) in demo mode (`demoSrc`), fed `/groups/sample/listing-demo.js` (`VE_DEMO.group`).
+  Its bar switches **A member** / **The organizer**. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past),
+  the group's board, a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
+  window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
+  Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
+  sign-in** (`VE_DEMO.login`: demo@vegansexplore.com / explore11, `groupDemoLogin`, kept for the visit in `sessionStorage`
+  `ve_group_demo`; it is not an account, so nothing it does can touch live data) and is the real business dashboard with the Group
+  Partner views (`ve-partner-dashboard.js`, shown when the server sends `D.group`): **Your members** (members, joined through you, guest
+  passes and how many joined after, the rate ladder with progress, the group's link, the member list), **Events** (coming up and past,
+  New event, one event with guests, guest passes or ticket money after our 5%, Write to your guests, the guest list, Copy the event
+  link), **Earnings** (earned this year, ready, held 30 days, paid; Passports and tickets apart; payouts), plus Home's group tiles,
+  Insights, Your page, Opportunities and Guides; hours, menu, audit, check-ins, ads and the Partner plan are hidden for a Group Partner.
+  Every number in the demo follows `canon-ve-group-partners`; every button that would save says so in a toast (`demo_only`).
+- **`/groups/welcome`** is the **Group Partner Guide** (`groups/welcome.html`, the Nonprofit Partner Guide's layout, Dani narrating in
+  text, `noindex`, public): Overview, Why it matters, What your group gets, The numbers, The guest pass, **Try the demo** (opens
+  `/groups/sample` and `/groups/sample?view=owner` in a new tab, with the demo sign-in), Your part, Questions, Say yes (`?c=<code>` goes
+  to `/invite?c=<code>`; without one, mail links to contact@lesaruss.com).
+- A listing's sidebar shows Follow only when it has a social link (it was an empty card on listings with none).
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is

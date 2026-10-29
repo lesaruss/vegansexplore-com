@@ -16,6 +16,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/groups/sample",
+      "destination": "/directory/listing"
+    },
+    {
       "source": "/business",
       "destination": "/passport"
     },
