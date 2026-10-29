@@ -514,6 +514,13 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   `lesaruss_secrets.LESARUSS_AI_STRIPE_WEBHOOK_SECRET`). Proven 2026-10-29: a free LESARUSS
   account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
+- **The front door** (LOCKED by Sean 2026-10-29, playbook `lesaruss-ai-front-door`, canon `canon-lesaruss-ai-front-door`): LESARUSS.ai
+  runs this engine with business topics in place of cities. Build order: Media podcasts and the Pulse, Funding (a tab on the events
+  engine) and Events, the Guides page and the Join Guide, the dashboard on lesaruss.ai, Labs and Advertising; LESARUSS 360 in the footer
+  and dashboard. **Podcasts** (migration `20261029_lesaruss_ai_podcasts.sql`): 23 marketing, leadership and development shows found on
+  Apple Podcasts, About from each feed's own description, tag `lesaruss-ai-directory-candidate` (so Vegans Explore's Directory and Media,
+  `rank` in `ve-media.js`, leave them out), `crawl_source` `lesaruss-ai-podcasts`, `specialty` the topic, no How Vegan.
+
 ## Analytics (Sean, 2026-10-28)
 
 "Use the same exact structure as the analytics section in BCPS Marcom... put it in our depot... see what's popular, what's
