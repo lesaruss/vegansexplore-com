@@ -235,6 +235,14 @@
     '.vev-going{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#1f5f22;margin:0 0 12px;}',
     '.vev-going::before{content:"";width:10px;height:10px;border-radius:50%;background:#2d7d31;}',
     '.vev-plain{font-family:inherit;font-size:12px;font-weight:800;color:#1f5f22;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}',
+    '.vev-host{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
+    '.vev-host:hover{border-color:#2d7d31;}',
+    '.vev-host img,.vev-host i{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;}',
+    '.vev-host i{display:flex;align-items:center;justify-content:center;background:#2d7d31;color:#fff;font-style:normal;font-weight:900;}',
+    '.vev-host span{display:flex;flex-direction:column;min-width:0;flex:1;}',
+    '.vev-host small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
+    '.vev-host b{font-size:15px;font-weight:800;}',
+    '.vev-host em{font-style:normal;font-size:12px;font-weight:700;color:#1f5f22;white-space:nowrap;}',
     '.vev-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 18px;}',
     '.vev-tiles div{background:#f7f8f7;border-radius:8px;padding:12px 14px;}',
     '.vev-tiles b{display:block;font-size:24px;font-weight:900;line-height:1.1;}',
@@ -899,6 +907,8 @@
         el.innerHTML = crumbs([[e.title]]) + '<div class="vev-ev"><div class="vev-form">' +
           '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured ? ' · Featured' : '') + '</p><h2>' + esc(e.title) + '</h2>' +
           '<div class="vev-facts"><span>' + esc(when(e)) + '</span><span>' + esc(place(e)) + (e.address && e.address !== e.location_name ? ' · ' + esc(e.address) : '') + '</span>' + (org ? '<span>Organized by ' + esc(org) + '</span>' : '') + '</div>' +
+          // The group that hosts it, linked to its page in the Directory (Sean, 2026-10-29: "their profile will be tied to all their events").
+          (e.host && e.host.slug ? '<a class="vev-host" href="/directory/' + encodeURIComponent(e.host.slug) + '">' + (e.host.logo_url ? '<img src="' + esc(e.host.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((e.host.name || '?').charAt(0)) + '</i>') + '<span><small>Hosted by</small><b>' + esc(e.host.name) + '</b></span><em>See their page and events</em></a>' : '') +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
           (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for Passport holders.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
           (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') + '</div>' +

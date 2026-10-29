@@ -42,6 +42,9 @@
 // POST { action: 'update', id, event }            edit a row in any status
 // POST { action: 'save', event, approve, flyer_path? }      the team's own event (from a flyer or typed in)
 // POST { action: 'sources' } | { action: 'source_save', source } | { action: 'source_check', id }
+// Groups (2026-10-29): review / update / save take host_listing_id (the Directory listing that hosts it, null clears it); the
+// public event returns event.host {slug, name, logo_url, category}; a source's listing_id makes every event saved from it that
+// group's; { action: 'hosts', q } searches the listings that can host.
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -57,6 +60,15 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const LIMITS = { submit: 10, read: 5, upload: 15 };
 const CATEGORIES = ['festival', 'food', 'social', 'market', 'meetup', 'workshop', 'health', 'activism', 'fundraiser', 'film', 'general', 'other'];
 const TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'application/pdf': 'pdf' };
+// Who can host an event on its Directory page (Sean, 2026-10-29): any approved listing; groups and organizations come first.
+const HOST_CATS = ['Groups', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
+// null clears the host, an approved listing's id sets it, anything else is false.
+async function hostId(v: unknown): Promise<string | null | false> {
+  if (v === null || v === '') return null;
+  if (!isId(v)) return false;
+  const { data } = await db.from('listings').select('id').eq('id', v).eq('status', 'approved').maybeSingle();
+  return data ? String(data.id) : false;
+}
 const EDITABLE = ['title', 'description', 'starts_at', 'ends_at', 'time_set', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'continent', 'category', 'event_type', 'ticket_url', 'price_cents'];
 
 const cors = {
@@ -359,14 +371,17 @@ async function sendBatch(items: { to: string; subject: string; html: string }[])
 async function publicAction(action: string, body: any, memberId: string | null) {
   if (action === 'event') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status')
+    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status, host_listing_id')
       .eq('id', body.id).maybeSingle();
     if (!ev || ev.status !== 'approved') return json({ error: 'not_found' }, 404);
     const { data: viewer } = await db.rpc('ve_event_viewer', { p_event: ev.id, p_member: memberId || NULL_ID });
     const { data: mt } = await db.from('ve_event_member_tickets').select('event_id').eq('event_id', ev.id).maybeSingle();
-    const { status: _s, ...out } = ev;
+    const { status: _s, host_listing_id: hid, ...out } = ev as any;
+    // The group (or organization) that hosts it, linked to its Directory page (Sean, 2026-10-29).
+    let host = null;
+    if (hid) { const { data: h } = await db.from('listings').select('slug, name, logo_url, category').eq('id', hid).eq('status', 'approved').maybeSingle(); host = h || null; }
     // A members-only ticket link: the page learns there is one, never the link itself (that is `tickets`, for members).
-    return json({ event: out, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
+    return json({ event: { ...out, host }, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
   }
   const tok = typeof body.token === 'string' && /^[0-9a-f]{64}$/.test(body.token) ? body.token : '';
   if (!tok) return json({ error: 'not_found' }, 404);
@@ -644,7 +659,7 @@ Deno.serve(async (req) => {
     case 'queue': {
       const gate = needAdmin(); if (gate) return gate;
       const status = ['pending', 'approved', 'rejected'].includes(body.status) ? body.status : 'pending';
-      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id, submitter_role')
+      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id, submitter_role, host_listing_id')
         .eq('status', status);
       // Waiting: soonest first, so nothing passes before it is seen. Approved: the upcoming ones. Turned down: newest.
       if (status === 'pending') q = q.order('starts_at', { ascending: true });
@@ -659,8 +674,11 @@ Deno.serve(async (req) => {
       const sids = [...new Set(rows.map((r) => r.source_id).filter(Boolean))];
       const srcs: Record<string, string> = {};
       if (sids.length) { const { data: ss } = await db.from('ve_event_sources').select('id, name').in('id', sids); for (const s of ss || []) srcs[s.id] = s.name; }
+      const hids = [...new Set(rows.map((r) => r.host_listing_id).filter(Boolean))];
+      const hosts: Record<string, any> = {};
+      if (hids.length) { const { data: hs } = await db.from('listings').select('id, slug, name').in('id', hids); for (const h of hs || []) hosts[h.id] = h; }
       const events = await Promise.all(rows.map(async (r) => ({
-        ...r, flyer_url: await signedFlyer(r.flyer_path),
+        ...r, flyer_url: await signedFlyer(r.flyer_path), host: r.host_listing_id ? hosts[r.host_listing_id] || null : null,
         by: r.source === 'member' ? { name: names[r.author_id]?.name || 'A member', email: names[r.author_id]?.email || null } : null,
         source_name: r.source_id ? srcs[r.source_id] || null : null,
       })));
@@ -682,6 +700,11 @@ Deno.serve(async (req) => {
       const fixes = shapeEvent(body.event || {});
       const patch: Record<string, unknown> = {};
       for (const k of EDITABLE) if (k in fixes) patch[k] = fixes[k];
+      if ('host_listing_id' in body) {
+        const h = await hostId(body.host_listing_id);
+        if (h === false) return json({ error: 'bad_host', message: 'That group is not on the Directory.' }, 400);
+        patch.host_listing_id = h;
+      }
       if (action === 'review') {
         const decision = body.decision === 'approved' ? 'approved' : body.decision === 'rejected' ? 'rejected' : '';
         if (!decision) return json({ error: 'bad_decision' }, 400);
@@ -713,6 +736,7 @@ Deno.serve(async (req) => {
       const miss = missing(ev);
       if (miss.length) return json({ error: 'missing', missing: miss, message: 'Fill in the name, the day, the city and the official link.' }, 400);
       if (body.flyer_path && ownsFlyer(body.flyer_path)) ev.flyer_path = body.flyer_path;
+      if (body.host_listing_id) { const h = await hostId(body.host_listing_id); if (h) ev.host_listing_id = h; }
       const { data, error } = await db.rpc('ve_event_intake', { p_event: ev, p_source: body.flyer_path ? 'flyer' : 'admin', p_source_id: null, p_author: memberId, p_approve: !!body.approve });
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       if (!data?.ok) return json({ error: data?.why || 'save_failed', message: data?.why === 'already_listed' ? 'That event is already on the calendar.' : data?.why === 'already_over' ? 'That event is over.' : 'That did not save.' }, 400);
@@ -766,10 +790,24 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
+    // The Directory listings that can host an event, for the Depot's Hosted by picker: groups and organizations first.
+    case 'hosts': {
+      const gate = needAdmin(); if (gate) return gate;
+      const q = clean(body.q, 80).replace(/[%,()]/g, ' ').trim();
+      let qq = db.from('listings').select('id, slug, name, category, address_city, address_state').eq('status', 'approved');
+      qq = q ? qq.ilike('name', `%${q}%`) : qq.in('category', HOST_CATS);
+      const { data } = await qq.order('name').limit(40);
+      const rows = (data || []).sort((a, b) => (HOST_CATS.includes(b.category) ? 1 : 0) - (HOST_CATS.includes(a.category) ? 1 : 0));
+      return json({ hosts: rows });
+    }
+
     case 'sources': {
       const gate = needAdmin(); if (gate) return gate;
       const { data } = await db.from('ve_event_sources').select('*').order('created_at', { ascending: true });
-      return json({ sources: data || [] });
+      const lids = [...new Set((data || []).map((s) => s.listing_id).filter(Boolean))];
+      const ls: Record<string, any> = {};
+      if (lids.length) { const { data: xs } = await db.from('listings').select('id, slug, name').in('id', lids); for (const x of xs || []) ls[x.id] = x; }
+      return json({ sources: (data || []).map((s) => ({ ...s, group: s.listing_id ? ls[s.listing_id] || null : null })) });
     }
 
     case 'source_save': {
@@ -781,6 +819,8 @@ Deno.serve(async (req) => {
         city_slug: clean(s.city_slug, 60) || null, notes: clean(s.notes, 1000) || null, active: s.active !== false,
         every_days: Math.min(60, Math.max(1, Math.round(Number(s.every_days) || 7))),
       };
+      // A group's own page: every event saved from it is that group's (ve_event_intake).
+      if ('listing_id' in s) { const h = await hostId(s.listing_id); if (h === false) return json({ error: 'bad_host', message: 'That group is not on the Directory.' }, 400); row.listing_id = h; }
       if (!row.name) return json({ error: 'missing', message: 'Give the source a name.' }, 400);
       if (kind === 'search' ? !row.query : !row.url) return json({ error: 'missing', message: kind === 'search' ? 'Add what to search for.' : 'Add the link.' }, 400);
       if (isId(s.id)) {

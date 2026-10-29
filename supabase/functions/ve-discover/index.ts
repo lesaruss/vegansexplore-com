@@ -335,7 +335,7 @@ const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors',
   'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development',
   'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 // ---- Adding by hand ----

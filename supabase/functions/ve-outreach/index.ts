@@ -108,7 +108,7 @@ const LISTING_CATEGORIES = [
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
-  'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
+  'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'];
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v);
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });

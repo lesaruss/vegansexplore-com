@@ -170,6 +170,31 @@
     }
 
     /* ---------- one event: its fields, its flyer, approve or turn down ---------- */
+    /* ---------- Hosted by (Sean, 2026-10-29: groups) ----------
+       The Directory listing that hosts the event: a group, or any organization. Its page lists the event, and the event names it.
+       hostPicker draws the box; wireHost searches as you type (ve-events hosts) and keeps the picked id on the input. */
+    function hostPicker(p, cur) {
+      return '<div class="f wide" data-f="host"><label for="' + p + '-host">Hosted by</label>' +
+        '<input id="' + p + '-host" list="' + p + '-host-l" autocomplete="off" placeholder="Search the Directory: Philly Social Club" value="' + esc(cur ? cur.name : '') + '" data-id="' + esc(cur ? cur.id || '' : '') + '">' +
+        '<datalist id="' + p + '-host-l"></datalist><small id="' + p + '-host-n">' + (cur && cur.slug ? 'Its page: <a href="/directory/' + esc(cur.slug) + '" target="_blank" rel="noopener">/directory/' + esc(cur.slug) + '</a>. ' : '') + 'A group or organization on the Directory. Its page lists this event. Leave empty for none.</small></div>';
+    }
+    function wireHost(p) {
+      var inp = $(p + '-host'); if (!inp) return;
+      var found = {}, t = 0;
+      var fill = function (q) { api({ action: 'hosts', q: q }).then(function (d) {
+        found = {};
+        $(p + '-host-l').innerHTML = (d.hosts || []).map(function (h) { var k = h.name + (h.address_city ? ' (' + h.address_city + ')' : ''); found[k] = h; found[h.name] = found[h.name] || h; return '<option value="' + esc(k) + '">' + esc(h.category || '') + '</option>'; }).join('');
+      }); };
+      inp.addEventListener('focus', function () { if (!$(p + '-host-l').children.length) fill(inp.value.trim()); });
+      inp.addEventListener('input', function () {
+        var h = found[inp.value]; inp.setAttribute('data-id', h ? h.id : '');
+        if (h) { inp.value = h.name; return; }
+        clearTimeout(t); t = setTimeout(function () { fill(inp.value.trim()); }, 250);
+      });
+    }
+    // undefined when the box is not on the page, null to clear, else the picked listing id.
+    function hostValue(p) { var inp = $(p + '-host'); if (!inp) return undefined; return inp.value.trim() ? (inp.getAttribute('data-id') || undefined) : null; }
+
     function fieldsHtml(e) {
       var tz = e.timezone || 'America/New_York', online = e.event_type === 'virtual';
       var f = function (id, label, input, wide, hint) { return '<div class="f' + (wide ? ' wide' : '') + '" data-f="' + id + '"><label for="f-' + id + '">' + label + '</label>' + input + (hint ? '<small>' + hint + '</small>' : '') + '</div>'; };
@@ -192,6 +217,7 @@
         f('state', 'State or region', i('state', e.state)) +
         f('country', 'Country', '<select id="f-country"><option value="">Choose</option>' + ckeys.map(function (k) { return '<option value="' + k + '"' + (k === cc ? ' selected' : '') + '>' + esc(VEEvents.countryName(k)) + '</option>'; }).join('') + '</select>') +
         f('ticket_url', 'Official link', i('ticket_url', e.ticket_url, 'url'), true, 'Tickets or the organizer\'s own page. Required to go live.') +
+        hostPicker('ev', e.host ? { id: e.host_listing_id || e.host.id, name: e.host.name, slug: e.host.slug } : null) +
         '</div>';
     }
     function readFields() {
@@ -240,11 +266,13 @@
           done();
         });
       }
-      if ($('ev-save')) $('ev-save').onclick = function () { act({ action: 'update', id: e.id, event: readFields() }, function () { load(e.status).then(function () { drawEvent(e.id); msg('Saved.'); }); }); };
+      wireHost('ev');
+      var withHost = function (b) { var h = hostValue('ev'); if (h !== undefined) b.host_listing_id = h; return b; };
+      if ($('ev-save')) $('ev-save').onclick = function () { act(withHost({ action: 'update', id: e.id, event: readFields() }), function () { load(e.status).then(function () { drawEvent(e.id); msg('Saved.'); }); }); };
       if ($('ev-ok')) $('ev-ok').onclick = function () {
         var f = readFields();
         if (!/^https?:\/\//i.test(f.ticket_url)) { msg('Add the official link first.', true); return; }
-        act({ action: 'review', id: e.id, decision: 'approved', event: f }, function () { go('#queue/pending'); });
+        act(withHost({ action: 'review', id: e.id, decision: 'approved', event: f }), function () { go('#queue/pending'); });
       };
       if ($('ev-no')) $('ev-no').onclick = function () {
         var why = prompt(e.status === 'approved' ? 'Why is it coming off the calendar? (for the team)' : 'Why not? (the member sees this on My events)', e.status === 'approved' ? 'Cancelled' : 'Not a Vegan event');
@@ -303,7 +331,7 @@
         '<div class="panel side"><h2>The flyer</h2><div class="drop" id="ev-drop" tabindex="0" role="button"><b>Drop a flyer here</b><span>An Instagram banner, a poster or a PDF. Or click to choose.</span></div>' +
         (adding && adding.preview ? '<p style="margin-top:12px"><img src="' + esc(adding.preview) + '" alt="The flyer"></p>' : '') +
         (adding && adding.links ? '<p>Links on it: ' + esc(adding.links) + '</p>' : '') + '</div></div>';
-      wireOnline();
+      wireOnline(); wireHost('ev');
       var drop = $('ev-drop'), file = $('ev-file');
       drop.onclick = function () { file.click(); };
       drop.onkeydown = function (k) { if (k.key === 'Enter' || k.key === ' ') { k.preventDefault(); file.click(); } };
@@ -329,7 +357,7 @@
         var ev = readFields(), m = $('ev-msg');
         if (!ev.title || !ev.starts_at || !/^https?:\/\//i.test(ev.ticket_url)) { m.textContent = 'Fill in the name, when it starts and the official link.'; m.className = 'msg bad'; return; }
         m.textContent = 'Saving…'; m.className = 'msg';
-        api({ action: 'save', event: ev, approve: approve, flyer_path: adding && adding.path }).then(function (d) {
+        api({ action: 'save', event: ev, approve: approve, flyer_path: adding && adding.path, host_listing_id: hostValue('ev') || null }).then(function (d) {
           if (!d.ok) { m.textContent = d.message || 'That did not save.'; m.className = 'msg bad'; return; }
           adding = null; cache = { pending: null, approved: null, rejected: null };
           go(approve ? '#queue/approved' : '#queue/pending');
@@ -351,7 +379,7 @@
         $('src-rows').innerHTML = sources.length ? sources.map(function (s) {
           var state = !s.active ? 'Off' : s.check_status === 'checking' ? 'Reading now' : s.check_status === 'queued' ? 'Next run' : 'Read';
           return '<div class="row"><span class="d">' + esc(KINDS[s.kind] || s.kind) + '</span>' +
-            '<span><span class="t">' + esc(s.name) + '</span><br><span class="m">' + esc(s.url || s.query || '') + '</span></span>' +
+            '<span><span class="t">' + esc(s.name) + '</span><br><span class="m">' + esc(s.url || s.query || '') + (s.group ? ' · Group: ' + esc(s.group.name) : '') + '</span></span>' +
             '<span class="m">' + esc(s.city_slug ? hubs[s.city_slug] || s.city_slug : 'Anywhere') + (s.last_checked_at ? ' · read ' + esc(new Date(s.last_checked_at).toLocaleDateString()) + ', ' + (s.last_found || 0) + ' new' : '') + '</span>' +
             '<span class="tag ' + (state === 'Off' ? 'rejected' : state === 'Read' ? 'approved' : 'pending') + '">' + state + '</span>' +
             '<a class="btn btn-ghost" href="#source/' + s.id + '">Open</a></div>';
@@ -370,16 +398,17 @@
         '<div class="f wide" id="s-url-f"><label for="s-url">Link</label><input id="s-url" type="url" value="' + esc(s.url || '') + '" placeholder="https://"></div>' +
         '<div class="f wide" id="s-query-f"><label for="s-query">Search for</label><input id="s-query" value="' + esc(s.query || '') + '" placeholder="Vegan events festivals meetups Atlanta upcoming"></div>' +
         '<div class="f"><label for="s-city">City</label><select id="s-city"><option value="">Anywhere</option>' + hubs.map(function (h) { return '<option value="' + h.slug + '"' + (h.slug === s.city_slug ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select></div>' +
+        hostPicker('s', s.group ? { id: s.group.id, name: s.group.name, slug: s.group.slug } : null).replace('Hosted by', 'The group whose events these are').replace('Its page lists this event. Leave empty for none.', 'Every event read from here is tied to it and shows on its page. Leave empty for a general source.') +
         '<div class="f"><label for="s-every">Read it every</label><select id="s-every">' + [1, 3, 7, 14, 30].map(function (n) { return '<option value="' + n + '"' + (n === (s.every_days || 7) ? ' selected' : '') + '>' + (n === 1 ? 'day' : n + ' days') + '</option>'; }).join('') + '</select></div>' +
         '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="s-active"' + (s.active !== false ? ' checked' : '') + '> On</label></div>' +
         '<div class="f wide"><label for="s-notes">Notes for the reader</label><textarea id="s-notes" placeholder="Their events are under the Calendar tab. Skip the cooking classes.">' + esc(s.notes || '') + '</textarea></div>' +
         '</div>' + (s.last_note ? '<p class="sub" style="margin-top:12px">Last read: ' + esc(s.last_note) + '</p>' : '') +
         '<div class="acts"><button class="btn" id="s-save">Save</button>' + (id !== 'new' ? '<button class="btn btn-ghost" id="s-now">Read it on the next run</button>' : '') + '<span class="msg" id="s-msg" role="status"></span></div></div>';
       var kind = $('s-kind'), t = function () { $('s-url-f').hidden = kind.value === 'search'; $('s-query-f').hidden = kind.value !== 'search'; };
-      kind.onchange = t; t();
+      kind.onchange = t; t(); wireHost('s');
       var m = function (x, bad) { $('s-msg').textContent = x; $('s-msg').className = 'msg' + (bad ? ' bad' : ''); };
       $('s-save').onclick = function () {
-        api({ action: 'source_save', source: { id: id === 'new' ? null : id, name: $('s-name').value, kind: kind.value, url: $('s-url').value, query: $('s-query').value, city_slug: $('s-city').value, notes: $('s-notes').value, every_days: +$('s-every').value, active: $('s-active').checked } }).then(function (d) {
+        api({ action: 'source_save', source: { id: id === 'new' ? null : id, name: $('s-name').value, kind: kind.value, url: $('s-url').value, query: $('s-query').value, city_slug: $('s-city').value, notes: $('s-notes').value, every_days: +$('s-every').value, active: $('s-active').checked, listing_id: hostValue('s') === undefined ? undefined : hostValue('s') } }).then(function (d) {
           if (!d.ok) { m(d.message || 'That did not save.', true); return; }
           sources = null; go('#sources');
         });

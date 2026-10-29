@@ -1127,6 +1127,31 @@ through `backlog_decide` as Add the ticked does (88 Rescues, 25 Sanctuaries, 23 
 31 of the calls failed to boot the function (503 BOOT_ERROR) and nothing saved; re-sent, all landed. Six had no town from Google
 and got it from Google's address.
 
+**Groups** (Sean, 2026-10-29: "I want to add groups... the same way we have nonprofit rescue sanctuaries... when you click on it,
+it's all of their events will be tied to their profile, and their profile will be tied to all their events... eventually get them to
+have their community exclusively on Vegans Explore"; migrations `20261029_community_groups.sql`, `20261029_community_groups_seed.sql`).
+Community's sub-sections are All, Nonprofits, Rescues, Sanctuaries, **Groups**, Events: social clubs, meetup groups, potluck and dinner
+clubs. A group is an organization like a rescue (no How Vegan), votable and savable like any listing, in its chapter by `communities`
+(a group known only by its chapter gets its state as well). **Events belong to the group that hosts them**: `events.host_listing_id`
+(any approved listing can host; Groups, Nonprofits, Rescues, Sanctuaries and Events come first in the picker). A listing's Overview shows
+**Upcoming events** (soonest first, each opening `/events#event/<id>`, with Tickets & info) and the last six **Past events**
+(`loadHostedEvents` in `directory/listing.html`; always shown for a group, else only once it has hosted something), and an event's page
+says **Hosted by <group>** linking to its page (`event.host` from `ve-events` `event`). **A group's events page is a crawl source tied to
+it** (`ve_event_sources.listing_id`): every event `ve_event_intake` saves from that source is the group's, and a duplicate found again
+there gets the group as its host. Depot > Events has **Hosted by** on each event (`ve-events` `hosts`, `host_listing_id` on `update`,
+`review` and `save`) and **The group whose events these are** on each crawl source. Groups often post only on Instagram, Meetup,
+Partiful or Linktree, which this build session cannot reach; the Background writer reads them. **The first sweep** (2026-10-29): 14 live
+(Vegan Social Club in South Florida, from the June Instagram import; NYC Vegetarian & Vegan Meetup, NYC Vegan Spirituality, Plant Powered
+Metro New York; Veg Society of DC, serving D.C., Maryland and Virginia; Baltimore Veg/Vegan Meetup; Vegan Club RVA; Vegan Social Clubs and
+Atlanta Veggie Eats; Vegetarians of Central Florida; Vegan Spirituality Group of Philadelphia; Los Angeles Vegan Gatherings, Vegans of
+Los Angeles; London Vegan Meetup), each with a dated 2025 or 2026 event, and 5 On hold for review in Directory review with why (Afro
+Vegan Social, Center City Philly Vegans, LGBTQ+ Vegans London, London Vegans, Vegan Squad: no dated event seen). **Philly Vegan Social
+Club** (Sean gave its Partiful, `partiful.com/u/VrM8jI2gyGMs9BJWvXNi`; migration `20261029_philly_vegan_social_club.sql`) went live the
+same day with its 32 upcoming Partiful events. Partiful is readable from the database server (pg_net) though not from the build
+session: a host page's `__NEXT_DATA__` lists `initialPublishedEvents`, and each `partiful.com/e/<id>` has the description and an
+approximate place (`locationInfo.mapsInfo.approximateLocation`, the neighborhood; the address only after an RSVP). North Florida, Delaware and West Virginia had none confirmed.
+The goal, not built yet: a group runs its community on Vegans Explore (its members, its events, its board).
+
 Logos (Sean, 2026-10-10: "I would prefer it just to have the thumbnail with the letter if it's not the official
 logo"): a listing shows a logo only when we hold it in our own storage (`vegan-media`: logos checked by eye, the curated
 `directory/logos/` files, or one an admin picked in the media library). **Every logo is our own copy** (Sean, 2026-10-27: "any
