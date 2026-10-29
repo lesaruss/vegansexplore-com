@@ -100,12 +100,15 @@
     var mine = []; try { mine = JSON.parse(sessionStorage.getItem('ve_group_gifts') || '[]'); } catch (e) {}
     return mine.concat(GIFTS);
   }
+  // ?demo_gift=short shows the organizer short of cleared earnings, so the pay-by-card offer can be seen.
+  var SHORT = /[?&]demo_gift=short\b/.test(location.search);
   var GROUP = {
     name: 'Sprout Social Society', status: 'active', code: 'SPROUT-SOCIAL-SOCIETY', link: 'vegansexplore.com/r/SPROUT-SOCIAL-SOCIETY',
     members_total: 214, brought: BROUGHT, new_this_month: 14, ladder: LADDER, rate_pct: 30,
     guest_passes: { used: 96, joined_after: 51 },
     members: MEMBERS, events: EVENTS,
-    gift: { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 18240, holding_cents: 6380, next_clear_at: at(9, 12), credit_cents: 0, points: 1100, days: 30, can: true, can_buy: true },
+    gift: SHORT ? { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 300, holding_cents: 6380, next_clear_at: at(9, 12), credit_cents: 0, points: 1100, days: 30, can: false, can_buy: true }
+      : { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 18240, holding_cents: 6380, next_clear_at: at(9, 12), credit_cents: 0, points: 1100, days: 30, can: true, can_buy: true },
     earnings: {
       // Commissions: the group's share of each $11 Passport bought through it, at the rate on the day. Tickets: what buyers paid, less our 5%.
       passports_cents: 25 * 220 + 50 * 275 + 37 * 330, tickets_cents: Math.round(ticketGross * 0.95), fee_cents: Math.round(ticketGross * 0.05),
