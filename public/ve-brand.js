@@ -85,6 +85,7 @@
         body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' }
     },
     drawNav: drawNav,
+    mountAccount: mountAccount,
     drawFooter: drawFooter
   };
 
@@ -117,7 +118,8 @@
     var bar = document.createElement('div');
     bar.className = 'lr-topbar ve-nav';
     bar.innerHTML = '<div class="row"><a class="lr-brand" href="/" aria-label="LESARUSS AI home">LESARUSS<span>.</span>AI</a>' +
-      '<button type="button" class="lr-burger" aria-expanded="false" aria-controls="lrMenu" aria-label="Open menu">&#9776;</button></div>';
+      '<div class="lr-right"><span class="lr-account"></span>' +
+      '<button type="button" class="lr-burger" aria-expanded="false" aria-controls="lrMenu" aria-label="Open menu">&#9776;</button></div></div>';
     var menu = document.createElement('nav');
     menu.id = 'lrMenu'; menu.className = 'lr-menu'; menu.setAttribute('aria-label', 'Site');
     menu.innerHTML = NAV.map(function (n) {
@@ -135,6 +137,55 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') set(false); });
     function setH() { document.documentElement.style.setProperty('--ve-nav-h', Math.round(bar.getBoundingClientRect().height) + 'px'); }
     setH(); window.addEventListener('resize', setH);
+    mountAccount(bar.querySelector('.lr-account'));
+  }
+
+  // Sign in, and who is signed in, in the header (Sean, 2026-10-29: "I don't see how to log in... I didn't see a way to actually
+  // show that I was logged in"). The listing pages' header (drawNav) and lesaruss.ai's own header (lesaruss-ai-site app/site.tsx)
+  // both use it. Signed out: Sign in, which starts Continue with LESARUSS as this brand (ve-auth.js, data-ve-lesaruss) and comes
+  // back to this page. Signed in: their initial and first name, opening who they are and Sign out. ve-auth.js keeps the session
+  // in this site's localStorage; it is loaded here once the page has its own scripts, unless the page already did.
+  var ACCT_CSS = '.lr-right{display:flex;align-items:center;gap:10px}.lr-account{position:relative;display:inline-flex}' +
+    '.lr-signin{font:inherit;font-family:Montserrat,sans-serif;font-size:13px;font-weight:800;background:#F69820;color:#1A1A1A;border:0;border-radius:6px;padding:9px 16px;cursor:pointer;white-space:nowrap}' +
+    '.lr-signin:hover{background:#E0870F}' +
+    '.lr-me{display:inline-flex;align-items:center;gap:8px;font:inherit;font-family:Montserrat,sans-serif;font-size:13px;font-weight:800;color:#1A1A1A;background:#fff;border:1px solid rgba(26,26,26,.14);border-radius:6px;padding:5px 12px 5px 5px;cursor:pointer}' +
+    '.lr-me i{font-style:normal;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#C1440D;color:#fff;font-size:12px}' +
+    '.lr-me-pop{position:absolute;top:calc(100% + 8px);right:0;min-width:270px;max-width:calc(100vw - 32px);background:#fff;border:1px solid rgba(26,26,26,.10);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:12px;display:none;z-index:402;font-family:Montserrat,sans-serif}' +
+    '.lr-me-pop.open{display:block}.lr-me-pop b{display:block;font-size:14px;color:#1A1A1A}.lr-me-pop small{display:block;font-size:12px;color:rgba(26,26,26,.62);margin:2px 0 10px;overflow-wrap:anywhere}' +
+    '.lr-me-pop .lr-out{font:inherit;font-size:13px;font-weight:800;width:100%;text-align:left;background:rgba(246,152,32,.14);color:#1A1A1A;border:0;border-radius:6px;padding:9px 12px;cursor:pointer}' +
+    '@media(max-width:420px){.lr-me span{display:none}.lr-me{padding:5px}}';
+  function withAuth(cb) {
+    if (window.VEAuth) return cb();
+    var go = function () {
+      if (window.VEAuth) return cb();
+      if (!document.querySelector('script[src*="/public/ve-auth.js"]')) {
+        var sc = document.createElement('script'); sc.src = '/public/ve-auth.js'; sc.onload = cb; document.head.appendChild(sc);
+      } else { var n = 0, t = setInterval(function () { if (window.VEAuth || ++n > 40) { clearInterval(t); if (window.VEAuth) cb(); } }, 150); }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+  }
+  function mountAccount(el) {
+    if (!el) return;
+    if (!document.getElementById('lr-acct-css')) { var c = document.createElement('style'); c.id = 'lr-acct-css'; c.textContent = ACCT_CSS; document.head.appendChild(c); }
+    function draw() {
+      var A = window.VEAuth, m = A && A.isLoggedIn() ? A.getMember() : null;
+      var back = location.pathname + location.search + location.hash;
+      if (!m) {
+        el.innerHTML = '<button type="button" class="lr-signin" data-ve-lesaruss="' + esc(back) + '">Sign in</button>';
+        return;
+      }
+      var name = String(m.name || m.email || 'Member'), first = name.split(/\s+/)[0];
+      el.innerHTML = '<button type="button" class="lr-me" aria-expanded="false" aria-haspopup="true"><i>' + esc(first.charAt(0).toUpperCase()) + '</i><span>' + esc(first) + '</span></button>' +
+        '<div class="lr-me-pop" role="menu"><b>' + esc(name) + '</b><small>Signed in' + (m.email ? ' as ' + esc(m.email) : '') + '</small>' +
+        '<button type="button" class="lr-out" role="menuitem">Sign out</button></div>';
+      var b = el.querySelector('.lr-me'), pop = el.querySelector('.lr-me-pop');
+      b.addEventListener('click', function (e) { e.stopPropagation(); var o = !pop.classList.contains('open'); pop.classList.toggle('open', o); b.setAttribute('aria-expanded', o ? 'true' : 'false'); });
+      document.addEventListener('click', function (e) { if (!el.contains(e.target)) { pop.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); } });
+      el.querySelector('.lr-out').addEventListener('click', function () { window.VEAuth.signOut(); });
+    }
+    el.innerHTML = '<button type="button" class="lr-signin" data-ve-lesaruss="' + esc(location.pathname + location.search + location.hash) + '">Sign in</button>';
+    withAuth(draw);
+    window.addEventListener('storage', function (e) { if (!e.key || e.key === 've_token' || e.key === 've_member') draw(); });
   }
 
   // The lesaruss.ai footer (app/site.tsx SiteFooter).
@@ -151,7 +202,7 @@
     f.className = 'lr-foot ve-footer'; f.setAttribute('role', 'contentinfo');
     f.innerHTML = '<div class="lr-foot-row"><span class="lr-foot-brand">LESARUSS<span>.</span>AI <em>&middot; Your guides in the new AI world.</em></span>' +
       '<nav class="lr-foot-links" aria-label="Footer"><a href="/guides">Guides</a><a href="/directory">Directory</a><a href="/join">Become a member</a>' +
-      '<a href="' + HQ + '/member/business">For businesses</a><a href="' + HQ + '/login">Member sign in</a>' +
+      '<a href="' + HQ + '/member/business">For businesses</a><a href="' + HQ + '/login">Member home</a>' +
       '<a href="https://lesaruss.com" target="_blank" rel="noopener noreferrer">The Universe</a><a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a></nav>' +
       '<span class="lr-foot-copy">&copy; ' + new Date().getFullYear() + ' LESARUSS</span></div>';
     var s = document.currentScript;

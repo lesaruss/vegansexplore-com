@@ -189,12 +189,16 @@
       icon: g.icon, eyebrow: 'Members only', title: g.title, body: g.body,
       // Another brand's site (window.VE_BRAND: { passportUrl, passportLabel, loginUrl, gates }) sends people to its own Passport
       // and sign-in, in its own words; Vegans Explore sets none.
+      // A brand that signs in with LESARUSS shows Sign in as its own button beside the Passport (Sean, 2026-10-29: on lesaruss.ai
+      // "I don't see how to log in"), with Not now under them; Vegans Explore keeps Not now beside and Sign in under.
       actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from + '&back=' + back : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
-               '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
+               (VB.signIn === 'lesaruss' && !o.signedIn
+                 ? '<button type="button" class="ve-vm-btn ve-vm-alt" data-ve-lesaruss="' + here().replace(/"/g, '&quot;') + '">Sign in with LESARUSS</button>'
+                 : '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>'),
       // A brand that signs in with LESARUSS (VB.signIn 'lesaruss') starts Continue with LESARUSS here (ve-auth.js, data-ve-lesaruss),
       // coming back to this page.
       foot: o.signedIn ? '' : VB.signIn === 'lesaruss'
-        ? 'Already a member? <a href="#" data-ve-lesaruss="' + here().replace(/"/g, '&quot;') + '">Sign in with LESARUSS</a>'
+        ? 'Already a Diplomat or Passport holder? Sign in above. <a href="#" data-vm-close>Not now</a>'
         : 'Already a member? <a' + top + ' href="' + (VB.loginUrl || '/login?next=' + back) + '">Sign in</a>'
     });
   }
