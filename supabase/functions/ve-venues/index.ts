@@ -130,7 +130,7 @@ Deno.serve(async (req) => {
 
   // ---------- anyone ----------
   if (action === 'list') {
-    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url, season_reset_at')
+    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url, season_reset_at, created_at')
       .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const ids = (vs || []).map((v) => v.id);
@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
-      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
+      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order, ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
       points: await reportPoints(), limits: await bountyLimits() });
   }
 
