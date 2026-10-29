@@ -50,7 +50,7 @@
   // comment. And each thing could have its own amount of points"). Update is two kinds underneath: it changed, or it is gone.
   var REPORT = {
     confirm: ['Still here', 'It is still sold, as written here.', 'Still here'],
-    wrong: ['Update', 'Something changed: the name, the price, where it is, or whether it is Vegan.', 'Something changed'],
+    wrong: ['Update', 'The name, the price, where it is, or whether it is Vegan.', 'Something changed'],
     gone: ['Update', 'This stand or item is not there anymore.', 'Not there anymore'],
     comment: ['Comment', 'Tell other fans what you thought of it. A photo makes it even better.', 'Comment'],
     missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet.', 'Something missing']
@@ -230,9 +230,9 @@
     return '<div class="sa-item"><div class="sa-item-b"><b>' + esc(it.name) + '</b>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
       '<div class="sa-vtags" style="margin:0 0 6px">' + tagHtml(vg[0], 'sa-tag-' + vg[1]) + freshTag(it) + '</div>' + srcLine(it) + '</div>' +
       '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) +
-      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/confirm/' + it.id + '">Still here</a>' +
-      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/wrong/' + it.id + '">Update</a>' +
-      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/comment/' + it.id + '">Comment</a></div>' + commentsHtml(it) + '</div>';
+      // One Update button (Sean, 2026-10-29: "just save and update... when they click update, it takes them to... that page"): it
+      // opens the choices, Still here, Something changed, Not there anymore and Comment, each with its points.
+      '<a class="sa-mini" href="#/venue/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>' + commentsHtml(it) + '</div>';
   }
   // What members said: comments the team accepted, with the photo when there is one.
   function commentsHtml(it) {
@@ -252,8 +252,13 @@
     var dir = s.listing ? ' &middot; <a href="/directory/' + esc(s.listing.slug) + '" style="color:var(--g);font-weight:800;font-size:13px">Their Directory page</a>' : '';
     var body = open ? (s.items.length ? s.items.map(function (it) { return itemRow(v, it); }).join('') : '<p class="dg-empty">Nothing listed here yet.</p>')
       : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
-    var num = s.pin ? '<span class="sa-pinno" aria-label="Pin ' + s.pin + ' on the map">' + s.pin + '</span>' : '';
-    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.where || '') + '</span>' + dir + '</div>' + zone + '</div>' + body + '</div>';
+    // Every stand has its number (Sean, 2026-10-29: "there are no numbers next to the other locations"). A stand with known
+    // sections is pinned on the map under that number, once per spot it sells from; one we only know the level of says so.
+    var num = s.num ? '<span class="sa-pinno' + (s.pin ? '' : ' off') + '" aria-label="' + (s.pin ? 'Pin ' + s.pin + ' on the map' : 'Stand ' + s.num + ', not on the map yet') + '">' + s.num + '</span>' : '';
+    var spots = (s.map_sections || []).length;
+    var onMap = !open || !v.layout ? '' : s.pin ? (spots > 1 ? tagHtml(spots + ' spots on the map', 'sa-tag-new') : '') : s.zone === 'suites' ? '' : tagHtml('Not on the map yet', 'sa-tag-stale');
+    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.where || '') + '</span>' + dir +
+      (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div><span class="sa-vtags" style="margin:0">' + zone + onMap + '</span></div>' + body + '</div>';
   }
   function viewVenue(slug, rest) {
     var r = (rest || '').split('/');
@@ -271,7 +276,7 @@
       (v.note ? '<span>' + esc(v.note) + (v.note_source_url ? ' <a href="' + esc(v.note_source_url) + '" target="_blank" rel="noopener">Source</a>' : '') + '</span>' : '') + '</div>';
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
     var pins = 0;
-    d.spots.forEach(function (s) { s.pin = d.open && v.layout && (s.map_sections || []).length ? ++pins : 0; });
+    d.spots.forEach(function (s, i) { s.num = d.open ? i + 1 : 0; s.pin = d.open && v.layout && (s.map_sections || []).length ? s.num : 0; if (s.pin) pins++; });
     var stands = d.spots.length ? d.spots.map(function (s) { return standCard(v, s, d.open); }).join('')
       : '<div class="dg-chef-empty"><div><h3>Nothing Vegan is listed here yet</h3><p>Be the first: tell us what you find at ' + esc(v.name) + ', with a photo from inside, and earn points when the team accepts it.</p></div><a class="dg-btn" href="#/venue/' + esc(v.slug) + '/report/missing">Add what you find</a></div>';
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Menus change, so ask at the stand when it matters. Every item says where it came from and when a member last checked it.</p>';
@@ -323,7 +328,7 @@
     box.addEventListener('click', function (e) {
       var g = e.target.closest && e.target.closest('[data-pin]'); if (!g) return;
       var st = stands.filter(function (x) { return String(x.n) === g.getAttribute('data-pin'); })[0];
-      [].forEach.call(box.querySelectorAll('.vvm-pin'), function (x) { x.classList.toggle('on', x.getAttribute('data-pin') === g.getAttribute('data-pin')); });
+      [].forEach.call(box.querySelectorAll('.vvm-pin'), function (x) { x.classList.toggle('on', x === g); });
       var el = st && document.getElementById('sa-st-' + st.id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('sa-flash'); setTimeout(function () { el.classList.remove('sa-flash'); }, 1600); }
     });
     dirs.addEventListener('click', function (e) {
@@ -365,15 +370,27 @@
     });
   }
 
+  // Update: what they can tell us about one item, each with its points, then its form.
+  function viewChoose(v, item, back) {
+    main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Update', '']]) +
+      head('Update', esc(item.it.name), esc(item.spot.name) + (item.spot.where ? ', ' + esc(item.spot.where) : '') + '. What would you like to tell us? Each one earns points once the team accepts it, more with a photo.') +
+      '<div class="sa-choose">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
+        return '<a class="sa-choice" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '"><b>' + esc(REPORT[k][2]) + '</b><span>' + esc(REPORT[k][1]) + '</span>' +
+          (ptsLine(k) ? '<i>' + esc(ptsLine(k)) + '</i>' : '') + '</a>';
+      }).join('') + '</div>' +
+      '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a></div>';
+  }
+
   // The report form: one view, the photo, a note, and Send (which asks for the location once).
   var PHOTO = null;
   function viewReport(slug, kind, itemId) {
     var d = VENUE[slug];
     if (!d) { viewVenue(slug); return; }
-    if (!REPORT[kind]) kind = 'missing';
     var v = d.venue, item = null;
     d.spots.forEach(function (s) { (s.items || []).forEach(function (it) { if (it.id === itemId) item = { it: it, spot: s }; }); });
     var back = '#/venue/' + v.slug;
+    if (kind === 'choose' && item) return viewChoose(v, item, back);
+    if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
@@ -383,7 +400,7 @@
     var noteLabel = kind === 'missing' ? 'What is missing? <i>The item, the stand and where it is (section or gate)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
       : kind === 'comment' ? 'Your comment <i>(what you thought, a tip for other fans)</i>' : kind === 'gone' ? 'Anything to add? <i>(optional)</i>' : 'What needs to be updated?';
     var earn = ptsLine(kind);
-    main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], [REPORT[kind][0], '']]) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
+    main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back]].concat(item ? [['Update', '#/venue/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
         (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +

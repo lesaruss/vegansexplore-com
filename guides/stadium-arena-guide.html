@@ -474,6 +474,14 @@
     .sa-dir-hint,.sa-dir-miss{font-size:13px;color:var(--ink75);margin:10px 0 0;}
     .sa-dir-miss{color:#8a1c12;font-weight:700;}
     .sa-pinno{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;border-radius:11px;background:#1a1a1a;color:#fff;font-size:11.5px;font-weight:900;margin-right:8px;vertical-align:2px;}
+    .sa-pinno.off{background:#fff;color:var(--ink55);border:1.5px solid var(--line);}
+    .sa-snote{font-size:12.5px;font-weight:700;color:#7a4b00;background:#fff4e2;border-radius:6px;padding:6px 10px;margin:8px 0 0;}
+    .sa-choose{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;margin:0 0 16px;}
+    .sa-choice{display:flex;flex-direction:column;gap:4px;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;text-decoration:none;color:var(--ink);transition:border-color .15s,box-shadow .15s;}
+    .sa-choice:hover{border-color:var(--g2);box-shadow:0 4px 14px rgba(0,0,0,.07);}
+    .sa-choice b{font-size:16px;font-weight:900;}
+    .sa-choice span{font-size:13px;color:var(--ink75);line-height:1.5;}
+    .sa-choice i{font-style:normal;font-size:12.5px;font-weight:800;color:var(--g);margin-top:4px;}
     .sa-flash{box-shadow:inset 0 0 0 3px #F69820;transition:box-shadow .3s;}
     /* Points by kind, comments on an item, the earn line on the form */
     .sa-ptable{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:0 0 16px;background:#fff;}
