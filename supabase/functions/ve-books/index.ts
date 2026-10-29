@@ -470,7 +470,7 @@ async function makeListing(b: any, author: any, extra: { cover_source?: string; 
   const initials = (String(b.title).replace(/^(The|A|An)\s+/i, '').match(/\b[A-Za-z0-9]/g) || ['B']).slice(0, 2).join('').toUpperCase();
   const { data: made, error } = await db.from('listings').insert({
     tenant_id: TENANT, name: `${b.title} by ${authorName}`, slug, category: 'Books', specialty: 'Books', status: 'approved', description: b.description, logo_url: b.cover_url,
-    website: b.isbn10 ? `https://www.amazon.com/dp/${b.isbn10}` : null, location: 'United States', address_country: 'US', vegan_status: 'fully_vegan', business_status: 'OPERATIONAL',
+    website: b.buy_link ? `https://vegansexplore.com${b.buy_link}` : null, location: 'United States', address_country: 'US', vegan_status: 'fully_vegan', business_status: 'OPERATIONAL',
     communities: ['all'], initials,
     details: { ...(fam ? { family: fam } : {}), creator: authorName, isbn: b.isbn13, publisher: b.publisher, release_year: b.year, book_type: b.book_type,
       media_type: 'book', summary: b.summary, buy_link: b.buy_link, cover_source: extra.cover_source || 'Copied when the book was built', cover_checked: false,
