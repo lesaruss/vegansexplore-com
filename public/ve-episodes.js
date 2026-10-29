@@ -47,6 +47,12 @@
     '.vep-one{display:grid;grid-template-columns:200px 1fr;gap:24px;align-items:start}.vep-one .vep-img{width:200px;height:200px;border-radius:12px}' +
     '.vep-one h2{font-size:22px;font-weight:900;line-height:1.25;margin:0 0 6px}.vep-one .vep-acts{flex-direction:row;flex-wrap:wrap;margin:14px 0 18px}' +
     '.vep-full{font-size:14px;line-height:1.7;color:rgba(26,26,26,.85);white-space:pre-line;max-width:860px}' +
+    '.vep-books{margin-top:28px;border-top:1px solid rgba(0,0,0,.1);padding-top:20px}.vep-books h3{font-size:12px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(26,26,26,.75);margin:0 0 14px}' +
+    '.vep-bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:18px}' +
+    '.vep-book{display:flex;flex-direction:column;gap:4px;text-decoration:none;color:#1a1a1a}.vep-book img,.vep-bnc{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.14);background:#f2f2ee}' +
+    '.vep-bnc{display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;font-size:13px;font-weight:900;color:#fff;background:#2d7d31}' +
+    '.vep-book b{font-size:13px;font-weight:800;line-height:1.3;margin-top:4px}.vep-book small{font-size:12px;color:rgba(26,26,26,.75)}.vep-book em{font-style:normal;font-size:11px;font-weight:700;color:#1f5f22}' +
+    '.vep-book:hover b{text-decoration:underline}.vep-bnote{font-size:11px;color:rgba(26,26,26,.75);margin:12px 0 0}' +
     '@media(max-width:640px){.vep-row{grid-template-columns:56px 1fr}.vep-img{width:56px;height:56px}.vep-row .vep-acts{grid-column:1/-1;flex-direction:row}.vep-row .vep-acts .vep-btn{flex:1}' +
       '.vep-one{grid-template-columns:1fr}.vep-one .vep-img{width:140px;height:140px}}' +
     // The player bar, at the foot of the window.
@@ -236,7 +242,26 @@
         root.querySelector('.vep-crumb button').onclick = back;
         wire(root);
         toTop();
+        books(ep.guid);
       });
+    }
+    // Referenced books (Sean, 2026-10-29): the books named in this episode, read from its transcript (ve-books). One that is in the
+    // Directory opens its page; any other opens Amazon through our tracked link.
+    function books(guid) {
+      fetch(FN.replace('/ve-podcast', '/ve-books'), { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'episode', listing_id: L.id, guid: guid }) }).then(function (r) { return r.json(); }).then(function (d) {
+        var list = (d && d.books) || []; if (!list.length || epParam() !== guid) return;
+        var WHY = { their_own: 'Their book', recommended: 'Recommended', discussed: 'Talked about', mentioned: 'Mentioned' };
+        var sec = document.createElement('section'); sec.className = 'vep-books';
+        sec.innerHTML = '<h3>Referenced books</h3><div class="vep-bgrid">' + list.map(function (b) {
+          var href = b.page || b.buy || '', out = !b.page;
+          return '<a class="vep-book" href="' + esc(href) + '"' + (out ? ' target="_blank" rel="noopener sponsored"' : '') + '>' +
+            (b.cover ? '<img src="' + esc(b.cover) + '" alt="" loading="lazy">' : '<span class="vep-bnc">' + esc(b.title) + '</span>') +
+            '<b>' + esc(b.title) + '</b>' + (b.author ? '<small>' + esc(b.author) + '</small>' : '') +
+            '<em>' + esc([WHY[b.context] || 'Mentioned', b.speaker && !/^(host|guest)$/i.test(b.speaker) ? 'by ' + b.speaker : ''].filter(Boolean).join(' ')) + (out ? ' · Amazon' : '') + '</em></a>';
+        }).join('') + '</div>' + (list.some(function (b) { return !b.page; }) ? '<p class="vep-bnote">As an Amazon Associate we earn from qualifying purchases.</p>' : '');
+        var art = root.querySelector('.vep-one'); if (art) art.parentNode.insertBefore(sec, art.nextSibling);
+      }).catch(function () {});
     }
     function back() { setEp('', true); drawList(); if (!eps.length) load((page - 1) * PER); }
     window.addEventListener('popstate', function () {

@@ -1431,8 +1431,30 @@ Vegan, each cover copied from Amazon's image for its ISBN into `vegan-media/medi
 ISBN was wrong; Reversing Diabetes uses the revised edition in print). Open Library and Google Books refuse our server after a few calls, so
 book facts came from Open Library's search before it closed. **Amazon Associates**: every `/go/` link to an Amazon store leaves with our
 tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`); the tag is empty
-until Sean gives it, so the links work untagged until then. Not built yet: books referenced in an episode's transcript and a search for every
-book our People have written.
+until Sean gives it, so the links work untagged until then.
+**Referenced books and the book crawl** (Sean, 2026-10-29: "any books that are mentioned in the podcast, we put on... a background list to be
+built out and put into the page. And any books from any of the people... we do a crawl"; migrations `20261029_ve_books_crawl.sql`,
+`20261029_book_covers_buy_links.sql`; edge function `ve-books`). `ve_books` is the list: every book we know of (source `listing`, the 33
+already listed; `transcript`; `author_crawl`), one row per title and author's last name (`ve_book_key`, `ve_book_author_key`,
+`ve_book_upsert`, so a caption's "Bolshevitz" still finds Bulsiewicz's book). Three crons call `ve-books`: **scan** (`ve-books-scan`, two
+transcripts every 10 minutes, `ve_content_transcripts.books_status`, requeued when a transcript is replaced) has Claude name the books said
+in a transcript, keeps a mention only when its quote is really in the transcript within two minutes of its second, and saves it in
+`ve_book_mentions` with the show's feed guid (`ve_content_feed_episode`); **crawl** (`ve-books-crawl`, two People every 10 minutes, again
+after 180 days, `ve_book_author_checks`) looks a person up by name and keeps the books Claude confirms are theirs (`author_listing_id`);
+**build** (`ve-books-build`, three every 5 minutes, three tries) matches a found book, takes an English edition whose cover Amazon has,
+copies the cover into `media/logos/books/`, has Claude write the card line and synopsis only from the publisher's description, and makes its
+tracked Amazon link. A book about Vegan or plant-based living, food, health or animals, or by one of our People, becomes a Books listing
+(`built`, in its author's family, so it is on their Books tab; a person with no family gets their slug as one); any other book is
+`referenced`, shown only on the episodes that name it. An existing listing of the same title is linked, never copied. A podcast episode's
+view (`?ep=<guid>`) shows **Referenced books** under it (`books` in `public/ve-episodes.js`, `ve-books` `episode`, public): the cover,
+title, author and Recommended / Their book / Talked about / Mentioned, opening the book's page, or Amazon for a referenced one. `ve-books`
+`status` counts the list, `probe` says whether the sources answer. **Sources**: Google Books first, read with our Google key (`GOOGLE_PLACES_API_KEY`),
+then Open Library. On 2026-10-29 neither answered: the key's API restrictions block the Books API (Sean adds Books API to the key in Google
+Cloud > APIs & Services > Credentials, as he did for YouTube) and Open Library refused our server's connections. Scans run regardless;
+crawl and build wait, and a source that does not answer does not use up a book's tries. Proven 2026-10-29 on two episodes: the cookbook
+countdown named its ten books, all matched to their listings, and John Lewis's named Badass Vegan, A New Earth and The Art of War (the last
+two queued). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
+(its author's logo) was set aside for the letter.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
