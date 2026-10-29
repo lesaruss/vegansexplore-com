@@ -112,6 +112,8 @@
     window.addEventListener('load', function() {
       var lb = document.getElementById('login-lesaruss');
       if (lb) lb.innerHTML = VEAuth.lesarussNote();
+      // Signed in on hq.lesaruss.ai already? The quiet check brings them back signed in, once a visit (public/ve-auth.js).
+      if (!VEAuth.isLoggedIn() && VEAuth.quietPickup()) return;
       VEAuth.initGoogleSignIn(document.getElementById('login-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         // Pay-or-pledge gate (2026-09-17): a first-time Google sign-in here

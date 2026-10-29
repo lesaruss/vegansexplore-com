@@ -60,6 +60,11 @@
     var q = new URLSearchParams(location.search);
     var code = q.get('code') || '', state = q.get('state') || '';
     history.replaceState(null, '', '/auth/lesaruss');
+    // The quiet check (public/ve-auth.js quietPickup): any answer but a session goes straight back to the page, where the
+    // usual sign-in shows. Nobody sees this page for it.
+    var quiet = false;
+    try { quiet = sessionStorage.getItem('ve_lesaruss_quiet_mode') === '1'; sessionStorage.removeItem('ve_lesaruss_quiet_mode'); } catch (e) {}
+    if (quiet && !code) { location.replace(back()); return; }
     if (!code) { show('Nothing to sign in', VB ? 'Start from a Vote button and press Sign in with LESARUSS.' : 'Start from the Sign in window and press Continue with LESARUSS.', retry); return; }
     VEAuth.finishLesaruss(code, state).then(function (d) {
       if (d && d.token) {
@@ -77,6 +82,7 @@
           '<a class="btn dark" href="' + (VB ? VB.passportUrl : 'https://lesaruss.ai/join') + '">Become a Diplomat</a><a class="btn line" href="/directory">Back to the Directory</a>');
         return;
       }
+      if (quiet && !(d && d.error === 'passport_needed')) { location.replace(back()); return; }
       if (d && d.error === 'passport_needed') {
         show('Your Passport opens Vegans Explore', d.message,
           '<a class="btn dark" href="' + (/^https:\/\/checkout\.stripe\.com\//.test(d.checkout_url || '') ? d.checkout_url : '/passport#/join') + '">Get your Passport, $11</a><a class="btn line" href="https://lesaruss.ai/join">Become a Diplomat</a>');
@@ -84,6 +90,7 @@
       }
       show('That sign-in did not finish', (d && d.message) || 'Please try again.', retry);
     }).catch(function () {
+      if (quiet) { location.replace(back()); return; }
       show('That sign-in did not finish', 'Something went wrong. Please try again.', retry);
     });
   })();
