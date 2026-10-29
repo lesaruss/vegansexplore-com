@@ -73,7 +73,8 @@
   // The top 12 of a kind: most votes, then most voters, then a logo over a letter, then A to Z. Never ours, never closed.
   function rank(rows) {
     // Shows on hiatus count too (Sean, 2026-10-27): their status shows on the card.
-    return rows.filter(function (l) { return OURS.indexOf(l.slug) < 0; })
+    // LESARUSS.ai's own listings (tag lesaruss-ai-directory-candidate: business podcasts and tools) are not ours to show.
+    return rows.filter(function (l) { return OURS.indexOf(l.slug) < 0 && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; })
       .sort(function (a, b) {
         return (b.vote_count || 0) - (a.vote_count || 0) || (b.voter_count || 0) - (a.voter_count || 0) ||
           (b.logo_url ? 1 : 0) - (a.logo_url ? 1 : 0) || String(a.name).localeCompare(String(b.name));
