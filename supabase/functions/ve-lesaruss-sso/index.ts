@@ -12,6 +12,11 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 //   - Anyone else is signed in as their Vegans Explore account is: a Passport holder is in; a new or unpaid account waits
 //     for its $11 Passport, exactly like Continue with Google (the page opens the Passport window).
 // POST { code, redirect_uri } -> { token, member, diplomat }. verify_jwt off: the code is the credential.
+//
+// LESARUSS.ai (Sean, 2026-10-29; migration 20261029_lesaruss_ai_votes.sql): POST { code, client: 'lesaruss-ai', redirect_uri }
+// from lesaruss.ai/auth/lesaruss (this site's page through its proxy). It signs in only a LESARUSS member (lr_member_entitled:
+// a Diplomat, a LESARUSS Passport or a super admin), makes no account, and its token carries brand 'lesaruss-ai', which
+// ve-votes reads. Anyone else gets membership_needed.
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -21,7 +26,8 @@ const VE_TENANT_ID = '00000000-0000-4000-a000-000000000002';
 const MEMBER_FIELDS = 'id, name, email, initials, color, membership_tier, ve_role, ve_tier, referral_code, is_superadmin, home_community, membership_status';
 const ROW_FIELDS = MEMBER_FIELDS + ', tenant_id';
 
-const ORIGINS = [/^https:\/\/(www\.)?vegansexplore\.com$/, /^https:\/\/vegansexplore-[a-z0-9]+-contact-2245s-projects\.vercel\.app$/];
+const ORIGINS = [/^https:\/\/(www\.)?vegansexplore\.com$/, /^https:\/\/vegansexplore-[a-z0-9]+-contact-2245s-projects\.vercel\.app$/,
+  /^https:\/\/(www\.)?lesaruss\.ai$/, /^https:\/\/lesaruss-ai-site[a-z0-9-]*\.vercel\.app$/];
 function cors(req: Request) {
   const o = req.headers.get('origin') || '';
   return {
@@ -56,9 +62,10 @@ serve(async (req: Request) => {
   try {
     const b = await req.json().catch(() => ({}));
     const code = String(b.code || ''), redirect = String(b.redirect_uri || '');
+    const client = b.client === 'lesaruss-ai' ? 'lesaruss-ai' : 'vegans-explore';
     if (!/^[A-Za-z0-9_-]{40,64}$/.test(code)) return json({ error: 'bad_code' }, 400);
 
-    const { data: rows, error } = await supabase.rpc('lesaruss_sso_consume', { p_code_hash: await sha256Hex(code), p_client: 'vegans-explore', p_redirect: redirect });
+    const { data: rows, error } = await supabase.rpc('lesaruss_sso_consume', { p_code_hash: await sha256Hex(code), p_client: client, p_redirect: redirect });
     if (error) { console.error('consume', error); return json({ error: 'internal_error' }, 500); }
     const hit = (rows ?? [])[0] as { email: string } | undefined;
     if (!hit?.email) return json({ error: 'expired', message: 'That sign-in has expired or was already used. Please try again.' }, 401);
@@ -69,6 +76,18 @@ serve(async (req: Request) => {
     const { data: found } = await supabase.from('members').select(ROW_FIELDS)
       .ilike('email', email.replace(/[%_\\]/g, '\\$&')).limit(1);
     let member = (found ?? [])[0] as Record<string, any> | undefined;
+
+    if (client === 'lesaruss-ai') {
+      const needed = { error: 'membership_needed', message: 'Voting in the LESARUSS.ai Directory is for LESARUSS members: Diplomats, and owners who claimed their listing with the $11 LESARUSS Passport.' };
+      if (!member) return json(needed, 403);
+      const { data: entitled } = await supabase.rpc('lr_member_entitled', { p_member: member.id });
+      if (entitled !== true) return json(needed, 403);
+      await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', member.id);
+      const token = await signJWT({ sub: member.id, email: member.email, tier: member.membership_tier, brand: 'lesaruss-ai' });
+      const { tenant_id: _t, ...out } = member;
+      // A LESARUSS member is a member there, whatever this site's own status for the row says.
+      return json({ token, diplomat: diplomat === true, member: { ...out, membership_status: 'active', communities: [], hidden_modules: [] } });
+    }
 
     // Another brand's account is let in here only as a Diplomat. Its status is that brand's, not ours: a free LESARUSS.ai
     // account reads as active, and must not open Vegans Explore without its Passport (Sean, 2026-10-29).

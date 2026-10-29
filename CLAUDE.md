@@ -493,8 +493,18 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   account, one way to join (the $11 LESARUSS Passport through HQ `/api/claim`, which records the claim for Depot > Claims), and
   Add your business goes to HQ's business application.
 - **The Directory component** takes `config.brand` (`sections`, `catMap`, `include`, `trust: false`, `vegan: false`,
-  `listingBase`); `ve-votes.js` sends a signed-out vote to the brand's Passport. Votes on lesaruss.ai still need a Vegans Explore
-  sign-in, so a LESARUSS member cannot cast one there yet.
+  `listingBase`); `ve-votes.js` sends a signed-out vote to the brand's window.
+- **Votes on lesaruss.ai** (Sean, 2026-10-29: "Go ahead with the voting next"; migration `20261029_lesaruss_ai_votes.sql`). A
+  signed-out Vote opens Voting is for LESARUSS members (`VE_BRAND.gates.vote`): **Become a Diplomat** (`/join`) and **Sign in with
+  LESARUSS** (`VE_BRAND.signIn` 'lesaruss': `data-ve-lesaruss`, so `ve-auth.js` starts Continue with LESARUSS as the client
+  `VE_BRAND.ssoClient` 'lesaruss-ai', a `lesaruss_sso_clients` row HQ's `/connect` names). It lands on `/auth/lesaruss` (this
+  page, proxied, branded), and `ve-lesaruss-sso` with `client: 'lesaruss-ai'` lets in only a LESARUSS member (`lr_member_entitled`:
+  a Diplomat, a `brand_memberships` 'lesaruss-ai' passport, which HQ records when a claim's $11 is paid, or a super admin), makes
+  no account, refuses anyone else with `membership_needed`, and signs a token with `brand: 'lesaruss-ai'`. `ve-votes` takes such a
+  token only for a listing in the LESARUSS.ai Directory (`lr_listing_in_directory`) and only while `lr_member_entitled`, counts it
+  in the same pool (`listing_daily_votes`, once a day per listing), and refuses its `contribute` (points are ours). A Vegans Explore
+  Passport alone does not vote there (each community is its own $11); a Diplomat votes on both. Proven 2026-10-29: a free LESARUSS
+  account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
 ## Analytics (Sean, 2026-10-28)
 

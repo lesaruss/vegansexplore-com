@@ -33,7 +33,8 @@
     return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); })
       .then(function (d) {
-        if (d && d.error === 'payment_required' && VEAuth.showActivateModal) VEAuth.showActivateModal(d.message);
+        // Another brand's site has its own membership, so its own window, not our $11 one.
+        if (d && d.error === 'payment_required') { if (window.VE_BRAND) gatePrompt('vote', { signedIn: true }); else if (VEAuth.showActivateModal) VEAuth.showActivateModal(d.message); }
         return d;
       });
   }
@@ -190,7 +191,11 @@
       // and sign-in, in its own words; Vegans Explore sets none.
       actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
                '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
-      foot: o.signedIn ? '' : 'Already a member? <a' + top + ' href="' + (VB.loginUrl || '/login?next=' + back) + '">Sign in</a>'
+      // A brand that signs in with LESARUSS (VB.signIn 'lesaruss') starts Continue with LESARUSS here (ve-auth.js, data-ve-lesaruss),
+      // coming back to this page.
+      foot: o.signedIn ? '' : VB.signIn === 'lesaruss'
+        ? 'Already a member? <a href="#" data-ve-lesaruss="' + here().replace(/"/g, '&quot;') + '">Sign in with LESARUSS</a>'
+        : 'Already a member? <a' + top + ' href="' + (VB.loginUrl || '/login?next=' + back) + '">Sign in</a>'
     });
   }
   function memberPrompt(kind, o) { gatePrompt(kind, o); }
