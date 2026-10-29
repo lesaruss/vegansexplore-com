@@ -40,15 +40,25 @@
     if (['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
     if (['Documentaries & Films', 'Books'].indexOf(c) >= 0) return 'work';
     if (['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(c) >= 0) return 'brand';
+    // Groups and organizations (Sean, 2026-10-29): no hours or menu, their own opportunities.
+    if (['Groups', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'].indexOf(c) >= 0) return 'org';
     return 'place';
   }
   // What people can do on the page, by kind: a podcast's visitors play episodes and open Listen on; a place's call and come in.
   var ACTS_BY = {
     show: [['play', 'Episodes played'], ['listen', 'Listen on clicks'], ['website', 'Website visits'], ['social', 'Social links']],
     work: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Where to buy'], ['photos', 'Photos opened']],
-    brand: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Orders'], ['photos', 'Photos opened']]
+    brand: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Orders'], ['photos', 'Photos opened']],
+    org: [['website', 'Website visits'], ['social', 'Social links'], ['photos', 'Photos opened']]
   };
-  var ACTS_WORDS = { show: 'Plays and clicks', work: 'Clicks', brand: 'Clicks and orders', place: 'Calls, directions, orders and clicks' };
+  var ACTS_WORDS = { show: 'Plays and clicks', work: 'Clicks', brand: 'Clicks and orders', org: 'Clicks', place: 'Calls, directions, orders and clicks' };
+  // What a group or an organization can take part in, all Coming. community-groups is the group program Sean described on
+  // 2026-10-29 (a group's home on Vegans Explore); its terms are not set, so the card says what it is, never a rate.
+  var ORG_OPPS = [
+    ['community-groups', 'Groups', 'Host your group on Vegans Explore', 'Your group\'s home here: your events on your page and the calendar, members finding you in every city, and a share of what your members bring in. We are building it with the first groups now.'],
+    ['nonprofit-partners', 'Nonprofits', 'Nonprofit Partners', 'For Vegan nonprofits, rescues and sanctuaries: your own link, a share of every Passport bought through it, points for our services and a badge.'],
+    ['community-nights', 'Community', 'Community nights', 'In each city, starting in South Florida in November 2026.']
+  ];
   // What a podcast can take part in (Sean, 2026-10-27), all Coming. directory/listing.html shows the first three on the locked tour.
   var PODCAST_OPPS = [
     ['podcast-network', 'Network', 'Join the Vegans Explore Podcast Network', 'Play the network tag, take part in our challenges, and be part of the sponsorships we bring in for the network.'],
@@ -134,6 +144,9 @@
     var api = opts.call || call;
     var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
+    // Get your page ready, in a group's or an organization's words.
+    var CK = KIND === 'org' ? Object.assign({}, CHECK, { description: ['Your story', 'A few lines on who you are, who it is for and what your events are like.', 'about'],
+      photos: ['Photos', 'Photos from your events, so people can picture showing up.', 'photos'] }) : CHECK;
     function go(view, extra) {
       var u = new URL(location.href);
       u.searchParams.set('tab', 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item');
@@ -194,17 +207,17 @@
       }
       // What is left, as cards; what is done, on one line.
       // A podcast, a book or a brand has no hours or menu to fill in.
-      var fits = function (c) { return CHECK[c.k] && (KIND === 'place' || ['logo', 'description'].indexOf(c.k) >= 0); };
+      var fits = function (c) { return CK[c.k] && (KIND === 'place' || ['logo', 'description'].indexOf(c.k) >= 0 || (KIND === 'org' && c.k === 'photos')); };
       var todo = D.checklist.filter(function (c) { return !c.done && fits(c); }), done = D.checklist.filter(function (c) { return c.done && fits(c); });
       out += '<h4>Get your page ready</h4>' + (todo.length ? '' : '<p class="vpd-empty">Everything is in. Your page is ready for visitors.</p>') +
         (todo.length ? '<div class="vpd-grid">' + todo.map(function (c) {
-          var m = CHECK[c.k];
+          var m = CK[c.k];
           var act = c.k === 'menu' ? '<a class="vpd-btn sm" href="?tab=brand&pd=menu" data-vpd="menu">Add it</a>'
             : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-survival-guide#/audit">Run it</a>'
             : '<button type="button" class="vpd-btn sm" data-vpd-edit="' + m[2] + '">Add it</button>';
           return '<div class="vpd-card"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p>' + act + '</div>';
         }).join('') + '</div>' : '') +
-        (done.length && todo.length ? '<p class="vpd-done">&#10003; Done: ' + done.map(function (c) { return esc(CHECK[c.k][0].replace(/^Your /, '').replace(/^The /, '')); }).join(', ') + '</p>' : '');
+        (done.length && todo.length ? '<p class="vpd-done">&#10003; Done: ' + done.map(function (c) { return esc(CK[c.k][0].replace(/^Your /, '').replace(/^The /, '')); }).join(', ') + '</p>' : '');
       if (D.cards.length) out += '<h4>What\'s new</h4><div class="vpd-grid">' + D.cards.map(function (c) {
         return '<div class="vpd-card"><span class="vpd-tag' + (c.kind === 'offer' ? ' warn' : '') + '">' + esc({ new: 'New', wizard: 'Try it', offer: 'Offer', tip: 'Tip' }[c.kind] || 'New') + '</span>' +
           '<b>' + esc(c.title) + '</b><p>' + esc(c.body) + '</p>' +
@@ -369,7 +382,7 @@
     // ---- Opportunities
     function drawOpps() {
       var ints = {}; (D.interests || []).forEach(function (k) { ints[k] = 1; });
-      var camps = KIND === 'show' ? PODCAST_OPPS : CAMPAIGNS.filter(function (c) { return !c[4] || Date.now() < c[4]; });
+      var camps = KIND === 'show' ? PODCAST_OPPS : KIND === 'org' ? ORG_OPPS : CAMPAIGNS.filter(function (c) { return !c[4] || Date.now() < c[4]; });
       return '<p class="vpd-empty">Tell us where you want in and we reach out with the details. Everything here is Coming.</p>' +
         '<div class="vpd-grid">' + camps.map(function (c) {
           return '<div class="vpd-card"><span class="vpd-tag warn">Coming &middot; ' + esc(c[1]) + '</span><b>' + esc(c[2]) + '</b><p>' + esc(c[3]) + '</p>' +
