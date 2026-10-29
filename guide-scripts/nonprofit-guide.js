@@ -242,9 +242,11 @@
   var GV = { counts: { episode: {} }, mine: { episode: {} } }, gvLoaded = false;
   function loadGVotes(then) {
     cookApi({ action: 'gvotes' }).then(function (d) {
-      if (d && d.counts) { GV.counts = d.counts; GV.mine = { episode: {} }; (d.mine.episode || []).forEach(function (x) { GV.mine.episode[x] = 1; }); gvLoaded = true; }
+      if (d && d.counts) { GV.counts = d.counts; GV.mine = { episode: {} }; (d.mine.episode || []).forEach(function (x) { GV.mine.episode[x] = 1; }); }
+      // Tried once, even when it failed: the view redraws after this, and must not ask again (a redraw drops a playing episode).
+      gvLoaded = true;
       if (then) then();
-    }).catch(function () { if (then) then(); });
+    }).catch(function () { gvLoaded = true; if (then) then(); });
   }
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
   function gvoteBtn(key) {
