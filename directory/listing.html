@@ -1394,9 +1394,12 @@ function renderFilmOverview(l){
 }
 // People in this film (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
 // vote for them"). details.film_people [{person, role}] are People listings, drawn with the Directory's own card and votes
-// (VERegionDirectory.card / wire, loaded on first need), three across beside the sidebar, in the order saved (the director first).
+// (VERegionDirectory.card / wire, loaded on first need), three across beside the sidebar: directors, co-directors, then the rest.
 function loadFilmPeople(l){
-  var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; });
+  var RANK = { 'Director': 0, 'Co-director': 1 };
+  var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; })
+    .map(function(x, i){ return [x, i]; }).sort(function(a, b){ var ra = RANK[a[0].role] == null ? 2 : RANK[a[0].role], rb = RANK[b[0].role] == null ? 2 : RANK[b[0].role]; return ra - rb || a[1] - b[1]; })
+    .map(function(p){ return p[0]; });
   var grid = document.querySelector('#film-people .rank-grid'); if(!grid || !list.length) return;
   var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
     var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
@@ -2469,7 +2472,10 @@ function renderPersonOverview(l){
   // Their work: an intake page, a program, a product, a book (details.person.links).
   var links = (p.links || []).filter(function(x){ return x && httpsOnly(x.url); });
   if(links.length) h += '<div class="section"><h2 class="section-title">Their work</h2><div class="pp-links">' +
-    links.map(function(x){ return '<a class="pp-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" data-act="website">' + esc(x.label || 'Visit') + ' <span aria-hidden="true">&#8599;</span></a>'; }).join('') + '</div></div>';
+    links.map(function(x){
+      // Our own pages (a director's films in the Directory) open in place; anything else in a new tab.
+      var ours = /^https:\/\/(www\.)?vegansexplore\.com\//i.test(x.url), href = ours ? x.url.replace(/^https:\/\/(www\.)?vegansexplore\.com/i, '') : x.url;
+      return '<a class="pp-link" href="' + esc(href) + '"' + (ours ? '' : ' target="_blank" rel="noopener" data-act="website"') + '>' + esc(x.label || 'Visit') + (ours ? '' : ' <span aria-hidden="true">&#8599;</span>') + '</a>'; }).join('') + '</div></div>';
   // Their own show, when it is in our Media section (details.person.shows), filled by loadPerson.
   // The player docks here, above every podcast list on the page, and changes with each Play (the podcast listing's player).
   h += '<div class="vep-dock" data-vep-always></div>';
