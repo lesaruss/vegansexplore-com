@@ -1,6 +1,6 @@
 // One-time run of migration 20261029_venues_east_coast.sql (the East Coast venues), through the one-time function pattern
 // (canon ops-supabase-write-once-function): the migration is too long to paste through the connector. Instead of a run key in the
-// repo it takes Bearer LESARUSS_ADMIN_TOKEN, read from lesaruss_secrets. Redeploy as the 410 stub once it has run.
+// repo it takes LESARUSS_ADMIN_TOKEN in x-admin-token (the gateway's JWT check takes the public anon key), read from lesaruss_secrets. Redeploy as the 410 stub once it has run.
 import postgres from 'npm:postgres@3.4.4'
 
 const SQL = `-- The East Coast venues (Sean, 2026-10-29: "Let's do Central Florida... Atlanta... Philly... New York"). Researched from published
@@ -331,7 +331,7 @@ where v.slug = $q$ubs-arena$q$ and sp.name = $q$Salad stand$q$ and not exists (s
 Deno.serve(async (req: Request) => {
   const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { max: 1, prepare: false })
   try {
-    const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
+    const tok = req.headers.get('x-admin-token') || ''
     const [row] = await sql`select value from public.lesaruss_secrets where key = 'LESARUSS_ADMIN_TOKEN'`
     if (!tok || !row || tok !== row.value) return new Response('not found', { status: 404 })
     const out = await sql.begin(async (tx) => {
