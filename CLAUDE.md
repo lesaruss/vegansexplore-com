@@ -2024,7 +2024,10 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   and A to R left off; Citizens Bank Park with home plate at the bottom and its lettered sections B to F on the 100 level; Subaru Park a
   soccer pitch). MetLife Stadium the same day
   (migration `20261029_venue_maps_metlife.sql`, from the stadium's own level charts; the 200 level's b sections are their own ring).
-  Yankee Stadium, Citi Field, Madison Square Garden, Barclays Center and UBS Arena wait on seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
+  Citi Field, Madison Square Garden and Barclays Center the same day (migration `20261029_venue_maps_new_york.sql`: Citi Field with
+  home plate at the bottom, its lettered and 14 to 16 sections on the field level; the Garden's floor sections 1 to 12, its 400s on
+  the West balcony and its 300s the bridges and East balcony; Barclays' lower bowl 1 to 31). Yankee Stadium and UBS Arena wait on
+  seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
   (`inset` box-shadow), so the scrolling column never clips it.
