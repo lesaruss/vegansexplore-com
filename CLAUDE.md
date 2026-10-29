@@ -2059,7 +2059,11 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
   **Try it** (a working Get me there on the free venue from a set start, D7 at FLL, section 124 at Hard Rock), How to use it (pick,
   type your gate or section, save), Built with you (we started with what we could find; members keep it right) beside the
-  Bounties card (live points from `bounties`), Newly added (the four latest, `list` `added`), and Get every venue. The full list
+  Bounties card (live points from `bounties`), Newly added (the four latest, `list` `added`), and Get every venue.
+  Reworked the same day (Sean: "a little jumbled... have the image... to the right... six different airports... all the way across... if
+  Nori's visible... four, but full width"): Try it is its words and result beside the free venue's picture (both open it, starting
+  from the demo gate or section), then How to use it, Get every venue, Built with you and Bounties, and Newly added: six across with
+  the Guide hidden (`.dg-min`), four with it showing, two on phones. The full list
   with the city filter is the Airports / Venues tab only. Nori's and River's Overview lines are text drafts for Sean.
   **Queued by Sean, not built** (2026-10-29: "let's not steer too far away from the airport guide... we can always cue this for
   later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
