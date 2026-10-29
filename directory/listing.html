@@ -753,8 +753,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
 #film-people .vrd-root .rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:1180px){#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:640px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:900px){#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1387,14 +1387,14 @@ function renderFilmOverview(l){
   var pods = Array.isArray(d.film_podcasts) && d.film_podcasts.length ? '<div class="section" id="film-pods"><h2 class="section-title">On our podcast</h2>' +
     '<p class="pp-sub">Our conversations with the people who made this film or appear in it.</p><div class="vep-dock" data-vep-always></div>' +
     '<div class="pp-scroll"><div class="vep-list"><p class="pp-empty">Loading...</p></div></div></div>' : '';
-  var people = Array.isArray(d.film_people) && d.film_people.length ? '<div class="section" id="film-people"><h2 class="section-title">People in this film</h2>' +
+  var people = Array.isArray(d.film_people) && d.film_people.length ? '<div class="section" id="film-people"><h2 class="section-title">Featured people</h2>' +
     '<p class="pp-sub">The people who made it or appear in it that we have interviewed. Vote for them like any listing.</p>' +
     '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>' : '';
   return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + people + pods;
 }
-// People in this film (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
+// Featured people (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
 // vote for them"). details.film_people [{person, role}] are People listings, drawn with the Directory's own card and votes
-// (VERegionDirectory.card / wire, loaded on first need), three across beside the sidebar: directors, co-directors, then the rest.
+// (VERegionDirectory.card / wire, loaded on first need), three columns beside the sidebar (two under 900 px, one on phones): directors, co-directors, then the rest.
 function loadFilmPeople(l){
   var RANK = { 'Director': 0, 'Co-director': 1 };
   var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; })
