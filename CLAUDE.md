@@ -1381,7 +1381,7 @@ built out and put into the page. And any books from any of the people... we do a
 `20261029_book_covers_buy_links.sql`; edge function `ve-books`). `ve_books` is the list: every book we know of (source `listing`, the 33
 already listed; `transcript`; `author_crawl`), one row per title and author's last name (`ve_book_key`, `ve_book_author_key`,
 `ve_book_upsert`, so a caption's "Bolshevitz" still finds Bulsiewicz's book). Three crons call `ve-books`: **scan** (`ve-books-scan`, two
-transcripts every 10 minutes, `ve_content_transcripts.books_status`, requeued when a transcript is replaced) has Claude name the books said
+transcripts every 5 minutes, `ve_content_transcripts.books_status`, requeued when a transcript is replaced) has Claude name the books said
 in a transcript, keeps a mention only when its quote is really in the transcript within two minutes of its second, and saves it in
 `ve_book_mentions` with the show's feed guid (`ve_content_feed_episode`); **crawl** (`ve-books-crawl`, two People every 10 minutes, again
 after 180 days, `ve_book_author_checks`) looks a person up by name and keeps the books Claude confirms are theirs (`author_listing_id`);
@@ -1400,7 +1400,17 @@ A source that does not answer does not use up a book's tries. A book whose Engli
 1987 Pregnancy, Children, and the Vegan Diet). Proven 2026-10-29 on two episodes: the cookbook
 countdown named its ten books, all matched to their listings, and John Lewis's named Badass Vegan, A New Earth and The Art of War (the last
 two queued; once Google answered, A New Earth and The Art of War became referenced books and Dr. Klaper's Moving Medicine Forward, named in
-his episode, a listing on his new Books tab). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
+his episode, a listing on his new Books tab). **Building each other** (Sean, 2026-10-29: "we're mining for content to put into our
+directory and then cross-referencing that content with what we have in our directory"): every book's page and the Books tab's book view
+show **Talked about on our podcasts** (`loadBookTalks` in `directory/listing.html`, `ve-books` `book`, public): the episodes that named it,
+with who and how (Their own book, Recommended, Talked about, Mentioned), each opening the episode on its show's page. Books not about Vegan
+living stay out of the Directory (Logan's default, Sean's to change) and show only as Referenced books; **Depot > Content > Books**
+(`/admin/depot/books`, after Content index in the Go to menu; `ve-books` `admin_list`, `admin_get`, `admin_set`) lists the book list by
+status (Waiting, In the Directory, Referenced only, Not found, Set aside) with the scan and crawl progress, and one book (`#b/<id>`) with
+why it stands where it does, the episodes that named it, and **Make it a listing** (a referenced book becomes a listing at once from what
+the builder found; any other is built as Vegan related on its next run, `vegan_related` true), **Try again** and **Set aside**. When Amazon
+has no cover for any English edition, the builder takes Google's own cover picture of one (`googleCover`, `books.google.com/books/content`,
+800 px wide); a book with no ISBN-10 gets an Amazon search as its tracked link (`buyLink`). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
 (its author's logo) was set aside for the letter.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
