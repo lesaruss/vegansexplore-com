@@ -53,9 +53,23 @@ function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;va
 // enough to pay (the $11 window, a claim's or a Guide's own checkout, an invitation's accept).
 function isPending(m){return!!(m&&m.membership_status==='pending_payment');}
 function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken()&&!isPending(getRealMember());}
-function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
+function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}if(d&&d.error==='passport_needed'){return _passportNeeded(d);}return d;});}
+// Another brand's LESARUSS account without a Vegans Explore Passport (ve-auth passport_needed, 2026-10-29): no session, just the
+// $11 window, whose button goes to the checkout the server made for them. The page's own error box shows the same words.
+var _needUrl=null;
+function _passportNeeded(d){_needUrl=d.checkout_url||null;hideAuthModal();showActivateModal(d.message);return{error:d.message,passport_needed:true};}
 function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+// Continue with LESARUSS (Sean, 2026-10-29; edge function ve-lesaruss-sso, migration 20261029_lesaruss_sign_in.sql): one
+// LESARUSS account signs in here. The button sends them to hq.lesaruss.ai/connect with a random state kept in this tab;
+// /auth/lesaruss trades the one-time code that comes back for a session. A Diplomat is in; anyone else meets the Passport.
+var LESARUSS_HQ=/^vegansexplore-[a-z0-9]+-contact-2245s-projects\.vercel\.app$/.test(location.hostname)?'https://lesaruss-hq-git-claude-happy-fara-c12102-contact-2245s-projects.vercel.app':'https://hq.lesaruss.ai';
+function loginWithLesaruss(back){var a=new Uint8Array(24);crypto.getRandomValues(a);var st=btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');try{sessionStorage.setItem('ve_lesaruss_state',st);sessionStorage.setItem('ve_lesaruss_back',back||(location.pathname+location.search+location.hash));}catch(e){}location.href=LESARUSS_HQ+'/connect?'+new URLSearchParams({client:'vegans-explore',redirect_uri:location.origin+'/auth/lesaruss',state:st}).toString();}
+function finishLesaruss(code,state){var want='';try{want=sessionStorage.getItem('ve_lesaruss_state')||'';}catch(e){}if(!state||state!==want)return Promise.resolve({error:'state',message:'That sign-in did not start in this browser tab. Please press Continue with LESARUSS again.'});try{sessionStorage.removeItem('ve_lesaruss_state');}catch(e){}return fetch(SUPABASE_URL+'/functions/v1/ve-lesaruss-sso',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON},body:JSON.stringify({code:code,redirect_uri:location.origin+'/auth/lesaruss'})}).then(function(r){return r.json();}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-ve-lesaruss]');if(!b)return;e.preventDefault();loginWithLesaruss(b.getAttribute('data-ve-lesaruss')||'');});
+var LESARUSS_BTN='<button type="button" class="ve-lesaruss-btn" data-ve-lesaruss=""><span class="ve-lesaruss-mark" aria-hidden="true">L</span>Continue with LESARUSS</button>';
+var LESARUSS_CSS='.ve-lesaruss-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:42px;margin:0 0 12px;border:1px solid #dadce0;border-radius:6px;background:#fff;color:#1a1a1a;font:600 14px "Montserrat",sans-serif;cursor:pointer}.ve-lesaruss-btn:hover{background:#f7f7f7}.ve-lesaruss-mark{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;background:#111;color:#fff;font-weight:900;font-size:12px}';
+(function(){try{var st=document.createElement('style');st.textContent=LESARUSS_CSS;document.head.appendChild(st);}catch(e){}})();
 function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||joinCarry('ve_join_community'),referral_code:joinCarry('ve_join_ref')}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function forgotPassword(email){return call('forgot_password',{email:email});}
 function resetPassword(token,password){return call('reset_password',{token:token,password:password});}
@@ -124,7 +138,7 @@ function showActivateModal(message){
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
 }
-function hideActivateModal(){var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
+function hideActivateModal(){_needUrl=null;var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
 function _buildActivateModal(){
 var s=document.createElement('style');
 s.textContent=
@@ -202,6 +216,7 @@ btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something 
 document.getElementById('ve-pm-founding-btn').addEventListener('click',function(){
 var btn=this;
 btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
+if(_needUrl){window.location.href=_needUrl;return;}
 startEntryCheckout(1100).then(function(d){
 if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
@@ -308,7 +323,7 @@ el.innerHTML=
 '<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Get your Passport</button>'+
 '</div>'+
 '<div id="ve-am-error" role="alert"></div>'+
-'<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+
+'<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+LESARUSS_BTN+
 '<div class="ve-am-divider"><div class="ve-am-divider-line"></div><span class="ve-am-divider-text">or use email</span><div class="ve-am-divider-line"></div></div>'+
 '<form id="ve-am-form" novalidate>'+
 '<div class="ve-am-field" id="ve-am-name-wrap" style="display:none;"><label for="ve-am-name">Name</label><input type="text" id="ve-am-name" name="name" autocomplete="name" placeholder="First and last name"></div>'+
@@ -355,5 +370,5 @@ if(isPending(d.member)){hideAuthModal();showActivateModal('Your account is waiti
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}
-global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,voteListing:voteListing,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,showActivateModal:showActivateModal,hideActivateModal:hideActivateModal,startPassportCheckout:startPassportCheckout,startEntryCheckout:startEntryCheckout,submitMissionSurvey:submitMissionSurvey,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
+global.VEAuth={getToken:getToken,getMember:getMember,isLoggedIn:isLoggedIn,setSession:setSession,clearSession:clearSession,signup:signup,login:login,loginWithGoogle:loginWithGoogle,forgotPassword:forgotPassword,resetPassword:resetPassword,verifyEmail:verifyEmail,initGoogleSignIn:initGoogleSignIn,loginWithLesaruss:loginWithLesaruss,finishLesaruss:finishLesaruss,lesarussButton:function(){return LESARUSS_BTN;},signOut:signOut,completeOnboarding:completeOnboarding,setHomeCommunity:setHomeCommunity,joinCommunity:joinCommunity,leaveCommunity:leaveCommunity,joinCampaign:joinCampaign,leaveCampaign:leaveCampaign,followPodcast:followPodcast,unfollowPodcast:unfollowPodcast,getLayout:getLayout,saveLayout:saveLayout,hideModule:hideModule,showModule:showModule,saveListing:saveListing,unsaveListing:unsaveListing,listSavedListings:listSavedListings,voteListing:voteListing,requirePassport:requirePassport,showAuthModal:showAuthModal,hideAuthModal:hideAuthModal,showActivateModal:showActivateModal,hideActivateModal:hideActivateModal,startPassportCheckout:startPassportCheckout,startEntryCheckout:startEntryCheckout,submitMissionSurvey:submitMissionSurvey,getRealMember:getRealMember,isRealSuperAdmin:isRealSuperAdmin,getViewAs:getViewAs,setViewAs:setViewAs,clearViewAs:clearViewAs};
 })(window);

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Signing you in — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; font-family: 'Montserrat', sans-serif; background: #f5f5f5; color: #1a1a1a; }
+    .page-frame { min-height: 100vh; display: flex; flex-direction: column; background: #fff; }
+    main { flex: 1; display: grid; place-items: center; padding: 44px 16px 80px; }
+    .card { width: 100%; max-width: 480px; border: 1px solid rgba(0,0,0,.1); border-radius: 12px; padding: 28px; text-align: center; }
+    .card h1 { font-size: 22px; font-weight: 900; margin: 0 0 10px; }
+    .card p { font-size: 15px; line-height: 1.6; color: rgba(26,26,26,.75); margin: 0 0 16px; }
+    .acts { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .btn { display: inline-flex; padding: 12px 18px; border-radius: 6px; font-weight: 800; font-size: 14px; text-decoration: none; border: 2px solid #1a1a1a; }
+    .btn.dark { background: #1a1a1a; color: #fff; }
+    .btn.line { background: #fff; color: #1a1a1a; }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <!-- Continue with LESARUSS lands here (Sean, 2026-10-29): hq.lesaruss.ai/connect sends back ?code=&state=, and
+       VEAuth.finishLesaruss trades the code once (ve-lesaruss-sso). A Diplomat goes on to where they started; an account
+       waiting for its Passport gets the $11 window; another brand's account that is not a Diplomat is told its choices. -->
+  <main>
+    <div class="card" id="sso" aria-live="polite">
+      <h1>Signing you in</h1>
+      <p>One moment while we finish signing you in with LESARUSS.</p>
+    </div>
+  </main>
+
+  <script src="/public/footer.js"></script>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function () {
+    var box = document.getElementById('sso');
+    function show(title, text, acts) {
+      box.innerHTML = '<h1></h1><p></p><div class="acts"></div>';
+      box.querySelector('h1').textContent = title;
+      box.querySelector('p').textContent = text;
+      box.querySelector('.acts').innerHTML = acts || '';
+    }
+    function back() {
+      var b = '';
+      try { b = sessionStorage.getItem('ve_lesaruss_back') || ''; sessionStorage.removeItem('ve_lesaruss_back'); } catch (e) {}
+      // Our own pages only.
+      return /^\/(?!\/)/.test(b) && !/^\/auth\/lesaruss/.test(b) ? b : '/dashboard';
+    }
+    var q = new URLSearchParams(location.search);
+    var code = q.get('code') || '', state = q.get('state') || '';
+    history.replaceState(null, '', '/auth/lesaruss');
+    if (!code) { show('Nothing to sign in', 'Start from the Sign in window and press Continue with LESARUSS.', '<a class="btn dark" href="/login">Sign in</a>'); return; }
+    VEAuth.finishLesaruss(code, state).then(function (d) {
+      if (d && d.token) {
+        var to = back();
+        if (d.member && d.member.membership_status === 'pending_payment') {
+          show('Signed in', 'One step left: your Passport.', '');
+          VEAuth.showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
+          return;
+        }
+        location.replace(to);
+        return;
+      }
+      if (d && d.error === 'passport_needed') {
+        show('Your Passport opens Vegans Explore', d.message,
+          '<a class="btn dark" href="' + (/^https:\/\/checkout\.stripe\.com\//.test(d.checkout_url || '') ? d.checkout_url : '/passport#/join') + '">Get your Passport, $11</a><a class="btn line" href="https://lesaruss.ai/join">Become a Diplomat</a>');
+        return;
+      }
+      show('That sign-in did not finish', (d && d.message) || 'Please try again.', '<a class="btn dark" href="/login">Back to sign in</a>');
+    }).catch(function () {
+      show('That sign-in did not finish', 'Something went wrong. Please try again.', '<a class="btn dark" href="/login">Back to sign in</a>');
+    });
+  })();
+  </script>
+</body>
+</html>

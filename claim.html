@@ -576,7 +576,7 @@
 
       // ---- Add it: the business is not in the Directory yet, so the same form asks for its name, kind and city.
       var CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Meal Prep', 'Clothing and Fashion', 'Beauty and Personal Care',
-        'Health and Wellness', 'Health Professionals', 'Fitness and Athletics', 'Coaches and Consultants', 'Animal Care', 'Events', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Podcasts', 'Books',
+        'Health and Wellness', 'Health Professionals', 'Fitness and Athletics', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Events', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Podcasts', 'Books',
         'E-Commerce & Marketplaces', 'Marketing & Growth'];
       $('n-cat').innerHTML = '<option value="">Choose one</option>' + CATS.map(function (c) { return '<option>' + esc(c) + '</option>'; }).join('');
       function me() { try { return window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; } catch (e) { return null; } }

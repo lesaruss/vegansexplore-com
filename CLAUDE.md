@@ -1230,6 +1230,20 @@ through `backlog_decide` as Add the ticked does (88 Rescues, 25 Sanctuaries, 23 
 31 of the calls failed to boot the function (503 BOOT_ERROR) and nothing saved; re-sent, all landed. Six had no town from Google
 and got it from Google's address.
 
+**Studios** (Sean, 2026-10-29, playbook `ve-business-hub-ad-console`: a studio directory for production, podcast and photo
+studios, prompted by Trisha, each claimable with the $11 Passport). Services > Studios, after Animal Care (`CAT_MAP`, `CAT_CONFIG`,
+`SECTIONS`, `KINDS`, `CATS` and the functions' category lists). A studio is usually Not a Vegan business. The first South Florida
+search (`20261029_studio_search.sql`) put 129 in Business outreach > New places > Ready to list (91 video and production, 25 podcast,
+13 photo), nothing live. The Directory's **Is your business in here?** strip (under the vote box, shown to everyone, members
+included) and the listing's claim box say the claim takes the $11 Passport, whose 1,100 points cover it.
+
+**Diplomats open every Guide** (Sean, 2026-10-29, canon `canon-lesaruss-ai-subscription-guide-wizard-model`
+UPDATE_2026_10_29_ONE_MEMBERSHIP_UNLIMITED_GUIDES and _DIPLOMAT_NAME_LOCKED): the one $111 LESARUSS.ai membership, named Diplomat,
+includes every Guide from every LESARUSS community. `ve-guide-unlock` `access()` opens a paid Guide (`via` `diplomat`) for an
+account whose email has a LESARUSS-tenant `members` row active on premium or advanced, or cancelled and paid through
+(`isDiplomat`, the rule in lesaruss-hq `lib/memberAccess.ts`). A Diplomat still needs a Vegans Explore account to sign in here;
+signing in with the LESARUSS account everywhere is the next build.
+
 **Groups** (Sean, 2026-10-29: "I want to add groups... the same way we have nonprofit rescue sanctuaries... when you click on it,
 it's all of their events will be tied to their profile, and their profile will be tied to all their events... eventually get them to
 have their community exclusively on Vegans Explore"; migrations `20261029_community_groups.sql`, `20261029_community_groups_seed.sql`).
@@ -2821,6 +2835,42 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
   engine (`character-respond`, used across LESARUSS) to take member context.
 - Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
   `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
+
+## Continue with LESARUSS (Sean, 2026-10-29)
+
+"A LESARUSS button... like how you do Google... log in here and you immediately get access to any of our communities... at the
+passport rate, your passport works... you still got to pay the $11 to get into the other communities." One LESARUSS account signs in
+on every brand (migration `20261029_lesaruss_sign_in.sql`, edge function `ve-lesaruss-sso`, HQ `app/connect` and `lib/sso.ts` in
+lesaruss/lesaruss-hq).
+
+- **The button** sits under Continue with Google in the sign-in window and on `/login` (`LESARUSS_BTN`, `loginWithLesaruss` in
+  `public/ve-auth.js`; any element with `data-ve-lesaruss="<path to come back to>"` starts it). It keeps a random state in the tab and
+  opens `hq.lesaruss.ai/connect?client=vegans-explore&redirect_uri=<origin>/auth/lesaruss&state=` (a preview of this site uses the
+  HQ branch preview, `LESARUSS_HQ`). HQ signs them in, shows who they are and what they get, and on Continue sends back a one-time
+  code (kept only as its sha256 in `lesaruss_sso_codes`, two minutes, once; the return address must be on `lesaruss_sso_clients`
+  exactly or match its preview pattern).
+- **`/auth/lesaruss`** (`auth/lesaruss.html`, `noindex`) checks the state and trades the code (`VEAuth.finishLesaruss`,
+  `ve-lesaruss-sso`): a session like ve-auth's. **One email is one `members` row across every brand**
+  (`idx_members_email_unique_global`), so the row may be their LESARUSS.ai one: a **Diplomat** (`lesaruss_is_diplomat`, the $111
+  membership) is let in as they are; **another brand's account that is not a Diplomat is refused** (`passport_needed`: Get your
+  Passport or Become a Diplomat), since its status is that brand's (17 free LESARUSS.ai accounts read as active); a Vegans Explore
+  account signs in as it is (waiting for its Passport, the $11 window opens); an email with no account gets one waiting for its
+  Passport. Super admins pass.
+- **Brand memberships** (Sean, 2026-10-29: "GO"; migration `20261029_brand_memberships.sql`). `brand_memberships` records who holds
+  what on which brand: `vegans-explore` passport (paid) or comp (on us), `lesaruss-ai` diplomat. `ve_member_entitled(member)` is
+  whether a row's status counts here: a Vegans Explore account (its status is ours, unchanged), a Vegans Explore Passport or comp on
+  record, a Diplomat, or a super admin. Every sign-in (`ve-auth` login and both Google paths, `ve-lesaruss-sso`) refuses another
+  brand's account that is not entitled with `passport_needed` and an $11 checkout the server makes (`passportNeeded`; no session
+  token reaches the browser); the $11 window's button goes there (`_passportNeeded` in `public/ve-auth.js`), and payment returns to
+  `/login?passport=paid` to sign in again. `ve-auth` `me` reads such an account as `pending_payment`, so an older session drops to
+  the $11 window. Vegans Explore accounts are recorded by trigger (`trg_ve_brand_membership_sync`); another brand's account gets its
+  Passport through `ve_brand_membership_grant` (the webhook's `entry_contribution`, the test checkout, `ve_member_admit`, which now
+  returns true when it made them a member here), and the webhook's welcome points go to it as a first join. The Diplomat rows follow
+  `ve_diplomat_sync`. On 2026-10-29 all 24 active Vegans Explore accounts, the switch accounts, Sean and the two Diplomats stayed in;
+  the 16 free LESARUSS accounts (seed, test and internal ones) are refused here.
+- `members.diplomat_since` and `ve_diplomat_sync()` (cron `ve-diplomat-sync`, daily) are ready for an account ever made active here
+  for being a Diplomat; nothing sets it today.
+- `/policies#privacy` says it (One LESARUSS account). Children's brands are never clients.
 
 ## Sign In As: switch into another account (Sean, 2026-10-26)
 

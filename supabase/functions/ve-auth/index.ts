@@ -220,6 +220,34 @@ async function findMemberByEmail(email: string): Promise<{ id: string } | null> 
   return data?.[0] ?? null;
 }
 
+// One email is one members row across every brand, and its membership_status is the brand's that made it: a free
+// LESARUSS.ai account reads 'active'. Another brand's account signs in here only when Vegans Explore holds it (its own
+// Passport or comp on record, the Diplomat membership, or a super admin: ve_member_entitled, migration
+// 20261029_brand_memberships.sql). Anyone else gets passport_needed and an $11 checkout made here, so no session token
+// ever reaches their browser; the webhook records the Passport and they sign in again.
+async function foreignNotEntitled(m: { id: string; tenant_id?: string | null }): Promise<boolean> {
+  if (m.tenant_id === VE_TENANT_ID) return false;
+  const { data, error } = await supabase.rpc('ve_member_entitled', { p_member: m.id });
+  if (error) console.error('ve_member_entitled', error);
+  return data !== true;
+}
+async function passportNeeded(m: { id: string; email: string; membership_tier?: string }): Promise<Response> {
+  let checkout_url: string | null = null;
+  try {
+    const t = await signJWT({ sub: m.id, email: m.email, tier: m.membership_tier, brand: 'vegans-explore' });
+    const r = await fetch(`${SUPABASE_URL}/functions/v1/ve-entry-checkout`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` },
+      body: JSON.stringify({ amount_cents: 1100, success_url: 'https://vegansexplore.com/login?passport=paid', cancel_url: 'https://vegansexplore.com/passport' }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (typeof d.url === 'string') checkout_url = d.url;
+  } catch (e) { console.error('passport_needed checkout', e); }
+  return new Response(JSON.stringify({
+    error: 'passport_needed', checkout_url,
+    message: 'Your LESARUSS account opens Vegans Explore with its $11 Passport, one time, with 1,100 welcome points. A Diplomat membership opens every LESARUSS community. Once it is paid, sign in again.',
+  }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+}
+
 async function getMemberCommunities(memberId: string): Promise<string[]> {
   const { data } = await supabase
     .from('member_communities')
@@ -767,7 +795,7 @@ serve(async (req: Request) => {
       const gUser = await verifyGoogleToken(id_token);
       if (!gUser) return new Response(JSON.stringify({ error: 'Invalid Google token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status').eq('google_id', gUser.sub).maybeSingle();
+      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, tenant_id').eq('google_id', gUser.sub).maybeSingle();
 
       if (existing) {
         // 'pending_payment' is allowed through -- browsing, the Guide chat, and
@@ -777,18 +805,22 @@ serve(async (req: Request) => {
         if (existing.membership_status !== 'active' && existing.membership_status !== 'pending_payment') {
           return new Response(JSON.stringify({ error: 'Account suspended.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
+        if (await foreignNotEntitled(existing)) return await passportNeeded(existing);
         const token = await signJWT({ sub: existing.id, email: existing.email, tier: existing.membership_tier, brand: 'vegans-explore' });
         await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', existing.id);
         const communities = await getMemberCommunities(existing.id);
         const hidden_modules = await getMemberHiddenModules(existing.id);
-        return new Response(JSON.stringify({ token, member: { ...existing, communities, hidden_modules } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+        const { tenant_id: _t, ...existingOut } = existing;
+        return new Response(JSON.stringify({ token, member: { ...existingOut, communities, hidden_modules } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
       const byEmail = await findMemberByEmail(gUser.email.toLowerCase());
       if (byEmail) {
         await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture, email_verified: true }).eq('id', byEmail.id);
-        const { data: linked } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status').eq('id', byEmail.id).single();
-        if (!linked) throw new Error('Failed to load linked member after google_id update');
+        const { data: linkedRow } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, tenant_id').eq('id', byEmail.id).single();
+        if (!linkedRow) throw new Error('Failed to load linked member after google_id update');
+        if (await foreignNotEntitled(linkedRow)) return await passportNeeded(linkedRow);
+        const { tenant_id: _lt, ...linked } = linkedRow;
         await ensureMemberPointsRow(linked.id);
         const token = await signJWT({ sub: linked.id, email: linked.email, tier: linked.membership_tier, brand: 'vegans-explore' });
         const communities = await getMemberCommunities(linked.id);
@@ -830,7 +862,7 @@ serve(async (req: Request) => {
       const { email, password } = body;
       if (!email || !password) return new Response(JSON.stringify({ error: 'email and password required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, password_hash, avatar_url').eq('email', email.toLowerCase()).limit(1).single();
+      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, password_hash, avatar_url, tenant_id').eq('email', email.toLowerCase()).limit(1).single();
       if (!member) return new Response(JSON.stringify({ error: 'No account found with that email.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       // 'pending_payment' signs in fine -- browsing, the Guide chat, and
       // onboarding stay open pre-payment (see requireActiveMembership); only
@@ -843,10 +875,11 @@ serve(async (req: Request) => {
 
       const valid = await verifyPassword(password, member.password_hash);
       if (!valid) return new Response(JSON.stringify({ error: 'Incorrect password.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (await foreignNotEntitled(member)) return await passportNeeded(member);
 
       await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', member.id);
       const token = await signJWT({ sub: member.id, email: member.email, tier: member.membership_tier, brand: 'vegans-explore' });
-      const { password_hash: _, ...safeMember } = member;
+      const { password_hash: _, tenant_id: _mt, ...safeMember } = member;
       const communities = await getMemberCommunities(member.id);
       const hidden_modules = await getMemberHiddenModules(member.id);
       return new Response(JSON.stringify({ token, member: { ...safeMember, communities, hidden_modules } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
@@ -1403,8 +1436,11 @@ serve(async (req: Request) => {
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status, level_override, ambassador_profile').eq('id', decoded.sub).maybeSingle();
-      if (!member) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const { data: meRow } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status, level_override, ambassador_profile, tenant_id').eq('id', decoded.sub).maybeSingle();
+      if (!meRow) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // A session another brand's account got before brand memberships reads here as waiting for its Passport.
+      const { tenant_id: _meT, ...member } = meRow;
+      if (await foreignNotEntitled(meRow)) member.membership_status = 'pending_payment';
       const communities = await getMemberCommunities(member.id);
       const hidden_modules = await getMemberHiddenModules(member.id);
       const podcast_follows = await getMemberPodcastFollows(member.id);

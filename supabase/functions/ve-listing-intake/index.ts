@@ -31,7 +31,7 @@ const clean = (v: unknown, n: number) => String(v ?? '').replace(/\s+/g, ' ').tr
 // The Directory's kinds (CATEGORIES in ve-discover; keep in step).
 const KINDS = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
   'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces',
-  'Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books',
+  'Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'];
 
 function b64urlDecodeToBytes(s: string): Uint8Array {

@@ -28,6 +28,12 @@
 
     .vote-box { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
     .vote-box[hidden] { display: none; }
+    .biz-strip { margin-top: 16px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #f3faf5; border: 1px solid #b9dfc3; border-radius: 14px; padding: 24px 32px; }
+    .biz-strip .vote-box-copy strong { color: #1a1a1a; }
+    .biz-strip .vote-box-copy strong span { color: #1f7a3a; }
+    .biz-strip .vote-box-copy p { color: rgba(0,0,0,0.72); }
+    .btn-claim { display: inline-block; font-weight: 800; font-size: 14px; padding: 13px 22px; border-radius: 6px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; text-decoration: none; }
+    .btn-claim:hover { background: #1a1a1a; color: #fff; }
     .vote-box-copy { flex: 1; min-width: 240px; }
     .vote-box-copy strong { display: block; font-size: 20px; font-weight: 900; margin-bottom: 6px; }
     .vote-box-copy strong span { color: #5EC47A; }
@@ -38,7 +44,7 @@
 
     @media (max-width: 700px) {
       main { padding: 28px 16px 64px; }
-      .vote-box { padding: 24px 20px; }
+      .vote-box, .biz-strip { padding: 24px 20px; }
     }
   </style>
 </head>
@@ -65,6 +71,16 @@
         <p>$11, one time, gets you your Passport: vote once a day for every business you love (the votes decide who leads each list) and your own dashboard to build your Vegan world. Businesses come in at the same $11 and get the advertising, sponsorships and marketing services we offer only to members.</p>
       </div>
       <a class="btn-join" href="/passport#/join">Get your Passport, $11</a>
+    </section>
+
+    <!-- The Directory is the business front door (Sean, 2026-10-29): every business here can claim its page with the
+         Passport, members included, so this strip shows to everyone. -->
+    <section class="biz-strip" aria-label="Claim your business">
+      <div class="vote-box-copy">
+        <strong>Is your business <span>in here?</span></strong>
+        <p>Claim it with your $11 Passport (its 1,100 points cover the claim): tell your story, keep your details right, see how many people find your page, and be first to hear about sponsorships and ads. Not listed yet? Add it the same way.</p>
+      </div>
+      <a class="btn-claim" href="/claim">Claim your business</a>
     </section>
   </main>
 

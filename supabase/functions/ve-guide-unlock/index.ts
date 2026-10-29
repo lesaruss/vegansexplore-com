@@ -14,6 +14,10 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 //   free        (the Welcome Guide, the Partner Guide): open to everyone.
 //   membership  (legacy): any active member has it.
 //   Anyone with a ve_guide_purchases row has the Guide, whatever the rule.
+//   A Diplomat has every Guide (Sean, 2026-10-29, canon-lesaruss-ai-subscription-guide-wizard-model
+//   UPDATE_2026_10_29_ONE_MEMBERSHIP_UNLIMITED_GUIDES and _DIPLOMAT_NAME_LOCKED): the one $111 LESARUSS.ai membership
+//   includes every Guide from every LESARUSS community. Same email, a LESARUSS-tenant members row that is active on a paid
+//   tier, or cancelled and paid through (the rule in lesaruss-hq lib/memberAccess.ts). via is then 'diplomat'.
 //
 // Actions (POST ?action=):
 //   status   {slug, token?}  -> {loggedIn, unlocked, via, balance, credits, cost, access_rule, membership_status, passport,
@@ -38,6 +42,21 @@ const FN_URL = `${SUPABASE_URL}/functions/v1/ve-guide-unlock`;
 const STRIPE_SECRET = Deno.env.get('STRIPE_SECRET_KEY') ?? ''; // Vegans Explore's own Stripe account
 const GUIDE_PRICE_CENTS = 1100;
 const CREDIT_CAP = 3, POINTS_PER_CREDIT = 2500;
+const LESARUSS_TENANT = '00000000-0000-4000-a000-000000000001';
+
+// Is this email a Diplomat (an active $111 LESARUSS.ai member)? Mirrors resolveViewer() in lesaruss-hq lib/memberAccess.ts.
+async function isDiplomat(email: string): Promise<boolean> {
+  const e = (email || '').trim().toLowerCase();
+  if (!e) return false;
+  const { data } = await supabase.from('members').select('membership_status, membership_tier, subscription_ends_at')
+    .eq('tenant_id', LESARUSS_TENANT).ilike('email', e.replace(/[%_\\]/g, '\\$&'));
+  return (data ?? []).some((m) => {
+    const paid = m.membership_tier === 'premium' || m.membership_tier === 'advanced';
+    if (!paid) return false;
+    if (m.membership_status === 'active') return true;
+    return m.membership_status === 'cancelled' && !!m.subscription_ends_at && new Date(m.subscription_ends_at).getTime() > Date.now();
+  });
+}
 
 // Test accounts (ve_test_checkout_allowlist) check out on the test Stripe key, the way ve-tours does.
 async function isTestAccount(email: string): Promise<boolean> {
@@ -178,8 +197,9 @@ serve(async (req: Request) => {
         supabase.from('members').select('lesars_balance, guide_credits, membership_status, membership_tier, email').eq('id', auth.sub).maybeSingle(),
       ]);
       const status = member?.membership_status ?? null;
-      const via = free ? 'free' : !member ? null : purchase ? 'purchase'
+      let via: string | null = free ? 'free' : !member ? null : purchase ? 'purchase'
         : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
+      if (!via && member && await isDiplomat(member.email ?? auth.email)) via = 'diplomat';
       return { loggedIn: !!member, unlocked: !!via, via, balance: member?.lesars_balance ?? 0, credits: member?.guide_credits ?? 0,
         membership_status: status, passport: status === 'active' && member?.membership_tier === 'passport', email: member?.email ?? '' };
     }

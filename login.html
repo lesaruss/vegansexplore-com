@@ -51,6 +51,8 @@
       <div class="login-google-wrap">
         <div id="login-google-btn"></div>
       </div>
+      <!-- Continue with LESARUSS (public/ve-auth.js): back here's ?next, else the dashboard. -->
+      <div id="login-lesaruss"></div>
       <div class="login-divider">
         <div class="login-divider-line"></div>
         <span class="login-divider-text">or sign in with email</span>
@@ -83,6 +85,8 @@
     var errorBox = document.getElementById('login-error');
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('visible'); }
     function clearError() { errorBox.classList.remove('visible'); }
+    // Back from the $11 checkout a LESARUSS account was sent to (ve-auth passport_needed): the Passport is paid, sign in again.
+    if (new URLSearchParams(window.location.search).get('passport') === 'paid') document.querySelector('.login-sub').textContent = 'Your Passport is paid. Sign in again to open it.';
     function setLoading(on) { submitBtn.disabled = on; submitBtn.textContent = on ? 'Signing in...' : 'Sign In'; }
     form.addEventListener('submit', function(e) {
       e.preventDefault(); clearError();
@@ -106,6 +110,8 @@
         .catch(function() { showError('Something went wrong. Please try again.'); setLoading(false); });
     });
     window.addEventListener('load', function() {
+      var lb = document.getElementById('login-lesaruss');
+      if (lb) { lb.innerHTML = VEAuth.lesarussButton(); lb.firstChild.setAttribute('data-ve-lesaruss', new URLSearchParams(window.location.search).get('next') || '/dashboard'); }
       VEAuth.initGoogleSignIn(document.getElementById('login-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         // Pay-or-pledge gate (2026-09-17): a first-time Google sign-in here

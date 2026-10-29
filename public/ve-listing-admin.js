@@ -39,7 +39,7 @@
   var SECTIONS = [
     ['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep']],
     ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
-    ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth']],
+    ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
     // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.

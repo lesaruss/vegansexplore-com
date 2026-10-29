@@ -944,8 +944,11 @@ Deno.serve(async (req: Request) => {
 
       // An active member contributing again (the dashboard's Contribute, Sean 2026-10-04) gets a
       // thank-you, not "your Passport is active". Read before the update flips the status.
+      // Another brand's account (one members row per email) reads 'active' before it has paid us, so it counts as a
+      // repeat only when Vegans Explore already holds it (ve_member_entitled, migration 20261029_brand_memberships.sql).
       const { data: before } = await supabase.from('members').select('membership_status').eq('id', memberId).maybeSingle()
-      const repeat = before?.membership_status === 'active'
+      const { data: entitledBefore } = await supabase.rpc('ve_member_entitled', { p_member: memberId })
+      const repeat = before?.membership_status === 'active' && entitledBefore === true
 
       const { error: memberUpdateError } = await supabase
         .from('members')
@@ -960,6 +963,9 @@ Deno.serve(async (req: Request) => {
         console.error('members entry_contribution update error:', memberUpdateError)
         return new Response(`Update error: ${memberUpdateError.message}`, { status: 500 })
       }
+      // The Vegans Explore Passport on record, for an account another brand made too.
+      const { error: bmErr } = await supabase.rpc('ve_brand_membership_grant', { p_member: memberId, p_kind: 'passport', p_source: 'stripe', p_ref: session.id })
+      if (bmErr) console.error('brand membership grant error:', bmErr)
 
       // Sean locked 2026-10-25 (playbook ve-pricing-points-passport): joining, $11 one time, is the Passport and comes with
       // 1,100 welcome points, once per member (ref 'welcome'). Every payment also earns the flat 25-point thank-you. Points
