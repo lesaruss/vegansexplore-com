@@ -717,8 +717,8 @@ once, the lead's own earnings and Level 1 untouched, pause and resume, points, t
 day `ve-affiliate` `orgs` was fixed: it asked for `city` and `state`, which listings does not have, so the organization search (also
 Points and levels' Where it goes picker) had always come back empty.
 
-**The Nonprofit Guide** (LOCKED by Sean 2026-10-29, playbook `ve-nonprofit-guide`, canon `canon-ve-nonprofit-guide`; not built
-yet). The Dairy Guide's layout for people who run Vegan nonprofits, rescues and sanctuaries, built from Sean's Canva **Vegan Nonprofit
+**The Nonprofit Guide** (LOCKED by Sean 2026-10-29, playbook `ve-nonprofit-guide`, canon `canon-ve-nonprofit-guide`; launched
+2026-10-29, below). The Dairy Guide's layout for people who run Vegan nonprofits, rescues and sanctuaries, built from Sean's Canva **Vegan Nonprofit
 Survival Guide** (design `DAGx8V9AvKE`): the 10 tips one per view (Tip 1 free), the Pulse (Vegans Explore Podcast 111 and 123 to 127,
 the nonprofit leaders on our shows, played in place), the Directory's Nonprofits, Rescues and Sanctuaries, Get found, Business
 partners, Events, a peer-to-peer kit, burnout and support, My list, and **Become a Nonprofit Partner** at the end. $11 or 1,100
@@ -743,7 +743,9 @@ written from the session, never in the repo; the page holds the intro, the title
 (`ve_guide_purchases` `paid_with` `nonprofit_partner`) and Sean holds a comp copy to review it. Banner `public/guides/nonprofit-guide.jpg`
 (Dani seated in her chair holding a rescued rabbit, the locked banner style). Two of the Canva doc's claims were corrected against their
 sources: Facebook's birthday fundraisers had raised more than $1 billion by 2019 (not "billions"), and the Mercy For Animals and VegFund
-examples say only what their own pages show. Launch = the catalog card (replacing Coming soon), `noindex` off, and Susan's invitation.
+examples say only what their own pages show. **Launched 2026-10-29** (Sean: "good as a V1... launch it"; migration
+`20261029_nonprofit_guide_launch.sql`): indexed, its card sixth in the Guide catalog (label Nonprofits, replacing the Coming soon
+card; `ve-guide-catalog.js`), in the sitemap. Susan Hargreaves' invitation can go out now. Dani's lines are still text drafts.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 

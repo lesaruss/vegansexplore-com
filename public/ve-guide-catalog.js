@@ -34,7 +34,7 @@
     chips: [{ text: 'Ambassadors only' }, { text: 'On us', cls: 'free' }], cta: 'Open your Guide' };
 
   // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, the Stadium & Arena Guide
-  // (launched 2026-10-29), then what is coming.
+  // (launched 2026-10-29), the Airport Guide and the Nonprofit Guide (both launched 2026-10-29), then what is coming.
   var GUIDES = [
     { slug: 'welcome', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg', href: '/passport',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
@@ -51,14 +51,15 @@
     { slug: 'airport-guide', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/airport-guide.jpg', href: '/guides/airport-guide',
       desc: 'Vegan food at the airport, gate by gate: every spot before or after security, a map of the terminal that takes you from your gate to the food without screening again, and travelers keeping it right, with Nori walking you through it. Fort Lauderdale is free.',
       chips: [{ text: 'Walked through by Nori' }, { text: 'Fort Lauderdale free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+    { slug: 'nonprofit-guide', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg', href: '/guides/nonprofit-guide',
+      desc: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going: ten ways to fundraise and stay relevant, our nonprofit series and interviews, the Directory, businesses near you that fit a tie-in, and how to get found, with Dani walking you through it.',
+      chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'vegan-meat-alternatives', soon: true, icon: 'burger', label: 'Food', title: 'The Vegan Meat Alternatives Guide',
       desc: 'Burgers, chicken, sausage, deli slices and more made from plants: the brands to buy, how to cook them and where to find them.' },
     { slug: 'entrepreneur', soon: true, icon: 'briefcase', label: 'Entrepreneur Path', title: 'Entrepreneur Guide',
       desc: 'Getting your Vegan business listed, claimed and growing on the platform, step by step.' },
     { slug: 'creator', soon: true, icon: 'camera', label: 'Creator Path', title: 'Creator Guide',
       desc: 'Building an audience and earning through the Vegans Explore ecosystem as a content creator.' },
-    { slug: 'nonprofit', soon: true, icon: 'heart', label: 'Nonprofit Path', title: 'Nonprofit Guide',
-      desc: "Building your organization's community on the platform and growing your base of supporters." },
     { slug: 'prevegan', soon: true, icon: 'sprout', label: 'Pre-Vegan Path', title: 'Pre-Vegan Guide',
       desc: 'Real answers for going from Vegan-curious to confident: what to eat, what to expect and how to start.' },
     { slug: 'seasonedvegan', soon: true, icon: 'globe', label: 'Seasoned Vegan Path', title: 'Seasoned Vegan Guide',
