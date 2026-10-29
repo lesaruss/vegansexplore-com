@@ -1189,6 +1189,20 @@ through `backlog_decide` as Add the ticked does (88 Rescues, 25 Sanctuaries, 23 
 31 of the calls failed to boot the function (503 BOOT_ERROR) and nothing saved; re-sent, all landed. Six had no town from Google
 and got it from Google's address.
 
+**Studios** (Sean, 2026-10-29, playbook `ve-business-hub-ad-console`: a studio directory for production, podcast and photo
+studios, prompted by Trisha, each claimable with the $11 Passport). Services > Studios, after Animal Care (`CAT_MAP`, `CAT_CONFIG`,
+`SECTIONS`, `KINDS`, `CATS` and the functions' category lists). A studio is usually Not a Vegan business. The first South Florida
+search (`20261029_studio_search.sql`) put 129 in Business outreach > New places > Ready to list (91 video and production, 25 podcast,
+13 photo), nothing live. The Directory's **Is your business in here?** strip (under the vote box, shown to everyone, members
+included) and the listing's claim box say the claim takes the $11 Passport, whose 1,100 points cover it.
+
+**Diplomats open every Guide** (Sean, 2026-10-29, canon `canon-lesaruss-ai-subscription-guide-wizard-model`
+UPDATE_2026_10_29_ONE_MEMBERSHIP_UNLIMITED_GUIDES and _DIPLOMAT_NAME_LOCKED): the one $111 LESARUSS.ai membership, named Diplomat,
+includes every Guide from every LESARUSS community. `ve-guide-unlock` `access()` opens a paid Guide (`via` `diplomat`) for an
+account whose email has a LESARUSS-tenant `members` row active on premium or advanced, or cancelled and paid through
+(`isDiplomat`, the rule in lesaruss-hq `lib/memberAccess.ts`). A Diplomat still needs a Vegans Explore account to sign in here;
+signing in with the LESARUSS account everywhere is the next build.
+
 **Groups** (Sean, 2026-10-29: "I want to add groups... the same way we have nonprofit rescue sanctuaries... when you click on it,
 it's all of their events will be tied to their profile, and their profile will be tied to all their events... eventually get them to
 have their community exclusively on Vegans Explore"; migrations `20261029_community_groups.sql`, `20261029_community_groups_seed.sql`).

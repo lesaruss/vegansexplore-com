@@ -116,7 +116,7 @@ const CATEGORIES = [
   'Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
-  'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care',
+  'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events',
   // People (2026-10-28): a person's profile; ve-people holds the rest of it.

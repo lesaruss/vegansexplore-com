@@ -1901,7 +1901,7 @@ function renderSidebar(l){
   // copy says exactly that rather than implying a paid unlock.
   // The one claim box (Sean, 2026-10-27: "keep it very sleek in two places", this and At a Glance): it opens the listing's
   // claim page (the Partner Dashboard view, ?tab=brand) and says every claim is checked before it is approved.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+claimHref(l)+'" data-claim-open class="claim-btn">Claim Listing</a></div></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone. It takes the $11 Passport (its 1,100 points cover the claim), which also shows you how many people find your page and puts you first in line for sponsorships and ads.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+claimHref(l)+'" data-claim-open class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
