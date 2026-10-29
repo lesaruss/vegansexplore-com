@@ -2465,7 +2465,12 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   and menu and is offered the $11. Server: `ve-claims` `owner_dashboard` (everything in one call), `menu_list` / `menu_save` /
   `menu_delete` (each a `ve_listing_edits` row, field `menu_item`, undone from the Depot by `ve-outreach`), `ad_request`.
   **What's new** is `ve_dashboard_cards` (audience business, member, coach, pre_vegan or all; kind new, wizard, offer, tip;
-  live between `starts_at` and `ends_at`): a new tool reaches every dashboard as a row, no code. Every listing counts what a
+  live between `starts_at` and `ends_at`): a new tool reaches every dashboard as a row, no code. **By kind of listing** (Sean, 2026-10-29: the
+  Vegan Social Club's dashboard offered "Check your restaurant for free"; migration `20261029_dashboard_cards_by_kind.sql`): a business
+  card's `listing_kinds` names who it is for (null: every listing): food, group, organization (Nonprofits, Rescues, Sanctuaries, Events),
+  show, work, brand, person, service (`dashKind` in `ve-claims`; the dashboard's `kindOf` calls groups and organizations `org`: no hours,
+  their own Get your page ready words and Opportunities, `ORG_OPPS`). Groups see Host your group on Vegans Explore (the group program,
+  interest only until its terms are set), Your events on your page, the Nonprofit Guide, bounties and the Daily Pulse. Every listing counts what a
   visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
   (migration `20261024_partner_dashboard.sql`). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
