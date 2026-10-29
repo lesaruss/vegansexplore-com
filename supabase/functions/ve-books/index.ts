@@ -5,8 +5,10 @@
 //
 // POST { action: 'scan', limit?: 1..6, content_id? }   transcripts -> the books said in them (ve_books found, ve_book_mentions)
 // POST { action: 'crawl', limit?: 1..6, listing_id? }  People listings -> the books Open Library lists for them (found)
-// POST { action: 'build', limit?: 1..6, book_id? }     found books -> Open Library match, cover, synopsis, Books listing or referenced
+// POST { action: 'build', limit?: 1..6, book_id? }     found books -> Google Books match (else Open Library), cover, synopsis, listing
+// Google Books is read with our Google key (lesaruss_secrets GOOGLE_PLACES_API_KEY); Open Library refuses our server at times.
 // POST { action: 'status' }                            counts, for the team
+// POST { action: 'probe' }                             whether Google Books and Open Library answer our server
 //   These take the cron's x-cron-secret, the LESARUSS_ADMIN_TOKEN or a super admin's VE token; wait: true answers with the results.
 // POST { action: 'episode', listing_id, guid } | { action: 'episode', content_id }   public: the episode's referenced books
 // verify_jwt is false.
@@ -98,6 +100,69 @@ async function ol(path: string): Promise<any> {
   throw new Error('Open Library did not answer');
 }
 const SEARCH_FIELDS = 'key,title,subtitle,author_name,first_publish_year,edition_count,publisher,subject,language';
+
+
+// ---- Google Books (the API key we hold for Google, which has the Books API) and Open Library, in one shape ----
+// A candidate is one book: its editions grouped by title and author's last name.
+type Cand = { title: string; subtitle: string; authors: string[]; year: number | null; editions: number; publishers: string[]; subjects: string[];
+  isbns: string[]; isbnPub: Record<string, string>; description: string; ol_work?: string };
+async function gb(q: string, max = 40): Promise<any[]> {
+  const key = await secret('GOOGLE_PLACES_API_KEY');
+  if (!key) throw new Error('No Google key');
+  const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${max}&printType=books&key=${key}`, { signal: AbortSignal.timeout(15000) });
+  if (!r.ok) throw new Error(`Google Books answered ${r.status}: ${(await r.text()).replace(/\s+/g, ' ').slice(0, 160)}`);
+  return (await r.json()).items || [];
+}
+function groupGB(items: any[]): Cand[] {
+  const by = new Map<string, Cand>();
+  for (const it of items) {
+    const v = it.volumeInfo || {};
+    if (!v.title) continue;
+    const k = words(String(v.title).split(':')[0]) + '|' + words((v.authors || [])[0] || '').split(' ').pop();
+    let g = by.get(k);
+    if (!g) { g = { title: v.title, subtitle: v.subtitle || '', authors: v.authors || [], year: null, editions: 0, publishers: [], subjects: [], isbns: [], isbnPub: {}, description: '' }; by.set(k, g); }
+    g.editions++;
+    const y = parseInt(String(v.publishedDate || '').slice(0, 4));
+    if (y && (!g.year || y < g.year)) g.year = y;
+    if (v.publisher && !g.publishers.includes(v.publisher)) g.publishers.push(v.publisher);
+    for (const c of v.categories || []) if (!g.subjects.includes(c)) g.subjects.push(c);
+    if ((v.language || 'en') === 'en') for (const id of v.industryIdentifiers || []) {
+      if (id.type === 'ISBN_13' && /^978/.test(id.identifier) && !g.isbns.includes(id.identifier)) { g.isbns.push(id.identifier); g.isbnPub[id.identifier] = v.publisher || ''; }
+    }
+    const d = String(v.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (d.length > g.description.length) g.description = d;
+  }
+  return [...by.values()];
+}
+function fromOL(docs: any[]): Cand[] {
+  return docs.map((d: any) => ({ title: d.title, subtitle: d.subtitle || '', authors: d.author_name || [], year: d.first_publish_year || null, editions: d.edition_count || 0,
+    publishers: (d.publisher || []).slice(0, 5), subjects: (d.subject || []).slice(0, 12), isbns: [], isbnPub: {}, description: '', ol_work: String(d.key).replace('/works/', '') }));
+}
+const quoteQ = (s: string) => '"' + String(s).replace(/"/g, '').trim() + '"';
+const lastName = (s: string) => String(s || '').replace(/,.*$/, '').replace(/\s+(MD|PhD|RD|DO|Jr\.?|Sr\.?)$/i, '').trim().split(/\s+/).pop() || '';
+// The books under one title (and author).
+async function findTitle(title: string, author: string | null): Promise<{ cands: Cand[]; via: string; why?: string }> {
+  let why = '';
+  try {
+    let items = await gb(`intitle:${quoteQ(title)}${author ? ' inauthor:' + quoteQ(lastName(author)) : ''}`, 30);
+    if (!items.length && author) items = await gb(`intitle:${quoteQ(title)}`, 30);
+    return { cands: groupGB(items).slice(0, 8), via: 'google' };
+  } catch (e) { why = String((e as Error).message || e); }
+  const q = (withAuthor: boolean) => `/search.json?title=${encodeURIComponent(title)}${withAuthor && author ? '&author=' + encodeURIComponent(author) : ''}&fields=${SEARCH_FIELDS}&limit=8`;
+  let docs = (await ol(q(true)))?.docs || [];
+  if (!docs.length && author) docs = (await ol(q(false)))?.docs || [];
+  return { cands: fromOL(docs), via: 'openlibrary', why };
+}
+// The books under one author's name.
+async function findAuthor(name: string): Promise<{ cands: Cand[]; via: string; why?: string }> {
+  let why = '';
+  try { return { cands: groupGB(await gb(`inauthor:${quoteQ(name)}`, 40)), via: 'google' }; }
+  catch (e) { why = String((e as Error).message || e); }
+  const r = await ol(`/search.json?author=${encodeURIComponent(name)}&fields=${SEARCH_FIELDS}&limit=40&sort=editions`);
+  return { cands: fromOL(r?.docs || []), via: 'openlibrary', why };
+}
+const candView = (c: Cand, i: number) => ({ index: i, title: c.title, subtitle: c.subtitle, authors: c.authors.slice(0, 4), year: c.year, editions: c.editions,
+  publishers: c.publishers.slice(0, 3), subjects: c.subjects.slice(0, 8), about: c.description.slice(0, 300) });
 
 const words = (s: string) => String(s || '').toLowerCase().replace(/[’']/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const slugify = (s: string) => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90).replace(/-+$/, '');
@@ -205,23 +270,22 @@ async function crawlOne(listingId: string) {
   if (!p) return { listing_id: listingId, ok: false };
   const name = String(p.name).replace(/\s*\(.*?\)\s*/g, ' ').replace(/^(Dr\.?|Chef)\s+/i, '').trim();
   const names = [name, ...((p.details?.person?.aka || []) as string[])].filter((n) => /\S\s+\S/.test(n)).slice(0, 2);
-  const docs: any[] = [];
+  const cands: Cand[] = []; let via = '';
   for (const n of names) {
-    const r = await ol(`/search.json?author=${encodeURIComponent(n)}&fields=${SEARCH_FIELDS}&limit=40&sort=editions`);
-    for (const d of r?.docs || []) if (!docs.some((x) => x.key === d.key)) docs.push(d);
+    const r = await findAuthor(n); via = r.via;
+    for (const c of r.cands) if (!cands.some((x) => words(x.title) === words(c.title))) cands.push(c);
   }
-  let found = 0, note = 'Open Library has no books under this name';
-  if (docs.length) {
-    const list = docs.slice(0, 50).map((d, i) => ({ index: i, title: d.title, subtitle: d.subtitle || '', authors: (d.author_name || []).slice(0, 4), year: d.first_publish_year || null,
-      editions: d.edition_count || 0, publishers: (d.publisher || []).slice(0, 3), subjects: (d.subject || []).slice(0, 8), languages: (d.language || []).slice(0, 5) }));
+  let found = 0, note = `No books under this name (${via})`;
+  if (cands.length) {
+    const list = cands.slice(0, 50).map(candView);
     const out = await ask(CRAWL_SYSTEM, JSON.stringify({ person: { name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }, results: list }), CRAWL_SCHEMA, 'medium');
     const titles: string[] = [];
     for (const b of out.books || []) {
-      const d = docs[b.index]; if (!d) continue;
-      const id = await upsertBook(String(b.title || d.title).trim(), name, 'author_crawl', p.id);
+      const c = cands[b.index]; if (!c) continue;
+      const id = await upsertBook(String(b.title || c.title).trim(), name, 'author_crawl', p.id);
       if (!id) continue;
-      found++; titles.push(b.title || d.title);
-      await db.from('ve_books').update({ ol_work: String(d.key).replace('/works/', '') }).eq('id', id).is('ol_work', null);
+      found++; titles.push(b.title || c.title);
+      if (c.ol_work) await db.from('ve_books').update({ ol_work: c.ol_work }).eq('id', id).is('ol_work', null);
       // A book already in the Directory joins their page now.
       const { data: row } = await db.from('ve_books').select('status, listing_id').eq('id', id).maybeSingle();
       if (row?.status === 'built' && row.listing_id) {
@@ -229,7 +293,7 @@ async function crawlOne(listingId: string) {
         if (bl) await joinFamily(bl.id, bl.details, p);
       }
     }
-    note = found ? `${found}: ${titles.join('; ')}` : String(out.note || 'None of the results were theirs');
+    note = found ? `${found} (${via}): ${titles.join('; ')}` : `${String(out.note || 'None of the results were theirs')} (${via})`;
   }
   await db.from('ve_book_author_checks').upsert({ listing_id: p.id, checked_at: new Date().toISOString(), found, note: note.slice(0, 500) });
   return { listing_id: p.id, name: p.name, ok: true, found, note };
@@ -290,42 +354,40 @@ async function buildOne(bookId: string) {
     return { book_id: bookId, title: b.title, ok: true, status: 'built', listing: twin.slug, existing: true };
   }
 
-  // Open Library: the title and author, else the title alone.
-  const q = (withAuthor: boolean) => `/search.json?title=${encodeURIComponent(b.title)}${withAuthor && b.author ? '&author=' + encodeURIComponent(b.author) : ''}&fields=${SEARCH_FIELDS}&limit=8`;
-  let docs = (await ol(q(true)))?.docs || [];
-  if (!docs.length && b.author) docs = (await ol(q(false)))?.docs || [];
-  if (b.ol_work && !docs.some((d: any) => d.key === '/works/' + b.ol_work)) {
-    const w = await ol(`/search.json?q=key:/works/${b.ol_work}&fields=${SEARCH_FIELDS}&limit=1`); if (w?.docs?.[0]) docs.unshift(w.docs[0]);
-  }
-  if (!docs.length) return fail('not_found', 'Open Library has no book by that title');
-  const cands = docs.map((d: any, i: number) => ({ index: i, title: d.title, subtitle: d.subtitle || '', authors: (d.author_name || []).slice(0, 4), year: d.first_publish_year || null,
-    editions: d.edition_count || 0, publishers: (d.publisher || []).slice(0, 3), subjects: (d.subject || []).slice(0, 10) }));
-  const pick = await ask(PICK_SYSTEM, JSON.stringify({ book: { title: b.title, author: b.author, said_on_our_podcasts: ments || [], author_profile: author ? { name: author.name, about: String(author.description || '').slice(0, 500) } : null }, results: cands }), PICK_SCHEMA);
-  const d = docs[pick.match];
-  if (!d || pick.match < 0) return fail('not_found', 'No Open Library match: ' + String(pick.note || '').slice(0, 300));
-  const work = String(d.key).replace('/works/', '');
+  // Google Books (else Open Library): the title and author, else the title alone.
+  const found = await findTitle(b.title, b.author);
+  const cands = found.cands;
+  if (!cands.length) return fail('not_found', `No book by that title (${found.via})`);
+  const pick = await ask(PICK_SYSTEM, JSON.stringify({ book: { title: b.title, author: b.author, said_on_our_podcasts: ments || [], author_profile: author ? { name: author.name, about: String(author.description || '').slice(0, 500) } : null }, results: cands.map(candView) }), PICK_SCHEMA);
+  const d = cands[pick.match];
+  if (!d || pick.match < 0) return fail('not_found', `No match (${found.via}): ` + String(pick.note || '').slice(0, 300));
 
-  // An English edition whose cover Amazon has, newest first.
-  const eds = (await ol(`/works/${work}/editions.json?limit=60`))?.entries || [];
-  const eng = eds.filter((e: any) => (e.isbn_13 || []).some((x: string) => /^978/.test(x)) && (!e.languages || e.languages.some((l: any) => l.key === '/languages/eng')))
-    .sort((x: any, y: any) => (parseInt(String(y.publish_date || '').match(/\d{4}/)?.[0] || '0')) - (parseInt(String(x.publish_date || '').match(/\d{4}/)?.[0] || '0')));
+  // Open Library's editions when that is where it came from.
+  if (!d.isbns.length && d.ol_work) {
+    const eds = (await ol(`/works/${d.ol_work}/editions.json?limit=60`))?.entries || [];
+    for (const e of eds) {
+      if (e.languages && !e.languages.some((l: any) => l.key === '/languages/eng')) continue;
+      for (const x of e.isbn_13 || []) if (/^978/.test(x) && !d.isbns.includes(x)) { d.isbns.push(x); d.isbnPub[x] = (e.publishers || [])[0] || ''; }
+    }
+    const wk = await ol(`/works/${d.ol_work}.json`);
+    d.description = typeof wk?.description === 'string' ? wk.description : wk?.description?.value || '';
+  }
+  // An English edition whose cover Amazon has.
   let cover: Uint8Array | null = null, i13 = '', i10 = '', publisher = '';
-  for (const e of eng.slice(0, 8)) {
-    const x = (e.isbn_13 || []).find((v: string) => /^978/.test(v)); const t = x && isbn10(x);
-    if (!t) continue;
+  for (const x of d.isbns.slice(0, 10)) {
+    const t = isbn10(x); if (!t) continue;
     const img = await amazonCover(t);
-    if (img) { cover = img; i13 = x; i10 = t; publisher = (e.publishers || [])[0] || ''; break; }
+    if (img) { cover = img; i13 = x; i10 = t; publisher = d.isbnPub[x] || d.publishers[0] || ''; break; }
   }
-  if (!cover) return fail('not_found', 'No English edition with a cover on Amazon');
+  if (!cover) return fail('not_found', `No English edition with a cover on Amazon (${found.via})`);
 
-  const wk = await ol(`/works/${work}.json`);
-  const desc = typeof wk?.description === 'string' ? wk.description : wk?.description?.value || '';
-  const authorName = b.author || (d.author_name || [])[0] || '';
+  const authorName = b.author || d.authors[0] || '';
   const wrote = await ask(WRITE_SYSTEM, JSON.stringify({
-    title: d.title, subtitle: d.subtitle || '', author: authorName, first_published: d.first_publish_year || null, publisher,
-    publisher_description: String(desc).replace(/\[.*?\]\(.*?\)/g, '').slice(0, 4000), subjects: (d.subject || []).slice(0, 12), said_on_our_podcasts: ments || [],
+    title: d.title, subtitle: d.subtitle, author: authorName, first_published: d.year, publisher,
+    publisher_description: String(d.description).replace(/\[.*?\]\(.*?\)/g, '').slice(0, 4000), subjects: d.subjects.slice(0, 12), said_on_our_podcasts: ments || [],
   }), WRITE_SCHEMA);
   const title = String(d.title || b.title).trim();
+  const work = d.ol_work || null;
   const slug = slugify(`${title} by ${authorName}`);
   const { error: upErr } = await db.storage.from('vegan-media').upload(`media/logos/books/${slug}.jpg`, cover, { contentType: 'image/jpeg', upsert: true, cacheControl: '86400' });
   if (upErr) return fail('found', 'Cover upload: ' + upErr.message);
@@ -334,7 +396,7 @@ async function buildOne(bookId: string) {
   await db.from('ve_links').upsert({ code: `book-${i10.toLowerCase()}`, label: `Buy on Amazon: ${title}`.slice(0, 120), destination: `https://www.amazon.com/dp/${i10}`,
     initiative_slug: 'books', tags: ['book', 'amazon', ...(author ? [author.slug] : [])].slice(0, 12), channel: 'other' }, { onConflict: 'code', ignoreDuplicates: true });
   const facts = {
-    title, author: authorName, isbn13: i13, isbn10: i10, publisher, year: d.first_publish_year || null, ol_work: work, cover_url: coverUrl,
+    title, author: authorName, isbn13: i13, isbn10: i10, publisher, year: d.year, ol_work: work, cover_url: coverUrl,
     description: clean(wrote.description).slice(0, 240), summary: clean(wrote.summary), book_type: pick.book_type, vegan_related: !!pick.vegan_related, buy_link: buy,
   };
   if (!pick.vegan_related && !author) {
@@ -348,8 +410,8 @@ async function buildOne(bookId: string) {
     tenant_id: TENANT, name, slug, category: 'Books', specialty: 'Books', status: 'approved', description: facts.description, logo_url: coverUrl,
     website: `https://www.amazon.com/dp/${i10}`, location: 'United States', address_country: 'US', vegan_status: 'fully_vegan', business_status: 'OPERATIONAL',
     communities: ['all'], initials,
-    details: { ...(fam ? { family: fam } : {}), creator: authorName, isbn: i13, publisher, release_year: d.first_publish_year || null, book_type: pick.book_type,
-      media_type: 'book', summary: facts.summary, buy_link: buy, cover_source: `Amazon cover for ISBN ${i13}`, cover_checked: false, ol_work: work,
+    details: { ...(fam ? { family: fam } : {}), creator: authorName, isbn: i13, publisher, release_year: d.year, book_type: pick.book_type,
+      media_type: 'book', summary: facts.summary, buy_link: buy, cover_source: `Amazon cover for ISBN ${i13}`, cover_checked: false, book_facts_from: found.via,
       added_by: 've-books', book_source: b.source },
   }).select('id, slug').single();
   if (error) return fail('found', 'Listing: ' + error.message);
@@ -398,6 +460,12 @@ Deno.serve(async (req) => {
   if (body.action === 'episode') return json(await episodeBooks(body));
   if (!(await allowed(req))) return json({ error: 'not_allowed' }, 403);
 
+  if (body.action === 'probe') {
+    const out: any = {};
+    try { out.google = { ok: true, results: (await gb('intitle:"cheese trap" inauthor:barnard', 3)).length }; } catch (e) { out.google = { ok: false, why: String((e as Error).message || e) }; }
+    try { out.openlibrary = { ok: true, results: ((await ol('/search.json?title=cheese+trap&limit=3&fields=key'))?.docs || []).length }; } catch (e) { out.openlibrary = { ok: false, why: String((e as Error).message || e) }; }
+    return json(out);
+  }
   if (body.action === 'status') {
     const { data } = await db.rpc('ve_books_status');
     return json({ ok: true, ...(data || {}) });
