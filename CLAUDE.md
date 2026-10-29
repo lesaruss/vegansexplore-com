@@ -1374,8 +1374,9 @@ book's tracked link, `details.buy_link`, `/go/book-<ISBN-10>`) and The book's pa
 Vegan, each cover copied from Amazon's image for its ISBN into `vegan-media/media/logos/books/` and checked by eye (Badass Vegan's stored
 ISBN was wrong; Reversing Diabetes uses the revised edition in print). Open Library and Google Books refuse our server after a few calls, so
 book facts came from Open Library's search before it closed. **Amazon Associates**: every `/go/` link to an Amazon store leaves with our
-tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`); the tag is empty
-until Sean gives it, so the links work untagged until then.
+tracking ID (`withAffiliate` in `ve-links`, `ve_site_settings` `amazon_associates` `{tag, tags: {'amazon.co.uk': ...}}`, read with a 5-minute
+cache). Our US tag is `vegansexplore-20` (Sean, 2026-10-29); other Amazon stores (amazon.co.uk for London) go untagged until a tag for
+that store is added under `tags`.
 **Referenced books and the book crawl** (Sean, 2026-10-29: "any books that are mentioned in the podcast, we put on... a background list to be
 built out and put into the page. And any books from any of the people... we do a crawl"; migrations `20261029_ve_books_crawl.sql`,
 `20261029_book_covers_buy_links.sql`; edge function `ve-books`). `ve_books` is the list: every book we know of (source `listing`, the 33
@@ -2561,8 +2562,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   token) looks at and copies pictures; it writes no rows.
 - A new listing gets `vegan_status = 'fully_vegan'` by default. Set it on purpose (null for a store, which is
   not a Vegan business), or the Directory calls it 100% Vegan.
-- Next: the sponsorship offer to a store (its page with deals for our members) and affiliate links once
-  Amazon Associates is settled.
+- Next: the sponsorship offer to a store (its page with deals for our members). Amazon Associates is set (`vegansexplore-20`,
+  2026-10-29): a product's Amazon link made as a `/go/` link carries it.
 
 ## Dashboard versions (Sean, 2026-10-24; built 2026-10-25)
 
