@@ -447,8 +447,10 @@ async function buildOne(bookId: string) {
     buy_link: await buyLink(title, authorName, i10, slug, author),
   };
   // Make it a listing (the Depot) counts as Vegan related.
-  // Only books about Vegan living become listings, our People's included (Sean, 2026-10-29: "Only the books relevant to Veganism").
-  if (!pick.vegan_related && b.vegan_related !== true) {
+  // Only books about Vegan living become listings, our People's included (Sean, 2026-10-29: "Only the books relevant to Veganism"),
+  // unless we talked about the book with its author on our podcast (Sean, the same day, keeping The Penis Book and iWant): it is
+  // named in one of our transcripts, or one of the author's credited episodes has its title in the episode's title.
+  if (!pick.vegan_related && b.vegan_related !== true && !(await talkedAbout(bookId, title, b.author_listing_id))) {
     await db.from('ve_books').update({ ...facts, status: 'referenced', note: String(wrote.note || '').slice(0, 300), updated_at: new Date().toISOString() }).eq('id', bookId);
     return { book_id: bookId, title, ok: true, status: 'referenced' };
   }
@@ -471,6 +473,15 @@ async function buyLink(title: string, author: string, i10: string, slug: string,
   await db.from('ve_links').upsert({ code, label: `Buy on Amazon: ${title}`.slice(0, 120), destination, initiative_slug: 'books',
     tags: ['book', 'amazon', ...(person ? [person.slug] : [])].slice(0, 12), channel: 'other' }, { onConflict: 'code', ignoreDuplicates: true });
   return '/go/' + code;
+}
+// Did we talk about this book on our podcast? A mention in a transcript, or the author's own episode titled with it.
+async function talkedAbout(bookId: string, title: string, authorListingId: string | null) {
+  const { count } = await db.from('ve_book_mentions').select('id', { count: 'exact', head: true }).eq('book_id', bookId);
+  if (count) return true;
+  if (!authorListingId) return false;
+  const { data } = await db.from('ve_person_credits').select('content:ve_pulse_content(title)').eq('listing_id', authorListingId).eq('kind', 'episode').limit(50);
+  const t = words(title);
+  return !!t && t.length > 3 && (data || []).some((r: any) => words(r.content?.title || '').includes(t));
 }
 // A book from the list becomes a Books listing (in its author's family when we know them).
 async function makeListing(b: any, author: any, extra: { cover_source?: string; book_facts_from?: string; note?: string } = {}) {
