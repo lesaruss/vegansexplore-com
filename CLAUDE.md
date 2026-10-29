@@ -2040,6 +2040,18 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   <item>` (`viewChoose`): Still here, Something changed, Not there anymore and Comment, each with its points, then its form. A stand
   can carry a warning (`ve_venue_spots.note`, shown on the card): Full Bloom at Kaseya Center, whose Miami Beach restaurant closed in
   2025, says check it is still open and its items are Ask before you order (migration `20261029_full_bloom_kaseya_note.sql`).
+- **The Airport Guide, built 2026-10-29, not published** (Sean: "Let's look at the airport guide now"; migrations
+  `20261029_airport_guide.sql`, `20261029_airports_seed.sql`, run through the one-time `ve-once-airports`, now the 410 stub). The same
+  engine: `ve-venues` serves both Guides (`GUIDES`, the body's `guide`; a venue's kind picks its Guide), the same reports, points, saves
+  and Depot > Venues. Page `guides/airport-guide.html` and `guide-scripts/airport-guide.js` (`noindex`, Nori on the right, her lines
+  text drafts for Sean): Choose your airport (City dropdown, `ag_city`), one airport per view (`#/airport/<slug>`), FLL free. Stands are
+  `zone` `landside` (before security) or `airside`, `map_level` the concourse (or the terminal before security), `map_sections` the
+  gates. The map is `/public/ve-airport-map.js` (`VEAirportMap`): `layout.terminals[].concourses[]` with `gates` ('A1-A14') and an
+  `airside` group (concourses that share a group connect without screening again); **Your gate** + Get me there sorts the spots it can
+  reach after security first, a spot with no known gate sits mid-concourse. Sixteen airports seeded from 2024 to 2026 sources (FLL, MIA,
+  PBI, MCO, TPA, JAX, ATL, DCA, IAD, BWI, PHL, JFK, LGA, EWR, LAX, LHR; 114 spots, 153 items), each pinned from Google (`locate`) with
+  its illustration (`public/guides/airports/<slug>.webp`). Gate ranges no source confirmed are left empty (EWR Terminal B, LAX, LHR,
+  JFK Terminal 5, LGA Terminal C, TPA Airside E). Launch = the `ve_guides` row `airport-guide` published, `noindex` off, a catalog card.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
