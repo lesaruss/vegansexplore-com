@@ -2735,7 +2735,12 @@
   function dashDirSection(k, label, subs) {
     if (!dashDirBanner) return;
     dashDirBanner.setLabel(label);
-    if (k === 'media' && subs && subs.list.length) dashDirBanner.setChoices(subs.list, subs.active, subs.pick, 'Kind of media');
+    // A kind picked while a listing is open shows that kind (Sean, 2026-10-29: "If I were to now select YouTube, I would expect it to
+    // switch to the YouTube main directory, but it doesn't do anything"): the listing closes first.
+    if (k === 'media' && subs && subs.list.length) dashDirBanner.setChoices(subs.list, subs.active, function (v) {
+      if (listingSlugFromPath()) closeDashboardListing();
+      subs.pick(v);
+    }, 'Kind of media');
     else dashDirBanner.setChoices(null);
   }
   // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
@@ -2783,6 +2788,9 @@
     var crumb = document.getElementById('dash-directory-crumb');
     if (!mount || !detail || !crumb) return;
     var path = '/dashboard/directory/' + encodeURIComponent(slug);
+    // Where the Directory was (Media > Podcasts is ?tab=media&sub=podcasts), so ← Directory goes back there, not to its first section
+    // (Sean, 2026-10-29: "it was sending me to food").
+    if (!listingSlugFromPath()) dashDirReturn = location.pathname + location.search;
     if (!noPush && location.pathname !== path) history.pushState({ tabKey: 'directory', listing: slug }, '', path);
     mount.style.display = 'none';
     document.getElementById('dash-dir-layout').style.display = 'none';
@@ -2832,8 +2840,9 @@
     detail.style.display = 'block';
   }
 
+  var dashDirReturn = null;
   function closeDashboardListing(quiet) {
-    if (!quiet && listingSlugFromPath()) history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
+    if (!quiet && listingSlugFromPath()) history.pushState({ tabKey: 'directory' }, '', dashDirReturn || '/dashboard/directory');
     var mount = document.getElementById('dash-directory-mount');
     var detail = document.getElementById('dash-directory-detail');
     var crumb = document.getElementById('dash-directory-crumb');
@@ -3567,7 +3576,8 @@
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {
           key: 'dash-dir', param: false, initial: active || '', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
           sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
-          onChange: function (s) { if (dashDirBanner) dashBannerPick('directory', s, member); },
+          // A city picked while a listing is open shows that city's Directory (the listing closes).
+          onChange: function (s) { if (!dashDirBanner) return; if (listingSlugFromPath()) closeDashboardListing(); dashBannerPick('directory', s, member); },
           // Directory home: the Directory as the menu opens it, its first section, in the city picked (Sean, 2026-10-27).
           home: { label: 'Directory home', href: '/dashboard/directory', onClick: function () {
             if (location.pathname + location.search !== '/dashboard/directory') history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
