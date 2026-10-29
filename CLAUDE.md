@@ -1312,6 +1312,16 @@ PlantPure Nation the full film, free from their makers), 15 have where-to-watch 
 Live and Let Live and The End of Meat have no upload from their makers yet. The same check found four film websites gone (letlivefilm.com
 and theendofmeat.com now serve gambling sites; gamechangersmovie.com and aprayerforcompassion.com no longer exist), cleared with a
 `ve_listing_edits` row each. Not yet: Amazon (Prime Video links not checked) and fields for these in the listing editor.
+**On our podcast** (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
+these films as well... anyone else that's been in a documentary"; migration `20261029_film_podcasts.sql`): under About, a film lists our
+episodes with the people who made it or are in it (`details.film_podcasts` `[{show, guid, with, person?}]`: the show's Directory slug, the
+feed guid, "Keegan Kuhn, co-director" or "Dr. Michael Klaper, in the film", and their People slug), read through `ve-podcast` `episode`
+(`loadFilmPods` in `directory/listing.html`), two across on desktop, the directors first, Play in a player docked above, then **In our People
+directory** linking whoever has a profile. The directors panel (Vegans Explore Podcast 57: Shaun Monson, Louie Psihoyos, Marc Pierschel,
+Keegan Kuhn) is on Earthlings, The Game Changers, Live and Let Live, The End of Meat, Cowspiracy, What the Health and They're Trying to Kill
+Us; John Lewis on They're Trying to Kill Us; Klaper on Cowspiracy and What the Health; Barnard on What the Health, Forks Over Knives, Eating
+You Alive and They're Trying to Kill Us; Dotsie Bausch on The Game Changers. Who is in which film is checked against its cast before a row
+goes in (Klaper is not in Forks Over Knives or Eating You Alive). The four directors have no People profiles yet.
 
 ## People (Sean, 2026-10-28)
 

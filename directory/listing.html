@@ -750,6 +750,10 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-act{padding:8px 14px;border-radius:6px;border:1px solid #1a1a1a;background:#1a1a1a;color:#fff;font:800 11px Montserrat,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
 .pp-act-2{background:#fff;color:#1a1a1a}
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
+#film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
+.film-ppl{font-size:13px;color:var(--ve-text-75);margin:12px 0 0}
+.film-ppl a{color:#1f5f22;font-weight:700}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1379,7 +1383,47 @@ function renderFilmOverview(l){
     (facts.length ? '<div class="film-facts">' + facts.map(function(f){ return '<span>'+esc(f[0])+' <b>'+esc(f[1])+'</b></span>'; }).join('') + '</div>' : '') + '</div>';
   var video = v ? '<div><div class="film-video"><iframe src="https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.id)+'?rel=0" title="'+esc(l.name + (v.kind === 'film' ? ', the full film' : ', trailer'))+'" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe></div>' +
     '<div class="film-cap">'+(v.kind === 'film' ? 'The full film, shared free by its makers' : 'Official trailer')+'</div></div>' : '';
-  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>';
+  var pods = Array.isArray(d.film_podcasts) && d.film_podcasts.length ? '<div class="section" id="film-pods"><h2 class="section-title">On our podcast</h2>' +
+    '<p class="pp-sub">Our conversations with the people who made this film or appear in it.</p><div class="vep-dock" data-vep-always></div>' +
+    '<div class="pp-scroll"><div class="vep-list"><p class="pp-empty">Loading...</p></div></div></div>' : '';
+  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + pods;
+}
+// On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
+// these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
+// is read through ve-podcast `episode` and drawn as a person page's row (ppEpRow: Play in the docked player, Save), the directors first,
+// then the newest, two across on desktop. The people with a profile in People are linked under the list.
+function loadFilmPods(l){
+  var list = ((l.details || {}).film_podcasts || []).filter(function(x){ return x && x.show && x.guid; });
+  var box = document.querySelector('#film-pods .vep-list'); if(!box || !list.length) return;
+  if(window.VEEpisodes) VEEpisodes.css();
+  var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+  var slugs = list.map(function(x){ return x.show; }).filter(function(v, i, a){ return a.indexOf(v) === i; });
+  var shows = fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&select=id,slug,name,logo_url', { headers: H })
+    .then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+  var eps = Promise.all(list.map(function(x){
+    return fetch(SUPABASE_URL + '/functions/v1/ve-podcast', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ action: 'episode', slug: x.show, guid: x.guid }) })
+      .then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ return d && d.episode; }).catch(function(){ return null; });
+  }));
+  Promise.all([shows, eps]).then(function(r){
+    var sh = {}; (r[0] || []).forEach(function(s){ sh[s.slug] = { id: s.id, slug: s.slug, name: s.name, image: s.logo_url || '' }; });
+    var rows = list.map(function(x, i){
+      var ep = r[1][i], show = sh[x.show]; if(!ep || !ep.audio || !show) return null;
+      return { x: x, ep: Object.assign({}, ep, { summary: '', show: show }) };
+    }).filter(Boolean).sort(function(a, b){
+      var da = /director/i.test(a.x.with), db = /director/i.test(b.x.with);
+      return da !== db ? (da ? -1 : 1) : String(b.ep.date || '').localeCompare(String(a.ep.date || ''));
+    });
+    if(!rows.length){ var sec = document.getElementById('film-pods'); if(sec) sec.hidden = true; return; }
+    box.innerHTML = rows.map(function(o){
+      var show = o.ep.show; o.ep.image = show.image || o.ep.image || ''; PP_EPS[show.id + '|' + o.ep.guid] = o.ep;
+      return window.VEEpisodes ? VEEpisodes.row(o.ep, show, { pre: o.x.with + ' · ' + show.name }) : '';
+    }).join('');
+    var ppl = [];
+    rows.forEach(function(o){ var n = o.x.with.split(',')[0]; if(o.x.person && !ppl.some(function(p){ return p[0] === o.x.person; })) ppl.push([o.x.person, n]); });
+    if(ppl.length){ var sec2 = document.getElementById('film-pods'), pl = document.createElement('p'); pl.className = 'film-ppl';
+      pl.innerHTML = 'In our People directory: ' + ppl.map(function(p){ return '<a href="/directory/' + encodeURIComponent(p[0]) + '">' + esc(p[1]) + '</a>'; }).join(', ');
+      sec2.appendChild(pl); }
+  });
 }
 function platformList(l){
   var platforms = [];
@@ -4221,6 +4265,7 @@ if(!slug || slug === 'listing'){
       trackActions(l);
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
+      if(l.category === 'Documentaries & Films' && !DEMO) loadFilmPods(l);
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
