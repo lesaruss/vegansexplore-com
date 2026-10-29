@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Group Partners | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Group Partners (LOCKED by Sean 2026-10-29, playbook ve-group-partners). Sean: "in the depot, just like we had with the ambassador
+       and the other thing, there would be a ... groups one, where I could personalize the message, select people, put in their email
+       addresses... do a crawl for all these community groups... send them messages one by one." One thing per view: the groups
+       (#list/<tab>), one group (#g/<listing>: its contact, Find their email, the invitation with Speak and Write their opening, the email
+       as it goes, Send, Copy, Cancel, Follow up), Pick groups (#pick) and Write to them (#new), and Find new groups (#discover: Meetup by
+       chapter, each one Add to the Directory or Set aside). Data: ve-groups (list, get, contact_save, find_contact, partner_save, discover,
+       discovered, discover_decide) and ve-invites (points_to 'group'); migration 20261029_group_partners.sql. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label,.lbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea,.search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:150px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .mic{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;min-height:36px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,0,0,.25);background:#fff;color:var(--ve-text);display:inline-flex;align-items:center;gap:6px;}
+    .mic svg{width:16px;height:16px;}
+    .mic.on{background:#a61b1b;border-color:#a61b1b;color:#fff;}
+    .note-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a,.tabs button{font:inherit;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;border:0;cursor:pointer;}
+    .tabs a.on,.tabs button.on{background:var(--ve-green-deep);color:#fff;}
+    .views{display:flex;gap:6px;flex-wrap:wrap;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .totals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:1000px){.totals{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media (max-width:520px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    /* A candidate: tick, who they are, where we know them from, and how much you have written with them. */
+    .crow{display:grid;grid-template-columns:28px minmax(0,1fr) 140px;gap:12px;align-items:start;padding:12px 14px;border-top:1px solid var(--ve-border);cursor:pointer;}
+    .crow:first-child{border-top:0;}
+    .crow.on{background:#f3faf3;}
+    .crow input{width:20px;height:20px;margin-top:3px;accent-color:var(--ve-green-deep);}
+    .crow b{font-size:14px;}
+    .crow .who{font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    .crow .sum{font-size:12.5px;color:var(--ve-text);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .crow .meta{font-size:12px;color:var(--ve-text-75);text-align:right;}
+    .crow .meta b{display:block;font-size:16px;color:var(--ve-text);}
+    @media (max-width:640px){.crow{grid-template-columns:28px minmax(0,1fr);}.crow .meta{grid-column:2;text-align:left;}.crow .meta b{display:inline;font-size:13px;}}
+    .pool{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;background:#eef1ee;color:#333;margin:4px 4px 0 0;white-space:nowrap;}
+    .pool.suggested{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pool.guest{background:#fff4e0;color:#8a5200;}
+    .pool.unpaid{background:#e8f0fe;color:#1a4a9c;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent{background:#e8f0fe;color:#1a4a9c}.t-read,.t-opened{background:#e6f4f6;color:#0d5c66}.t-quiet{background:#f3ecf9;color:#5b2a86}.t-accepted{background:#fff0d6;color:#7a4b00}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:18px;}
+    .two>.card{margin:0;}
+    .steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+    .steps li{display:flex;gap:10px;align-items:center;font-size:13.5px;}
+    .steps i{width:12px;height:12px;border-radius:50%;background:#d6d9d6;flex:none;}
+    .steps li.done i{background:var(--ve-green-deep);}
+    .steps li.bad i{background:#a61b1b;}
+    .steps li:not(.done):not(.bad){color:var(--ve-text-75);}
+    .picked{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#1a1a1a;color:#fff;border-radius:10px;padding:10px 14px;margin-top:12px;}
+    .picked b{font-size:14px;}
+    .prow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ve-border);}
+    .prow:first-child{border-top:0;}
+    .prow small{display:block;font-size:12.5px;color:var(--ve-text-75);}
+    .comp{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .comp input{width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .tools{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0 0 12px;}
+    .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:16px;}
+    .pgrid .card{margin:0;}
+    .known{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;}
+    .known b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:2px;}
+    #ed-reason{min-height:120px;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .kv div{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .kv b{display:block;font-size:22px;font-weight:900;line-height:1.1;}
+    .kv span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .form select{font:inherit;font-size:14px;padding:9px 44px 9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;color:var(--ve-text);text-transform:none;letter-spacing:0;font-weight:600;}
+    .why{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 12px;}
+    .pool.found{background:#e6f4f6;color:#0d5c66;}
+    .pool.none{background:#fdecec;color:#8f1d1d;}
+    .ctlrow{display:grid;grid-template-columns:minmax(0,1fr) 240px;gap:10px;margin:0 0 12px;}
+    @media (max-width:640px){.ctlrow{grid-template-columns:minmax(0,1fr);}}
+    .ctlrow select{font:inherit;font-size:14px;padding:9px 44px 9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;color:var(--ve-text);font-weight:600;}
+    .irow .tags{display:flex;flex-direction:column;gap:4px;align-items:flex-end;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Group Partners</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">The social clubs, meetups and potluck groups in Community &rsaquo; Groups, invited one at a time to host their community and events on Vegans Explore. The group is the partner and its organizer the lead, their own Founding Membership on us. Find each group's email, tell me what you know about them, read the opening I write in your voice, and send it from you.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null, picked = [], disc = null;
+      var DAY = 86400000;
+      var MIC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
+      var CHAPTERS = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'atlanta': 'Atlanta',
+        'washington-dc': 'Washington, D.C.', 'maryland': 'Maryland', 'virginia': 'Virginia', 'delaware': 'Delaware', 'west-virginia': 'West Virginia',
+        'new-york': 'New York', 'philadelphia': 'Philadelphia', 'los-angeles': 'Los Angeles', 'london': 'London' };
+      // The status of a group on the list: where its invitation stands, else whether we have an email for it.
+      var ST = { noemail: 'No email yet', ready: 'Ready to invite', draft: 'Not sent yet', sent: 'Sent', read: 'Read it', opened: 'Opened the link',
+        joined: 'Said yes', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
+      var STCLS = { noemail: 'canceled', ready: 'ready', draft: 'ready', sent: 'sent', read: 'read', opened: 'opened', joined: 'joined', declined: 'declined', expired: 'expired', canceled: 'canceled' };
+      var TABS = ['all', 'noemail', 'ready', 'draft', 'sent', 'opened', 'joined', 'declined'];
+      var TABW = { all: 'All', noemail: 'No email yet', ready: 'Ready to invite', draft: 'Not sent yet', sent: 'Sent', opened: 'Opened the link', joined: 'Said yes', declined: 'Declined' };
+      var PST = { invited: 'Invited', onboarding: 'Onboarding', active: 'Active', paused: 'Paused', ended: 'Ended' };
+      var filt = { q: '', chapter: '' };
+      try { picked = JSON.parse(sessionStorage.getItem('ve_groups_picked') || '[]') || []; } catch (e) { picked = []; }
+      function savePicked() { try { sessionStorage.setItem('ve_groups_picked', JSON.stringify(picked)); } catch (e) {} }
+
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function call(fn, body) { return fetch(BASE + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function groups(body) { return call('ve-groups', body); }
+      function invites(body) { return call('ve-invites', body); }
+      function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function when(d) { return d ? new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+      function go(h) { if (location.hash === '#' + h) draw(); else location.hash = h; }
+      function copy(text, btn) {
+        var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      function chapterOf(g) { var c = (g.chapters || []).filter(function (x) { return CHAPTERS[x]; })[0]; return c || ''; }
+      function stOf(g) {
+        var i = g.invite;
+        if (i) {
+          if (i.status === 'ready') return 'draft';
+          if (i.status === 'sent') return i.email_opened_at ? 'read' : 'sent';
+          if (i.status === 'opened') return 'opened';
+          if (i.status === 'joined' || i.status === 'accepted') return 'joined';
+          if (STCLS[i.status]) return i.status;
+        }
+        return g.contact_email ? 'ready' : 'noemail';
+      }
+      function inTab(g, t) { var s = stOf(g); return t === 'all' || s === t || (t === 'sent' && s === 'read'); }
+      function tag(s) { return '<span class="tag t-' + STCLS[s] + '">' + esc(ST[s]) + '</span>'; }
+      function load() { return groups({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d.groups || []; }); }
+
+      // Speak instead of typing: the browser's own speech recognition, added to the note as it hears it.
+      function dictation(btn, area) {
+        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!btn) return;
+        if (!SR) { btn.hidden = true; return; }
+        var rec = null, base = '';
+        btn.addEventListener('click', function () {
+          if (rec) { rec.stop(); return; }
+          rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+          base = area.value ? area.value.replace(/\s*$/, '') + ' ' : '';
+          rec.onresult = function (e) {
+            var text = '';
+            for (var k = 0; k < e.results.length; k++) text += e.results[k][0].transcript;
+            area.value = (base + text.replace(/^\s+/, '')).slice(0, 2000);
+            area.dispatchEvent(new Event('input'));
+          };
+          rec.onend = function () { rec = null; btn.classList.remove('on'); btn.innerHTML = MIC + 'Speak'; };
+          rec.onerror = function () { if (rec) rec.stop(); };
+          rec.start(); btn.classList.add('on'); btn.innerHTML = MIC + 'Stop';
+        });
+      }
+      function ctxField(id, val, label) {
+        return '<label class="wide"><span class="note-head">' + esc(label || 'What you know about them') + '<button type="button" class="mic" id="' + id + '-mic">' + MIC + 'Speak</button></span>' +
+          '<textarea id="' + id + '" maxlength="2000" placeholder="How you know the group or its organizer, an event of theirs you went to, why they would be a strong first partner. Talk it through; it does not need to be sentences.">' + esc(val || '') + '</textarea></label>';
+      }
+      function views(on) {
+        return '<nav class="views" aria-label="Group Partners"><a href="#list/all" class="' + (on === 'list' ? 'on' : '') + '">Groups (' + (data ? data.length : 0) + ')</a>' +
+          '<a href="#pick" class="' + (on === 'pick' ? 'on' : '') + '">Pick groups' + (picked.length ? ' (' + picked.length + ')' : '') + '</a>' +
+          '<a href="#discover" class="' + (on === 'discover' ? 'on' : '') + '">Find new groups</a></nav>';
+      }
+      function controls() {
+        return '<div class="ctlrow"><input class="search" id="q" type="search" placeholder="Search a group, a city or an email" value="' + esc(filt.q) + '">' +
+          '<select id="ch" aria-label="Chapter"><option value="">Every chapter</option>' + Object.keys(CHAPTERS).map(function (k) { return '<option value="' + k + '"' + (k === filt.chapter ? ' selected' : '') + '>' + CHAPTERS[k] + '</option>'; }).join('') + '</select></div>';
+      }
+      function matches(g) {
+        if (filt.chapter && (g.chapters || []).indexOf(filt.chapter) < 0) return false;
+        if (!filt.q) return true;
+        var hay = [g.name, g.city, g.state, g.contact_email, g.contact_name].join(' ').toLowerCase();
+        return filt.q.toLowerCase().split(/\s+/).every(function (w) { return hay.indexOf(w) >= 0; });
+      }
+      function wireControls(redraw) {
+        $('q').addEventListener('input', function () { filt.q = this.value.trim(); redraw(true); });
+        $('ch').addEventListener('change', function () { filt.chapter = this.value; redraw(true); });
+      }
+      function sub(g) {
+        return [CHAPTERS[chapterOf(g)] || g.city || '', g.contact_email ? esc(g.contact_email) : 'No email yet',
+          n(g.events.up) + ' upcoming &middot; ' + n(g.events.past) + ' past events'].filter(Boolean).join(' &middot; ');
+      }
+
+      // ---- The groups ----
+      function drawList(t) {
+        var rows = data.filter(matches), T = {};
+        TABS.forEach(function (k) { T[k] = rows.filter(function (g) { return inTab(g, k); }).length; });
+        var shown = rows.filter(function (g) { return inTab(g, t); });
+        if (!$('glist')) {
+          app.innerHTML = '<div class="bar">' + views('list') + '<a class="btn" href="#pick">Pick groups to invite</a></div>' + controls() +
+            '<nav class="tabs" id="gtabs" style="margin:0 0 12px"></nav><div class="list" id="glist"></div>';
+          wireControls(function () { drawList(t); });
+        }
+        $('gtabs').innerHTML = TABS.map(function (k) { return '<a href="#list/' + k + '" class="' + (k === t ? 'on' : '') + '">' + TABW[k] + ' (' + T[k] + ')</a>'; }).join('');
+        $('glist').innerHTML = shown.length ? shown.map(function (g) {
+          return '<div class="irow"><div><b>' + esc(g.name) + (g.status === 'pending' ? ' <span class="pool">On hold</span>' : '') + '</b><small>' + sub(g) + '</small></div>' +
+            '<div class="tags">' + tag(stOf(g)) + (g.partner && g.partner.status !== 'invited' ? '<span class="tag t-joined">' + esc(PST[g.partner.status]) + '</span>' : '') + '</div>' +
+            '<a class="btn btn-ghost btn-sm" href="#g/' + esc(g.id) + '">Open</a></div>';
+        }).join('') : '<p class="empty">No groups here.</p>';
+      }
+
+      // ---- One group ----
+      function drawGroup(id) {
+        app.innerHTML = '<p class="crumb"><a href="#list/all">Groups</a></p><p class="empty">Loading...</p>';
+        groups({ action: 'get', listing_id: id }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#list/all">Groups</a></p><p class="empty">That group is not here.</p>'; return; }
+          paintGroup(d);
+        }, function () { app.innerHTML = '<p class="empty">The group did not load. Refresh to try again.</p>'; });
+      }
+      function paintGroup(d) {
+        var g = d.group, inv = (d.invites || []).filter(function (i) { return i.status !== 'canceled'; })[0] || null, P = d.partner, E = d.events || {};
+        var open = inv && ['ready', 'sent', 'opened'].indexOf(inv.status) >= 0, waiting = inv && ['sent', 'opened'].indexOf(inv.status) >= 0;
+        var links = [g.website ? '<a class="btn btn-ghost btn-sm" href="' + esc(g.website) + '" target="_blank" rel="noopener">Their site</a>' : '',
+          g.instagram ? '<a class="btn btn-ghost btn-sm" href="https://www.instagram.com/' + esc(String(g.instagram).replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, '')) + '/" target="_blank" rel="noopener">Instagram</a>' : '',
+          g.events_url ? '<a class="btn btn-ghost btn-sm" href="' + esc(g.events_url) + '" target="_blank" rel="noopener">Their events</a>' : '',
+          '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(g.slug) + '" target="_blank" rel="noopener">Their page</a>'].join('');
+        var html = '<p class="crumb"><a href="#list/all">Groups</a> &rsaquo; ' + esc(g.name) + '</p>' +
+          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(g.name) + '</h2><small class="hint">' + esc((g.chapters || []).map(function (c) { return CHAPTERS[c] || c; }).join(', ') || g.city || '') +
+            ' &middot; ' + n(E.upcoming) + ' upcoming &middot; ' + n(E.past) + ' past events' + (g.status === 'pending' ? ' &middot; On hold for review' : '') + '</small></div>' +
+            (P ? '<span class="tag t-joined">' + esc(PST[P.status] || P.status) + '</span>' : '') + '</div>' +
+            (g.description ? '<p class="known" style="-webkit-line-clamp:3">' + esc(g.description) + '</p>' : '') + '<div class="acts">' + links + '</div></section>';
+        // Who to write to: the contact we hold, Find their email, or type it in.
+        html += '<div class="two"><section class="card"><h2>Who to write to</h2><form class="form" id="ct">' +
+          '<label>The organizer\'s name<input id="ct-name" maxlength="120" value="' + esc(g.contact_name || '') + '" placeholder="Their first and last name"></label>' +
+          '<label>Their email<input id="ct-email" type="email" maxlength="200" value="' + esc(g.contact_email || '') + '" placeholder="name@example.com"></label>' +
+          '<p class="hint wide">' + (g.contact_email ? 'From: ' + esc(g.contact_source || 'the team') : g.contact_note ? 'Last look: ' + esc(g.contact_note) : 'Find their email reads their own website and Instagram, and takes only an email they publish. Never guessed.') + '</p>' +
+          '<div class="wide acts"><button type="submit" class="btn btn-ghost">Save</button><button type="button" class="btn btn-ghost" id="ct-find">Find their email</button><span class="msg" id="ct-msg" role="status"></span></div></form>' +
+          (P ? '<h2 style="margin-top:18px">The partnership</h2><form class="form" id="pt"><label>Status<select id="pt-st">' + Object.keys(PST).map(function (k) { return '<option value="' + k + '"' + (k === P.status ? ' selected' : '') + '>' + PST[k] + '</option>'; }).join('') + '</select></label>' +
+            '<label>Lead<input disabled value="' + esc(P.lead ? P.lead.name + ' (' + P.lead.email + ')' : 'Not yet') + '"></label>' +
+            '<label class="wide">Team note<textarea id="pt-note" maxlength="2000" style="min-height:80px">' + esc(P.notes || '') + '</textarea></label>' +
+            '<div class="wide acts"><button type="submit" class="btn btn-ghost">Save</button><span class="msg" id="pt-msg" role="status"></span></div></form>' : '') + '</section>';
+        // The invitation.
+        if (!inv || inv.status === 'expired' || inv.status === 'declined') {
+          html += '<section class="card"><h2>The invitation</h2>' + (inv ? '<p class="why">' + (inv.status === 'declined' ? 'They declined ' + esc(day(inv.declined_at)) + (inv.decline_note ? ': "' + esc(inv.decline_note) + '"' : '') + '.' : 'The last one expired ' + esc(day(inv.expires_at)) + '.') + ' You can write a new one.</p>' : '') +
+            '<form class="form" id="mk">' + ctxField('mk-ctx', '', 'What you know about them') +
+            '<div class="wide acts"><button type="submit" class="btn">Write their invitation</button><span class="msg" id="mk-msg" role="status"></span></div>' +
+            '<p class="hint wide">It goes to the email on the left, to the organizer by name. Nothing is sent: it waits for you to read, change and send.</p></form></section></div>';
+        } else {
+          var steps = [['Made', inv.created_at, true], ['Sent' + (inv.sent_via === 'copied' ? ' (you copied the link)' : ''), inv.sent_at, !!inv.sent_at],
+            ['Read the email', inv.email_opened_at, !!inv.email_opened_at], ['Opened the link', inv.opened_at, !!inv.opened_at],
+            ['Said yes: ' + g.name + ' is onboarding', inv.joined_at, !!inv.joined_at]];
+          if (inv.nudge_count) steps.splice(2, 0, ['Follow-up' + (inv.nudge_count > 1 ? 's' : '') + ' sent: ' + inv.nudge_count, inv.nudged_at, true]);
+          html += '<section class="card"><div class="bar"><h2 style="margin:0">The invitation</h2>' + tag(stOf({ invite: inv, contact_email: 1 })) + '</div><p class="hint" style="margin-bottom:10px">To ' + esc(inv.name) + ', ' + esc(inv.email) + ', the only email that can accept it.</p>' +
+            '<ol class="steps">' + steps.map(function (x) { return '<li class="' + (x[2] ? 'done' : '') + '"><i></i><span>' + esc(x[0]) + (x[1] ? ' &middot; ' + esc(when(x[1])) : '') + '</span></li>'; }).join('') + '</ol></section></div>';
+          if (waiting && inv.sent_via === 'email') {
+            var nextNudge = inv.sent_at ? new Date(Date.parse(inv.nudged_at || inv.sent_at) + 5 * DAY) : null;
+            html += '<section class="card" style="margin-top:18px"><h2>Follow up</h2><p class="hint" style="margin-bottom:10px">One short note from you, worded for where they stopped. At most 2, 5 days apart; it keeps their link open 14 more days. ' +
+              (inv.can_nudge ? 'It can go now.' : inv.nudge_count >= 2 ? 'They have had 2 already.' : nextNudge ? 'The next one can go ' + esc(day(nextNudge)) + '.' : '') + '</p>' +
+              '<div class="mail" id="nmail">Loading the follow-up...</div><div class="acts"><button type="button" class="btn" id="nudge"' + (inv.can_nudge ? '' : ' disabled') + '>Send the follow-up</button><span class="msg" id="nmsg" role="status"></span></div></section>';
+          }
+          if (open) {
+            html += '<div class="two" style="margin-top:18px"><section class="card"><h2>The draft</h2><form class="form" id="ed">' + ctxField('ed-ctx', inv.context, 'What you told me about them') +
+              '<div class="wide acts"><button type="button" class="btn btn-ghost btn-sm" id="ed-redo">Write their opening</button><span class="hint" id="ed-note"></span></div>' +
+              '<label class="wide">Their opening<textarea id="ed-reason" maxlength="2000">' + esc(inv.reason || '') + '</textarea><span class="hint">The first lines of the email, after "Hi ' + esc(String(inv.name || '').split(' ')[0]) + '," and before the invitation. Change any word.</span></label>' +
+              '<div class="wide acts"><button type="submit" class="btn btn-ghost" id="ed-save">Save changes</button><span class="msg" id="ed-msg" role="status"></span></div></form></section>' +
+              '<section class="card"><h2>The email, as it goes</h2><div class="mail" id="mail">Loading the email...</div>' +
+              '<div class="acts"><button type="button" class="btn" id="send">' + (inv.status === 'ready' ? 'Send it from me' : 'Send it again') + '</button><button type="button" class="btn btn-ghost" id="copy">Copy the link</button><button type="button" class="btn btn-bad" id="cancel">Cancel it</button>' +
+              '<span class="msg" id="msg" role="status"></span></div></section></div>';
+          }
+        }
+        app.innerHTML = html;
+        wireGroup(d, g, inv, open);
+      }
+      function wireGroup(d, g, inv, open) {
+        var reload = function () { data = null; drawGroup(g.id); };
+        $('ct').addEventListener('submit', function (e) {
+          e.preventDefault(); var m = $('ct-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          groups({ action: 'contact_save', listing_id: g.id, name: $('ct-name').value.trim() || null, email: $('ct-email').value.trim() || null }).then(function (r) {
+            if (r && r.ok) { m.textContent = 'Saved.'; data = null; return; }
+            m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not save.';
+          });
+        });
+        $('ct-find').addEventListener('click', function () {
+          var b = this, m = $('ct-msg'); b.disabled = true; m.className = 'msg'; m.textContent = 'Reading their website and Instagram...';
+          groups({ action: 'find_contact', listing_id: g.id }).then(function (r) {
+            b.disabled = false;
+            if (!r || !r.ok) { m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not go through.'; return; }
+            if (!r.email) { m.className = 'msg err'; m.textContent = 'No published email. ' + (r.tried || []).join('. '); return; }
+            if (!$('ct-email').value.trim()) $('ct-email').value = r.email;
+            m.textContent = r.saved ? 'Found and saved: ' + r.email + ' (' + r.source + ').' : 'Found ' + r.email + ' (' + r.source + '). You already have an email here; Save to use this one.';
+            data = null;
+          }).catch(function () { b.disabled = false; m.className = 'msg err'; m.textContent = 'Could not reach the server.'; });
+        });
+        if ($('pt')) $('pt').addEventListener('submit', function (e) {
+          e.preventDefault(); var m = $('pt-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          groups({ action: 'partner_save', listing_id: g.id, status: $('pt-st').value, notes: $('pt-note').value.trim() || null }).then(function (r) {
+            if (r && r.ok) { m.textContent = 'Saved.'; data = null; return; }
+            m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not save.';
+          });
+        });
+        if ($('mk')) {
+          dictation($('mk-ctx-mic'), $('mk-ctx'));
+          $('mk').addEventListener('submit', function (e) {
+            e.preventDefault(); var m = $('mk-msg'), b = this.querySelector('button[type=submit]');
+            var email = $('ct-email').value.trim(), name = $('ct-name').value.trim();
+            if (!email) { m.className = 'msg err'; m.textContent = 'Their email first, on the left.'; return; }
+            b.disabled = true; m.className = 'msg'; m.textContent = 'Making the invitation...';
+            make([{ id: g.id, name: name || g.name, group: g.name, email: email, context: $('mk-ctx').value.trim() }], m).then(function (made) {
+              b.disabled = false; if (made.length) reload();
+            });
+          });
+        }
+        if ($('nmail')) invites({ action: 'nudge_preview', id: inv.id }).then(function (r) { var x = r && r.email; $('nmail').innerHTML = x ? '<div class="subj">' + esc(x.subject) + '</div>' + x.html : 'The follow-up did not load.'; });
+        if ($('nudge')) $('nudge').addEventListener('click', function () {
+          if (!confirm('Send ' + inv.name + ' the follow-up?')) return;
+          var b = this, m = $('nmsg'); b.disabled = true; m.className = 'msg'; m.textContent = 'Sending...';
+          invites({ action: 'nudge', id: inv.id }).then(function (r) {
+            if (r && r.ok) { m.textContent = 'Sent from you.'; setTimeout(reload, 600); return; }
+            b.disabled = false; m.className = 'msg err'; m.textContent = (r && r.message) || 'It did not send.';
+          });
+        });
+        if (!open) return;
+        function preview() {
+          invites({ action: 'preview', id: inv.id }).then(function (r) {
+            var x = r && r.email; if (!x) { $('mail').textContent = 'The email did not load.'; return; }
+            $('mail').innerHTML = '<div class="subj">' + esc(x.subject) + '</div>' + x.html;
+          });
+        }
+        preview();
+        dictation($('ed-ctx-mic'), $('ed-ctx'));
+        var dirty = false;
+        $('ed-reason').addEventListener('input', function () { dirty = true; });
+        $('ed-ctx').addEventListener('input', function () { dirty = true; });
+        $('ed-redo').addEventListener('click', function () {
+          var b = this, m = $('ed-note'); b.disabled = true; m.textContent = 'Writing...';
+          invites({ action: 'draft_note', id: inv.id, context: $('ed-ctx').value.trim() || null }).then(function (r) {
+            b.disabled = false;
+            if (!r || !r.ok) { m.textContent = (r && r.message) || 'It did not get written.'; return; }
+            $('ed-reason').value = r.reason; m.textContent = r.note || 'Written. Read it over.'; dirty = false; preview();
+          }).catch(function () { b.disabled = false; m.textContent = 'Could not reach the server.'; });
+        });
+        function save() {
+          return invites({ action: 'update', id: inv.id, reason: $('ed-reason').value.trim() || null, context: $('ed-ctx').value.trim() || null }).then(function (r) {
+            if (!r || !r.ok) throw new Error((r && r.message) || 'That did not save.');
+            dirty = false;
+          });
+        }
+        $('ed').addEventListener('submit', function (e) {
+          e.preventDefault(); var m = $('ed-msg'); $('ed-save').disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+          save().then(function () { $('ed-save').disabled = false; m.textContent = 'Saved. The email shows it.'; preview(); }, function (err) { $('ed-save').disabled = false; m.className = 'msg err'; m.textContent = err.message; });
+        });
+        var msg = $('msg');
+        $('send').addEventListener('click', function () {
+          var b = this; b.disabled = true; msg.className = 'msg'; msg.textContent = dirty ? 'Saving your changes...' : 'Sending...';
+          (dirty ? save() : Promise.resolve()).then(function () { msg.textContent = 'Sending...'; return invites({ action: 'send', ids: [inv.id] }); }).then(function (r) {
+            b.disabled = false;
+            if (r && r.sent && r.sent.length) { msg.textContent = 'Sent from you to ' + inv.email + '.'; setTimeout(reload, 900); return; }
+            msg.className = 'msg err'; msg.textContent = (r && (r.message || (r.failed && r.failed[0] && r.failed[0].why))) || 'It did not send.';
+          }).catch(function (err) { b.disabled = false; msg.className = 'msg err'; msg.textContent = (err && err.message) || 'Could not reach the server.'; });
+        });
+        $('copy').addEventListener('click', function () {
+          var b = this;
+          (dirty ? save() : Promise.resolve()).then(function () { return invites({ action: 'mark_copied', id: inv.id }); }).then(function (r) {
+            if (r && r.link) { copy(r.link, b); msg.className = 'msg'; msg.textContent = 'Copied. It works for 30 days, for ' + inv.email + ' only.'; data = null; }
+            else { msg.className = 'msg err'; msg.textContent = 'That did not go through.'; }
+          }).catch(function (err) { msg.className = 'msg err'; msg.textContent = err.message; });
+        });
+        $('cancel').addEventListener('click', function () {
+          if (!confirm('Cancel the invitation for ' + g.name + '? Its link stops working.')) return;
+          invites({ action: 'cancel', id: inv.id }).then(function (r) {
+            if (r && r.ok) reload(); else { msg.className = 'msg err'; msg.textContent = (r && r.message) || 'That did not go through.'; }
+          });
+        });
+      }
+
+      // Make invitations (one create for all of them), then write each opening in Sean's voice, one at a time.
+      function make(list, m) {
+        return invites({ action: 'create', brand: 'vegans-explore', points_to: 'group', reason: null, people: list.map(function (p) {
+          return { name: p.name, email: p.email, listing_id: p.id, comp: true, points: 0, pool: 'groups', context: String(p.context || '').trim() || null };
+        }) }).then(function (r) {
+          if (!r || !r.ok || !(r.created || []).length) {
+            m.className = 'msg err'; m.textContent = (r && (r.message || (r.skipped && r.skipped[0] && r.skipped[0].name + ': ' + r.skipped[0].why))) || 'That did not go through.';
+            return [];
+          }
+          var made = r.created, failed = [], k = 0;
+          return new Promise(function (done) {
+            (function next() {
+              if (k >= made.length) {
+                var left = (r.skipped || []).map(function (s) { return s.name + ' (' + s.why + ')'; });
+                if (left.length || failed.length) alert((left.length ? 'Left out: ' + left.join(', ') + '. ' : '') + (failed.length ? 'No opening yet for ' + failed.join(', ') + ': open the group and press Write their opening.' : ''));
+                done(made); return;
+              }
+              var c = made[k]; m.className = 'msg'; m.textContent = 'Writing ' + (k + 1) + ' of ' + made.length + ': ' + c.name + '...';
+              invites({ action: 'draft_note', id: c.id }).then(function (x) { if (!x || !x.ok) failed.push(c.name); }, function () { failed.push(c.name); }).then(function () { k++; next(); });
+            })();
+          });
+        }, function () { m.className = 'msg err'; m.textContent = 'Could not reach the server.'; return []; });
+      }
+
+      // ---- Pick groups: the ones with an email and no open invitation ----
+      function drawPick(again) {
+        var rows = data.filter(function (g) { return matches(g) && ['ready', 'expired', 'declined', 'canceled', 'noemail'].indexOf(stOf(g)) >= 0; });
+        rows.sort(function (a, b) { return (b.contact_email ? 1 : 0) - (a.contact_email ? 1 : 0) || (b.events.up - a.events.up) || (b.events.past - a.events.past); });
+        var ids = picked.map(function (p) { return p.id; });
+        if (!again || !$('plist')) {
+          app.innerHTML = '<div class="bar">' + views('pick') + '</div>' + controls() + '<p class="hint" style="margin:0 0 10px">Groups with no invitation open, the ones with an email first, then the busiest. A group with no email yet can be picked; type it on the next screen.</p>' +
+            '<div class="list" id="plist"></div><div class="picked" id="pbar"></div>';
+          wireControls(drawPick);
+        }
+        $('plist').innerHTML = rows.length ? rows.map(function (g) {
+          var on = ids.indexOf(g.id) >= 0;
+          return '<label class="crow' + (on ? ' on' : '') + '"><input type="checkbox" data-id="' + esc(g.id) + '"' + (on ? ' checked' : '') + '><div><b>' + esc(g.name) + '</b><div class="who">' + esc(CHAPTERS[chapterOf(g)] || g.city || '') + '</div>' +
+            '<span class="pool ' + (g.contact_email ? 'found' : 'none') + '">' + (g.contact_email ? esc(g.contact_email) : 'No email yet') + '</span>' + (stOf(g) !== 'ready' && stOf(g) !== 'noemail' ? '<span class="pool">' + esc(ST[stOf(g)]) + ' before</span>' : '') + '</div>' +
+            '<div class="meta"><b>' + n(g.events.up) + '</b>upcoming &middot; ' + n(g.events.past) + ' past</div></label>';
+        }).join('') : '<p class="empty">No groups to pick here.</p>';
+        $('plist').querySelectorAll('input[data-id]').forEach(function (box) {
+          box.addEventListener('change', function () {
+            var g = data.filter(function (x) { return x.id === box.dataset.id; })[0];
+            picked = picked.filter(function (p) { return p.id !== g.id; });
+            if (box.checked) picked.push({ id: g.id, group: g.name, name: g.contact_name || '', email: g.contact_email || '', context: '' });
+            savePicked(); drawPick(true);
+          });
+        });
+        $('pbar').innerHTML = '<b>' + picked.length + ' picked</b><span class="acts">' + (picked.length ? '<button type="button" class="btn btn-ghost btn-sm" id="pclear">Clear</button><a class="btn btn-sm" href="#new">Write to them</a>' : '') + '</span>';
+        if ($('pclear')) $('pclear').addEventListener('click', function () { picked = []; savePicked(); drawPick(true); });
+      }
+
+      // ---- Write to them: one card a group ----
+      function drawNew() {
+        if (!picked.length) { app.innerHTML = '<p class="crumb"><a href="#pick">Pick groups</a> &rsaquo; Write to them</p><section class="card"><p class="empty">No groups picked yet.</p><a class="btn" href="#pick">Pick groups</a></section>'; return; }
+        app.innerHTML = '<p class="crumb"><a href="#pick">Pick groups</a> &rsaquo; Write to them</p>' +
+          '<div class="why">Tell me a little about each group: how you know it or its organizer, an event of theirs, why they would make a strong first partner. I write each opening in your voice from that and what we hold on the group. Nothing is sent: each one waits in Not sent yet for you to read, change and send.</div>' +
+          '<div class="pgrid">' + picked.map(function (p, k) {
+            return '<section class="card"><h2>' + esc(p.group) + '</h2><div class="form">' +
+              '<label>The organizer\'s name<input data-k="' + k + '" data-f="name" maxlength="120" value="' + esc(p.name) + '" placeholder="Their first and last name"></label>' +
+              '<label>Their email<input data-k="' + k + '" data-f="email" type="email" maxlength="200" value="' + esc(p.email) + '" placeholder="name@example.com"></label>' +
+              ctxField('ctx-' + k, p.context) + '<div class="wide acts"><button type="button" class="btn btn-ghost btn-sm" data-drop="' + k + '">Take it off</button></div></div></section>';
+          }).join('') + '</div><div class="picked"><b>' + picked.length + ' group' + (picked.length === 1 ? '' : 's') + '</b><span class="acts"><span class="msg" id="msg" role="status" style="color:#fff"></span><button type="button" class="btn btn-sm" id="mk">Write their invitations</button></span></div>';
+        app.querySelectorAll('input[data-k]').forEach(function (el) { el.addEventListener('input', function () { picked[+el.dataset.k][el.dataset.f] = el.value.trim(); savePicked(); }); });
+        picked.forEach(function (p, k) {
+          var area = $('ctx-' + k); dictation($('ctx-' + k + '-mic'), area);
+          area.addEventListener('input', function () { picked[k].context = area.value; savePicked(); });
+        });
+        app.querySelectorAll('[data-drop]').forEach(function (b) { b.addEventListener('click', function () { picked.splice(+b.dataset.drop, 1); savePicked(); drawNew(); }); });
+        $('mk').addEventListener('click', function () {
+          var msg = $('msg'), btn = this;
+          var noMail = picked.filter(function (p) { return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email || ''); });
+          if (noMail.length) { msg.textContent = 'An email for ' + noMail.map(function (p) { return p.group; }).join(', ') + '.'; return; }
+          btn.disabled = true;
+          // The organizer's email goes on the group as its contact too, so the list shows it next time.
+          Promise.all(picked.map(function (p) {
+            var g = data.filter(function (x) { return x.id === p.id; })[0] || {};
+            if (g.contact_email === p.email.toLowerCase() && (g.contact_name || '') === p.name) return null;
+            return groups({ action: 'contact_save', listing_id: p.id, email: p.email, name: p.name || null, source: 'Typed in by the team' });
+          })).then(function () {
+            return make(picked.map(function (p) { return { id: p.id, name: p.name || p.group, email: p.email, context: p.context }; }), msg);
+          }).then(function (made) {
+            btn.disabled = false;
+            if (!made.length) return;
+            picked = []; savePicked(); data = null;
+            go(made.length === 1 && made[0].listing_id ? 'g/' + made[0].listing_id : 'list/draft');
+          });
+        });
+      }
+
+      // ---- Find new groups: Meetup, chapter by chapter ----
+      function drawDiscover() {
+        app.innerHTML = '<div class="bar">' + views('discover') + '</div>' +
+          '<section class="card"><h2>Search a chapter</h2><p class="hint" style="margin-bottom:10px">Searches Meetup for Vegan and plant-based groups around the chapter\'s cities, keeps the ones with events since 2025, and leaves out ours and any we already hold. Each one waits here, off the Directory, until you add it or set it aside. Adding one brings in this year\'s events and the next 180 days.</p>' +
+          '<div class="ctlrow"><select id="dch" aria-label="Chapter">' + Object.keys(CHAPTERS).map(function (k) { return '<option value="' + k + '">' + CHAPTERS[k] + '</option>'; }).join('') + '</select><button type="button" class="btn" id="drun">Search Meetup</button></div>' +
+          '<p class="msg" id="dmsg" role="status"></p></section><h2>Waiting for you</h2><div class="list" id="dlist"><p class="empty">Loading...</p></div>';
+        $('drun').addEventListener('click', function () {
+          var b = this, m = $('dmsg'), ch = $('dch').value; b.disabled = true; m.className = 'msg'; m.textContent = 'Searching ' + CHAPTERS[ch] + '...';
+          groups({ action: 'discover', chapter: ch }).then(function (r) {
+            b.disabled = false;
+            if (!r || !r.ok) { m.className = 'msg err'; m.textContent = (r && r.message) || 'The search did not go through.'; return; }
+            m.textContent = 'Looked at ' + n(r.looked_at) + ' groups: ' + n(r.added.length) + ' new, waiting below.' + (r.skipped.length ? ' Left out ' + r.skipped.length + ' (' + r.skipped.slice(0, 4).map(function (s) { return s.name + ': ' + s.why; }).join('; ') + (r.skipped.length > 4 ? '...' : '') + ').' : '') + (r.errors.length ? ' ' + r.errors.length + ' errors.' : '');
+            loadDisc();
+          }).catch(function () { b.disabled = false; m.className = 'msg err'; m.textContent = 'Could not reach the server.'; });
+        });
+        loadDisc();
+      }
+      function loadDisc() {
+        groups({ action: 'discovered' }).then(function (r) {
+          disc = (r && r.groups) || [];
+          var el = $('dlist'); if (!el) return;
+          el.innerHTML = disc.length ? disc.map(function (g) {
+            var f = g.found || {};
+            return '<div class="irow" style="grid-template-columns:minmax(0,1fr) auto"><div><b>' + esc(g.name) + '</b><small>' + esc([CHAPTERS[g.chapter] || g.chapter, g.city].filter(Boolean).join(' &middot; ')) +
+              (f.members != null ? ' &middot; ' + n(f.members) + ' members' : '') + ' &middot; ' + n(f.upcoming) + ' upcoming &middot; ' + n(f.past_since_2025) + ' since 2025 &middot; <a href="' + esc(g.link) + '" target="_blank" rel="noopener">Meetup</a></small>' +
+              (g.about ? '<small style="margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">' + esc(g.about) + '</small>' : '') + '</div>' +
+              '<div class="acts"><button type="button" class="btn btn-sm" data-add="' + esc(g.id) + '">Add to the Directory</button><button type="button" class="btn btn-ghost btn-sm" data-aside="' + esc(g.id) + '">Set aside</button></div></div>';
+          }).join('') : '<p class="empty">Nothing waiting. Search a chapter above.</p>';
+          el.querySelectorAll('[data-add],[data-aside]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              var add = !!b.dataset.add, id = b.dataset.add || b.dataset.aside, row = b.closest('.irow');
+              if (!add) { var why = prompt('Why set it aside? (optional)'); if (why === null) return; }
+              row.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+              b.textContent = add ? 'Adding, with its events...' : 'Setting aside...';
+              groups({ action: 'discover_decide', listing_id: id, decision: add ? 'add' : 'aside', note: add ? null : (why || null) }).then(function (r) {
+                if (r && r.ok) { data = null; row.innerHTML = '<div><b>' + (add ? 'Added' : 'Set aside') + '</b><small>' + (add ? n((r.events || {}).added) + ' events in. <a href="/directory/' + esc(r.slug) + '" target="_blank" rel="noopener">Its page</a>' : 'Off the list.') + '</small></div>'; return; }
+                row.querySelectorAll('button').forEach(function (x) { x.disabled = false; }); b.textContent = (r && r.message) || 'That did not go through.';
+              });
+            });
+          });
+        });
+      }
+
+      function draw() {
+        var r = location.hash.replace(/^#/, '') || 'list/all', m;
+        if (r === 'discover') return drawDiscover();
+        if (r === 'new') return drawNew();
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The groups did not load. Refresh to try again.</p>'; }); }
+        if ((m = r.match(/^g\/([0-9a-f-]{36})$/))) return drawGroup(m[1]);
+        if (r === 'pick') return drawPick();
+        app.innerHTML = '';
+        if ((m = r.match(/^list\/([a-z]+)$/))) return drawList(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
+        drawList('all');
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
