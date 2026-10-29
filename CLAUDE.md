@@ -686,7 +686,8 @@ everything stays with the organization. Paid to the organization after its W-9 a
 earnings, never a donation or tax-deductible. **The lead on the account** (Sean, 2026-10-29: "it doesn't impact the person's
 individual status. They just happen to be the person assigned as the lead") gets a complimentary Founding Membership when the
 organization says yes and keeps their own standing (Level 1, their own link and points). Invitation only, from Depot > People >
-Founding Members (Founding Member, Ambassador or Nonprofit Partner). First: Susan Hargreaves, Animal Hero Kids (`be-an-animal-hero`).
+Founding Members (Founding Member, Ambassador or Nonprofit Partner). First: Susan Hargreaves, Animal Hero Kids (`be-an-animal-hero`), at animalherokidsrock@gmail.com (Sean, 2026-10-29: the address he uses, the
+most reliable; HQ holds three others for her).
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
