@@ -2019,6 +2019,13 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
   (`inset` box-shadow), so the scrolling column never clips it.
+- **Numbered stands, one Update button** (Sean, 2026-10-29: "all of the location items say 1, and there are no numbers next to the
+  other locations"; "just save and update... when they click update, it takes them to... that page"). Every stand carries its
+  number; a pinned stand's pins wear it once per spot it sells from ("5 spots on the map"), one we only know the level of says Not
+  on the map yet, and a tapped pin lights alone. An item shows only Save and **Update**, which opens `#/venue/<slug>/report/choose/
+  <item>` (`viewChoose`): Still here, Something changed, Not there anymore and Comment, each with its points, then its form. A stand
+  can carry a warning (`ve_venue_spots.note`, shown on the card): Full Bloom at Kaseya Center, whose Miami Beach restaurant closed in
+  2025, says check it is still open and its items are Ask before you order (migration `20261029_full_bloom_kaseya_note.sql`).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
