@@ -422,6 +422,15 @@ async function buildOne(bookId: string) {
     if (img) { cover = img; i13 = /^97[89]\d{10}$/.test(c.isbn) ? c.isbn : (d.isbns[0] || ''); i10 = isbn10(i13) || ''; publisher = c.publisher || d.publishers[0] || ''; coverFrom = `Google Books cover, volume ${c.id}`; break; }
   }
   if (!cover) return fail('not_found', `No English edition with a cover on Amazon or Google Books (${found.via})`);
+  // The same edition already listed under another author line (The China Study, 2026-10-29): that listing, never a second one.
+  if (i13) {
+    const { data: dup } = await db.from('listings').select('id, slug, details').eq('category', 'Books').eq('status', 'approved').eq('details->>isbn', i13).limit(1).maybeSingle();
+    if (dup) {
+      await joinFamily(dup.id, dup.details, author);
+      await db.from('ve_books').update({ status: 'built', listing_id: dup.id, isbn13: i13, note: 'Already in the Directory (same ISBN)', updated_at: new Date().toISOString() }).eq('id', bookId);
+      return { book_id: bookId, title: b.title, ok: true, status: 'built', listing: dup.slug, existing: true };
+    }
+  }
 
   const authorName = b.author || d.authors[0] || '';
   const wrote = await ask(WRITE_SYSTEM, JSON.stringify({
