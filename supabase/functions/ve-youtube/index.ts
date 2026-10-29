@@ -119,6 +119,16 @@ Deno.serve(async (req) => {
       subscribers: feed.subscribers, video_count: feed.video_count, fetched_at: feed.fetched_at }, videos: feed.videos || [] });
   }
 
+  if (action === 'lists') {
+    if (!(await ops())) return json({ error: 'unauthorized' }, 401);
+    const base = String(body.channel_id || '').slice(2), out: any = {};
+    for (const pre of ['UU', 'UULF', 'UUSH']) {
+      try { const v = await uploads(pre + base); out[pre] = { n: v.length, first: v.slice(0, 3).map((x: any) => x.title) }; }
+      catch (e) { out[pre] = { error: String((e as Error).message || e).slice(0, 120) }; }
+    }
+    return json(out);
+  }
+
   if (action === 'resolve') {
     if (!(await ops())) return json({ error: 'unauthorized' }, 401);
     try {
