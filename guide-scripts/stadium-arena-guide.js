@@ -18,7 +18,9 @@
  *
  * Reports: any Passport holder, Guide or not, inside the venue (the browser's location, checked on the server against the
  * venue's circle), with a photo (shrunk to 1600 px JPEG here, which drops its location data). The team accepts them in
- * Depot > Venues: the first accepted correction 100 points, a later one that agrees 25, Still accurate 10, 5 paid a day.
+ * Depot > Venues. The points are ve_venue_report_points: Still here pays a bounty to the first member to confirm an item no member
+ * has checked in 35 days (Sean, 2026-10-29: "you want to be first to action"), then its usual amount; the limits are
+ * ve_site_settings venue_bounties (migration 20261029_venue_bounties.sql).
  *
  * River's words: `say` for visitors, `sayMember` for owners. They are drafts until Sean approves them; nothing is recorded
  * before that (CLIPS stays empty, and the bubble carries the words). No counts in anything River says.
@@ -74,7 +76,7 @@
 
   var ME = { signed_in: false, active: false, owns: false, admin: false };
   var ST = { published: true, cost: 1100, balance: 0, active: false };
-  var VENUES = null, VENUE = {}, curTab = 'overview', checked = false, POINTS = {};
+  var VENUES = null, VENUE = {}, curTab = 'overview', checked = false, POINTS = {}, LIMITS = {};
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
@@ -194,7 +196,8 @@
     var locked = !owner() && !v.free;
     var badge = v.free && !owner() ? tagHtml('Free to everyone', 'sa-tag-free') : locked ? tagHtml('Members', 'sa-tag-lock') : '';
     var tags = tagHtml(v.items ? v.items + ' Vegan item' + (v.items === 1 ? '' : 's') : 'Nothing listed yet', v.items ? 'sa-tag-new' : 'sa-tag-stale') +
-      (v.last ? tagHtml('Checked ' + fmtDate(v.last), 'sa-tag-fresh') : '');
+      (v.last ? tagHtml('Checked ' + fmtDate(v.last), 'sa-tag-fresh') : '') +
+      (v.bounties ? tagHtml(v.bounties + (v.bounties === 1 ? ' bounty' : ' bounties') + ' open', 'sa-tag-bounty') : '');
     var pic = v.image ? '<span class="sa-vimg" style="background-image:url(\'' + esc(v.image) + '\')" role="img" aria-label="' + esc(v.name) + ', illustrated">' + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>'
       : '<span class="sa-vimg sa-vimg-none">' + (ICON[v.kind] || ICON.stadium) + (badge ? '<span class="sa-vbadge">' + badge + '</span>' : '') + '</span>';
     return '<a class="sa-vcard" href="#/venue/' + esc(v.slug) + '">' + pic + '<span class="sa-vbody"><h3>' + esc(v.name) + '</h3>' +
@@ -213,9 +216,11 @@
 
   function freshTag(it) {
     if (it.freshness === 'fresh') return tagHtml('Checked ' + fmtDate(it.last_confirmed_at), 'sa-tag-fresh');
-    if (it.freshness === 'stale') return tagHtml('Needs a fresh check', 'sa-tag-stale');
-    return tagHtml('Not checked by a member yet', 'sa-tag-new');
+    return tagHtml(it.freshness === 'stale' ? 'Needs a fresh check' : 'Not checked by a member yet', it.freshness === 'stale' ? 'sa-tag-stale' : 'sa-tag-new') + bountyTag(it);
   }
+  // The first member to confirm an item no one has checked lately earns the bounty; after that Still here pays its usual amount.
+  function firstPts() { var p = POINTS.confirm; return p && p.first_with_photo ? p.first_with_photo : 0; }
+  function bountyTag(it) { return it && it.bounty && firstPts() ? tagHtml('Bounty: first to confirm, ' + pts(firstPts()) + ' points', 'sa-tag-bounty') : ''; }
   function srcLine(it) {
     var s = it.sources || [];
     if (!s.length) return '';
@@ -243,8 +248,9 @@
         '<p>&ldquo;' + esc(c.note || '') + '&rdquo;<span>' + esc(c.member || 'A member') + ' &middot; ' + esc(fmtDate(c.at)) + '</span></p></div>';
     }).join('') + '</div>';
   }
-  function ptsLine(kind) {
+  function ptsLine(kind, it) {
     var p = POINTS[kind]; if (!p) return '';
+    if (kind === 'confirm' && it && it.bounty && p.first_with_photo) return 'Bounty, be first: ' + pts(p.first_with_photo) + ' points with a photo, ' + pts(p.first_no_photo) + ' without';
     return pts(p.with_photo) + ' points with a photo, ' + pts(p.no_photo) + ' without';
   }
   function standCard(v, s, open) {
@@ -348,7 +354,8 @@
       ['Update', 'Something changed or is gone, the first accepted report', P('wrong', 'with_photo', 100), P('wrong', 'no_photo', 50)],
       ['Something missing', 'A Vegan item or stand that is not in the Guide yet', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50)],
       ['Agrees with the first', 'An update the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15)],
-      ['Still here', 'It is still sold, as written', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
+      ['Still here, first to confirm', 'The bounty: the first member to confirm an item no one has checked in ' + (LIMITS.fresh_days || 35) + ' days', P('confirm', 'first_with_photo', 50), P('confirm', 'first_no_photo', 25)],
+      ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
       ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
     ];
     main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Any Passport holder can send one, with or without the Guide.') +
@@ -356,7 +363,7 @@
       rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span><span role="cell"><b>' + pts(r[2]) + '</b> points</span><span role="cell"><b>' + pts(r[3]) + '</b> points</span></div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open the venue while you are there and tap <b>Still here</b>, <b>Update</b> or <b>Comment</b> on an item, or <b>Add something missing</b>.</li>' +
       '<li>Add a photo of the menu board or the food if you can. Your phone shares your location once, to show you are inside the venue.</li>' +
-      '<li>The team checks every one, so a photo that does not help is not paid. Points land when it is accepted, up to five paid a day.</li></ol>' +
+      '<li>The team checks every one, so a photo that does not help is not paid. Points land when it is accepted, up to ' + (LIMITS.daily_paid_cap || 40) + ' paid a day. Look for <b>Bounty</b> on an item or a venue: the first to confirm it earns the most.</li></ol>' +
       '<div class="dg-btns" style="margin-bottom:18px"><a class="dg-btn" href="#/venues">Pick a venue</a></div>' +
       (signedIn ? '<h3 class="dg-k" style="margin:6px 0 10px">Your reports</h3><div id="saMine"><div class="dg-loading">Loading your reports...</div></div>' : '');
     if (signedIn) api({ action: 'mine' }).then(function (d) {
@@ -376,7 +383,7 @@
       head('Update', esc(item.it.name), esc(item.spot.name) + (item.spot.where ? ', ' + esc(item.spot.where) : '') + '. What would you like to tell us? Each one earns points once the team accepts it, more with a photo.') +
       '<div class="sa-choose">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
         return '<a class="sa-choice" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '"><b>' + esc(REPORT[k][2]) + '</b><span>' + esc(REPORT[k][1]) + '</span>' +
-          (ptsLine(k) ? '<i>' + esc(ptsLine(k)) + '</i>' : '') + '</a>';
+          (ptsLine(k, item.it) ? '<i>' + esc(ptsLine(k, item.it)) + '</i>' : '') + '</a>';
       }).join('') + '</div>' +
       '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a></div>';
   }
@@ -399,7 +406,7 @@
       return '<a class="dg-chip" aria-pressed="' + (k === kind) + '" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '">' + esc(REPORT[k][2]) + '</a>'; }).join('') + '</div>' : '';
     var noteLabel = kind === 'missing' ? 'What is missing? <i>The item, the stand and where it is (section or gate)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
       : kind === 'comment' ? 'Your comment <i>(what you thought, a tip for other fans)</i>' : kind === 'gone' ? 'Anything to add? <i>(optional)</i>' : 'What needs to be updated?';
-    var earn = ptsLine(kind);
+    var earn = ptsLine(kind, item && item.it);
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back]].concat(item ? [['Update', '#/venue/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
@@ -467,7 +474,7 @@
       }) : send(null)).then(function (d) {
         if (d && d.ok) {
           main.innerHTML = crumb([['Venues', '#/venues'], [v.name, '#/venue/' + v.slug], ['Sent', '']]) +
-            '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks every report. Points land when yours is accepted, and you can follow it under Help keep it right.</p>' +
+            '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks every report. ' + (d.bounty ? 'You are first on this one: when the team accepts it, it pays the bounty. ' : '') + 'Points land when yours is accepted, and you can follow it under Help keep it right.</p>' +
             '<div class="dg-btns"><a class="dg-btn" href="#/venue/' + esc(v.slug) + '">Back to ' + esc(v.name) + '</a><a class="dg-btn dg-ghost" href="#/report">Your reports</a></div></div>';
           return;
         }
@@ -611,6 +618,7 @@
       if (d && d.me) ME = d.me;
       VENUES = (d && d.venues) || [];
       ((d && d.points) || []).forEach(function (p) { POINTS[p.kind] = p; });
+      if (d && d.limits) LIMITS = d.limits;
       route();
     }).catch(function () { VENUES = []; route(); });
     unlockApi('status').then(function (d) {
