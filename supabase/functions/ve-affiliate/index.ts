@@ -87,10 +87,12 @@ Deno.serve(async (req: Request) => {
 
     if (action === 'orgs') {
       const q = clip(body.q, 60);
-      let r = db.from('listings').select('id, name, slug, category, city, state, logo_url').eq('status', 'approved').in('category', ORG_CATS)
+      // The columns are address_city / address_state (asking for city and state failed the query, so this list came back empty).
+      let r = db.from('listings').select('id, name, slug, category, city:address_city, state:address_state, logo_url').eq('status', 'approved').in('category', ORG_CATS)
         .order('voter_count', { ascending: false, nullsFirst: false }).order('name').limit(20);
       if (q) r = r.ilike('name', `%${q.replace(/[%_\\]/g, '\\$&')}%`);
-      const { data } = await r;
+      const { data, error } = await r;
+      if (error) { console.error('orgs:', error); return json({ error: 'load_failed' }, 500); }
       return json({ ok: true, orgs: data ?? [] });
     }
 
