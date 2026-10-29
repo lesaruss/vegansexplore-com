@@ -19,8 +19,14 @@
 //   POST { action: 'announce_remove', listing_id, id }
 // The Group Partner's lead only:
 //   POST { action: 'group_gift', listing_id, name, email, note?, send }  -> { url }   a Passport for one email, at our share of the $11
-//        at the group's rate today (1,100 points with it), taken from the group's earnings; send: we email it, else they copy the link
-//   POST { action: 'gift_send', listing_id, id } | { action: 'gift_cancel', listing_id, id }   cancel gives the cost back
+//        at the group's rate today (1,100 points with it), taken from the group's cleared earnings; send: we email it, else they copy
+//        the link. Cleared earnings (Sean, 2026-10-29: "that balance will only count after the 30-day period") are commissions past
+//        their 30-day hold and not paid out, less gifts (ve_group_balance); money still held never counts. Short of it: error 'balance'
+//        with can_buy, and the organizer pays for the gift by card instead, at the same price:
+//   POST { action: 'gift_checkout', listing_id, name, email, note?, send }  -> { url }   Stripe checkout; GET ?confirm=<session> (the
+//        return trip and ve-stripe-webhook) makes the gift once (universe_invites.paid_session) and goes back to the dashboard
+//   POST { action: 'gift_send', listing_id, id } | { action: 'gift_cancel', listing_id, id }   cancel gives the cost back (to the group's
+//        balance for a gift bought by card)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -31,6 +37,7 @@ const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
 const DAY_MS = 24 * 60 * 60 * 1000;
+const FN_URL = `${SUPABASE_URL}/functions/v1/ve-group`;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -147,9 +154,108 @@ async function settings() {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'group_partner_program').maybeSingle();
   return (data?.value ?? {}) as any;
 }
+// Stripe, the way ve-restaurant-audit does it: test accounts (ve_test_checkout_allowlist) pay on the test key.
+async function stripeKey(test: boolean) {
+  if (!test) return Deno.env.get('STRIPE_SECRET_KEY') ?? '';
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'STRIPE_SECRET_KEY_ACCT_LESARUSS_TEST').maybeSingle();
+  const k = String(data?.value || '');
+  if (!k.startsWith('sk_test_')) throw new Error('test key missing');
+  return k;
+}
+async function isTestAccount(email: string | null) {
+  if (!email) return false;
+  const { data } = await db.from('ve_test_checkout_allowlist').select('email').eq('email', email.toLowerCase()).maybeSingle();
+  return !!data;
+}
+const dayName = (iso: string) => new Date(iso).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/New_York' });
+
+// Who the gift is for, checked the same way for a gift from earnings and one paid by card. Returns the price and the balance too.
+async function giftCheck(g: any, partner: any, body: any) {
+  const name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase(), note = clean(body.note, 501);
+  if (!name) return { err: json({ error: 'missing', message: 'Who is it for? Give their name.' }, 400) };
+  if (!isEmail(email)) return { err: json({ error: 'bad_email', message: 'That email does not look right.' }, 400) };
+  if (note.length > 500) return { err: json({ error: 'too_long', message: 'Keep the note to 500 characters.' }, 400) };
+  const cfg = await settings();
+  const { data: reg } = await db.from('members').select('id, membership_status').ilike('email', email).limit(1);
+  if (reg?.length && reg[0].membership_status === 'active') return { err: json({ error: 'member', message: 'They are already a member. Nothing to gift.' }, 409) };
+  const { data: open } = await db.from('universe_invites').select('id, email').eq('points_to', 'gift').eq('listing_id', g.id).in('status', ['ready', 'sent', 'opened']);
+  if ((open || []).some((x: any) => String(x.email).toLowerCase() === email)) return { err: json({ error: 'open', message: 'You already have a gift waiting for that email.' }, 409) };
+  if ((open || []).length >= (cfg.gift_open_max ?? 20)) return { err: json({ error: 'too_many', message: `${cfg.gift_open_max ?? 20} gifts can wait at once. Cancel one or wait for them to be used.` }, 429) };
+  const [{ data: rate }, { data: bal }, { data: held }] = await Promise.all([
+    db.rpc('ve_group_rate', { p_group: partner.id }), db.rpc('ve_group_balance', { p_group: partner.id }),
+    db.from('ve_affiliate_commissions').select('commission_cents, hold_until').eq('group_partner_id', partner.id).eq('status', 'pending').order('hold_until').limit(200),
+  ]);
+  const ratePct = Number((rate as any)?.rate_pct ?? 20);
+  const cost = Math.round(1100 * (100 - ratePct) / 100);
+  const credit = Number(cfg.gift_credit_cents ?? 0);
+  const holding = (held || []).reduce((t: number, x: any) => t + Number(x.commission_cents || 0), 0);
+  return { name, email, note, cfg, ratePct, cost, balance: Number(bal || 0), credit, holding, nextClear: (held || [])[0]?.hold_until || null };
+}
+
+// Makes the gift: the invitation for one email and, from earnings, its cost as a negative commission row. paid: bought by card.
+async function makeGift(o: { g: any; partner: any; giver: any; name: string; email: string; note: string; send: boolean; ratePct: number; cost: number; cfg: any;
+  paid?: { session: string; cents: number } }) {
+  const code = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, '0')).join('');
+  const now = new Date();
+  const { data: inv, error } = await db.from('universe_invites').insert({
+    code, brand: 'vegans-explore', name: o.name, email: o.email, comp: true, points: Number(o.cfg.gift_points ?? 1100), reason: o.note || null, points_to: 'gift', listing_id: o.g.id,
+    status: 'sent', sent_via: o.send ? 'email' : 'copied', sent_at: now.toISOString(),
+    expires_at: new Date(now.getTime() + Number(o.cfg.gift_days ?? 30) * DAY_MS).toISOString(), created_by: `member:${o.giver.id}`, pool: 'group-gift',
+    paid_session: o.paid?.session ?? null, paid_cents: o.paid?.cents ?? null,
+  }).select('*').single();
+  if (error || !inv) {
+    // The webhook and the buyer's return trip both confirm a card gift: the second finds the first one's gift.
+    if (o.paid && (error as any)?.code === '23505') {
+      const { data: had } = await db.from('universe_invites').select('*').eq('paid_session', o.paid.session).maybeSingle();
+      if (had) return { inv: had, dup: true };
+    }
+    return { error: error?.message || 'save_failed' };
+  }
+  if (!o.paid) {
+    const { error: ce } = await db.from('ve_affiliate_commissions').insert({
+      group_partner_id: o.partner.id, product: 'gift', product_ref: inv.id, ref: `gift:${inv.id}`, sale_cents: 1100, level: 0, rate_pct: o.ratePct,
+      commission_cents: -o.cost, route: 'group', route_listing_id: o.g.id, status: 'ready', hold_until: now.toISOString(), note: `A Passport gift to ${o.name} (${o.email})`,
+    });
+    if (ce) { await db.from('universe_invites').delete().eq('id', inv.id); return { error: ce.message }; }
+  }
+  let emailed = false;
+  if (o.send) {
+    const id = await sendOne(o.email, `${firstName(o.giver.name)} of ${o.g.name} gave you a Vegans Explore Passport`, giftEmail(o.g, shortName(o.giver.name), inv, o.note));
+    emailed = !!id;
+    await db.from('universe_invites').update(id ? { resend_email_id: id } : { sent_via: 'copied' }).eq('id', inv.id);
+  }
+  return { inv, emailed };
+}
+
+// A card gift's checkout came back (the buyer, or ve-stripe-webhook): check it is paid, make the gift once, back to the dashboard.
+async function confirmGift(sessionId: string): Promise<Response> {
+  const go = (u: string) => new Response(null, { status: 302, headers: { Location: u } });
+  const test = sessionId.startsWith('cs_test_');
+  const res = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}`, { headers: { Authorization: `Bearer ${await stripeKey(test)}` } });
+  if (!res.ok) return go(SITE);
+  const s = await res.json(), m = s.metadata || {};
+  if (m.type !== 've_group_gift' || !isId(m.listing_id) || !isId(m.member_id)) return go(SITE);
+  const g = await groupOf(m.listing_id);
+  if (!g) return go(SITE);
+  const back = `${SITE}/directory/${encodeURIComponent(g.slug)}?tab=brand&pd=gift`;
+  if (s.payment_status !== 'paid') return go(`${back}&gift=unpaid`);
+  const partner = await partnerOf(g.id);
+  const { data: giver } = await db.from('members').select('id, name').eq('id', m.member_id).maybeSingle();
+  if (!partner || !giver) return go(back);
+  const cfg = await settings();
+  const r: any = await makeGift({ g, partner, giver, name: clean(m.name, 120), email: clean(m.email, 200).toLowerCase(), note: clean(m.note, 500), send: m.send === '1',
+    ratePct: Number(m.rate_pct || 0), cost: Number(s.amount_total || 0), cfg, paid: { session: s.id, cents: Number(s.amount_total || 0) } });
+  if (!r.inv) { console.error('card gift not made', s.id, r.error); return go(`${back}&gift=error`); }
+  return go(`${back}&gift=paid&code=${r.inv.code}${r.emailed || (r.dup && r.inv.resend_email_id) ? '&emailed=1' : ''}`);
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
+  const url = new URL(req.url);
+  if (req.method === 'GET' && url.searchParams.get('confirm')) {
+    try { return await confirmGift(url.searchParams.get('confirm')!); }
+    catch (e) { console.error('gift confirm failed', e); return new Response(null, { status: 302, headers: { Location: SITE } }); }
+  }
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
@@ -281,8 +387,8 @@ Deno.serve(async (req) => {
     return json({ ok: true, ...(await dash()) });
   }
 
-  // ---- Gifts: the Group Partner's lead only, from the group's earnings.
-  if (['group_gift', 'gift_send', 'gift_cancel'].includes(action)) {
+  // ---- Gifts: the Group Partner's lead only, from the group's cleared earnings, or by card.
+  if (['group_gift', 'gift_checkout', 'gift_send', 'gift_cancel'].includes(action)) {
     if (!isLead || !partner || !['onboarding', 'active'].includes(partner.status)) return json({ error: 'not_lead', message: 'Gifts are for a Group Partner\'s lead.' }, 403);
     if (action === 'gift_send' || action === 'gift_cancel') {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
@@ -298,41 +404,38 @@ Deno.serve(async (req) => {
       await db.from('universe_invites').update({ sent_via: 'email', sent_at: new Date().toISOString(), resend_email_id: id, updated_at: new Date().toISOString() }).eq('id', inv.id);
       return json({ ok: true, ...(await dash()) });
     }
-    const name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase(), note = clean(body.note, 501);
-    if (!name) return json({ error: 'missing', message: 'Who is it for? Give their name.' }, 400);
-    if (!isEmail(email)) return json({ error: 'bad_email', message: 'That email does not look right.' }, 400);
-    if (note.length > 500) return json({ error: 'too_long', message: 'Keep the note to 500 characters.' }, 400);
-    const cfg = await settings();
-    const { data: reg } = await db.from('members').select('id, membership_status').ilike('email', email).limit(1);
-    if (reg?.length && reg[0].membership_status === 'active') return json({ error: 'member', message: 'They are already a member. Nothing to gift.' }, 409);
-    const { data: open } = await db.from('universe_invites').select('id, email').eq('points_to', 'gift').eq('listing_id', g.id).in('status', ['ready', 'sent', 'opened']);
-    if ((open || []).some((x: any) => String(x.email).toLowerCase() === email)) return json({ error: 'open', message: 'You already have a gift waiting for that email.' }, 409);
-    if ((open || []).length >= (cfg.gift_open_max ?? 20)) return json({ error: 'too_many', message: `${cfg.gift_open_max ?? 20} gifts can wait at once. Cancel one or wait for them to be used.` }, 429);
-    const [{ data: rate }, { data: bal }] = await Promise.all([db.rpc('ve_group_rate', { p_group: partner.id }), db.rpc('ve_group_balance', { p_group: partner.id })]);
-    const ratePct = Number((rate as any)?.rate_pct ?? 20);
-    const cost = Math.round(1100 * (100 - ratePct) / 100);
-    const credit = Number(cfg.gift_credit_cents ?? 0);
-    if (Number(bal || 0) + credit < cost) return json({ error: 'balance', message: `A gift costs ${money(cost)} from your earnings, and you have ${money(Math.max(0, Number(bal || 0)))}. Gifts come out of what your group has earned.` }, 402);
-    const code = Array.from(crypto.getRandomValues(new Uint8Array(6)), (b) => b.toString(16).padStart(2, '0')).join('');
-    const now = new Date();
-    const { data: inv, error } = await db.from('universe_invites').insert({
-      code, brand: 'vegans-explore', name, email, comp: true, points: Number(cfg.gift_points ?? 1100), reason: note || null, points_to: 'gift', listing_id: g.id,
-      status: 'sent', sent_via: body.send === true ? 'email' : 'copied', sent_at: now.toISOString(),
-      expires_at: new Date(now.getTime() + Number(cfg.gift_days ?? 30) * DAY_MS).toISOString(), created_by: `member:${member.id}`, pool: 'group-gift',
-    }).select('*').single();
-    if (error || !inv) return json({ error: 'save_failed', message: error?.message }, 500);
-    const { error: ce } = await db.from('ve_affiliate_commissions').insert({
-      group_partner_id: partner.id, product: 'gift', product_ref: inv.id, ref: `gift:${inv.id}`, sale_cents: 1100, level: 0, rate_pct: ratePct,
-      commission_cents: -cost, route: 'group', route_listing_id: g.id, status: 'ready', hold_until: now.toISOString(), note: `A Passport gift to ${name} (${email})`,
-    });
-    if (ce) { await db.from('universe_invites').delete().eq('id', inv.id); return json({ error: 'save_failed', message: ce.message }, 500); }
-    let emailed = false;
-    if (body.send === true) {
-      const id = await sendOne(email, `${firstName(member.name)} of ${g.name} gave you a Vegans Explore Passport`, giftEmail(g, shortName(member.name), inv, note));
-      emailed = !!id;
-      await db.from('universe_invites').update(id ? { resend_email_id: id } : { sent_via: 'copied' }).eq('id', inv.id);
+    const c: any = await giftCheck(g, partner, body);
+    if (c.err) return c.err;
+    if (action === 'gift_checkout') {
+      const test = await isTestAccount(member.email);
+      const back = `${SITE}/directory/${encodeURIComponent(g.slug)}?tab=brand&pd=gift`;
+      const params = new URLSearchParams({
+        mode: 'payment',
+        'line_items[0][price_data][currency]': 'usd',
+        'line_items[0][price_data][product_data][name]': ((test ? '[TEST] ' : '') + `A Vegans Explore Passport for ${c.name}, from ${g.name}`).slice(0, 120),
+        'line_items[0][price_data][unit_amount]': String(c.cost),
+        'line_items[0][quantity]': '1',
+        success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${back}&item=new&gift=canceled`,
+        'metadata[type]': 've_group_gift', 'metadata[confirm_fn]': 've-group',
+        'metadata[listing_id]': g.id, 'metadata[member_id]': member.id, 'metadata[rate_pct]': String(c.ratePct),
+        'metadata[name]': c.name, 'metadata[email]': c.email, 'metadata[note]': c.note, 'metadata[send]': body.send === true ? '1' : '0',
+      });
+      if (member.email) { params.set('customer_email', member.email); params.set('payment_intent_data[receipt_email]', member.email); }
+      if (test) params.set('metadata[test]', 'true');
+      const sres = await fetch('https://api.stripe.com/v1/checkout/sessions', { method: 'POST', headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Content-Type': 'application/x-www-form-urlencoded' }, body: params.toString() });
+      const sj = await sres.json();
+      if (!sres.ok) { console.error('stripe', sj); return json({ error: 'stripe', message: 'Checkout did not open. Try again in a minute.' }, 400); }
+      return json({ ok: true, url: sj.url, cost_cents: c.cost, test_mode: test });
     }
-    return json({ ok: true, url: `${SITE}/invite?c=${code}`, emailed, cost_cents: cost, ...(await dash()) });
+    if (c.balance + c.credit < c.cost) {
+      const soon = c.holding > 0 && c.nextClear ? ` ${money(c.holding)} more is on its 30-day hold; the next of it clears ${dayName(c.nextClear)}.` : '';
+      return json({ error: 'balance', can_buy: true, cost_cents: c.cost, balance_cents: c.balance, holding_cents: c.holding, next_clear_at: c.nextClear,
+        message: `A gift costs ${money(c.cost)}, and your cleared earnings are ${money(Math.max(0, c.balance))}. Earnings count 30 days after each sale.${soon} You can pay for this gift by card instead.` }, 402);
+    }
+    const r: any = await makeGift({ g, partner, giver: member, name: c.name, email: c.email, note: c.note, send: body.send === true, ratePct: c.ratePct, cost: c.cost, cfg: c.cfg });
+    if (!r.inv) return json({ error: 'save_failed', message: r.error }, 500);
+    return json({ ok: true, url: `${SITE}/invite?c=${r.inv.code}`, emailed: r.emailed, cost_cents: c.cost, ...(await dash()) });
   }
 
   return json({ error: 'unknown_action' }, 400);
