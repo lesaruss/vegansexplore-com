@@ -75,6 +75,19 @@
     [-8, 'passport', 'Omar F. joined with your link', 330], [-9, 'ticket', '3 tickets, Supper Club: Five Courses at Seedling', 12825]
   ].map(function (x) { return { at: new Date(Date.now() + x[0] * DAY).toISOString(), kind: x[1], what: x[2], cents: x[3] }; });
 
+  // Announcements (Sean, 2026-10-29: "send messages to their members and have it appear on the overview page below About").
+  // The seeded ones, plus what the organizer sends in this sample, kept for the visit only (sessionStorage ve_group_ann).
+  var ANN = [
+    { id: 'a1', at: at(-2, 9), pinned: true, title: 'Supper club: four seats left', body: 'Seedling\'s five-course night on the 14th is nearly full. If you meant to come, grab your ticket from Events today. Drinks are your own.', sent_to: 214, emailed: true },
+    { id: 'a2', at: at(-6, 20), title: 'Thank you for Halloween!', body: '54 costumes and the best potluck table we have had. The photos are up in Media. Next up: brunch on Sunday at George English Park.', sent_to: 211, emailed: true },
+    { id: 'a3', at: at(-15, 12), title: 'Holiday Potluck tickets are open', body: 'Our end-of-year potluck is on the calendar. The ticket covers the room and drinks; bring a dish if you can.', sent_to: 208, emailed: false }
+  ];
+  function annAll() {
+    var mine = [];
+    try { mine = JSON.parse(sessionStorage.getItem('ve_group_ann') || '[]'); } catch (e) {}
+    var pinned = mine.some(function (x) { return x.pinned; });
+    return mine.concat(ANN.map(function (x) { return pinned ? Object.assign({}, x, { pinned: false }) : x; })).sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || Date.parse(b.at) - Date.parse(a.at); });
+  }
   var GROUP = {
     name: 'Sprout Social Society', status: 'active', code: 'SPROUT-SOCIAL-SOCIETY', link: 'vegansexplore.com/r/SPROUT-SOCIAL-SOCIETY',
     members_total: 214, brought: BROUGHT, new_this_month: 14, ladder: LADDER, rate_pct: 30,
@@ -141,6 +154,7 @@
     guideUrl: '/groups/welcome',
     events: EVENTS,
     group: GROUP,
+    announcements: annAll,
     // The group's Message Board tab (Sean, 2026-10-29): posts newest first, each with its replies.
     board: [
       { who: 'Sprout Social Society', when: 0, host: true, pinned: true, text: 'Welcome! New here? Say hi below, tell us your neighborhood, and pick a free event for your guest pass. See you soon.', replies: [
@@ -194,7 +208,18 @@
     },
     dashboard: function (body, toast) {
       var a = body && body.action;
-      if (a === 'owner_dashboard') { var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), saves: { total: 96, last_30_days: 18 } })); }
+      if (a === 'group_announce') {
+        var t = String(body.title || '').trim().slice(0, 120), m = String(body.body || '').trim().slice(0, 1000);
+        if (!t || !m) return Promise.resolve({ ok: false, error: 'missing' });
+        var mine = []; try { mine = JSON.parse(sessionStorage.getItem('ve_group_ann') || '[]'); } catch (e) {}
+        if (body.pin) mine.forEach(function (x) { x.pinned = false; });
+        mine.unshift({ id: 'm' + Date.now(), at: new Date().toISOString(), pinned: !!body.pin, title: t, body: m, sent_to: GROUP.members_total, emailed: !!body.email, sample: true });
+        try { sessionStorage.setItem('ve_group_ann', JSON.stringify(mine)); } catch (e) {}
+        GROUP.announcements = annAll(); if (window.gdAnnRender) window.gdAnnRender();
+        toast('Sample: posted on your page' + (body.email ? ' and it would be emailed to your ' + GROUP.members_total + ' members' : '') + '. Nothing is really sent.');
+        return Promise.resolve({ ok: true, announcements: GROUP.announcements });
+      }
+      if (a === 'owner_dashboard') { GROUP.announcements = annAll(); var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), saves: { total: 96, last_30_days: 18 } })); }
       if (a === 'demo_only') { toast('Sample: ' + (body.note || '') + ' Nothing is saved or charged here.'); return Promise.resolve({ ok: true }); }
       toast('Sample dashboard: nothing is saved or charged here. As a Group Partner this happens for real.');
       return Promise.resolve({ ok: true });

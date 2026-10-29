@@ -33,7 +33,7 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
-  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
@@ -112,6 +112,7 @@
     '@media (max-width:640px){.vpd-ladder{grid-template-columns:repeat(4,minmax(0,1fr))}}' +
     '.vpd-prog{height:10px;border-radius:6px;background:#eef1ee;overflow:hidden}.vpd-prog i{display:block;height:100%;background:#2d7d31}' +
     '.vpd-scroll{max-height:440px;overflow:auto}' +
+    '.vpd-ann p{margin:6px 0 0;font-size:14px;line-height:1.5;color:rgba(26,26,26,.8)}.vpd-check{flex-direction:row!important;align-items:center;gap:8px!important;font-weight:600!important}.vpd-check input{width:18px;height:18px}.vpd-ann-form{grid-template-columns:1fr!important;gap:12px!important}' +
     '.vpd-form{display:grid;gap:12px;max-width:none}.vpd-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:800}.vpd-form input,.vpd-form textarea{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,.2);border-radius:6px}.vpd-form .vpd-btn{justify-self:start}' +
     '.vpd-list{display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin:0 0 18px}' +
     '.vpd-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid rgba(0,0,0,.07);background:#fff}.vpd-row:first-child{border-top:0}' +
@@ -171,7 +172,7 @@
       });
     }
     function views() {
-      var G = ['gmembers', 'gevents', 'earnings'];
+      var G = ['gmembers', 'gevents', 'announce', 'earnings'];
       return VIEWS.filter(function (v) {
         if (G.indexOf(v[0]) >= 0) return !!D.group;
         // A Group Partner's dashboard: no hours, menu, audit, check-ins, ads or Partner plan; its members are its audience.
@@ -460,7 +461,7 @@
         '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>' + (nx ? n(nx[0] - G.brought) + ' to ' + nx[1] + '%' : 'The top rate') + '</em></div>' +
         '<div><b>' + G.rate_pct + '%</b><span>Your share of each Passport</span><em>Of the $11, from today</em></div>' +
         '<div><b>' + money((E.passports_cents || 0) + (E.tickets_cents || 0)) + '</b><span>Earned this year</span><em>' + money(E.ready_cents || 0) + ' ready to pay</em></div></div>' +
-        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
+        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=announce" data-vpd="announce" class="vpd-btn o sm">Announcements</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
     }
     function drawMembers() {
       var G = D.group, nx = nextRung(G), cur = 0;
@@ -530,7 +531,26 @@
         '<p class="vpd-empty">Referral earnings paid to your group, never a donation. Your posts say your group earns when people join (the FTC rule).</p>';
     }
 
-    var VIEW_FN = { home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    // Announcements (Sean, 2026-10-29): the organizer writes to the group's members; it shows on the group's Overview under About
+    // (the newest three, a pinned one first) and, ticked, goes to the members by email from Vegans Explore with the group's name.
+    // D.group.announcements [{id, at, title, body, pinned, sent_to, emailed}]; sent through api group_announce (the sample answers it).
+    function drawAnnounce() {
+      var A = D.group.announcements || [];
+      if (q('item') === 'new') return '<p class="vpd-crumb"><a href="?tab=brand&pd=announce" data-vpd="announce">Announcements</a> / New announcement</p>' +
+        '<div class="vpd-form vpd-ann-form"><label>Title<input id="vpd-an-title" maxlength="120" placeholder="Brunch moves to 11:30 this Sunday"></label>' +
+        '<label>Message<textarea id="vpd-an-body" rows="5" maxlength="1000" placeholder="What your members should know."></textarea></label>' +
+        '<label class="vpd-check"><input type="checkbox" id="vpd-an-email" checked> Also email it to your ' + n(D.group.members_total) + ' members</label>' +
+        '<label class="vpd-check"><input type="checkbox" id="vpd-an-pin"> Pin it to the top of your page</label>' +
+        '<p class="vpd-empty">It shows on your page\'s Overview, under About. The email comes from Vegans Explore with your group\'s name, and replies come to us, never your members\' addresses.</p>' +
+        '<p id="vpd-msg" class="vpd-msg" role="status"></p><button type="button" class="vpd-btn" data-vpd-announce>Send it</button></div>';
+      return '<p style="margin:0 0 14px"><a class="vpd-btn" href="?tab=brand&pd=announce&item=new" data-vpd="announce" data-vpd-item="new">New announcement</a></p>' +
+        (A.length ? '<div class="vpd-list">' + A.map(function (x) {
+          return '<div class="vpd-row vpd-ann"><div><b>' + esc(x.title) + '</b><small>' + dt(x.at, true) + ' &middot; ' + (x.emailed ? 'Emailed to ' + n(x.sent_to) + ' members' : 'On your page only') + '</small><p>' + esc(x.body) + '</p></div>' +
+            (x.pinned ? '<span class="vpd-tag">Pinned</span>' : '<span class="vpd-tag">On your page</span>') + '</div>';
+        }).join('') + '</div>' : '<p class="vpd-empty">No announcements yet. Your first one shows on your page under About.</p>');
+    }
+
+    var VIEW_FN = { announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
@@ -566,6 +586,18 @@
           if (!d || !d.ok) return msg(d && d.error === 'menu_full' ? 'Your menu holds 300 items at most.' : 'That did not save. Try again.', true);
           menu = null; D.menu_count = Math.max(D.menu_count, 1); go('menu');
         });
+      });
+      var ann = el.querySelector('[data-vpd-announce]');
+      if (ann) ann.addEventListener('click', function () {
+        var t = (el.querySelector('#vpd-an-title') || {}).value || '', b = (el.querySelector('#vpd-an-body') || {}).value || '';
+        if (!t.trim()) return msg('Give it a title.', true);
+        if (!b.trim()) return msg('Write the message.', true);
+        ann.disabled = true; msg('Sending...');
+        api({ action: 'group_announce', listing_id: l.id, title: t, body: b, email: !!(el.querySelector('#vpd-an-email') || {}).checked, pin: !!(el.querySelector('#vpd-an-pin') || {}).checked }).then(function (d) {
+          ann.disabled = false;
+          if (!d || !d.ok) return msg('That did not send. Try again.', true);
+          if (d.announcements) D.group.announcements = d.announcements; go('announce');
+        }, function () { ann.disabled = false; msg('That did not send. Try again.', true); });
       });
       var send = el.querySelector('[data-vpd-send]');
       if (send) send.addEventListener('click', function () {

@@ -778,7 +778,12 @@ the owner's perspective").
   Overview, **Board** (the Message Board: posts with replies, the organizer's pinned welcome, `VE_DEMO.board`) and **Media** (the Photo
   Gallery: one album per past event, Halloween Costume Potluck and Sunday Brunch in the Park, five photos each, `VE_DEMO.galleries`;
   `?tab=media&album=<id>`, Media > event, each photo in the page's lightbox; `groupDemoTabs` in `directory/listing.html`). The brunch
-  is at George English Park, on the Intracoastal, to match its photos. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
+  is at George English Park, on the Intracoastal, to match its photos. **Announcements** (Sean, 2026-10-29: "send messages to their members and have it appear
+  on the overview page below About"): the organizer's dashboard has an Announcements view (`drawAnnounce` in `ve-partner-dashboard.js`,
+  `?tab=brand&pd=announce`, New announcement: title, message up to 1,000 characters, Also email it to your members, Pin it to the top),
+  sent through `group_announce`; the Overview shows the newest three under About, one pinned first (`gdAnnRender`). The sample answers
+  `group_announce` itself and keeps what is sent for the visit (`sessionStorage` `ve_group_ann`); a live group's version (a table, the
+  email through us, the page section for real listings) is part of the Group Partners build. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
   window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
   Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
   sign-in** (`VE_DEMO.login`: demo@vegansexplore.com / explore11, `groupDemoLogin`, kept for the visit in `sessionStorage`

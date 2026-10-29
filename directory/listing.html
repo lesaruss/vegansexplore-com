@@ -1008,6 +1008,10 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .gd-join .gd-n{font-size:14px;margin:0 0 8px}.gd-join .gd-n b{font-size:24px;font-weight:900}
 .gd-faces{display:flex;margin:0 0 10px}.gd-faces i{width:30px;height:30px;border-radius:50%;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;margin-left:-6px}.gd-faces i:first-child{margin-left:0}
 .gd-join p{font-size:13px;line-height:1.5;margin:0 0 12px}.gd-join .dm-go{width:100%}
+.gd-ann{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:14px 16px;margin:0 0 10px;background:#fff}.gd-ann.pin{border-color:#2d7d31;background:#f6faf6}
+.gd-ann-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gd-ann-h b{font-size:15px}.gd-ann-h em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#fff3d6;color:#7a5200;padding:2px 8px;border-radius:6px}
+.gd-ann-h span{margin-left:auto;font-size:12px;color:rgba(26,26,26,.68)}.gd-ann p{margin:6px 0 4px;font-size:14px;line-height:1.55}.gd-ann small{font-size:12px;color:rgba(26,26,26,.68)}
+.gd-ann-more{font-size:13px;color:rgba(26,26,26,.68);margin:4px 0 0}
 .gd-pad{padding:32px 40px 40px}@media(max-width:700px){.gd-pad{padding:20px 16px 28px}}
 .gd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 16px}.gd-head .dm-go{width:auto}
 .gd-sub{margin:4px 0 16px;font-size:14px;color:rgba(26,26,26,.68)}.gd-head .gd-sub{margin-bottom:0}
@@ -4886,8 +4890,23 @@ function groupDemoTabs(){
   var t = q.get('tab'); if(t === 'board' || t === 'media') showListingTab(t);
   if(t === 'media' && q.get('album')){ var u = new URL(location.href); u.searchParams.set('album', q.get('album')); history.replaceState(history.state, '', u.pathname + u.search + u.hash); }
 }
+// Announcements on the sample group's Overview, under About (Sean, 2026-10-29): the newest three, a pinned one first, from the
+// organizer's dashboard (Announcements); what the organizer sends in the sample shows here for the visit.
+function gdAnnRender(){
+  var box = document.getElementById('gd-ann'), A = typeof DEMO.announcements === 'function' ? DEMO.announcements() : (DEMO.announcements || []);
+  if(!box) return;
+  box.hidden = !A.length;
+  box.innerHTML = '<h2 class="section-title">Announcements</h2>' + A.slice(0, 3).map(function(x){
+    return '<article class="gd-ann' + (x.pinned ? ' pin' : '') + '"><div class="gd-ann-h"><b>' + esc(x.title) + '</b>' + (x.pinned ? '<em>Pinned</em>' : '') +
+      '<span>' + esc(new Date(x.at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' })) + '</span></div><p>' + esc(x.body) + '</p>' +
+      '<small>From the organizer</small></article>';
+  }).join('') + (A.length > 3 ? '<p class="gd-ann-more">The latest three. Members of the group get every announcement in their email.</p>' : '');
+}
+window.gdAnnRender = gdAnnRender;
 function renderGroupDemo(l){
   loadHostedEvents(l);
+  var he = document.getElementById('hosted-events');
+  if(he){ var an = document.createElement('div'); an.className = 'section'; an.id = 'gd-ann'; he.parentNode.insertBefore(an, he); gdAnnRender(); }
   var g = DEMO.group || {}, side = document.querySelector('.listing-page-grid .listing-sidebar');
   if(side){
     var c = document.createElement('div'); c.className = 'side-card gd-join';
