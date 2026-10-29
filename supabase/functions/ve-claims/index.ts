@@ -1072,20 +1072,34 @@ Deno.serve(async (req) => {
 
     // owner_dashboard
     const food = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'].includes(l.category);
+    // What's new speaks to what the listing is (Sean, 2026-10-29: a social club's owner should never see "Check your restaurant
+    // for free"). A card's listing_kinds names the kinds it is for (null: every business). Keep in step with kindOf in
+    // /public/ve-partner-dashboard.js.
+    const dashKind = food ? 'food'
+      : l.category === 'Groups' ? 'group'
+      : ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'].includes(l.category) ? 'organization'
+      : ['Podcasts', 'YouTube', 'News Outlets', 'Media'].includes(l.category) ? 'show'
+      : ['Documentaries & Films', 'Books'].includes(l.category) ? 'work'
+      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Markets'].includes(l.category) ? 'brand'
+      : ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'].includes(l.category) ? 'person'
+      : 'service';
     const hours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();
     const [menu, audit, cardsQ] = await Promise.all([
       db.from('ve_menu_items').select('id', { count: 'exact', head: true }).eq('listing_id', lid),
       db.from('ve_audits').select('id').eq('listing_id', lid).eq('status', 'done').limit(1),
-      db.from('ve_dashboard_cards').select('id, kind, title, body, cta_label, cta_url, starts_at, ends_at').in('audience', ['business', 'all']).order('sort'),
+      db.from('ve_dashboard_cards').select('id, kind, title, body, cta_label, cta_url, starts_at, ends_at, listing_kinds').in('audience', ['business', 'all']).order('sort'),
     ]);
     const checklist = [
       { k: 'logo', done: !!l.logo_url }, { k: 'description', done: String(l.description || '').length >= 80 },
-      { k: 'photos', done: (l.gallery_urls || []).length > 0 }, { k: 'hours', done: !!hours },
+      { k: 'photos', done: (l.gallery_urls || []).length > 0 },
+      // Hours only for a place people walk into: never for a group, an organization, a show or a brand.
+      ...(food || dashKind === 'service' ? [{ k: 'hours', done: !!hours }] : []),
       ...(food ? [{ k: 'menu', done: (menu.count || 0) > 0 }, { k: 'audit', done: !!(audit.data || []).length }] : []),
     ];
     const hub = hubOf(l);
-    const base = { ok: true, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, hub, claim_status: l.claim_status },
-      open, owner, admin: !owner, member_active: memberActive, checklist, cards: (cardsQ.data || []).filter((c: any) => Date.parse(c.starts_at) <= Date.now() && (!c.ends_at || Date.parse(c.ends_at) > Date.now())), menu_count: menu.count || 0 };
+    const base = { ok: true, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, kind: dashKind, hub, claim_status: l.claim_status },
+      open, owner, admin: !owner, member_active: memberActive, checklist, cards: (cardsQ.data || []).filter((c: any) => Date.parse(c.starts_at) <= Date.now() && (!c.ends_at || Date.parse(c.ends_at) > Date.now())
+        && (!c.listing_kinds || c.listing_kinds.includes(dashKind))).map(({ listing_kinds: _k, ...c }: any) => c), menu_count: menu.count || 0 };
     if (!open) return json(base);
 
     const days = Math.min(365, Math.max(1, Math.round(Number(body.days) || 30)));
