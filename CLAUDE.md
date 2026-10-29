@@ -503,7 +503,12 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   no account, refuses anyone else with `membership_needed`, and signs a token with `brand: 'lesaruss-ai'`. `ve-votes` takes such a
   token only for a listing in the LESARUSS.ai Directory (`lr_listing_in_directory`) and only while `lr_member_entitled`, counts it
   in the same pool (`listing_daily_votes`, once a day per listing), and refuses its `contribute` (points are ours). A Vegans Explore
-  Passport alone does not vote there (each community is its own $11); a Diplomat votes on both. Proven 2026-10-29: a free LESARUSS
+  Passport alone does not vote there (each community is its own $11); a Diplomat votes on both. **The $11 LESARUSS Passport on its own** (Sean, 2026-10-29: "Build the $11 LESARUSS Passport checkout"): the members window's
+  button (`VE_BRAND.passportUrl` `/passport`, with `?from=` and `?back=`) opens lesaruss.ai/passport (lesaruss-ai-site `app/passport`),
+  which pays through HQ `/api/passport` (`lib/passportCheckout.ts`, table `lr_passport_checkouts`, migration 060) and, once Stripe says
+  paid, records `brand_memberships` 'lesaruss-ai' passport (source `passport_checkout`) on the email's one members row, makes its HQ
+  sign-in (no password: the 6-digit code on /login sets one), emails the steps, and offers Sign in with LESARUSS back to the listing.
+  It is confirmed on the return from Stripe (the LESARUSS.ai Stripe account has no webhook to HQ, the same as claims). Proven 2026-10-29: a free LESARUSS
   account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
 ## Analytics (Sean, 2026-10-28)
