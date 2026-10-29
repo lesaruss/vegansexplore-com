@@ -2770,6 +2770,31 @@ item (first in Action items until done), the dock's Guide icon, and the Choose Y
 - Depot > Preview journeys > Your Guide walks every screen (`/guide?preview=<step>`, `PREVIEWS` in
   `guide.html`); a new screen gets a preview there and a line in `JOURNEYS.guide`.
 
+## Continue with LESARUSS (Sean, 2026-10-29)
+
+"A LESARUSS button... like how you do Google... log in here and you immediately get access to any of our communities... at the
+passport rate, your passport works... you still got to pay the $11 to get into the other communities." One LESARUSS account signs in
+on every brand (migration `20261029_lesaruss_sign_in.sql`, edge function `ve-lesaruss-sso`, HQ `app/connect` and `lib/sso.ts` in
+lesaruss/lesaruss-hq).
+
+- **The button** sits under Continue with Google in the sign-in window and on `/login` (`LESARUSS_BTN`, `loginWithLesaruss` in
+  `public/ve-auth.js`; any element with `data-ve-lesaruss="<path to come back to>"` starts it). It keeps a random state in the tab and
+  opens `hq.lesaruss.ai/connect?client=vegans-explore&redirect_uri=<origin>/auth/lesaruss&state=` (a preview of this site uses the
+  HQ branch preview, `LESARUSS_HQ`). HQ signs them in, shows who they are and what they get, and on Continue sends back a one-time
+  code (kept only as its sha256 in `lesaruss_sso_codes`, two minutes, once; the return address must be on `lesaruss_sso_clients`
+  exactly or match its preview pattern).
+- **`/auth/lesaruss`** (`auth/lesaruss.html`, `noindex`) checks the state and trades the code (`VEAuth.finishLesaruss`,
+  `ve-lesaruss-sso`): a session like ve-auth's. **One email is one `members` row across every brand**
+  (`idx_members_email_unique_global`), so the row may be their LESARUSS.ai one: a **Diplomat** (`lesaruss_is_diplomat`, the $111
+  membership) is let in as they are; **another brand's account that is not a Diplomat is refused** (`passport_needed`: Get your
+  Passport or Become a Diplomat), since its status is that brand's (17 free LESARUSS.ai accounts read as active); a Vegans Explore
+  account signs in as it is (waiting for its Passport, the $11 window opens); an email with no account gets one waiting for its
+  Passport. Super admins pass. Continue with Google still links by email across brands (`findMemberByEmail`), so a free LESARUSS.ai
+  account can sign in there and read as active: per-brand entitlements are Sean's call, not built.
+- `members.diplomat_since` and `ve_diplomat_sync()` (cron `ve-diplomat-sync`, daily) are ready for an account ever made active here
+  for being a Diplomat; nothing sets it today.
+- `/policies#privacy` says it (One LESARUSS account). Children's brands are never clients.
+
 ## Sign In As: switch into another account (Sean, 2026-10-26)
 
 "The same way I do view as, I want to have that option to choose from the super admin... so I can log in and see that
