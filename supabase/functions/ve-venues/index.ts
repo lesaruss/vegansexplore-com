@@ -15,7 +15,9 @@
 //   { action: 'report', venue, item?, spot?, kind, note?, path?, lat, lng, accuracy }
 //                                              kind confirm | wrong | missing | gone | comment; the photo is optional and pays more
 //                                              (ve_venue_report_points); checked in ve_venue_report_save (inside the venue's circle,
-//                                              20 a day) and left for the team. Accepted comments show on the item.
+//                                              60 a day, 40 paid) and left for the team. Accepted comments show on the item.
+//   { action: 'bounties', hub? }           open bounties at every venue of both Guides (no item names): how many items wait for
+//                                              their first confirmation and the points on them (migration 20261029_venue_bounties.sql)
 //   { action: 'mine' }                         their reports, newest first, with what the team decided and the points
 // A Guide owner:
 //   { action: 'saves' } / { action: 'save', kind: 'venue'|'venue_item', key, on }   My list (ve_guide_saves)
@@ -82,8 +84,12 @@ async function secret(key: string): Promise<string | null> {
 // from the sources.
 // What each report pays (with a photo, without; and for agreeing with the first), Sean's to change in ve_venue_report_points.
 async function reportPoints() {
-  const { data } = await db.from('ve_venue_report_points').select('kind, with_photo, no_photo, agree_with_photo, agree_no_photo').order('sort_order');
+  const { data } = await db.from('ve_venue_report_points').select('kind, with_photo, no_photo, agree_with_photo, agree_no_photo, first_with_photo, first_no_photo').order('sort_order');
   return data || [];
+}
+async function bountyLimits() {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'venue_bounties').maybeSingle();
+  return data?.value || { fresh_days: 35, daily_paid_cap: 40, daily_reports: 60 };
 }
 const FRESH_DAYS = 35;
 function freshness(it: any, v: any) {
@@ -124,20 +130,47 @@ Deno.serve(async (req) => {
 
   // ---------- anyone ----------
   if (action === 'list') {
-    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url')
+    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url, season_reset_at')
       .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order');
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const ids = (vs || []).map((v) => v.id);
     const { data: its } = ids.length ? await db.from('ve_venue_items').select('venue_id, last_confirmed_at').in('venue_id', ids).eq('status', 'live') : { data: [] as any[] };
-    const counts: Record<string, { items: number; confirmed: number; last: string | null }> = {};
+    const counts: Record<string, { items: number; confirmed: number; last: string | null; bounties: number }> = {};
+    const byId: Record<string, any> = {}; for (const v of vs || []) byId[v.id] = v;
     for (const it of its || []) {
-      const c = counts[it.venue_id] ||= { items: 0, confirmed: 0, last: null };
+      const c = counts[it.venue_id] ||= { items: 0, confirmed: 0, last: null, bounties: 0 };
       c.items++;
+      if (freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
-      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, ...(counts[v.id] || { items: 0, confirmed: 0, last: null }) })),
-      points: await reportPoints() });
+      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
+      points: await reportPoints(), limits: await bountyLimits() });
+  }
+
+  // Bounties around the city (Sean, 2026-10-29: "you want to be first to action... constantly looking at the bounties"): every
+  // venue of both Guides with items waiting for their first confirmation, and what they pay. No item names: those are the Guide's.
+  if (action === 'bounties') {
+    const hub = str(body.hub, 40);
+    let q = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at').eq('status', 'live');
+    if (hub && hub !== 'all') q = q.eq('hub', hub);
+    const { data: vs } = await q.order('sort_order');
+    const ids = (vs || []).map((v) => v.id);
+    const { data: its } = ids.length ? await db.from('ve_venue_items').select('venue_id, last_confirmed_at').in('venue_id', ids).eq('status', 'live') : { data: [] as any[] };
+    const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
+    const first = P.confirm?.first_with_photo ?? P.confirm?.with_photo ?? 0, missing = P.missing?.with_photo ?? 0;
+    // Only the Guides that are out (an unpublished Guide's venues wait for its launch), unless a super admin asks.
+    const { data: gs } = await db.from('ve_guides').select('slug, published').in('slug', Object.keys(GUIDES));
+    const live = new Set((gs || []).filter((g) => g.published || admin).map((g) => g.slug));
+    const out = (vs || []).filter((v) => v.latitude != null && live.has(guideOfKind(v.kind))).map((v) => {
+      const mine = (its || []).filter((i) => i.venue_id === v.id);
+      const open = mine.filter((i) => freshness(i, v) !== 'fresh').length;
+      // A venue with nothing listed yet has one bounty: be the first to add what is there.
+      const points = mine.length ? open * first : missing;
+      return { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, image: v.image_url, free: v.free_example,
+        guide: guideOfKind(v.kind), items: mine.length, open: mine.length ? open : 1, empty: !mine.length, points };
+    }).filter((v) => v.open > 0).sort((a, b) => b.points - a.points);
+    return json({ venues: out, total: out.reduce((n, v) => n + v.points, 0), points: await reportPoints(), limits: await bountyLimits() });
   }
 
   if (action === 'venue') {
@@ -182,7 +215,7 @@ Deno.serve(async (req) => {
         listing: s.listing_id && listings[s.listing_id] ? { slug: listings[s.listing_id].slug, name: listings[s.listing_id].name, logo_url: listings[s.listing_id].logo_url } : null,
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
-          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v),
+          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v), bounty: freshness(i, v) !== 'fresh',
           photo_url: i.photo_url, photo_illustrative: i.photo_illustrative, saved: saved.includes('venue_item:' + i.id),
           comments: (comments[i.id] || []).slice(0, 5) })) : [],
       };
