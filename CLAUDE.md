@@ -917,6 +917,35 @@ second confirm of one session refused (the card form itself was not paid: checko
   member gets no points). The first discover (South Florida) found six for review, a yoga group among them: discover's filter is a first
   pass, so read each before adding it.
 
+## Pathways (LOCKED by Sean 2026-10-29, playbook `ve-pathways`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-pathways`; migration `20261029_pathways_canon.sql`). **Not built
+yet.** Sean: "let's find these email addresses, the social media handles... send them the email, but then also follow up with the
+Instagram, and then automatically be cued on when to do follow-ups... nurturing each of these people until they become members...
+see what they're going to see... a report of how many people have opened it... track that over time." Every way into the community
+is a **pathway**, worked by one engine in **Depot > Pathways**, a tab each: Founding Members, Ambassadors, Community Managers, Nonprofit
+Partners, Group Partners, **Content Creators** (new) and Coaches (later). A new category is a new pathway, never its own console; the
+existing consoles become each pathway's detail view.
+- **Four views per pathway**: the people (a board by stage: Found, Ready to invite, Invited, Followed up on Instagram, Read it, Opened
+  the link, Said yes, Joined, Next step; beside them Declined, No reply, Resting with a date; each person's page with email, handles,
+  where we found them, every touch and what is due); **Today** (the daily work list); **the journey** (every screen they see in order,
+  See what they see on each, like Preview journeys, Not built where a step is missing, ending in **Introduce LESARUSS.AI**, a short note
+  from Sean); **the report** (found, invited, read, opened the link, replied, said yes, joined, declined, no reply, week by week, by
+  source, pathways side by side).
+- **Leads**: a finder per pathway into Found for Sean to look over (Meetup discover for groups, the community search for nonprofits,
+  YouTube, Instagram and our podcasts and People for creators, the Coaches section and Instagram for coaches); published emails only.
+- **Pace and sequence**: 5 new a day per pathway, weekdays. Day 0 email, Day 2 Instagram, Day 5 follow-up email, Day 12 last note, then
+  No reply, resting 6 months before one more try; Declined is final unless they come back. Every email from Sean, its opening drafted
+  per person (like Founding Members), the day's batch approved by Sean (like Business outreach send days). **Instagram is never
+  automated** (its rules forbid automated first messages; the account is at risk): a task in Today with the message written, Copy and
+  open Instagram, Mark sent.
+- **Content Creators**: offer not decided (V's recommendation: featured in Media, their own link at a creator commission, the Podcast
+  Network for podcasters, the Creator Guide); until then invited as Ambassadors with the Creator profile. Coaches wait for Creators.
+  Each pathway's LESARUSS.AI step is shaped later. Mailing list reactivation is a separate project.
+- **Build order**: 1. the hub and journey view for the five that exist (shows every gap); 2. the board, Today, Instagram tasks and the
+  report on those five; 3. a lead finder per pathway; 4. Content Creators; 5. Coaches. Reuse `ve-outreach` (lists, sender, sync,
+  warm-up), `universe_invites` and its consoles, `ve-invites` `draft_note` and Preview journeys.
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
