@@ -220,6 +220,7 @@
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
       <div id="checkins" hidden></div>
+      <div id="venueb" hidden></div>
       <div id="campaign" hidden>
         <div class="cintro">
           <div class="ctext"><span class="ckind-tag" id="c-kind"></span><h2 id="c-title"></h2><p class="cwhen" id="c-meta"></p><p class="cstory" id="c-story"></p><div id="c-note"></div></div>
@@ -407,10 +408,11 @@
     // one campaign, one job.
     function setView(v) {
       state.view = v;
-      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list'; $('checkins').hidden = v !== 'checkins';
+      $('list').hidden = v !== 'list'; $('campaign').hidden = v !== 'campaign'; $('job').hidden = v !== 'job'; $('how').hidden = v !== 'list'; $('checkins').hidden = v !== 'checkins'; $('venueb').hidden = v !== 'venueb';
       document.body.classList.toggle('sub-view', v !== 'list');
       var c = campOf(state.cslug), items = [['Bounties', href('', '')]];
       if (v === 'checkins') items.push([CHECKINS.title, '']);
+      if (v === 'venueb') items.push([VENUEB.title, '']);
       if (v !== 'list' && c) items.push([c.title, href(c.slug, '')]);
       if (v === 'job' && state.current) items.push([short(state.current.title), '']);
       $('crumbs').hidden = v === 'list';
@@ -420,6 +422,7 @@
     }
     function route() {
       if (state.cslug === CHECKINS.slug) { renderCheckins(); return; }
+      if (state.cslug === VENUEB.slug) { renderVenueBounties(); return; }
       if (state.jobId) { open(state.jobId); return; }
       var c = state.cslug && campOf(state.cslug);
       if (c) renderCampaign(c); else { state.cslug = ''; renderList(); }
@@ -453,14 +456,43 @@
             : '<p class="empty">No check-ins yet. Your first one is 10 points.</p>';
         }).catch(function () { $('ck-mine').innerHTML = '<p class="empty">Could not load your check-ins.</p>'; });
     }
+    // Venue bounties (Sean, 2026-10-29: "you want to be first to action... somebody might want to take a whole weekend going around
+    // to all these different places and collecting the bounties"): the venue Guides' items waiting for a member's first
+    // confirmation, by venue, from ve-venues bounties. The first to confirm one earns the bounty; after that it pays less.
+    var VENUEB = { slug: 'venues', title: 'Be first at the stadiums' };
+    var VFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-venues';
+    function venueCard() {
+      return '<a class="ccard" href="' + esc(href(VENUEB.slug, '')) + '" data-slug="' + VENUEB.slug + '"><span class="ccover k-ongoing" style="background-image:url(\'/public/guides/venues/river-report.webp\');background-size:cover;background-position:center"><span class="ckind">Always open</span></span>' +
+        '<span class="cbody"><span class="ctitle">' + VENUEB.title + '</span><span class="cmeta">Stadiums and arenas in your city</span>' +
+        '<span class="cjobs">First to confirm an item &middot; 50 points</span></span></a>';
+    }
+    function renderVenueBounties() {
+      setView('venueb');
+      $('venueb').innerHTML = '<div style="margin-top:16px"><p class="ckind" style="position:static;display:inline-block;margin-bottom:8px">Always open</p><h2 style="font-size:24px;font-weight:900;margin:0 0 8px">' + VENUEB.title + '</h2>' +
+        '<p style="max-width:860px">Every Vegan item in our Stadium &amp; Arena Guide needs members to check it is still sold. The <strong>first</strong> member to confirm an item no one has checked lately earns the bounty; after that, Still here pays less. Go to a game, walk the concourse, tap <strong>Update</strong> then <strong>Still here</strong> on each item, with a photo, and the points land when the team accepts them.</p>' +
+        '<ol style="margin:14px 0 14px 20px;max-width:860px;line-height:1.7"><li>Pick a venue below and open it in the Guide.</li><li>While you are inside, tap <strong>Update</strong> on an item marked <strong>Bounty</strong> and choose Still here. Your phone shares its location once, to show you are there.</li><li>Something new or gone? Tell us that too: the first to report it earns the most.</li></ol>' +
+        '<div id="vb-list"><p class="empty">Loading...</p></div></div>';
+      fetch(VFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token() || '') }, body: JSON.stringify({ action: 'bounties', hub: state.city || 'all' }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          var rows = (d && d.venues) || [], lim = (d && d.limits) || {};
+          $('vb-list').innerHTML = rows.length
+            ? '<p style="margin:0 0 8px"><strong>' + (d.total || 0).toLocaleString() + '</strong> points waiting here, with photos. Up to ' + (lim.daily_paid_cap || 40) + ' reports paid a day.</p><div class="jlist">' +
+              rows.map(function (v) {
+                var url = '/guides/' + v.guide + '#/' + (v.kind === 'airport' ? 'airport' : 'venue') + '/' + encodeURIComponent(v.slug);
+                var what = v.empty ? 'Nothing listed yet: be the first to add what is there' : v.open + (v.open === 1 ? ' item' : ' items') + ' waiting for a first check';
+                return '<a class="jrow ck-row" target="_top" href="' + esc(url) + '"><span class="jname"><b>' + esc(v.name) + '</b><small>' + esc(what) + '</small></span><span data-l="Where">' + esc(v.city || '') + '</span><span data-l="Points">up to ' + (v.points || 0).toLocaleString() + '</span></a>';
+              }).join('') + '</div><p style="margin-top:10px;font-size:13px">The Guide is $11 or 1,100 points, and the bounties at one venue can pay that back. Hard Rock Stadium is open to everyone.</p>'
+            : '<p class="empty">No venue bounties in this city yet. Pick another city, or check back when we add venues here.</p>';
+        }).catch(function () { $('vb-list').innerHTML = '<p class="empty">Could not load the venue bounties.</p>'; });
+    }
     function renderList() {
       setView('list');
-      if (!state.campaigns.length) { $('list').innerHTML = '<div class="cgrid">' + checkinCard() + '</div><div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
+      if (!state.campaigns.length) { $('list').innerHTML = '<div class="cgrid">' + checkinCard() + venueCard() + '</div><div class="empty"><strong>No campaigns here right now.</strong>New ones go up when your city needs creators: big events, restaurant nights and more. Check the Daily Pulse for what is coming.</div>'; return; }
       var mineN = state.campaigns.filter(function (c) { return c.mine; }).length;
       if (!mineN) state.cfilter = 'all';
       var list = state.cfilter === 'mine' ? state.campaigns.filter(function (c) { return c.mine; }) : state.campaigns;
       $('list').innerHTML = (mineN ? '<div class="filters" role="group" aria-label="Show"><button type="button" data-cf="all" aria-pressed="' + (state.cfilter !== 'mine') + '">All campaigns (' + state.campaigns.length + ')</button><button type="button" data-cf="mine" aria-pressed="' + (state.cfilter === 'mine') + '">You are in (' + mineN + ')</button></div>' : '') +
-        '<div class="cgrid">' + (state.cfilter === 'mine' ? '' : checkinCard()) + list.map(function (c) {
+        '<div class="cgrid">' + (state.cfilter === 'mine' ? '' : checkinCard() + venueCard()) + list.map(function (c) {
         var cover = c.cover_url ? ' style="background-image:linear-gradient(to top,rgba(0,0,0,0.25),rgba(0,0,0,0)),url(\'' + esc(c.cover_url).replace(/'/g, '%27') + '\')"' : '';
         return '<a class="ccard" href="' + esc(href(c.slug, '')) + '" data-slug="' + esc(c.slug) + '"><span class="ccover k-' + esc(c.kind) + '"' + cover + '><span class="ckind">' + esc(KIND[c.kind] || 'Campaign') + '</span></span>' +
           '<span class="cbody"><span class="ctitle">' + esc(c.title) + '</span>' +

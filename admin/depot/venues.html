@@ -14,8 +14,8 @@
        view: the reports (#list/pending|accepted|agreed|declined), one report (#r/<id>: the photo, how far from the venue, the item,
        the other reports on it, Accept, Agrees with the first, Decline), the venues (#venues), one venue (#venue/<slug>: its details,
        New season, Find it on Google, its stands and items), a stand (#venue/<slug>/stand/<id>|new) and an item
-       (#venue/<slug>/item/<id> or #venue/<slug>/stand/<id>/item/new). Points: 10 Still accurate, 100 the first accepted correction,
-       25 a later one that agrees, at most 5 paid a member a day (ve_venue_report_review). Server: ve-venues. */
+       (#venue/<slug>/item/<id> or #venue/<slug>/stand/<id>/item/new). Points: Still here the bounty (first to confirm) then 10, 100 the first accepted correction,
+       25 a later one that agrees, at most 40 paid a member a day (ve_site_settings venue_bounties) (ve_venue_report_review). Server: ve-venues. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -82,7 +82,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Venues</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">The Stadium &amp; Arena Guide. Members check what is still there from inside a venue, with a photo. Nothing pays until you decide: Still accurate pays 10 points, the first accepted correction 100, a later one that agrees 25, at most 5 paid to a member a day.</p>
+    <p class="sub">The Stadium &amp; Arena Guide. Members check what is still there from inside a venue, with a photo. Nothing pays until you decide. Still here pays the bounty (50 with a photo) to the first member to confirm an item no one has checked in 35 days, then 10; the first accepted correction pays 100, a later one that agrees 25; at most 40 paid to a member a day. Review confirmations oldest first: a newer one waits for the one sent before it.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -103,7 +103,8 @@
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
     function when(t) { return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
     function go(h) { if (location.hash !== h) location.hash = h; else route(); }
-    function fail(r) { return r.message || r.why || r.error || 'That did not save.'; }
+    var WHY = { earlier_pending: 'Someone sent Still here on this item before this one. Review theirs first: the first to confirm earns the bounty.' };
+    function fail(r) { return r.message || WHY[r.why] || r.why || r.error || 'That did not save.'; }
     function sel(id, map, val) { return '<select id="' + id + '">' + Object.keys(map).map(function (k) { return '<option value="' + k + '"' + (k === val ? ' selected' : '') + '>' + esc(map[k]) + '</option>'; }).join('') + '</select>'; }
     function topTabs(on) {
       return '<div class="tabs" style="margin-bottom:14px"><a href="#list/pending" class="' + (on === 'reports' ? 'on' : '') + '">Reports</a><a href="#venues" class="' + (on === 'venues' ? 'on' : '') + '">Venues</a></div>';
