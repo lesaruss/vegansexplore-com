@@ -18,6 +18,8 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 //   UPDATE_2026_10_29_ONE_MEMBERSHIP_UNLIMITED_GUIDES and _DIPLOMAT_NAME_LOCKED): the one $111 LESARUSS.ai membership
 //   includes every Guide from every LESARUSS community. Same email, a LESARUSS-tenant members row that is active on a paid
 //   tier, or cancelled and paid through (the rule in lesaruss-hq lib/memberAccess.ts). via is then 'diplomat'.
+//   The Creator Guide (creator-guide) comes with being an active Ambassador (members.ve_role 'ambassador'; canon
+//   canon-ve-ambassadors-talent-shop, Sean 2026-10-29). via is then 'ambassador'.
 //
 // Actions (POST ?action=):
 //   status   {slug, token?}  -> {loggedIn, unlocked, via, balance, credits, cost, access_rule, membership_status, passport,
@@ -194,12 +196,14 @@ serve(async (req: Request) => {
       await supabase.rpc('ve_passport_credit', { p_member: auth.sub });
       const [{ data: purchase }, { data: member }] = await Promise.all([
         supabase.from('ve_guide_purchases').select('id').eq('member_id', auth.sub).eq('guide_id', guide!.id).maybeSingle(),
-        supabase.from('members').select('lesars_balance, guide_credits, membership_status, membership_tier, email').eq('id', auth.sub).maybeSingle(),
+        supabase.from('members').select('lesars_balance, guide_credits, membership_status, membership_tier, email, ve_role').eq('id', auth.sub).maybeSingle(),
       ]);
       const status = member?.membership_status ?? null;
       let via: string | null = free ? 'free' : !member ? null : purchase ? 'purchase'
         : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
       if (!via && member && await isDiplomat(member.email ?? auth.email)) via = 'diplomat';
+      // The Creator Guide comes with being an active Ambassador (canon-ve-ambassadors-talent-shop, Sean 2026-10-29).
+      if (!via && member && slug === 'creator-guide' && member.ve_role === 'ambassador' && status === 'active') via = 'ambassador';
       return { loggedIn: !!member, unlocked: !!via, via, balance: member?.lesars_balance ?? 0, credits: member?.guide_credits ?? 0,
         membership_status: status, passport: status === 'active' && member?.membership_tier === 'passport', email: member?.email ?? '' };
     }
