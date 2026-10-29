@@ -800,13 +800,21 @@ the owner's perspective").
   (`ve_group_dash`). **Gift a membership** (Sean, same day: "It would cost whatever our half of the $11 would be based on where they are in
   the commission split... deducted from their payout... an invite link to a specific address"): the lead's dashboard view `gift`
   (`drawGift`): our share of the $11 at the group's rate today ($8.80 at 20%, $5.50 at 50%), taken from the group's earnings at once as a
-  negative commission row (product `gift`, ref `gift:<invite>`), only while the earnings cover it (`gift_credit_cents` 0, Logan's default,
-  Sean's to change); a `universe_invites` row (`points_to` `gift`, the group's `listing_id`, 1,100 points, 30 days, one email), emailed from
+  negative commission row (product `gift`, ref `gift:<invite>`). **Only cleared earnings count** (Sean, same day: "that balance will only
+  count after the 30-day period... If they're in a negative, they should get a prompt to purchase the membership"; migration
+  `20261029_group_gift_cleared_balance.sql`): `ve_group_balance` is commissions past their 30-day hold (`ready`), not paid out, less gifts,
+  so a gift never takes it below zero (`gift_credit_cents` 0). Short of it, the dashboard says what is on hold and when the next of it
+  clears, and offers **Pay $X by card**, the same price (`ve-group` `gift_checkout`, Stripe; `GET ?confirm=` from the return trip and
+  ve-stripe-webhook makes the gift once, `universe_invites.paid_session` and `paid_cents`; no commission row). A card gift that expires, is
+  canceled or declined goes to the group's balance (a `ready` row, ref `gift-back:<invite>`) for its next gift (Logan's default, Sean's to
+  change: a card refund). When a payout is marked paid in Depot > Ambassadors > Commissions, its gift rows are marked with it. A `universe_invites` row (`points_to` `gift`, the group's `listing_id`, 1,100 points, 30 days, one email), emailed from
   Vegans Explore with the organizer's name or a link they copy; `/invite` words it as their gift. Accepting makes them a Founding Member, one
   the group brought in (it counts toward the rate) and a member of the group (`trg_ve_group_gift_status`); expired (nightly
   `ve-group-gift-sweep`), canceled or declined gives the cost back (the row turns `reversed`). Not for a member who already has a Passport.
   Proven 2026-10-29 on a [TEST] group with internal accounts (join, the organizer-only post, a real email, the email link, gift pricing,
-  balance, cancel giving back, the claim, a commission at 20%), then removed. The real dashboard's views were checked in the sample, which
+  balance, cancel giving back, the claim, a commission at 20%), then removed. The cleared rule the same way: held money refused with the card
+offer, a test-mode checkout opened, an unpaid return sent back, a gift from cleared money, a card gift's cancel crediting the balance and a
+second confirm of one session refused (the card form itself was not paid: checkout.stripe.com is blocked from the build session). The real dashboard's views were checked in the sample, which
   draws the same code. A member's side: About, the Events tabs from the demo file (6 upcoming, 16 past), a **Group Partner** card with its members and **Join the group**, and every RSVP, ticket and join as a simulation
   window (`demoEvent`, `demoJoinGroup`; See it as Someone new or A Passport holder: the guest pass on a first free event, the $11
   Passport after it or for a paid event, the ticket with card processing on the buyer). The organizer's side opens with the **demo
