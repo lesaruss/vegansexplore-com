@@ -1777,7 +1777,9 @@ so her clips were cut by hand (the audit, member overview and member quiz clips 
 her lips after the last word). Tabs: Overview, **Your audit** (the free check, open to everyone; the result, then the $49 and
 $149 offer; members see their audits and orders), **The fixes** (one per view, `#/fixes/<id>`; a member's in the order their
 latest audit puts them, using each check's `chapter`; Outdated or hard-to-find information is the free example), **Pulse**
-(our interviews with business owners, `PULSE_PICKS`, and sourced research facts), **Get featured** (listed, claimed, votes, the
+(our interviews with business owners, and sourced research facts; since 2026-10-29 each interview is its podcast episode, not the
+video (Sean: "the way we're doing it in the people directory listings"): `PULSE_PICKS` pins each to its show and its feed guid, read
+through `ve-podcast` `episode`, drawn with `VEEpisodes.row` two across, Play in the player docked above the list, plus our vote and Save), **Get featured** (listed, claimed, votes, the
 Partner plan; find your page; top-voted Vegan restaurants), **Promotions** (each Live or Coming; never a planned thing shown as
 live), **Test yourself** (ten questions, one per view, 80% earns the Entrepreneur Track badge, kept in the browser), My list
 (fixes, interviews, promotions through `ve-cookbook` saves; `ve_guide_saves` and `ve_guide_votes` take `fix` and `promo`),

@@ -182,18 +182,6 @@
     .dg-cookpv{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px;align-items:start;}
 
     /* The Pulse: research and our podcasts */
-    .dg-pods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:14px;}
-    .dg-pod{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s;}
-    .dg-pod:hover{border-color:var(--g2);}
-    .dg-pod-img{aspect-ratio:16/9;background:#14301c center/cover no-repeat;position:relative;}
-    .dg-pod-img::after{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,255,255,0.92) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='18' viewBox='0 0 16 18'%3E%3Cpath d='M3 1l12 8-12 8z' fill='%231f5f22'/%3E%3C/svg%3E") 55% 50%/14px no-repeat;}
-    .dg-pod-b{padding:12px 14px 14px;}
-    .dg-pod-show{font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
-    .dg-pod-t{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .dg-pod-s{font-size:12.5px;line-height:1.5;color:var(--ink75);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-    .dg-watch{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:22px;align-items:start;}
-    .dg-watch iframe{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000;}
-    .dg-watch p{font-size:14px;line-height:1.65;color:var(--ink75);margin:0 0 12px;}
 
     /* A Directory listing or product inside the Guide */
     .dg-inguide{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:14px 18px;margin:0 0 14px;}
@@ -325,14 +313,15 @@
     .dg-gp span{display:block;aspect-ratio:1/1;border-radius:10px;background:var(--gl) center/cover no-repeat;}
     .dg-gp figcaption{font-size:12px;font-weight:700;color:var(--ink55);margin-top:5px;}
     .dg-gp-wait span{opacity:.55;}
-    .dg-pod-w{position:relative;display:flex;flex-direction:column;}
-    .dg-pod-w .dg-pod{flex:1 1 auto;}
-    .dg-pod-acts{position:absolute;top:8px;right:8px;}
     /* One tile (Sean, 2026-10-10): vote and save sit together at the top right of every swap, recipe and episode */
     /* Stacked, vote on top of Save (Sean, 2026-10-10: side by side squeezed the words on a phone) */
     .dg-acts{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;align-items:stretch;align-self:flex-start;}
     .dg-acts .dg-vote,.dg-acts .dg-save{justify-content:center;align-self:stretch;}
-    .dg-pod-acts{flex-direction:row;}
+    /* Pulse interviews are their podcast episodes, the row a person's page uses (/public/ve-episodes.js), two across (Sean, 2026-10-29:
+       "have them in two columns, so that way it doesn't take up too much space"); one on a phone */
+    .rg-eps .vep-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .rg-eps .vep-acts .dg-vote,.rg-eps .vep-acts .dg-save{justify-content:center;}
+    @media (max-width:760px){.rg-eps .vep-list{grid-template-columns:minmax(0,1fr);}}
     .dg-save{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink55);cursor:pointer;}
     .dg-save:hover{border-color:var(--g2);color:var(--g);}
     .dg-save.on{border-color:var(--gm);background:var(--gl);color:var(--g);}
@@ -364,7 +353,7 @@
       html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
-    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access,.dg-watch{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:900px){
       .dg-top{padding:16px 16px 14px;}
       .dg-menu{display:none;}
@@ -514,6 +503,7 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
+<script src="/public/ve-episodes.js"></script>
 <script src="/guide-scripts/vegan-restaurant-survival-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
