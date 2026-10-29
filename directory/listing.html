@@ -752,8 +752,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
-#film-people .vrd-root .rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media(max-width:900px){#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:560px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
@@ -1394,7 +1393,7 @@ function renderFilmOverview(l){
 }
 // Featured people (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
 // vote for them"). details.film_people [{person, role}] are People listings, drawn with the Directory's own card and votes
-// (VERegionDirectory.card / wire, loaded on first need), three columns beside the sidebar (two under 900 px, one on phones): directors, co-directors, then the rest.
+// (VERegionDirectory.card / wire, loaded on first need), two columns beside the sidebar (Sean, 2026-10-29: three squished the words), one on phones: directors, co-directors, then the rest.
 function loadFilmPeople(l){
   var RANK = { 'Director': 0, 'Co-director': 1 };
   var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; })
