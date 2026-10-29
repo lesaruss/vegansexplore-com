@@ -6,11 +6,11 @@
 // YouTube refuses our server its channel pages and its RSS feeds (a blank page and a 404 for every channel, checked 2026-10-29), so
 // this reads YouTube's own Data API v3 with the project's Google key (YOUTUBE_API_KEY, else GOOGLE_PLACES_API_KEY; the YouTube Data
 // API is on for that key since 2026-10-29). A channel is listings.details.youtube_channel_id (a YouTube listing, or a News Outlet
-// such as Plant Based News); its latest 50 uploads are
-// kept in ve_youtube_feeds and read again when older than 6 hours (1 API unit a channel for the uploads, of 10,000 a day); a read
+// such as Plant Based News); its latest 50 videos and 50 Shorts
+// are kept in ve_youtube_feeds and read again when older than 6 hours (3 API units a channel a read, of 10,000 a day); a read
 // that fails keeps serving what we have. Videos play in YouTube's own player (youtube-nocookie); nothing is copied.
 //
-// POST { action: 'videos', listing_id | slug }       anyone: { channel, videos }
+// POST { action: 'videos', listing_id | slug }       anyone: { channel, videos, shorts } (long-form and Shorts apart)
 // POST { action: 'resolve', handle | channel_id }     ops (Bearer LESARUSS_ADMIN_TOKEN): the channel's id, title, description,
 //                                                     picture, subscribers and uploads, to add a channel
 // POST { action: 'refresh' }                          the cron (x-cron-secret) or ops: reads up to 20 channels older than 6 hours
@@ -79,12 +79,19 @@ async function read(listing: any) {
   try {
     const info = await channelInfo({ id: channel });
     if (!info) throw new Error('channel_not_found');
-    const videos = info.uploads ? await uploads(info.uploads) : [];
+    // Videos and Shorts apart (Sean, 2026-10-29: "sort the shorts from the regular videos... right now it's all buried together"):
+    // YouTube keeps each channel's long-form uploads in the list UULF<id> and its Shorts in UUSH<id> (the uploads list UU<id> mixes
+    // them). A channel with no Shorts has no UUSH list; if UULF is ever refused, the mixed uploads stand in as videos.
+    const base = channel.slice(2);
+    let videos: any[] = [], shorts: any[] = [];
+    try { videos = await uploads('UULF' + base); }
+    catch { videos = info.uploads ? await uploads(info.uploads) : []; }
+    try { shorts = await uploads('UUSH' + base); } catch { shorts = []; }
     const row = { listing_id: listing.id, channel_id: channel, title: info.title, handle: info.handle, thumb: info.thumb,
-      subscribers: info.subscribers, video_count: info.video_count, videos, fetched_at: new Date().toISOString(), error: null };
+      subscribers: info.subscribers, video_count: info.video_count, videos, shorts, fetched_at: new Date().toISOString(), error: null };
     await db.from('ve_youtube_feeds').upsert(row, { onConflict: 'listing_id' });
     // Active while it uploads, like a podcast: a video in the last six months, else On hiatus (never Ended).
-    const latest = videos[0]?.published ? Date.parse(videos[0].published) : 0;
+    const latest = Math.max(videos[0]?.published ? Date.parse(videos[0].published) : 0, shorts[0]?.published ? Date.parse(shorts[0].published) : 0);
     const status = latest && Date.now() - latest < 183 * 864e5 ? 'OPERATIONAL' : 'CLOSED_TEMPORARILY';
     if (latest && listing.category === 'YouTube' && listing.business_status !== status) await db.from('listings').update({ business_status: status }).eq('id', listing.id);
     return row;
@@ -116,17 +123,7 @@ Deno.serve(async (req) => {
       else if (!f?.videos?.length) return json({ ok: true, channel: { title: l.name }, videos: [], error: r.error });
     }
     return json({ ok: true, channel: { id: feed.channel_id, title: feed.title, handle: feed.handle, thumb: feed.thumb,
-      subscribers: feed.subscribers, video_count: feed.video_count, fetched_at: feed.fetched_at }, videos: feed.videos || [] });
-  }
-
-  if (action === 'lists') {
-    if (!(await ops())) return json({ error: 'unauthorized' }, 401);
-    const base = String(body.channel_id || '').slice(2), out: any = {};
-    for (const pre of ['UU', 'UULF', 'UUSH']) {
-      try { const v = await uploads(pre + base); out[pre] = { n: v.length, first: v.slice(0, 3).map((x: any) => x.title) }; }
-      catch (e) { out[pre] = { error: String((e as Error).message || e).slice(0, 120) }; }
-    }
-    return json(out);
+      subscribers: feed.subscribers, video_count: feed.video_count, fetched_at: feed.fetched_at }, videos: feed.videos || [], shorts: feed.shorts || [] });
   }
 
   if (action === 'resolve') {

@@ -22,3 +22,6 @@ select cron.schedule('ve-youtube-refresh', '43 * * * *', $$
     headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select value from public.lesaruss_secrets where key = 'CRON_SECRET')),
     body := '{"action":"refresh"}'::jsonb, timeout_milliseconds := 150000)
 $$);
+
+-- Shorts apart from the videos (Sean, 2026-10-29: "sort the shorts from the regular videos so people could have a choice").
+alter table public.ve_youtube_feeds add column if not exists shorts jsonb not null default '[]'::jsonb;
