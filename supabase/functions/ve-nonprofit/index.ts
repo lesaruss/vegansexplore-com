@@ -5,6 +5,9 @@
 // The lead (member token):
 //   POST { action: 'me', partner_id? }              the partnerships they lead, with the numbers (a super admin may open any, partner_id)
 //   POST { action: 'use_points', partner_id, what, note? }   ask the team to use the organization's points on a service (logged and emailed)
+// Any member (the Nonprofit Guide, playbook ve-nonprofit-guide):
+//   POST { action: 'survey_get' }                    what they told us about their organization, if anything
+//   POST { action: 'survey', answers }               Tell us about your organization: saved, 100 points once, emailed to Sean
 // Super admins:
 //   POST { action: 'list' }                          every partner with its numbers, and the Nonprofit Partner invitations
 //   POST { action: 'get', id }                       one partner
@@ -27,6 +30,8 @@ const USES: Record<string, string> = {
   guide: 'A Guide for our people',
   other: 'Something else',
 };
+// Points for the Nonprofit Guide's organization survey, once (Logan's default, Sean's to change).
+const SURVEY_POINTS = 100;
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -125,6 +130,46 @@ Deno.serve(async (req: Request) => {
         (note ? `<p>Their note: ${esc(note)}</p>` : '') +
         `<p><a href="${SITE}/admin/depot/nonprofit-partners#p/${p.id}">Depot &gt; Nonprofit Partners</a> · <a href="${SITE}/dashboard/leads">Leads</a></p>`, me.email);
       return json({ ok: true });
+    }
+
+    // Tell us about your organization (the Nonprofit Guide's Become a Partner tab; playbook ve-nonprofit-guide). Any member, one
+    // answer each, changeable; SURVEY_POINTS are paid once, the first time (ref np-survey:<member>), and Sean is emailed each send.
+    if (action === 'survey_get') {
+      const { data } = await db.from('ve_nonprofit_surveys').select('answers, points, created_at, updated_at').eq('member_id', me.id).maybeSingle();
+      return json({ ok: true, survey: data ?? null, points: SURVEY_POINTS });
+    }
+    if (action === 'survey') {
+      if (me.membership_status !== 'active') return json({ error: 'members_only', message: 'Tell us about your organization once you have your Passport.' }, 403);
+      const a = body.answers && typeof body.answers === 'object' ? body.answers : {};
+      const pick = (v: unknown, n: number) => clip(v, n) ?? '';
+      const many = (v: unknown) => (Array.isArray(v) ? v : []).map((x) => pick(x, 80)).filter(Boolean).slice(0, 12);
+      const answers = {
+        org: pick(a.org, 160), role: pick(a.role, 120), kind: pick(a.kind, 40), where: pick(a.where, 200),
+        challenge: many(a.challenge), money: many(a.money), monthly: pick(a.monthly, 40), help: many(a.help), note: pick(a.note, 1000),
+      };
+      if (!answers.org || !answers.kind) return json({ error: 'bad_request', message: 'Add your organization\'s name and what kind it is.' }, 400);
+      const { data: prev } = await db.from('ve_nonprofit_surveys').select('id, points').eq('member_id', me.id).maybeSingle();
+      // The organization's Directory listing, when its name matches one (Nonprofits, Rescues or Sanctuaries).
+      const { data: org } = await db.from('listings').select('id, slug').eq('status', 'approved').in('category', ['Nonprofits', 'Rescues', 'Sanctuaries'])
+        .ilike('name', likeEsc(answers.org)).limit(1).maybeSingle();
+      const row = { member_id: me.id, org_name: answers.org, answers, listing_id: org?.id ?? null, updated_at: new Date().toISOString() };
+      const { error } = prev ? await db.from('ve_nonprofit_surveys').update(row).eq('id', prev.id) : await db.from('ve_nonprofit_surveys').insert(row);
+      if (error) { console.error('survey:', error); return json({ error: 'save_failed', message: 'That did not go through.' }, 500); }
+      let paid = 0;
+      if (!prev?.points) {
+        const { error: gErr } = await db.rpc('ve_points_grant', { p_member: me.id, p_amount: SURVEY_POINTS, p_reason: 'nonprofit_survey', p_ref: `np-survey:${me.id}` });
+        if (gErr) console.error('survey points:', gErr);
+        else { paid = SURVEY_POINTS; await db.from('ve_nonprofit_surveys').update({ points: SURVEY_POINTS }).eq('member_id', me.id); }
+      }
+      const list = (x: string[]) => x.length ? x.map(esc).join(', ') : '(none)';
+      await sendEmail([SEAN_EMAIL], `[Nonprofit Guide] ${answers.org} ${prev ? 'updated its answers' : 'told us about itself'}`,
+        `<p>${esc(me.name || 'A member')} (${esc(me.email || '')})${answers.role ? ', ' + esc(answers.role) + ',' : ''} told us about <b>${esc(answers.org)}</b> (${esc(answers.kind)}).</p>` +
+        `<p>Where: ${esc(answers.where || '(not given)')}<br>Hardest right now: ${list(answers.challenge)}<br>Raises money through: ${list(answers.money)}<br>` +
+        `Monthly giving: ${esc(answers.monthly || '(not given)')}<br>Would help most: ${list(answers.help)}</p>` + (answers.note ? `<p>${esc(answers.note)}</p>` : '') +
+        `<p>${org ? `In the Directory: <a href="${SITE}/directory/${org.slug}">their listing</a>. ` : 'Not matched to a Directory listing. '}` +
+        `Invite them from <a href="${SITE}/admin/depot/founding">Depot &gt; Founding Members</a>.</p>`, me.email);
+      const { data: saved } = await db.from('ve_nonprofit_surveys').select('answers, points, created_at, updated_at').eq('member_id', me.id).maybeSingle();
+      return json({ ok: true, paid, survey: saved });
     }
 
     if (!admin) return json({ error: 'forbidden' }, 403);

@@ -1,0 +1,858 @@
+/* The Nonprofit Guide (LOCKED by Sean 2026-10-29, playbook ve-nonprofit-guide, canon canon-ve-nonprofit-guide; built on the
+ * Restaurant Guide's files, docs/guides/BUILD-A-GUIDE.md).
+ *
+ * For the people who run Vegan nonprofits, rescues and sanctuaries. The knowledge is Sean's Vegan Nonprofit Survival Guide (Canva
+ * DAGx8V9AvKE, "Top 10 Ways to Fundraise and Stay Relevant in Today's Economy"); the Directory and our episodes are built in, and it
+ * ends on Become a Nonprofit Partner. The tabs are the tour; Dani stays on the right of every tab (her lines show as text, no clips).
+ * The address bar carries the view (#/tips/revenue, #/pulse/leaders, #/directory/rescues, #/partner/tell).
+ *
+ *   Overview       what the Guide is and what each tab holds
+ *   The 10 tips    one per view, each with the lesson, its case or pro tip, a This week checklist and the episode behind it.
+ *                  Tip 1 (storytelling) is open to everyone, the free example
+ *   Pulse          our nonprofit series (Vegans Explore Podcast 111, 123 to 127) and the nonprofit leaders on our shows, as their
+ *                  podcast episodes, played in place (PULSE_PICKS, ve-podcast)
+ *   Directory      Nonprofits, Rescues and Sanctuaries with the Directory's own card, by chapter; a listing opens in the Guide
+ *   Get found      find your organization's page, claim it, keep it current, votes, points members give, the chapters it serves
+ *   Businesses     Vegan brands and restaurants in your chapter that fit a tie-in, and a pitch to send (tip 6 made real)
+ *   Events         put your event on our calendar, promote it, find vendors; and the peer-to-peer kit (members)
+ *   Support        burnout and support: what drains small nonprofits and what to do instead
+ *   Partner        Become a Nonprofit Partner (playbook ve-nonprofit-partners) and Tell us about your organization, a survey
+ *                  paid in points once (ve-nonprofit `survey`)
+ *   My list        members: saved tips, episodes and organizations (ve_guide_saves through ve-cookbook: fix, episode, listing)
+ *   Get access     visitors: $11 or 1,100 points
+ *
+ * Access is every Guide's: ve-guide-unlock for this slug decides; a Nonprofit Partner's lead owns it (ve_nonprofit_partner_start).
+ * The members-only text (tips 2 to 10, the kit, the pitch, the support plan) is ve_guides.content_html, handed out only to its
+ * owners. Never add it to this repo.
+ */
+(function () {
+  var SLUG = 'nonprofit-guide';
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
+  var COOK_URL = SB + '/functions/v1/ve-cookbook';
+  var NP_URL = SB + '/functions/v1/ve-nonprofit';
+  var PODCAST_FN = SB + '/functions/v1/ve-podcast';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var FIELDS = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status,communities,tags,extra_categories';
+  var ORG_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
+  var ORGS_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(category.in.(' + ORG_CATS.join(',') + '),extra_categories.ov.{' + ORG_CATS.join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=1000';
+  // Businesses for a tie-in (tip 6): Vegan food brands sell everywhere; 100% Vegan restaurants by chapter.
+  var BRANDS_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&category=eq.Food Brands&order=vote_count.desc.nullslast,name.asc&limit=12';
+  var RESTS_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&category=in.(Restaurants,Bakeries %26 Cafes)&vegan_status=eq.fully_vegan&order=vote_count.desc.nullslast,name.asc&limit=1000';
+
+  // Our episodes, in this order, as their podcast episodes: [ve_pulse_content slug, the show's Directory slug, the episode's guid in
+  // that show's feed (ve_podcast_feeds), group]. Matched by title and date 2026-10-29. A new one is a row here.
+  var PULSE_PICKS = [
+    ['the-nonprofit-survival-guide-marketing-and-communication', 'vegans-explore-podcast', '43bf326f-e986-4783-addc-e30afc259404', 'series'],
+    ['why-vegan-nonprofits-burn-out-and-what-to-do-instead', 'vegans-explore-podcast', '0899c71a-e815-4097-8d1b-bcac428f8f04', 'series'],
+    ['marketing-that-converts-without-a-big-budget', 'vegans-explore-podcast', '84d3d5b9-f90b-47d0-9f55-1d49f0c3b2a4', 'series'],
+    ['fundraising-systems-for-stability', 'vegans-explore-podcast', 'b3f52089-2b13-4e57-bb27-f414302adf3e', 'series'],
+    ['from-volunteers-to-leaders', 'vegans-explore-podcast', '573b398a-c521-4b5a-8c8e-433bc5c28f7e', 'series'],
+    ['building-infrastructure-that-lasts', 'vegans-explore-podcast', 'ea7a6a73-caaf-4590-a7b3-5d8c82ffc4c7', 'series'],
+    ['susan-hargraves-animal-hero-kids-charles-grippo-ep007-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/486535308', 'leaders'],
+    ['ingrid-newkirk-peta-founder-interview', 'vegans-explore-podcast', 'd1adbd7e-a5b7-40f3-b72a-31f1453fc1be', 'leaders'],
+    ['rachel-black-humane-league-ep004-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/477185073', 'leaders'],
+    ['rowdy-girl-sanctuary-rancher-advocacy-ep026-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/748790878', 'leaders'],
+    ['vegan-sanctuaries-transforming-lives-in-florida', 'vegans-explore-podcast', '83c14ba7-5723-4ba1-a829-4315a458a50e', 'leaders'],
+    ['richard-kudo-animal-recovery-mission-ep012-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/597994581', 'leaders'],
+    ['jordan-david-conscious-muscle-sanctuary-ep014-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/605166471', 'leaders'],
+    ['jane-velez-mitchell-unchained-broadcast-animal-activism', 'vegans-explore-podcast', '3d36a143-e014-4059-915d-d61c70e6cb04', 'leaders'],
+    ['compassion-in-action-from-food-insecurity-to-animal-rescue-e109-soflo-vegans-podcast', 'soflo-vegans-podcast', '0c448e94-0c52-488e-a1ef-b67eea1d2d53', 'leaders'],
+    ['liz-jones-animal-rights-marine-biology-ep024-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/741286495', 'leaders'],
+    ['honey-labronx-vegan-drag-queen-ep017-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/636559014', 'leaders']
+  ];
+  var SHOW_SLUGS = PULSE_PICKS.map(function (x) { return x[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+  var SHOWS_URL = SB + '/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=in.(' + SHOW_SLUGS.join(',') + ')';
+  var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.map(function (x) { return x[0]; }).join(',') + ')';
+
+  // The tabs, in tour order, and what Dani says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get
+  // it), `sayMember` walks an owner through what they have.
+  var TABS = [
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Dani. This Guide is for the people who keep Vegan nonprofits, rescues and sanctuaries going: how to raise money, stay relevant and get found.',
+      sayMember: 'Welcome in. Start with the ten tips, then find your organization in the Directory and make its page yours.' },
+    { k: 'tips', label: 'The 10 tips', lock: 1, say: 'Ten ways to fundraise and stay relevant, each with what to do this week and an episode that backs it up. Storytelling is open for you to try.',
+      sayMember: 'Here are all ten tips. Each has a short checklist for this week. Tick it off as you go, and save the ones you\'re working on.' },
+    { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our five-part nonprofit series, and our interviews with the people behind PETA, The Humane League, Animal Hero Kids and the sanctuaries. Play them right here.',
+      sayMember: 'Every nonprofit episode we\'ve recorded lives here. Start with the series, then hear how the leaders did it.' },
+    { k: 'directory', label: 'Directory', say: 'Here are the nonprofits, rescues and sanctuaries in our Directory, chapter by chapter. Members vote for the ones they love.',
+      sayMember: 'Find your organization and the ones near you. Members vote and give points here, so a page that\'s kept current gets noticed.' },
+    { k: 'found', label: 'Get found', say: 'Your page in our Directory is free. Here\'s how to claim it, keep it current and show up in every chapter you serve.',
+      sayMember: 'Find your page, claim it, and keep it current. Members can give your organization points right from it.' },
+    { k: 'businesses', label: 'Businesses', lock: 1, say: 'Vegan brands and restaurants want to be seen doing good. Here are the ones near you, and a pitch you can send today.',
+      sayMember: 'Pick your chapter, pick a business, and send the pitch. Start with one this week.' },
+    { k: 'events', label: 'Events', say: 'Put your next event on our calendar, promote it, and find vendors for it. Members get a peer-to-peer kit too.',
+      sayMember: 'Add your event to our calendar, then use the peer-to-peer kit so your supporters fundraise for you.' },
+    { k: 'support', label: 'Support', lock: 1, say: 'Passion alone doesn\'t keep a nonprofit going. Here\'s what drains small organizations, and what to do instead.',
+      sayMember: 'You don\'t have to carry it alone. Here\'s how to share the load, and where to find help.' },
+    { k: 'partner', label: 'Become a Partner', say: 'Nonprofit Partners get their own link, earn twenty percent when people join through it, and get points, a kit and a badge.',
+      sayMember: 'Tell us about your organization. It helps us support you, and it pays points.' },
+    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: tips, episodes and organizations.' },
+    { k: 'join', label: 'Get access', guest: 1, say: 'The Nonprofit Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+  ];
+  var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  var TIP_ICON = {
+    story: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+    revenue: '<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.5 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5v1.5M12 16v1.5"/>',
+    digital: '<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    peer: '<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M2 20c1-3.5 3.5-5 6-5s5 1.5 6 5M12 20c.6-2.4 2-4 4-5 2.5 0 5 1.5 6 5"/>',
+    retention: '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
+    business: '<path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M3 9h18M9 20v-6h6v6"/>',
+    hybrid: '<rect x="3" y="5" width="13" height="10" rx="2"/><path d="M16 9l5-3v8l-5-3"/><path d="M7 19h6"/>',
+    data: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    younger: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>',
+    trust: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>'
+  };
+  function tipIcon(id, size) { return '<svg width="' + (size || 34) + '" height="' + (size || 34) + '" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + (TIP_ICON[id] || TIP_ICON.story) + '</svg>'; }
+  function ic(path) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '>' + path + '</svg>'; }
+  var ICON = {
+    tips: ic('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/>'),
+    pulse: ic('<path d="M3 12h4l2-6 4 12 2-6h6"/>'),
+    directory: ic('<path d="M12 21s-7-6.5-7-12a7 7 0 0114 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/>'),
+    found: ic('<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>'),
+    businesses: ic(TIP_ICON.business),
+    events: ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
+    support: ic('<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>'),
+    partner: ic('<path d="M3 10v4h3l7 5V5L6 10z"/><path d="M17 9a4 4 0 010 6"/>'),
+    kit: ic('<path d="M4 7h16v13H4z"/><path d="M9 7V4h6v3"/>')
+  };
+  var LOCK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
+  var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+  var BOOKMARK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3h12a1 1 0 011 1v17l-7-4.5L5 21V4a1 1 0 011-1z"/></svg>';
+
+  var main = document.getElementById('dgMain');
+  var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
+  var qEl = document.getElementById('dgQ');
+  var PUB = JSON.parse(document.getElementById('ng-public').textContent);
+
+  var access = 'checking';       // checking | guest | pending | member
+  var MEM = null;                // members-only payload (tips, kit, pitch, support)
+  var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
+  var PODS = null, ORGS = null, BRANDS = null, RESTS = null;
+  var curTab = 'overview';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function auth() { return window.VEAuth || null; }
+  function token() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; }
+  function member() { return access === 'member'; }
+  function sources(list) { return list && list.length ? '<span class="dg-src">' + list.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</span>' : ''; }
+  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()); }); }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function href(k) { return '#/' + (k === 'overview' ? '' : k); }
+  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
+  function rest(url) { return fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.json(); }); }
+
+  // ---------- tabs ----------
+  function drawMenu(cur) {
+    var locked = !member();
+    menuEl.innerHTML = tabs().map(function (t) {
+      return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) +
+        (locked && t.lock ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
+    }).join('');
+    menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
+      (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+  }
+  menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+
+  // ---------- pieces ----------
+  function crumb(parts) {
+    return '<div class="dg-crumb"><a href="#/">Nonprofit Guide</a>' + parts.map(function (p) { return ' &rsaquo; ' + (p[1] ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a>' : esc(p[0])); }).join('') + '</div>';
+  }
+  function head(k, h, lede, right) {
+    return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + h + '</h2></div>' + (right || '') + '</div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : '');
+  }
+  function toggles(list, cur) {
+    return '<div class="dg-toggles" role="group">' + list.map(function (x) { return '<a href="' + x[1] + '" aria-pressed="' + (x[0] === cur) + '">' + esc(x[0]) + '</a>'; }).join('') + '</div>';
+  }
+  function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
+  function gated(inner, title, text) {
+    return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + esc(offerLine()) + '</p>' + ctaBtns() + '</div></div>';
+  }
+  function row(o) {
+    return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="dg-th rg-th" aria-hidden="true">' + o.icon + '</span>' : '') +
+      '<div class="dg-srow-b">' + (o.pre || '') + '<h3>' + (o.href ? '<a href="' + o.href + '">' + esc(o.title) + '</a>' : esc(o.title)) + '</h3>' + (o.body || '') + '</div>' +
+      (o.acts ? '<div class="dg-acts">' + o.acts + '</div>' : '') + '</div>';
+  }
+  function copyBox(id, text, label) {
+    return '<div class="ng-copy"><pre id="' + id + '">' + esc(text) + '</pre><button type="button" class="dg-btn dg-ghost" data-copy="' + id + '">' + esc(label || 'Copy') + '</button></div>';
+  }
+
+  // ---------- the offer: $11 or 1,100 points ----------
+  function mode() {
+    if (access === 'guest' || access === 'checking') return 'join';
+    return ST.balance >= ST.cost ? 'points' : 'buy';
+  }
+  function ctaLabel() { return { join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
+  function offerLine() {
+    if (mode() === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
+    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+  }
+  function ctaBtns() {
+    var m = mode();
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
+      (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') +
+      (m === 'points' ? '<a href="#" data-buy>Or get it for $11</a>' : '') +
+      (m === 'buy' ? '<a href="/passport">Or get your Passport: $11 with 1,100 points</a>' : '') + '</div>';
+  }
+  function take(d) {
+    if (!d || d.error) return;
+    if (d.access_rule) ST.rule = d.access_rule;
+    if (d.cost) ST.cost = d.cost;
+    ST.balance = d.balance || 0; ST.active = d.membership_status === 'active'; ST.via = d.via || null;
+  }
+  function drawJoinbox() {
+    var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
+    box.querySelector('[data-join]').textContent = ctaLabel();
+    box.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
+  }
+
+  // ---------- saves and votes (ve-cookbook, the Guide's own lists) ----------
+  function cookApi(body) {
+    var tok = token(), h = { 'Content-Type': 'application/json' };
+    if (tok) h.Authorization = 'Bearer ' + tok;
+    body.guide = SLUG;
+    return fetch(COOK_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  // Saves: a tip is kind fix (a lesson to work on), an episode, a Directory listing.
+  var SV = { fix: {}, episode: {}, listing: {} }, SV_ORDER = [], svState = '', svWait = [];
+  function loadSaves(then) {
+    if (then) svWait.push(then);
+    if (svState === 'loading') return;
+    if (!member() || svState === 'loaded') { var w0 = svWait; svWait = []; w0.forEach(function (f) { f(); }); return; }
+    svState = 'loading';
+    var finish = function () { paintSaves(); var w = svWait; svWait = []; w.forEach(function (f) { f(); }); };
+    cookApi({ action: 'saves' }).then(function (d) {
+      if (d && d.saves) { SV_ORDER = d.saves; d.saves.forEach(function (x) { if (SV[x.kind]) SV[x.kind][x.key] = 1; }); svState = 'loaded'; } else svState = '';
+      finish();
+    }).catch(function () { svState = ''; finish(); });
+  }
+  function saveBtn(kind, key) {
+    var on = !!SV[kind][key];
+    return '<button type="button" class="dg-save' + (on ? ' on' : '') + '" data-save="' + kind + ':' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'Saved to My list' : 'Save to My list') + '">' + BOOKMARK + '<span>' + (on ? 'Saved' : 'Save') + '</span></button>';
+  }
+  function paintSaves() {
+    [].forEach.call(document.querySelectorAll('[data-save]'), function (b) {
+      var kk = b.getAttribute('data-save'), i = kk.indexOf(':'), on = !!(SV[kk.slice(0, i)] || {})[kk.slice(i + 1)];
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Saved to My list' : 'Save to My list';
+      b.querySelector('span').textContent = on ? 'Saved' : 'Save';
+    });
+  }
+  var GV = { counts: { episode: {} }, mine: { episode: {} } }, gvLoaded = false;
+  function loadGVotes(then) {
+    cookApi({ action: 'gvotes' }).then(function (d) {
+      if (d && d.counts) { GV.counts = d.counts; GV.mine = { episode: {} }; (d.mine.episode || []).forEach(function (x) { GV.mine.episode[x] = 1; }); gvLoaded = true; }
+      if (then) then();
+    }).catch(function () { if (then) then(); });
+  }
+  function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
+  function gvoteBtn(key) {
+    var on = !!GV.mine.episode[key];
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+  }
+
+  // ---------- chapters (VE_HUBS), for the Directory and Businesses ----------
+  function chapters() { return window.VE_HUBS || []; }
+  function chapter() { var c = recall('ng_chapter'); return c && (c === 'all' || chapters().some(function (h) { return h.slug === c; })) ? c : 'all'; }
+  // The chapters a listing counts in: its address's and the ones it serves ('all', online and media count everywhere).
+  function inChapter(l, slug) {
+    if (slug === 'all') return true;
+    var c = l.communities || [];
+    if (c.indexOf('all') >= 0 || c.indexOf(slug) >= 0) return true;
+    if (!l.address_city && !l.address_state) return true;
+    var h = chapters().filter(function (x) { return x.slug === slug; })[0];
+    if (!h || (!h.match.cities && !h.match.states)) return false;
+    if (h.match.cities && h.match.cities.indexOf(l.address_city) < 0) return false;
+    if (h.match.states && h.match.states.indexOf(l.address_state) < 0) return false;
+    return true;
+  }
+  function chapterPick(id, cur) {
+    return '<select class="dg-sort ng-pick" id="' + id + '" aria-label="Chapter"><option value="all"' + (cur === 'all' ? ' selected' : '') + '>All chapters</option>' +
+      chapters().map(function (h) { return '<option value="' + h.slug + '"' + (h.slug === cur ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select>';
+  }
+  function cards(list, gridId) {
+    return '<div class="vrd-root"><div class="rank-grid" id="' + gridId + '">' + list.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>';
+  }
+  function wireCards(gridId, back) {
+    var g = document.getElementById(gridId);
+    if (!g || !window.VERegionDirectory) return;
+    VERegionDirectory.wire(g, function (slug) { location.hash = back + '/listing/' + encodeURIComponent(slug); });
+    if (member()) [].forEach.call(g.querySelectorAll('.rank-card[data-slug]'), function (card) {
+      var right = card.querySelector('.rank-right'); if (!right || right.querySelector('[data-save]')) return;
+      right.insertAdjacentHTML('beforeend', saveBtn('listing', card.getAttribute('data-slug')));
+    });
+  }
+  // A Directory page inside the Guide, framed and sized to fit.
+  function viewListing(slug, back) {
+    main.innerHTML = crumb([[back[0], back[1]], ['Directory page']]) +
+      '<div class="dg-btns" style="margin-bottom:12px"><a class="dg-btn" href="/business?listing=' + encodeURIComponent(slug) + '">Is this your organization? Claim it</a><a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(slug) + '">Open the page</a></div>' +
+      '<div class="dg-lframe"><iframe id="dgListingFrame" title="Directory page" src="/directory/' + encodeURIComponent(slug) + '"></iframe></div>';
+    var f = document.getElementById('dgListingFrame');
+    f.addEventListener('load', function () {
+      var d; try { d = f.contentDocument; } catch (e) { return; }
+      if (!d || !d.body) return;
+      var last = 0;
+      function fit() { var h = d.body.scrollHeight; if (Math.abs(h - last) < 2) return; last = h; f.style.height = Math.max(600, Math.min(20000, h)) + 'px'; f.setAttribute('scrolling', 'no'); }
+      fit();
+      if (window.ResizeObserver) new ResizeObserver(fit).observe(d.body);
+    });
+  }
+
+  // ---------- the 10 tips ----------
+  function allTips() {
+    var byId = {}; (MEM ? MEM.tips : []).forEach(function (t) { byId[t.id] = t; }); byId[PUB.tip_example.id] = PUB.tip_example;
+    return PUB.titles.map(function (t) { return byId[t[0]] || { id: t[0], title: t[1], locked: 1 }; });
+  }
+  function checks() { try { return JSON.parse(recall('ng_checks') || '{}'); } catch (e) { return {}; } }
+  function tipDone(t, c) { return t.week && t.week.length && t.week.every(function (x, i) { return c[t.id + ':' + i]; }); }
+  function viewTips(id) {
+    if (id) return viewTip(id);
+    var list = allTips(), c = checks();
+    var tiles = list.map(function (t, i) {
+      var open = !t.locked;
+      return row({ icon: tipIcon(t.id), title: (i + 1) + '. ' + t.title, href: open ? '#/tips/' + t.id : '',
+        pre: (tipDone(t, c) ? '<span class="rg-done" style="margin-left:0">Done this week</span>' : '') + (!member() && t.id === PUB.tip_example.id ? '<span class="dg-free">Free to try</span>' : ''),
+        body: open ? '<p class="dg-srow-p">' + esc(t.lesson) + '</p>' : '<p class="dg-srow-p">' + LOCK_SVG + ' In the full Guide</p>',
+        acts: member() ? saveBtn('fix', t.id) : '' });
+    }).join('');
+    main.innerHTML = head('The 10 tips', 'Ten ways to fundraise and stay relevant',
+      esc(PUB.intro) + (member() ? '' : ' One is open for you to try.')) +
+      '<div class="dg-srows">' + tiles + '</div>' +
+      (member() ? '' : '<div style="margin-top:16px">' + gated(skel('Every tip, with what to do this week', 4), 'All ten tips', 'Revenue, your digital home, peer-to-peer, keeping donors, business partners, hybrid events, data, younger supporters and trust, each with a checklist for this week.') + '</div>');
+  }
+  function pod(slug) { return (PODS || []).filter(function (p) { return p.slug === slug; })[0] || null; }
+  function viewTip(id) {
+    var list = allTips(), i = -1;
+    list.forEach(function (t, n) { if (t.id === id) i = n; });
+    var t = list[i];
+    if (!t || t.locked) {
+      main.innerHTML = crumb([['The 10 tips', '#/tips'], [t ? t.title : 'Tip']]) + gated(skel(t ? t.title : '', 6), t ? t.title : 'This tip', 'It opens with the full Guide, with every other tip.');
+      return;
+    }
+    var c = checks(), p = t.episode ? pod(t.episode) : null;
+    var nextOpen = null; for (var n = i + 1; n < list.length; n++) if (!list[n].locked) { nextOpen = list[n]; break; }
+    main.innerHTML = crumb([['The 10 tips', '#/tips'], [t.title]]) +
+      '<div class="rg-fix"><div class="dg-head"><div><div class="dg-k">Tip ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(t.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', t.id) + '</div>' : '') + '</div>' +
+      '<p class="rg-problem">' + esc(t.lesson) + '</p><ul style="margin-top:12px">' + t.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+      (t.extra ? '<div class="ng-extra"><b>' + (t.extra.kind === 'case' ? 'Case example' : 'Pro tip') + '</b>' + esc(t.extra.text) + sources(t.extra.sources) + '</div>' : '') +
+      '<h3>This week</h3><div class="ng-week">' + t.week.map(function (w, k) {
+        var on = !!c[t.id + ':' + k];
+        return '<label><input type="checkbox" data-check="' + esc(t.id) + ':' + k + '"' + (on ? ' checked' : '') + '><span>' + esc(w) + '</span></label>';
+      }).join('') + '</div>' +
+      (t.ours ? '<div class="ng-ours"><b>On Vegans Explore</b>' + esc(t.ours.text) + ' <a href="' + esc(t.ours.href) + '">' + esc(t.ours.cta) + ' &rsaquo;</a></div>' : '') +
+      (p ? '<h3>Listen</h3><div class="vep-dock" data-vep-always></div><div class="rg-eps ng-one"><div class="vep-list">' + podCard(p) + '</div></div>' : '') +
+      '<div class="rg-fixnav"><a class="dg-tnav" href="#/tips">All tips</a>' +
+      (nextOpen ? '<a class="dg-tnav next" href="#/tips/' + nextOpen.id + '">Next tip &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/pulse">The Pulse &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">Get every tip &rsaquo;</a>') + '</div></div>' +
+      (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine tips', 3), 'The other nine tips', 'Revenue, your digital home, peer-to-peer, keeping donors, business partners, hybrid events, data, younger supporters and trust.') + '</div>' : '');
+  }
+
+  // ---------- the Pulse: our series and the leaders ----------
+  function podCard(p) {
+    var ep = p.ep;
+    if (!ep || !window.VEEpisodes) return '';
+    var show = { name: p.show.name, image: p.show.logo_url || '' };
+    return VEEpisodes.row(Object.assign({}, ep, { summary: '', image: show.image || ep.image || '' }), show,
+      { showName: true, acts: member() ? gvoteBtn(p.slug) + saveBtn('episode', p.slug) : '' });
+  }
+  function podKey(p) { return '|' + p.ep.guid; }
+  function playPod(slug) {
+    var p = pod(slug);
+    if (p && p.ep && window.VEEpisodes) VEEpisodes.play(Object.assign({}, p.ep, { image: p.show.logo_url || p.ep.image || '' }), { name: p.show.name, image: p.show.logo_url || '' });
+  }
+  function keepPlayer(bar) {
+    if (!bar) return;
+    var dock = main.querySelector('.vep-dock[data-vep-always]');
+    if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
+    else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }
+  }
+  function viewPulse(sub) {
+    var parts = String(sub || '').split('/'), m = parts[0] === 'leaders' ? 'leaders' : 'series';
+    if (parts[0] === 'listen' && parts[1]) { viewPulse(''); playPod(decodeURIComponent(parts[1])); return; }
+    var t = toggles([['Our nonprofit series', '#/pulse'], ['Nonprofit leaders', '#/pulse/leaders']], m === 'leaders' ? 'Nonprofit leaders' : 'Our nonprofit series');
+    var html = head('The Nonprofit Pulse', m === 'leaders' ? 'The people who built them' : 'Our nonprofit series',
+      m === 'leaders' ? 'Founders and leaders of PETA, The Humane League, Animal Hero Kids, Animal Recovery Mission and the sanctuaries, on what it took.'
+        : 'Six episodes from Sean A. Russell for small grassroots Vegan nonprofits: communication, burnout, marketing, fundraising, volunteers and the systems that last.', t);
+    var pods = PODS ? PODS.filter(function (p) { return p.group === m; }) : null;
+    if (pods && m === 'leaders') pods = pods.map(function (x, i) { return [x, i]; }).sort(function (a, b) { return gvCount(b[0].slug) - gvCount(a[0].slug) || a[1] - b[1]; }).map(function (x) { return x[0]; });
+    var grid = pods ? (pods.length ? '<div class="vep-list">' + pods.map(podCard).join('') + '</div>' : '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>';
+    if (member() && !gvLoaded) loadGVotes(function () { if (curTab === 'pulse') viewPulse(sub); });
+    html += member() ? '<div class="vep-dock" data-vep-always></div><div class="rg-eps">' + grid + '</div>' : gated('<div class="rg-eps">' + grid + '</div>', 'Every nonprofit episode', 'Listen to the series and the leaders right here in the Guide.');
+    main.innerHTML = html;
+  }
+
+  // ---------- Directory: nonprofits, rescues and sanctuaries ----------
+  var DIR_SUBS = [['All', ''], ['Nonprofits', 'nonprofits'], ['Rescues', 'rescues'], ['Sanctuaries', 'sanctuaries']];
+  var dirShown = 24;
+  function orgCat(l, cat) { return l.category === cat || (l.extra_categories || []).indexOf(cat) >= 0; }
+  function viewDirectory(sub) {
+    if (sub && sub.indexOf('listing/') >= 0) return viewListing(decodeURIComponent(sub.split('listing/')[1]), ['Directory', '#/directory']);
+    var key = (sub || '').split('/')[0], s = DIR_SUBS.filter(function (x) { return x[1] === key; })[0] || DIR_SUBS[0];
+    var ch = chapter(), q = (document.getElementById('ngDirQ') || {}).value || '';
+    var list = (ORGS || []).filter(function (l) {
+      return (!s[1] || orgCat(l, s[0])) && inChapter(l, ch) && (!q || (l.name || '').toLowerCase().indexOf(q.toLowerCase()) >= 0);
+    });
+    main.innerHTML = head('Directory', 'Nonprofits, rescues and sanctuaries',
+      'Every one in our Directory, chapter by chapter, the most voted first. National organizations show in every chapter.',
+      toggles(DIR_SUBS.map(function (x) { return [x[0], '#/directory' + (x[1] ? '/' + x[1] : '')]; }), s[0])) +
+      '<div class="dg-tools">' + chapterPick('ngDirCh', ch) + '<input type="search" id="ngDirQ" placeholder="Search ' + esc(s[1] ? s[0] : 'organizations') + '..." value="' + esc(q) + '" aria-label="Search organizations"><span class="dg-count">' + (ORGS ? list.length + ' shown' : '') + '</span></div>' +
+      (ORGS ? (list.length ? cards(list.slice(0, dirShown), 'ngDir') + (list.length > dirShown ? '<div class="dg-btns" style="margin-top:14px"><button type="button" class="dg-btn dg-ghost" data-more>Show more</button></div>' : '')
+        : '<p class="dg-empty">None here yet. <a href="/claim?add=1">Add your organization</a>.</p>') : '<div class="dg-loading">Loading...</div>');
+    wireCards('ngDir', '#/directory');
+    var sel = document.getElementById('ngDirCh'); if (sel) sel.addEventListener('change', function () { store('ng_chapter', sel.value); dirShown = 24; viewDirectory(sub); });
+    var inp = document.getElementById('ngDirQ'), t;
+    if (inp) inp.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { dirShown = 24; viewDirectory(sub); var i2 = document.getElementById('ngDirQ'); if (i2) { i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); } }, 200); });
+  }
+
+  // ---------- Get found ----------
+  function viewFound(sub) {
+    if (sub && sub.indexOf('listing/') === 0) return viewListing(decodeURIComponent(sub.slice(8)), ['Get found', '#/found']);
+    var steps = [
+      ['Find your page', 'Many Vegan nonprofits, rescues and sanctuaries are already in our Directory. Search for yours below.', '#/found', 'Search below'],
+      ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is $11 or 1,100 points, and our team checks every claim.', '/business', 'How claiming works'],
+      ['Not listed? Add it', 'Add your organization to the Directory. It waits for our team to check it, then it goes live.', '/claim?add=1', 'Add your organization'],
+      ['Every chapter you serve', 'A statewide or national organization shows in every chapter it serves, not just its home city. Tell us which.', 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Chapters our organization serves'), 'Tell our team'],
+      ['Votes and points', 'Members vote for the organizations they love, and they can give your organization points right from its page.', '/directory?tab=community', 'See the Community Directory'],
+      ['The Nonprofit Partner badge', 'Nonprofit Partners wear a badge on their page and Directory card, and earn through their own link.', '#/partner', 'Become a Partner']
+    ];
+    main.innerHTML = head('Get found', 'Make your Directory page work for you',
+      'Your page in our Directory is part of your digital home. Here is how to claim it, keep it current, and show up wherever you serve.') +
+      '<div class="rg-steps">' + steps.map(function (s, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p><a href="' + s[2] + '">' + esc(s[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>' +
+      '<h3 class="dg-k" style="margin:0 0 8px">Find your organization</h3><div class="rg-find"><input type="search" id="ngFind" placeholder="Your organization\'s name" aria-label="Find your organization" autocomplete="off"></div><div class="rg-hits" id="ngHits"></div>';
+    var input = document.getElementById('ngFind'), hits = document.getElementById('ngHits'), t;
+    input.addEventListener('input', function () {
+      clearTimeout(t); var q = input.value.trim();
+      if (q.length < 2) { hits.innerHTML = ''; return; }
+      t = setTimeout(function () {
+        var low = q.toLowerCase(), found = (ORGS || []).filter(function (l) { return (l.name || '').toLowerCase().indexOf(low) >= 0; }).slice(0, 8);
+        hits.innerHTML = found.length ? found.map(function (l) { return '<a class="rg-hit" href="#/found/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '<span>' + esc([l.category, l.address_city].filter(Boolean).join(' · ')) + ' &middot; Open the page</span></a>'; }).join('')
+          : '<p class="dg-empty">Not in the Directory yet. <a href="/claim?add=1">Add your organization</a>.</p>';
+      }, 200);
+    });
+  }
+
+  // ---------- Businesses: a tie-in near you (tip 6) ----------
+  function viewBusinesses(sub) {
+    if (sub && sub.indexOf('listing/') >= 0) return viewListing(decodeURIComponent(sub.split('listing/')[1]), ['Businesses', '#/businesses']);
+    var ch = chapter();
+    var rests = (RESTS || []).filter(function (l) { return ch !== 'all' && inChapter(l, ch) && (l.address_city || l.address_state); }).slice(0, 12);
+    if (ch === 'all') rests = (RESTS || []).slice(0, 12);
+    var lists = '<h3 class="dg-k" style="margin:0 0 8px">Vegan food brands</h3><p class="dg-lede" style="margin-bottom:10px">They sell everywhere, so a tie-in works wherever you are.</p>' +
+      (BRANDS ? cards(BRANDS, 'ngBrands') : '<div class="dg-loading">Loading...</div>') +
+      '<h3 class="dg-k" style="margin:22px 0 8px">100% Vegan restaurants' + (ch === 'all' ? '' : ' in ' + esc((chapters().filter(function (h) { return h.slug === ch; })[0] || {}).name || '')) + '</h3>' +
+      (RESTS ? (rests.length ? cards(rests, 'ngRests') : '<p class="dg-empty">None listed in this chapter yet.</p>') : '<div class="dg-loading">Loading...</div>');
+    var pitch = MEM && MEM.pitch ? '<h3 class="dg-k" style="margin:22px 0 8px">The pitch</h3><p class="dg-lede" style="margin-bottom:10px">Fill in the brackets, then send it from your own email. Offer something real in return.</p>' + copyBox('ngPitch', MEM.pitch, 'Copy the pitch') : '';
+    main.innerHTML = head('Businesses', 'Vegan businesses near you that fit a tie-in',
+      'Cause marketing, a table at your event, a sponsor for your next campaign. Mission-aligned businesses want to be seen doing good, and your authenticity gives them credibility.', chapterPick('ngBizCh', ch)) +
+      (member() ? lists + pitch : gated(skel('Vegan food brands', 3) + skel('100% Vegan restaurants near you', 3), 'Businesses near you, and the pitch', 'Vegan brands and restaurants in your chapter, and a pitch you can send today.'));
+    if (member()) { wireCards('ngBrands', '#/businesses'); wireCards('ngRests', '#/businesses'); }
+    var sel = document.getElementById('ngBizCh'); if (sel) sel.addEventListener('change', function () { store('ng_chapter', sel.value); viewBusinesses(''); });
+  }
+
+  // ---------- Events, and the peer-to-peer kit ----------
+  function viewEvents(sub) {
+    var kit = String(sub || '').split('/')[0] === 'kit';
+    var t = toggles([['Your events', '#/events'], ['Peer-to-peer kit', '#/events/kit']], kit ? 'Peer-to-peer kit' : 'Your events');
+    if (!kit) {
+      var steps = [
+        ['Put it on our calendar', 'Every Vegan event belongs on our calendar, by city. Drop in your flyer, paste a link or type it in; we read it and ask what is missing.', '/events#submit/1', 'Add your event'],
+        ['Promote it', 'Once it is in, Promote your event shows our packages: a feature, ads, a social push, coverage. Tell us what you are interested in.', '/events#mine', 'Your events'],
+        ['Find vendors', 'Vegan food trucks, vendors and brands that show up at markets and events, filtered by your chapter.', '/directory?tab=food&sub=vendors', 'Find vendors'],
+        ['Record it, then use it again', 'Hybrid events reach beyond your city. Record every talk: one webinar becomes posts, reels and a donor update.', '#/tips/hybrid', 'Read the tip']
+      ];
+      main.innerHTML = head('Events', 'Fill your next event', 'Our calendar is where members look for something to do. Here is how to get your event in front of them.', t) +
+        '<div class="rg-steps">' + steps.map(function (s, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p><a href="' + s[2] + '">' + esc(s[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>';
+      return;
+    }
+    var body = !member() ? gated(skel('World Vegan Day', 3) + skel('Giving Tuesday', 3) + skel('Earth Day', 3), 'The peer-to-peer kit', 'Ready-to-post messages for World Vegan Day, Giving Tuesday and Earth Day, and the toolkit checklist.')
+      : '<div class="ng-kit">' + MEM.kit.moments.map(function (m, i) {
+          return '<div class="dg-card"><span class="dg-bcat">' + esc(m.when) + '</span><h3 style="margin-top:4px">' + esc(m.title) + '</h3><p style="margin-bottom:10px">' + esc(m.why) + '</p>' + copyBox('ngKit' + i, m.text, 'Copy message') + '</div>';
+        }).join('') + '</div>' +
+        '<h3 class="dg-k" style="margin:22px 0 8px">Your toolkit for supporters</h3><div class="ng-week">' + MEM.kit.toolkit.map(function (w, k) {
+          var on = !!checks()['kit:' + k];
+          return '<label><input type="checkbox" data-check="kit:' + k + '"' + (on ? ' checked' : '') + '><span>' + esc(w) + '</span></label>';
+        }).join('') + '</div>';
+    main.innerHTML = head('Events', 'The peer-to-peer kit', 'Your community is your biggest amplifier. Give them the words, the date and one clear ask, then celebrate them publicly.', t) + body;
+  }
+
+  // ---------- Support: burnout ----------
+  function viewSupport() {
+    var html = head('Support', 'Burnout, and what to do instead',
+      'Passion alone does not create sustainability. If you run a small grassroots nonprofit and you are exhausted, it is usually not your belief in the mission. It is the structure.');
+    if (!member()) {
+      main.innerHTML = html + gated(skel('Three weaknesses that drain small nonprofits', 4) + skel('Share the load', 3), 'The support plan', 'What quietly drains small nonprofits, how to turn volunteers into leaders, and where to find help.');
+      return;
+    }
+    var s = MEM.support, c = checks();
+    var eps = ['why-vegan-nonprofits-burn-out-and-what-to-do-instead', 'from-volunteers-to-leaders', 'rachel-black-humane-league-ep004-soflo-vegans-podcast'].map(pod).filter(Boolean);
+    main.innerHTML = html +
+      '<h3 class="dg-k" style="margin:0 0 8px">' + esc(s.weak_title) + '</h3><div class="rg-todo">' + s.weak.map(function (w) { return '<div class="rg-item"><span class="rg-st rg-st-fix">Watch for</span><div><b>' + esc(w[0]) + '</b></div><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
+      '<h3 class="dg-k" style="margin:18px 0 8px">' + esc(s.share_title) + '</h3><div class="ng-week">' + s.share.map(function (w, k) {
+        return '<label><input type="checkbox" data-check="support:' + k + '"' + (c['support:' + k] ? ' checked' : '') + '><span>' + esc(w) + '</span></label>';
+      }).join('') + '</div>' +
+      '<h3 class="dg-k" style="margin:18px 0 8px">Where to find help</h3><div class="rg-steps">' + s.help.map(function (h) { return '<div class="rg-step"><b>' + esc(h[0]) + '</b><p>' + esc(h[1]) + '</p><a href="' + esc(h[2]) + '">' + esc(h[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>' +
+      (eps.length ? '<h3 class="dg-k" style="margin:18px 0 8px">Listen</h3><div class="vep-dock" data-vep-always></div><div class="rg-eps"><div class="vep-list">' + eps.map(podCard).join('') + '</div></div>' : '');
+  }
+
+  // ---------- Become a Nonprofit Partner, and the organization survey ----------
+  var SURVEY = [
+    { k: 'org', t: 'text', l: 'Your organization\'s name', req: 1, max: 160 },
+    { k: 'role', t: 'text', l: 'Your role there', max: 120 },
+    { k: 'kind', t: 'one', l: 'What kind of organization is it?', o: ['Nonprofit', 'Rescue', 'Sanctuary', 'Something else'], req: 1 },
+    { k: 'where', t: 'text', l: 'Where are you based, and where do you serve?', max: 200 },
+    { k: 'challenge', t: 'many', l: 'What is hardest right now?', o: ['Raising money', 'Finding volunteers', 'Getting seen', 'Burnout', 'Running events', 'Something else'] },
+    { k: 'money', t: 'many', l: 'How do you raise money today?', o: ['Events', 'Monthly donors', 'Grants', 'Merchandise', 'Business partners', 'Peer-to-peer', 'Other'] },
+    { k: 'monthly', t: 'one', l: 'Do you have a monthly giving program?', o: ['Yes', 'We are starting one', 'Not yet'] },
+    { k: 'help', t: 'many', l: 'What would help most from Vegans Explore?', o: ['Being found in the Directory', 'Promoting our events', 'Business partners', 'Volunteers', 'Being on a podcast or in the Daily Pulse', 'Ads', 'Earning through our own link'] },
+    { k: 'note', t: 'long', l: 'Anything else we should know?', max: 1000 }
+  ];
+  var SV_SURVEY = null; // what they sent before
+  function npApi(body) {
+    var tok = token(), h = { 'Content-Type': 'application/json' };
+    if (tok) h.Authorization = 'Bearer ' + tok;
+    return fetch(NP_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+  }
+  function viewPartner(sub) {
+    var tell = String(sub || '').split('/')[0] === 'tell';
+    var t = toggles([['The partnership', '#/partner'], ['Tell us about you', '#/partner/tell']], tell ? 'Tell us about you' : 'The partnership');
+    if (!tell) {
+      var what = [
+        ['Your own link', 'A short link for your organization, separate from anyone\'s personal one. Visits and sign-ups through it count for the organization.'],
+        ['20% of what comes through it', 'A flat 20% of the $11 Passport and of Guides bought through your link, paid to the organization as referral earnings once $25 is ready and after a W-9. Never a donation, and not tax-deductible.'],
+        ['Points for our services', 'Points your organization holds, set when you are invited, toward promoting your events, a feature or a social push. Members can give you more.'],
+        ['A marketing kit', 'Ready-to-post messages, a website button and banner, and an email blurb, all carrying your link.'],
+        ['A badge and your own Guide', 'The Nonprofit Partner badge on your page and Directory card, and a Guide for your lead with your numbers.'],
+        ['Your lead is on us', 'The person who runs the partnership gets a complimentary Founding Membership. If the lead changes, everything stays with the organization.']
+      ];
+      main.innerHTML = head('Become a Partner', 'Vegans Explore Nonprofit Partners',
+        'The organization is the partner. Nonprofit Partners join by invitation; tell us about your organization and our team will be in touch.', t) +
+        '<div class="rg-steps">' + what.map(function (w, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + '</b><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
+        '<div class="dg-btns"><a class="dg-btn" href="#/partner/tell">Tell us about your organization</a><a class="dg-btn dg-ghost" href="/policies#membership">The terms</a></div>';
+      return;
+    }
+    var fields = SURVEY.map(function (q) {
+      var v = (SV_SURVEY && SV_SURVEY.answers) ? SV_SURVEY.answers[q.k] : null;
+      if (q.t === 'text') return '<label class="dg-field"><span>' + esc(q.l) + (q.req ? '' : ' <i>(optional)</i>') + '</span><input name="' + q.k + '" maxlength="' + q.max + '"' + (q.req ? ' required' : '') + ' value="' + esc(v || '') + '"></label>';
+      if (q.t === 'long') return '<label class="dg-field"><span>' + esc(q.l) + ' <i>(optional)</i></span><textarea name="' + q.k + '" rows="3" maxlength="' + q.max + '">' + esc(v || '') + '</textarea></label>';
+      var arr = Array.isArray(v) ? v : v ? [v] : [];
+      return '<fieldset class="ng-q"><legend>' + esc(q.l) + (q.t === 'many' ? ' <i>(pick any)</i>' : '') + '</legend>' + q.o.map(function (o) {
+        return '<label><input type="' + (q.t === 'many' ? 'checkbox' : 'radio') + '" name="' + q.k + '" value="' + esc(o) + '"' + (arr.indexOf(o) >= 0 ? ' checked' : '') + (q.req && q.t === 'one' ? ' required' : '') + '><span>' + esc(o) + '</span></label>';
+      }).join('') + '</fieldset>';
+    }).join('');
+    var pay = PUB.survey_points;
+    main.innerHTML = head('Become a Partner', 'Tell us about your organization',
+      'It helps us shape what we build for Vegan nonprofits, and our team reads every one. ' + (SV_SURVEY && SV_SURVEY.points ? 'You earned your ' + pts(SV_SURVEY.points) + ' points; you can update your answers any time.' : 'Members earn ' + pts(pay) + ' points for it, once.'), t) +
+      (token() ? '<form class="dg-form" id="ngSurvey">' + fields + '<span class="dg-status" role="status"></span><button type="submit" class="dg-btn">' + (SV_SURVEY ? 'Update my answers' : 'Send it') + '</button></form>'
+        : '<div class="dg-door"><p>Sign in to tell us about your organization. Members earn ' + pts(pay) + ' points for it.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport">Get your Passport</a></div></div>');
+    var f = document.getElementById('ngSurvey'); if (!f) return;
+    if (!SV_SURVEY) npApi({ action: 'survey_get' }).then(function (d) { if (d && d.survey && !SV_SURVEY) { SV_SURVEY = d.survey; if (curTab === 'partner' && /tell/.test(location.hash)) viewPartner('tell'); } }).catch(function () {});
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var ans = {};
+      SURVEY.forEach(function (q) {
+        if (q.t === 'many') ans[q.k] = [].map.call(f.querySelectorAll('input[name="' + q.k + '"]:checked'), function (x) { return x.value; });
+        else if (q.t === 'one') { var c = f.querySelector('input[name="' + q.k + '"]:checked'); ans[q.k] = c ? c.value : ''; }
+        else ans[q.k] = f.elements[q.k].value.trim();
+      });
+      var btn = f.querySelector('button[type=submit]'), st = f.querySelector('.dg-status');
+      btn.disabled = true; btn.textContent = 'Sending...'; st.textContent = '';
+      npApi({ action: 'survey', answers: ans }).then(function (d) {
+        if (!d || !d.ok) throw d;
+        SV_SURVEY = d.survey;
+        main.innerHTML = head('Become a Partner', 'Thank you', (d.paid ? 'We added ' + pts(d.paid) + ' points to your account. ' : '') + 'Our team reads every one, and we will be in touch about the partnership.', t) +
+          '<div class="dg-btns"><a class="dg-btn" href="#/tips">Back to the tips</a><a class="dg-btn dg-ghost" href="#/partner/tell">See my answers</a></div>';
+      }).catch(function (d) { btn.disabled = false; btn.textContent = SV_SURVEY ? 'Update my answers' : 'Send it'; st.textContent = (d && d.message) || 'That did not go through. Try again in a minute.'; });
+    });
+  }
+
+  // ---------- My list ----------
+  var LIST_SECS = [['Tips', 'tips', 'fix', '#/tips'], ['Episodes', 'episodes', 'episode', '#/pulse'], ['Organizations', 'organizations', 'listing', '#/directory']];
+  function viewMyList(sub) {
+    var sec = LIST_SECS.filter(function (x) { return x[1] === String(sub || '').split('/')[0]; })[0] || LIST_SECS[0];
+    main.innerHTML = head('My list', 'My list', 'Everything you save in the Guide, in one place. Tap Save on any tip, episode or organization.', toggles(LIST_SECS.map(function (x) { return [x[0], '#/mylist/' + x[1]]; }), sec[0])) +
+      '<div id="dgML"><div class="dg-loading">Loading your list...</div></div>';
+    var draw = function () {
+      var el = document.getElementById('dgML'); if (!el) return;
+      var keys = SV_ORDER.filter(function (x) { return x.kind === sec[2]; }).map(function (x) { return x.key; }), html = '', items = [];
+      if (sec[2] === 'fix') { var all = allTips(); items = keys.map(function (k) { return all.filter(function (t) { return t.id === k; })[0]; }).filter(Boolean);
+        html = '<div class="dg-srows">' + items.map(function (t) { return row({ icon: tipIcon(t.id), title: t.title, href: '#/tips/' + t.id, body: '<p class="dg-srow-p">' + esc(t.lesson || '') + '</p>', acts: saveBtn('fix', t.id) }); }).join('') + '</div>'; }
+      else if (sec[2] === 'episode') { items = keys.map(pod).filter(Boolean); html = '<div class="vep-dock" data-vep-always></div><div class="rg-eps"><div class="vep-list">' + items.map(podCard).join('') + '</div></div>'; }
+      else { items = keys.map(function (k) { return (ORGS || []).concat(BRANDS || [], RESTS || []).filter(function (l) { return l.slug === k; })[0]; }).filter(Boolean); html = cards(items, 'ngML'); }
+      el.innerHTML = items.length ? html : '<p class="dg-empty">Nothing saved here yet. Tap Save on any of the <a href="' + sec[3] + '">' + esc(sec[0].toLowerCase()) + '</a> and it shows up here.</p>';
+      if (sec[2] === 'listing') wireCards('ngML', '#/directory');
+    };
+    var waits = 0, done = function () { if (--waits <= 0) draw(); };
+    if (svState !== 'loaded') { waits++; loadSaves(done); }
+    if (sec[2] === 'episode' && !gvLoaded) { waits++; loadGVotes(done); }
+    if (!waits) draw();
+  }
+
+  // ---------- Get access ----------
+  function viewJoin() {
+    if (member()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep. Thank you for the work you do.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
+    var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
+    var list = '<div class="dg-access"><ul>' +
+      '<li><b>All ten tips</b>, each with what to do this week and the episode behind it.</li>' +
+      '<li><b>The Nonprofit Pulse:</b> our five-part series and our interviews with nonprofit leaders, played right here.</li>' +
+      '<li><b>Businesses near you</b> that fit a tie-in, and a pitch you can send today.</li>' +
+      '<li><b>The peer-to-peer kit</b>, the support plan, and My list to keep your place.</li></ul></div>';
+    var box = m === 'points'
+      ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
+        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
+      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+          : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
+        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
+        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
+    main.innerHTML = head('Get access', 'Open the whole Nonprofit Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Nonprofit Partners get it with the partnership. The Directory, Get found, Events and the partnership stay open to everyone.') + list;
+    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
+  }
+
+  // ---------- Overview ----------
+  function viewOverview() {
+    var tiles = [
+      ['tips', 'The 10 tips', 'Ten ways to fundraise and stay relevant, each with what to do this week.'],
+      ['pulse', 'Pulse', 'Our nonprofit series, and the leaders of PETA, The Humane League, Animal Hero Kids and the sanctuaries.'],
+      ['directory', 'Directory', 'Nonprofits, rescues and sanctuaries, chapter by chapter.', 1],
+      ['found', 'Get found', 'Claim your page, keep it current, and show up in every chapter you serve.', 1],
+      ['businesses', 'Businesses', 'Vegan brands and restaurants near you that fit a tie-in, and a pitch to send.'],
+      ['events', 'Events', 'Your event on our calendar, promoted, with vendors. Plus the peer-to-peer kit.', 1],
+      ['support', 'Support', 'What drains small nonprofits, and what to do instead.'],
+      ['partner', 'Become a Partner', 'Your own link, 20% of what comes through it, points, a kit and a badge.', 1]
+    ];
+    main.innerHTML = head('Vegans Explore Guides for nonprofits', 'Fundraise, stay relevant and get found',
+      'For the people who keep Vegan nonprofits, rescues and sanctuaries going. Based on The Vegan Nonprofit Survival Guide by Sean A. Russell, with our Directory and our interviews built in.') +
+      '<div class="dg-tiles">' + tiles.map(function (t) {
+        return '<a class="dg-tile' + (t[0] === 'partner' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
+          (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
+      }).join('') + '</div>' +
+      '<div class="dg-start"><a class="dg-btn" href="#/tips/' + PUB.tip_example.id + '">' + (member() ? 'Start with tip 1' : 'Try tip 1, free') + '</a><a class="dg-btn dg-ghost" href="#/found">Find your organization</a>' +
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Dani with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+  }
+
+  // ---------- search (members) ----------
+  function index() {
+    var out = [];
+    if (!MEM) return out;
+    allTips().forEach(function (t) { out.push({ t: 'The 10 tips', title: t.title, text: [t.lesson].concat(t.list || []).concat(t.week || []).join(' '), href: '#/tips/' + t.id }); });
+    (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/listen/' + encodeURIComponent(p.slug) }); });
+    (ORGS || []).forEach(function (l) { out.push({ t: 'Directory', title: l.name, text: [l.category, l.address_city, l.address_state].filter(Boolean).join(', '), href: '#/directory/listing/' + encodeURIComponent(l.slug) }); });
+    return out;
+  }
+  function viewSearch(q) {
+    if (qEl.value !== q) qEl.value = q;
+    var words = q.toLowerCase().split(/\s+/).filter(Boolean);
+    var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
+    var groups = {}; hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
+    var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
+    ['The 10 tips', 'Pulse', 'Directory'].forEach(function (g) {
+      if (!groups[g]) return;
+      html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
+        return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
+      }).join('') + '</div>';
+    });
+    if (!hits.length) html += '<p class="dg-empty">Nothing matched. Try donors, volunteers, events or a sanctuary\'s name.</p>';
+    main.innerHTML = html + '</div>';
+  }
+  var tSearch;
+  qEl.addEventListener('input', function () {
+    clearTimeout(tSearch);
+    tSearch = setTimeout(function () {
+      var q = qEl.value.trim(), h = q ? '#/search/' + encodeURIComponent(q) : '#/';
+      if (/^#\/search\//.test(location.hash) && q) { history.replaceState(null, '', location.pathname + location.search + h); route(); } else location.hash = h;
+    }, 180);
+  });
+  document.getElementById('dgSearchForm').addEventListener('submit', function (e) { e.preventDefault(); var q = qEl.value.trim(); if (q) location.hash = '#/search/' + encodeURIComponent(q); });
+
+  // ---------- Dani, on the right of every tab (her words as text; no clips yet) ----------
+  var tourM = document.getElementById('dgTourM'), foldBtn = document.getElementById('dgFold'), railEl = document.getElementById('dgRail');
+  function setFold(folded) {
+    railEl.classList.toggle('dg-folded', folded);
+    foldBtn.textContent = folded ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!folded));
+    try { sessionStorage.setItem('ng_dani_folded', folded ? '1' : ''); } catch (e) {}
+  }
+  foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
+  try { if (sessionStorage.getItem('ng_dani_folded')) setFold(true); } catch (e) {}
+  var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
+  function drawDani() {
+    var t = tab(curTab), list = tabs(), i = 0;
+    list.forEach(function (x, n) { if (x.k === curTab) i = n; });
+    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
+      '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+  }
+
+  // ---------- router ----------
+  function route() {
+    var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
+    var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
+    if (view === 'search' && (!sub || !member())) view = 'overview';
+    var known = { overview: 1, tips: 1, pulse: 1, directory: 1, found: 1, businesses: 1, events: 1, support: 1, partner: 1, mylist: 1, join: 1, search: 1 };
+    if (!known[view]) view = 'overview';
+    document.body.classList.toggle('dg-member', member());
+    drawJoinbox();
+    var key = view;
+    if (view === 'search') key = curTab;
+    if (view === 'join' && member()) key = 'overview';
+    if (view === 'mylist' && !member()) { view = 'overview'; key = 'overview'; }
+    if (member() && !svState) loadSaves();
+    drawMenu(view === 'search' ? 'search' : key);
+    if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
+    var bar = document.getElementById('vep-player');
+    ({ overview: viewOverview, tips: function () { viewTips(sub); }, pulse: function () { viewPulse(sub); }, directory: function () { viewDirectory(sub); },
+       found: function () { viewFound(sub); }, businesses: function () { viewBusinesses(sub); }, events: function () { viewEvents(sub); }, support: viewSupport,
+       partner: function () { viewPartner(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+    keepPlayer(bar);
+    curTab = key;
+    drawDani();
+    if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
+  }
+  window.addEventListener('hashchange', function () { dirShown = 24; route(); });
+
+  // ---------- access ----------
+  function api(action, tok) {
+    return fetch(UNLOCK_URL + '?action=' + action, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: SLUG, token: tok || undefined }) })
+      .then(function (r) { return r.json(); });
+  }
+  function becomeMember(html) {
+    var t = document.createElement('template'); t.innerHTML = html;
+    var el = t.content.getElementById('ng-data');
+    MEM = el ? JSON.parse(el.textContent) : null;
+    access = MEM ? 'member' : 'pending';
+    route();
+  }
+  function feedEp(show, guid) {
+    return fetch(PODCAST_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'episode', slug: show, guid: guid }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d && d.episode; }).catch(function () { return null; });
+  }
+  function loadPublic() {
+    if (window.VEEpisodes) VEEpisodes.css();
+    rest(ORGS_URL).then(function (d) { ORGS = Array.isArray(d) ? d : []; if (/^(directory|found|search|mylist)$/.test(curTab) || /^#\/search/.test(location.hash)) route(); }).catch(function () { ORGS = []; });
+    Promise.all([rest(BRANDS_URL).catch(function () { return []; }), rest(RESTS_URL).catch(function () { return []; })]).then(function (r) {
+      BRANDS = Array.isArray(r[0]) ? r[0] : []; RESTS = Array.isArray(r[1]) ? r[1] : [];
+      if (curTab === 'businesses' || curTab === 'mylist') route();
+    });
+    var eps = Promise.all(PULSE_PICKS.map(function (x) { return feedEp(x[1], x[2]); }));
+    Promise.all([rest(PULSE_URL).catch(function () { return []; }), rest(SHOWS_URL).catch(function () { return []; }), eps]).then(function (r) {
+      var pods = Array.isArray(r[0]) ? r[0] : [], shows = Array.isArray(r[1]) ? r[1] : [];
+      PODS = PULSE_PICKS.map(function (x, i) {
+        var p = pods.filter(function (y) { return y.slug === x[0]; })[0], show = shows.filter(function (y) { return y.slug === x[1]; })[0], ep = r[2][i];
+        return p && show && ep && ep.audio ? Object.assign({}, p, { show: show, ep: ep, group: x[3] }) : null;
+      }).filter(Boolean);
+      if (/^(pulse|tips|support|mylist)$/.test(curTab)) route();
+    });
+  }
+  function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
+
+  document.addEventListener('click', function (e) {
+    var a = auth(), el;
+    if ((el = e.target.closest('[data-vep-play]'))) {
+      var pp = (PODS || []).filter(function (x) { return x.ep && podKey(x) === el.getAttribute('data-vep-play'); })[0];
+      if (pp) playPod(pp.slug); return;
+    }
+    if ((el = e.target.closest('[data-copy]'))) {
+      var src = document.getElementById(el.getAttribute('data-copy')), txt = src ? src.textContent : '';
+      var ok = function () { var was = el.textContent; el.textContent = 'Copied'; setTimeout(function () { el.textContent = was; }, 1600); };
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(ok).catch(function () {}); return;
+    }
+    if (e.target.closest('[data-more]')) { dirShown += 24; viewDirectory((location.hash.split('#/directory/')[1] || '')); return; }
+    if ((el = e.target.closest('[data-save]'))) {
+      e.preventDefault(); e.stopPropagation();
+      var kk = el.getAttribute('data-save'), i = kk.indexOf(':'), kind = kk.slice(0, i), key = kk.slice(i + 1), on = !SV[kind][key];
+      if (on) { SV[kind][key] = 1; SV_ORDER.unshift({ kind: kind, key: key }); } else { delete SV[kind][key]; SV_ORDER = SV_ORDER.filter(function (x) { return !(x.kind === kind && x.key === key); }); }
+      paintSaves();
+      cookApi({ action: 'save', kind: kind, key: key, on: on }).then(function (r) { if (!r || !r.ok) throw r; }).catch(function () {
+        if (on) delete SV[kind][key]; else SV[kind][key] = 1; paintSaves();
+      });
+      return;
+    }
+    if ((el = e.target.closest('[data-gvote]'))) {
+      e.preventDefault(); e.stopPropagation();
+      var key2 = el.getAttribute('data-gvote').split(':')[1], on2 = !GV.mine.episode[key2];
+      cookApi({ action: 'gvote', kind: 'episode', key: key2, on: on2 }).then(function (r) {
+        if (!r || !r.ok) return;
+        if (on2) GV.mine.episode[key2] = 1; else delete GV.mine.episode[key2];
+        GV.counts.episode[key2] = r.count;
+        el.classList.toggle('on', on2); el.setAttribute('aria-pressed', String(on2)); el.querySelector('b').textContent = r.count;
+      });
+      return;
+    }
+    if ((el = e.target.closest('.dg-srow[data-href]')) && !e.target.closest('a,button')) { location.hash = el.getAttribute('data-href'); return; }
+    if (e.target.closest('[data-signin]')) {
+      e.preventDefault();
+      if (a) a.showAuthModal('Sign in and the Nonprofit Guide opens if it is yours.', function () { location.reload(); }, 'login');
+      return;
+    }
+    if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
+    var jb = e.target.closest('[data-join]');
+    if (jb) {
+      if (!a || access === 'checking' || jb.disabled) return;
+      var m = mode();
+      // A new account goes straight on to the Guide's own $11 checkout, since buying the Guide is what makes them a member.
+      if (m === 'join') {
+        var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
+        window.VE_ACTIVATE_HANDLER = go;
+        a.showAuthModal('Create your account, then get the Nonprofit Guide for $11. Buying it makes you a member.', go, 'signup');
+        return;
+      }
+      if (m === 'points') unlockPoints(jb); else buyNow(jb);
+    }
+  });
+  document.addEventListener('change', function (e) {
+    var el = e.target.closest && e.target.closest('[data-check]'); if (!el) return;
+    var c = checks(), k = el.getAttribute('data-check');
+    if (el.checked) c[k] = 1; else delete c[k];
+    store('ng_checks', JSON.stringify(c));
+  });
+  function unlockPoints(btn) {
+    var tok = token(); if (!tok) return;
+    btn.disabled = true; btn.textContent = 'Unlocking...';
+    api('unlock', tok).then(function (d) {
+      if (d && d.unlocked) return api('open', tok).then(function (o) { take(o); if (o && o.unlocked && o.html) becomeMember(o.html); else throw 0; });
+      if (d && d.error === 'insufficient_points') { ST.balance = d.balance || 0; route(); return; }
+      throw 0;
+    }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no points were spent. Try again in a minute.'); });
+  }
+  function buyNow(btn) {
+    var tok = token(); if (!tok) return;
+    btn.disabled = true; btn.textContent = 'Opening checkout...';
+    fetch(UNLOCK_URL + '?action=checkout', { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: SLUG, token: tok, return_url: location.origin + location.pathname }) })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && d.url) { (window.top || window).location.href = d.url; return; } if (d && d.already) { location.reload(); return; } throw 0; })
+      .catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('Checkout did not open. Try again in a minute.'); });
+  }
+  function confirmAfterCheckout(tok, tries) {
+    setStatus('Opening your Guide...');
+    access = 'pending';
+    api('open', tok).then(function (d) {
+      take(d);
+      if (d && d.unlocked && d.html) { setStatus(''); becomeMember(d.html); return; }
+      if (tries > 0) { setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); return; }
+      route(); setStatus('Your payment went through. It can take a minute to show here: refresh this page shortly.');
+    }).catch(function () { if (tries > 0) setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); else route(); });
+  }
+
+  function init() {
+    if (window.VERegionDirectory) VERegionDirectory.css();
+    document.documentElement.classList.add('dg-fit');
+    var box = document.getElementById('dgMaya');
+    if (window.VEGuideArt) { var art = VEGuideArt('dani', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
+    var params = new URLSearchParams(location.search);
+    route();
+    loadPublic();
+    var a = auth(), viewAs = a && a.getViewAs ? a.getViewAs() : null;
+    var tok = a && a.isLoggedIn() && !viewAs ? a.getToken() : null;
+    if (!tok) { access = viewAs && viewAs.mode !== 'public' ? 'pending' : 'guest'; route(); api('status').then(function (d) { take(d); route(); }).catch(function () {}); return; }
+    var val = params.get('guide');
+    if (val) { params.delete('guide'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    if (val === 'success' || val === 'bought') { confirmAfterCheckout(tok, 8); return; }
+    if (val === 'cancelled') setTimeout(function () { setStatus('Checkout was cancelled. Nothing was charged.'); }, 1500);
+    api('open', tok).then(function (d) {
+      take(d);
+      if (d && d.unlocked && d.html) becomeMember(d.html);
+      else { access = d && d.loggedIn ? 'pending' : 'guest'; route(); }
+    }).catch(function () { access = 'pending'; route(); setStatus('We could not check your access just now. Refresh to try again.'); });
+  }
+
+  if (window.VEAuth) init(); else window.addEventListener('load', init);
+})();
