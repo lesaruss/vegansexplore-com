@@ -588,7 +588,7 @@
       var VSTAT = [['fully_vegan', '100% Vegan'], ['vegan_options', 'Vegan options'], ['vegan_friendly', 'Vegan friendly']];
       var placeCache = { key: '', rows: [], cats: [] };
       // Rescues, sanctuaries, nonprofits and events are organizations: no How Vegan (Sean, 2026-10-27).
-      var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Events'];
+      var ORGS = ['Rescues', 'Sanctuaries', 'Nonprofits', 'Groups', 'Events'];
       // The category a place most likely is, from the community search's guess or what Google and Instagram call it.
       function guessCatOf(r) {
         var p = r.place || {}, g = r.ig || {}, t = p.type || g.category || '';

@@ -100,6 +100,20 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listing-page-main{min-width:0}
 .listing-sidebar{padding:28px 40px 40px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column}
 .listing-sidebar::-webkit-scrollbar{display:none}
+.he-list{display:flex;flex-direction:column;gap:8px}
+.he-scroll{max-height:520px;overflow:auto}
+.he-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--ve-border,rgba(0,0,0,.1));border-radius:8px;background:#fff}
+.he-past{opacity:.7}
+.he-date{flex:none;width:46px;text-align:center;line-height:1.1}
+.he-date b{display:block;font-size:20px;font-weight:900}
+.he-date span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:rgba(26,26,26,.68)}
+.he-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.he-name{font-weight:800;font-size:15px;color:inherit;text-decoration:none}
+.he-name:hover{text-decoration:underline}
+.he-body span{font-size:13px;color:rgba(26,26,26,.68)}
+.he-go{flex:none;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#2d7d31;color:#fff;text-decoration:none;white-space:nowrap}
+.he-sub{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:18px 0 8px;color:rgba(26,26,26,.68)}
+@media (max-width:560px){.he-row{flex-wrap:wrap}.he-go{margin-left:58px}}
 .loc-row{display:block;padding:9px 0;border-top:1px solid rgba(0,0,0,.07);text-decoration:none;color:inherit;font-size:13px;line-height:1.4}
 .loc-row:first-of-type{border-top:0}
 .loc-row strong{color:#1f5f22}
@@ -1132,6 +1146,36 @@ function withMain(l){
     return l;
   }, function(){ return l; });
 }
+// Events this listing hosts (events.host_listing_id; Sean, 2026-10-29: "all of their events will be tied to their profile, and
+// their profile will be tied to all their events"). Upcoming ones first, soonest first, then the last six that have passed. A group
+// always shows the section; any other listing only once it has hosted something. Each opens on the events calendar.
+function loadHostedEvents(l){
+  var box = document.getElementById('hosted-events'); if(!box) return;
+  var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=200';
+  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
+    rows = Array.isArray(rows) ? rows : [];
+    var now = Date.now(), endOf = function(e){ return new Date(e.ends_at || new Date(e.starts_at).getTime() + 4 * 3600000).getTime(); };
+    var up = rows.filter(function(e){ return endOf(e) >= now; }), past = rows.filter(function(e){ return endOf(e) < now; }).reverse().slice(0, 6);
+    var isGroup = l.category === 'Groups';
+    if(!up.length && !past.length && !isGroup) return;
+    var fmt = function(e, o){ try { return new Date(e.starts_at).toLocaleString('en-US', Object.assign({ timeZone: e.timezone || undefined }, o)); } catch(x){ return new Date(e.starts_at).toLocaleString('en-US', o); } };
+    var row = function(e, old){
+      var when = fmt(e, { weekday: 'short', month: 'short', day: 'numeric' }) + (e.time_set === false ? ' · Time to be announced' : ' · ' + fmt(e, { hour: 'numeric', minute: '2-digit' }));
+      var where = e.event_type === 'virtual' && !e.city ? 'Online' : [e.location_name, e.city].filter(Boolean).join(', ');
+      var link = /^https?:\/\//.test(e.ticket_url || '') ? e.ticket_url : /^https?:\/\//.test(e.virtual_url || '') ? e.virtual_url : '';
+      return '<div class="he-row' + (old ? ' he-past' : '') + '"><div class="he-date" aria-hidden="true"><b>' + esc(fmt(e, { day: 'numeric' })) + '</b><span>' + esc(fmt(e, { month: 'short' })) + '</span></div>' +
+        '<div class="he-body"><a class="he-name" href="/events#event/' + esc(e.id) + '">' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + '</span></div>' +
+        (!old && link ? '<a class="he-go" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Tickets and details for ' + esc(e.title) + '">Tickets &amp; info</a>' : '') + '</div>';
+    };
+    box.hidden = false;
+    box.className = 'section';
+    box.innerHTML = '<h2 class="section-title">Upcoming events</h2>' +
+      (up.length ? '<div class="he-list he-scroll">' + up.map(function(e){ return row(e, false); }).join('') + '</div>'
+        : '<p class="about-text">No upcoming events on our calendar yet. ' + (isGroup ? 'We add their events as they post them.' : '') + ' <a href="/events">See every event</a></p>') +
+      (past.length ? '<h3 class="he-sub">Past events</h3><div class="he-list">' + past.map(function(e){ return row(e, true); }).join('') + '</div>' : '');
+  }).catch(function(){});
+}
+
 function loadLocations(l){
   var mainId = l.parent_id || l.id;
   var url = SUPABASE_URL + '/rest/v1/listings?or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&status=eq.approved&select=id,slug,name,location_label,address_street,address_city,address_state,business_status&order=address_state.asc,address_city.asc';
@@ -2695,7 +2739,7 @@ function listingKind(l){
 function listingNoun(l){
   if(isPersonL(l)) return 'profile';
   return ({ 'Podcasts': 'podcast', 'YouTube': 'channel', 'News Outlets': 'outlet', 'Media': 'show', 'Books': 'book', 'Documentaries & Films': 'film' })[l && l.category]
-    || (listingKind(l) === 'brand' ? 'brand' : listingKind(l) === 'place' && /Nonprofit|Rescue|Sanctuar|Advocacy|Organization/i.test(l && l.category || '') ? 'organization' : 'business');
+    || (listingKind(l) === 'brand' ? 'brand' : listingKind(l) === 'place' && /Nonprofit|Rescue|Sanctuar|Advocacy|Organization/i.test(l && l.category || '') ? 'organization' : l && l.category === 'Groups' ? 'group' : 'business');
 }
 // What a podcast can take part in, all Coming (Sean, 2026-10-27). The same list as PODCAST_OPPS in /public/ve-partner-dashboard.js.
 var PODCAST_OPPS = [
@@ -3509,6 +3553,9 @@ function renderListing(l){
   else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
+
+  // A group's events, or any listing that hosts events (Sean, 2026-10-29), right under About. Filled by loadHostedEvents.
+  if(!person && catType !== 'media' && !l._brandSite && !DEMO) overviewContent += '<div id="hosted-events"' + (l.category === 'Groups' ? '' : ' hidden') + '></div>';
 
   // Photos right after About. Not listings.google_photos (Sean, 2026-09-29, BOSS "source reliable
   // photos"): those are Google Maps users' photos, which we have no right to show. Only photos the
@@ -4403,6 +4450,7 @@ if(!slug || slug === 'listing'){
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
+      if(!DEMO) loadHostedEvents(l);
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
       // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly

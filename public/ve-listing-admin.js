@@ -41,7 +41,7 @@
     ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
-    ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events']],
+    ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
     // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.
     ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders']]
   ];

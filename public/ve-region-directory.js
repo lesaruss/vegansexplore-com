@@ -46,7 +46,7 @@
     'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
     // Community is the animals first (Sean, 2026-10-27: "it being about nonprofits, it being about events, it being about rescues...
     // sanctuaries"). Community Partner was not a kind of listing; its rows were re-filed the same day.
-    'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Events': 'community', 'Community Partner': 'community',
+    'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Groups': 'community', 'Events': 'community', 'Community Partner': 'community',
     // People (Sean, 2026-10-28: "a people directory... people that we've actually interacted with"): a person is a listing, so votes
     // and saves work the same. Keep PEOPLE_CATS below, SECTIONS in ve-listing-admin.js and PEOPLE in directory/listing.html in step.
     'Activists': 'people', 'Content Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people',
@@ -71,7 +71,8 @@
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
       // All first here, the one exception (Sean, 2026-10-27: "I don't mind people seeing all of the community listings in one slot").
-      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'], allFirst: true },
+      // Groups (Sean, 2026-10-29): social clubs and meetup groups; a group's page lists the events it hosts (events.host_listing_id).
+      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'], allFirst: true },
     // People, All first like Community. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
     { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
