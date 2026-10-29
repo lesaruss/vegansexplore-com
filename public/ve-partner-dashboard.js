@@ -32,7 +32,8 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  var VIEWS = [['home', 'Home'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
+  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
@@ -106,6 +107,12 @@
     '.vpd-table-wrap{max-height:420px;overflow:auto;border:1px solid rgba(0,0,0,.1);border-radius:10px}' +
     '.vpd-table{width:100%;border-collapse:collapse;font-size:14px}.vpd-table th{position:sticky;top:0;background:#f6f8f6;text-align:left;font-size:12px;font-weight:800;padding:10px 12px;cursor:pointer;user-select:none;white-space:nowrap}' +
     '.vpd-table td{padding:9px 12px;border-top:1px solid rgba(0,0,0,.06)}.vpd-table td.n,.vpd-table th.n{text-align:right}' +
+    '.vpd-ladder{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 10px}.vpd-ladder div{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:10px 6px;text-align:center;background:#fff}' +
+    '.vpd-ladder b{display:block;font-size:18px;font-weight:900}.vpd-ladder span{font-size:11px;font-weight:700;color:rgba(26,26,26,.68)}.vpd-ladder .past{background:#f6faf6}.vpd-ladder .on{background:#1f5f22;border-color:#1f5f22;color:#fff}.vpd-ladder .on span{color:#e8f5e9}' +
+    '@media (max-width:640px){.vpd-ladder{grid-template-columns:repeat(4,minmax(0,1fr))}}' +
+    '.vpd-prog{height:10px;border-radius:6px;background:#eef1ee;overflow:hidden}.vpd-prog i{display:block;height:100%;background:#2d7d31}' +
+    '.vpd-scroll{max-height:440px;overflow:auto}' +
+    '.vpd-form{display:grid;gap:12px;max-width:none}.vpd-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:800}.vpd-form input,.vpd-form textarea{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,.2);border-radius:6px}.vpd-form .vpd-btn{justify-self:start}' +
     '.vpd-list{display:flex;flex-direction:column;border:1px solid rgba(0,0,0,.1);border-radius:10px;overflow:hidden;margin:0 0 18px}' +
     '.vpd-row{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid rgba(0,0,0,.07);background:#fff}.vpd-row:first-child{border-top:0}' +
     '.vpd-row b{display:block;font-size:14px}.vpd-row small{display:block;font-size:12.5px;color:rgba(26,26,26,.65);margin-top:2px}' +
@@ -164,7 +171,11 @@
       });
     }
     function views() {
+      var G = ['gmembers', 'gevents', 'earnings'];
       return VIEWS.filter(function (v) {
+        if (G.indexOf(v[0]) >= 0) return !!D.group;
+        // A Group Partner's dashboard: no hours, menu, audit, check-ins, ads or Partner plan; its members are its audience.
+        if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
         if (v[0] === 'audit') return D.listing.food;
         if (v[0] === 'checkins') return KIND === 'place';
@@ -202,9 +213,10 @@
         out += '<div class="vpd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, last ' + D.days + ' days</span>' + change(T.view || 0, P.views) + '</div>' +
           '<div><b>' + n(s.visitors) + '</b><span>Visitors</span>' + change(s.visitors || 0, P.visitors) + '</div>' +
           '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + change(acts, P.actions) + '</div>' +
-          '<div><b>' + n(D.ads.reduce(function (a, x) { return a + x.impressions; }, 0)) + '</b><span>Ad impressions</span><em>' + (D.ads.length ? D.ads.length + ' campaign' + (D.ads.length > 1 ? 's' : '') : 'No ads yet') + '</em></div></div>' +
+          (D.group ? '' : '<div><b>' + n(D.ads.reduce(function (a, x) { return a + x.impressions; }, 0)) + '</b><span>Ad impressions</span><em>' + (D.ads.length ? D.ads.length + ' campaign' + (D.ads.length > 1 ? 's' : '') : 'No ads yet') + '</em></div>') + '</div>' +
           '<a href="?tab=brand&pd=insights" data-vpd="insights" class="vpd-btn o sm">See every number</a>';
       }
+      if (D.open && D.group) out = groupTiles() + out;
       // What is left, as cards; what is done, on one line.
       // A podcast, a book or a brand has no hours or menu to fill in.
       var fits = function (c) { return CK[c.k] && (KIND === 'place' || ['logo', 'description'].indexOf(c.k) >= 0 || (KIND === 'org' && c.k === 'photos')); };
@@ -435,12 +447,99 @@
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : '$111 a quarter.')) + '</p>' +
         (D.plan ? '' : '<a class="vpd-btn sm o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand' + (FRONT_ROW ? '&offer=front-row' : '') + '">' + (FRONT_ROW ? 'Take my front-row seat' : 'Become a Partner') + '</a>') + '</div></div>';
     }
-    var VIEW_FN = { home: drawHome, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    // ---- Group Partner views (canon-ve-group-partners, LOCKED 2026-10-29). D.group: members_total, brought, rate_pct, ladder
+    // [[members, pct]], guest_passes {used, joined_after}, members [{name, joined, via, events, chapter}], events [{id, title, starts_at,
+    // price_cents, capacity, going, guest_passes}], earnings {passports_cents, tickets_cents, fee_cents, ready_cents, holding_cents,
+    // w9, payouts [{at, cents}], recent [{at, kind, what, cents}]}, link, code.
+    function money(c) { return '$' + (Math.round(c) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function dt(x, y) { return esc(new Date(x).toLocaleDateString('en-US', Object.assign({ month: 'short', day: 'numeric', timeZone: 'America/New_York' }, y ? { year: 'numeric' } : {}))); }
+    function nextRung(G) { var nx = null; G.ladder.forEach(function (r) { if (!nx && r[0] > G.brought) nx = r; }); return nx; }
+    function groupTiles() {
+      var G = D.group, E = G.earnings || {}, nx = nextRung(G);
+      return '<div class="vpd-tiles"><div><b>' + n(G.members_total) + '</b><span>Members in your group</span><em>' + n(G.new_this_month || 0) + ' new this month</em></div>' +
+        '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>' + (nx ? n(nx[0] - G.brought) + ' to ' + nx[1] + '%' : 'The top rate') + '</em></div>' +
+        '<div><b>' + G.rate_pct + '%</b><span>Your share of each Passport</span><em>Of the $11, from today</em></div>' +
+        '<div><b>' + money((E.passports_cents || 0) + (E.tickets_cents || 0)) + '</b><span>Earned this year</span><em>' + money(E.ready_cents || 0) + ' ready to pay</em></div></div>' +
+        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
+    }
+    function drawMembers() {
+      var G = D.group, nx = nextRung(G), cur = 0;
+      G.ladder.forEach(function (r, i) { if (G.brought >= r[0]) cur = i; });
+      var base = G.ladder[cur][0], pct = nx ? Math.round((G.brought - base) / (nx[0] - base) * 100) : 100;
+      return '<div class="vpd-tiles"><div><b>' + n(G.members_total) + '</b><span>Members in your group</span><em>Anyone with a Passport, in any city</em></div>' +
+        '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>Your link and your guest passes</em></div>' +
+        '<div><b>' + n(G.guest_passes.used) + '</b><span>Guest passes used</span><em>' + n(G.guest_passes.joined_after) + ' joined after (' + Math.round(G.guest_passes.joined_after / Math.max(1, G.guest_passes.used) * 100) + '%)</em></div>' +
+        '<div><b>' + G.rate_pct + '%</b><span>Your share of each Passport</span><em>' + (nx ? n(nx[0] - G.brought) + ' more to ' + nx[1] + '%' : 'The top rate') + '</em></div></div>' +
+        '<h4>Your rate</h4><div class="vpd-ladder">' + G.ladder.map(function (r, i) {
+          return '<div class="' + (i === cur ? 'on' : i < cur ? 'past' : '') + '"><b>' + r[1] + '%</b><span>' + (r[0] ? n(r[0]) + ' members' : 'To start') + '</span></div>';
+        }).join('') + '</div>' +
+        '<div class="vpd-prog" role="img" aria-label="' + pct + '% of the way to the next rate"><i style="width:' + pct + '%"></i></div>' +
+        '<p class="vpd-empty" style="margin:6px 0 18px">' + (nx ? n(G.brought) + ' of ' + n(nx[0]) + ' toward ' + nx[1] + '%. A new rate counts from the day you reach it.' : 'You are at the top rate.') + '</p>' +
+        '<h4>Your link</h4><div class="vpd-card" style="margin:0 0 18px"><b>' + esc(G.link) + '</b><p>Everyone who joins Vegans Explore through it, or after a guest pass at one of your events, counts toward your rate and pays you your share.</p>' +
+        '<button type="button" class="vpd-btn sm" data-vpd-copy="' + esc('https://' + G.link) + '">Copy your link</button></div>' +
+        '<h4>Your members</h4><div class="vpd-table-wrap vpd-scroll"><table class="vpd-table"><thead><tr><th>Member</th><th>Joined your group</th><th>How</th><th class="n">Events</th><th>Chapter</th></tr></thead><tbody>' +
+        G.members.map(function (m) { return '<tr><td>' + esc(m.name) + '</td><td>' + dt(m.joined, true) + '</td><td>' + esc(m.via) + '</td><td class="n">' + n(m.events) + '</td><td>' + esc(m.chapter) + '</td></tr>'; }).join('') +
+        '</tbody></table></div><p class="vpd-empty">You see a member\'s first name and last initial. Messages to your members go through us, and they choose to hear from you.</p>';
+    }
+    function drawEvents() {
+      var G = D.group, id = q('item'), now = Date.now();
+      var up = G.events.filter(function (e) { return Date.parse(e.starts_at) >= now; }).sort(function (a, b) { return Date.parse(a.starts_at) - Date.parse(b.starts_at); });
+      var past = G.events.filter(function (e) { return Date.parse(e.starts_at) < now; }).sort(function (a, b) { return Date.parse(b.starts_at) - Date.parse(a.starts_at); });
+      var price = function (e) { return e.price_cents ? money(e.price_cents) : 'Free'; };
+      if (id === 'new') return '<p class="vpd-crumb"><a href="?tab=brand&pd=gevents" data-vpd="gevents">Events</a> / New event</p>' +
+        '<div class="vpd-form"><label>Name<input id="vpd-ev-name" placeholder="Game Night"></label><label>Day and time<input id="vpd-ev-when" type="datetime-local"></label>' +
+        '<label>Where<input id="vpd-ev-where" placeholder="The venue and city"></label><label>Ticket price (leave empty for a free event)<input id="vpd-ev-price" inputmode="decimal" placeholder="$0"></label>' +
+        '<label>How many can come<input id="vpd-ev-cap" inputmode="numeric" placeholder="40"></label><label>About it<textarea id="vpd-ev-about" rows="3"></textarea></label>' +
+        '<p class="vpd-empty">Free events: a newcomer uses their one guest pass, then joins with the $11 Passport. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
+        '<button type="button" class="vpd-btn" data-vpd-demo="Your event would go live on your page and the events calendar.">Put it live</button></div>';
+      if (id) {
+        var e = G.events.filter(function (x) { return x.id === id; })[0];
+        if (!e) return '<p class="vpd-empty">That event is not here. <a href="?tab=brand&pd=gevents" data-vpd="gevents">Back to Events</a></p>';
+        var over = Date.parse(e.starts_at) < now, gross = e.price_cents * e.going;
+        return '<p class="vpd-crumb"><a href="?tab=brand&pd=gevents" data-vpd="gevents">Events</a> / ' + esc(e.title) + '</p>' +
+          '<div class="vpd-tiles"><div><b>' + n(e.going) + (e.capacity ? '<small style="font-size:14px"> of ' + n(e.capacity) + '</small>' : '') + '</b><span>' + (over ? 'Went' : 'Going') + '</span></div>' +
+          (e.price_cents ? '<div><b>' + money(gross * 0.95) + '</b><span>Yours from tickets</span><em>' + n(e.going) + ' at ' + price(e) + ', less our 5% (' + money(gross * 0.05) + ')</em></div>'
+            : '<div><b>' + n(e.guest_passes) + '</b><span>Guest passes</span><em>Newcomers on their one free event</em></div>') +
+          '<div><b>' + dt(e.starts_at, true) + '</b><span>' + esc(e.location_name || '') + '</span><em>' + esc(e.city || '') + '</em></div></div>' +
+          '<div class="vpd-grid"><div class="vpd-card"><b>Guests and messages</b><p>Message the guests who said yes, through us, until 7 days after the event.</p><button type="button" class="vpd-btn sm" data-vpd-demo="Your message would go to the guests who said yes, by email from Vegans Explore with your group\'s name.">Write to your guests</button></div>' +
+          '<div class="vpd-card"><b>Check people in</b><p>At the door, tick guests off on your phone. A guest pass is used when they check in.</p><button type="button" class="vpd-btn sm" data-vpd-demo="At the door this opens your guest list to tick people in.">Open the guest list</button></div>' +
+          '<div class="vpd-card"><b>Share it</b><p>Your event\'s own link, with your group link inside, so everyone who joins counts toward your rate.</p><button type="button" class="vpd-btn sm" data-vpd-demo="Your event link is copied, ready to post.">Copy the event link</button></div></div>';
+      }
+      var row = function (e) {
+        return '<div class="vpd-row"><div><b>' + esc(e.title) + '</b><small>' + dt(e.starts_at, Date.parse(e.starts_at) < now) + ' &middot; ' + esc(e.location_name || '') + ' &middot; ' + price(e) + '</small></div>' +
+          '<span class="vpd-tag">' + n(e.going) + (e.capacity ? ' of ' + n(e.capacity) : '') + (Date.parse(e.starts_at) < now ? ' went' : ' going') + '</span>' +
+          '<a class="vpd-btn sm o" href="?tab=brand&pd=gevents&item=' + esc(e.id) + '" data-vpd="gevents" data-vpd-item="' + esc(e.id) + '">Open</a></div>';
+      };
+      return '<p style="margin:0 0 14px"><a class="vpd-btn" href="?tab=brand&pd=gevents&item=new" data-vpd="gevents" data-vpd-item="new">New event</a></p>' +
+        '<h4>Coming up</h4><div class="vpd-list">' + up.map(row).join('') + '</div>' +
+        '<h4>Past events (' + past.length + ')</h4><div class="vpd-list vpd-scroll">' + past.map(row).join('') + '</div>';
+    }
+    function drawEarnings() {
+      var E = D.group.earnings;
+      return '<div class="vpd-tiles"><div><b>' + money(E.passports_cents + E.tickets_cents) + '</b><span>Earned this year</span></div>' +
+        '<div><b>' + money(E.ready_cents) + '</b><span>Ready to pay</span><em>Paid once $25 is ready</em></div>' +
+        '<div><b>' + money(E.holding_cents) + '</b><span>Waiting</span><em>Held 30 days for refunds</em></div>' +
+        '<div><b>' + money(E.payouts.reduce(function (a, x) { return a + x.cents; }, 0)) + '</b><span>Paid to you</span><em>' + (E.w9 ? 'W-9 on file' : 'Add your W-9 to be paid') + '</em></div></div>' +
+        '<div class="vpd-rows"><div><span>From Passports (your share of each $11)</span><b>' + money(E.passports_cents) + '</b></div><div><span>From tickets, after our 5%</span><b>' + money(E.tickets_cents) + '</b></div>' +
+        '<div><span>Our 5% on tickets</span><b>' + money(E.fee_cents) + '</b></div><div><span>Card processing</span><b>Paid by the buyer</b></div></div>' +
+        '<p style="margin:0 0 18px"><button type="button" class="vpd-btn" data-vpd-demo="Your ready balance would be paid to your account on file.">Pay me what is ready</button></p>' +
+        '<h4>Lately</h4><div class="vpd-list">' + E.recent.map(function (x) {
+          return '<div class="vpd-row"><div><b>' + esc(x.what) + '</b><small>' + dt(x.at) + '</small></div><span class="vpd-tag">' + (x.kind === 'ticket' ? 'Tickets' : 'Passport') + '</span><b>' + money(x.cents) + '</b></div>';
+        }).join('') + '</div>' +
+        '<h4>Payouts</h4><div class="vpd-list">' + E.payouts.map(function (x) { return '<div class="vpd-row"><div><b>' + money(x.cents) + '</b><small>' + dt(x.at, true) + '</small></div><span class="vpd-tag">Paid</span></div>'; }).join('') + '</div>' +
+        '<p class="vpd-empty">Referral earnings paid to your group, never a donation. Your posts say your group earns when people join (the FTC rule).</p>';
+    }
+
+    var VIEW_FN = { home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
       el.querySelectorAll('[data-vpd]').forEach(function (a) {
         a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.vpd, a.dataset.vpdItem ? { item: a.dataset.vpdItem } : null); });
+      });
+      el.querySelectorAll('[data-vpd-demo]').forEach(function (b) { b.addEventListener('click', function () { api({ action: 'demo_only', note: b.dataset.vpdDemo }); }); });
+      el.querySelectorAll('[data-vpd-copy]').forEach(function (b) {
+        b.addEventListener('click', function () { try { navigator.clipboard.writeText(b.dataset.vpdCopy); } catch (x) {} b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy your link'; }, 1600); });
       });
       el.querySelectorAll('[data-vpd-edit]').forEach(function (b) { b.addEventListener('click', function () { if (opts.editPage) opts.editPage(b.dataset.vpdEdit); }); });
       el.querySelectorAll('[data-vpd-join]').forEach(function (b) {

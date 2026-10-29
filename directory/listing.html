@@ -980,6 +980,30 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .tk-status{font-size:13px;font-weight:800}
 .tk-status.ok{color:var(--ve-green-dark)}
 .tk-status.wait{color:#7d5a12}
+.demo-modal{position:fixed;inset:0;background:rgba(10,14,10,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:1000000}
+.demo-modal.show{display:flex}
+.dm-box{position:relative;background:#fff;border-radius:10px;max-width:520px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:26px 24px 22px;font-family:Montserrat,sans-serif;color:#1a1a1a}
+.dm-box h3{font-size:20px;font-weight:900;margin:0 0 8px}.dm-box p{font-size:14px;line-height:1.55;margin:0 0 12px}
+.dm-x{position:absolute;top:8px;right:10px;border:0;background:none;font-size:26px;line-height:1;cursor:pointer;color:#555}
+.dm-kicker{font-size:11px!important;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#1f5f22;margin:0 0 6px!important}
+.dm-meta{font-weight:700;color:rgba(26,26,26,.7)}
+.dm-who{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:4px 0 14px}.dm-who span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.6)}
+.dm-who button{font:inherit;font-size:12px;font-weight:800;padding:7px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.18);background:#fff;cursor:pointer}.dm-who button[aria-pressed="true"]{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
+.dm-pass,.dm-done{border-radius:8px;padding:12px 14px;margin:0 0 14px;display:flex;flex-direction:column;gap:4px}.dm-pass{background:#fff7e8;border:1px solid #f2d9a6}.dm-done{background:#eef6ee;border:1px solid #bfdcbf}
+.dm-pass b,.dm-done b{font-size:15px}.dm-pass span,.dm-done span{font-size:13px;line-height:1.5}
+.dm-bill{border:1px solid rgba(0,0,0,.1);border-radius:8px;margin:0 0 14px}.dm-bill div{display:flex;justify-content:space-between;padding:9px 12px;font-size:14px;border-bottom:1px solid rgba(0,0,0,.07)}.dm-bill div:last-child{border-bottom:0}
+.dm-total{font-weight:900;background:#f6f8f6}
+.dm-go{font:inherit;font-size:13px;font-weight:800;letter-spacing:.04em;padding:12px 18px;border-radius:6px;border:0;background:#1f5f22;color:#fff;cursor:pointer}
+.dm-ghost{font:inherit;font-size:13px;font-weight:800;padding:12px 18px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;cursor:pointer}
+.dm-acts{display:flex;gap:8px;flex-wrap:wrap}.dm-note{font-size:13px!important;color:rgba(26,26,26,.68)}
+.dm-f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:800;margin:0 0 12px}.dm-f input{font:inherit;font-weight:500;font-size:15px;padding:10px 12px;border:1px solid rgba(0,0,0,.2);border-radius:6px}
+.dm-hint{background:#f6f8f6;border-radius:6px;padding:8px 10px;font-size:13px!important}.dm-err{color:#a61b1b;font-weight:700;font-size:13px!important;min-height:1em}
+.gd-join .gd-badge{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:#eef4ee;color:#1f5f22;margin:0 0 8px}
+.gd-join .gd-n{font-size:14px;margin:0 0 8px}.gd-join .gd-n b{font-size:24px;font-weight:900}
+.gd-faces{display:flex;margin:0 0 10px}.gd-faces i{width:30px;height:30px;border-radius:50%;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;margin-left:-6px}.gd-faces i:first-child{margin-left:0}
+.gd-join p{font-size:13px;line-height:1.5;margin:0 0 12px}.gd-join .dm-go{width:100%}
+.gd-post{border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 12px;margin:0 0 8px;background:#fff}.gd-post.host{background:#f6faf6}
+.gd-post b{font-size:14px}.gd-post span{font-size:12px;color:rgba(26,26,26,.6);margin-left:8px}.gd-post p{margin:4px 0 0;font-size:14px;line-height:1.5}
 .demo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:1000001}
 .demo-toast.show{opacity:1}
 @media(max-width:768px){
@@ -1177,7 +1201,10 @@ function withMain(l){
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
   var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
-  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
+  // The sample group's events come from its demo file; each opens the sample's RSVP and ticket simulation (data-demo-ev).
+  var demoEv = DEMO && DEMO.events;
+  (demoEv ? Promise.resolve(DEMO.events.slice().sort(function(a, b){ return Date.parse(a.starts_at) - Date.parse(b.starts_at); }))
+    : fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); })).then(function(rows){
     rows = Array.isArray(rows) ? rows : [];
     var now = Date.now(), endOf = function(e){ return new Date(e.ends_at || new Date(e.starts_at).getTime() + 4 * 3600000).getTime(); };
     var up = rows.filter(function(e){ return endOf(e) >= now; }), past = rows.filter(function(e){ return endOf(e) < now; }).reverse();
@@ -1191,8 +1218,9 @@ function loadHostedEvents(l){
       var where = e.event_type === 'virtual' && !e.city ? 'Online' : [e.location_name, e.city].filter(Boolean).join(', ');
       var link = /^https?:\/\//.test(e.ticket_url || '') ? e.ticket_url : /^https?:\/\//.test(e.virtual_url || '') ? e.virtual_url : '';
       return '<div class="he-row' + (old ? ' he-past' : '') + '"><div class="he-date" aria-hidden="true"><b>' + esc(fmt(e, { day: 'numeric' })) + '</b><span>' + esc(fmt(e, { month: 'short' })) + '</span></div>' +
-        '<div class="he-body"><a class="he-name" href="/events#event/' + esc(e.id) + '">' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + '</span></div>' +
-        (link ? '<a class="he-go' + (old ? ' ghost' : '') + '" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + (old ? 'Event page for ' : 'Tickets and details for ') + esc(e.title) + '">' + (old ? 'Event page' : 'Tickets &amp; info') + '</a>' : '') + '</div>';
+        '<div class="he-body"><a class="he-name" href="' + (demoEv ? '#' : '/events#event/' + esc(e.id)) + '"' + (demoEv ? ' data-demo-ev="' + esc(e.id) + '"' : '') + '>' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + (demoEv ? ' · ' + (e.price_cents ? '$' + (e.price_cents / 100).toFixed(2) : 'Free') + ' · ' + e.going + (old ? ' went' : ' going') : '') + '</span></div>' +
+        (demoEv ? '<button type="button" class="he-go' + (old ? ' ghost' : '') + '" data-demo-ev="' + esc(e.id) + '">' + (old ? 'See it' : e.price_cents ? 'Get tickets' : 'RSVP') + '</button>' : '') +
+        (!demoEv && link ? '<a class="he-go' + (old ? ' ghost' : '') + '" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + (old ? 'Event page for ' : 'Tickets and details for ') + esc(e.title) + '">' + (old ? 'Event page' : 'Tickets &amp; info') + '</a>' : '') + '</div>';
     };
     var lists = {
       up: up.length ? '<div class="he-list he-scroll">' + up.map(function(e){ return row(e, false); }).join('') + '</div>'
@@ -1956,7 +1984,7 @@ function renderSidebar(l){
   return '<div class="listing-sidebar">'+
     (l._campaign ? campaignSideCard(l._campaign) : '')+
     '<div class="side-card">'+verifBadge+'<div class="side-card-title">Contact & Info</div>'+contact+'</div>'+
-    '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>'+
+    (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
     communityCard+
@@ -3327,6 +3355,8 @@ function demoSlug(){
 // restaurant with a Visitor / Owner switch that opens the real business dashboard on sample numbers.
 function demoSrc(){
   if(/^\/business\/sample\/?$/.test(location.pathname)) return '/business/sample/listing-demo.js';
+  // The sample group (Sean, 2026-10-29): Sprout Social Club, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
+  if(/^\/groups\/sample\/?$/.test(location.pathname)) return '/groups/sample/listing-demo.js';
   var s = demoSlug(); return s ? '/campaign-engine/' + s + '/listing-demo.js' : '';
 }
 function demoToast(msg){
@@ -3560,6 +3590,9 @@ function wireCampaign(l){
   });
 }
 function demoBar(){
+  if(DEMO.group) return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Sample</strong>'+esc(DEMO.label)+'</div>'+
+    '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A member</button><button type="button" data-view="owner" aria-pressed="false">The organizer</button></div>'+
+    '<div class="db-links"><a href="'+esc(DEMO.guideUrl || '/groups/welcome')+'">The Group Partner Guide</a><button type="button" id="demo-signout" hidden>Sign out of the demo</button></div></div>';
   if(DEMO.business) return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Sample</strong>'+esc(DEMO.label)+'</div>'+
     '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A visitor</button><button type="button" data-view="owner" aria-pressed="false">The owner</button></div>'+
     '<div class="db-links"><a href="/business">For businesses</a><a href="/claim">Find your business</a></div></div>';
@@ -3579,7 +3612,13 @@ function setDemoWeek(w, l){
   var sel = document.getElementById('demo-week'); if(sel) sel.value = String(CST.week);
 }
 window.veDemoWeek = function(w){ if(window._veDemoListing) setDemoWeek(w, window._veDemoListing); };
-function setDemoView(v, l){ CST.view = v; if(DEMO && DEMO.business) sampleView(l); else refreshCampaign(l); }
+function setDemoView(v, l){
+  // The sample group's organizer side opens with the demo sign-in (DEMO.login), kept for the visit. It is not an account.
+  if(v === 'owner' && DEMO && DEMO.group && !groupDemoSignedIn()){ groupDemoLogin(l); return; }
+  CST.view = v; if(DEMO && DEMO.business) sampleView(l); else refreshCampaign(l);
+  var so = document.getElementById('demo-signout'); if(so) so.hidden = !(DEMO && DEMO.group && groupDemoSignedIn());
+}
+function groupDemoSignedIn(){ try { return sessionStorage.getItem('ve_group_demo') === '1'; } catch(e){ return false; } }
 // The sample business: The owner shows the Partner Dashboard tab with the real dashboard on DEMO.dashboard's numbers; A visitor
 // sees the page as anyone does. The view rides in the address bar (?tab=brand is the owner's) so back and links work.
 var SAMPLE_DASH = null;
@@ -3695,7 +3734,7 @@ function renderListing(l){
   }
 
   // A group's events, or any listing that hosts events (Sean, 2026-10-29), right under About. Filled by loadHostedEvents.
-  if(!person && catType !== 'media' && !l._brandSite && !DEMO) overviewContent += '<div id="hosted-events"' + (l.category === 'Groups' ? '' : ' hidden') + '></div>';
+  if(!person && catType !== 'media' && !l._brandSite && (!DEMO || DEMO.events)) overviewContent += '<div id="hosted-events"' + (l.category === 'Groups' ? '' : ' hidden') + '></div>';
 
   // Photos right after About. Not listings.google_photos (Sean, 2026-09-29, BOSS "source reliable
   // photos"): those are Google Maps users' photos, which we have no right to show. Only photos the
@@ -4590,7 +4629,7 @@ if(!slug || slug === 'listing'){
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
-      if(!DEMO) loadHostedEvents(l);
+      if(!DEMO || DEMO.events) loadHostedEvents(l);
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
       // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly
@@ -4648,13 +4687,131 @@ if(!slug || slug === 'listing'){
 })();
 
 // Demo mode: the real listing page, fed an illustrative listing and its campaign.
+// ── The sample group (Sean, 2026-10-29) ─────────────────────────────────────
+// A member's side: the guest pass, RSVPs, tickets and joining, all simulated in a window (nothing is charged or saved), and the
+// group's board. The organizer's side is the real dashboard with the Group Partner views, behind the demo sign-in.
+function demoModal(html, onWire){
+  var m = document.getElementById('demo-modal');
+  if(!m){
+    m = document.createElement('div'); m.id = 'demo-modal'; m.className = 'demo-modal'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true');
+    m.addEventListener('click', function(e){ if(e.target === m || e.target.closest('[data-dm-close]')) closeDemoModal(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDemoModal(); });
+    document.body.appendChild(m);
+  }
+  m.innerHTML = '<div class="dm-box"><button type="button" class="dm-x" data-dm-close aria-label="Close">&times;</button>' + html + '</div>';
+  m.classList.add('show'); document.body.style.overflow = 'hidden';
+  var f = m.querySelector('input,button.dm-go'); if(f) setTimeout(function(){ f.focus(); }, 30);
+  if(onWire) onWire(m);
+}
+function closeDemoModal(){ var m = document.getElementById('demo-modal'); if(m){ m.classList.remove('show'); document.body.style.overflow = ''; } }
+function groupDemoLogin(l){
+  var L = DEMO.login || {};
+  demoModal('<p class="dm-kicker">Sample group</p><h3>Sign in as the organizer</h3>' +
+    '<p>Use the demo sign-in to see what Sprout Social Club\'s organizer sees. It opens this sample only, in this browser.</p>' +
+    '<label class="dm-f">Email<input id="dm-email" type="email" autocomplete="off" placeholder="' + esc(L.email || '') + '"></label>' +
+    '<label class="dm-f">Password<input id="dm-pass" type="password" autocomplete="off"></label>' +
+    '<p class="dm-hint">Demo sign-in: <b>' + esc(L.email || '') + '</b> / <b>' + esc(L.password || '') + '</b></p><p class="dm-err" id="dm-err" role="alert"></p>' +
+    '<div class="dm-acts"><button type="button" class="dm-go" id="dm-in">Sign in</button><button type="button" class="dm-ghost" id="dm-fill">Fill it in for me</button></div>', function(m){
+      var go = function(){
+        var e = m.querySelector('#dm-email').value.trim().toLowerCase(), p = m.querySelector('#dm-pass').value;
+        if(e !== String(L.email).toLowerCase() || p !== L.password){ m.querySelector('#dm-err').textContent = 'That is not the demo sign-in. It is shown just above.'; return; }
+        try { sessionStorage.setItem('ve_group_demo', '1'); } catch(x){}
+        closeDemoModal(); setDemoView('owner', l);
+      };
+      m.querySelector('#dm-in').onclick = go;
+      m.querySelector('#dm-pass').onkeydown = function(e){ if(e.key === 'Enter') go(); };
+      m.querySelector('#dm-fill').onclick = function(){ m.querySelector('#dm-email').value = L.email; m.querySelector('#dm-pass').value = L.password; };
+    });
+}
+var GDEMO = { who: 'new', guestUsed: false, going: {}, joined: false };
+function money2(c){ return '$' + (c / 100).toFixed(2); }
+function demoEvent(id){
+  var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0]; if(!e) return;
+  var past = Date.parse(e.ends_at || e.starts_at) < Date.now();
+  var when = new Date(e.starts_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Club</p><h3>' + esc(e.title) + '</h3>' +
+    '<p class="dm-meta">' + esc(when) + ' · ' + esc(e.location_name) + ', ' + esc(e.city) + '</p>' + (e.description ? '<p>' + esc(e.description) + '</p>' : '');
+  if(past){ demoModal(head + '<p class="dm-note">' + e.going + ' went. Past events stay on the group\'s page, so newcomers can see how active it is.</p>'); return; }
+  var draw = function(){
+    var newcomer = GDEMO.who === 'new', going = GDEMO.going[e.id], body;
+    var tabs = '<div class="dm-who" role="group" aria-label="Who are you in this sample?"><span>See it as</span><button type="button" data-who="new" aria-pressed="' + newcomer + '">Someone new</button><button type="button" data-who="member" aria-pressed="' + !newcomer + '">A Passport holder</button></div>';
+    var fee = e.price_cents ? Math.round(e.price_cents * 0.029 + 30) : 0;
+    var ticket = e.price_cents ? '<div class="dm-bill"><div><span>Ticket</span><b>' + money2(e.price_cents) + '</b></div><div><span>Card processing</span><b>' + money2(fee) + '</b></div>' : '';
+    if(going) body = '<div class="dm-done"><b>You\'re going.</b><span>' + esc(going) + '</span></div><p class="dm-note">This is the sample: nothing was charged or saved.</p>';
+    else if(!newcomer){
+      body = e.price_cents ? ticket + '<div class="dm-total"><span>Total</span><b>' + money2(e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="buy">Get my ticket</button>'
+        : '<p>' + e.going + ' going. As a Passport holder, every event is yours to RSVP.</p><button type="button" class="dm-go" data-act="rsvp">I\'m going</button>';
+    } else if(!e.price_cents && !GDEMO.guestUsed){
+      body = '<div class="dm-pass"><b>Your guest pass covers this one.</b><span>Your first free event with any group is on us. From your second, you join Vegans Explore with the Passport: $11, one time.</span></div><button type="button" class="dm-go" data-act="guest">RSVP with my guest pass</button>';
+    } else {
+      body = '<div class="dm-pass"><b>' + (e.price_cents ? 'Ticketed events are for Passport holders.' : 'You used your guest pass.') + '</b><span>Join Vegans Explore with the Passport: $11, one time, with 1,100 points. Then every group and every event is open to you.</span></div>' +
+        '<div class="dm-bill"><div><span>The Passport, one time</span><b>$11.00</b></div>' + (e.price_cents ? '<div><span>Ticket</span><b>' + money2(e.price_cents) + '</b></div><div><span>Card processing</span><b>' + money2(fee) + '</b></div>' : '') +
+        '<div class="dm-total"><span>Total</span><b>' + money2(1100 + e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="join">Join and ' + (e.price_cents ? 'get my ticket' : 'RSVP') + '</button>';
+    }
+    demoModal(head + tabs + body, function(m){
+      m.querySelectorAll('[data-who]').forEach(function(b){ b.onclick = function(){ GDEMO.who = b.getAttribute('data-who'); draw(); }; });
+      var a = m.querySelector('[data-act]'); if(!a) return;
+      a.onclick = function(){
+        var k = a.getAttribute('data-act');
+        if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
+        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Club, so the group earns its share of your $11.'; }
+        else if(k === 'buy'){ GDEMO.going[e.id] = 'Your ticket is in My events. The group gets the ticket price less our 5%.'; }
+        else GDEMO.going[e.id] = 'It is on My events, and the organizer can message the guests who say yes.';
+        draw();
+      };
+    });
+  };
+  draw();
+}
+function demoJoinGroup(){
+  var g = DEMO.group || {};
+  var draw = function(){
+    var done = GDEMO.joinedGroup;
+    demoModal('<p class="dm-kicker">Sprout Social Club</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
+      (done ? '<div class="dm-done"><b>Welcome to Sprout Social Club.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
+        : '<p>' + (g.members_total || '') + ' members. Joining a group is free for Passport holders: its board, its events first, and its members, from any city.</p>' +
+          (GDEMO.who === 'member' ? '<button type="button" class="dm-go" data-act="j">Join the group</button>'
+            : '<div class="dm-pass"><b>Groups are for Passport holders.</b><span>Your first free event is on a guest pass. To join a group, the Passport: $11, one time, with 1,100 points.</span></div><button type="button" class="dm-go" data-act="jp">Get the Passport and join</button>')), function(m){
+        var a = m.querySelector('[data-act]'); if(a) a.onclick = function(){ GDEMO.joinedGroup = true; GDEMO.who = 'member'; draw(); };
+      });
+  };
+  draw();
+}
+function renderGroupDemo(l){
+  loadHostedEvents(l);
+  var g = DEMO.group || {}, side = document.querySelector('.listing-page-grid .listing-sidebar');
+  if(side){
+    var c = document.createElement('div'); c.className = 'side-card gd-join';
+    c.innerHTML = '<div class="gd-badge">Group Partner</div><div class="gd-n"><b>' + (g.members_total || 0) + '</b> members</div>' +
+      '<div class="gd-faces" aria-hidden="true">' + (g.members || []).slice(0, 6).map(function(m){ return '<i>' + esc(m.name.charAt(0)) + '</i>'; }).join('') + '</div>' +
+      '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>';
+    side.insertBefore(c, side.firstChild);
+  }
+  var ov = document.getElementById('hosted-events');
+  if(ov && DEMO.board){
+    var b = document.createElement('div'); b.className = 'section gd-board';
+    b.innerHTML = '<h2 class="section-title">From the group\'s board</h2>' + DEMO.board.map(function(p){
+      return '<div class="gd-post' + (p.host ? ' host' : '') + '"><b>' + esc(p.who) + '</b><span>' + p.when + ' days ago</span><p>' + esc(p.text) + '</p></div>';
+    }).join('') + '<button type="button" class="he-go ghost" data-demo-board>Write on the board</button>';
+    ov.parentNode.insertBefore(b, ov.nextSibling);
+  }
+  var root = document.getElementById('listing-root');
+  root.addEventListener('click', function(e){
+    var ev = e.target.closest('[data-demo-ev]'); if(ev){ e.preventDefault(); demoEvent(ev.getAttribute('data-demo-ev')); return; }
+    if(e.target.closest('[data-demo-join]')){ demoJoinGroup(); return; }
+    if(e.target.closest('[data-demo-board]')){ demoToast('Sample: members of the group post and comment here. Nothing is saved.'); return; }
+    if(e.target.closest('#demo-signout')){ try { sessionStorage.removeItem('ve_group_demo'); } catch(x){} setDemoView('member', l); }
+  });
+  document.addEventListener('click', function(e){ if(e.target.closest('#demo-modal [data-demo-join]')) demoJoinGroup(); });
+}
+
 function renderDemo(){
   var l = DEMO.listing;
   CST.week = DEMO.startWeek || 6;
   l._campaign = DEMO.campaignAt ? DEMO.campaignAt(CST.week) : (DEMO.campaign || null);
   window._veDemoListing = l;
   renderListing(l); fitHeroAvatar();
-  document.title = l.name + (DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
+  document.title = l.name + (DEMO.group ? ' (Sample group)' : DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
   var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
   document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
   if(DEMO.menu && DEMO.menu.length){
@@ -4673,6 +4830,7 @@ function renderDemo(){
   });
   var donate = document.getElementById('donate-btn'); if(donate) donate.disabled = true;
   root.addEventListener('change', function(e){ if(e.target && e.target.id === 'demo-week') setDemoWeek(parseInt(e.target.value,10), l); });
+  if(DEMO.group) renderGroupDemo(l);
   if(DEMO.business){
     // Claim Listing and Own this business open the owner's side; anything that would buy or claim the sample goes to /business.
     root.addEventListener('click', function(e){
