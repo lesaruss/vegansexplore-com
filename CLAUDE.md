@@ -2024,6 +2024,11 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   `ve_venues.image_url`), and the Overview is **Choose your stadium**: one line on what it is for, the venue picture cards, then Help
   keep it right (River photographing a bowl at a stand, `river-report.webp`) and Get every venue. The cards are two across beside
   River and fill the width once he is hidden.
+- **Kaseya Center, Amerant Bank Arena and loanDepot park have maps too** (2026-10-29, from Sean's seating chart screenshots;
+  migration `20261029_venue_maps_three.sql`): Kaseya 100, 300 and 400 levels; Amerant 100, the club's C sections (typed as on the
+  ticket, C27) and 300; loanDepot drawn with home plate at the bottom (Promenade 1 to 40, Legends 200s, Vista 300s and the Home Run
+  Porch on top). The middle is a court, a rink or a diamond (`fieldSvg`), and directions say the court or the rink. Their stands are
+  pinned by section (Kaseya 105 and 117; loanDepot 19, 205 and 40); two stands at one section sit side by side.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

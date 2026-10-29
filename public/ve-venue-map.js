@@ -107,6 +107,7 @@
     else steps.push((change ? 'Then walk' : 'On the concourse, walk') + ' with the field on your ' + (dd > 0 ? 'right' : 'left') +
       (passed.length ? ', past ' + (passed.length > 3 ? passed.slice(0, 3).join(', ') + ' and ' + (passed.length - 3) + ' more' : passed.length > 1 ? passed.slice(0, -1).join(', ') + ' and ' + passed[passed.length - 1] : passed[0]) : '') +
       ', to section ' + target.label + '.');
+    if (layout.field && layout.field !== 'football' && layout.field !== 'baseball') steps[steps.length - 1] = steps[steps.length - 1].replace('the field', layout.field === 'hockey' ? 'the rink' : 'the court');
     return { minutes: Math.max(1, Math.round(walk / WALK_M_PER_MIN + Math.abs(change) * LEVEL_MIN)), steps: steps, dd: dd, walk: walk };
   }
 
@@ -134,11 +135,22 @@
   }
   function fieldSvg(kind) {
     var x = CX - FW + 18, y = CY - FH + 18, w = 2 * (FW - 18), h = 2 * (FH - 18), s = '<rect class="vvm-field" x="' + (CX - FW + 6) + '" y="' + (CY - FH + 6) + '" width="' + (2 * FW - 12) + '" height="' + (2 * FH - 12) + '" rx="26"/>';
+    if (kind === 'basketball' || kind === 'hockey') {
+      // A court or a rink: the center line and circle, and the two ends.
+      s += '<line class="vvm-yd" x1="' + CX + '" y1="' + y + '" x2="' + CX + '" y2="' + (y + h) + '"/><circle class="vvm-mark" cx="' + CX + '" cy="' + CY + '" r="28"/>' +
+        (kind === 'hockey' ? '<line class="vvm-yd" x1="' + (x + w * .3) + '" y1="' + y + '" x2="' + (x + w * .3) + '" y2="' + (y + h) + '"/><line class="vvm-yd" x1="' + (x + w * .7) + '" y1="' + y + '" x2="' + (x + w * .7) + '" y2="' + (y + h) + '"/>'
+          : '<rect class="vvm-mark" x="' + x + '" y="' + (CY - 34) + '" width="58" height="68"/><rect class="vvm-mark" x="' + (x + w - 58) + '" y="' + (CY - 34) + '" width="58" height="68"/>');
+    }
+    if (kind === 'baseball') {
+      // Home plate at the bottom: the infield diamond.
+      var hx = CX, hy = CY + FH - 26, d = 72;
+      s += '<polygon class="vvm-dirt" points="' + hx + ',' + hy + ' ' + (hx + d) + ',' + (hy - d) + ' ' + hx + ',' + (hy - 2 * d) + ' ' + (hx - d) + ',' + (hy - d) + '"/>';
+    }
     if (kind === 'football') {
       s += '<rect class="vvm-ez" x="' + x + '" y="' + y + '" width="' + (w / 12) + '" height="' + h + '"/><rect class="vvm-ez" x="' + (x + w * 11 / 12) + '" y="' + y + '" width="' + (w / 12) + '" height="' + h + '"/>';
       for (var i = 1; i < 12; i++) s += '<line class="vvm-yd" x1="' + (x + w * i / 12) + '" y1="' + y + '" x2="' + (x + w * i / 12) + '" y2="' + (y + h) + '"/>';
     }
-    return s + '<text class="vvm-ftext" x="' + CX + '" y="' + (CY + 6) + '" text-anchor="middle">' + ({ football: 'FIELD', baseball: 'FIELD', basketball: 'COURT', hockey: 'RINK' }[kind] || 'FIELD') + '</text>';
+    return s + '<text class="vvm-ftext" x="' + CX + '" y="' + (kind === 'baseball' ? CY - 70 : CY + 6) + '" text-anchor="middle">' + ({ football: 'FIELD', baseball: 'FIELD', basketball: 'COURT', hockey: 'RINK' }[kind] || 'FIELD') + '</text>';
   }
 
   function svg(layout, pins, opts) {
@@ -149,8 +161,8 @@
       lv.secs.forEach(function (s) {
         var cls = 'vvm-sec vvm-l' + Math.min(s.level, 2) + (you && you.level === s.level && you.key === s.key ? ' you' : '');
         body += '<polygon class="' + cls + '" points="' + s.poly.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + '"/>';
-        var t = s.label.length > 4 ? '' : s.label;
-        if (t) body += '<text class="vvm-num" x="' + s.x.toFixed(1) + '" y="' + (s.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(t) + '</text>';
+        var t = s.label.length > 5 ? '' : s.label;
+        if (t) body += '<text class="vvm-num' + (t.length > 4 ? ' sm' : '') + '" x="' + s.x.toFixed(1) + '" y="' + (s.y + 4).toFixed(1) + '" text-anchor="middle">' + esc(t) + '</text>';
       });
     });
     // The walk: up or down at the member's place, then around the target level's concourse.
@@ -160,10 +172,13 @@
       for (var i = 0; i <= steps; i++) pts.push(onRing(a + best.dd * i / steps, lv.d1 + 3));
       body += '<polyline class="vvm-route" points="' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + '"/>';
     }
+    var seen = {};
     (pins || []).forEach(function (p) {
       (p.sections || []).forEach(function (raw) {
         var s = find(layout, raw); if (!s) return;
-        body += pinSvg(s.x, s.y, p.n, r && r.routes.length && r.routes[0].stand.n === p.n && r.routes[0].target.key === s.key && r.routes[0].target.level === s.level);
+        // Two stands at one section stand side by side.
+        var k = s.level + ':' + s.key, nth = seen[k] = (seen[k] || 0) + 1;
+        body += pinSvg(s.x + (nth - 1) * 30, s.y, p.n, r && r.routes.length && r.routes[0].stand.n === p.n && r.routes[0].target.key === s.key && r.routes[0].target.level === s.level);
       });
     });
     if (you) body += '<g class="vvm-you" transform="translate(' + you.x.toFixed(1) + ' ' + you.y.toFixed(1) + ')"><circle r="15"/><text y="5" text-anchor="middle">YOU</text></g>';
@@ -175,7 +190,8 @@
     '.vvm-ftext{fill:rgba(255,255,255,.9);font-size:22px;font-weight:900;letter-spacing:.2em;}' +
     '.vvm-sec{stroke:#fff;stroke-width:1;}.vvm-l0{fill:#1f5f22;}.vvm-l1{fill:#2d7d31;}.vvm-l2{fill:#3A9B3E;}' +
     '.vvm-sec.you{fill:#F69820;}' +
-    '.vvm-num{fill:#fff;font-size:12.5px;font-weight:700;pointer-events:none;}' +
+    '.vvm-num{fill:#fff;font-size:12.5px;font-weight:700;pointer-events:none;}.vvm-num.sm{font-size:9.5px;}' +
+    '.vvm-mark{fill:none;stroke:rgba(255,255,255,.7);stroke-width:2;}.vvm-dirt{fill:#c9a36a;stroke:rgba(255,255,255,.7);stroke-width:2;}' +
     '.vvm-route{fill:none;stroke:#F69820;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 12;}' +
     '.vvm-pin{cursor:pointer;}.vvm-pin path{fill:#fff;stroke:#1a1a1a;stroke-width:2.5;}.vvm-pin text{font-size:15px;font-weight:900;fill:#1a1a1a;}' +
     '.vvm-pin.on path{fill:#F69820;}' +
