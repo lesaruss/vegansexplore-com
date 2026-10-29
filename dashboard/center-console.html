@@ -336,6 +336,12 @@
   #dash-depot-host iframe{display:block;width:100%;height:900px;border:0;background:transparent;}
   #dash-console-host iframe{display:block;width:100%;height:min(660px,calc(100vh - 300px));min-height:440px;border:1.5px solid var(--ve-border);border-radius:14px;background:#fff;}
   @media (max-width:760px){ #dash-console-host iframe{height:calc(100vh - 170px);min-height:520px;} }
+  /* A page that does not size itself (a Guide) fills the window down to 24px from its foot, the same give as above the
+     breadcrumb (Sean, 2026-10-29: "the height can go down just a little bit more"); fitConsoleFrame sets the height. */
+  @media (min-width:761px){
+    .console-frame main.frame-fit{padding-bottom:24px;}
+    .console-frame.is-fullscreen main.frame-fit{padding-bottom:124px;}
+  }
   /* Action items that are <button>s (Set up your Guide) reuse the tour-prompt look.
      Resets the button-element defaults the other rule doesn't need to touch. */
   button.dash-tour-prompt{font-family:inherit;text-align:left;width:100%;cursor:pointer;background:linear-gradient(180deg,#fff,#fafdfa);}
@@ -3120,9 +3126,23 @@
     detail.style.display = 'block';
     content.classList.add('detail-open');
     try { var m = document.querySelector('.console-frame main'); if (m) m.scrollTop = 0; } catch (e) {}
+    fitConsoleFrame();
     try { window.scrollTo(0, 0); } catch (e) {}
   }
   window.openConsoleFrame = openConsoleFrame;
+  function fitConsoleFrame() {
+    var m = document.querySelector('.console-frame main');
+    var f = document.querySelector('#dash-console-host iframe');
+    var on = !!(m && f && f.offsetParent && !f.classList.contains('ve-sized') && window.innerWidth > 760);
+    if (m) m.classList.toggle('frame-fit', on);
+    if (!on) { if (f && !f.classList.contains('ve-sized')) f.style.height = ''; return; }
+    var pb = parseFloat(getComputedStyle(m).paddingBottom) || 0;
+    var top = f.getBoundingClientRect().top - m.getBoundingClientRect().top + m.scrollTop;
+    var h = Math.floor(m.clientHeight - pb - top - (f.offsetHeight - f.clientHeight));
+    f.style.height = Math.max(440, h) + 'px';
+  }
+  window.fitConsoleFrame = fitConsoleFrame;
+  window.addEventListener('resize', fitConsoleFrame);
   // Bounties live in the dashboard window (Sean, 2026-10-04: a member feature belongs in the
   // universal frame). The campaigns page opens under "Dashboard / Bounties" and the address bar
   // reads /dashboard/bounties, carrying the campaign and job the page is showing.
@@ -3191,6 +3211,7 @@
     if (e.data.type === 've-frame-height') {
       var h = Math.max(440, Math.min(40000, Math.round(+e.data.h || 0)));
       f.classList.add('ve-sized'); f.style.height = h + 'px'; f.setAttribute('scrolling', 'no');
+      if (f.parentNode && f.parentNode.id === 'dash-console-host') { var fm = document.querySelector('.console-frame main'); if (fm) fm.classList.remove('frame-fit'); }
       tellFrameView();
     } else if (e.data.type === 've-frame-url') {
       var fp = String(e.data.path || '');
@@ -3231,6 +3252,7 @@
     if (detail) detail.style.display = 'none';
     var wasBounties = !!(host && host.querySelector('iframe[src^="/bounties"]'));
     if (host) host.innerHTML = '';
+    fitConsoleFrame();
     if (wasBounties && /^\/dashboard\/bounties/.test(location.pathname)) history.replaceState({ tabKey: 'profile' }, '', '/dashboard');
   }
   window.closeConsoleFrame = closeConsoleFrame;
@@ -4298,6 +4320,7 @@
 
     function apply(full) {
       frame.classList.toggle('is-fullscreen', full);
+      if (window.fitConsoleFrame) window.fitConsoleFrame();
       min.setAttribute('aria-disabled', full ? 'false' : 'true');
       min.title = full ? 'Back into the window' : 'Already in the window';
       max.setAttribute('aria-disabled', full ? 'true' : 'false');
