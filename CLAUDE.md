@@ -2069,7 +2069,11 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
   evergreen bounties (check in where you go, volunteer with a nonprofit, is this place still open?); paid jobs such as attending an
   event for us, Level 2 and up, with a stipend; and past event jobs leaving the list once claims close.
-- **The Airport Guide, built 2026-10-29, not published** (Sean: "Let's look at the airport guide now"; migrations
+- **The Airport Guide, launched 2026-10-29** (Sean: "I love it. Let's lock it and let's launch the airport guide"; migration
+  `20261029_airport_guide_launch.sql`; the Overview locked the same day, canon `canon-ve-venue-guides` v3): published, indexed, its
+  card fifth in the Guide catalog (label Travel, banner `public/guides/airport-guide.jpg`: Nori in the black tee with a boarding pass
+  and a coffee, the locked banner style), its airports in the venue bounties. Nori's lines show as text; `CLIPS` is still empty.
+  Built (Sean: "Let's look at the airport guide now"; migrations
   `20261029_airport_guide.sql`, `20261029_airports_seed.sql`, run through the one-time `ve-once-airports`, now the 410 stub). The same
   engine: `ve-venues` serves both Guides (`GUIDES`, the body's `guide`; a venue's kind picks its Guide), the same reports, points, saves
   and Depot > Venues. Page `guides/airport-guide.html` and `guide-scripts/airport-guide.js` (`noindex`, Nori on the right, her lines
