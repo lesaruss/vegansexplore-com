@@ -281,6 +281,7 @@
       box.innerHTML = VEVenueMap.svg(v.layout, stands, { you: you, route: r, title: 'Map of ' + v.name });
       var html = '';
       if (seat && !you) html = '<p class="sa-dir-miss">We could not find section ' + esc(seat) + ' at ' + esc(v.name) + '. Check the number on your ticket.</p>';
+      else if (r && !r.routes.length) html = '<p class="sa-dir-hint">You are marked on the map. No stand with Vegan food here is on the map yet: add one with Add something missing when you find it.</p>';
       else if (r) {
         html = '<ol class="sa-dirs">' + r.routes.map(function (x) {
           return '<li><button type="button" class="sa-dir-go" data-st="' + esc(x.stand.id) + '"><span class="sa-pinno">' + x.stand.n + '</span><span><b>' + esc(x.stand.name) + '</b> <span class="sa-dir-meta">section ' + esc(x.section) +
