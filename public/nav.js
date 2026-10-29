@@ -139,6 +139,11 @@
     '@media(max-width:960px){.ve-nav-in .ve-pub-nav{display:none;} .ve-nav-in .ve-nav-right-wrap{margin-left:auto;} .ve-nav-in .ve-burger{display:inline-flex;}}',
     '@media(max-width:860px){.ve-nav-public .ve-pub-nav{display:none;} .ve-nav-public .ve-nav-right-wrap{display:flex !important;margin-left:auto;} .ve-nav-public .ve-burger{display:inline-flex;}}',
     '.ve-nav-right-wrap{display:flex;align-items:center;}',
+    // Every control is a 40px target, and the bar fits a 320px phone (2026-10-29: signed out, Log In, Join and the hamburger
+    // ran 31px past the edge). Under 380px the logo, gaps and padding tighten; the two buttons stay on the bar.
+    '.ve-wordmark,.ve-nav-login,.ve-nav-cta{min-height:40px;box-sizing:border-box;}',
+    '.ve-nav-login,.ve-nav-cta{display:inline-flex;align-items:center;}',
+    '@media(max-width:380px){.ve-nav-inner{padding:0 12px;gap:8px;} .ve-wordmark-logo{height:26px;} .ve-nav-login{padding:9px 8px;} .ve-nav-cta{padding:9px 12px;} .ve-burger{margin-left:4px;}}',
   ].join('');
 
   var styleEl = document.createElement('style');
