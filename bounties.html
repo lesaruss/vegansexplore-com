@@ -469,20 +469,26 @@
     function renderVenueBounties() {
       setView('venueb');
       $('venueb').innerHTML = '<div style="margin-top:16px"><p class="ckind" style="position:static;display:inline-block;margin-bottom:8px">Always open</p><h2 style="font-size:24px;font-weight:900;margin:0 0 8px">' + VENUEB.title + '</h2>' +
-        '<p style="max-width:860px">Every Vegan item in our Stadium &amp; Arena Guide needs members to check it is still sold. The <strong>first</strong> member to confirm an item no one has checked lately earns the bounty; after that, Still here pays less. Go to a game, walk the concourse, tap <strong>Update</strong> then <strong>Still here</strong> on each item, with a photo, and the points land when the team accepts them.</p>' +
-        '<ol style="margin:14px 0 14px 20px;max-width:860px;line-height:1.7"><li>Pick a venue below and open it in the Guide.</li><li>While you are inside, tap <strong>Update</strong> on an item marked <strong>Bounty</strong> and choose Still here. Your phone shares its location once, to show you are there.</li><li>Something new or gone? Tell us that too: the first to report it earns the most.</li></ol>' +
+        '<p style="max-width:860px">Every Vegan item in our venue Guides needs members to check it is still sold. The <strong>first</strong> member to confirm an item no one has checked lately earns the bounty; after that, Still here pays less. Go to a game, walk the concourse, tap <strong>Update</strong> then <strong>Still here</strong> on each item, with a photo, and the points land when the team accepts them.</p>' +
+        '<ol style="margin:14px 0 14px 20px;max-width:860px;line-height:1.7"><li>Get the Guide: its bounties unlock with it. Then pick a venue below and open it.</li><li>While you are inside, tap <strong>Update</strong> on an item marked <strong>Bounty</strong> and choose Still here. Your phone shares its location once, to show you are there.</li><li>Something new or gone? Tell us that too: the first to report it earns the most.</li></ol>' +
         '<div id="vb-list"><p class="empty">Loading...</p></div></div>';
       fetch(VFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token() || '') }, body: JSON.stringify({ action: 'bounties', hub: state.city || 'all' }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           var rows = (d && d.venues) || [], lim = (d && d.limits) || {};
+          // Each Guide's bounties unlock with the Guide (Sean, 2026-10-29): owners see the venues, everyone else what is waiting.
+          var GN = { 'stadium-arena-guide': 'the Stadium & Arena Guide', 'airport-guide': 'the Airport Guide' };
+          var lockHtml = ((d && d.locked) || []).map(function (g) {
+            return '<div class="empty" style="text-align:left;margin-bottom:10px"><strong>' + g.points.toLocaleString() + ' points waiting at ' + g.venues + (g.venues === 1 ? ' venue' : ' venues') + ' here.</strong>These bounties unlock with ' + esc(GN[g.guide] || 'the Guide') + ': $11 or 1,100 points, yours to keep. <a target="_top" href="/guides/' + esc(g.guide) + '#/join" style="font-weight:800;color:var(--ve-green-dark,#1a7a35)">Get the Guide</a></div>';
+          }).join('');
           $('vb-list').innerHTML = rows.length
             ? '<p style="margin:0 0 8px"><strong>' + (d.total || 0).toLocaleString() + '</strong> points waiting here, with photos. Up to ' + (lim.daily_paid_cap || 40) + ' reports paid a day.</p><div class="jlist">' +
               rows.map(function (v) {
                 var url = '/guides/' + v.guide + '#/' + (v.kind === 'airport' ? 'airport' : 'venue') + '/' + encodeURIComponent(v.slug);
                 var what = v.empty ? 'Nothing listed yet: be the first to add what is there' : v.open + (v.open === 1 ? ' item' : ' items') + ' waiting for a first check';
                 return '<a class="jrow ck-row" target="_top" href="' + esc(url) + '"><span class="jname"><b>' + esc(v.name) + '</b><small>' + esc(what) + '</small></span><span data-l="Where">' + esc(v.city || '') + '</span><span data-l="Points">up to ' + (v.points || 0).toLocaleString() + '</span></a>';
-              }).join('') + '</div><p style="margin-top:10px;font-size:13px">The Guide is $11 or 1,100 points, and the bounties at one venue can pay that back. Hard Rock Stadium is open to everyone.</p>'
-            : '<p class="empty">No venue bounties in this city yet. Pick another city, or check back when we add venues here.</p>';
+              }).join('') + '</div><p style="margin-top:10px;font-size:13px">Bounties are part of the Guide you own.</p>'
+            : (lockHtml ? '' : '<p class="empty">No venue bounties in this city yet. Pick another city, or check back when we add venues here.</p>');
+          $('vb-list').innerHTML = lockHtml + $('vb-list').innerHTML;
         }).catch(function () { $('vb-list').innerHTML = '<p class="empty">Could not load the venue bounties.</p>'; });
     }
     function renderList() {

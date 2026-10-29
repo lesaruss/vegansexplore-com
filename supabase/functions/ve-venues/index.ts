@@ -10,7 +10,7 @@
 //                                              the free example (Hard Rock Stadium); everyone else gets the outline (locked: true)
 //                                              An open venue also carries its map: venue.layout (each level's sections by side) and
 //                                              each stand's map_sections and map_level (migration 20261028_venue_maps.sql)
-// An active member (any Passport holder may report, Guide or not):
+// An active member who owns the venue's Guide (bounties unlock with the Guide, Sean 2026-10-29):
 //   { action: 'report_start' }                 -> { path, upload_url }   PUT the photo (JPEG, shrunk in the browser) there
 //   { action: 'report', venue, item?, spot?, kind, note?, path?, lat, lng, accuracy }
 //                                              kind confirm | wrong | missing | gone | comment; the photo is optional and pays more
@@ -162,6 +162,9 @@ Deno.serve(async (req) => {
     // Only the Guides that are out (an unpublished Guide's venues wait for its launch), unless a super admin asks.
     const { data: gs } = await db.from('ve_guides').select('slug, published').in('slug', Object.keys(GUIDES));
     const live = new Set((gs || []).filter((g) => g.published || admin).map((g) => g.slug));
+    // Each Guide's bounties are for its owners; everyone else gets the count and what it would pay, as a reason to get it.
+    const ownsG: Record<string, boolean> = {};
+    for (const g of live) ownsG[g] = admin || (!!viewer && !!(await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: g })).data);
     const out = (vs || []).filter((v) => v.latitude != null && live.has(guideOfKind(v.kind))).map((v) => {
       const mine = (its || []).filter((i) => i.venue_id === v.id);
       const open = mine.filter((i) => freshness(i, v) !== 'fresh').length;
@@ -170,7 +173,12 @@ Deno.serve(async (req) => {
       return { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, image: v.image_url, free: v.free_example,
         guide: guideOfKind(v.kind), items: mine.length, open: mine.length ? open : 1, empty: !mine.length, points };
     }).filter((v) => v.open > 0).sort((a, b) => b.points - a.points);
-    return json({ venues: out, total: out.reduce((n, v) => n + v.points, 0), points: await reportPoints(), limits: await bountyLimits() });
+    const locked = [...live].filter((g) => !ownsG[g]).map((g) => {
+      const vs2 = out.filter((v) => v.guide === g);
+      return { guide: g, venues: vs2.length, points: vs2.reduce((n, v) => n + v.points, 0) };
+    }).filter((x) => x.venues);
+    const mine = out.filter((v) => ownsG[v.guide]);
+    return json({ venues: mine, locked, total: mine.reduce((n, v) => n + v.points, 0), points: await reportPoints(), limits: await bountyLimits() });
   }
 
   if (action === 'venue') {
@@ -244,8 +252,13 @@ Deno.serve(async (req) => {
       const { data: listed } = await db.storage.from(BUCKET).list(viewer!.id, { search: path.split('/')[1] });
       if (!(listed || []).some((f) => f.name === path.split('/')[1])) return json({ error: 'bad_photo', message: 'The photo did not finish uploading. Try again.' }, 400);
     }
-    const { data: v } = await db.from('ve_venues').select('id').eq('slug', str(body.venue, 80)).maybeSingle();
+    const { data: v } = await db.from('ve_venues').select('id, kind').eq('slug', str(body.venue, 80)).maybeSingle();
     if (!v) return json({ error: 'not_found' }, 404);
+    // Bounties unlock with the Guide (Sean, 2026-10-29): only its owners (and super admins) report, the free venue included.
+    if (!admin) {
+      const { data: has } = await db.rpc('ve_owns_guide', { p_member: viewer!.id, p_guide: guideOfKind(v.kind) });
+      if (!has) return json({ error: 'guide_required', message: 'Bounties unlock with the Guide.' }, 403);
+    }
     const { data, error } = await db.rpc('ve_venue_report_save', {
       p_member: viewer!.id, p_venue: v.id, p_spot: isId(body.spot) ? body.spot : null, p_item: isId(body.item) ? body.item : null,
       p_kind: str(body.kind, 20), p_note: str(body.note, 600), p_photo: path || null,
