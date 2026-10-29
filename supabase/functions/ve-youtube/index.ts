@@ -5,7 +5,8 @@
 //
 // YouTube refuses our server its channel pages and its RSS feeds (a blank page and a 404 for every channel, checked 2026-10-29), so
 // this reads YouTube's own Data API v3 with the project's Google key (YOUTUBE_API_KEY, else GOOGLE_PLACES_API_KEY; the YouTube Data
-// API has to be on for that key's Google Cloud project). A channel is listings.details.youtube_channel_id; its latest 50 uploads are
+// API is on for that key since 2026-10-29). A channel is listings.details.youtube_channel_id (a YouTube listing, or a News Outlet
+// such as Plant Based News); its latest 50 uploads are
 // kept in ve_youtube_feeds and read again when older than 6 hours (1 API unit a channel for the uploads, of 10,000 a day); a read
 // that fails keeps serving what we have. Videos play in YouTube's own player (youtube-nocookie); nothing is copied.
 //
@@ -85,7 +86,7 @@ async function read(listing: any) {
     // Active while it uploads, like a podcast: a video in the last six months, else On hiatus (never Ended).
     const latest = videos[0]?.published ? Date.parse(videos[0].published) : 0;
     const status = latest && Date.now() - latest < 183 * 864e5 ? 'OPERATIONAL' : 'CLOSED_TEMPORARILY';
-    if (latest && listing.business_status !== status) await db.from('listings').update({ business_status: status }).eq('id', listing.id);
+    if (latest && listing.category === 'YouTube' && listing.business_status !== status) await db.from('listings').update({ business_status: status }).eq('id', listing.id);
     return row;
   } catch (e) {
     const msg = String((e as Error).message || e).slice(0, 300);
@@ -102,7 +103,8 @@ Deno.serve(async (req) => {
   const ops = async () => { const t = await secret('LESARUSS_ADMIN_TOKEN'); return !!t && bearer === t; };
 
   if (action === 'videos') {
-    let q = db.from('listings').select('id, slug, name, business_status, details').eq('status', 'approved').eq('category', 'YouTube');
+    // A YouTube listing, or another media listing with a channel (Plant Based News, a News Outlet).
+    let q = db.from('listings').select('id, slug, name, category, business_status, details').eq('status', 'approved').not('details->>youtube_channel_id', 'is', null);
     q = isId(body.listing_id) ? q.eq('id', body.listing_id) : q.eq('slug', String(body.slug || ''));
     const { data: l } = await q.maybeSingle();
     if (!l) return json({ error: 'not_found' }, 404);
@@ -131,7 +133,7 @@ Deno.serve(async (req) => {
     const cron = req.headers.get('x-cron-secret');
     const cs = await secret('CRON_SECRET');
     if (!((cron && cs && cron === cs) || (await ops()))) return json({ error: 'unauthorized' }, 401);
-    const { data: ls } = await db.from('listings').select('id, slug, business_status, details').eq('status', 'approved').eq('category', 'YouTube');
+    const { data: ls } = await db.from('listings').select('id, slug, category, business_status, details').eq('status', 'approved').not('details->>youtube_channel_id', 'is', null);
     const { data: fs } = await db.from('ve_youtube_feeds').select('listing_id, fetched_at');
     const at: Record<string, number> = {};
     (fs || []).forEach((f: any) => { at[f.listing_id] = f.fetched_at ? Date.parse(f.fetched_at) : 0; });
