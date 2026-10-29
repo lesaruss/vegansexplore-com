@@ -1392,12 +1392,15 @@ tracked Amazon link. A book about Vegan or plant-based living, food, health or a
 `referenced`, shown only on the episodes that name it. An existing listing of the same title is linked, never copied. A podcast episode's
 view (`?ep=<guid>`) shows **Referenced books** under it (`books` in `public/ve-episodes.js`, `ve-books` `episode`, public): the cover,
 title, author and Recommended / Their book / Talked about / Mentioned, opening the book's page, or Amazon for a referenced one. `ve-books`
-`status` counts the list, `probe` says whether the sources answer. **Sources**: Google Books first, read with our Google key (`GOOGLE_PLACES_API_KEY`),
-then Open Library. On 2026-10-29 neither answered: the key's API restrictions block the Books API (Sean adds Books API to the key in Google
-Cloud > APIs & Services > Credentials, as he did for YouTube) and Open Library refused our server's connections. Scans run regardless;
-crawl and build wait, and a source that does not answer does not use up a book's tries. Proven 2026-10-29 on two episodes: the cookbook
+`status` counts the list, `probe` says whether the sources answer. **Sources**: Google Books first, read with our Google key (`GOOGLE_PLACES_API_KEY`; Sean added the Books API to the key 2026-10-29),
+English results only (`langRestrict=en`), retried when it answers 503, and searched looser until something comes back (its operators miss
+some books a plain search finds); then Open Library, which refused our server's connections that day. A crawl that finds nothing under the
+listing's name asks Claude what name they publish under (Earthling Ed writes as Ed Winters) and saves the book under the name on its cover.
+A source that does not answer does not use up a book's tries. A book whose English editions have no cover on Amazon is `not_found` (Klaper's
+1987 Pregnancy, Children, and the Vegan Diet). Proven 2026-10-29 on two episodes: the cookbook
 countdown named its ten books, all matched to their listings, and John Lewis's named Badass Vegan, A New Earth and The Art of War (the last
-two queued). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
+two queued; once Google answered, A New Earth and The Art of War became referenced books and Dr. Klaper's Moving Medicine Forward, named in
+his episode, a listing on his new Books tab). The same day five older books got their Amazon covers and every book with an ISBN its Amazon link; Sweet Potato Soul's picture
 (its author's logo) was set aside for the letter.
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
