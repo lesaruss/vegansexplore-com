@@ -1329,7 +1329,7 @@ account is his studio's rabbit logo (removed) and Keegan's was not found, so bot
 **Featured people** (named People in this film until Sean's "people featured people" the same day; Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even vote
 for them"; migration `20261029_film_people.sql`): above On our podcast, the People listings who made the film or are in it
 (`details.film_people` `[{person, role}]`) as the Directory's own card with Votes (`loadFilmPeople`, which loads
-`/public/ve-region-directory.js` on first need), three columns, two under 900 px, one on phones. What the Health: Joel Kahn, Klaper, Barnard;
+`/public/ve-region-directory.js` on first need), two columns (Sean, 2026-10-29: three squished the words), one on phones. What the Health: Joel Kahn, Klaper, Barnard;
 Cowspiracy: Klaper; Forks Over Knives and Eating You Alive: Barnard; They're Trying to Kill Us: John Lewis, Barnard; The Game Changers: Dotsie
 Bausch; and since the same day the four directors as Director or Co-director, sorted first. IMDb and Wikipedia do not resolve from the build session, so casts were checked through published cast listings; Torre Washington
 was not found in The Game Changers' cast and is left out until it is confirmed.
