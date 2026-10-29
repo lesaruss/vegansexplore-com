@@ -1558,7 +1558,9 @@ has no cover for any English edition, the builder takes Google's own cover pictu
 (`pre-vegans-by-sean-russell`, `/go/book-b0b1cd57rw`), in the family `pre-vegans` with the Pre-Vegans Podcast, Featured in Media > Books
 (`SHOWS` in `ve-media.js`), and its eight People in it show as its **Featured people** (`details.film_people` on a book too, `bookPeople` in
 `directory/listing.html`). A book with a 979 ISBN goes the same way. Google Books had Dr. Aaron Spitz as "Splitz"; his book's listing was
-corrected the same day. Sean got his own People profile the same day (`sean-russell`, Founders, migration
+corrected the same day. The China Study was built twice the same day (two author lines; the key took "II"): the author key is now the
+first author's last name without II, Jr, MD and the like, `buildOne` links to a Books listing with the same ISBN instead of making
+another, and the copy was merged (migration `20261029_books_dedupe_author_key.sql`). Sean got his own People profile the same day (`sean-russell`, Founders, migration
 `20261029_people_sean_russell.sql`): the May import's quarantined @seanarussell82 row promoted, Host of every Vegans Explore, SoFlo
 Vegans and Pre-Vegans episode (221 credits), in the family `sean-russell` with the Vegans Explore, SoFlo Vegans and Pre-Vegans podcasts and the book (migration
 `20261029_sean_russell_family.sql`; no YouTube page joins it until Sean has video he wants to promote); his website is seanarussell.com,
