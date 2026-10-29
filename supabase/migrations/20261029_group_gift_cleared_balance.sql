@@ -6,7 +6,7 @@
 -- 2. Short of it, the organizer buys the gift by card at the same price (our share of the $11 at their rate): ve-group gift_checkout,
 --    confirmed once by universe_invites.paid_session. A card gift has no commission row.
 -- 3. A card gift that expires, is canceled or is declined goes back to the group's balance (a 'ready' row, ref 'gift-back:<invite>'),
---    so it can fund the next gift (Logan's default, Sean's to change: a Stripe refund instead).
+--    so it can fund the next gift, never a card refund (Sean, 2026-10-29: "keep it going to the balance, no refund").
 
 create or replace function public.ve_group_balance(p_group uuid)
 returns int language sql stable security definer set search_path to 'public' as $function$

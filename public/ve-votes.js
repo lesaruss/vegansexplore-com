@@ -98,15 +98,15 @@
       '@media(prefers-reduced-motion:reduce){#ve-vm-box{animation:none}}' +
       '#ve-vm-x{position:absolute;top:10px;right:10px;width:36px;height:36px;border:0;background:none;border-radius:6px;cursor:pointer;color:#555;font-size:22px;line-height:1}' +
       '#ve-vm-x:hover{background:#f3f3f3;color:#1a1a1a}' +
-      '#ve-vm-ico{width:52px;height:52px;border-radius:50%;background:#e8f5e9;color:#2d7d31;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}' +
-      '#ve-vm-eye{font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#2d7d31;margin:0 0 8px}' +
+      '#ve-vm-ico{width:52px;height:52px;border-radius:50%;background:var(--vb-soft,#e8f5e9);color:var(--vb-go,#2d7d31);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}' +
+      '#ve-vm-eye{font-size:10px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:var(--vb-go,#2d7d31);margin:0 0 8px}' +
       '#ve-vm-title{margin:0 0 8px;font-size:20px;font-weight:900;color:#1a1a1a;letter-spacing:-0.01em;line-height:1.2}' +
       '#ve-vm-body{margin:0 0 20px;font-size:13.5px;color:#4a4a4a;line-height:1.6}' +
       '#ve-vm-body b{color:#1a1a1a}' +
       '.ve-vm-btn{display:block;width:100%;padding:14px;border-radius:6px;font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;box-sizing:border-box}' +
-      '.ve-vm-go{background:#22C55E;color:#03170a}.ve-vm-go:hover{background:#16A34A}' +
+      '.ve-vm-go{background:var(--vb-cta,#22C55E);color:var(--vb-cta-ink,#03170a)}.ve-vm-go:hover{background:var(--vb-cta-hover,#16A34A)}' +
       '.ve-vm-alt{background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,0.2);margin-top:10px}.ve-vm-alt:hover{background:#f5f5f5}' +
-      '#ve-vm-foot{margin:14px 0 0;font-size:12.5px;color:#555}#ve-vm-foot a{color:#2d7d31;font-weight:800}' +
+      '#ve-vm-foot{margin:14px 0 0;font-size:12.5px;color:#555}#ve-vm-foot a{color:var(--vb-go,#2d7d31);font-weight:800}' +
       '#ve-vote-modal :focus-visible{outline:3px solid #F69820;outline-offset:2px}';
     document.head.appendChild(st);
     modalEl = document.createElement('div');
@@ -180,14 +180,17 @@
   // links open in the whole window.
   function gatePrompt(kind, o) {
     o = o || {};
-    var g = GATES[kind] || GATES.vote, from = g.from || (GATES[kind] ? kind : 'vote');
+    var VB = window.VE_BRAND || {}, gates = VB.gates || {};
+    var g = gates[kind] || GATES[kind] || GATES.vote, from = g.from || (GATES[kind] ? kind : 'vote');
     var framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
     var top = framed ? ' target="_top"' : '', back = encodeURIComponent(framed ? '/dashboard/pulse' : here());
     openModal({
       icon: g.icon, eyebrow: 'Members only', title: g.title, body: g.body,
-      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="/passport?from=' + from + '&back=' + back + '">Explore the Passport</a>' +
+      // Another brand's site (window.VE_BRAND: { passportUrl, passportLabel, loginUrl, gates }) sends people to its own Passport
+      // and sign-in, in its own words; Vegans Explore sets none.
+      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
                '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>',
-      foot: o.signedIn ? '' : 'Already a member? <a' + top + ' href="/login?next=' + back + '">Sign in</a>'
+      foot: o.signedIn ? '' : 'Already a member? <a' + top + ' href="' + (VB.loginUrl || '/login?next=' + back) + '">Sign in</a>'
     });
   }
   function memberPrompt(kind, o) { gatePrompt(kind, o); }
@@ -238,9 +241,10 @@
     var card = btn.closest('.rank-card'); if (card) card.dataset.votes = String(n);
   }
   function vote(btn) {
-    if (btn.dataset.busy || !window.VEAuth) return;
+    if (btn.dataset.busy) return;
     if (btn.dataset.voted && tooSoon(btn.dataset.next)) { votedPrompt(btn.dataset.next); return; }
-    if (!VEAuth.isLoggedIn()) { passportPrompt(); return; }
+    // No Vegans Explore sign-in on this page (another brand's site, window.VE_BRAND): the members window, with that brand's links.
+    if (!window.VEAuth || !VEAuth.isLoggedIn()) { passportPrompt(); return; }
     var id = btn.getAttribute('data-listing-id'), label = btn.textContent;
     btn.dataset.busy = '1'; btn.disabled = true; btn.textContent = 'Voting...';
     cast(id).then(function (d) {

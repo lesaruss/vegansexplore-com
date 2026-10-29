@@ -90,6 +90,22 @@
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>',
       subcats: [] }
   ];
+  // One framework for every brand (Sean, 2026-10-29: "If we make an update in Vegans Explore... it needs to match LESARUSS.ai...
+  // What changes is just maybe the color"). Another brand's site loads this same file (lesaruss.ai proxies /public/* here) and
+  // passes config.brand: its sections ({ sections, catMap }), which listings are its own (include(l)), no vetting rule
+  // (trust: false), no How Vegan (vegan: false) and where a listing opens (listingBase). Colors are the --vb-* variables in the
+  // CSS below; Vegans Explore sets none, so it keeps its greens. With no config.brand nothing here changes for Vegans Explore.
+  var BRAND = {};
+  var VE_CAT_MAP = CAT_MAP, VE_CAT_CONFIG = CAT_CONFIG;
+  function useBrand(b) {
+    BRAND = b || {};
+    CAT_MAP = BRAND.catMap || VE_CAT_MAP;
+    CAT_CONFIG = BRAND.sections || VE_CAT_CONFIG;
+  }
+  function ownListing(l) {
+    if (typeof BRAND.include === 'function') return BRAND.include(l);
+    return (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0;
+  }
   // Members (an active membership) see the Being vetted section.
   function memberNow() { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; return !!(m && m.membership_status === 'active'); }
   function adminNow() { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; return !!(m && m.is_superadmin); }
@@ -99,7 +115,7 @@
     + '.vrd-root{font-family:Montserrat,sans-serif}'
     + '.vrd-root .cat-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;flex-wrap:wrap}'
     + /* Muted text is #666 (5.7:1 on white, WCAG AA); #888 and #aaa failed. */ '.vrd-root .cat-tab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border:none;background:transparent;color:#666;cursor:pointer;font-family:Montserrat,sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}'
-    + '.vrd-root .cat-tab.active{color:#1a1a1a;border-bottom-color:#5EC47A}'
+    + '.vrd-root .cat-tab.active{color:#1a1a1a;border-bottom-color:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .cat-tab:hover:not(.active){color:#555}'
     + '.vrd-root .board-panel{display:none;padding-top:16px}'
     + '.vrd-root .board-panel.active{display:block}'
@@ -107,11 +123,11 @@
     + '.vrd-root .subcat-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #eee}'
     + '.vrd-root .subcat-pill{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 14px;border-radius:20px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;font-family:Montserrat,sans-serif;transition:all .15s}'
     + '.vrd-root .subcat-pill.sc-active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
-    + '.vrd-root .subcat-pill:hover:not(.sc-active){border-color:#5EC47A;color:#2d7a4f}'
+    + '.vrd-root .subcat-pill:hover:not(.sc-active){border-color:var(--vb-accent,#5EC47A);color:var(--vb-accent-ink,#2d7a4f)}'
     + '.vrd-root .subcat-pills .vrd-search-wrap{position:relative;margin-left:auto;flex:0 1 240px;min-width:160px;max-width:260px}'
     + '.vrd-root .vrd-search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#999;display:flex;pointer-events:none}'
     + '.vrd-root .vrd-search-input{width:100%;padding:8px 14px 8px 32px;border:1.5px solid #ddd;border-radius:20px;font-size:12px;font-family:Montserrat,sans-serif;color:#1a1a1a;background:#fff;transition:border-color .15s}'
-    + '.vrd-root .vrd-search-input:focus{outline:none;border-color:#5EC47A}'
+    + '.vrd-root .vrd-search-input:focus{outline:none;border-color:var(--vb-accent,#5EC47A)}'
     + '@media(max-width:640px){.vrd-root .subcat-pills .vrd-search-wrap{flex:1 1 100%;margin-left:0;max-width:none;order:99}}'
     // The sub-sections fill the row under the tabs (Sean, 2026-10-27; the search moved under them, beside the filter icon).
     + '.vrd-root .subcat-list{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;gap:8px 6px}'
@@ -120,10 +136,10 @@
     + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:0}'
     + '.vrd-root .vrd-tools .vrd-search-input{height:44px;border-radius:6px;padding:0 14px 0 34px;font-size:13px}'
     + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}'
-    + '.vrd-root .vrd-filter-btn:hover,.vrd-root .vrd-filter-btn[aria-expanded=true]{border-color:#2d7a4f;color:#2d7a4f}'
-    + '.vrd-root .vrd-filter-btn[aria-expanded=true]{background:#f0faf4}'
-    + '.vrd-root .vrd-filter-btn:focus-visible{outline:2px solid #5EC47A;outline-offset:2px}'
-    + '.vrd-root .vrd-filter-count{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:#2d7a4f;color:#fff;font-size:10px;font-weight:800;line-height:18px;text-align:center}'
+    + '.vrd-root .vrd-filter-btn:hover,.vrd-root .vrd-filter-btn[aria-expanded=true]{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f)}'
+    + '.vrd-root .vrd-filter-btn[aria-expanded=true]{background:var(--vb-soft,#f0faf4)}'
+    + '.vrd-root .vrd-filter-btn:focus-visible{outline:2px solid var(--vb-accent,#5EC47A);outline-offset:2px}'
+    + '.vrd-root .vrd-filter-count{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--vb-accent-ink,#2d7a4f);color:#fff;font-size:10px;font-weight:800;line-height:18px;text-align:center}'
     + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);padding:0;overflow:hidden}'
     + '.vrd-root .vrd-filter-pop[hidden]{display:none}'
     + '.vrd-root .vrd-pop-sec{padding:18px 20px}'
@@ -139,15 +155,15 @@
     + '.vrd-root .vrd-filter-pop .sort-bar .geo-label,.vrd-root .vrd-filter-pop .sort-bar .sort-label{margin:0;font-size:10px;letter-spacing:.08em;color:#666}'
     // Dropdowns: our chevron 16px from the edge (canon rule 15), the 6px corner (rule 13), one height.
     + '.vrd-root .vrd-filter-pop .sort-bar select,.vrd-root .vrd-filter-pop select{flex:0 0 auto;width:100%;max-width:100%;min-width:0;height:40px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 12px;font-size:12px;color:#1a1a1a;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
-    + '.vrd-root .vrd-filter-pop select:focus{outline:none;border-color:#5EC47A}'
+    + '.vrd-root .vrd-filter-pop select:focus{outline:none;border-color:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .vrd-pop-foot{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;background:#fafafa}'
     + '.vrd-root .vrd-pop-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:10px 16px;border-radius:6px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer}'
-    + '.vrd-root .vrd-pop-btn:hover{border-color:#2d7a4f;color:#2d7a4f}'
-    + '.vrd-root .vrd-pop-done{background:#2d7d31;border-color:#2d7d31;color:#fff}'
-    + '.vrd-root .vrd-pop-done:hover{background:#1f5f22;border-color:#1f5f22;color:#fff}'
+    + '.vrd-root .vrd-pop-btn:hover{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f)}'
+    + '.vrd-root .vrd-pop-done{background:var(--vb-go,#2d7d31);border-color:var(--vb-go,#2d7d31);color:#fff}'
+    + '.vrd-root .vrd-pop-done:hover{background:var(--vb-go-hover,#1f5f22);border-color:var(--vb-go-hover,#1f5f22);color:#fff}'
     + '@media(max-width:600px){.vrd-root .vrd-filter-pop .sort-bar{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 10px}.vrd-root .vrd-pop-sec{padding:16px}.vrd-root .vrd-pop-foot{padding:12px 16px}.vrd-root .vrd-pop-btn{flex:1 1 0}}'
     + '.vrd-root .perpage-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:7px 28px 7px 14px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;flex-shrink:0;margin-left:auto}'
-    + '.vrd-root .perpage-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
+    + '.vrd-root .perpage-select:focus{outline:2px solid var(--vb-accent,#5EC47A);outline-offset:1px}'
     + '.vrd-root .sort-bar{display:flex;align-items:center;gap:10px 18px;margin-bottom:16px;flex-wrap:wrap}'
     // One row on desktop, every field the same share; it wraps to a second row only when they no longer fit (Sean, 2026-10-26).
     + '.vrd-root .sb-f,.vrd-root .sort-bar .vrd-geo,.vrd-root .sort-bar .vrd-sub{display:flex;align-items:center;gap:8px;flex:1 1 0;min-width:170px}'
@@ -163,7 +179,7 @@
     + '.vrd-root .geo-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666;margin-left:8px}'
     + '.vrd-root .sort-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666}'
     + '.vrd-root .sort-select{font-family:Montserrat,sans-serif;font-size:11px;font-weight:700;color:#555;background:#fff;border:1px solid #ddd;border-radius:20px;padding:5px 26px 5px 12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'10\' height=\'6\'%3E%3Cpath d=\'M0 0l5 6 5-6z\' fill=\'%23888\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}'
-    + '.vrd-root .sort-select:focus{outline:2px solid #5EC47A;outline-offset:1px}'
+    + '.vrd-root .sort-select:focus{outline:2px solid var(--vb-accent,#5EC47A);outline-offset:1px}'
     + '.vrd-root .rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}'
     /* min-width:0 is load-bearing: the card is a grid item, and without it the
        grid track's automatic minimum grows to the card's min-content (the
@@ -172,10 +188,10 @@
        the item's min-width lets the track shrink to the container so the name's
        ellipsis engages instead. Pairs with minmax(0,1fr) in the mobile grid. */
     + '.vrd-root .rank-card{background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s;min-width:0}'
-    + '.vrd-root .rank-card:hover{border-color:#5EC47A}'
+    + '.vrd-root .rank-card:hover{border-color:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .rank-num-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;min-width:32px}'
     + '.vrd-root .rank-num{font-size:20px;font-weight:900;color:#e0e0e0;line-height:1;text-align:center}'
-    + '.vrd-root .rank-num.top3{color:#5EC47A}'
+    + '.vrd-root .rank-num.top3{color:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .rank-pts{font-size:8px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;text-align:center}'
     + '.vrd-root .rank-info{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}'
     // The whole name shows, on up to four rows when it needs them (Sean, 2026-10-26: "right now they all have ellipses"; four since
@@ -186,8 +202,8 @@
     + '.vrd-root .rank-right{display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:6px;flex-shrink:0;height:60px}'
     + '.vrd-root .vote-count{font-size:16px;font-weight:900;color:#1a1a1a;line-height:1}'
     + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#666}'
-    + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:#f0faf4;color:#2d7a4f;border:1px solid #b6e5c8;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
-    + '.vrd-root .vote-btn:hover{background:#5EC47A;color:#000;border-color:#5EC47A}'
+    + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);border:1px solid var(--vb-line,#b6e5c8);cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
+    + '.vrd-root .vote-btn:hover{background:var(--vb-accent,#5EC47A);color:#000;border-color:var(--vb-accent,#5EC47A)}'
     // The category and its badges wrap together, so a badge on a second line starts at the edge (2026-10-25).
     + '.vrd-root .rank-subcat{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px}'
     + '.vrd-root .vrd-vegan{display:inline-block;margin-left:0;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;vertical-align:1px}'
@@ -197,7 +213,7 @@
     + '.vrd-root .vrd-vegan-friendly{background:#f0f0f0;color:#555}'
     + '.vrd-root .vrd-vegan-options{background:#f5f1e8;color:#6b5a2e}'
     + '.vrd-root .vrd-vends{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.06em;padding:1px 7px;border-radius:10px;background:#e8eefb;color:#23408e;white-space:nowrap}'
-    + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#1f5f22;color:#fff;vertical-align:2px;white-space:nowrap}'
+    + '.vrd-root .vrd-verified{display:inline-flex;align-items:center;gap:3px;margin-left:6px;font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:var(--vb-go-hover,#1f5f22);color:#fff;vertical-align:2px;white-space:nowrap}'
     + '.vrd-root .vrd-temp{display:inline-block;margin-left:6px;font-size:9.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:10px;background:#fdecea;color:#9b1c1c}'
     + '.vrd-root .rank-right:has(.vla-edit){height:auto}'
     // The count, then Vote as its word and its button; the admins' More menu under them (2026-10-27).
@@ -211,19 +227,19 @@
     + '.vrd-root .vla-menu .vla-edit:hover{background:#fffaf0}'
     + '.vrd-root .vrd-vetting{margin-top:3px;font-size:11px;font-weight:700;color:#8a5a00;line-height:1.3;white-space:nowrap}'
     + '.vrd-root .av{border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}'
-    + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:#e8f8ef;color:#2d7a4f;border:1px solid #b6e5c8}'
-    + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:#5EC47A}'
+    + '.vrd-root .online-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:10px;background:var(--vb-soft,#e8f8ef);color:var(--vb-accent-ink,#2d7a4f);border:1px solid var(--vb-line,#b6e5c8)}'
+    + '.vrd-root .online-badge::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .vrd-empty{grid-column:1/-1;padding:48px 24px;text-align:center;color:#666;font-size:13px;font-weight:600}'
     + '.vrd-root .vrd-foot{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:12px;margin-top:20px;padding-top:16px}'
     + '.vrd-root .vrd-foot .perpage-select{grid-column:3;justify-self:end;margin-left:0}.vrd-root .vrd-foot .perpage-select[hidden]{display:none}'
     + '.vrd-root .vrd-pagination{grid-column:2;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px}'
     + '.vrd-root .vrd-page-num{font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;min-width:34px;height:34px;padding:0 8px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer}'
-    + '.vrd-root .vrd-page-num:hover:not(.on){border-color:#5EC47A;color:#2d7a4f}'
+    + '.vrd-root .vrd-page-num:hover:not(.on){border-color:var(--vb-accent,#5EC47A);color:var(--vb-accent-ink,#2d7a4f)}'
     + '.vrd-root .vrd-page-num.on{background:#1a1a1a;border-color:#1a1a1a;color:#fff;cursor:default}'
     + '.vrd-root .vrd-page-gap{font-size:12px;font-weight:800;color:#999;padding:0 2px}'
     + '@media(max-width:640px){.vrd-root .vrd-foot{grid-template-columns:minmax(0,1fr);justify-items:center}.vrd-root .vrd-pagination,.vrd-root .vrd-foot .perpage-select{grid-column:1;justify-self:center}}'
     + '.vrd-root .vrd-page-btn{font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 18px;border-radius:6px;border:1px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer;transition:border-color .15s}'
-    + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:#5EC47A;color:#2d7a4f}'
+    + '.vrd-root .vrd-page-btn:hover:not(:disabled){border-color:var(--vb-accent,#5EC47A);color:var(--vb-accent-ink,#2d7a4f)}'
     + '.vrd-root .vrd-page-btn:disabled{opacity:.35;cursor:default}'
     + '.vrd-root .vrd-page-indicator{font-size:11px;font-weight:700;color:#666;letter-spacing:.04em}'
     // Beside the ad rail (/directory, the dashboard): three across in the three-fourths, two on a laptop (Sean, 2026-10-26).
@@ -276,6 +292,7 @@
     var typeOptions = '<option value="">All</option>' +
       '<option value="online">Online</option>' +
       '<option value="closed">Closed</option>';
+    if (BRAND.vegan === false) veganHtml = '';
     var typeHtml = veganHtml + '<span class="sb-f"><span class="geo-label">Type</span>' +
       '<select aria-label="Filter by type" class="sort-select" data-vrd-type="' + cat.key + '">' + typeOptions + '</select></span>';
     // Media is everywhere and none of it is a place (Sean, 2026-10-27): no Area, How Vegan or Online / Closed for it.
@@ -360,7 +377,7 @@
 
   function makeAvatar(l) {
     var initial = ((l.name || 'V').charAt(0)).toUpperCase();
-    var color = l.color || '#3A9B3E';
+    var color = l.color || BRAND.avatar || '#3A9B3E';
     var fallback = '<div class="av" style="width:60px;height:60px;min-width:60px;background:' + esc(color) + ';display:none;align-items:center;justify-content:center"><span style="font-size:24px;font-weight:900;color:#fff;line-height:1">' + esc(initial) + '</span></div>';
     if (l.logo_url) {
       // Lazy: the Directory draws every section's cards up front (about 700 logos), so only the ones on screen load
@@ -412,6 +429,7 @@
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
   var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Vegan options' };
   function veganTag(l) {
+    if (BRAND.vegan === false) return '';
     var k = VEGAN_KEY[l.vegan_status]; if (!k) return '';
     return ' <span class="vrd-vegan vrd-vegan-' + k + '">' + VEGAN_LABEL[k] + '</span>';
   }
@@ -606,7 +624,7 @@
       card.addEventListener('click', function (e) {
         if (e.target.closest('.vote-btn') || e.target.closest('.vla-edit')) return;
         if (config && typeof config.onOpenListing === 'function') { config.onOpenListing(slug, card.dataset.name || ''); return; }
-        window.location = '/directory/' + slug;
+        window.location = (BRAND.listingBase || '/directory/') + slug;
       });
     });
   }
@@ -1100,7 +1118,7 @@
         // first page loaded forever once the Directory passed 1,000 listings (2026-10-28).
         if (Array.isArray(data) && data.length === 1000) { fetchAll(root, config, (offset || 0) + 1000, acc); }
         else {
-          var approved = acc.filter(function (l) { return inRegion(config, l) && (l.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0; });
+          var approved = acc.filter(function (l) { return inRegion(config, l) && ownListing(l); });
           // The public directory rule (/public/ve-trust.js): unvetted vegan-friendly listings
           // are for members only until 10 different people vote for them or the business claims it.
           withTrust(function (T) {
@@ -1171,6 +1189,7 @@
 
   var TRUST = null, trustLoading = null;
   function withTrust(cb) {
+    if (BRAND.trust === false) return cb(null);
     if (!trustLoading) trustLoading = new Promise(function (res) {
       if (window.VETrust) return res();
       var sc = document.createElement('script'); sc.src = '/public/ve-trust.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
@@ -1188,7 +1207,7 @@
     var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
-      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l); })); })
+      .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l) && ownListing(l); })); })
       .catch(function () { populateGrids(root, config, approved, []); });
   }
 
@@ -1196,6 +1215,7 @@
     init: function (config) {
       var root = document.getElementById(config.mount);
       if (!root) return;
+      useBrand(config.brand);
       injectStyleOnce();
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
