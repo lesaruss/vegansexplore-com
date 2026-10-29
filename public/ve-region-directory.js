@@ -909,11 +909,25 @@
     } finally { root._vrdRestoring = false; }
   }
 
-  // config.onSection(key, label): the section on show (the Directory's banner names it under its title, Sean 2026-10-27).
+  // config.onSection(key, label, subs): the section on show (the Directory's banner names it under its title, Sean 2026-10-27),
+  // and its sub-sections {list: [{value, label}], active, pick(value)} for a banner that picks them (Media's kinds, Sean
+  // 2026-10-29: "the drop down shows the cities, and instead it should show the different types... and any new thing that we
+  // get on there"). The list is the section's own pills, so a new sub-section joins it; All comes where the pills put it.
   function tellSection(root, config) {
     var on = root.querySelector('.cat-tab.active'), key = on && on.getAttribute('data-vrd-tab');
     var c = CAT_CONFIG.filter(function (x) { return x.key === key; })[0];
-    if (config && config.onSection && c) config.onSection(c.key, c.label);
+    if (!(config && config.onSection && c)) return;
+    var panel = root.querySelector('#board-' + c.key);
+    var pills = panel ? Array.prototype.filter.call(panel.querySelectorAll('[data-vrd-subcat]'), function (b) { return !b.hidden && b.style.display !== 'none'; }) : [];
+    var act = panel && panel.querySelector('.subcat-pill.sc-active');
+    config.onSection(c.key, c.label, {
+      list: pills.map(function (b) { var v = b.getAttribute('data-vrd-subcat'); return { value: v, label: v === 'All' ? 'All ' + c.label.toLowerCase() : b.textContent.trim() }; }),
+      active: act ? act.getAttribute('data-vrd-subcat') : '',
+      pick: function (v) {
+        var b = pills.filter(function (x) { return x.getAttribute('data-vrd-subcat') === v; })[0];
+        if (b && !b.classList.contains('sc-active')) b.click();
+      }
+    });
   }
   // How many filters differ from where they started, on the icon.
   function countFilters(panel) {
@@ -984,6 +998,7 @@
         var q = panel.querySelector('[data-vrd-search]'), sub = btn.getAttribute('data-vrd-subcat');
         if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : sub; q.placeholder = 'Search ' + lbl + '\u2026'; q.setAttribute('aria-label', 'Search ' + lbl); }
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
+        if (panel.classList.contains('active')) tellSection(root, state);
       });
     });
 
