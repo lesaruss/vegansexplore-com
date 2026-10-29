@@ -702,16 +702,19 @@ serve(async (req: Request) => {
 
       let referred_by: string | null = null;
       let referred_by_partner: string | null = null;
+      let referred_by_group: string | null = null;
       if (referral_code) {
         const { data: referrer } = await supabase.from('members').select('id').eq('referral_code', referral_code).maybeSingle();
         if (referrer) referred_by = referrer.id;
         // An organization's link (Nonprofit Partners, Sean 2026-10-29): the organization is credited, not a person.
         else referred_by_partner = await partnerFromCode(referral_code);
+        // A group's link (Group Partners, Sean 2026-10-29): the group is credited.
+        if (!referrer && !referred_by_partner) referred_by_group = await groupFromCode(referral_code);
       }
 
       const { data: member, error: insertErr } = await supabase.from('members').insert({
         email: email.toLowerCase(), password_hash, name,
-        initials, color, referral_code: ref_code, referred_by, referred_by_partner,
+        initials, color, referral_code: ref_code, referred_by, referred_by_partner, referred_by_group,
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['email'], home_community,
         tenant_id: VE_TENANT_ID,
@@ -798,14 +801,16 @@ serve(async (req: Request) => {
       // A share link (?ref=) counts for Google sign-ups too (Sean, 2026-10-27: Ambassadors bring people in).
       let referred_by: string | null = null;
       let referred_by_partner: string | null = null;
+      let referred_by_group: string | null = null;
       if (typeof body.referral_code === 'string' && /^[A-Z0-9-]{3,24}$/i.test(body.referral_code)) {
         const { data: referrer } = await supabase.from('members').select('id').eq('referral_code', body.referral_code.toUpperCase()).maybeSingle();
         if (referrer) referred_by = referrer.id;
         else referred_by_partner = await partnerFromCode(body.referral_code);
+        if (!referrer && !referred_by_partner) referred_by_group = await groupFromCode(body.referral_code);
       }
       const { data: member, error: insertErr } = await supabase.from('members').insert({
         email: gUser.email.toLowerCase(), name: gUser.name, google_id: gUser.sub,
-        avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code, referred_by, referred_by_partner,
+        avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code, referred_by, referred_by_partner, referred_by_group,
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
         auth_methods: ['google'], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,
@@ -1853,6 +1858,13 @@ async function partnerFromCode(code: string): Promise<string | null> {
   const c = String(code || '').trim().toUpperCase();
   if (!/^[A-Z0-9-]{3,24}$/.test(c)) return null;
   const { data } = await supabase.from('ve_nonprofit_partners').select('id').eq('code', c).eq('status', 'active').maybeSingle();
+  return data?.id ?? null;
+}
+// A Group Partner's link code (ve_group_partners.code), onboarding or active.
+async function groupFromCode(code: string): Promise<string | null> {
+  const c = String(code || '').trim().toUpperCase();
+  if (!/^[A-Z0-9-]{3,24}$/.test(c)) return null;
+  const { data } = await supabase.from('ve_group_partners').select('id').eq('code', c).in('status', ['onboarding', 'active']).maybeSingle();
   return data?.id ?? null;
 }
 

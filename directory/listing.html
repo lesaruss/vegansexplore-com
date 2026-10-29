@@ -1011,7 +1011,8 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .gd-ann{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:14px 16px;margin:0 0 10px;background:#fff}.gd-ann.pin{border-color:#2d7d31;background:#f6faf6}
 .gd-ann-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gd-ann-h b{font-size:15px}.gd-ann-h em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#fff3d6;color:#7a5200;padding:2px 8px;border-radius:6px}
 .gd-ann-h span{margin-left:auto;font-size:12px;color:rgba(26,26,26,.68)}.gd-ann p{margin:6px 0 4px;font-size:14px;line-height:1.55}.gd-ann small{font-size:12px;color:rgba(26,26,26,.68)}
-.gd-ann-more{font-size:13px;color:rgba(26,26,26,.68);margin:4px 0 0}
+.gd-ann-more{font-size:13px;color:rgba(26,26,26,.68);margin:4px 0 0}.gd-ann-more a{color:#1f5a23;font-weight:700}
+.gd-opt{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.45;margin:8px 0 12px;cursor:pointer}.gd-opt input{width:18px;height:18px;flex:none;margin-top:1px}
 .gd-pad{padding:32px 40px 40px}@media(max-width:700px){.gd-pad{padding:20px 16px 28px}}
 .gd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 16px}.gd-head .dm-go{width:auto}
 .gd-sub{margin:4px 0 16px;font-size:14px;color:rgba(26,26,26,.68)}.gd-head .gd-sub{margin-bottom:0}
@@ -1224,6 +1225,65 @@ function withMain(l){
 // 2026-10-29: "a good indicator to people that it's a good group to join if they have a lot of past events"), each with its count,
 // each list scrolling in its own box. A group always shows the section; any other listing only once it has hosted something. A name
 // opens the event on our calendar; the button goes to their own page (an old one may no longer open, which is fine for the record).
+// A real group's announcements and members (Sean, 2026-10-29: "build the live announcements for real groups"; ve-group). The
+// newest three, a pinned one first, under About; the sidebar's card joins or leaves the group, with its own unticked yes to the
+// group's emails (canon-ve-member-profiles-partner-windows). The organizer writes them on the dashboard's Announcements.
+function loadGroupLive(l){
+  var he = document.getElementById('hosted-events'), side = document.querySelector('.listing-page-grid .listing-sidebar');
+  if(!he) return;
+  var an = document.createElement('div'); an.className = 'section'; an.id = 'gd-ann'; an.hidden = true; he.parentNode.insertBefore(an, he);
+  var card = null;
+  if(side){ card = document.createElement('div'); card.className = 'side-card gd-join'; card.hidden = true; side.insertBefore(card, side.firstChild); }
+  function api(body){
+    var tok = window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null;
+    return fetch(SUPABASE_URL + '/functions/v1/ve-group', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}),
+      body: JSON.stringify(Object.assign({ listing_id: l.id }, body)) }).then(function(r){ return r.json(); }).catch(function(){ return {}; });
+  }
+  function draw(d){
+    var A = d.announcements || [];
+    an.hidden = !A.length && !d.can_post;
+    an.innerHTML = '<h2 class="section-title">Announcements</h2>' + (A.length ? A.map(function(x){
+      return '<article class="gd-ann' + (x.pinned ? ' pin' : '') + '"><div class="gd-ann-h"><b>' + esc(x.title) + '</b>' + (x.pinned ? '<em>Pinned</em>' : '') +
+        '<span>' + esc(new Date(x.at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' })) + '</span></div><p>' + esc(x.body) + '</p><small>From the organizer</small></article>';
+    }).join('') + (d.total > 3 ? '<p class="gd-ann-more">The latest three. Members who said yes get every announcement by email.</p>' : '')
+      : '<p class="gd-ann-more">Nothing posted yet. Write your first one from your dashboard\'s Announcements; it shows here.</p>') +
+      (d.can_post ? '<p class="gd-ann-more"><a href="?tab=brand&pd=announce&item=new" data-gd-write>Write an announcement</a></p>' : '');
+    if(!card) return;
+    var v = d.viewer || {};
+    card.hidden = false;
+    card.innerHTML = (d.partner ? '<div class="gd-badge">Group Partner</div>' : '') + '<div class="gd-n"><b>' + (d.members || 0) + '</b> member' + (d.members === 1 ? '' : 's') + ' on Vegans Explore</div>' +
+      (v.joined ? '<p>You\'re in the group.</p><label class="gd-opt"><input type="checkbox" data-gd-email' + (v.email_ok ? ' checked' : '') + '> Email me ' + esc(l.name) + '\'s announcements</label>' +
+          '<button type="button" class="he-go ghost" data-gd-leave>Leave the group</button>'
+        : '<p>Join to follow its events and announcements, from any city.</p><button type="button" class="dm-go" data-gd-join>Join the group</button>');
+  }
+  function join(){
+    if(!(window.VEAuth && VEAuth.isLoggedIn()) || !(VEAuth.getMember() || {}).membership_status || (VEAuth.getMember() || {}).membership_status !== 'active'){
+      if(window.VEVotes) VEVotes.memberPrompt('group', { signedIn: !!(window.VEAuth && VEAuth.isLoggedIn()) }); return;
+    }
+    demoModal('<p class="dm-kicker">' + esc(l.name) + '</p><h3>Join the group</h3><p>You follow its events and see its announcements here, from any city.</p>' +
+      '<label class="gd-opt"><input type="checkbox" id="gd-email-ok"> Email me ' + esc(l.name) + '\'s announcements (through Vegans Explore; they never see your email address)</label>' +
+      '<p class="dm-err" id="gd-err" role="alert"></p><div class="dm-acts"><button type="button" class="dm-go" id="gd-go">Join the group</button></div>', function(m){
+        m.querySelector('#gd-go').onclick = function(){
+          var b = this; b.disabled = true;
+          api({ action: 'join', email_ok: m.querySelector('#gd-email-ok').checked }).then(function(r){
+            b.disabled = false;
+            if(!r.ok){ m.querySelector('#gd-err').textContent = r.message || 'That did not go through. Try again.'; return; }
+            closeDemoModal(); refresh();
+          });
+        };
+      });
+  }
+  function refresh(){ return api({ action: 'page' }).then(function(d){ if(d && !d.error) draw(d); }); }
+  document.getElementById('listing-root').addEventListener('click', function(e){
+    if(e.target.closest('[data-gd-join]')){ join(); return; }
+    var lv = e.target.closest('[data-gd-leave]'); if(lv){ lv.disabled = true; api({ action: 'leave' }).then(refresh); return; }
+    var w = e.target.closest('[data-gd-write]'); if(w){ e.preventDefault(); if(window.veListingTab){ history.replaceState(history.state, '', w.getAttribute('href')); veListingTab('brand'); } }
+  });
+  document.getElementById('listing-root').addEventListener('change', function(e){
+    if(e.target && e.target.hasAttribute && e.target.hasAttribute('data-gd-email')) api({ action: 'email_pref', email_ok: e.target.checked });
+  });
+  refresh();
+}
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
   var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
@@ -4688,6 +4748,7 @@ if(!slug || slug === 'listing'){
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       if(!DEMO || DEMO.events) loadHostedEvents(l);
+      if(!DEMO && l.category === 'Groups') loadGroupLive(l);
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
       // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly

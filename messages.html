@@ -11,7 +11,8 @@
     /* A member's link from a business's campaign message (member profiles phase 3, Sean 2026-10-28; playbook
        ve-member-profiles-partner-windows). /messages#c/<token>: the message, Stop messages from <name> (takes back their yes)
        and Report this message (pauses the campaign until the team looks). No sign-in: the link is theirs alone.
-       Server: ve-campaign-window msg_get, msg_stop, msg_report. Event organizers' messages open on /events#message/<token>. */
+       Server: ve-campaign-window msg_get, msg_stop, msg_report. Event organizers' messages open on /events#message/<token>.
+       A group's announcement (2026-10-29) opens on /messages#g/<token>: Stop these emails, Leave the group, Report this (ve-group). */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); }
     body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
@@ -46,6 +47,9 @@
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
     function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+    // A group's announcement (Sean, 2026-10-29; ve-group): /messages#g/<token>.
+    var gm = /^#g\/([0-9a-f]{64})$/.exec(location.hash || '');
+    if (gm) return groupMsg(gm[1]);
     var m = /^#c\/([0-9a-f]{64})$/.exec(location.hash || '');
     if (!m) { app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>That link is not complete</h1><p class="lead">Open the whole link from the email.</p>'; return; }
     var tok = m[1];
@@ -72,6 +76,35 @@
         });
       });
     });
+    function groupMsg(tok) {
+      var G = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-group';
+      var gapi = function (body) { return fetch(G, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); };
+      gapi({ action: 'msg_get', token: tok }).then(function (d) {
+        if (!d.body) { app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>That announcement is not here</h1><p class="lead">The link may be incomplete. Open the whole link from the email.</p>'; return; }
+        var nm = d.group.name, page = '/directory/' + encodeURIComponent(d.group.slug);
+        app.innerHTML = '<p class="eyebrow">From ' + esc(nm) + ', through Vegans Explore</p><h1>' + esc(d.title) + '</h1>' +
+          '<p class="lead">Sent ' + esc(new Date(d.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '. ' + esc(nm) + ' does not see your email address.</p>' +
+          '<div class="msg">' + esc(d.body) + '</div><div id="acts">' +
+          (d.reported ? '<div class="done">You reported this announcement. Thank you.</div>' :
+            (d.left ? '<div class="done" style="margin-bottom:12px">You left ' + esc(nm) + '.</div>' : d.stopped ? '<div class="done" style="margin-bottom:12px">You stopped ' + esc(nm) + '\'s emails.</div>' : '') +
+            '<div class="acts">' + (d.stopped || d.left ? '' : '<button type="button" class="btn" id="stop">Stop these emails</button>') + (d.left ? '' : '<button type="button" class="btn" id="leave">Leave the group</button>') +
+            '<button type="button" class="btn" id="report">Report this</button></div>') +
+          '</div><p class="more"><a href="' + page + '">See ' + esc(nm) + ' on Vegans Explore</a></p>';
+        var acts = document.getElementById('acts');
+        var done = function (t) { acts.innerHTML = '<div class="done">' + esc(t) + '</div>'; };
+        var on = function (id, action, text) { var b = document.getElementById(id); if (b) b.addEventListener('click', function () { b.disabled = true; gapi({ action: action, token: tok }).then(function (r) { if (r.ok) done(text); else b.disabled = false; }); }); };
+        on('stop', 'msg_stop', 'Done. ' + nm + '\'s announcements won\'t come by email any more. You can still see them on its page.');
+        on('leave', 'msg_leave', 'Done. You left ' + nm + '. You can join again from its page any time.');
+        var report = document.getElementById('report');
+        if (report) report.addEventListener('click', function () {
+          acts.innerHTML = '<label for="why">What was wrong with it? (optional)</label><textarea id="why" maxlength="1000"></textarea><p class="hint">Our team reads every report. ' + esc(nm) + '\'s emails are paused until we look, and you won\'t get them again.</p><button type="button" class="btn solid" id="send">Send the report</button>';
+          document.getElementById('send').addEventListener('click', function () {
+            var b = this; b.disabled = true;
+            gapi({ action: 'msg_report', token: tok, note: document.getElementById('why').value.trim() }).then(function (r) { if (r.ok) done('Thank you. ' + nm + '\'s emails are paused while our team looks, and you won\'t get them again.'); else b.disabled = false; });
+          });
+        });
+      });
+    }
   })();
   </script>
   <script src="/public/footer.js"></script>

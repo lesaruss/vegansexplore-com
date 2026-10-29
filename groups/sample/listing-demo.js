@@ -88,15 +88,28 @@
     var pinned = mine.some(function (x) { return x.pinned; });
     return mine.concat(ANN.map(function (x) { return pinned ? Object.assign({}, x, { pinned: false }) : x; })).sort(function (a, b) { return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || Date.parse(b.at) - Date.parse(a.at); });
   }
+  // Gifts (Sean, 2026-10-29: "the organizer can gift a Vegans Explore membership... our half of the $11... deducted from their
+  // payout... an invite link to a specific address"). At this sample's 30% our share is $7.70. Seeded ones, plus what is made here
+  // for the visit (sessionStorage ve_group_gifts).
+  var GIFT_COST = Math.round(1100 * 0.7);
+  var GIFTS = [
+    { id: 'g1', name: 'Marisol Vega', email: 'marisol@example.com', status: 'joined', sent_via: 'email', created_at: at(-12, 10), expires_at: at(18, 10), joined_at: at(-11, 9), code: 'aaaaaaaaaaaa', cost_cents: GIFT_COST },
+    { id: 'g2', name: 'Theo Park', email: 'theo@example.com', status: 'sent', sent_via: 'copied', created_at: at(-3, 18), expires_at: at(27, 18), code: 'bbbbbbbbbbbb', cost_cents: GIFT_COST }
+  ];
+  function giftsAll() {
+    var mine = []; try { mine = JSON.parse(sessionStorage.getItem('ve_group_gifts') || '[]'); } catch (e) {}
+    return mine.concat(GIFTS);
+  }
   var GROUP = {
     name: 'Sprout Social Society', status: 'active', code: 'SPROUT-SOCIAL-SOCIETY', link: 'vegansexplore.com/r/SPROUT-SOCIAL-SOCIETY',
     members_total: 214, brought: BROUGHT, new_this_month: 14, ladder: LADDER, rate_pct: 30,
     guest_passes: { used: 96, joined_after: 51 },
     members: MEMBERS, events: EVENTS,
+    gift: { cost_cents: GIFT_COST, rate_pct: 30, balance_cents: 18240 + 6380, credit_cents: 0, points: 1100, days: 30, can: true },
     earnings: {
       // Commissions: the group's share of each $11 Passport bought through it, at the rate on the day. Tickets: what buyers paid, less our 5%.
       passports_cents: 25 * 220 + 50 * 275 + 37 * 330, tickets_cents: Math.round(ticketGross * 0.95), fee_cents: Math.round(ticketGross * 0.05),
-      ready_cents: 18240, holding_cents: 6380, w9: true,
+      ready_cents: 18240, holding_cents: 6380, w9: true, gifts_cents: GIFT_COST * 2,
       payouts: [],
       recent: RECENT
     }
@@ -208,6 +221,24 @@
     },
     dashboard: function (body, toast) {
       var a = body && body.action;
+      if (a === 'group_gift' || a === 'gift_send' || a === 'gift_cancel') {
+        var mine = []; try { mine = JSON.parse(sessionStorage.getItem('ve_group_gifts') || '[]'); } catch (e) {}
+        var save = function () { try { sessionStorage.setItem('ve_group_gifts', JSON.stringify(mine)); } catch (e) {} GROUP.gifts = giftsAll(); };
+        if (a === 'group_gift') {
+          var em = String(body.email || '').trim().toLowerCase();
+          if (giftsAll().some(function (x) { return x.email === em && /sent|opened/.test(x.status); })) return Promise.resolve({ ok: false, message: 'You already have a gift waiting for that email.' });
+          var code = Math.random().toString(16).slice(2, 14).padEnd(12, '0');
+          mine.unshift({ id: 'm' + Date.now(), name: String(body.name || '').trim(), email: em, status: 'sent', sent_via: body.send ? 'email' : 'copied',
+            created_at: new Date().toISOString(), expires_at: new Date(Date.now() + 30 * 864e5).toISOString(), code: code, cost_cents: GIFT_COST });
+          save(); toast('Sample: ' + (body.send ? 'it would be emailed to ' + em : 'your link is ready') + '. Nothing is charged or sent here.');
+          return Promise.resolve({ ok: true, url: 'https://vegansexplore.com/invite?c=' + code, emailed: !!body.send, group: GROUP });
+        }
+        var gx = mine.filter(function (x) { return x.id === body.id; })[0];
+        if (!gx) { toast('Sample: the gifts that came with this sample stay as they are.'); return Promise.resolve({ ok: true, group: GROUP }); }
+        if (a === 'gift_cancel') { gx.status = 'canceled'; gx.given_back = true; } else gx.sent_via = 'email';
+        save(); toast(a === 'gift_cancel' ? 'Sample: canceled, and its ' + '$' + (GIFT_COST / 100).toFixed(2) + ' would come back to your earnings.' : 'Sample: it would be emailed now.');
+        return Promise.resolve({ ok: true, group: GROUP });
+      }
       if (a === 'group_announce') {
         var t = String(body.title || '').trim().slice(0, 120), m = String(body.body || '').trim().slice(0, 1000);
         if (!t || !m) return Promise.resolve({ ok: false, error: 'missing' });
@@ -219,7 +250,7 @@
         toast('Sample: posted on your page' + (body.email ? ' and it would be emailed to your ' + GROUP.members_total + ' members' : '') + '. Nothing is really sent.');
         return Promise.resolve({ ok: true, announcements: GROUP.announcements });
       }
-      if (a === 'owner_dashboard') { GROUP.announcements = annAll(); var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), saves: { total: 96, last_30_days: 18 } })); }
+      if (a === 'owner_dashboard') { GROUP.announcements = annAll(); GROUP.gifts = giftsAll(); var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), saves: { total: 96, last_30_days: 18 } })); }
       if (a === 'demo_only') { toast('Sample: ' + (body.note || '') + ' Nothing is saved or charged here.'); return Promise.resolve({ ok: true }); }
       toast('Sample dashboard: nothing is saved or charged here. As a Group Partner this happens for real.');
       return Promise.resolve({ ok: true });

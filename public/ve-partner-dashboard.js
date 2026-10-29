@@ -33,7 +33,7 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
-  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
@@ -138,6 +138,11 @@
     return fetch(SB + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) })
       .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
   }
+  // A group's own actions (announcements, gifts, its live numbers) go to ve-group (Sean, 2026-10-29).
+  function callGroup(body) {
+    return fetch(SB + '/functions/v1/ve-group', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
   function q(k) { return new URLSearchParams(location.search).get(k); }
   function day(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
   function change(now, before) {
@@ -149,7 +154,7 @@
   function mount(el, l, opts) {
     opts = opts || {};
     css();
-    var api = opts.call || call;
+    var api = opts.call || call, gapi = opts.call || callGroup;
     var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     // Get your page ready, in a group's or an organization's words.
@@ -168,13 +173,23 @@
       el.innerHTML = '<div class="vpd"><p class="vpd-empty">Loading your dashboard...</p></div>';
       api({ action: 'owner_dashboard', listing_id: l.id, days: days }).then(function (d) {
         if (!d || !d.ok) { el.innerHTML = '<div class="vpd"><p class="vpd-empty">We could not open your dashboard just now. Try again in a moment.</p></div>'; return; }
-        D = d; cb();
+        D = d;
+        // A real group's announcements, members and partnership come from ve-group (the sample's are in its demo file).
+        if (opts.call || !d.open || !D.listing || D.listing.kind !== 'group') return cb();
+        gapi({ action: 'dash', listing_id: l.id }).then(function (g) { if (g && g.ok) mergeGroup(g); cb(); });
       });
     }
+    function mergeGroup(g) {
+      ['announcements', 'group_members', 'group_email_ok', 'mail_paused', 'limits', 'lead'].forEach(function (k) { if (k in g) D[k] = g[k]; });
+      if (g.group) D.group = g.group;
+    }
+    var REAL = !opts.call;
     function views() {
-      var G = ['gmembers', 'gevents', 'announce', 'earnings'];
+      var G = ['gmembers', 'gevents', 'earnings'];
       return VIEWS.filter(function (v) {
         if (G.indexOf(v[0]) >= 0) return !!D.group;
+        if (v[0] === 'announce') return !!D.group || (D.listing && D.listing.kind === 'group');
+        if (v[0] === 'gift') return !!D.group && (!REAL || !!D.lead);
         // A Group Partner's dashboard: no hours, menu, audit, check-ins, ads or Partner plan; its members are its audience.
         if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
@@ -461,7 +476,7 @@
         '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>' + (nx ? n(nx[0] - G.brought) + ' to ' + nx[1] + '%' : 'The top rate') + '</em></div>' +
         '<div><b>' + G.rate_pct + '%</b><span>Your share of each Passport</span><em>Of the $11, from today</em></div>' +
         '<div><b>' + money((E.passports_cents || 0) + (E.tickets_cents || 0)) + '</b><span>Earned this year</span><em>' + money(E.ready_cents || 0) + ' ready to pay</em></div></div>' +
-        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=announce" data-vpd="announce" class="vpd-btn o sm">Announcements</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
+        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=announce" data-vpd="announce" class="vpd-btn o sm">Announcements</a> <a href="?tab=brand&pd=gift" data-vpd="gift" class="vpd-btn o sm">Gift a membership</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
     }
     function drawMembers() {
       var G = D.group, nx = nextRung(G), cur = 0;
@@ -492,7 +507,7 @@
         '<label>Where<input id="vpd-ev-where" placeholder="The venue and city"></label><label>Ticket price (leave empty for a free event)<input id="vpd-ev-price" inputmode="decimal" placeholder="$0"></label>' +
         '<label>How many can come<input id="vpd-ev-cap" inputmode="numeric" placeholder="40"></label><label>About it<textarea id="vpd-ev-about" rows="3"></textarea></label>' +
         '<p class="vpd-empty">Free events: a newcomer uses their one guest pass, then joins with the $11 Passport. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
-        '<button type="button" class="vpd-btn" data-vpd-demo="Your event would go live on your page and the events calendar.">Put it live</button></div>';
+        (REAL ? '<a class="vpd-btn" href="/events#submit/1">Add it on the events calendar</a>' : '<button type="button" class="vpd-btn" data-vpd-demo="Your event would go live on your page and the events calendar.">Put it live</button>') + '</div>';
       if (id) {
         var e = G.events.filter(function (x) { return x.id === id; })[0];
         if (!e) return '<p class="vpd-empty">That event is not here. <a href="?tab=brand&pd=gevents" data-vpd="gevents">Back to Events</a></p>';
@@ -502,9 +517,12 @@
           (e.price_cents ? '<div><b>' + money(gross * 0.95) + '</b><span>Yours from tickets</span><em>' + n(e.going) + ' at ' + price(e) + ', less our 5% (' + money(gross * 0.05) + ')</em></div>'
             : '<div><b>' + n(e.guest_passes) + '</b><span>Guest passes</span><em>Newcomers on their one free event</em></div>') +
           '<div><b>' + dt(e.starts_at, true) + '</b><span>' + esc(e.location_name || '') + '</span><em>' + esc(e.city || '') + '</em></div></div>' +
-          '<div class="vpd-grid"><div class="vpd-card"><b>Guests and messages</b><p>Message the guests who said yes, through us, until 7 days after the event.</p><button type="button" class="vpd-btn sm" data-vpd-demo="Your message would go to the guests who said yes, by email from Vegans Explore with your group\'s name.">Write to your guests</button></div>' +
-          '<div class="vpd-card"><b>Check people in</b><p>At the door, tick guests off on your phone. A guest pass is used when they check in.</p><button type="button" class="vpd-btn sm" data-vpd-demo="At the door this opens your guest list to tick people in.">Open the guest list</button></div>' +
-          '<div class="vpd-card"><b>Share it</b><p>Your event\'s own link, with your group link inside, so everyone who joins counts toward your rate.</p><button type="button" class="vpd-btn sm" data-vpd-demo="Your event link is copied, ready to post.">Copy the event link</button></div></div>';
+          '<div class="vpd-grid"><div class="vpd-card"><b>Guests and messages</b><p>Message the guests who said yes, through us, until 7 days after the event.</p>' +
+          (REAL ? '<a class="vpd-btn sm" href="/events#guests/' + esc(e.id) + '">Write to your guests</a>' : '<button type="button" class="vpd-btn sm" data-vpd-demo="Your message would go to the guests who said yes, by email from Vegans Explore with your group\'s name.">Write to your guests</button>') + '</div>' +
+          (REAL ? '' : '<div class="vpd-card"><b>Check people in</b><p>At the door, tick guests off on your phone. A guest pass is used when they check in.</p><button type="button" class="vpd-btn sm" data-vpd-demo="At the door this opens your guest list to tick people in.">Open the guest list</button></div>') +
+          '<div class="vpd-card"><b>Share it</b><p>Your event\'s own link, with your group link inside, so everyone who joins counts toward your rate.</p>' +
+          (REAL ? '<button type="button" class="vpd-btn sm" data-vpd-copy="https://vegansexplore.com/events?ref=' + esc(G.code || '') + '#event/' + esc(e.id) + '">Copy the event link</button>'
+            : '<button type="button" class="vpd-btn sm" data-vpd-demo="Your event link is copied, ready to post.">Copy the event link</button>') + '</div></div>';
       }
       var row = function (e) {
         return '<div class="vpd-row"><div><b>' + esc(e.title) + '</b><small>' + dt(e.starts_at, Date.parse(e.starts_at) < now) + ' &middot; ' + esc(e.location_name || '') + ' &middot; ' + price(e) + '</small></div>' +
@@ -522,10 +540,12 @@
         '<div><b>' + money(E.holding_cents) + '</b><span>Waiting</span><em>Held 30 days for refunds</em></div>' +
         '<div><b>' + money(E.payouts.reduce(function (a, x) { return a + x.cents; }, 0)) + '</b><span>Paid to you</span><em>' + (E.w9 ? 'W-9 on file' : 'Add your W-9 to be paid') + '</em></div></div>' +
         '<div class="vpd-rows"><div><span>From Passports (your share of each $11)</span><b>' + money(E.passports_cents) + '</b></div><div><span>From tickets, after our 5%</span><b>' + money(E.tickets_cents) + '</b></div>' +
-        '<div><span>Our 5% on tickets</span><b>' + money(E.fee_cents) + '</b></div><div><span>Card processing</span><b>Paid by the buyer</b></div></div>' +
-        '<p style="margin:0 0 18px"><button type="button" class="vpd-btn" data-vpd-demo="Your ready balance would be paid to your account on file.">Pay me what is ready</button></p>' +
+        '<div><span>Our 5% on tickets</span><b>' + money(E.fee_cents) + '</b></div><div><span>Card processing</span><b>Paid by the buyer</b></div>' +
+        (E.gifts_cents ? '<div><span>Memberships you gave</span><b>-' + money(E.gifts_cents) + '</b></div>' : '') + '</div>' +
+        (REAL ? '<p class="vpd-empty" style="margin:0 0 18px">We pay what is ready once it reaches $25' + (E.w9 ? '' : ' and your W-9 is in (reply to any of our emails for the form)') + '. Gifts you give come out of it first.</p>'
+          : '<p style="margin:0 0 18px"><button type="button" class="vpd-btn" data-vpd-demo="Your ready balance would be paid to your account on file.">Pay me what is ready</button></p>') +
         '<h4>Lately</h4><div class="vpd-list">' + E.recent.map(function (x) {
-          return '<div class="vpd-row"><div><b>' + esc(x.what) + '</b><small>' + dt(x.at) + '</small></div><span class="vpd-tag">' + (x.kind === 'ticket' ? 'Tickets' : 'Passport') + '</span><b>' + money(x.cents) + '</b></div>';
+          return '<div class="vpd-row"><div><b>' + esc(x.what) + '</b><small>' + dt(x.at) + '</small></div><span class="vpd-tag">' + (x.kind === 'ticket' ? 'Tickets' : x.kind === 'gift' ? 'Gift' : 'Passport') + '</span><b>' + money(x.cents) + '</b></div>';
         }).join('') + '</div>' +
         '<h4>Payouts</h4><div class="vpd-list">' + E.payouts.map(function (x) { return '<div class="vpd-row"><div><b>' + money(x.cents) + '</b><small>' + dt(x.at, true) + '</small></div><span class="vpd-tag">Paid</span></div>'; }).join('') + '</div>' +
         '<p class="vpd-empty">Referral earnings paid to your group, never a donation. Your posts say your group earns when people join (the FTC rule).</p>';
@@ -535,22 +555,71 @@
     // (the newest three, a pinned one first) and, ticked, goes to the members by email from Vegans Explore with the group's name.
     // D.group.announcements [{id, at, title, body, pinned, sent_to, emailed}]; sent through api group_announce (the sample answers it).
     function drawAnnounce() {
-      var A = D.group.announcements || [];
+      var A = D.announcements || (D.group && D.group.announcements) || [];
+      var total = D.group ? D.group.members_total : (D.group_members || 0);
+      // Who an email reaches: the members who said yes to the group's emails (the sample counts every member).
+      var reach = REAL ? (D.group_email_ok || 0) : total, lim = D.limits || null;
+      var emailNote = D.mail_paused ? 'Your emails are paused while our team looks at a member\'s report. Announcements still post on your page.'
+        : lim && !lim.emails_left ? 'You have sent ' + lim.emails_per_week + ' emails this week, the most a group sends. This one posts on your page; email again in a few days.'
+        : (lim ? lim.emails_left + ' of ' + lim.emails_per_week + ' emails left this week. ' : '') + 'The email comes from Vegans Explore with your group\'s name; replies come to us, never your members\' addresses.';
+      var canEmail = !D.mail_paused && !(lim && !lim.emails_left);
       if (q('item') === 'new') return '<p class="vpd-crumb"><a href="?tab=brand&pd=announce" data-vpd="announce">Announcements</a> / New announcement</p>' +
         '<div class="vpd-form vpd-ann-form"><label>Title<input id="vpd-an-title" maxlength="120" placeholder="Brunch moves to 11:30 this Sunday"></label>' +
         '<label>Message<textarea id="vpd-an-body" rows="5" maxlength="1000" placeholder="What your members should know."></textarea></label>' +
-        '<label class="vpd-check"><input type="checkbox" id="vpd-an-email" checked> Also email it to your ' + n(D.group.members_total) + ' members</label>' +
+        '<label class="vpd-check"><input type="checkbox" id="vpd-an-email"' + (canEmail ? ' checked' : ' disabled') + '> Also email it to ' +
+          (REAL ? n(reach) + ' of your ' + n(total) + ' members (the ones who said yes to your emails)' : 'your ' + n(total) + ' members') + '</label>' +
         '<label class="vpd-check"><input type="checkbox" id="vpd-an-pin"> Pin it to the top of your page</label>' +
-        '<p class="vpd-empty">It shows on your page\'s Overview, under About. The email comes from Vegans Explore with your group\'s name, and replies come to us, never your members\' addresses.</p>' +
+        '<p class="vpd-empty">It shows on your page\'s Overview, under About. ' + esc(emailNote) + '</p>' +
         '<p id="vpd-msg" class="vpd-msg" role="status"></p><button type="button" class="vpd-btn" data-vpd-announce>Send it</button></div>';
       return '<p style="margin:0 0 14px"><a class="vpd-btn" href="?tab=brand&pd=announce&item=new" data-vpd="announce" data-vpd-item="new">New announcement</a></p>' +
+        (REAL ? '<p class="vpd-empty" style="margin:0 0 14px">' + n(total) + ' member' + (total === 1 ? '' : 's') + ' in your group, ' + n(reach) + ' get your emails. Members join from your page.</p>' : '') +
         (A.length ? '<div class="vpd-list">' + A.map(function (x) {
-          return '<div class="vpd-row vpd-ann"><div><b>' + esc(x.title) + '</b><small>' + dt(x.at, true) + ' &middot; ' + (x.emailed ? 'Emailed to ' + n(x.sent_to) + ' members' : 'On your page only') + '</small><p>' + esc(x.body) + '</p></div>' +
-            (x.pinned ? '<span class="vpd-tag">Pinned</span>' : '<span class="vpd-tag">On your page</span>') + '</div>';
+          return '<div class="vpd-row vpd-ann"><div><b>' + esc(x.title) + '</b><small>' + dt(x.at, true) + ' &middot; ' + (x.emailed ? 'Emailed to ' + n(x.sent_to) + ' member' + (x.sent_to === 1 ? '' : 's') : 'On your page only') + '</small><p>' + esc(x.body) + '</p></div>' +
+            (x.pinned ? '<span class="vpd-tag">Pinned</span>' : '<span class="vpd-tag">On your page</span>') +
+            (REAL ? '<button type="button" class="vpd-btn sm o" data-vpd-annrm="' + esc(x.id) + '">Take it down</button>' : '') + '</div>';
         }).join('') + '</div>' : '<p class="vpd-empty">No announcements yet. Your first one shows on your page under About.</p>');
     }
+    // ---- Gift a membership (Sean, 2026-10-29): our share of the $11 at the group's rate today, from the group's earnings, for one email.
+    // D.group.gift {cost_cents, rate_pct, balance_cents, credit_cents, points, days, can}; D.group.gifts [{id, name, email, status, sent_via,
+    // created_at, expires_at, joined_at, code, cost_cents, given_back}].
+    var GIFT_LINK = null;
+    function drawGift() {
+      var G = D.group, F = G.gift || {}, list = G.gifts || [];
+      var STATUS = { sent: 'Waiting', opened: 'Opened', ready: 'Waiting', joined: 'Joined', accepted: 'Joined', expired: 'Expired', canceled: 'Canceled', declined: 'Turned down' };
+      var head = '<div class="vpd-tiles"><div><b>' + money(F.cost_cents || 0) + '</b><span>A gift today</span><em>Our share of the $11 at your ' + (F.rate_pct || G.rate_pct) + '% rate</em></div>' +
+        '<div><b>' + money(Math.max(0, F.balance_cents || 0)) + '</b><span>Your earnings to give from</span><em>Waiting and ready, less your gifts</em></div>' +
+        '<div><b>' + n(F.points || 1100) + '</b><span>Points they get</span><em>Like any Passport</em></div>' +
+        '<div><b>' + n(list.filter(function (x) { return x.status === 'joined'; }).length) + '</b><span>Gifts used</span><em>Each one counts toward your rate</em></div></div>';
+      if (q('item') === 'new') {
+        if (GIFT_LINK) {
+          var made = GIFT_LINK; GIFT_LINK = null;
+          return '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / Ready</p><div class="vpd-card"><b>' + (made.emailed ? 'Sent to ' + esc(made.email) : 'Your gift link for ' + esc(made.email)) + '</b>' +
+            '<p>' + (made.emailed ? 'We emailed it from Vegans Explore with your name. You can also send the link yourself:' : 'Send it to them yourself. It works only for ' + esc(made.email) + ', once, for ' + (F.days || 30) + ' days.') + '</p>' +
+            '<p style="word-break:break-all"><b>' + esc(made.url) + '</b></p><button type="button" class="vpd-btn sm" data-vpd-copy="' + esc(made.url) + '">Copy the link</button> <a class="vpd-btn sm o" href="?tab=brand&pd=gift" data-vpd="gift">Back to your gifts</a></div>';
+        }
+        if (!F.can) return '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / New gift</p>' + head +
+          '<p class="vpd-empty">A gift costs ' + money(F.cost_cents || 0) + ' from your earnings, and you have ' + money(Math.max(0, F.balance_cents || 0)) + '. Gifts come out of what your group has earned through its link.</p>';
+        return '<p class="vpd-crumb"><a href="?tab=brand&pd=gift" data-vpd="gift">Gift a membership</a> / New gift</p>' +
+          '<div class="vpd-form vpd-ann-form"><label>Their name<input id="vpd-gf-name" maxlength="120" placeholder="Jordan Lee"></label>' +
+          '<label>Their email<input id="vpd-gf-email" type="email" maxlength="200" placeholder="jordan@example.com"></label>' +
+          '<label>A note from you (optional)<textarea id="vpd-gf-note" rows="3" maxlength="500" placeholder="Come to brunch with us on Sunday!"></textarea></label>' +
+          '<p class="vpd-empty">They get a Passport on you, with ' + n(F.points || 1100) + ' points, and join your group. ' + money(F.cost_cents || 0) + ' comes out of your earnings now; if they do not accept within ' + (F.days || 30) + ' days, or you cancel, it comes back. The link works only for their email.</p>' +
+          '<p id="vpd-msg" class="vpd-msg" role="status"></p><p><button type="button" class="vpd-btn" data-vpd-gift="email">Email it to them</button> <button type="button" class="vpd-btn o" data-vpd-gift="link">Make the link to send myself</button></p></div>';
+      }
+      return head + '<p style="margin:0 0 14px">' + (F.can ? '<a class="vpd-btn" href="?tab=brand&pd=gift&item=new" data-vpd="gift" data-vpd-item="new">Gift a membership</a>'
+          : '<span class="vpd-empty">A gift costs ' + money(F.cost_cents || 0) + ' from your earnings, and you have ' + money(Math.max(0, F.balance_cents || 0)) + '. Gifts open up as your link earns.</span>') + '</p>' +
+        '<h4>Your gifts</h4>' + (list.length ? '<div class="vpd-list">' + list.map(function (x) {
+          var open = ['ready', 'sent', 'opened'].indexOf(x.status) >= 0, url = 'https://vegansexplore.com/invite?c=' + x.code;
+          return '<div class="vpd-row"><div><b>' + esc(x.name) + '</b><small>' + esc(x.email) + ' &middot; ' + dt(x.created_at, true) + ' &middot; ' + money(x.cost_cents || 0) +
+            (x.given_back ? ', given back' : '') + (open ? ' &middot; open until ' + dt(x.expires_at) : '') + '</small></div>' +
+            '<span class="vpd-tag">' + esc(STATUS[x.status] || x.status) + '</span>' +
+            (open ? '<button type="button" class="vpd-btn sm o" data-vpd-copy="' + esc(url) + '">Copy the link</button>' +
+              (x.sent_via !== 'email' ? ' <button type="button" class="vpd-btn sm o" data-vpd-giftsend="' + esc(x.id) + '">Email it</button>' : '') +
+              ' <button type="button" class="vpd-btn sm o" data-vpd-giftcancel="' + esc(x.id) + '">Cancel</button>' : '') + '</div>';
+        }).join('') + '</div>' : '<p class="vpd-empty">No gifts yet. A gift is a Passport for someone you want in your group, paid from your earnings.</p>');
+    }
 
-    var VIEW_FN = { announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    var VIEW_FN = { gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
@@ -559,7 +628,7 @@
       });
       el.querySelectorAll('[data-vpd-demo]').forEach(function (b) { b.addEventListener('click', function () { api({ action: 'demo_only', note: b.dataset.vpdDemo }); }); });
       el.querySelectorAll('[data-vpd-copy]').forEach(function (b) {
-        b.addEventListener('click', function () { try { navigator.clipboard.writeText(b.dataset.vpdCopy); } catch (x) {} b.textContent = 'Copied'; setTimeout(function () { b.textContent = 'Copy your link'; }, 1600); });
+        b.addEventListener('click', function () { try { navigator.clipboard.writeText(b.dataset.vpdCopy); } catch (x) {} var was = b.textContent; b.textContent = 'Copied'; setTimeout(function () { b.textContent = was; }, 1600); });
       });
       el.querySelectorAll('[data-vpd-edit]').forEach(function (b) { b.addEventListener('click', function () { if (opts.editPage) opts.editPage(b.dataset.vpdEdit); }); });
       el.querySelectorAll('[data-vpd-join]').forEach(function (b) {
@@ -593,11 +662,42 @@
         if (!t.trim()) return msg('Give it a title.', true);
         if (!b.trim()) return msg('Write the message.', true);
         ann.disabled = true; msg('Sending...');
-        api({ action: 'group_announce', listing_id: l.id, title: t, body: b, email: !!(el.querySelector('#vpd-an-email') || {}).checked, pin: !!(el.querySelector('#vpd-an-pin') || {}).checked }).then(function (d) {
+        gapi({ action: 'group_announce', listing_id: l.id, title: t, body: b, email: !!(el.querySelector('#vpd-an-email') || {}).checked, pin: !!(el.querySelector('#vpd-an-pin') || {}).checked }).then(function (d) {
           ann.disabled = false;
-          if (!d || !d.ok) return msg('That did not send. Try again.', true);
-          if (d.announcements) D.group.announcements = d.announcements; go('announce');
+          if (!d || !d.ok) return msg((d && d.message) || 'That did not send. Try again.', true);
+          if (REAL) mergeGroup(d); else if (d.announcements) D.group.announcements = d.announcements;
+          go('announce');
         }, function () { ann.disabled = false; msg('That did not send. Try again.', true); });
+      });
+      el.querySelectorAll('[data-vpd-annrm]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          b.disabled = true;
+          gapi({ action: 'announce_remove', listing_id: l.id, id: b.dataset.vpdAnnrm }).then(function (d) { if (d && d.ok) { mergeGroup(d); draw(); } else b.disabled = false; });
+        });
+      });
+      el.querySelectorAll('[data-vpd-gift]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var v = function (k) { return ((el.querySelector('#vpd-gf-' + k) || {}).value || '').trim(); };
+          if (!v('name')) return msg('Who is it for? Give their name.', true);
+          if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v('email'))) return msg('That email does not look right.', true);
+          el.querySelectorAll('[data-vpd-gift]').forEach(function (x) { x.disabled = true; }); msg('Making your gift...');
+          gapi({ action: 'group_gift', listing_id: l.id, name: v('name'), email: v('email'), note: v('note'), send: b.dataset.vpdGift === 'email' }).then(function (d) {
+            el.querySelectorAll('[data-vpd-gift]').forEach(function (x) { x.disabled = false; });
+            if (!d || !d.ok) return msg((d && d.message) || 'That did not go through. Try again.', true);
+            mergeGroup(d);
+            GIFT_LINK = { url: d.url, email: v('email'), emailed: !!d.emailed }; draw();
+          });
+        });
+      });
+      el.querySelectorAll('[data-vpd-giftsend],[data-vpd-giftcancel]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var cancel = !!b.dataset.vpdGiftcancel;
+          b.disabled = true;
+          gapi({ action: cancel ? 'gift_cancel' : 'gift_send', listing_id: l.id, id: b.dataset.vpdGiftcancel || b.dataset.vpdGiftsend }).then(function (d) {
+            if (!d || !d.ok) { b.disabled = false; return; }
+            mergeGroup(d); draw();
+          });
+        });
       });
       var send = el.querySelector('[data-vpd-send]');
       if (send) send.addEventListener('click', function () {
