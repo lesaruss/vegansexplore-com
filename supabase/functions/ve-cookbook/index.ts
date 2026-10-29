@@ -34,12 +34,14 @@ const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
-const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-survival-guide': 'The Vegan Restaurant Survival Guide' };
+const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-survival-guide': 'The Vegan Restaurant Survival Guide',
+  'nonprofit-guide': 'The Nonprofit Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
-// The Restaurant Guide adds its fixes and promotions (migration 20261010_ve_audit_orders.sql).
+// The Restaurant Guide adds its fixes and promotions (migration 20261010_ve_audit_orders.sql). The Nonprofit Guide (2026-10-29) saves
+// its tips as kind fix, its episodes and Directory listings.
 const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode', 'fix', 'promo'], SAVE_CAP = 500;
 const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo'];
 

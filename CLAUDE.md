@@ -724,6 +724,26 @@ the nonprofit leaders on our shows, played in place), the Directory's Nonprofits
 partners, Events, a peer-to-peer kit, burnout and support, My list, and **Become a Nonprofit Partner** at the end. $11 or 1,100
 points, included for Nonprofit Partner leads; Dani narrates; it replaces the Coming soon card. Susan Hargreaves is invited only
 once it is live.
+**Built 2026-10-29, not launched** (Sean: "hand it to Logan"; migration `20261029_nonprofit_guide.sql`). `guides/nonprofit-guide.html`
+and `guide-scripts/nonprofit-guide.js`, the Restaurant Guide's shell (`noindex`, Dani on the right, her lines as text drafts for Sean,
+no clips), ten tabs (`#/<tab>`): Overview, **The 10 tips** (`#/tips/<id>`: the Canva lesson word for word where it holds, its case or
+pro tip, a This week checklist kept in the browser (`ng_checks`), On Vegans Explore, and the episode behind it; story is free), **Pulse**
+(Our nonprofit series: Vegans Explore Podcast 111 and 123 to 127; Nonprofit leaders: Susan Hargreaves, Ingrid Newkirk, Rachel Black,
+Rowdy Girl, the Florida sanctuaries, Kudo, Jordan David, Jane Velez-Mitchell, Compassion in Action, Liz Jones, Honey LaBronx; `PULSE_PICKS`
+with each feed guid, played in a docked player), **Directory** (Nonprofits, Rescues and Sanctuaries with the Directory's card, a chapter
+picker, `localStorage` `ng_chapter`; a listing opens framed in the Guide), **Get found**, **Businesses** (Food Brands and the chapter's
+100% Vegan restaurants, and the pitch to copy), **Events** (our calendar, Promote your event, vendors; and the Peer-to-peer kit: World
+Vegan Day, Giving Tuesday, Earth Day), **Support** (the three weaknesses from episode 123, Share the load from 126, where to find help),
+**Become a Partner** (the partnership, and **Tell us about your organization**: `ve-nonprofit` `survey` / `survey_get`, one row per
+member in `ve_nonprofit_surveys`, 100 points once, reason `nonprofit_survey`, ref `np-survey:<member>`, emailed to Sean, active members
+only; `SURVEY_POINTS` is Logan's default), My list (saves through `ve-cookbook`: tips as kind `fix`, `episode`, `listing`) and Get
+access. Tips 2 to 10, the kit, the pitch and the support plan are `ve_guides.content_html` (`<script id="ng-data">`, no public read),
+written from the session, never in the repo; the page holds the intro, the titles and tip 1 (`#ng-public`). The `ve_guides` row
+`nonprofit-guide` is published ($11 or 1,100 points) so it sells and opens; `ve_nonprofit_partner_start` gives the lead the Guide
+(`ve_guide_purchases` `paid_with` `nonprofit_partner`) and Sean holds a comp copy to review it. Banner `public/guides/nonprofit-guide.jpg`
+(Dani seated in her chair holding a rescued rabbit, the locked banner style). Two of the Canva doc's claims were corrected against their
+sources: Facebook's birthday fundraisers had raised more than $1 billion by 2019 (not "billions"), and the Mercy For Animals and VegFund
+examples say only what their own pages show. Launch = the catalog card (replacing Coming soon), `noindex` off, and Susan's invitation.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
