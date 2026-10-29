@@ -1600,7 +1600,7 @@ episode is titled with it; The Penis Book and iWant stay, migration `20261029_bo
 view (`?ep=<guid>`) shows **Referenced books** under it (`books` in `public/ve-episodes.js`, `ve-books` `episode`, public): the cover,
 title, author and Recommended / Their book / Talked about / Mentioned, opening the book's page, or Amazon for a referenced one. `ve-books`
 `status` counts the list, `probe` says whether the sources answer. **Sources**: Google Books first, read with our Google key (`GOOGLE_PLACES_API_KEY`; Sean added the Books API to the key 2026-10-29),
-English results only (`langRestrict=en`), retried when it answers 503, and searched looser until something comes back (its operators miss
+English results only (`langRestrict=en`, an edition counted only when Google says its language is English, and the match itself judged English or not; a book found only in another language is Not found, since a Spanish La Promesa Del Meñique got through on 2026-10-29), retried when it answers 503, and searched looser until something comes back (its operators miss
 some books a plain search finds); then Open Library, which refused our server's connections that day. A crawl that finds nothing under the
 listing's name asks Claude what name they publish under (Earthling Ed writes as Ed Winters) and saves the book under the name on its cover.
 A source that does not answer does not use up a book's tries. A book whose English editions have no cover on Amazon is `not_found` (Klaper's
