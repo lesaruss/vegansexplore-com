@@ -96,7 +96,9 @@
     var STATUS = { pending: 'Waiting', accepted: 'Accepted', agreed: 'Agreed', declined: 'Declined' };
     var KIND = { confirm: 'Still here', wrong: 'Update: something changed', gone: 'Update: not there anymore', missing: 'Something missing', comment: 'Comment' };
     var VEGAN = { vegan: 'Vegan', on_request: 'Vegan on request', ask: 'Ask before you order' };
-    var ZONE = { concourse: 'Concourse', club: 'Club level', suites: 'Suites', outside: 'Outside' };
+    var ZONE = { concourse: 'Concourse', club: 'Club level', suites: 'Suites', outside: 'Outside', airside: 'After security', landside: 'Before security' };
+    var ZONE_AIR = { airside: 'After security', landside: 'Before security', club: 'Lounge' };
+    function guideOf(v) { return v.kind === 'airport' ? '/guides/airport-guide#/airport/' : '/guides/stadium-arena-guide#/venue/'; }
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return {}; }); }
     function when(t) { return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
@@ -176,9 +178,10 @@
 
     function drawVenues() {
       app.innerHTML = topTabs('venues') + '<p class="msg">Loading…</p>';
-      api({ action: 'list' }).then(function (d) {
-        var vs = d.venues || [];
-        app.innerHTML = topTabs('venues') + '<div class="bar"><span class="m">Live venues in Guide order. Hard Rock Stadium is the free one.</span><a class="btn" href="#venue-new">New venue</a></div><div class="rows">' +
+      // Both venue Guides (the Stadium & Arena Guide, then the Airport Guide), each asked for its own venues.
+      Promise.all([api({ action: 'list', guide: 'stadium-arena-guide' }), api({ action: 'list', guide: 'airport-guide' })]).then(function (ds) {
+        var vs = (ds[0].venues || []).concat(ds[1].venues || []);
+        app.innerHTML = topTabs('venues') + '<div class="bar"><span class="m">Live venues in Guide order, stadiums and arenas, then airports. Hard Rock Stadium and Fort Lauderdale are the free ones.</span><a class="btn" href="#venue-new">New venue</a></div><div class="rows">' +
           (vs.length ? vs.map(function (v) {
             return '<div class="row"><span><span class="t">' + esc(v.name) + '</span><br><span class="m">' + esc((v.kind === 'arena' ? 'Arena' : v.kind === 'airport' ? 'Airport' : 'Stadium') + ' · ' + [v.city, v.state].filter(Boolean).join(', ')) + '</span></span>' +
               '<span class="m hide-sm">' + v.items + ' items, ' + v.confirmed + ' checked by members</span>' +
@@ -226,10 +229,11 @@
         if (!v) { app.innerHTML = '<p class="empty">That venue is not here. <a href="#venues">Back to the venues</a></p>'; return; }
         app.innerHTML = '<nav class="crumb"><a href="#venues">Venues</a><span>/</span><span>' + esc(v.name) + '</span></nav>' +
           '<div class="two"><div class="panel"><h2>' + esc(v.name) + (v.free ? ' <span class="tag accepted">Free</span>' : '') + '</h2>' + venueForm(v) +
-            '<div class="acts"><button class="btn" id="save">Save</button><a class="btn btn-ghost" href="/guides/stadium-arena-guide#/venue/' + esc(v.slug) + '" target="_blank" rel="noopener">See it in the Guide</a><span class="msg" id="m" role="status"></span></div></div>' +
+            '<div class="acts"><button class="btn" id="save">Save</button><a class="btn btn-ghost" href="' + guideOf(v) + esc(v.slug) + '" target="_blank" rel="noopener">See it in the Guide</a><span class="msg" id="m" role="status"></span></div></div>' +
           '<div><div class="panel"><h2>On the map</h2><p style="font-size:14px">' + (v.can_report ? esc(v.address || '') + (v.maps ? ' · <a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Google Maps</a>' : '') : '<b style="color:#8a1c12">No location yet, so members cannot send reports here.</b>') + '</p>' +
             '<div class="acts"><button class="btn btn-ghost" id="locate">' + (v.can_report ? 'Find it on Google again' : 'Find it on Google') + '</button><span class="msg" id="lm" role="status"></span></div></div>' +
-          '<div class="panel"><h2>The map</h2><p class="m">Each level\'s sections in clockwise order by side, read from the venue\'s seating chart (see public/ve-venue-map.js). ' + (v.layout ? (v.layout.levels || []).length + ' levels.' : 'None yet, so the Guide shows no map here.') + '</p>' +
+          '<div class="panel"><h2>The map</h2><p class="m">' + (v.kind === 'airport' ? 'Each terminal with its concourses and their gates, and which concourses connect after security (see public/ve-airport-map.js). ' + (v.layout ? (v.layout.terminals || []).length + ' terminals.' : 'None yet, so the Guide shows no map here.')
+              : 'Each level\'s sections in clockwise order by side, read from the venue\'s seating chart (see public/ve-venue-map.js). ' + (v.layout ? (v.layout.levels || []).length + ' levels.' : 'None yet, so the Guide shows no map here.')) + '</p>' +
             '<div class="f wide" style="margin-top:8px"><label for="v-layout">Layout (JSON)</label><textarea id="v-layout" style="min-height:140px;font-family:monospace;font-size:12px">' + esc(v.layout ? JSON.stringify(v.layout) : '') + '</textarea></div>' +
             '<div class="acts"><button class="btn btn-ghost" id="layout">Save the map</button><span class="msg" id="ym" role="status"></span></div></div>' +
           '<div class="panel"><h2>New season</h2><p class="m">Every item here shows Not checked this season until a member confirms it again.' + (v.season_reset_at ? ' Last new season: ' + esc(when(v.season_reset_at)) + '.' : '') + '</p>' +
@@ -272,9 +276,13 @@
           '<div class="panel"><h2>' + (s.id ? 'Stand' : 'New stand') + '</h2><div class="grid">' +
             '<div class="f"><label for="s-name">Name</label><input id="s-name" maxlength="200" value="' + esc(s.name) + '"></div>' +
             '<div class="f"><label for="s-where">Where it is</label><input id="s-where" maxlength="200" value="' + esc(s.where) + '" placeholder="Section 105"></div>' +
-            '<div class="f"><label for="s-zone">Who can reach it</label>' + sel('s-zone', ZONE, s.zone || 'concourse') + '</div>' +
-            '<div class="f"><label for="s-map">Sections on the map</label><input id="s-map" value="' + esc((s.map_sections || []).join(', ')) + '" placeholder="122A, 150A"><small>Each one puts a pin. Separate with commas.</small></div>' +
-            '<div class="f"><label for="s-level">Level, when we do not know the section</label><input id="s-level" value="' + esc(s.map_level || '') + '" placeholder="200"></div>' +
+            (v.kind === 'airport'
+              ? '<div class="f"><label for="s-zone">Before or after security</label>' + sel('s-zone', ZONE_AIR, s.zone || 'airside') + '</div>' +
+                '<div class="f"><label for="s-map">Gates it is near</label><input id="s-map" value="' + esc((s.map_sections || []).join(', ')) + '" placeholder="D24, D26"><small>Each one puts a pin. Separate with commas.</small></div>' +
+                '<div class="f"><label for="s-level">Concourse, or the terminal when before security</label><input id="s-level" value="' + esc(s.map_level || '') + '" placeholder="D or T1"></div>'
+              : '<div class="f"><label for="s-zone">Who can reach it</label>' + sel('s-zone', ZONE, s.zone || 'concourse') + '</div>' +
+                '<div class="f"><label for="s-map">Sections on the map</label><input id="s-map" value="' + esc((s.map_sections || []).join(', ')) + '" placeholder="122A, 150A"><small>Each one puts a pin. Separate with commas.</small></div>' +
+                '<div class="f"><label for="s-level">Level, when we do not know the section</label><input id="s-level" value="' + esc(s.map_level || '') + '" placeholder="200"></div>') +
             '<div class="f wide"><label for="s-note">Note</label><textarea id="s-note" maxlength="300">' + esc(s.note) + '</textarea></div></div>' +
           '<div class="acts"><button class="btn" id="save">Save</button>' + (s.id ? '<button class="btn btn-red" id="gone">Take it out</button>' : '') + '<span class="msg" id="m" role="status"></span></div></div>';
         var m = $('m');
