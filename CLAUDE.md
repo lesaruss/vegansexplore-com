@@ -1310,7 +1310,9 @@ their latest videos... watch everything on this page"; migration `20261029_ve_yo
 listing names its channel in `details.youtube_channel_id`; its Overview (`renderYouTubeOverview`, `loadYouTube` in `directory/listing.html`)
 plays the latest video on the left (`youtube-nocookie`), About (the listing's description, up to 250 characters), subscribers and videos,
 and **Find them on** (YouTube, Instagram, TikTok, Facebook, website; marks in `/public/icons/platforms/`) on the right, then **Latest videos**,
-thumbnails 12 at a time (Show more), each playing in that player. `ve-youtube` `videos` serves the latest 50 uploads from
+thumbnails 12 at a time (Show more), each playing in that player. **Videos and Shorts apart** (Sean, 2026-10-29: "sort the shorts from the
+regular videos so people could have a choice"): a Videos / Shorts switch over the grid (`?yt=shorts`, Shorts shown tall); `ve-youtube` keeps
+the channel's latest 50 of each from YouTube's own lists, UULF<id> (long-form) and UUSH<id> (Shorts), since the uploads list mixes them. `ve-youtube` `videos` serves the latest 50 uploads from
 `ve_youtube_feeds`, read again after 6 hours (cron `ve-youtube-refresh`, hourly, 20 a run), which sets Active / On hiatus like a podcast;
 `resolve` (ops) looks a channel up by handle or id. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
 for every channel, Google's own included; checked 2026-10-29), so it reads YouTube's Data API v3 with `YOUTUBE_API_KEY`, else
