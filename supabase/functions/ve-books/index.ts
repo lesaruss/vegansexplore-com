@@ -86,12 +86,12 @@ async function ask(system: string, user: string, schema: unknown, effort: 'low' 
 // ---- Open Library, one call at a time with a gap (it refuses a burst) ----
 let olLast = 0;
 async function ol(path: string): Promise<any> {
-  for (let attempt = 0; attempt < 3; attempt++) {
+  for (let attempt = 0; attempt < 2; attempt++) {
     const wait = olLast + 1500 - Date.now();
     if (wait > 0) await sleep(wait);
     olLast = Date.now();
     try {
-      const r = await fetch('https://openlibrary.org' + path, { headers: { 'User-Agent': OL_UA, Accept: 'application/json' }, signal: AbortSignal.timeout(15000) });
+      const r = await fetch('https://openlibrary.org' + path, { headers: { 'User-Agent': OL_UA, Accept: 'application/json' }, signal: AbortSignal.timeout(10000) });
       if (r.ok) return await r.json();
       if (r.status === 404) return null;
     } catch { /* try again */ }
@@ -495,7 +495,12 @@ Deno.serve(async (req) => {
         const why = String((e as Error).message || e).slice(0, 300);
         if (body.action === 'scan') await db.from('ve_content_transcripts').update({ books_status: 'queued', books_note: 'Will try again: ' + why }).eq('content_id', id);
         if (body.action === 'crawl') await db.from('ve_book_author_checks').update({ checked_at: new Date(Date.now() - 179 * 86400000).toISOString(), note: 'Will try again tomorrow: ' + why }).eq('listing_id', id);
-        if (body.action === 'build') await db.from('ve_books').update({ status: 'found', note: 'Will try again: ' + why }).eq('id', id);
+        // A source that does not answer is not the book's fault: that try does not count.
+        if (body.action === 'build') {
+          const down = /did not answer|Google Books answered|No Google key/.test(why);
+          const { data: r } = await db.from('ve_books').select('tries').eq('id', id).maybeSingle();
+          await db.from('ve_books').update({ status: 'found', note: 'Will try again: ' + why, tries: down ? Math.max(0, (r?.tries || 1) - 1) : r?.tries }).eq('id', id);
+        }
         out.push({ id, ok: false, why });
       }
     }
