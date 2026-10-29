@@ -2037,7 +2037,10 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   (MetLife Stadium, Yankee Stadium, Citi Field, Madison Square Garden, Barclays Center, UBS Arena). Items come from 2024 to 2026
   sources (venue pages, team sites, PETA, VegNews, Veggl, local news) read through search, since those sites are not reachable
   from the build session; anything known only from before 2024 was left out and anything unclear is Ask before you order.
-  Camping World Stadium, Inter&Co Stadium, Subaru Park and Barclays Center have no confirmed Vegan stand yet. Their maps wait on
+  Camping World Stadium, Inter&Co Stadium, Subaru Park and Barclays Center have no confirmed Vegan stand yet. Central Florida's five have
+  maps (2026-10-29, from Sean's screenshots; migration `20261029_venue_maps_central_florida.sql`: Camping World's 100s, Plaza P and C
+  sections and 200s; Kia Center's 100s, lettered club sections and 200s; Inter&Co a soccer pitch, `field` `soccer`, lower 2 to 36 and
+  upper 100s; Raymond James 100s to 300s; Benchmark 100s, club C1 to C9, 200s and 300s); Atlanta, Philadelphia and New York wait on
   seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card

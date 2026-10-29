@@ -107,7 +107,7 @@
     else steps.push((change ? 'Then walk' : 'On the concourse, walk') + ' with the field on your ' + (dd > 0 ? 'right' : 'left') +
       (passed.length ? ', past ' + (passed.length > 3 ? passed.slice(0, 3).join(', ') + ' and ' + (passed.length - 3) + ' more' : passed.length > 1 ? passed.slice(0, -1).join(', ') + ' and ' + passed[passed.length - 1] : passed[0]) : '') +
       ', to section ' + target.label + '.');
-    if (layout.field && layout.field !== 'football' && layout.field !== 'baseball') steps[steps.length - 1] = steps[steps.length - 1].replace('the field', layout.field === 'hockey' ? 'the rink' : 'the court');
+    if (layout.field === 'hockey' || layout.field === 'basketball') steps[steps.length - 1] = steps[steps.length - 1].replace('the field', layout.field === 'hockey' ? 'the rink' : 'the court');
     return { minutes: Math.max(1, Math.round(walk / WALK_M_PER_MIN + Math.abs(change) * LEVEL_MIN)), steps: steps, dd: dd, walk: walk };
   }
 
@@ -140,6 +140,11 @@
       s += '<line class="vvm-yd" x1="' + CX + '" y1="' + y + '" x2="' + CX + '" y2="' + (y + h) + '"/><circle class="vvm-mark" cx="' + CX + '" cy="' + CY + '" r="28"/>' +
         (kind === 'hockey' ? '<line class="vvm-yd" x1="' + (x + w * .3) + '" y1="' + y + '" x2="' + (x + w * .3) + '" y2="' + (y + h) + '"/><line class="vvm-yd" x1="' + (x + w * .7) + '" y1="' + y + '" x2="' + (x + w * .7) + '" y2="' + (y + h) + '"/>'
           : '<rect class="vvm-mark" x="' + x + '" y="' + (CY - 34) + '" width="58" height="68"/><rect class="vvm-mark" x="' + (x + w - 58) + '" y="' + (CY - 34) + '" width="58" height="68"/>');
+    }
+    if (kind === 'soccer') {
+      // A pitch: the halfway line, the center circle and the two penalty boxes.
+      s += '<line class="vvm-yd" x1="' + CX + '" y1="' + y + '" x2="' + CX + '" y2="' + (y + h) + '"/><circle class="vvm-mark" cx="' + CX + '" cy="' + CY + '" r="34"/>' +
+        '<rect class="vvm-mark" x="' + x + '" y="' + (CY - h * .3) + '" width="' + (w * .14) + '" height="' + (h * .6) + '"/><rect class="vvm-mark" x="' + (x + w * .86) + '" y="' + (CY - h * .3) + '" width="' + (w * .14) + '" height="' + (h * .6) + '"/>';
     }
     if (kind === 'baseball') {
       // Home plate at the bottom: the infield diamond.
