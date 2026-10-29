@@ -51,7 +51,7 @@
       <div class="login-google-wrap">
         <div id="login-google-btn"></div>
       </div>
-      <!-- Continue with LESARUSS (public/ve-auth.js): back here's ?next, else the dashboard. -->
+      <!-- Continue with LESARUSS is off (Sean, 2026-10-29); a LESARUSS member signs in the usual way (public/ve-auth.js LESARUSS_NOTE). -->
       <div id="login-lesaruss"></div>
       <div class="login-divider">
         <div class="login-divider-line"></div>
@@ -111,7 +111,7 @@
     });
     window.addEventListener('load', function() {
       var lb = document.getElementById('login-lesaruss');
-      if (lb) { lb.innerHTML = VEAuth.lesarussButton(); lb.firstChild.setAttribute('data-ve-lesaruss', new URLSearchParams(window.location.search).get('next') || '/dashboard'); }
+      if (lb) lb.innerHTML = VEAuth.lesarussNote();
       VEAuth.initGoogleSignIn(document.getElementById('login-google-btn'), function(d) {
         if (d.error) { showError(d.error); return; }
         // Pay-or-pledge gate (2026-09-17): a first-time Google sign-in here

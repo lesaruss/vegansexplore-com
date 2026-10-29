@@ -1272,7 +1272,11 @@ and got it from Google's address.
 studios, prompted by Trisha, each claimable with the $11 Passport). Services > Studios, after Animal Care (`CAT_MAP`, `CAT_CONFIG`,
 `SECTIONS`, `KINDS`, `CATS` and the functions' category lists). A studio is usually Not a Vegan business. The first South Florida
 search (`20261029_studio_search.sql`) put 129 in Business outreach > New places > Ready to list (91 video and production, 25 podcast,
-13 photo), nothing live. The Directory's **Is your business in here?** strip (under the vote box, shown to everyone, members
+13 photo). **123 went live the same day after a preliminary check** (Sean: "I'm not going to click through 129 studios... is it open?
+Is it active?... If it fits that... Add them. We can always remove them later on"; migration `20261029_studios_live.sql`, run through
+the one-time `ve-once-studios-live`, now the 410 stub): all 129 were open on Google; a studio went live with a phone or website and
+either a Google review in the last two years or a website that loads, and the six that did not are set aside with why (two dead
+websites, four with no website and no recent review). The Directory's **Is your business in here?** strip (under the vote box, shown to everyone, members
 included) and the listing's claim box say the claim takes the $11 Passport, whose 1,100 points cover it.
 
 **Diplomats open every Guide** (Sean, 2026-10-29, canon `canon-lesaruss-ai-subscription-guide-wizard-model`
@@ -2885,7 +2889,14 @@ passport rate, your passport works... you still got to pay the $11 to get into t
 on every brand (migration `20261029_lesaruss_sign_in.sql`, edge function `ve-lesaruss-sso`, HQ `app/connect` and `lib/sso.ts` in
 lesaruss/lesaruss-hq).
 
-- **The button** sits under Continue with Google in the sign-in window and on `/login` (`LESARUSS_BTN`, `loginWithLesaruss` in
+- **The button is off** (Sean, 2026-10-29: "it just took me to another place where I would have to choose Apple or Google... why
+  don't I just use the Google to log in?... let's not push it out to anywhere else... log in the same way and we will pick up on your
+  membership"). In its place the sign-in window and `/login` say "Already a LESARUSS member? Sign in with the same Google account or
+  email, and we pick up your membership" (`LESARUSS_NOTE` in `public/ve-auth.js`): one email is one account, so Google or a password
+  signs in the same account, and a Diplomat comes in through `ve_member_entitled`. Everything below stays in place, unused. A sign-in
+  that picks up a LESARUSS session already open in the browser (a quiet check with HQ, no page to click through) is the idea Sean
+  raised; not built.
+- **The button** sat under Continue with Google in the sign-in window and on `/login` (`LESARUSS_BTN`, `loginWithLesaruss` in
   `public/ve-auth.js`; any element with `data-ve-lesaruss="<path to come back to>"` starts it). It keeps a random state in the tab and
   opens `hq.lesaruss.ai/connect?client=vegans-explore&redirect_uri=<origin>/auth/lesaruss&state=` (a preview of this site uses the
   HQ branch preview, `LESARUSS_HQ`). HQ signs them in, shows who they are and what they get, and on Continue sends back a one-time
