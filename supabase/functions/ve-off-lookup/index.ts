@@ -5,6 +5,11 @@
 //                                                   media/logos/, media/products/, media/communities/ (city art) or
 //                                                   media/brand-door/ (the For <Brand> tour: Maya's clips and posters,
 //                                                   2026-10-09); pictures, and mp4 video for brand-door; returns URLs.
+//   { action: 'yt', ids: [...] (25) }             -> YouTube oEmbed for each video id: its title, channel and channel link,
+//                                                   so a trailer is checked before a listing names it (2026-10-29).
+//   { action: 'page', urls: [...] (25) }          -> each page's status, final address and <title>, so a where-to-watch link
+//                                                   is checked to open that film (2026-10-29), and the YouTube ids the page
+//                                                   names (yt: links, embeds, TMDB's data-id, "videoId" in YouTube's pages).
 //   { run, brands: [[key, offBrandTag], ...] }     -> Open Food Facts lookups, one brand at a time (6 at most),
 //                                                   saved to vegan-media/media/off/<run>.json.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -47,6 +52,33 @@ Deno.serve(async (req) => {
         const r = await fetch(u, { headers: { 'User-Agent': UA } });
         const buf = new Uint8Array(await r.arrayBuffer());
         out[u] = r.ok && buf.length < 3_000_000 ? { type: r.headers.get('content-type'), b64: encodeBase64(buf) } : { error: `${r.status} ${buf.length}` };
+      } catch (e) { out[u] = { error: String((e as Error).message || e) }; }
+    }));
+    return json(out);
+  }
+  if (b.action === 'yt') {
+    const ids: string[] = (Array.isArray(b.ids) ? b.ids : []).slice(0, 25).filter((v: string) => /^[\w-]{11}$/.test(String(v)));
+    const out: Record<string, unknown> = {};
+    await Promise.all(ids.map(async (id) => {
+      try {
+        const r = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent('https://www.youtube.com/watch?v=' + id)}`, { headers: { 'User-Agent': UA } });
+        const d = r.ok ? await r.json() : null;
+        out[id] = d ? { title: d.title, author_name: d.author_name, author_url: d.author_url } : { error: r.status };
+      } catch (e) { out[id] = { error: String((e as Error).message || e) }; }
+    }));
+    return json(out);
+  }
+  if (b.action === 'page') {
+    const urls: string[] = (Array.isArray(b.urls) ? b.urls : []).slice(0, 25).filter((u: string) => /^https:\/\//.test(String(u)));
+    const out: Record<string, unknown> = {};
+    await Promise.all(urls.map(async (u) => {
+      try {
+        const r = await fetch(u, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36', 'Accept-Language': 'en-US' }, redirect: 'follow' });
+        const html = (await r.text()).slice(0, 400_000);
+        const t = (html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '';
+        const og = (html.match(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']*)/i) || [])[1] || '';
+        const yt = [...new Set([...html.matchAll(/(?:youtube(?:-nocookie)?\.com\/(?:watch\?v=|embed\/)|youtu\.be\/|data-site="YouTube"[^>]*data-id="|data-id="(?=[\w-]{11}"[^>]*data-site="YouTube")|"videoId":\s*")([\w-]{11})/g)].map((m) => m[1]))].slice(0, 40);
+        out[u] = { status: r.status, final: r.url, title: t.trim().slice(0, 200), og_title: og.slice(0, 200), yt };
       } catch (e) { out[u] = { error: String((e as Error).message || e) }; }
     }));
     return json(out);
