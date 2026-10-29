@@ -1525,7 +1525,9 @@ has no cover for any English edition, the builder takes Google's own cover pictu
 (`pre-vegans-by-sean-russell`, `/go/book-b0b1cd57rw`), in the family `pre-vegans` with the Pre-Vegans Podcast, Featured in Media > Books
 (`SHOWS` in `ve-media.js`), and its eight People in it show as its **Featured people** (`details.film_people` on a book too, `bookPeople` in
 `directory/listing.html`). A book with a 979 ISBN goes the same way. Google Books had Dr. Aaron Spitz as "Splitz"; his book's listing was
-corrected the same day.
+corrected the same day. Sean got his own People profile the same day (`sean-russell`, Founders, migration
+`20261029_people_sean_russell.sql`): the May import's quarantined @seanarussell82 row promoted, Host of every Vegans Explore, SoFlo
+Vegans and Pre-Vegans episode (221 credits), in the family `pre-vegans` (Overview, Podcast, Books with Pre-Vegans).
 
 **Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
