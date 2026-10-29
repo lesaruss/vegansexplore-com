@@ -138,13 +138,13 @@ function groupGB(items: any[]): Cand[] {
     if (y && (!g.year || y < g.year)) g.year = y;
     if (v.publisher && !g.publishers.includes(v.publisher)) g.publishers.push(v.publisher);
     for (const c of v.categories || []) if (!g.subjects.includes(c)) g.subjects.push(c);
-    if ((v.language || 'en') === 'en') for (const id of v.industryIdentifiers || []) {
+    if (v.language === 'en') for (const id of v.industryIdentifiers || []) {
       if (id.type === 'ISBN_13' && /^978/.test(id.identifier) && !g.isbns.includes(id.identifier)) { g.isbns.push(id.identifier); g.isbnPub[id.identifier] = v.publisher || ''; }
     }
     const d = String(v.description || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     if (d.length > g.description.length) g.description = d;
     // An edition Google has a cover picture for (imageLinks), kept for when Amazon has none.
-    if (v.imageLinks && it.id && (v.language || 'en') === 'en') g.covers.push({ id: it.id, isbn: ((v.industryIdentifiers || []).find((x: any) => x.type === 'ISBN_13') || {}).identifier || '', publisher: v.publisher || '' });
+    if (v.imageLinks && it.id && v.language === 'en') g.covers.push({ id: it.id, isbn: ((v.industryIdentifiers || []).find((x: any) => x.type === 'ISBN_13') || {}).identifier || '', publisher: v.publisher || '' });
   }
   return [...by.values()];
 }
@@ -339,16 +339,17 @@ async function crawlOne(listingId: string) {
 
 // ---- build: match, cover, synopsis, listing ----
 const PICK_SCHEMA = {
-  type: 'object', additionalProperties: false, required: ['match', 'vegan_related', 'book_type', 'note'],
+  type: 'object', additionalProperties: false, required: ['match', 'english', 'vegan_related', 'book_type', 'note'],
   properties: {
     match: { type: 'integer', description: 'The number of the result that is this book, or -1 when none is.' },
+    english: { type: 'boolean', description: 'True when the result you matched is the book in English. False for a translation or any other language (judge by its title, subtitle and about).' },
     vegan_related: { type: 'boolean', description: 'True when the book is about Vegan or plant-based living, food or health, animals, animal rights or the effect of food on the planet.' },
     book_type: { type: 'string', enum: BOOK_TYPES },
     note: { type: 'string' },
   },
 };
 const PICK_SYSTEM = `You match a book to Open Library's search results. The book came from a podcast transcript (captions can misspell it) or from an author's list.
-Pick the result that is this exact book (same title and author; a subtitle may differ), or -1 when none is. Then say whether it is about Vegan or plant-based living, food or health, animals, animal rights or food and the planet, and which kind it is: cookbook, memoir (biography and memoir), educational (animals, ethics, the food system, science), health (health and nutrition), lifestyle, or children (a children's book).`;
+Pick the result that is this exact book (same title and author; a subtitle may differ), or -1 when none is. When it is there in English and in another language, pick the English one; say whether the one you picked is in English. Then say whether it is about Vegan or plant-based living, food or health, animals, animal rights or food and the planet, and which kind it is: cookbook, memoir (biography and memoir), educational (animals, ethics, the food system, science), health (health and nutrition), lifestyle, or children (a children's book).`;
 const WRITE_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['description', 'summary', 'note'],
   properties: {
@@ -399,6 +400,8 @@ async function buildOne(bookId: string) {
   const pick = await ask(PICK_SYSTEM, JSON.stringify({ book: { title: b.title, author: b.author, said_on_our_podcasts: ments || [], author_profile: author ? { name: author.name, about: String(author.description || '').slice(0, 500) } : null }, results: cands.map(candView) }), PICK_SCHEMA);
   const d = cands[pick.match];
   if (!d || pick.match < 0) return fail('not_found', `No match (${found.via}): ` + String(pick.note || '').slice(0, 300));
+  // English editions only (a Spanish La Promesa Del Meñique got through on 2026-10-29): Google's own word, then the match's.
+  if (!pick.english) return fail('set_aside', `Not an English edition: ${d.title}`);
 
   // Open Library's editions when that is where it came from.
   if (!d.isbns.length && d.ol_work) {
