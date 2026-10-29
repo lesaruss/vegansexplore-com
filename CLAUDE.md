@@ -454,6 +454,46 @@ returns every moment across every show, who said it, a quote, and a play button 
   actions `topics`, `search`, `moment` (super admin or the admin token). Not yet: members' search and the Guides' Pulse tabs
   playing moments; episodes not on YouTube cannot play.
 
+## The bounties board (Sean, 2026-10-29; built the same day)
+
+"Update the bounty section. Right now it's showing some bounties for some old events. I want it to be a little bit more
+simplified, almost like how we have the podcast into two columns on the people listing... you can search, it's filterable... sort
+it by the guides... evergreen bounties would be checking in at your favorite restaurant... volunteer opportunities... checking out
+restaurants that we're not sure if they're open or not... attend an event on our behalf... a paid stipend, but you might have to be
+level 2." Migration `20261029_bounties_board.sql` (run through the one-time `ve-once-bounties-board`, now the 410 stub).
+
+- **`/bounties` is one list of rows, two across** (`bounties.html`, `.bb-row`, the people page's podcast row look: a square picture,
+  the title, one line of type, city and when, tags, the points on the right and one Open button; one column under 900 px). Search,
+  **Type** (All, Evergreen, Guides, Events and campaigns), **Guide** (the Guides with venue bounties in the city) and **Sort** (Most
+  points, Soonest, A to Z), all in the address (`?type= &guide= &sort= &q=`). Every row opens its own view: a job (`?campaign=&id=`,
+  the campaign and job views as before), an evergreen bounty (`?campaign=check-ins|volunteer|still-open`), a venue in its Guide, or
+  a locked Guide's Get the Guide. Rows come from `ve-bounties` `list` and `evergreen` and `ve-venues` `bounties`.
+- **Old event jobs leave the list once their claims close** (`claims_close_at`), unless the viewer holds a spot (`ve-bounties`
+  `list`). On 2026-10-29 that took off the Vegan Creole Festival and Vegan Day Party Miami jobs (Oct 24) and Run the Palm Beach dinner.
+- **Evergreen bounties** (`ve_field_reports`, one row per visit; Depot > Bounties > **Field reports**, `#field/<pending|accepted|
+  declined>`). Both are sent from the place: the phone's location is checked like a check-in (within `volunteer_radius_m` 300 or
+  `still_open_radius_m` 150, plus up to 100 m of its accuracy; worse than 500 m refused), up to 10 a day, and nothing pays until the
+  team accepts it (`ve_field_report_review`, `ve_points_grant` reason `bounty`, ref `field:<id>`; the member is emailed either way).
+  Photos are shrunk in the browser to 1600 px and go to `ve-bounty-uploads` under `field/<member>/`.
+  - **Volunteer with a nonprofit**: at a Nonprofits, Rescues or Sanctuaries listing with a map pin, in the city's chapter
+    (`chapterOf` in `ve-bounties`, the same rule as `ve_chapter_of`): the hours (half an hour to 12), what they did, an optional
+    photo. **25 points an hour, up to 8 hours a visit, 10 more with a photo.** The reviewer can pay for fewer hours, with a note.
+  - **Is it still open?**: places we flagged as maybe closed (`ve_still_open_places(hub)`: an open monthly check-up flag or a strong
+    Directory review flag, with a map pin, and no accepted answer in 90 days). Open or Closed, with a photo (required), once a month
+    per member and place. **The first accepted answer pays 100, later accepted ones 20**; first is by submission (an earlier answer
+    is decided first, `earlier_pending`). An accepted Open writes the check-up's flag review (still open) and
+    `details.review_ok_until` 90 days on; an accepted Closed holds the listing in Directory review ("A member visited and found it
+    closed"). 14 places on 2026-10-29 (London 8, Philadelphia 4, Atlanta and Central Florida 1).
+  - **Check in where you go** stays as it was (`ve-checkin`, 10 points a visit).
+  - Amounts and limits are `ve_site_settings` `evergreen_bounties`, Logan's defaults, Sean's to change.
+- **Paid jobs** (attend an event for us): `ve_bounties.min_level` (1 to 4) and the stipend in the existing `cash_cents`, set in Depot >
+  Bounties' job editor (**Stipend ($)**, **Who can claim**: Any member, Level 2, 3 or 4 and up; `ve-bounties` `job_update` `cash`,
+  `min_level`). `ve_bounty_claim` refuses a member below it (`level`, "This job is for Level 2 and up. You are Level 1..."), the row
+  shows Paid and Level N and up, and the job's At a glance says who can claim. No paid job is posted yet.
+- Proven 2026-10-29 with the internal QA account and a super admin (too far refused, photo required, a volunteer report paid 60 for
+  2 of 2.5 hours with a photo after the note was required, a still-open Open paid 100 as first and left the list, a second decision
+  refused; in a rolled-back transaction the level gate refused Level 1 and an accepted Closed held the listing), then removed.
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked
@@ -997,7 +1037,7 @@ members who leave **Show my check-ins to other members** on (My Account > Privac
 business dashboard's **Check-ins** view (`ve-claims` `owner_dashboard` `checkins`: last 30 days, members, members who came back,
 12 months, by week and by the members' home chapter; no names or member ids leave the function); a business reaches members only
 through the yes at save, during a campaign (Your audience). The team sees who in Depot > Directory review (`review_get` `checkins`). A check-in in the last 30 days keeps a place from
-being held automatically. On `/bounties` it is the always-open first card in every city (**Check in where you go**,
+being held automatically. On `/bounties` it is an evergreen row in every city (**Check in where you go**,
 `?campaign=check-ins`): how it works, Open the Directory, and the member's own check-ins (`ve-checkin` `mine`).
 
 On a city hub the banner bar's crumb is a community picker (All cities, then each `VE_HUBS` city; Sean, 2026-10-25): a city
@@ -2127,8 +2167,8 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   paid report is `bounty` true. First is by submission: `ve_venue_report_review` refuses a confirmation while an earlier one on the
   same item waits (`earlier_pending`). Limits in `ve_site_settings` `venue_bounties` (fresh_days 35, daily_paid_cap 40, daily_reports
   60; were 5 paid and 20 sent). The Guides tag each open item **Bounty: first to confirm** and each venue card **N bounties open**;
-  `/bounties` has the always-open card **Be first at the stadiums** (`?campaign=venues`, `ve-venues` `bounties`: by city, each venue's
-  open items and points, no item names, only Guides that are published). Defaults Logan set, Sean's to change.
+  `/bounties` lists each venue as a Guides row (`ve-venues` `bounties`: by city, each venue's open items and points, no item names,
+  only Guides that are published; the old **Be first at the stadiums** view still opens at `?campaign=venues`). Defaults Logan set, Sean's to change.
   **Bounties unlock with the Guide** (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock"):
   only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
   the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
@@ -2144,10 +2184,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   from the demo gate or section), then How to use it, Get every venue, Built with you and Bounties, and Newly added: six across with
   the Guide hidden (`.dg-min`), four with it showing, two on phones. The full list
   with the city filter is the Airports / Venues tab only. Nori's and River's Overview lines are text drafts for Sean.
-  **Queued by Sean, not built** (2026-10-29: "let's not steer too far away from the airport guide... we can always cue this for
-  later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
-  evergreen bounties (check in where you go, volunteer with a nonprofit, is this place still open?); paid jobs such as attending an
-  event for us, Level 2 and up, with a stipend; and past event jobs leaving the list once claims close.
+  Sean's queued `/bounties` rework (2026-10-29) is built: see The bounties board.
 - **The Airport Guide, built 2026-10-29, not published** (Sean: "Let's look at the airport guide now"; migrations
   `20261029_airport_guide.sql`, `20261029_airports_seed.sql`, run through the one-time `ve-once-airports`, now the 410 stub). The same
   engine: `ve-venues` serves both Guides (`GUIDES`, the body's `guide`; a venue's kind picks its Guide), the same reports, points, saves
