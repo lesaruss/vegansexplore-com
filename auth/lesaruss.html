@@ -69,7 +69,7 @@
       }
       if (d && d.error === 'passport_needed') {
         show('Your Passport opens Vegans Explore', d.message,
-          '<a class="btn dark" href="/passport#/join">Get your Passport, $11</a><a class="btn line" href="https://lesaruss.ai/join">Become a Diplomat</a>');
+          '<a class="btn dark" href="' + (/^https:\/\/checkout\.stripe\.com\//.test(d.checkout_url || '') ? d.checkout_url : '/passport#/join') + '">Get your Passport, $11</a><a class="btn line" href="https://lesaruss.ai/join">Become a Diplomat</a>');
         return;
       }
       show('That sign-in did not finish', (d && d.message) || 'Please try again.', '<a class="btn dark" href="/login">Back to sign in</a>');

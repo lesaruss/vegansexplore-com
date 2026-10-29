@@ -70,6 +70,7 @@ async function confirmTestSession(sessionId: string): Promise<Response> {
   const { data: member } = await supabase.from('members').select('id, email').eq('id', session.metadata.member_id).maybeSingle();
   if (!member || !(await isTestAccount(member.email))) return Response.redirect(back.replace('activate=success', 'activate=cancelled'), 302);
   await supabase.from('members').update({ membership_status: 'active', entry_paid_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', member.id);
+  await supabase.rpc('ve_brand_membership_grant', { p_member: member.id, p_kind: 'passport', p_source: 'stripe', p_ref: sessionId });
   console.log('TEST entry contribution activated (no points credited):', member.id, session.id);
   return Response.redirect(back, 302);
 }

@@ -2852,8 +2852,19 @@ lesaruss/lesaruss-hq).
   membership) is let in as they are; **another brand's account that is not a Diplomat is refused** (`passport_needed`: Get your
   Passport or Become a Diplomat), since its status is that brand's (17 free LESARUSS.ai accounts read as active); a Vegans Explore
   account signs in as it is (waiting for its Passport, the $11 window opens); an email with no account gets one waiting for its
-  Passport. Super admins pass. Continue with Google still links by email across brands (`findMemberByEmail`), so a free LESARUSS.ai
-  account can sign in there and read as active: per-brand entitlements are Sean's call, not built.
+  Passport. Super admins pass.
+- **Brand memberships** (Sean, 2026-10-29: "GO"; migration `20261029_brand_memberships.sql`). `brand_memberships` records who holds
+  what on which brand: `vegans-explore` passport (paid) or comp (on us), `lesaruss-ai` diplomat. `ve_member_entitled(member)` is
+  whether a row's status counts here: a Vegans Explore account (its status is ours, unchanged), a Vegans Explore Passport or comp on
+  record, a Diplomat, or a super admin. Every sign-in (`ve-auth` login and both Google paths, `ve-lesaruss-sso`) refuses another
+  brand's account that is not entitled with `passport_needed` and an $11 checkout the server makes (`passportNeeded`; no session
+  token reaches the browser); the $11 window's button goes there (`_passportNeeded` in `public/ve-auth.js`), and payment returns to
+  `/login?passport=paid` to sign in again. `ve-auth` `me` reads such an account as `pending_payment`, so an older session drops to
+  the $11 window. Vegans Explore accounts are recorded by trigger (`trg_ve_brand_membership_sync`); another brand's account gets its
+  Passport through `ve_brand_membership_grant` (the webhook's `entry_contribution`, the test checkout, `ve_member_admit`, which now
+  returns true when it made them a member here), and the webhook's welcome points go to it as a first join. The Diplomat rows follow
+  `ve_diplomat_sync`. On 2026-10-29 all 24 active Vegans Explore accounts, the switch accounts, Sean and the two Diplomats stayed in;
+  the 16 free LESARUSS accounts (seed, test and internal ones) are refused here.
 - `members.diplomat_since` and `ve_diplomat_sync()` (cron `ve-diplomat-sync`, daily) are ready for an account ever made active here
   for being a Diplomat; nothing sets it today.
 - `/policies#privacy` says it (One LESARUSS account). Children's brands are never clients.

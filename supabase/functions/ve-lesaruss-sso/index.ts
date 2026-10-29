@@ -72,8 +72,23 @@ serve(async (req: Request) => {
 
     // Another brand's account is let in here only as a Diplomat. Its status is that brand's, not ours: a free LESARUSS.ai
     // account reads as active, and must not open Vegans Explore without its Passport (Sean, 2026-10-29).
+    // ve_member_entitled (migration 20261029_brand_memberships.sql): their own Vegans Explore Passport on record also counts.
     if (member && member.tenant_id !== VE_TENANT_ID && diplomat !== true && !member.is_superadmin) {
-      return json({ error: 'passport_needed', message: 'Your LESARUSS account is not a Diplomat yet. Vegans Explore opens with its $11 Passport, or with a Diplomat membership, which opens every LESARUSS community.' }, 403);
+      const { data: entitled } = await supabase.rpc('ve_member_entitled', { p_member: member.id });
+      if (entitled !== true) {
+        // Their $11 checkout is made here, the way ve-auth does it, so no session token reaches the browser.
+        let checkout_url: string | null = null;
+        try {
+          const t = await signJWT({ sub: member.id, email: member.email, tier: member.membership_tier, brand: 'vegans-explore' });
+          const r = await fetch(`${SUPABASE_URL}/functions/v1/ve-entry-checkout`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` },
+            body: JSON.stringify({ amount_cents: 1100, success_url: 'https://vegansexplore.com/login?passport=paid', cancel_url: 'https://vegansexplore.com/passport' }),
+          });
+          const d = await r.json().catch(() => ({}));
+          if (typeof d.url === 'string') checkout_url = d.url;
+        } catch (e) { console.error('passport_needed checkout', e); }
+        return json({ error: 'passport_needed', checkout_url, message: 'Your LESARUSS account opens Vegans Explore with its $11 Passport, one time, with 1,100 welcome points. A Diplomat membership opens every LESARUSS community.' }, 403);
+      }
     }
     if (member && member.membership_status !== 'active' && member.membership_status !== 'pending_payment') {
       return json({ error: 'suspended', message: 'This account is not active. Write to contact@lesaruss.com.' }, 403);

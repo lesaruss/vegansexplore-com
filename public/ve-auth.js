@@ -53,7 +53,11 @@ function getMember(){var v=getViewAs();if(v){if(v.mode==='public')return null;va
 // enough to pay (the $11 window, a claim's or a Guide's own checkout, an invitation's accept).
 function isPending(m){return!!(m&&m.membership_status==='pending_payment');}
 function isLoggedIn(){var v=getViewAs();if(v)return v.mode==='member';return!!getToken()&&!isPending(getRealMember());}
-function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}return d;});}
+function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error==='payment_required'){showActivateModal(d.message);}if(d&&d.error==='passport_needed'){return _passportNeeded(d);}return d;});}
+// Another brand's LESARUSS account without a Vegans Explore Passport (ve-auth passport_needed, 2026-10-29): no session, just the
+// $11 window, whose button goes to the checkout the server made for them. The page's own error box shows the same words.
+var _needUrl=null;
+function _passportNeeded(d){_needUrl=d.checkout_url||null;hideAuthModal();showActivateModal(d.message);return{error:d.message,passport_needed:true};}
 function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 // Continue with LESARUSS (Sean, 2026-10-29; edge function ve-lesaruss-sso, migration 20261029_lesaruss_sign_in.sql): one
@@ -134,7 +138,7 @@ function showActivateModal(message){
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
 }
-function hideActivateModal(){var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
+function hideActivateModal(){_needUrl=null;var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
 function _buildActivateModal(){
 var s=document.createElement('style');
 s.textContent=
@@ -212,6 +216,7 @@ btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something 
 document.getElementById('ve-pm-founding-btn').addEventListener('click',function(){
 var btn=this;
 btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
+if(_needUrl){window.location.href=_needUrl;return;}
 startEntryCheckout(1100).then(function(d){
 if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');

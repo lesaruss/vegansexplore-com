@@ -85,6 +85,8 @@
     var errorBox = document.getElementById('login-error');
     function showError(msg) { errorBox.textContent = msg; errorBox.classList.add('visible'); }
     function clearError() { errorBox.classList.remove('visible'); }
+    // Back from the $11 checkout a LESARUSS account was sent to (ve-auth passport_needed): the Passport is paid, sign in again.
+    if (new URLSearchParams(window.location.search).get('passport') === 'paid') document.querySelector('.login-sub').textContent = 'Your Passport is paid. Sign in again to open it.';
     function setLoading(on) { submitBtn.disabled = on; submitBtn.textContent = on ? 'Signing in...' : 'Sign In'; }
     form.addEventListener('submit', function(e) {
       e.preventDefault(); clearError();
