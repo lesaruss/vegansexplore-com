@@ -194,6 +194,7 @@
       // A gift from a group's organizer (Sean, 2026-10-29): a Passport on them, for this one email.
       if (inv.points_to === 'gift') {
         var gg = (inv.org && inv.org.name) || 'a Vegans Explore group', giver = inv.giver || 'Someone';
+        $('eyebrow').textContent = 'A gift from ' + gg;
         $('title').textContent = inv.first_name + ', ' + giver + ' gave you a Vegans Explore Passport.';
         $('lede').textContent = giver + ' of ' + gg + ' gave you a Passport: a Founding Membership on Vegans Explore, the community for Vegans, city by city.';
         $('gift').hidden = false; $('gift').textContent = 'Your Passport is a gift from ' + gg + (inv.points > 0 ? ', with ' + Number(inv.points).toLocaleString('en-US') + ' points to start' : '');
