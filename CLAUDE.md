@@ -2893,9 +2893,16 @@ lesaruss/lesaruss-hq).
   don't I just use the Google to log in?... let's not push it out to anywhere else... log in the same way and we will pick up on your
   membership"). In its place the sign-in window and `/login` say "Already a LESARUSS member? Sign in with the same Google account or
   email, and we pick up your membership" (`LESARUSS_NOTE` in `public/ve-auth.js`): one email is one account, so Google or a password
-  signs in the same account, and a Diplomat comes in through `ve_member_entitled`. Everything below stays in place, unused. A sign-in
-  that picks up a LESARUSS session already open in the browser (a quiet check with HQ, no page to click through) is the idea Sean
-  raised; not built.
+  signs in the same account, and a Diplomat comes in through `ve_member_entitled`. The privacy paragraph says the same (2026-10-29).
+- **The quiet check** (Sean, 2026-10-29: "If they have an active login session on... their browser... it should pick up on that";
+  "build the session pickup"). When someone goes to sign in (`/login`, or the sign-in window opened with no follow-up waiting,
+  `showAuthModal` without a callback), `quietPickup` in `public/ve-auth.js` hops the browser once to HQ's `/connect/silent` (lesaruss-hq
+  `app/connect/silent/route.ts`): signed in on hq.lesaruss.ai, it comes straight back with a one-time code and `/auth/lesaruss` signs
+  them in here (the same code, `ve-lesaruss-sso` and Passport rule as below); signed out, it comes straight back with
+  `error=login_required` and the page shows its usual sign-in (`?ve_signin=login|signup` reopens the window, then leaves the address).
+  Nothing to see or click either way. Once a tab session (`sessionStorage` `ve_lesaruss_quiet`), vegansexplore.com and its previews
+  only, never in a frame, on a brand page (`VE_BRAND`) or for anyone holding a token. HQ answers only return addresses on
+  `lesaruss_sso_clients`, anything else a plain 400.
 - **The button** sat under Continue with Google in the sign-in window and on `/login` (`LESARUSS_BTN`, `loginWithLesaruss` in
   `public/ve-auth.js`; any element with `data-ve-lesaruss="<path to come back to>"` starts it). It keeps a random state in the tab and
   opens `hq.lesaruss.ai/connect?client=vegans-explore&redirect_uri=<origin>/auth/lesaruss&state=` (a preview of this site uses the
