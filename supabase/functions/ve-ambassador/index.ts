@@ -463,7 +463,7 @@ Deno.serve(async (req) => {
     try {
       if (!acct) {
         const { ok, d } = await stripe(test, 'POST', 'accounts', {
-          type: 'express', country: 'US', email: member.email || '', business_type: 'individual',
+          type: 'express', country: 'US', email: member.email || '',
           'capabilities[transfers][requested]': 'true', 'metadata[member_id]': member.id, 'metadata[source]': 've-ambassador',
         });
         if (!ok) {
