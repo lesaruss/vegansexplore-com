@@ -1320,9 +1320,20 @@ through `resolve`, its About written from the channel's own description, links o
 logo): Pick Up Limes, Rainbow Plant Life, Mic the Vegan, NutritionFacts.org, Earthling Ed (YouTube) (one listing a name: his People profile is
 Earthling Ed), Sweet Simple Vegan, Cheap Lazy Vegan, Simnett Nutrition, BOSH!, Sarah's Vegan Kitchen, The Happy Pear (from the May import)
 and Plant Based News. Left out: Avant-Garde Vegan (Gaz Oakley is no longer Vegan), Sauce Stache (now Mark Stache, a general health
-channel), We Cook Vegan (uploads not public).
+channel), We Cook Vegan (uploads not public); then BadAssVegan (John Lewis) and Torre Washington (YouTube) with the linked pages.
 
- "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
+**Linked pages** (Sean, 2026-10-29: "his overview page and then have a tab for his podcast and then have a tab for his other thing... it
+just goes to those pages... you see the URL change as well. All that is cross discovery, and it doesn't bog down his page"; migration
+`20261029_listing_families.sql`). Listings that belong together share `listings.details.family`; every page in it shows the others in its
+tab row as links to their own pages (`loadFamily` in `directory/listing.html`): **Overview** (the person), **Podcast**, **YouTube**, **Book**,
+in that order, the page you are on active in its place. A show two people host names each person (Muscles by Brussels Radio: Dani Taylor,
+Giacomo Marchese, Podcast); with no person it is Podcast and YouTube (Nutrition Facts, Plant Based News). Families set 2026-10-29: Earthling
+Ed (profile, The Disclosure Podcast, his channel), John Lewis (profile, BadAssVegan, the book Badass Vegan), Torre Washington (profile,
+Torre Washington (YouTube)), and each host and their show (Neal Barnard, Dotsie Bausch, Jason Kartalian, Brighde Reed, Maxime Sigouin,
+Muscles by Brussels). Neither John Lewis nor Torre Washington hosts a podcast of his own (checked, Sean asked); their channels were added
+(`badassvegan-youtube`, `torre-washington-youtube`). A new family is the same `details.family` value on each listing.
+
+**Film pages** (Sean, 2026-10-29: "a trailer from like YouTube of the documentaries on the page, add a little bit more of a summary...
 where it can be viewed, like if it's Netflix, if it's YouTube, almost like how you have it with the podcast... the video on the left and the
 text on the right"; migration `20261029_film_pages.sql`). A Documentaries & Films listing's Overview (`renderFilmOverview` in
 `directory/listing.html`) is **Where to watch** (square icons like a podcast's Listen on, each with Free, Rent or buy or Stream under it;
