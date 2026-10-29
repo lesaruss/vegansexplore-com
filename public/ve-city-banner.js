@@ -45,10 +45,10 @@
     '.vcb::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.99) 0%,rgba(0,0,0,.95) 28%,rgba(0,0,0,.72) 52%,rgba(0,0,0,.28) 68%,transparent 84%);}',
     '.vcb::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 32%);}',
     '.vcb-inner{position:relative;z-index:1;padding:56px 40px;max-width:680px;}',
-    '.vcb-eyebrow{font-size:10px;font-weight:800;letter-spacing:.32em;text-transform:uppercase;color:#3A9B3E;margin-bottom:16px;display:flex;align-items:center;gap:10px;}',
-    '.vcb-eyebrow::before{content:"";width:20px;height:2px;background:#3A9B3E;}',
+    '.vcb-eyebrow{font-size:10px;font-weight:800;letter-spacing:.32em;text-transform:uppercase;color:var(--vb-accent,#3A9B3E);margin-bottom:16px;display:flex;align-items:center;gap:10px;}',
+    '.vcb-eyebrow::before{content:"";width:20px;height:2px;background:var(--vb-accent,#3A9B3E);}',
     '.vcb h1{font-size:clamp(36px,5.5vw,68px);font-weight:900;line-height:.96;letter-spacing:-.03em;text-transform:uppercase;color:#fff;margin:0 0 18px;text-shadow:0 2px 14px rgba(0,0,0,.6);}',
-    '.vcb h1 em{display:block;color:#6fd98c;font-style:normal;}',
+    '.vcb h1 em{display:block;color:var(--vb-accent-hi,#6fd98c);font-style:normal;}',
     '.vcb-sub{font-size:16px;line-height:1.6;color:rgba(255,255,255,.9);max-width:520px;margin:0;}',
     '.vcb-pick{display:flex;align-items:center;gap:12px;margin-top:26px;flex-wrap:wrap;}',
     // No City label beside the picker (Sean, 2026-10-26: it pushed the picker out on phones); the picker sits flush left
@@ -63,8 +63,8 @@
     '.vcb-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}',
     '.vcb-btn{display:inline-flex;align-items:center;justify-content:center;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:rgba(0,0,0,.35);border:1.5px solid rgba(255,255,255,.5);border-radius:6px;padding:10px 16px;cursor:pointer;text-decoration:none;white-space:nowrap;}',
     '.vcb-btn:hover{border-color:#fff;background:rgba(0,0,0,.55);}',
-    '.vcb-btn-go{background:#2d7d31;border-color:#2d7d31;}',
-    '.vcb-btn-go:hover{background:#1f5f22;border-color:#1f5f22;}',
+    '.vcb-btn-go{background:var(--vb-go,#2d7d31);border-color:var(--vb-go,#2d7d31);}',
+    '.vcb-btn-go:hover{background:var(--vb-go-hover,#1f5f22);border-color:var(--vb-go-hover,#1f5f22);}',
     '.vcb :focus-visible{outline:3px solid #F69820;outline-offset:3px;}',
     '.vcb.is-collapsed{min-height:0;}',
     '.vcb.is-collapsed::before{background:rgba(0,0,0,.78);}',
@@ -171,7 +171,9 @@
       var h = hubBySlug(slug); if (h && h.page && h.page.banner) return h.page.banner;
       return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
     }
-    function paint() { el.style.backgroundImage = "url('" + (opts.art || art(current || 'new-york')) + "')"; }
+    // On another brand's site (window.VE_BRAND.assetOrigin, e.g. https://vegansexplore.com) the city art comes from here.
+    function abs(u) { var o = window.VE_BRAND && window.VE_BRAND.assetOrigin; return o && u && u.charAt(0) === '/' && u.charAt(1) !== '/' ? o + u : u; }
+    function paint() { el.style.backgroundImage = "url('" + abs(opts.art || art(current || 'new-york')) + "')"; }
     function show(slug, quiet) {
       if (choices) {
         var c = choice(slug) || choices[0];
