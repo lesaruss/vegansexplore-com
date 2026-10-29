@@ -156,7 +156,7 @@
       ['#/report', '/public/guides/venues/river-report.webp', 'Help keep it right', 'At the game? Confirm what is still there, update what changed, or leave a comment and a photo. The team checks each one, and accepted ones earn points.'],
       owner() ? ['#/mylist', '', 'My list', 'The venues and items you saved.'] : ['#/join', '', 'Get every venue', 'The Guide is $11 or ' + pts(ST.cost) + ' points, yours to keep. Hard Rock Stadium is free to everyone.']
     ];
-    main.innerHTML = head('Stadium &amp; Arena Guide', 'Choose your stadium', 'Every stand with Vegan food at the stadiums and arenas in our cities, where it is, and how to get there from your seat.') +
+    main.innerHTML = head('Stadium & Arena Guide', 'Choose your stadium', 'Every stand with Vegan food at the stadiums and arenas in our cities, where it is, and how to get there from your seat.') +
       grid + '<div class="sa-more">' + more.map(function (m) {
         return '<a class="sa-morecard' + (m[1] ? '' : ' sa-noimg') + '" href="' + m[0] + '">' + (m[1] ? '<span class="sa-vimg" style="background-image:url(\'' + m[1] + '\')"></span>' : '<span class="sa-moreic">' + ICON.list + '</span>') +
           '<span class="sa-vbody"><h3>' + esc(m[2]) + '</h3><span class="sa-vmeta">' + esc(m[3]) + '</span></span></a>';

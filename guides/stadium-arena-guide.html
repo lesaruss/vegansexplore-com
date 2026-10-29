@@ -391,6 +391,8 @@
 
     /* The Stadium & Arena Guide: venue cards, stands, items with their freshness, and the report form. */
     .sa-vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;}
+    /* Desktop: two venues across beside River, four across once he is hidden (Sean, 2026-10-29: no big empty gap either way). */
+    @media (min-width:901px){.dg-app:not(.dg-min) .sa-vgrid{grid-template-columns:repeat(2,minmax(0,1fr));}.dg-app.dg-min .sa-vgrid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr));}}
     .sa-vcard,.sa-morecard{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s,transform .15s;}
     .sa-vcard:hover,.sa-morecard:hover{border-color:var(--g2);box-shadow:0 6px 18px rgba(0,0,0,.08);transform:translateY(-1px);}
     .sa-vimg{position:relative;display:block;aspect-ratio:16/9;background:#eef3ee center/cover no-repeat;}
