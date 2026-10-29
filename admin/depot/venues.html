@@ -94,7 +94,7 @@
     var $ = function (id) { return document.getElementById(id); };
     var app = $('app');
     var STATUS = { pending: 'Waiting', accepted: 'Accepted', agreed: 'Agreed', declined: 'Declined' };
-    var KIND = { confirm: 'Still accurate', wrong: 'Something is wrong', gone: 'Not there anymore', missing: 'Something missing' };
+    var KIND = { confirm: 'Still here', wrong: 'Update: something changed', gone: 'Update: not there anymore', missing: 'Something missing', comment: 'Comment' };
     var VEGAN = { vegan: 'Vegan', on_request: 'Vegan on request', ask: 'Ask before you order' };
     var ZONE = { concourse: 'Concourse', club: 'Club level', suites: 'Suites', outside: 'Outside' };
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -130,10 +130,13 @@
         var r = d.report;
         if (!r) { app.innerHTML = '<p class="empty">That report is not here. <a href="#list/pending">Back to the reports</a></p>'; return; }
         var v = r.venue || {}, it = r.item, sp = r.spot;
-        var firsts = (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm'; });
-        var pays = r.kind === 'confirm' ? 10 : 100, capped = r.paid_that_day >= 5;
+        // Agrees with the first is for updates and missing items only; a comment or Still here is accepted or declined.
+        var firsts = r.kind === 'comment' || r.kind === 'confirm' ? [] : (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm' && o.kind !== 'comment'; });
+        // What it pays comes from ve_venue_report_points: more with a photo (Sean, 2026-10-29).
+        var pr = (d.points || []).filter(function (p) { return p.kind === r.kind; })[0] || {}, photo = !!r.photo;
+        var pays = photo ? pr.with_photo : pr.no_photo, agreePays = photo ? pr.agree_with_photo : pr.agree_no_photo, capped = r.paid_that_day >= 5;
         app.innerHTML = '<nav class="crumb"><a href="#list/' + r.status + '">Reports</a><span>/</span><span>' + esc(KIND[r.kind]) + '</span></nav>' +
-          '<div class="two"><div class="panel">' + (r.photo ? '<img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo.</p>') + '</div>' +
+          '<div class="two"><div class="panel">' + (r.photo ? '<img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo with this one, so it pays the lower points.</p>') + '</div>' +
           '<div><div class="panel"><h2>' + esc(KIND[r.kind]) + ' <span class="tag ' + r.status + '">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span></h2><dl class="kv">' +
             '<dt>Venue</dt><dd><a href="#venue/' + esc(v.slug) + '">' + esc(v.name) + '</a></dd>' +
             (sp ? '<dt>Stand</dt><dd>' + esc(sp.name) + (sp.where_text ? ' · ' + esc(sp.where_text) : '') + '</dd>' : '') +
@@ -145,13 +148,13 @@
             (r.note ? '<p class="note" style="margin-top:12px">' + esc(r.note) + '</p>' : '') +
             (r.review_note ? '<p class="m" style="margin-top:10px">Your note: ' + esc(r.review_note) + '</p>' : '') + '</div>' +
           (r.status === 'pending' ? '<div class="panel"><h2>Decide</h2>' +
-            (firsts.length ? '<p class="m" style="margin-bottom:8px">Someone reported this first. If this one says the same, pick theirs and choose Agrees with the first (25 points; they are told who was first).</p>' +
+            (firsts.length ? '<p class="m" style="margin-bottom:8px">Someone reported this first. If this one says the same, pick theirs and choose Agrees with the first (' + agreePays + ' points; they are told who was first).</p>' +
               firsts.map(function (o, i) { return '<label class="orow"><input type="radio" name="first" value="' + o.id + '"' + (i === 0 ? ' checked' : '') + '><span><b>' + esc(o.member || 'A member') + '</b> · ' + esc(when(o.at)) + '<br><span class="m">' + esc(KIND[o.kind]) + (o.note ? ': ' + esc(o.note) : '') + '</span></span></label>'; }).join('') : '') +
             '<div class="f wide" style="margin-top:8px"><label for="rnote">Note to the member (needed to decline)</label><textarea id="rnote" maxlength="600"></textarea></div>' +
             '<div class="acts"><button class="btn" id="accept">Accept' + (capped ? '' : ' (' + pays + ' pts)') + '</button>' +
-            (firsts.length ? '<button class="btn btn-ghost" id="agree">Agrees with the first' + (capped ? '' : ' (25 pts)') + '</button>' : '') +
+            (firsts.length ? '<button class="btn btn-ghost" id="agree">Agrees with the first' + (capped ? '' : ' (' + agreePays + ' pts)') + '</button>' : '') +
             '<button class="btn btn-red" id="decline">Decline</button><span class="msg" id="m" role="status"></span></div>' +
-            '<p class="m" style="margin-top:10px">' + (r.kind === 'confirm' ? 'Accepting marks the item checked today.' : 'Accepting pays the member. Change the Guide yourself: ' + (it ? '<a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">edit the item</a>' : sp ? '<a href="#venue/' + esc(v.slug) + '/stand/' + sp.id + '/item/new">add the item</a>' : '<a href="#venue/' + esc(v.slug) + '">open the venue</a>') + '.') + '</p></div>' : '') +
+            '<p class="m" style="margin-top:10px">' + (r.kind === 'confirm' ? 'Accepting marks the item checked today.' : r.kind === 'comment' ? 'Accepting shows the comment on the item, with their first name and photo. Decline anything that does not help other fans.' : 'Accepting pays the member. Change the Guide yourself: ' + (it ? '<a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">edit the item</a>' : sp ? '<a href="#venue/' + esc(v.slug) + '/stand/' + sp.id + '/item/new">add the item</a>' : '<a href="#venue/' + esc(v.slug) + '">open the venue</a>') + '.') + '</p></div>' : '') +
           ((d.others || []).length ? '<div class="panel"><h2>Other reports on this</h2>' + d.others.map(function (o) { return '<div class="orow"><span><a href="#r/' + o.id + '"><b>' + esc(o.member || 'A member') + '</b></a> · ' + esc(when(o.at)) + ' <span class="tag ' + o.status + '">' + STATUS[o.status] + (o.points ? ' · ' + o.points + ' pts' : '') + '</span><br><span class="m">' + esc(KIND[o.kind]) + (o.note ? ': ' + esc(o.note) : '') + '</span></span></div>'; }).join('') + '</div>' : '') +
           '</div></div>';
         if (r.status !== 'pending') return;

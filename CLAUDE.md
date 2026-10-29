@@ -2008,6 +2008,21 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   **Desktop is half and half** (Sean, 2026-10-28: "put the image to the right and the information to the left... a half situation"):
   the map sticks on the right while the left holds Get me there, the directions and the stands (`mapPanel`, `.sa-vgrid2` grid areas),
   so a pin's stand comes up beside the map, outlined; phones keep one column (Your section, the map, the directions, the stands).
+- **Update, Comment and points by photo** (Sean, 2026-10-29: "when it says wrong... maybe it's update... maybe it's comment... leave
+  a photo, leave a comment. And each thing could have its own amount of points... It has to be approved"; migration
+  `20261029_venue_comments_points.sql`). Every item has **Still here**, **Update** (Something changed, kind `wrong`, or Not there
+  anymore, `gone`) and **Comment** (`comment`); a photo is optional on all of them and pays more. The amounts are rows in
+  `ve_venue_report_points` (with_photo / no_photo, and agree_* for an update that agrees with the first), read by the review, the
+  Guide's Help keep it right table and Depot > Venues, so changing one is a row: Update and Something missing 100 / 50 (agrees
+  25 / 15), Still here 10 / 5, Comment 10 / 5 (Logan's defaults replacing the locked 100 / 25 / 10, Sean's to change). Still the
+  phone inside the venue for every kind, 5 paid a day, nothing paid until accepted; a comment the team accepts shows under the item
+  with the member's first name, last initial and photo (`comments` in `ve-venues` `venue`, signed links).
+- **Venue pictures and Choose your stadium** (Sean, 2026-10-29: "an image of that arena in our GeekFon style... They need to see that
+  visual of these are the different stadiums"). Each venue has its own illustration in the community art's style (Higgsfield
+  nano_banana_pro with the South Florida banner as the style reference, no text or logos; `public/guides/venues/<slug>.webp`,
+  `ve_venues.image_url`), and the Overview is **Choose your stadium**: one line on what it is for, the venue picture cards, then Help
+  keep it right (River photographing a bowl at a stand, `river-report.webp`) and Get every venue. The cards are two across beside
+  River and fill the width once he is hidden.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
