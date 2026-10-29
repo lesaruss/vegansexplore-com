@@ -468,6 +468,34 @@ that click to the visitor's account once they are signed in (30 days). Email-sys
 links are synced every 15 minutes (`ve-links-email-sync` cron) and named by recipient. Never paste a
 bare campaign URL into outreach.
 
+## One framework for every brand: LESARUSS.ai (Sean, 2026-10-29)
+
+"If we make an update in Vegans Explore and the look and feel and the functionality, it needs to match LESARUSS.ai. So we're
+using one framework throughout all of them. What changes is just maybe the color and the look and feel of it." The LESARUSS.ai
+Directory is this site's Directory: lesaruss.ai (lesaruss/lesaruss-ai-site `next.config.ts`) proxies `/public/*`,
+`/directory/<slug>`, `/claim`, `/communities/*` and `/directory/logos/*` here, and its `/directory` page mounts
+`ve-region-directory.js` and `ve-city-banner.js`. A change to those files, `directory/listing.html` or `claim.html` shows on
+both sites, so check a change on both (`?brand=lesaruss` turns brand mode on here for the visit, `?brand=ve` off).
+
+- **`/public/ve-brand.js`** is the brand, loaded first in `<head>` of the listing page and `claim.html`. On lesaruss.ai (and
+  `lesaruss-ai-site*.vercel.app` previews) it sets `window.VE_BRAND`: its sections (`sections`, `sectionOf`), which listings are
+  its own (`ownsListing`: tags `lesaruss-ai-directory`, `-candidate`, `-business-member`, and category Studios), its Passport and
+  sign-in links, its vote window words (`gates`), its claim settings (`claimApi`, HQ's `/api/claim`; `applyUrl`, `claimTicks`,
+  `claimNext`) and its colors. On vegansexplore.com it does nothing.
+- **Colors** are CSS variables with our values as the fallback: `--ve-green*` on the pages and `--vb-*` in the shared components
+  and the listing page (`--vb-accent`, `--vb-accent-ink`, `--vb-go`, `--vb-go-hover`, `--vb-soft`, `--vb-line`, `--vb-deep`...).
+  A new green in these files goes through a variable, never a bare hex, or LESARUSS.ai wears it.
+- **Header and footer**: `nav.js` and `footer.js` hand over to `VE_BRAND.drawNav()` / `drawFooter()`; `analytics.js` skips
+  lesaruss.ai.
+- **The listing page** (`VB` in `directory/listing.html`): a listing that is not the brand's opens on vegansexplore.com; the
+  breadcrumb uses the brand's sections; no How Vegan, check-ins, points or billboard; the claim link and vote box are the brand's.
+- **`claim.html`** (`VB`): Claim your listing, the same steps and cards, the brand's listings only, no How Vegan or Vegans Explore
+  account, one way to join (the $11 LESARUSS Passport through HQ `/api/claim`, which records the claim for Depot > Claims), and
+  Add your business goes to HQ's business application.
+- **The Directory component** takes `config.brand` (`sections`, `catMap`, `include`, `trust: false`, `vegan: false`,
+  `listingBase`); `ve-votes.js` sends a signed-out vote to the brand's Passport. Votes on lesaruss.ai still need a Vegans Explore
+  sign-in, so a LESARUSS member cannot cast one there yet.
+
 ## Analytics (Sean, 2026-10-28)
 
 "Use the same exact structure as the analytics section in BCPS Marcom... put it in our depot... see what's popular, what's
