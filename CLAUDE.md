@@ -2022,7 +2022,9 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   The Mac Shac's club pin is C238). The map's frame fits its outermost ring (a fourth level used to run off the edge). Philadelphia's
   other three the same day (migration `20261029_venue_maps_philadelphia.sql`: Xfinity Mobile Arena as a court, its loge boxes 1 to 82
   and A to R left off; Citizens Bank Park with home plate at the bottom and its lettered sections B to F on the 100 level; Subaru Park a
-  soccer pitch). New York's six wait on seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
+  soccer pitch). MetLife Stadium the same day
+  (migration `20261029_venue_maps_metlife.sql`, from the stadium's own level charts; the 200 level's b sections are their own ring).
+  Yankee Stadium, Citi Field, Madison Square Garden, Barclays Center and UBS Arena wait on seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
   (`inset` box-shadow), so the scrolling column never clips it.
