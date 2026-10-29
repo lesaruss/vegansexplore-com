@@ -197,6 +197,13 @@ function ambassadorWhy(inv: Invite, b: (t: string) => string) {
   }
 }
 
+async function giverOf(createdBy: string | null): Promise<string | null> {
+  const m = /^member:([0-9a-f-]{36})$/.exec(String(createdBy || ''));
+  if (!m) return null;
+  const { data } = await db.from('members').select('name').eq('id', m[1]).maybeSingle();
+  const p = String(data?.name || '').trim().split(/\s+/);
+  return p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : null;
+}
 async function orgOf(id: string | null) {
   if (!id) return null;
   const { data } = await db.from('listings').select('id, name, slug, category, logo_url').eq('id', id).maybeSingle();
@@ -383,7 +390,9 @@ Deno.serve(async (req: Request) => {
         dinner: d ? { title: d.title, date: dinnerDate(d), place: dinnerPlace(d), url: await destinationFor(inv) } : null,
         status: inv.status === 'canceled' ? 'canceled' : inv.status === 'joined' ? 'joined' : inv.status === 'declined' ? 'declined' : inv.status === 'accepted' ? 'accepted' : expired ? 'expired' : 'open',
         expires_at: inv.expires_at, level: inv.level ?? null, profile: inv.profile ?? null, email_hint: maskEmail(inv.email),
-        org: inv.points_to === 'nonprofit' || inv.points_to === 'group' ? await orgOf(inv.listing_id) : null,
+        org: inv.points_to === 'nonprofit' || inv.points_to === 'group' || inv.points_to === 'gift' ? await orgOf(inv.listing_id) : null,
+        // A gift from a group's organizer (ve-group group_gift, Sean 2026-10-29): who gave it, by first name and last initial.
+        giver: inv.points_to === 'gift' ? await giverOf(inv.created_by) : null,
       };
       if (action === 'view') {
         if (inv.status === 'sent') await db.from('universe_invites').update({ status: 'opened', opened_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', inv.id).eq('status', 'sent');
@@ -415,7 +424,7 @@ Deno.serve(async (req: Request) => {
             tags: [{ name: 'kind', value: 'group_partner_yes' }] }),
         }).catch((e) => console.error('group yes email:', e));
       }
-      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : inv.points_to === 'nonprofit' ? '/nonprofits/welcome' : inv.points_to === 'group' ? `/groups/welcome?c=${inv.code}` : '/dashboard') });
+      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : inv.points_to === 'nonprofit' ? '/nonprofits/welcome' : inv.points_to === 'group' ? `/groups/welcome?c=${inv.code}` : inv.points_to === 'gift' && (out.org as any)?.slug ? `/directory/${(out.org as any).slug}` : '/dashboard') });
     }
 
     // ---- Admin ----
