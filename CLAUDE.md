@@ -675,6 +675,19 @@ any comped invitation. `ve-invites` `founding`, `founding_candidates`, `nudge`, 
 (comp only when ticked) and `pool`. Proven 2026-10-28 with an internal unpaid account (draft, copied link, opened, said yes, the test-mode
 checkout opened, a payment inside a rolled-back transaction turned it Joined), then removed.
 
+## Nonprofit Partners (LOCKED by Sean 2026-10-29, playbook `ve-nonprofit-partners`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-nonprofit-partners`). Not built yet. **The organization is the
+partner** (its Directory listing: Nonprofits, Rescues or Sanctuaries), never a person: its own link (separate from the lead's), a
+flat 20% of the $11 Passport and Guides bought through it (the opportunity's rate, not a member level), points it holds for our
+services (Sean sets the amount on the invitation; members can give it more), a marketing kit (ready-to-post messages, a website button
+and banner, an email blurb), a Nonprofit Partner badge and its own Guide on the Ambassador Guide's pattern. If the lead changes,
+everything stays with the organization. Paid to the organization after its W-9 at $25 (the affiliate defaults), worded as referral
+earnings, never a donation or tax-deductible. **The lead on the account** (Sean, 2026-10-29: "it doesn't impact the person's
+individual status. They just happen to be the person assigned as the lead") gets a complimentary Founding Membership when the
+organization says yes and keeps their own standing (Level 1, their own link and points). Invitation only, from Depot > People >
+Founding Members (Founding Member, Ambassador or Nonprofit Partner). First: Susan Hargreaves, Animal Hero Kids (`be-an-animal-hero`).
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
