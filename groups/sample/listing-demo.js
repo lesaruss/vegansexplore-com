@@ -21,7 +21,7 @@
   // [days from today, hour, title, venue, neighborhood/city, price in cents (0 free), capacity, going, guest passes, description]
   var UP = [
     [3, 19, 'Taco Tuesday Takeover', 'Rosa\'s Plant Cantina', 'Fort Lauderdale', 0, 40, 31, 6, 'We fill the back patio at a 100% Vegan taquera. Order at the counter, sit with the group, meet whoever sits next to you.'],
-    [9, 11, 'Sunday Brunch in the Park', 'Holiday Park pavilion', 'Fort Lauderdale', 0, 60, 44, 9, 'Bring a dish to share. Coffee and oat milk on us. Kids and dogs welcome.'],
+    [9, 11, 'Sunday Brunch in the Park', 'George English Park pavilion, on the Intracoastal', 'Fort Lauderdale', 0, 60, 44, 9, 'Bring a dish to share. Coffee and oat milk on us. Kids and dogs welcome.'],
     [16, 19, 'Supper Club: Five Courses at Seedling', 'Seedling Kitchen', 'Wilton Manors', 4500, 32, 28, 0, 'A five-course Vegan tasting menu with the chef at the pass. Ticket covers dinner and tip; drinks are your own.'],
     [23, 18, 'Game Night', 'The Board Room cafe', 'Fort Lauderdale', 0, 30, 17, 4, 'Board games, Vegan snacks and a lot of laughing. First-timers always welcome.'],
     [30, 9, 'Beach Cleanup and Smoothies', 'Las Olas beach entrance', 'Fort Lauderdale', 0, 80, 52, 12, 'An hour of cleanup with gloves and bags provided, then smoothies on the sand.'],
@@ -34,16 +34,16 @@
     [-27, 18, 'Game Night', 'The Board Room cafe', 'Fort Lauderdale', 0, 30, 22, 5],
     [-41, 9, 'Sanctuary Day', 'A farm sanctuary', 'Loxahatchee', 2000, 40, 37, 0],
     [-55, 19, 'Taco Tuesday Takeover', 'Rosa\'s Plant Cantina', 'Fort Lauderdale', 0, 40, 35, 8],
-    [-69, 11, 'Sunday Brunch in the Park', 'Holiday Park pavilion', 'Fort Lauderdale', 0, 60, 41, 10],
+    [-69, 11, 'Sunday Brunch in the Park', 'George English Park pavilion, on the Intracoastal', 'Fort Lauderdale', 0, 60, 41, 10],
     [-83, 19, 'Vegan Comedy Night', 'The Laugh Room', 'Fort Lauderdale', 1800, 80, 71, 0],
     [-97, 9, 'Beach Cleanup and Smoothies', 'Las Olas beach entrance', 'Fort Lauderdale', 0, 80, 48, 13],
     [-118, 19, 'Supper Club: Summer Menu', 'Seedling Kitchen', 'Wilton Manors', 4500, 32, 30, 0],
     [-139, 18, 'Rooftop Mixer', 'Skyline rooftop', 'Fort Lauderdale', 1200, 90, 77, 0],
-    [-160, 11, 'Sunday Brunch in the Park', 'Holiday Park pavilion', 'Fort Lauderdale', 0, 60, 38, 9],
+    [-160, 11, 'Sunday Brunch in the Park', 'George English Park pavilion, on the Intracoastal', 'Fort Lauderdale', 0, 60, 38, 9],
     [-181, 19, 'Taco Tuesday Takeover', 'Rosa\'s Plant Cantina', 'Fort Lauderdale', 0, 40, 33, 7],
     [-209, 10, 'Kayak and Picnic', 'Hugh Taylor Birch State Park', 'Fort Lauderdale', 2500, 24, 24, 0],
     [-237, 19, 'Valentine\'s Singles Mixer', 'Garden bar', 'Fort Lauderdale', 1500, 60, 58, 0],
-    [-265, 11, 'New Year Brunch', 'Holiday Park pavilion', 'Fort Lauderdale', 0, 60, 46, 12]
+    [-265, 11, 'New Year Brunch', 'George English Park pavilion, on the Intracoastal', 'Fort Lauderdale', 0, 60, 46, 12]
   ];
   function ev(row, i, past) {
     var s = at(row[0], row[1]);
@@ -116,7 +116,7 @@
     ok: true,
     listing: { id: 'sample-sprout-social-society', name: 'Sprout Social Society', slug: 'sample', category: 'Groups', food: false, kind: 'group', hub: 'south-florida', claim_status: 'verified' },
     open: true, owner: true, admin: false, member_active: true,
-    checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: false }],
+    checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: true }],
     cards: [
       { kind: 'new', title: 'Your next supper club is 87% sold', body: 'Seedling holds 32. Share the event from Events so the last seats go to your people.', cta_label: 'Open Events', cta_url: '?pd=gevents' },
       { kind: 'offer', title: '38 members to 35%', body: 'At 150 members brought in, every new Passport through your link pays you 35%.', cta_label: 'See your members', cta_url: '?pd=gmembers' },
@@ -141,15 +141,38 @@
     guideUrl: '/groups/welcome',
     events: EVENTS,
     group: GROUP,
+    // The group's Message Board tab (Sean, 2026-10-29): posts newest first, each with its replies.
     board: [
-      { who: 'Nia H.', when: 2, text: 'Who is carpooling to the beach cleanup from Plantation? I have three seats.' },
-      { who: 'Andre T.', when: 4, text: 'Seedling just posted the supper club menu. The mushroom course looks unreal.' },
-      { who: 'Sprout Social Society', when: 6, text: 'Thank you for 54 costumes on Halloween! Photos are in the group album.', host: true }
+      { who: 'Sprout Social Society', when: 0, host: true, pinned: true, text: 'Welcome! New here? Say hi below, tell us your neighborhood, and pick a free event for your guest pass. See you soon.', replies: [
+        { who: 'Kayla M.', when: 1, text: 'Hi from Plantation! Coming to brunch on Sunday.' },
+        { who: 'Rob D.', when: 3, text: 'Just moved to Victoria Park. Taco Tuesday will be my first one.' }] },
+      { who: 'Nia H.', when: 2, text: 'Who is carpooling to the beach cleanup from Plantation? I have three seats.', replies: [
+        { who: 'Marcus L.', when: 2, text: 'Me please! I am near Broward Mall.' }] },
+      { who: 'Andre T.', when: 4, text: 'Seedling just posted the supper club menu. The mushroom course looks unreal.', replies: [
+        { who: 'Priya S.', when: 4, text: 'Got my ticket. Only a few seats left.' },
+        { who: 'Sprout Social Society', when: 3, text: 'Four seats left as of this morning.', host: true }] },
+      { who: 'Sprout Social Society', when: 6, host: true, text: 'Thank you for 54 costumes on Halloween! The photos are in Media.', replies: [
+        { who: 'Elena R.', when: 6, text: 'The shark won the contest and the tree was robbed.' }] },
+      { who: 'Jordan P.', when: 9, text: 'Anyone have a good Vegan cheesecake recipe for the holiday potluck? I want to bring something new.', replies: [
+        { who: 'Tasha W.', when: 8, text: 'Cashew base with lemon and a date crust. I will post it.' }] },
+      { who: 'Luis G.', when: 12, text: 'Found a new Vegan bakery in Wilton Manors. Group outing some Saturday?', replies: [] }
+    ],
+    // The Media tab: one album per event, five photos each (made for the sample in Higgsfield, 2026-10-29).
+    galleries: [
+      { id: 'halloween', event: 'p0', title: 'Halloween Costume Potluck', photos: [
+        ['/groups/sample/img/halloween-1.jpg', 'Serving up the potluck'], ['/groups/sample/img/halloween-2.jpg', 'The whole crew'],
+        ['/groups/sample/img/halloween-3.jpg', 'The spread'], ['/groups/sample/img/halloween-4.jpg', 'Avocado meets vampire'],
+        ['/groups/sample/img/halloween-5.jpg', 'Costume contest']] },
+      { id: 'brunch', event: 'p6', title: 'Sunday Brunch in the Park', photos: [
+        ['/groups/sample/img/brunch-1.jpg', 'Brunch at the pavilion'], ['/groups/sample/img/brunch-2.jpg', 'The whole crew'],
+        ['/groups/sample/img/brunch-3.jpg', 'Pancakes, scramble and fruit'], ['/groups/sample/img/brunch-4.jpg', 'After brunch on the grass'],
+        ['/groups/sample/img/brunch-5.jpg', 'Bringing the quiche']] }
     ],
     listing: {
       id: 'sample-sprout-social-society',
       slug: 'sample',
       name: 'Sprout Social Society',
+      logo_url: '/groups/sample/img/logo.jpg',
       initials: 'SS',
       color: '#2d7d31',
       category: 'Groups',

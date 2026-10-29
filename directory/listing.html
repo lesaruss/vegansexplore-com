@@ -1008,8 +1008,24 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .gd-join .gd-n{font-size:14px;margin:0 0 8px}.gd-join .gd-n b{font-size:24px;font-weight:900}
 .gd-faces{display:flex;margin:0 0 10px}.gd-faces i{width:30px;height:30px;border-radius:50%;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;margin-left:-6px}.gd-faces i:first-child{margin-left:0}
 .gd-join p{font-size:13px;line-height:1.5;margin:0 0 12px}.gd-join .dm-go{width:100%}
-.gd-post{border:1px solid rgba(0,0,0,.1);border-radius:8px;padding:10px 12px;margin:0 0 8px;background:#fff}.gd-post.host{background:#f6faf6}
-.gd-post b{font-size:14px}.gd-post span{font-size:12px;color:rgba(26,26,26,.6);margin-left:8px}.gd-post p{margin:4px 0 0;font-size:14px;line-height:1.5}
+.gd-pad{padding:32px 40px 40px}@media(max-width:700px){.gd-pad{padding:20px 16px 28px}}
+.gd-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin:0 0 16px}.gd-head .dm-go{width:auto}
+.gd-sub{margin:4px 0 16px;font-size:14px;color:rgba(26,26,26,.68)}.gd-head .gd-sub{margin-bottom:0}
+.gd-post{border:1px solid rgba(0,0,0,.1);border-radius:6px;padding:14px 16px;margin:0 0 12px;background:#fff}.gd-post.host{background:#f6faf6}
+.gd-by{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.gd-by i{width:30px;height:30px;border-radius:6px;background:#2d7d31;color:#fff;font-style:normal;font-weight:800;font-size:13px;display:grid;place-items:center}
+.gd-by b{font-size:14px}.gd-by em{font-style:normal;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;background:#e5f1e5;color:#1f5a23;padding:2px 8px;border-radius:6px}.gd-by em.pin{background:#fff3d6;color:#7a5200}
+.gd-by span{font-size:12px;color:rgba(26,26,26,.68);margin-left:auto}.gd-post>p{margin:8px 0 0;font-size:14px;line-height:1.55}
+.gd-replies{margin:12px 0 0 38px;display:grid;gap:8px}.gd-reply{border-left:3px solid #d9e6d9;padding:2px 0 2px 12px}.gd-reply.host{border-left-color:#2d7d31}
+.gd-reply b{font-size:13px}.gd-reply span{font-size:12px;color:rgba(26,26,26,.68);margin-left:8px}.gd-reply p{margin:2px 0 0;font-size:14px;line-height:1.5}
+.gd-rep{margin:10px 0 0 38px;background:none;border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:6px 12px;font:600 13px Montserrat,system-ui,sans-serif;cursor:pointer}
+@media(max-width:600px){.gd-replies,.gd-rep{margin-left:0}}
+.gd-albums{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
+.gd-album{display:grid;gap:4px;text-decoration:none;color:inherit}.gd-album img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block;margin:0 0 6px}
+.gd-album b{font-size:16px}.gd-album span{font-size:13px;color:rgba(26,26,26,.68)}.gd-album:hover b{text-decoration:underline}
+.gd-crumb{font-size:13px;margin:0 0 10px;color:rgba(26,26,26,.68)}.gd-crumb a{color:#1f5a23;font-weight:700}
+.gd-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px}
+.gd-photo{display:grid;gap:6px;padding:0;border:0;background:none;cursor:zoom-in;text-align:left;font:500 13px Montserrat,system-ui,sans-serif;color:rgba(26,26,26,.75)}
+.gd-photo img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:6px;display:block}.gd-photo:focus-visible{outline:3px solid #2d7d31;outline-offset:3px}
 .demo-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#111;color:#fff;font-size:13px;font-weight:600;padding:12px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:calc(100% - 32px);z-index:1000001}
 .demo-toast.show{opacity:1}
 @media(max-width:768px){
@@ -4804,6 +4820,61 @@ function demoJoinGroup(){
   };
   draw();
 }
+// The sample group's Board (Message Board) and Media (Photo Gallery) tabs (Sean, 2026-10-29), after Overview. Media is one card per
+// event; an album opens in the tab (?tab=media&album=<id>, Media > event) and each photo in the page's lightbox.
+function gdAgo(d){ return d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d + ' days ago'; }
+function gdDate(id){
+  var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0];
+  return e ? new Date(e.starts_at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' }) : '';
+}
+function gdBoard(){
+  return '<div class="gd-pad"><div class="gd-head"><div><h2 class="section-title">Message Board</h2><p class="gd-sub">Posts from the group\'s members. Members post and reply; anyone can read.</p></div>' +
+    '<button type="button" class="dm-go" data-demo-board>Write a post</button></div>' +
+    (DEMO.board || []).map(function(p){
+      var r = p.replies || [];
+      return '<article class="gd-post' + (p.host ? ' host' : '') + '"><div class="gd-by"><i aria-hidden="true">' + esc(p.who.charAt(0)) + '</i><b>' + esc(p.who) + '</b>' +
+        (p.host ? '<em>Organizer</em>' : '') + (p.pinned ? '<em class="pin">Pinned</em>' : '') + '<span>' + gdAgo(p.when) + '</span></div><p>' + esc(p.text) + '</p>' +
+        (r.length ? '<div class="gd-replies">' + r.map(function(x){
+          return '<div class="gd-reply' + (x.host ? ' host' : '') + '"><b>' + esc(x.who) + '</b><span>' + gdAgo(x.when) + '</span><p>' + esc(x.text) + '</p></div>';
+        }).join('') + '</div>' : '') +
+        '<button type="button" class="gd-rep" data-demo-board>Reply' + (r.length ? ' (' + r.length + ')' : '') + '</button></article>';
+    }).join('') + '</div>';
+}
+function gdMedia(id){
+  var gs = DEMO.galleries || [], g = gs.filter(function(x){ return x.id === id; })[0];
+  if(!g) return '<div class="gd-pad"><h2 class="section-title">Photo Gallery</h2><p class="gd-sub">Photos from the group\'s past events. Open an event to see them all.</p>' +
+    '<div class="gd-albums">' + gs.map(function(x){
+      return '<a href="?tab=media&album=' + x.id + '" class="gd-album" data-gd-album="' + x.id + '"><img src="' + esc(x.photos[0][0]) + '" alt="" loading="lazy">' +
+        '<b>' + esc(x.title) + '</b><span>' + esc(gdDate(x.event)) + ' · ' + x.photos.length + ' photos</span></a>';
+    }).join('') + '</div></div>';
+  _lbReg['gd-' + g.id] = g.photos.map(function(p){ return p[0]; });
+  return '<div class="gd-pad"><nav class="gd-crumb" aria-label="Breadcrumb"><a href="?tab=media" data-gd-album="">Media</a> &rsaquo; <span>' + esc(g.title) + '</span></nav>' +
+    '<h2 class="section-title">' + esc(g.title) + '</h2><p class="gd-sub">' + esc(gdDate(g.event)) + ' · ' + g.photos.length + ' photos</p><div class="gd-photos">' +
+    g.photos.map(function(p, i){
+      return '<button type="button" class="gd-photo" data-gd-key="gd-' + g.id + '" data-gd-photo="' + i + '"><img src="' + esc(p[0]) + '" alt="' + esc(p[1]) + '" loading="lazy"><span>' + esc(p[1]) + '</span></button>';
+    }).join('') + '</div></div>';
+}
+function gdAlbum(id){
+  var panel = document.getElementById('tab-media'); if(!panel) return;
+  panel.innerHTML = gdMedia(id);
+  var u = new URL(location.href); u.searchParams.set('tab', 'media'); if(id) u.searchParams.set('album', id); else u.searchParams.delete('album');
+  history.replaceState(history.state, '', u.pathname + u.search + u.hash);
+  var tabs = document.querySelector('.listing-tabs'); if(tabs && tabs.getBoundingClientRect().top < 0) tabs.scrollIntoView({ block: 'start' });
+}
+function groupDemoTabs(){
+  var nav = document.querySelector('.listing-tabs'), ovBtn = nav && nav.querySelector('[data-tab="overview"]'), ov = document.getElementById('tab-overview');
+  if(!ovBtn || !ov) return;
+  var q = new URLSearchParams(location.search);
+  [['media', 'Media', gdMedia(q.get('album'))], ['board', 'Board', gdBoard()]].forEach(function(t){
+    var b = document.createElement('button'); b.className = 'tab-btn'; b.setAttribute('data-tab', t[0]); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.textContent = t[1];
+    b.addEventListener('click', function(){ if(t[0] === 'media') gdAlbum(''); showListingTab(t[0]); });
+    ovBtn.insertAdjacentElement('afterend', b);
+    var p = document.createElement('div'); p.className = 'tab-panel'; p.id = 'tab-' + t[0]; p.setAttribute('role', 'tabpanel'); p.innerHTML = t[2];
+    ov.insertAdjacentElement('afterend', p);
+  });
+  var t = q.get('tab'); if(t === 'board' || t === 'media') showListingTab(t);
+  if(t === 'media' && q.get('album')){ var u = new URL(location.href); u.searchParams.set('album', q.get('album')); history.replaceState(history.state, '', u.pathname + u.search + u.hash); }
+}
 function renderGroupDemo(l){
   loadHostedEvents(l);
   var g = DEMO.group || {}, side = document.querySelector('.listing-page-grid .listing-sidebar');
@@ -4814,19 +4885,14 @@ function renderGroupDemo(l){
       '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>';
     side.insertBefore(c, side.firstChild);
   }
-  var ov = document.getElementById('hosted-events');
-  if(ov && DEMO.board){
-    var b = document.createElement('div'); b.className = 'section gd-board';
-    b.innerHTML = '<h2 class="section-title">From the group\'s board</h2>' + DEMO.board.map(function(p){
-      return '<div class="gd-post' + (p.host ? ' host' : '') + '"><b>' + esc(p.who) + '</b><span>' + p.when + ' days ago</span><p>' + esc(p.text) + '</p></div>';
-    }).join('') + '<button type="button" class="he-go ghost" data-demo-board>Write on the board</button>';
-    ov.parentNode.insertBefore(b, ov.nextSibling);
-  }
+  groupDemoTabs();
   var root = document.getElementById('listing-root');
   root.addEventListener('click', function(e){
     var ev = e.target.closest('[data-demo-ev]'); if(ev){ e.preventDefault(); demoEvent(ev.getAttribute('data-demo-ev')); return; }
     if(e.target.closest('[data-demo-join]')){ demoJoinGroup(); return; }
-    if(e.target.closest('[data-demo-board]')){ demoToast('Sample: members of the group post and comment here. Nothing is saved.'); return; }
+    if(e.target.closest('[data-demo-board]')){ demoToast('Sample: members of the group post and reply here. Nothing is saved.'); return; }
+    var al = e.target.closest('[data-gd-album]'); if(al){ e.preventDefault(); gdAlbum(al.getAttribute('data-gd-album')); return; }
+    var ph = e.target.closest('[data-gd-photo]'); if(ph){ openLightbox(ph.getAttribute('data-gd-key'), +ph.getAttribute('data-gd-photo')); return; }
     if(e.target.closest('#demo-signout')){ try { sessionStorage.removeItem('ve_group_demo'); } catch(x){} setDemoView('member', l); }
   });
   document.addEventListener('click', function(e){ if(e.target.closest('#demo-modal [data-demo-join]')) demoJoinGroup(); });
