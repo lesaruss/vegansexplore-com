@@ -109,9 +109,19 @@ type Cand = { title: string; subtitle: string; authors: string[]; year: number |
 async function gb(q: string, max = 40): Promise<any[]> {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) throw new Error('No Google key');
-  const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${max}&printType=books&key=${key}`, { signal: AbortSignal.timeout(15000) });
-  if (!r.ok) throw new Error(`Google Books answered ${r.status}: ${(await r.text()).replace(/\s+/g, ' ').slice(0, 160)}`);
-  return (await r.json()).items || [];
+  // Google Books answers 503 now and then; a short wait and it answers.
+  for (let attempt = 0; ; attempt++) {
+    const r = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${max}&printType=books&langRestrict=en&key=${key}`, { signal: AbortSignal.timeout(15000) });
+    if (r.ok) return (await r.json()).items || [];
+    const text = (await r.text()).replace(/\s+/g, ' ').slice(0, 160);
+    if (attempt < 3 && [429, 500, 502, 503].includes(r.status)) { await sleep(1500 * (attempt + 1)); continue; }
+    throw new Error(`Google Books answered ${r.status}: ${text}`);
+  }
+}
+// The first of several searches that finds anything (Google's operators miss some books a plain search finds).
+async function gbFirst(qs: string[], max: number): Promise<any[]> {
+  for (const q of qs) { const items = await gb(q, max); if (items.length) return items; }
+  return [];
 }
 function groupGB(items: any[]): Cand[] {
   const by = new Map<string, Cand>();
@@ -144,22 +154,25 @@ const lastName = (s: string) => String(s || '').replace(/,.*$/, '').replace(/\s+
 async function findTitle(title: string, author: string | null): Promise<{ cands: Cand[]; via: string; why?: string }> {
   let why = '';
   try {
-    let items = await gb(`intitle:${quoteQ(title)}${author ? ' inauthor:' + quoteQ(lastName(author)) : ''}`, 30);
-    if (!items.length && author) items = await gb(`intitle:${quoteQ(title)}`, 30);
-    return { cands: groupGB(items).slice(0, 8), via: 'google' };
+    const qs = [`intitle:${quoteQ(title)}${author ? ' inauthor:' + quoteQ(lastName(author)) : ''}`, ...(author ? [`${quoteQ(title)} ${lastName(author)}`] : []), `intitle:${quoteQ(title)}`, quoteQ(title)];
+    return { cands: groupGB(await gbFirst(qs, 30)).slice(0, 8), via: 'google' };
   } catch (e) { why = String((e as Error).message || e); }
-  const q = (withAuthor: boolean) => `/search.json?title=${encodeURIComponent(title)}${withAuthor && author ? '&author=' + encodeURIComponent(author) : ''}&fields=${SEARCH_FIELDS}&limit=8`;
-  let docs = (await ol(q(true)))?.docs || [];
-  if (!docs.length && author) docs = (await ol(q(false)))?.docs || [];
-  return { cands: fromOL(docs), via: 'openlibrary', why };
+  try {
+    const q = (withAuthor: boolean) => `/search.json?title=${encodeURIComponent(title)}${withAuthor && author ? '&author=' + encodeURIComponent(author) : ''}&fields=${SEARCH_FIELDS}&limit=8`;
+    let docs = (await ol(q(true)))?.docs || [];
+    if (!docs.length && author) docs = (await ol(q(false)))?.docs || [];
+    return { cands: fromOL(docs), via: 'openlibrary', why };
+  } catch (e) { throw new Error(`${why}; Open Library: ${String((e as Error).message || e)}`); }
 }
 // The books under one author's name.
 async function findAuthor(name: string): Promise<{ cands: Cand[]; via: string; why?: string }> {
   let why = '';
-  try { return { cands: groupGB(await gb(`inauthor:${quoteQ(name)}`, 40)), via: 'google' }; }
+  try { return { cands: groupGB(await gbFirst([`inauthor:${quoteQ(name)}`, quoteQ(name)], 40)), via: 'google' }; }
   catch (e) { why = String((e as Error).message || e); }
-  const r = await ol(`/search.json?author=${encodeURIComponent(name)}&fields=${SEARCH_FIELDS}&limit=40&sort=editions`);
-  return { cands: fromOL(r?.docs || []), via: 'openlibrary', why };
+  try {
+    const r = await ol(`/search.json?author=${encodeURIComponent(name)}&fields=${SEARCH_FIELDS}&limit=40&sort=editions`);
+    return { cands: fromOL(r?.docs || []), via: 'openlibrary', why };
+  } catch (e) { throw new Error(`${why}; Open Library: ${String((e as Error).message || e)}`); }
 }
 const candView = (c: Cand, i: number) => ({ index: i, title: c.title, subtitle: c.subtitle, authors: c.authors.slice(0, 4), year: c.year, editions: c.editions,
   publishers: c.publishers.slice(0, 3), subjects: c.subjects.slice(0, 8), about: c.description.slice(0, 300) });
@@ -265,6 +278,9 @@ Return the books this person wrote or co-wrote. Leave out:
 - study guides, summaries or workbooks about their books by others, journal articles, and titles that are not real books.
 If none are theirs, return an empty list. index is the result's number in the list.`;
 
+const PEN_SCHEMA = { type: 'object', additionalProperties: false, required: ['names'], properties: { names: { type: 'array', items: { type: 'string' } } } };
+const PEN_SYSTEM = `Given a person from the Vegans Explore People directory, list up to two other full names they publish books under (for example a stage name's real name: Earthling Ed publishes as Ed Winters). Use their profile and what you know. Return an empty list when there is no other name or you are not sure.`;
+
 async function crawlOne(listingId: string) {
   const { data: p } = await db.from('listings').select('id, slug, name, category, description, details').eq('id', listingId).maybeSingle();
   if (!p) return { listing_id: listingId, ok: false };
@@ -276,13 +292,31 @@ async function crawlOne(listingId: string) {
     for (const c of r.cands) if (!cands.some((x) => words(x.title) === words(c.title))) cands.push(c);
   }
   let found = 0, note = `No books under this name (${via})`;
+  // Someone known by another name (Earthling Ed writes as Ed Winters): Claude names what they publish under, from their profile.
+  const run = async () => {
+    const list = cands.slice(0, 60).map(candView);
+    return await ask(CRAWL_SYSTEM, JSON.stringify({ person: { name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }, results: list }), CRAWL_SCHEMA, 'medium');
+  };
+  let out: any = cands.length ? await run() : { books: [] };
+  const penNames: string[] = [];
+  if (!(out.books || []).length) {
+    const alt = await ask(PEN_SYSTEM, JSON.stringify({ name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }), PEN_SCHEMA);
+    const more = ((alt.names || []) as string[]).map((n) => String(n).trim()).filter((n) => /\S\s+\S/.test(n) && !names.some((x) => words(x) === words(n))).slice(0, 2);
+    for (const n of more) {
+      penNames.push(n);
+      const r = await findAuthor(n); via = r.via;
+      for (const c of r.cands) if (!cands.some((x) => words(x.title) === words(c.title))) cands.push(c);
+    }
+    if (more.length && cands.length) out = await run();
+  }
   if (cands.length) {
-    const list = cands.slice(0, 50).map(candView);
-    const out = await ask(CRAWL_SYSTEM, JSON.stringify({ person: { name: p.name, also_known_as: p.details?.person?.aka || [], does: p.details?.person?.title || p.category, about: String(p.description || '').slice(0, 800) }, results: list }), CRAWL_SCHEMA, 'medium');
     const titles: string[] = [];
     for (const b of out.books || []) {
       const c = cands[b.index]; if (!c) continue;
-      const id = await upsertBook(String(b.title || c.title).trim(), name, 'author_crawl', p.id);
+      // The name on the cover, the one of its authors that is this person (Ed Winters, not Earthling Ed).
+      const tried = [...names, ...penNames].map((n) => words(lastName(n)));
+      const who = c.authors.find((a) => tried.includes(words(lastName(a)))) || c.authors[0] || name;
+      const id = await upsertBook(String(b.title || c.title).trim(), who, 'author_crawl', p.id);
       if (!id) continue;
       found++; titles.push(b.title || c.title);
       if (c.ol_work) await db.from('ve_books').update({ ol_work: c.ol_work }).eq('id', id).is('ol_work', null);
@@ -316,11 +350,11 @@ const WRITE_SCHEMA = {
   properties: {
     description: { type: 'string', description: 'One sentence, 80 to 200 characters, for the book\'s card.' },
     summary: { type: 'string', description: 'The synopsis: one to three short paragraphs separated by a blank line, 250 to 900 characters in all.' },
-    note: { type: 'string', description: 'Where the facts came from, one short sentence for the team.' },
+    note: { type: 'string', description: 'Where the facts came from (say the publisher\'s description, the subjects or the podcast), one short sentence for the team.' },
   },
 };
 const WRITE_SYSTEM = `You write the card line and the synopsis for a book's page in the Vegans Explore Directory.
-- Use only what the sources say: the publisher's description from Open Library, the subtitle, the subjects, and what was said about it on our podcasts. Never invent a claim, an award, a bestseller list, a number or a quote.
+- Use only what the sources say: the publisher's description (from Google Books or Open Library), the subtitle, the subjects, and what was said about it on our podcasts. Never invent a claim, an award, a bestseller list, a number or a quote.
 - When the sources say little, keep it short and plain: what the book is and who wrote it.
 - Third person, present tense, warm and plain, no hype words (best, amazing, must read). Name the author once.
 - Spell Vegan with a capital V. No dashes of any kind (no em or en dash, no hyphen used as a dash); use commas or periods.`;
@@ -462,7 +496,10 @@ Deno.serve(async (req) => {
 
   if (body.action === 'probe') {
     const out: any = {};
-    try { out.google = { ok: true, results: (await gb('intitle:"cheese trap" inauthor:barnard', 3)).length }; } catch (e) { out.google = { ok: false, why: String((e as Error).message || e) }; }
+    try {
+      const items = await gb(body.q ? String(body.q).slice(0, 200) : 'intitle:"cheese trap" inauthor:barnard', 10);
+      out.google = { ok: true, results: items.length, titles: items.slice(0, 10).map((it: any) => `${it.volumeInfo?.title} / ${(it.volumeInfo?.authors || []).join(', ')}`) };
+    } catch (e) { out.google = { ok: false, why: String((e as Error).message || e) }; }
     try { out.openlibrary = { ok: true, results: ((await ol('/search.json?title=cheese+trap&limit=3&fields=key'))?.docs || []).length }; } catch (e) { out.openlibrary = { ok: false, why: String((e as Error).message || e) }; }
     return json(out);
   }
