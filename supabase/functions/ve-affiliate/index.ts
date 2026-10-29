@@ -10,6 +10,7 @@
 //   POST { action: 'admin_list', status? }                 every commission with who earned it and where it goes
 //   POST { action: 'admin_settle', id, status: 'paid'|'given'|'reversed', note? }
 //   POST { action: 'admin_launch', live: boolean }         show the program to members (ve_site_settings affiliate_program.live)
+// A Nonprofit Partner's commissions (Sean, 2026-10-29) are rows here too, with partner_id and route 'partner': paid to the organization.
 // verify_jwt is off; the member token is checked here, like ve-invites.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
@@ -99,7 +100,7 @@ Deno.serve(async (req: Request) => {
       let r = db.from('ve_affiliate_commissions').select('*').order('created_at', { ascending: false }).limit(500);
       if (['pending', 'ready', 'paid', 'given', 'reversed'].includes(body.status)) r = r.eq('status', body.status);
       const { data: rows } = await r;
-      const ids = [...new Set((rows ?? []).flatMap((c: any) => [c.affiliate_id, c.buyer_id]))];
+      const ids = [...new Set((rows ?? []).flatMap((c: any) => [c.affiliate_id, c.buyer_id]).filter(Boolean))];
       const orgIds = [...new Set((rows ?? []).map((c: any) => c.route_listing_id).filter(Boolean))];
       const [{ data: people }, { data: orgs }, { data: setting }] = await Promise.all([
         ids.length ? db.from('members').select('id, name, email').in('id', ids) : Promise.resolve({ data: [] }),
@@ -118,7 +119,7 @@ Deno.serve(async (req: Request) => {
       if (!c) return json({ error: 'not_found' }, 404);
       if (['paid', 'given', 'reversed'].includes(c.status)) return json({ error: 'settled', message: 'This one is already settled.' }, 409);
       if (body.status === 'given' && c.route !== 'nonprofit') return json({ error: 'bad_request', message: 'This one is theirs to keep.' }, 400);
-      if (body.status === 'paid' && c.route !== 'self') return json({ error: 'bad_request', message: 'This one goes to their organization.' }, 400);
+      if (body.status === 'paid' && c.route === 'nonprofit') return json({ error: 'bad_request', message: 'This one goes to their organization.' }, 400);
       await db.from('ve_affiliate_commissions').update({ status: body.status, settled_at: new Date().toISOString(), note: clip(body.note, 300) }).eq('id', c.id);
       return json({ ok: true });
     }

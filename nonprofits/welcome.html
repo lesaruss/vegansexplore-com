@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>The Nonprofit Partner Guide — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Nonprofit Partner Guide (LOCKED by Sean 2026-10-29, playbook ve-nonprofit-partners: "it'll be the same sort of ambassador
+       situation... they'll be able to get commissions... marketing if they want to do posts, they want to put stuff on their
+       website"). The Ambassador Guide's layout (ambassadors/welcome.html, its dg-* and am-* rules copied here): the tabs are the
+       tour, a Guide's picture and words on the right, the content on the left, Back / N of M / Next. For the lead on a Nonprofit
+       Partner account and super admins (who preview a partner with ?partner=<id>). Data: ve-nonprofit (me, use_points). The
+       organization is the partner: its link, its earnings and its points are the organization's, never the lead's own. */
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    *,*::before,*::after{box-sizing:border-box;}
+
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/south-florida/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .dg-brand-mark{flex:1 1 280px;min-width:0;}
+    .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
+    .dg-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:4px 0 0;text-transform:uppercase;}
+    .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
+    .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
+    .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
+    .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
+    .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
+    .dg-menu{display:flex;gap:2px;margin-top:12px;overflow:hidden;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+    .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-join-tab{margin-left:auto;color:#c5f2c7;}
+    .dg-menu-select{display:none;}
+
+    .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
+    .dg-main{min-width:0;}
+    .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
+    .dg-guide{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
+    .dg-guide.dg-shift{animation:dgShift .55s ease-out;}
+    @keyframes dgShift{from{transform:scale(1.03) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
+    @media (prefers-reduced-motion:reduce){.dg-guide.dg-shift{animation:none;}}
+    .dg-guide-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
+    .dg-guide-name b{color:var(--ink);}
+    .dg-bubble{background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;}
+    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-tour.dg-tour-m{display:none;}
+    .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
+    .dg-tnav[aria-disabled="true"]{opacity:0.35;pointer-events:none;}
+
+    .dg-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
+    .dg-h1{font-size:clamp(22px,2.2vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-0.01em;line-height:1.15;}
+    .dg-lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:860px;}
+    .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
+    .dg-btn:hover{background:#4ade80;}
+    .dg-btn[disabled]{opacity:.6;cursor:default;}
+    .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;}
+    .dg-note{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5;margin:0 0 16px;}
+    .dg-note b{font-weight:900;}
+    .dg-status{display:block;font-size:13px;font-weight:700;color:#8a5a00;margin-top:10px;}
+    .dg-status:empty{display:none;}
+
+    .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;}
+    .dg-tile{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
+    .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
+    .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
+    .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
+    .dg-card .dg-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);margin-bottom:8px;}
+    .dg-card .dg-tag.soon{background:#f2f4f2;color:var(--ink55);}
+    .dg-card a{color:var(--g);font-weight:800;}
+    .dg-levels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px;}
+    .dg-level{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px;text-align:center;}
+    .dg-level b{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .dg-level strong{display:block;font-size:28px;font-weight:900;margin:4px 0 2px;}
+    .dg-level span{font-size:12.5px;color:var(--ink75);}
+
+    .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
+    .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
+    .dg-access li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
+    .dg-access li b{color:var(--ink);}
+    .dg-pricebox{border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:24px;text-align:center;}
+    .dg-pricebox .dg-big{font-size:52px;font-weight:900;line-height:1;}
+    .dg-pricebox .dg-big small{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-pricebox p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:10px 0 16px;}
+    .dg-pricebox .dg-btn{width:100%;}
+    .dg-pricebox a{color:var(--g);font-weight:800;}
+
+    @media (min-width:901px) and (min-height:600px){
+      html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
+      html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
+      html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
+      html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
+      html.dg-fit .dg-rail{overflow:hidden;}
+      html.dg-fit .dg-guide{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
+    }
+    @media (max-width:1280px){.dg-menu a{padding:10px 10px 11px;font-size:10.5px;letter-spacing:.05em;}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-access{grid-template-columns:minmax(0,1fr);}.dg-menu{display:none;}
+      .dg-menu-select{display:block;margin:12px 0 14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}}
+    @media (max-width:900px){
+      .dg-top{padding:16px 16px 2px;}
+      .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
+      .dg-joinbox .dg-btn{width:100%;}
+      .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
+      .dg-joinbox .dg-jb-in br{display:none;}
+      .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
+      .dg-rail{order:-1;}
+      .dg-guide{aspect-ratio:1/1;width:100%;max-width:280px;margin:0 auto;}
+      .dg-rail .dg-tour{display:none;}
+      .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
+      .dg-levels{grid-template-columns:minmax(0,1fr);}
+    }
+    @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
+    /* The Ambassador's own extras on the Guide layout. */
+    .dg-joinbox .dg-jb-price b{font-size:30px;}
+    .am-link{display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:14px 16px;margin:0 0 16px;}
+    .am-link code{font-family:inherit;font-size:15px;font-weight:800;color:var(--g);word-break:break-all;flex:1;min-width:220px;}
+    .am-msg{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;}
+    .am-msg b{display:block;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin-bottom:6px;}
+    .am-msg p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 12px;white-space:pre-line;flex:1;}
+    .am-msg-link{display:flex;flex-direction:column;gap:2px;background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:8px 12px;margin:0 0 12px;}
+    .am-msg-link span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink75);}
+    .am-msg-link code{font-family:inherit;font-size:14px;font-weight:800;color:var(--g);word-break:break-all;}
+    .am-msg-acts{display:flex;flex-wrap:wrap;gap:8px;}
+    .am-sm-on{background:var(--g) !important;color:#fff !important;border-color:var(--g) !important;}
+    .am-sm{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:38px;border-radius:6px;cursor:pointer;border:1px solid var(--gm);background:#fff;color:var(--g);align-self:flex-start;}
+    .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
+    .am-steps li{counter-increment:s;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
+    .am-steps li::before{content:counter(s);display:inline-flex;width:26px;height:26px;border-radius:6px;background:var(--g);color:#fff;font-weight:900;font-size:13px;align-items:center;justify-content:center;margin-bottom:8px;}
+    .am-steps li b{display:block;color:var(--ink);font-size:14.5px;}
+    .am-field{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px;}
+    .am-select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;max-width:420px;color:var(--ink);}
+    .am-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .am-row .dg-btn{min-height:46px;}
+    .am-note{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin:8px 0 16px;}
+    .am-note.bad{color:#a61b1b;}
+    .am-qa{border-bottom:1px solid var(--line);padding:12px 0;}
+    .am-qa b{display:block;font-size:14.5px;font-weight:900;margin-bottom:3px;}
+    .am-qa p{margin:0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .am-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;margin-top:16px;}
+    .am-list{border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+    .am-list h3{margin:0 0 6px;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;}
+    .am-list ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--ink75);}
+    .am-people{list-style:none;margin:12px 0 0;padding:0;border:1px solid var(--line);border-radius:12px;max-height:260px;overflow:auto;}
+    .am-people li{display:flex;justify-content:space-between;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;}
+    .am-people li:last-child{border-bottom:0;}
+    .am-tag{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);white-space:nowrap;}
+    .am-tag.wait{background:var(--warm);color:#8a5a00;}
+    .am-gate{max-width:560px;margin:48px auto;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .am-gate p{margin:0 0 16px;color:var(--ink75);line-height:1.6;}
+    @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
+    .am-sec{margin:20px 0 10px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .dg-tile .am-ic{display:flex;align-items:center;justify-content:center;color:var(--g);border:1px solid var(--gm);background:#fff;}
+    .np-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#f7f8f7;border:1px solid var(--line);border-radius:8px;padding:10px 12px;white-space:pre-wrap;word-break:break-all;margin:8px 0 10px;max-height:140px;overflow:auto;}
+    .np-prev{border:1px dashed var(--gm);border-radius:12px;padding:16px;background:#fff;margin:8px 0;}
+    .np-use{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;max-width:560px;}
+    .np-use textarea{font:inherit;font-size:14px;padding:10px 12px;min-height:90px;border:1px solid rgba(0,0,0,.25);border-radius:6px;resize:vertical;}
+    .np-org{display:flex;gap:12px;align-items:center;}
+    .np-org i{flex:0 0 44px;height:44px;border-radius:10px;background:#fff center/cover no-repeat;border:1px solid rgba(255,255,255,.3);}
+    [hidden]{display:none !important;}
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<header class="dg-top" id="npTop" hidden>
+  <div class="dg-top-row">
+    <div class="dg-brand-mark np-org">
+      <i id="npLogo" aria-hidden="true"></i>
+      <div><div class="dg-eyebrow" id="npEyebrow">Nonprofit Partner</div>
+      <h1 class="dg-title" id="npTitle">The Nonprofit Partner Guide</h1></div>
+    </div>
+    <div class="dg-joinbox">
+      <div class="dg-jb-price"><b id="npPts">0</b><small>points<br>to use</small></div>
+      <a class="dg-btn" href="#/link">Copy your link</a>
+    </div>
+  </div>
+  <nav class="dg-menu" id="dgMenu" aria-label="Nonprofit Partner Guide tabs"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Nonprofit Partner Guide tabs"></select>
+</header>
+
+<div class="am-gate" id="npGate" hidden></div>
+
+<div class="dg-app" id="npApp" hidden>
+  <main class="dg-main" id="dgMain" aria-live="polite"></main>
+  <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
+  <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Your Guide">
+    <div class="dg-guide" id="dgGuide" role="img"></div>
+    <div class="dg-guide-name" id="dgGuideName"></div>
+    <div class="dg-bubble" id="dgBubble"></div>
+    <div class="dg-tour" id="dgTour"></div>
+  </aside>
+</div>
+
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  // Every fact here is the locked playbook's (ve-nonprofit-partners, CLAUDE.md): the organization's link earns 20% of the $11 Passport and
+  // of Guides bought through it, paid to the organization after its W-9 once $25 is ready, held 30 days for refunds, for 12 months after
+  // each person joins; never a donation from us and never tax-deductible. Its points go to our services through the team.
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nonprofit';
+  var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
+  var TABS = [
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. Your organization is one of our first Nonprofit Partners. This Guide walks you through it, one tab at a time.' },
+    { k: 'why', label: 'Why it matters', g: 'dani', say: 'Your people already trust you. Every one of them who joins finds the Vegan places, events and organizations near them, and your organization earns as they do.' },
+    { k: 'link', label: 'Your link', g: 'liz', say: 'This link belongs to your organization, not to you. Everyone who joins through it counts to your organization.' },
+    { k: 'kit', label: 'Your kit', g: 'maya', say: 'Here is everything ready to share: posts, a button and banner for your website, and a short piece for your newsletter. Each one carries your link.' },
+    { k: 'numbers', label: 'Your numbers', g: 'theo', say: 'Here is who has visited, who has joined, and what your organization has earned so far.' },
+    { k: 'money', label: 'Where the money goes', g: 'river', say: 'Everything your link earns is paid to your organization. Here is how and when.' },
+    { k: 'points', label: 'Your points', g: 'nori', say: 'Your organization holds points for our services. Tell us how you would like to use them, and we take it from there.' },
+    { k: 'you', label: 'Your account', g: 'liz', say: 'You lead this account, and your own Founding Membership is on us. Your own level and link stay yours.' }
+  ];
+  var BLURB = {
+    why: 'What it does for your organization.', link: 'Your organization\'s link, and how it counts.', kit: 'Posts, a website button and banner, an email blurb.',
+    numbers: 'Visitors, members and earnings.', money: 'Paid to your organization, and when.', points: 'Your points, and how to use them.', you: 'Your own membership, on us.'
+  };
+  var ICONS = {
+    why: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
+    link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+    kit: '<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+    numbers: '<path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M21 16V5"/>',
+    money: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+    points: '<circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 9.5h4.5a1.8 1.8 0 0 1 0 3.6H10.5a1.8 1.8 0 0 0 0 3.6H15"/>',
+    you: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'
+  };
+  function icon(k) { return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[k] || '') + '</svg>'; }
+  var $ = function (id) { return document.getElementById(id); };
+  var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect');
+  var guideEl = $('dgGuide'), nameEl = $('dgGuideName'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
+  var D = null, P = null, cur = 'overview', lastGuide = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function usd(c) { return '$' + (Number(c || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
+  function org() { return (P && P.org && P.org.name) || 'your organization'; }
+  function link() { return 'vegansexplore.com/r/' + encodeURIComponent((P && P.code) || ''); }
+  function full() { return 'https://' + link(); }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
+  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
+  function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '">' + esc(label) + '</a></div>'; }
+  function copy(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+    else window.prompt('Copy this', text);
+  }
+  function rate() { return Number((P && P.rate_pct) || 20); }
+
+  // Ready to share. Every one says the organization earns when someone joins through its link (the FTC's endorsement rules), and goes
+  // out with the link on its own line (Copy message), as the Ambassador Guide's do.
+  function messages() {
+    var o = org(), r = rate() + '%';
+    return [
+      ['A post for your followers', o + ' is a Vegans Explore Nonprofit Partner. Vegans Explore is a community for Vegans, city by city: the Vegan places, events, rescues and sanctuaries near you, voted on by members. Join with our link and ' + o + ' earns ' + r + ' of your $11 Passport, at no extra cost to you.'],
+      ['A text to a supporter', 'We just became a Vegans Explore Nonprofit Partner. If you join with our link, ' + o + ' earns part of your $11 Passport, and you get the Vegan places, events and people near you. Here it is.'],
+      ['For your newsletter', 'Support ' + o + ' by joining Vegans Explore\n\nWe are proud to be one of the first Nonprofit Partners of Vegans Explore, a community for Vegans, city by city. Members find Vegan restaurants, events, rescues and sanctuaries near them, vote for the places they love, and join the conversation in their city. The Passport is $11, one time, with 1,100 points to start. When you join through our link, ' + o + ' earns ' + r + ' of it, at no extra cost to you.'],
+      ['For your volunteers', 'Thank you for everything you do for ' + o + '. One more easy way to help: join Vegans Explore with our link. ' + o + ' earns part of every $11 Passport, and you get a community that backs the work we do.']
+    ].map(function (m) { return { title: m[0], text: m[1], link: link() }; });
+  }
+  function messageText(m) { return m.text + '\n\n' + m.link; }
+  function buttonCode() {
+    return '<a href="' + full() + '" style="display:inline-block;background:#22C55E;color:#03170a;font-family:Montserrat,Arial,sans-serif;font-weight:800;font-size:14px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;padding:14px 24px;border-radius:6px">Join us on Vegans Explore</a>';
+  }
+  function bannerCode() {
+    return '<div style="font-family:Montserrat,Arial,sans-serif;background:#14301c;color:#fff;border-radius:12px;padding:24px;max-width:720px">' +
+      '<div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#c5f2c7">Vegans Explore Nonprofit Partner</div>' +
+      '<div style="font-size:22px;font-weight:900;line-height:1.2;margin:6px 0 8px">Join the community and support ' + esc(org()) + '</div>' +
+      '<div style="font-size:15px;line-height:1.5;color:#e6f4e7;margin:0 0 16px">Find the Vegan places, events, rescues and sanctuaries near you. When you join through our link, ' + esc(org()) + ' earns part of your $11 Passport.</div>' +
+      '<a href="' + full() + '" style="display:inline-block;background:#22C55E;color:#03170a;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:12px 22px;border-radius:6px">Join with our link</a></div>';
+  }
+
+  var VIEWS = {
+    overview: function () {
+      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
+        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+      }).join('');
+      return head('Welcome', esc(org()) + ' is a Nonprofit Partner', 'Vegans Explore is a community for Vegans, city by city. ' + esc(org()) + ' is one of our first Nonprofit Partners: it has <b>its own link</b>, earns <b>' + rate() + '% of every $11 Passport</b> and Guide bought through it, holds <b>points for our services</b>, and wears a Nonprofit Partner badge in the Directory. You lead the account.' + (D && D.preview ? ' <b>(You are previewing this as an admin.)</b>' : '')) +
+        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
+    },
+    why: function () {
+      return head('Why it matters', 'More people behind your work', 'Your supporters already trust you. Vegans Explore gives them a community that backs the organizations doing the work, and every one who joins through your link adds to ' + esc(org()) + '.') +
+        '<div class="dg-grid">' +
+        card('People find you', esc(org()) + ' has its page in the Directory\'s Community section, where members find rescues, sanctuaries and nonprofits in every chapter, vote for them and give them points. <a href="/directory/' + esc(P.org.slug) + '">See your page</a>.', 'The Directory') +
+        card('Your link earns', 'Every person who joins through your link earns ' + esc(org()) + ' ' + rate() + '% of their $11 Passport, and of Guides they buy, for 12 months after they join. It costs them nothing extra.', 'Income') +
+        card('Your people, in one place', 'Members get the Daily Pulse, events and the Vegan places in their city, and the Fosters and Rescues boards, where animals that need a home are posted.', 'Community') +
+        card('Points for your work', 'Your organization holds points for our services: promoting your events, a feature, a social push. Members can give you more from your page.', 'Points') +
+        card('Campaigns behind the cause', 'As the community grows, so does our promotion of the organizations doing the work.', 'Growing', true) +
+        '</div>' + nextBtn('link', 'Next: your link');
+    },
+    link: function () {
+      return head('Your link', esc(org()) + '\'s link', 'Share it anywhere: your website, posts, emails, your bio. It opens the Passport, the page that shows people what Vegans Explore is and how to join, and it counts everyone who joins to ' + esc(org()) + '.') +
+        '<div class="am-link"><code>' + esc(link()) + '</code><button type="button" class="dg-btn" data-copy-link>Copy your link</button></div>' +
+        '<ol class="am-steps">' +
+        '<li><b>They open your link</b>It takes them to the Passport, and remembers ' + esc(org()) + ' for their visit.</li>' +
+        '<li><b>They make an account</b>With email, or Continue with Google. Your link still counts.</li>' +
+        '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
+        '<li><b>' + esc(org()) + ' earns</b>' + rate() + '% of their Passport, and of Guides they buy in their first 12 months.</li></ol>' +
+        '<div class="dg-grid">' +
+        card('It belongs to the organization', 'This is not your personal link. If someone else takes over the account, the link, its numbers and its earnings stay with ' + esc(org()) + '.', 'Yours to share') +
+        card('Say that you earn', 'Whenever you share it, say that ' + esc(org()) + ' earns when people join with it. Every message in Your kit already does. The law asks for it, and it keeps trust.', 'Always') +
+        '</div>' + nextBtn('kit', 'Next: your kit');
+    },
+    kit: function () {
+      return head('Your kit', 'Ready to share', 'Copy message gives you the words with your link on its own line. The button and banner are ready to paste into your website.') +
+        '<h3 class="am-sec">Posts and messages</h3><div class="dg-grid">' + messages().map(function (m, i) {
+          return '<div class="am-msg"><b>' + esc(m.title) + '</b><p>' + esc(m.text) + '</p>' +
+            '<div class="am-msg-link"><span>Your link</span><code>' + esc(m.link) + '</code></div>' +
+            '<div class="am-msg-acts"><button type="button" class="am-sm am-sm-on" data-copy="' + i + '">Copy message</button><button type="button" class="am-sm" data-copy-link>Copy link</button></div></div>';
+        }).join('') + '</div>' +
+        '<h3 class="am-sec">A button for your website</h3><div class="np-prev">' + buttonCode() + '</div>' +
+        '<pre class="np-code" id="npBtnCode">' + esc(buttonCode()) + '</pre><button type="button" class="am-sm am-sm-on" data-copy-code="btn">Copy the code</button>' +
+        '<h3 class="am-sec">A banner for your website</h3><div class="np-prev">' + bannerCode() + '</div>' +
+        '<pre class="np-code">' + esc(bannerCode()) + '</pre><button type="button" class="am-sm am-sm-on" data-copy-code="banner">Copy the code</button>' +
+        '<p class="dg-lede" style="margin-top:14px">Paste the code where your website lets you add HTML. If your website builder does not take code, add a button that links to ' + esc(link()) + '.</p>' +
+        nextBtn('numbers', 'Next: your numbers');
+    },
+    numbers: function () {
+      var T = P.totals || {}, J = P.joined || [], C = P.commissions || [];
+      return head('Your numbers', 'What your link has done', J.length ? 'Thank you. Every one of them makes the community bigger.' : 'No one has joined through your link yet. Your first post is the start.') +
+        '<div class="dg-levels">' +
+        '<div class="dg-level"><b>Visitors</b><strong>' + n(P.visitors) + '</strong><span>' + n(P.visitors_30d) + ' in the last 30 days</span></div>' +
+        '<div class="dg-level"><b>Members</b><strong>' + n(P.members) + '</strong><span>joined through your link' + (P.signups > P.members ? ', ' + n(P.signups - P.members) + ' waiting' : '') + '</span></div>' +
+        '<div class="dg-level"><b>Earned</b><strong>' + usd(T.earned) + '</strong><span>' + usd(T.pending) + ' on hold, ' + usd(T.ready) + ' ready, ' + usd(T.paid) + ' paid</span></div></div>' +
+        (J.length ? '<h3 class="am-sec">Who joined</h3><ul class="am-people">' + J.map(function (p) { return '<li><span>' + esc(p.name || 'A member') + '</span><span class="am-tag' + (p.member ? '' : ' wait') + '">' + (p.member ? 'Member' : 'Waiting') + '</span></li>'; }).join('') + '</ul>' : '') +
+        (C.length ? '<h3 class="am-sec">Earnings</h3><ul class="am-people">' + C.map(function (c) {
+          var st = { pending: 'On hold until ' + day(c.hold_until), ready: 'Ready', paid: 'Paid', reversed: 'Refunded' }[c.status] || c.status;
+          return '<li><span>' + esc(c.buyer || 'A member') + ' bought ' + (c.product === 'guide' ? 'a Guide' : 'the Passport') + ', ' + day(c.created_at) + '</span><span><b>' + usd(c.commission_cents) + '</b> <span class="am-tag' + (c.status === 'pending' ? ' wait' : '') + '">' + esc(st) + '</span></span></li>';
+        }).join('') + '</ul>' : '') +
+        '<p class="dg-lede" style="margin-top:14px">Waiting means they made an account but have not got their Passport yet.</p>' + nextBtn('money', 'Next: where the money goes');
+    },
+    money: function () {
+      var min = usd(((P.program || {}).min_payout_cents) || 2500);
+      return head('Where the money goes', 'Paid to ' + esc(org()), 'Everything your link earns is ' + esc(org()) + '\'s: referral earnings paid to the organization, never to you personally.') +
+        '<div class="dg-grid">' +
+        card('How much', rate() + '% of the $11 Passport, and of Guides bought with money, for 12 months after each person joins through your link. Never of anything someone gives on top.', 'The rate') +
+        card('When', 'Each one waits 30 days in case of a refund, then it is ready. We pay once ' + min + ' is ready.', 'Timing') +
+        card('What we need first', 'The organization\'s W-9 (or the form for your country) before the first payment. Send it to <a href="mailto:contact@lesaruss.com?subject=W-9%20for%20' + encodeURIComponent(org()) + '">contact@lesaruss.com</a>.', 'Before the first payment') +
+        card('What it is, and is not', 'It is referral earnings paid by LESARUSS Inc., a company. It is not a donation from us and not tax-deductible to anyone. How your organization records it is a question for your accountant.', 'Straight talk') +
+        '</div>' + nextBtn('points', 'Next: your points');
+    },
+    points: function () {
+      var L = P.ledger || [], G = P.given || {}, U = (D && D.uses) || {};
+      var given = typeof G === 'object' ? (G.total || G.points || 0) : Number(G) || 0;
+      return head('Your points', n(P.points) + ' points for ' + esc(org()), 'Points pay for our services, never money. Tell us how you would like to use them and we take it from there: nothing is spent until the team does it with you.' + (given ? ' Members have also given ' + esc(org()) + ' ' + n(given) + ' points from your page.' : '')) +
+        '<form class="np-use" id="npUse"><label class="am-field" for="npWhat">What would you like?</label>' +
+        '<select class="am-select" id="npWhat">' + Object.keys(U).map(function (k) { return '<option value="' + esc(k) + '">' + esc(U[k]) + '</option>'; }).join('') + '</select>' +
+        '<label class="am-field" for="npNote">Tell us more (optional)</label><textarea id="npNote" maxlength="1000" placeholder="An event date, what you have in mind..."></textarea>' +
+        '<div class="am-row"><button type="submit" class="dg-btn">Ask to use our points</button></div><p class="am-note" id="npUseNote" role="status"></p></form>' +
+        (L.length ? '<h3 class="am-sec">History</h3><ul class="am-people">' + L.map(function (x) { return '<li><span>' + esc(x.note || ({ invite: 'Welcome points', team_gift: 'From the team', team_adjust: 'Adjusted by the team' }[x.reason] || x.reason)) + ', ' + day(x.at) + '</span><b>' + (x.delta > 0 ? '+' : '') + n(x.delta) + '</b></li>'; }).join('') + '</ul>' : '') +
+        nextBtn('you', 'Next: your account');
+    },
+    you: function () {
+      return head('Your account', 'You lead ' + esc(org()) + '\'s account', 'Your own Founding Membership is on us. It is your own account, separate from the partnership: your level, your points and your personal link are yours, and nothing the organization earns changes them.') +
+        '<div class="dg-grid">' +
+        card('Your membership', 'Everything a member has: vote, save, check in, post on the Daily Pulse, join any community and unlock Guides. <a href="/dashboard">Go to your dashboard</a>.', 'On us') +
+        card('Your own link', 'You also have a personal link, in <a href="/dashboard/levels">Points and levels</a>. Use the organization\'s link for the organization; your own counts to you.', 'Separate') +
+        card('Questions', 'Write to us any time at <a href="mailto:contact@lesaruss.com?subject=Nonprofit%20Partner">contact@lesaruss.com</a>.', 'We are here') +
+        '</div><div class="dg-btns"><a class="dg-btn" href="#/kit">Share your link</a><a href="/dashboard" style="font-size:13px;font-weight:800;color:var(--g)">Go to your dashboard</a></div>';
+    }
+  };
+
+  function draw() {
+    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    cur = VIEWS[k] ? k : 'overview';
+    var t = tab(cur), i = TABS.indexOf(t);
+    main.innerHTML = VIEWS[cur]();
+    main.scrollTop = 0;
+    menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
+    var pic = art(t.g);
+    guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
+    guideEl.setAttribute('aria-label', GUIDES[t.g] + ', one of our Guides');
+    $('dgRail').setAttribute('data-guide', t.g);
+    if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
+    nameEl.innerHTML = '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
+    bubble.textContent = t.say;
+    var nav = '<a class="dg-tnav" href="#/' + TABS[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
+      '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = nav;
+    $('npPts').textContent = n(P.points);
+    $('npTitle').textContent = org();
+    $('npEyebrow').textContent = 'Nonprofit Partner Guide';
+    $('npLogo').style.backgroundImage = P.org && P.org.logo_url ? "url('" + P.org.logo_url + "')" : '';
+    $('npLogo').hidden = !(P.org && P.org.logo_url);
+  }
+
+  sel.addEventListener('change', function () { location.hash = '#/' + sel.value; });
+  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
+  document.addEventListener('click', function (e) {
+    var b;
+    if ((b = e.target.closest('[data-copy-link]'))) return copy(full(), b);
+    if ((b = e.target.closest('[data-copy]'))) return copy(messageText(messages()[+b.dataset.copy]), b);
+    if ((b = e.target.closest('[data-copy-code]'))) return copy(b.dataset.copyCode === 'btn' ? buttonCode() : bannerCode(), b);
+  });
+  document.addEventListener('submit', function (e) {
+    if (e.target.id !== 'npUse') return;
+    e.preventDefault();
+    var note = $('npUseNote'), btn = e.target.querySelector('button');
+    btn.disabled = true; note.className = 'am-note'; note.textContent = 'Sending...';
+    api({ action: 'use_points', partner_id: P.id, what: $('npWhat').value, note: $('npNote').value.trim() || null }).then(function (d) {
+      btn.disabled = false;
+      if (d && d.ok) { note.textContent = 'Sent. We will be in touch to set it up.'; $('npNote').value = ''; return; }
+      note.className = 'am-note bad'; note.textContent = (d && d.message) || 'That did not go through. Try again.';
+    }, function () { btn.disabled = false; note.className = 'am-note bad'; note.textContent = 'Could not connect. Try again.'; });
+  });
+  window.addEventListener('hashchange', function () { if (P) draw(); });
+
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function gate(html) { $('npGate').innerHTML = html; $('npGate').hidden = false; $('npApp').hidden = true; $('npTop').hidden = true; }
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 200);
+    if (!VEAuth.getToken() || !VEAuth.isLoggedIn()) {
+      gate('<p>Sign in to open your Nonprofit Partner Guide.</p><button type="button" class="dg-btn" id="npSignin">Sign in</button>');
+      $('npSignin').onclick = function () { VEAuth.showAuthModal('Sign in to open your Nonprofit Partner Guide.', function () { location.reload(); }, 'login'); };
+      return;
+    }
+    var want = new URLSearchParams(location.search).get('partner');
+    api({ action: 'me', partner_id: want || null }).then(function (d) {
+      D = d;
+      if (!d || !d.ok) return gate('<p>We could not open the Guide just now. Refresh to try again.</p>');
+      P = (d.partners || [])[0];
+      if (!P) return gate('<p>This Guide is for the people who lead a Vegans Explore Nonprofit Partner. If your organization was invited, open the link in the invitation.</p><a class="dg-btn" href="/dashboard">Go to your dashboard</a>');
+      $('npTop').hidden = false; $('npApp').hidden = false;
+      document.documentElement.classList.add('dg-fit');
+      draw();
+    }, function () { gate('<p>Could not connect. Refresh to try again.</p>'); });
+  }
+  start();
+})();
+</script>
+
+</body>
+</html>

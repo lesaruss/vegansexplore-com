@@ -108,6 +108,16 @@
     .known b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:2px;}
     #ed-reason{min-height:120px;}
     .why{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 12px;}
+    /* Invite as (Sean, 2026-10-29: "when I see some of these people... I want to make them an ambassador... a nonprofit version"). */
+    .form select{font:inherit;font-size:14px;padding:9px 44px 9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;color:var(--ve-text);text-transform:none;letter-spacing:0;font-weight:600;}
+    .orgres{border:1px solid var(--ve-border);border-radius:8px;max-height:220px;overflow:auto;margin-top:6px;background:#fff;}
+    .orgres button{display:block;width:100%;text-align:left;font:inherit;font-size:13.5px;padding:9px 12px;border:0;border-top:1px solid var(--ve-border);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;color:var(--ve-text);}
+    .orgres button:first-child{border-top:0;}
+    .orgres button:hover{background:#f3faf3;}
+    .orgres small{font-weight:500;color:var(--ve-text-75);}
+    .orgpick{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--ve-green-light);border-radius:8px;padding:10px 12px;font-size:14px;font-weight:800;color:var(--ve-green-deep);text-transform:none;letter-spacing:0;}
+    .kind{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:middle;}
+    .kind.amb{background:#e8f0fe;color:#1a4a9c;}.kind.np{background:#fff4e0;color:#8a5200;}
   </style>
 </head>
 <body>
@@ -121,7 +131,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Founding Members</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Hand-picked, one person at a time. Pick people you know, write to them in your words, and watch each one: read it, opened the link, said yes, joined, or turned it down. The invitation is $11, one time, unless you make it on us for that person.</p>
+    <p class="sub">Hand-picked, one person at a time. Pick people you know, choose what to invite each one as (a Founding Member, an Ambassador, or their organization as a Nonprofit Partner), write to them in your words, and watch each one: read it, opened the link, said yes, joined, or turned it down. A Founding Member invitation is $11, one time, unless you make it on us.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -150,6 +160,13 @@
         return i.status;
       }
       function inTab(i, t) { return t === 'all' || (t === 'nudge' ? !!i.can_nudge : stOf(i) === t); }
+      // What each invitation is (Sean, 2026-10-29): a Founding Member (no tag), an Ambassador, or an organization as a Nonprofit Partner.
+      var KIND_WORDS = { founding: 'Founding Member', ambassador: 'Ambassador', nonprofit: 'Nonprofit Partner' };
+      function kindTag(i) {
+        if (i.points_to === 'ambassador') return ' <span class="kind amb">Ambassador</span>';
+        if (i.points_to === 'nonprofit') return ' <span class="kind np">Nonprofit Partner' + (i.org ? ': ' + esc(i.org.name) : '') + '</span>';
+        return '';
+      }
       function tag(st) { return '<span class="tag t-' + esc(st) + '">' + esc(WORDS[st] || st) + '</span>'; }
       function poolTags(list) { return (list || []).map(function (p) { return '<span class="pool ' + esc(p) + '">' + esc(POOL_WORDS[p] || p) + '</span>'; }).join(''); }
       function copy(text, btn) {
@@ -204,7 +221,7 @@
           '<div class="list">' + (rows.length ? rows.map(function (i) {
             var s = stOf(i), last = i.joined_at ? 'joined ' + day(i.joined_at) : i.accepted_at ? 'said yes ' + day(i.accepted_at) : i.declined_at ? 'declined ' + day(i.declined_at)
               : i.opened_at ? 'opened the link ' + day(i.opened_at) : i.email_opened_at ? 'read ' + day(i.email_opened_at) : i.sent_at ? 'sent ' + day(i.sent_at) : 'made ' + day(i.created_at);
-            return '<div class="irow"><div><b>' + esc(i.name) + (i.comp ? ' <span class="pool suggested">On us</span>' : '') + '</b><small>' + esc(i.email) + ' &middot; ' + esc(last) +
+            return '<div class="irow"><div><b>' + esc(i.name) + kindTag(i) + (i.comp && i.points_to === 'founding' ? ' <span class="pool suggested">On us</span>' : '') + '</b><small>' + esc(i.email) + ' &middot; ' + esc(last) +
               (i.nudge_count ? ' &middot; ' + i.nudge_count + ' follow-up' + (i.nudge_count > 1 ? 's' : '') : '') + (i.pool ? ' &middot; ' + esc(POOL_WORDS[i.pool] || i.pool) : '') + '</small></div>' +
               tag(s) + '<a class="btn btn-ghost btn-sm" href="#invite/' + esc(i.id) + '">Open</a></div>';
           }).join('') : '<p class="empty">' + (st === 'all' ? 'No Founding Member invitations yet. Pick the first people.' : 'None here.') + '</p>') + '</div>';
@@ -233,7 +250,7 @@
           var r = e.target.closest('.crow'); if (!r) return;
           var c = pick.rows[Number(r.dataset.k)];
           if (isPicked(c.email)) picked = picked.filter(function (p) { return p.email !== c.email; });
-          else picked.push({ name: c.name, email: c.email, person_id: c.person_id, pool: (c.pools || [])[0] || null, comp: false,
+          else picked.push({ name: c.name, email: c.email, person_id: c.person_id, pool: (c.pools || [])[0] || null, comp: false, kind: 'founding', org: null, points: 1100, level: 1,
             known: { title: c.title, organization: c.organization, summary: c.summary, messages: c.messages, last: c.last_interaction_at }, context: '' });
           savePicked(); paintPick();
         });
@@ -275,29 +292,70 @@
         if (!picked.length) { app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p><section class="card"><p class="empty">No one picked yet.</p><a class="btn" href="#pick">Pick people</a></section>'; return; }
         app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p>' +
           '<div class="why">Tell me a little about each person: how you know them, something good only you would know, why they would make a strong member. I write each one\'s opening in your voice from that and what HQ already knows. Nothing is sent: each one waits in Not sent yet for you to read, change and send.</div>' +
-          '<div class="pgrid" id="plist"></div><p class="hint" style="margin-top:10px">On us makes that one person\'s Founding Membership free, with 1,100 points. Everyone else is invited at $11.</p>' +
+          '<div class="pgrid" id="plist"></div><p class="hint" style="margin-top:10px">A Founding Member is invited at $11 unless you tick On us (free, with 1,100 points). An Ambassador\'s membership is always on us, with the points and level you set. A Nonprofit Partner invites their organization: it gets its own link and 20%, the points you set are the organization\'s, and their own Founding Membership is on us.</p>' +
           '<div class="picked"><b>' + picked.length + (picked.length === 1 ? ' person' : ' people') + '</b><span class="acts"><span class="msg" id="msg" role="status" style="color:#fff"></span><button type="button" class="btn" id="mk">Write ' + (picked.length === 1 ? 'the invitation' : 'their invitations') + '</button></span></div>';
         $('plist').innerHTML = picked.map(function (p, k) {
-          var kn = p.known || {}, who = [kn.title, kn.organization].filter(Boolean).join(', ');
+          var kn = p.known || {}, who = [kn.title, kn.organization].filter(Boolean).join(', '), kind = p.kind || 'founding';
           return '<section class="card pcard"><div class="bar" style="margin-bottom:8px"><div><h2 style="margin:0">' + esc(p.name) + '</h2><small class="hint">' + esc(p.email) + (who ? ' &middot; ' + esc(who) : '') + '</small></div>' +
-            '<span class="acts"><label class="comp"><input type="checkbox" data-comp="' + k + '"' + (p.comp ? ' checked' : '') + '>On us</label><button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></span></div>' +
+            '<span class="acts">' + (kind === 'founding' ? '<label class="comp"><input type="checkbox" data-comp="' + k + '"' + (p.comp ? ' checked' : '') + '>On us</label>' : '') + '<button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></span></div>' +
             (kn.summary ? '<p class="known"><b>What HQ knows</b>' + esc(kn.summary) + (kn.messages ? ' <span class="hint">(' + n(kn.messages) + ' emails' + (kn.last ? ', last ' + esc(day(kn.last)) : '') + ')</span>' : '') + '</p>' : '<p class="known hint">HQ has no notes on them. What you say is all the opening will use.</p>') +
-            '<div class="form">' + ctxField('ctx-' + k, p.context) + '</div></section>';
+            '<div class="form">' +
+              '<label>Invite as<select data-kind="' + k + '">' + ['founding', 'ambassador', 'nonprofit'].map(function (x) { return '<option value="' + x + '"' + (x === kind ? ' selected' : '') + '>' + (x === 'nonprofit' ? 'Their organization, as a Nonprofit Partner' : KIND_WORDS[x]) + '</option>'; }).join('') + '</select></label>' +
+              (kind === 'ambassador' ? '<label>They start at<select data-level="' + k + '">' + [1, 2, 3].map(function (x) { return '<option value="' + x + '"' + (x === (p.level || 1) ? ' selected' : '') + '>Level ' + x + (x === 1 ? ', by their points' : '') + '</option>'; }).join('') + '</select></label>' : '') +
+              (kind !== 'founding' ? '<label>' + (kind === 'nonprofit' ? 'Points for the organization' : 'Points to start') + '<input type="number" min="0" max="100000" step="100" data-pts="' + k + '" value="' + esc(p.points == null ? 1100 : p.points) + '"></label>' : '') +
+              (kind === 'nonprofit' ? '<div class="wide lbl">Their organization' + (p.org ? '<span class="orgpick">' + esc(p.org.name) + ' <button type="button" class="btn btn-ghost btn-sm" data-orgclear="' + k + '">Change</button></span>'
+                : '<input class="search" type="search" data-orgq="' + k + '" placeholder="Search the Directory: a nonprofit, rescue or sanctuary"><div class="orgres" data-orgres="' + k + '" hidden></div><span class="hint">Not in the Directory yet? Add it in Directory review first.</span>') + '</div>' : '') +
+              ctxField('ctx-' + k, p.context) + '</div></section>';
         }).join('');
         picked.forEach(function (p, k) {
           dictation($('ctx-' + k + '-mic'), $('ctx-' + k));
           $('ctx-' + k).addEventListener('input', function () { picked[k].context = this.value; savePicked(); });
         });
-        $('plist').addEventListener('change', function (e) { var c = e.target.closest('[data-comp]'); if (c) { picked[Number(c.dataset.comp)].comp = c.checked; savePicked(); } });
-        $('plist').addEventListener('click', function (e) { var b = e.target.closest('[data-rm]'); if (!b) return; picked.splice(Number(b.dataset.rm), 1); savePicked(); drawNew(); });
+        $('plist').addEventListener('change', function (e) {
+          var c = e.target.closest('[data-comp]'); if (c) { picked[Number(c.dataset.comp)].comp = c.checked; savePicked(); return; }
+          var kd = e.target.closest('[data-kind]'); if (kd) { picked[Number(kd.dataset.kind)].kind = kd.value; savePicked(); drawNew(); return; }
+          var lv = e.target.closest('[data-level]'); if (lv) { picked[Number(lv.dataset.level)].level = Number(lv.value); savePicked(); return; }
+        });
+        $('plist').addEventListener('input', function (e) {
+          var pt = e.target.closest('[data-pts]'); if (pt) { picked[Number(pt.dataset.pts)].points = Math.max(0, Math.min(100000, Math.round(Number(pt.value) || 0))); savePicked(); return; }
+          var oq = e.target.closest('[data-orgq]'); if (!oq) return;
+          var k2 = oq.dataset.orgq, box = document.querySelector('[data-orgres="' + k2 + '"]'), q = oq.value.trim();
+          clearTimeout(oq._t);
+          if (q.length < 2) { box.hidden = true; return; }
+          oq._t = setTimeout(function () {
+            fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-affiliate', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify({ action: 'orgs', q: q }) })
+              .then(function (r) { return r.json(); }).then(function (d) {
+                var orgs = (d && d.orgs) || [];
+                box._orgs = orgs; box.hidden = false;
+                box.innerHTML = orgs.length ? orgs.map(function (o, j) { return '<button type="button" data-orgpick="' + k2 + ':' + j + '">' + esc(o.name) + ' <small>' + esc(o.category) + (o.city ? ', ' + esc(o.city) : '') + '</small></button>'; }).join('') : '<p class="empty">No nonprofit, rescue or sanctuary by that name.</p>';
+              });
+          }, 250);
+        });
+        $('plist').addEventListener('click', function (e) {
+          var op = e.target.closest('[data-orgpick]');
+          if (op) { var kj = op.dataset.orgpick.split(':'), box = op.closest('.orgres'), o = box._orgs[Number(kj[1])]; picked[Number(kj[0])].org = { id: o.id, name: o.name, slug: o.slug }; savePicked(); drawNew(); return; }
+          var oc = e.target.closest('[data-orgclear]'); if (oc) { picked[Number(oc.dataset.orgclear)].org = null; savePicked(); drawNew(); return; }
+          var b = e.target.closest('[data-rm]'); if (!b) return; picked.splice(Number(b.dataset.rm), 1); savePicked(); drawNew();
+        });
         $('mk').addEventListener('click', function () {
           var msg = $('msg'), btn = this;
+          var noOrg = picked.filter(function (p) { return p.kind === 'nonprofit' && !p.org; });
+          if (noOrg.length) { msg.textContent = 'Pick the organization for ' + noOrg.map(function (p) { return p.name; }).join(', ') + '.'; return; }
           var thin = picked.filter(function (p) { return !String(p.context || '').trim() && !(p.known && p.known.summary); });
           if (thin.length && !confirm('There is nothing to go on for ' + thin.map(function (p) { return p.name; }).join(', ') + '. Their invitation will have no personal opening until you add one. Go on?')) return;
           btn.disabled = true; msg.textContent = 'Making the invitations...';
-          api({ action: 'create', brand: 'vegans-explore', points_to: 'founding', reason: null,
-            people: picked.map(function (p) { return { name: p.name, email: p.email, person_id: p.person_id || null, comp: !!p.comp, points: p.comp ? 1100 : 0, pool: p.pool, context: String(p.context || '').trim() || null }; }) }).then(function (d) {
-            if (!d || !d.ok || !d.created.length) { btn.disabled = false; msg.textContent = (d && (d.message || (d.skipped && d.skipped[0] && d.skipped[0].name + ': ' + d.skipped[0].why))) || 'That did not go through.'; return; }
+          // One create a kind: Founding Members, Ambassadors, Nonprofit Partners (each with its organization).
+          var groups = ['founding', 'ambassador', 'nonprofit'].map(function (kind) {
+            return { kind: kind, people: picked.filter(function (p) { return (p.kind || 'founding') === kind; }).map(function (p) {
+              return { name: p.name, email: p.email, person_id: p.person_id || null, comp: kind === 'founding' ? !!p.comp : true,
+                points: kind === 'founding' ? (p.comp ? 1100 : 0) : (p.points == null ? 1100 : p.points), level: kind === 'ambassador' ? (p.level || 1) : null,
+                listing_id: kind === 'nonprofit' && p.org ? p.org.id : null, pool: p.pool || 'other', context: String(p.context || '').trim() || null };
+            }) };
+          }).filter(function (g) { return g.people.length; });
+          Promise.all(groups.map(function (g) { return api({ action: 'create', brand: 'vegans-explore', points_to: g.kind, reason: null, people: g.people }); })).then(function (rs) {
+            var d = { ok: rs.some(function (r) { return r && r.ok; }), created: [], skipped: [] };
+            rs.forEach(function (r) { if (r && r.ok) { d.created = d.created.concat(r.created || []); d.skipped = d.skipped.concat(r.skipped || []); } else if (r && r.message) d.message = r.message; });
+            if (!d.ok || !d.created.length) { btn.disabled = false; msg.textContent = (d.message || (d.skipped[0] && d.skipped[0].name + ': ' + d.skipped[0].why)) || 'That did not go through.'; return; }
             var made = d.created, failed = [], k = 0;
             (function next() {
               if (k >= made.length) {
@@ -327,11 +385,11 @@
           ['Opened the link', i.opened_at, !!i.opened_at],
         ];
         if (i.status === 'declined') steps.push(['Declined' + (i.decline_note ? ': "' + i.decline_note + '"' : ''), i.declined_at, 'bad']);
-        else { if (!i.comp) steps.push(['Said yes', i.accepted_at, !!i.accepted_at]); steps.push([i.comp ? 'Accepted, on us' : 'Paid the $11 and joined', i.joined_at, !!i.joined_at]); }
+        else { if (!i.comp) steps.push(['Said yes', i.accepted_at, !!i.accepted_at]); steps.push([i.points_to === 'nonprofit' ? 'Accepted: ' + (i.org ? i.org.name : 'the organization') + ' is a Nonprofit Partner' : i.points_to === 'ambassador' ? 'Accepted: an Ambassador, on us' : i.comp ? 'Accepted, on us' : 'Paid the $11 and joined', i.joined_at, !!i.joined_at]); }
         if (i.nudge_count) steps.splice(2, 0, ['Follow-up' + (i.nudge_count > 1 ? 's' : '') + ' sent: ' + i.nudge_count, i.nudged_at, true]);
         var nextNudge = i.sent_at ? new Date(Date.parse(i.nudged_at || i.sent_at) + 5 * DAY) : null;
         app.innerHTML = '<p class="crumb"><a href="#list/all">Invitations</a> &rsaquo; ' + esc(i.name) + '</p>' +
-          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(i.name) + (i.comp ? ' <span class="pool suggested">On us</span>' : '') + '</h2><small class="hint">' + esc(i.email) + ', the only email that can accept it' + (i.pool ? ' &middot; ' + esc(POOL_WORDS[i.pool] || i.pool) : '') + '</small></div>' + tag(s) + '</div>' +
+          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(i.name) + kindTag(i) + (i.comp && i.points_to === 'founding' ? ' <span class="pool suggested">On us</span>' : '') + '</h2><small class="hint">' + esc(i.email) + ', the only email that can accept it' + (i.pool ? ' &middot; ' + esc(POOL_WORDS[i.pool] || i.pool) : '') + '</small></div>' + tag(s) + '</div>' +
           '<ol class="steps">' + steps.map(function (x) { return '<li class="' + (x[2] === 'bad' ? 'bad' : x[2] ? 'done' : '') + '"><i></i><span>' + esc(x[0]) + (x[1] ? ' &middot; ' + esc(when(x[1])) : '') + '</span></li>'; }).join('') + '</ol>' +
           (i.sent_via === 'copied' ? '<p class="hint">Read shows only for emails we send; a copied link shows from Opened the link.</p>' : '') + '</section>' +
           (waiting && i.sent_via === 'email' ? '<section class="card"><h2>Follow up</h2><p class="hint" style="margin-bottom:10px">One short note from you, worded for where they stopped. At most 2, 5 days apart; it keeps their link open 14 more days. ' +

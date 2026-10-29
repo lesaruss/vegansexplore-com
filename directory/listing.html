@@ -3371,6 +3371,8 @@ function renderListing(l){
             (!mediaKind && !person && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:#7fe0a0;border-color:#7fe0a0':'color:#5EC47A;border-color:#5EC47A'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
             cuisineLabels(l).map(function(c){ return '<span class="badge-subcat badge-cuisine" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'">'+esc(c)+'</span>'; }).join('')+
             verifiedBadge+
+            // A Nonprofit Partner (Sean, 2026-10-29; listings.tags ve-nonprofit-partner while the partnership is active).
+            ((l.tags||[]).indexOf('ve-nonprofit-partner')>=0 ? '<span class="badge-subcat" style="color:#ffd27a;border-color:#ffd27a">Nonprofit Partner</span>' : '')+
           '</div>'+
           (l.tagline || (person && personOf(l).title) ? '<p class="listing-tagline">'+esc(l.tagline || personOf(l).title)+'</p>' : '')+
         '</div>'+

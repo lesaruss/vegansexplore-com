@@ -43,6 +43,11 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 //                                        them (context, saved when given) and their HQ > People record (Sean, 2026-10-28: "you draft the
 //                                        message... I can let you know a little bit about that person")
 //   POST { action: 'nudge', id }         one short follow-up from Sean, at most 2, 5 days apart; keeps the link open 14 more days
+// Nonprofit Partners (LOCKED by Sean 2026-10-29, playbook ve-nonprofit-partners): points_to 'nonprofit' invites one person to bring their
+// organization (listing_id, a Nonprofits, Rescues or Sanctuaries listing) in as a Nonprofit Partner. Accepting makes the organization the
+// partner (ve_nonprofit_partner_start: its own link, 20%, the invitation's points as the organization's) and comps the lead's Founding
+// Membership; the lead's own level and link stay their own. Made from Founding Members (Invite as), which also lists them, and the
+// Ambassador invitations made there (pool set).
 // Public, added 2026-10-28:
 //   POST { action: 'decline', code, note? }    "No thanks" on the invitation page
 // An invitation is for its email only: universe_invite_claim refuses any other account ('wrong_email'), so a copied link
@@ -61,6 +66,8 @@ const VE_TENANT_ID = '00000000-0000-4000-a000-000000000002';
 const FROM = 'Sean A. Russell <hello@vegansexplore.com>';
 const REPLY_TO = 'contact@lesaruss.com';
 const DAYS = 30;
+const ORG_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
+const KINDS = ['none', 'dinner', 'community_manager', 'ambassador', 'founding', 'nonprofit'];
 const BRANDS: Record<string, string> = { 'vegans-explore': 'Vegans Explore' };
 const CITIES: Record<string, string> = {
   'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'delaware': 'Delaware', 'maryland': 'Maryland', 'virginia': 'Virginia', 'west-virginia': 'West Virginia', 'london': 'London',
@@ -184,8 +191,16 @@ function ambassadorWhy(inv: Invite, b: (t: string) => string) {
   }
 }
 
+async function orgOf(id: string | null) {
+  if (!id) return null;
+  const { data } = await db.from('listings').select('id, name, slug, category, logo_url').eq('id', id).maybeSingle();
+  return data;
+}
+
 async function emailFor(inv: Invite) {
   const first = firstName(inv.name);
+  const org = inv.points_to === 'nonprofit' ? await orgOf(inv.listing_id) : null;
+  const orgName = org?.name ?? 'your organization';
   const brand = BRANDS[inv.brand] ?? 'Vegans Explore';
   const d = inv.points_to === 'dinner' ? await dinnerOf(inv.dinner_slug) : null;
   const city = inv.city_slug ? CITIES[inv.city_slug] ?? inv.city_slug : null;
@@ -195,6 +210,7 @@ async function emailFor(inv: Invite) {
     : inv.points_to === 'community_manager' ? `${first}, lead ${city ?? 'your city'} with ${brand}`
     : inv.points_to === 'ambassador' ? `${first}, be a ${brand} Ambassador`
     : inv.points_to === 'founding' ? `${first}, be one of our first Founding Members`
+    : inv.points_to === 'nonprofit' ? `${first}, bring ${orgName} in as a ${brand} Nonprofit Partner`
     : `${first}, an invitation to ${brand}`;
   // Each paragraph is HTML built from escaped text, with what matters in bold (Sean, 2026-10-28: "Each paragraph should have a space.
   // Bold things that you feel should be bolded"). Spacing is inline on every paragraph, so it holds in every email app and in the
@@ -203,7 +219,7 @@ async function emailFor(inv: Invite) {
   const paras: string[] = [];
   if (inv.reason) for (const p of String(inv.reason).split(/\n\s*\n/)) if (p.trim()) paras.push(esc(p.trim()).replace(/\n/g, '<br>'));
   // A Founding Member invitation says what Vegans Explore is in its own paragraph, after the personal opening.
-  if (inv.points_to !== 'founding') paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
+  if (inv.points_to !== 'founding' && inv.points_to !== 'nonprofit') paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like you to be part of it.`);
   if (d) paras.push(`I'd like you at ${b(`our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}`)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${esc(city ?? '')} community as its ${b('Community Manager')}. Your link has the details.`.replace('our  ', 'our '));
   if (inv.points_to === 'ambassador') paras.push(ambassadorWhy(inv, b));
@@ -211,8 +227,15 @@ async function emailFor(inv: Invite) {
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives.${inv.reason ? '' : ' You were one of the first people I thought of.'}`);
     if (!inv.comp) paras.push(`It's ${b('$11, one time')}, with ${b('1,100 points')} to start: vote for the places you love, get the Daily Pulse in your city, check in, and unlock the Guides. Your $11 keeps the community running.`);
   }
-  if (inv.comp) paras.push(`${b('Your Founding Membership is on us')}${inv.points > 0 ? `, with ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} ${b(`Level ${inv.level}`)}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
-  const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : inv.points_to === 'founding' ? 'Become a Founding Member' : 'Accept your invitation';
+  // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account and
+  // their membership is on us. Referral earnings paid to the organization, never a donation, never tax-deductible.
+  if (inv.points_to === 'nonprofit') {
+    paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like ${b(orgName)} to be one of our ${b('first Nonprofit Partners')}.`);
+    paras.push(`${esc(orgName)} gets ${b('its own link')} to share with your people. Every time someone joins ${esc(brand)} through it, ${esc(orgName)} earns ${b('20% of the $11 Passport')}, and of Guides bought through it, paid to ${esc(orgName)}. We give you ready-made posts, a button and banner for your website and an email blurb${inv.points > 0 ? `, plus ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} for ${esc(orgName)} to use on our services` : ''}.`);
+    paras.push(`You would lead the account, and ${b('your own Founding Membership is on us')}. There's nothing to pay and nothing owed.`);
+  }
+  if (inv.comp && inv.points_to !== 'nonprofit') paras.push(`${b('Your Founding Membership is on us')}${inv.points > 0 ? `, with ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} to start` : ''}${inv.level > 1 ? `, ${inv.points > 0 ? 'at' : 'starting at'} ${b(`Level ${inv.level}`)}` : ''}. There's nothing to pay and nothing owed. If you like what we're building, tell people about it.`);
+  const cta = d ? 'See your seat' : inv.points_to === 'community_manager' ? 'See the role' : inv.points_to === 'ambassador' ? 'Accept and get started' : inv.points_to === 'founding' ? 'Become a Founding Member' : inv.points_to === 'nonprofit' ? 'See the partnership' : 'Accept your invitation';
   const url = linkUrl(inv);
   const fine = `This invitation is just for you, at ${inv.email}. It works once, until ${untilText}.`;
   const P = 'margin:0 0 18px;font-size:15px;line-height:1.65;color:#1a1a1a';
@@ -232,11 +255,16 @@ ${paras.map((x) => `<p style="${P}">${x}</p>`).join('\n')}
 async function nudgeFor(inv: Invite) {
   const first = firstName(inv.name);
   const url = linkUrl(inv);
+  const org = inv.points_to === 'nonprofit' ? await orgOf(inv.listing_id) : null;
+  const about = inv.points_to === 'nonprofit' ? `${org?.name ?? 'your organization'} being one of our first Nonprofit Partners`
+    : inv.points_to === 'ambassador' ? 'being one of our first Ambassadors' : 'being one of our first Founding Members';
   const said = inv.status === 'accepted'
     ? `You said yes to being one of our first Founding Members, thank you. The last step is the $11, and your spot is still held for you.`
     : inv.status === 'opened' || inv.email_opened_at
-      ? `I wanted to follow up on my note about being one of our first Founding Members. No pressure at all: your spot is held a little longer if you'd like it.`
-      : `I sent you a note last week about being one of our first Founding Members, and I didn't want it to get lost in your inbox.`;
+      ? `I wanted to follow up on my note about ${about}. No pressure at all: your spot is held a little longer if you'd like it.`
+      : `I sent you a note last week about ${about}, and I didn't want it to get lost in your inbox.`;
+  const subject = inv.points_to === 'nonprofit' ? `Re: ${first}, bring ${org?.name ?? 'your organization'} in as a Vegans Explore Nonprofit Partner`
+    : inv.points_to === 'ambassador' ? `Re: ${first}, be a Vegans Explore Ambassador` : `Re: ${first}, be one of our first Founding Members`;
   const until = new Date(Math.max(Date.parse(inv.expires_at ?? '') || 0, Date.now() + 14 * 86400000));
   const untilText = until.toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/New_York' });
   const cta = inv.status === 'accepted' ? 'Finish joining' : 'See your invitation';
@@ -250,20 +278,20 @@ async function nudgeFor(inv: Invite) {
 <p style="margin:24px 0 0;font-size:12px;line-height:1.5;color:#777">This invitation is just for you, at ${esc(inv.email)}. It's open until ${esc(untilText)}.</p>
 </div>`;
   const text = [`Hi ${first},`, said, `If now isn't the right time, just reply and tell me. I'd rather hear it than guess.`, `${cta}: ${url}`, `Sean A. Russell\nFounder, Vegans Explore`, `This invitation is just for you, at ${inv.email}. It's open until ${untilText}.`].join('\n\n');
-  return { subject: `Re: ${first}, be one of our first Founding Members`, html, text, to: inv.email, from: FROM, expires_at: until.toISOString() };
+  return { subject, html, text, to: inv.email, from: FROM, expires_at: until.toISOString() };
 }
 const NUDGE_MAX = 2, NUDGE_GAP_DAYS = 5;
 
 // The personal opening, written from what Sean told us about the person and what HQ > People already holds. Sean's notes come first;
 // nothing is invented. The email adds "Hi <first>," before it and the Founding Member paragraphs after it.
 const MODEL = 'claude-opus-5-5';
-const OPENING_SYSTEM = `You write the personal opening of an invitation email from Sean A. Russell, founder of Vegans Explore, a community for Vegans, city by city. Sean is hand-picking the first Founding Members and is inviting one person.
+const OPENING_SYSTEM = `You write the personal opening of an invitation email from Sean A. Russell, founder of Vegans Explore, a community for Vegans, city by city. Sean is hand-picking one person; the sources say what to (invitation): to be one of the first Founding Members, one of the first Ambassadors, or to bring their organization in as one of the first Nonprofit Partners. For a Nonprofit Partner, the opening may speak to the organization's work as well as the person, from the sources only.
 
 Write in Sean's voice, first person, speaking to them as "you": warm, plain and specific, the way a friend writes, never salesy.
 - 2 to 4 short sentences, under 550 characters. It opens the email right after "Hi <first name>,", so no greeting and no sign-off.
 - Say how Sean knows them and why they would make a strong member of this community, using only what the sources say. Sean's own notes come first and win over anything else; the HQ summary is background an assistant wrote from Sean's emails, useful for how they know each other.
 - Never invent a fact, a date, a place, a feeling or a compliment the sources do not state. Do not add superlatives ("favorite", "so many", "never once") or claims about their impact that the sources do not make. Saying something plainly and true beats saying it beautifully. Never describe Sean's feelings, memories or favorites ("my best memories", "I loved") unless his notes say them; the only opinion you add is the last sentence's reason they belong. If the sources are thin, write one or two simple, true sentences.
-- Do not describe Vegans Explore or mention the price, points, the Founding Membership, "city by city" or "the first members": the email says all of that next. End on the person, why they belong, not on the invitation.
+- Do not describe Vegans Explore or mention the price, points, earnings, links, the Founding Membership, the partnership's terms, "city by city" or "the first members": the email says all of that next. End on the person, why they belong, not on the invitation.
 - Never repeat anything private, sensitive or negative from the summary (money, health, conflicts, personal trouble).
 - No dashes of any kind, no exclamation marks, no emojis. Write Vegan with a capital V.`;
 const OPENING_SCHEMA = { type: 'object', additionalProperties: false, required: ['opening', 'note'], properties: {
@@ -276,8 +304,11 @@ async function draftOpening(inv: Invite): Promise<{ opening?: string; note?: str
   let person: any = null;
   if (inv.person_id) ({ data: person } = await db.from('people').select('first_name, last_name, organization, title, city, region, relationship_summary, last_interaction_at, email_message_count, source').eq('id', inv.person_id).maybeSingle());
   if (!person) ({ data: person } = await db.from('people').select('first_name, last_name, organization, title, city, region, relationship_summary, last_interaction_at, email_message_count, source').ilike('email', likeEsc(inv.email)).is('merged_into', null).limit(1).maybeSingle());
+  const org = inv.points_to === 'nonprofit' ? await orgOf(inv.listing_id) : null;
   const sources = {
     name: inv.name,
+    invitation: inv.points_to === 'nonprofit' ? 'Nonprofit Partner' : inv.points_to === 'ambassador' ? 'Ambassador' : 'Founding Member',
+    organization: org ? { name: org.name, kind: org.category } : undefined,
     seans_notes: String(inv.context || '').trim() || null,
     hq: person ? { organization: person.organization, title: person.title, city: person.city || person.region, summary: person.relationship_summary,
       emails_with_sean: person.email_message_count, last_contact: person.last_interaction_at ? String(person.last_interaction_at).slice(0, 10) : null } : null,
@@ -333,6 +364,7 @@ Deno.serve(async (req: Request) => {
         dinner: d ? { title: d.title, date: dinnerDate(d), place: dinnerPlace(d), url: await destinationFor(inv) } : null,
         status: inv.status === 'canceled' ? 'canceled' : inv.status === 'joined' ? 'joined' : inv.status === 'declined' ? 'declined' : inv.status === 'accepted' ? 'accepted' : expired ? 'expired' : 'open',
         expires_at: inv.expires_at, level: inv.level ?? null, profile: inv.profile ?? null, email_hint: maskEmail(inv.email),
+        org: inv.points_to === 'nonprofit' ? await orgOf(inv.listing_id) : null,
       };
       if (action === 'view') {
         if (inv.status === 'sent') await db.from('universe_invites').update({ status: 'opened', opened_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', inv.id).eq('status', 'sent');
@@ -353,7 +385,7 @@ Deno.serve(async (req: Request) => {
       };
       if (messages[result]) return json({ error: result, message: messages[result] }, 409);
       const { data: after } = await db.from('members').select('membership_status').eq('id', me).maybeSingle();
-      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : '/dashboard') });
+      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : inv.points_to === 'nonprofit' ? '/nonprofits/welcome' : '/dashboard') });
     }
 
     // ---- Admin ----
@@ -363,7 +395,7 @@ Deno.serve(async (req: Request) => {
     if (action === 'create') {
       const brand = String(body.brand ?? 'vegans-explore');
       if (!BRANDS[brand]) return json({ error: 'bad_brand', message: 'That brand does not have a membership to invite to yet.' }, 400);
-      const pointsTo = ['none', 'dinner', 'community_manager', 'ambassador', 'founding'].includes(body.points_to) ? body.points_to : 'none';
+      const pointsTo = KINDS.includes(body.points_to) ? body.points_to : 'none';
       const dinner = pointsTo === 'dinner' ? await dinnerOf(clip(body.dinner_slug, 80)) : null;
       if (pointsTo === 'dinner' && !dinner) return json({ error: 'bad_dinner', message: 'Pick a dinner.' }, 400);
       const city = pointsTo === 'community_manager' ? clip(body.city_slug, 40) : dinner?.city_slug ?? null;
@@ -394,7 +426,7 @@ Deno.serve(async (req: Request) => {
         // An account that never paid is not a member (registration is the Passport); it can still be invited.
         // A member can still be asked to be an Ambassador (Sean, 2026-10-28: Depot > Ambassadors); never one who already is.
         if (reg?.length && reg[0].ve_role === 'ambassador') { skipped.push({ name, email, why: 'Already an Ambassador' }); continue; }
-        if (reg?.length && reg[0].membership_status !== 'pending_payment' && pointsTo !== 'ambassador') { skipped.push({ name, email, why: 'Already a member' }); continue; }
+        if (reg?.length && reg[0].membership_status !== 'pending_payment' && pointsTo !== 'ambassador' && pointsTo !== 'nonprofit') { skipped.push({ name, email, why: 'Already a member' }); continue; }
         if (sup?.length) { skipped.push({ name, email, why: 'On the do-not-contact list' }); continue; }
         if (open?.length) { skipped.push({ name, email, why: 'Already has an open invite' }); continue; }
         if (personId) {
@@ -402,8 +434,19 @@ Deno.serve(async (req: Request) => {
           if (per?.quarantined || per?.archived) { skipped.push({ name, email, why: 'Quarantined or archived' }); continue; }
           if (per?.email_unsubscribed) { skipped.push({ name, email, why: 'Unsubscribed' }); continue; }
         }
-        // A Founding Member invitation is the $11 unless Sean makes this one person's on us (Sean, 2026-10-28).
-        const comp = pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
+        // A Nonprofit Partner invitation names the organization: a nonprofit, rescue or sanctuary in the Directory, not a partner yet.
+        let listingId: string | null = null;
+        if (pointsTo === 'nonprofit') {
+          const lid = isId(p?.listing_id) ? p.listing_id : isId(body.listing_id) ? body.listing_id : null;
+          const org = lid ? await orgOf(lid) : null;
+          if (!org || !ORG_CATS.includes(org.category)) { skipped.push({ name, email, why: 'Pick their organization (a nonprofit, rescue or sanctuary)' }); continue; }
+          const { data: np } = await db.from('ve_nonprofit_partners').select('id, status').eq('listing_id', org.id).maybeSingle();
+          if (np && np.status === 'active') { skipped.push({ name, email, why: `${org.name} is already a Nonprofit Partner` }); continue; }
+          listingId = org.id;
+        }
+        // A Founding Member invitation is the $11 unless Sean makes this one person's on us (Sean, 2026-10-28). A Nonprofit Partner's
+        // lead is always on us (Sean, 2026-10-29), and its points are the organization's.
+        const comp = pointsTo === 'nonprofit' ? true : pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
         const points = comp ? pointsOf(p?.points ?? body.points) : 0;
         const level = levelOf(p?.level ?? body.level);
         const profile = pointsTo === 'ambassador' ? profileOf(p?.profile ?? body.profile) : null;
@@ -432,13 +475,13 @@ Deno.serve(async (req: Request) => {
         const { data: inv, error } = await db.from('universe_invites').insert({
           brand, person_id: personId, name, email, comp, points, reason, points_to: pointsTo, dinner_slug: dinner?.slug ?? null,
           dinner_invite_id: dinnerInviteId, city_slug: city, batch_id: batch, created_by: by ?? actor.label, level, profile, pool: clip(p?.pool, 40),
-          context: clip(p?.context, 2000),
+          context: clip(p?.context, 2000), listing_id: listingId,
         }).select('*').single();
         if (error || !inv) { console.error('invite insert:', error); skipped.push({ name, email, why: 'Could not save' }); continue; }
 
         // The personal tracked link (Depot > Links), so the click names them.
         const base = `invite-${slugify(firstName(name), 16) || 'guest'}`;
-        const initiative = dinner ? `dinner-${dinner.slug}` : pointsTo === 'community_manager' ? 'community-managers' : pointsTo === 'ambassador' ? 'ambassadors' : pointsTo === 'founding' ? 'founding-members' : `invite-${brand}`;
+        const initiative = dinner ? `dinner-${dinner.slug}` : pointsTo === 'community_manager' ? 'community-managers' : pointsTo === 'ambassador' ? 'ambassadors' : pointsTo === 'founding' ? 'founding-members' : pointsTo === 'nonprofit' ? 'nonprofit-partners' : `invite-${brand}`;
         const dest = await destinationFor(inv);
         let link: { id: string; code: string } | null = null;
         for (let tries = 0; !link && tries < 6; tries++) {
@@ -459,7 +502,7 @@ Deno.serve(async (req: Request) => {
       let q = db.from('universe_invites').select('id, name, email, comp, points, level, profile, reason, points_to, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, joined_at, declined_at, decline_note, claimed_member_id, expires_at, created_at, created_by, link_code, code')
         .eq('brand', 'vegans-explore').order('created_at', { ascending: false }).limit(300);
       if (['ready', 'sent', 'opened', 'accepted', 'joined', 'declined', 'expired', 'canceled'].includes(body.status)) q = q.eq('status', body.status);
-      if (['none', 'dinner', 'community_manager', 'ambassador', 'founding'].includes(body.points_to)) q = q.eq('points_to', body.points_to);
+      if (KINDS.includes(body.points_to)) q = q.eq('points_to', body.points_to);
       const { data, error } = await q;
       if (error) { console.error('list:', error); return json({ error: 'list_failed' }, 500); }
       await refreshOpens(data ?? []);
@@ -487,10 +530,15 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === 'founding') {
-      const { data, error } = await db.from('universe_invites').select('id, name, email, person_id, comp, points, reason, context, pool, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, accepted_at, joined_at, declined_at, decline_note, claimed_member_id, expires_at, nudged_at, nudge_count, created_at, link_code, code')
-        .eq('brand', 'vegans-explore').eq('points_to', 'founding').order('created_at', { ascending: false }).limit(500);
+      // Every invitation made here: Founding Members, Nonprofit Partners, and the Ambassadors picked here (pool is set only here).
+      const { data, error } = await db.from('universe_invites').select('id, name, email, person_id, comp, points, level, profile, reason, context, pool, points_to, listing_id, status, sent_via, sent_at, opened_at, email_opened_at, resend_email_id, accepted_at, joined_at, declined_at, decline_note, claimed_member_id, expires_at, nudged_at, nudge_count, created_at, link_code, code')
+        .eq('brand', 'vegans-explore').or('points_to.eq.founding,points_to.eq.nonprofit,and(points_to.eq.ambassador,pool.not.is.null)').order('created_at', { ascending: false }).limit(500);
       if (error) { console.error('founding:', error); return json({ error: 'list_failed' }, 500); }
       await refreshOpens(data ?? []);
+      const orgIds = [...new Set((data ?? []).map((i: any) => i.listing_id).filter(Boolean))];
+      const { data: orgs } = orgIds.length ? await db.from('listings').select('id, name, slug').in('id', orgIds) : { data: [] };
+      const O = new Map((orgs ?? []).map((o: any) => [o.id, o]));
+      for (const i of (data ?? []) as any[]) i.org = O.get(i.listing_id) ?? null;
       const now = Date.now();
       const invites = (data ?? []).map((i) => ({
         ...i, status: ['sent', 'opened'].includes(i.status) && i.expires_at && Date.parse(i.expires_at) < now ? 'expired' : i.status, link: linkUrl(i),
@@ -536,7 +584,7 @@ Deno.serve(async (req: Request) => {
       if (!RESEND_KEY) return json({ error: 'email_off', message: 'Email is not set up for this function.' }, 500);
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: inv } = await db.from('universe_invites').select('*').eq('id', body.id).maybeSingle();
-      if (!inv || inv.points_to !== 'founding') return json({ error: 'not_found' }, 404);
+      if (!inv || !['founding', 'nonprofit', 'ambassador'].includes(inv.points_to)) return json({ error: 'not_found' }, 404);
       if (!['sent', 'opened', 'accepted'].includes(inv.status)) return json({ error: 'closed', message: 'This invitation is not waiting on them.' }, 409);
       if ((inv.nudge_count ?? 0) >= NUDGE_MAX) return json({ error: 'enough', message: `They have had ${NUDGE_MAX} follow-ups already.` }, 409);
       const last = Date.parse(inv.nudged_at ?? inv.sent_at ?? '') || 0;

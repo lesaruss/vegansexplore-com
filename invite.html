@@ -111,6 +111,7 @@
     var code = (new URLSearchParams(location.search).get('c') || '').toLowerCase().replace(/[^a-f0-9]/g, '').slice(0, 12);
     var $ = function (id) { return document.getElementById(id); };
     var invite = null;
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
     function call(action, token, extra) {
       return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + (token || ANON) }, body: JSON.stringify(Object.assign({ action: action, code: code }, extra || {})) })
@@ -165,6 +166,18 @@
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’m hand-picking the first Founding Members: the people who shape what this becomes before everyone else arrives.' + (inv.comp ? '' : ' It’s $11, one time, with 1,100 points to start.');
         if (!inv.comp) $('pt-points').hidden = false, $('pt-points').textContent = '1,100 points to start: vote, check in, unlock the Guides, and give to the places you love';
       }
+      // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account, on us.
+      if (inv.points_to === 'nonprofit') {
+        var org = (inv.org && inv.org.name) || 'your organization';
+        $('title').textContent = inv.first_name + ', bring ' + org + ' in as a Nonprofit Partner.';
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like ' + org + ' to be one of our first Nonprofit Partners. You would lead the account.';
+        $('gift').hidden = false; $('gift').textContent = 'Your own Founding Membership is on us';
+        $('points').innerHTML = ['<b>' + esc(org) + ' gets its own link.</b> Every time someone joins through it, ' + esc(org) + ' earns 20% of the $11 Passport, and of Guides bought through it, paid to ' + esc(org) + '.',
+          'A ready-made kit: posts to share, a button and banner for your website, and an email blurb, all with your link.',
+          inv.points > 0 ? Number(inv.points).toLocaleString('en-US') + ' points for ' + esc(org) + ' to use on our services.' : '',
+          'A Nonprofit Partner badge on ' + esc(org) + '’s page in the Directory, and a Guide that walks you through it.']
+          .filter(Boolean).map(function (t) { return '<li>' + t + '</li>'; }).join('');
+      }
       if (inv.points_to === 'community_manager') {
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like you to lead ' + (inv.city || 'your city') + ' as its Community Manager.';
       }
@@ -172,10 +185,10 @@
         $('dinner-link').href = inv.dinner.url; $('dinner-link').hidden = false;
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city. I’d like you at our dinner in ' + inv.dinner.place + ' on ' + inv.dinner.date + ', and part of what we’re building.';
       }
-      $('accept').textContent = inv.comp ? 'Accept your membership' : inv.points_to === 'founding' ? 'Become a Founding Member, $11' : 'Accept your invitation';
+      $('accept').textContent = inv.points_to === 'nonprofit' ? 'Accept for ' + ((inv.org && inv.org.name) || 'your organization') : inv.comp ? 'Accept your membership' : inv.points_to === 'founding' ? 'Become a Founding Member, $11' : 'Accept your invitation';
       if (inv.expires_at) {
         var d = new Date(inv.expires_at);
-        $('fine').textContent = 'This invitation is just for you' + (inv.email_hint ? ', at ' + inv.email_hint + '. Accept it with that email' : '') + '. It works once, until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.' + (inv.comp ? ' Nothing to pay, nothing owed.' : '');
+        $('fine').textContent = (inv.points_to === 'nonprofit' ? 'The organization’s earnings are referral earnings paid to it, never a donation and not tax-deductible. ' : '') + 'This invitation is just for you' + (inv.email_hint ? ', at ' + inv.email_hint + '. Accept it with that email' : '') + '. It works once, until ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '.' + (inv.comp ? ' Nothing to pay, nothing owed.' : '');
       }
       show('invite');
     }
@@ -200,6 +213,11 @@
           $('done-next').href = next;
           $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : invite.points_to === 'ambassador' ? 'Start as an Ambassador' : 'Go to your dashboard';
           $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active. Thank you for what you do for this community.' : 'Your account is ready.';
+          if (invite.points_to === 'nonprofit') {
+            $('done-title').textContent = 'Welcome, Nonprofit Partner.';
+            $('done-lede').textContent = ((invite.org && invite.org.name) || 'Your organization') + ' is a Vegans Explore Nonprofit Partner, and your Founding Membership is active. Your partner Guide has your link and your kit.';
+            $('done-next').textContent = 'Open your partner Guide';
+          }
           if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Become a Founding Member any time from your dashboard.';
           show('done');
           return;

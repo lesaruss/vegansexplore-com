@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Nonprofit Partners | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Nonprofit Partners (LOCKED by Sean 2026-10-29, playbook ve-nonprofit-partners). The organization is the partner: its link, its
+       20%, its points, its badge. One thing per view: the partners and the invitations (#list), one partner (#p/<id>): its numbers,
+       its link, its lead, its status and rate, Give points, who joined, its earnings. Invitations are made in Founding Members (Invite
+       as: Nonprofit Partner). Data: ve-nonprofit (list, get, save, points); migration 20261029_nonprofit_partners.sql. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px 14px;align-items:start;}
+    .form label,.lbl{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;}
+    .form input,.form textarea,.search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ve-text);width:100%;}
+    .form textarea{min-height:150px;resize:vertical;}
+    .form .wide{grid-column:1/-1;}
+    .hint{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .mic{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 12px;min-height:36px;border-radius:6px;cursor:pointer;border:1px solid rgba(0,0,0,.25);background:#fff;color:var(--ve-text);display:inline-flex;align-items:center;gap:6px;}
+    .mic svg{width:16px;height:16px;}
+    .mic.on{background:#a61b1b;border-color:#a61b1b;color:#fff;}
+    .note-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
+    .msg.err{color:#a61b1b;}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;}
+    .tabs a,.tabs button{font:inherit;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:#eef1ee;color:#333;text-decoration:none;border:0;cursor:pointer;}
+    .tabs a.on,.tabs button.on{background:var(--ve-green-deep);color:#fff;}
+    .views{display:flex;gap:6px;flex-wrap:wrap;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .totals{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:1000px){.totals{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    @media (max-width:520px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    /* A candidate: tick, who they are, where we know them from, and how much you have written with them. */
+    .crow{display:grid;grid-template-columns:28px minmax(0,1fr) 140px;gap:12px;align-items:start;padding:12px 14px;border-top:1px solid var(--ve-border);cursor:pointer;}
+    .crow:first-child{border-top:0;}
+    .crow.on{background:#f3faf3;}
+    .crow input{width:20px;height:20px;margin-top:3px;accent-color:var(--ve-green-deep);}
+    .crow b{font-size:14px;}
+    .crow .who{font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    .crow .sum{font-size:12.5px;color:var(--ve-text);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .crow .meta{font-size:12px;color:var(--ve-text-75);text-align:right;}
+    .crow .meta b{display:block;font-size:16px;color:var(--ve-text);}
+    @media (max-width:640px){.crow{grid-template-columns:28px minmax(0,1fr);}.crow .meta{grid-column:2;text-align:left;}.crow .meta b{display:inline;font-size:13px;}}
+    .pool{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;background:#eef1ee;color:#333;margin:4px 4px 0 0;white-space:nowrap;}
+    .pool.suggested{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pool.guest{background:#fff4e0;color:#8a5200;}
+    .pool.unpaid{background:#e8f0fe;color:#1a4a9c;}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-ready{background:#fff4e0;color:#8a5200}.t-sent{background:#e8f0fe;color:#1a4a9c}.t-read,.t-opened{background:#e6f4f6;color:#0d5c66}.t-quiet{background:#f3ecf9;color:#5b2a86}.t-accepted{background:#fff0d6;color:#7a4b00}.t-joined{background:var(--ve-green-light);color:var(--ve-green-deep)}.t-declined{background:#fdecec;color:#8f1d1d}.t-expired,.t-canceled{background:#f1f1f1;color:#555}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:18px 14px;}
+    .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
+    .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:18px;}
+    .two>.card{margin:0;}
+    .steps{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+    .steps li{display:flex;gap:10px;align-items:center;font-size:13.5px;}
+    .steps i{width:12px;height:12px;border-radius:50%;background:#d6d9d6;flex:none;}
+    .steps li.done i{background:var(--ve-green-deep);}
+    .steps li.bad i{background:#a61b1b;}
+    .steps li:not(.done):not(.bad){color:var(--ve-text-75);}
+    .picked{position:sticky;bottom:0;z-index:2;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;background:#1a1a1a;color:#fff;border-radius:10px;padding:10px 14px;margin-top:12px;}
+    .picked b{font-size:14px;}
+    .prow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--ve-border);}
+    .prow:first-child{border-top:0;}
+    .prow small{display:block;font-size:12.5px;color:var(--ve-text-75);}
+    .comp{display:flex;gap:6px;align-items:center;font-size:12.5px;font-weight:700;cursor:pointer;}
+    .comp input{width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .tools{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0 0 12px;}
+    .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:16px;}
+    .pgrid .card{margin:0;}
+    .known{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 10px;display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden;}
+    .known b{display:block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:2px;}
+    #ed-reason{min-height:120px;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .kv div{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 14px;}
+    .kv b{display:block;font-size:22px;font-weight:900;line-height:1.1;}
+    .kv span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .form select{font:inherit;font-size:14px;padding:9px 44px 9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;color:var(--ve-text);text-transform:none;letter-spacing:0;font-weight:600;}
+    .why{font-size:13px;background:#f7f8f7;border-radius:8px;padding:10px 12px;margin:0 0 12px;}
+    /* Invite as (Sean, 2026-10-29: "when I see some of these people... I want to make them an ambassador... a nonprofit version"). */
+    .form select{font:inherit;font-size:14px;padding:9px 44px 9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;width:100%;color:var(--ve-text);text-transform:none;letter-spacing:0;font-weight:600;}
+    .orgres{border:1px solid var(--ve-border);border-radius:8px;max-height:220px;overflow:auto;margin-top:6px;background:#fff;}
+    .orgres button{display:block;width:100%;text-align:left;font:inherit;font-size:13.5px;padding:9px 12px;border:0;border-top:1px solid var(--ve-border);background:#fff;cursor:pointer;text-transform:none;letter-spacing:0;font-weight:600;color:var(--ve-text);}
+    .orgres button:first-child{border-top:0;}
+    .orgres button:hover{background:#f3faf3;}
+    .orgres small{font-weight:500;color:var(--ve-text-75);}
+    .orgpick{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--ve-green-light);border-radius:8px;padding:10px 12px;font-size:14px;font-weight:800;color:var(--ve-green-deep);text-transform:none;letter-spacing:0;}
+    .kind{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:5px;margin-left:6px;vertical-align:middle;}
+    .kind.amb{background:#e8f0fe;color:#1a4a9c;}.kind.np{background:#fff4e0;color:#8a5200;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Nonprofit Partners</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Organizations we invited to share Vegans Explore with their people. Each one has its own link, earns 20% of the Passports and Guides bought through it, holds points for our services and wears the Nonprofit Partner badge. Invite one from Founding Members: pick the person who leads it, then Invite as, Their organization.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nonprofit';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null;
+      var ST = { active: 'Active', paused: 'Paused', ended: 'Ended' };
+      var IST = { ready: 'Not sent yet', sent: 'Sent', opened: 'Opened the link', joined: 'Accepted', declined: 'Declined', expired: 'Expired', canceled: 'Canceled' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+      function usd(c) { return '$' + (Number(c || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function copy(text, btn) {
+        var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+        else window.prompt('Copy this', text);
+      }
+      function stTag(s) { return '<span class="tag t-' + (s === 'active' ? 'joined' : s === 'paused' ? 'ready' : 'canceled') + '">' + esc(ST[s] || s) + '</span>'; }
+      function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
+
+      function drawList() {
+        var P = data.partners || [], I = data.invites || [];
+        var open = I.filter(function (i) { return i.status !== 'joined'; });
+        app.innerHTML = '<div class="bar"><nav class="views"><a href="#list" class="on">Partners (' + P.length + ')</a></nav><a class="btn" href="/admin/depot/founding#pick">Invite an organization</a></div>' +
+          '<div class="list">' + (P.length ? P.map(function (p) {
+            return '<div class="irow"><div><b>' + esc(p.org ? p.org.name : 'An organization') + '</b><small>' + (p.lead ? 'Led by ' + esc(p.lead.name) + ' &middot; ' : 'No lead &middot; ') +
+              n(p.visitors) + ' visitors &middot; ' + n(p.members) + ' members &middot; ' + usd((p.totals || {}).earned) + ' earned &middot; ' + n(p.points) + ' points &middot; since ' + esc(day(p.started_at)) + '</small></div>' +
+              stTag(p.status) + '<a class="btn btn-ghost btn-sm" href="#p/' + esc(p.id) + '">Open</a></div>';
+          }).join('') : '<p class="empty">No Nonprofit Partners yet. Invite the first organization from Founding Members.</p>') + '</div>' +
+          (open.length ? '<h2 style="margin-top:22px">Invitations</h2><div class="list">' + open.map(function (i) {
+            return '<div class="irow"><div><b>' + esc(i.org ? i.org.name : 'An organization') + '</b><small>' + esc(i.name) + ' &middot; ' + esc(i.email) + ' &middot; ' + n(i.points) + ' points for the organization &middot; made ' + esc(day(i.created_at)) + '</small></div>' +
+              '<span class="tag t-' + esc(i.status) + '">' + esc(IST[i.status] || i.status) + '</span><a class="btn btn-ghost btn-sm" href="/admin/depot/founding#invite/' + esc(i.id) + '">Open</a></div>';
+          }).join('') + '</div>' : '');
+      }
+
+      function drawOne(id) {
+        var p = (data.partners || []).filter(function (x) { return x.id === id; })[0];
+        if (!p) { app.innerHTML = '<p class="crumb"><a href="#list">Nonprofit Partners</a></p><p class="empty">That partner is not here.</p>'; return; }
+        var T = p.totals || {}, link = 'https://vegansexplore.com/r/' + p.code;
+        app.innerHTML = '<p class="crumb"><a href="#list">Nonprofit Partners</a> &rsaquo; ' + esc(p.org ? p.org.name : '') + '</p>' +
+          '<section class="card"><div class="bar"><div><h2 style="margin:0">' + esc(p.org ? p.org.name : '') + '</h2><small class="hint">' + esc(p.org ? p.org.category : '') + (p.lead ? ' &middot; led by ' + esc(p.lead.name) + ' (' + esc(p.lead.email) + ')' : ' &middot; no lead') + ' &middot; since ' + esc(day(p.started_at)) + '</small></div>' + stTag(p.status) + '</div>' +
+          '<div class="kv"><div><b>' + n(p.visitors) + '</b><span>Link visitors</span></div><div><b>' + n(p.members) + '</b><span>Members joined</span></div><div><b>' + n(p.signups - p.members) + '</b><span>Waiting</span></div>' +
+            '<div><b>' + usd(T.earned) + '</b><span>Earned</span></div><div><b>' + usd(T.ready) + '</b><span>Ready to pay</span></div><div><b>' + usd(T.paid) + '</b><span>Paid</span></div><div><b>' + n(p.points) + '</b><span>Points held</span></div></div>' +
+          '<div class="acts"><code style="font-weight:800">' + esc(link.replace('https://', '')) + '</code><button type="button" class="btn btn-ghost btn-sm" id="cp">Copy the link</button>' +
+            (p.org ? '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(p.org.slug) + '" target="_blank" rel="noopener">Their page</a>' : '') +
+            '<a class="btn btn-ghost btn-sm" href="/nonprofits/welcome?partner=' + esc(p.id) + '" target="_blank" rel="noopener">See their Guide</a></div></section>' +
+          '<div class="two"><section class="card"><h2>The partnership</h2><form class="form" id="ed">' +
+            '<label>Status<select id="ed-st">' + Object.keys(ST).map(function (k) { return '<option value="' + k + '"' + (k === p.status ? ' selected' : '') + '>' + ST[k] + '</option>'; }).join('') + '</select><span class="hint">Paused or Ended: the badge comes off and the link stops earning.</span></label>' +
+            '<label>Rate (%)<input id="ed-rate" type="number" min="0" max="30" step="1" value="' + esc(p.rate_pct) + '"><span class="hint">20% is the partnership\'s rate.</span></label>' +
+            '<label>Their link<input id="ed-code" value="' + esc(p.code) + '" maxlength="24"><span class="hint">vegansexplore.com/r/&lt;this&gt;. Changing it breaks the old one.</span></label>' +
+            '<label>A new lead (their account email)<input id="ed-lead" type="email" placeholder="' + esc(p.lead ? p.lead.email : '') + '"><span class="hint">Everything stays with the organization.</span></label>' +
+            '<label class="wide">Team note<textarea id="ed-note" maxlength="1000" style="min-height:80px">' + esc(p.note || '') + '</textarea></label>' +
+            '<div class="wide acts"><button type="submit" class="btn">Save</button><span class="msg" id="ed-msg" role="status"></span></div></form></section>' +
+          '<section class="card"><h2>Give points</h2><form class="form" id="gp"><label>Points<input id="gp-n" type="number" min="-100000" max="100000" step="100" value="1100"><span class="hint">A negative number takes points back.</span></label>' +
+            '<label>Why<input id="gp-why" maxlength="300" placeholder="For their spring event..."></label><div class="wide acts"><button type="submit" class="btn">Give points</button><span class="msg" id="gp-msg" role="status"></span></div></form>' +
+            ((p.ledger || []).length ? '<div class="list" style="margin-top:12px">' + p.ledger.map(function (x) { return '<div class="irow"><div><b>' + (x.delta > 0 ? '+' : '') + n(x.delta) + '</b><small>' + esc(x.note || x.reason) + ' &middot; ' + esc(day(x.at)) + '</small></div><span></span><span></span></div>'; }).join('') + '</div>' : '') + '</section></div>' +
+          '<div class="two" style="margin-top:18px"><section class="card"><h2>Who joined with their link</h2>' + ((p.joined || []).length ? '<div class="list">' + p.joined.map(function (j) { return '<div class="irow"><div><b>' + esc(j.name || 'A member') + '</b><small>' + esc(day(j.at)) + '</small></div><span class="tag t-' + (j.member ? 'joined' : 'ready') + '">' + (j.member ? 'Member' : 'Waiting') + '</span><span></span></div>'; }).join('') + '</div>' : '<p class="empty">No one yet.</p>') + '</section>' +
+          '<section class="card"><h2>Earnings</h2>' + ((p.commissions || []).length ? '<div class="list">' + p.commissions.map(function (c) { return '<div class="irow"><div><b>' + usd(c.commission_cents) + '</b><small>' + esc(c.buyer || 'A member') + ' bought ' + (c.product === 'guide' ? 'a Guide' : 'the Passport') + ' ' + esc(day(c.created_at)) + '</small></div><span class="tag t-' + (c.status === 'pending' ? 'ready' : c.status === 'ready' ? 'sent' : c.status === 'reversed' ? 'canceled' : 'joined') + '">' + esc(c.status) + '</span><span></span></div>'; }).join('') + '</div><p class="hint" style="margin-top:8px">Mark them paid in <a href="/admin/depot/ambassadors#commissions/ready">Ambassadors &rsaquo; Commissions</a>, after the organization\'s W-9.</p>' : '<p class="empty">Nothing earned yet.</p>') + '</section></div>';
+        $('cp').addEventListener('click', function () { copy(link, this); });
+        $('ed').addEventListener('submit', function (e) {
+          e.preventDefault(); var m = $('ed-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          var body = { action: 'save', id: p.id, status: $('ed-st').value, rate_pct: Number($('ed-rate').value), note: $('ed-note').value.trim() || null };
+          if ($('ed-code').value.trim().toUpperCase() !== p.code) body.code = $('ed-code').value.trim();
+          if ($('ed-lead').value.trim()) body.lead_email = $('ed-lead').value.trim();
+          api(body).then(function (d) {
+            if (d && d.ok) { m.textContent = 'Saved.'; load().then(function () { drawOne(p.id); }); return; }
+            m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not save.';
+          });
+        });
+        $('gp').addEventListener('submit', function (e) {
+          e.preventDefault(); var m = $('gp-msg'), v = Math.round(Number($('gp-n').value) || 0);
+          if (!v) { m.className = 'msg err'; m.textContent = 'How many points?'; return; }
+          m.className = 'msg'; m.textContent = 'Saving...';
+          api({ action: 'points', id: p.id, amount: v, note: $('gp-why').value.trim() || null }).then(function (d) {
+            if (d && d.ok) { m.textContent = 'Done. They hold ' + n(d.balance) + '.'; load().then(function () { drawOne(p.id); }); return; }
+            m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not go through.';
+          });
+        });
+      }
+
+      function draw() {
+        var r = location.hash.replace(/^#/, '') || 'list', m;
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The partners did not load. Refresh to try again.</p>'; }); }
+        if ((m = r.match(/^p\/([0-9a-f-]{36})$/))) return drawOne(m[1]);
+        drawList();
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

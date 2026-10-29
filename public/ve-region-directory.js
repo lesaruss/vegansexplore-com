@@ -487,6 +487,8 @@
     var spec = l.category === 'Physicians' ? specLabel(l.specialty) : '';
     return esc(l.person_title || spec || l.category || '');
   }
+  // A Nonprofit Partner (Sean, 2026-10-29): listings.tags carries ve-nonprofit-partner while the partnership is active.
+  function partnerTag(l) { return (l.tags || []).indexOf('ve-nonprofit-partner') >= 0 ? ' <span class="vrd-mstat vrd-mstat-on">Nonprofit Partner</span>' : ''; }
   function mediaTag(l) {
     var w = statusWords(l.category), s = l.business_status, work = /Books|Documentaries/.test(l.category);
     // A book or a film is simply there; it says so only when it is not (Sean, 2026-10-27: "Available doesn't tell me anything").
@@ -514,7 +516,7 @@
       (isPerson(l) ? '<div class="rank-meta">' + personMeta(l) + '</div>'
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-          '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + '</div>') + vettingNote(l) + '</div>' +
+          '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }

@@ -457,9 +457,10 @@
             }).join('') + '</nav></div>' +
             '<div class="list">' + (rows.length ? rows.map(function (c) {
               var open = c.status === 'pending' || c.status === 'ready';
-              var to = c.route === 'nonprofit' ? 'to ' + (c.org ? c.org.name : 'their organization') : 'to them';
-              return '<div class="irow"><div><b>' + esc(c.affiliate ? c.affiliate.name : 'A member') + ' &middot; ' + usd(c.commission_cents) + ' ' + esc(to) + '</b><small>' +
-                esc(c.buyer ? c.buyer.name : 'A member') + ' bought ' + (c.product === 'guide' ? 'a Guide' : 'the Passport') + ' ' + esc(day(c.created_at)) + ' &middot; Level ' + c.level + ', ' + Number(c.rate_pct) + '%' +
+              // A Nonprofit Partner's commission (route 'partner', Sean 2026-10-29) is the organization's own, paid to it.
+              var to = c.route === 'nonprofit' ? 'to ' + (c.org ? c.org.name : 'their organization') : c.route === 'partner' ? 'to the organization (Nonprofit Partner)' : 'to them';
+              return '<div class="irow"><div><b>' + esc(c.route === 'partner' ? (c.org ? c.org.name : 'A Nonprofit Partner') : c.affiliate ? c.affiliate.name : 'A member') + ' &middot; ' + usd(c.commission_cents) + ' ' + esc(to) + '</b><small>' +
+                esc(c.buyer ? c.buyer.name : 'A member') + ' bought ' + (c.product === 'guide' ? 'a Guide' : 'the Passport') + ' ' + esc(day(c.created_at)) + ' &middot; ' + (c.route === 'partner' ? 'partnership rate' : 'Level ' + c.level) + ', ' + Number(c.rate_pct) + '%' +
                 (c.status === 'pending' ? ' &middot; ready ' + esc(day(c.hold_until)) : '') + (c.note ? ' &middot; ' + esc(c.note) : '') + '</small></div>' +
                 '<span class="tag t-' + (c.status === 'pending' ? 'ready' : c.status === 'ready' ? 'sent' : c.status === 'reversed' ? 'canceled' : 'joined') + '">' + esc(CST[c.status]) + '</span>' +
                 (c.status === 'ready' ? '<button type="button" class="btn btn-sm" data-settle="' + esc(c.id) + '" data-to="' + (c.route === 'nonprofit' ? 'given' : 'paid') + '">' + (c.route === 'nonprofit' ? 'Mark given' : 'Mark paid') + '</button>' : '<span></span>') +
