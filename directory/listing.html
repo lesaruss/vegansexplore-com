@@ -752,8 +752,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
-.film-ppl{font-size:13px;color:var(--ve-text-75);margin:12px 0 0}
-.film-ppl a{color:#1f5f22;font-weight:700}
+#film-people .vrd-root .rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1180px){#film-people .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){#film-people .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1386,12 +1387,39 @@ function renderFilmOverview(l){
   var pods = Array.isArray(d.film_podcasts) && d.film_podcasts.length ? '<div class="section" id="film-pods"><h2 class="section-title">On our podcast</h2>' +
     '<p class="pp-sub">Our conversations with the people who made this film or appear in it.</p><div class="vep-dock" data-vep-always></div>' +
     '<div class="pp-scroll"><div class="vep-list"><p class="pp-empty">Loading...</p></div></div></div>' : '';
-  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + pods;
+  var people = Array.isArray(d.film_people) && d.film_people.length ? '<div class="section" id="film-people"><h2 class="section-title">People in this film</h2>' +
+    '<p class="pp-sub">The people who made it or appear in it that we have interviewed. Vote for them like any listing.</p>' +
+    '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>' : '';
+  return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + people + pods;
+}
+// People in this film (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even
+// vote for them"). details.film_people [{person, role}] are People listings, drawn with the Directory's own card and votes
+// (VERegionDirectory.card / wire, loaded on first need), three across beside the sidebar, in the order saved (the director first).
+function loadFilmPeople(l){
+  var list = ((l.details || {}).film_people || []).filter(function(x){ return x && x.person; });
+  var grid = document.querySelector('#film-people .rank-grid'); if(!grid || !list.length) return;
+  var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+    var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+  });
+  ready.then(function(){
+    if(!window.VERegionDirectory) return;
+    VERegionDirectory.css();
+    var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    var sel = VERegionDirectory.FIELDS + ',person_title:details->person->>title,specialty:details->person->>specialty';
+    return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + list.map(function(x){ return encodeURIComponent(x.person); }).join(',') + ')&select=' + encodeURIComponent(sel), { headers: H })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+        var by = {}; (rows || []).forEach(function(r){ by[r.slug] = r; });
+        var cards = list.map(function(x){ return by[x.person]; }).filter(Boolean);
+        if(!cards.length){ document.getElementById('film-people').hidden = true; return; }
+        grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
+        VERegionDirectory.wire(grid.parentNode);
+      });
+  }).catch(function(){ var sec = document.getElementById('film-people'); if(sec) sec.hidden = true; });
 }
 // On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
 // these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
 // is read through ve-podcast `episode` and drawn as a person page's row (ppEpRow: Play in the docked player, Save), the directors first,
-// then the newest, two across on desktop. The people with a profile in People are linked under the list.
+// then the newest, two across on desktop. Their People profiles are the tiles above it (loadFilmPeople).
 function loadFilmPods(l){
   var list = ((l.details || {}).film_podcasts || []).filter(function(x){ return x && x.show && x.guid; });
   var box = document.querySelector('#film-pods .vep-list'); if(!box || !list.length) return;
@@ -1418,11 +1446,6 @@ function loadFilmPods(l){
       var show = o.ep.show; o.ep.image = show.image || o.ep.image || ''; PP_EPS[show.id + '|' + o.ep.guid] = o.ep;
       return window.VEEpisodes ? VEEpisodes.row(o.ep, show, { pre: o.x.with + ' · ' + show.name }) : '';
     }).join('');
-    var ppl = [];
-    rows.forEach(function(o){ var n = o.x.with.split(',')[0]; if(o.x.person && !ppl.some(function(p){ return p[0] === o.x.person; })) ppl.push([o.x.person, n]); });
-    if(ppl.length){ var sec2 = document.getElementById('film-pods'), pl = document.createElement('p'); pl.className = 'film-ppl';
-      pl.innerHTML = 'In our People directory: ' + ppl.map(function(p){ return '<a href="/directory/' + encodeURIComponent(p[0]) + '">' + esc(p[1]) + '</a>'; }).join(', ');
-      sec2.appendChild(pl); }
   });
 }
 function platformList(l){
@@ -4265,7 +4288,7 @@ if(!slug || slug === 'listing'){
       trackActions(l);
       ownerVerifiedCard(l);
       if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
-      if(l.category === 'Documentaries & Films' && !DEMO) loadFilmPods(l);
+      if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isPersonL(l)) loadPerson(l);
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them

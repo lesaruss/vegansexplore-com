@@ -1316,12 +1316,18 @@ and theendofmeat.com now serve gambling sites; gamechangersmovie.com and aprayer
 these films as well... anyone else that's been in a documentary"; migration `20261029_film_podcasts.sql`): under About, a film lists our
 episodes with the people who made it or are in it (`details.film_podcasts` `[{show, guid, with, person?}]`: the show's Directory slug, the
 feed guid, "Keegan Kuhn, co-director" or "Dr. Michael Klaper, in the film", and their People slug), read through `ve-podcast` `episode`
-(`loadFilmPods` in `directory/listing.html`), two across on desktop, the directors first, Play in a player docked above, then **In our People
-directory** linking whoever has a profile. The directors panel (Vegans Explore Podcast 57: Shaun Monson, Louie Psihoyos, Marc Pierschel,
+(`loadFilmPods` in `directory/listing.html`), two across on desktop, the directors first, Play in a player docked above, with their People tiles above it. The directors panel (Vegans Explore Podcast 57: Shaun Monson, Louie Psihoyos, Marc Pierschel,
 Keegan Kuhn) is on Earthlings, The Game Changers, Live and Let Live, The End of Meat, Cowspiracy, What the Health and They're Trying to Kill
 Us; John Lewis on They're Trying to Kill Us; Klaper on Cowspiracy and What the Health; Barnard on What the Health, Forks Over Knives, Eating
 You Alive and They're Trying to Kill Us; Dotsie Bausch on The Game Changers. Who is in which film is checked against its cast before a row
 goes in (Klaper is not in Forks Over Knives or Eating You Alive). The four directors have no People profiles yet.
+**People in this film** (Sean, 2026-10-29: "their same tile that we have in their directory featured on their page. So they could even vote
+for them"; migration `20261029_film_people.sql`): above On our podcast, the People listings who made the film or are in it
+(`details.film_people` `[{person, role}]`) as the Directory's own card with Votes (`loadFilmPeople`, which loads
+`/public/ve-region-directory.js` on first need), three across, two under 1180 px, one on phones. What the Health: Joel Kahn, Klaper, Barnard;
+Cowspiracy: Klaper; Forks Over Knives and Eating You Alive: Barnard; They're Trying to Kill Us: John Lewis, Barnard; The Game Changers: Dotsie
+Bausch. IMDb and Wikipedia do not resolve from the build session, so casts were checked through published cast listings; Torre Washington
+was not found in The Game Changers' cast and is left out until it is confirmed.
 
 ## People (Sean, 2026-10-28)
 
