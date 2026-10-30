@@ -617,7 +617,7 @@
               '<div><span>Card</span><b style="font-size:15px">' + (x.source_cta === 'claim' ? 'Is this you?' : x.source_cta === 'ad' ? 'Creator ad' : '-') + '</b></div>' +
               '<div><span>Arrived by</span><b style="font-size:15px">' + esc(x.source_channel || 'Unknown') + '</b></div>' +
               (x.claim_listing ? '<div class="kv-wide"><span>Claims the profile</span><b style="font-size:15px"><a href="/directory/' + esc(x.claim_listing.slug) + '" target="_blank" rel="noopener">' + esc(x.claim_listing.name) + '</a></b><small style="display:block;margin-top:4px">Confirm it is them, then link it in the listing editor\'s Their Vegans Explore account.</small></div>' : '') +
-            '</div><div class="list" id="cr-journey"><p class="empty">Loading their steps...</p></div>' +
+            '</div><h3>Their steps</h3><div class="list" id="cr-journey"><p class="empty">Loading their steps...</p></div>' +
             '<h3>Platforms</h3><div class="list">' + (x.platforms || []).map(function (p) { return '<div class="irow"><div><b>' + esc(p.label) + '</b><small>' + esc(p.handle) + '</small></div><span>' + (p.followers ? reach(p.followers) : '') + '</span><span></span><span></span></div>'; }).join('') + '</div>' +
             '<h3>Their answers</h3><div class="list">' + (d.answer_labels || []).filter(function (l) { return A[l[0]] && ['name', 'email', 'phone'].indexOf(l[0]) < 0; }).map(function (l) {
               return '<div class="irow"><div><small>' + esc(l[1]) + '</small><div style="font-size:14px;white-space:pre-line;overflow-wrap:anywhere">' + esc(words(l[0])) + '</div></div><span></span><span></span><span></span></div>';
@@ -663,9 +663,9 @@
           app.innerHTML = '<div class="bar">' + views('funnel') + '</div>' +
             '<p class="sub">The creator ad and the "Is this you?" card on every People page, followed to the application. Each number is people, counted once. ' +
             'A page is where they clicked; "Straight in" is someone who reached the application without a card. Tracking started October 30, 2026.</p>' +
-            '<div class="bar"><label for="fn-days" class="hint" style="margin:0 8px 0 0">Period</label><select id="fn-days" class="sel">' + [[7, 'Last 7 days'], [30, 'Last 30 days'], [90, 'Last 90 days'], [365, 'Last year']].map(function (o) {
+            '<div style="display:flex;align-items:center;gap:10px;margin:0 0 14px"><label for="fn-days" class="hint" style="margin:0">Period</label><select id="fn-days" class="sel">' + [[7, 'Last 7 days'], [30, 'Last 30 days'], [90, 'Last 90 days'], [365, 'Last year']].map(function (o) {
               return '<option value="' + o[0] + '"' + (o[0] === d.days ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
-            '<div class="kv">' + COLS.map(function (c) { return '<div><span>' + c[1] + '</span><b>' + (T[c[0]] || 0) + '</b></div>'; }).join('') + '</div>' +
+            '<section class="card"><div class="kv" style="margin:0">' + COLS.map(function (c) { return '<div><span>' + c[1] + '</span><b>' + (T[c[0]] || 0) + '</b></div>'; }).join('') + '</div></section>' +
             '<section class="card"><h2 style="margin:0 0 10px">By page</h2>' + table(F.pages || [], 'Page', function (r) {
               return r.slug ? '<a href="/directory/' + esc(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a>' : r.key === '(none)' ? 'Straight in' : esc(r.key); }) + '</section>' +
             '<section class="card"><h2 style="margin:0 0 10px">By how they came in</h2>' + table(F.channels || [], 'Channel', function (r) { return esc(r.key); }) +

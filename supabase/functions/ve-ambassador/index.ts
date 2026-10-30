@@ -377,7 +377,7 @@ Deno.serve(async (req) => {
       if (!isId(body.id)) return json({ error: 'bad_request' }, 400);
       const { data: app } = await db.from('ve_creator_applications').select('id, source_visitor, created_at').eq('id', body.id).maybeSingle();
       if (!app) return json({ error: 'not_found' }, 404);
-      let q = db.from('ve_promo_events').select('step, page, listing_id, cta, channel, created_at').eq('promo', PROMO).order('created_at').limit(200);
+      let q = db.from('ve_promo_events').select('step, page, listing_id, cta, channel, created_at').eq('promo', PROMO).order('created_at').order('id').limit(200);
       q = app.source_visitor ? q.or(`visitor.eq.${app.source_visitor},ref_id.eq.${app.id}`) : q.eq('ref_id', app.id);
       const { data: ev } = await q;
       const ids = [...new Set((ev || []).map((e: any) => e.listing_id).filter(Boolean))];

@@ -2091,7 +2091,30 @@ doorway into making them an ambassador." **Launched to everyone 2026-10-28** (Se
   row closed). Every bio was written from the transcripts the same day, 28 moved to the section their interview puts them in (the seed's
   section kept as their second), 29 have their Instagram photo, checked by eye (Sailesh Rao's, Feldi's, James Wildman's and Tim James's
   were not them and were removed). Not added: people only talked about (Tabitha Brown) and businesses (Love Life Cafe, Maizly...).
-- Not built yet: people from events and articles beyond the Foodie Fest, the Ambassador path from a profile, and a "Is this you?" for the person.
+- **"Is this you?" and the creator ad** (Sean, 2026-10-30: "there isn't anything about claiming it... an ad for content creators to
+  register using the animated style... see who's clicking on it... follow their journey... which channels are showing up the most... see
+  that somebody signed up because they went through Brooke's page and became a creator on her page"; migration `20261030_promo_funnel.sql`).
+  Every People page's sidebar opens with **Is this you, <first name>?** (while no account holds the profile: no `owner_member_id`, no
+  `details.person.member_id`), going to the creator application with `?claim=<slug>` (`/gigs/sample?claim=<slug>#join/1`, which says
+  "You are claiming <name>' profile", Not me), and an **animated creator ad**: Kai in our illustration style, four scenes crossfading with
+  a headline each (Cook for the camera, Host our events, Tell local stories, Work with Vegan brands), Become a creator, opening the
+  walkthrough (`/gigs/sample#overview`). Both are `/public/ve-promo.js` (`VEPromo.creatorCards`, `ppPromo` in `directory/listing.html`;
+  not in a demo or on another brand's site, not for the person themselves). **Every step is tracked from the page it started on**
+  (`ve_promo_events`, promo `creator-register`): view (the card on screen), click, landed (the walkthrough), started (the application's
+  first step) through `ve_promo_track` from the browser (bots left out, once a visitor, step and page every 30 minutes); sent
+  (`ve-ambassador` `creator_apply`) and accepted (`creator_status`) by the server. The click is kept in the browser 30 days
+  (`localStorage` `ve_promo_creator-register`, the last click wins), and `ve-gigs.js` sends it with the application:
+  `ve_creator_applications.source_page`, `source_listing_id`, `source_cta` (ad | claim), `source_channel`, `source_visitor` and
+  `claim_listing_id`. **The channel** is how the visit came in, kept by `nav.js` on its first page (`sessionStorage` `ve_landing`):
+  utm_source, a tracked /go/ link named by its code (Link: brooke-profile), the referring site (Instagram, Google...), or **Direct or an
+  app** (WhatsApp and texts send no referrer). **Depot > Ambassadors > Where they came from** (`#funnel`, `ve-ambassador`
+  `creator_funnel`, `ve_promo_funnel`): Saw it, Clicked, Walkthrough, Started, Sent, Accepted, by page and by channel, people counted once
+  each, with the click rate; each creator application shows Where they came from, the profile it claims, and **Their steps**
+  (`creator_journey`), and Sean's new-application email says the page and channel. A claim is never automatic: confirm it is them, then
+  link the account in the listing editor's Their Vegans Explore account. Proven 2026-10-30 end to end on the live database with a test
+  visitor (claim card on Brooke's page, every step, the application, Accepted, the funnel and the journey). A new promotion is a new
+  `promo` slug on the same table and functions.
+- Not built yet: people from events and articles beyond the Foodie Fest, and the Ambassador path from a profile.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
 
