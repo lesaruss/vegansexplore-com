@@ -933,7 +933,14 @@ second confirm of one session refused (the card form itself was not paid: checko
   (three a day per email; `APPLY_FIELDS` and `APPLY_REQUIRED` there match `FORM`), saved in `ve_group_applications` (RLS on, no
   policies), emailed to Sean with every answer and a confirmation to them; from an invitation (`?c=`) it ends on Open my invitation.
   **Depot > Group Partners > Applications** (`#apps/<status>`, `#app/<id>`; `ve-groups` `applications`, `application_get`,
-  `application_save`): New, Reviewing, Accepted, Declined, every answer, a private note; marking one sends nothing. Old `#/why` and `#/guest`
+  `application_save`): New, Reviewing, Accepted, Declined, every answer, a private note; marking one sends nothing. **Request a meeting**
+  (Sean, 2026-10-30: "I don't want to be in the mix like that... it would be my goal to get community managers who can be that person they
+  speak to... don't put my name in there. Make it general"; migration `20261030_group_meeting_requests.sql`): Apply's first step offers
+  it (`#/meet`, `MEET` in the page, not a tour tab): name, email, group, where it meets, phone, good times, what to talk about, sent
+  through `ve-group` `meet` (three a day per email) as a `ve_group_applications` row with `kind` `meeting`, emailed to the chapter's
+  active Community Managers (`home_community`), else the team inbox, reply-to the requester; they are told only that our team will be in
+  touch. Depot > Group Partners > **Meeting requests** (`#meets/<status>`: New, Set up, Met, Closed). **No public copy names Sean**: a
+  page or email a group reads says our team; a person who wants to talk is routed to a Community Manager, else the team. Old `#/why` and `#/guest`
   land on What you get and The numbers (`ALIAS`). A preview, a group card, an event or See every group opens full screen in the page
   (`openView`, with Open in a new tab and Close or Escape). **Dani steps aside** when someone clicks around on their own: following her
   tour (Back / Next, a page's Next button, Take the tour with Dani, her picture) keeps her; any other move folds her into the corner, and
