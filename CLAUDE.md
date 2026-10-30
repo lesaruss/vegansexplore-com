@@ -3063,7 +3063,19 @@ that we're selling"), and a tile in Your tools.
   Directory; Just starting shows its `wizard` cards as numbered first steps; every version shows its What's new. Cards are
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
-- Edge function `ve-dashboard` (`home`, `set_version`; verify_jwt off, the member token checked inside).
+- Edge function `ve-dashboard` (`home`, `set_version`, `recent_votes`, `member_card`; verify_jwt off, the member token checked inside).
+- **Recent activity and the tools search** (Sean, 2026-10-30: "a log of user votes... an icon of the person that voted... a light box
+  of who that person is... I don't have to go off this page"; "a little eyebrow... your tools, and then it has a search... put these in
+  categories"). Super admins get **Recent activity** above Your tools: Recent Members, **Recent Votes**, Recent Leads, Events waiting and
+  Guest Reviews, each the latest 100 scrolling inside a box of the same height (`#dash-recent`, `dpRows`). A vote row is the listing (its
+  name opens it under the Directory tab), who and when, and the voter's picture on the right (`ve-dashboard` `recent_votes`, from
+  `listing_daily_votes`). Any member picture there opens **who they are** in a lightbox (`memberCard`, `ve-dashboard` `member_card`, super
+  admins only): status, Founding Member, role, level, points, votes, check-ins, saves, joined, home chapter, Instagram, their link, their
+  listings and latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
+  2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
+  `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
+  under the Depot tab (`openDepotPage`), so a new Depot page joins the search with its `TABS` row.
 - **A listing opened in the dashboard has its own address** (Sean, 2026-10-27: "if somebody just wanted to share a link to their
   page"): `/dashboard/directory/<slug>` (rewrite in `vercel.json`; back and forward move between the Directory and the listing),
   **Copy link** beside the breadcrumb copies the public `/directory/<slug>`, and the address opened signed out goes straight to
