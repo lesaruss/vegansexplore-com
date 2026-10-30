@@ -174,6 +174,7 @@
           '<a href="#invites/all" class="' + (on === 'invites' ? 'on' : '') + '">Invitations (' + data.invites.length + ')</a>' +
           '<a href="#door" class="' + (on === 'door' ? 'on' : '') + '">Paid work</a>' +
           '<a href="#stories" class="' + (on === 'stories' ? 'on' : '') + '">Stories</a>' +
+          '<a href="#creators/new" class="' + (on === 'creators' ? 'on' : '') + '">Creators</a>' +
           '<a href="#commissions/all" class="' + (on === 'commissions' ? 'on' : '') + '">Commissions</a></nav>';
       }
 
@@ -565,6 +566,62 @@
         });
       }
 
+      // Creator applications (Sean, 2026-10-30: "the last step is the intake... We want to know as much as we can about them"). What
+      // creators send from the Creator Dashboard walkthrough's Apply (/gigs/sample#join/1), newest first, by status; one opens with every
+      // answer, their platforms and a team note. Marking one sends nothing. ve-ambassador admin_list (creators) and creator_status.
+      var CST = { new: 'New', reviewing: 'Reviewing', accepted: 'Accepted', declined: 'Declined' };
+      function creatorsLoad(then) {
+        dapi({ action: 'admin_list' }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<div class="bar">' + views('creators') + '</div><p class="empty">Creator applications did not load.</p>'; return; }
+          then(d);
+        });
+      }
+      function reach(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function drawCreators(st) {
+        if (!CST[st]) st = 'new';
+        app.innerHTML = '<div class="bar">' + views('creators') + '</div><p class="empty">Loading...</p>';
+        creatorsLoad(function (d) {
+          var R = d.creators || [], W = d.chapter_words || {}, rows = R.filter(function (x) { return x.status === st; });
+          app.innerHTML = '<div class="bar">' + views('creators') + '</div>' +
+            '<p class="sub">Applications from the Creator Dashboard walkthrough (<a href="/gigs/sample" target="_blank" rel="noopener">/gigs/sample</a>). Each is emailed to you as it comes in.</p>' +
+            '<div class="bar"><nav class="tabs" aria-label="Filter by status">' + Object.keys(CST).map(function (k) {
+              return '<a href="#creators/' + k + '" class="' + (k === st ? 'on' : '') + '">' + CST[k] + ' (' + R.filter(function (x) { return x.status === k; }).length + ')</a>';
+            }).join('') + '</nav></div>' +
+            '<div class="list">' + (rows.length ? rows.map(function (x) {
+              return '<div class="irow"><div><b><a href="#creator/' + esc(x.id) + '">' + esc(x.name) + '</a></b>' +
+                '<small>' + esc([x.city, W[x.chapter] || x.chapter].filter(Boolean).join(', ')) + ' &middot; ' + reach(x.total_reach) + ' reach &middot; ' + esc((x.platforms || []).map(function (p) { return p.label; }).join(', ')) + '</small>' +
+                '<small>' + esc((x.topics || []).slice(0, 4).join(', ')) + '</small></div>' +
+                '<span class="c"><small>' + esc(day(x.created_at)) + '</small></span>' +
+                '<span class="tag ' + (x.status === 'accepted' ? 't-joined' : x.status === 'declined' ? '' : x.status === 'reviewing' ? 't-sent' : 't-ready') + '">' + CST[x.status] + '</span>' +
+                '<a class="btn btn-sm" href="#creator/' + esc(x.id) + '">Open</a></div>';
+            }).join('') : '<p class="empty">None here.</p>') + '</div>';
+        });
+      }
+      function drawCreator(id) {
+        app.innerHTML = '<p class="empty">Loading...</p>';
+        creatorsLoad(function (d) {
+          var x = (d.creators || []).filter(function (r) { return r.id === id; })[0], W = d.chapter_words || {};
+          if (!x) { app.innerHTML = '<p class="crumb"><a href="#creators/new">Creators</a></p><p class="empty">That application is not here.</p>'; return; }
+          var A = x.answers || {}, words = function (k) { return k === 'chapter' ? (W[A[k]] || A[k]) : k === 'chapters' ? (x.chapters || []).map(function (c) { return W[c] || c; }).join(', ') : A[k]; };
+          app.innerHTML = '<p class="crumb"><a href="#creators/' + esc(x.status) + '">Creators</a> &rsaquo; ' + esc(x.name) + '</p>' +
+            '<section class="card"><h2 style="margin:0 0 4px">' + esc(x.name) + '</h2><p class="hint">' + esc(x.email) + (x.phone ? ' &middot; ' + esc(x.phone) : '') + ' &middot; applied ' + esc(day(x.created_at)) + '</p>' +
+            '<div class="kv"><div><span>Total reach</span><b>' + reach(x.total_reach) + '</b></div><div><span>Main platform</span><b>' + esc(x.main_platform || '-') + '</b></div><div><span>Home chapter</span><b>' + esc(W[x.chapter] || x.chapter || '-') + '</b></div><div><span>Status</span><b>' + CST[x.status] + '</b></div></div>' +
+            '<h3>Platforms</h3><div class="list">' + (x.platforms || []).map(function (p) { return '<div class="irow"><div><b>' + esc(p.label) + '</b><small>' + esc(p.handle) + '</small></div><span>' + (p.followers ? reach(p.followers) : '') + '</span><span></span><span></span></div>'; }).join('') + '</div>' +
+            '<h3>Their answers</h3><div class="list">' + (d.answer_labels || []).filter(function (l) { return A[l[0]] && ['name', 'email', 'phone'].indexOf(l[0]) < 0; }).map(function (l) {
+              return '<div class="irow"><div><small>' + esc(l[1]) + '</small><div style="font-size:14px;white-space:pre-line;overflow-wrap:anywhere">' + esc(words(l[0])) + '</div></div><span></span><span></span><span></span></div>';
+            }).join('') + '</div></section>' +
+            '<section class="card form"><h2>Your call</h2><label for="cr-note">Team note</label><textarea id="cr-note" maxlength="2000">' + esc(x.team_note || '') + '</textarea>' +
+            '<p class="hint">Marking it sends nothing. Write to them yourself: <a href="mailto:' + esc(x.email) + '">' + esc(x.email) + '</a>.</p>' +
+            '<div class="bar">' + Object.keys(CST).map(function (k) { return '<button type="button" class="btn btn-sm' + (k === x.status ? '' : ' btn-ghost') + '" data-cst="' + k + '">' + (k === x.status ? CST[k] + ' (now)' : 'Mark ' + CST[k].toLowerCase()) + '</button>'; }).join('') + '</div></section>';
+          app.querySelectorAll('[data-cst]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              b.disabled = true;
+              dapi({ action: 'creator_status', id: x.id, status: b.dataset.cst, note: $('cr-note').value }).then(function (r) { if (r && r.ok) drawCreator(id); else { b.disabled = false; alert('That did not save.'); } });
+            });
+          });
+        });
+      }
+
       // The email an Ambassador gets, for a profile, with a sample person (Depot > Preview journeys > Ambassador). Nothing is saved.
       function drawSample(p) {
         var key = PROFILES.some(function (x) { return x[0] === p; }) ? p : '';
@@ -586,6 +643,8 @@
         if ((m = r.match(/^invites\/([a-z]+)$/))) return drawInvites(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
         if (r === 'door') return drawDoor();
         if ((m = r.match(/^stories(?:\/([a-z]+))?$/))) return drawStories(m[1] || 'new');
+        if ((m = r.match(/^creators(?:\/([a-z]+))?$/))) return drawCreators(m[1] || 'new');
+        if ((m = r.match(/^creator\/([0-9a-f-]{36})$/))) return drawCreator(m[1]);
         if ((m = r.match(/^commissions\/([a-z]+)$/))) return drawCommissions(m[1]);
         if ((m = r.match(/^sample\/([a-z]*)$/))) return drawSample(m[1]);
         drawList();

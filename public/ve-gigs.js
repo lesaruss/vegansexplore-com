@@ -4,7 +4,14 @@
    points (the old Bounties). A gig is applied to, auditioned for or claimed; it may ask for proof (a pitch, examples, an audition,
    a rate); it may require followers on given platforms, a level or a city. Small creators rise by results (How you rise).
 
-   One view at a time, the address carries it: #board, #gig/<id>, #apply/<id>/<step>, #mine[/<status>], #profile, #how.
+   One view at a time, the address carries it: #dashboard, #board, #gig/<id>, #apply/<id>/<step>, #mine[/<status>], #profile, #how.
+
+   The creator pathway (Sean, 2026-10-30: "this really should be the guide itself... the overview explains the opportunity... a
+   video with one of our guides to the right... it should be a next, next, next... the last step is the intake"): with guide: true
+   (/gigs/sample) the page is a walkthrough. #overview is the landing (the opportunity, how it works, how to use the page, Kai on
+   the right), then Your dashboard, Open gigs, My gigs, Your media kit (each of its four views), How you rise and Apply (#join/<n>,
+   the creator application, one step per view, sent to ve-ambassador creator_apply). Back / Step N of M / Next sit at the top and
+   the bottom of every step, with Kai's line on what you are looking at.
 
    Usage:
      VEGigs.mount(el, { demo: true, data: window.VE_GIGS_DEMO })   // /gigs/sample: nothing is sent, applying is kept for the visit
@@ -106,6 +113,43 @@
     '@media (max-width:700px){.vg-grid,.vg-grid2,.vg-tiers,.vg-grid4,.vg-pillars{grid-template-columns:minmax(0,1fr);}.vg-hero{grid-template-columns:minmax(0,1fr);}}',
     '@media (max-width:1100px){.vg-tools{grid-template-columns:repeat(2,minmax(0,1fr));}.vg-tools .vg-q{grid-column:1/-1;}}',
     '@media (max-width:820px){.vg-two{grid-template-columns:minmax(0,1fr);}}',
+    '.vg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:10px 12px;margin:0 0 14px;}',
+    '.vg-tour.bottom{margin:22px 0 0;}',
+    '.vg-tour-at{flex:1 1 220px;text-align:center;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);}',
+    '.vg-tour-at em{font-style:normal;color:#1a1a1a;}',
+    '.vg-tour .vg-btn{min-height:40px;padding:9px 16px;}',
+    '.vg-kai-line{display:flex;gap:12px;align-items:flex-start;margin:0 0 14px;}',
+    '.vg-kai-line i{flex:0 0 48px;height:48px;border-radius:10px;background:#f2f4f2 center/cover no-repeat;}',
+    '.vg-kai-line p{margin:0;background:#fff;border:1px solid var(--gm);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.5;}',
+    '.vg-kai-line b{color:var(--g);}',
+    '.vg-land{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:28px;align-items:start;}',
+    '.vg-land-l>p{font-size:15.5px;line-height:1.65;color:var(--ink75);margin:0 0 12px;max-width:860px;}',
+    '.vg-kick{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 4px;}',
+    '.vg-land .vg-h{font-size:clamp(26px,3vw,40px);}',
+    '.vg-gets{list-style:none;padding:0;margin:0 0 6px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}',
+    '.vg-gets li{border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:13.5px;line-height:1.5;color:var(--ink75);}.vg-gets b{display:block;color:#1a1a1a;font-size:14.5px;font-weight:900;margin-bottom:2px;}',
+    '.vg-use{counter-reset:u;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}',
+    '.vg-use li{counter-increment:u;display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:var(--ink75);}',
+    '.vg-use li::before{content:counter(u);flex:0 0 26px;height:26px;border-radius:6px;background:var(--g);color:#fff;font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center;}',
+    '.vg-kai{position:sticky;top:calc(var(--ve-nav-h,72px) + 16px);border:1px solid var(--gm);border-radius:16px;overflow:hidden;background:#fff;}',
+    '.vg-kai figure{margin:0;aspect-ratio:1/1;background:#fff center 20%/cover no-repeat;}',
+    '.vg-kai-say{padding:14px 16px;border-top:1px solid var(--gm);background:var(--gl);}',
+    '.vg-kai-say b{display:block;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:4px;}',
+    '.vg-kai-say p{margin:0;font-size:14.5px;line-height:1.55;}',
+    '.vg-form{max-width:900px;}',
+    '.vg-field{margin:0 0 14px;}.vg-field>label,.vg-field>span{display:block;font-size:13px;font-weight:800;margin:0 0 6px;}',
+    '.vg-field small{display:block;font-size:12px;color:var(--ink75);margin-top:4px;line-height:1.4;}',
+    '.vg-field .req{color:#9b1c1c;}',
+    '.vg-opts{display:flex;flex-wrap:wrap;gap:8px;}',
+    '.vg-opts label{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;padding:8px 12px;border:1px solid var(--line);border-radius:6px;cursor:pointer;}',
+    '.vg-opts label:has(input:checked){border-color:var(--g);background:var(--gl);}',
+    '.vg-plats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px;}',
+    '.vg-plat-row{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:8px;}',
+    '.vg-err{color:#9b1c1c;font-size:13px;font-weight:700;min-height:18px;margin:6px 0 0;}',
+    '.vg-pager{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px;margin-top:8px;}',
+    '.vg-pager span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink75);}',
+    '@media (max-width:900px){.vg-land{grid-template-columns:minmax(0,1fr);}.vg-kai{position:static;display:grid;grid-template-columns:120px minmax(0,1fr);}.vg-kai figure{aspect-ratio:auto;min-height:120px;}.vg-kai-say{border-top:0;border-left:1px solid var(--gm);}.vg-gets,.vg-plats{grid-template-columns:minmax(0,1fr);}}',
+    '@media (max-width:600px){.vg-tour-at{order:-1;flex-basis:100%;}.vg-tour{justify-content:space-between;}}',
     '.vg :focus-visible{outline:3px solid #F69820;outline-offset:2px;}'
   ].join('');
 
@@ -173,7 +217,7 @@
     if (!document.getElementById('ve-gigs-css')) { var st = document.createElement('style'); st.id = 've-gigs-css'; st.textContent = CSS; document.head.appendChild(st); }
     el.classList.add('vg');
     var D = opts.data || { creator: {}, gigs: [], mine: [] };
-    var demo = !!opts.demo, KEY = 've_gigs_demo';
+    var demo = !!opts.demo, guide = !!opts.guide, KEY = 've_gigs_demo';
     var state = { q: '', pay: 'all', kind: 'all', wherePick: 'mine', sort: 'new', fit: false, form: {} };
     // In the sample, what a visitor applies to or claims is kept for the visit, so My gigs follows them.
     if (demo) { try { var kept = JSON.parse(sessionStorage.getItem(KEY) || '[]'); kept.forEach(function (m) { D.mine = D.mine.filter(function (x) { return x.gig !== m.gig; }); D.mine.unshift(m); }); } catch (e) {} }
@@ -199,8 +243,8 @@
         (C.reliability ? '<div class="vg-stat"><b>' + standing(C) + '</b><span>Your standing</span></div>' : '') + '</div></div>';
     }
     function head(active) {
-      return (demo ? '<p class="vg-note"><b>Demo.</b> Kai Monroe is invented and drawn in our style, every brand here is illustrative, and nothing you do is sent. This is the dashboard an official creator opens every day.</p>' : '') +
-        (active === 'overview' || active === 'board' ? strip() : '');
+      return (demo && !guide ? '<p class="vg-note"><b>Demo.</b> Kai Monroe is invented and drawn in our style, every brand here is illustrative, and nothing you do is sent. This is the dashboard an official creator opens every day.</p>' : '') +
+        (active === 'dashboard' || active === 'board' ? strip() : '');
     }
 
     function card(g) {
@@ -269,13 +313,13 @@
     }
 
     var V = {
-      overview: function () {
+      dashboard: function () {
         var open = D.gigs.filter(function (g) { return qualifies(g, C) && !mineOf(g.id); }).length;
         var play = D.mine.filter(function (m) { return ['applied', 'shortlisted', 'audition', 'booked'].indexOf(m.status) > -1; });
         var todo = D.mine.filter(function (m) { return m.status === 'audition' || m.status === 'booked'; });
         var done = (C.kit_done || []).filter(function (x) { return x[1]; }).length, all = (C.kit_done || []).length;
         var tile = function (href, n, t, d) { return '<a class="vg-card vg-go" href="' + href + '"><b class="vg-big">' + n + '</b><div class="vg-title">' + t + '</div><div class="vg-line">' + d + '</div></a>'; };
-        return head('overview') + '<h2 class="vg-h">Your Creator Dashboard</h2><p class="vg-help" style="font-size:14.5px;max-width:860px;margin:0 0 14px">Everything you do with us, in one place. Use the menu at the top to move between its parts: find gigs, follow the ones you are in, keep your media kit sharp, and see how you rise.</p>' +
+        return head('dashboard') + '<h2 class="vg-h">Your Creator Dashboard</h2><p class="vg-help" style="font-size:14.5px;max-width:860px;margin:0 0 14px">Everything you do with us, in one place: the gigs open to you, the ones you are in, your media kit and where you stand.</p>' +
           '<div class="vg-grid vg-grid4">' + tile('#board', open, 'Open gigs', 'Gigs you qualify for and have not applied to yet.') + tile('#mine', play.length, 'My gigs', 'Applied, shortlisted, auditioning or booked.') +
           tile('#profile', all ? Math.round(done / all * 100) + '%' : '-', 'Your media kit', 'Your page partners and the public see. Complete kits get booked first.') + tile('#how', standing(C), 'How you rise', NEXT_TIER[standing(C)]) + '</div>' +
           (todo.length ? '<h3 class="vg-sec">Up next</h3><div class="vg-grid">' + todo.map(mineCard).join('') + '</div>' : '') +
@@ -375,14 +419,177 @@
           '<div class="vg-two" style="margin-top:14px"><div class="vg-box"><h3>What counts</h3><ul><li>Delivered, on time, approved the first time</li><li>Clicks and joins through your link, per 1,000 followers</li><li>Your level, from the points you earn taking part</li></ul></div>' +
           '<div class="vg-box"><h3>What costs you</h3><ul><li>A no-show or a late cancel is a strike</li><li>Numbers that do not match what you told us</li><li>Strikes clear after a run of clean gigs</li></ul></div></div>' +
           '<div class="vg-box"><h3>Start small</h3><p>Points gigs and gigs with no minimum (content for a brand\'s own pages, hosting, first reviews) are open to everyone. They are how a small creator builds a record partners can trust.</p></div>';
+      },
+      // The landing (Sean, 2026-10-30): the opportunity, how it works and how to use the page on the left, Kai on the right.
+      overview: function () {
+        return '<div class="vg-land"><div class="vg-land-l">' +
+          '<p class="vg-kick">For content creators</p><h2 class="vg-h">Looking for paid work that fits what you already make?</h2>' +
+          '<p>Over the next few months we are bringing local businesses, national brands and events onto Vegans Explore in all thirteen of our chapters, and their campaigns need creators. Register to be considered, and the opportunities that fit you come straight to your own Creator Dashboard.</p>' +
+          '<h3 class="vg-sec">What you get</h3><ul class="vg-gets">' +
+          [['Gigs delivered to you', 'Paid campaigns, product collaborations, hosting and events, matched to your city, your topics and your audience.'],
+           ['A media kit partners trust', 'Your platforms, your best work and your results in one page, shown to a partner only once you are shortlisted.'],
+           ['Paid fairly, on time', 'Half your fee when you are booked, the other half when your posts are live. You set your rates.'],
+           ['Room to rise', 'Points gigs and gigs with no follower minimum let a small creator build a record. Results count more than followers.']]
+            .map(function (x) { return '<li><b>' + x[0] + '</b>' + x[1] + '</li>'; }).join('') + '</ul>' +
+          '<h3 class="vg-sec">How it works</h3><div class="vg-grid vg-grid4 vg-steps4">' +
+          [['Apply to be considered', 'Tell us who you are, where you post and what you make.'], ['Get approved', 'Our team reads every application and sets up your dashboard.'], ['Gigs come to you', 'Apply, audition or claim the ones you want.'], ['Deliver and rise', 'Get paid, and let your results open bigger gigs.']]
+            .map(function (x, i) { return '<div class="vg-card"><em class="vg-n">' + (i + 1) + '</em><div class="vg-title">' + x[0] + '</div><div class="vg-line">' + x[1] + '</div></div>'; }).join('') + '</div>' +
+          '<h3 class="vg-sec">How to use this page</h3><ol class="vg-use">' +
+          '<li>Press Next, at the top or the bottom of any step, to walk through the Creator Dashboard as Kai sees it.</li>' +
+          '<li>Click around as you go. Apply to a gig or claim one: in this demo nothing is sent.</li>' +
+          '<li>When you are ready, the last step is the application. You can also jump straight to it.</li></ol>' +
+          '<div class="vg-btns"><a class="vg-btn" href="#dashboard">Start the walkthrough</a><a class="vg-btn ghost" href="#join/1">Skip to the application</a></div>' +
+          '</div><aside class="vg-kai" aria-label="Kai, your guide"><figure style="background-image:url(\'' + esc(KAI_IMG) + '\')" role="img" aria-label="Kai Monroe waving"></figure>' +
+          '<div class="vg-kai-say"><b>Kai</b><p>' + esc(TOUR[0].say) + '</p></div></aside></div>';
+      },
+      join: function (n) {
+        if (n === 'done') return '<div class="vg-form"><p class="vg-kick">Application sent</p><h2 class="vg-h">Thank you. We have it.</h2><p class="vg-help" style="font-size:15px;max-width:760px">Our team reads every application and will write back by email, usually within a few days. When you are approved, your Creator Dashboard opens and the gigs that fit you start landing in it.</p>' +
+          '<div class="vg-btns"><a class="vg-btn ghost" href="#dashboard">Look around the demo again</a><a class="vg-btn ghost" href="/creators/welcome">Read the Official Creator Guide</a></div></div>';
+        var i = Math.min(Math.max(parseInt(n, 10) || 1, 1), FORM.length), step = FORM[i - 1], A = state.app;
+        var val = function (k) { return A[k] == null ? '' : A[k]; };
+        var field = function (f) {
+          var lab = esc(f.label) + (f.req ? ' <span class="req">*</span>' : ''), help = f.help ? '<small>' + esc(f.help) + '</small>' : '';
+          if (f.type === 'checks' || f.type === 'radio') {
+            var on = f.type === 'checks' ? (A[f.k] || []) : [A[f.k]];
+            return '<div class="vg-field"><span>' + lab + '</span><div class="vg-opts" role="group" aria-label="' + esc(f.label) + '">' + f.opts.map(function (o) {
+              var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o;
+              return '<label><input type="' + (f.type === 'checks' ? 'checkbox' : 'radio') + '" name="' + f.k + '" data-a="' + f.k + '" value="' + esc(v) + '"' + (on.indexOf(v) > -1 ? ' checked' : '') + '>' + esc(t) + '</label>';
+            }).join('') + '</div>' + help + '</div>';
+          }
+          if (f.type === 'select') return '<div class="vg-field"><label for="a-' + f.k + '">' + lab + '</label><select id="a-' + f.k + '" data-a="' + f.k + '"><option value="">Choose one</option>' + f.opts.map(function (o) {
+            var v = Array.isArray(o) ? o[0] : o, t = Array.isArray(o) ? o[1] : o; return '<option value="' + esc(v) + '"' + (val(f.k) === v ? ' selected' : '') + '>' + esc(t) + '</option>'; }).join('') + '</select>' + help + '</div>';
+          if (f.type === 'plats') return '<div class="vg-field"><span>' + lab + '</span><div class="vg-plats">' + PLATS.map(function (p) {
+            return '<div><label for="a-' + p[0] + '" style="font-size:12.5px;font-weight:800;display:block;margin:0 0 4px">' + p[1] + '</label><div class="vg-plat-row"><input type="text" id="a-' + p[0] + '" data-a="' + p[0] + '" value="' + esc(val(p[0])) + '" placeholder="' + esc(p[2]) + '" autocomplete="off">' +
+              (p[3] ? '<input type="text" inputmode="numeric" data-a="' + p[0] + '_n" value="' + esc(val(p[0] + '_n')) + '" placeholder="' + p[3] + '" aria-label="' + esc(p[1] + ' ' + p[3]) + '">' : '<span></span>') + '</div></div>';
+          }).join('') + '</div>' + help + '</div>';
+          if (f.type === 'textarea') return '<div class="vg-field"><label for="a-' + f.k + '">' + lab + '</label><textarea id="a-' + f.k + '" data-a="' + f.k + '" maxlength="' + (f.max || 1200) + '">' + esc(val(f.k)) + '</textarea>' + help + '</div>';
+          if (f.type === 'confirm') return '<div class="vg-field"><label class="vg-check"><input type="checkbox" data-a="' + f.k + '"' + (A[f.k] ? ' checked' : '') + '> ' + esc(f.label) + ' <span class="req">*</span></label></div>';
+          return '<div class="vg-field"><label for="a-' + f.k + '">' + lab + '</label><input type="' + (f.type || 'text') + '" id="a-' + f.k + '" data-a="' + f.k + '" value="' + esc(val(f.k)) + '"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + (f.ac ? ' autocomplete="' + f.ac + '"' : '') + '>' + help + '</div>';
+        };
+        return '<div class="vg-form"><p class="vg-kick">Apply to be an official creator</p><h2 class="vg-h">' + esc(step.title) + '</h2>' +
+          '<div class="vg-steps">' + FORM.map(function (x, j) { return '<span class="' + (j === i - 1 ? 'on' : '') + '">' + esc(x.short) + '</span>'; }).join('') + '</div>' +
+          (step.lede ? '<p class="vg-help" style="font-size:14.5px;margin:0 0 16px;max-width:760px">' + esc(step.lede) + '</p>' : '') +
+          step.fields.map(field).join('') +
+          '<p class="vg-err" id="vg-join-err" role="alert"></p>' +
+          '<div class="vg-pager">' + (i > 1 ? '<a class="vg-btn ghost" href="#join/' + (i - 1) + '">Back</a>' : '<a class="vg-btn ghost" href="#how">Back</a>') +
+          '<span>Step ' + i + ' of ' + FORM.length + '</span>' +
+          (i < FORM.length ? '<button type="button" class="vg-btn" data-join-next="' + i + '">Next</button>' : '<button type="button" class="vg-btn" data-join-send>Send my application</button>') + '</div></div>';
       }
     };
 
+    // The walkthrough (guide: true): each step's address, its name, and Kai's line on what you are looking at. Lines are drafts (Sean's to
+    // change); Kai's voice is not picked yet, so she speaks in text.
+    var TOUR = [
+      { v: 'overview', name: 'Overview', say: 'Hi, I\'m Kai. I make Vegan food and fitness videos in Miami, and this is my Creator Dashboard. Press Next and I\'ll show you around: the gigs, the ones I\'m in, my media kit and how you rise. At the end, you can apply.' },
+      { v: 'dashboard', name: 'Your dashboard', say: 'This is what I see when I sign in: gigs open to me, the ones I\'m in, how complete my media kit is and where I stand. Tap any tile to jump in.' },
+      { v: 'board', name: 'Open gigs', say: 'Every gig our partners post lands here. Filter by pay, kind and city, open one to see what it asks, and check whether you qualify. Try applying: nothing is sent in the demo.' },
+      { v: 'mine', name: 'My gigs', say: 'Everything I applied to, auditioned for or got booked on, by status, with what happens next. Anything you tried on Open gigs shows up here too.' },
+      { v: 'profile', name: 'Your media kit', subs: ['you', 'partner', 'public', 'team'], say: 'My media kit is the page partners judge me by. Next shows it four ways: as I see it, as a partner sees it, as the public sees it and as the team sees it.' },
+      { v: 'how', name: 'How you rise', say: 'Followers get you noticed. Results get you booked. Deliver on time and your record opens bigger, better paid gigs.' },
+      { v: 'join', name: 'Apply', say: 'That\'s the tour. If this is for you, tell us about yourself. The more we know, the better the gigs we can match you with.' }
+    ];
+    var KAI_IMG = C.avatar || '/gigs/sample/img/kai-avatar.webp';
+    var SUBSAY = { you: 'This is my kit as I see it, with what would make it stronger.', partner: 'This is what a brand sees once I\'m shortlisted: no rates, no contact details. They book me through Vegans Explore.', public: 'This is my page in the People directory, my link in bio. No rates, results or audience numbers.', team: 'And this is what the Vegans Explore team sees: everything, so they can match me to the right gigs.' };
+    function tourAt(h) {
+      var v = h[0] === 'gig' || h[0] === 'apply' ? 'board' : h[0] || 'overview';
+      var i = 0; TOUR.forEach(function (t, j) { if (t.v === v) i = j; });
+      var sub = TOUR[i].subs ? Math.max(0, TOUR[i].subs.indexOf(h[1] || 'you')) : -1;
+      return { i: i, sub: sub };
+    }
+    function tourHash(i, sub, dir) {
+      var t = TOUR[i];
+      if (t.subs && sub > -1) { var s2 = sub + dir; if (s2 >= 0 && s2 < t.subs.length) return '#profile/' + t.subs[s2]; }
+      var j = i + dir; if (j < 0 || j >= TOUR.length) return '';
+      var n = TOUR[j]; return '#' + (n.subs ? 'profile/' + n.subs[dir > 0 ? 0 : n.subs.length - 1] : n.v === 'join' ? 'join/1' : n.v);
+    }
+    function tourBar(h, where) {
+      var at = tourAt(h), t = TOUR[at.i], back = tourHash(at.i, at.sub, -1), next = t.v === 'join' ? '' : tourHash(at.i, at.sub, 1);
+      var nextName = next ? (t.subs && at.sub < t.subs.length - 1 ? 'Next view' : 'Next: ' + TOUR[at.i + 1].name) : '';
+      return '<nav class="vg-tour' + (where === 'bottom' ? ' bottom' : '') + '" aria-label="Walkthrough">' +
+        (back ? '<a class="vg-btn ghost" href="' + back + '">Back</a>' : '<span></span>') +
+        '<span class="vg-tour-at">Step ' + (at.i + 1) + ' of ' + TOUR.length + ' <em>· ' + esc(t.name) + (t.subs ? ' (' + (at.sub + 1) + ' of ' + t.subs.length + ')' : '') + '</em></span>' +
+        (next ? '<a class="vg-btn" href="' + next + '">' + esc(nextName) + '</a>' : '<span></span>') + '</nav>';
+    }
+    function kaiLine(h) {
+      var at = tourAt(h), t = TOUR[at.i];
+      if (t.v === 'overview' || h[0] === 'join' && h[1] === 'done') return '';
+      var say = t.subs && at.sub > 0 ? SUBSAY[t.subs[at.sub]] : t.say;
+      return '<div class="vg-kai-line"><i style="background-image:url(\'' + esc(KAI_IMG) + '\')" aria-hidden="true"></i><p><b>Kai:</b> ' + esc(say) + '</p></div>';
+    }
+
+    // The creator application (Sean, 2026-10-30: "We want to know as much as we can about them to see the scope of what we can apply them
+    // to... when we run a campaign, it can automatically pull in... content creators... specific to a certain city interest"). One step per
+    // view, Next checks the step, answers kept in the browser until sent (localStorage vg_creator_apply). Keep the keys in step with
+    // APPLY_KEYS in ve-ambassador.
+    var CH_OPTS = Object.keys(CHAPTER_NAMES).map(function (k) { return [k, CHAPTER_NAMES[k]]; });
+    var PLATS = [['instagram', 'Instagram', '@yourhandle', 'Followers'], ['tiktok', 'TikTok', '@yourhandle', 'Followers'], ['youtube', 'YouTube', '@yourchannel', 'Subscribers'],
+      ['facebook', 'Facebook', 'Page name or link', 'Followers'], ['podcast', 'Podcast', 'Link to your show', 'Monthly listens'], ['website', 'Website or blog', 'https://', 'Monthly visitors']];
+    var FORM = [
+      { short: 'You', title: 'About you', lede: 'Who you are and where you are. We match gigs city by city.', fields: [
+        { k: 'name', label: 'Your name', req: true, ac: 'name' }, { k: 'email', label: 'Email', type: 'email', req: true, ac: 'email' },
+        { k: 'phone', label: 'Phone', type: 'tel', ac: 'tel', help: 'Optional. Only for booking you.' },
+        { k: 'chapter', label: 'Your home chapter', type: 'select', req: true, opts: CH_OPTS.concat([['other', 'Somewhere else']]) },
+        { k: 'city', label: 'Your city', req: true, ac: 'address-level2' },
+        { k: 'chapters', label: 'Where you can show up in person', type: 'checks', opts: CH_OPTS, help: 'Pick every chapter you could get to for an event or a shoot.' },
+        { k: 'travel', label: 'Would you travel for the right gig?', type: 'radio', opts: ['Yes', 'Sometimes', 'No'] }] },
+      { short: 'Platforms', title: 'Where you post', lede: 'Your handles and your numbers as they are today. Be honest: your results show where you stand either way.', fields: [
+        { k: 'plats', label: 'Your platforms', type: 'plats', req: true, help: 'At least one. Leave the rest empty.' },
+        { k: 'main', label: 'Your main platform', type: 'select', req: true, opts: PLATS.map(function (p) { return [p[0], p[1]]; }) },
+        { k: 'engagement', label: 'Your usual engagement rate, if you know it', ph: 'For example 5%' }] },
+      { short: 'Your work', title: 'What you make', lede: 'Your topics and formats, and your best work, are how we match you to a gig.', fields: [
+        { k: 'topics', label: 'What you post about', type: 'checks', req: true, opts: ['Recipes and cooking', 'Restaurants and food spots', 'Fitness and sport', 'Health and nutrition', 'Fashion and beauty', 'Travel', 'Animals and advocacy', 'Family and parenting', 'Comedy and entertainment', 'Lifestyle', 'Business and money', 'Music and art'] },
+        { k: 'formats', label: 'What you make', type: 'checks', req: true, opts: ['Short videos (Reels, TikTok, Shorts)', 'Photos and carousels', 'Long video', 'Livestreams', 'Podcast', 'Writing and blogs', 'Content for a brand\'s own page (UGC)', 'Hosting and on camera', 'Event coverage'] },
+        { k: 'best_work', label: 'Links to your best work', type: 'textarea', req: true, max: 1000, help: 'Two or three posts you are proud of, one link a line.' },
+        { k: 'vegan_since', label: 'How long you have been Vegan', type: 'select', opts: ['Less than a year', '1 to 3 years', '3 to 10 years', 'More than 10 years', 'Plant-based, not fully Vegan yet'] },
+        { k: 'audience', label: 'Who your audience is', type: 'textarea', max: 600, help: 'Where they are, their ages, what they come to you for. Whatever you know.' }] },
+      { short: 'Working together', title: 'Working together', lede: 'What you want to do, and what you have done.', fields: [
+        { k: 'gig_kinds', label: 'The kinds of gigs you want', type: 'checks', req: true, opts: ['Paid campaigns', 'Product collaborations', 'Hosting and events', 'Content for brands\' own pages', 'Points gigs (to build a record)', 'Speaking and panels'] },
+        { k: 'brands', label: 'Brands or events you have worked with', type: 'textarea', max: 800, help: 'Optional. Paid or not.' },
+        { k: 'rates', label: 'Your rates, if you have them', type: 'textarea', max: 600, help: 'A post, a Reel or TikTok, hosting for half a day. Only our team sees them.' },
+        { k: 'skills', label: 'Other things you do well', type: 'checks', opts: ['Video editing', 'Photography', 'Design', 'Writing', 'Social media management', 'Recipe development', 'Outreach'] },
+        { k: 'availability', label: 'When you are usually free', type: 'checks', opts: ['Weekdays', 'Weeknights', 'Weekends'] }] },
+      { short: 'Send', title: 'Last thing', lede: 'In your own words.', fields: [
+        { k: 'bio', label: 'Tell us about you and what you make', type: 'textarea', req: true, max: 1200 },
+        { k: 'why', label: 'What would make this worth it for you?', type: 'textarea', max: 800 },
+        { k: 'heard', label: 'How you heard about us', ph: 'A friend, Instagram, an event...' },
+        { k: 'anything', label: 'Anything else', type: 'textarea', max: 800 },
+        { k: 'confirm', label: 'My numbers are true as of today, and Vegans Explore may contact me about gigs.', type: 'confirm', req: true }] }
+    ];
+    var APP_KEY = 'vg_creator_apply';
+    state.app = {}; try { state.app = JSON.parse(localStorage.getItem(APP_KEY) || '{}') || {}; } catch (e) {}
+    function keepApp() { try { localStorage.setItem(APP_KEY, JSON.stringify(state.app)); } catch (e) {} }
+    function stepMissing(i) {
+      var A = state.app, miss = [];
+      FORM[i - 1].fields.forEach(function (f) {
+        if (!f.req) return;
+        if (f.type === 'plats') { if (!PLATS.some(function (p) { return String(A[p[0]] || '').trim(); })) miss.push('at least one platform'); return; }
+        var v = A[f.k];
+        if (f.type === 'checks' ? !(v && v.length) : f.type === 'confirm' ? !v : !String(v || '').trim()) miss.push(f.label.toLowerCase());
+      });
+      if (i === 1 && A.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(A.email)) miss.push('an email that looks right');
+      return miss;
+    }
+
     function draw() {
-      var h = (location.hash || '#overview').slice(1).split('/');
-      var html = h[0] === 'gig' ? V.gig(h[1]) : h[0] === 'apply' ? V.apply(h[1], h[2]) : h[0] === 'mine' ? V.mine(h[1]) : h[0] === 'profile' ? V.profile(h[1]) : h[0] === 'how' ? V.how() : h[0] === 'board' ? V.board() : V.overview();
+      var h = (location.hash || (guide ? '#overview' : '#dashboard')).slice(1).split('/');
+      if (!guide && (h[0] === 'overview' || h[0] === 'join')) h = ['dashboard'];
+      var html = h[0] === 'gig' ? V.gig(h[1]) : h[0] === 'apply' ? V.apply(h[1], h[2]) : h[0] === 'mine' ? V.mine(h[1]) : h[0] === 'profile' ? V.profile(h[1]) : h[0] === 'how' ? V.how() : h[0] === 'board' ? V.board()
+        : h[0] === 'join' ? V.join(h[1]) : h[0] === 'dashboard' ? V.dashboard() : guide ? V.overview() : V.dashboard();
+      if (guide && !(h[0] === 'join' && h[1] === 'done')) {
+        var fin = h[0] === 'join' || h[0] === 'overview' || !h[0];
+        html = tourBar(h, 'top') + kaiLine(h) + html + (fin ? '' : tourBar(h, 'bottom'));
+      }
       el.innerHTML = html;
-      if (opts.onView) opts.onView(h[0]);
+      if (opts.onView) opts.onView(h[0] || (guide ? 'overview' : 'dashboard'));
+    }
+    el.addEventListener('input', function (e) { if (e.target.hasAttribute('data-a')) appInput(e.target); });
+    el.addEventListener('change', function (e) { if (e.target.hasAttribute('data-a')) appInput(e.target); });
+    function appInput(t) {
+      var k = t.getAttribute('data-a');
+      if (t.type === 'checkbox' && t.name === k) { state.app[k] = Array.prototype.map.call(el.querySelectorAll('input[name="' + k + '"]:checked'), function (x) { return x.value; }); }
+      else if (t.type === 'checkbox') state.app[k] = t.checked;
+      else state.app[k] = t.value;
+      keepApp();
     }
     el.addEventListener('input', function (e) {
       var k = e.target.getAttribute('data-f'); if (!k) return;
@@ -390,6 +597,21 @@
       if (k !== 'q') draw(); else { var pos = e.target.selectionStart; draw(); var q = el.querySelector('[data-f=q]'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }
     });
     el.addEventListener('click', function (e) {
+      var j = e.target.closest('[data-join-next],[data-join-send]');
+      if (j) {
+        var at = +(j.getAttribute('data-join-next') || FORM.length), miss = stepMissing(at), err = el.querySelector('#vg-join-err');
+        if (miss.length) { err.textContent = 'Still needed: ' + miss.join(', ') + '.'; return; }
+        if (j.hasAttribute('data-join-next')) { location.hash = '#join/' + (at + 1); return; }
+        for (var s = 1; s <= FORM.length; s++) if (stepMissing(s).length) { location.hash = '#join/' + s; return; }
+        j.disabled = true; j.textContent = 'Sending...';
+        fetch(SB + '/functions/v1/ve-ambassador', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'creator_apply', answers: state.app, source: location.pathname }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            if (!d || !d.ok) { j.disabled = false; j.textContent = 'Send my application'; err.textContent = (d && d.message) || 'That did not go through. Try again in a minute.'; return; }
+            state.app = {}; try { localStorage.removeItem(APP_KEY); } catch (x) {}
+            location.hash = '#join/done';
+          }, function () { j.disabled = false; j.textContent = 'Send my application'; err.textContent = 'That did not go through. Check your connection and try again.'; });
+        return;
+      }
       var t = e.target.closest('[data-next],[data-send],[data-claim],[data-lb]'); if (!t) return;
       if (t.hasAttribute('data-lb')) { var lb = document.createElement('div'); lb.className = 'vg-lb'; lb.innerHTML = '<img src="' + esc(t.getAttribute('data-lb')) + '" alt="">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); return; }
       if (t.hasAttribute('data-next')) {

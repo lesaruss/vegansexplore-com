@@ -16,7 +16,10 @@
   <style>
     /* The Gig Board (Sean, 2026-10-30). /gigs is the live board (today: our bounties as points gigs, for signed-in members);
        /gigs/sample (a rewrite to this page) is the sample, Kai Monroe and illustrative gigs from /gigs/sample/demo.js. Both draw
-       /public/ve-gigs.js; this page adds the shared banner, whose dropdown moves between the board's views. */
+       /public/ve-gigs.js; this page adds the shared banner, whose dropdown moves between the board's views. The sample is also the
+       creator pathway (Sean, 2026-10-30: "this really should be the guide itself"): it opens on the Overview (the opportunity, Kai
+       on the right), walks Your dashboard, Open gigs, My gigs, Your media kit and How you rise with Next at the top and the bottom,
+       and ends on Apply, the creator application (VEGigs guide: true). */
     *, *::before, *::after { box-sizing: border-box; }
     body { margin: 0; background: #fff; font-family: 'Montserrat', sans-serif; color: #1a1a1a; }
     main { max-width: none; margin: 0; padding: 24px 40px 80px; }
@@ -39,25 +42,29 @@
     (function () {
       var demo = /^\/gigs\/sample/.test(location.pathname);
       // The dropdown is the only menu (Sean, 2026-10-30); in the demo the line under the title says Demo.
-      var VIEWS = [{ value: 'overview', label: 'Overview' }, { value: 'board', label: 'Open gigs' }, { value: 'mine', label: 'My gigs' }, { value: 'profile', label: 'Your media kit' }, { value: 'how', label: 'How you rise' }];
+      var VIEWS = (demo ? [{ value: 'overview', label: 'Overview' }] : []).concat([{ value: 'dashboard', label: 'Your dashboard' }, { value: 'board', label: 'Open gigs' }, { value: 'mine', label: 'My gigs' }, { value: 'profile', label: 'Your media kit' }, { value: 'how', label: 'How you rise' }])
+        .concat(demo ? [{ value: 'join', label: 'Apply' }] : []);
+      var HOME = demo ? 'overview' : 'dashboard';
       var ready = false;
       var banner = VECityBanner.mount('gig-banner', {
         key: 'gigs', title: 'Creator Dashboard', pickLabel: 'Creator Dashboard menu', param: false, art: '/communities/south-florida/banner.jpg',
-        sub: 'Find gigs, follow the ones you are in, keep your media kit sharp, and rise by results. Use the menu to move around.',
-        choices: VIEWS, home: { label: 'Dashboard home', href: demo ? '/gigs/sample#overview' : '/gigs#overview' },
-        actions: demo ? [{ label: 'Become an official creator', short: 'Register', href: '/creators/welcome#/register', go: true }] : [],
-        onChange: function (v) { if (!ready) return; var cur = (location.hash || '#overview').slice(1).split('/')[0]; if (v && v !== cur && !(v === 'board' && (cur === 'gig' || cur === 'apply'))) location.hash = '#' + v; }
+        sub: demo ? 'Paid work for Vegan creators, city by city. Walk through it with Kai, then apply.' : 'Find gigs, follow the ones you are in, keep your media kit sharp, and rise by results. Use the menu to move around.',
+        choices: VIEWS, home: { label: demo ? 'Overview' : 'Dashboard home', href: demo ? '/gigs/sample#overview' : '/gigs#dashboard' },
+        actions: demo ? [{ label: 'Apply to be a creator', short: 'Apply', href: '/gigs/sample#join/1', go: true }] : [],
+        onChange: function (v) { if (!ready) return; var cur = (location.hash || '#' + HOME).slice(1).split('/')[0]; if (v && v !== cur && !(v === 'board' && (cur === 'gig' || cur === 'apply'))) location.hash = '#' + (v === 'join' ? 'join/1' : v); }
       });
       // Inside a Guide's preview the banner starts folded, so the board is what shows.
       ready = true;
       if (demo) banner.setLabel('Demo');
       if (window.top !== window) banner.fold(true);
       function sync(view) { var v = view === 'gig' || view === 'apply' ? 'board' : view; if (banner.current() !== v) banner.setQuiet(v); }
+      // The banner's own pick at mount follows the address.
+      ready = false; sync(((location.hash || '#' + HOME).slice(1).split('/')[0]) || HOME); ready = true;
       var el = document.getElementById('gigs');
       el.addEventListener('click', function () { banner.autoFold(); });
       function load(src) { return new Promise(function (ok) { var s = document.createElement('script'); s.src = src; s.onload = ok; document.head.appendChild(s); }); }
       if (demo) {
-        load('/gigs/sample/demo.js').then(function () { VEGigs.mount(el, { demo: true, data: window.VE_GIGS_DEMO, onView: sync }); });
+        load('/gigs/sample/demo.js').then(function () { VEGigs.mount(el, { demo: true, guide: true, data: window.VE_GIGS_DEMO, onView: sync }); });
         return;
       }
       function start() {
