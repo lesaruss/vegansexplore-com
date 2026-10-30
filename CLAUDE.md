@@ -1097,10 +1097,12 @@ Guide on each and never one twice in a row: Overview (Liz), Why it matters (Dani
 joined it), Tell the stories (River), Paid work (Theo), Your link (Maya; Who to invite joined it), What to share (Liz), Your membership
 (Dani; the optional home base, `homeBase`, joined it), Answering questions (Theo), Your progress (River); `#/who` and `#/city` forward
 (`OLD_TABS`). Every card grid is two across (`.dg-grid`, `.am-steps`, `.am-kinds`), one on phones, and an odd last card runs the full
-width; Why it matters' Points given to the organizations became Their events, on the calendar. Recorded so far: Liz (Overview, What to
-share) and Maya (Your link). Dani, Nori, River and Theo have no voice yet: three ElevenLabs voice designs each, made 2026-10-30, wait for
-Sean's pick (`vegan-media/media/voices/ambassador-guide/<guide>-p1|p2|p3.mp3`; their `generated_voice_id`s in el-media's answer, saved
-with `save_voice` into `character_agents.elevenlabs_voice_id` once picked), then their tabs are recorded the same way.
+width; Why it matters' Points given to the organizations became Their events, on the calendar. Every tab talks: Liz (Overview, What to share), Maya (Your link), and,
+since Sean picked their voices in the ElevenLabs Voice Library the same day (the designed samples were "horrible" and were deleted), Dani
+(`b5RPB35vTODb3BEmR3Fc`; Why it matters, Your membership), Nori (`rr9oBze1kuNJYeAV7xos`; The opportunity), River (`btaSeNTVh1pGx4pjFzub`;
+Tell the stories, Your progress) and Theo (`aFyw0oiXW7dzKF4o7woX`; Paid work, Answering questions), saved in
+`character_agents.elevenlabs_voice_id` (migration `20261030_guide_voices.sql`). Each line checked word for word with `stt`; change a
+tab's `say` and its line is recorded again (the next `-v2`).
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
