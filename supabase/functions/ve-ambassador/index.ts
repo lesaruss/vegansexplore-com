@@ -18,7 +18,10 @@
 //   POST { action: 'rates_save', rates: {post, reel, story, appearance, hosting, social_day, notes}, skills, chapters }
 //   POST { action: 'payout_start' }  -> { url }   Stripe's onboarding for their Express account (made on the first press)
 //   POST { action: 'payout_status' }              asks Stripe whether payouts are on
+//   POST { action: 'story', kind: intro|interview|host|report, name?, about, place?, contact? }  an introduction or a story for us
+//        (Sean, 2026-10-30: business owners, podcasters, people with a story, a guest host, news from their community), 10 a day
 // Super admins (or ops):
+//   POST { action: 'story_status', id, status: new|contacted|done }
 //   POST { action: 'admin_list' }  -> every Ambassador with their checklist, and the profile requests waiting
 //   POST { action: 'claim_decide', id, approve, note? }  approving gives them the listing (or makes it, under Content Creators)
 // The cron (x-cron-secret) or ops:
@@ -42,6 +45,7 @@ const SKILLS = ['recipes', 'fitness', 'hosting', 'speaking', 'ugc', 'photo', 'vi
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'dc', 'delaware', 'maryland', 'virginia', 'west-virginia',
   'new-york', 'philadelphia', 'los-angeles', 'london'];
 const BIO_MIN = 80;
+const STORY_KINDS: Record<string, string> = { intro: 'An introduction', interview: 'Their own story', host: 'Hosting', report: 'From their community' };
 const REMIND_MAX = 10;
 
 const cors = {
@@ -267,8 +271,14 @@ Deno.serve(async (req) => {
   const isAdmin = !!member.is_superadmin;
 
   // ---- The team: every Ambassador's checklist, and the profile requests waiting.
-  if (action === 'admin_list' || action === 'claim_decide') {
+  if (action === 'admin_list' || action === 'claim_decide' || action === 'story_status') {
     if (!isAdmin) return json({ error: 'forbidden' }, 403);
+    if (action === 'story_status') {
+      if (!isId(body.id) || !['new', 'contacted', 'done'].includes(body.status)) return json({ error: 'bad_request' }, 400);
+      const { error } = await db.from('ve_ambassador_stories').update({ status: body.status, status_at: new Date().toISOString(), status_by: member.id }).eq('id', body.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true });
+    }
     if (action === 'claim_decide') {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: c } = await db.from('ve_profile_claims').select('*').eq('id', body.id).maybeSingle();
@@ -306,10 +316,11 @@ Deno.serve(async (req) => {
       if (who?.email) await sendOne(who.email, 'Your Vegans Explore profile is yours', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 16px">Your profile in the Directory is now yours to keep current: your photo, what you do and your bio. It is the first step of your checklist for paid work.</p>` + btn(`${DOOR}?step=profile`, 'Finish your profile')));
       return json({ ok: true, status: 'approved', listing_id: listingId });
     }
-    const [{ data: ambs }, { data: rows }, { data: pend }] = await Promise.all([
+    const [{ data: ambs }, { data: rows }, { data: pend }, { data: stories }] = await Promise.all([
       db.from('members').select('id, name, email, avatar_url, ambassador_profile').eq('ve_role', 'ambassador').order('name'),
       db.from('ve_ambassador_door').select('*'),
       db.from('ve_profile_claims').select('id, member_id, listing_id, new_profile, note, created_at').eq('status', 'pending').order('created_at'),
+      db.from('ve_ambassador_stories').select('id, member_id, kind, name, about, place, contact, status, status_at, created_at').order('created_at', { ascending: false }).limit(200),
     ]);
     const byMember: Record<string, any> = {}; for (const r of rows || []) byMember[r.member_id] = r;
     const people = await Promise.all((ambs || []).map(async (a: any) => {
@@ -325,12 +336,37 @@ Deno.serve(async (req) => {
     const names: Record<string, any> = {}; for (const a of ambs || []) names[a.id] = a;
     const claims = (pend || []).map((c: any) => ({ ...c, member: names[c.member_id] ? { name: names[c.member_id].name, email: names[c.member_id].email } : null,
       listing: (ls || []).find((l: any) => l.id === c.listing_id) || null }));
-    return json({ ok: true, ambassadors: people, claims });
+    const sids = [...new Set((stories || []).map((x: any) => x.member_id).filter((id: string) => !names[id]))];
+    const { data: more } = sids.length ? await db.from('members').select('id, name, email').in('id', sids) : { data: [] };
+    for (const m of more || []) names[m.id] = m;
+    const storyRows = (stories || []).map((x: any) => ({ ...x, kind_words: STORY_KINDS[x.kind] || x.kind,
+      member: names[x.member_id] ? { name: names[x.member_id].name, email: names[x.member_id].email } : null }));
+    return json({ ok: true, ambassadors: people, claims, stories: storyRows });
   }
 
   // ---- The Ambassador's own checklist.
   if (member.ve_role !== 'ambassador' && !isAdmin) return json({ error: 'ambassadors_only', message: 'The door is for Ambassadors.' }, 403);
   const reply = async () => { const s = await state(member.id); const at = await settle(member, s); return json(shape(member, s, at || s.row?.active_at || null)); };
+
+  // An introduction or a story (Sean, 2026-10-30). Not bound to their city: anyone, anywhere. Saved for the team and emailed to Sean.
+  if (action === 'story') {
+    const kind = String(body.kind || '');
+    if (!STORY_KINDS[kind]) return json({ error: 'bad_kind' }, 400);
+    const about = clean(body.about, 1500), name = clean(body.name, 160), place = clean(body.place, 160), contact = clean(body.contact, 300);
+    if (about.length < 10) return json({ error: 'missing', message: 'Tell us a little more.' }, 400);
+    if (kind === 'intro' && !name) return json({ error: 'missing', message: 'Who are you introducing?' }, 400);
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { count } = await db.from('ve_ambassador_stories').select('id', { count: 'exact', head: true }).eq('member_id', member.id).gte('created_at', since);
+    if ((count ?? 0) >= 10) return json({ error: 'daily_limit', message: 'That is ten today. Send the rest tomorrow, or email us.' }, 429);
+    const { error } = await db.from('ve_ambassador_stories').insert({ member_id: member.id, kind, name: name || null, about, place: place || null, contact: contact || null });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    await sendOne(SEAN_EMAIL, `[Ambassadors] ${STORY_KINDS[kind]} from ${member.name || member.email}${name ? ': ' + name : ''}`, wrap(
+      `<p><b>${esc(member.name || '')}</b> (${esc(member.email || '')}) sent ${esc(STORY_KINDS[kind].toLowerCase())}.</p>` +
+      (name ? `<p><b>Who:</b> ${esc(name)}</p>` : '') + `<p style="white-space:pre-line">${esc(about)}</p>` +
+      (place ? `<p><b>Where:</b> ${esc(place)}</p>` : '') + (contact ? `<p><b>How to reach them:</b> ${esc(contact)}</p>` : '') +
+      `<p><a href="${SITE}/admin/depot/ambassadors#stories">Depot &gt; Ambassadors &gt; Stories</a></p>`));
+    return json({ ok: true });
+  }
 
   if (action === 'door') {
     if (member.ve_role === 'ambassador') await ensureRow(member.id);

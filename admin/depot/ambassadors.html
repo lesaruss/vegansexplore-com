@@ -173,6 +173,7 @@
         return '<nav class="views" aria-label="Ambassadors"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Ambassadors (' + data.ambassadors.length + ')</a>' +
           '<a href="#invites/all" class="' + (on === 'invites' ? 'on' : '') + '">Invitations (' + data.invites.length + ')</a>' +
           '<a href="#door" class="' + (on === 'door' ? 'on' : '') + '">Paid work</a>' +
+          '<a href="#stories" class="' + (on === 'stories' ? 'on' : '') + '">Stories</a>' +
           '<a href="#commissions/all" class="' + (on === 'commissions' ? 'on' : '') + '">Commissions</a></nav>';
       }
 
@@ -530,6 +531,40 @@
         });
       }
 
+      // Stories (Sean, 2026-10-30: "introducing us to business owners and to podcasters and to people who are on the streets who have a
+      // story to be told... we want to interview you and put you on our podcast... different people hosting... report on what's happening
+      // in your community"). What Ambassadors send from the Guide's Tell the stories tab, newest first, by status; ve-ambassador
+      // admin_list (stories) and story_status.
+      var SST = { new: 'New', contacted: 'Contacted', done: 'Done' };
+      function drawStories(st) {
+        if (!SST[st]) st = 'new';
+        app.innerHTML = '<div class="bar">' + views('stories') + '</div><p class="empty">Loading...</p>';
+        dapi({ action: 'admin_list' }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<div class="bar">' + views('stories') + '</div><p class="empty">Stories did not load.</p>'; return; }
+          var S = d.stories || [], rows = S.filter(function (x) { return x.status === st; });
+          app.innerHTML = '<div class="bar">' + views('stories') + '</div>' +
+            '<p class="sub">Introductions, interviews, hosting and news Ambassadors send from their Guide\'s Tell the stories tab. Each is emailed to you as it comes in.</p>' +
+            '<div class="bar"><nav class="tabs" aria-label="Filter by status">' + Object.keys(SST).map(function (k) {
+              return '<a href="#stories/' + k + '" class="' + (k === st ? 'on' : '') + '">' + SST[k] + ' (' + S.filter(function (x) { return x.status === k; }).length + ')</a>';
+            }).join('') + '</nav></div>' +
+            '<div class="list">' + (rows.length ? rows.map(function (x) {
+              var next = x.status === 'new' ? ['contacted', 'Mark contacted'] : x.status === 'contacted' ? ['done', 'Mark done'] : ['new', 'Open it again'];
+              return '<div class="irow"><div><b>' + esc(x.kind_words) + (x.name ? ': ' + esc(x.name) : '') + '</b>' +
+                '<div style="font-size:13.5px;margin:4px 0;white-space:pre-line">' + esc(x.about) + '</div>' +
+                '<small>From ' + esc(x.member ? x.member.name + ' (' + x.member.email + ')' : 'an Ambassador') + ' &middot; ' + esc(day(x.created_at)) +
+                (x.place ? ' &middot; ' + esc(x.place) : '') + (x.contact ? ' &middot; reach: ' + esc(x.contact) : '') + '</small></div>' +
+                '<span class="tag ' + (x.status === 'done' ? 't-joined' : x.status === 'contacted' ? 't-sent' : 't-ready') + '">' + SST[x.status] + '</span>' +
+                '<button type="button" class="btn btn-sm' + (x.status === 'done' ? ' btn-ghost' : '') + '" data-st="' + esc(x.id) + '" data-to="' + next[0] + '">' + next[1] + '</button><span></span></div>';
+            }).join('') : '<p class="empty">None here.</p>') + '</div>';
+          app.querySelectorAll('[data-st]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              b.disabled = true;
+              dapi({ action: 'story_status', id: b.dataset.st, status: b.dataset.to }).then(function (r) { if (r && r.ok) drawStories(st); else { b.disabled = false; alert('That did not save.'); } });
+            });
+          });
+        });
+      }
+
       // The email an Ambassador gets, for a profile, with a sample person (Depot > Preview journeys > Ambassador). Nothing is saved.
       function drawSample(p) {
         var key = PROFILES.some(function (x) { return x[0] === p; }) ? p : '';
@@ -550,6 +585,7 @@
         if ((m = r.match(/^invite\/([0-9a-f-]{36})$/))) return drawInvite(m[1]);
         if ((m = r.match(/^invites\/([a-z]+)$/))) return drawInvites(TABS.indexOf(m[1]) >= 0 ? m[1] : 'all');
         if (r === 'door') return drawDoor();
+        if ((m = r.match(/^stories(?:\/([a-z]+))?$/))) return drawStories(m[1] || 'new');
         if ((m = r.match(/^commissions\/([a-z]+)$/))) return drawCommissions(m[1]);
         if ((m = r.match(/^sample\/([a-z]*)$/))) return drawSample(m[1]);
         drawList();
