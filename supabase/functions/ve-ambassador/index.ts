@@ -25,8 +25,11 @@
 //   POST { action: 'admin_list' }  -> every Ambassador with their checklist, and the profile requests waiting
 //   POST { action: 'claim_decide', id, approve, note? }  approving gives them the listing (or makes it, under Content Creators)
 //   POST { action: 'creator_status', id, status: new|reviewing|accepted|declined, note? }   a creator application (sends nothing)
+//   POST { action: 'creator_funnel', days? }  -> where creators came from: by page and channel, viewed, clicked, opened the walkthrough,
+//        started, sent, accepted (ve_promo_funnel, promo 'creator-register'; default the last 90 days)
+//   POST { action: 'creator_journey', id }  -> one application's steps, from the card they clicked to the application
 // Anyone, no sign-in (the creator pathway's last step, /gigs/sample#join/1 to /5; Sean, 2026-10-30):
-//   POST { action: 'creator_apply', answers }  saves ve_creator_applications, emails Sean every answer and confirms to them; three a day
+//   POST { action: 'creator_apply', answers, attribution?, claim? }  saves ve_creator_applications, emails Sean every answer and confirms to them; three a day
 //        per email. A signed-in member's token, when sent, links the application to them.
 // The cron (x-cron-secret) or ops:
 //   POST { action: 'remind' }  emails who is due: Day 2, Day 7, then every 7 days, at most 10, naming what is missing
@@ -64,6 +67,10 @@ const CHAPTER_WORDS: Record<string, string> = { 'south-florida': 'South Florida'
   dc: 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia',
   'new-york': 'New York', 'los-angeles': 'Los Angeles', london: 'London', other: 'Somewhere else' };
 const CREATOR_STATUS = ['new', 'reviewing', 'accepted', 'declined'];
+// The creator ad and "Is this you?" on People pages (Sean, 2026-10-30; /public/ve-promo.js, migration 20261030_promo_funnel.sql).
+const PROMO = 'creator-register';
+const STEP_NAMES: Record<string, string> = { view: 'Saw the card', click: 'Clicked it', landed: 'Opened the walkthrough', started: 'Started the application',
+  sent: 'Sent the application', accepted: 'Accepted' };
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -306,19 +313,41 @@ Deno.serve(async (req) => {
     const chapters = list(a.chapters).filter((c) => CHAPTERS.includes(c));
     const chapter = CHAPTERS.includes(String(a.chapter)) || a.chapter === 'other' ? String(a.chapter) : null;
     const reach = platforms.reduce((n, p) => n + p.followers, 0);
+    // Where they came from: the People page whose card they clicked (the browser keeps it 30 days), how this visit came in, and the
+    // profile they claim from "Is this you?" (a People listing no account holds yet).
+    const at0 = (body.attribution && typeof body.attribution === 'object') ? body.attribution : {};
+    const srcPage = /^\/[A-Za-z0-9/_.-]{0,199}$/.test(String(at0.page || '')) ? String(at0.page) : null;
+    const srcListing = isId(at0.listing_id) ? String(at0.listing_id) : null;
+    const srcCta = /^[a-z0-9-]{1,30}$/.test(String(at0.cta || '')) ? String(at0.cta) : null;
+    const srcChannel = clean(at0.channel, 80) || null;
+    const srcVisitor = /^[A-Za-z0-9-]{8,64}$/.test(String(at0.visitor || '')) ? String(at0.visitor) : null;
+    let claimL: any = null;
+    const claimSlug = String(body.claim || '').toLowerCase();
+    if (/^[a-z0-9-]{2,120}$/.test(claimSlug)) {
+      const { data: cl } = await db.from('listings').select('id, name, slug, category, owner_member_id, details').eq('slug', claimSlug).eq('status', 'approved').in('category', PEOPLE_CATS).limit(1);
+      claimL = cl?.[0] || null;
+    }
+    const { data: srcL } = srcListing ? await db.from('listings').select('id, name, slug').eq('id', srcListing).maybeSingle() : { data: null };
     const { data: row, error } = await db.from('ve_creator_applications').insert({
       name: out.name.slice(0, 160), email, phone: out.phone || null, chapter, city: out.city || null,
       chapters: chapter && chapter !== 'other' && !chapters.includes(chapter) ? [chapter, ...chapters] : chapters,
       topics: list(a.topics), formats: list(a.formats), gig_kinds: list(a.gig_kinds), platforms, main_platform: clean(a.main, 40) || null,
       total_reach: Math.min(reach, 2147483647), answers: out, source: clean(body.source, 120) || null, member_id: who || null,
+      source_page: srcPage, source_listing_id: srcL?.id || null, source_cta: srcCta, source_channel: srcChannel, source_visitor: srcVisitor,
+      claim_listing_id: claimL?.id || null,
     }).select('id').single();
     if (error || !row) { console.error('creator_apply', error); return json({ error: 'save_failed', message: 'That did not save. Try again in a minute.' }, 500); }
+    await db.from('ve_promo_events').insert({ promo: PROMO, step: 'sent', visitor: srcVisitor, page: srcPage, listing_id: srcL?.id || null, cta: srcCta,
+      channel: srcChannel, ref_id: row.id, member_id: who || null });
+    const cameFrom = `<p><b>Where they came from:</b> ${srcL ? `the ${srcCta === 'claim' ? '"Is this you?" card' : 'creator ad'} on <a href="${SITE}/directory/${esc(srcL.slug)}">${esc(srcL.name)}</a>${/s$/i.test(srcL.name) ? "'" : "'s"} page` : srcPage ? esc(srcPage) : 'straight to the application'}` +
+      `${srcChannel ? `, after arriving by ${esc(srcChannel)}` : ''}.</p>` +
+      (claimL ? `<p><b>Claims the profile:</b> <a href="${SITE}/directory/${esc(claimL.slug)}">${esc(claimL.name)}</a>${claimL.owner_member_id || claimL.details?.person?.member_id ? ' (an account already holds it: check before you link it)' : ''}. Confirm it is them before linking it to their account (the listing editor's Their Vegans Explore account).</p>` : '');
     const words = (k: string) => k === 'chapter' ? CHAPTER_WORDS[out[k]] || out[k] : k === 'chapters' ? list(a.chapters).map((c) => CHAPTER_WORDS[c] || c).join(', ') : out[k];
     const rows = APPLY_KEYS.filter(([k]) => out[k]).map(([k, label]) =>
       `<tr><td style="padding:6px 12px 6px 0;color:#555;vertical-align:top;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0">${esc(words(k)).replace(/\n/g, '<br>')}</td></tr>`).join('') +
       platforms.map((p) => `<tr><td style="padding:6px 12px 6px 0;color:#555;vertical-align:top;white-space:nowrap">${esc(p.label)}</td><td style="padding:6px 0">${esc(p.handle)}${p.followers ? ' &middot; ' + p.followers.toLocaleString('en-US') : ''}</td></tr>`).join('');
     await sendOne(SEAN_EMAIL, `[Creators] New application: ${out.name}${out.city ? ' (' + out.city + ')' : ''}`, wrap(
-      `<p><b>${esc(out.name)}</b> applied to be an official creator. Total reach as they gave it: <b>${reach.toLocaleString('en-US')}</b>.</p>` +
+      `<p><b>${esc(out.name)}</b> applied to be an official creator. Total reach as they gave it: <b>${reach.toLocaleString('en-US')}</b>.</p>` + cameFrom +
       `<table style="border-collapse:collapse;font-size:14px">${rows}</table>` +
       `<p><a href="${SITE}/admin/depot/ambassadors#creator/${row.id}">Read it in the Depot</a></p>`));
     await sendOne(email, 'We have your creator application', wrap(
@@ -336,14 +365,41 @@ Deno.serve(async (req) => {
   const isAdmin = !!member.is_superadmin;
 
   // ---- The team: every Ambassador's checklist, and the profile requests waiting.
-  if (action === 'admin_list' || action === 'claim_decide' || action === 'story_status' || action === 'creator_status') {
+  if (action === 'admin_list' || action === 'claim_decide' || action === 'story_status' || action === 'creator_status' || action === 'creator_funnel' || action === 'creator_journey') {
     if (!isAdmin) return json({ error: 'forbidden' }, 403);
+    if (action === 'creator_funnel') {
+      const days = Math.min(Math.max(Math.round(Number(body.days) || 90), 1), 3650);
+      const { data, error } = await db.rpc('ve_promo_funnel', { p_promo: PROMO, p_since: new Date(Date.now() - days * DAY_MS).toISOString() });
+      if (error) return json({ error: 'load_failed', message: error.message }, 500);
+      return json({ ok: true, days, funnel: data, step_names: STEP_NAMES });
+    }
+    if (action === 'creator_journey') {
+      if (!isId(body.id)) return json({ error: 'bad_request' }, 400);
+      const { data: app } = await db.from('ve_creator_applications').select('id, source_visitor, created_at').eq('id', body.id).maybeSingle();
+      if (!app) return json({ error: 'not_found' }, 404);
+      let q = db.from('ve_promo_events').select('step, page, listing_id, cta, channel, created_at').eq('promo', PROMO).order('created_at').order('id').limit(200);
+      q = app.source_visitor ? q.or(`visitor.eq.${app.source_visitor},ref_id.eq.${app.id}`) : q.eq('ref_id', app.id);
+      const { data: ev } = await q;
+      const ids = [...new Set((ev || []).map((e: any) => e.listing_id).filter(Boolean))];
+      const { data: ls } = ids.length ? await db.from('listings').select('id, name, slug').in('id', ids) : { data: [] };
+      const nm: Record<string, any> = {}; for (const l of ls || []) nm[l.id] = l;
+      return json({ ok: true, steps: (ev || []).map((e: any) => ({ ...e, step_words: STEP_NAMES[e.step] || e.step, listing: e.listing_id ? nm[e.listing_id] || null : null })) });
+    }
     if (action === 'creator_status') {
       if (!isId(body.id) || !CREATOR_STATUS.includes(body.status)) return json({ error: 'bad_request' }, 400);
       const patch: Record<string, unknown> = { status: body.status, status_at: new Date().toISOString(), status_by: member.id };
       if (typeof body.note === 'string') patch.team_note = clean(body.note, 2000) || null;
       const { error } = await db.from('ve_creator_applications').update(patch).eq('id', body.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      // Accepted counts once in Where they came from, under the page the application came from.
+      if (body.status === 'accepted') {
+        const { data: done } = await db.from('ve_promo_events').select('id').eq('promo', PROMO).eq('step', 'accepted').eq('ref_id', body.id).limit(1);
+        if (!done?.length) {
+          const { data: a } = await db.from('ve_creator_applications').select('source_page, source_listing_id, source_cta, source_channel, source_visitor, member_id').eq('id', body.id).maybeSingle();
+          if (a) await db.from('ve_promo_events').insert({ promo: PROMO, step: 'accepted', visitor: a.source_visitor, page: a.source_page, listing_id: a.source_listing_id,
+            cta: a.source_cta, channel: a.source_channel, ref_id: body.id, member_id: a.member_id });
+        }
+      }
       return json({ ok: true });
     }
     if (action === 'story_status') {
@@ -415,7 +471,13 @@ Deno.serve(async (req) => {
     for (const m of more || []) names[m.id] = m;
     const storyRows = (stories || []).map((x: any) => ({ ...x, kind_words: STORY_KINDS[x.kind] || x.kind,
       member: names[x.member_id] ? { name: names[x.member_id].name, email: names[x.member_id].email } : null }));
-    return json({ ok: true, ambassadors: people, claims, stories: storyRows, creators: creators || [], chapter_words: CHAPTER_WORDS, answer_labels: APPLY_KEYS });
+    // The pages applications came from and the profiles they claim, by name.
+    const cl = [...new Set((creators || []).flatMap((c: any) => [c.source_listing_id, c.claim_listing_id]).filter(Boolean))];
+    const { data: cls } = cl.length ? await db.from('listings').select('id, name, slug').in('id', cl) : { data: [] };
+    const cn: Record<string, any> = {}; for (const l of cls || []) cn[l.id] = { name: l.name, slug: l.slug };
+    const creatorRows = (creators || []).map((c: any) => ({ ...c, source_listing: c.source_listing_id ? cn[c.source_listing_id] || null : null,
+      claim_listing: c.claim_listing_id ? cn[c.claim_listing_id] || null : null }));
+    return json({ ok: true, ambassadors: people, claims, stories: storyRows, creators: creatorRows, chapter_words: CHAPTER_WORDS, answer_labels: APPLY_KEYS });
   }
 
   // ---- The Ambassador's own checklist.

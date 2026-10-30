@@ -91,6 +91,10 @@
     .mail{border:1px solid var(--ve-border);border-radius:10px;padding:16px;background:#fcfcfc;margin:8px 0 14px;}
     .mail .subj{font-size:13px;font-weight:800;margin-bottom:10px;}
     .acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+    .sel{appearance:none;-webkit-appearance:none;font:inherit;font-size:14px;border:1px solid #d5d9d5;border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23333' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;padding:9px 44px 9px 12px}
+    .ftab{width:100%;border-collapse:collapse;font-size:13.5px;min-width:640px}
+    .ftab th{text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);padding:8px 10px;border-bottom:1px solid #e3e6e3}
+    .ftab td{padding:9px 10px;border-bottom:1px solid #eef0ee}.ftab td:not(:first-child),.ftab th:not(:first-child){text-align:right}
     .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 14px;}
     .kv div{background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13px;}
     .kv span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);}
@@ -175,6 +179,7 @@
           '<a href="#door" class="' + (on === 'door' ? 'on' : '') + '">Paid work</a>' +
           '<a href="#stories" class="' + (on === 'stories' ? 'on' : '') + '">Stories</a>' +
           '<a href="#creators/new" class="' + (on === 'creators' ? 'on' : '') + '">Creators</a>' +
+          '<a href="#funnel" class="' + (on === 'funnel' ? 'on' : '') + '">Where they came from</a>' +
           '<a href="#commissions/all" class="' + (on === 'commissions' ? 'on' : '') + '">Commissions</a></nav>';
       }
 
@@ -590,7 +595,8 @@
             '<div class="list">' + (rows.length ? rows.map(function (x) {
               return '<div class="irow"><div><b><a href="#creator/' + esc(x.id) + '">' + esc(x.name) + '</a></b>' +
                 '<small>' + esc([x.city, W[x.chapter] || x.chapter].filter(Boolean).join(', ')) + ' &middot; ' + reach(x.total_reach) + ' reach &middot; ' + esc((x.platforms || []).map(function (p) { return p.label; }).join(', ')) + '</small>' +
-                '<small>' + esc((x.topics || []).slice(0, 4).join(', ')) + '</small></div>' +
+                '<small>' + esc((x.topics || []).slice(0, 4).join(', ')) + '</small>' +
+                (x.source_listing || x.claim_listing ? '<small>' + (x.claim_listing ? 'Claims ' + poss(x.claim_listing.name) + ' profile' : 'From ' + poss(x.source_listing.name) + ' page') + (x.source_channel ? ', arrived by ' + esc(x.source_channel) : '') + '</small>' : '') + '</div>' +
                 '<span class="c"><small>' + esc(day(x.created_at)) + '</small></span>' +
                 '<span class="tag ' + (x.status === 'accepted' ? 't-joined' : x.status === 'declined' ? '' : x.status === 'reviewing' ? 't-sent' : 't-ready') + '">' + CST[x.status] + '</span>' +
                 '<a class="btn btn-sm" href="#creator/' + esc(x.id) + '">Open</a></div>';
@@ -606,6 +612,12 @@
           app.innerHTML = '<p class="crumb"><a href="#creators/' + esc(x.status) + '">Creators</a> &rsaquo; ' + esc(x.name) + '</p>' +
             '<section class="card"><h2 style="margin:0 0 4px">' + esc(x.name) + '</h2><p class="hint">' + esc(x.email) + (x.phone ? ' &middot; ' + esc(x.phone) : '') + ' &middot; applied ' + esc(day(x.created_at)) + '</p>' +
             '<div class="kv"><div><span>Total reach</span><b>' + reach(x.total_reach) + '</b></div><div><span>Main platform</span><b>' + esc(x.main_platform || '-') + '</b></div><div><span>Home chapter</span><b>' + esc(W[x.chapter] || x.chapter || '-') + '</b></div><div><span>Status</span><b>' + CST[x.status] + '</b></div></div>' +
+            '<h3>Where they came from</h3><div class="kv">' +
+              '<div class="kv-wide"><span>Page</span><b style="font-size:15px">' + (x.source_listing ? '<a href="/directory/' + esc(x.source_listing.slug) + '" target="_blank" rel="noopener">' + esc(x.source_listing.name) + '</a>' : esc(x.source_page || 'Straight to the application')) + '</b></div>' +
+              '<div><span>Card</span><b style="font-size:15px">' + (x.source_cta === 'claim' ? 'Is this you?' : x.source_cta === 'ad' ? 'Creator ad' : '-') + '</b></div>' +
+              '<div><span>Arrived by</span><b style="font-size:15px">' + esc(x.source_channel || 'Unknown') + '</b></div>' +
+              (x.claim_listing ? '<div class="kv-wide"><span>Claims the profile</span><b style="font-size:15px"><a href="/directory/' + esc(x.claim_listing.slug) + '" target="_blank" rel="noopener">' + esc(x.claim_listing.name) + '</a></b><small style="display:block;margin-top:4px">Confirm it is them, then link it in the listing editor\'s Their Vegans Explore account.</small></div>' : '') +
+            '</div><h3>Their steps</h3><div class="list" id="cr-journey"><p class="empty">Loading their steps...</p></div>' +
             '<h3>Platforms</h3><div class="list">' + (x.platforms || []).map(function (p) { return '<div class="irow"><div><b>' + esc(p.label) + '</b><small>' + esc(p.handle) + '</small></div><span>' + (p.followers ? reach(p.followers) : '') + '</span><span></span><span></span></div>'; }).join('') + '</div>' +
             '<h3>Their answers</h3><div class="list">' + (d.answer_labels || []).filter(function (l) { return A[l[0]] && ['name', 'email', 'phone'].indexOf(l[0]) < 0; }).map(function (l) {
               return '<div class="irow"><div><small>' + esc(l[1]) + '</small><div style="font-size:14px;white-space:pre-line;overflow-wrap:anywhere">' + esc(words(l[0])) + '</div></div><span></span><span></span><span></span></div>';
@@ -613,12 +625,52 @@
             '<section class="card form"><h2>Your call</h2><label for="cr-note">Team note</label><textarea id="cr-note" maxlength="2000">' + esc(x.team_note || '') + '</textarea>' +
             '<p class="hint">Marking it sends nothing. Write to them yourself: <a href="mailto:' + esc(x.email) + '">' + esc(x.email) + '</a>.</p>' +
             '<div class="bar">' + Object.keys(CST).map(function (k) { return '<button type="button" class="btn btn-sm' + (k === x.status ? '' : ' btn-ghost') + '" data-cst="' + k + '">' + (k === x.status ? CST[k] + ' (now)' : 'Mark ' + CST[k].toLowerCase()) + '</button>'; }).join('') + '</div></section>';
+          dapi({ action: 'creator_journey', id: x.id }).then(function (j) {
+            var box = $('cr-journey'); if (!box) return;
+            var st = (j && j.steps) || [];
+            box.innerHTML = st.length ? st.map(function (e) {
+              return '<div class="irow"><div><b>' + esc(e.step_words) + '</b><small>' + (e.listing ? poss(e.listing.name) + ' page' : esc(e.page || '')) + (e.channel ? ' &middot; ' + esc(e.channel) : '') + '</small></div>' +
+                '<span class="c"><small>' + esc(new Date(e.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '</small></span><span></span><span></span></div>';
+            }).join('') : '<p class="empty">No steps recorded (tracking started October 30, 2026).</p>';
+          });
           app.querySelectorAll('[data-cst]').forEach(function (b) {
             b.addEventListener('click', function () {
               b.disabled = true;
               dapi({ action: 'creator_status', id: x.id, status: b.dataset.cst, note: $('cr-note').value }).then(function (r) { if (r && r.ok) drawCreator(id); else { b.disabled = false; alert('That did not save.'); } });
             });
           });
+        });
+      }
+
+      // Where they came from (Sean, 2026-10-30: "see who's clicking on it, how many people click through, follow their journey... which
+      // channels are showing up the most"). The creator ad and "Is this you?" on People pages, by the page they were on and by how the visit
+      // came in: saw the card, clicked, opened the walkthrough, started the application, sent it, accepted. Each counts different visitors.
+      // ve-ambassador creator_funnel (ve_promo_funnel, promo creator-register).
+      function poss(n) { return esc(n) + (/s$/i.test(String(n || '')) ? '\'' : '\'s'); }
+      function drawFunnel() {
+        var days = +(sessionStorage.getItem('amb_funnel_days') || 90);
+        app.innerHTML = '<div class="bar">' + views('funnel') + '</div><p class="empty">Loading...</p>';
+        dapi({ action: 'creator_funnel', days: days }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<div class="bar">' + views('funnel') + '</div><p class="empty">This did not load.</p>'; return; }
+          var F = d.funnel || {}, T = F.totals || {};
+          var COLS = [['views', 'Saw it'], ['clicks', 'Clicked'], ['landed', 'Walkthrough'], ['started', 'Started'], ['sent', 'Sent'], ['accepted', 'Accepted']];
+          function pct(a, b) { return b ? Math.round(a / b * 100) + '%' : '-'; }
+          function table(rows, label, name) {
+            if (!rows.length) return '<p class="empty">Nothing yet.</p>';
+            return '<div style="overflow-x:auto"><table class="ftab"><thead><tr><th>' + label + '</th>' + COLS.map(function (c) { return '<th>' + c[1] + '</th>'; }).join('') + '<th>Click rate</th></tr></thead><tbody>' +
+              rows.map(function (r) { return '<tr><td>' + name(r) + '</td>' + COLS.map(function (c) { return '<td>' + (r[c[0]] || 0) + '</td>'; }).join('') + '<td>' + pct(r.clicks || 0, r.views || 0) + '</td></tr>'; }).join('') + '</tbody></table></div>';
+          }
+          app.innerHTML = '<div class="bar">' + views('funnel') + '</div>' +
+            '<p class="sub">The creator ad and the "Is this you?" card on every People page, followed to the application. Each number is people, counted once. ' +
+            'A page is where they clicked; "Straight in" is someone who reached the application without a card. Tracking started October 30, 2026.</p>' +
+            '<div style="display:flex;align-items:center;gap:10px;margin:0 0 14px"><label for="fn-days" class="hint" style="margin:0">Period</label><select id="fn-days" class="sel">' + [[7, 'Last 7 days'], [30, 'Last 30 days'], [90, 'Last 90 days'], [365, 'Last year']].map(function (o) {
+              return '<option value="' + o[0] + '"' + (o[0] === d.days ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+            '<section class="card"><div class="kv" style="margin:0">' + COLS.map(function (c) { return '<div><span>' + c[1] + '</span><b>' + (T[c[0]] || 0) + '</b></div>'; }).join('') + '</div></section>' +
+            '<section class="card"><h2 style="margin:0 0 10px">By page</h2>' + table(F.pages || [], 'Page', function (r) {
+              return r.slug ? '<a href="/directory/' + esc(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a>' : r.key === '(none)' ? 'Straight in' : esc(r.key); }) + '</section>' +
+            '<section class="card"><h2 style="margin:0 0 10px">By how they came in</h2>' + table(F.channels || [], 'Channel', function (r) { return esc(r.key); }) +
+            '<p class="hint">"Direct or an app" is WhatsApp, texts and typed addresses, which do not say where they came from. A tracked /go/ link shows as Link: its code.</p></section>';
+          $('fn-days').addEventListener('change', function () { try { sessionStorage.setItem('amb_funnel_days', this.value); } catch (e) {} drawFunnel(); });
         });
       }
 
@@ -645,6 +697,7 @@
         if ((m = r.match(/^stories(?:\/([a-z]+))?$/))) return drawStories(m[1] || 'new');
         if ((m = r.match(/^creators(?:\/([a-z]+))?$/))) return drawCreators(m[1] || 'new');
         if ((m = r.match(/^creator\/([0-9a-f-]{36})$/))) return drawCreator(m[1]);
+        if (r === 'funnel') return drawFunnel();
         if ((m = r.match(/^commissions\/([a-z]+)$/))) return drawCommissions(m[1]);
         if ((m = r.match(/^sample\/([a-z]*)$/))) return drawSample(m[1]);
         drawList();

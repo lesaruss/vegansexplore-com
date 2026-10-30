@@ -9,6 +9,37 @@
   (document.head || document.documentElement).appendChild(s);
 })();
 
+/* ---- How this visit came in (Sean, 2026-10-30: "which channels are showing up the most") ----
+ * The first page of a visit keeps where it came from in sessionStorage ve_landing {channel, vl, page}: utm_source, a tracked
+ * /go/ link (?vl=, named by its code on the server), the referring site, or "Direct or an app" (WhatsApp and texts send none).
+ * /public/ve-promo.js sends it with each promotion step (the creator ad on People pages). */
+(function () {
+  if (window.VE_BRAND) return;
+  try {
+    if (sessionStorage.getItem('ve_landing')) return;
+    var q = new URLSearchParams(location.search), utm = (q.get('utm_source') || '').trim(), vl = q.get('vl') || '', ch = '';
+    var NAMES = { instagram: 'Instagram', ig: 'Instagram', facebook: 'Facebook', fb: 'Facebook', tiktok: 'TikTok', youtube: 'YouTube',
+      google: 'Google', bing: 'Bing', duckduckgo: 'DuckDuckGo', x: 'X', twitter: 'X', linkedin: 'LinkedIn', whatsapp: 'WhatsApp',
+      email: 'Email', newsletter: 'Email', pinterest: 'Pinterest', reddit: 'Reddit', threads: 'Threads' };
+    if (utm) ch = NAMES[utm.toLowerCase()] || utm.slice(0, 40);
+    else if (/^[0-9a-f-]{36}$/.test(vl)) ch = 'Tracked link';
+    else {
+      var host = ''; try { host = new URL(document.referrer).hostname.replace(/^www\./, ''); } catch (e) {}
+      if (!host) ch = 'Direct or an app';
+      else if (/(^|\.)vegansexplore\.com$/.test(host)) ch = 'Vegans Explore';
+      else {
+        var known = [[/instagram\.com$/, 'Instagram'], [/facebook\.com$|fb\.com$/, 'Facebook'], [/(^|\.)t\.co$|x\.com$|twitter\.com$/, 'X'],
+          [/(^|\.)google\./, 'Google'], [/bing\.com$/, 'Bing'], [/duckduckgo\.com$/, 'DuckDuckGo'], [/youtube\.com$/, 'YouTube'],
+          [/tiktok\.com$/, 'TikTok'], [/linkedin\.com$|lnkd\.in$/, 'LinkedIn'], [/whatsapp\.com$/, 'WhatsApp'], [/threads\.net$/, 'Threads'],
+          [/pinterest\./, 'Pinterest'], [/reddit\.com$/, 'Reddit'], [/lesaruss\.(ai|com)$/, 'LESARUSS']];
+        for (var i = 0; i < known.length && !ch; i++) if (known[i][0].test(host)) ch = known[i][1];
+        if (!ch) ch = host.slice(0, 60);
+      }
+    }
+    sessionStorage.setItem('ve_landing', JSON.stringify({ channel: ch, vl: /^[0-9a-f-]{36}$/.test(vl) ? vl : '', page: location.pathname }));
+  } catch (e) {}
+})();
+
 /* ---- Inside the dashboard window (Sean, 2026-10-04) ----
  * Any page the dashboard opens in its console frame drops its own nav and footer (the dashboard
  * keeps its own around it) and tells the dashboard its height, so the frame grows to fit and
