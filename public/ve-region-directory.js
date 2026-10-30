@@ -347,7 +347,7 @@
       // A show's status is a filter, not a sort (Sean, 2026-10-27, "you could decide what the best practice is"): people want only
       // the shows still going, not the list reordered.
       '<span class="vrd-sub" data-sub-for="mstat" hidden><span class="geo-label">Status</span>' +
-      '<select aria-label="Filter by status" class="sort-select" data-vrd-mstat="' + cat.key + '"><option value="">All</option><option value="active">Active</option><option value="hiatus">On hiatus</option></select></span>' +
+      '<select aria-label="Filter by status" class="sort-select" data-vrd-mstat="' + cat.key + '"><option value="">All</option><option value="active">Active</option><option value="hiatus">On hiatus</option><option value="ended">Ended</option></select></span>' +
       '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Sells at</span>' +
       '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Anywhere</option><option value="1">Markets &amp; events</option><option value="0">Online &amp; stores</option></select></span>';
     return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + '</div>';
@@ -530,11 +530,11 @@
       '<a class="vla-edit" role="menuitem" data-vrd-review="#l/' + encodeURIComponent(l.id) + '/' + list + '" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/' + list + '" target="_blank" rel="noopener">Review</a></div></details>';
   }
 
-  // Paused and closed in the words of the kind of listing (Sean, 2026-10-27): a podcast is On hiatus, never Ended (it could come
-  // back years later; Sean, same day), a book or film No
+  // Paused and closed in the words of the kind of listing (Sean, 2026-10-27): a podcast is On hiatus, and Ended only when Sean
+  // confirms it (Sean, 2026-10-30, on Vegans Who Lift: "I can confirm they've ended"; it could come back years later), a book or film No
   // longer available, a brand Paused or Out of business. Keep in step with STATUS in /public/ve-listing-admin.js and statusWords
   // in /directory/listing.html.
-  var STATUS_WORDS = { show: ['On hiatus', 'On hiatus'], work: ['Unavailable for now', 'No longer available'], brand: ['Paused', 'Out of business'], place: ['Temporarily closed', 'Permanently closed'] };
+  var STATUS_WORDS = { show: ['On hiatus', 'Ended'], work: ['Unavailable for now', 'No longer available'], brand: ['Paused', 'Out of business'], place: ['Temporarily closed', 'Permanently closed'] };
   function statusWords(cat) {
     return STATUS_WORDS[['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(cat) >= 0 ? 'show' : ['Documentaries & Films', 'Books'].indexOf(cat) >= 0 ? 'work'
       : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(cat) >= 0 ? 'brand' : 'place'];
@@ -557,7 +557,7 @@
     var w = statusWords(l.category), s = l.business_status, work = /Books|Documentaries/.test(l.category);
     // A book or a film is simply there; it says so only when it is not (Sean, 2026-10-27: "Available doesn't tell me anything").
     if (work && s !== 'CLOSED_PERMANENTLY' && s !== 'CLOSED_TEMPORARILY') return '';
-    var t = s === 'CLOSED_PERMANENTLY' && work ? [w[1], 'off'] : s === 'CLOSED_PERMANENTLY' || s === 'CLOSED_TEMPORARILY' ? [w[0], 'paused'] : ['Active', 'on'];
+    var t = s === 'CLOSED_PERMANENTLY' ? [w[1], 'off'] : s === 'CLOSED_PERMANENTLY' || s === 'CLOSED_TEMPORARILY' ? [w[0], 'paused'] : ['Active', 'on'];
     return ' <span class="vrd-mstat vrd-mstat-' + t[1] + '">' + t[0] + '</span>';
   }
   // The line under a media card's name says what it is, where a place says its city (Sean, 2026-10-27: no "Online", no city):
@@ -740,7 +740,7 @@
     return out.join('|');
   }
   function extraAttrs(l) {
-    var ms = l.business_status === 'CLOSED_PERMANENTLY' || l.business_status === 'CLOSED_TEMPORARILY' ? 'hiatus' : 'active';
+    var ms = l.business_status === 'CLOSED_PERMANENTLY' ? 'ended' : l.business_status === 'CLOSED_TEMPORARILY' ? 'hiatus' : 'active';
     return ' data-booktype="' + esc(l.book_type || '') + '" data-htype="' + esc(l.health_type || '') + '" data-spec="' + esc(l.specialty || '') + '" data-year="' + esc(l.release_year || '') + '" data-mstat="' + ms + '" data-kinds="' + esc((l.product_kinds || []).join('|')) + '" data-cuisines="' + esc((l.cuisines || []).join('|')) + '" data-chain="' + ((l.tags || []).indexOf('ve-grocery-store') >= 0 ? 1 : 0) + '" data-hubs="' + esc(hubsOf(l)) + '" data-vends="' + (vendsAt(l) ? 1 : 0) + '"';
   }
 

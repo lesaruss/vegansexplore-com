@@ -1896,7 +1896,11 @@ plays the latest video on the left (`youtube-nocookie`), About (the listing's de
 and **Find them on** (YouTube, Instagram, TikTok, Facebook, website; marks in `/public/icons/platforms/`) on the right, then **Latest videos**,
 thumbnails 12 at a time (Show more), each playing in that player. `ve-youtube` `videos` serves the latest 50 uploads from
 `ve_youtube_feeds`, read again after 6 hours (cron `ve-youtube-refresh`, hourly, 20 a run), which sets Active / On hiatus like a podcast;
-`resolve` (ops) looks a channel up by handle or id. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
+`resolve` (ops) looks a channel up by handle or id. **Playlists for a client's site** (Sean, 2026-10-30, Brooke Sellers'
+meatlessmuscle.com series pages, hand-typed and behind: "will it stay up to date?"; migration `20261030_ve_youtube_playlists.sql`):
+`ve-youtube` `playlist` (anyone, `{id}`) serves a playlist listed in `ve_youtube_playlists` whole, newest first, with each video's
+length, read again after 6 hours on a visit or by the same hourly `refresh` (10 playlists a run). Only listed playlists are served. Her
+five series are listed (`site` meatlessmuscle.com); her pages read it and keep their typed list as the fallback. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
 for every channel, Google's own included; checked 2026-10-29), so it reads YouTube's Data API v3 with `YOUTUBE_API_KEY`, else
 `GOOGLE_PLACES_API_KEY` (Sean turned the YouTube Data API on for it the same day). A News Outlet with a channel gets the same page
 (`isYouTubeL`: Plant Based News, which also shows under YouTube). **The first 12** (migration `20261029_youtube_channels.sql`, each found
@@ -2094,7 +2098,11 @@ Plays (`play`, the episode's guid) and Listen on clicks (`listen`) are `ve_listi
 Anything longer than 6 months... we'll say on hiatus... if a new episode gets posted... that can update the tag automatically").
 **Never Ended** (Sean, same day: "We can't confirm it's ended because it could come back 3 years later... I would take offense if
 somebody typed my podcast ended"): a show is Active or On hiatus, however old its last episode (migration
-`20261027_shows_never_ended.sql` moved the five the feed had marked Ended). `ve-podcast` sets a podcast's `business_status` from its latest
+`20261027_shows_never_ended.sql` moved the five the feed had marked Ended). **Ended only when Sean confirms it** (Sean, 2026-10-30:
+"you can use the ended on the Vegans Who Lift podcast because I can confirm they've ended. But Vegans Explore podcast will be coming
+back"): `business_status` CLOSED_PERMANENTLY reads **Ended** on a show (`STATUS_WORDS` in `ve-region-directory.js`, `statusWords` in
+`directory/listing.html`, `STATUS` in `ve-listing-admin.js`; a Status filter option), set by hand with `details.ended_at`, and
+`ve-podcast` `syncStatus` keeps it until an episode newer than `ended_at` comes out (then Active). Vegans Who Lift is the first. `ve-podcast` sets a podcast's `business_status` from its latest
 episode each time it reads the feed, and cron `ve-podcast-refresh` (hourly, `refresh`, x-cron-secret) re-reads feeds older than 20
 hours, eight a run, and re-checks every status from what we hold. A save in the listing editor holds only until then. Media (show
 and work) wears its status where other listings say how Vegan they are: the listing header's tag (Active, On hiatus;

@@ -24,7 +24,9 @@
 // A podcast's status follows its feed (Sean, 2026-10-27: "if an episode has been posted within the last 6 months, we can consider it
 // active. Anything longer than 6 months... we'll say on hiatus"). Never Ended (Sean, same day: "it could come back 3 years later...
 // I would take offense if somebody typed my podcast ended"): listings.business_status OPERATIONAL or CLOSED_TEMPORARILY, set each
-// time a feed is read and by the hourly refresh, so a new episode puts it back to Active on its own.
+// time a feed is read and by the hourly refresh, so a new episode puts it back to Active on its own. Ended (CLOSED_PERMANENTLY) only
+// when Sean confirms it (2026-10-30, Vegans Who Lift: "I can confirm they've ended"); it holds until an episode newer than
+// details.ended_at comes out (none set: newer than 30 days ago), which makes it Active again.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -118,6 +120,10 @@ function statusOf(latest: string | null | undefined): string | null {
 async function syncStatus(l: any, latest: string | null | undefined) {
   const s = statusOf(latest);
   if (!s || l.category !== 'Podcasts' || l.business_status === s) return;
+  if (l.business_status === 'CLOSED_PERMANENTLY') {
+    const since = Date.parse(l.details?.ended_at || '') || Date.now() - 30 * DAY;
+    if (!latest || !(Date.parse(latest) > since)) return;
+  }
   await db.from('listings').update({ business_status: s }).eq('id', l.id);
   l.business_status = s;
 }
@@ -207,7 +213,7 @@ Deno.serve(async (req) => {
       if (l && l.status === 'approved') { await feedFor(l, true); read++; }
     }
     // Time passes without a new episode too: every podcast's status from what we hold.
-    const { data: all } = await db.from('ve_podcast_feeds').select('listing_id, latest:episodes->0->>date, listings(id, category, business_status)');
+    const { data: all } = await db.from('ve_podcast_feeds').select('listing_id, latest:episodes->0->>date, listings(id, category, business_status, details)');
     let changed = 0;
     for (const r of (all || []) as any[]) {
       if (!r.listings) continue;
