@@ -3472,12 +3472,18 @@
       var votes = (d.recent_votes || []).map(function (v) {
         return '<li>' + (v.slug ? '<a href="/directory/' + encodeURIComponent(v.slug) + '" data-mc-listing="' + e(v.slug) + '">' + e(v.name || v.slug) + '</a>' : '<span>A removed listing</span>') + '<span>' + e(dpWhen(v.at)) + '</span></li>';
       }).join('');
-      var votedBy = (d.voted_by || []).map(function (v) {
-        var w = v.voter || {}, nm = w.name || 'Member';
+      // A person row: their picture and name (opening their own card), a line under it, and when.
+      var personRow = function (w, line, at) {
+        w = w || {}; var nm = w.name || 'Member';
         var pic = w.avatar_url ? '<img src="' + e(w.avatar_url) + '" alt="">' : e(nm.trim().charAt(0).toUpperCase());
         return '<li><button type="button" class="dash-mc-voter" data-mc-member="' + e(w.id || '') + '" title="See who ' + e(nm) + ' is">' +
           '<span class="dash-mc-vav"' + (w.color && !w.avatar_url ? ' style="background:' + e(w.color) + '"' : '') + '>' + pic + '</span>' +
-          '<span class="dash-mc-vtxt"><b>' + e(nm) + '</b>' + (v.page ? '<i>for ' + e(v.page) + '</i>' : '') + '</span></button><span>' + e(dpWhen(v.at)) + '</span></li>';
+          '<span class="dash-mc-vtxt"><b>' + e(nm) + '</b>' + (line ? '<i>' + e(line) + '</i>' : '') + '</span></button><span>' + e(dpWhen(at)) + '</span></li>';
+      };
+      var votedBy = (d.voted_by || []).map(function (v) { return personRow(v.voter, v.page ? 'for ' + v.page : '', v.at); }).join('');
+      // Who saved their pages (Sean, 2026-10-30): a page, or an episode on it. The team's view only.
+      var savedBy = (d.saved_by || []).map(function (v) {
+        return personRow(v.member, v.episode ? 'saved the episode ' + v.episode + (v.page ? ' (' + v.page + ')' : '') : (v.page ? 'saved ' + v.page : ''), v.at);
       }).join('');
       var owned = (d.listings || []).map(function (l) { return '<li><a href="/directory/' + encodeURIComponent(l.slug) + '" data-mc-listing="' + e(l.slug) + '">' + e(l.name) + '</a><span>' + (l.owner ? 'Owner' : 'Their profile') + '</span></li>'; }).join('');
       box.innerHTML = '<button type="button" class="dash-mc-x" aria-label="Close">&times;</button>' +
@@ -3492,7 +3498,9 @@
         (facts ? '<ul class="dash-mc-facts">' + facts + '</ul>' : '') +
         (owned ? '<p class="dash-mc-h">Their pages</p><ul class="dash-mc-list">' + owned + '</ul>' : '') +
         // Who voted for them (Sean, 2026-10-30): each voter's picture and name opens their own card.
-        ((d.listings || []).length ? '<p class="dash-mc-h">Who voted for them</p>' + (votedBy ? '<ul class="dash-mc-list dash-mc-voters">' + votedBy + '</ul>' : '<p class="dash-preview-empty">No votes on their pages yet.</p>') : '') +
+        ((d.listings || []).length ? '<p class="dash-mc-h">Who voted for them' + (c.votes_received ? ' (' + Number(c.votes_received).toLocaleString() + ')' : '') + '</p>' + (votedBy ? '<ul class="dash-mc-list dash-mc-voters">' + votedBy + '</ul>' : '<p class="dash-preview-empty">No votes on their pages yet.</p>') : '') +
+        ((d.listings || []).length ? '<p class="dash-mc-h">Who saved their pages' + (c.saves_received ? ' (' + Number(c.saves_received).toLocaleString() + ')' : '') + '</p>' +
+          (savedBy ? '<ul class="dash-mc-list dash-mc-voters">' + savedBy + '</ul>' : '<p class="dash-preview-empty">No one has saved their pages yet.</p>') : '') +
         '<p class="dash-mc-h">Their latest votes</p>' + (votes ? '<ul class="dash-mc-list">' + votes + '</ul>' : '<p class="dash-preview-empty">No votes yet.</p>') +
         (m.email ? '<div class="dash-mc-acts"><button type="button" data-mc-copy>Copy email</button></div>' : '');
       box.querySelector('.dash-mc-x').focus();
