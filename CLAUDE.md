@@ -1852,6 +1852,18 @@ Directory is their chapter's).
   active city, and a chapter picked there becomes the active city (`switchActiveCity(slug, member, true)`), every location widening
   only the tab (`DASH_ALL.directory`).
 - **The ad rail follows it**: the chapter's two banners where the location applies and a chapter is picked, else the All cities pair.
+- **Events got the same navigation the same day** (Sean: "Let's do something similar to the events so we improve on that
+  experience"; canon `canon-ve-directory-navigation` v2): `/events` and the dashboard's Events tab mount `VEEvents` with
+  `filterMenu: true`. The banner's dropdown is the kind of event (All events, then the kinds on the calendar; `onState` hands the
+  page the kinds, `cal.setCat(kind)`, the kind stays in the address as `?cat=`), **Upcoming / Past** are the tab row (`.vev-tabs`),
+  and **Filters** (`.vev-fbtn`, the count is Sort only) holds Location (Continent, Country, Chapter from the events on the calendar
+  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. The line under the title reads "Festivals · South
+  Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
+  our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
+  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
+  opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
+  member, 'events')`). LESARUSS.ai's Events and Funding (`VE_BRAND.calendar`) keep their own banner; the old toolbar (Where, Sort,
+  Upcoming / Past, the kind pills) stays for any mount without `filterMenu`.
 - **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).

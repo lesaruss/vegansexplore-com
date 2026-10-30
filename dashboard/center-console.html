@@ -2673,13 +2673,13 @@
   // site in renderCommunitySection. Sean: "when I click on your
   // communities, those should change the community that you see in that
   // top pill box with the drop down. And right now it doesn't."
-  // keepDirectory: the Directory's own location filter picked the city, so the Directory is already showing it.
-  function switchActiveCity(slug, member, keepDirectory) {
+  // keep: 'directory' or 'events' when that tab's own location filter picked the city, so it is already showing it.
+  function switchActiveCity(slug, member, keep) {
     setActiveCity(slug);
     renderCityPill(member);
-    if (!keepDirectory) renderDirectory(member);
+    if (keep !== 'directory') renderDirectory(member);
     renderLeaderboard(member);
-    renderEventsTab(member);
+    if (keep !== 'events') renderEventsTab(member);
     // 2026-09-07 (Logan, Sean caught live): switching cities left Your
     // Campaigns showing the previous city's cards until a manual refresh --
     // same "city switch doesn't re-render" bug class already fixed for
@@ -2918,32 +2918,35 @@
     dashDirBanner.setLabel(label + (L.applies && L.name ? ' \u00b7 ' + L.name : ''));
     dashDirBanner.setArt(chapter);
   }
-  // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
-  function dashBannerPick(which, slug, member) {
-    if (!slug) {
-      DASH_ALL[which] = true;
-      if (which === 'events') renderEventsTab(member); else renderDirectory(member);
-      return;
-    }
-    DASH_ALL.events = false; DASH_ALL.directory = false;
-    switchActiveCity(slug, member);
-  }
   function renderEventsTab(member) {
     var mount = document.getElementById('dash-events-cal');
     if (!mount || !window.VEEvents || !window.VECityBanner) return;
     var slug = DASH_ALL.events ? '' : (getActiveCity(member) || '');
     if (!dashEvBanner) {
+      // The banner's dropdown is the kind of event and the location is in Filters, the same as /events (Sean, 2026-10-30). The
+      // filter starts on the dashboard's active city; a chapter picked there becomes the active city, every location widens only
+      // this tab (DASH_ALL.events).
       dashEvBanner = VECityBanner.mount('dash-ev-hero', {
-        key: 'dash-events', param: false, initial: slug, title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
+        key: 'dash-events', param: false, title: 'Vegan Events', allTitle: 'All events', pickLabel: 'Kind of event',
         sub: 'Festivals, meetups, markets and gatherings near you and around the world. Know of one? Submit it.',
-        onChange: function (s) { if (dashEvBanner) dashBannerPick('events', s, member); },
         home: { label: 'Events home', href: '/dashboard/events', onClick: function () { if (dashEvCal) dashEvCal.home(); } },
         action: { label: 'Submit an event', onClick: function () { if (dashEvCal) dashEvCal.submit(); } }
       });
-      dashEvCal = VEEvents.mount(mount, { key: 'dash-events', urlState: false, city: slug, onInteract: function () { dashEvBanner.autoFold(); } });
+      dashEvBanner.setChoices([{ value: '', label: 'All events' }], '', function () {}, 'Kind of event');
+      dashEvCal = VEEvents.mount(mount, {
+        key: 'dash-events', urlState: false, filterMenu: true, city: slug, onInteract: function () { dashEvBanner.autoFold(); },
+        onState: function (s) {
+          dashEvBanner.setChoices(s.kinds, s.cat, function (k) { dashEvBanner.autoFold(); dashEvCal.setCat(k); }, 'Kind of event');
+          dashEvBanner.setLabel(s.catLabel + (s.location ? ' \u00b7 ' + s.location : ''));
+          dashEvBanner.setArt(s.chapter);
+        },
+        onLocation: function (loc, hub) {
+          DASH_ALL.events = !hub;
+          if (hub) switchActiveCity(hub.slug, member, 'events');
+        }
+      });
       return;
     }
-    dashEvBanner.setQuiet(slug);
     dashEvCal.setCity(slug);
   }
 
@@ -4216,7 +4219,7 @@
       onOpenListing: openDashboardListing, url: '/dashboard/directory', sectionMenu: true, onSection: dashDirSection,
       location: { initial: active || '', onChange: function (loc, hub) {
         DASH_ALL.directory = !hub;
-        if (hub) switchActiveCity(hub.slug, member, true);
+        if (hub) switchActiveCity(hub.slug, member, 'directory');
       } }
     });
   }

@@ -61,10 +61,10 @@
   // Each chapter's country and continent, for the Directory's Location filter (Sean, 2026-10-30, canon
   // canon-ve-directory-navigation: Continent > Country > Chapter). Every chapter is in the United States unless named here;
   // a chapter in a new country adds its state code here.
-  var WHERE = { GB: ['United Kingdom', 'Europe'] };
+  var WHERE = { GB: ['United Kingdom', 'Europe', 'GB'] };
   hubs.forEach(function (h) {
-    var w = WHERE[h.state] || ['United States', 'North America'];
-    h.country = w[0]; h.continent = w[1];
+    var w = WHERE[h.state] || ['United States', 'North America', 'US'];
+    h.country = w[0]; h.continent = w[1]; h.countryCode = w[2];
   });
   hubs.forEach(function (h) {
     var f = [];
