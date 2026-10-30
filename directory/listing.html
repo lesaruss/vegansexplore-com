@@ -2169,6 +2169,8 @@ function renderSidebar(l){
   if(isPersonL(l)){
     var site = l.website ? '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg><a href="'+esc(/^https?:\/\//i.test(l.website) ? l.website : 'https://' + l.website)+'" target="_blank" rel="noopener">Visit Website</a></div>' : '';
     return '<div class="listing-sidebar">'+
+      // "Is this you?" and the creator ad (ppPromo), filled once the page is drawn.
+      '<div id="pp-promo"></div>'+
       (site ? '<div class="side-card"><div class="side-card-title">Website</div>'+site+'</div>' : '')+
       (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
       communityCard+billboardHtml+'</div>';
@@ -2986,6 +2988,19 @@ function renderPersonOverview(l){
   h += '<div class="section" id="pp-elsewhere" hidden><h2 class="section-title">On other podcasts</h2><p class="pp-sub">Shows in our Directory that have had them on, from each show\'s own feed.</p><div class="pp-scroll"></div></div>';
   h += '<div class="section" id="pp-moments" hidden><h2 class="section-title">In their words</h2><p class="pp-sub">Moments from their interviews, each one playing from the second it starts.</p><div class="pp-list"></div></div>';
   return h;
+}
+// "Is this you?" and the creator ad on every People page (Sean, 2026-10-30: "there isn't anything about claiming it... an ad for
+// content creators to register using the animated style... see that somebody signed up because they went through Brooke's page").
+// /public/ve-promo.js draws both and tracks each step from this page (Depot > Ambassadors > Where they came from). The claim shows
+// while no account holds the profile (owner_member_id, details.person.member_id); neither shows in a demo or on another brand's site.
+function ppPromo(l){
+  var el = document.getElementById('pp-promo'); if(!el || VB || (typeof DEMO !== 'undefined' && DEMO)) return;
+  var p = personOf(l), m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+  var held = !!(l.owner_member_id || p.member_id), mine = !!(m && (m.id === l.owner_member_id || m.id === p.member_id));
+  if(mine) return;
+  function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug }); }
+  if(window.VEPromo) return go();
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js'; s.onload = go; document.head.appendChild(s);
 }
 function ytThumb(id){ return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/mqdefault.jpg'; }
 function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
@@ -4864,7 +4879,7 @@ if(!slug || slug === 'listing'){
       if(l.category === 'News Outlets' && !DEMO) loadNewsStories(l);
       if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
-      if(isPersonL(l)) loadPerson(l);
+      if(isPersonL(l)){ loadPerson(l); ppPromo(l); }
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);

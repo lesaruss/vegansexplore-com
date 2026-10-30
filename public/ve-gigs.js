@@ -96,6 +96,8 @@
     '.vg-nav{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:14px;margin-top:16px;font-size:12px;font-weight:800;color:var(--ink75);}',
     '.vg-label{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:12px 0 6px;}',
     '.vg-help{font-size:12.5px;color:var(--ink75);margin:6px 0 0;line-height:1.45;}',
+    '.vg-claimnote{background:#f1f8f3;border:1px solid #cfe6d6;border-radius:6px;padding:10px 14px;font-size:13.5px;line-height:1.5;margin:0 0 16px;max-width:760px}',
+    '.vg-claimnote button{background:none;border:0;padding:0;margin-left:6px;font:inherit;font-weight:800;color:#14532d;text-decoration:underline;cursor:pointer}',
     '.vg-err{color:#9b1c1c;font-size:13px;font-weight:700;min-height:18px;margin-top:8px;}',
     '.vg-folio{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(130px,100%),1fr));gap:10px;}',
     '.vg-folio button{border:0;padding:0;background:none;cursor:zoom-in;text-align:left;font:inherit;}',
@@ -473,6 +475,8 @@
         };
         return '<div class="vg-form"><p class="vg-kick">Apply to be an official creator</p><h2 class="vg-h">' + esc(step.title) + '</h2>' +
           '<div class="vg-steps">' + FORM.map(function (x, j) { return '<span class="' + (j === i - 1 ? 'on' : '') + '">' + esc(x.short) + '</span>'; }).join('') + '</div>' +
+          (CLAIM ? '<p class="vg-claimnote">You are claiming ' + (claimName() ? '<b>' + esc(claimName()) + '</b>' + (/s$/i.test(claimName()) ? '\'' : '\'s') + ' profile' : 'the profile at <b>/directory/' + esc(CLAIM) + '</b>') +
+            '. Our team confirms it is you before it is yours. <button type="button" data-unclaim>Not me</button></p>' : '') +
           (step.lede ? '<p class="vg-help" style="font-size:14.5px;margin:0 0 16px;max-width:760px">' + esc(step.lede) + '</p>' : '') +
           step.fields.map(field).join('') +
           '<p class="vg-err" id="vg-join-err" role="alert"></p>' +
@@ -563,6 +567,30 @@
     var APP_KEY = 'vg_creator_apply';
     state.app = {}; try { state.app = JSON.parse(localStorage.getItem(APP_KEY) || '{}') || {}; } catch (e) {}
     function keepApp() { try { localStorage.setItem(APP_KEY, JSON.stringify(state.app)); } catch (e) {} }
+    // Where they came from (Sean, 2026-10-30: "see that somebody signed up because they went through Brooke's page"). The People page's
+    // creator ad and "Is this you?" (/public/ve-promo.js) keep the page they clicked on; the walkthrough and the application's first step
+    // count as landed and started, and the application carries the page, the channel and, from "Is this you?", the profile it claims
+    // (?claim=<slug>). Depot > Ambassadors > Where they came from.
+    var CLAIM = ''; try { CLAIM = (new URLSearchParams(location.search).get('claim') || '').toLowerCase(); } catch (e) {}
+    if (!/^[a-z0-9-]{2,120}$/.test(CLAIM)) CLAIM = '';
+    var tracks = guide || opts.start === 'join/1';
+    function promoSrc() { return window.VEPromo ? VEPromo.source('creator-register') : null; }
+    function claimName() { var s2 = promoSrc(); return s2 && s2.claim === CLAIM ? s2.claim_name : ''; }
+    if (CLAIM && !state.app.name && claimName()) { state.app.name = claimName(); keepApp(); }
+    function promoStep(h) {
+      if (!tracks || !window.VEPromo) return;
+      if (h[0] === 'overview' && guide) VEPromo.step('creator-register', 'landed');
+      if (h[0] === 'join' && h[1] === '1') VEPromo.step('creator-register', 'started');
+    }
+    if (tracks && !window.VEPromo) {
+      var ps = document.createElement('script'); ps.src = '/public/ve-promo.js';
+      ps.onload = function () {
+        var h0 = (here() || opts.start || (guide ? 'overview' : 'dashboard')).split('/');
+        if (CLAIM && !state.app.name && claimName()) { state.app.name = claimName(); keepApp(); if (h0[0] === 'join') draw(); }
+        promoStep(h0);
+      };
+      document.head.appendChild(ps);
+    }
     function stepMissing(i) {
       var A = state.app, miss = [];
       FORM[i - 1].fields.forEach(function (f) {
@@ -585,6 +613,7 @@
         html = tourBar(h, 'top') + kaiLine(h) + html + (fin ? '' : tourBar(h, 'bottom'));
       }
       el.innerHTML = BASE === '#' ? html : html.replace(/href="#(?!\/)/g, 'href="' + BASE);
+      promoStep(h);
       if (opts.onView) opts.onView(h[0] || (guide ? 'overview' : 'dashboard'));
     }
     el.addEventListener('input', function (e) { if (e.target.hasAttribute('data-a')) appInput(e.target); });
@@ -602,6 +631,7 @@
       if (k !== 'q') draw(); else { var pos = e.target.selectionStart; draw(); var q = el.querySelector('[data-f=q]'); if (q) { q.focus(); q.setSelectionRange(pos, pos); } }
     });
     el.addEventListener('click', function (e) {
+      if (e.target.closest('[data-unclaim]')) { CLAIM = ''; draw(); return; }
       var j = e.target.closest('[data-join-next],[data-join-send]');
       if (j) {
         var at = +(j.getAttribute('data-join-next') || FORM.length), miss = stepMissing(at), err = el.querySelector('#vg-join-err');
@@ -609,7 +639,7 @@
         if (j.hasAttribute('data-join-next')) { go('#join/' + (at + 1)); return; }
         for (var s = 1; s <= FORM.length; s++) if (stepMissing(s).length) { go('#join/' + s); return; }
         j.disabled = true; j.textContent = 'Sending...';
-        fetch(SB + '/functions/v1/ve-ambassador', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'creator_apply', answers: state.app, source: location.pathname }) })
+        fetch(SB + '/functions/v1/ve-ambassador', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'creator_apply', answers: state.app, source: location.pathname, attribution: promoSrc(), claim: CLAIM || null }) })
           .then(function (r) { return r.json(); }).then(function (d) {
             if (!d || !d.ok) { j.disabled = false; j.textContent = 'Send my application'; err.textContent = (d && d.message) || 'That did not go through. Try again in a minute.'; return; }
             state.app = {}; try { localStorage.removeItem(APP_KEY); } catch (x) {}
