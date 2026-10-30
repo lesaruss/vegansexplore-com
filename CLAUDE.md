@@ -3149,8 +3149,18 @@ only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboar
 lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
 that we're selling"), and a tile in Your tools.
 
-**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is the **Inbox** (`renderInbox`,
-`#dash-inbox-block`; migration `20261030_ve_inbox.sql`): "anything that comes through, period, even if it's assigned to somebody
+**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is **The Depot** (Sean, the same day:
+"the most used depot tools that I use... sortable... most recently used... by the different topics"; `renderDepotBlock`,
+`#dash-depot-block`): every row of `TABS` in `public/depot-tabs.js` as small tiles two across, with a search and Most used, Recently used,
+By topic or Only one topic (kept in `localStorage` `ve_dash_depot_sort`). Use is counted in the browser (`localStorage` `ve_depot_use`,
+`VE_DEPOT_USE`): a Depot page counts itself as it loads, the dashboard counts the Admin pages and Demos as it opens them. **Your tools is
+gone for super admins** ("all of the items that are listed below in the your tools really should just be part of the depot"): Secret
+Shopper, the Community Board and Guides left (the Daily Pulse and Guides are in the menu). `TABS` gained two groups: **Admin** (kind
+`dash`: Leads, Members, Submissions, Role applications, Guest reviews, Platform health, Community Insights, opened in the dashboard's
+frame; from a Depot page's Go to through a `ve-open-tool` message) and **Demos** (kind `demo`, each in a new tab: the sample business,
+group and Gig Board, the Campaign Engine and its four Fieldhouse Protein pages, the Partner walkthrough and the five pitch decks). A new
+admin page or demo is a `TABS` row. The **Inbox** is the first **Recent activity** box (`inboxCard`, the same rows as the other boxes, a
+filter in its head in place of View all, late ones first; a box new to the saved order now lands first) (migration `20261030_ve_inbox.sql`): "anything that comes through, period, even if it's assigned to somebody
 else... so nothing falls through the cracks". `ve_inbox_items()` is every request a person sent, wherever it came in (meeting
 requests and Group Partner applications, Ask a person questions, leads that are not link clicks, Ambassador stories, Podcast
 Network applications, profile requests, listing claims and applications, nonprofit surveys, events members submitted; tests and
@@ -3159,7 +3169,7 @@ one: assigned to the chapter's active Community Manager (the request's chapter, 
 **Opened** only when that person opens it (with no Community Manager, a super admin); **Replied** or **Closed, no reply needed**, by
 hand (`ve-dashboard` `inbox`, `inbox_open`, `inbox_set`). The reply clock is **24 hours from when it came in** ("no more than... 24
 hours... sooner the better", `INBOX_DUE_HOURS`); the head shows open, late and the average reply time, which is how a Community
-Manager's work will be measured. Tabs Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
+Manager's work will be measured. Filter Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
 assigned to, opened, reply by, a team note, Reply by email, Mark replied, Close, Open where it came in). A Community Manager's own
 inbox (only theirs) is in `ve-dashboard` already, not yet on their dashboard. Replies are marked by hand: sending the reply from the
 inbox, so the clock stops itself, is the next step.

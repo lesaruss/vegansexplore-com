@@ -29,6 +29,15 @@
   // (part of Onboarding). Put one back by adding its row here.
   var TABS = [
     { group: 'Insights', href: '/admin/depot/analytics', label: 'Analytics' },
+    // Admin (Sean, 2026-10-30: "all the things that are an admin right now should be an admin section within the depot"): the
+    // dashboard's own admin pages (kind 'dash'), which open in the dashboard's frame, never inside a Depot page.
+    { group: 'Admin', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/members', label: 'Members', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/submissions', label: 'Submissions', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/guest-reviews', label: 'Guest reviews', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/health', label: 'Platform health', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/insights', label: 'Community Insights', kind: 'dash' },
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
     { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
     { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
@@ -54,8 +63,29 @@
     { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },
     { group: 'Site', href: '/admin/depot/preview', label: 'Preview journeys' },
     { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
-    { group: 'Site', href: '/admin/depot/services', label: 'Services' }
+    { group: 'Site', href: '/admin/depot/services', label: 'Services' },
+    // Demos (Sean, 2026-10-30: "add the demo section and collect all the different demos"): the samples and walkthroughs we show
+    // people, kind 'demo', each opening in a new tab as the public sees it.
+    { group: 'Demos', href: '/business/sample', label: 'Sample business', kind: 'demo' },
+    { group: 'Demos', href: '/groups/sample', label: 'Sample group', kind: 'demo' },
+    { group: 'Demos', href: '/gigs/sample', label: 'Sample Gig Board', kind: 'demo' },
+    { group: 'Demos', href: '/campaign-engine', label: 'The Campaign Engine', kind: 'demo' },
+    { group: 'Demos', href: '/campaign-engine/fieldhouse-protein', label: 'Campaign on a listing', kind: 'demo' },
+    { group: 'Demos', href: '/campaign-engine/fieldhouse-protein/social', label: 'Campaign in the feeds', kind: 'demo' },
+    { group: 'Demos', href: '/campaign-engine/fieldhouse-protein/dashboard', label: 'Campaign sponsor dashboard', kind: 'demo' },
+    { group: 'Demos', href: '/campaign-engine/fieldhouse-protein/report', label: 'Campaign final report', kind: 'demo' },
+    { group: 'Demos', href: '/partners', label: 'Partner walkthrough', kind: 'demo' },
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-dolphins-pitch', label: 'Pitch: Miami Dolphins', kind: 'demo' },
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-supermarket-pitch', label: 'Pitch: Supermarkets', kind: 'demo' },
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-night-event-pitch', label: 'Pitch: Night events', kind: 'demo' },
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-global-tour-pitch', label: 'Pitch: Global tour', kind: 'demo' },
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-cm-pitch', label: 'Pitch: Community Managers', kind: 'demo' }
   ];
+  // How often and when each one was opened, in this browser, for the dashboard's Depot box (Sean, 2026-10-30: "the most used depot
+  // tools... sorted by most recently used"). A Depot page counts itself as it loads; the dashboard counts the others as it opens them.
+  window.VE_DEPOT_USE = function (href) {
+    try { var u = JSON.parse(localStorage.getItem('ve_depot_use') || '{}'); var x = u[href] || { n: 0 }; x.n++; x.at = Date.now(); u[href] = x; localStorage.setItem('ve_depot_use', JSON.stringify(u)); } catch (e) {}
+  };
   window.VE_DEPOT_TABS = TABS;
   if (window.VE_DEPOT_LIST_ONLY) return;
   // Sean, 2026-09-29: a drop-down to the right of the page title instead of a row of tabs,
@@ -76,6 +106,8 @@
     '@media (max-width:560px){.depot-go{flex:1 1 100%;}.depot-go select{flex:1 1 auto;min-width:0;}.depot-head .ve-tour-launch{flex:1 1 100%;min-height:46px;}}';
   function mount() {
     var el = document.getElementById('depot-tabs'); if (!el) return;
+    var at = location.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '');
+    if (TABS.some(function (t) { return t.href === at; })) window.VE_DEPOT_USE(at);
     if (!document.getElementById('depot-tabs-css')) { var st = document.createElement('style'); st.id = 'depot-tabs-css'; st.textContent = CSS; document.head.appendChild(st); }
     var here = location.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '');
     var go = document.createElement('label'); go.className = 'depot-go';
@@ -85,7 +117,17 @@
         var open = !k || TABS[k - 1].group !== t.group, close = k === TABS.length - 1 || TABS[k + 1].group !== t.group;
         return h + (open ? '<optgroup label="' + t.group + '">' : '') + '<option value="' + t.href + '"' + (here === t.href ? ' selected' : '') + '>' + t.label + '</option>' + (close ? '</optgroup>' : '');
       }, '') + '</select>';
-    go.querySelector('select').addEventListener('change', function () { if (this.value) location.href = this.value; });
+    // A Depot page goes here; a demo opens in a new tab; a dashboard page asks the dashboard around this frame to open it.
+    go.querySelector('select').addEventListener('change', function () {
+      var t = TABS.filter(function (x) { return x.href === this.value; }, this)[0]; if (!t) return;
+      if (t.kind === 'demo') { window.VE_DEPOT_USE(t.href); window.open(t.href, '_blank', 'noopener'); this.value = here; return; }
+      if (t.kind === 'dash') {
+        var inDash = false; try { inDash = window.self !== window.top && /^\/dashboard/.test(window.top.location.pathname); } catch (e) {}
+        window.VE_DEPOT_USE(t.href);
+        if (inDash) { window.top.postMessage({ type: 've-open-tool', href: t.href, label: t.label }, location.origin); this.value = here; return; }
+      }
+      location.href = t.href;
+    });
     // Put the drop-down beside the page title when the title sits right above the old tab spot.
     var h1 = el.previousElementSibling;
     if (h1 && h1.tagName === 'H1') {
