@@ -375,6 +375,7 @@
       '<div class="rg-steps">' + steps.map(function (w, i) {
         return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + ' <span class="dg-free" style="margin-left:6px' + (w[2] === 'Coming' ? ';background:#fff7e8;color:#8a5a00' : '') + '">' + esc(w[2]) + '</span></b><p>' + esc(w[1]) + '</p></div>';
       }).join('') + '</div>' +
+      '<div class="dg-btns"><a class="dg-btn" href="/gigs/sample" target="_blank" rel="noopener">See the Gig Board, with a sample creator</a><a class="dg-btn dg-ghost" href="/creators/welcome#/board">The Official Creator Guide</a></div>' +
       '<div class="dg-btns"><a class="dg-btn" href="' + ask + '">Tell us about you</a><a class="dg-btn dg-ghost" href="/ambassadors/welcome">Already an Ambassador? Open your Guide</a></div>' +
       '<p class="dg-pp" style="margin-top:12px">Sponsored posts always carry the disclosure the FTC asks for. <a href="/policies#membership">The terms</a></p>';
   }
