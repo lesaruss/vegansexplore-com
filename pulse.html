@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- One framework for every brand: on lesaruss.ai (which serves this page at /pulse) ve-brand.js sets window.VE_BRAND and this
+       page becomes LESARUSS.ai's Pulse, by business topic instead of city (VE_BRAND.pulse; Sean, 2026-10-29). -->
+  <script src="/public/ve-brand.js"></script>
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -405,12 +408,28 @@
     var inHub = document.documentElement.classList.contains('in-hub');
     var $ = function (id) { return document.getElementById(id); };
     var params = new URLSearchParams(location.search);
+    // LESARUSS.ai's Pulse (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door: "the banner picks a topic... where Vegans Explore
+    // picks a city"). VE_BRAND.pulse lists the topics; a topic is ve-board's scope 'lr-<key>' and ?topic=<key> carries it. Only the
+    // Pulse tab exists there (no city boards, no Suggest a Topic, no ads yet), and comments are for LESARUSS members (ve-board).
+    var LR = window.VE_BRAND && VE_BRAND.pulse ? VE_BRAND.pulse : null;
+    if (LR) {
+      LANES.pulse.h1 = "Today's Pulse";
+      LANES.pulse.lede = 'One briefing a day for each topic: what happened in business this week, why it matters to you, and one thing to do. Open one and join the conversation in its comments.';
+      LANES.pulse.search = 'Search the Pulse, for example: grants, pricing, AI agents';
+      document.querySelector('.lanes').hidden = true; $('new-post').hidden = true;
+      Array.prototype.forEach.call(document.querySelectorAll('.vear-rail'), function (r) { r.parentNode.classList.remove('vear-layout'); r.remove(); });
+      document.title = 'The Pulse | ' + VE_BRAND.name;
+      document.querySelector('#reporter .muted').textContent = 'The LESARUSS team will take a look. Reports are private.';
+    }
+    function lrScope(key) { return 'lr-' + key; }
+    function lrTopic(scope) { return LR && scope ? LR.topics.filter(function (t) { return 'lr-' + t.key === scope; })[0] || null : null; }
     // Areas a post can be for (VE_HUBS[].page.boardAreas, Sean 2026-10-10); no area means the whole city.
     function areasFor(slug) { var h = window.VE_HUB ? VE_HUB(slug) : null; return (h && h.page && h.page.boardAreas) || []; }
     // Every tab has its own address (Sean, 2026-10-27): /pulse is the Daily Pulse, /pulse/jobs, /pulse/classifieds,
     // /pulse/fosters, /pulse/rescues and /pulse/suggest the rest (rewrites in vercel.json). An old ?lane= link still lands,
     // and the address is moved to the tab's own. An old Requests & Offers link (lane=board) still opens its post.
     function laneFromPath() {
+      if (LR) return 'pulse';
       var m = location.pathname.match(/^\/pulse\/(jobs|classifieds|fosters|rescues|suggest)\/?$/);
       var l = m ? m[1] : params.get('lane');
       return LANES[l] && l !== 'board' ? l : 'pulse';
@@ -438,7 +457,7 @@
     }
     function since(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
     // '' is every chapter (All cities on the banner).
-    function hubName(slug) { if (!slug) return 'every city'; if (slug === 'national') return 'National'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : slug; }
+    function hubName(slug) { if (LR) { var tp = lrTopic(slug); return tp ? tp.label : 'every topic'; } if (!slug) return 'every city'; if (slug === 'national') return 'National'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : slug; }
     function avatar(p) {
       if (!p) return '<span class="avatar" style="background:#ddd">?</span>';
       if (p.avatar) return '<span class="avatar" style="background-image:url(\'' + esc(p.avatar) + '\')" aria-hidden="true"></span>';
@@ -448,7 +467,7 @@
     function isToday(post) { return !!post.published_at && Date.now() - new Date(post.published_at).getTime() < DAY_MS; }
     function tags(post) {
       if (post.kind === 'topic') {
-        return '<span class="tag tag-topic">Daily Pulse</span>' + (isToday(post) ? '<span class="tag tag-today">Today</span>' : '') +
+        return '<span class="tag tag-topic">' + (LR ? 'Pulse' : 'Daily Pulse') + '</span>' + (isToday(post) ? '<span class="tag tag-today">Today</span>' : '') +
           (post.community === 'national' ? '<span class="tag tag-national">National</span>' : !state.city ? '<span class="tag tag-city">' + esc(hubName(post.community)) + '</span>' : '') +
           (post.status === 'hidden' ? '<span class="tag tag-hidden">Hidden</span>' : '') + (post.status === 'draft' ? '<span class="tag tag-hidden">Draft</span>' : '');
       }
@@ -486,6 +505,7 @@
     var member = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
     var wanted = params.get('city') || params.get('community') || (member && member.home_community) || saved || '';
     if (!isHub(wanted)) wanted = '';
+    if (LR) wanted = lrTopic(lrScope(params.get('topic') || '')) ? lrScope(params.get('topic')) : '';
     state.city = wanted;
     var banner = null;
     function areaOptions(slug) {
@@ -508,7 +528,8 @@
     function syncUrl(push) {
       var u = new URL(location.href);
       // The banner keeps ?city= (pushState); a city hub's frame keeps its ?community=.
-      if (!inHub) { u.searchParams.delete('community'); if (state.city) u.searchParams.set('city', state.city); else u.searchParams.delete('city'); }
+      if (LR) { u.searchParams.delete('city'); if (state.city) u.searchParams.set('topic', state.city.slice(3)); else u.searchParams.delete('topic'); }
+      else if (!inHub) { u.searchParams.delete('community'); if (state.city) u.searchParams.set('city', state.city); else u.searchParams.delete('city'); }
       u.searchParams.delete('lane');
       if (state.area && state.lane !== 'pulse') u.searchParams.set('area', state.area); else u.searchParams.delete('area');
       if (state.current) u.searchParams.set('post', state.current.id); else u.searchParams.delete('post');
@@ -532,7 +553,7 @@
         $('chips').innerHTML = '<button type="button" class="chip" data-type="" aria-pressed="true">Everything</button>' +
           L.types.map(function (t) { return '<button type="button" class="chip" data-type="' + t[0] + '" aria-pressed="false">' + esc(t[1]) + '</button>'; }).join('');
       }
-      document.title = (pulse ? 'Daily Pulse' : L.name + ' | Daily Pulse') + ' | Vegans Explore';
+      document.title = LR ? 'The Pulse | ' + VE_BRAND.name : (pulse ? 'Daily Pulse' : L.name + ' | Daily Pulse') + ' | Vegans Explore';
     }
     setLane(state.lane);
     Array.prototype.forEach.call(document.querySelectorAll('.lane'), function (b) {
@@ -541,11 +562,24 @@
     function pickCity(slug) {
       if (slug === state.city) return;
       closePost(); state.city = slug; state.area = ''; fillAreas(); syncUrl();
-      if (banner) banner.setHome('/pulse' + (slug ? '?city=' + encodeURIComponent(slug) : ''));
-      if (slug) { try { localStorage.setItem('ve_selected_city', slug); } catch (e) {} }
+      if (banner) banner.setHome('/pulse' + (slug ? (LR ? '?topic=' + encodeURIComponent(slug.slice(3)) : '?city=' + encodeURIComponent(slug)) : ''));
+      if (slug && !LR) { try { localStorage.setItem('ve_selected_city', slug); } catch (e) {} }
       load();
     }
-    if (!inHub && window.VECityBanner && $('pulse-hero')) {
+    if (LR && window.VECityBanner && $('pulse-hero')) {
+      // The topic picker in place of the city picker: All topics first, then each topic.
+      banner = VECityBanner.mount('pulse-hero', {
+        key: 'pulse', eyebrow: VE_BRAND.name, title: 'The Pulse', pickLabel: 'Topic', param: false, art: LR.art,
+        sub: LR.sub,
+        choices: [{ value: 'all', label: 'All topics' }].concat(LR.topics.map(function (t) { return { value: lrScope(t.key), label: t.label }; })),
+        initial: state.city || 'all',
+        home: { label: 'Pulse home', href: '/pulse' },
+        onChange: function (v) { pickCity(v === 'all' ? '' : v); }
+      });
+      document.body.classList.add('has-banner');
+      $('main').addEventListener('click', function (e) { if (e.target.closest('.post-card')) banner.autoFold(); });
+      if (params.get('post')) banner.autoFold();
+    } else if (!inHub && window.VECityBanner && $('pulse-hero')) {
       banner = VECityBanner.mount('pulse-hero', {
         key: 'pulse', title: 'Daily Pulse', allTitle: 'Every City', allLabel: 'All cities', initial: state.city,
         sub: 'Every chapter\'s community board: today\'s briefing and its conversation, jobs, classifieds, fosters and rescues. Read anything; members post and comment.',
@@ -602,20 +636,21 @@
     function renderJoinNote() {
       var note = $('join-note');
       if (state.viewer.member) { note.classList.remove('show'); return; }
-      $('join-note-text').textContent = "You're welcome to look around. Members post, comment, and see contact details: your Passport is $11 one time.";
+      $('join-note-text').textContent = LR ? "You're welcome to read everything. LESARUSS members join the conversation: a LESARUSS Passport is $11 one time."
+        : "You're welcome to look around. Members post, comment, and see contact details: your Passport is $11 one time.";
       note.classList.add('show');
     }
     function load(append) {
       var pulse = state.lane === 'pulse';
       var L = LANES[state.lane];
-      var where = state.city || 'all';
+      var where = state.city || (LR ? 'lr-all' : 'all');
       var body = pulse ? { action: 'list', lane: 'pulse', community: where } : { action: 'list', lane: state.lane, community: where, status: state.status };
       if (!pulse && state.type) body[L.field] = state.type;
       if (state.lane === 'board' && state.category) body.category = state.category;
       if (!pulse && state.area && state.city) body.area = state.area;
       if (state.q) body.q = state.q;
       if (append && state.last) body.before = state.last;
-      $('status-line').textContent = 'Loading ' + (pulse ? (state.city ? 'the ' + hubName(state.city) + ' Daily Pulse' : 'the Daily Pulse in every city') : (state.city ? 'the ' + boardName(state.lane, hubName(state.city)) : LANES[state.lane].name + ' in every city')) + '...';
+      $('status-line').textContent = LR ? 'Loading the Pulse...' : 'Loading ' + (pulse ? (state.city ? 'the ' + hubName(state.city) + ' Daily Pulse' : 'the Daily Pulse in every city') : (state.city ? 'the ' + boardName(state.lane, hubName(state.city)) : LANES[state.lane].name + ' in every city')) + '...';
       call(body).then(function (d) {
         if (d.viewer) state.viewer = d.viewer;
         renderJoinNote();
@@ -625,7 +660,8 @@
           $('posts').innerHTML = state.q || (!pulse && (state.type || state.category || state.area || state.status !== 'open'))
             ? '<div class="empty"><strong>Nothing matches that yet.</strong>Try fewer words, or clear the filters.</div>'
             : pulse
-              ? '<div class="empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' + esc(state.city ? hubName(state.city) : 'every city') + ': the stories people are talking about, what is coming up, and one thing you can do.</div>'
+              ? LR ? '<div class="empty"><strong>The first briefing is on its way.</strong>Each morning the Pulse brings what is moving in ' + esc(state.city ? hubName(state.city) : 'business') + ': the stories worth your time, why they matter to your business, and one thing you can do.</div>'
+                : '<div class="empty"><strong>Today\'s briefing is on its way.</strong>Each day the Daily Pulse brings what is happening in ' + esc(state.city ? hubName(state.city) : 'every city') + ': the stories people are talking about, what is coming up, and one thing you can do.</div>'
               : '<div class="empty"><strong>' + (state.city ? 'The ' + esc(boardName(state.lane, hubName(state.city))) + ' is ready for its first post.' : 'Nothing posted here yet in any chapter.') + '</strong>Post it here and your city can answer.</div>';
         } else {
           $('posts').insertAdjacentHTML('beforeend', posts.map(card).join(''));
@@ -634,7 +670,7 @@
         $('more').hidden = !d.more;
         var shown = document.querySelectorAll('.post-card').length;
         $('status-line').textContent = !shown ? '' : pulse
-          ? shown + (shown === 1 ? ' topic' : ' topics') + (state.city ? ' for ' + hubName(state.city) + ' and the whole country' : ' across every city')
+          ? shown + (shown === 1 ? ' briefing' : ' briefings') + (LR ? (state.city ? ' on ' + hubName(state.city) : ' across every topic') : state.city ? ' for ' + hubName(state.city) + ' and the whole country' : ' across every city')
           : shown + (shown === 1 ? ' post' : ' posts') + (state.city ? ' on the ' + boardName(state.lane, hubName(state.city)) : ' in every city');
       }).catch(function () { $('status-line').textContent = 'The board could not load. Please refresh the page.'; });
     }
@@ -704,14 +740,14 @@
       $('d-title').textContent = post.title;
       var topic = post.kind === 'topic', lane = laneOf(post), L = LANES[lane];
       $('d-when').textContent = topic
-        ? 'Daily Pulse · ' + ago(post.created_at) + ' · ' + (post.community === 'national' ? 'National' : hubName(post.community))
+        ? (LR ? 'Pulse · ' : 'Daily Pulse · ') + ago(post.created_at) + ' · ' + (post.community === 'national' ? 'National' : hubName(post.community))
         : post.pinned ? 'Pinned · ' + L.name + ' · ' + hubName(post.community)
         : 'Posted ' + ago(post.created_at) + (post.area ? ' · ' + post.area : '') + ' · ' + hubName(post.community);
       $('d-body').textContent = post.body;
       $('d-question').hidden = !topic || !post.question; $('d-question').innerHTML = topic && post.question ? '<span class="q-label">Today\'s question</span>' + esc(post.question) : '';
-      $('d-back-label').textContent = topic || lane === 'board' ? 'Back to the Daily Pulse' : 'Back to ' + L.name;
+      $('d-back-label').textContent = LR ? 'Back to the Pulse' : topic || lane === 'board' ? 'Back to the Daily Pulse' : 'Back to ' + L.name;
       $('detail').classList.toggle('is-topic', topic);
-      $('d-back').setAttribute('href', lanePath(lane) + (state.city ? '?city=' + state.city : ''));
+      $('d-back').setAttribute('href', lanePath(lane) + (state.city ? (LR ? '?topic=' + state.city.slice(3) : '?city=' + state.city) : ''));
       $('d-briefing').innerHTML = topic && window.VEPulse ? VEPulse.briefing(post) : '';
       var src = $('d-source');
       if (topic && post.source_url && !(post.briefing && post.briefing.stories && post.briefing.stories.length)) {
@@ -719,7 +755,7 @@
         src.hidden = false;
       } else src.hidden = true;
       $('d-trust').hidden = topic || post.pinned;
-      $('reply-form').querySelector('.hint').textContent = topic ? 'Share your experience or your view. Keep it kind; your city reads this too.' : 'Ask a question, offer help, or point them to someone who can.';
+      $('reply-form').querySelector('.hint').textContent = LR ? 'Share what you are seeing in your business, or ask the room. Keep it useful and kind.' : topic ? 'Share your experience or your view. Keep it kind; your city reads this too.' : 'Ask a question, offer help, or point them to someone who can.';
       $('reply-form').querySelector('[type=submit]').textContent = state.viewer.member ? 'Post comment' : 'Become a member to comment';
       var c = $('d-contact');
       if (post.contact) { c.className = 'contact-box'; c.innerHTML = '<strong>How to reach them:</strong> ' + esc(post.contact); c.hidden = false; }
@@ -760,7 +796,8 @@
       } else if (e.target.id === 'mod-post') {
         call({ action: 'moderate', post_id: post.id, op: post.status === 'hidden' ? 'restore' : 'hide' }).then(function (d) { if (!handleError(d)) { openPost(post.id); load(); } });
       } else if (e.target.id === 'copy-link') {
-        var link = location.origin + lanePath(laneOf(post)) + '?' + (post.community !== 'national' ? 'city=' + post.community + '&' : state.city ? 'city=' + state.city + '&' : '') + 'post=' + post.id;
+        var link = LR ? location.origin + '/pulse?topic=' + String(post.community).slice(3) + '&post=' + post.id
+          : location.origin + lanePath(laneOf(post)) + '?' + (post.community !== 'national' ? 'city=' + post.community + '&' : state.city ? 'city=' + state.city + '&' : '') + 'post=' + post.id;
         (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { e.target.textContent = 'Link copied'; }, function () { prompt('Copy this link', link); });
       }
     }
@@ -786,7 +823,7 @@
       var body = Object.assign({ action: 'report', reason: $('r-reason').value, details: $('r-details').value.trim() }, state.reportTarget || {});
       call(body).then(function (d) {
         if (handleError(d, $('report-msg'))) return;
-        $('report-msg').className = 'form-msg ok'; $('report-msg').textContent = d.message || 'Thank you. Your Community Manager will take a look.';
+        $('report-msg').className = 'form-msg ok'; $('report-msg').textContent = LR ? 'Thank you. The team will take a look.' : d.message || 'Thank you. Your Community Manager will take a look.';
         setTimeout(function () { closeDialog('reporter'); if (state.current) openPost(state.current.id); load(); }, 1400);
       });
     });

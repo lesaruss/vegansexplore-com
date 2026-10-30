@@ -8,7 +8,8 @@
  *   - colors: the --ve-green* variables the pages use and the --vb-* ones the shared components use, in LESARUSS orange;
  *   - nav.js and footer.js draw the LESARUSS header and footer (drawNav, drawFooter) and skip our Google tag;
  *   - ve-votes.js sends the members window to the LESARUSS Passport and HQ sign-in;
- *   - ve-city-banner.js loads the city art from vegansexplore.com (assetOrigin).
+ *   - ve-city-banner.js loads the city art from vegansexplore.com (assetOrigin);
+ *   - pulse.html (served at lesaruss.ai/pulse) picks a business topic where Vegans Explore picks a city (pulse).
  * On vegansexplore.com it does nothing. ?brand=lesaruss turns it on here for a visit (a preview, a local check); ?brand=ve off.
  */
 (function () {
@@ -82,7 +83,23 @@
       vote: { icon: 'heart', title: 'Voting is for LESARUSS members',
         body: 'Member votes decide which businesses lead every list. A LESARUSS Passport, <b>$11 one time</b>, lets you vote every day for the studios, venues and services you trust. <a href="/join">Diplomats</a> vote too.' },
       save: { icon: 'bookmark', title: 'Saving is for Passport holders',
-        body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' }
+        body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' },
+      comment: { icon: 'chat', from: 'pulse', title: 'Comments are for LESARUSS members',
+        body: 'Anyone can read the Pulse. LESARUSS members talk under every briefing: what they are seeing in their business, and what is working. A LESARUSS Passport is <b>$11 one time</b>. <a href="/join">Diplomats</a> comment too.' },
+      report: { icon: 'chat', from: 'pulse', title: 'Reports come from LESARUSS members',
+        body: 'Members keep the conversation useful: a report goes to the LESARUSS team. A LESARUSS Passport is <b>$11 one time</b>.' },
+      post: { icon: 'chat', from: 'pulse', title: 'The conversation is for LESARUSS members',
+        body: 'Anyone can read the Pulse. A LESARUSS Passport, <b>$11 one time</b>, lets you join the conversation under every briefing.' }
+    },
+    // The Pulse by topic (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door: "the banner picks a topic (AI, Funding, Marketing,
+    // Leadership, Creators, Business operations, Events) where Vegans Explore picks a city"). Each key is ve-board's scope lr-<key>;
+    // ve_pulse_auto_queue and the writer use the same list (migration 20261030_lesaruss_ai_topic_pulse.sql).
+    pulse: {
+      sub: 'One briefing a day for each topic, from the business news worth your time: what happened, why it matters to your business, and one thing to do.',
+      art: '/communities/new-york/banner.jpg',
+      topics: [{ key: 'ai', label: 'AI' }, { key: 'funding', label: 'Funding' }, { key: 'marketing', label: 'Marketing' },
+        { key: 'leadership', label: 'Leadership' }, { key: 'creators', label: 'Creators' }, { key: 'operations', label: 'Business operations' },
+        { key: 'events', label: 'Events' }]
     },
     drawNav: drawNav,
     mountAccount: mountAccount,
@@ -98,7 +115,7 @@
     '--vb-hero-1:rgba(14,12,10,.86);--vb-hero-2:rgba(14,12,10,.8);--vb-hero-1b:rgba(14,12,10,.9)}';
   (document.head || document.documentElement).appendChild(st);
 
-  var NAV = [['/', 'Start Here'], ['/guides', 'Guides'], ['/directory', 'Directory'], ['/join', 'Become a member'],
+  var NAV = [['/', 'Start Here'], ['/guides', 'Guides'], ['/directory', 'Directory'], ['/pulse', 'Pulse'], ['/join', 'Become a member'],
     [HQ + '/member/business', 'For businesses'], ['https://lesaruss.com', 'The Universe', 1]];
 
   // The lesaruss.ai header (lesaruss-ai-site app/site.tsx SiteHeader): the wordmark and the menu behind the button.
@@ -201,7 +218,7 @@
     var f = document.createElement('footer');
     f.className = 'lr-foot ve-footer'; f.setAttribute('role', 'contentinfo');
     f.innerHTML = '<div class="lr-foot-row"><span class="lr-foot-brand">LESARUSS<span>.</span>AI <em>&middot; Your guides in the new AI world.</em></span>' +
-      '<nav class="lr-foot-links" aria-label="Footer"><a href="/guides">Guides</a><a href="/directory">Directory</a><a href="/join">Become a member</a>' +
+      '<nav class="lr-foot-links" aria-label="Footer"><a href="/guides">Guides</a><a href="/directory">Directory</a><a href="/pulse">Pulse</a><a href="/join">Become a member</a>' +
       '<a href="' + HQ + '/member/business">For businesses</a><a href="' + HQ + '/login">Member home</a>' +
       '<a href="https://lesaruss.com" target="_blank" rel="noopener noreferrer">The Universe</a><a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a></nav>' +
       '<span class="lr-foot-copy">&copy; ' + new Date().getFullYear() + ' LESARUSS</span></div>';
