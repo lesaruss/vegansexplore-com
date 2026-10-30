@@ -154,6 +154,10 @@
     '@media (max-width:600px){.vg-tour-at{order:-1;flex-basis:100%;}.vg-tour{justify-content:space-between;}}',
     '.vg-thumb{flex:0 0 56px;width:56px;height:56px;border-radius:10px;background:var(--gl) center/cover no-repeat;color:var(--g);display:flex;align-items:center;justify-content:center;}',
     '.vg-tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px;}',
+    '.vg-tile{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:14px;align-items:start;}',
+    '.vg-tile>.vg-thumb{width:100%;height:auto;aspect-ratio:1/1;border-radius:12px;}.vg-tile>.vg-thumb svg{width:34%;height:auto;}',
+    '.vg-tile-r{min-width:0;display:flex;flex-direction:column;gap:6px;height:100%;}',
+    '.vg-kindrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}',
     '.vg-ico{flex:0 0 44px;width:44px;height:44px;border-radius:10px;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center;}',
     '.vg-go-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}',
     '.vg-top2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin:0 0 16px;}',
@@ -341,32 +345,35 @@
         '<div class="vg-stat"><b>Level ' + (C.level || 1) + '</b><span>' + num(C.points || 0) + ' points</span></div>' +
         (C.reliability ? '<div class="vg-stat"><b>' + standing(C) + '</b><span>Your standing</span></div>' : '') + '</div></div>';
     }
-    function head(active) {
+    // The page's title comes first and Kai's strip under it (Sean, 2026-10-30: "Shouldn't the your creator dashboard be above where it
+    // says Kai Monroe... It will also work to kind of break up the fact that her thumbnail is listed twice").
+    function head(active, title) {
       return (demo && !guide ? '<p class="vg-note"><b>Demo.</b> Kai Monroe is invented and drawn in our style, every brand here is illustrative, and nothing you do is sent. This is the dashboard an official creator opens every day.</p>' : '') +
-        (active === 'dashboard' || active === 'board' ? strip() : '');
+        (title || '') + (active === 'dashboard' || active === 'board' ? strip() : '');
     }
 
     function card(g) {
       var ch = checks(g, C), ok = ch.every(function (x) { return x.ok; }), m = mineOf(g.id), miss = ch.filter(function (x) { return !x.ok; })[0];
-      return '<a class="vg-card' + (ok ? '' : ' no') + '" href="#gig/' + esc(g.id) + '">' +
-        '<div class="vg-top">' + thumb(g.img, g.kind) + '<div class="vg-tt"><span class="vg-partner">' + esc(g.partner.name) + ' · ' + esc(KIND[g.kind] || g.kind) + '</span><div class="vg-title">' + esc(g.title) + '</div></div><span class="vg-tag ' + (g.mode === 'audition' ? 'warn' : '') + '">' + esc(MODE[g.mode]) + '</span></div>' +
-        '<div class="vg-pay">' + esc(payText(g.pay)) + '</div>' +
-        '<div class="vg-line">' + esc(where(g)) + (ch.length ? ' · ' + esc(ch.map(function (x) { return x.label; }).filter(function (l) { return !/^Shows up/.test(l); }).join(' · ')) : '') + '</div>' +
+      return '<a class="vg-card vg-tile' + (ok ? '' : ' no') + '" href="#gig/' + esc(g.id) + '">' + thumb(g.img, g.kind) + '<div class="vg-tile-r">' +
+        '<div class="vg-kindrow"><span class="vg-partner">' + esc(g.partner.name) + ' · ' + esc(KIND[g.kind] || g.kind) + '</span><span class="vg-tag ' + (g.mode === 'audition' ? 'warn' : '') + '">' + esc(MODE[g.mode]) + '</span></div>' +
+        '<div class="vg-title">' + esc(g.title) + '</div><div class="vg-pay">' + esc(payText(g.pay)) + '</div>' +
+        '<div class="vg-line">' + esc([where(g)].concat(ch.map(function (x) { return x.label; }).filter(function (l) { return !/^Shows up/.test(l); })).join(' · ')) + '</div>' +
         '<div class="vg-tags">' + (m ? '<span class="vg-tag ' + STATUS[m.status][1] + '">' + STATUS[m.status][0] + '</span>' : ok ? '<span class="vg-tag ok">You qualify</span>' : '<span class="vg-tag no">' + esc(miss.need) + '</span>') +
         '<span class="vg-tag">' + esc(closesText(g)) + '</span>' + (g.spots ? '<span class="vg-tag">' + g.spots + (g.spots === 1 ? ' spot' : ' spots') + '</span>' : '') +
-        (g.applicants ? '<span class="vg-tag">' + num(g.applicants) + ' applied</span>' : '') + '</div></a>';
+        (g.applicants ? '<span class="vg-tag">' + num(g.applicants) + ' applied</span>' : '') + '</div></div></a>';
     }
 
     // My gigs wear the board's tile (Sean, 2026-10-30: "my gigs should look the same way... three columns"), with where it stands.
     function mineCard(m) {
       var g = gig(m.gig), s = STATUS[m.status], aud = g && m.status === 'audition' && (g.asks || []).indexOf('audition') > -1;
-      var inner = '<div class="vg-top">' + thumb(g ? g.img : m.img, g ? g.kind : 'content') + '<div class="vg-tt"><span class="vg-partner">' + esc(g ? g.partner.name + ' · ' + (KIND[g.kind] || g.kind) : 'Past gig') + '</span><div class="vg-title">' + esc(g ? g.title : m.title) + '</div></div><span class="vg-tag ' + s[1] + '">' + s[0] + '</span></div>' +
+      // Where it stands is the first pill at the bottom (Sean, 2026-10-30: "we could put the booked as the first thing in the bottom pills").
+      var inner = thumb(g ? g.img : m.img, g ? g.kind : 'content') + '<div class="vg-tile-r"><span class="vg-partner">' + esc(g ? g.partner.name + ' · ' + (KIND[g.kind] || g.kind) : 'Past gig') + '</span><div class="vg-title">' + esc(g ? g.title : m.title) + '</div>' +
         (g ? '<div class="vg-pay">' + esc(payText(g.pay)) + '</div>' : '') +
         (m.next ? '<div class="vg-next' + (aud ? ' warn' : '') + '">' + esc(m.next) + '</div>' : '') +
-        '<div class="vg-tags">' + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') + (g ? '<span class="vg-tag">' + esc(where(g)) + '</span>' : '') +
-        (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div>';
+        '<div class="vg-tags"><span class="vg-tag ' + s[1] + '">' + s[0] + '</span>' + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') + (g ? '<span class="vg-tag">' + esc(where(g)) + '</span>' : '') +
+        (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div></div>';
       var href = aud ? '#apply/' + g.id + '/' + ((g.asks || []).indexOf('audition') + 1) : g ? '#gig/' + g.id : '';
-      return href ? '<a class="vg-card" href="' + esc(href) + '">' + inner + '</a>' : '<div class="vg-card">' + inner + '</div>';
+      return href ? '<a class="vg-card vg-tile" href="' + esc(href) + '">' + inner + '</a>' : '<div class="vg-card vg-tile">' + inner + '</div>';
     }
 
     // Your media kit (Sean, 2026-10-30: "it's essentially their media kits... she gets to be the prototype of what a media kit profile
@@ -418,7 +425,7 @@
         var todo = D.mine.filter(function (m) { return m.status === 'audition' || m.status === 'booked'; });
         var done = (C.kit_done || []).filter(function (x) { return x[1]; }).length, all = (C.kit_done || []).length;
         var tile = function (href, n, t, d) { return '<a class="vg-card vg-go" href="' + href + '"><div class="vg-go-top"><b class="vg-big">' + n + '</b><span class="vg-ico">' + icon({ '#board': 'board', '#mine': 'mine', '#profile': 'kit', '#how': 'how' }[href]) + '</span></div><div class="vg-title">' + t + '</div><div class="vg-line">' + d + '</div></a>'; };
-        return head('dashboard') + '<h2 class="vg-h">Your Creator Dashboard</h2><p class="vg-help" style="font-size:14.5px;max-width:860px;margin:0 0 14px">Everything you do with us, in one place: the gigs open to you, the ones you are in, your media kit and where you stand.</p>' +
+        return head('dashboard', '<h2 class="vg-h">Your Creator Dashboard</h2><p class="vg-help" style="font-size:14.5px;max-width:860px;margin:0 0 14px">Everything you do with us, in one place: the gigs open to you, the ones you are in, your media kit and where you stand.</p>') +
           '<div class="vg-grid vg-grid4">' + tile('#board', open, 'Open gigs', 'Gigs you qualify for and have not applied to yet.') + tile('#mine', play.length, 'My gigs', 'Applied, shortlisted, auditioning or booked.') +
           tile('#profile', all ? Math.round(done / all * 100) + '%' : '-', 'Your media kit', 'Your page partners and the public see. Complete kits get booked first.') + tile('#how', standing(C), 'How you rise', NEXT_TIER[standing(C)]) + '</div>' +
           (todo.length ? '<h3 class="vg-sec">Up next</h3><div class="vg-grid">' + todo.map(mineCard).join('') + '</div>' : '') +
@@ -439,7 +446,7 @@
         list.sort(state.sort === 'closing' ? function (a, b) { return (a.closes ? +new Date(a.closes) : 9e15) - (b.closes ? +new Date(b.closes) : 9e15); }
           : state.sort === 'pay' ? function (a, b) { return val(b) - val(a); } : function (a, b) { return +new Date(b.posted) - +new Date(a.posted); });
         var sel = function (k, opts2) { return '<select data-f="' + k + '" aria-label="' + k + '">' + opts2.map(function (o) { return '<option value="' + o[0] + '"' + (state[k] === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; };
-        return head('board') + '<h2 class="vg-h">Open gigs</h2>' +
+        return head('board', '<h2 class="vg-h">Open gigs</h2>') +
           '<div class="vg-tools"><input class="vg-q" type="search" data-f="q" placeholder="Search gigs, brands, kinds..." value="' + esc(state.q) + '" aria-label="Search gigs">' +
           sel('pay', [['all', 'Any pay'], ['paid', 'Paid'], ['perk', 'Perks'], ['points', 'Points']]) +
           sel('kind', [['all', 'Every kind']].concat(Object.keys(KIND).map(function (k) { return [k, KIND[k]]; }))) +
