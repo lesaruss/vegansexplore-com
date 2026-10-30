@@ -418,6 +418,15 @@
   .dash-ib-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
   .dash-ib-acts button,.dash-ib-acts a{font:inherit;font-size:13px;font-weight:800;padding:10px 14px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;text-decoration:none;}
   .dash-ib-acts .go{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
+  .dash-ib-reply{margin-top:16px;padding-top:14px;border-top:1px solid var(--ve-border);}
+  .dash-ib-reply h4{margin:0 0 4px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-50);}
+  .dash-ib-reply .sub{margin:0 0 8px;font-size:12px;color:var(--ve-text-50);}
+  .dash-ib-reply input,.dash-ib-reply textarea{width:100%;padding:10px 12px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;font:inherit;font-size:13.5px;box-sizing:border-box;}
+  .dash-ib-reply textarea{min-height:130px;margin-top:8px;line-height:1.55;}
+  .dash-ib-sent{margin:10px 0 0;padding:0;list-style:none;}
+  .dash-ib-sent li{padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin-top:8px;font-size:13px;line-height:1.55;}
+  .dash-ib-sent li b{display:block;font-size:12px;color:var(--ve-text-50);margin-bottom:4px;}
+  .dash-ib-sent li p{margin:0;white-space:pre-wrap;}
   .dash-ib-note{width:100%;min-height:64px;margin-top:12px;padding:10px 12px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;font:inherit;font-size:13px;box-sizing:border-box;}
   /* A member, in a lightbox (Sean, 2026-10-30: "a light box of who that person is... I don't have to go off this page"). */
   .dash-mc{position:fixed;inset:0;z-index:2000;background:rgba(10,20,12,0.55);display:flex;align-items:center;justify-content:center;padding:16px;}
@@ -3705,6 +3714,7 @@
       renderInbox(ibMember);
     });
   }
+  function ibSigned() { return (String((ibMember && ibMember.name) || '').trim().split(/\s+/)[0]) || 'The team'; }
   function renderInbox(member) {
     if (member) ibMember = member;
     if (!ibBody) return;
@@ -3739,7 +3749,7 @@
       var row = document.createElement('div'); row.className = 'dash-preview-row ib-click'; row.tabIndex = 0; row.setAttribute('role', 'button');
       var who = r.requester || {}, wn = who.name || who.email || 'Someone';
       var av = document.createElement(who.id ? 'button' : 'span'); av.className = 'dash-preview-av';
-      if (who.id) { av.type = 'button'; av.setAttribute('aria-label', 'See who ' + wn + ' is'); av.addEventListener('click', function (e) { e.stopPropagation(); memberCard(who.id); }); }
+      if (who.id && ibMember && ibMember.is_superadmin) { av.type = 'button'; av.setAttribute('aria-label', 'See who ' + wn + ' is'); av.addEventListener('click', function (e) { e.stopPropagation(); memberCard(who.id); }); }
       dpPic(av, { url: who.avatar_url, name: wn, color: who.color });
       var clock = ibClock(r), e = dvEsc;
       var rb = document.createElement('div'); rb.className = 'dash-preview-rowbody';
@@ -3818,7 +3828,7 @@
       var av = who.avatar_url ? '<img src="' + e(who.avatar_url) + '" alt="">' : e(String(wn).trim().charAt(0).toUpperCase());
       var opened = r.viewed_at ? when(r.viewed_at) : (r.assigned ? 'Not yet opened by ' + r.assigned.name : 'Not yet');
       wrap.innerHTML = '<div class="dash-mc-box" role="dialog" aria-modal="true" aria-label="Request"><button type="button" class="dash-mc-x" aria-label="Close">&times;</button>' +
-        '<div class="dash-mc-top">' + (who.id ? '<button type="button" class="dash-mc-av" data-ib-who style="border:none;cursor:pointer;padding:0;' + (who.color && !who.avatar_url ? 'background:' + e(who.color) : '') + '" aria-label="See who ' + e(wn) + ' is">' + av + '</button>'
+        '<div class="dash-mc-top">' + (who.id && ibMember && ibMember.is_superadmin ? '<button type="button" class="dash-mc-av" data-ib-who style="border:none;cursor:pointer;padding:0;' + (who.color && !who.avatar_url ? 'background:' + e(who.color) : '') + '" aria-label="See who ' + e(wn) + ' is">' + av + '</button>'
           : '<div class="dash-mc-av"' + (who.color && !who.avatar_url ? ' style="background:' + e(who.color) + '"' : '') + '>' + av + '</div>') +
         '<div style="min-width:0"><div class="dash-ib-kind">' + e(r.kind) + '</div><div class="dash-mc-name">' + e(r.title || wn) + '</div>' +
         '<div class="dash-mc-email">' + e(wn) + (who.email && who.email !== wn ? ' · ' + e(who.email) : '') + '</div>' +
@@ -3833,9 +3843,15 @@
         (r.replied_at ? '<li><b>Replied</b><span>' + e(when(r.replied_at)) + '</span></li>' : '') +
         (r.closed_at ? '<li><b>Closed</b><span>' + e(when(r.closed_at)) + '</span></li>' : '') +
         '</ul>' +
+        // Reply from here (Sean, 2026-10-30): from the Vegans Explore team, signed with your first name; sending it stops the clock.
+        (who.email ? '<div class="dash-ib-reply"><h4>Reply to ' + e(String(wn).split(/\s+/)[0]) + '</h4>' +
+          '<p class="sub">Goes to ' + e(who.email) + ' from Vegans Explore, signed ' + e(ibSigned()) + ', Vegans Explore team. Their reply comes back to the team inbox' + (ibMember && !ibMember.is_superadmin ? ' and to you' : '') + '.</p>' +
+          '<input type="text" id="dash-ib-subj" maxlength="150" aria-label="Subject" value="' + e('Re: ' + (r.title || r.kind || 'your message')) + '">' +
+          '<textarea id="dash-ib-msg-body" maxlength="5000" aria-label="Your reply" placeholder="Write your reply. A blank line starts a new paragraph."></textarea>' +
+          '<div class="dash-ib-acts" style="margin-top:10px"><button type="button" class="go" data-ib-send>Send reply</button><button type="button" data-ib-test>Send me a test first</button></div>' +
+          '<ul class="dash-ib-sent" id="dash-ib-sent"></ul></div>' : '<p class="dash-preview-empty" style="margin-top:14px">No email on this request, so it cannot be answered from here. Mark it when you have replied another way.</p>') +
         '<textarea class="dash-ib-note" maxlength="1000" placeholder="A note for the team (never sent)">' + e(r.note || '') + '</textarea>' +
         '<div class="dash-ib-acts">' +
-        (who.email ? '<a class="go" href="mailto:' + e(who.email) + '?subject=' + encodeURIComponent('Re: ' + (r.title || r.kind)) + '">Reply by email</a>' : '') +
         (r.status === 'replied' || r.status === 'closed' ? '<button type="button" data-ib-set="open">Reopen</button>'
           : '<button type="button" data-ib-set="replied">Mark replied</button><button type="button" data-ib-set="closed">Close, no reply needed</button>') +
         (r.link ? '<a href="' + e(r.link) + '" data-ib-link>Open where it came in</a>' : '') +
@@ -3847,6 +3863,35 @@
         ev.preventDefault(); close();
         var href = lk.getAttribute('href');
         if (/^\/admin\/depot\//.test(href) && typeof openDepotPage === 'function') openDepotPage(href); else openConsoleFrame(href, r.kind);
+      });
+      // The replies sent so far, and Send.
+      var sentList = wrap.querySelector('#dash-ib-sent');
+      if (sentList) dvCall({ action: 'inbox_replies', source: r.source, source_id: r.id }).then(function (d) {
+        var rows = (d && d.replies) || [];
+        sentList.innerHTML = rows.map(function (x) {
+          return '<li><b>' + (x.test ? 'Test to ' : 'Sent to ') + e(x.to_email) + ' · ' + e(dpWhen(x.sent_at)) + ' · signed ' + e(x.signed_as || '') + '</b><p>' + e(x.body) + '</p></li>';
+        }).join('');
+      });
+      Array.prototype.forEach.call(wrap.querySelectorAll('[data-ib-send],[data-ib-test]'), function (b) {
+        b.addEventListener('click', function () {
+          var test = b.hasAttribute('data-ib-test'), msg = document.getElementById('dash-ib-msg');
+          var text = wrap.querySelector('#dash-ib-msg-body').value.trim();
+          if (text.length < 2) { msg.textContent = 'Write your reply first.'; return; }
+          if (!test && !window.confirm('Send this reply to ' + who.email + '?')) return;
+          Array.prototype.forEach.call(wrap.querySelectorAll('[data-ib-send],[data-ib-test]'), function (x) { x.disabled = true; });
+          msg.textContent = test ? 'Sending you a test...' : 'Sending...';
+          dvCall({ action: 'inbox_reply', source: r.source, source_id: r.id, message: text, subject: wrap.querySelector('#dash-ib-subj').value, test: test,
+            note: wrap.querySelector('.dash-ib-note').value }).then(function (d) {
+            Array.prototype.forEach.call(wrap.querySelectorAll('[data-ib-send],[data-ib-test]'), function (x) { x.disabled = false; });
+            if (!d || !d.ok) {
+              msg.textContent = { daily_limit: 'That is the most replies for today. Try again tomorrow.', no_email: 'Your account has no email for the test.',
+                no_requester_email: 'This request has no email to reply to.', too_long: 'Keep it under 5,000 characters.' }[d && d.error] || 'That did not send. Try again.';
+              return;
+            }
+            if (test) { msg.textContent = 'A test is on its way to ' + d.to + '. Nothing was sent to them.'; return; }
+            close(); renderInbox();
+          });
+        });
       });
       Array.prototype.forEach.call(wrap.querySelectorAll('[data-ib-set]'), function (b) {
         b.addEventListener('click', function () {
@@ -4179,6 +4224,18 @@
       return;
     }
     ['dash-tools-title', 'dash-tools-bar'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = false; });
+
+    // A Community Manager's own Inbox (Sean, 2026-10-30): the requests assigned to them (ve-dashboard inbox filters to theirs), the same
+    // box, the 24-hour clock and replies, above Your tools.
+    if (member.ve_role === 'community_manager' && member.membership_status === 'active' && recentWrap && recent) {
+      recentWrap.hidden = false;
+      var rt = recentWrap.querySelector('.dash-section-title'), rh = recentWrap.querySelector('.dash-recent-hint');
+      if (rt) rt.textContent = 'Your inbox';
+      if (rh) rh.textContent = 'Requests from people in your chapter. Reply within 24 hours of when they came in.';
+      recent.innerHTML = '';
+      ibMember = member;
+      recent.appendChild(inboxCard());
+    }
 
     // Everyone else: their tools, the version's first (renderVersion sets DASH_VERSION and draws this again).
     var access = memberTools(member, false);

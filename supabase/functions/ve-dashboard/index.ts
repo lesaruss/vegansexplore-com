@@ -29,6 +29,11 @@
 //   track the effectiveness of our community managers"; migration 20261030_ve_inbox.sql).
 // POST { action: 'inbox_open', source, source_id }   marks it seen by the team, and opened when the person it is assigned to opens it.
 // POST { action: 'inbox_set', source, source_id, set: 'replied'|'closed'|'open', note? }
+// POST { action: 'inbox_reply', source, source_id, message, subject?, test? }   replies from the Inbox (Sean, 2026-10-30, "go with
+//   your recommendation"): an email from Vegans Explore to the person who sent the request, signed with the sender's first name and
+//   "Vegans Explore team", replies to contact@lesaruss.com (and the Community Manager who sent it). It is kept in ve_inbox_replies and
+//   stops the 24-hour clock (replied_at). test: true sends it to the sender alone with [Test] in the subject and stops nothing.
+// POST { action: 'inbox_replies', source, source_id }   the replies sent on one request, newest first.
 //
 // A member's picture everywhere here is their People profile photo when one names them (details.person.member_id), else their account
 // picture (Sean, 2026-10-30: "if the user has a thumbnail, let's use the thumbnail... my face should show up"). LESARUSS.ai's own
@@ -41,6 +46,21 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
 const isLr = (l: any) => (l?.tags || []).some((t: string) => LR_TAGS.includes(t));
 const INBOX_DUE_HOURS = 24;
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const REPLY_FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
+const TEAM_EMAIL = 'contact@lesaruss.com';
+const REPLIES_A_DAY = 50;
+const esc = (s: unknown) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const firstName = (n: unknown) => String(n || '').trim().split(/\s+/)[0] || '';
+// A reply as a plain personal email: their first name, the message (a blank line a new paragraph), the sign-off and why they got it.
+function replyHtml(to: string, message: string, signed: string, about: string) {
+  const paras = message.trim().split(/\n{2,}/).map((p) => `<p style="margin:0 0 14px">${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">` +
+    (to ? `<p style="margin:0 0 14px">Hi ${esc(to)},</p>` : '') + paras +
+    `<p style="margin:18px 0 0">${esc(signed)}<br>Vegans Explore team</p>` +
+    `<p style="margin:28px 0 0;font-size:12px;color:#777">You are getting this because you reached out to Vegans Explore${about ? ` (${esc(about)})` : ''}. ` +
+    `Reply to this email to keep talking. LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p></div>`;
+}
 const CHAPTER_SLUG: Record<string, string> = { 'South Florida': 'south-florida', 'Central Florida': 'central-florida', 'North Florida': 'north-florida',
   'Atlanta': 'atlanta', 'Washington, D.C.': 'washington-dc', 'Maryland': 'maryland', 'Virginia': 'virginia', 'Delaware': 'delaware', 'West Virginia': 'west-virginia',
   'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'London': 'london' };
@@ -94,7 +114,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, name, email, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'set_version') {
@@ -219,7 +239,7 @@ Deno.serve(async (req) => {
         name: m.name || r.name || r.email || m.email || null, color: m.color || null, avatar_url: pics.get(r.member_id) || null }; }) });
   }
 
-  if (body.action === 'inbox' || body.action === 'inbox_open' || body.action === 'inbox_set') {
+  if (['inbox', 'inbox_open', 'inbox_set', 'inbox_reply', 'inbox_replies'].includes(body.action)) {
     const isCm = member.ve_role === 'community_manager' && member.membership_status === 'active';
     if (!member.is_superadmin && !isCm) return json({ error: 'forbidden' }, 403);
     const { data: items, error } = await db.rpc('ve_inbox_items', {});
@@ -234,6 +254,8 @@ Deno.serve(async (req) => {
       db.from('members').select('id, name, email, home_community').eq('ve_role', 'community_manager').eq('membership_status', 'active'),
       db.from('ve_inbox_state').select('*'),
     ]);
+    const { data: sent } = await db.from('ve_inbox_replies').select('source, source_id').eq('test', false);
+    const R = new Map<string, number>(); for (const x of sent || []) { const k = (x as any).source + ':' + (x as any).source_id; R.set(k, (R.get(k) || 0) + 1); }
     const M = new Map<string, any>((ms || []).map((m: any) => [m.id, m]));
     const E = new Map<string, any>((byEmail || []).map((m: any) => [String(m.email).toLowerCase(), m]));
     const CM = new Map<string, any>(); for (const c of cms || []) if ((c as any).home_community && !CM.has((c as any).home_community)) CM.set((c as any).home_community, c);
@@ -254,7 +276,7 @@ Deno.serve(async (req) => {
         assigned: cm ? { id: cm.id, name: cm.name || cm.email } : null,
         seen_at: st.first_seen_at || null, viewed_at: st.viewed_at || null, replied_at: st.replied_at || null, closed_at: st.closed_at || null, note: st.note || null,
         due_at: new Date(due).toISOString(), late: !done && now > due,
-        status: st.replied_at ? 'replied' : st.closed_at ? 'closed' : st.viewed_at ? 'opened' : 'new',
+        status: st.replied_at ? 'replied' : st.closed_at ? 'closed' : st.viewed_at ? 'opened' : 'new', replies: R.get(r.source + ':' + r.source_id) || 0,
         reply_hours: st.replied_at ? Math.round((new Date(st.replied_at).getTime() - new Date(r.created_at).getTime()) / 360000) / 10 : null };
     });
     const mine = member.is_superadmin ? rows : rows.filter((r) => r.assigned?.id === memberId);
@@ -269,11 +291,41 @@ Deno.serve(async (req) => {
     const src = String(body.source || ''), sid = String(body.source_id || '');
     const row = mine.find((r) => r.source === src && r.id === sid);
     if (!row) return json({ error: 'not_found' }, 404);
+    if (body.action === 'inbox_replies') {
+      const { data } = await db.from('ve_inbox_replies').select('id, member_id, to_email, subject, body, signed_as, test, sent_at').eq('source', src).eq('source_id', sid).order('sent_at', { ascending: false }).limit(50);
+      return json({ ok: true, replies: data || [] });
+    }
     const at = new Date().toISOString();
     const prev = S.get(src + ':' + sid) || {};
     const patch: any = { source: src, source_id: sid, updated_at: at, assigned_member_id: prev.assigned_member_id || row.assigned?.id || null,
       first_seen_at: prev.first_seen_at || at };
-    if (body.action === 'inbox_open') {
+    if (body.action === 'inbox_reply') {
+      const message = String(body.message || '').replace(/\r/g, '').trim();
+      if (message.length < 2) return json({ error: 'empty' }, 400);
+      if (message.length > 5000) return json({ error: 'too_long' }, 400);
+      const test = body.test === true;
+      const to = test ? String(member.email || '') : String(row.requester?.email || '');
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(to)) return json({ error: test ? 'no_email' : 'no_requester_email' }, 400);
+      if (!RESEND_KEY) return json({ error: 'email_off' }, 500);
+      const since = new Date(Date.now() - 86400000).toISOString();
+      const { count } = await db.from('ve_inbox_replies').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gte('sent_at', since);
+      if ((count || 0) >= REPLIES_A_DAY) return json({ error: 'daily_limit' }, 429);
+      const signed = firstName(member.name) || 'The team';
+      const subject = (test ? '[Test] ' : '') + (String(body.subject || '').replace(/\s+/g, ' ').trim().slice(0, 150) || ('Re: ' + (row.title || row.kind || 'your message')).slice(0, 150));
+      const replyTo = [TEAM_EMAIL];
+      if (!member.is_superadmin && member.email && member.email.toLowerCase() !== TEAM_EMAIL) replyTo.push(member.email);
+      const res = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: REPLY_FROM, reply_to: replyTo, to: [to], subject, html: replyHtml(firstName(row.requester?.name && !/@/.test(row.requester.name) ? row.requester.name : ''), message, signed, row.title || row.kind || ''),
+          text: message + `\n\n${signed}\nVegans Explore team` }) }).catch(() => null);
+      const sentOk = !!res && res.ok;
+      const out = res ? await res.json().catch(() => null) : null;
+      if (!sentOk) return json({ error: 'send_failed', message: String(out?.message || out?.error || '').slice(0, 200) }, 502);
+      await db.from('ve_inbox_replies').insert({ source: src, source_id: sid, member_id: memberId, to_email: to, subject, body: message, signed_as: signed, provider_id: out?.id || null, test });
+      if (test) return json({ ok: true, test: true, to });
+      patch.replied_at = prev.replied_at || at; patch.replied_by = prev.replied_by || memberId; patch.closed_at = null; patch.closed_by = null;
+      if (typeof body.note === 'string') patch.note = body.note.slice(0, 1000) || null;
+      if (!prev.viewed_at && (!patch.assigned_member_id || patch.assigned_member_id === memberId)) { patch.viewed_at = at; patch.viewed_by = memberId; }
+    } else if (body.action === 'inbox_open') {
       // Opened counts when the person it is assigned to opens it; with no Community Manager, the team (a super admin).
       const assignee = patch.assigned_member_id;
       if (!prev.viewed_at && ((assignee && assignee === memberId) || (!assignee && member.is_superadmin))) { patch.viewed_at = at; patch.viewed_by = memberId; }
@@ -288,7 +340,7 @@ Deno.serve(async (req) => {
     }
     const { error: e2 } = await db.from('ve_inbox_state').upsert(patch, { onConflict: 'source,source_id' });
     if (e2) return json({ error: 'save_failed', message: e2.message }, 500);
-    return json({ ok: true });
+    return json({ ok: true, ...(body.action === 'inbox_reply' ? { sent: true, to: row.requester?.email } : {}) });
   }
 
   return json({ error: 'unknown_action' }, 400);

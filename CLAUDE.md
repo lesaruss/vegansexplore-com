@@ -3248,9 +3248,16 @@ one: assigned to the chapter's active Community Manager (the request's chapter, 
 hand (`ve-dashboard` `inbox`, `inbox_open`, `inbox_set`). The reply clock is **24 hours from when it came in** ("no more than... 24
 hours... sooner the better", `INBOX_DUE_HOURS`); the head shows open, late and the average reply time, which is how a Community
 Manager's work will be measured. Filter Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
-assigned to, opened, reply by, a team note, Reply by email, Mark replied, Close, Open where it came in). A Community Manager's own
-inbox (only theirs) is in `ve-dashboard` already, not yet on their dashboard. Replies are marked by hand: sending the reply from the
-inbox, so the clock stops itself, is the next step.
+assigned to, opened, reply by, a team note, the reply box, Mark replied, Close, Open where it came in). **Replying from the Inbox**
+(Sean, 2026-10-30: "go with your recommendation"; migration `20261030_ve_inbox_replies.sql`): the window's **Reply to <name>** (a
+subject and the message, a blank line a new paragraph) sends an email from VEGANS EXPLORE <hello@vegansexplore.com>, signed with the
+sender's first name and "Vegans Explore team", never Sean's name for anyone else; replies come back to contact@lesaruss.com and to the
+Community Manager who sent it (`ve-dashboard` `inbox_reply`, Resend, 50 a day per sender). Sending it is the reply: `replied_at` is set,
+so the 24-hour clock stops itself. Every reply is a `ve_inbox_replies` row (RLS on, no policies; `inbox_replies` lists them under the
+box). **Send me a test first** (`test: true`) sends it to the sender alone with [Test] and stops nothing. Mark replied stays for an
+answer given another way. **A Community Manager's own Inbox**: their Dashboard tab shows **Your inbox** above Your tools, the same box
+with only the requests assigned to them (`ve-dashboard` `inbox` filters to theirs); a requester's picture opens their member card for
+super admins only.
 **Recent activity** has the **Leaderboard** as one of its boxes, the same size (it stays beside For you for everyone else), and every
 box has a drag handle (mouse, touch, or the arrow keys) to put it where Sean wants; the order is kept in the browser
 (`localStorage` `ve_dash_recent_order`, `dashReorder`). **Every member thumbnail is a rounded square that opens who they are**
