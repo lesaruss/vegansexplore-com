@@ -3240,6 +3240,15 @@ and Done). They share the database; LESARUSS.ai's own Depot is to be set up the 
   2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
   `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
   under the Depot tab (`openDepotPage`), so a new Depot page joins the search with its `TABS` row.
+- **Proven live as Sean, 2026-10-30** (a 15-minute session from the one-time `ve-once-dash-proof`, now the 410 stub; every
+  `ve-dashboard` action and the page in a real browser). Fixed the same day: **Events waiting** (the Recent activity box, the Depot
+  banner's count and the Event Submissions badge) read `ve-rewards` `list_pending_events`, which returns every tenant, so it listed
+  LESARUSS.ai's 13 funding and business events as ours; it reads `ve-events` `queue` now (`veEventsWaiting`, Vegans Explore's tenant).
+  A super admin's Dashboard and Guides banners read ∞ like the member card. **One search for super admins** (Logan's default, Sean's to
+  change): the Depot panel; Secret Shopper joined `TABS` under Admin, the last super admin tool that was only in Your tools.
+- **Linking a member to their People profile**: the listing editor's About them has **Their Vegans Explore account** (the email they
+  sign in with; `ve-people` `save` `account_email`, `account`), which sets or clears `details.person.member_id`, one profile per account,
+  never a Guide account, logged in `ve_listing_edits` (field `person.member_id`). It never sets `owner_member_id`.
 - **A listing opened in the dashboard has its own address** (Sean, 2026-10-27: "if somebody just wanted to share a link to their
   page"): `/dashboard/directory/<slug>` (rewrite in `vercel.json`; back and forward move between the Directory and the listing),
   **Copy link** beside the breadcrumb copies the public `/directory/<slug>`, and the address opened signed out goes straight to

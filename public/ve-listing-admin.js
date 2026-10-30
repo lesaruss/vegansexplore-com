@@ -244,6 +244,8 @@
       '<div class="row2"><div><label class="h" for="vla-pfb">Facebook</label><input type="text" id="vla-pfb" value="' + esc(l.facebook || '') + '"></div>' +
       '<div><label class="h" for="vla-ptt">TikTok</label><input type="text" id="vla-ptt" placeholder="@handle" value="' + esc(l.tiktok || '') + '"></div></div>' +
       '<label class="h" for="vla-pyt">YouTube</label><input type="text" id="vla-pyt" placeholder="@channel or a link" value="' + esc(l.youtube || '') + '">' +
+      '<label class="h" for="vla-pacct">Their Vegans Explore account</label><input type="email" id="vla-pacct" placeholder="The email they sign in with" autocomplete="off">' +
+      '<div class="note" id="vla-pacct-note">Links this profile to their account, so their member card counts the votes and saves on it. It does not make them its owner. Leave it empty if they have no account.</div>' +
       '<label class="h">Their work (a sign-up page, a program, a product, a book)</label>' +
       [0, 1, 2].map(function (i) { var x = ((l.person || {}).links || [])[i] || {};
         return '<div class="row2"><div><input type="text" class="vla-plink-l" maxlength="40" placeholder="Label, like Work with me" value="' + esc(x.label || '') + '"></div><div><input type="text" class="vla-plink-u" placeholder="https://" value="' + esc(x.url || '') + '"></div></div>'; }).join('') +
@@ -370,6 +372,11 @@
     // People: credits, adding an episode or an event, and the bio from their interviews.
     function drawCredits() {
       var box = $('#vla-pcred'); if (!box || $('#vla-p-person').hidden) return;
+      var acct = $('#vla-pacct');
+      if (acct && !acct.dataset.loaded) people({ action: 'account', listing_id: l.id }).then(function (d) {
+        acct.dataset.loaded = '1'; acct.dataset.was = (d && d.account && d.account.email) || ''; acct.value = acct.dataset.was;
+        if (d && d.account) $('#vla-pacct-note').textContent = 'Linked to ' + (d.account.name || d.account.email) + '. Their member card counts the votes and saves on this profile. Clear it to unlink.';
+      });
       people({ action: 'credits', listing_id: l.id }).then(function (d) {
         var rows = (d && d.credits) || [];
         box.innerHTML = rows.length ? rows.map(function (c) {
@@ -619,7 +626,9 @@
               return { label: wrap.querySelectorAll('.vla-plink-l')[i].value.trim(), url: u.value.trim() }; }).filter(function (x) { return x.url; });
             return people({ action: 'save', listing_id: l.id, title: $('#vla-ptitle').value.trim(), specialty: $('#vla-spec-wrap').hidden ? '' : (($('input[name=vla-spec]:checked') || {}).value || ''),
               links: links, bio: $('#vla-pbio').value, website: $('#vla-pweb').value.trim(), instagram: $('#vla-pig').value.trim(), facebook: $('#vla-pfb').value.trim(),
-              tiktok: $('#vla-ptt').value.trim(), youtube: $('#vla-pyt').value.trim() }).then(function (x) { if (!x || !x.ok) throw new Error('their profile did not: ' + ((x && (x.message || x.error)) || 'try again.')); });
+              tiktok: $('#vla-ptt').value.trim(), youtube: $('#vla-pyt').value.trim(),
+              account_email: $('#vla-pacct').dataset.loaded && $('#vla-pacct').value.trim().toLowerCase() !== ($('#vla-pacct').dataset.was || '').toLowerCase() ? $('#vla-pacct').value.trim() : undefined })
+              .then(function (x) { if (!x || !x.ok) throw new Error('their profile did not: ' + ((x && (x.message || x.error)) || 'try again.')); });
           }
           function afterWork() {
           // A changed feed is read at once, so a wrong one says so before the window closes.
