@@ -841,7 +841,14 @@ or for a Passport holder's email, a second pass at another group event), a test-
 unpaid return refused, paid twice in a rolled-back transaction (once only, wrong session refused), then a real Stripe test payment
 marked paid, the door, the dashboard, and a Stripe test refund of $40.00 with $1.51 kept; then removed. The Stripe card form itself
 was not paid (checkout.stripe.com and api.stripe.com are blocked from the build session; the test payment went through pg_net).
-Not yet: a check on the type's limit at the moment of payment (two buyers paying for the last ticket at once both get one).
+**Seats are held at checkout** (migration `20261029_group_tickets_holds_policy.sql`): an open checkout counts against a type's limit
+for 35 minutes (Stripe expires it at 30); `ve_ticket_order_open` locks the type's row, counts what is left and writes the order in one
+step, and `ve_ticket_left` gives the page the same count. A stale pending order is never canceled, so a late payment still confirms.
+The same migration put tickets, the guest pass and Group Partners in the Guides' facts and three saved answers, and `/policies` has
+**Group Partners** and **Event tickets** under Membership and the guest pass and door list under Privacy.
+**No invitations yet** (Sean, 2026-10-29: "we're not going to send to anybody just yet... I just need to make sure I get my hands on
+everything once it's locked in. I'm selectively sending it out"): no Group Partner invitation goes out until Sean has reviewed the
+program and picks who gets one; keep building so every piece is ready.
 
 **The sample group, the Guide and the console** (Sean, 2026-10-29: "Let's not bank on Vegan Social Club... I want us to create our
 own mock club so people can go through it... the same way we did the business... a general username and password... in the depot...
