@@ -1131,6 +1131,15 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   claim and the bounty lifecycle takes over; each emails the creator); `claim` refuses an apply gig (`apply_needed`) and a member who
   does not qualify (`not_qualified`). Not built yet: posting a gig with these fields and deciding applicants in Depot > Bounties, the
   partner's own view of its applicants, results per creator from tracked links, and `/dashboard/gigs`.
+- **The Creator Guide is the creator pathway** (Sean, 2026-10-30: "take this, what we created, put it into the creator guide as the
+  overview... the drill through everything will just be under overview... the become could take them directly to the intake page").
+  Its **Overview** is the `/gigs/sample` walkthrough itself (Kai, the opportunity, then Your dashboard, Open gigs, My gigs, the media
+  kit, How you rise and Apply), mounted inside the Guide at `#/overview/<view>` (`VEGigs.mount` with `base`, `external`: the Guide's
+  router draws it; `gigView` in `guide-scripts/creator-guide.js`, each mounted once so a visitor's demo applications stay for the
+  visit). **Your next step** became **Become a creator** (`#/next`, the application on its own: `start: 'join/1'`, `tour: false`).
+  River steps aside on those two tabs (`body.cg-wide`), since Kai walks them; The 10 tips, People doing it and Pulse keep River.
+  Not yet (Sean's direction): People doing it marking the creators who have registered with us, and the Pulse tab carrying articles
+  for creators beside the podcasts, sortable.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
   `guide-scripts/creator-guide.js`, the Nonprofit Guide's shell, River narrating in text (no clips), indexed, seventh in the
   Guide catalog (label Creators, banner `public/guides/creator-guide.jpg`), in the sitemap. Tabs: Overview, **The 10 tips** (`#/tips/<id>`:

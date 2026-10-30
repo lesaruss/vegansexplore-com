@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Creator Guide - Vegans Explore Guides</title>
-  <meta name="description" content="For Vegan content creators going from hobby to professional: ten moves with real examples and action items, the creators and channels doing it, our creator episodes, and your next step as an Ambassador. With River as your Guide.">
+  <meta name="description" content="For Vegan content creators: how paid gigs come to you through the Creator Dashboard, ten moves from hobby to professional, the creators doing it, our creator episodes, and how to apply.">
   <link rel="canonical" href="https://vegansexplore.com/guides/creator-guide">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
@@ -352,6 +352,10 @@
       html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
+    /* The Overview and Become a creator are Kai's (the Creator Dashboard walkthrough and the application): River steps aside there. */
+    body.cg-wide .dg-rail,body.cg-wide .dg-tour-m,body.cg-wide .dg-mini{display:none !important;}
+    body.cg-wide .dg-app{grid-template-columns:minmax(0,1fr) !important;}
+    .dg-main .vg-kai{top:0;}
     @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:900px){
       .dg-top{padding:16px 16px 14px;}
@@ -522,6 +526,8 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-episodes.js"></script>
+<script src="/gigs/sample/demo.js"></script>
+<script src="/public/ve-gigs.js"></script>
 <script src="/guide-scripts/creator-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>

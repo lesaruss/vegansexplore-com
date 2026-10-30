@@ -30,7 +30,7 @@
     '.vg-me-main{flex:1 1 220px;min-width:0;}.vg-me-main b{font-size:16px;font-weight:900;}.vg-me-main span{display:block;font-size:12.5px;color:var(--ink75);margin-top:2px;}',
     '.vg-stats{display:flex;gap:18px;flex-wrap:wrap;}.vg-stat b{display:block;font-size:17px;font-weight:900;}.vg-stat span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink75);}',
     '.vg-tools{display:grid;grid-template-columns:minmax(200px,2fr) repeat(4,minmax(130px,1fr));gap:10px;margin:0 0 10px;}',
-    '.vg input[type=search],.vg input[type=text],.vg input[type=url],.vg textarea,.vg select{font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:#fff;color:#1a1a1a;width:100%;}',
+    '.vg input[type=search],.vg input[type=text],.vg input[type=url],.vg input[type=email],.vg input[type=tel],.vg textarea,.vg select{font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:#fff;color:#1a1a1a;width:100%;}',
     '.vg select{appearance:none;-webkit-appearance:none;background:#fff ' + CHEV + ' no-repeat right 16px center;padding-right:44px;}',
     '.vg textarea{min-height:120px;resize:vertical;line-height:1.5;}',
     '.vg-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:0 0 14px;cursor:pointer;}',
@@ -218,6 +218,11 @@
     el.classList.add('vg');
     var D = opts.data || { creator: {}, gigs: [], mine: [] };
     var demo = !!opts.demo, guide = !!opts.guide, KEY = 've_gigs_demo';
+    // Where the board's views live in the address: '#' on its own page (#board, #mine/applied), or a Guide's own path (the Creator
+    // Guide mounts it at '#/overview/' and '#/next/', and drives it with the returned draw(): opts.external).
+    var BASE = opts.base || '#';
+    function here() { var raw = location.hash || ''; return raw.indexOf(BASE) === 0 ? raw.slice(BASE.length) : ''; }
+    function go(h) { location.hash = BASE + String(h).replace(/^#/, ''); }
     var state = { q: '', pay: 'all', kind: 'all', wherePick: 'mine', sort: 'new', fit: false, form: {} };
     // In the sample, what a visitor applies to or claims is kept for the visit, so My gigs follows them.
     if (demo) { try { var kept = JSON.parse(sessionStorage.getItem(KEY) || '[]'); kept.forEach(function (m) { D.mine = D.mine.filter(function (x) { return x.gig !== m.gig; }); D.mine.unshift(m); }); } catch (e) {} }
@@ -444,7 +449,7 @@
       },
       join: function (n) {
         if (n === 'done') return '<div class="vg-form"><p class="vg-kick">Application sent</p><h2 class="vg-h">Thank you. We have it.</h2><p class="vg-help" style="font-size:15px;max-width:760px">Our team reads every application and will write back by email, usually within a few days. When you are approved, your Creator Dashboard opens and the gigs that fit you start landing in it.</p>' +
-          '<div class="vg-btns"><a class="vg-btn ghost" href="#dashboard">Look around the demo again</a><a class="vg-btn ghost" href="/creators/welcome">Read the Official Creator Guide</a></div></div>';
+          '<div class="vg-btns"><a class="vg-btn ghost" href="' + (opts.demoHref || '#dashboard') + '">Look around the demo again</a><a class="vg-btn ghost" href="/creators/welcome">Read the Official Creator Guide</a></div></div>';
         var i = Math.min(Math.max(parseInt(n, 10) || 1, 1), FORM.length), step = FORM[i - 1], A = state.app;
         var val = function (k) { return A[k] == null ? '' : A[k]; };
         var field = function (f) {
@@ -471,7 +476,7 @@
           (step.lede ? '<p class="vg-help" style="font-size:14.5px;margin:0 0 16px;max-width:760px">' + esc(step.lede) + '</p>' : '') +
           step.fields.map(field).join('') +
           '<p class="vg-err" id="vg-join-err" role="alert"></p>' +
-          '<div class="vg-pager">' + (i > 1 ? '<a class="vg-btn ghost" href="#join/' + (i - 1) + '">Back</a>' : '<a class="vg-btn ghost" href="#how">Back</a>') +
+          '<div class="vg-pager">' + (i > 1 ? '<a class="vg-btn ghost" href="#join/' + (i - 1) + '">Back</a>' : opts.tour === false ? '<span></span>' : '<a class="vg-btn ghost" href="#how">Back</a>') +
           '<span>Step ' + i + ' of ' + FORM.length + '</span>' +
           (i < FORM.length ? '<button type="button" class="vg-btn" data-join-next="' + i + '">Next</button>' : '<button type="button" class="vg-btn" data-join-send>Send my application</button>') + '</div></div>';
       }
@@ -571,15 +576,15 @@
     }
 
     function draw() {
-      var h = (location.hash || (guide ? '#overview' : '#dashboard')).slice(1).split('/');
+      var h = (here() || opts.start || (guide ? 'overview' : 'dashboard')).split('/');
       if (!guide && (h[0] === 'overview' || h[0] === 'join')) h = ['dashboard'];
       var html = h[0] === 'gig' ? V.gig(h[1]) : h[0] === 'apply' ? V.apply(h[1], h[2]) : h[0] === 'mine' ? V.mine(h[1]) : h[0] === 'profile' ? V.profile(h[1]) : h[0] === 'how' ? V.how() : h[0] === 'board' ? V.board()
         : h[0] === 'join' ? V.join(h[1]) : h[0] === 'dashboard' ? V.dashboard() : guide ? V.overview() : V.dashboard();
-      if (guide && !(h[0] === 'join' && h[1] === 'done')) {
+      if (guide && opts.tour !== false && !(h[0] === 'join' && h[1] === 'done')) {
         var fin = h[0] === 'join' || h[0] === 'overview' || !h[0];
         html = tourBar(h, 'top') + kaiLine(h) + html + (fin ? '' : tourBar(h, 'bottom'));
       }
-      el.innerHTML = html;
+      el.innerHTML = BASE === '#' ? html : html.replace(/href="#(?!\/)/g, 'href="' + BASE);
       if (opts.onView) opts.onView(h[0] || (guide ? 'overview' : 'dashboard'));
     }
     el.addEventListener('input', function (e) { if (e.target.hasAttribute('data-a')) appInput(e.target); });
@@ -601,14 +606,14 @@
       if (j) {
         var at = +(j.getAttribute('data-join-next') || FORM.length), miss = stepMissing(at), err = el.querySelector('#vg-join-err');
         if (miss.length) { err.textContent = 'Still needed: ' + miss.join(', ') + '.'; return; }
-        if (j.hasAttribute('data-join-next')) { location.hash = '#join/' + (at + 1); return; }
-        for (var s = 1; s <= FORM.length; s++) if (stepMissing(s).length) { location.hash = '#join/' + s; return; }
+        if (j.hasAttribute('data-join-next')) { go('#join/' + (at + 1)); return; }
+        for (var s = 1; s <= FORM.length; s++) if (stepMissing(s).length) { go('#join/' + s); return; }
         j.disabled = true; j.textContent = 'Sending...';
         fetch(SB + '/functions/v1/ve-ambassador', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'creator_apply', answers: state.app, source: location.pathname }) })
           .then(function (r) { return r.json(); }).then(function (d) {
             if (!d || !d.ok) { j.disabled = false; j.textContent = 'Send my application'; err.textContent = (d && d.message) || 'That did not go through. Try again in a minute.'; return; }
             state.app = {}; try { localStorage.removeItem(APP_KEY); } catch (x) {}
-            location.hash = '#join/done';
+            go('#join/done');
           }, function () { j.disabled = false; j.textContent = 'Send my application'; err.textContent = 'That did not go through. Check your connection and try again.'; });
         return;
       }
@@ -618,26 +623,26 @@
         var p = t.getAttribute('data-next').split('|'), inp = el.querySelector('#vg-in'), v = (inp && inp.value || '').trim();
         if (!v) { el.querySelector('#vg-err').textContent = 'Fill this in to go on.'; return; }
         if (inp.type === 'url' && !/^https?:\/\/\S+\.\S+/.test(v)) { el.querySelector('#vg-err').textContent = 'That needs to be a full link, starting with https://'; return; }
-        state.form[p[0]][p[2]] = v; location.hash = '#apply/' + p[0] + '/' + (+p[1] + 1); return;
+        state.form[p[0]][p[2]] = v; go('#apply/' + p[0] + '/' + (+p[1] + 1)); return;
       }
       var id = t.getAttribute('data-send') || t.getAttribute('data-claim'), g = gig(id);
       if (t.hasAttribute('data-send') && !demo && opts.send) {
         t.disabled = true;
         opts.send(id, state.form[id] || {}).then(function (r) {
           if (!r || !r.ok) { t.disabled = false; toast((r && r.message) || 'That did not go through.'); return; }
-          keep({ gig: id, status: r.status || 'applied', at: new Date().toISOString(), next: 'Waiting for the team' }); toast('Application sent.'); location.hash = '#mine/' + (r.status || 'applied');
+          keep({ gig: id, status: r.status || 'applied', at: new Date().toISOString(), next: 'Waiting for the team' }); toast('Application sent.'); go('#mine/' + (r.status || 'applied'));
         });
         return;
       }
       if (t.hasAttribute('data-send')) {
         keep({ gig: id, status: mineOf(id) && mineOf(id).status === 'audition' ? 'shortlisted' : 'applied', at: new Date().toISOString(), next: demo ? 'Sample: in the real board the partner reviews it' : 'Waiting for the partner' });
-        toast(demo ? 'Sent in the sample. Nothing left this page.' : 'Application sent.'); location.hash = '#mine/applied';
+        toast(demo ? 'Sent in the sample. Nothing left this page.' : 'Application sent.'); go('#mine/applied');
       } else {
         keep({ gig: id, status: 'booked', at: new Date().toISOString(), next: 'Claimed: do it and send it in' });
-        toast(demo ? 'Claimed in the sample. Nothing left this page.' : 'Claimed.'); location.hash = '#mine/booked';
+        toast(demo ? 'Claimed in the sample. Nothing left this page.' : 'Claimed.'); go('#mine/booked');
       }
     });
-    window.addEventListener('hashchange', function () { draw(); var top = el.getBoundingClientRect().top; if (top < 0) el.scrollIntoView({ block: 'start' }); });
+    if (!opts.external) window.addEventListener('hashchange', function () { draw(); var top = el.getBoundingClientRect().top; if (top < 0) el.scrollIntoView({ block: 'start' }); });
     draw();
     return { draw: draw, data: D };
   }
