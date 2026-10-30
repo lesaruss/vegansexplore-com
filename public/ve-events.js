@@ -33,8 +33,14 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var FN = SUPABASE_URL + '/functions/v1/ve-events';
+  // Whose calendar (events.tenant_id): Vegans Explore's here; LESARUSS.ai's when another brand mounts it (opts.tenant). Every
+  // reader filters to its own tenant so the two calendars never mix (2026-10-30).
+  var VE_TENANT = '00000000-0000-4000-a000-000000000002';
 
   var CATS = { festival: 'Festival', food: 'Food', social: 'Social', market: 'Market', meetup: 'Meetup', workshop: 'Workshop', health: 'Health', activism: 'Activism', fundraiser: 'Fundraiser', film: 'Film', general: 'General', other: 'Other' };
+  // LESARUSS.ai's business events and its funding kinds (migration 20261030_lesaruss_ai_events_funding.sql).
+  var BIZ_CATS = { conference: 'Conference', summit: 'Summit', pitch: 'Pitch night', tour: 'Tour', networking: 'Networking', webinar: 'Webinar', workshop: 'Workshop', meetup: 'Meetup', other: 'Other' };
+  var FUND_CATS = { grant: 'Grant', loan: 'Loan', accelerator: 'Accelerator', competition: 'Pitch competition', fellowship: 'Fellowship' };
   // The countries people pick most, then every country an event is already in. Two-letter ISO codes; continents for Where.
   var COUNTRIES = { US: ['United States', 'North America'], CA: ['Canada', 'North America'], MX: ['Mexico', 'North America'], JM: ['Jamaica', 'North America'], BS: ['Bahamas', 'North America'], PR: ['Puerto Rico', 'North America'], CR: ['Costa Rica', 'North America'], GB: ['United Kingdom', 'Europe'], IE: ['Ireland', 'Europe'], FR: ['France', 'Europe'], DE: ['Germany', 'Europe'], ES: ['Spain', 'Europe'], IT: ['Italy', 'Europe'], NL: ['Netherlands', 'Europe'], PT: ['Portugal', 'Europe'], BE: ['Belgium', 'Europe'], CH: ['Switzerland', 'Europe'], AT: ['Austria', 'Europe'], SE: ['Sweden', 'Europe'], NO: ['Norway', 'Europe'], DK: ['Denmark', 'Europe'], PL: ['Poland', 'Europe'], GR: ['Greece', 'Europe'], AU: ['Australia', 'Oceania'], NZ: ['New Zealand', 'Oceania'], BR: ['Brazil', 'South America'], AR: ['Argentina', 'South America'], CO: ['Colombia', 'South America'], CL: ['Chile', 'South America'], IN: ['India', 'Asia'], JP: ['Japan', 'Asia'], TH: ['Thailand', 'Asia'], SG: ['Singapore', 'Asia'], KR: ['South Korea', 'Asia'], IL: ['Israel', 'Asia'], AE: ['United Arab Emirates', 'Asia'], ZA: ['South Africa', 'Africa'], NG: ['Nigeria', 'Africa'], KE: ['Kenya', 'Africa'], GH: ['Ghana', 'Africa'] };
   var CONTINENTS = ['North America', 'Europe', 'South America', 'Asia', 'Oceania', 'Africa', 'Online', 'Other'];
@@ -48,7 +54,7 @@
     var c = norm(e.country);
     return e.continent || (COUNTRIES[c] && COUNTRIES[c][1]) || (c ? 'Other' : 'Online');
   }
-  function catLabel(c) { return CATS[c || 'other'] || 'Event'; }
+  function catLabel(c) { return CATS[c || 'other'] || BIZ_CATS[c] || FUND_CATS[c] || 'Event'; }
   function safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : ''; }
   function token() { try { return localStorage.getItem('ve_token'); } catch (e) { return null; } }
   function signedIn() { return !!token() && !!(window.VEAuth ? VEAuth.isLoggedIn() : true); }
@@ -119,13 +125,18 @@
 
   /* ---------- styles: the dashboard's event row, and the tools above it ---------- */
   var CSS = [
+    // Funding tiles (LESARUSS.ai): what it offers, who can apply (two rows), when it closes.
+    '.vev-date small{font-size:8px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin-bottom:4px;}',
+    '.vev-amt{font-weight:800;color:#1a1a1a;}',
+    '.vev-elig{font-size:12px;line-height:1.5;color:rgba(26,26,26,.75);margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.vev-soon{color:#a61b1b;font-weight:800;}',
     '.vev{font-family:Montserrat,sans-serif;color:#1a1a1a;}',
     '.vev-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;}',
     '.vev-search{position:relative;flex:1 1 260px;}',
     '.vev-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:15px;height:15px;pointer-events:none;}',
     '.vev input,.vev select,.vev textarea{font-family:inherit;font-size:14px;font-weight:600;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;}',
     '.vev-search input{width:100%;padding:12px 14px 12px 40px;}',
-    '.vev input:focus,.vev select:focus,.vev textarea:focus{border-color:#2d7d31;outline:none;}',
+    '.vev input:focus,.vev select:focus,.vev textarea:focus{border-color:var(--vb-go,#2d7d31);outline:none;}',
     // Dropdowns: our chevron, 16px from the edge (canon rule 15).
     ".vev select{appearance:none;-webkit-appearance:none;-moz-appearance:none;background:#fff url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\") no-repeat right 16px center;padding:12px 44px 12px 14px;cursor:pointer;}",
     '.vev select::-ms-expand{display:none;}',
@@ -133,53 +144,53 @@
     '.vev-seg{display:inline-flex;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;overflow:hidden;}',
     '.vev-seg button{font-family:inherit;font-size:12px;font-weight:800;padding:12px 16px;border:0;background:#fff;color:rgba(26,26,26,.75);cursor:pointer;}',
     '.vev-seg button+button{border-left:1.5px solid rgba(0,0,0,.14);}',
-    '.vev-seg button[aria-pressed="true"]{background:#2d7d31;color:#fff;}',
+    '.vev-seg button[aria-pressed="true"]{background:var(--vb-go,#2d7d31);color:#fff;}',
     '.vev-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;border-radius:6px;border:0;background:#F69820;color:#1a1a1a;cursor:pointer;text-decoration:none;white-space:nowrap;}',
     '.vev-btn:hover{background:#d4800f;}',
-    '.vev-btn.ghost{background:#fff;color:#1f5f22;border:1.5px solid rgba(0,0,0,.18);}',
+    '.vev-btn.ghost{background:#fff;color:var(--vb-go-hover,#1f5f22);border:1.5px solid rgba(0,0,0,.18);}',
     '.vev-btn.ghost:hover{background:#f1f5f1;}',
-    '.vev-btn.green{background:#2d7d31;color:#fff;}',
-    '.vev-btn.green:hover{background:#1f5f22;}',
+    '.vev-btn.green{background:var(--vb-go,#2d7d31);color:#fff;}',
+    '.vev-btn.green:hover{background:var(--vb-go-hover,#1f5f22);}',
     '.vev-btn:disabled{opacity:.5;cursor:default;}',
     '.vev-pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}',
     '.vev-pill{font-family:inherit;font-size:12px;font-weight:700;padding:8px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,.14);background:#fff;color:rgba(26,26,26,.75);cursor:pointer;}',
-    '.vev-pill[aria-pressed="true"]{background:#2d7d31;border-color:#2d7d31;color:#fff;}',
+    '.vev-pill[aria-pressed="true"]{background:var(--vb-go,#2d7d31);border-color:var(--vb-go,#2d7d31);color:#fff;}',
     '.vev-count{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);margin:0 0 12px;}',
-    '.vev-group{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#1f5f22;margin:18px 0 10px;}',
+    '.vev-group{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin:18px 0 10px;}',
     '.vev-group:first-child{margin-top:0;}',
     // The dashboard's event row (center-console .event-row), one look everywhere.
     '.vev-row{display:flex;align-items:stretch;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;overflow:hidden;margin-bottom:10px;background:#fff;transition:border-color .15s,box-shadow .15s;}',
-    '.vev-row:hover{border-color:#2d7d31;box-shadow:0 3px 14px rgba(58,155,62,.07);}',
-    '.vev-date{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:#e8f5e9;min-width:76px;text-align:center;flex-shrink:0;}',
-    '.vev-day{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1;color:#2d7d31;}',
-    '.vev-mon{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#1f5f22;margin-top:3px;}',
+    '.vev-row:hover{border-color:var(--vb-go,#2d7d31);box-shadow:0 3px 14px rgba(0,0,0,.06);}',
+    '.vev-date{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:var(--vb-soft,#e8f5e9);min-width:76px;text-align:center;flex-shrink:0;}',
+    '.vev-day{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--vb-go,#2d7d31);}',
+    '.vev-mon{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin-top:3px;}',
     '.vev-body{flex:1;min-width:0;padding:16px 22px;display:flex;flex-direction:column;justify-content:center;gap:3px;}',
-    '.vev-kind{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#1f5f22;margin-bottom:4px;}',
+    '.vev-kind{display:inline-flex;align-items:center;gap:5px;font-size:9px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin-bottom:4px;}',
     '.vev-kind::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}',
     '.vev-name{font-size:15px;font-weight:800;letter-spacing:-.01em;line-height:1.3;margin:0;}',
     '.vev-details{font-size:12px;font-weight:600;color:rgba(26,26,26,.75);display:flex;align-items:center;gap:4px 14px;flex-wrap:wrap;margin-top:2px;}',
     '.vev-cta{display:flex;align-items:center;padding:16px 20px;flex-shrink:0;}',
-    '.vev-go{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:11px 16px;border-radius:6px;background:#2d7d31;color:#fff;text-decoration:none;white-space:nowrap;display:inline-block;}',
-    '.vev-go:hover{background:#1f5f22;}',
+    '.vev-go{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:11px 16px;border-radius:6px;background:var(--vb-go,#2d7d31);color:#fff;text-decoration:none;white-space:nowrap;display:inline-block;}',
+    '.vev-go:hover{background:var(--vb-go-hover,#1f5f22);}',
     '.vev-go.off{background:#eee;color:rgba(26,26,26,.6);pointer-events:none;}',
     '.vev-empty{border:1.5px dashed rgba(0,0,0,.14);border-radius:10px;padding:28px 22px;text-align:center;font-size:14px;line-height:1.6;color:rgba(26,26,26,.75);}',
-    '.vev-empty a,.vev-link{color:#1f5f22;font-weight:800;}',
+    '.vev-empty a,.vev-link{color:var(--vb-go-hover,#1f5f22);font-weight:800;}',
     '.vev-more{display:block;margin:14px auto 0;}',
     '@media (max-width:640px){.vev-row{flex-wrap:wrap;}.vev-date{min-width:64px;padding:12px 14px;}.vev-body{padding:12px 14px;}.vev-cta{width:100%;padding:0 14px 14px;}.vev-go{width:100%;text-align:center;}.vev-tools select{flex:1 1 140px;min-width:0;}.vev-seg{flex:1 1 100%;}.vev-seg button{flex:1;}}',
     // Submit an event: one step per view (Interface defaults).
     '.vev-crumb{font-size:12.5px;font-weight:700;color:rgba(26,26,26,.75);margin-bottom:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}',
-    '.vev-crumb a{color:#1f5f22;font-weight:800;text-decoration:none;}',
+    '.vev-crumb a{color:var(--vb-go-hover,#1f5f22);font-weight:800;text-decoration:none;}',
     '.vev-steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}',
     '.vev-steps span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 11px;border-radius:6px;background:#f1f3f1;color:rgba(26,26,26,.6);}',
-    '.vev-steps span.on{background:#2d7d31;color:#fff;}',
-    '.vev-steps span.done{background:#e8f5e9;color:#1f5f22;}',
+    '.vev-steps span.on{background:var(--vb-go,#2d7d31);color:#fff;}',
+    '.vev-steps span.done{background:var(--vb-soft,#e8f5e9);color:var(--vb-go-hover,#1f5f22);}',
     '.vev-form{border:1.5px solid rgba(0,0,0,.09);border-radius:12px;padding:22px;background:#fff;}',
     '.vev-form h2{font-size:20px;font-weight:900;margin:0 0 6px;}',
     '.vev-form .lead{font-size:14px;line-height:1.6;color:rgba(26,26,26,.75);margin:0 0 18px;max-width:760px;}',
     '.vev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px 16px;}',
     '.vev-f{display:flex;flex-direction:column;gap:6px;}',
     '.vev-f.wide{grid-column:1/-1;}',
-    '.vev-f label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#1f5f22;}',
+    '.vev-f label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);}',
     '.vev-f input,.vev-f select,.vev-f textarea{width:100%;padding:12px 14px;}',
     '.vev-f select{padding-right:44px;}',
     '.vev-f textarea{min-height:110px;resize:vertical;line-height:1.5;}',
@@ -188,12 +199,12 @@
     '.vev-check{display:flex;gap:10px;align-items:center;font-size:14px;font-weight:600;}',
     '.vev-check input{width:18px;height:18px;}',
     '.vev-drop{border:2px dashed #9cc79e;border-radius:12px;padding:26px 18px;text-align:center;cursor:pointer;background:#fafdfa;}',
-    '.vev-drop.over{background:#e8f5e9;border-color:#2d7d31;}',
+    '.vev-drop.over{background:var(--vb-soft,#e8f5e9);border-color:var(--vb-go,#2d7d31);}',
     '.vev-drop b{display:block;font-size:16px;font-weight:800;margin-bottom:4px;}',
     '.vev-drop span{font-size:13px;color:rgba(26,26,26,.75);}',
     '.vev-flyer{display:flex;gap:14px;align-items:flex-start;margin-top:14px;}',
     '.vev-flyer img{width:120px;max-height:160px;object-fit:contain;border:1px solid rgba(0,0,0,.1);border-radius:8px;background:#fff;}',
-    '.vev-note{font-size:13.5px;font-weight:700;color:#1f5f22;line-height:1.5;min-height:20px;}',
+    '.vev-note{font-size:13.5px;font-weight:700;color:var(--vb-go-hover,#1f5f22);line-height:1.5;min-height:20px;}',
     '.vev-note.bad{color:#b42318;}',
     '.vev-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;flex-wrap:wrap;}',
     '.vev-nav .of{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.6);}',
@@ -202,7 +213,7 @@
     '.vev-review dd{margin:0;word-break:break-word;}',
     '.vev-tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;}',
     '.vev-tag.pending{background:#fff4e2;color:#6b3f00;}',
-    '.vev-tag.approved{background:#e8f5e9;color:#1f5f22;}',
+    '.vev-tag.approved{background:var(--vb-soft,#e8f5e9);color:var(--vb-go-hover,#1f5f22);}',
     '.vev-tag.rejected{background:#fbeeec;color:#8a1c12;}',
     '.vev-mine{display:flex;flex-direction:column;gap:8px;}',
     '.vev-mine div{display:flex;gap:12px;align-items:center;justify-content:space-between;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;padding:12px 14px;flex-wrap:wrap;}',
@@ -211,19 +222,19 @@
     // How to add it, the role and Promote your event: choice cards (Sean, 2026-10-28).
     '.vev-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:12px;margin:4px 0 16px;}',
     '.vev-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;font-family:inherit;border:1.5px solid rgba(0,0,0,.14);border-radius:10px;padding:16px;background:#fff;color:#1a1a1a;cursor:pointer;}',
-    '.vev-card:hover{border-color:#2d7d31;}',
-    '.vev-card[aria-pressed="true"]{border-color:#2d7d31;background:#e8f5e9;box-shadow:inset 0 0 0 1px #2d7d31;}',
+    '.vev-card:hover{border-color:var(--vb-go,#2d7d31);}',
+    '.vev-card[aria-pressed="true"]{border-color:var(--vb-go,#2d7d31);background:var(--vb-soft,#e8f5e9);box-shadow:inset 0 0 0 1px var(--vb-go,#2d7d31);}',
     '.vev-card b{font-size:15px;font-weight:800;}',
     '.vev-card span{font-size:13px;line-height:1.5;color:rgba(26,26,26,.75);}',
     '.vev-card ul{margin:2px 0 0 18px;padding:0;font-size:13px;line-height:1.55;color:rgba(26,26,26,.75);}',
-    '.vev-card svg{width:26px;height:26px;color:#2d7d31;}',
-    '.vev-sub{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:20px 0 10px;}',
+    '.vev-card svg{width:26px;height:26px;color:var(--vb-go,#2d7d31);}',
+    '.vev-sub{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin:20px 0 10px;}',
     '.vev-ask{border:1.5px solid #f3c27a;background:#fff8ec;border-radius:10px;padding:16px;margin-bottom:16px;}',
     '.vev-ask h3{font-size:15px;font-weight:800;margin:0 0 4px;}',
     '.vev-ask p{font-size:13px;margin:0 0 12px;color:rgba(26,26,26,.75);}',
-    '.vev-review dd button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;background:none;border:0;padding:0 0 0 8px;cursor:pointer;}',
-    '.vev-banner{border-radius:10px;background:#e8f5e9;color:#1f5f22;font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
-    '.vev-mine .vev-promote{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1f5f22;text-decoration:none;margin-right:10px;}',
+    '.vev-review dd button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);background:none;border:0;padding:0 0 0 8px;cursor:pointer;}',
+    '.vev-banner{border-radius:10px;background:var(--vb-soft,#e8f5e9);color:var(--vb-go-hover,#1f5f22);font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
+    '.vev-mine .vev-promote{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);text-decoration:none;margin-right:10px;}',
     // The event window (2026-10-28): an event's own view, Guests and messages, a guest's message.
     '.vev-name a{color:inherit;text-decoration:none;}',
     '.vev-name a:hover{text-decoration:underline;}',
@@ -232,9 +243,9 @@
     '.vev-ev .vev-desc{font-size:14.5px;line-height:1.65;color:rgba(26,26,26,.85);white-space:pre-line;margin:0 0 16px;}',
     '.vev-facts{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;margin:0 0 16px;}',
     '.vev-facts span{color:rgba(26,26,26,.75);}',
-    '.vev-rsvp h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:0 0 8px;}',
+    '.vev-rsvp h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin:0 0 8px;}',
     '.vev-rsvp p{font-size:13.5px;line-height:1.55;color:rgba(26,26,26,.75);margin:0 0 12px;}',
-    '.vev-sale h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#1f5f22;margin:18px 0 8px;}',
+    '.vev-sale h3{font-size:13px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin:18px 0 8px;}',
     '.vev-tix{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;margin:0 0 10px;}',
     '.vev-tix b{display:block;font-size:15px;}.vev-tix small{font-size:12.5px;color:rgba(26,26,26,.7);}',
     '.vev-tix select{appearance:none;-webkit-appearance:none;font:inherit;font-weight:700;padding:10px 40px 10px 12px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%231a1a1a%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 16px center;}',
@@ -242,20 +253,20 @@
     '.vev-gp{display:grid;grid-template-columns:1fr 1fr auto;gap:8px;}.vev-gp input{font:inherit;padding:11px 12px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;min-width:0;}',
     '@media(max-width:640px){.vev-gp{grid-template-columns:1fr}.vev-tix{grid-template-columns:1fr auto}.vev-tix>div{grid-column:1/-1}}',
     '.vev-optin{display:flex;gap:10px;align-items:flex-start;border:1.5px solid rgba(0,0,0,.12);border-radius:10px;padding:12px 14px;margin:0 0 12px;cursor:pointer;}',
-    '.vev-optin input{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:#2d7d31;}',
+    '.vev-optin input{width:20px;height:20px;flex-shrink:0;margin-top:1px;accent-color:var(--vb-go,#2d7d31);}',
     '.vev-optin b{display:block;font-size:14px;}',
     '.vev-optin small{display:block;font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.7);margin-top:2px;}',
-    '.vev-going{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#1f5f22;margin:0 0 12px;}',
-    '.vev-going::before{content:"";width:10px;height:10px;border-radius:50%;background:#2d7d31;}',
-    '.vev-plain{font-family:inherit;font-size:12px;font-weight:800;color:#1f5f22;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}',
+    '.vev-going{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:var(--vb-go-hover,#1f5f22);margin:0 0 12px;}',
+    '.vev-going::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--vb-go,#2d7d31);}',
+    '.vev-plain{font-family:inherit;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}',
     '.vev-host{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
-    '.vev-host:hover{border-color:#2d7d31;}',
+    '.vev-host:hover{border-color:var(--vb-go,#2d7d31);}',
     '.vev-host img,.vev-host i{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;}',
-    '.vev-host i{display:flex;align-items:center;justify-content:center;background:#2d7d31;color:#fff;font-style:normal;font-weight:900;}',
+    '.vev-host i{display:flex;align-items:center;justify-content:center;background:var(--vb-go,#2d7d31);color:#fff;font-style:normal;font-weight:900;}',
     '.vev-host span{display:flex;flex-direction:column;min-width:0;flex:1;}',
     '.vev-host small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
     '.vev-host b{font-size:15px;font-weight:800;}',
-    '.vev-host em{font-style:normal;font-size:12px;font-weight:700;color:#1f5f22;white-space:nowrap;}',
+    '.vev-host em{font-style:normal;font-size:12px;font-weight:700;color:var(--vb-go-hover,#1f5f22);white-space:nowrap;}',
     '.vev-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 18px;}',
     '.vev-tiles div{background:#f7f8f7;border-radius:8px;padding:12px 14px;}',
     '.vev-tiles b{display:block;font-size:24px;font-weight:900;line-height:1.1;}',
@@ -265,14 +276,14 @@
     '.vev-guest b{display:block;font-size:15px;}',
     '.vev-guest .meta{color:rgba(26,26,26,.68);font-size:12px;font-weight:700;margin-bottom:6px;}',
     '.vev-guest dl{margin:0;}',
-    '.vev-guest dt{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#1f5f22;margin-top:6px;}',
+    '.vev-guest dt{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin-top:6px;}',
     '.vev-guest dd{margin:0;}',
     '.vev-sent{display:flex;flex-direction:column;gap:8px;}',
     '.vev-sent div{border:1.5px solid rgba(0,0,0,.09);border-radius:10px;padding:12px 14px;font-size:13.5px;line-height:1.5;}',
     '.vev-sent small{display:block;font-size:12px;font-weight:700;color:rgba(26,26,26,.68);margin-bottom:4px;}',
     '.vev-sent p{margin:0;white-space:pre-line;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
     '.vev-warn{border-radius:10px;background:#fff4e2;color:#6b3f00;font-size:14px;font-weight:700;line-height:1.55;padding:14px 16px;margin-bottom:18px;}',
-    '.vev-msgbox{border-left:3px solid #2d7d31;background:#f7f8f7;border-radius:6px;padding:14px 16px;font-size:15px;line-height:1.65;white-space:pre-line;margin:0 0 18px;}',
+    '.vev-msgbox{border-left:3px solid var(--vb-go,#2d7d31);background:#f7f8f7;border-radius:6px;padding:14px 16px;font-size:15px;line-height:1.65;white-space:pre-line;margin:0 0 18px;}',
     '.vev-left{font-size:12.5px;font-weight:700;color:rgba(26,26,26,.7);}'
   ].join('');
   function injectCss() {
@@ -300,7 +311,25 @@
   // An event whose tickets are members-only points its ticket_url at our own page, /events#event/<id>/tickets (Sean, 2026-10-28,
   // the Dolphins game): the tile opens that view in place, which takes a member straight to the tickets.
   function memberTix(u) { var m = /^https:\/\/(www\.)?vegansexplore\.com\/events(#event\/[0-9a-f-]{36}\/tickets)$/i.exec(u || ''); return m ? m[2] : ''; }
-  function tile(e, past) {
+  // A funding opportunity (listing_kind 'funding'): its date is the deadline; the button is its official apply page.
+  function daysLeft(e) { return Math.ceil((new Date(e.starts_at).getTime() - Date.now()) / 86400000); }
+  function fundTile(e, past) {
+    var f = e.funding || {}, dm = dayMon(e), link = safeUrl(e.ticket_url), left = daysLeft(e);
+    var close = f.rolling ? 'Rolling: apply any time' : past ? 'Closed ' + when(e).replace(/ \u00b7 Time to be announced$/, '')
+      : 'Closes ' + when(e).replace(/ \u00b7 Time to be announced$/, '') + (left <= 14 ? ' \u00b7 <span class="vev-soon">' + (left <= 1 ? 'last day' : left + ' days left') + '</span>' : '');
+    return '<article class="vev-row" aria-label="' + esc(e.title) + '">' +
+      '<div class="vev-date" aria-hidden="true">' + (f.rolling ? '<small>Open</small><span class="vev-mon">Rolling</span>' : '<small>' + (past ? 'Closed' : 'Closes') + '</small><span class="vev-day">' + esc(dm[0]) + '</span><span class="vev-mon">' + esc(dm[1]) + '</span>') + '</div>' +
+      '<div class="vev-body">' +
+        '<p class="vev-kind">' + esc(catLabel(e.category)) + (f.offered_by ? ' \u00b7 ' + esc(f.offered_by) : '') + '</p>' +
+        '<h3 class="vev-name">' + (link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">' + esc(e.title) + '</a>' : esc(e.title)) + '</h3>' +
+        '<div class="vev-details">' + (f.amount ? '<span class="vev-amt">' + esc(f.amount) + '</span>' : '') + '<span>' + close.split('<span').map(function (x, i) { return i ? '<span' + x : esc(x); }).join('') + '</span></div>' +
+        (f.eligibility ? '<p class="vev-elig">' + esc(f.eligibility) + '</p>' : '') +
+      '</div>' +
+      (!past && link ? '<div class="vev-cta"><a class="vev-go" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Apply: ' + esc(e.title) + '">Apply</a></div>' : '') +
+    '</article>';
+  }
+  function tile(e, past, outLink) {
+    if (e.listing_kind === 'funding') return fundTile(e, past);
     var dm = dayMon(e), link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url), own = memberTix(e.ticket_url);
     var cta = past ? (safeUrl(e.recording_url) ? '<a class="vev-go" href="' + esc(e.recording_url) + '" target="_blank" rel="noopener noreferrer">Watch</a>' : '')
       : own ? '<a class="vev-go" href="' + esc(own) + '" aria-label="Get tickets for ' + esc(e.title) + '">Get tickets</a>'
@@ -309,7 +338,8 @@
       '<div class="vev-date" aria-hidden="true"><span class="vev-day">' + esc(dm[0]) + '</span><span class="vev-mon">' + esc(dm[1]) + '</span></div>' +
       '<div class="vev-body">' +
         '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured && !past ? ' · Featured' : '') + '</p>' +
-        '<h3 class="vev-name"><a href="#event/' + esc(e.id) + '">' + esc(e.title) + '</a></h3>' +
+        // Another brand's calendar has no event view of its own yet: the name opens the official page.
+        '<h3 class="vev-name">' + (outLink && link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">' : '<a href="#event/' + esc(e.id) + '">') + esc(e.title) + '</a></h3>' +
         '<div class="vev-details"><span>' + esc(place(e)) + '</span><span>' + esc(when(e)) + '</span>' + (e.rsvp_count && !past ? '<span>' + e.rsvp_count + ' going</span>' : '') + '</div>' +
       '</div>' +
       (cta ? '<div class="vev-cta">' + cta + '</div>' : '') +
@@ -330,6 +360,10 @@
       sort: useUrl && qs.get('sort') === 'city' ? 'city' : 'date', shown: 40
     };
     var all = null, draft = null, flyer = null, mine = null, how = '';
+    // LESARUSS.ai (opts.tenant): business events and funding (st.kind), no Submit or event view yet.
+    var tenant = opts.tenant || VE_TENANT, brandCal = tenant !== VE_TENANT;
+    st.kind = opts.kind === 'funding' ? 'funding' : 'event';
+    var fund = function () { return st.kind === 'funding'; };
 
     function syncUrl() {
       if (!useUrl) return;
@@ -355,15 +389,20 @@
         }
         if (!skipCat && st.cat && (e.category || 'other') !== st.cat) return false;
         if (words.length) {
-          var hay = [e.title, e.description, e.location_name, e.city, e.state, countryName(e.country), catLabel(e.category)].join(' ').toLowerCase();
+          var f = e.funding || {};
+          var hay = [e.title, e.description, e.location_name, e.city, e.state, countryName(e.country), catLabel(e.category), f.offered_by, f.amount, f.eligibility].join(' ').toLowerCase();
           for (var i = 0; i < words.length; i++) if (hay.indexOf(words[i]) < 0) return false;
         }
         return true;
       });
       list.sort(function (a, b) {
-        if (st.sort === 'city') {
+        if (st.sort === 'city' && !fund()) {
           var c = String(a.city || 'zzz Online').localeCompare(String(b.city || 'zzz Online'));
           if (c) return c;
+        }
+        if (st.sort === 'amount' && fund()) {
+          var m = ((b.funding || {}).amount_usd || 0) - ((a.funding || {}).amount_usd || 0);
+          if (m) return m;
         }
         var d = new Date(a.starts_at) - new Date(b.starts_at);
         return st.when === 'past' ? -d : d;
@@ -389,17 +428,17 @@
       el.innerHTML =
         '<div class="vev-tools">' +
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
-            '<input type="search" data-v="q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
+            '<input type="search" data-v="q" placeholder="' + (fund() ? 'Search grants, accelerators, who can apply' : 'Search events, places, cities') + '" aria-label="Search ' + (fund() ? 'funding' : 'events') + '" autocomplete="off" value="' + esc(st.q) + '"></label>' +
           '<select data-v="where" aria-label="Where">' + whereOptions() + '</select>' +
-          '<select data-v="sort" aria-label="Sort by"><option value="date">Sort: Soonest</option><option value="city">Sort: City, A to Z</option></select>' +
-          '<div class="vev-seg" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">Upcoming</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">Past</button></div>' +
+          '<select data-v="sort" aria-label="Sort by">' + (fund() ? '<option value="date">Sort: Closing soon</option><option value="amount">Sort: Biggest first</option>' : '<option value="date">Sort: Soonest</option><option value="city">Sort: City, A to Z</option>') + '</select>' +
+          '<div class="vev-seg" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">' + (fund() ? 'Open' : 'Upcoming') + '</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">' + (fund() ? 'Closed' : 'Past') + '</button></div>' +
           // Submit an event is the city banner's green button only (Sean, 2026-10-27: "we only need one").
         '</div>' +
         '<div class="vev-pills" data-v="pills" role="group" aria-label="Kind of event"></div>' +
-        '<p class="vev-count" data-v="count" aria-live="polite">' + (all ? '' : 'Loading events…') + '</p>' +
+        '<p class="vev-count" data-v="count" aria-live="polite">' + (all ? '' : fund() ? 'Loading funding…' : 'Loading events…') + '</p>' +
         '<div data-v="list"></div>';
       var sel = el.querySelector('[data-v="where"]'); sel.value = st.where; if (sel.value !== st.where) { st.where = ''; sel.value = ''; }
-      el.querySelector('[data-v="sort"]').value = st.sort;
+      el.querySelector('[data-v="sort"]').value = st.sort; if (el.querySelector('[data-v="sort"]').value !== st.sort) { st.sort = 'date'; el.querySelector('[data-v="sort"]').value = 'date'; }
       var timer;
       el.querySelector('[data-v="q"]').addEventListener('input', function (ev) { clearTimeout(timer); timer = setTimeout(function () { st.q = ev.target.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150); });
       sel.addEventListener('change', function () { st.where = sel.value; st.shown = 40; syncUrl(); drawRows(); });
@@ -424,18 +463,25 @@
       filtered(true).forEach(function (e) { cats[e.category || 'other'] = 1; });
       var keys = Object.keys(cats).sort(function (a, b) { return catLabel(a).localeCompare(catLabel(b)); });
       if (st.cat && keys.indexOf(st.cat) < 0) keys.push(st.cat);
-      pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">All kinds</button>'].concat(keys.map(function (k) {
+      pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">' + (fund() ? 'All funding' : 'All kinds') + '</button>'].concat(keys.map(function (k) {
         return '<button type="button" class="vev-pill" data-cat="' + esc(k) + '" aria-pressed="' + (st.cat === k) + '">' + esc(catLabel(k)) + '</button>';
       })).join('');
       var list = filtered(false), past = st.when === 'past';
       var hub = st.city && window.VECityBanner ? VECityBanner.hubBySlug(st.city) : null;
       var wl = st.where ? (st.where.indexOf('c:') === 0 ? st.where.slice(2) : countryName(st.where)) : '';
       var whereTxt = hub ? ' in ' + hub.name : (wl ? ' in ' + wl : '');
-      el.querySelector('[data-v="count"]').textContent = list.length + (past ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + whereTxt;
+      el.querySelector('[data-v="count"]').textContent = fund()
+        ? list.length + (past ? ' closed' : ' open') + (list.length === 1 ? ' opportunity' : ' opportunities') + whereTxt
+        : list.length + (past ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + whereTxt;
       var box = el.querySelector('[data-v="list"]');
       if (!list.length) {
-        box.innerHTML = '<div class="vev-empty">' + (past ? 'No past events here yet.' : 'No upcoming events' + esc(whereTxt) + ' yet.') +
-          ' Know of one? <a href="#submit/1" data-go="submit">Submit an event</a>' + (st.q || st.cat || st.where ? ', or <a href="#" data-go="clear">see every event</a>' : '') + '.</div>';
+        var clear = st.q || st.cat || st.where ? '<a href="#" data-go="clear">' + (fund() ? 'See every opportunity' : 'see every event') + '</a>' : '';
+        box.innerHTML = fund()
+          ? '<div class="vev-empty">' + (past ? 'Nothing closed here yet.' : 'No open funding' + esc(whereTxt) + ' yet. We add grants, accelerators and pitch competitions every week, each checked on its official page.') + (clear ? ' ' + clear + '.' : '') + '</div>'
+          : brandCal
+          ? '<div class="vev-empty">' + (past ? 'No past events here yet.' : 'No upcoming events' + esc(whereTxt) + ' yet. We add conferences, summits, pitch nights and workshops every week.') + (clear ? ' ' + clear.replace('see', 'See') + '.' : '') + '</div>'
+          : '<div class="vev-empty">' + (past ? 'No past events here yet.' : 'No upcoming events' + esc(whereTxt) + ' yet.') +
+          ' Know of one? <a href="#submit/1" data-go="submit">Submit an event</a>' + (clear ? ', or ' + clear : '') + '.</div>';
       } else {
         var html = '', lastGroup = null;
         list.slice(0, st.shown).forEach(function (e) {
@@ -443,7 +489,7 @@
             var g = e.city ? e.city + (norm(e.country) === 'US' && e.state ? ', ' + e.state : (norm(e.country) && norm(e.country) !== 'US' ? ', ' + countryName(e.country) : '')) : 'Online';
             if (g !== lastGroup) { html += '<p class="vev-group">' + esc(g) + '</p>'; lastGroup = g; }
           }
-          html += tile(e, past);
+          html += tile(e, past, brandCal);
         });
         if (list.length > st.shown) html += '<button type="button" class="vev-btn ghost vev-more" data-go="more">Show more (' + (list.length - st.shown) + ')</button>';
         box.innerHTML = html;
@@ -460,7 +506,7 @@
     }
 
     function load() {
-      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set&status=eq.approved&order=starts_at.asc&limit=2000', {
+      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set,listing_kind,funding&status=eq.approved&tenant_id=eq.' + tenant + '&listing_kind=eq.' + st.kind + '&order=starts_at.asc&limit=2000', {
         headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
       }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
         all = (rows || []).filter(function (e) { return e.starts_at; });
@@ -1086,6 +1132,7 @@
     }
 
     function route() {
+      if (brandCal) { drawList(); if (opts.onView) opts.onView('list'); return; }
       var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})(\/tickets)?$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
       if (em) { drawEvent(em[1], null, !!em[2]); if (opts.onView) opts.onView('event'); return; }
       if (gm) { drawGuests(gm[1]); if (opts.onView) opts.onView('guests'); return; }
@@ -1109,12 +1156,18 @@
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
       home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
-      reload: function () { return load().then(drawRows); }
+      reload: function () { return load().then(drawRows); },
+      // Events or Funding (LESARUSS.ai's banner picker): another list from the same engine.
+      setKind: function (k) {
+        k = k === 'funding' ? 'funding' : 'event'; if (k === st.kind) return;
+        st.kind = k; st.cat = ''; st.sort = 'date'; st.shown = 40; all = null; syncUrl(); drawList(); load().then(drawList);
+      },
+      kind: function () { return st.kind; }
     };
   }
 
   window.VEEvents = {
     mount: mount, api: api, zonedToISO: zonedToISO, isoToLocal: isoToLocal, uploadFlyer: uploadFlyer, readFlyer: readFlyer, shrink: shrink,
-    TZS: TZS, CATS: CATS, COUNTRIES: COUNTRIES, continentOf: continentOf, countryName: countryName, tile: tile, injectCss: injectCss, esc: esc
+    TZS: TZS, CATS: CATS, BIZ_CATS: BIZ_CATS, FUND_CATS: FUND_CATS, VE_TENANT: VE_TENANT, LR_TENANT: '00000000-0000-4000-a000-000000000001', COUNTRIES: COUNTRIES, continentOf: continentOf, countryName: countryName, tile: tile, injectCss: injectCss, esc: esc
   };
 })();

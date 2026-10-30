@@ -59,6 +59,12 @@ const BUCKET = 'event-flyers';
 const DAY_MS = 24 * 60 * 60 * 1000;
 const LIMITS = { submit: 10, read: 5, upload: 15 };
 const CATEGORIES = ['festival', 'food', 'social', 'market', 'meetup', 'workshop', 'health', 'activism', 'fundraiser', 'film', 'general', 'other'];
+// LESARUSS.ai's calendar (2026-10-30, migration 20261030_lesaruss_ai_events_funding.sql): business events and funding, the same
+// table under the LESARUSS tenant. The Depot passes brand 'lesaruss' to see and edit them; without it, Vegans Explore's only.
+const VE_TENANT = '00000000-0000-4000-a000-000000000002';
+const LR_TENANT = '00000000-0000-4000-a000-000000000001';
+const BIZ_CATEGORIES = ['conference', 'summit', 'pitch', 'tour', 'networking', 'webinar', 'workshop', 'meetup', 'other'];
+const FUND_CATEGORIES = ['grant', 'loan', 'accelerator', 'competition', 'fellowship'];
 const TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif', 'application/pdf': 'pdf' };
 // Who can host an event on its Directory page (Sean, 2026-10-29): any approved listing; groups and organizations come first.
 const HOST_CATS = ['Groups', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'];
@@ -69,7 +75,7 @@ async function hostId(v: unknown): Promise<string | null | false> {
   const { data } = await db.from('listings').select('id').eq('id', v).eq('status', 'approved').maybeSingle();
   return data ? String(data.id) : false;
 }
-const EDITABLE = ['title', 'description', 'starts_at', 'ends_at', 'time_set', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'continent', 'category', 'event_type', 'ticket_url', 'price_cents'];
+const EDITABLE = ['title', 'description', 'starts_at', 'ends_at', 'time_set', 'timezone', 'location_name', 'address', 'city', 'state', 'country', 'continent', 'category', 'event_type', 'ticket_url', 'price_cents', 'funding'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -145,7 +151,18 @@ function shapeEvent(e: any) {
   set('country', clean(e.country, 2).toUpperCase().replace(/^UK$/, 'GB'));
   set('continent', clean(e.continent, 40));
   const cat = clean(e.category, 30).toLowerCase();
-  set('category', CATEGORIES.includes(cat) ? cat : '');
+  set('category', CATEGORIES.includes(cat) || BIZ_CATEGORIES.includes(cat) || FUND_CATEGORIES.includes(cat) ? cat : '');
+  // A funding opportunity's details (LESARUSS.ai): only what its official page says.
+  if (e.funding && typeof e.funding === 'object') {
+    const f = e.funding, usd = Number(f.amount_usd);
+    const fund: Record<string, unknown> = {};
+    if (clean(f.offered_by, 120)) fund.offered_by = clean(f.offered_by, 120);
+    if (clean(f.amount, 80)) fund.amount = clean(f.amount, 80);
+    if (Number.isFinite(usd) && usd > 0) fund.amount_usd = Math.round(usd);
+    if (tidy(f.eligibility, 500)) fund.eligibility = tidy(f.eligibility, 500);
+    if (f.rolling === true) fund.rolling = true;
+    out.funding = fund;
+  }
   set('event_type', ['in_person', 'virtual', 'hybrid'].includes(e.event_type) ? e.event_type : '');
   set('ticket_url', isUrl(e.ticket_url) ? String(e.ticket_url).trim().slice(0, 1000) : '');
   const cents = Number(e.price_cents);
@@ -659,8 +676,9 @@ Deno.serve(async (req) => {
     case 'queue': {
       const gate = needAdmin(); if (gate) return gate;
       const status = ['pending', 'approved', 'rejected'].includes(body.status) ? body.status : 'pending';
-      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id, submitter_role, host_listing_id')
-        .eq('status', status);
+      const tenant = body.brand === 'lesaruss' ? LR_TENANT : VE_TENANT;
+      let q = db.from('events').select('id, title, description, starts_at, ends_at, time_set, timezone, location_name, address, city, state, country, continent, category, event_type, ticket_url, price_cents, status, source, source_url, flyer_path, rejection_reason, created_at, reviewed_at, author_id, source_id, submitter_role, host_listing_id, listing_kind, funding')
+        .eq('status', status).eq('tenant_id', tenant);
       // Waiting: soonest first, so nothing passes before it is seen. Approved: the upcoming ones. Turned down: newest.
       if (status === 'pending') q = q.order('starts_at', { ascending: true });
       else if (status === 'approved') q = q.gte('starts_at', new Date(Date.now() - DAY_MS).toISOString()).order('starts_at', { ascending: true });
@@ -684,7 +702,7 @@ Deno.serve(async (req) => {
       })));
       const counts: Record<string, number> = {};
       for (const s of ['pending', 'approved', 'rejected']) {
-        let c = db.from('events').select('id', { count: 'exact', head: true }).eq('status', s);
+        let c = db.from('events').select('id', { count: 'exact', head: true }).eq('status', s).eq('tenant_id', tenant);
         if (s === 'approved') c = c.gte('starts_at', new Date(Date.now() - DAY_MS).toISOString());
         const { count } = await c; counts[s] = count || 0;
       }
@@ -733,6 +751,9 @@ Deno.serve(async (req) => {
     case 'save': {
       const gate = needAdmin(); if (gate) return gate;
       const ev = shapeEvent(body.event);
+      // On LESARUSS.ai's calendar (the Depot's brand switch): its tenant, and a funding opportunity is online by nature.
+      if (body.brand === 'lesaruss') ev.tenant = 'lesaruss';
+      if (body.brand === 'lesaruss' && body.event?.listing_kind === 'funding') { ev.listing_kind = 'funding'; ev.event_type = 'virtual'; }
       const miss = missing(ev);
       if (miss.length) return json({ error: 'missing', missing: miss, message: 'Fill in the name, the day, the city and the official link.' }, 400);
       if (body.flyer_path && ownsFlyer(body.flyer_path)) ev.flyer_path = body.flyer_path;
@@ -803,7 +824,7 @@ Deno.serve(async (req) => {
 
     case 'sources': {
       const gate = needAdmin(); if (gate) return gate;
-      const { data } = await db.from('ve_event_sources').select('*').order('created_at', { ascending: true });
+      const { data } = await db.from('ve_event_sources').select('*').eq('tenant_id', body.brand === 'lesaruss' ? LR_TENANT : VE_TENANT).order('created_at', { ascending: true });
       const lids = [...new Set((data || []).map((s) => s.listing_id).filter(Boolean))];
       const ls: Record<string, any> = {};
       if (lids.length) { const { data: xs } = await db.from('listings').select('id, slug, name').in('id', lids); for (const x of xs || []) ls[x.id] = x; }
@@ -819,6 +840,9 @@ Deno.serve(async (req) => {
         city_slug: clean(s.city_slug, 60) || null, notes: clean(s.notes, 1000) || null, active: s.active !== false,
         every_days: Math.min(60, Math.max(1, Math.round(Number(s.every_days) || 7))),
       };
+      // A new source is LESARUSS.ai's when the Depot is on LESARUSS.ai; what it lists, events or funding (or both).
+      if (!isId(s.id)) row.tenant_id = body.brand === 'lesaruss' ? LR_TENANT : VE_TENANT;
+      if (['event', 'funding', 'both'].includes(s.listing_kind)) row.listing_kind = s.listing_kind;
       // A group's own page: every event saved from it is that group's (ve_event_intake).
       if ('listing_id' in s) { const h = await hostId(s.listing_id); if (h === false) return json({ error: 'bad_host', message: 'That group is not on the Directory.' }, 400); row.listing_id = h; }
       if (!row.name) return json({ error: 'missing', message: 'Give the source a name.' }, 400);

@@ -13,7 +13,9 @@
        the ability to upload images or documents for you to pull information for events"). Every event the members send,
        the crawl finds (dispatcher source events_crawl) or the team reads from a flyer waits here until approved. One thing
        per view: the queue (#queue/pending|approved|rejected), one event (#event/<id>), Add from a flyer (#add), and the
-       places the crawl reads (#sources, #source/<id>|new). Server: ve-events. */
+       places the crawl reads (#sources, #source/<id>|new). Server: ve-events.
+       LESARUSS.ai's calendar (2026-10-30): ?brand=lesaruss switches the page to its business events and funding (the same table,
+       the LESARUSS tenant); every call then carries brand 'lesaruss'. A funding item's date is its deadline. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -111,10 +113,19 @@
   <script>
   (function () {
     var $ = function (id) { return document.getElementById(id); };
-    var app = $('ev-app'), esc = VEEvents.esc, api = VEEvents.api;
+    var app = $('ev-app'), esc = VEEvents.esc;
+    var brand = new URLSearchParams(location.search).get('brand') === 'lesaruss' ? 'lesaruss' : '';
+    var api = function (b) { if (brand) b.brand = brand; return VEEvents.api(b); };
+    var FUND = VEEvents.FUND_CATS, BIZ = VEEvents.BIZ_CATS;
+    function kindLabel(e) { return (e.listing_kind === 'funding' ? FUND : brand ? BIZ : CATS)[e.category] || CATS[e.category] || 'Event'; }
     // Who sent a member's event (events.submitter_role, Sean 2026-10-28).
     var ROLE = { host: 'its host', promoter: 'promoting it', attending: 'going' };
     var CATS = VEEvents.CATS, COUNTRIES = VEEvents.COUNTRIES;
+    // Vegans Explore's calendar or LESARUSS.ai's, at the top of every view.
+    function brandBar() {
+      var h = location.hash || '#queue/pending';
+      return '<div class="tabs" style="margin-bottom:10px"><a href="/admin/depot/events' + h + '" class="' + (brand ? '' : 'on') + '">Vegans Explore</a><a href="/admin/depot/events?brand=lesaruss' + h + '" class="' + (brand ? 'on' : '') + '">LESARUSS.ai</a></div>';
+    }
     var cache = { pending: null, approved: null, rejected: null }, counts = {}, sources = null, adding = null, q = '';
     var SRC = { member: 'Member', crawl: 'Found online', flyer: 'Flyer', admin: 'Team', import: 'Earlier' };
     var STATUS = { pending: 'Waiting for approval', approved: 'Live', rejected: 'Turned down' };
@@ -141,16 +152,16 @@
       var tabs = ['pending', 'approved', 'rejected'].map(function (s) {
         return '<a href="#queue/' + s + '" class="' + (s === status ? 'on' : '') + '">' + STATUS[s] + (counts[s] != null ? ' (' + counts[s] + ')' : '') + '</a>';
       }).join('');
-      app.innerHTML = '<div class="tabs">' + tabs + '</div>' +
+      app.innerHTML = brandBar() + '<div class="tabs" data-v="qtabs">' + tabs + '</div>' +
         '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
-        '<a class="btn btn-orange" href="#add">Add from a flyer</a><a class="btn btn-ghost" href="#sources">Crawl sources</a><a class="btn btn-ghost" href="/events" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a><a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
         '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
       $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
       (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
     }
     function drawQueue2(status) {
       // Counts arrive with the first load; redraw the tabs once.
-      app.querySelector('.tabs').innerHTML = ['pending', 'approved', 'rejected'].map(function (s) {
+      app.querySelector('[data-v="qtabs"]').innerHTML = ['pending', 'approved', 'rejected'].map(function (s) {
         return '<a href="#queue/' + s + '" class="' + (s === status ? 'on' : '') + '">' + STATUS[s] + ' (' + (counts[s] || 0) + ')</a>';
       }).join('');
       drawRows(status);
@@ -163,7 +174,7 @@
       box.innerHTML = list.length ? list.map(function (e) {
         return '<div class="row"><span class="d">' + esc(day(e)) + '</span>' +
           '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span></span>' +
-          '<span class="m">' + esc(CATS[e.category] || 'Event') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
+          '<span class="m">' + esc(kindLabel(e)) + (e.funding && e.funding.amount ? ' · ' + esc(e.funding.amount) : '') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
           '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
           '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
       }).join('') : '<p class="empty">' + (status === 'pending' ? 'Nothing waiting. New ones arrive as members send them and the crawl finds them.' : 'Nothing here.') + '</p>';
@@ -202,12 +213,21 @@
       var tzs = VEEvents.TZS.slice(); if (tzs.indexOf(tz) < 0) tzs.unshift(tz);
       var cc = String(e.country || '').toUpperCase(), ckeys = Object.keys(COUNTRIES).sort(function (a, b) { return COUNTRIES[a][0].localeCompare(COUNTRIES[b][0]); });
       if (cc && !COUNTRIES[cc]) ckeys.unshift(cc);
+      var fund = e.listing_kind === 'funding', kinds = fund ? FUND : brand ? BIZ : CATS, fd = e.funding || {};
+      var dflt = fund ? 'grant' : 'other';
       return '<div class="grid">' +
-        f('title', 'Event name', i('title', e.title), true) +
-        f('category', 'Kind', '<select id="f-category">' + Object.keys(CATS).map(function (k) { return '<option value="' + k + '"' + (k === (e.category || 'other') ? ' selected' : '') + '>' + CATS[k] + '</option>'; }).join('') + '</select>') +
+        // LESARUSS.ai: an event or a funding opportunity (new ones only; the list redraws for the kind picked).
+        (brand && !e.id ? f('lkind', 'This is', '<select id="f-lkind"><option value="event"' + (fund ? '' : ' selected') + '>An event</option><option value="funding"' + (fund ? ' selected' : '') + '>Funding (a grant, loan, accelerator, pitch competition or fellowship)</option></select>', true) : '') +
+        f('title', fund ? 'Name of the program' : 'Event name', i('title', e.title), true) +
+        f('category', 'Kind', '<select id="f-category">' + Object.keys(kinds).map(function (k) { return '<option value="' + k + '"' + (k === (e.category && kinds[e.category] ? e.category : dflt) ? ' selected' : '') + '>' + kinds[k] + '</option>'; }).join('') + '</select>') +
+        (fund ? f('offered_by', 'Who offers it', i('offered_by', fd.offered_by)) +
+          f('amount', 'What it offers', i('amount', fd.amount), false, 'As their page words it: $10,000 grant, Up to $500,000 for 7%.') +
+          f('amount_usd', 'Top cash amount in dollars', i('amount_usd', fd.amount_usd, 'number'), false, 'Only when their page states one. Sorts Biggest first.') +
+          f('eligibility', 'Who can apply', '<textarea id="f-eligibility">' + esc(fd.eligibility || '') + '</textarea>', true) +
+          '<div class="f wide"><label class="chk"><input type="checkbox" id="f-rolling"' + (fd.rolling ? ' checked' : '') + '> Rolling: they take applications all year (set the deadline 60 days out; it is read again)</label></div>' : '') +
         f('description', 'About it', '<textarea id="f-description">' + esc(e.description || '') + '</textarea>', true) +
-        f('start', 'Starts', i('start', VEEvents.isoToLocal(e.starts_at, tz), 'datetime-local')) +
-        f('end', 'Ends', i('end', VEEvents.isoToLocal(e.ends_at, tz), 'datetime-local')) +
+        f('start', fund ? 'Deadline' : 'Starts', i('start', VEEvents.isoToLocal(e.starts_at, tz), 'datetime-local')) +
+        (fund ? '' : f('end', 'Ends', i('end', VEEvents.isoToLocal(e.ends_at, tz), 'datetime-local'))) +
         '<div class="f"><label class="chk" style="margin-top:24px"><input type="checkbox" id="f-tba"' + (e.time_set === false ? ' checked' : '') + '> Time not announced yet</label></div>' +
         f('timezone', 'Time zone', '<select id="f-timezone">' + tzs.map(function (z) { return '<option' + (z === tz ? ' selected' : '') + '>' + esc(z) + '</option>'; }).join('') + '</select>') +
         '<div class="f wide"><label class="chk"><input type="checkbox" id="f-online"' + (online ? ' checked' : '') + '> Online only</label></div>' +
@@ -216,15 +236,16 @@
         f('city', 'City', i('city', e.city)) +
         f('state', 'State or region', i('state', e.state)) +
         f('country', 'Country', '<select id="f-country"><option value="">Choose</option>' + ckeys.map(function (k) { return '<option value="' + k + '"' + (k === cc ? ' selected' : '') + '>' + esc(VEEvents.countryName(k)) + '</option>'; }).join('') + '</select>') +
-        f('ticket_url', 'Official link', i('ticket_url', e.ticket_url, 'url'), true, 'Tickets or the organizer\'s own page. Required to go live.') +
-        hostPicker('ev', e.host ? { id: e.host_listing_id || e.host.id, name: e.host.name, slug: e.host.slug } : null) +
+        f('ticket_url', fund ? 'Official apply page' : 'Official link', i('ticket_url', e.ticket_url, 'url'), true, fund ? 'Where they apply. Required to go live.' : 'Tickets or the organizer\'s own page. Required to go live.') +
+        (brand ? '' : hostPicker('ev', e.host ? { id: e.host_listing_id || e.host.id, name: e.host.name, slug: e.host.slug } : null)) +
         '</div>';
     }
     function readFields() {
       var v = function (id) { var x = $('f-' + id); return x ? x.value.trim() : ''; };
-      var tz = v('timezone'), online = $('f-online').checked, cc = v('country');
+      var tz = v('timezone'), online = $('f-online').checked, cc = v('country'), fund = !!$('f-eligibility');
       var e = { title: v('title'), category: v('category'), description: v('description'), timezone: tz, event_type: online ? 'virtual' : 'in_person', time_set: !$('f-tba').checked,
         starts_at: VEEvents.zonedToISO(v('start'), tz), ends_at: v('end') ? VEEvents.zonedToISO(v('end'), tz) : '', ticket_url: v('ticket_url') };
+      if (fund) { e.listing_kind = 'funding'; e.funding = { offered_by: v('offered_by'), amount: v('amount'), amount_usd: v('amount_usd'), eligibility: v('eligibility'), rolling: $('f-rolling').checked }; }
       if (!online) Object.assign(e, { location_name: v('location_name'), address: v('address'), city: v('city'), state: v('state'), country: cc, continent: (COUNTRIES[cc] || [])[1] || '' });
       return e;
     }
@@ -323,7 +344,7 @@
     /* ---------- Add from a flyer ---------- */
     function drawAdd() {
       var e = adding && adding.event || { timezone: 'America/New_York', country: 'US', category: 'other' };
-      app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Add from a flyer</span></nav>' +
+      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>' + (brand ? 'Add one' : 'Add from a flyer') + '</span></nav>' +
         '<div class="two"><div class="panel"><h2>The event</h2>' +
         (adding && adding.note ? '<p class="msg' + (adding.bad ? ' bad' : '') + '">' + esc(adding.note) + '</p>' : '<p class="sub">Drop the flyer on the right and its details fill in here. Check them, add the official link if it was not printed, and put it live.</p>') +
         fieldsHtml(e) +
@@ -332,6 +353,12 @@
         (adding && adding.preview ? '<p style="margin-top:12px"><img src="' + esc(adding.preview) + '" alt="The flyer"></p>' : '') +
         (adding && adding.links ? '<p>Links on it: ' + esc(adding.links) + '</p>' : '') + '</div></div>';
       wireOnline(); wireHost('ev');
+      // LESARUSS.ai: switching between an event and funding redraws the fields for it, keeping what was typed.
+      if ($('f-lkind')) $('f-lkind').onchange = function () {
+        var x = readFields(), k = this.value;
+        x.listing_kind = k; x.category = ''; if (k === 'funding') { x.event_type = 'virtual'; x.time_set = false; } else delete x.funding;
+        adding = Object.assign(adding || {}, { event: x }); drawAdd();
+      };
       var drop = $('ev-drop'), file = $('ev-file');
       drop.onclick = function () { file.click(); };
       drop.onkeydown = function (k) { if (k.key === 'Enter' || k.key === ' ') { k.preventDefault(); file.click(); } };
@@ -371,7 +398,7 @@
     var KINDS = { list: 'List of events', website: 'Website', instagram: 'Instagram', calendar: 'Calendar', search: 'Web search' };
     function loadSources() { return api({ action: 'sources' }).then(function (d) { sources = d.sources || []; }); }
     function drawSources() {
-      app.innerHTML = '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Crawl sources</span></nav>' +
+      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Crawl sources</span></nav>' +
         '<p class="sub">The places the Background writer reads for upcoming Vegan events, anywhere in the world, each on its own schedule. What it finds lands in Waiting for approval. Add the calendars, Instagram accounts and sites you know.</p>' +
         '<div class="bar"><a class="btn" href="#source/new">New source</a></div><div class="rows" id="src-rows"><p class="msg">Loading…</p></div>';
       (sources ? Promise.resolve() : loadSources()).then(function () {

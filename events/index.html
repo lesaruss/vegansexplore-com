@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- One framework for every brand: lesaruss.ai serves this page at /events and /funding (lesaruss-ai-site next.config.ts), where
+     ve-brand.js sets window.VE_BRAND and it becomes LESARUSS.ai's calendar: business events and funding, picked in the banner. -->
+<script src="/public/ve-brand.js"></script>
 <script src="/analytics.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -43,6 +46,31 @@
 <script>
 (function () {
   var cal = null;
+  // LESARUSS.ai (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door): conferences, summits, pitch nights and workshops, and
+  // Funding, its own tab on the same engine (grants, loans, accelerators, pitch competitions; closing soon first). The banner
+  // picks Events or Funding where Vegans Explore picks a city; /funding (or ?tab=funding) opens on Funding. No Submit or ads yet.
+  var LR = window.VE_BRAND && VE_BRAND.calendar;
+  if (LR) {
+    var rail = document.querySelector('.vear-rail'); if (rail) { rail.parentNode.classList.remove('vear-layout'); rail.remove(); }
+    var startKind = /^\/funding\/?$/.test(location.pathname) || new URLSearchParams(location.search).get('tab') === 'funding' ? 'funding' : 'event';
+    var copy = function (k) { return LR[k]; };
+    var path = function (k) { return k === 'funding' ? '/funding' : '/events'; };
+    document.title = copy(startKind).title + ' | ' + VE_BRAND.name;
+    var lrBanner = VECityBanner.mount('ev-hero', {
+      key: 'events', eyebrow: VE_BRAND.name, title: 'Events and Funding', pickLabel: 'Show', param: false, art: LR.art,
+      sub: copy(startKind).sub,
+      choices: [{ value: 'event', label: 'Events' }, { value: 'funding', label: 'Funding' }],
+      initial: startKind,
+      home: { label: 'Calendar home', href: path(startKind) },
+      onChange: function (k) {
+        if (!cal || k === cal.kind()) return;
+        cal.setKind(k); lrBanner.setHome(path(k)); document.title = copy(k).title + ' | ' + VE_BRAND.name;
+        history.replaceState(history.state, '', path(k) + location.search.replace(/([?&])tab=funding&?/, '$1').replace(/[?&]$/, '') + location.hash);
+      }
+    });
+    cal = VEEvents.mount('ev-cal', { key: 'events', tenant: VEEvents.LR_TENANT, kind: startKind, onInteract: function () { lrBanner.autoFold(); } });
+    return;
+  }
   var banner = VECityBanner.mount('ev-hero', {
     key: 'events', title: 'Vegan Events', allTitle: 'Every City', allLabel: 'All cities',
     sub: 'Festivals, meetups, markets and gatherings, in our cities and around the world. Pick a city, search, and find your next one.',
