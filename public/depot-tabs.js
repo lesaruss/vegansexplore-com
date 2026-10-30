@@ -38,6 +38,7 @@
     { group: 'Admin', href: '/dashboard/guest-reviews', label: 'Guest reviews', kind: 'dash' },
     { group: 'Admin', href: '/dashboard/health', label: 'Platform health', kind: 'dash' },
     { group: 'Admin', href: '/dashboard/insights', label: 'Community Insights', kind: 'dash' },
+    { group: 'Admin', href: '/dashboard/secret-shopper', label: 'Secret Shopper', kind: 'dash' },
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
     { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
     { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },

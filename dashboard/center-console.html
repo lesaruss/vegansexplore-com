@@ -1359,13 +1359,16 @@
   var SA_MEDIA_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
   var SA_GUEST_SVG = '<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>';
 
+  // Events waiting for approval, Vegans Explore's only: ve-events queue reads our tenant (ve-rewards list_pending_events read every
+  // tenant, so the Dashboard counted LESARUSS.ai's funding and business events as ours; found live 2026-10-30).
+  function veEventsWaiting(token) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-events', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (token || VEAuth.getToken()) },
+      body: JSON.stringify({ action: 'queue', status: 'pending' }) }).then(function (r) { return r.json(); })
+      .then(function (d) { if (!d || !d.events) throw new Error((d && d.error) || 'load_failed'); return d.events; });
+  }
   function loadPendingEventsCount(token) {
-    fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=list_pending_events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY },
-      body: JSON.stringify({ token: token, status: 'pending' })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      var count = (d && d.items && d.items.length) || 0;
+    veEventsWaiting(token).then(function (rows) {
+      var count = rows.length;
       var badge = document.getElementById('dash-events-pending-badge');
       if (!badge) return;
       if (count > 0) { badge.textContent = count; badge.style.display = ''; }
@@ -1619,7 +1622,8 @@
         onChange: function (shelf) { draw(shelf); }
       }));
       var gpts = gm && typeof gm.points === 'number' ? gm.points : 0, gn = Math.floor(gpts / 1100);
-      setTabStats('guides', [[gpts.toLocaleString(), 'Your points'], [gn.toLocaleString(), gn === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
+      if (gm && gm.is_superadmin) setTabStats('guides', [['&infin;', 'Your points'], ['Every', 'Guide open to you'], ['$11', 'Or 1,100 points a Guide']]);
+      else setTabStats('guides', [[gpts.toLocaleString(), 'Your points'], [gn.toLocaleString(), gn === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
       return;
     }
     draw(dashGuidesBanner ? dashGuidesBanner.current() : 'all');
@@ -2899,13 +2903,16 @@
     if (dashTabBanners.home) document.body.classList.add('dash-has-banner');
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
     var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
-    setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1), '/dashboard/levels']]);
+    // A super admin earns no points, so their numbers read unlimited, as in the member card (Sean, 2026-10-30: "I don't want to make
+    // the illusion that I'm earning points").
+    if (member.is_superadmin) setTabStats('home', [['&infin;', 'Points'], ['&infin;', 'Lifetime points'], ['&infin;', 'Level', '/dashboard/levels']]);
+    else setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1), '/dashboard/levels']]);
     setTabStats('saves', [['...', 'Episodes saved'], ['...', 'Places and brands saved']]);
     if (dashTabBanners.depot && member.is_superadmin) {
       setTabStats('depot', [['...', 'Events waiting', '/dashboard/depot/events'], ['...', 'New places ready to list', '/dashboard/depot/business-outreach#places/list']]);
       var tok = VEAuth.getToken(), depotStats = { events: '...', places: '...' };
       var paint = function () { setTabStats('depot', [[depotStats.events, 'Events waiting', '/dashboard/depot/events'], [depotStats.places, 'New places ready to list', '/dashboard/depot/business-outreach#places/list']]); };
-      dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: tok, status: 'pending' }).then(function (d) { depotStats.events = (((d && d.items) || []).length).toLocaleString(); paint(); }).catch(function () {});
+      veEventsWaiting(tok).then(function (rows) { depotStats.events = rows.length.toLocaleString(); paint(); }).catch(function () {});
       fetch(SUPABASE_URL + '/functions/v1/ve-discover', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify({ action: 'backlog_summary' }) })
         .then(function (r) { return r.json(); }).then(function (d) { depotStats.places = ((d && d.open && d.open.list) || 0).toLocaleString(); paint(); }).catch(function () {});
     }
@@ -4149,8 +4156,8 @@
         });
       }));
       recent.appendChild(dpDataCard('Events waiting', '/admin/depot/events', function (token, body, t) {
-        dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: token, status: 'pending' }).then(function (d) {
-          var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
+        veEventsWaiting(token).then(function (ev) {
+          var rows = ev.slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
           dpCount(t, rows.length);
           dpRows(body, rows, function (e) { return { name: e.title || 'Event', meta: [e.city, dpDate(e.starts_at || e.created_at)].filter(Boolean).join(' · ') }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });

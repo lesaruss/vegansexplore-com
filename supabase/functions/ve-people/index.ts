@@ -5,7 +5,12 @@
 // the bio written from their interviews.
 //
 // Super admin (the VE app token) or ops (Bearer LESARUSS_ADMIN_TOKEN):
-// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}], bio?, website?, instagram?, facebook?, tiktok?, youtube? } -> { ok, person }
+// POST { action: 'save', listing_id, title?, specialty?, links?: [{label, url}], bio?, website?, instagram?, facebook?, tiktok?, youtube?,
+//        account_email? } -> { ok, person, account }
+//      account_email links the profile to that person's Vegans Explore account (details.person.member_id; '' unlinks), so the
+//      dashboard's member card counts the votes and saves on their profile and uses its photo (Sean, 2026-10-30). Never the owner:
+//      owner_member_id would turn on the campaign window's "let them message me" at save.
+//      { action: 'account', listing_id }                                                 -> { ok, account: {id, name, email} | null }
 //      { action: 'credits', listing_id }                                                 -> { ok, credits }
 //      { action: 'credit_add', listing_id, kind: episode|event|article|video, content_id? | event_id? | title, url?, happened_on?, role?, note? }
 //      { action: 'credit_remove', id }
@@ -163,13 +168,37 @@ Deno.serve(async (req) => {
       if (String((cur as any)?.[k] ?? '') === String(cols[k] ?? '')) delete cols[k];
       else edits.push({ field: k, old_value: (cur as any)?.[k] ?? null, new_value: cols[k] ?? null });
     }
+    // Their account: the member this profile is (one profile per account).
+    let account: any = undefined;
+    if (body.account_email !== undefined) {
+      const em = String(body.account_email || '').trim().toLowerCase();
+      let mid: string | null = null;
+      if (em) {
+        const { data: m } = await db.from('members').select('id, name, email, member_class').ilike('email', em.replace(/[%_\\]/g, '\\$&')).maybeSingle();
+        if (!m) return json({ error: 'no_account', message: `No account uses ${em}.` }, 404);
+        if (m.member_class === 'agent') return json({ error: 'no_account', message: 'That is a Guide account.' }, 400);
+        const { data: other } = await db.from('listings').select('name').eq('status', 'approved').eq('details->person->>member_id', m.id).neq('id', l.id).limit(1).maybeSingle();
+        if (other) return json({ error: 'account_taken', message: `That account is already ${other.name}'s profile.` }, 409);
+        mid = m.id; account = { id: m.id, name: m.name, email: m.email };
+      } else account = null;
+      if ((p.member_id || null) !== mid) { edits.push({ field: 'person.member_id', old_value: p.member_id ?? null, new_value: mid }); if (mid) p.member_id = mid; else delete p.member_id; }
+    }
     if (edits.length) {
       details.person = p;
       const { error } = await db.from('listings').update({ ...cols, details, updated_at: new Date().toISOString() }).eq('id', l.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       await logEdits(l.id, by, edits);
     }
-    return json({ ok: true, person: p });
+    return json({ ok: true, person: p, ...(account !== undefined ? { account } : {}) });
+  }
+
+  if (action === 'account') {
+    if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
+    const l: any = await person(body.listing_id);
+    if (!l) return json({ error: 'not_a_person' }, 400);
+    const mid = l.details?.person?.member_id;
+    const { data: m } = isId(mid) ? await db.from('members').select('id, name, email').eq('id', mid).maybeSingle() : { data: null };
+    return json({ ok: true, account: m || null });
   }
 
   if (action === 'credits') {
