@@ -1922,6 +1922,19 @@ Earthling Ed), Sweet Simple Vegan, Cheap Lazy Vegan, Simnett Nutrition, BOSH!, S
 and Plant Based News. Left out: Avant-Garde Vegan (Gaz Oakley is no longer Vegan), Sauce Stache (now Mark Stache, a general health
 channel), We Cook Vegan (uploads not public); then BadAssVegan (John Lewis) and Torre Washington (YouTube) with the linked pages.
 
+**News outlets' stories** (Sean, 2026-10-30: "have their RSS feed underneath the About Us... when they click on it, it goes to
+their website"; migration `20261030_ve_outlet_stories.sql`, edge function `ve-outlet-stories`). A News Outlets listing shows **Latest
+stories** under About (under the video and About for an outlet with a channel, Plant Based News): headline, date, picture and a summary
+clamped to two rows, 10 at a time with Show more, each opening the outlet's own page in a new tab, counted as a `website` action with ref
+`story` (`newsStoriesHtml`, `loadNewsStories` in `directory/listing.html`). The feed is `listings.rss_url` (RSS or Atom); empty, it is found
+once from their home page (`<link rel="alternate">`, then /feed/, /rss, /index.rss...) and saved, and an empty string turns it off
+(`admin_feed`). The latest 100 are kept in `ve_outlet_feeds`, read again after 3 hours. **A general outlet shows only its Vegan and animal
+stories** (`details.news_filter` `vegan`, `VEGAN_RE` in the function, English and Spanish), and with none the section stays hidden: WLRN,
+WPTV, CBS 12, Diario Las Américas, Miami's Community Newspapers, Westside Gazette and Las Olas Insider. Vegan outlets show every story.
+On 2026-10-30: VegNews, Plant Based News, Sentient Media, VegWorld, WPTV, CBS 12 (its local feed, `cbs12.com/news/local.rss`, which its
+home page does not name), Las Olas Insider and Miami's Community Newspapers showed stories; Diario Las Américas (`rss/pages/lo-ultimo.xml`)
+and Westside Gazette had none that matched; VegOut's and WLRN's feeds are published empty and UnchainedTV has none.
+
 **Linked pages** (Sean, 2026-10-29: "his overview page and then have a tab for his podcast and then have a tab for his other thing... it
 just goes to those pages... you see the URL change as well. All that is cross discovery, and it doesn't bog down his page"; migration
 `20261029_listing_families.sql`). Listings that belong together share `listings.details.family`; every page in it shows the others in its
