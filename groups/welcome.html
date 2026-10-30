@@ -345,7 +345,8 @@
     { k: 'numbers', label: 'The numbers', say: 'The more members your group brings in, the bigger your share: twenty percent, climbing to fifty. And nobody pays to try you out.' },
     { k: 'part', label: 'Your part', say: 'Your part is simple: share your link and host your events here. The more you do, the more it unlocks.' },
     { k: 'questions', label: 'Questions', say: 'Here are straight answers to what organizers ask us most.' },
-    { k: 'yes', label: 'Apply', say: 'If this sounds right for your group, apply here. It takes about five minutes, and Sean reads every application himself.' }
+    { k: 'yes', label: 'Apply', say: 'If this sounds right for your group, apply here. It takes about five minutes, and our team reads every application.' },
+    { k: 'meet', label: 'Request a meeting', hide: 1, say: 'Want to talk it through first? Tell us when suits you, and someone from our team will reach out to set a time.' }
   ];
   var ALIAS = { why: 'gets', guest: 'numbers' };
   var ICONS = {
@@ -517,13 +518,22 @@
         qa('What if our organizer changes?', 'The group is the partner, not one person. If someone new takes over, your page, your link and your earnings stay with the group.') +
         nextBtn('yes', 'Next: apply');
     },
-    yes: function (sub) { return applyView(sub); }
+    yes: function (sub) { return applyView(sub); },
+    meet: function (sub) {
+      if (sub === 'done') return head('Request a meeting', 'Thank you. Someone will reach out.', 'Someone from our team will email you to set a time that suits you. In the meantime, you can look around the demo or start your application.') +
+        '<div class="dg-btns"><a class="dg-btn" href="#/demo">Look at the demo</a><a class="dg-btn dg-ghost" href="#/yes/1">Start the application</a></div>';
+      var d = draft();
+      return head('Request a meeting', 'Talk it through first', 'Tell us a little about your group and when suits you. Someone from our team, usually your city\'s Community Manager, will reach out to set a time.') +
+        '<form class="gp-form" id="gpMeet" novalidate>' + MEET.map(function (f) { return field(f, d[f.k] !== undefined ? d[f.k] : ''); }).join('') + '</form>' +
+        '<p class="gp-err" id="gpErr" role="alert"></p>' +
+        '<div class="gp-nav"><a class="dg-btn dg-ghost" href="#/yes/1">Back to the application</a><span></span><button type="button" class="dg-btn" data-meet-send>Send my request</button></div>';
+    }
   };
 
 
   // ---------- Apply (Sean, 2026-10-30: "It needs to be an intake... a registration... walk them through what they need to answer... take
   // this seriously... Let us determine if you're a right fit"). One step per view (#/yes/1 to /5), Back / Step N of M / Next, Next checks
-  // the step, answers kept in the browser until sent (gp_apply), sent to ve-group 'apply'. Sean reads them in Depot > Group Partners.
+  // the step, answers kept in the browser until sent (gp_apply), sent to ve-group 'apply', read in Depot > Group Partners. Public words never name Sean (2026-10-30).
   var CHAPTERS = ['South Florida', 'Central Florida', 'North Florida', 'Atlanta', 'Washington, D.C.', 'Maryland', 'Virginia', 'Delaware', 'West Virginia',
     'New York', 'Philadelphia', 'Los Angeles', 'London', 'Somewhere else'];
   var FORM = [
@@ -553,7 +563,7 @@
       { k: 'phone', l: 'Phone', type: 'tel', hint: 'Only if you would like a call.' },
       { k: 'role', l: 'Your role', type: 'select', req: 1, opts: ['Founder', 'Organizer', 'Co-organizer', 'Board member', 'Volunteer', 'Something else'] },
       { k: 'instagram', l: 'Your Instagram', ph: '@yourname' },
-      { k: 'heard', l: 'How you heard about us', type: 'select', opts: ['Sean or our team reached out', 'A friend', 'Instagram', 'Our podcast', 'The Vegans Explore site', 'Somewhere else'] }] },
+      { k: 'heard', l: 'How you heard about us', type: 'select', opts: ['Our team reached out', 'A friend', 'Instagram', 'Our podcast', 'The Vegans Explore site', 'Somewhere else'] }] },
     { t: 'The fit', fields: [
       { k: 'host_here', l: 'Would you host your events on Vegans Explore?', type: 'radio', req: 1, wide: 1, opts: ['Yes, all of them', 'Some of them', 'Not sure yet'] },
       { k: 'share_link', l: 'Would you share your group\'s link with your members?', type: 'radio', req: 1, wide: 1, opts: ['Yes', 'Maybe', 'No'] },
@@ -561,6 +571,15 @@
       { k: 'revenue_use', l: 'What would steady money let your group do?', type: 'textarea', wide: 1, ph: 'More events, a bigger venue, giving to a cause, paying your organizers...' },
       { k: 'anything_else', l: 'Anything else we should know', type: 'textarea', wide: 1 },
       { k: 'confirm', l: 'Everything here is accurate, and Vegans Explore can contact me about it.', type: 'confirm', req: 1 }] }
+  ];
+  var MEET = [
+    { k: 'name', l: 'Your name', req: 1 },
+    { k: 'email', l: 'Your email', type: 'email', req: 1 },
+    { k: 'group_name', l: 'Your group\'s name', req: 1 },
+    { k: 'chapter', l: 'Where it meets', type: 'select', opts: CHAPTERS, req: 1 },
+    { k: 'phone', l: 'Phone', type: 'tel', hint: 'Only if you would rather have a call.' },
+    { k: 'times', l: 'Good days and times', ph: 'Weekday evenings, Saturday mornings' },
+    { k: 'topic', l: 'What you would like to talk about', type: 'textarea', wide: 1 }
   ];
   function draft() { try { return JSON.parse(localStorage.getItem('gp_apply') || '{}') || {}; } catch (e) { return {}; } }
   function keep(d) { try { localStorage.setItem('gp_apply', JSON.stringify(d)); } catch (e) {} }
@@ -600,16 +619,16 @@
     return !bad.length;
   }
   function applyView(sub) {
-    if (sub === 'done') return head('Apply', 'Thank you. We have it.', 'Sean reads every application himself and will write back to the email you gave, usually within a few days. A copy of your answers is on its way to you.') +
+    if (sub === 'done') return head('Apply', 'Thank you. We have it.', 'Our team reads every application and will write back to the email you gave, usually within a few days. A copy of your answers is on its way to you.') +
       '<div class="dg-btns">' + (code ? '<a class="dg-btn" href="/invite?c=' + encodeURIComponent(code) + '">Open my invitation</a>' : '') +
       '<a class="dg-btn' + (code ? ' dg-ghost' : '') + '" href="#/demo">Look at the demo again</a></div>';
     var n = Math.max(1, Math.min(FORM.length, parseInt(sub, 10) || 1)), st = FORM[n - 1], d = draft();
     var steps = '<ol class="gp-steps">' + FORM.map(function (x, i) { return '<li class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + esc(x.t) + '</li>'; }).join('') + '</ol>';
-    var intro = n === 1 ? '<div class="gp-intro">Being a Group Partner can become a steady source of money for your group, to do more for its community. So we ask for a few minutes and real answers. Sean reads every application himself to make sure it is a fit both ways. Small groups are welcome: your share grows with the members you bring in.</div>' : '';
+    var intro = n === 1 ? '<div class="gp-intro">Being a Group Partner can become a steady source of money for your group, to do more for its community. So we ask for a few minutes and real answers. Our team reads every application to make sure it is a fit both ways. Small groups are welcome: your share grows with the members you bring in.</div>' : '';
     return head('Apply, step ' + n + ' of ' + FORM.length, st.t, '') + steps + intro +
       '<form class="gp-form" id="gpForm" novalidate>' + st.fields.map(function (f) { return field(f, d[f.k]); }).join('') + '</form>' +
       '<p class="gp-err" id="gpErr" role="alert"></p>' +
-      '<div class="gp-nav">' + (n > 1 ? '<a class="dg-btn dg-ghost" href="#/yes/' + (n - 1) + '" data-apply-back>Back</a>' : '<a class="dg-btn dg-ghost" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('A question about Group Partners') + '">Talk to Sean first</a>') +
+      '<div class="gp-nav">' + (n > 1 ? '<a class="dg-btn dg-ghost" href="#/yes/' + (n - 1) + '" data-apply-back>Back</a>' : '<a class="dg-btn dg-ghost" href="#/meet">Request a meeting</a>') +
       '<span>Step ' + n + ' of ' + FORM.length + '</span>' +
       '<button type="button" class="dg-btn" data-apply-next="' + n + '">' + (n < FORM.length ? 'Next' : 'Send my application') + '</button></div>';
   }
@@ -627,6 +646,28 @@
         $('gpErr').textContent = (r && r.message) || 'That did not go through. Try again in a minute.';
       }, function () { btn.disabled = false; btn.textContent = 'Send my application'; $('gpErr').textContent = 'That did not go through. Check your connection and try again.'; });
   }
+  // Request a meeting (Sean, 2026-10-30: "they can request a meeting... community managers who can be that person they speak to... don't
+  // put my name in there. Make it general"). ve-group 'meet' routes it to the chapter's Community Manager, else the team inbox.
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-meet-send]');
+    if (!b) return;
+    e.preventDefault();
+    var d = draft(), form = $('gpMeet');
+    MEET.forEach(function (f) { var el = form.querySelector('[name="' + f.k + '"]'); if (el) d[f.k] = el.value.trim(); });
+    keep(d);
+    var bad = MEET.filter(function (f) { return (f.req && !d[f.k]) || (f.k === 'email' && d.email && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(d.email)); });
+    [].forEach.call(form.querySelectorAll('.gp-f'), function (el) { el.classList.toggle('bad', bad.some(function (f) { return f.k === el.getAttribute('data-k'); })); });
+    if (bad.length) { $('gpErr').textContent = bad.length === 1 ? (bad[0].k === 'email' && d.email ? 'That email does not look right.' : 'One answer is missing: ' + bad[0].l + '.') : bad.length + ' answers are missing. They are outlined in red.'; return; }
+    b.disabled = true; b.textContent = 'Sending...';
+    var m = {}; MEET.forEach(function (f) { m[f.k] = d[f.k] || ''; });
+    fetch(SB + '/functions/v1/ve-group', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ((window.VEAuth && VEAuth.getToken && VEAuth.getToken()) || '') },
+      body: JSON.stringify({ action: 'meet', answers: m, invite_code: code || undefined }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (r) {
+        if (r && r.ok) { viaTour = true; location.hash = '#/meet/done'; return; }
+        b.disabled = false; b.textContent = 'Send my request'; $('gpErr').textContent = (r && r.message) || 'That did not go through. Try again in a minute.';
+      }, function () { b.disabled = false; b.textContent = 'Send my request'; $('gpErr').textContent = 'That did not go through. Check your connection and try again.'; });
+  });
   // Answers are kept as they are typed, so leaving and coming back loses nothing.
   document.addEventListener('change', function (e) { var m = location.hash.match(/^#\/yes\/(\d)/); if (m && e.target.closest('#gpForm')) readStep(+m[1]); });
   document.addEventListener('click', function (e) {
@@ -689,18 +730,18 @@
     var hm = location.hash.match(/^#\/([a-z]+)(?:\/([a-z0-9]+))?/) || [], k = hm[1];
     k = ALIAS[k] || k;
     cur = VIEWS[k] ? k : 'overview';
-    var t = tab(cur), i = TABS.indexOf(t);
+    var t = tab(cur), TOUR = TABS.filter(function (x) { return !x.hide; }), i = Math.max(0, TOUR.indexOf(t.hide ? tab('yes') : t));
     main.innerHTML = VIEWS[cur](hm[2]);
     main.scrollTop = 0;
     if (cur === 'overview') fillCommunity();
     fitThumbs();
-    menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
-    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
+    menu.innerHTML = TOUR.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
+    sel.innerHTML = TOUR.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
     var pic = window.VEGuideArt ? VEGuideArt('dani', 'square') : null;
     guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
     bubble.textContent = t.say;
-    var nav = '<a class="dg-tnav" href="#/' + TABS[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
-      '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
+    var nav = '<a class="dg-tnav" href="#/' + TOUR[Math.max(0, i - 1)].k + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TOUR.length + '</span>' +
+      '<a class="dg-tnav next" href="#/' + TOUR[Math.min(TOUR.length - 1, i + 1)].k + '"' + (i < TOUR.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
     tourEl.innerHTML = tourM.innerHTML = nav;
   }
 
@@ -722,7 +763,7 @@
     if (e.target.closest('.dg-tnav,[data-tour]')) viaTour = true;
     if (e.target.closest('[data-tour-start],#dgGuide')) {
       e.preventDefault(); setFold(false); store('gp_dani_pinned', true);
-      viaTour = true; location.hash = '#/' + TABS[Math.min(TABS.length - 1, TABS.indexOf(tab(cur)) + 1)].k;
+      var T2 = TABS.filter(function (x) { return !x.hide; }); viaTour = true; location.hash = '#/' + T2[Math.min(T2.length - 1, T2.indexOf(tab(cur)) + 1)].k;
     }
   }, true);
   function route() {
