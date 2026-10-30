@@ -3,13 +3,13 @@
  *
  * For Vegan content creators going from hobbyist to professional. The knowledge is Sean's Vegan Content Creator Survival Guide (Canva
  * DAGx86FyHyw, "Top 10 Moves to Evolve From Hobbyist to Professional Vegan Creator"); the creators in our Directory and our creator
- * episodes are built in, and it ends on the next step: the Ambassador program. The tabs are the tour; River stays on the right of
- * every tab (his lines show as text, no clips). The address bar carries the view (#/tips/flow, #/people/youtube, #/pulse/craft).
+ * episodes are built in, and it ends on the next step: becoming a creator. The tabs are the tour; Kai Monroe (the sample creator)
+ * narrates: at the top of the walkthrough, on the right of every other tab, her lines spoken (VEGigs.voice). The address bar carries the view (#/tips/flow, #/people/youtube, #/pulse/craft).
  *
  *   Overview       the creator pathway (Sean, 2026-10-30: "take this, what we created, put it into the creator guide as the
  *                  overview... the drill through everything will just be under overview"): /gigs/sample's walkthrough with Kai,
  *                  the opportunity, then the Creator Dashboard step by step, ending on the application. /public/ve-gigs.js mounted
- *                  at #/overview/<view> (VEGigs base, external); River steps aside on it, since Kai walks this part
+ *                  at #/overview/<view> (VEGigs base, external); her rail steps aside there, since she sits at the top of the walkthrough
  *   The 10 tips    one per view: the principle, In Action (a real creator), This week (the three action items, ticked in the
  *                  browser), On Vegans Explore and an episode. Tip 1 (purpose) is open to everyone, the free example
  *   People         People > Content Creators and the Directory's YouTube channels, with the Directory's own card
@@ -55,21 +55,17 @@
   var SHOWS_URL = SB + '/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=in.(' + SHOW_SLUGS.join(',') + ')';
   var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.map(function (x) { return x[0]; }).join(',') + ')';
 
-  // The tabs, in tour order, and what River says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get
-  // it), `sayMember` walks an owner through what they have.
+  // The tabs, in tour order (Sean, 2026-10-30: "put the My List before Become a Creator. Become the Creator should be the last thing
+  // that they do"), and Kai's line on each. Each `say` must match its recording, voices/creator-guide/kai-<voice>-v1.mp3 in vegan-media
+  // (VEGigs.voice plays it); the Overview and Become a creator take their lines from ve-gigs.js (LINES), view by view.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. This Guide is for Vegan creators ready to go from hobby to professional: ten moves, the people doing it, and where it can take you.',
-      sayMember: 'Welcome in. Start with the ten tips, one this week, then look at who\'s doing it and where you go next.' },
-    { k: 'tips', label: 'The 10 tips', lock: 1, say: 'Ten moves, each with a real Vegan creator doing it and three things you can start today. Your purpose and niche is open for you to try.',
-      sayMember: 'Here are all ten. Each has three action items for this week. Tick them off as you go, and save the ones you\'re working on.' },
-    { k: 'people', label: 'People doing it', say: 'These are the creators and channels in our Directory. See how they show up, and vote for the ones you watch.',
-      sayMember: 'Study the creators in your lane: how they title things, how often they post, who they work with. Save the ones you learn from.' },
-    { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.',
-      sayMember: 'Every creator conversation we\'ve recorded lives here. Start with how they built it, then the craft.' },
-    { k: 'next', label: 'Become a creator', say: 'Ready? Tell us about you and what you make. Our team reads every application, and the gigs that fit you come to your Creator Dashboard.',
-      sayMember: 'Ready? Tell us about you and what you make. Our team reads every application, and the gigs that fit you come to your Creator Dashboard.' },
-    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: tips, episodes and creators.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'The Creator Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+    { k: 'overview', label: 'Overview' },
+    { k: 'tips', label: 'The 10 tips', lock: 1, voice: 'tab-tips', say: 'Ten moves from hobby to professional, each with a real Vegan creator doing it and three things you can start this week. The first one, purpose and niche, is open to try.' },
+    { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are creators and channels in our Directory. See how they show up, and vote for the ones you watch.' },
+    { k: 'pulse', label: 'Pulse', lock: 1, voice: 'tab-pulse', say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.' },
+    { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved lives here: your tips, episodes and creators.' },
+    { k: 'join', label: 'Get access', guest: 1, voice: 'tab-join', say: 'The Creator Guide is eleven dollars, or eleven hundred points, and it\'s yours to keep.' },
+    { k: 'next', label: 'Become a creator' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var TIP_ICON = {
@@ -379,7 +375,7 @@
     main.innerHTML = ''; main.appendChild(g.el); g.api.draw();
   }
   // Become a creator: the application on its own (Sean, 2026-10-30: "the become could take them directly to the intake page").
-  function viewNext() { gigView('#/next/', { start: 'join/1', tour: false }); }
+  function viewNext() { gigView('#/next/', { start: 'join/1', tour: false, onView: function (v, h, key) { if (curTab === 'next') drawKai(key); } }); }
 
   // ---------- My list ----------
   var LIST_SECS = [['Tips', 'tips', 'fix', '#/tips'], ['Episodes', 'episodes', 'episode', '#/pulse'], ['Creators', 'creators', 'listing', '#/people']];
@@ -459,20 +455,26 @@
   });
   document.getElementById('dgSearchForm').addEventListener('submit', function (e) { e.preventDefault(); var q = qEl.value.trim(); if (q) location.hash = '#/search/' + encodeURIComponent(q); });
 
-  // ---------- River, on the right of every tab (his words as text; no clips yet) ----------
+  // ---------- Kai, on the right of every tab but the walkthrough (Sean, 2026-10-30: "make Kai the new creator guide and replace River...
+  // you can leave her on the other ones... on the right-hand side, even on the About You section, she can be giving little tips") ----------
   var tourM = document.getElementById('dgTourM'), foldBtn = document.getElementById('dgFold'), railEl = document.getElementById('dgRail');
   function setFold(folded) {
     railEl.classList.toggle('dg-folded', folded);
-    foldBtn.textContent = folded ? 'Show River' : 'Hide River'; foldBtn.setAttribute('aria-expanded', String(!folded));
-    try { sessionStorage.setItem('cg_river_folded', folded ? '1' : ''); } catch (e) {}
+    foldBtn.textContent = folded ? 'Show Kai' : 'Hide Kai'; foldBtn.setAttribute('aria-expanded', String(!folded));
+    try { sessionStorage.setItem('cg_kai_folded', folded ? '1' : ''); } catch (e) {}
   }
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
-  try { if (sessionStorage.getItem('cg_river_folded')) setFold(true); } catch (e) {}
+  try { if (sessionStorage.getItem('cg_kai_folded')) setFold(true); } catch (e) {}
   var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
-  function drawRiver() {
-    var t = tab(curTab), list = tabs(), i = 0;
+  // Her line and its Play button; the line plays by itself on each new tab once the visitor has pressed Play anywhere (VEGigs.voice).
+  // On Become a creator it is the tip for the step of the application on screen.
+  var playEl = document.getElementById('dgPlay');
+  function drawKai(lineKey) {
+    var t = tab(curTab), list = tabs(), i = 0, V = window.VEGigs;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    var key = curTab === 'next' ? (lineKey || 'form-1') : t.voice, text = curTab === 'next' ? (V && V.LINES[key]) || '' : t.say;
+    bubble.textContent = text || '';
+    if (V && curTab !== 'overview') { playEl.innerHTML = key ? V.voice.button(key) : ''; V.voice.cue(key || ''); }
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
@@ -485,7 +487,7 @@
     var known = { overview: 1, tips: 1, people: 1, pulse: 1, next: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
-    document.body.classList.toggle('cg-wide', view === 'overview' || view === 'next');
+    document.body.classList.toggle('cg-wide', view === 'overview');
     drawJoinbox();
     var key = view;
     if (view === 'search') key = curTab;
@@ -499,7 +501,7 @@
        next: viewNext, mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     curTab = key;
-    drawRiver();
+    drawKai(view === 'next' && GIGS['#/next/'] ? GIGS['#/next/'].api.lineKey() : '');
     if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
   }
   window.addEventListener('hashchange', function () { shown = 24; route(); });
@@ -623,7 +625,7 @@
     if (window.VERegionDirectory) VERegionDirectory.css();
     document.documentElement.classList.add('dg-fit');
     var box = document.getElementById('dgMaya');
-    if (window.VEGuideArt) { var art = VEGuideArt('river', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
+    if (window.VEGuideArt) { var art = VEGuideArt('kai', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search);
     route();
     loadPublic();

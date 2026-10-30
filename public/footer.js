@@ -89,6 +89,9 @@
     // River's refresh (Sean, 2026-10-28): in his 20s, short twists with a fade. Kept in the repo.
     river:  { square: '/public/guides/art/river-square.webp',
               tall:   '/public/guides/art/river-tall.webp' },
+    // Kai Monroe, the creator who walks the Creator Guide and the Creator Dashboard (Sean, 2026-10-30); not in the member picker.
+    kai:    { square: '/gigs/sample/img/kai-avatar.webp',
+              tall:   '/gigs/sample/img/kai-avatar.webp' },
     // Pascal, the Cultural Bridge (the guide chat demo and the pitches); not in the member picker.
     pascal: { square: ART + 'hf_20261005_024303_7798f249-b17f-47e7-b7c5-704a8aae5ba5_min.webp',
               tall:   ART + 'hf_20261005_024304_5e1634a6-d9de-43d5-919a-1af4001dbf45_min.webp' }

@@ -1137,7 +1137,22 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   kit, How you rise and Apply), mounted inside the Guide at `#/overview/<view>` (`VEGigs.mount` with `base`, `external`: the Guide's
   router draws it; `gigView` in `guide-scripts/creator-guide.js`, each mounted once so a visitor's demo applications stay for the
   visit). **Your next step** became **Become a creator** (`#/next`, the application on its own: `start: 'join/1'`, `tour: false`).
-  River steps aside on those two tabs (`body.cg-wide`), since Kai walks them; The 10 tips, People doing it and Pulse keep River.
+  **Kai is the Creator Guide's narrator** (Sean, 2026-10-30: "make Kai the new creator guide and replace River... after the first page,
+  she is at the top of the screen... two column where one Kai in the text bubble is on the left and the back and next and open gigs is
+  on the right... minimize the top row... we want them to see the full demo"). The walkthrough's landing keeps her on the right; every
+  step after it opens with one row of two equal columns (`.vg-top2`, `topRow` in `ve-gigs.js`): Kai, her line and Play on the left, Step
+  N of 7 with Back and Next on the right (one column on phones), so the demo below runs full width. On every other tab she is in the
+  Guide's rail (`data-guide="kai"`, `VE_GUIDE_ART.kai` in `footer.js`, `drawKai`), and on Become a creator her line is the tip for the
+  application step on screen. The tabs end My list (members) or Get access, then **Become a creator**, always last. **Her voice**: every
+  line is recorded (`LINES` in `ve-gigs.js` for the walkthrough and the application, each tab's `say` and `voice` in
+  `creator-guide.js`; `vegan-media/media/voices/creator-guide/kai-<key>-v1.mp3`, el-media tts with the ElevenLabs premade voice Jessica,
+  `cgSgspJ2msm6clMCkdW9`, a stand-in until Sean picks hers), and `VEGigs.voice` plays them: nothing plays until the visitor presses
+  Play Kai, then each new view or tab plays its line by itself until they press Pause (`sessionStorage` `ve_kai_voice`). A line's text
+  must match its recording; change one and record it again (`-v2`). el-media refuses more than two recordings at once (ElevenLabs'
+  concurrent limit), so send them two at a time. **Every gig has a picture** (Sean: "each one should have a little square with rounded
+  corner image... inviting and visual"): `img` on a gig (the sample's are `gigs/sample/img/gig-g<n>.webp`, illustrative, Higgsfield
+  2026-10-30), shown square on the board's tiles and My gigs (so Up next too), else the flat icon of its kind (`thumb`, `ICON`); the
+  dashboard's four tiles wear flat icons.
   Not yet (Sean's direction): People doing it marking the creators who have registered with us, and the Pulse tab carrying articles
   for creators beside the podcasts, sortable.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
