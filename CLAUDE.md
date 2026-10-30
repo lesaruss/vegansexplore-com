@@ -981,6 +981,15 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
 - **First**: Torre Washington; Gabriela Reyes once the platform comes first (confirm her name and handle); then Philly's creators ahead
   of a dinner. **Build**: the Creator Guide from Sean's Canva Vegan Content Creator Survival Guide (`DAGx86FyHyw`), profile claim and
   the checklist, the Opportunities board, Stripe Connect and campaign production, the shop, the lead finder by city.
+- **The Official Creator Guide** (Sean, 2026-10-30, for professional creators such as Gabriela Reyes: "get straight to the business
+  point of it... these are business professionals... We want to register you as one of our official content creators"):
+  `/creators/welcome` (`creators/welcome.html`, the Group Partner Guide's layout, River fixed on the right, his lines as text, `noindex`,
+  open by link). An official creator is an Ambassador with the Creator profile, never a separate program. Eight tabs: Overview, Where
+  we're going (thirteen chapters, the Directory, our shows, brands and events as one buyer), The work (paid campaigns, collaborations,
+  professional work Coming; hosting open now; events with the Dolphins showcase; the sample campaign), How it pays (this canon's terms),
+  Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
+  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
+  profile's invitation email linking it.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
   `guide-scripts/creator-guide.js`, the Nonprofit Guide's shell, River narrating in text (no clips), indexed, seventh in the
   Guide catalog (label Creators, banner `public/guides/creator-guide.jpg`), in the sitemap. Tabs: Overview, **The 10 tips** (`#/tips/<id>`:
@@ -2219,6 +2228,14 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   fill the window (`html.dg-fit`) never sizes its frame (`nav.js`): sizing it to its own height made the Ambassador Guide bounce. Under the
   cards, `/guides` ends with the Directory's Passport box ("Your first Guide is on us", hidden for active members); its old
   Passport, Vision and Ready sections are gone (Sean, 2026-10-26).
+- **The Guides menu and who sees what** (Sean, 2026-10-30: "the same heading as the non-logged in version... we're getting enough
+  guides now where we can create a menu... even the onboarding guides... some that I want the community to see, and then there's some
+  that I just want the team to see"). `/guides` and the dashboard's Guides tab wear the same banner, **Vegan Guides**, whose dropdown is
+  the Guides menu (`VEGuideCatalog.bannerOptions`, `?shelf=` on `/guides`): All Guides (each shelf under its heading), Everyday Guides,
+  For your work, **Partner Guides** (the onboarding Guides: the Official Creator Guide, the Ambassador Guide, Community Manager
+  Onboarding, the Group Partner Guide, the Nonprofit Partner Guide; each opens as its own page) and Coming soon. Each Guide's `see` in
+  `ve-guide-catalog.js` says who finds it in the menu: `all`, `members`, a list of `ve_role` values, or `team`; super admins see every
+  Guide, the restricted ones marked with who else does. A menu is not a lock: a Guide page guards itself where it must.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.

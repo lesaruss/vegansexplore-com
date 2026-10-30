@@ -205,8 +205,9 @@
 
     /* ── Guide Catalog (new) ── */
     .gc-section { padding: 80px 56px; background: #fff; }
+    #gc-banner + .gc-section { padding-top: 36px; }
     .gc-section .section-sub { margin-bottom: 44px; }
-    @media (max-width: 600px) { .gc-section { padding: 48px 16px; } .gc-section .section-sub { margin-bottom: 28px; } }
+    @media (max-width: 600px) { .gc-section, #gc-banner + .gc-section { padding: 28px 16px 48px; } .gc-section .section-sub { margin-bottom: 28px; } }
     .gc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
     @media (max-width: 900px) { .gc-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 600px) { .gc-grid { grid-template-columns: 1fr; } }
@@ -310,29 +311,30 @@
   <!-- HERO, STATS BAR, and PATHS SECTION removed 2026-07-12 per Sean: simplifying this
        page to lead with the Guide Catalog. The character path-picker (Maya, etc.) comes
        back once the Creator/Nonprofit/Pre-Vegan/Seasoned Vegan guides are actually built. -->
-  <!-- GUIDE CATALOG (new) -->
+  <!-- The Guides banner (Sean, 2026-10-30: "the same heading as" the dashboard's Guides tab): the shared city banner with the Guides
+       menu as its dropdown (VEGuideCatalog.bannerOptions, ?shelf= in the address bar), the same on /guides and /dashboard/guides. -->
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-city-banner.js"></script>
   <script src="/public/ve-guide-catalog.js"></script>
-  <section class="gc-section" aria-labelledby="gc-heading">
-    <div class="section-eyebrow" aria-hidden="true">Guides</div>
-    <h2 class="section-h2" id="gc-heading">Step-By-Step<br>Guides.</h2>
-    <p class="section-sub">Practical guides for wherever you are on the journey. Every Guide is $11 or 1,100 points, and yours to keep. The Passport comes with 1,100 welcome points.</p>
+  <section id="gc-banner"></section>
+  <section class="gc-section" aria-label="Guides">
     <!-- The Guide cards come from /public/ve-guide-catalog.js, the same list as the dashboard's Guides tab (Sean,
-         2026-10-26). Signed out, only the live Guides show; members also see what is coming. -->
+         2026-10-26). Signed out, only the Guides open to everyone show; members also see what is coming, and the team sees every Guide. -->
     <div class="gc-grid" id="gc-grid" role="list" aria-label="Guide catalog"></div>
     <p class="gc-note" id="gc-note"></p>
   </section>
   <script>
     (function() {
-      function gcInitView() {
-        var loggedIn = !!(window.VEAuth && VEAuth.isLoggedIn());
-        document.body.classList.add(loggedIn ? 'gc-member' : 'gc-guest');
-      }
-      if (window.VEAuth) { gcInitView(); } else { window.addEventListener('load', gcInitView); }
-
+      var banner = null;
       function gcRender() {
         var member = !!(window.VEAuth && VEAuth.isLoggedIn());
-        var m = member && VEAuth.getMember && VEAuth.getMember();
-        VEGuideCatalog.render(document.getElementById('gc-grid'), { member: member, ambassador: !!(m && (m.ve_role === 'ambassador' || m.is_superadmin)), source: 'guides-live-catalog' });
+        var m = member && VEAuth.getMember ? VEAuth.getMember() : null;
+        document.body.classList.add(member ? 'gc-member' : 'gc-guest');
+        function draw(shelf) {
+          VEGuideCatalog.render(document.getElementById('gc-grid'), { viewer: m, member: member, shelf: shelf, source: 'guides-live-catalog' });
+        }
+        if (!banner) banner = VECityBanner.mount('gc-banner', VEGuideCatalog.bannerOptions(m, { member: member, onChange: function (shelf) { draw(shelf); } }));
+        else draw(banner.current());
         document.getElementById('gc-note').textContent = member
           ? 'New Guides open as they are finished. Tap Notify me on any of them to hear the day it opens.'
           : 'More Guides are on the way. Members see what is coming and hear the day each one opens.';
