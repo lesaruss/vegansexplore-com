@@ -2632,6 +2632,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   `ve_listing_submit_points(member, claim)` takes 1,100 from both balances once per application (`points_ledger` reason
   `listing_submit`, ref `claim:<id>`; migration `20261027_ve_listing_submit_points.sql`), and it waits in Depot > Claims like any
   application. The policy (`/policies#membership`), the Guides' facts and a saved answer say the same.
+- **Super admins see every paid Guide unlocked** (Sean, 2026-10-30: "if I want to see how it looks otherwise, I can change my view"): `ve-guide-unlock` `access()` returns `via` `admin`; a View As preview sends no token, so The public or Member shows it locked.
 - **Every purchase earns a flat 25-point thank-you** (`ve_purchase_thanks(member, ref)`, reason `purchase_thanks`, once per
   ref: `stripe:<session>`, `guide:<id>`, `tour:<order>`).
 - **Points are given, never bought.** They come from taking part: Bounties, competitions and campaigns, the Daily Pulse, the
