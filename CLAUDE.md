@@ -529,6 +529,24 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   brand `lesaruss-ai`, `city_slug` the topic; TechCrunch, Crunchbase, Marketing Dive, Fast Company, Tubefilter, BizBash...), every story
   kept with status `national` so it stays out of the Depot Inbox. The seven topics are in `pulse_auto` (queued 6 PM Eastern, out at 7 AM),
   and the writer's `pulse_topic_write` instructions carry a LESARUSS.ai section (business voice, no cities or Vegan framing).
+  The Inc. feed is off (its pages refuse the writer, 403); the first morning's other six briefings were written on schedule.
+- **Events and Funding** (built 2026-10-30, migration `20261030_lesaruss_ai_events_funding.sql`, run through the one-time
+  `ve-once-lr-events`, now the 410 stub). One events engine: LESARUSS.ai's rows are `events` with `tenant_id` LESARUSS
+  (`...0001`), Vegans Explore's `...0002`, and **every Vegans Explore reader filters to its tenant** (`ve-events.js` load,
+  `hub-news.js`; the others read by id or host listing). `events.listing_kind` is `event` or `funding`; a funding row's `starts_at` is
+  its **deadline** (Upcoming = open, Soonest = closing soon), `ticket_url` its official apply page, `category` its kind (grant, loan,
+  accelerator, competition, fellowship) and `events.funding` `{offered_by, amount, amount_usd, eligibility, rolling}`. Business events
+  use conference, summit, pitch, tour, networking, webinar, workshop, meetup. `ve_event_intake` takes `"tenant": "lesaruss"` (or the
+  source's tenant), `listing_kind`, `deadline` and the funding fields, refuses a closed one (`closed`) and one with no deadline.
+  lesaruss.ai/events and /funding are this site's `events/index.html` (proxied) in brand mode (`VE_BRAND.calendar`): the banner picks
+  Events or Funding, `VEEvents.mount(..., {tenant: VEEvents.LR_TENANT, kind})`, a funding tile (what it offers, who can apply in two
+  rows, Closes with days left in red under 15, Apply), Sort Closing soon / Biggest first, Open / Closed; no Submit, event view or ads
+  yet (the name opens the official page). The tile colors go through `--vb-*`. `ve_event_sources.tenant_id` and `listing_kind` (event,
+  funding, both): 16 LESARUSS.ai sources (Hello Alice, IFundWomen, Amber Grant, SBA, Y Combinator, Techstars, Google for Startups,
+  searches for grants, pitch competitions, creator funds and business, AI, marketing and creator conferences, Eventbrite business
+  online); the writer's `events_crawl` instructions have a LESARUSS.ai section, and nothing goes live until approved in **Depot >
+  Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
+  funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
 
 ## Analytics (Sean, 2026-10-28)
 
