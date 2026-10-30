@@ -1105,7 +1105,21 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   partners say, audience (ages, top cities), brands worked with, reliability, rates and where they show up; partners see no rates or
   contact, the public sees no rates, results or audience, and **You** adds Make it shine (what would complete the kit; our team helps
   keep it current). Kai's kit data is in `gigs/sample/demo.js` (`tagline`, `cover`, `pillars`, `audience`, `brands`, `quotes`,
-  `kit_done`). The same banner-as-the-only-menu pattern is to be weighed for the other demos and the Directory (Sean's note, not done). It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
+  `kit_done`). The same banner-as-the-only-menu pattern is to be weighed for the other demos and the Directory (Sean's note, not done). **The sample is the creator pathway** (Sean, 2026-10-30: "this really should be the guide itself... the
+  overview explains the opportunity... a video with one of our guides to the right... Kai Monroe... it should be a next, next, next...
+  the last step is the intake"; `VEGigs.mount` with `guide: true`): `/gigs/sample` opens on **Overview** (`#overview`: the opportunity,
+  what you get, how it works and how to use the page on the left, Kai on the right with her line), then **Your dashboard** (`#dashboard`,
+  the old overview), Open gigs, My gigs, Your media kit (Next steps through its four views), How you rise and **Apply** (`#join/1` to
+  `/5`). Every step has Back / Step N of 7 / Next at the top and the bottom and Kai's line on what you are looking at (`TOUR`, `SUBSAY`;
+  drafts, Sean's to change). Kai is a character in her own right now, the creator who walks you through; she speaks in text until her
+  voice is picked (Sean picks Guide voices). **The creator application** (`FORM` in `ve-gigs.js`: About you, Where you post, What you
+  make, Working together, Last thing; one step per view, Next checks the step, kept in `localStorage` `vg_creator_apply`) goes to
+  `ve-ambassador` `creator_apply` (anyone, three a day per email) into `ve_creator_applications` (migration
+  `20261030_creator_applications.sql`: what a campaign will match on, chapters, topics, formats, gig kinds, platforms and reach, in
+  their own columns; every answer in `answers`), emailed to Sean with every answer and confirmed to them, in the dashboard's Inbox, and
+  read in **Depot > Ambassadors > Creators** (`#creators/<status>`, `#creator/<id>`: New, Reviewing, Accepted, Declined, a team note;
+  marking sends nothing). The live `/gigs` opens on Your dashboard and has no Overview or Apply. Matching applicants to a campaign is not
+  built yet. It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
   "see it on the sample board" links, and linked from the Creator Guide's Your next step and the Ambassador Guide's Paid work.
   **`/gigs`** (signed in) is the live board: the city's bounties through `ve-bounties` `list`. **The bounty is the gig** (migration
   `20261030_gig_board.sql`): `ve_bounties` gained `gig_kind`, `apply_mode` (claim | apply | audition), `perk`, `partner_name`,

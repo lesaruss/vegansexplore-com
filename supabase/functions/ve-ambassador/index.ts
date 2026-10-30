@@ -24,6 +24,10 @@
 //   POST { action: 'story_status', id, status: new|contacted|done }
 //   POST { action: 'admin_list' }  -> every Ambassador with their checklist, and the profile requests waiting
 //   POST { action: 'claim_decide', id, approve, note? }  approving gives them the listing (or makes it, under Content Creators)
+//   POST { action: 'creator_status', id, status: new|reviewing|accepted|declined, note? }   a creator application (sends nothing)
+// Anyone, no sign-in (the creator pathway's last step, /gigs/sample#join/1 to /5; Sean, 2026-10-30):
+//   POST { action: 'creator_apply', answers }  saves ve_creator_applications, emails Sean every answer and confirms to them; three a day
+//        per email. A signed-in member's token, when sent, links the application to them.
 // The cron (x-cron-secret) or ops:
 //   POST { action: 'remind' }  emails who is due: Day 2, Day 7, then every 7 days, at most 10, naming what is missing
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -47,6 +51,19 @@ const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta'
 const BIO_MIN = 80;
 const STORY_KINDS: Record<string, string> = { intro: 'An introduction', interview: 'Their own story', host: 'Hosting', report: 'From their community' };
 const REMIND_MAX = 10;
+// The creator application's answers, as the team reads them (FORM in /public/ve-gigs.js asks them; keep the keys in step).
+const APPLY_KEYS: [string, string][] = [
+  ['name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['chapter', 'Home chapter'], ['city', 'City'], ['chapters', 'Can show up in'], ['travel', 'Would travel'],
+  ['main', 'Main platform'], ['engagement', 'Engagement rate'], ['topics', 'Posts about'], ['formats', 'Makes'], ['best_work', 'Best work'], ['vegan_since', 'Vegan for'],
+  ['audience', 'Their audience'], ['gig_kinds', 'Gigs they want'], ['brands', 'Worked with'], ['rates', 'Rates'], ['skills', 'Other skills'], ['availability', 'Free'],
+  ['bio', 'About them'], ['why', 'What would make it worth it'], ['heard', 'Heard about us'], ['anything', 'Anything else'],
+];
+const APPLY_PLATS: [string, string][] = [['instagram', 'Instagram'], ['tiktok', 'TikTok'], ['youtube', 'YouTube'], ['facebook', 'Facebook'], ['podcast', 'Podcast'], ['website', 'Website']];
+const APPLY_REQUIRED = ['name', 'email', 'chapter', 'city', 'main', 'topics', 'formats', 'best_work', 'gig_kinds', 'bio'];
+const CHAPTER_WORDS: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
+  dc: 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia',
+  'new-york': 'New York', 'los-angeles': 'Los Angeles', london: 'London', other: 'Somewhere else' };
+const CREATOR_STATUS = ['new', 'reviewing', 'accepted', 'declined'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -264,6 +281,54 @@ Deno.serve(async (req) => {
     return json({ ok: true, sent });
   }
 
+  // ---- The creator application (Sean, 2026-10-30: "the last step is the intake... We want to know as much as we can about them").
+  // Anyone, no sign-in. What a campaign will match on (chapters, topics, formats, gig kinds, platforms and reach) gets its own column.
+  if (action === 'creator_apply') {
+    const a = (body.answers && typeof body.answers === 'object') ? body.answers : {};
+    const list = (v: unknown, max = 20) => (Array.isArray(v) ? v : []).map((x) => clean(x, 80)).filter(Boolean).slice(0, max);
+    const out: Record<string, string> = {};
+    for (const [k] of APPLY_KEYS) { const v = a[k]; const t = Array.isArray(v) ? list(v).join(', ') : clean(v, 1200); if (t) out[k] = t; }
+    const email = (out.email || '').toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'bad_email', message: 'That email does not look right.' }, 400);
+    const platforms = APPLY_PLATS.map(([k, label]) => {
+      const handle = clean(a[k], 200);
+      const n = Math.max(0, Math.min(2e9, Math.round(Number(String(a[k + '_n'] ?? '').replace(/[^0-9.kKmM]/g, '').replace(/k$/i, 'e3').replace(/m$/i, 'e6')) || 0)));
+      return handle ? { kind: k, label, handle, followers: n } : null;
+    }).filter(Boolean) as { kind: string; label: string; handle: string; followers: number }[];
+    const missing = APPLY_REQUIRED.filter((k) => !out[k]);
+    if (!platforms.length) missing.push('platforms');
+    if (missing.length) return json({ error: 'missing', message: 'A few answers are missing.', fields: missing }, 400);
+    if (a.confirm !== true) return json({ error: 'confirm', message: 'Tick the box to confirm your answers.' }, 400);
+    const { count } = await db.from('ve_creator_applications').select('id', { count: 'exact', head: true }).ilike('email', email)
+      .gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
+    if ((count || 0) >= 3) return json({ error: 'too_many', message: 'We already have your application. Our team will write back.' }, 429);
+    const who = await memberOf(req, body).catch(() => null);
+    const chapters = list(a.chapters).filter((c) => CHAPTERS.includes(c));
+    const chapter = CHAPTERS.includes(String(a.chapter)) || a.chapter === 'other' ? String(a.chapter) : null;
+    const reach = platforms.reduce((n, p) => n + p.followers, 0);
+    const { data: row, error } = await db.from('ve_creator_applications').insert({
+      name: out.name.slice(0, 160), email, phone: out.phone || null, chapter, city: out.city || null,
+      chapters: chapter && chapter !== 'other' && !chapters.includes(chapter) ? [chapter, ...chapters] : chapters,
+      topics: list(a.topics), formats: list(a.formats), gig_kinds: list(a.gig_kinds), platforms, main_platform: clean(a.main, 40) || null,
+      total_reach: Math.min(reach, 2147483647), answers: out, source: clean(body.source, 120) || null, member_id: who || null,
+    }).select('id').single();
+    if (error || !row) { console.error('creator_apply', error); return json({ error: 'save_failed', message: 'That did not save. Try again in a minute.' }, 500); }
+    const words = (k: string) => k === 'chapter' ? CHAPTER_WORDS[out[k]] || out[k] : k === 'chapters' ? list(a.chapters).map((c) => CHAPTER_WORDS[c] || c).join(', ') : out[k];
+    const rows = APPLY_KEYS.filter(([k]) => out[k]).map(([k, label]) =>
+      `<tr><td style="padding:6px 12px 6px 0;color:#555;vertical-align:top;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0">${esc(words(k)).replace(/\n/g, '<br>')}</td></tr>`).join('') +
+      platforms.map((p) => `<tr><td style="padding:6px 12px 6px 0;color:#555;vertical-align:top;white-space:nowrap">${esc(p.label)}</td><td style="padding:6px 0">${esc(p.handle)}${p.followers ? ' &middot; ' + p.followers.toLocaleString('en-US') : ''}</td></tr>`).join('');
+    await sendOne(SEAN_EMAIL, `[Creators] New application: ${out.name}${out.city ? ' (' + out.city + ')' : ''}`, wrap(
+      `<p><b>${esc(out.name)}</b> applied to be an official creator. Total reach as they gave it: <b>${reach.toLocaleString('en-US')}</b>.</p>` +
+      `<table style="border-collapse:collapse;font-size:14px">${rows}</table>` +
+      `<p><a href="${SITE}/admin/depot/ambassadors#creator/${row.id}">Read it in the Depot</a></p>`));
+    await sendOne(email, 'We have your creator application', wrap(
+      `<p style="margin:0 0 12px">Hi ${esc(firstName(out.name))},</p>` +
+      `<p style="margin:0 0 12px">Thank you for applying to be an official creator with Vegans Explore. Our team reads every application and will write back, usually within a few days.</p>` +
+      `<p style="margin:0 0 16px">When you are approved, your Creator Dashboard opens and the gigs that fit you start landing in it. Until then, you can walk through it again with Kai.</p>` +
+      btn(`${SITE}/gigs/sample`, 'See the Creator Dashboard')));
+    return json({ ok: true, id: row.id });
+  }
+
   const memberId = await memberOf(req, body);
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
   const { data: member } = await db.from('members').select('id, name, email, ve_role, is_superadmin, membership_status').eq('id', memberId).maybeSingle();
@@ -271,8 +336,16 @@ Deno.serve(async (req) => {
   const isAdmin = !!member.is_superadmin;
 
   // ---- The team: every Ambassador's checklist, and the profile requests waiting.
-  if (action === 'admin_list' || action === 'claim_decide' || action === 'story_status') {
+  if (action === 'admin_list' || action === 'claim_decide' || action === 'story_status' || action === 'creator_status') {
     if (!isAdmin) return json({ error: 'forbidden' }, 403);
+    if (action === 'creator_status') {
+      if (!isId(body.id) || !CREATOR_STATUS.includes(body.status)) return json({ error: 'bad_request' }, 400);
+      const patch: Record<string, unknown> = { status: body.status, status_at: new Date().toISOString(), status_by: member.id };
+      if (typeof body.note === 'string') patch.team_note = clean(body.note, 2000) || null;
+      const { error } = await db.from('ve_creator_applications').update(patch).eq('id', body.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true });
+    }
     if (action === 'story_status') {
       if (!isId(body.id) || !['new', 'contacted', 'done'].includes(body.status)) return json({ error: 'bad_request' }, 400);
       const { error } = await db.from('ve_ambassador_stories').update({ status: body.status, status_at: new Date().toISOString(), status_by: member.id }).eq('id', body.id);
@@ -316,11 +389,12 @@ Deno.serve(async (req) => {
       if (who?.email) await sendOne(who.email, 'Your Vegans Explore profile is yours', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 16px">Your profile in the Directory is now yours to keep current: your photo, what you do and your bio. It is the first step of your checklist for paid work.</p>` + btn(`${DOOR}?step=profile`, 'Finish your profile')));
       return json({ ok: true, status: 'approved', listing_id: listingId });
     }
-    const [{ data: ambs }, { data: rows }, { data: pend }, { data: stories }] = await Promise.all([
+    const [{ data: ambs }, { data: rows }, { data: pend }, { data: stories }, { data: creators }] = await Promise.all([
       db.from('members').select('id, name, email, avatar_url, ambassador_profile').eq('ve_role', 'ambassador').order('name'),
       db.from('ve_ambassador_door').select('*'),
       db.from('ve_profile_claims').select('id, member_id, listing_id, new_profile, note, created_at').eq('status', 'pending').order('created_at'),
       db.from('ve_ambassador_stories').select('id, member_id, kind, name, about, place, contact, status, status_at, created_at').order('created_at', { ascending: false }).limit(200),
+      db.from('ve_creator_applications').select('*').order('created_at', { ascending: false }).limit(500),
     ]);
     const byMember: Record<string, any> = {}; for (const r of rows || []) byMember[r.member_id] = r;
     const people = await Promise.all((ambs || []).map(async (a: any) => {
@@ -341,7 +415,7 @@ Deno.serve(async (req) => {
     for (const m of more || []) names[m.id] = m;
     const storyRows = (stories || []).map((x: any) => ({ ...x, kind_words: STORY_KINDS[x.kind] || x.kind,
       member: names[x.member_id] ? { name: names[x.member_id].name, email: names[x.member_id].email } : null }));
-    return json({ ok: true, ambassadors: people, claims, stories: storyRows });
+    return json({ ok: true, ambassadors: people, claims, stories: storyRows, creators: creators || [], chapter_words: CHAPTER_WORDS, answer_labels: APPLY_KEYS });
   }
 
   // ---- The Ambassador's own checklist.
