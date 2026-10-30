@@ -3128,6 +3128,32 @@ only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboar
 lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
 that we're selling"), and a tile in Your tools.
 
+**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is the **Inbox** (`renderInbox`,
+`#dash-inbox-block`; migration `20261030_ve_inbox.sql`): "anything that comes through, period, even if it's assigned to somebody
+else... so nothing falls through the cracks". `ve_inbox_items()` is every request a person sent, wherever it came in (meeting
+requests and Group Partner applications, Ask a person questions, leads that are not link clicks, Ambassador stories, Podcast
+Network applications, profile requests, listing claims and applications, nonprofit surveys, events members submitted; tests and
+LESARUSS.ai's own items left out); a new kind of request is a new `union all` there. `ve_inbox_state` holds what happened to each
+one: assigned to the chapter's active Community Manager (the request's chapter, else the requester's home chapter), else the team;
+**Opened** only when that person opens it (with no Community Manager, a super admin); **Replied** or **Closed, no reply needed**, by
+hand (`ve-dashboard` `inbox`, `inbox_open`, `inbox_set`). The reply clock is **24 hours from when it came in** ("no more than... 24
+hours... sooner the better", `INBOX_DUE_HOURS`); the head shows open, late and the average reply time, which is how a Community
+Manager's work will be measured. Tabs Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
+assigned to, opened, reply by, a team note, Reply by email, Mark replied, Close, Open where it came in). A Community Manager's own
+inbox (only theirs) is in `ve-dashboard` already, not yet on their dashboard. Replies are marked by hand: sending the reply from the
+inbox, so the clock stops itself, is the next step.
+**Recent activity** has the **Leaderboard** as one of its boxes, the same size (it stays beside For you for everyone else), and every
+box has a drag handle (mouse, touch, or the arrow keys) to put it where Sean wants; the order is kept in the browser
+(`localStorage` `ve_dash_recent_order`, `dashReorder`). **Every member thumbnail is a rounded square that opens who they are**
+(`memberCard`): Recent Members, the voter on Recent Votes, Recent Leads (`ve-dashboard` `recent_leads`), the Leaderboard
+(`leaderboard`) and the Inbox. A member's picture is their People profile photo when one names them (`details.person.member_id`),
+else their account picture (`pictures()` in `ve-dashboard`). **Your tools**: the search on the left and the category filters to its
+right, wrapping to another row; on phones the filters sit behind a filter icon beside the search (`#dash-tools-filter`).
+**Vegans Explore only** (Sean, 2026-10-30: "It's showing votes for things that are on LESARUSS.ai... we need to make sure those
+stuff stay separate"): LESARUSS.ai's listings (tags `lesaruss-ai-directory`, `-candidate`, `-business-member`) are left out of Recent
+Votes, a member's latest votes, the inbox and the Depot's Logos (`ours` in `ve-discover`: To find, Suggested, the sweep, chain logos
+and Done). They share the database; LESARUSS.ai's own Depot is to be set up the same way on its side.
+
 - Which one: the member's choice (`members.dashboard_version`, the switch on the block; picking the suggested one clears it),
   else `ve_dashboard_version()`: owns a listing or Business owner in the Mission Survey (q3), business; q6 Curious / pre-Vegan,
   Flexitarian or Vegetarian, pre_vegan; Service provider, coach; else member (migration `20261025_dashboard_versions.sql`).
