@@ -16,6 +16,11 @@
      VEGuideCatalog.render(el, { viewer: member|null, shelf: 'all'|<shelf key>, source: 'guides-live-catalog', open: function (guide, event) {} });
      VEGuideCatalog.shelves(viewer) -> [{value, label}] the menu for this viewer; VEGuideCatalog.bannerOptions(viewer, extra) for VECityBanner.
    `open` is optional: the dashboard passes one to open a Guide inside its window. A Guide with `full` opens as its own page.
+
+   Another brand (LESARUSS.ai's /guides, 2026-10-30, canon canon-lesaruss-ai-front-door: "Guides: the catalog style") passes its own
+   list and shelves: render(el, { guides: [...], shelves: [{value, label, sub}] }); every Guide in it is open to all. Its Diplomats
+   get every Guide from every LESARUSS community, so it can add ours with VEGuideCatalog.communityGuides(origin, chips): our live
+   Guides with links and pictures on vegansexplore.com (origin), on their own shelf ('vegans-explore').
 */
 (function () {
   if (window.VEGuideCatalog) return;
@@ -128,14 +133,14 @@
     }).join('');
     var top = g.soon ? '<div class="gc-banner gc-banner-icon" aria-hidden="true">' + icon(g.icon) + '</div>'
       : g.badge ? '<a class="gc-banner gc-banner-icon gc-banner-amb" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '<span>' + esc(g.badge) + '</span></a>'
-      : '<a class="gc-banner" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></a>';
+      : '<a class="gc-banner" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true"' + (g.newTab ? ' target="_blank" rel="noopener"' : '') + '><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"' + (g.bannerPos ? ' style="object-position:' + esc(g.bannerPos) + '"' : '') + '></a>';
     var tag = g.soon ? '<span class="gc-soon-tag">Coming soon</span>' : g.tag ? '<span class="gc-new-tag">' + esc(g.tag) + '</span>' : '';
     var action = g.soon
       ? '<button type="button" class="gc-btn gc-btn-outline" data-gc-notify>Notify me</button>' +
         '<div class="gc-waitlist"><input type="email" placeholder="Your email address" aria-label="Email to be told when the ' + esc(g.title) + ' opens">' +
         '<button type="button" class="gc-btn gc-btn-primary" data-gc-join>Join the waitlist</button>' +
         '<div class="gc-waitlist-success">You\'re on the list.</div></div>'
-      : '<a href="' + esc(g.href) + '" class="gc-btn gc-btn-primary" data-frame-label="' + esc(g.title) + '" data-gc-open>' + esc(g.cta) + '</a>';
+      : '<a href="' + esc(g.href) + '" class="gc-btn gc-btn-primary" data-frame-label="' + esc(g.title) + '" data-gc-open' + (g.newTab ? ' target="_blank" rel="noopener"' : '') + '>' + esc(g.cta) + '</a>';
     return '<div class="gc-card' + (g.soon ? ' is-soon' : '') + '" role="listitem" data-slug="' + esc(g.slug) + '">' + top +
       '<div class="gc-topline"><span class="gc-label">' + esc(g.label) + '</span>' + tag + '</div>' +
       '<div class="gc-title">' + esc(g.title) + '</div><p class="gc-desc">' + esc(g.desc) + '</p>' +
@@ -171,6 +176,7 @@
     return w.member && see.indexOf(w.role) >= 0;
   }
   function visible(opts) {
+    if (opts && opts.guides) return opts.guides.slice();
     var w = viewerOf(opts || {});
     return PARTNERS.concat(GUIDES).filter(function (g) { return canSee(g, w); }).map(function (g) {
       var c = {}; for (var k in g) c[k] = g[k];
@@ -197,7 +203,7 @@
     if (!document.getElementById('ve-guide-catalog-css')) {
       var st = document.createElement('style'); st.id = 've-guide-catalog-css'; st.textContent = CSS; document.head.appendChild(st);
     }
-    var all = visible(opts);
+    var all = visible(opts), SH = opts.shelves || SHELVES;
     var shelf = opts.shelf && opts.shelf !== 'all' ? opts.shelf : '';
     var html = '';
     if (shelf) {
@@ -205,11 +211,11 @@
       html = only.length ? only.map(card).join('') : '<p class="gc-empty">Nothing on this shelf for you yet.</p>';
     } else {
       // All Guides, a shelf at a time with its heading, Everyday first.
-      SHELVES.forEach(function (s) {
+      SH.forEach(function (s) {
         if (s.value === 'all') return;
         var on = all.filter(function (g) { return g.shelf === s.value; });
         if (!on.length) return;
-        html += '<div class="gc-shelf-h" role="presentation"><b>' + esc(s.label) + '</b><span>' + esc(SHELF_SUB[s.value] || '') + '</span></div>' + on.map(card).join('');
+        html += '<div class="gc-shelf-h" role="presentation"><b>' + esc(s.label) + '</b><span>' + esc(s.sub || SHELF_SUB[s.value] || '') + '</span></div>' + on.map(card).join('');
       });
     }
     el.innerHTML = html;
@@ -238,5 +244,16 @@
     });
   }
 
-  window.VEGuideCatalog = { GUIDES: GUIDES, PARTNERS: PARTNERS, SHELVES: SHELVES, render: render, shelves: shelves, bannerOptions: bannerOptions };
+  // Our live Guides for another LESARUSS brand's catalog: every one with a page (not the free Welcome Guide, which is our Passport,
+  // and not the Partner Guides), linked and pictured on vegansexplore.com, its chips replaced by the brand's own.
+  function communityGuides(origin, chips) {
+    origin = origin || 'https://vegansexplore.com';
+    var abs = function (u) { return /^https?:/.test(u) ? u : origin + u; };
+    return GUIDES.filter(function (g) { return !g.soon && g.slug !== 'welcome' && (g.see || 'all') === 'all'; }).map(function (g) {
+      return { slug: 've-' + g.slug, shelf: 'vegans-explore', label: 'Vegans Explore \u00b7 ' + g.label, title: g.title, desc: g.desc,
+        banner: abs(g.banner), href: abs(g.href), newTab: true, chips: chips || [{ text: PRICE, cls: 'price' }], cta: 'Open on Vegans Explore' };
+    });
+  }
+
+  window.VEGuideCatalog = { GUIDES: GUIDES, PARTNERS: PARTNERS, SHELVES: SHELVES, render: render, shelves: shelves, bannerOptions: bannerOptions, communityGuides: communityGuides };
 })();
