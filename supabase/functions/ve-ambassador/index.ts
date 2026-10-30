@@ -468,8 +468,9 @@ Deno.serve(async (req) => {
         });
         if (!ok) {
           console.error('stripe account', d);
+          if (/restricted/i.test(String(d?.error?.message || ''))) await sendOne(SEAN_EMAIL, '[Ambassadors] Stripe refused a payouts account', wrap(`<p>Stripe refused to make a payouts account for <b>${esc(member.name || '')}</b> (${esc(member.email || '')}):</p><p>${esc(String(d.error.message))}</p><p>Confirm it in the Stripe Dashboard (Vegans Explore), then they can press Get paid again.</p>`));
           const msg = String(d?.error?.message || '');
-          return json({ error: 'stripe', message: /signed up for Connect|connect/i.test(msg) ? 'Payouts are not switched on yet. We will let you know as soon as they are.' : 'Stripe did not open. Try again in a minute.', detail: isAdmin ? msg : undefined }, 400);
+          return json({ error: 'stripe', message: /signed up for Connect/i.test(msg) ? 'Payouts are not switched on yet. We will let you know as soon as they are.' : /restricted/i.test(msg) ? 'Payouts could not be set up right now. Our team has been told and will let you know.' : 'Stripe did not open. Try again in a minute.', detail: isAdmin ? msg : undefined }, 400);
         }
         acct = d.id;
         await db.from('ve_ambassador_door').update({ stripe_account_id: acct, stripe_test: test, updated_at: new Date().toISOString() }).eq('member_id', member.id);
