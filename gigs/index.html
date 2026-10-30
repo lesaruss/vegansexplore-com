@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gig Board — Vegans Explore</title>
+  <meta name="description" content="Paid campaigns, collaborations, hosting and points gigs for Vegan creators and members, city by city.">
+  <link rel="canonical" href="https://vegansexplore.com/gigs">
+  <meta property="og:title" content="Gig Board — Vegans Explore">
+  <meta property="og:description" content="Paid campaigns, collaborations, hosting and points gigs for Vegan creators and members, city by city.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Gig Board (Sean, 2026-10-30). /gigs is the live board (today: our bounties as points gigs, for signed-in members);
+       /gigs/sample (a rewrite to this page) is the sample, Kai Monroe and illustrative gigs from /gigs/sample/demo.js. Both draw
+       /public/ve-gigs.js; this page adds the shared banner, whose dropdown moves between the board's views. */
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: #fff; font-family: 'Montserrat', sans-serif; color: #1a1a1a; }
+    main { max-width: none; margin: 0; padding: 24px 40px 80px; }
+    .gate { border: 1px solid rgba(0,0,0,.1); border-radius: 12px; padding: 32px; text-align: center; }
+    .gate p { color: rgba(26,26,26,.75); line-height: 1.6; margin: 0 0 16px; }
+    .gate a { display: inline-flex; margin: 4px; padding: 11px 20px; border-radius: 6px; font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; text-decoration: none; background: #2d7d31; color: #fff; }
+    .gate a.ghost { background: #fff; color: #1a1a1a; border: 1.5px solid rgba(0,0,0,.12); }
+    @media (max-width: 600px) { main { padding: 16px 16px 60px; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-city-banner.js"></script>
+  <section id="gig-banner"></section>
+  <main><div id="gigs"></div></main>
+  <script src="/public/ve-gigs.js"></script>
+  <script>
+    (function () {
+      var demo = /^\/gigs\/sample/.test(location.pathname);
+      var VIEWS = [{ value: 'board', label: 'Open gigs' }, { value: 'mine', label: 'My gigs' }, { value: 'profile', label: 'Your profile' }, { value: 'how', label: 'How you rise' }];
+      var ready = false;
+      var banner = VECityBanner.mount('gig-banner', {
+        key: 'gigs', title: 'Gig Board', pickLabel: 'Board view', param: false, art: '/communities/south-florida/banner.jpg',
+        sub: 'Paid campaigns, collaborations, hosting and points gigs. Apply, audition or claim, and rise by results.',
+        choices: VIEWS, home: { label: 'Gigs home', href: demo ? '/gigs/sample#board' : '/gigs#board' },
+        actions: demo ? [{ label: 'Become an official creator', short: 'Register', href: '/creators/welcome#/register', go: true }] : [],
+        onChange: function (v) { if (!ready) return; var cur = (location.hash || '#board').slice(1).split('/')[0]; if (v && v !== cur && !(v === 'board' && (cur === 'gig' || cur === 'apply'))) location.hash = '#' + v; }
+      });
+      // Inside a Guide's preview the banner starts folded, so the board is what shows.
+      ready = true;
+      if (window.top !== window) banner.fold(true);
+      function sync(view) { var v = view === 'gig' || view === 'apply' ? 'board' : view; if (banner.current() !== v) banner.setQuiet(v); }
+      var el = document.getElementById('gigs');
+      el.addEventListener('click', function () { banner.autoFold(); });
+      function load(src) { return new Promise(function (ok) { var s = document.createElement('script'); s.src = src; s.onload = ok; document.head.appendChild(s); }); }
+      if (demo) {
+        load('/gigs/sample/demo.js').then(function () { VEGigs.mount(el, { demo: true, data: window.VE_GIGS_DEMO, onView: sync }); });
+        return;
+      }
+      function start() {
+        if (!(window.VEAuth && VEAuth.isLoggedIn())) {
+          el.innerHTML = '<div class="gate"><p><b>The Gig Board is for members.</b> Sign in to see the gigs in your city, or open the sample to see how it works.</p><a href="/gigs/sample">See the sample board</a><a class="ghost" href="/login?next=/gigs">Sign in</a></div>';
+          return;
+        }
+        VEGigs.live(el, { onView: sync }).catch(function () { el.innerHTML = '<div class="gate"><p>The board could not load. Refresh to try again.</p></div>'; });
+      }
+      if (window.VEAuth) start(); else window.addEventListener('load', start);
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

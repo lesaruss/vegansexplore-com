@@ -38,6 +38,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/gigs/sample",
+      "destination": "/gigs/index"
+    },
+    {
       "source": "/business",
       "destination": "/passport"
     },

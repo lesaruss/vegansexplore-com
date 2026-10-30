@@ -1058,6 +1058,33 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
   their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
   profile's invitation email linking it.
+- **The Gig Board** (Sean, 2026-10-30: "the actual mechanism for them to find gigs... like Casting Networks or Backstage where they
+  can go on daily and see what opportunities are available... whatever we create, I want become the way the bounties work as well...
+  submit some proofs, some examples... audition... a certain requirement of followers... opportunities that are just for points...
+  rise up the rankings if you're reliable"). One board for every way we pay a creator or member: `/public/ve-gigs.js` (`VEGigs.mount`,
+  `VEGigs.live`), one view at a time (`#board`, `#gig/<id>`, `#apply/<id>/<step>`, `#mine[/<status>]`, `#profile`, `#how`), filters
+  (pay: paid, perks, points; kind: paid campaign, collaboration, hosting, event, content, bounty; my cities or every city; Only gigs I
+  qualify for; newest, closing soon, highest pay). A gig is **claimed** (first come, the old bounty), **applied** to or **auditioned**
+  for; it asks for a pitch, examples, an audition link or a rate; each requirement (followers on given platforms, a level, a city) is
+  checked against the creator's profile and shown as You qualify or what it needs. **How you rise**: New, Rising (one delivered),
+  Reliable (five delivered, 9 in 10 on time, no open strikes), Featured (Reliable, Level 3, clicks per 1,000 followers at least twice the
+  board's average; sees new paid gigs a day early), counted from each creator's own tracked link (Logan's defaults, Sean's to change).
+  **`/gigs/sample`** (a rewrite to `gigs/index.html`, `noindex`) is the sample: **Kai Monroe**, an invented creator drawn in our style
+  (`gigs/sample/img/`, Higgsfield 2026-10-30, 26 credits; sources kept in `vegan-media/media/communities/kai-sample/`), illustrative
+  brands, ten gigs from `gigs/sample/demo.js` (dated from today), My gigs in every status, her profile as partners see it (platforms,
+  work with products, results per 1,000 followers, reliability, rates for the team); applying and claiming work for the visit and send
+  nothing. It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
+  "see it on the sample board" links, and linked from the Creator Guide's Your next step and the Ambassador Guide's Paid work.
+  **`/gigs`** (signed in) is the live board: the city's bounties through `ve-bounties` `list`. **The bounty is the gig** (migration
+  `20261030_gig_board.sql`): `ve_bounties` gained `gig_kind`, `apply_mode` (claim | apply | audition), `perk`, `partner_name`,
+  `partner_listing_id`, `req_min_followers`, `req_platforms`, `req_level`, `remote`, `asks`, `audition_prompt`, `apply_by` (every
+  existing bounty reads as a points bounty to claim, unchanged); submissions gained `applied`, `shortlisted`, `audition`,
+  `not_selected`, `application`, `applied_at`, `decided_at`, `decided_by`; `ve_gig_fit(bounty, member)` checks followers (the paid-work
+  checklist's platforms) and level. `ve-bounties` `apply` (Passport holders, requirements, every ask filled, an audition a full link;
+  emails the team), `applicants` and `applicant_decide` (shortlist, audition, book, not selected; booking turns the application into a
+  claim and the bounty lifecycle takes over; each emails the creator); `claim` refuses an apply gig (`apply_needed`) and a member who
+  does not qualify (`not_qualified`). Not built yet: posting a gig with these fields and deciding applicants in Depot > Bounties, the
+  partner's own view of its applicants, results per creator from tracked links, and `/dashboard/gigs`.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
   `guide-scripts/creator-guide.js`, the Nonprofit Guide's shell, River narrating in text (no clips), indexed, seventh in the
   Guide catalog (label Creators, banner `public/guides/creator-guide.jpg`), in the sitemap. Tabs: Overview, **The 10 tips** (`#/tips/<id>`:
@@ -3139,7 +3166,10 @@ and Done). They share the database; LESARUSS.ai's own Depot is to be set up the 
   admins only): status, Founding Member, role, level and points (a super admin's read ∞: they earn none; Sean, 2026-10-30), votes given,
   votes received (on their pages: listings they own, or a People profile naming them in `details.person.member_id`, which links a person
   without making them its owner; Sean's profile carries his, migration `20261030_people_member_link.sql`), places they checked in, saves,
-  joined, home chapter, Instagram, their link, their pages and latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  joined, home chapter, Instagram, their link, their pages, **Who voted for them** (the latest 25 votes on their pages, each voter's picture
+  and name opening that voter's own card, and the page voted for; `voted_by`), **Who saved their pages** (the latest 25 saves of their pages
+  or of an episode on them, the same rows, `saved_by`, `saves_received`; the team's view only, an owner's dashboard never names who saved),
+  their latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
   Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
   2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
   `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening

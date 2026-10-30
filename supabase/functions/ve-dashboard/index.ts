@@ -17,7 +17,9 @@
 //   person that voted").
 // POST { action: 'member_card', member_id } super admins: who a member is, for the dashboard's lightbox: account, level, points,
 //   the votes they gave and the votes their pages got (listings they own, or a People profile naming them in
-//   details.person.member_id), the places they checked in, saves and their pages, so Sean never leaves the page.
+//   details.person.member_id), the places they checked in, saves and their pages, and who voted for them (voted_by: the latest 25
+//   votes on their pages with each voter; Sean, 2026-10-30) and who saved them (saved_by: the latest 25 saves of their pages or
+//   their episodes, saves_received the count), so Sean never leaves the page.
 // POST { action: 'leaderboard' }            every member: the top 100 by points (ve_leaderboard), each with their id and picture, so a
 //   super admin's thumbnail opens who they are (Sean, 2026-10-30).
 // POST { action: 'recent_leads' }           super admins: the latest 100 ve_initiative_interest rows with the member's picture.
@@ -162,11 +164,38 @@ Deno.serve(async (req) => {
       db.from('listings').select('id, name, slug, owner_member_id').eq('status', 'approved').or(`owner_member_id.eq.${id},details->person->>member_id.eq.${id}`).order('name').limit(20),
     ]);
     const pageIds = (owned || []).map((l: any) => l.id);
-    const recv = pageIds.length ? await db.from('listing_daily_votes').select('id', { count: 'exact', head: true }).in('listing_id', pageIds) : { count: 0 };
+    // Who voted for them: the latest 25 votes on their pages, each with the voter.
+    const [recv, { data: inVotes }] = pageIds.length ? await Promise.all([
+      db.from('listing_daily_votes').select('id', { count: 'exact', head: true }).in('listing_id', pageIds),
+      db.from('listing_daily_votes').select('created_at, listing_id, member_id').in('listing_id', pageIds).order('created_at', { ascending: false }).limit(25),
+    ]) : [{ count: 0 }, { data: [] }];
+    // Who saved their pages: the latest 25 saves of their pages or of an episode on them (the team's view only; an owner's
+    // dashboard never names who saved).
+    const [lsN, epsN, { data: lSaves }, { data: eSaves }] = pageIds.length ? await Promise.all([
+      db.from('ve_listing_saves').select('id', { count: 'exact', head: true }).in('listing_id', pageIds),
+      db.from('ve_episode_saves').select('id', { count: 'exact', head: true }).in('listing_id', pageIds),
+      db.from('ve_listing_saves').select('saved_at, listing_id, member_id').in('listing_id', pageIds).order('saved_at', { ascending: false }).limit(25),
+      db.from('ve_episode_saves').select('created_at, listing_id, member_id, title').in('listing_id', pageIds).order('created_at', { ascending: false }).limit(25),
+    ]) : [{ count: 0 }, { count: 0 }, { data: [] }, { data: [] }];
+    const saves = [...(lSaves || []).map((x: any) => ({ at: x.saved_at, listing_id: x.listing_id, member_id: x.member_id, episode: null })),
+      ...(eSaves || []).map((x: any) => ({ at: x.created_at, listing_id: x.listing_id, member_id: x.member_id, episode: x.title || 'An episode' }))]
+      .sort((a, b) => Date.parse(b.at) - Date.parse(a.at)).slice(0, 25);
+    const voterIds = [...new Set([...(inVotes || []), ...saves].map((v: any) => v.member_id).filter(Boolean))];
+    const { data: voters } = voterIds.length ? await db.from('members').select('id, name, email, avatar_url, color').in('id', voterIds) : { data: [] };
+    const vpics = await pictures(voterIds as string[]);
+    const V = new Map((voters || []).map((x: any) => [x.id, { ...x, avatar_url: vpics.get(x.id) || null }])), P = new Map((owned || []).map((l: any) => [l.id, l]));
+    const votedBy = (inVotes || []).map((v: any) => {
+      const x: any = V.get(v.member_id) || {}, l: any = P.get(v.listing_id) || {};
+      return { at: v.created_at, voter: { id: v.member_id, name: x.name || x.email || 'Member', avatar_url: x.avatar_url || null, color: x.color || null }, page: l.name || null, slug: l.slug || null };
+    });
+    const savedBy = saves.map((v: any) => {
+      const x: any = V.get(v.member_id) || {}, l: any = P.get(v.listing_id) || {};
+      return { at: v.at, member: { id: v.member_id, name: x.name || x.email || 'Member', avatar_url: x.avatar_url || null, color: x.color || null }, page: l.name || null, episode: v.episode };
+    });
     return json({ ok: true, member: m, level: level || null, points: pts || null,
-      counts: { votes: votesN.count || 0, votes_received: recv.count || 0, checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
+      counts: { votes: votesN.count || 0, votes_received: recv.count || 0, saves_received: (lsN.count || 0) + (epsN.count || 0), checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
       recent_votes: (recent || []).filter((r: any) => !isLr(r.listings)).slice(0, 8).map((r: any) => ({ at: r.created_at, name: r.listings?.name || null, slug: r.listings?.slug || null })),
-      listings: (owned || []).map((l: any) => ({ name: l.name, slug: l.slug, owner: l.owner_member_id === id })) });
+      listings: (owned || []).map((l: any) => ({ name: l.name, slug: l.slug, owner: l.owner_member_id === id })), voted_by: votedBy, saved_by: savedBy });
   }
 
   if (body.action === 'leaderboard') {

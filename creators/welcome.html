@@ -212,6 +212,28 @@
     .dg-grid>:last-child:nth-child(odd),.dg-tiles>:last-child:nth-child(odd),.am-steps>:last-child:nth-child(odd){grid-column:1/-1;}
     @media (max-width:700px){.dg-grid,.dg-tiles,.am-steps{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:700px){.cr-pay li{grid-template-columns:minmax(0,1fr);gap:2px;}}
+    /* Try the board: picks on the left, the live sample on the right, scaled to fit; tap it for full screen (the Group Partner Guide's way). */
+    .gp-split{display:grid;grid-template-columns:minmax(240px,320px) minmax(0,1fr);gap:20px;align-items:start;}
+    .gp-side{display:flex;flex-direction:column;gap:8px;}
+    .gp-pick{display:block;width:100%;text-align:left;font:inherit;padding:12px 14px;border-radius:12px;border:2px solid transparent;background:var(--g);color:#fff;cursor:pointer;}
+    .gp-pick.alt{background:#14301c;}
+    .gp-pick[aria-pressed="true"]{border-color:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,.25);}
+    .gp-pick b{display:block;font-size:15px;font-weight:900;margin:0 0 2px;}
+    .gp-pick span{display:block;font-size:12.5px;line-height:1.45;color:#e6f4e7;}
+    .gp-thumb{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#f3f6f3;box-shadow:0 10px 30px rgba(0,0,0,.10);height:480px;}
+    .gp-thumb iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none;background:#fff;}
+    .gp-thumb-open{position:absolute;inset:0;width:100%;border:0;background:transparent;cursor:zoom-in;display:flex;align-items:flex-end;justify-content:flex-end;padding:14px;font:inherit;}
+    .gp-thumb-open span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(10,18,12,.85);color:#fff;padding:9px 12px;border-radius:6px;}
+    .gp-cap{font-size:12px;color:var(--ink55);margin:8px 2px 0;}
+    .cr-see{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);background:var(--gl);border:1px solid var(--gm);border-radius:6px;padding:8px 12px;cursor:pointer;margin-top:10px;}
+    .gp-view{position:fixed;inset:0;z-index:1000;background:rgba(6,14,8,.82);display:flex;flex-direction:column;padding:14px;}
+    .gp-view-bar{display:flex;align-items:center;gap:10px;color:#fff;padding:0 2px 10px;}
+    .gp-view-bar b{flex:1;min-width:0;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .gp-view-bar a,.gp-view-bar button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;text-decoration:none;cursor:pointer;white-space:nowrap;}
+    .gp-view-bar button{background:#22C55E;border-color:#22C55E;color:#03170a;}
+    .gp-view iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff;}
+    html.gp-view-on,html.gp-view-on body{overflow:hidden;}
+    @media (max-width:900px){.gp-split{grid-template-columns:minmax(0,1fr);}.gp-thumb{height:auto;aspect-ratio:3/4;}.gp-view{padding:8px;}.gp-view-bar a{display:none;}}
   </style>
 </head>
 <body>
@@ -254,6 +276,7 @@
     { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. You make content for a living, so I\'ll keep this to the business: what we are building, the work we bring you, and how it pays.' },
     { k: 'where', label: 'Where we\'re going', say: 'We are building the Vegan community city by city, and when we sit down with brands and events, we bring our creators with us.' },
     { k: 'work', label: 'The work', say: 'Paid campaigns, collaborations, hosting and events. Here is each one, and what is open today.' },
+    { k: 'board', label: 'Try the board', say: 'Here is the board itself. Meet Kai, a sample creator, and click through it: open a gig, apply, audition, and see what partners see.' },
     { k: 'pay', label: 'How it pays', say: 'Your rate is yours, paid in full. Half when you say yes, half when your posts are live.' },
     { k: 'cities', label: 'Every city', say: 'Brands want real people in every city we are in. That is where you come in, wherever you are.' },
     { k: 'you', label: 'What you tell us', say: 'Tell us what you do, where you post and what you charge. That is how we match you, and it stays with our team.' },
@@ -261,7 +284,7 @@
     { k: 'register', label: 'Register', say: 'Ready? Register, and you are on the list we work from every time a brand or an event calls.' }
   ];
   var BLURB = {
-    where: 'Thirteen chapters, brands and events.', work: 'Campaigns, collaborations, hosting.', pay: 'Your full rate, 50% up front.',
+    board: 'The real Gig Board, with a sample creator.', where: 'Thirteen chapters, brands and events.', work: 'Campaigns, collaborations, hosting.', pay: 'Your full rate, 50% up front.',
     cities: 'Creators in every chapter.', you: 'Platforms, rates and what you want.', questions: 'Straight answers.', register: 'Become an official creator.'
   };
   var ICONS = {
@@ -271,7 +294,8 @@
     cities: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0114 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
     you: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/>',
     questions: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>',
-    register: '<path d="M20 6 9 17l-5-5"/>'
+    register: '<path d="M20 6 9 17l-5-5"/>',
+    board: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h3M8 16h6"/>'
   };
   var CHAPTERS = ['South Florida', 'Central Florida', 'North Florida', 'Atlanta', 'Washington, D.C.', 'Maryland', 'Virginia', 'Delaware', 'West Virginia', 'Philadelphia', 'New York', 'Los Angeles', 'London'];
   var code = (new URLSearchParams(location.search).get('c') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
@@ -288,6 +312,20 @@
   function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '">' + esc(label) + '</a></div>'; }
   function qa(q, a) { return '<div class="am-qa"><b>' + esc(q) + '</b><p>' + a + '</p></div>'; }
   function mail(subject, label, ghost) { return '<a class="dg-btn' + (ghost ? ' dg-ghost' : '') + '" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent(subject) + '">' + esc(label) + '</a>'; }
+  var SAMPLE = '/gigs/sample';
+  function see(hash, label) { return '<button type="button" class="cr-see" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Gig Board, sample">' + esc(label) + ' &rarr;</button>'; }
+  var PICKS = [['board', 'Open gigs', 'What is on the board today: paid, perks and points, with what you qualify for.'],
+    ['gig/g1', 'A paid campaign', 'The brief, the pay, who it is for, and what to send, with an audition.'],
+    ['apply/g7/1', 'Apply and audition', 'One step at a time: your pitch, then your audition link.'],
+    ['mine', 'My gigs', 'Applied, shortlisted, audition requested, booked, delivered, paid.'],
+    ['profile', 'What partners see', 'Kai\'s platforms, work with products, results and reliability.'],
+    ['how', 'How you rise', 'Reliability and real results move you up, not followers alone.']];
+  var pick = 'board';
+  function thumb(hash) {
+    return '<div class="gp-thumb" data-thumb><iframe tabindex="-1" aria-hidden="true" title="The Gig Board, sample" src="' + SAMPLE + '#' + hash + '"></iframe>' +
+      '<button type="button" class="gp-thumb-open" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Gig Board, sample"><span>Open full screen</span></button></div>' +
+      '<p class="gp-cap">A sample: Kai is invented and drawn in our style, every brand is illustrative, and nothing is sent. Tap it to click around full screen.</p>';
+  }
   function me() { try { return window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember ? VEAuth.getMember() : null; } catch (e) { return null; } }
 
   var VIEWS = {
@@ -316,7 +354,12 @@
         card('Events', 'Our own events and the ones we promote, starting with the Plant-Based Showcase on Miami Dolphins game day, Sunday, November 29, 2026. Tell us you want in, and we let you know where creators fit.', 'Coming', true) +
         card('Professional work', 'Social, editing, design and outreach for the businesses in our Directory, offered with vetted Vegan professionals. Each service opens one at a time.', 'Coming', true) +
         card('See a campaign run', 'Our sample campaign shows a brand\'s campaign as members see it: the tasks, the leaderboard and the creators. <a href="/campaign-engine/fieldhouse-protein" target="_blank" rel="noopener">Open the sample</a> (illustrative).', 'Sample') +
-        '</div>' + nextBtn('pay', 'Next: how it pays');
+        '</div>' + see('board', 'See these on the sample board') + nextBtn('board', 'Next: try the board');
+    },
+    board: function () {
+      return head('Try the board', 'The Gig Board, as a creator sees it', 'Every gig we bring you lands on one board you can open any day, like a casting site: paid campaigns, collaborations, hosting and points gigs, each with its requirements and what to send. Meet <b>Kai Monroe</b>, a sample creator, and click through it.') +
+        '<div class="gp-split"><div class="gp-side">' + PICKS.map(function (p, i) { return '<button type="button" class="gp-pick' + (i % 2 ? ' alt' : '') + '" data-pick="' + p[0] + '" aria-pressed="' + (p[0] === pick) + '"><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></button>'; }).join('') +
+        '</div><div id="crThumb">' + thumb(pick) + '</div></div>' + nextBtn('pay', 'Next: how it pays');
     },
     pay: function () {
       return head('How it pays', 'Your rate, paid in full', 'We run campaigns the way you would want to be booked.') +
@@ -333,7 +376,7 @@
         card('Your link earns too', 'Every official creator has their own link. You earn 20% of every Passport bought through it, from day one.', 'Commission') +
         card('The Partner plan, on us', 'From Level 2, while you are active, our Partner plan is on us: your own page in the Directory, its dashboard and its numbers.', 'From Level 2') +
         card('Sponsored means disclosed', 'Every sponsored post says so, the way the FTC asks. We give you the words.', 'The rules') +
-        '</div>' + nextBtn('cities', 'Next: every city');
+        '</div>' + see('mine', 'See Kai\'s gigs and earnings') + nextBtn('cities', 'Next: every city');
     },
     cities: function () {
       return head('Every city', 'Creators where the brands are', 'A brand that comes to us wants people on the ground in each city, not one post from one place. We are looking for creators in every chapter, and you are never tied to one: show up where you live, and wherever you travel.') +
@@ -351,7 +394,7 @@
         '<li><b>Your platforms</b>Instagram, TikTok, YouTube, Facebook or a podcast, and your followers. YouTube we read ourselves.</li>' +
         '<li><b>Your rates</b>A post, a reel, a story, an appearance, hosting, a day of social work, and the cities you can show up in. Our team only.</li>' +
         '<li><b>Get paid</b>Your payout details, on Stripe\'s own secure pages.</li></ol>' +
-        '<p class="dg-lede">When all four are done you are <b>Active</b>, and campaigns can be offered to you.</p>' + nextBtn('questions', 'Next: questions');
+        '<p class="dg-lede">When all four are done you are <b>Active</b>, and campaigns can be offered to you.</p>' + see('profile', 'See what partners see on Kai\'s profile') + nextBtn('questions', 'Next: questions');
     },
     questions: function () {
       return head('Questions', 'Straight answers') +
@@ -382,6 +425,7 @@
     var t = tab(cur), i = TABS.indexOf(t);
     main.innerHTML = VIEWS[cur]();
     main.scrollTop = 0;
+    fitThumbs();
     menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
     sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
     var pic = window.VEGuideArt ? VEGuideArt('river', 'square') : null;
@@ -391,6 +435,32 @@
       '<a class="dg-tnav next" href="#/' + TABS[Math.min(TABS.length - 1, i + 1)].k + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
     tourEl.innerHTML = tourM.innerHTML = nav;
   }
+
+  // Try the board: the live sample, drawn at desktop width (phone width on a phone) and scaled into its box.
+  function fitThumbs() {
+    [].forEach.call(main.querySelectorAll('[data-thumb]'), function (t) {
+      var phone = window.innerWidth <= 900;
+      if (!phone) { var top = t.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop; t.style.height = Math.max(380, Math.min(760, main.clientHeight - top - 40)) + 'px'; } else t.style.height = '';
+      var vw = phone ? 420 : 1280, sc = t.clientWidth / vw, f = t.querySelector('iframe');
+      f.style.width = vw + 'px'; f.style.height = Math.ceil(t.clientHeight / sc) + 'px'; f.style.transform = 'scale(' + sc + ')';
+    });
+  }
+  window.addEventListener('resize', fitThumbs);
+  var viewEl = null;
+  function closeView() { if (!viewEl) return; viewEl.remove(); viewEl = null; document.documentElement.classList.remove('gp-view-on'); }
+  function openView(url, title) {
+    closeView();
+    viewEl = document.createElement('div'); viewEl.className = 'gp-view'; viewEl.setAttribute('role', 'dialog'); viewEl.setAttribute('aria-modal', 'true'); viewEl.setAttribute('aria-label', title);
+    viewEl.innerHTML = '<div class="gp-view-bar"><b>' + esc(title) + '</b><a href="' + esc(url) + '" target="_blank" rel="noopener">Open in a new tab</a><button type="button" data-view-close>Close</button></div><iframe title="' + esc(title) + '" src="' + esc(url) + '"></iframe>';
+    document.body.appendChild(viewEl); document.documentElement.classList.add('gp-view-on'); viewEl.querySelector('[data-view-close]').focus();
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeView(); });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-view-close]')) { closeView(); return; }
+    var v = e.target.closest('[data-view-url]'); if (v) { e.preventDefault(); openView(v.getAttribute('data-view-url'), v.getAttribute('data-view-title')); return; }
+    var pk = e.target.closest('[data-pick]');
+    if (pk) { pick = pk.getAttribute('data-pick'); [].forEach.call(main.querySelectorAll('[data-pick]'), function (b) { b.setAttribute('aria-pressed', String(b === pk)); }); $('crThumb').innerHTML = thumb(pick); fitThumbs(); }
+  });
 
   sel.addEventListener('change', function () { location.hash = '#/' + sel.value; });
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
