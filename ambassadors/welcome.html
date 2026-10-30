@@ -166,6 +166,45 @@
     @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
     .am-sec{margin:20px 0 10px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
     .dg-tile .am-ic{display:flex;align-items:center;justify-content:center;color:var(--g);border:1px solid var(--gm);background:#fff;}
+    /* Ask whether they want the Guide (Sean, 2026-10-30: "on the first page, we can ask them if they want the guide. And if they choose
+       not to, they can navigate through themselves... at the bottom, hidden, the guide will always be there"), and pictures so the page
+       is not plain once the Guide is folded away (/public/ve-guide-min.js). */
+    .dg-fold{display:none;align-items:center;justify-content:center;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink75);cursor:pointer;}
+    .am-choose{display:flex;gap:16px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:16px 18px;margin:0 0 18px;flex-wrap:wrap;}
+    .am-choose i{flex:0 0 64px;height:64px;border-radius:12px;background:#fff center 18%/cover no-repeat;}
+    .am-choose div{flex:1 1 260px;min-width:0;}
+    .am-choose b{display:block;font-size:15px;font-weight:900;}
+    .am-choose p{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink75);}
+    .am-choose .dg-btns{margin:0;}
+    .am-chose{font-size:13px;color:var(--ink75);margin:0 0 16px;}
+    .am-chose button{font:inherit;font-weight:800;color:var(--g);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}
+    .am-ops{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:14px;margin:0 0 20px;}
+    .am-op{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;text-decoration:none;color:var(--ink);background:#fff;transition:transform .12s,box-shadow .12s;}
+    .am-op:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
+    .am-op i{display:block;aspect-ratio:16/10;background:#f3f6f3 center/cover no-repeat;}
+    .am-op div{padding:12px 14px 14px;}
+    .am-op b{display:block;font-size:15px;font-weight:900;margin-bottom:3px;}
+    .am-op span{display:block;font-size:13px;line-height:1.5;color:var(--ink75);}
+    .am-feat{display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr);gap:18px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 14px;background:#fff;}
+    .am-feat i{display:block;aspect-ratio:16/10;border-radius:10px;background:#f3f6f3 center/cover no-repeat;}
+    .am-feat b{display:block;font-size:16px;font-weight:900;margin-bottom:4px;}
+    .am-feat p{margin:0;font-size:14px;line-height:1.6;color:var(--ink75);}
+    .am-feat a{color:var(--g);font-weight:800;}
+    .am-kinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .am-kind{display:flex;flex-direction:column;gap:3px;text-align:left;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:12px 14px;cursor:pointer;color:var(--ink);}
+    .am-kind b{font-size:14px;font-weight:900;}
+    .am-kind span{font-size:12.5px;line-height:1.45;color:var(--ink75);}
+    .am-kind[aria-pressed="true"]{border-color:var(--g);background:var(--gl);}
+    .am-form{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:12px 16px;}
+    .am-form .wide{grid-column:1/-1;}
+    .am-form label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;}
+    .am-form label small{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink55);}
+    .am-form input,.am-form textarea,.am-ask textarea{font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;color:var(--ink);letter-spacing:0;text-transform:none;font-weight:400;width:100%;}
+    .am-form textarea,.am-ask textarea{min-height:110px;resize:vertical;line-height:1.5;}
+    .am-ask{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px 18px;margin:18px 0 0;}
+    .am-ask b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .am-ask p{margin:0 0 10px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
+    @media (max-width:700px){.am-feat{grid-template-columns:minmax(0,1fr);}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -190,20 +229,22 @@
 
 <div class="am-gate" id="amGate" hidden></div>
 
-<div class="dg-app" id="amApp" hidden>
+<div class="dg-app" id="dgApp" hidden>
   <main class="dg-main" id="dgMain" aria-live="polite"></main>
   <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
-  <aside class="dg-rail" aria-label="Your Guide">
+  <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Your Guide">
     <div class="dg-guide" id="dgGuide" role="img"></div>
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
     <div class="dg-tour" id="dgTour"></div>
+    <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide me</button>
   </aside>
 </div>
 
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-guide-min.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script>
 (function () {
@@ -213,30 +254,43 @@
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
+  // Not bound to one place (Sean, 2026-10-30: "why would we want to limit them to any particular area?... As an ambassador, you're just
+  // representing the movement and helping us get into as many places as possible, introducing us to business owners and to podcasters
+  // and to people who are on the streets who have a story to be told... we want to interview you and put you on our podcast... be the
+  // voice of your city"). The Opportunity, Tell the stories and Paid work tabs say what it is; Anywhere replaced Your city.
   var TABS = [
-    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. You were hand selected for what you have already given the movement. This Guide walks you through what comes with it, one tab at a time.' },
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. You were hand selected for what you have already given the movement. I can walk you through this, or you can look around on your own. Your call.' },
     { k: 'why', label: 'Why it matters', g: 'dani', say: 'Every person who joins is someone new who can find and support a rescue, a sanctuary or a Vegan place near them. People already trust you, and that is why your invitation counts.' },
+    { k: 'role', label: 'The opportunity', g: 'nori', say: 'You are not bound to one place. You represent the movement wherever you go, with everyone you know, and you help us reach places we have never been.' },
+    { k: 'stories', label: 'Tell the stories', g: 'river', say: 'We want the stories. Introduce us to the people doing the work, tell us your own, or raise your hand to host. The voices of Vegans Explore should be yours.' },
+    { k: 'paid', label: 'Paid work', g: 'theo', say: 'When a campaign, an event or a reporter needs someone like you, it comes to you with what it pays. Your checklist gets you ready for it.' },
     { k: 'account', label: 'Your membership', g: 'theo', say: 'Your Founding Membership is on us, in recognition of your work. Here are your points, your level, and what they can do.' },
-    { k: 'role', label: 'Your role', g: 'nori', say: 'You already do the work. As an Ambassador you bring people in and are a voice for your city, your way, with the people who already trust you.' },
-    { k: 'city', label: 'Your city', g: 'river', say: 'Pick the city you represent. Your Daily Pulse, events and Directory open there, and so does the hub you will point people to.' },
-    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours. Everyone who joins through it adds their voice, their votes and their support to the community.' },
-    { k: 'who', label: 'Who to invite', g: 'maya', say: 'Start with the people who would love it most: friends who eat Vegan, the Vegan-curious, and the places you already go.' },
+    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours, and it works everywhere. Everyone who joins through it adds their voice, their votes and their support to the community.' },
+    { k: 'who', label: 'Who to invite', g: 'maya', say: 'Anyone, anywhere: friends in other cities, the places you love, the people with a story. Start with the ones who would love it most.' },
     { k: 'share', label: 'What to share', g: 'dani', say: 'Here are a few things to send, each with your link already in it. Use them as they are, or say it your way.' },
-    { k: 'questions', label: 'Answering questions', g: 'theo', say: 'People will ask what it is and what it costs. Here are the straight answers, and a few things to keep in mind.' },
+    { k: 'city', label: 'Anywhere', g: 'maya', say: 'Share it anywhere. Every chapter is open to you. Pick a home base if you like, so your Daily Pulse and events open there.' },
+    { k: 'questions', label: 'Answering questions', g: 'theo', say: 'People will ask what it is and what it costs. Here are the straight answers. Not here? Ask us, and we will answer you and add it.' },
     { k: 'progress', label: 'Your progress', g: 'liz', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
   ];
   var BLURB = {
-    why: 'For the animals, and for the community.', account: 'Founding Member, your points and your level.', role: 'What an Ambassador does, and what is up to you.',
-    city: 'The city you represent.', link: 'Your link, and how it counts.', who: 'Where to start.',
-    share: 'Ready-made words, with your link.', questions: 'Straight answers to what people ask.', progress: 'Who joined through you.'
+    why: 'For the animals, and for the community.', role: 'What you can do, wherever you are.', stories: 'Introductions, interviews, hosting, news.',
+    paid: 'Campaigns, events and press that pay.', account: 'Founding Member, your points and your level.',
+    city: 'Not bound to one place.', link: 'Your link, and how it counts.', who: 'Anyone, anywhere.',
+    share: 'Ready-made words, with your link.', questions: 'Straight answers, and ask your own.', progress: 'Who joined through you.'
   };
+  // Pictures in our illustration style (public/guides), so a page reads well with the Guide folded away.
+  var PIC = { link: '/public/guides/thumb-passport.jpg', intro: '/public/guides/thumb-directory.jpg', stories: '/public/guides/creator-guide.jpg',
+    voice: '/public/guides/thumb-bounties.jpg', paid: '/public/guides/thumb-community.jpg', animals: '/public/guides/nonprofit-guide.jpg' };
+  function pic(k) { return "background-image:url('" + PIC[k] + "')"; }
   // Flat line icons on the Overview's tiles (Sean, 2026-10-27: "I don't like the guide icons... flat icons that represent those
   // things instead"); the Guide stays on the right of every tab.
   var ICONS = {
     why: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
     account: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/>',
     role: '<path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
-    city: '<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
+    stories: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+    paid: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/>',
+    city: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
     link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
     who: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M19 8v6M16 11h6"/>',
     share: '<path d="M21 3 10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
@@ -247,7 +301,16 @@
   var $ = function (id) { return document.getElementById(id); };
   var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect');
   var guideEl = $('dgGuide'), nameEl = $('dgGuideName'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
-  var M = null, REF = null, cur = 'overview', lastGuide = null;
+  var M = null, REF = null, cur = 'overview', lastGuide = null, storyKind = '';
+  var railEl = $('dgRail'), foldBtn = $('dgFold');
+  // Walk me through it, or look around myself (Sean, 2026-10-30), kept in the browser. Folding or showing the Guide by hand changes it too.
+  function guideMode() { try { return localStorage.getItem('am_guide_mode') || ''; } catch (e) { return ''; } }
+  function setMode(m) {
+    try { localStorage.setItem('am_guide_mode', m); } catch (e) {}
+    railEl.classList.toggle('dg-folded', m === 'self');
+    foldBtn.setAttribute('aria-expanded', String(m !== 'self'));
+  }
+  foldBtn.addEventListener('click', function () { setMode(railEl.classList.contains('dg-folded') ? 'walk' : 'self'); if (cur === 'overview') draw(); });
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function n(v) { return Number(v || 0).toLocaleString('en-US'); }
@@ -368,8 +431,22 @@
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
-      return head('Welcome, ' + first(), 'You were hand selected', 'Vegans Explore is a community for Vegans, city by city. We invited you, personally, because of what you have already given the movement: ' + prof().reason + '. You are one of our first Ambassadors. Your Founding Membership is <b>on us</b>, and this Guide shows you everything that comes with it, starting with why it matters.') +
-        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
+      var mode = guideMode(), lizPic = art('liz');
+      var choose = !mode
+        ? '<div class="am-choose"><i style="' + (lizPic ? "background-image:url('" + lizPic + "')" : '') + '" aria-hidden="true"></i><div><b>Want Liz to walk you through it?</b>' +
+          '<p>She goes tab by tab with you. Or look around on your own; she waits in the corner whenever you want her.</p></div>' +
+          '<div class="dg-btns"><button type="button" class="dg-btn" data-mode="walk">Walk me through it</button><button type="button" class="dg-btn dg-ghost" data-mode="self">I\'ll look around myself</button></div></div>'
+        : '<p class="am-chose">' + (mode === 'self' ? 'You are looking around on your own. <button type="button" data-mode="walk">Have Liz walk you through it</button>' : 'Liz is walking you through it. <button type="button" data-mode="self">Look around on your own</button>') + '</p>';
+      var ops = [
+        ['link', '#/link', 'Share it with anyone, anywhere', 'Your link works in every city. Friends far away, people you meet traveling, your audience online.'],
+        ['intro', '#/stories', 'Introduce us', 'Business owners, podcasters, organizers: the people doing the work, wherever they are.'],
+        ['stories', '#/stories', 'Tell the stories', 'Be on our podcast, bring us someone with a story, or raise your hand to host.'],
+        ['voice', '#/stories', 'Be the voice of your community', 'Tell us what is happening where you are, and it can become the Daily Pulse.'],
+        ['paid', '#/paid', 'Paid work', 'Campaigns, events and press that need someone like you, with what they pay.']
+      ].map(function (o) { return '<a class="am-op" href="' + o[1] + '"><i style="' + pic(o[0]) + '" aria-hidden="true"></i><div><b>' + esc(o[2]) + '</b><span>' + esc(o[3]) + '</span></div></a>'; }).join('');
+      return head('Welcome, ' + first(), 'You were hand selected', 'We invited you, personally, because of what you have already given the movement: ' + prof().reason + '. As one of our first Ambassadors you represent Vegans Explore wherever you go. You are not bound to one city: you help us reach as many places as possible, and bring us the people and stories worth telling. Your Founding Membership is <b>on us</b>.') +
+        choose + '<h3 class="am-sec">The opportunity</h3><div class="am-ops">' + ops + '</div>' +
+        '<h3 class="am-sec">Everything in this Guide</h3><div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start with why it matters');
     },
     why: function () {
       // The profile decides which reasons come first (Sean, 2026-10-28); the default is the balance Sean set on 2026-10-27, for the
@@ -378,7 +455,7 @@
       return head('Why it matters', P.whyH, P.whyLede) + P.blocks.map(function (k) {
         var b = BLOCKS[k]();
         return '<h3 class="am-sec">' + esc(b[0]) + '</h3><div class="dg-grid">' + b[1].join('') + '</div>';
-      }).join('') + nextBtn('account', 'Next: your membership');
+      }).join('') + nextBtn('role', 'Next: the opportunity');
     },
     account: function () {
       var total = (M && M.total_points) || 0, lv = level(total);
@@ -393,33 +470,74 @@
         card('Unlock a Guide', 'Every Guide is $11 or 1,100 points, and yours to keep. <a href="/guides">See the Guides</a>.', 'Spend') +
         card('Talk with your Guide', 'Ask your Guide anything Vegan, 4 points a message.', 'Spend') +
         card('Levels never drop', 'Level 2 from 2,500 points earned, Level 3 from 10,000, Level 4 from 25,000. Spending or giving points never lowers your level.', 'Levels') +
-        '</div>' + nextBtn('role', 'Next: your role');
+        '</div>' + nextBtn('link', 'Next: your link');
     },
     role: function () {
-      return head('Your role', 'What an Ambassador does', 'You were chosen because people already listen to you. Share Vegans Explore your way, with the people you think would love it.') +
-        '<div class="dg-grid">' +
-        card('Bring people in', 'Share your link with friends, family and anyone who would love it. Every member makes the Directory sharper and the hubs busier.', 'The heart of it') +
-        card('Be a voice for your city', 'Vote for the places you love, check in when you visit, and join the conversation on the Daily Pulse. People follow what members do.', 'Every day') +
-        card('Tell us what is happening', 'Know a new place, an event or some news in your city? Send it as a hot tip in <a href="/pulse/suggest">Suggest a Topic</a>, and it can become tomorrow\'s Daily Pulse.', 'Hot tips') +
-        card('Point businesses our way', 'When a Vegan place you love is not in the Directory, or has not claimed its page, send them to <a href="/business">Vegans Explore for businesses</a>.', 'Businesses') +
-        card('Bring the animals\' people in', 'Know a rescue, sanctuary or animal nonprofit that is not in the Directory yet? Tell us through <a href="/pulse/suggest">Suggest a Topic</a>, and invite the people who foster, volunteer and give.', 'For the animals') +
-        card('Paid work', 'When a brand campaign, an event or a reporter needs someone like you, we bring it to you with what it pays. Finish <a href="/ambassadors/door">your checklist</a> (your profile, platforms, rates and payouts) to be active for it.', 'Your checklist') +
+      var feat = function (k, h, body) { return '<div class="am-feat"><i style="' + pic(k) + '" aria-hidden="true"></i><div><b>' + esc(h) + '</b><p>' + body + '</p></div></div>'; };
+      return head('The opportunity', 'You represent the movement, wherever you are', 'Vegans Explore grows one place at a time, and you can open doors we cannot. You are not bound to one city: share it with the people you know anywhere, introduce us to the people doing the work, and bring us the stories worth telling.') +
+        feat('link', 'Bring people in, anywhere', 'Friends in other cities, family, the people you meet traveling, your audience online. Your link works in every chapter, and every member it brings in makes the community bigger. <a href="#/link">Your link</a>.') +
+        feat('intro', 'Introduce us', 'Business owners, podcasters, creators, organizers and the people behind rescues and sanctuaries. One warm introduction from you is worth a hundred cold emails from us. <a href="#/stories">Introduce someone</a>.') +
+        feat('stories', 'Tell the stories', 'We want to interview the people in this community and put them on our podcast: you, and the people you know with a story to tell. We are lining up episodes with community hosts too. <a href="#/stories">Tell us</a>.') +
+        feat('voice', 'Be the voice of your community', 'Wherever you are, tell us what is happening: a new place, an event, someone doing something worth sharing. It can become the Daily Pulse. <a href="#/stories">Send it</a>.') +
+        feat('paid', 'Paid work', 'When a brand campaign, an event or a reporter needs someone like you, we bring it to you with what it pays and what it asks. <a href="#/paid">How paid work works</a>.') +
+        '<h3 class="am-sec">Every day, as a member</h3><div class="dg-grid">' +
+        card('Vote and check in', 'Vote for the places you love and check in when you visit, for 10 points. People follow what members do.', 'Every day') +
+        card('Join any conversation', 'The Daily Pulse runs in every chapter. Join in wherever you have something to say. <a href="/pulse">Open the Daily Pulse</a>.', 'Daily Pulse') +
         card('What is next for Ambassadors', 'From Level 2 your link earns, and we are shaping more for Ambassadors. You will hear it here first.', 'Coming', true) +
-        '</div>' + nextBtn('city', 'Next: your city');
+        '</div>' + nextBtn('stories', 'Next: tell the stories');
+    },
+    stories: function () {
+      var KINDS = [
+        ['intro', 'Introduce someone', 'A business owner, a podcaster, a creator, an organizer, anywhere.'],
+        ['interview', 'Interview me', 'You have a story. We would love to hear it on the podcast.'],
+        ['host', 'I want to host', 'Lead a conversation or an episode with someone in your community.'],
+        ['report', 'What is happening here', 'News from your community: a new place, an event, someone to know.']
+      ];
+      var k = storyKind;
+      var who = k === 'intro';
+      return head('Tell the stories', 'The voices of Vegans Explore are yours', 'Vegans Explore is the people in it. We want our podcast and the Daily Pulse to sound like the community: the people you know with a story to tell, the voices in your city, and you. Pick one, tell us a little, and we take it from there.') +
+        '<div class="am-feat"><i style="' + pic('stories') + '" aria-hidden="true"></i><div><b>On the podcast</b><p>We interview people from the community: business owners, activists, creators, the people doing the work on the streets. We are also lining up a season with different community hosts. Raise your hand for either, or point us to someone.</p></div></div>' +
+        '<div class="am-kinds" role="group" aria-label="What are you sending">' + KINDS.map(function (x) {
+          return '<button type="button" class="am-kind" data-kind="' + x[0] + '" aria-pressed="' + (k === x[0]) + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></button>';
+        }).join('') + '</div>' +
+        (k ? '<div class="am-form">' +
+          (who ? '<label>Who are you introducing<input id="stName" maxlength="160" placeholder="Their name, or their business or show"></label>' : '') +
+          '<label>Where<small>Any city, anywhere.</small><input id="stPlace" maxlength="160" placeholder="City, or online"></label>' +
+          '<label>' + (who ? 'How to reach them' : 'How to reach you, if not by email') + '<small>A handle, an email or a link.</small><input id="stContact" maxlength="300"></label>' +
+          '<label class="wide">' + ({ intro: 'Who they are and why they matter', interview: 'Your story, in a few lines', host: 'What you would host, and with whom', report: 'What is happening' })[k] + '<textarea id="stAbout" maxlength="1500"></textarea></label>' +
+          '</div><div class="dg-btns"><button type="button" class="dg-btn" id="stSend">Send it to us</button><span class="am-note" id="stNote" role="status"></span></div>' : '') +
+        '<p class="dg-lede" style="margin-top:16px;font-size:13.5px">We read every one, and we reach out when it fits. Nothing is promised until we do. Quick news can also go in <a href="/pulse/suggest">Suggest a Topic</a> as a hot tip.</p>' +
+        nextBtn('paid', 'Next: paid work');
+    },
+    paid: function () {
+      return head('Paid work', 'Ready for paid work', 'Brands, events and reporters need people like you. When one fits you, we bring it to you with what it pays and what it asks, and you say yes or no to each one. To be ready, finish your checklist: it takes about ten minutes.') +
+        '<ol class="am-steps">' +
+        '<li><b>Your profile</b>Your page in our People directory: a photo, what you do and your bio. Brands and organizers see it first.</li>' +
+        '<li><b>Your platforms</b>Where you post and how many people follow you. We read YouTube for you.</li>' +
+        '<li><b>Your rates</b>What you charge for a post, a reel, an appearance. Only our team sees them.</li>' +
+        '<li><b>Get paid</b>Your bank and tax details, on Stripe\'s own pages. We never see them.</li></ol>' +
+        '<div class="dg-btns" style="margin:0 0 18px"><a class="dg-btn" href="/ambassadors/door">Open your checklist</a></div>' +
+        '<div class="dg-grid">' +
+        card('The kinds of work', 'Posts and reels for brand campaigns, appearances and hosting at events, and from Level 2 professional work: running a social account, editing, design, outreach, starting with a small paid trial.', 'What it is') +
+        card('How it pays', 'You always get your full rate: half when you say yes, half when your posts are live. It comes through Stripe, straight to your bank.', 'Your rate') +
+        card('Your numbers stay with us', 'Brands see a package, never your rates. Your name goes to a brand only after you say yes.', 'Private') +
+        card('The first paid jobs', 'They open as brands sign on, starting with our own campaigns and events. Finish your checklist now and you are first in line.', 'Coming', true) +
+        card('The Creator Guide is yours', 'Ten moves from hobbyist to professional Vegan creator, with the people doing it and our conversations with them. Included for Ambassadors. <a href="/guides/creator-guide">Open the Creator Guide</a>.', 'For creators') +
+        '</div>' + nextBtn('account', 'Next: your membership');
     },
     city: function () {
       var h = M && hub(M.home_community);
-      var opts = '<option value="">Pick your city</option>' + (window.VE_HUBS || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (M && M.home_community === x.slug ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
-      return head('Your city', h ? 'You represent ' + h.name : 'Pick the city you represent', 'Your home city is where your Daily Pulse, events and Directory open. You can still join and talk in any community.') +
-        '<label class="am-field" for="amCity">Your city</label>' +
+      var opts = '<option value="">Pick a home base</option>' + (window.VE_HUBS || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (M && M.home_community === x.slug ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
+      return head('Anywhere', 'Not bound to one place', 'Share Vegans Explore with anyone, in any city. Your link works everywhere, and every chapter is open to you: join any community, post on any Daily Pulse, introduce us to people anywhere. If you like, pick a home base so your Daily Pulse, events and Directory open there.') +
+        '<label class="am-field" for="amCity">Your home base (optional)</label>' +
         '<div class="am-row"><select class="am-select" id="amCity">' + opts + '</select><button type="button" class="dg-btn" id="amCitySave">Save</button></div>' +
         '<p class="am-note" id="amCityNote" role="status"></p>' +
-        (h ? '<div class="dg-grid">' +
-          card('Your city\'s hub', 'The Daily Pulse, events, the Directory and the members of ' + esc(h.name) + '. <a href="/communities/' + esc(h.slug) + '">Open the hub</a>.', 'Share it') +
-          card('Today\'s Daily Pulse', 'A topic every morning for your city. Join the conversation. <a href="/pulse?city=' + esc(h.slug) + '">Open the Daily Pulse</a>.', 'Every day') +
-          card('Events near you', 'What is coming up, and Submit an event when you know one we do not. <a href="/events?city=' + esc(h.slug) + '">Open Events</a>.', 'Events') +
-          card('The Directory', 'Vote for the places you love, and check in when you visit for 10 points. <a href="/directory">Open the Directory</a>.', 'Vote') +
-          '</div>' + nextBtn('link', 'Next: your link') : '');
+        '<div class="dg-grid">' +
+        card('Every chapter', 'South Florida to London. Point people to theirs, wherever they are. <a href="/communities">See the communities</a>.', 'Anywhere') +
+        card('No chapter there yet?', 'Share it anyway. Anyone can join from anywhere, and we open new chapters where members grow. Your introductions there count the most.', 'Help us grow') +
+        (h ? card('Your home base', 'The Daily Pulse, events and members of ' + esc(h.name) + '. <a href="/communities/' + esc(h.slug) + '">Open the hub</a>.', 'Home base') : '') +
+        card('Events anywhere', 'Know an event we do not have? Submit it, wherever it is. <a href="/events">Open Events</a>.', 'Events') +
+        '</div>' + nextBtn('questions', 'Next: answering questions');
     },
     link: function () {
       return head('Your link', 'Your Ambassador link', 'Share it anywhere: a text, a post, your bio, an email. It opens the Passport, the page that shows people what Vegans Explore is and how to join.') +
@@ -436,14 +554,16 @@
         '</div>' + nextBtn('who', 'Next: who to invite');
     },
     who: function () {
-      return head('Who to invite', 'Start close, then go wider', 'The best invitations are personal: one message to one person who would love it.') +
+      return head('Who to invite', 'Anyone, anywhere', 'The best invitations are personal: one message to one person who would love it, wherever they live.') +
         '<div class="dg-grid">' +
         card('Friends who eat Vegan', 'They will use the Directory and the Daily Pulse right away, and vote for their favorite places.', 'Start here') +
         card('The Vegan-curious', 'Friends and family who are trying it out. Looking around is free, and the Guides make it easy to start.', 'Gently') +
         card('People at events', 'Potlucks, festivals and community nights. Show them your city\'s hub on your phone.', 'In person') +
         card('Your online circle', 'Groups and followers who care about Vegan food and the animals. Share a post with your link.', 'Online') +
         card('People who help the animals', 'Fosters, volunteers and the people behind rescues and sanctuaries. Every member is someone new who can find their organization and help.', 'For the animals') +
-        card('The places you go', 'Vegan restaurants, bakeries and brands. Their page is already in the Directory, or they can add it. Send them to /business.', 'Businesses') +
+        card('The places you go', 'Vegan restaurants, bakeries and brands, in your city or anywhere you travel. Their page is already in the Directory, or they can add it. Send them to /business.', 'Businesses') +
+        card('Podcasters and creators', 'People with an audience who care about the same things. Share your link, and <a href="#/stories">introduce them to us</a>.', 'Creators') +
+        card('People with a story', 'The ones doing the work: organizers, rescuers, cooks, athletes. <a href="#/stories">Tell us about them</a>, and we may put them on the podcast.', 'Stories') +
         '</div>' + nextBtn('share', 'Next: what to share');
     },
     share: function () {
@@ -452,7 +572,7 @@
           return '<div class="am-msg"><b>' + esc(m.title) + '</b><p>' + esc(m.text) + '</p>' +
             '<div class="am-msg-link"><span>Your link</span><code>' + esc(m.link) + '</code></div>' +
             '<div class="am-msg-acts"><button type="button" class="am-sm am-sm-on" data-copy="' + i + '">Copy message</button><button type="button" class="am-sm" data-copy-link>Copy link</button></div></div>';
-        }).join('') + '</div>' + nextBtn('questions', 'Next: answering questions');
+        }).join('') + '</div>' + nextBtn('city', 'Next: anywhere');
     },
     questions: function () {
       var qa = [
@@ -462,6 +582,7 @@
         ['Is it a donation?', 'No. It is a membership contribution to Vegans Explore, never a tax-deductible donation.'],
         ['What are points?', 'Points come from taking part, never from buying them. Spend them on Guides, give them to the places you love, and climb levels.'],
         ['My city is not on the list.', 'Anyone can join any community, and the Directory covers places everywhere. We open new chapters as members grow in a city.'],
+        ['Do I have to stick to one city?', 'No. You are not bound to one place. Share it with anyone, anywhere, and join any community you like.'],
         ['I own a business.', 'Send them to vegansexplore.com/business: their page, their dashboard and how members find them.']
       ];
       return head('Answering questions', 'Straight answers', 'If you do not know an answer, say so and point them to the Passport page. It answers the rest.') +
@@ -469,7 +590,11 @@
         '<div class="am-two">' +
         '<div class="am-list"><h3>Do</h3><ul><li>Share with people you know, one at a time.</li><li>Say why you use it, in your words.</li><li>Capitalize Vegan.</li></ul></div>' +
         '<div class="am-list"><h3>Please don\'t</h3><ul><li>Promise anything marked Coming.</li><li>Call the $11 a donation.</li><li>Message strangers in bulk or post your link where it is not welcome.</li></ul></div>' +
-        '</div>' + nextBtn('progress', 'Next: your progress');
+        '</div>' +
+        '<div class="am-ask"><b>Not on the list?</b><p>Ask us. We answer you by email, and if others will ask the same thing, it joins this list.</p>' +
+        '<textarea id="askQ" maxlength="1000" placeholder="Your question"></textarea>' +
+        '<div class="dg-btns" style="margin-top:10px"><button type="button" class="dg-btn" id="askSend">Ask us</button><span class="am-note" id="askNote" role="status" style="margin:0"></span></div></div>' +
+        nextBtn('progress', 'Next: your progress');
     },
     progress: function () {
       if (!REF) { loadRef(); return head('Your progress', 'Who joined through you', '') + '<p class="dg-lede">Loading...</p>'; }
@@ -486,6 +611,36 @@
         '<div class="dg-btns"><a class="dg-btn" href="#/share">Share your link</a><a href="/dashboard" style="font-size:13px;font-weight:800;color:var(--g)">Go to your dashboard</a></div>';
     }
   };
+
+  function say(el, text, bad) { if (el) { el.className = 'am-note' + (bad ? ' bad' : ''); el.textContent = text; } }
+  // An introduction or a story, through ve-ambassador (saved for the team and emailed to Sean).
+  function sendStory() {
+    var note = $('stNote'), btn = $('stSend');
+    var body = { action: 'story', kind: storyKind, name: $('stName') ? $('stName').value.trim() : '', place: $('stPlace').value.trim(),
+      contact: $('stContact').value.trim(), about: $('stAbout').value.trim() };
+    if (storyKind === 'intro' && !body.name) return say(note, 'Who are you introducing?', true);
+    if (body.about.length < 10) return say(note, 'Tell us a little more.', true);
+    btn.disabled = true; say(note, 'Sending...');
+    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ambassador', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        btn.disabled = false;
+        if (!d || !d.ok) return say(note, (d && d.message) || 'That did not send. Try again.', true);
+        ['stName', 'stPlace', 'stContact', 'stAbout'].forEach(function (id) { if ($(id)) $(id).value = ''; });
+        say(note, 'Sent. Thank you. We read every one and reach out when it fits.');
+      }, function () { btn.disabled = false; say(note, 'Could not connect. Try again.', true); });
+  }
+  // A question that is not on the list goes to the team (ve-auth guide_ask_person: emailed, and kept on the Guides' to-do list).
+  function sendAsk() {
+    var q = $('askQ').value.trim(), note = $('askNote'), btn = $('askSend');
+    if (q.length < 5) return say(note, 'Type your question first.', true);
+    btn.disabled = true; say(note, 'Sending...');
+    fetch(FN + '?action=guide_ask_person', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ action: 'guide_ask_person', token: VEAuth.getToken(), message: q, agent_slug: 'ambassador-guide' }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        btn.disabled = false;
+        if (d && d.ok) { $('askQ').value = ''; return say(note, 'Sent. We will answer you by email.'); }
+        say(note, d && d.error === 'daily_limit' ? 'That is five questions today. Send more tomorrow, or email contact@lesaruss.com.' : 'That did not send. Try again.', true);
+      }, function () { btn.disabled = false; say(note, 'Could not connect. Try again.', true); });
+  }
 
   function loadRef() {
     if (loadRef.busy) return; loadRef.busy = true;
@@ -520,6 +675,10 @@
     var b;
     if ((b = e.target.closest('[data-copy-link]'))) return copy(link(), b);
     if ((b = e.target.closest('[data-copy]'))) return copy(messageText(messages()[+b.dataset.copy]), b);
+    if ((b = e.target.closest('[data-mode]'))) { setMode(b.dataset.mode); draw(); return; }
+    if ((b = e.target.closest('[data-kind]'))) { storyKind = b.dataset.kind; draw(); var f = $('stName') || $('stAbout'); if (f) f.focus(); return; }
+    if (e.target.closest('#stSend')) return sendStory();
+    if (e.target.closest('#askSend')) return sendAsk();
     if (e.target.closest('#amCitySave')) {
       var v = $('amCity').value, note = $('amCityNote'), btn = $('amCitySave');
       if (!v) { note.className = 'am-note bad'; note.textContent = 'Pick your city first.'; return; }
@@ -534,7 +693,7 @@
   });
   window.addEventListener('hashchange', function () { if (M) draw(); });
 
-  function gate(html) { $('amGate').innerHTML = html; $('amGate').hidden = false; $('amApp').hidden = true; $('amTop').hidden = true; }
+  function gate(html) { $('amGate').innerHTML = html; $('amGate').hidden = false; $('dgApp').hidden = true; $('amTop').hidden = true; }
   function start() {
     if (!window.VEAuth) return setTimeout(start, 200);
     var token = VEAuth.getToken();
@@ -553,8 +712,9 @@
         // Links from the first version of this page (?step=1..4) land on the matching tab.
         var st = new URLSearchParams(location.search).get('step');
         if (st && !location.hash) history.replaceState(null, '', location.pathname + '#/' + ({ 1: 'overview', 2: 'city', 3: 'link', 4: 'share' }[st] || 'overview'));
-        $('amTop').hidden = false; $('amApp').hidden = false;
+        $('amTop').hidden = false; $('dgApp').hidden = false;
         document.documentElement.classList.add('dg-fit');
+        if (guideMode() === 'self') setMode('self');
         draw();
       }, function () { gate('<p>Could not connect. Refresh to try again.</p>'); });
   }
