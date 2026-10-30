@@ -217,7 +217,8 @@
       function views(on) {
         return '<nav class="views" aria-label="Group Partners"><a href="#list/all" class="' + (on === 'list' ? 'on' : '') + '">Groups (' + (data ? data.length : 0) + ')</a>' +
           '<a href="#pick" class="' + (on === 'pick' ? 'on' : '') + '">Pick groups' + (picked.length ? ' (' + picked.length + ')' : '') + '</a>' +
-          '<a href="#discover" class="' + (on === 'discover' ? 'on' : '') + '">Find new groups</a></nav>';
+          '<a href="#discover" class="' + (on === 'discover' ? 'on' : '') + '">Find new groups</a>' +
+          '<a href="#apps/new" class="' + (on === 'apps' ? 'on' : '') + '">Applications' + (appsNew ? ' (' + appsNew + ' new)' : '') + '</a></nav>';
       }
       function controls() {
         return '<div class="ctlrow"><input class="search" id="q" type="search" placeholder="Search a group, a city or an email" value="' + esc(filt.q) + '">' +
@@ -553,8 +554,69 @@
         });
       }
 
+
+      // ---- Applications (the Group Partner Guide's Apply tab, ve-group 'apply'; Sean, 2026-10-30: "Let us determine if you're a right
+      // fit"). Reading or marking one sends nothing; an invitation is still made by hand from the group's own page.
+      var appsNew = 0;
+      var AST = { 'new': 'New', reviewing: 'Reviewing', accepted: 'Accepted', declined: 'Declined' };
+      var ACLS = { 'new': 'ready', reviewing: 'sent', accepted: 'joined', declined: 'declined' };
+      var AFIELDS = [['Your group', [['group_name', 'Group'], ['chapter', 'Chapter'], ['city', 'City'], ['events_link', 'Where they post events'], ['other_links', 'Other links'], ['started', 'Running for'], ['entity', 'Organization']]],
+        ['Their people', [['size', 'Members or followers'], ['turnout', 'Usually at an event'], ['frequency', 'How often'], ['paid', 'Their events are'], ['kinds', 'What they do'], ['ticket_price', 'Usual ticket price']]],
+        ['How they run it', [['platforms', 'What they use'], ['team', 'People running it'], ['fees', 'Fees a year'], ['hardest', 'Hardest part']]],
+        ['The organizer', [['name', 'Name'], ['email', 'Email'], ['phone', 'Phone'], ['role', 'Role'], ['instagram', 'Instagram'], ['heard', 'Heard about us']]],
+        ['The fit', [['host_here', 'Would host events here'], ['share_link', 'Would share the link'], ['worth_it', 'What would make it worth it'], ['revenue_use', 'What steady money would let them do'], ['anything_else', 'Anything else']]]];
+      function atag(st) { return '<span class="tag t-' + ACLS[st] + '">' + esc(AST[st] || st) + '</span>'; }
+      function linkish(v) { return /^https?:\/\//i.test(v) ? '<a href="' + esc(v) + '" target="_blank" rel="noopener">' + esc(v) + '</a>' : esc(v).replace(/\n/g, '<br>'); }
+      function drawApps(t) {
+        app.innerHTML = '<div class="bar">' + views('apps') + '</div><p class="empty">Loading...</p>';
+        groups({ action: 'applications' }).then(function (d) {
+          var all = (d && d.applications) || [], C = {};
+          Object.keys(AST).forEach(function (k) { C[k] = all.filter(function (a) { return a.status === k; }).length; });
+          appsNew = C['new'];
+          var shown = all.filter(function (a) { return a.status === t; });
+          app.innerHTML = '<div class="bar">' + views('apps') + '</div>' +
+            '<p class="hint" style="margin:0 0 12px">What groups sent from the Group Partner Guide\'s Apply tab. Reading or marking one sends nothing; you invite a group from its own page.</p>' +
+            '<nav class="tabs" style="margin:0 0 12px">' + Object.keys(AST).map(function (k) { return '<a href="#apps/' + k + '" class="' + (k === t ? 'on' : '') + '">' + AST[k] + ' (' + C[k] + ')</a>'; }).join('') + '</nav>' +
+            '<div class="list">' + (shown.length ? shown.map(function (a) {
+              return '<div class="irow"><div><b>' + esc(a.group) + '</b><small>' + esc([a.city, a.chapter].filter(Boolean).join(', ')) + ' &middot; ' + esc(a.name) + ' &middot; ' +
+                esc([a.turnout ? a.turnout + ' at an event' : '', a.size ? a.size + ' members' : ''].filter(Boolean).join(', ')) + ' &middot; ' + esc(when(a.at)) + '</small></div>' +
+                '<div class="tags">' + atag(a.status) + '</div><a class="btn btn-ghost btn-sm" href="#app/' + esc(a.id) + '">Open</a></div>';
+            }).join('') : '<p class="empty">None here.</p>') + '</div>';
+        }, function () { app.innerHTML = '<div class="bar">' + views('apps') + '</div><p class="empty">The applications did not load. Refresh to try again.</p>'; });
+      }
+      function drawApp(id) {
+        app.innerHTML = '<p class="crumb"><a href="#apps/new">Applications</a></p><p class="empty">Loading...</p>';
+        groups({ action: 'application_get', id: id }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#apps/new">Applications</a></p><p class="empty">That application is not here.</p>'; return; }
+          var a = d.application, ans = a.answers || {}, L = d.listing;
+          var parts = AFIELDS.map(function (sec) {
+            var rows = sec[1].filter(function (f) { return ans[f[0]]; }).map(function (f) { return '<div class="prow" style="grid-template-columns:200px minmax(0,1fr)"><small style="font-weight:800">' + esc(f[1]) + '</small><div>' + linkish(String(ans[f[0]])) + '</div></div>'; }).join('');
+            return rows ? '<section class="card"><h3 style="margin:0 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase">' + esc(sec[0]) + '</h3>' + rows + '</section>' : '';
+          }).join('');
+          app.innerHTML = '<p class="crumb"><a href="#apps/' + esc(a.status) + '">Applications</a> &rsaquo; ' + esc(a.group_name) + '</p>' +
+            '<div class="bar"><div><h2 style="margin:0">' + esc(a.group_name) + '</h2><small>' + esc(when(a.created_at)) + (a.invite_code ? ' &middot; came from an invitation' : '') + '</small></div>' + atag(a.status) + '</div>' +
+            '<div class="acts" style="margin:0 0 14px"><a class="btn btn-ghost btn-sm" href="mailto:' + esc(a.organizer_email) + '?subject=' + encodeURIComponent(a.group_name + ' and Vegans Explore') + '">Write to ' + esc(String(a.organizer_name).split(' ')[0]) + '</a>' +
+            (L ? '<a class="btn btn-ghost btn-sm" href="#g/' + esc(L.id) + '">Their group in the Depot</a><a class="btn btn-ghost btn-sm" href="/directory/' + esc(L.slug) + '" target="_blank" rel="noopener">Their page</a>' : '<span class="hint">Not in the Directory under this name yet.</span>') + '</div>' +
+            '<section class="card"><h3 style="margin:0 0 8px;font-size:13px;letter-spacing:.08em;text-transform:uppercase">Your decision</h3>' +
+            '<div class="acts" style="margin:0 0 10px">' + Object.keys(AST).map(function (k) { return '<button type="button" class="btn ' + (k === a.status ? '' : 'btn-ghost') + ' btn-sm" data-ast="' + k + '">' + AST[k] + '</button>'; }).join('') + '</div>' +
+            '<label class="wide"><textarea id="anote" maxlength="1000" placeholder="A note for yourself (never sent)" style="width:100%;min-height:70px">' + esc(a.decision_note || '') + '</textarea></label>' +
+            '<div class="acts"><button type="button" class="btn btn-ghost btn-sm" id="asave">Save the note</button><span class="msg" id="amsg" role="status"></span></div></section>' + parts;
+          function save(st) {
+            $('amsg').textContent = 'Saving...';
+            groups({ action: 'application_save', id: a.id, status: st, note: $('anote').value }).then(function (r) {
+              if (r && r.ok) { a.status = st; $('amsg').textContent = 'Saved.'; [].forEach.call(app.querySelectorAll('[data-ast]'), function (b) { b.classList.toggle('btn-ghost', b.getAttribute('data-ast') !== st); }); }
+              else $('amsg').textContent = (r && r.message) || 'That did not save.';
+            });
+          }
+          [].forEach.call(app.querySelectorAll('[data-ast]'), function (b) { b.addEventListener('click', function () { save(b.getAttribute('data-ast')); }); });
+          $('asave').addEventListener('click', function () { save(a.status); });
+        });
+      }
+
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list/all', m;
+        if ((m = r.match(/^apps\/([a-z]+)$/))) return drawApps(AST[m[1]] ? m[1] : 'new');
+        if ((m = r.match(/^app\/([0-9a-f-]{36})$/))) return drawApp(m[1]);
         if (r === 'discover') return drawDiscover();
         if (r === 'new') return drawNew();
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">The groups did not load. Refresh to try again.</p>'; }); }

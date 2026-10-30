@@ -257,7 +257,44 @@
     .gp-view iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff;}
     html.gp-view-on,html.gp-view-on body{overflow:hidden;}
     #dgGuide{cursor:pointer;}
+    /* What you get: the cards beside the sample club's photos; the photos step aside while Dani is showing. */
+    .gp-gets{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,42%);gap:20px;align-items:start;}
+    .gp-gets .gp-cards{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .dg-app:not(.dg-min) .gp-gets{grid-template-columns:minmax(0,1fr);}
+    .dg-app:not(.dg-min) .gp-gets .gp-cards{grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));}
+    .dg-app:not(.dg-min) .gp-art{display:none;}
+    .gp-art{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .gp-art img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;display:block;}
+    .gp-art img:first-child{grid-column:1 / -1;}
+    .gp-art figcaption{grid-column:1 / -1;font-size:12px;color:var(--ink55);}
+    /* Apply: one step per view. */
+    .gp-steps{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:0;list-style:none;}
+    .gp-steps li{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;background:#f2f4f2;color:var(--ink55);}
+    .gp-steps li.on{background:var(--g);color:#fff;}
+    .gp-steps li.done{background:var(--gl);color:var(--g);}
+    .gp-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 18px;max-width:980px;}
+    .gp-f{display:flex;flex-direction:column;gap:6px;min-width:0;}
+    .gp-f.wide{grid-column:1 / -1;}
+    .gp-f > span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);}
+    .gp-f > span i{font-style:normal;color:#a61b1b;}
+    .gp-f small{font-size:12px;color:var(--ink55);line-height:1.4;}
+    .gp-f input[type=text],.gp-f input[type=email],.gp-f input[type=url],.gp-f input[type=tel],.gp-f textarea{font:inherit;font-size:15px;padding:11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;color:var(--ink);width:100%;}
+    .gp-f textarea{min-height:96px;resize:vertical;}
+    .gp-f select{font:inherit;font-size:15px;padding:11px 44px 11px 12px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;color:var(--ink);width:100%;}
+    .gp-f.bad input,.gp-f.bad select,.gp-f.bad textarea,.gp-f.bad .gp-opts{outline:2px solid #d14343;outline-offset:2px;border-radius:6px;}
+    .gp-opts{display:flex;flex-wrap:wrap;gap:8px;}
+    .gp-opts label{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:9px 12px;border:1px solid rgba(0,0,0,.2);border-radius:6px;cursor:pointer;background:#fff;}
+    .gp-opts label:has(input:checked){border-color:var(--g);background:var(--gl);font-weight:700;}
+    .gp-opts input{accent-color:#1f5f22;margin:0;}
+    .gp-confirm{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;}
+    .gp-confirm input{accent-color:#1f5f22;width:18px;height:18px;margin-top:2px;flex:0 0 auto;}
+    .gp-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;max-width:980px;border-top:1px solid var(--line);padding-top:16px;}
+    .gp-nav span{font-size:12px;font-weight:800;color:var(--ink55);letter-spacing:.06em;text-transform:uppercase;}
+    .gp-err{color:#a61b1b;font-size:13.5px;font-weight:700;margin:10px 0 0;min-height:18px;}
+    .gp-intro{border-left:4px solid var(--g);background:var(--gl);border-radius:0 12px 12px 0;padding:14px 18px;margin:0 0 18px;max-width:980px;font-size:14.5px;line-height:1.6;color:#123d18;}
+    @media (max-width:700px){.gp-form{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:1100px){.gp-chips{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:1100px){.gp-gets,.dg-app .gp-gets{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:900px){.gp-groups .rank-card:nth-child(n+5){display:none;}.gp-split{grid-template-columns:minmax(0,1fr);}.gp-thumb{height:auto;aspect-ratio:3/4;}.gp-view{padding:8px;}.gp-view-bar a{display:none;}}
     [hidden]{display:none !important;}
   </style>
@@ -308,7 +345,7 @@
     { k: 'numbers', label: 'The numbers', say: 'The more members your group brings in, the bigger your share: twenty percent, climbing to fifty. And nobody pays to try you out.' },
     { k: 'part', label: 'Your part', say: 'Your part is simple: share your link and host your events here. The more you do, the more it unlocks.' },
     { k: 'questions', label: 'Questions', say: 'Here are straight answers to what organizers ask us most.' },
-    { k: 'yes', label: 'Say yes', say: 'Ready? Say yes and we set your group up. And if you want to talk it through first, we are here.' }
+    { k: 'yes', label: 'Apply', say: 'If this sounds right for your group, apply here. It takes about five minutes, and Sean reads every application himself.' }
   ];
   var ALIAS = { why: 'gets', guest: 'numbers' };
   var ICONS = {
@@ -329,6 +366,8 @@
   var LADDER = [['Start', 20], ['25 members', 25], ['75', 30], ['150', 35], ['300', 40], ['600', 45], ['1,000', 50]];
   var FEES = [['Vegans Explore', '5% of a paid ticket. Free events free.', 1], ['Eventbrite', '3.7% + $1.79 a ticket, plus card processing'],
     ['Luma (free plan)', '5% a ticket'], ['Posh', '10% + $0.99 a ticket'], ['Partiful', 'reported at about 10% + $2 a ticket']];
+  var ART = [['/groups/sample/img/brunch-2.jpg', 'A group photo at a brunch in the park'], ['/groups/sample/img/brunch-1.jpg', 'A potluck table'],
+    ['/groups/sample/img/halloween-1.jpg', 'A Halloween costume potluck'], ['/groups/sample/img/brunch-4.jpg', 'Friends on a picnic blanket']];
   var DEMO = { member: '/groups/sample', owner: '/groups/sample?tab=brand', members: '/groups/sample?tab=brand&pd=gmembers' };
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -429,7 +468,7 @@
     },
     gets: function () {
       return head('What you get', 'A home for your group, on us', 'You already bring people together. Vegans Explore is a community for Vegans, city by city, and your group gets a real home in it. None of this costs your group anything.') +
-        '<div class="gp-cards">' +
+        '<div class="gp-gets"><div class="gp-cards">' +
         slim('home', 'A community page', 'Your members, your events and your board, where your people talk between events.') +
         slim('cal', 'Your events, and your history', 'On your page and our calendar. Past events stay, so newcomers see a group that shows up.') +
         slim('pay', 'Paid for growing', 'A share of every Passport bought through your group, from 20% up to 50%.') +
@@ -437,7 +476,8 @@
         slim('reach', 'Anyone, anywhere, can join', 'A member who visits your city often can join your group too.') +
         slim('star', 'Featured, and bounties first', 'Featured where members look for something to do, and first pick of bounties.') +
         slim('gift', 'Your organizer, on us', 'A Founding Membership: the full Passport and 1,100 points, theirs to keep.') +
-        '</div>' + nextBtn('numbers', 'Next: the numbers');
+        '</div><figure class="gp-art" style="margin:0">' + ART.map(function (a) { return '<img src="' + a[0] + '" alt="' + esc(a[1]) + '" loading="lazy">'; }).join('') +
+        '<figcaption>Sprout Social Society, our sample club.</figcaption></figure></div>' + nextBtn('numbers', 'Next: the numbers');
     },
     numbers: function () {
       return head('The numbers', 'Your share grows with your group', 'Your group earns a share of every $11 Passport (and Guide) bought by someone who joins through your group\'s link, set by how many members it has brought in, all time. A new share counts from the day you reach it.') +
@@ -475,16 +515,125 @@
         qa('When do we get paid?', 'Each payment waits 30 days in case of a refund. We pay once $25 is ready, after we have your W-9.') +
         qa('What do you take from tickets?', '5% of a paid ticket. Free events are free, and card processing is paid by the buyer.') +
         qa('What if our organizer changes?', 'The group is the partner, not one person. If someone new takes over, your page, your link and your earnings stay with the group.') +
-        nextBtn('yes', 'Next: say yes');
+        nextBtn('yes', 'Next: apply');
     },
-    yes: function () {
-      if (code) return head('Say yes', 'Welcome your group to Vegans Explore', 'Open your invitation to say yes. We set up your group\'s page and your organizer\'s Founding Membership, on us.') +
-        '<div class="dg-btns"><a class="dg-btn" href="/invite?c=' + encodeURIComponent(code) + '">Open my invitation</a>' + mail('Our group and Vegans Explore', 'Talk to Sean first', true) + '</div>';
-      return head('Say yes', 'Tell us about your group', 'Send us a few lines about your group: its name, its city, where you post your events, and how many people come. Sean will write back himself.') +
-        '<div class="dg-btns">' + mail('Our group wants to be a Group Partner', 'Tell us about your group') + mail('A question about Group Partners', 'Talk to Sean', true) + '</div>' +
-        '<p class="dg-lede" style="margin-top:14px">Both go to contact@lesaruss.com.</p>';
-    }
+    yes: function (sub) { return applyView(sub); }
   };
+
+
+  // ---------- Apply (Sean, 2026-10-30: "It needs to be an intake... a registration... walk them through what they need to answer... take
+  // this seriously... Let us determine if you're a right fit"). One step per view (#/yes/1 to /5), Back / Step N of M / Next, Next checks
+  // the step, answers kept in the browser until sent (gp_apply), sent to ve-group 'apply'. Sean reads them in Depot > Group Partners.
+  var CHAPTERS = ['South Florida', 'Central Florida', 'North Florida', 'Atlanta', 'Washington, D.C.', 'Maryland', 'Virginia', 'Delaware', 'West Virginia',
+    'New York', 'Philadelphia', 'Los Angeles', 'London', 'Somewhere else'];
+  var FORM = [
+    { t: 'Your group', fields: [
+      { k: 'group_name', l: 'Your group\'s name', req: 1 },
+      { k: 'chapter', l: 'Where it meets', type: 'select', opts: CHAPTERS, req: 1 },
+      { k: 'city', l: 'City', req: 1, ph: 'Fort Lauderdale' },
+      { k: 'events_link', l: 'Where you post your events', req: 1, ph: 'Your Meetup, Partiful, Instagram or website', hint: 'The page where people find your events today.' },
+      { k: 'other_links', l: 'Other links', ph: 'Instagram, Facebook, WhatsApp group' },
+      { k: 'started', l: 'How long it has run', type: 'select', opts: ['Less than a year', '1 to 2 years', '3 to 5 years', 'More than 5 years'] },
+      { k: 'entity', l: 'Is the group its own organization?', type: 'radio', wide: 1, opts: ['A registered nonprofit', 'A registered business', 'Not registered, it is just us'] }] },
+    { t: 'Your people', fields: [
+      { k: 'size', l: 'Members or followers', type: 'select', req: 1, opts: ['Under 50', '50 to 200', '200 to 500', '500 to 2,000', 'More than 2,000'], hint: 'On the page where you post your events.' },
+      { k: 'turnout', l: 'How many usually come', type: 'select', req: 1, opts: ['1 to 5', '6 to 15', '16 to 30', '31 to 60', '61 to 100', 'More than 100'] },
+      { k: 'frequency', l: 'How often you meet', type: 'select', req: 1, opts: ['Every week', 'A few times a month', 'About once a month', 'Every few months', 'Now and then'] },
+      { k: 'paid', l: 'Your events are', type: 'select', req: 1, opts: ['All free', 'Some free, some paid', 'Mostly paid'] },
+      { k: 'kinds', l: 'What you do together', type: 'multi', req: 1, wide: 1, opts: ['Potlucks', 'Dinners out', 'Social mixers', 'Outdoors and fitness', 'Volunteering and activism', 'Classes and talks', 'Markets and festivals', 'Something else'] },
+      { k: 'ticket_price', l: 'Usual ticket price', ph: 'If you sell tickets, for example $15' }] },
+    { t: 'How you run it', fields: [
+      { k: 'platforms', l: 'What you use today', type: 'multi', req: 1, wide: 1, opts: ['Meetup', 'Partiful', 'Eventbrite', 'Luma', 'Facebook', 'Instagram', 'WhatsApp', 'Discord', 'Our own website', 'Something else'] },
+      { k: 'team', l: 'How many of you run it', type: 'select', req: 1, opts: ['Just me', '2 or 3 of us', '4 to 10', 'More than 10'] },
+      { k: 'fees', l: 'What you pay in platform fees a year', ph: 'A rough number, if you know' },
+      { k: 'hardest', l: 'The hardest part right now', type: 'multi', wide: 1, opts: ['Finding new people', 'Getting people to come back', 'Covering costs', 'Finding venues', 'Time', 'The tools we use'] }] },
+    { t: 'You', fields: [
+      { k: 'name', l: 'Your name', req: 1 },
+      { k: 'email', l: 'Your email', type: 'email', req: 1 },
+      { k: 'phone', l: 'Phone', type: 'tel', hint: 'Only if you would like a call.' },
+      { k: 'role', l: 'Your role', type: 'select', req: 1, opts: ['Founder', 'Organizer', 'Co-organizer', 'Board member', 'Volunteer', 'Something else'] },
+      { k: 'instagram', l: 'Your Instagram', ph: '@yourname' },
+      { k: 'heard', l: 'How you heard about us', type: 'select', opts: ['Sean or our team reached out', 'A friend', 'Instagram', 'Our podcast', 'The Vegans Explore site', 'Somewhere else'] }] },
+    { t: 'The fit', fields: [
+      { k: 'host_here', l: 'Would you host your events on Vegans Explore?', type: 'radio', req: 1, wide: 1, opts: ['Yes, all of them', 'Some of them', 'Not sure yet'] },
+      { k: 'share_link', l: 'Would you share your group\'s link with your members?', type: 'radio', req: 1, wide: 1, opts: ['Yes', 'Maybe', 'No'] },
+      { k: 'worth_it', l: 'What would make this worth it for your group?', type: 'textarea', req: 1, wide: 1 },
+      { k: 'revenue_use', l: 'What would steady money let your group do?', type: 'textarea', wide: 1, ph: 'More events, a bigger venue, giving to a cause, paying your organizers...' },
+      { k: 'anything_else', l: 'Anything else we should know', type: 'textarea', wide: 1 },
+      { k: 'confirm', l: 'Everything here is accurate, and Vegans Explore can contact me about it.', type: 'confirm', req: 1 }] }
+  ];
+  function draft() { try { return JSON.parse(localStorage.getItem('gp_apply') || '{}') || {}; } catch (e) { return {}; } }
+  function keep(d) { try { localStorage.setItem('gp_apply', JSON.stringify(d)); } catch (e) {} }
+  function field(f, v) {
+    var name = esc(f.k), req = f.req ? ' <i>*</i>' : '', hint = f.hint ? '<small>' + esc(f.hint) + '</small>' : '', body;
+    if (f.type === 'select') body = '<select name="' + name + '"><option value="">Choose one</option>' + f.opts.map(function (o) { return '<option' + (v === o ? ' selected' : '') + '>' + esc(o) + '</option>'; }).join('') + '</select>';
+    else if (f.type === 'radio' || f.type === 'multi') body = '<div class="gp-opts" role="group" aria-label="' + esc(f.l) + '">' + f.opts.map(function (o) {
+      var on = f.type === 'multi' ? (v || []).indexOf(o) >= 0 : v === o;
+      return '<label><input type="' + (f.type === 'multi' ? 'checkbox' : 'radio') + '" name="' + name + '" value="' + esc(o) + '"' + (on ? ' checked' : '') + '>' + esc(o) + '</label>'; }).join('') + '</div>';
+    else if (f.type === 'textarea') body = '<textarea name="' + name + '" maxlength="1200"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + '>' + esc(v || '') + '</textarea>';
+    else if (f.type === 'confirm') return '<label class="gp-f wide gp-confirm" data-k="' + name + '"><input type="checkbox" name="' + name + '"' + (v ? ' checked' : '') + '><span style="text-transform:none;letter-spacing:0;font-size:14px;font-weight:600">' + esc(f.l) + '</span></label>';
+    else body = '<input type="' + (f.type || 'text') + '" name="' + name + '" maxlength="300" value="' + esc(v || '') + '"' + (f.ph ? ' placeholder="' + esc(f.ph) + '"' : '') + (f.k === 'email' ? ' autocomplete="email"' : f.k === 'name' ? ' autocomplete="name"' : '') + '>';
+    return '<label class="gp-f' + (f.wide ? ' wide' : '') + '" data-k="' + name + '"><span>' + esc(f.l) + req + '</span>' + body + hint + '</label>';
+  }
+  function readStep(n) {
+    var d = draft();
+    FORM[n - 1].fields.forEach(function (f) {
+      var els = main.querySelectorAll('[name="' + f.k + '"]');
+      if (!els.length) return;
+      if (f.type === 'multi') d[f.k] = [].filter.call(els, function (e) { return e.checked; }).map(function (e) { return e.value; });
+      else if (f.type === 'radio') { var c = [].filter.call(els, function (e) { return e.checked; })[0]; d[f.k] = c ? c.value : ''; }
+      else if (f.type === 'confirm') d[f.k] = els[0].checked;
+      else d[f.k] = els[0].value.trim();
+    });
+    keep(d); return d;
+  }
+  function stepOk(n, d) {
+    var bad = FORM[n - 1].fields.filter(function (f) {
+      var v = d[f.k];
+      if (f.k === 'email' && v && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) return true;
+      return f.req && (f.type === 'multi' ? !(v && v.length) : !v);
+    });
+    [].forEach.call(main.querySelectorAll('.gp-f'), function (el) { el.classList.toggle('bad', bad.some(function (f) { return f.k === el.getAttribute('data-k'); })); });
+    var err = $('gpErr');
+    if (bad.length) { err.textContent = bad.length === 1 ? (bad[0].k === 'email' && d.email ? 'That email does not look right.' : 'One answer is missing: ' + bad[0].l + '.') : bad.length + ' answers are missing. They are outlined in red.';
+      var first = main.querySelector('.gp-f.bad input, .gp-f.bad select, .gp-f.bad textarea'); if (first) first.focus(); }
+    return !bad.length;
+  }
+  function applyView(sub) {
+    if (sub === 'done') return head('Apply', 'Thank you. We have it.', 'Sean reads every application himself and will write back to the email you gave, usually within a few days. A copy of your answers is on its way to you.') +
+      '<div class="dg-btns">' + (code ? '<a class="dg-btn" href="/invite?c=' + encodeURIComponent(code) + '">Open my invitation</a>' : '') +
+      '<a class="dg-btn' + (code ? ' dg-ghost' : '') + '" href="#/demo">Look at the demo again</a></div>';
+    var n = Math.max(1, Math.min(FORM.length, parseInt(sub, 10) || 1)), st = FORM[n - 1], d = draft();
+    var steps = '<ol class="gp-steps">' + FORM.map(function (x, i) { return '<li class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + esc(x.t) + '</li>'; }).join('') + '</ol>';
+    var intro = n === 1 ? '<div class="gp-intro">Being a Group Partner can become a steady source of money for your group, to do more for its community. So we ask for a few minutes and real answers. Sean reads every application himself to make sure it is a fit both ways. Small groups are welcome: your share grows with the members you bring in.</div>' : '';
+    return head('Apply, step ' + n + ' of ' + FORM.length, st.t, '') + steps + intro +
+      '<form class="gp-form" id="gpForm" novalidate>' + st.fields.map(function (f) { return field(f, d[f.k]); }).join('') + '</form>' +
+      '<p class="gp-err" id="gpErr" role="alert"></p>' +
+      '<div class="gp-nav">' + (n > 1 ? '<a class="dg-btn dg-ghost" href="#/yes/' + (n - 1) + '" data-apply-back>Back</a>' : '<a class="dg-btn dg-ghost" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('A question about Group Partners') + '">Talk to Sean first</a>') +
+      '<span>Step ' + n + ' of ' + FORM.length + '</span>' +
+      '<button type="button" class="dg-btn" data-apply-next="' + n + '">' + (n < FORM.length ? 'Next' : 'Send my application') + '</button></div>';
+  }
+  function applyNext(n, btn) {
+    var d = readStep(n);
+    if (!stepOk(n, d)) return;
+    if (n < FORM.length) { viaTour = true; location.hash = '#/yes/' + (n + 1); return; }
+    btn.disabled = true; btn.textContent = 'Sending...';
+    fetch(SB + '/functions/v1/ve-group', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ((window.VEAuth && VEAuth.getToken && VEAuth.getToken()) || '') },
+      body: JSON.stringify({ action: 'apply', answers: d, invite_code: code || undefined }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (r) {
+        if (r && r.ok) { try { localStorage.removeItem('gp_apply'); } catch (e) {} viaTour = true; location.hash = '#/yes/done'; return; }
+        btn.disabled = false; btn.textContent = 'Send my application';
+        $('gpErr').textContent = (r && r.message) || 'That did not go through. Try again in a minute.';
+      }, function () { btn.disabled = false; btn.textContent = 'Send my application'; $('gpErr').textContent = 'That did not go through. Check your connection and try again.'; });
+  }
+  // Answers are kept as they are typed, so leaving and coming back loses nothing.
+  document.addEventListener('change', function (e) { var m = location.hash.match(/^#\/yes\/(\d)/); if (m && e.target.closest('#gpForm')) readStep(+m[1]); });
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-apply-next]');
+    if (b) { e.preventDefault(); applyNext(+b.getAttribute('data-apply-next'), b); return; }
+    if (e.target.closest('[data-apply-back]')) { var m = location.hash.match(/^#\/yes\/(\d)/); if (m) readStep(+m[1]); viaTour = true; }
+  });
 
   // The previews fill the space beside the tiles without the page scrolling: the page is drawn at desktop width (phone width on a
   // phone) and scaled down to the box.
@@ -537,11 +686,11 @@
   });
 
   function draw() {
-    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    var hm = location.hash.match(/^#\/([a-z]+)(?:\/([a-z0-9]+))?/) || [], k = hm[1];
     k = ALIAS[k] || k;
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
-    main.innerHTML = VIEWS[cur]();
+    main.innerHTML = VIEWS[cur](hm[2]);
     main.scrollTop = 0;
     if (cur === 'overview') fillCommunity();
     fitThumbs();
