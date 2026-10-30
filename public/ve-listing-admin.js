@@ -96,8 +96,8 @@
   function kindOf(cat) { return (SECTIONS[5][1].indexOf(cat) >= 0) ? 'person' : MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
   var STATUS = {
     place: { title: 'Open or closed', opts: OPEN },
-    // Never Ended (Sean, 2026-10-27: "it could come back 3 years later").
-    show: { title: 'Status', opts: [['OPERATIONAL', 'Active'], ['CLOSED_TEMPORARILY', 'On hiatus']] },
+    // Ended only when Sean confirms it (2026-10-27: "it could come back 3 years later"; 2026-10-30: "I can confirm they've ended").
+    show: { title: 'Status', opts: [['OPERATIONAL', 'Active'], ['CLOSED_TEMPORARILY', 'On hiatus'], ['CLOSED_PERMANENTLY', 'Ended']] },
     work: { title: 'Status', opts: [['OPERATIONAL', 'Available'], ['CLOSED_PERMANENTLY', 'No longer available']] },
     brand: { title: 'Status', opts: [['OPERATIONAL', 'In business'], ['CLOSED_TEMPORARILY', 'Paused'], ['CLOSED_PERMANENTLY', 'Out of business']] }
   };
@@ -356,7 +356,7 @@
       var last = st.opts[st.opts.length - 1][1];
       // A podcast's status follows its feed (ve-podcast, every hour): a save here holds only until the feed is read again.
       $('#vla-bs-note').textContent = $('#vla-sub').value === 'Podcasts'
-        ? 'Set from its latest episode: Active within 6 months, then On hiatus, never Ended. A new episode sets it back on its own. To take it off the Directory:'
+        ? 'Set from its latest episode: Active within 6 months, then On hiatus. Ended only when we know it ended; it stays Ended until a new episode comes out. To take it off the Directory:'
         : kind === 'show' ? 'To take it off the Directory:' : last + ' keeps it under Closed in the Directory, for memory. To take it off without that:';
     }
     // The vetted switch only matters for a Vegan-friendly or Vegan-options food place (the rule in /public/ve-trust.js).
