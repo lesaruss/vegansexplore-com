@@ -1088,6 +1088,19 @@ and dots (`OPS`, `drawOps`), and **Liz walks you through it**, her voice over he
 reaches each one (`OV_AUDIO.cues`, from the recording's alignment) that card lights and slides into view. With the Guide showing, her
 picture in the rail is the player (one Liz, not two); folded away, the player sits beside the cards. It pauses when they leave the tab. **Depot > Ambassadors > Stories**
 (`#stories/<status>`: New, Contacted, Done; `ve-ambassador` `admin_list` `stories`, `story_status`).
+**Then, the same day** (Sean: "don't have the hide me feature. It's just going to be fixed there... when you go to next, you see Dani
+and she talks as well... two rows, two columns... more rectangular... equal in length... Theo back to back. I don't like that... compress
+it"). The Guide is fixed on the right again: no Walk me through it choice, no Hide me / Show me, no `ve-guide-min.js`, and the Guide's
+picture is the player on every tab with a recording (`railPlayer`, `tabAudio`; the Overview's is Liz's walkthrough with its card cues,
+the others `TABS[].audio`, `vegan-media/media/voices/ambassador-guide/tab-<tab>-v1.mp3`, word for word as `say`). Ten tabs, a different
+Guide on each and never one twice in a row: Overview (Liz), Why it matters (Dani), The opportunity (Nori; Every chapter is open to you
+joined it), Tell the stories (River), Paid work (Theo), Your link (Maya; Who to invite joined it), What to share (Liz), Your membership
+(Dani; the optional home base, `homeBase`, joined it), Answering questions (Theo), Your progress (River); `#/who` and `#/city` forward
+(`OLD_TABS`). Every card grid is two across (`.dg-grid`, `.am-steps`, `.am-kinds`), one on phones, and an odd last card runs the full
+width; Why it matters' Points given to the organizations became Their events, on the calendar. Recorded so far: Liz (Overview, What to
+share) and Maya (Your link). Dani, Nori, River and Theo have no voice yet: three ElevenLabs voice designs each, made 2026-10-30, wait for
+Sean's pick (`vegan-media/media/voices/ambassador-guide/<guide>-p1|p2|p3.mp3`; their `generated_voice_id`s in el-media's answer, saved
+with `save_voice` into `character_agents.elevenlabs_voice_id` once picked), then their tabs are recorded the same way.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
