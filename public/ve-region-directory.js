@@ -1232,6 +1232,9 @@
     // vrd-root and a .rank-grid; wire() adds votes and opens a listing through onOpen(slug, name)
     // so the visitor stays where they are. A listing needs the fields fetchAll selects.
     css: injectStyleOnce,
+    // A brand's cards outside init (2026-10-30: a LESARUSS.ai Guide's Directory tab): the same config.brand init takes, so the
+    // card reads like that brand's Directory (no How Vegan, its avatar color, its listing addresses).
+    brand: function (b) { useBrand(b); },
     card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
     wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
     FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type'

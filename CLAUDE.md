@@ -548,10 +548,19 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
   funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
 - **The Guides page** (built 2026-10-30). lesaruss.ai/guides (lesaruss-ai-site `app/guides/SharedGuides.tsx`) mounts this site's
-  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves (All Guides, LESARUSS.ai Guides, From Vegans Explore;
-  `?shelf=`) and the cards are ours. The catalog takes a brand's own list (`render(el, {guides, shelves})`) and gives it our live
-  Guides (`VEGuideCatalog.communityGuides(origin, chips)`: every live Guide but the Welcome Guide and the Partner Guides, opening on
-  vegansexplore.com), since a Diplomat gets every Guide from every LESARUSS community. A new live Guide in `GUIDES` shows there too.
+  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves, by business topic (All Guides, AI and new tech,
+  Creators and media, Running the business; `?shelf=`, `SHELF_OF` there), and the cards are ours, each with a banner made for the
+  card (`public/guides/banners/<slug>.jpg` there; the Guide's portrait cover stays on its own page). **Business Guides only** (Sean,
+  2026-10-30: "the audience is businesses... let's save that for when they become a diplomat"): our Guides do not show there; a
+  Diplomat's every-community shelf belongs on their dashboard (`VEGuideCatalog.communityGuides` stays for it).
+- **A LESARUSS.ai Guide is a mini app** (Sean, 2026-10-30: "update these guides so it fits with what we're doing with Vegans
+  Explore... start with the podcast guide... from that template, we can roll on"). lesaruss.ai/guides/podcast-starter-guide
+  (lesaruss-ai-site `app/guides/[slug]/GuideApp.tsx`, `MINI_APPS` in its page) is our Guide layout in LESARUSS colors: the header
+  with the $11 box and the tabs, the tab on the left, V on the right with her approved lines and clips, Back / N of M / Next. HQ
+  holds the tabs and V's words (lesaruss-hq `lib/guideSite.ts`) and answers who the visitor is with their own HQ session
+  (`/api/member/guide-site`, CORS for lesaruss.ai): the paid parts' words only to an owner (`canOpenCourse`), saves, hot labs.
+  Cheat sheets are HQ's graphics framed from `hq.lesaruss.ai/guide-sheet/<slug>/<key>`. Its Directory tab uses this site's card
+  (`VERegionDirectory.brand(b)`, then `card` and `wire`, so the card reads like the brand's Directory).
 
 ## Analytics (Sean, 2026-10-28)
 
@@ -3139,6 +3148,32 @@ staff, Contribute for active members, the admin cards first for super admins). T
 only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboard" as the way back, and `/dashboard/tools`
 lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
 that we're selling"), and a tile in Your tools.
+
+**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is the **Inbox** (`renderInbox`,
+`#dash-inbox-block`; migration `20261030_ve_inbox.sql`): "anything that comes through, period, even if it's assigned to somebody
+else... so nothing falls through the cracks". `ve_inbox_items()` is every request a person sent, wherever it came in (meeting
+requests and Group Partner applications, Ask a person questions, leads that are not link clicks, Ambassador stories, Podcast
+Network applications, profile requests, listing claims and applications, nonprofit surveys, events members submitted; tests and
+LESARUSS.ai's own items left out); a new kind of request is a new `union all` there. `ve_inbox_state` holds what happened to each
+one: assigned to the chapter's active Community Manager (the request's chapter, else the requester's home chapter), else the team;
+**Opened** only when that person opens it (with no Community Manager, a super admin); **Replied** or **Closed, no reply needed**, by
+hand (`ve-dashboard` `inbox`, `inbox_open`, `inbox_set`). The reply clock is **24 hours from when it came in** ("no more than... 24
+hours... sooner the better", `INBOX_DUE_HOURS`); the head shows open, late and the average reply time, which is how a Community
+Manager's work will be measured. Tabs Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
+assigned to, opened, reply by, a team note, Reply by email, Mark replied, Close, Open where it came in). A Community Manager's own
+inbox (only theirs) is in `ve-dashboard` already, not yet on their dashboard. Replies are marked by hand: sending the reply from the
+inbox, so the clock stops itself, is the next step.
+**Recent activity** has the **Leaderboard** as one of its boxes, the same size (it stays beside For you for everyone else), and every
+box has a drag handle (mouse, touch, or the arrow keys) to put it where Sean wants; the order is kept in the browser
+(`localStorage` `ve_dash_recent_order`, `dashReorder`). **Every member thumbnail is a rounded square that opens who they are**
+(`memberCard`): Recent Members, the voter on Recent Votes, Recent Leads (`ve-dashboard` `recent_leads`), the Leaderboard
+(`leaderboard`) and the Inbox. A member's picture is their People profile photo when one names them (`details.person.member_id`),
+else their account picture (`pictures()` in `ve-dashboard`). **Your tools**: the search on the left and the category filters to its
+right, wrapping to another row; on phones the filters sit behind a filter icon beside the search (`#dash-tools-filter`).
+**Vegans Explore only** (Sean, 2026-10-30: "It's showing votes for things that are on LESARUSS.ai... we need to make sure those
+stuff stay separate"): LESARUSS.ai's listings (tags `lesaruss-ai-directory`, `-candidate`, `-business-member`) are left out of Recent
+Votes, a member's latest votes, the inbox and the Depot's Logos (`ours` in `ve-discover`: To find, Suggested, the sweep, chain logos
+and Done). They share the database; LESARUSS.ai's own Depot is to be set up the same way on its side.
 
 - Which one: the member's choice (`members.dashboard_version`, the switch on the block; picking the suggested one clears it),
   else `ve_dashboard_version()`: owns a listing or Business owner in the Mission Survey (q3), business; q6 Curious / pre-Vegan,
