@@ -1152,7 +1152,11 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   concurrent limit), so send them two at a time. **Every gig has a picture** (Sean: "each one should have a little square with rounded
   corner image... inviting and visual"): `img` on a gig (the sample's are `gigs/sample/img/gig-g<n>.webp`, illustrative, Higgsfield
   2026-10-30), shown square on the board's tiles and My gigs (so Up next too), else the flat icon of its kind (`thumb`, `ICON`); the
-  dashboard's four tiles wear flat icons.
+  dashboard's four tiles wear flat icons. **The tile** (Sean, 2026-10-30: "the image being a fourth... have the text, have everything
+  else stretch out"): the picture a fourth of the tile on the left, everything else the three-fourths on the right (`.vg-tile`,
+  `.vg-tile-r`); on the board the first row is the partner and kind with Apply / Audition / Claim it beside it (`.vg-kindrow`), and on
+  My gigs where it stands (Booked, Audition requested...) is the first pill at the bottom. Your Creator Dashboard and Open gigs put
+  their title above Kai's strip (`head(active, title)`).
   Not yet (Sean's direction): People doing it marking the creators who have registered with us, and the Pulse tab carrying articles
   for creators beside the podcasts, sortable.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
