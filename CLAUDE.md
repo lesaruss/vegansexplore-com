@@ -3114,7 +3114,9 @@ that we're selling"), and a tile in Your tools.
   votes received (on their pages: listings they own, or a People profile naming them in `details.person.member_id`, which links a person
   without making them its owner; Sean's profile carries his, migration `20261030_people_member_link.sql`), places they checked in, saves,
   joined, home chapter, Instagram, their link, their pages, **Who voted for them** (the latest 25 votes on their pages, each voter's picture
-  and name opening that voter's own card, and the page voted for; `voted_by`), their latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  and name opening that voter's own card, and the page voted for; `voted_by`), **Who saved their pages** (the latest 25 saves of their pages
+  or of an episode on them, the same rows, `saved_by`, `saves_received`; the team's view only, an owner's dashboard never names who saved),
+  their latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
   Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
   2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
   `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
