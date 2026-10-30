@@ -2,6 +2,9 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
+  "functions": {
+    "api/listing.js": { "includeFiles": "directory/listing.html" }
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -39,8 +42,12 @@
       "destination": "/passport"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/directory/:slug",
-      "destination": "/directory/listing"
+      "destination": "/api/listing?slug=:slug"
     },
     {
       "source": "/products/:slug",
