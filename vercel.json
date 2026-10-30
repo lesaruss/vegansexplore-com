@@ -2,6 +2,21 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/((?!ads/).*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://lesaruss.ai https://*.lesaruss.ai https://vegansexplore.com https://*.vegansexplore.com" }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
