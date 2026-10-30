@@ -30,7 +30,26 @@
     '.vg select{appearance:none;-webkit-appearance:none;background:#fff ' + CHEV + ' no-repeat right 16px center;padding-right:44px;}',
     '.vg textarea{min-height:120px;resize:vertical;line-height:1.5;}',
     '.vg-check{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;margin:0 0 14px;cursor:pointer;}',
-    '.vg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:12px;}',
+    '.vg-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}',
+    '.vg-grid2{grid-template-columns:repeat(2,minmax(0,1fr));}',
+    '.vg-next{font-size:13px;font-weight:700;line-height:1.4;}.vg-next.warn{color:#7a4b00;}',
+    '.vg-plat.vg-sum{margin:0 0 14px;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));}',
+    '.vg-chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;}',
+    '.vg-chips a{font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;border:1px solid var(--line);color:#1a1a1a;text-decoration:none;}',
+    '.vg-chips a em{font-style:normal;color:var(--ink75);margin-left:4px;}',
+    '.vg-chips a[aria-current]{background:var(--g);border-color:var(--g);color:#fff;}.vg-chips a[aria-current] em{color:#e6f4e7;}',
+    '.vg-seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:0 0 8px;}',
+    '.vg-seg a{padding:9px 14px;font-size:12px;font-weight:800;color:#1a1a1a;text-decoration:none;border-right:1px solid var(--line);}',
+    '.vg-seg a:last-child{border-right:0;}.vg-seg a[aria-selected=true]{background:var(--g);color:#fff;}',
+    '.vg-res{display:flex;flex-direction:column;gap:8px;}.vg-res div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}',
+    '.vg-res b{font-size:14px;font-weight:900;}.vg-res span{grid-column:1;font-size:12.5px;color:var(--ink75);}.vg-res em{grid-column:2;grid-row:1/3;font-style:normal;}',
+    '.vg-pub-head{display:flex;gap:16px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:16px;margin:0 0 12px;}',
+    '.vg-pub-av{width:96px;height:96px;border-radius:14px;background:#eef3ee center/cover no-repeat;flex:0 0 96px;}',
+    '.vg-pub-head>div:nth-child(2){flex:1 1 240px;min-width:0;}',
+    '.vg-pub-vote{border:1px solid var(--gm);background:var(--gl);border-radius:10px;padding:10px 14px;text-align:center;}.vg-pub-vote b{display:block;color:var(--g);font-size:15px;}.vg-pub-vote span{font-size:11.5px;color:var(--ink75);}',
+    '.vg-hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,1fr);gap:24px;align-items:center;margin:0 0 6px;}',
+    '.vg-hero figure{margin:0;}.vg-hero img{width:100%;max-height:260px;object-fit:cover;object-position:center 30%;border-radius:12px;display:block;}',
+    '.vg-hero figcaption{font-size:12px;color:var(--ink75);margin-top:6px;}',
     '.vg-card{border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;background:#fff;transition:box-shadow .12s,transform .12s;}',
     '.vg-card:hover{box-shadow:0 6px 22px rgba(0,0,0,.08);transform:translateY(-1px);}',
     '.vg-card.no{opacity:.72;}',
@@ -60,23 +79,22 @@
     '.vg-label{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:12px 0 6px;}',
     '.vg-help{font-size:12.5px;color:var(--ink75);margin:6px 0 0;line-height:1.45;}',
     '.vg-err{color:#9b1c1c;font-size:13px;font-weight:700;min-height:18px;margin-top:8px;}',
-    '.vg-rows{border:1px solid var(--line);border-radius:12px;overflow:hidden;}',
-    '.vg-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);}',
-    '.vg-row:last-child{border-bottom:0;}.vg-row b{display:block;font-size:14.5px;font-weight:900;}.vg-row span{font-size:12.5px;color:var(--ink75);}',
     '.vg-folio{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(130px,100%),1fr));gap:10px;}',
     '.vg-folio button{border:0;padding:0;background:none;cursor:zoom-in;text-align:left;font:inherit;}',
     '.vg-folio img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px;display:block;background:#eef3ee;}',
     '.vg-folio small{display:block;font-size:12px;font-weight:700;margin-top:6px;line-height:1.35;}.vg-folio em{display:block;font-style:normal;font-size:11.5px;color:var(--ink75);}',
     '.vg-plat{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(160px,100%),1fr));gap:10px;}',
     '.vg-plat div{border:1px solid var(--gm);background:var(--gl);border-radius:10px;padding:12px;}.vg-plat b{display:block;font-size:20px;font-weight:900;}.vg-plat span{font-size:12px;color:var(--ink75);}',
-    '.vg-tiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;}',
+    '.vg-tiers{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}',
     '.vg-tier{border:1px solid var(--line);border-radius:12px;padding:14px;}.vg-tier.on{border-color:var(--g);background:var(--gl);}.vg-tier b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}.vg-tier p{font-size:13px;line-height:1.5;color:var(--ink75);margin:0;}',
     '.vg-empty{padding:30px;text-align:center;color:var(--ink75);border:1px dashed var(--line);border-radius:12px;}',
     '.vg-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 18px;border-radius:6px;font-size:13.5px;font-weight:700;z-index:2000;max-width:calc(100% - 32px);}',
     '.vg-lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:2000;padding:16px;cursor:zoom-out;}',
     '.vg-lb img{max-width:100%;max-height:88vh;border-radius:10px;}',
+    '@media (max-width:1100px){.vg-grid,.vg-tiers{grid-template-columns:repeat(2,minmax(0,1fr));}}',
+    '@media (max-width:700px){.vg-grid,.vg-grid2,.vg-tiers{grid-template-columns:minmax(0,1fr);}.vg-hero{grid-template-columns:minmax(0,1fr);}}',
     '@media (max-width:1100px){.vg-tools{grid-template-columns:repeat(2,minmax(0,1fr));}.vg-tools .vg-q{grid-column:1/-1;}}',
-    '@media (max-width:820px){.vg-two{grid-template-columns:minmax(0,1fr);}.vg-row{grid-template-columns:minmax(0,1fr);}}',
+    '@media (max-width:820px){.vg-two{grid-template-columns:minmax(0,1fr);}}',
     '.vg :focus-visible{outline:3px solid #F69820;outline-offset:2px;}'
   ].join('');
 
@@ -181,6 +199,70 @@
         (g.applicants ? '<span class="vg-tag">' + num(g.applicants) + ' applied</span>' : '') + '</div></a>';
     }
 
+    // My gigs wear the board's tile (Sean, 2026-10-30: "my gigs should look the same way... three columns"), with where it stands.
+    function mineCard(m) {
+      var g = gig(m.gig), s = STATUS[m.status], aud = g && m.status === 'audition' && (g.asks || []).indexOf('audition') > -1;
+      var inner = '<div class="vg-top"><span class="vg-partner">' + esc(g ? g.partner.name + ' · ' + (KIND[g.kind] || g.kind) : 'Past gig') + '</span><span class="vg-tag ' + s[1] + '">' + s[0] + '</span></div>' +
+        '<div class="vg-title">' + esc(g ? g.title : m.title) + '</div>' + (g ? '<div class="vg-pay">' + esc(payText(g.pay)) + '</div>' : '') +
+        (m.next ? '<div class="vg-next' + (aud ? ' warn' : '') + '">' + esc(m.next) + '</div>' : '') +
+        '<div class="vg-tags">' + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') + (g ? '<span class="vg-tag">' + esc(where(g)) + '</span>' : '') +
+        (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div>';
+      var href = aud ? '#apply/' + g.id + '/' + ((g.asks || []).indexOf('audition') + 1) : g ? '#gig/' + g.id : '';
+      return href ? '<a class="vg-card" href="' + esc(href) + '">' + inner + '</a>' : '<div class="vg-card">' + inner + '</div>';
+    }
+
+    // Your profile, seen four ways (Sean, 2026-10-30: "what they would see and what we would see and what the sponsors would see, and
+    // then what the public will see... this information is what they'll see... when they click dashboard").
+    var PVIEWS = [
+      ['you', 'Your dashboard', 'What you see on your dashboard once you are an official creator: everything, with what to do next.'],
+      ['partner', 'Partners', 'What a brand or organizer sees once you are shortlisted. No rates, no contact details: we stay in between.'],
+      ['team', 'Our team', 'What our team sees: everything, rates and strikes included, to match you to the right gigs.'],
+      ['public', 'The public', 'Your page in the People directory: open to everyone, no numbers that are not already public.']
+    ];
+    function box(h, body, cls) { return '<div class="vg-box' + (cls ? ' ' + cls : '') + '"><h3>' + h + '</h3>' + body + '</div>'; }
+    function folio(caps) { return (C.portfolio || []).length ? '<div class="vg-folio">' + C.portfolio.map(function (p) { return '<button type="button" data-lb="' + esc(p.img) + '"><img src="' + esc(p.img) + '" alt="' + esc(p.caption) + '" loading="lazy"><small>' + esc(p.caption) + '</small>' + (caps ? '<em>' + esc(p.partner) + '</em>' : '') + '</button>'; }).join('') + '</div>' : '<p>Add your best posts in your checklist.</p>'; }
+    function plats(withEng) { return '<div class="vg-plat">' + (C.platforms || []).map(function (p) { return '<div><b>' + short(p.followers) + '</b><span>' + esc(p.label) + (withEng && p.eng ? ' · ' + p.eng + '% engagement' : '') + '</span></div>'; }).join('') + '</div>'; }
+    function results() { return (C.results || []).length ? '<div class="vg-res">' + C.results.map(function (x) { return '<div><b>' + esc(x.gig) + '</b><span>' + num(x.clicks) + ' clicks · ' + x.joins + ' joined · ' + x.posts + (x.posts === 1 ? ' post' : ' posts') + '</span><em class="vg-tag ' + (x.per_k >= (C.board_per_k || 18) ? 'ok' : '') + '">' + x.per_k + ' per 1K followers</em></div>'; }).join('') + '</div><p class="vg-help">The board average is ' + (C.board_per_k || 18) + ' clicks per 1,000 followers, counted from each creator\'s own tracked link.</p>' : '<p>Your first gig starts your record.</p>'; }
+    function relLine(withStrikes) { var r = C.reliability || {}; return '<p><b>' + standing(C) + '</b></p><p>' + (r.delivered || 0) + ' of ' + (r.booked || 0) + ' booked gigs delivered, ' + (r.on_time || 0) + ' on time, ' + (r.first_try || 0) + ' approved the first time' + (withStrikes ? ', ' + (r.strikes || 0) + (r.strikes === 1 ? ' strike' : ' strikes') : '') + '.</p>'; }
+    function rates() { return (C.rates || []).length ? C.rates.map(function (x) { return '<p>' + esc(x[0]) + ': <b>' + esc(x[1]) + '</b></p>'; }).join('') : '<p>Not set yet.</p>'; }
+    var NEXT_TIER = { New: 'Deliver your first gig to be Rising.', Rising: 'Deliver five, on time, to be Reliable.', Reliable: 'Reach Level 3 and keep your clicks per 1,000 followers at twice the board\'s average to be Featured.', Featured: 'You are at the top. You see new paid gigs a day early.' };
+    var PROFILE = {
+      you: function () {
+        var open = D.mine.filter(function (m) { return ['applied', 'shortlisted', 'audition', 'booked'].indexOf(m.status) > -1; });
+        var todo = D.mine.filter(function (m) { return m.status === 'audition' || m.status === 'booked'; });
+        return '<div class="vg-plat vg-sum"><div><b>' + (C.earned_cents != null ? money(C.earned_cents) : '$0') + '</b><span>Paid this year</span></div><div><b>' + open.length + '</b><span>Gigs in play</span></div><div><b>' + standing(C) + '</b><span>Your standing</span></div><div><b>Level ' + (C.level || 1) + '</b><span>' + num(C.points || 0) + ' points</span></div></div>' +
+          '<div class="vg-two"><div>' +
+          box('Up next', todo.length ? '<div class="vg-grid vg-grid2">' + todo.map(mineCard).join('') + '</div>' : '<p>Nothing due. <a href="#board">Find a gig</a></p>') +
+          box('Your results', results()) + box('Your work', folio(true)) +
+          '</div><div>' + box('Your standing', relLine(true) + '<p>' + NEXT_TIER[standing(C)] + ' <a href="#how">How you rise</a></p>') +
+          box('Platforms', plats(true)) + box('Your rates (our team only)', rates()) +
+          box('Your checklist', '<p><span class="vg-tag ok">Active</span> Profile, platforms, rates and payouts are done. <a href="/ambassadors/door">Open your checklist</a></p>') + '</div></div>';
+      },
+      partner: function () {
+        return '<div class="vg-two"><div>' + (C.line ? box('About', '<p>' + esc(C.line) + '</p>') : '') + box('Their work', folio(true)) + box('Results on past gigs', results()) +
+          '</div><div>' + box('Platforms', plats(true)) + box('Reliability', relLine(false)) +
+          box('To book them', '<p>Through us. Their rate is in your quote, and every message goes through Vegans Explore.</p>') + '</div></div>';
+      },
+      team: function () {
+        return '<div class="vg-two"><div>' + (C.line ? box('About', '<p>' + esc(C.line) + '</p>') : '') + box('Results on past gigs', results()) + box('Their work', folio(true)) +
+          '</div><div>' + box('Rates', rates()) + box('Reliability', relLine(true)) + box('Platforms', plats(true)) +
+          box('On file', '<p>Ambassador, Creator profile<br>Checklist: Active, payouts on<br>Cities: ' + esc((C.chapters || []).map(function (c) { return CHAPTER_NAMES[c] || c; }).join(', ')) + '</p>') + '</div></div>';
+      },
+      public: function () {
+        var first = (C.name || '').split(' ')[0];
+        return '<div class="vg-pub"><div class="vg-pub-head"><div class="vg-pub-av" style="' + (C.avatar ? "background-image:url('" + esc(C.avatar) + "')" : '') + '"></div><div>' +
+          '<span class="vg-partner">People · Content Creators</span><h2 class="vg-h" style="margin:2px 0 4px">' + esc(C.name || '') + '</h2>' +
+          '<p class="vg-line">Vegan food and fitness creator · ' + esc(C.city || '') + '</p>' +
+          '<div class="vg-tags" style="margin-top:8px">' + (C.platforms || []).map(function (p) { return '<span class="vg-tag">' + esc(p.label) + '</span>'; }).join('') + '<span class="vg-tag ok">Official creator</span></div></div>' +
+          '<div class="vg-pub-vote"><b>+ Vote</b><span>Members vote for the people they love</span></div></div>' +
+          '<div class="vg-two"><div>' + box('About', '<p>' + esc(C.line || '') + '</p>') + box('Their work', folio(false)) +
+          '</div><div>' + box('With Vegans Explore', '<p>Hosted the night market stage<br>Wynwood restaurant crawl<br>Oat-milk latte tour</p>') +
+          box('Follow', '<p>' + esc(C.handle || '') + ' on Instagram and TikTok</p>') +
+          box('Where they show up', '<p>' + esc((C.chapters || []).map(function (c) { return CHAPTER_NAMES[c] || c; }).join(', ')) + '</p>') + '</div></div></div>' +
+          '<p class="vg-help">Every official creator has a page in our People directory. A partner books them through us; the public page never shows rates, results or contact details.</p>';
+      }
+    };
+
     var V = {
       board: function () {
         var list = D.gigs.filter(function (g) {
@@ -245,29 +327,20 @@
       mine: function (tab) {
         tab = tab || 'all';
         var rows = D.mine.filter(function (m) { return tab === 'all' || m.status === tab; });
-        return head('mine') + '<div class="vg-tabs" style="border:0;margin-bottom:8px">' + MINE_TABS.map(function (t) {
-          var n = t[0] === 'all' ? D.mine.length : D.mine.filter(function (m) { return m.status === t[0]; }).length;
-          return n || t[0] === 'all' ? '<a href="#mine/' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + t[1] + ' (' + n + ')</a>' : '';
-        }).join('') + '</div>' +
-          (rows.length ? '<div class="vg-rows">' + rows.map(function (m) {
-            var g = gig(m.gig), s = STATUS[m.status];
-            return '<div class="vg-row"><div><b>' + esc(g ? g.title : m.title) + '</b><span>' + esc(g ? g.partner.name + ' · ' + payText(g.pay) : '') + '</span></div><div><span class="vg-tag ' + s[1] + '">' + s[0] + '</span><br><span>' + esc(m.next || '') + '</span></div>' +
-              (g ? '<a class="vg-btn ghost" href="#gig/' + esc(g.id) + '">Open</a>' : '<span></span>') + '</div>';
-          }).join('') + '</div>' : '<div class="vg-empty">Nothing here yet. <a href="#board">Find a gig</a></div>') +
-          (C.earned_cents != null ? '<div class="vg-plat" style="margin-top:14px"><div><b>' + money(C.earned_cents) + '</b><span>Paid this year</span></div><div><b>' + num(C.earned_points) + '</b><span>Points from gigs</span></div><div><b>' + (C.reliability ? C.reliability.delivered : 0) + '</b><span>Gigs delivered</span></div></div>' : '');
+        return head('mine') +
+          (C.earned_cents != null ? '<div class="vg-plat vg-sum"><div><b>' + money(C.earned_cents) + '</b><span>Paid this year</span></div><div><b>' + num(C.earned_points) + '</b><span>Points from gigs</span></div><div><b>' + (C.reliability ? C.reliability.delivered : 0) + '</b><span>Gigs delivered</span></div></div>' : '') +
+          '<div class="vg-chips">' + MINE_TABS.map(function (t) {
+            var n = t[0] === 'all' ? D.mine.length : D.mine.filter(function (m) { return m.status === t[0]; }).length;
+            return n || t[0] === 'all' ? '<a href="#mine/' + t[0] + '"' + (t[0] === tab ? ' aria-current="page"' : '') + '>' + t[1] + ' <em>' + n + '</em></a>' : '';
+          }).join('') + '</div>' +
+          (rows.length ? '<div class="vg-grid">' + rows.map(mineCard).join('') + '</div>' : '<div class="vg-empty">Nothing here yet. <a href="#board">Find a gig</a></div>');
       },
-      profile: function () {
-        var r = C.reliability || {};
-        return head('profile') + '<p class="vg-help" style="margin:0 0 12px">This is what a partner sees once you are shortlisted. Your rates stay with our team.</p>' +
-          '<div class="vg-two"><div>' +
-          (C.line ? '<div class="vg-box"><h3>About</h3><p>' + esc(C.line) + '</p></div>' : '') +
-          '<div class="vg-box"><h3>Your work</h3>' + ((C.portfolio || []).length ? '<div class="vg-folio">' + C.portfolio.map(function (p) { return '<button type="button" data-lb="' + esc(p.img) + '"><img src="' + esc(p.img) + '" alt="' + esc(p.caption) + '" loading="lazy"><small>' + esc(p.caption) + '</small><em>' + esc(p.partner) + '</em></button>'; }).join('') + '</div>' : '<p>Add your best posts in your checklist.</p>') + '</div>' +
-          '<div class="vg-box"><h3>Results on past gigs</h3>' + ((C.results || []).length ? '<div class="vg-rows">' + C.results.map(function (x) { return '<div class="vg-row"><div><b>' + esc(x.gig) + '</b><span>' + x.posts + (x.posts === 1 ? ' post' : ' posts') + '</span></div><div><span>' + num(x.clicks) + ' clicks on your link · ' + x.joins + ' joined</span></div><span class="vg-tag ' + (x.per_k >= (C.board_per_k || 18) ? 'ok' : '') + '">' + x.per_k + ' per 1K followers</span></div>'; }).join('') + '</div><p class="vg-help">The board average is ' + (C.board_per_k || 18) + ' clicks per 1,000 followers. Results are counted from your own tracked link, so they are real.</p>' : '<p>Your first gig starts your record.</p>') + '</div>' +
-          '</div><div>' +
-          '<div class="vg-box"><h3>Platforms</h3><div class="vg-plat">' + (C.platforms || []).map(function (p) { return '<div><b>' + short(p.followers) + '</b><span>' + esc(p.label) + (p.eng ? ' · ' + p.eng + '% engagement' : '') + '</span></div>'; }).join('') + '</div></div>' +
-          '<div class="vg-box"><h3>Reliability</h3><p><b>' + standing(C) + '</b></p><p>' + (r.delivered || 0) + ' of ' + (r.booked || 0) + ' booked gigs delivered, ' + (r.on_time || 0) + ' on time, ' + (r.first_try || 0) + ' approved the first time, ' + (r.strikes || 0) + (r.strikes === 1 ? ' strike' : ' strikes') + '.</p></div>' +
-          ((C.rates || []).length ? '<div class="vg-box"><h3>Your rates (our team only)</h3>' + C.rates.map(function (x) { return '<p>' + esc(x[0]) + ': <b>' + esc(x[1]) + '</b></p>'; }).join('') + '</div>' : '') +
-          '</div></div>';
+      profile: function (as) {
+        as = PVIEWS.some(function (v) { return v[0] === as; }) ? as : 'you';
+        var bar = '<div class="vg-seg" role="tablist" aria-label="See your profile as">' + PVIEWS.map(function (v) {
+          return '<a role="tab" href="#profile/' + v[0] + '" aria-selected="' + (v[0] === as) + '">' + v[1] + '</a>';
+        }).join('') + '</div><p class="vg-help" style="margin:0 0 14px">' + PVIEWS.filter(function (v) { return v[0] === as; })[0][2] + '</p>';
+        return head('profile') + bar + PROFILE[as]();
       },
       how: function () {
         var s = standing(C), T = [
@@ -276,8 +349,9 @@
           ['Reliable', 'Five gigs delivered, 9 in 10 on time, no open strikes. Partners see the Reliable mark on your profile.'],
           ['Featured', 'Reliable, Level 3, and your clicks per 1,000 followers at least twice the board\'s average. Featured creators see new paid gigs a day before everyone else.']
         ];
-        return head('how') + '<h2 class="vg-h">Rise by results, not just followers</h2>' +
-          '<p class="vg-help" style="font-size:14.5px;max-width:860px">A partner can only judge a stranger by followers at first. Once you have done a gig, we know: every booked creator shares their own tracked link, so we count the clicks and the people who joined. A small audience that shows up beats a big one that scrolls past, and your record says so. Be honest about your numbers; the results show where you stand either way.</p>' +
+        return head('how') + '<div class="vg-hero"><div><h2 class="vg-h">Rise by results, not just followers</h2>' +
+          '<p class="vg-help" style="font-size:14.5px">A partner can only judge a stranger by followers at first. Once you have done a gig, we know: every booked creator shares their own tracked link, so we count the clicks and the people who joined. A small audience that shows up beats a big one that scrolls past, and your record says so. Be honest about your numbers; the results show where you stand either way.</p></div>' +
+          (C.portfolio && C.portfolio.length ? '<figure><img src="' + esc((C.portfolio[C.portfolio.length - 1] || {}).img) + '" alt="' + esc(C.name || 'A creator') + ' hosting a festival stage"><figcaption>' + esc(C.name ? C.name.split(' ')[0] + ' started on points gigs and hosting. Now she is Reliable.' : '') + '</figcaption></figure>' : '') + '</div>' +
           '<div class="vg-tiers" style="margin-top:14px">' + T.map(function (t) { return '<div class="vg-tier' + (t[0] === s ? ' on' : '') + '"><b>' + t[0] + (t[0] === s ? ' · you' : '') + '</b><p>' + t[1] + '</p></div>'; }).join('') + '</div>' +
           '<div class="vg-two" style="margin-top:14px"><div class="vg-box"><h3>What counts</h3><ul><li>Delivered, on time, approved the first time</li><li>Clicks and joins through your link, per 1,000 followers</li><li>Your level, from the points you earn taking part</li></ul></div>' +
           '<div class="vg-box"><h3>What costs you</h3><ul><li>A no-show or a late cancel is a strike</li><li>Numbers that do not match what you told us</li><li>Strikes clear after a run of clean gigs</li></ul></div></div>' +
@@ -287,7 +361,7 @@
 
     function draw() {
       var h = (location.hash || '#board').slice(1).split('/');
-      var html = h[0] === 'gig' ? V.gig(h[1]) : h[0] === 'apply' ? V.apply(h[1], h[2]) : h[0] === 'mine' ? V.mine(h[1]) : h[0] === 'profile' ? V.profile() : h[0] === 'how' ? V.how() : V.board();
+      var html = h[0] === 'gig' ? V.gig(h[1]) : h[0] === 'apply' ? V.apply(h[1], h[2]) : h[0] === 'mine' ? V.mine(h[1]) : h[0] === 'profile' ? V.profile(h[1]) : h[0] === 'how' ? V.how() : V.board();
       el.innerHTML = html;
       if (opts.onView) opts.onView(h[0]);
     }

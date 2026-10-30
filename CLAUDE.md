@@ -1073,7 +1073,12 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   (`gigs/sample/img/`, Higgsfield 2026-10-30, 26 credits; sources kept in `vegan-media/media/communities/kai-sample/`), illustrative
   brands, ten gigs from `gigs/sample/demo.js` (dated from today), My gigs in every status, her profile as partners see it (platforms,
   work with products, results per 1,000 followers, reliability, rates for the team); applying and claiming work for the visit and send
-  nothing. It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
+  nothing. Since the same day (Sean: "my gigs should look the same way... three columns"; "what they would see and what we would see and
+  what the sponsors would see, and then what the public will see"): the board and My gigs are the same tile, three across (two under 1100
+  px, one on phones), My gigs filtered by status chips; **Your profile** switches four ways (`#profile/you|partner|team|public`):
+  **Your dashboard** (what an official creator's dashboard shows: paid this year, gigs in play, standing and the next step, Up next,
+  results, work, rates, checklist), **Partners** (no rates or contact), **Our team** (everything) and **The public** (their People
+  directory page: no rates, results or contact). How you rise opens beside Kai hosting a stage. It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
   "see it on the sample board" links, and linked from the Creator Guide's Your next step and the Ambassador Guide's Paid work.
   **`/gigs`** (signed in) is the live board: the city's bounties through `ve-bounties` `list`. **The bounty is the gig** (migration
   `20261030_gig_board.sql`): `ve_bounties` gained `gig_kind`, `apply_mode` (claim | apply | audition), `perk`, `partner_name`,
