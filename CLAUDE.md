@@ -1020,6 +1020,24 @@ approval making the listing, the profile, platforms with YouTube read live, rate
 2026-10-30 live as Sean (an Express account made and Stripe's onboarding link returned; the test account `acct_1UW3SU1iCaKwuaVp` is Sean's
 to delete in Connect), then removed.
 
+**The Ambassador Guide, reworked 2026-10-30** (Sean: "why would we want to limit them to any particular area?... As an ambassador, you're
+just representing the movement and helping us get into as many places as possible, introducing us to business owners and to podcasters
+and to people who are on the streets who have a story to be told... we want to interview you and put you on our podcast... different
+people hosting... be the voice of your city"; "on the first page, we can ask them if they want the guide... at the bottom, hidden, the
+guide will always be there"; "it's got to be clear on what the opportunity is"; "they should be able to submit a question too"). Twelve
+tabs: Overview, Why it matters, **The opportunity** (`#/role`: bring people in anywhere, introduce us, tell the stories, be the voice of
+your community, paid work, each a picture from `public/guides/thumb-*.jpg` and `creator-guide.jpg`, `PIC`), **Tell the stories**
+(`#/stories`: four kinds, Introduce someone, Interview me, I want to host, What is happening here; sent through `ve-ambassador` `story`,
+saved in `ve_ambassador_stories` (migration `20261030_ambassador_stories.sql`, 10 a day) and emailed to Sean; nothing promised until we
+reach out), **Paid work** (`#/paid`: the four checklist steps, Open your checklist (`/ambassadors/door`), the kinds of work, how it pays,
+numbers private, the first paid jobs Coming, the Creator Guide), Your membership, Your link, Who to invite (anyone, anywhere: podcasters,
+people with a story), What to share, **Anywhere** (`#/city`, was Your city: not bound to one place, the home base optional), Answering
+questions (plus Do I have to stick to one city?, and **Not on the list? Ask us**: `ve-auth` `guide_ask_person`, `agent_slug`
+`ambassador-guide`, emailed and kept on `guide_kb_gaps`), Your progress. The Overview asks **Want Liz to walk you through it?** (Walk me
+through it / I'll look around myself, `localStorage` `am_guide_mode`); looking around folds the Guide into the corner (`/public/ve-guide-min.js`,
+`#dgApp`, `#dgRail` `data-guide="liz"`, `#dgFold`), and Hide me / Show me change the choice too. **Depot > Ambassadors > Stories**
+(`#stories/<status>`: New, Contacted, Done; `ve-ambassador` `admin_list` `stories`, `story_status`).
+
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-member-profiles-partner-windows`). **We choose when a profile is
