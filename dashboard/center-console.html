@@ -1510,8 +1510,24 @@
     var row = document.getElementById('dash-guides-row');
     if (!row || !window.VEGuideCatalog) return;
     var gm = window.VEAuth && VEAuth.getMember && VEAuth.getMember();
-    VEGuideCatalog.render(row, { member: true, ambassador: !!(gm && (gm.ve_role === 'ambassador' || gm.is_superadmin)), source: 'dashboard-guides-tab', open: function (g) { openConsoleFrame(g.href, g.title); } });
+    var draw = function (shelf) {
+      VEGuideCatalog.render(row, { viewer: gm, member: true, shelf: shelf, source: 'dashboard-guides-tab', open: function (g) { openConsoleFrame(g.href, g.title); } });
+    };
+    // The Guides tab's banner is /guides' banner (Sean, 2026-10-30: "the same heading as the non-logged in version"): its dropdown is
+    // the Guides menu (VEGuideCatalog.bannerOptions), not the cities; open, it keeps the tab's numbers (setTabStats 'guides').
+    if (!dashGuidesBanner && window.VECityBanner && document.getElementById('dash-guides-hero')) {
+      dashGuidesBanner = VECityBanner.mount('dash-guides-hero', VEGuideCatalog.bannerOptions(gm, {
+        member: true, key: 'dash-guides', param: false, meta: '<div class="dash-bmeta" id="dash-guides-meta"></div>',
+        home: { label: 'Guides home', href: '/dashboard/guides', onClick: function () { dashGuidesBanner.set('all'); } },
+        onChange: function (shelf) { draw(shelf); }
+      }));
+      var gpts = gm && typeof gm.points === 'number' ? gm.points : 0, gn = Math.floor(gpts / 1100);
+      setTabStats('guides', [[gpts.toLocaleString(), 'Your points'], [gn.toLocaleString(), gn === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
+      return;
+    }
+    draw(dashGuidesBanner ? dashGuidesBanner.current() : 'all');
   }
+  var dashGuidesBanner = null;
 
   // Communities tab (Sean 2026-09-26): every community shows, four across, so
   // none are out of sight. Tapping one brings it up on the dashboard (city pill,
@@ -2762,7 +2778,6 @@
     var first = (member.name || '').split(' ')[0] || 'there';
     var TABS = [
       ['home', 'Welcome back, ' + first, 'Your points, your Guides, what is new and every tool you use, in one place. Pick a city and the Directory, Events and the Daily Pulse follow it.'],
-      ['guides', 'Vegan Guides', 'Step-by-step Guides walked through by our Guides. Every Guide is $11 or 1,100 points, and yours to keep.'],
       ['saves', 'My Saves', 'Podcast episodes and places you saved, ready whenever you are.'],
       ['depot', 'The Depot', 'Every admin tool in one place: approvals, outreach, the Directory review and the content behind the site.']
     ];
@@ -2782,7 +2797,6 @@
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
     var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
     setTabStats('home', [[pts.toLocaleString(), 'Points'], [life.toLocaleString(), 'Lifetime points'], ['Level ' + lv, nextAt == null ? 'Top level' : (nextAt - life).toLocaleString() + ' to Level ' + (lv + 1), '/dashboard/levels']]);
-    setTabStats('guides', [[pts.toLocaleString(), 'Your points'], [Math.floor(pts / 1100).toLocaleString(), Math.floor(pts / 1100) === 1 ? 'Guide your points unlock' : 'Guides your points unlock'], ['$11', 'Or 1,100 points a Guide']]);
     setTabStats('saves', [['...', 'Episodes saved'], ['...', 'Places and brands saved']]);
     if (dashTabBanners.depot && member.is_superadmin) {
       setTabStats('depot', [['...', 'Events waiting', '/dashboard/depot/events'], ['...', 'New places ready to list', '/dashboard/depot/business-outreach#places/list']]);

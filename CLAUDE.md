@@ -529,6 +529,29 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   brand `lesaruss-ai`, `city_slug` the topic; TechCrunch, Crunchbase, Marketing Dive, Fast Company, Tubefilter, BizBash...), every story
   kept with status `national` so it stays out of the Depot Inbox. The seven topics are in `pulse_auto` (queued 6 PM Eastern, out at 7 AM),
   and the writer's `pulse_topic_write` instructions carry a LESARUSS.ai section (business voice, no cities or Vegan framing).
+  The Inc. feed is off (its pages refuse the writer, 403); the first morning's other six briefings were written on schedule.
+- **Events and Funding** (built 2026-10-30, migration `20261030_lesaruss_ai_events_funding.sql`, run through the one-time
+  `ve-once-lr-events`, now the 410 stub). One events engine: LESARUSS.ai's rows are `events` with `tenant_id` LESARUSS
+  (`...0001`), Vegans Explore's `...0002`, and **every Vegans Explore reader filters to its tenant** (`ve-events.js` load,
+  `hub-news.js`; the others read by id or host listing). `events.listing_kind` is `event` or `funding`; a funding row's `starts_at` is
+  its **deadline** (Upcoming = open, Soonest = closing soon), `ticket_url` its official apply page, `category` its kind (grant, loan,
+  accelerator, competition, fellowship) and `events.funding` `{offered_by, amount, amount_usd, eligibility, rolling}`. Business events
+  use conference, summit, pitch, tour, networking, webinar, workshop, meetup. `ve_event_intake` takes `"tenant": "lesaruss"` (or the
+  source's tenant), `listing_kind`, `deadline` and the funding fields, refuses a closed one (`closed`) and one with no deadline.
+  lesaruss.ai/events and /funding are this site's `events/index.html` (proxied) in brand mode (`VE_BRAND.calendar`): the banner picks
+  Events or Funding, `VEEvents.mount(..., {tenant: VEEvents.LR_TENANT, kind})`, a funding tile (what it offers, who can apply in two
+  rows, Closes with days left in red under 15, Apply), Sort Closing soon / Biggest first, Open / Closed; no Submit, event view or ads
+  yet (the name opens the official page). The tile colors go through `--vb-*`. `ve_event_sources.tenant_id` and `listing_kind` (event,
+  funding, both): 16 LESARUSS.ai sources (Hello Alice, IFundWomen, Amber Grant, SBA, Y Combinator, Techstars, Google for Startups,
+  searches for grants, pitch competitions, creator funds and business, AI, marketing and creator conferences, Eventbrite business
+  online); the writer's `events_crawl` instructions have a LESARUSS.ai section, and nothing goes live until approved in **Depot >
+  Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
+  funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
+- **The Guides page** (built 2026-10-30). lesaruss.ai/guides (lesaruss-ai-site `app/guides/SharedGuides.tsx`) mounts this site's
+  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves (All Guides, LESARUSS.ai Guides, From Vegans Explore;
+  `?shelf=`) and the cards are ours. The catalog takes a brand's own list (`render(el, {guides, shelves})`) and gives it our live
+  Guides (`VEGuideCatalog.communityGuides(origin, chips)`: every live Guide but the Welcome Guide and the Partner Guides, opening on
+  vegansexplore.com), since a Diplomat gets every Guide from every LESARUSS community. A new live Guide in `GUIDES` shows there too.
 
 ## Analytics (Sean, 2026-10-28)
 
@@ -1026,6 +1049,15 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
 - **First**: Torre Washington; Gabriela Reyes once the platform comes first (confirm her name and handle); then Philly's creators ahead
   of a dinner. **Build**: the Creator Guide from Sean's Canva Vegan Content Creator Survival Guide (`DAGx86FyHyw`), profile claim and
   the checklist, the Opportunities board, Stripe Connect and campaign production, the shop, the lead finder by city.
+- **The Official Creator Guide** (Sean, 2026-10-30, for professional creators such as Gabriela Reyes: "get straight to the business
+  point of it... these are business professionals... We want to register you as one of our official content creators"):
+  `/creators/welcome` (`creators/welcome.html`, the Group Partner Guide's layout, River fixed on the right, his lines as text, `noindex`,
+  open by link). An official creator is an Ambassador with the Creator profile, never a separate program. Eight tabs: Overview, Where
+  we're going (thirteen chapters, the Directory, our shows, brands and events as one buyer), The work (paid campaigns, collaborations,
+  professional work Coming; hosting open now; events with the Dolphins showcase; the sample campaign), How it pays (this canon's terms),
+  Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
+  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
+  profile's invitation email linking it.
 - **The Creator Guide** (built 2026-10-29, the Ambassador door; migration `20261029_creator_guide.sql`). `guides/creator-guide.html` and
   `guide-scripts/creator-guide.js`, the Nonprofit Guide's shell, River narrating in text (no clips), indexed, seventh in the
   Guide catalog (label Creators, banner `public/guides/creator-guide.jpg`), in the sitemap. Tabs: Overview, **The 10 tips** (`#/tips/<id>`:
@@ -2264,6 +2296,14 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   fill the window (`html.dg-fit`) never sizes its frame (`nav.js`): sizing it to its own height made the Ambassador Guide bounce. Under the
   cards, `/guides` ends with the Directory's Passport box ("Your first Guide is on us", hidden for active members); its old
   Passport, Vision and Ready sections are gone (Sean, 2026-10-26).
+- **The Guides menu and who sees what** (Sean, 2026-10-30: "the same heading as the non-logged in version... we're getting enough
+  guides now where we can create a menu... even the onboarding guides... some that I want the community to see, and then there's some
+  that I just want the team to see"). `/guides` and the dashboard's Guides tab wear the same banner, **Vegan Guides**, whose dropdown is
+  the Guides menu (`VEGuideCatalog.bannerOptions`, `?shelf=` on `/guides`): All Guides (each shelf under its heading), Everyday Guides,
+  For your work, **Partner Guides** (the onboarding Guides: the Official Creator Guide, the Ambassador Guide, Community Manager
+  Onboarding, the Group Partner Guide, the Nonprofit Partner Guide; each opens as its own page) and Coming soon. Each Guide's `see` in
+  `ve-guide-catalog.js` says who finds it in the menu: `all`, `members`, a list of `ve_role` values, or `team`; super admins see every
+  Guide, the restricted ones marked with who else does. A menu is not a lock: a Guide page guards itself where it must.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic
   and a preview of their ad in place (not built yet).
 - Pictures of the Guides are made in Higgsfield from their current art, in our illustration style.

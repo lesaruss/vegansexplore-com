@@ -201,7 +201,7 @@
         });
       });
     }
-    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&order=starts_at.asc&limit=200', { headers: headers() })
+    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&order=starts_at.asc&limit=200', { headers: headers() })
       .then(function (r) { return r.json(); })
       .then(function (rows) {
         var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });
