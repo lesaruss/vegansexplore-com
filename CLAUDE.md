@@ -1952,8 +1952,13 @@ Las Olas Insider and Miami's Community Newspapers showed stories; Diario Las Am√
 none that matched; WLRN's feed is published empty. **The cleanup the same day** (Sean, 2026-10-30; migration
 `20261030_news_outlets_cleanup.sql`, run through the one-time `ve-once-news-outlets`, now the 410 stub): the seven local outlets had been
 hidden from Vegans Explore by the LESARUSS.ai tag `lesaruss-ai-directory-candidate` (which the Directory and Media leave out); it came off,
-so they show here and stay in the LESARUSS.ai Directory by `lesaruss-ai-directory`, and their How Vegan was cleared (they are not Vegan
-outlets). VegOut ("not that active anymore") and VegWorld (latest story February 23, 2026) were Removed (Directory review's Removed list
+so they showed here, and their How Vegan was cleared (they are not Vegan outlets). **Then six went back to LESARUSS.ai only** (Sean,
+the same day: "I'm not sure exactly why they're there... for Lasaris AI"; they were made 2026-10-29 by a Google Places search for
+LESARUSS.ai; migration `20261030_local_outlets_back_to_lesaruss_ai.sql`, run through `ve-once-outlets-lr`, now the 410 stub): Diario Las
+Am√©ricas, Las Olas Insider, Miami's Community Newspapers, Westside Gazette, CBS 12 and WPTV carry the candidate tag again. **WLRN stays
+on both** (it has had Susan Hargreaves on). **A news outlet leads its family's tabs** under its own name (`familyKind` -1 in
+`directory/listing.html`; Sean: "Let's put the plant-based news tab first, because that's their main thing"): Plant Based News, Podcast,
+YouTube, then the page's own tabs and Partner Dashboard. VegOut ("not that active anymore") and VegWorld (latest story February 23, 2026) were Removed (Directory review's Removed list
 puts them back). **Plant Based News is two listings** (Sean: "that should be the default when you look on news outlets and not their
 YouTube channel. When you're on YouTube, you should see their YouTube channel"): the News Outlet (`plant-based-news`, its stories, the
 votes) and **Plant Based News (YouTube)** (`plant-based-news-youtube`, the channel and its `ve_youtube_feeds` row), linked as the family
