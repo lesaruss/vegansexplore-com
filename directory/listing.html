@@ -1688,15 +1688,23 @@ function loadFilmPods(l){
 // Books (Sean, 2026-10-29: "if they're an author, we want to put a book section after YouTube and before partner dashboard"): with a
 // person in the family, every book in it is one Books tab, which lives on the person's page (?tab=books, one book ?book=<slug>);
 // from the podcast, YouTube or a book's own page it links there. Without a person each book links to its own page as before.
+// Shared shows (Sean, 2026-10-30: "the podcast and YouTube channels, they should be able to be shared by multiple people because
+// sometimes there's multiple people on the podcast"): a listing can also belong to other families, details.families. A person's page
+// lists every show they share; the shared show's own page lists only its people and itself (not each host's books or channel).
 function familyKind(x){ return isPersonL(x) ? 0 : x.category === 'Podcasts' ? 1 : isYouTubeL(x) ? 2 : x.category === 'Books' ? 3 : 4; }
 function loadFamily(l){
-  var fam = (l.details || {}).family, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
-  if(!fam || !ov || !/^[a-z0-9-]{1,80}$/.test(fam)) return;
-  fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&details->>family=eq.' + encodeURIComponent(fam) +
+  var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
+  var fams = [d.family].concat(Array.isArray(d.families) ? d.families : []).filter(function(f, i, all){
+    return typeof f === 'string' && /^[a-z0-9-]{1,80}$/.test(f) && all.indexOf(f) === i; });
+  if(!fams.length || !ov) return;
+  var shared = fams.length > 1;
+  var or = '(details->>family.in.(' + fams.join(',') + ')' + fams.map(function(f){ return ',details->families.cs.["' + f + '"]'; }).join('') + ')';
+  fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&or=' + encodeURIComponent(or) +
     '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link,buy_label:details->>buy_label,ford:details->>family_order&limit=40',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
       rows = (rows || []).map(function(x){ x.details = { youtube_channel_id: x.yt }; return x; });
+      if(shared) rows = rows.filter(function(x){ return x.id === l.id || familyKind(x) === 0; });
       if(rows.length < 2 || !rows.some(function(x){ return x.id === l.id; })) return;
       // Within a kind, details.family_order puts one first (Sean, 2026-10-29: Vegans Explore Podcast before his other shows), then A to Z.
       function ford(x){ var n = parseInt(x.ford, 10); return isNaN(n) ? 999 : n; }

@@ -1933,6 +1933,11 @@ Torre Washington (YouTube)), and each host and their show (Neal Barnard, Dotsie 
 Muscles by Brussels). Neither John Lewis nor Torre Washington hosts a podcast of his own (checked, Sean asked); their channels were added
 (`badassvegan-youtube`, `torre-washington-youtube`). A new family is the same `details.family` value on each listing; two of the same
 kind run A to Z unless `details.family_order` puts one first (lower first; the Vegans Explore Podcast is 1 in Sean's family).
+**Shared shows** (Sean, 2026-10-30: "the podcast and YouTube channels, they should be able to be shared by multiple people because
+sometimes there's multiple people on the podcast"): a listing can also belong to other families, `details.families` (a list). Each
+person keeps their own family (their books and channel stay theirs); a shared show is its own family plus each host's, so it shows on
+every host's page, and its own page lists only its people and itself. First: the Vegans Who Lift Podcast (`vegans-who-lift`, with
+`brooke-sellers` and `john-thomas`; migration `20261030_brooke_john_shared_podcast.sql`). Neither bio names the other (Sean, same day).
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
