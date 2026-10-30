@@ -16,7 +16,8 @@
 //   each with the listing and the member who voted (Sean, 2026-10-30: "a log of user votes... who they vote for... an icon of the
 //   person that voted").
 // POST { action: 'member_card', member_id } super admins: who a member is, for the dashboard's lightbox: account, level, points,
-//   their votes, check-ins, saves and listings, so Sean never leaves the page.
+//   the votes they gave and the votes their pages got (listings they own, or a People profile naming them in
+//   details.person.member_id), the places they checked in, saves and their pages, so Sean never leaves the page.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -119,12 +120,15 @@ Deno.serve(async (req) => {
       db.from('member_points').select('total_points, available_points').eq('member_id', id).limit(1).maybeSingle(),
       count('listing_daily_votes'), count('ve_checkins'), count('ve_listing_saves'), count('ve_episode_saves'),
       db.from('listing_daily_votes').select('created_at, listings(name, slug)').eq('member_id', id).order('created_at', { ascending: false }).limit(8),
-      db.from('listings').select('name, slug').eq('status', 'approved').eq('owner_member_id', id).order('name').limit(10),
+      // Their pages: listings they own, and a People profile that names them (details.person.member_id).
+      db.from('listings').select('id, name, slug, owner_member_id').eq('status', 'approved').or(`owner_member_id.eq.${id},details->person->>member_id.eq.${id}`).order('name').limit(20),
     ]);
+    const pageIds = (owned || []).map((l: any) => l.id);
+    const recv = pageIds.length ? await db.from('listing_daily_votes').select('id', { count: 'exact', head: true }).in('listing_id', pageIds) : { count: 0 };
     return json({ ok: true, member: m, level: level || null, points: pts || null,
-      counts: { votes: votesN.count || 0, checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
+      counts: { votes: votesN.count || 0, votes_received: recv.count || 0, checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
       recent_votes: (recent || []).map((r: any) => ({ at: r.created_at, name: r.listings?.name || null, slug: r.listings?.slug || null })),
-      listings: owned || [] });
+      listings: (owned || []).map((l: any) => ({ name: l.name, slug: l.slug, owner: l.owner_member_id === id })) });
   }
 
   return json({ error: 'unknown_action' }, 400);
