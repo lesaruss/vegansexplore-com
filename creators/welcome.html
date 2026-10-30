@@ -276,7 +276,7 @@
     { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. You make content for a living, so I\'ll keep this to the business: what we are building, the work we bring you, and how it pays.' },
     { k: 'where', label: 'Where we\'re going', say: 'We are building the Vegan community city by city, and when we sit down with brands and events, we bring our creators with us.' },
     { k: 'work', label: 'The work', say: 'Paid campaigns, collaborations, hosting and events. Here is each one, and what is open today.' },
-    { k: 'board', label: 'Try the board', say: 'Here is the board itself. Meet Kai, a sample creator, and click through it: open a gig, apply, audition, and see what partners see.' },
+    { k: 'board', label: 'Try the demo', say: 'Here is your Creator Dashboard. Meet Kai, a sample creator, and click through it: open a gig, apply, audition, and see her media kit.' },
     { k: 'pay', label: 'How it pays', say: 'Your rate is yours, paid in full. Half when you say yes, half when your posts are live.' },
     { k: 'cities', label: 'Every city', say: 'Brands want real people in every city we are in. That is where you come in, wherever you are.' },
     { k: 'you', label: 'What you tell us', say: 'Tell us what you do, where you post and what you charge. That is how we match you, and it stays with our team.' },
@@ -284,7 +284,7 @@
     { k: 'register', label: 'Register', say: 'Ready? Register, and you are on the list we work from every time a brand or an event calls.' }
   ];
   var BLURB = {
-    board: 'The real Gig Board, with a sample creator.', where: 'Thirteen chapters, brands and events.', work: 'Campaigns, collaborations, hosting.', pay: 'Your full rate, 50% up front.',
+    board: 'The Creator Dashboard, with a sample creator.', where: 'Thirteen chapters, brands and events.', work: 'Campaigns, collaborations, hosting.', pay: 'Your full rate, 50% up front.',
     cities: 'Creators in every chapter.', you: 'Platforms, rates and what you want.', questions: 'Straight answers.', register: 'Become an official creator.'
   };
   var ICONS = {
@@ -313,18 +313,19 @@
   function qa(q, a) { return '<div class="am-qa"><b>' + esc(q) + '</b><p>' + a + '</p></div>'; }
   function mail(subject, label, ghost) { return '<a class="dg-btn' + (ghost ? ' dg-ghost' : '') + '" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent(subject) + '">' + esc(label) + '</a>'; }
   var SAMPLE = '/gigs/sample';
-  function see(hash, label) { return '<button type="button" class="cr-see" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Gig Board, sample">' + esc(label) + ' &rarr;</button>'; }
-  var PICKS = [['board', 'Open gigs', 'What is on the board today: paid, perks and points, with what you qualify for.'],
+  function see(hash, label) { return '<button type="button" class="cr-see" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Creator Dashboard, demo">' + esc(label) + ' &rarr;</button>'; }
+  var PICKS = [['overview', 'Overview', 'Your dashboard at a glance: open gigs, the ones you are in, your media kit and your standing.'],
+    ['board', 'Open gigs', 'What is open today: paid, perks and points, with what you qualify for.'],
     ['gig/g1', 'A paid campaign', 'The brief, the pay, who it is for, and what to send, with an audition.'],
     ['apply/g7/1', 'Apply and audition', 'One step at a time: your pitch, then your audition link.'],
     ['mine', 'My gigs', 'Applied, shortlisted, audition requested, booked, delivered, paid.'],
-    ['profile', 'What partners see', 'Kai\'s platforms, work with products, results and reliability.'],
+    ['profile/partner', 'Her media kit', 'Kai\'s page as partners see it: reach, audience, work with products, results.'],
     ['how', 'How you rise', 'Reliability and real results move you up, not followers alone.']];
-  var pick = 'board';
+  var pick = 'overview';
   function thumb(hash) {
-    return '<div class="gp-thumb" data-thumb><iframe tabindex="-1" aria-hidden="true" title="The Gig Board, sample" src="' + SAMPLE + '#' + hash + '"></iframe>' +
-      '<button type="button" class="gp-thumb-open" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Gig Board, sample"><span>Open full screen</span></button></div>' +
-      '<p class="gp-cap">A sample: Kai is invented and drawn in our style, every brand is illustrative, and nothing is sent. Tap it to click around full screen.</p>';
+    return '<div class="gp-thumb" data-thumb><iframe tabindex="-1" aria-hidden="true" title="The Creator Dashboard, demo" src="' + SAMPLE + '#' + hash + '"></iframe>' +
+      '<button type="button" class="gp-thumb-open" data-view-url="' + SAMPLE + '#' + hash + '" data-view-title="The Creator Dashboard, demo"><span>Open full screen</span></button></div>' +
+      '<p class="gp-cap">A demo: Kai is invented and drawn in our style, every brand is illustrative, and nothing is sent. Tap it to click around full screen.</p>';
   }
   function me() { try { return window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember ? VEAuth.getMember() : null; } catch (e) { return null; } }
 
@@ -354,10 +355,10 @@
         card('Events', 'Our own events and the ones we promote, starting with the Plant-Based Showcase on Miami Dolphins game day, Sunday, November 29, 2026. Tell us you want in, and we let you know where creators fit.', 'Coming', true) +
         card('Professional work', 'Social, editing, design and outreach for the businesses in our Directory, offered with vetted Vegan professionals. Each service opens one at a time.', 'Coming', true) +
         card('See a campaign run', 'Our sample campaign shows a brand\'s campaign as members see it: the tasks, the leaderboard and the creators. <a href="/campaign-engine/fieldhouse-protein" target="_blank" rel="noopener">Open the sample</a> (illustrative).', 'Sample') +
-        '</div>' + see('board', 'See these on the sample board') + nextBtn('board', 'Next: try the board');
+        '</div>' + see('board', 'See these in the demo') + nextBtn('board', 'Next: try the demo');
     },
     board: function () {
-      return head('Try the board', 'The Gig Board, as a creator sees it', 'Every gig we bring you lands on one board you can open any day, like a casting site: paid campaigns, collaborations, hosting and points gigs, each with its requirements and what to send. Meet <b>Kai Monroe</b>, a sample creator, and click through it.') +
+      return head('Try the demo', 'Your Creator Dashboard', 'Every gig we bring you lands on your dashboard, like a casting site you open any day: paid campaigns, collaborations, hosting and points gigs, each with its requirements and what to send. Your media kit lives there too: the page partners book you from. Meet <b>Kai Monroe</b>, a sample creator, and click through it.') +
         '<div class="gp-split"><div class="gp-side">' + PICKS.map(function (p, i) { return '<button type="button" class="gp-pick' + (i % 2 ? ' alt' : '') + '" data-pick="' + p[0] + '" aria-pressed="' + (p[0] === pick) + '"><b>' + esc(p[1]) + '</b><span>' + esc(p[2]) + '</span></button>'; }).join('') +
         '</div><div id="crThumb">' + thumb(pick) + '</div></div>' + nextBtn('pay', 'Next: how it pays');
     },
@@ -394,7 +395,7 @@
         '<li><b>Your platforms</b>Instagram, TikTok, YouTube, Facebook or a podcast, and your followers. YouTube we read ourselves.</li>' +
         '<li><b>Your rates</b>A post, a reel, a story, an appearance, hosting, a day of social work, and the cities you can show up in. Our team only.</li>' +
         '<li><b>Get paid</b>Your payout details, on Stripe\'s own secure pages.</li></ol>' +
-        '<p class="dg-lede">When all four are done you are <b>Active</b>, and campaigns can be offered to you.</p>' + see('profile', 'See what partners see on Kai\'s profile') + nextBtn('questions', 'Next: questions');
+        '<p class="dg-lede">When all four are done you are <b>Active</b>, and campaigns can be offered to you.</p>' + see('profile/partner', 'See Kai\'s media kit') + nextBtn('questions', 'Next: questions');
     },
     questions: function () {
       return head('Questions', 'Straight answers') +

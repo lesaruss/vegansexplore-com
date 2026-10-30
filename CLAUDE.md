@@ -1078,7 +1078,19 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   px, one on phones), My gigs filtered by status chips; **Your profile** switches four ways (`#profile/you|partner|team|public`):
   **Your dashboard** (what an official creator's dashboard shows: paid this year, gigs in play, standing and the next step, Up next,
   results, work, rates, checklist), **Partners** (no rates or contact), **Our team** (everything) and **The public** (their People
-  directory page: no rates, results or contact). How you rise opens beside Kai hosting a stage. It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
+  directory page: no rates, results or contact). How you rise opens beside Kai hosting a stage.
+  **The Creator Dashboard** (Sean, 2026-10-30, the same day: "train our audience to know that the drop-down menu at the top navigates
+  this particular section... this should be the creator board, our creator dashboard... the green part could be demo... it's essentially
+  their media kits... she gets to be the prototype"): the page is the **Creator Dashboard** (`gigs/index.html`; the line under the title
+  reads **Demo** on `/gigs/sample`), and **the banner's dropdown is its only menu** (Overview, Open gigs, My gigs, Your media kit, How you
+  rise; no tabs inside the page). **Overview** (`#overview`, the default) explains how to use it: four tiles (open gigs you qualify for,
+  gigs in play, how complete your media kit is, your standing), Up next and How it works. **Your media kit** (`#profile/you|partner|
+  public|team`) is the creator's media kit and the prototype for their People listing: a cover with their photo, tagline, tags and a
+  booking button, total reach and each platform, then About, what they make (content pillars), featured work, results on past gigs, what
+  partners say, audience (ages, top cities), brands worked with, reliability, rates and where they show up; partners see no rates or
+  contact, the public sees no rates, results or audience, and **You** adds Make it shine (what would complete the kit; our team helps
+  keep it current). Kai's kit data is in `gigs/sample/demo.js` (`tagline`, `cover`, `pillars`, `audience`, `brands`, `quotes`,
+  `kit_done`). The same banner-as-the-only-menu pattern is to be weighed for the other demos and the Directory (Sean's note, not done). It is the Official Creator Guide's **Try the board** tab (pick a screen, a live scaled preview, full screen on tap) and its
   "see it on the sample board" links, and linked from the Creator Guide's Your next step and the Ambassador Guide's Paid work.
   **`/gigs`** (signed in) is the live board: the city's bounties through `ve-bounties` `list`. **The bounty is the gig** (migration
   `20261030_gig_board.sql`): `ve_bounties` gained `gig_kind`, `apply_mode` (claim | apply | audition), `perk`, `partner_name`,

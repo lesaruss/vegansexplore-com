@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <title>Gig Board — Vegans Explore</title>
+  <title>Creator Dashboard — Vegans Explore</title>
   <meta name="description" content="Paid campaigns, collaborations, hosting and points gigs for Vegan creators and members, city by city.">
   <link rel="canonical" href="https://vegansexplore.com/gigs">
-  <meta property="og:title" content="Gig Board — Vegans Explore">
+  <meta property="og:title" content="Creator Dashboard — Vegans Explore">
   <meta property="og:description" content="Paid campaigns, collaborations, hosting and points gigs for Vegan creators and members, city by city.">
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
@@ -38,17 +38,19 @@
   <script>
     (function () {
       var demo = /^\/gigs\/sample/.test(location.pathname);
-      var VIEWS = [{ value: 'board', label: 'Open gigs' }, { value: 'mine', label: 'My gigs' }, { value: 'profile', label: 'Your profile' }, { value: 'how', label: 'How you rise' }];
+      // The dropdown is the only menu (Sean, 2026-10-30); in the demo the line under the title says Demo.
+      var VIEWS = [{ value: 'overview', label: 'Overview' }, { value: 'board', label: 'Open gigs' }, { value: 'mine', label: 'My gigs' }, { value: 'profile', label: 'Your media kit' }, { value: 'how', label: 'How you rise' }];
       var ready = false;
       var banner = VECityBanner.mount('gig-banner', {
-        key: 'gigs', title: 'Gig Board', pickLabel: 'Board view', param: false, art: '/communities/south-florida/banner.jpg',
-        sub: 'Paid campaigns, collaborations, hosting and points gigs. Apply, audition or claim, and rise by results.',
-        choices: VIEWS, home: { label: 'Gigs home', href: demo ? '/gigs/sample#board' : '/gigs#board' },
+        key: 'gigs', title: 'Creator Dashboard', pickLabel: 'Creator Dashboard menu', param: false, art: '/communities/south-florida/banner.jpg',
+        sub: 'Find gigs, follow the ones you are in, keep your media kit sharp, and rise by results. Use the menu to move around.',
+        choices: VIEWS, home: { label: 'Dashboard home', href: demo ? '/gigs/sample#overview' : '/gigs#overview' },
         actions: demo ? [{ label: 'Become an official creator', short: 'Register', href: '/creators/welcome#/register', go: true }] : [],
-        onChange: function (v) { if (!ready) return; var cur = (location.hash || '#board').slice(1).split('/')[0]; if (v && v !== cur && !(v === 'board' && (cur === 'gig' || cur === 'apply'))) location.hash = '#' + v; }
+        onChange: function (v) { if (!ready) return; var cur = (location.hash || '#overview').slice(1).split('/')[0]; if (v && v !== cur && !(v === 'board' && (cur === 'gig' || cur === 'apply'))) location.hash = '#' + v; }
       });
       // Inside a Guide's preview the banner starts folded, so the board is what shows.
       ready = true;
+      if (demo) banner.setLabel('Demo');
       if (window.top !== window) banner.fold(true);
       function sync(view) { var v = view === 'gig' || view === 'apply' ? 'board' : view; if (banner.current() !== v) banner.setQuiet(v); }
       var el = document.getElementById('gigs');

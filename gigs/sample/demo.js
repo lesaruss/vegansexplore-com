@@ -26,6 +26,14 @@
       { gig: 'Night market recap', posts: 1, clicks: 141, joins: 3, per_k: 17 }
     ],
     board_per_k: 18,
+    // The media kit (Sean, 2026-10-30: "it's essentially their media kits... she gets to be the prototype").
+    tagline: 'Plant-based food and fitness for people who are busy, broke-ish and hungry.',
+    cover: IMG + 'post-market.webp',
+    pillars: [['Fast plant-based meals', '15-minute recipes from one pan'], ['Gym days', 'What a Vegan athlete eats around training'], ['Spots worth the drive', 'Honest reviews of Vegan places in South Florida']],
+    audience: { women: 64, ages: [['18 to 24', 31], ['25 to 34', 46], ['35 to 44', 16], ['45 and up', 7]], cities: [['Miami', 38], ['Fort Lauderdale', 17], ['Orlando', 9], ['New York', 6]], vegan: 58 },
+    brands: ['Fieldhouse Protein', 'Meadowline Oat', 'Crunchwell Snacks', 'Three Wynwood restaurants'],
+    quotes: [['The Wynwood crawl brought in more people than any creator we have worked with this year.', 'A Wynwood restaurant owner (illustrative)'], ['On time, on brief, and the comments were full of people asking where to buy it.', 'Fieldhouse Protein (illustrative)']],
+    kit_done: [['Photo and cover', true], ['A tagline and an about', true], ['Your platforms, with numbers', true], ['Three content pillars', true], ['Five pieces of your best work', true], ['Your audience: ages and cities', true], ['A partner quote', true], ['A short intro video', false]],
     portfolio: [
       { img: IMG + 'post-latte.webp', caption: 'Oat-milk latte tour, post 1 of 2', partner: 'Meadowline Oat (Illustrative)' },
       { img: IMG + 'post-protein.webp', caption: 'Post-workout shake, a sponsored Reel', partner: 'Fieldhouse Protein (Illustrative)' },
