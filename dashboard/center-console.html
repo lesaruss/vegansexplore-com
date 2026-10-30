@@ -362,6 +362,7 @@
   .dash-grip:hover,.dash-grip:focus-visible{background:var(--ve-green-light);color:var(--ve-green-dark);outline:none;}
   .dash-preview-card.is-dragging{opacity:.55;box-shadow:0 0 0 2px var(--ve-green);}
   .dash-preview-card.is-dragging .dash-grip{cursor:grabbing;}
+  .dash-grip + .dash-preview-title{flex:1;min-width:0;}
   .dash-recent-hint{font-size:12px;color:var(--ve-text-50);margin:-6px 0 12px;}
   /* The inbox (Sean, 2026-10-30): every request that comes in, who it is assigned to, whether they opened it, and the 24-hour
      reply clock. In the Leaderboard's place beside For you, for super admins. */
@@ -3595,17 +3596,23 @@
       g.setAttribute('aria-label', 'Move ' + card.getAttribute('data-key') + ' (drag, or use the arrow keys)');
       g.innerHTML = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>';
       head.insertBefore(g, head.firstChild);
+      // Moving the box in the page drops the handle's pointer capture, so the move and the release are heard on the document.
       var moving = false;
-      g.addEventListener('pointerdown', function (e) { e.preventDefault(); moving = true; card.classList.add('is-dragging'); try { g.setPointerCapture(e.pointerId); } catch (err) {} });
-      g.addEventListener('pointermove', function (e) {
+      function move(e) {
         if (!moving) return;
         var el = document.elementFromPoint(e.clientX, e.clientY), over = el && el.closest('.dash-preview-card');
         if (!over || over === card || over.parentNode !== grid) return;
         var list = cards();
         grid.insertBefore(card, list.indexOf(over) < list.indexOf(card) ? over : over.nextSibling);
+      }
+      function end() {
+        if (!moving) return; moving = false; card.classList.remove('is-dragging'); save();
+        document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', end); document.removeEventListener('pointercancel', end);
+      }
+      g.addEventListener('pointerdown', function (e) {
+        e.preventDefault(); moving = true; card.classList.add('is-dragging');
+        document.addEventListener('pointermove', move); document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
       });
-      function end() { if (!moving) return; moving = false; card.classList.remove('is-dragging'); save(); }
-      g.addEventListener('pointerup', end); g.addEventListener('pointercancel', end);
       g.addEventListener('keydown', function (e) {
         var list = cards(), i = list.indexOf(card);
         if ((e.key === 'ArrowLeft' || e.key === 'ArrowUp') && i > 0) { grid.insertBefore(card, list[i - 1]); }
@@ -4014,7 +4021,9 @@
           var rows = d.rows || [];
           dpCount(t, rows.length);
           dpRows(body, rows, function (it) {
-            return { name: it.name || 'Interest', meta: [it.action, it.initiative].filter(Boolean).join(' · ') || dpDate(it.at), memberId: it.member_id, url: it.avatar_url, color: it.color };
+            var words = function (x) { x = String(x || '').replace(/^vegans-explore-initiative-/, '').replace(/[-_]+/g, ' ').trim(); return x ? x.charAt(0).toUpperCase() + x.slice(1) : ''; };
+            var act = { sponsor_tier: 'Sponsor interest', ticket: 'Ticket interest', link_click: 'Clicked a link' }[it.action] || words(it.action);
+            return { name: it.name || 'Interest', meta: [act, words(it.initiative)].filter(Boolean).join(' · ') || dpDate(it.at), memberId: it.member_id, url: it.avatar_url, color: it.color };
           });
         });
       }));
