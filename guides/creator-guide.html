@@ -17,7 +17,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* The Creator Guide (Sean 2026-10-29, canon canon-ve-ambassadors-talent-shop, playbook ve-ambassadors-talent-shop), built on the
-       Nonprofit Guide's files. River stays on the right of every tab; the content sits on a clean white page to his left. The styles
+       Nonprofit Guide's files. Kai Monroe, the sample creator, narrates: at the top of the Creator Dashboard walkthrough, on the right of every other tab, the content on a clean white page to her left. The styles
        are the Nonprofit Guide's (same class names). Code: /guide-scripts/creator-guide.js. */
     
     :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
@@ -352,7 +352,8 @@
       html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
-    /* The Overview and Become a creator are Kai's (the Creator Dashboard walkthrough and the application): River steps aside there. */
+    /* On the Overview (the Creator Dashboard walkthrough) Kai sits at the top of the demo, so her rail steps aside there. */
+    .cg-play:empty{display:none;}.cg-play .vg-kai-play{font-family:inherit;}
     body.cg-wide .dg-rail,body.cg-wide .dg-tour-m,body.cg-wide .dg-mini{display:none !important;}
     body.cg-wide .dg-app{grid-template-columns:minmax(0,1fr) !important;}
     .dg-main .vg-kai{top:0;}
@@ -505,12 +506,13 @@
   <main class="dg-main" id="dgMain" aria-live="polite"><div class="dg-loading">Loading the Guide...</div></main>
   <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
 
-  <!-- River stays here on every tab. His lines show as text (no clips yet). -->
-  <aside class="dg-rail" id="dgRail" data-guide="river" aria-label="River, your Guide">
+  <!-- Kai stays here on every tab but the walkthrough. Her lines are spoken once the visitor presses Play (VEGigs.voice). -->
+  <aside class="dg-rail" id="dgRail" data-guide="kai" aria-label="Kai, your Guide">
     <div class="dg-maya" id="dgMaya"></div>
-    <div class="dg-namebar"><div class="dg-maya-name"><b>River</b> &middot; Your Guide for Vegan creators</div>
-      <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide River</button></div>
+    <div class="dg-namebar"><div class="dg-maya-name"><b>Kai Monroe</b> &middot; Your Guide for Vegan creators</div>
+      <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Kai</button></div>
     <div class="dg-bubble" id="dgBubble"></div>
+    <div class="cg-play" id="dgPlay"></div>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
