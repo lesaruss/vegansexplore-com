@@ -91,6 +91,13 @@
       post: { icon: 'chat', from: 'pulse', title: 'The conversation is for LESARUSS members',
         body: 'Anyone can read the Pulse. A LESARUSS Passport, <b>$11 one time</b>, lets you join the conversation under every briefing.' }
     },
+    // Events and Funding (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door): events/index.html at lesaruss.ai/events and
+    // /funding, the events engine under the LESARUSS tenant (migration 20261030_lesaruss_ai_events_funding.sql).
+    calendar: {
+      art: '/communities/new-york/banner.jpg',
+      event: { title: 'Business Events', sub: 'Conferences, summits, pitch nights, workshops and tours for business owners and creators, each checked on its official page.' },
+      funding: { title: 'Funding', sub: 'Grants, loans, accelerators, pitch competitions and fellowships you can apply for, closing soon first, each with its official apply page.' }
+    },
     // The Pulse by topic (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door: "the banner picks a topic (AI, Funding, Marketing,
     // Leadership, Creators, Business operations, Events) where Vegans Explore picks a city"). Each key is ve-board's scope lr-<key>;
     // ve_pulse_auto_queue and the writer use the same list (migration 20261030_lesaruss_ai_topic_pulse.sql).
@@ -115,7 +122,7 @@
     '--vb-hero-1:rgba(14,12,10,.86);--vb-hero-2:rgba(14,12,10,.8);--vb-hero-1b:rgba(14,12,10,.9)}';
   (document.head || document.documentElement).appendChild(st);
 
-  var NAV = [['/', 'Start Here'], ['/guides', 'Guides'], ['/directory', 'Directory'], ['/pulse', 'Pulse'], ['/join', 'Become a member'],
+  var NAV = [['/', 'Start Here'], ['/guides', 'Guides'], ['/directory', 'Directory'], ['/pulse', 'Pulse'], ['/events', 'Events'], ['/funding', 'Funding'], ['/join', 'Become a member'],
     [HQ + '/member/business', 'For businesses'], ['https://lesaruss.com', 'The Universe', 1]];
 
   // The lesaruss.ai header (lesaruss-ai-site app/site.tsx SiteHeader): the wordmark and the menu behind the button.
@@ -218,7 +225,7 @@
     var f = document.createElement('footer');
     f.className = 'lr-foot ve-footer'; f.setAttribute('role', 'contentinfo');
     f.innerHTML = '<div class="lr-foot-row"><span class="lr-foot-brand">LESARUSS<span>.</span>AI <em>&middot; Your guides in the new AI world.</em></span>' +
-      '<nav class="lr-foot-links" aria-label="Footer"><a href="/guides">Guides</a><a href="/directory">Directory</a><a href="/pulse">Pulse</a><a href="/join">Become a member</a>' +
+      '<nav class="lr-foot-links" aria-label="Footer"><a href="/guides">Guides</a><a href="/directory">Directory</a><a href="/pulse">Pulse</a><a href="/events">Events</a><a href="/funding">Funding</a><a href="/join">Become a member</a>' +
       '<a href="' + HQ + '/member/business">For businesses</a><a href="' + HQ + '/login">Member home</a>' +
       '<a href="https://lesaruss.com" target="_blank" rel="noopener noreferrer">The Universe</a><a href="mailto:contact@lesaruss.com">contact@lesaruss.com</a></nav>' +
       '<span class="lr-foot-copy">&copy; ' + new Date().getFullYear() + ' LESARUSS</span></div>';
