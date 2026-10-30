@@ -6,12 +6,15 @@
  * episodes are built in, and it ends on the next step: the Ambassador program. The tabs are the tour; River stays on the right of
  * every tab (his lines show as text, no clips). The address bar carries the view (#/tips/flow, #/people/youtube, #/pulse/craft).
  *
- *   Overview       what the Guide is and what each tab holds
+ *   Overview       the creator pathway (Sean, 2026-10-30: "take this, what we created, put it into the creator guide as the
+ *                  overview... the drill through everything will just be under overview"): /gigs/sample's walkthrough with Kai,
+ *                  the opportunity, then the Creator Dashboard step by step, ending on the application. /public/ve-gigs.js mounted
+ *                  at #/overview/<view> (VEGigs base, external); River steps aside on it, since Kai walks this part
  *   The 10 tips    one per view: the principle, In Action (a real creator), This week (the three action items, ticked in the
  *                  browser), On Vegans Explore and an episode. Tip 1 (purpose) is open to everyone, the free example
  *   People         People > Content Creators and the Directory's YouTube channels, with the Directory's own card
  *   Pulse          our episodes with creators, played in place (PULSE_PICKS, ve-podcast)
- *   Your next step become an Ambassador: invitation only, one program by results (canon-ve-ambassadors-talent-shop)
+ *   Become a creator  the creator application itself (ve-gigs' Apply, #/next/join/<n>, ve-ambassador creator_apply)
  *   My list        members: saved tips, episodes and creators (ve_guide_saves through ve-cookbook: fix, episode, listing)
  *   Get access     visitors: $11 or 1,100 points
  *
@@ -63,8 +66,8 @@
       sayMember: 'Study the creators in your lane: how they title things, how often they post, who they work with. Save the ones you learn from.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.',
       sayMember: 'Every creator conversation we\'ve recorded lives here. Start with how they built it, then the craft.' },
-    { k: 'next', label: 'Your next step', say: 'When you\'re ready, the next step is becoming an Ambassador. It\'s by invitation, and you grow by what you do.',
-      sayMember: 'When you\'re ready, the next step is becoming an Ambassador. Tell us about you, and we\'ll be in touch.' },
+    { k: 'next', label: 'Become a creator', say: 'Ready? Tell us about you and what you make. Our team reads every application, and the gigs that fit you come to your Creator Dashboard.',
+      sayMember: 'Ready? Tell us about you and what you make. Our team reads every application, and the gigs that fit you come to your Creator Dashboard.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: tips, episodes and creators.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Creator Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
   ];
@@ -352,33 +355,31 @@
       '<div class="dg-tools"><input type="search" id="cgQ" placeholder="Search ' + esc(s[1] ? s[0].toLowerCase() : 'creators') + '..." value="' + esc(q) + '" aria-label="Search creators"><span class="dg-count">' + (CREATORS ? list.length + ' shown' : '') + '</span></div>' +
       (CREATORS ? (list.length ? cards(list.slice(0, shown), 'cgPeople') + (list.length > shown ? '<div class="dg-btns" style="margin-top:14px"><button type="button" class="dg-btn dg-ghost" data-more>Show more</button></div>' : '')
         : '<p class="dg-empty">None here yet.</p>') : '<div class="dg-loading">Loading...</div>') +
-      '<p class="dg-pp" style="margin-top:16px">Are you a creator we should know? <a href="#/next">Your next step</a></p>';
+      '<p class="dg-pp" style="margin-top:16px">Are you a creator we should know? <a href="#/next">Become a creator</a></p>';
     wireCards('cgPeople', '#/people');
     var inp = document.getElementById('cgQ'), tm;
     if (inp) inp.addEventListener('input', function () { clearTimeout(tm); tm = setTimeout(function () { shown = 24; viewPeople(sub); var i2 = document.getElementById('cgQ'); if (i2) { i2.focus(); i2.setSelectionRange(i2.value.length, i2.value.length); } }, 200); });
   }
 
-  // ---------- Your next step: the Ambassador program (canon-ve-ambassadors-talent-shop) ----------
-  function viewNext() {
-    var steps = [
-      ['One program, by results', 'There is one Ambassador program for everyone. You climb by what you do: your level, the jobs you take, the campaigns you finish. Doing a little is fine.', 'Live'],
-      ['Your own link', 'Every Ambassador shares their own link. A friend who joins through it earns you points, and from Level 2 a commission on their Passport.', 'Live'],
-      ['Points jobs', 'Open to every Ambassador: post, share your link, show up. They pay in points.', 'Live'],
-      ['Perk jobs', 'A dinner, a ticket, often for a cause, plus points.', 'Coming'],
-      ['Paid jobs', 'By invitation, for active Ambassadors with a rate card. From Level 2, professional work too: managing a social account, editing, design, outreach, starting with a small paid trial job.', 'Coming'],
-      ['Ready for paid work', 'A checklist that keeps itself up to date: your profile, your platforms, your rates (seen only by our team) and how you get paid. When it is done, you are active. Ambassadors find it on their dashboard as Paid work: your checklist.', 'Live'],
-      ['Services, one at a time', 'What we offer creators and the brands they work with opens one service at a time, each announced in the Daily Pulse.', 'Coming']
-    ];
-    var ask = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Becoming an Ambassador') + '&body=' + encodeURIComponent('Hi Sean,\n\nI am a Vegan creator and I would like to be considered as an Ambassador.\n\nMy name:\nWhere I create (links):\nWhat I make:\nMy city:\n');
-    main.innerHTML = head('Your next step', 'Become an Ambassador',
-      'Ambassadors bring people into the community, for the animals and for their city, and grow with us as they do. It is by invitation: tell us about you and what you make, and our team will be in touch. Ambassadors get this Guide with it.') +
-      '<div class="rg-steps">' + steps.map(function (w, i) {
-        return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + ' <span class="dg-free" style="margin-left:6px' + (w[2] === 'Coming' ? ';background:#fff7e8;color:#8a5a00' : '') + '">' + esc(w[2]) + '</span></b><p>' + esc(w[1]) + '</p></div>';
-      }).join('') + '</div>' +
-      '<div class="dg-btns"><a class="dg-btn" href="/gigs/sample" target="_blank" rel="noopener">See the Creator Dashboard demo</a><a class="dg-btn dg-ghost" href="/creators/welcome#/board">The Official Creator Guide</a></div>' +
-      '<div class="dg-btns"><a class="dg-btn" href="' + ask + '">Tell us about you</a><a class="dg-btn dg-ghost" href="/ambassadors/welcome">Already an Ambassador? Open your Guide</a></div>' +
-      '<p class="dg-pp" style="margin-top:12px">Sponsored posts always carry the disclosure the FTC asks for. <a href="/policies#membership">The terms</a></p>';
+  // ---------- The Creator Dashboard walkthrough and the application (ve-gigs.js, the same views as /gigs/sample) ----------
+  // Each is mounted once and kept, so what a visitor tries in the demo (an application, a claim) stays for the visit; the Guide's
+  // router draws it (external: true) under its own path.
+  var GIGS = {};
+  function gigView(base, extra) {
+    if (!window.VEGigs || !window.VE_GIGS_DEMO) { main.innerHTML = '<div class="dg-loading">Loading...</div>'; return; }
+    var g = GIGS[base];
+    if (!g) {
+      var el = document.createElement('div'), o = { demo: true, guide: true, external: true, base: base, data: window.VE_GIGS_DEMO, demoHref: '#/overview/dashboard' };
+      for (var k in extra) o[k] = extra[k];
+      g = GIGS[base] = { el: el, api: null };
+      main.innerHTML = ''; main.appendChild(el);
+      g.api = window.VEGigs.mount(el, o);
+      return;
+    }
+    main.innerHTML = ''; main.appendChild(g.el); g.api.draw();
   }
+  // Become a creator: the application on its own (Sean, 2026-10-30: "the become could take them directly to the intake page").
+  function viewNext() { gigView('#/next/', { start: 'join/1', tour: false }); }
 
   // ---------- My list ----------
   var LIST_SECS = [['Tips', 'tips', 'fix', '#/tips'], ['Episodes', 'episodes', 'episode', '#/pulse'], ['Creators', 'creators', 'listing', '#/people']];
@@ -417,27 +418,12 @@
           : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
         '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Ambassadors get it included. People doing it and Your next step stay open to everyone.') + list;
+    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Ambassadors get it included. The overview, People doing it and Become a creator stay open to everyone.') + list;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
 
-  // ---------- Overview ----------
-  function viewOverview() {
-    var tiles = [
-      ['tips', 'The 10 tips', 'Ten moves from hobbyist to professional, each with a real creator and three action items.'],
-      ['people', 'People doing it', 'The content creators and YouTube channels in our Directory.', 1],
-      ['pulse', 'Pulse', 'Our conversations with creators, filmmakers and podcasters, played right here.'],
-      ['next', 'Your next step', 'Become an Ambassador: one program, and you grow by what you do.', 1]
-    ];
-    main.innerHTML = head('Vegans Explore Guides for creators', 'From hobbyist to professional Vegan creator',
-      'For Vegan creators ready to grow with intention. Based on The Vegan Content Creator Survival Guide by Sean A. Russell, with the creators in our Directory and our conversations built in.') +
-      '<div class="dg-tiles">' + tiles.map(function (t) {
-        return '<a class="dg-tile' + (t[0] === 'next' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
-          (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
-      }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/tips/' + PUB.tip_example.id + '">' + (member() ? 'Start with tip 1' : 'Try tip 1, free') + '</a><a class="dg-btn dg-ghost" href="#/people">See who\'s doing it</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow River with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
-  }
+  // ---------- Overview: the creator pathway, Kai walking the Creator Dashboard, ending on the application ----------
+  function viewOverview() { gigView('#/overview/', {}); }
 
   // ---------- search (members) ----------
   function index() {
@@ -499,6 +485,7 @@
     var known = { overview: 1, tips: 1, people: 1, pulse: 1, next: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
+    document.body.classList.toggle('cg-wide', view === 'overview' || view === 'next');
     drawJoinbox();
     var key = view;
     if (view === 'search') key = curTab;
