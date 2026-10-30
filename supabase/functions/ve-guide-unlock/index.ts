@@ -196,11 +196,14 @@ serve(async (req: Request) => {
       await supabase.rpc('ve_passport_credit', { p_member: auth.sub });
       const [{ data: purchase }, { data: member }] = await Promise.all([
         supabase.from('ve_guide_purchases').select('id').eq('member_id', auth.sub).eq('guide_id', guide!.id).maybeSingle(),
-        supabase.from('members').select('lesars_balance, guide_credits, membership_status, membership_tier, email, ve_role').eq('id', auth.sub).maybeSingle(),
+        supabase.from('members').select('lesars_balance, guide_credits, membership_status, membership_tier, email, ve_role, is_superadmin').eq('id', auth.sub).maybeSingle(),
       ]);
       const status = member?.membership_status ?? null;
       let via: string | null = free ? 'free' : !member ? null : purchase ? 'purchase'
         : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
+      // Super admins see every Guide open (Sean, 2026-10-30: "I should be seeing this completely unlocked as a super admin. And if I
+      // want to see how it looks otherwise, I can change my view"). View As previews send no token, so they still see it locked.
+      if (!via && member?.is_superadmin) via = 'admin';
       if (!via && member && await isDiplomat(member.email ?? auth.email)) via = 'diplomat';
       // The Creator Guide comes with being an active Ambassador (canon-ve-ambassadors-talent-shop, Sean 2026-10-29).
       if (!via && member && slug === 'creator-guide' && member.ve_role === 'ambassador' && status === 'active') via = 'ambassador';
