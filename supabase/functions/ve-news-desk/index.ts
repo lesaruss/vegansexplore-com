@@ -182,7 +182,8 @@ function cityHits(text: string): { slug: string; term: string }[] {
 interface Flag { city_slug: string | null; reason: string; matched_terms: string[]; headline_match: boolean; status?: string }
 function judge(feed: any, it: Item): Flag | null {
   const text = it.title + ' ' + (it.summary || '');
-  if (feed.scope === 'topic') return { city_slug: feed.city_slug, reason: `${feed.feed_name}: ${feed.city_slug}`, matched_terms: [], headline_match: true };
+  // Status 'national' as for a Vegan outlet's national story: it feeds the topic's Pulse and stays out of the Inbox.
+  if (feed.scope === 'topic') return { city_slug: feed.city_slug, reason: `${feed.feed_name}: ${feed.city_slug}`, matched_terms: [], headline_match: true, status: 'national' };
   if (feed.scope === 'vegan') {
     const inTitle = cityHits(it.title), all = cityHits(text);
     const hit = inTitle[0] || all[0];

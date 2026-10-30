@@ -90,3 +90,7 @@ LESARUSS.ai topics (Sean, 2026-10-29, canon canon-lesaruss-ai-front-door). A com
    The same rules: no em or en dashes, no emoji, hashtags or markdown, never invent names, dates, amounts or deadlines, attribute claims, and no financial, legal or tax advice. Read the last three published briefings for that topic first and do not repeat them. With no real news for a topic in 7 days, a shorter briefing from one story is fine; with none at all, mark it failed with "No new stories this week" (a failed draft does not go out).$w$,
     updated_at = now()
 where key = 'pulse_topic_write' and instructions not like '%LESARUSS.ai topics (Sean, 2026-10-29%';
+
+-- 5. A topic story feeds its Pulse and stays out of the Depot Inbox, like a Vegan outlet's national story (status 'national').
+update ve_news_leads set status = 'national'
+where status = 'new' and feed_id in (select id from ve_news_feeds where brand_slug = 'lesaruss-ai' and scope = 'topic');
