@@ -74,7 +74,10 @@
     .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
     .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
     .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
-    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    /* Two across, never three and one (Sean, 2026-10-30: "two rows, two columns... a little bit more rectangular... equal in length");
+       an odd last card runs the full width. */
+    .dg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}
+    .dg-grid > :last-child:nth-child(odd){grid-column:1/-1;}
     .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
     .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
     .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
@@ -139,7 +142,7 @@
     .am-msg-acts{display:flex;flex-wrap:wrap;gap:8px;}
     .am-sm-on{background:var(--g) !important;color:#fff !important;border-color:var(--g) !important;}
     .am-sm{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:8px 14px;min-height:38px;border-radius:6px;cursor:pointer;border:1px solid var(--gm);background:#fff;color:var(--g);align-self:flex-start;}
-    .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
+    .am-steps{list-style:none;margin:0 0 16px;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
     .am-steps li{counter-increment:s;border:1px solid var(--line);border-radius:12px;padding:14px 16px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
     .am-steps li::before{content:counter(s);display:inline-flex;width:26px;height:26px;border-radius:6px;background:var(--g);color:#fff;font-weight:900;font-size:13px;align-items:center;justify-content:center;margin-bottom:8px;}
     .am-steps li b{display:block;color:var(--ink);font-size:14.5px;}
@@ -163,7 +166,7 @@
     .am-tag.wait{background:var(--warm);color:#8a5a00;}
     .am-gate{max-width:560px;margin:48px auto;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
     .am-gate p{margin:0 0 16px;color:var(--ink75);line-height:1.6;}
-    @media (max-width:700px){.am-two{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:700px){.am-two,.dg-grid,.am-steps,.am-kinds{grid-template-columns:minmax(0,1fr);}}
     .am-sec{margin:20px 0 10px;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
     .dg-tile .am-ic{display:flex;align-items:center;justify-content:center;color:var(--g);border:1px solid var(--gm);background:#fff;}
     /* Ask whether they want the Guide (Sean, 2026-10-30: "on the first page, we can ask them if they want the guide. And if they choose
@@ -192,7 +195,7 @@
     .am-feat b{display:block;font-size:16px;font-weight:900;margin-bottom:4px;}
     .am-feat p{margin:0;font-size:14px;line-height:1.6;color:var(--ink75);}
     .am-feat a{color:var(--g);font-weight:800;}
-    .am-kinds{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .am-kinds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 14px;}
     .am-kind{display:flex;flex-direction:column;gap:3px;text-align:left;font:inherit;border:1.5px solid var(--line);border-radius:10px;background:#fff;padding:12px 14px;cursor:pointer;color:var(--ink);}
     .am-kind b{font-size:14px;font-weight:900;}
     .am-kind span{font-size:12.5px;line-height:1.45;color:var(--ink75);}
@@ -263,14 +266,12 @@
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
     <div class="dg-tour" id="dgTour"></div>
-    <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide me</button>
   </aside>
 </div>
 
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
-<script src="/public/ve-guide-min.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script>
 (function () {
@@ -284,25 +285,27 @@
   // representing the movement and helping us get into as many places as possible, introducing us to business owners and to podcasters
   // and to people who are on the streets who have a story to be told... we want to interview you and put you on our podcast... be the
   // voice of your city"). The Opportunity, Tell the stories and Paid work tabs say what it is; Anywhere replaced Your city.
+  // Ten tabs, a different Guide on each (never the same one twice in a row), each talking on their tab (Sean, 2026-10-30: "when they go
+  // to next, you see Dani and she talks as well"; "you may have too many things... compress it": Who to invite joined Your link, and
+  // Anywhere joined The opportunity and Your membership). `audio` is the Guide's line, el-media tts in their voice, word for word as `say`.
+  var VOX = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/ambassador-guide/';
   var TABS = [
-    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. You were hand selected for what you have already given the movement. I can walk you through this, or you can look around on your own. Your call.' },
+    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. Press play on my picture and I\'ll walk you through it. On every tab, one of us is here to talk you through that part.' },
     { k: 'why', label: 'Why it matters', g: 'dani', say: 'Every person who joins is someone new who can find and support a rescue, a sanctuary or a Vegan place near them. People already trust you, and that is why your invitation counts.' },
     { k: 'role', label: 'The opportunity', g: 'nori', say: 'You are not bound to one place. You represent the movement wherever you go, with everyone you know, and you help us reach places we have never been.' },
     { k: 'stories', label: 'Tell the stories', g: 'river', say: 'We want the stories. Introduce us to the people doing the work, tell us your own, or raise your hand to host. The voices of Vegans Explore should be yours.' },
     { k: 'paid', label: 'Paid work', g: 'theo', say: 'When a campaign, an event or a reporter needs someone like you, it comes to you with what it pays. Your checklist gets you ready for it.' },
-    { k: 'account', label: 'Your membership', g: 'theo', say: 'Your Founding Membership is on us, in recognition of your work. Here are your points, your level, and what they can do.' },
-    { k: 'link', label: 'Your link', g: 'liz', say: 'This link is yours, and it works everywhere. Everyone who joins through it adds their voice, their votes and their support to the community.' },
-    { k: 'who', label: 'Who to invite', g: 'maya', say: 'Anyone, anywhere: friends in other cities, the places you love, the people with a story. Start with the ones who would love it most.' },
-    { k: 'share', label: 'What to share', g: 'dani', say: 'Here are a few things to send, each with your link already in it. Use them as they are, or say it your way.' },
-    { k: 'city', label: 'Anywhere', g: 'maya', say: 'Share it anywhere. Every chapter is open to you. Pick a home base if you like, so your Daily Pulse and events open there.' },
+    { k: 'link', label: 'Your link', g: 'maya', say: 'This is your link, and it works everywhere. Share it with anyone who would love it, wherever they live. Every person who joins makes the community bigger.', audio: { src: VOX + 'tab-link-v1.mp3', dur: 10 } },
+    { k: 'share', label: 'What to share', g: 'liz', say: 'Here are a few things to send, each with your link already in it. Use them as they are, or say it your way.', audio: { src: VOX + 'tab-share-v1.mp3', dur: 6 } },
+    { k: 'account', label: 'Your membership', g: 'dani', say: 'Your Founding Membership is on us, in recognition of your work. Here are your points, your level, and your home base, if you want one.' },
     { k: 'questions', label: 'Answering questions', g: 'theo', say: 'People will ask what it is and what it costs. Here are the straight answers. Not here? Ask us, and we will answer you and add it.' },
-    { k: 'progress', label: 'Your progress', g: 'liz', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
+    { k: 'progress', label: 'Your progress', g: 'river', say: 'This is who has joined through your link so far, and the points you have earned for it. Thank you for bringing them in.' }
   ];
+  var OLD_TABS = { who: 'link', city: 'account' };
   var BLURB = {
     why: 'For the animals, and for the community.', role: 'What you can do, wherever you are.', stories: 'Introductions, interviews, hosting, news.',
-    paid: 'Campaigns, events and press that pay.', account: 'Founding Member, your points and your level.',
-    city: 'Not bound to one place.', link: 'Your link, and how it counts.', who: 'Anyone, anywhere.',
-    share: 'Ready-made words, with your link.', questions: 'Straight answers, and ask your own.', progress: 'Who joined through you.'
+    paid: 'Campaigns, events and press that pay.', account: 'Founding Member, points, level and home base.',
+    link: 'Your link, and who to share it with.', share: 'Ready-made words, with your link.', questions: 'Straight answers, and ask your own.', progress: 'Who joined through you.'
   };
   // Pictures in our illustration style (public/guides), so a page reads well with the Guide folded away.
   var PIC = { link: '/public/guides/thumb-passport.jpg', intro: '/public/guides/thumb-directory.jpg', stories: '/public/guides/creator-guide.jpg',
@@ -328,15 +331,6 @@
   var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect');
   var guideEl = $('dgGuide'), nameEl = $('dgGuideName'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
   var M = null, REF = null, cur = 'overview', lastGuide = null, storyKind = '';
-  var railEl = $('dgRail'), foldBtn = $('dgFold');
-  // Walk me through it, or look around myself (Sean, 2026-10-30), kept in the browser. Folding or showing the Guide by hand changes it too.
-  function guideMode() { try { return localStorage.getItem('am_guide_mode') || ''; } catch (e) { return ''; } }
-  function setMode(m) {
-    try { localStorage.setItem('am_guide_mode', m); } catch (e) {}
-    railEl.classList.toggle('dg-folded', m === 'self');
-    foldBtn.setAttribute('aria-expanded', String(m !== 'self'));
-  }
-  foldBtn.addEventListener('click', function () { setMode(railEl.classList.contains('dg-folded') ? 'walk' : 'self'); if (cur === 'overview') draw(); });
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function n(v) { return Number(v || 0).toLocaleString('en-US'); }
@@ -367,7 +361,7 @@
     animals: function () { return ['For the animals', [
       card('Rescues and sanctuaries get found', 'The Directory\'s Community section puts the animals first: rescues, sanctuaries, nonprofits and their events, in every chapter. Every member is someone new who can find them, visit, volunteer and give. <a href="/directory?tab=community">See the Community section</a>.', 'The Directory'),
       card('Fosters and rescues on the Board', 'Every chapter\'s Daily Pulse has a Fosters board and a Rescues board, where animals that need a foster or a rescue are posted. More members means more people who see each one. <a href="/pulse/rescues">Open Rescues</a>.', 'Every city'),
-      card('Points given to the organizations', 'Points come in as people join through you. You can give them to a rescue, sanctuary or nonprofit right from its page, where they show as support from the community.', 'Give'),
+      card('Their events, on the calendar', 'Sanctuary open days, adoption events and fundraisers go on our events calendar, in every chapter, and members RSVP right there. <a href="/events">See Events</a>.', 'Events'),
       card('Campaigns behind the cause', 'As the community grows, our marketing and promotion grows with it: campaigns, events and promotion that put organizations in front of the people ready to support them, and help them find the support they are lacking today.', 'Growing', true)]]; },
     community: function () { return ['For the community', [
       card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory'),
@@ -464,13 +458,16 @@
   var OV_AUDIO = { src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/ambassador-guide/overview-v1.mp3', dur: 51,
     cues: [8.3, 19.6, 26.7, 34.6, 39.7, 47.2] };
   var car = { start: 0, per: 3, on: -1 }, ovAudio = null;
-  function vidUi() {
+  // The Guide's picture on the right is the player on every tab that has their voice: one play button, the progress and the time.
+  function tabAudio(k) { return k === 'overview' ? OV_AUDIO : (tab(k).audio || null); }
+  function vidUi(k) {
+    var A = tabAudio(k), t = tab(k);
     return '<span class="am-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" id="amVidIc"><path d="M8 5v14l11-7z"/></svg></span>' +
-      '<span class="am-vbar"><b>Liz walks you through it</b><span id="amVidT">Listen &middot; ' + clock(OV_AUDIO.dur) + '</span><span class="am-prog"><i id="amVidP"></i></span></span>';
+      '<span class="am-vbar"><b>' + esc(k === 'overview' ? 'Liz walks you through it' : GUIDES[t.g] + ' on this page') + '</b><span id="amVidT">Listen &middot; ' + clock(A.dur) + '</span><span class="am-prog"><i id="amVidP"></i></span></span>';
   }
-  // With the Guide showing, her own picture on the right is the player (one Liz, not two); folded away, the player sits beside the cards.
-  function railPlayer(on) {
-    if (on) { guideEl.innerHTML = vidUi(); guideEl.classList.add('am-vid-ui'); guideEl.id = 'dgGuide'; guideEl.setAttribute('role', 'button'); guideEl.setAttribute('tabindex', '0'); guideEl.dataset.ovplay = '1'; }
+  function railPlayer(k) {
+    var A = tabAudio(k);
+    if (A) { guideEl.innerHTML = vidUi(k); guideEl.classList.add('am-vid-ui'); guideEl.setAttribute('role', 'button'); guideEl.setAttribute('tabindex', '0'); guideEl.dataset.ovplay = '1'; }
     else if (guideEl.dataset.ovplay) { guideEl.innerHTML = ''; guideEl.classList.remove('am-vid-ui'); guideEl.setAttribute('role', 'img'); guideEl.removeAttribute('tabindex'); delete guideEl.dataset.ovplay; }
   }
   function clock(t) { t = Math.max(0, Math.round(t || 0)); return Math.floor(t / 60) + ':' + ('0' + t % 60).slice(-2); }
@@ -490,47 +487,49 @@
   }
   function ovSync() {
     if (!ovAudio) return;
-    var t = ovAudio.currentTime, on = -1;
-    OV_AUDIO.cues.forEach(function (c, i) { if (t >= c && i < OPS.length) on = i; });
-    if (t >= OV_AUDIO.cues[OPS.length]) on = -1;
+    var t = ovAudio.currentTime, on = -1, A = tabAudio(cur) || OV_AUDIO;
+    if (cur === 'overview') { OV_AUDIO.cues.forEach(function (c, i) { if (t >= c && i < OPS.length) on = i; }); if (t >= OV_AUDIO.cues[OPS.length]) on = -1; }
     var p = $('amVidP'), tt = $('amVidT');
-    if (p) p.style.width = (100 * t / (ovAudio.duration || OV_AUDIO.dur)) + '%';
-    if (tt) tt.textContent = (ovAudio.paused ? 'Paused' : 'Playing') + ' \u00b7 ' + clock(t) + ' / ' + clock(ovAudio.duration || OV_AUDIO.dur);
-    if (on !== car.on) {
+    if (p) p.style.width = (100 * t / (ovAudio.duration || A.dur)) + '%';
+    if (tt) tt.textContent = (ovAudio.paused ? 'Paused' : 'Playing') + ' \u00b7 ' + clock(t) + ' / ' + clock(ovAudio.duration || A.dur);
+    if (cur === 'overview' && on !== car.on) {
       car.on = on;
       if (on >= 0 && (on < car.start || on >= car.start + car.per)) car.start = on;
       drawOps();
     }
   }
   function ovToggle() {
+    var A = tabAudio(cur); if (!A) return;
     if (!ovAudio) {
-      ovAudio = new Audio(OV_AUDIO.src);
+      ovAudio = new Audio();
       ovAudio.addEventListener('timeupdate', ovSync);
-      ovAudio.addEventListener('ended', function () { car.on = -1; drawOps(); ovIcon(); var tt = $('amVidT'); if (tt) tt.textContent = 'Listen again \u00b7 ' + clock(OV_AUDIO.dur); });
+      ovAudio.addEventListener('ended', function () { car.on = -1; if (cur === 'overview') drawOps(); ovIcon(); var tt = $('amVidT'); if (tt) tt.textContent = 'Listen again \u00b7 ' + clock((tabAudio(cur) || OV_AUDIO).dur); });
       ovAudio.addEventListener('play', ovIcon); ovAudio.addEventListener('pause', ovIcon);
     }
+    if (ovAudio.dataset.tab !== cur) { ovAudio.pause(); ovAudio.src = A.src; ovAudio.dataset.tab = cur; }
     if (ovAudio.paused) ovAudio.play().catch(function () {}); else ovAudio.pause();
   }
   function ovIcon() {
-    var ic = $('amVidIc'); if (!ic || !ovAudio) return;
+    var ic = $('amVidIc'); if (!ic || !ovAudio || ovAudio.dataset.tab !== cur) return;
     ic.innerHTML = ovAudio.paused ? '<path d="M8 5v14l11-7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
-    var v = $('amVid') || guideEl; v.setAttribute('aria-label', (ovAudio.paused ? 'Play' : 'Pause') + ': Liz walks you through it');
+    guideEl.setAttribute('aria-label', (ovAudio.paused ? 'Play' : 'Pause') + ': Liz walks you through it');
     ovSync();
+  }
+
+  // A home base, if they want one: their Daily Pulse, events and Directory open there. Never a limit (Sean, 2026-10-30).
+  function homeBase() {
+    var h = M && hub(M.home_community);
+    var opts = '<option value="">No home base</option>' + (window.VE_HUBS || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (M && M.home_community === x.slug ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
+    return '<h3 class="am-sec">Your home base (optional)</h3><p class="dg-lede" style="font-size:14px">You are not bound to one place. A home base only decides where your Daily Pulse, events and Directory open' + (h ? ': now <a href="/communities/' + esc(h.slug) + '">' + esc(h.name) + '</a>' : '') + '.</p>' +
+      '<div class="am-row"><select class="am-select" id="amCity" aria-label="Your home base">' + opts + '</select><button type="button" class="dg-btn" id="amCitySave">Save</button></div>' +
+      '<p class="am-note" id="amCityNote" role="status"></p>';
   }
 
   var VIEWS = {
     overview: function () {
-      var mode = guideMode(), lizPic = art('liz');
-      var choose = !mode
-        ? '<div class="am-choose"><i style="' + (lizPic ? "background-image:url('" + lizPic + "')" : '') + '" aria-hidden="true"></i><div><b>Want Liz to walk you through it?</b>' +
-          '<p>Tab by tab, or look around yourself while she waits in the corner.</p></div>' +
-          '<div class="dg-btns"><button type="button" class="dg-btn" data-mode="walk">Walk me through it</button><button type="button" class="dg-btn dg-ghost" data-mode="self">I\'ll look around myself</button></div></div>'
-        : '<p class="am-chose">' + (mode === 'self' ? 'You are looking around on your own. <button type="button" data-mode="walk">Have Liz walk you through it</button>' : 'Liz is walking you through it. <button type="button" data-mode="self">Look around on your own</button>') + '</p>';
       return head('Welcome, ' + first(), 'You were hand selected', 'For what you have already given the movement: ' + prof().reason + '. As one of our first Ambassadors you represent Vegans Explore wherever you go. Your Founding Membership is <b>on us</b>.') +
-        choose +
-        '<div class="am-ovrow' + (mode === 'self' ? '' : ' solo') + '"><div class="am-car"><div class="am-ops" id="amOps"></div>' +
-        '<div class="am-car-nav"><button type="button" class="am-arrow" data-car="-1" aria-label="Back">&#8249;</button><div class="am-dots" id="amDots"></div><button type="button" class="am-arrow" data-car="1" aria-label="More">&#8250;</button></div></div>' +
-        (mode === 'self' ? '<button type="button" class="am-video am-vid-ui" id="amVid" style="' + (lizPic ? "background-image:url('" + lizPic + "')" : '') + '" aria-label="Play: Liz walks you through it">' + vidUi() + '</button>' : '') + '</div>' +
+        '<div class="am-ovrow solo"><div class="am-car"><div class="am-ops" id="amOps"></div>' +
+        '<div class="am-car-nav"><button type="button" class="am-arrow" data-car="-1" aria-label="Back">&#8249;</button><div class="am-dots" id="amDots"></div><button type="button" class="am-arrow" data-car="1" aria-label="More">&#8250;</button></div></div></div>' +
         nextBtn('why', 'Start with why it matters');
     },
     why: function () {
@@ -555,7 +554,7 @@
         card('Unlock a Guide', 'Every Guide is $11 or 1,100 points, and yours to keep. <a href="/guides">See the Guides</a>.', 'Spend') +
         card('Talk with your Guide', 'Ask your Guide anything Vegan, 4 points a message.', 'Spend') +
         card('Levels never drop', 'Level 2 from 2,500 points earned, Level 3 from 10,000, Level 4 from 25,000. Spending or giving points never lowers your level.', 'Levels') +
-        '</div>' + nextBtn('link', 'Next: your link');
+        '</div>' + homeBase() + nextBtn('questions', 'Next: answering questions');
     },
     role: function () {
       var feat = function (k, h, body) { return '<div class="am-feat"><i style="' + pic(k) + '" aria-hidden="true"></i><div><b>' + esc(h) + '</b><p>' + body + '</p></div></div>'; };
@@ -565,9 +564,9 @@
         feat('stories', 'Tell the stories', 'We want to interview the people in this community and put them on our podcast: you, and the people you know with a story to tell. We are lining up episodes with community hosts too. <a href="#/stories">Tell us</a>.') +
         feat('voice', 'Be the voice of your community', 'Wherever you are, tell us what is happening: a new place, an event, someone doing something worth sharing. It can become the Daily Pulse. <a href="#/stories">Send it</a>.') +
         feat('paid', 'Paid work', 'When a brand campaign, an event or a reporter needs someone like you, we bring it to you with what it pays and what it asks. <a href="#/paid">How paid work works</a>.') +
-        '<h3 class="am-sec">Every day, as a member</h3><div class="dg-grid">' +
-        card('Vote and check in', 'Vote for the places you love and check in when you visit, for 10 points. People follow what members do.', 'Every day') +
-        card('Join any conversation', 'The Daily Pulse runs in every chapter. Join in wherever you have something to say. <a href="/pulse">Open the Daily Pulse</a>.', 'Daily Pulse') +
+        '<h3 class="am-sec">Every day, anywhere</h3><div class="dg-grid">' +
+        card('Every chapter is open to you', 'South Florida to London. Join any community, and point people to theirs. No chapter where they live yet? Share it anyway: we open new chapters where members grow. <a href="/communities">See the communities</a>.', 'Anywhere') +
+        card('Vote, check in, join in', 'Vote for the places you love, check in when you visit for 10 points, and join the Daily Pulse wherever you have something to say.', 'Every day') +
         card('What is next for Ambassadors', 'From Level 2 your link earns, and we are shaping more for Ambassadors. You will hear it here first.', 'Coming', true) +
         '</div>' + nextBtn('stories', 'Next: tell the stories');
     },
@@ -604,25 +603,10 @@
         '<div class="dg-btns" style="margin:0 0 18px"><a class="dg-btn" href="/ambassadors/door">Open your checklist</a></div>' +
         '<div class="dg-grid">' +
         card('The kinds of work', 'Posts and reels for brand campaigns, appearances and hosting at events, and from Level 2 professional work: running a social account, editing, design, outreach, starting with a small paid trial.', 'What it is') +
-        card('How it pays', 'You always get your full rate: half when you say yes, half when your posts are live. It comes through Stripe, straight to your bank.', 'Your rate') +
-        card('Your numbers stay with us', 'Brands see a package, never your rates. Your name goes to a brand only after you say yes.', 'Private') +
+        card('How it pays', 'You always get your full rate: half when you say yes, half when your posts are live, through Stripe to your bank. Brands never see your rates, and your name goes to them only after you say yes.', 'Your rate') +
         card('The first paid jobs', 'They open as brands sign on, starting with our own campaigns and events. Finish your checklist now and you are first in line.', 'Coming', true) +
         card('The Creator Guide is yours', 'Ten moves from hobbyist to professional Vegan creator, with the people doing it and our conversations with them. Included for Ambassadors. <a href="/guides/creator-guide">Open the Creator Guide</a>.', 'For creators') +
-        '</div>' + nextBtn('account', 'Next: your membership');
-    },
-    city: function () {
-      var h = M && hub(M.home_community);
-      var opts = '<option value="">Pick a home base</option>' + (window.VE_HUBS || []).map(function (x) { return '<option value="' + esc(x.slug) + '"' + (M && M.home_community === x.slug ? ' selected' : '') + '>' + esc(x.name) + '</option>'; }).join('');
-      return head('Anywhere', 'Not bound to one place', 'Share Vegans Explore with anyone, in any city. Your link works everywhere, and every chapter is open to you: join any community, post on any Daily Pulse, introduce us to people anywhere. If you like, pick a home base so your Daily Pulse, events and Directory open there.') +
-        '<label class="am-field" for="amCity">Your home base (optional)</label>' +
-        '<div class="am-row"><select class="am-select" id="amCity">' + opts + '</select><button type="button" class="dg-btn" id="amCitySave">Save</button></div>' +
-        '<p class="am-note" id="amCityNote" role="status"></p>' +
-        '<div class="dg-grid">' +
-        card('Every chapter', 'South Florida to London. Point people to theirs, wherever they are. <a href="/communities">See the communities</a>.', 'Anywhere') +
-        card('No chapter there yet?', 'Share it anyway. Anyone can join from anywhere, and we open new chapters where members grow. Your introductions there count the most.', 'Help us grow') +
-        (h ? card('Your home base', 'The Daily Pulse, events and members of ' + esc(h.name) + '. <a href="/communities/' + esc(h.slug) + '">Open the hub</a>.', 'Home base') : '') +
-        card('Events anywhere', 'Know an event we do not have? Submit it, wherever it is. <a href="/events">Open Events</a>.', 'Events') +
-        '</div>' + nextBtn('questions', 'Next: answering questions');
+        '</div>' + nextBtn('link', 'Next: your link');
     },
     link: function () {
       return head('Your link', 'Your Ambassador link', 'Share it anywhere: a text, a post, your bio, an email. It opens the Passport, the page that shows people what Vegans Explore is and how to join.') +
@@ -633,22 +617,13 @@
         '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
         '<li><b>The community grows</b>Another member voting for local places, joining their city and taking part. You also get 111 points, once per friend, to use or give away.</li></ol>' +
         '<div class="dg-grid">' +
-        card('It counts when they join', 'An account that has not paid its $11 is not a member yet, so it shows as Waiting in Your progress until it does.', 'How it counts') +
-        card('Use the same link everywhere', 'One link is easier to remember, and every member it brings in is counted to you.', 'Tip') +
+        card('It counts when they join', 'An account that has not paid its $11 shows as Waiting in Your progress until it does. Use the same link everywhere, so every member it brings in counts to you.', 'How it counts') +
         card('From Level 2, it earns', 'Your link earns a share of the Passports, and from Level 3 the Guides, bought through it: 20%, then 25%, then 30%. Keep it, or send it all to a rescue or sanctuary in your name. See <a href="/dashboard/levels">Points and levels</a>, and always say you earn from your link when you share it.', 'Your link') +
-        '</div>' + nextBtn('who', 'Next: who to invite');
-    },
-    who: function () {
-      return head('Who to invite', 'Anyone, anywhere', 'The best invitations are personal: one message to one person who would love it, wherever they live.') +
-        '<div class="dg-grid">' +
-        card('Friends who eat Vegan', 'They will use the Directory and the Daily Pulse right away, and vote for their favorite places.', 'Start here') +
-        card('The Vegan-curious', 'Friends and family who are trying it out. Looking around is free, and the Guides make it easy to start.', 'Gently') +
-        card('People at events', 'Potlucks, festivals and community nights. Show them your city\'s hub on your phone.', 'In person') +
-        card('Your online circle', 'Groups and followers who care about Vegan food and the animals. Share a post with your link.', 'Online') +
+        '</div><h3 class="am-sec">Who to share it with: anyone, anywhere</h3><div class="dg-grid">' +
+        card('Friends and family, wherever they live', 'Friends who eat Vegan and the Vegan-curious, in your city or across the country. One message to one person who would love it.', 'Start here') +
+        card('Your online circle', 'Your followers and groups who care about Vegan food and the animals. Put your link in your bio and your posts.', 'Online') +
+        card('The places you love, and the people with a show', 'Vegan restaurants, bakeries and brands anywhere you go, and the podcasters and creators you know. Send businesses to vegansexplore.com/business, and <a href="#/stories">introduce the rest to us</a>.', 'Introductions') +
         card('People who help the animals', 'Fosters, volunteers and the people behind rescues and sanctuaries. Every member is someone new who can find their organization and help.', 'For the animals') +
-        card('The places you go', 'Vegan restaurants, bakeries and brands, in your city or anywhere you travel. Their page is already in the Directory, or they can add it. Send them to /business.', 'Businesses') +
-        card('Podcasters and creators', 'People with an audience who care about the same things. Share your link, and <a href="#/stories">introduce them to us</a>.', 'Creators') +
-        card('People with a story', 'The ones doing the work: organizers, rescuers, cooks, athletes. <a href="#/stories">Tell us about them</a>, and we may put them on the podcast.', 'Stories') +
         '</div>' + nextBtn('share', 'Next: what to share');
     },
     share: function () {
@@ -657,7 +632,7 @@
           return '<div class="am-msg"><b>' + esc(m.title) + '</b><p>' + esc(m.text) + '</p>' +
             '<div class="am-msg-link"><span>Your link</span><code>' + esc(m.link) + '</code></div>' +
             '<div class="am-msg-acts"><button type="button" class="am-sm am-sm-on" data-copy="' + i + '">Copy message</button><button type="button" class="am-sm" data-copy-link>Copy link</button></div></div>';
-        }).join('') + '</div>' + nextBtn('city', 'Next: anywhere');
+        }).join('') + '</div>' + nextBtn('account', 'Next: your membership');
     },
     questions: function () {
       var qa = [
@@ -736,11 +711,12 @@
 
   function draw() {
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    if (OLD_TABS[k]) { history.replaceState(null, '', location.pathname + location.search + '#/' + OLD_TABS[k]); k = OLD_TABS[k]; }
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
-    if (cur !== 'overview' && ovAudio && !ovAudio.paused) ovAudio.pause();
+    if (ovAudio && !ovAudio.paused && ovAudio.dataset.tab !== cur) ovAudio.pause();
     main.innerHTML = VIEWS[cur]();
-    railPlayer(cur === 'overview' && guideMode() !== 'self');
+    railPlayer(cur);
     if (cur === 'overview') { drawOps(); ovIcon(); setTimeout(drawOps, 80); }
     main.scrollTop = 0;
     menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
@@ -763,8 +739,7 @@
     var b;
     if ((b = e.target.closest('[data-copy-link]'))) return copy(link(), b);
     if ((b = e.target.closest('[data-copy]'))) return copy(messageText(messages()[+b.dataset.copy]), b);
-    if ((b = e.target.closest('[data-mode]'))) { setMode(b.dataset.mode); draw(); return; }
-    if (e.target.closest('#amVid') || e.target.closest('[data-ovplay]')) return ovToggle();
+    if (e.target.closest('[data-ovplay]')) return ovToggle();
     if ((b = e.target.closest('[data-car]'))) { car.start += +b.dataset.car; drawOps(); return; }
     if ((b = e.target.closest('[data-dot]'))) { car.start = +b.dataset.dot; drawOps(); return; }
     if ((b = e.target.closest('[data-kind]'))) { storyKind = b.dataset.kind; draw(); var f = $('stName') || $('stAbout'); if (f) f.focus(); return; }
@@ -772,13 +747,13 @@
     if (e.target.closest('#askSend')) return sendAsk();
     if (e.target.closest('#amCitySave')) {
       var v = $('amCity').value, note = $('amCityNote'), btn = $('amCitySave');
-      if (!v) { note.className = 'am-note bad'; note.textContent = 'Pick your city first.'; return; }
+      if (!v) { note.className = 'am-note bad'; note.textContent = 'Pick a home base first.'; return; }
       if (M.home_community === v) { note.className = 'am-note'; note.textContent = 'That is already your city.'; return; }
       btn.disabled = true; note.className = 'am-note'; note.textContent = 'Saving...';
       VEAuth.setHomeCommunity(v).then(function (d) {
         btn.disabled = false;
         if (d && d.error) { note.className = 'am-note bad'; note.textContent = 'That did not save. Try again.'; return; }
-        M.home_community = v; draw(); var n2 = $('amCityNote'); if (n2) n2.textContent = 'Saved. Your city is ' + hub(v).name + '.';
+        M.home_community = v; draw(); var n2 = $('amCityNote'); if (n2) n2.textContent = 'Saved. Your home base is ' + hub(v).name + '.';
       }, function () { btn.disabled = false; note.className = 'am-note bad'; note.textContent = 'Could not connect. Try again.'; });
     }
   });
@@ -807,7 +782,6 @@
         if (st && !location.hash) history.replaceState(null, '', location.pathname + '#/' + ({ 1: 'overview', 2: 'city', 3: 'link', 4: 'share' }[st] || 'overview'));
         $('amTop').hidden = false; $('dgApp').hidden = false;
         document.documentElement.classList.add('dg-fit');
-        if (guideMode() === 'self') setMode('self');
         draw();
       }, function () { gate('<p>Could not connect. Refresh to try again.</p>'); });
   }
