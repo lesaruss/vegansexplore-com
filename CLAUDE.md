@@ -548,10 +548,19 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
   funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
 - **The Guides page** (built 2026-10-30). lesaruss.ai/guides (lesaruss-ai-site `app/guides/SharedGuides.tsx`) mounts this site's
-  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves (All Guides, LESARUSS.ai Guides, From Vegans Explore;
-  `?shelf=`) and the cards are ours. The catalog takes a brand's own list (`render(el, {guides, shelves})`) and gives it our live
-  Guides (`VEGuideCatalog.communityGuides(origin, chips)`: every live Guide but the Welcome Guide and the Partner Guides, opening on
-  vegansexplore.com), since a Diplomat gets every Guide from every LESARUSS community. A new live Guide in `GUIDES` shows there too.
+  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves, by business topic (All Guides, AI and new tech,
+  Creators and media, Running the business; `?shelf=`, `SHELF_OF` there), and the cards are ours, each with a banner made for the
+  card (`public/guides/banners/<slug>.jpg` there; the Guide's portrait cover stays on its own page). **Business Guides only** (Sean,
+  2026-10-30: "the audience is businesses... let's save that for when they become a diplomat"): our Guides do not show there; a
+  Diplomat's every-community shelf belongs on their dashboard (`VEGuideCatalog.communityGuides` stays for it).
+- **A LESARUSS.ai Guide is a mini app** (Sean, 2026-10-30: "update these guides so it fits with what we're doing with Vegans
+  Explore... start with the podcast guide... from that template, we can roll on"). lesaruss.ai/guides/podcast-starter-guide
+  (lesaruss-ai-site `app/guides/[slug]/GuideApp.tsx`, `MINI_APPS` in its page) is our Guide layout in LESARUSS colors: the header
+  with the $11 box and the tabs, the tab on the left, V on the right with her approved lines and clips, Back / N of M / Next. HQ
+  holds the tabs and V's words (lesaruss-hq `lib/guideSite.ts`) and answers who the visitor is with their own HQ session
+  (`/api/member/guide-site`, CORS for lesaruss.ai): the paid parts' words only to an owner (`canOpenCourse`), saves, hot labs.
+  Cheat sheets are HQ's graphics framed from `hq.lesaruss.ai/guide-sheet/<slug>/<key>`. Its Directory tab uses this site's card
+  (`VERegionDirectory.brand(b)`, then `card` and `wire`, so the card reads like the brand's Directory).
 
 ## Analytics (Sean, 2026-10-28)
 
