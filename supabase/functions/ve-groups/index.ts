@@ -15,6 +15,8 @@
 //   POST { action: 'discover', chapter }            Meetup's group search around the chapter for Vegan groups not on the Directory yet;
 //                                                    each becomes a QUARANTINED Groups listing (crawl_source 'group-discover'), never live
 //   POST { action: 'discovered' }                   what discover found and is waiting for Sean
+//   POST { action: 'applications' } | { action: 'application_get', id } | { action: 'application_save', id, status, note? }   the Group
+//                                                    Partner Guide's applications (ve_group_applications); reading or marking one sends nothing
 //   POST { action: 'discover_decide', listing_id, decision: 'add'|'aside', note? }   Add to the Directory (live, its Meetup page a
 //                                                    crawl source tied to it, its 2026 Meetup events saved) or Set aside (rejected, kept)
 // verify_jwt is off; the token is checked here, like ve-nonprofit.
@@ -444,6 +446,37 @@ Deno.serve(async (req) => {
       const u = meetupUrlname(l.details?.group?.meetup || l.website);
       const events = u ? await importMeetupEvents(l.id, u, sourceId).catch((e) => ({ error: String(e) })) : { read: 0, added: 0 };
       return json({ ok: true, decision: 'add', slug: l.slug, events });
+    }
+
+    // ---- Applications from the Group Partner Guide's Apply tab (ve-group 'apply'). Reading one never invites anyone.
+    if (action === 'applications') {
+      const { data, error } = await db.from('ve_group_applications').select('id, created_at, group_name, chapter, city, organizer_name, organizer_email, status, answers, listing_id')
+        .order('created_at', { ascending: false }).limit(500);
+      if (error) return json({ error: 'load_failed', message: error.message }, 500);
+      return json({ ok: true, applications: (data || []).map((r: any) => ({ id: r.id, at: r.created_at, group: r.group_name, chapter: r.chapter, city: r.city,
+        name: r.organizer_name, email: r.organizer_email, status: r.status, turnout: r.answers?.turnout || null, size: r.answers?.size || null, listing_id: r.listing_id })) });
+    }
+    if (action === 'application_get') {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: r } = await db.from('ve_group_applications').select('*').eq('id', body.id).maybeSingle();
+      if (!r) return json({ error: 'not_found' }, 404);
+      let listing = null;
+      if (r.listing_id) { const { data: l } = await db.from('listings').select('id, slug, name').eq('id', r.listing_id).maybeSingle(); listing = l; }
+      else {
+        // A Groups listing with the same name, to open beside it.
+        const { data: ls } = await db.from('listings').select('id, slug, name').eq('category', 'Groups').ilike('name', r.group_name).limit(1);
+        listing = ls?.[0] || null;
+      }
+      return json({ ok: true, application: r, listing });
+    }
+    if (action === 'application_save') {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const status = String(body.status || '');
+      if (!['new', 'reviewing', 'accepted', 'declined'].includes(status)) return json({ error: 'bad_status' }, 400);
+      const { error } = await db.from('ve_group_applications').update({ status, decision_note: clip(body.note, 1000), reviewed_at: new Date().toISOString(),
+        reviewed_by: actor.label === 'ops' ? 'Logan' : 'Sean' }).eq('id', body.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true });
     }
 
     return json({ error: 'unknown_action' }, 400);
