@@ -520,6 +520,15 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   and dashboard. **Podcasts** (migration `20261029_lesaruss_ai_podcasts.sql`): 23 marketing, leadership and development shows found on
   Apple Podcasts, About from each feed's own description, tag `lesaruss-ai-directory-candidate` (so Vegans Explore's Directory and Media,
   `rank` in `ve-media.js`, leave them out), `crawl_source` `lesaruss-ai-podcasts`, `specialty` the topic, no How Vegan.
+- **The Pulse by topic** (built 2026-10-30, migration `20261030_lesaruss_ai_topic_pulse.sql`; Sean: "it's really not going to be
+  focused on regional stuff"). lesaruss.ai/pulse is this site's `pulse.html` (proxied) in brand mode (`VE_BRAND.pulse`): the banner
+  picks a business topic (AI, Funding, Marketing, Leadership, Creators, Business operations, Events, or All topics; `?topic=`), never a
+  city, and only the Pulse tab shows (no city boards, Suggest a Topic or ads). A topic is `ve_board_posts.community_slug` `lr-<topic>`
+  (`ve-board` `LR_TOPICS`, `lr-all` lists them all); anyone reads, commenting and reporting need a LESARUSS member
+  (`lr_member_entitled`), and a LESARUSS sign-in takes part only there. Its stories are 21 business feeds (`ve_news_feeds` scope `topic`,
+  brand `lesaruss-ai`, `city_slug` the topic; TechCrunch, Crunchbase, Marketing Dive, Fast Company, Tubefilter, BizBash...), every story
+  kept with status `national` so it stays out of the Depot Inbox. The seven topics are in `pulse_auto` (queued 6 PM Eastern, out at 7 AM),
+  and the writer's `pulse_topic_write` instructions carry a LESARUSS.ai section (business voice, no cities or Vegan framing).
 
 ## Analytics (Sean, 2026-10-28)
 
