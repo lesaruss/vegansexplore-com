@@ -3113,7 +3113,8 @@ that we're selling"), and a tile in Your tools.
   admins only): status, Founding Member, role, level and points (a super admin's read ∞: they earn none; Sean, 2026-10-30), votes given,
   votes received (on their pages: listings they own, or a People profile naming them in `details.person.member_id`, which links a person
   without making them its owner; Sean's profile carries his, migration `20261030_people_member_link.sql`), places they checked in, saves,
-  joined, home chapter, Instagram, their link, their pages and latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  joined, home chapter, Instagram, their link, their pages, **Who voted for them** (the latest 25 votes on their pages, each voter's picture
+  and name opening that voter's own card, and the page voted for; `voted_by`), their latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
   Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
   2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
   `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
