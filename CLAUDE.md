@@ -547,6 +547,11 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   online); the writer's `events_crawl` instructions have a LESARUSS.ai section, and nothing goes live until approved in **Depot >
   Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
   funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
+- **The Guides page** (built 2026-10-30). lesaruss.ai/guides (lesaruss-ai-site `app/guides/SharedGuides.tsx`) mounts this site's
+  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves (All Guides, LESARUSS.ai Guides, From Vegans Explore;
+  `?shelf=`) and the cards are ours. The catalog takes a brand's own list (`render(el, {guides, shelves})`) and gives it our live
+  Guides (`VEGuideCatalog.communityGuides(origin, chips)`: every live Guide but the Welcome Guide and the Partner Guides, opening on
+  vegansexplore.com), since a Diplomat gets every Guide from every LESARUSS community. A new live Guide in `GUIDES` shows there too.
 
 ## Analytics (Sean, 2026-10-28)
 
@@ -3132,8 +3137,11 @@ that we're selling"), and a tile in Your tools.
   Guest Reviews, each the latest 100 scrolling inside a box of the same height (`#dash-recent`, `dpRows`). A vote row is the listing (its
   name opens it under the Directory tab), who and when, and the voter's picture on the right (`ve-dashboard` `recent_votes`, from
   `listing_daily_votes`). Any member picture there opens **who they are** in a lightbox (`memberCard`, `ve-dashboard` `member_card`, super
-  admins only): status, Founding Member, role, level, points, votes, check-ins, saves, joined, home chapter, Instagram, their link, their
-  listings and latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  admins only): status, Founding Member, role, level and points (a super admin's read ∞: they earn none; Sean, 2026-10-30), votes given,
+  votes received (on their pages: listings they own, or a People profile naming them in `details.person.member_id`, which links a person
+  without making them its owner; Sean's profile carries his, migration `20261030_people_member_link.sql`), places they checked in, saves,
+  joined, home chapter, Instagram, their link, their pages, **Who voted for them** (the latest 25 votes on their pages, each voter's picture
+  and name opening that voter's own card, and the page voted for; `voted_by`), their latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
   Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
   2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
   `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
