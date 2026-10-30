@@ -1033,11 +1033,14 @@ Day 7, then every 7 days, at most 10, naming what is missing, counted from the d
 Your tools (after The Ambassador Guide) and the Guide's Your role (Paid work). **Depot > Ambassadors > Paid work** (`#door`, `admin_list`,
 `claim_decide`): totals, the profile requests to **Approve** (an existing People listing becomes theirs, `owner_member_id`, or a new
 Content Creators listing is made, every chapter, `crawl_source` `ambassador`) or **Decline** with a note they get by email, and every
-Ambassador's checklist with their platforms, rates and skills. **Stripe Connect is not switched on** on the LESARUSS account (Stripe:
-"signed up for Connect"); until Sean turns it on (dashboard.stripe.com/connect, Express accounts), Get paid answers "Payouts are not
-switched on yet". Proven 2026-10-29 with the internal QA account as an Ambassador (search, a new-profile request, approval making the
-listing, the profile, platforms with YouTube read live, rates, Next saving, Stripe refused, the Depot view, reminders due none), then
-removed.
+Ambassador's checklist with their platforms, rates and skills. **Payouts run on the Vegans Explore Stripe account** (the live
+`STRIPE_SECRET_KEY` is `STRIPE_SECRET_KEY_ACCT_VEGANSEXPLORE`; test accounts use the LESARUSS test key, whose account has no Connect, so a
+test run is refused with "Payouts are not switched on yet"). Connect is on there. The first live Express account (2026-10-30) was refused
+for "suspicious activity" until Sean confirmed it in the dashboard; a refusal like that now tells the member "Payouts could not be set up
+right now" and emails Sean Stripe's reason. Proven 2026-10-29 with the internal QA account as an Ambassador (search, a new-profile request,
+approval making the listing, the profile, platforms with YouTube read live, rates, Next saving, the Depot view, reminders due none), and
+2026-10-30 live as Sean (an Express account made and Stripe's onboarding link returned; the test account `acct_1UW3SU1iCaKwuaVp` is Sean's
+to delete in Connect), then removed.
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
 
