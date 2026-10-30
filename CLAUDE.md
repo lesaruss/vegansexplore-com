@@ -547,6 +547,11 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   online); the writer's `events_crawl` instructions have a LESARUSS.ai section, and nothing goes live until approved in **Depot >
   Events > LESARUSS.ai** (`?brand=lesaruss`; every call carries `brand`, the queue, sources and Add are that brand's, and an item's
   funding fields are editable). The Pulse writer's city events are Vegans Explore's only; a LESARUSS.ai topic may use LESARUSS.ai's.
+- **The Guides page** (built 2026-10-30). lesaruss.ai/guides (lesaruss-ai-site `app/guides/SharedGuides.tsx`) mounts this site's
+  `ve-city-banner.js` and `ve-guide-catalog.js`: the banner's menu is the shelves (All Guides, LESARUSS.ai Guides, From Vegans Explore;
+  `?shelf=`) and the cards are ours. The catalog takes a brand's own list (`render(el, {guides, shelves})`) and gives it our live
+  Guides (`VEGuideCatalog.communityGuides(origin, chips)`: every live Guide but the Welcome Guide and the Partner Guides, opening on
+  vegansexplore.com), since a Diplomat gets every Guide from every LESARUSS community. A new live Guide in `GUIDES` shows there too.
 
 ## Analytics (Sean, 2026-10-28)
 
