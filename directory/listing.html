@@ -1693,7 +1693,7 @@ function loadFamily(l){
   var fam = (l.details || {}).family, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
   if(!fam || !ov || !/^[a-z0-9-]{1,80}$/.test(fam)) return;
   fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&details->>family=eq.' + encodeURIComponent(fam) +
-    '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link,ford:details->>family_order&limit=40',
+    '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link,buy_label:details->>buy_label,ford:details->>family_order&limit=40',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
       rows = (rows || []).map(function(x){ x.details = { youtube_channel_id: x.yt }; return x; });
@@ -1743,7 +1743,8 @@ function loadFamily(l){
 // The Books tab on a person's page: the covers, then About the author (Sean, 2026-10-29: "people might not come from the overview
 // section. Just like a little short 150 character of the author"). A cover opens that book in the same space: the breadcrumb (Books >
 // the title) inside the page, the synopsis (details.summary, else the listing's description) and Buy on Amazon, our tracked /go/ link
-// (details.buy_link), which adds our Amazon Associates tag on the way (ve-links, ve_site_settings amazon_associates). ?book=<slug>.
+// (details.buy_link), which adds our Amazon Associates tag on the way (ve-links, ve_site_settings amazon_associates); a book sold
+// elsewhere names its button in details.buy_label instead. ?book=<slug>.
 var BOOK_STATE = null;
 var BOOK_TYPE_WORDS = { cookbook: 'Cookbook', memoir: 'Biography & memoir', educational: 'Educational', health: 'Health & nutrition', lifestyle: 'Lifestyle', children: 'Children\'s' };
 function bookTitle(b, author){ var n = String(b.name || ''); return n.replace(/\s+by\s+[^,]+(,\s*(MD|PhD|DO|RD))?$/i, '') || n; }
@@ -1776,14 +1777,17 @@ function drawBooks(slug, push){
   } else {
     var syn = String(b.summary || b.description || '').split(/\n\s*\n/).filter(Boolean);
     var meta = [b.year, BOOK_TYPE_WORDS[b.book_type] || '', b.publisher].filter(Boolean).join(' · ');
+    // A book sold somewhere other than Amazon (an author's own shop) names its button in details.buy_label and carries no
+    // Associates note (Sean, 2026-10-30: Brooke Sellers' cookbook is sold on meatlessmuscle.com).
+    var amazon = !!b.buy && !b.buy_label;
     html = '<div class="section"><nav class="bk-crumb" aria-label="Breadcrumb"><button type="button" data-bk-list>Books</button><span aria-hidden="true">›</span><span aria-current="page">' + esc(bookTitle(b)) + '</span></nav>' +
       '<div class="bk-detail">' + bookCover(b, 'bk-cover bk-cover-lg') +
       '<div><h2 class="bk-title">' + esc(bookTitle(b)) + '</h2><div class="bk-by">by ' + esc(b.creator || a.name) + '</div>' +
       (meta ? '<div class="bk-meta">' + esc(meta) + '</div>' : '') +
       syn.map(function(p){ return '<p class="about-text">' + esc(p) + '</p>'; }).join('') +
-      '<div class="bk-acts">' + (b.buy ? '<a class="pp-act" href="' + esc(b.buy) + '" target="_blank" rel="noopener sponsored">Buy on Amazon</a>' : '') +
+      '<div class="bk-acts">' + (b.buy ? '<a class="pp-act" href="' + esc(b.buy) + '" target="_blank" rel="noopener' + (amazon ? ' sponsored' : '') + '">' + esc(b.buy_label || 'Buy on Amazon') + '</a>' : '') +
       '<a class="pp-act pp-act-2" href="/directory/' + encodeURIComponent(b.slug) + '">The book\'s page</a></div>' +
-      (b.buy ? '<div class="bk-note">As an Amazon Associate we earn from qualifying purchases.</div>' : '') + '</div></div></div>';
+      (amazon ? '<div class="bk-note">As an Amazon Associate we earn from qualifying purchases.</div>' : '') + '</div></div></div>';
   }
   S.panel.innerHTML = '<div style="padding:32px 40px 40px">' + html + (b ? '<div id="bk-talks-host"></div>' : '') + aboutAuthor(a) + '</div>';
   if(b) loadBookTalks(b.id, document.getElementById('bk-talks-host'));
