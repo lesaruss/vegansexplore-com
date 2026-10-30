@@ -366,6 +366,27 @@
   .dash-recent-hint{font-size:12px;color:var(--ve-text-50);margin:-6px 0 12px;}
   /* The inbox (Sean, 2026-10-30): every request that comes in, who it is assigned to, whether they opened it, and the 24-hour
      reply clock. In the Leaderboard's place beside For you, for super admins. */
+  /* The Depot beside For you (Sean, 2026-10-30): small tiles two across, scrolling inside at For you's height. */
+  .dash-depot-sort{font:inherit;font-size:13px;font-weight:700;color:var(--ve-text);min-height:36px;padding:6px 40px 6px 12px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px;-webkit-appearance:none;appearance:none;cursor:pointer;max-width:60%;}
+  .dash-depot-search{margin:0 0 10px;}
+  #dash-depot-list{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  .dash-dp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+  @media (max-width:420px){ .dash-dp-grid{grid-template-columns:minmax(0,1fr);} }
+  .dash-dp-h{grid-column:1/-1;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);margin:6px 0 0;}
+  .dash-dp-h:first-child{margin-top:0;}
+  .dash-dp-tile{display:flex;align-items:center;gap:10px;min-width:0;text-align:left;font:inherit;background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--ve-text);}
+  .dash-dp-tile:hover,.dash-dp-tile:focus-visible{border-color:var(--ve-green);box-shadow:0 2px 10px rgba(58,155,62,0.10);outline:none;}
+  .dash-dp-tile .ve-ficon{flex:0 0 auto;width:32px;height:32px;border-radius:8px;}
+  .dash-dp-tile .ve-ficon svg{width:17px;height:17px;}
+  .dash-dp-t{min-width:0;flex:1;}
+  .dash-dp-t b{display:block;font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dash-dp-t small{display:block;font-size:11px;color:var(--ve-text-50);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dash-dp-ext{flex:0 0 auto;font-size:12px;color:var(--ve-text-50);}
+  .dash-ib-filter{font:inherit;font-size:11px;font-weight:800;color:var(--ve-green-dark);min-height:28px;padding:3px 30px 3px 8px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center/10px 7px;-webkit-appearance:none;appearance:none;cursor:pointer;}
+  .dash-preview-late{background:#fdecea;color:#b42318;border-radius:20px;padding:1px 8px;font-size:10px;letter-spacing:.04em;}
+  .dash-preview-row .dash-ib-tag{flex:0 0 auto;}
+  .dash-preview-row.ib-click{cursor:pointer;border-radius:6px;}
+  .dash-preview-row.ib-click:hover,.dash-preview-row.ib-click:focus-visible{background:#f6faf6;outline:none;}
   .dash-inbox-sum{font-size:12px;color:var(--ve-text-50);font-weight:700;}
   .dash-inbox-sum b{color:#b42318;}
   .dash-inbox-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;}
@@ -1004,13 +1025,14 @@
       <div class="dash-lb-head"><p class="dash-section-title">Leaderboard</p></div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
-      <!-- Inbox (Sean, 2026-10-30): in the Leaderboard's place for super admins, who get the Leaderboard as a Recent activity box.
-           Every request that comes in, assigned or not, with whether the person it is assigned to opened it and the 24-hour reply
-           clock. renderInbox(), ve-dashboard inbox / inbox_open / inbox_set. -->
-      <div id="dash-inbox-block" hidden>
-      <div class="dash-lb-head"><p class="dash-section-title">Inbox</p><span class="dash-inbox-sum" id="dash-inbox-sum"></span></div>
-      <div class="dash-inbox-tabs" id="dash-inbox-tabs" role="tablist" aria-label="Filter the inbox"></div>
-      <div id="dash-inbox-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
+      <!-- The Depot (Sean, 2026-10-30): in the Leaderboard's place for super admins, who get the Leaderboard and the Inbox as Recent
+           activity boxes. Every Depot page, the Admin pages and the Demos (TABS in public/depot-tabs.js), most used first, or most
+           recently used, or by topic, with a search. renderDepotBlock(); use counted in the browser (VE_DEPOT_USE). -->
+      <div id="dash-depot-block" hidden>
+      <div class="dash-lb-head"><p class="dash-section-title">The Depot</p>
+        <select id="dash-depot-sort" class="dash-depot-sort" aria-label="Sort the Depot"></select></div>
+      <input type="search" id="dash-depot-search" class="dash-tools-search dash-depot-search" placeholder="Search the Depot" aria-label="Search the Depot" autocomplete="off">
+      <div id="dash-depot-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
       </div>
 
@@ -1025,8 +1047,8 @@
         <p class="dash-recent-hint">Drag a box by its handle to put it where you want it.</p>
         <div id="dash-recent-grid" class="dash-preview-grid"></div>
       </div>
-      <p class="dash-section-title">Your tools</p>
-      <div class="dash-tools-bar">
+      <p class="dash-section-title" id="dash-tools-title">Your tools</p>
+      <div class="dash-tools-bar" id="dash-tools-bar">
         <div class="dash-tools-find">
           <input type="search" id="dash-tools-search" class="dash-tools-search" placeholder="Search your tools (try Depot, Invites, Links)" aria-label="Search your tools" autocomplete="off">
           <button type="button" class="dash-tools-filter" id="dash-tools-filter" aria-expanded="false" aria-controls="dash-tools-cats" aria-label="Filter your tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16l-6 8v5l-4 2v-7L4 5z"/></svg><i id="dash-tools-fcount"></i></button>
@@ -2706,12 +2728,12 @@
   function renderLeaderboard(member, scope) {
     var list = document.getElementById('dash-leaderboard-list');
     if (!list) return;
-    // Super admins: the Inbox takes this place and the Leaderboard is a Recent activity box (Sean, 2026-10-30).
-    var lbBlock = document.getElementById('dash-leaderboard-block'), ibBlock = document.getElementById('dash-inbox-block');
+    // Super admins: the Depot takes this place, and the Leaderboard and the Inbox are Recent activity boxes (Sean, 2026-10-30).
+    var lbBlock = document.getElementById('dash-leaderboard-block'), dpBlock = document.getElementById('dash-depot-block');
     var admin = !!(member && member.is_superadmin);
     if (lbBlock) lbBlock.hidden = admin;
-    if (ibBlock) ibBlock.hidden = !admin;
-    if (admin) { renderInbox(member); return; }
+    if (dpBlock) dpBlock.hidden = !admin;
+    if (admin) { renderDepotBlock(); return; }
     var useScope = scope || dashLeaderboardScope;
     var cities;
     if (useScope === 'global') {
@@ -3401,6 +3423,10 @@
       renderGuidePrompt();
     } else if (e.data.type === 've-guide-progress') {
       renderGuidePrompt();
+    } else if (e.data.type === 've-open-tool' && /^\/dashboard\/[a-z-]+$/.test(String(e.data.href || ''))) {
+      // A Depot page's Go to picked an Admin page (public/depot-tabs.js): open it in the dashboard's frame.
+      if (window.activateDashTab) window.activateDashTab('profile');
+      openConsoleFrame(e.data.href, String(e.data.label || ''));
     } else if (e.data.type === 've-open-help') {
       openHelpBox();
     } else if (e.data.type === 've-frame-unsize') {
@@ -3600,11 +3626,14 @@
     var head = document.createElement('div'); head.className = 'dash-preview-head';
     var t = document.createElement('span'); t.className = 'dash-preview-title'; t.textContent = title;
     card.setAttribute('data-key', title);
-    var va = document.createElement('a'); va.className = 'dash-preview-viewall'; va.textContent = 'View all →'; va.href = viewAllHref;
-    // Open the full admin page inside the console frame (Sean, 2026-09-22),
-    // not as a full-page navigation.
-    va.addEventListener('click', function (e) { e.preventDefault(); openConsoleFrame(viewAllHref, title); });
-    head.appendChild(t); head.appendChild(va);
+    head.appendChild(t);
+    if (viewAllHref) {
+      var va = document.createElement('a'); va.className = 'dash-preview-viewall'; va.textContent = 'View all →'; va.href = viewAllHref;
+      // Open the full admin page inside the console frame (Sean, 2026-09-22),
+      // not as a full-page navigation.
+      va.addEventListener('click', function (e) { e.preventDefault(); openConsoleFrame(viewAllHref, title); });
+      head.appendChild(va);
+    }
     var body = document.createElement('div'); body.className = 'dash-preview-body';
     body.innerHTML = '<p class="dash-preview-empty">Loading…</p>';
     card.appendChild(head); card.appendChild(body);
@@ -3616,9 +3645,13 @@
   // move things around myself").
   function dashReorder(grid, storeKey) {
     var cards = function () { return Array.prototype.slice.call(grid.children); };
-    try { JSON.parse(localStorage.getItem(storeKey) || '[]').forEach(function (k) {
-      var c = cards().filter(function (x) { return x.getAttribute('data-key') === k; })[0]; if (c) grid.appendChild(c);
-    }); } catch (e) {}
+    // The saved order, then any box it does not know yet goes first, so a new box is seen.
+    try {
+      var saved = JSON.parse(localStorage.getItem(storeKey) || '[]');
+      var fresh = cards().filter(function (x) { return saved.indexOf(x.getAttribute('data-key')) < 0; });
+      saved.forEach(function (k) { var c = cards().filter(function (x) { return x.getAttribute('data-key') === k; })[0]; if (c) grid.appendChild(c); });
+      if (saved.length) fresh.reverse().forEach(function (c) { grid.insertBefore(c, grid.firstChild); });
+    } catch (e) {}
     function save() { try { localStorage.setItem(storeKey, JSON.stringify(cards().map(function (c) { return c.getAttribute('data-key'); }))); } catch (e) {} }
     cards().forEach(function (card) {
       var head = card.querySelector('.dash-preview-head'); if (!head || head.querySelector('.dash-grip')) return;
@@ -3656,23 +3689,32 @@
   // The inbox (Sean, 2026-10-30). Every request, newest first, filtered by Open, Late, Not opened, Done and All; a row opens the
   // request in a lightbox, which counts as opened when its assignee (the chapter's Community Manager, else the team) opens it.
   var IB_TABS = [['open', 'Open'], ['late', 'Late'], ['new', 'Not opened'], ['done', 'Done'], ['all', 'All']];
-  var ibTab = 'open', ibRows = [], ibMember = null;
+  var ibTab = 'open', ibRows = [], ibMember = null, ibBody = null, ibTitle = null, ibSel = null;
   function ibClock(r) {
     var h = function (ms) { var x = Math.abs(ms) / 3600000; return x < 1 ? Math.max(1, Math.round(x * 60)) + ' min' : (x < 48 ? Math.round(x) + ' h' : Math.round(x / 24) + ' days'); };
     if (r.status === 'replied') return { text: 'Replied in ' + (r.reply_hours < 1 ? Math.max(1, Math.round(r.reply_hours * 60)) + ' min' : r.reply_hours + ' h'), late: r.reply_hours > 24 };
     if (r.status === 'closed') return { text: 'Closed', late: false };
     var left = new Date(r.due_at).getTime() - Date.now();
-    return left < 0 ? { text: 'Late by ' + h(left), late: true } : { text: h(left) + ' left to reply', late: false };
+    return left < 0 ? { text: 'Late by ' + h(left), late: true } : { text: h(left) + ' left', late: false };
   }
   var IB_STATUS = { 'new': 'Not opened', opened: 'Opened', replied: 'Replied', closed: 'Closed' };
+  // The Inbox is a Recent activity box (Sean, 2026-10-30: "drop the inbox to the recent activity and have it formatted the same
+  // way"): the same rows as the others, a filter in its head in place of View all, open ones first with the late ones on top.
+  function inboxCard() {
+    return dpDataCard('Inbox', null, function (token, body, t) {
+      ibBody = body; ibTitle = t;
+      ibSel = document.createElement('select'); ibSel.className = 'dash-ib-filter'; ibSel.setAttribute('aria-label', 'Filter the inbox');
+      ibSel.addEventListener('change', function () { ibTab = ibSel.value; drawInbox(); });
+      t.parentNode.appendChild(ibSel);
+      renderInbox(ibMember);
+    });
+  }
   function renderInbox(member) {
-    ibMember = member;
-    var list = document.getElementById('dash-inbox-list'); if (!list) return;
+    if (member) ibMember = member;
+    if (!ibBody) return;
     dvCall({ action: 'inbox' }).then(function (d) {
-      if (!d || !d.ok) { list.innerHTML = '<p class="dash-preview-empty">Couldn\'t load the inbox.</p>'; return; }
+      if (!d || !d.ok) { ibBody.innerHTML = '<p class="dash-preview-empty">Couldn\'t load the inbox.</p>'; return; }
       ibRows = d.rows || [];
-      var c = d.counts || {}, sum = document.getElementById('dash-inbox-sum');
-      if (sum) sum.innerHTML = (c.open || 0) + ' open' + (c.late ? ', <b>' + c.late + ' late</b>' : '') + (c.avg_reply_hours != null ? ' · replies in ' + c.avg_reply_hours + ' h on average' : '');
       drawInbox();
     });
   }
@@ -3684,37 +3726,84 @@
     return true;
   }
   function drawInbox() {
-    var list = document.getElementById('dash-inbox-list'), tabs = document.getElementById('dash-inbox-tabs'); if (!list) return;
-    if (tabs) {
-      tabs.innerHTML = IB_TABS.map(function (x) {
-        var keep = ibTab; ibTab = x[0]; var n = ibRows.filter(ibFilter).length; ibTab = keep;
-        return '<button type="button" role="tab" data-ib="' + x[0] + '" aria-selected="' + (ibTab === x[0]) + '">' + x[1] + '<span>' + n + '</span></button>';
-      }).join('');
-      tabs.onclick = function (e) { var b = e.target.closest('[data-ib]'); if (!b) return; ibTab = b.getAttribute('data-ib'); drawInbox(); };
+    if (!ibBody) return;
+    var count = function (k) { var keep = ibTab; ibTab = k; var n = ibRows.filter(ibFilter).length; ibTab = keep; return n; };
+    if (ibSel) ibSel.innerHTML = IB_TABS.map(function (x) { return '<option value="' + x[0] + '"' + (ibTab === x[0] ? ' selected' : '') + '>' + x[1] + ' (' + count(x[0]) + ')</option>'; }).join('');
+    if (ibTitle) {
+      Array.prototype.forEach.call(ibTitle.querySelectorAll('span'), function (x) { x.remove(); });
+      dpCount(ibTitle, count('open'));
+      var late = count('late');
+      if (late) { var b = document.createElement('span'); b.className = 'dash-preview-late'; b.textContent = late + ' late'; ibTitle.appendChild(b); }
     }
-    var rows = ibRows.filter(ibFilter);
-    list.innerHTML = '';
-    if (!rows.length) { list.innerHTML = '<p class="dash-preview-empty">' + (ibTab === 'open' ? 'Nothing waiting on a reply.' : 'Nothing here.') + '</p>'; if (window.veSyncHome) window.veSyncHome(); return; }
+    var rank = function (r) { return r.status === 'replied' || r.status === 'closed' ? 2 : (r.late ? 0 : 1); };
+    var rows = ibRows.filter(ibFilter).slice().sort(function (a, b) { return rank(a) - rank(b) || new Date(b.at) - new Date(a.at); });
+    ibBody.innerHTML = '';
+    if (!rows.length) { ibBody.innerHTML = '<p class="dash-preview-empty">' + (ibTab === 'open' ? 'Nothing waiting on a reply.' : 'Nothing here.') + '</p>'; return; }
     rows.forEach(function (r) {
-      var row = document.createElement('div'); row.className = 'dash-ib-row'; row.tabIndex = 0; row.setAttribute('role', 'button');
+      var row = document.createElement('div'); row.className = 'dash-preview-row ib-click'; row.tabIndex = 0; row.setAttribute('role', 'button');
       var who = r.requester || {}, wn = who.name || who.email || 'Someone';
       var av = document.createElement(who.id ? 'button' : 'span'); av.className = 'dash-preview-av';
       if (who.id) { av.type = 'button'; av.setAttribute('aria-label', 'See who ' + wn + ' is'); av.addEventListener('click', function (e) { e.stopPropagation(); memberCard(who.id); }); }
       dpPic(av, { url: who.avatar_url, name: wn, color: who.color });
       var clock = ibClock(r), e = dvEsc;
-      var body = document.createElement('div'); body.className = 'dash-ib-body';
-      body.innerHTML = '<div class="dash-ib-kind">' + e(r.kind) + '</div><div class="dash-ib-title">' + e(r.title || wn) + '</div>' +
-        '<div class="dash-ib-meta">' + e([wn, r.chapter ? MC_COMMUNITY(r.chapter) : '', r.assigned ? 'For ' + r.assigned.name : 'For the team'].filter(Boolean).join(' · ')) + '</div>';
-      var side = document.createElement('div'); side.className = 'dash-ib-side';
-      side.innerHTML = '<span class="dash-ib-tag t-' + r.status + '">' + IB_STATUS[r.status] + '</span><span class="dash-ib-clock' + (clock.late ? ' late' : '') + '">' + e(clock.text) + '</span>';
-      row.appendChild(av); row.appendChild(body); row.appendChild(side);
+      var rb = document.createElement('div'); rb.className = 'dash-preview-rowbody';
+      rb.innerHTML = '<div class="dash-preview-name">' + e(r.title || wn) + '</div>' +
+        '<div class="dash-preview-meta">' + e([r.kind, wn, r.assigned ? 'For ' + r.assigned.name : ''].filter(Boolean).join(' · ')) + ' · <span style="' + (clock.late ? 'color:#b42318;font-weight:800' : '') + '">' + e(clock.text) + '</span></div>';
+      var tag = document.createElement('span'); tag.className = 'dash-ib-tag t-' + r.status; tag.textContent = IB_STATUS[r.status];
+      row.appendChild(av); row.appendChild(rb); row.appendChild(tag);
       row.addEventListener('click', function () { inboxItem(r); });
       row.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); inboxItem(r); } });
-      list.appendChild(row);
+      ibBody.appendChild(row);
     });
-    // Five show and the rest scroll, like the Leaderboard it replaced; on desktop it matches For you's height (syncHome).
-    var all = list.querySelectorAll('.dash-ib-row');
-    if (all.length > 5 && all[4].offsetHeight) list.dataset.five = (all[4].offsetTop + all[4].offsetHeight) + 'px';
+  }
+
+  // The Depot beside For you (Sean, 2026-10-30: "the most used depot tools that I use... with some sort of sortable thing... most
+  // recently used... by the different topics"). Every row of TABS (public/depot-tabs.js): Depot pages open under the Depot tab,
+  // Admin pages in the dashboard's frame, Demos in a new tab. Use is counted in this browser (localStorage ve_depot_use).
+  var dpSort = 'used';
+  function depotUse() { try { return JSON.parse(localStorage.getItem('ve_depot_use') || '{}'); } catch (e) { return {}; } }
+  function depotOpen(t) {
+    if (t.kind === 'demo') { if (window.VE_DEPOT_USE) VE_DEPOT_USE(t.href); window.open(t.href, '_blank', 'noopener'); renderDepotBlock(); return; }
+    if (t.kind === 'dash') { if (window.VE_DEPOT_USE) VE_DEPOT_USE(t.href); openConsoleFrame(t.href, t.label); return; }
+    openDepotPage(t.href);  // the page counts itself as it loads
+  }
+  function depotAgo(at) {
+    var m = Math.round((Date.now() - at) / 60000);
+    return m < 60 ? Math.max(1, m) + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago';
+  }
+  function renderDepotBlock() {
+    var list = document.getElementById('dash-depot-list'), sel = document.getElementById('dash-depot-sort'), q = document.getElementById('dash-depot-search');
+    var tabs = window.VE_DEPOT_TABS || []; if (!list) return;
+    var groups = []; tabs.forEach(function (t) { if (groups.indexOf(t.group) < 0) groups.push(t.group); });
+    if (sel && !sel.options.length) {
+      sel.innerHTML = '<option value="used">Most used</option><option value="recent">Recently used</option><option value="topic">By topic</option>' +
+        groups.map(function (g) { return '<option value="g:' + dvEsc(g) + '">Only ' + dvEsc(g) + '</option>'; }).join('');
+      try { var keep = localStorage.getItem('ve_dash_depot_sort'); if (keep && (/^(used|recent|topic)$/.test(keep) || groups.indexOf(keep.slice(2)) >= 0)) dpSort = keep; } catch (e) {}
+      sel.value = dpSort;
+      sel.addEventListener('change', function () { dpSort = sel.value; try { localStorage.setItem('ve_dash_depot_sort', dpSort); } catch (e) {} renderDepotBlock(); });
+      if (q) q.addEventListener('input', renderDepotBlock);
+    }
+    var use = depotUse(), words = (q ? q.value : '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+    var order = tabs.map(function (t, i) { return { t: t, i: i, u: use[t.href] || { n: 0, at: 0 } }; })
+      .filter(function (x) { var hay = (x.t.label + ' ' + x.t.group + ' ' + (x.t.kind === 'demo' ? 'demo sample' : '')).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
+    if (dpSort.slice(0, 2) === 'g:') order = order.filter(function (x) { return x.t.group === dpSort.slice(2); });
+    if (dpSort === 'used') order.sort(function (a, b) { return b.u.n - a.u.n || b.u.at - a.u.at || a.i - b.i; });
+    if (dpSort === 'recent') order.sort(function (a, b) { return b.u.at - a.u.at || a.i - b.i; });
+    var ICON = { Insights: 'chart', Admin: 'clipboard', Directory: 'store', Content: 'news', People: 'star', Site: 'box', Demos: 'eye' };
+    var tile = function (x) {
+      var sub = dpSort === 'recent' ? (x.u.at ? 'Opened ' + depotAgo(x.u.at) : x.t.group) : (x.u.n ? x.t.group + ' · used ' + x.u.n + (x.u.n === 1 ? ' time' : ' times') : x.t.group);
+      return '<button type="button" class="dash-dp-tile" data-dp="' + x.i + '"><span class="ve-ficon">' + FICON(ICON[x.t.group] || 'box') + '</span>' +
+        '<span class="dash-dp-t"><b>' + dvEsc(x.t.label) + '</b><small>' + dvEsc(sub) + '</small></span>' + (x.t.kind === 'demo' ? '<span class="dash-dp-ext" aria-label="Opens in a new tab">&#8599;</span>' : '') + '</button>';
+    };
+    var html = '';
+    if (!order.length) html = '<p class="dash-preview-empty" style="grid-column:1/-1">Nothing in the Depot matches that.</p>';
+    else if (dpSort === 'topic' && !words.length) groups.forEach(function (g) { var inG = order.filter(function (x) { return x.t.group === g; }); if (inG.length) html += '<p class="dash-dp-h">' + dvEsc(g) + '</p>' + inG.map(tile).join(''); });
+    else html = order.map(tile).join('');
+    list.innerHTML = '<div class="dash-dp-grid">' + html + '</div>';
+    list.onclick = function (e) { var b = e.target.closest('[data-dp]'); if (b) depotOpen(tabs[+b.getAttribute('data-dp')]); };
+    // Six rows show; on desktop it matches For you's height (syncHome).
+    var tiles = list.querySelectorAll('.dash-dp-tile');
+    if (tiles.length > 12 && tiles[11].offsetHeight) list.dataset.five = (tiles[11].offsetTop + tiles[11].offsetHeight) + 'px';
     if (window.veSyncHome) setTimeout(window.veSyncHome, 0);
   }
   function inboxItem(r) {
@@ -3769,7 +3858,7 @@
           msg.textContent = 'Saving...';
           dvCall({ action: 'inbox_set', source: r.source, source_id: r.id, set: set, note: wrap.querySelector('.dash-ib-note').value }).then(function (d) {
             if (!d || !d.ok) { msg.textContent = 'That did not save.'; return; }
-            close(); renderInbox(ibMember);
+            close(); renderInbox();
           });
         });
       });
@@ -3819,8 +3908,8 @@
     var lastCards = [], lastCap = 0;
     function syncHome(cards, capH) {
       if (cards) { lastCards = cards; lastCap = capH; } else { cards = lastCards; capH = lastCap; }
-      var ib = document.getElementById('dash-inbox-block');
-      var lb = ib && !ib.hidden ? document.getElementById('dash-inbox-list') : document.getElementById('dash-leaderboard-list'); if (!lb) return;
+      var side = document.getElementById('dash-depot-block');
+      var lb = side && !side.hidden ? document.getElementById('dash-depot-list') : document.getElementById('dash-leaderboard-list'); if (!lb) return;
       var wide = window.innerWidth > 900 && list.offsetHeight > 0 && lb.offsetHeight > 0;
       if (!wide) {
         if (list.style.minHeight) list.style.minHeight = '';
@@ -4018,6 +4107,8 @@
     if (member.is_superadmin && recent) {
       // Recent activity (Sean, 2026-10-30): the latest 100 of each, scrolling inside boxes of the same size.
       recent.innerHTML = '';
+      ibMember = member;
+      recent.appendChild(inboxCard());
       recent.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
         dpFetch('/functions/v1/ve-members-admin?action=list_all_members', { token: token }).then(function (d) {
           // Real members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03).
@@ -4084,25 +4175,14 @@
       }));
 
       dashReorder(recent, 've_dash_recent_order');
-
-      var tools = [
-        { cat: 'admin', icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', keywords: 'admin', href: '/admin/depot', fn: function () { if (window.activateDashTab) window.activateDashTab('depot'); else openConsoleFrame('/admin/depot', 'The Depot'); } },
-        { cat: 'admin', icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', keywords: 'pulse moderate', fn: function () { openConsoleFrame('/pulse', 'Community Board'); } },
-        { cat: 'admin', icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } },
-        { cat: 'admin', icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', href: '/admin/depot/links', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } },
-        { cat: 'admin', icon: 'chart', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }
-      ];
-      // Everything that was on the Tools tab is here too (Sean, 2026-10-26).
-      memberTools(member, true).forEach(function (c) { if (c.title !== 'Community Board' && c.title !== 'Secret Shopper') tools.push(c); });
-      // Every Depot page, so typing its name gets there (public/depot-tabs.js TABS).
-      var had = tools.map(function (x) { return x.href; }).filter(Boolean);
-      (window.VE_DEPOT_TABS || []).forEach(function (d) {
-        if (had.indexOf(d.href) >= 0) return;
-        tools.push({ cat: 'depot', catLabel: 'Depot · ' + d.group, icon: DEPOT_ICON[d.group] || 'box', title: d.label, desc: 'Depot > ' + d.group + ' > ' + d.label, keywords: 'depot admin', fn: function () { openDepotPage(d.href); } });
-      });
-      renderToolGrid(grid, tools);
+      // No Your tools for a super admin (Sean, 2026-10-30: "all of the items that are listed below in the your tools really should just
+      // be part of the depot"): the Depot box beside For you holds every Depot page, the Admin pages and the Demos. Secret Shopper, the
+      // Community Board and Guides left (the Daily Pulse and Guides are in the menu).
+      ['dash-tools-title', 'dash-tools-bar', 'dash-tools-cats', 'dash-tools-none'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = true; });
+      host.innerHTML = '';
       return;
     }
+    ['dash-tools-title', 'dash-tools-bar'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = false; });
 
     // Everyone else: their tools, the version's first (renderVersion sets DASH_VERSION and draws this again).
     var access = memberTools(member, false);
