@@ -170,9 +170,11 @@
        not to, they can navigate through themselves... at the bottom, hidden, the guide will always be there"), and pictures so the page
        is not plain once the Guide is folded away (/public/ve-guide-min.js). */
     .dg-fold{display:none;align-items:center;justify-content:center;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink75);cursor:pointer;}
-    .am-choose{display:flex;gap:16px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:16px 18px;margin:0 0 18px;flex-wrap:wrap;}
-    .am-choose i{flex:0 0 64px;height:64px;border-radius:12px;background:#fff center 18%/cover no-repeat;}
-    .am-choose div{flex:1 1 260px;min-width:0;}
+    .am-choose{display:flex;gap:14px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:10px 14px;margin:0 0 16px;flex-wrap:wrap;}
+    .am-choose .dg-btns{flex:0 0 auto;gap:8px;}
+    .am-choose .dg-btn{min-height:38px;padding:9px 14px;}
+    .am-choose i{flex:0 0 44px;height:44px;border-radius:12px;background:#fff center 18%/cover no-repeat;}
+    .am-choose div{flex:1 1 220px;min-width:0;}
     .am-choose b{display:block;font-size:15px;font-weight:900;}
     .am-choose p{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink75);}
     .am-choose .dg-btns{margin:0;}
@@ -205,6 +207,30 @@
     .am-ask b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
     .am-ask p{margin:0 0 10px;font-size:13.5px;line-height:1.5;color:var(--ink75);}
     @media (max-width:700px){.am-feat{grid-template-columns:minmax(0,1fr);}}
+    /* The Overview, minimal (Sean, 2026-10-30: "keep it to three... with a toggle where it just advances to the next one in that space...
+       the video playing to the right with rounded corners... it's just an image with the audio playing in the background"). */
+    .dg-guide.am-vid-ui{cursor:pointer;}
+    .am-ovrow.solo{grid-template-columns:minmax(0,1fr);}
+    .am-ovrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:18px;align-items:stretch;margin:0 0 6px;}
+    .am-car{display:flex;flex-direction:column;gap:10px;min-width:0;}
+    .am-car .am-ops{grid-template-columns:repeat(var(--per,3),minmax(0,1fr));margin:0;flex:1;}
+    .am-op.is-on{border-color:var(--g2);box-shadow:0 0 0 2px var(--g2);}
+    .am-car-nav{display:flex;align-items:center;gap:10px;}
+    .am-car-nav button.am-arrow{font:inherit;width:40px;height:40px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .am-car-nav button.am-arrow:disabled{opacity:.35;cursor:default;}
+    .am-dots{display:flex;gap:6px;}
+    .am-dots button{width:10px;height:10px;border-radius:50%;border:0;padding:0;background:var(--gm);cursor:pointer;}
+    .am-dots button[aria-current="true"]{background:var(--g);}
+    .am-video{position:relative;display:block;width:100%;min-height:300px;border:0;padding:0;border-radius:16px;overflow:hidden;cursor:pointer;background:#e8f5e9 center 18%/cover no-repeat;font-family:inherit;text-align:left;}
+    .am-vid-ui .am-play{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;background:rgba(15,40,20,.82);display:flex;align-items:center;justify-content:center;transition:transform .15s;}
+    .am-vid-ui:hover .am-play{transform:translate(-50%,-50%) scale(1.06);}
+    .am-vid-ui .am-vbar{position:absolute;left:0;right:0;bottom:0;padding:26px 14px 12px;background:linear-gradient(to top,rgba(0,0,0,.7),rgba(0,0,0,0));color:#fff;}
+    .am-vid-ui .am-vbar b{display:block;font-size:13px;font-weight:900;}
+    .am-vid-ui .am-vbar span{display:block;font-size:11.5px;opacity:.85;margin-top:1px;}
+    .am-vid-ui .am-prog{height:4px;border-radius:2px;background:rgba(255,255,255,.3);margin-top:8px;overflow:hidden;}
+    .am-vid-ui .am-prog i{display:block;height:100%;width:0;background:#4ade80;}
+    .am-vid-ui:focus-visible{outline:3px solid #F69820;outline-offset:3px;}
+    @media (max-width:900px){.am-ovrow{grid-template-columns:minmax(0,1fr);}.am-video{min-height:240px;order:-1;}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -426,27 +452,86 @@
   }
   function messageText(m) { return m.text + '\n\n' + m.link; }
 
+  // The Overview's five, three at a time with a toggle, and Liz's walkthrough (her voice over her picture, el-media tts, checked word for
+  // word). As she reaches each one (OV_AUDIO.cues, seconds from the recording's alignment), that card lights and comes into view.
+  var OPS = [
+    ['link', '#/link', 'Share it with anyone, anywhere', 'Your link works in every city. Friends far away, people you meet traveling, your audience online.'],
+    ['intro', '#/stories', 'Introduce us', 'Business owners, podcasters, organizers: the people doing the work, wherever they are.'],
+    ['stories', '#/stories', 'Tell the stories', 'Be on our podcast, bring us someone with a story, or raise your hand to host.'],
+    ['voice', '#/stories', 'Be the voice of your community', 'Tell us what is happening where you are, and it can become the Daily Pulse.'],
+    ['paid', '#/paid', 'Paid work', 'Campaigns, events and press that need someone like you, with what they pay.']
+  ];
+  var OV_AUDIO = { src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/ambassador-guide/overview-v1.mp3', dur: 51,
+    cues: [8.3, 19.6, 26.7, 34.6, 39.7, 47.2] };
+  var car = { start: 0, per: 3, on: -1 }, ovAudio = null;
+  function vidUi() {
+    return '<span class="am-play" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff" id="amVidIc"><path d="M8 5v14l11-7z"/></svg></span>' +
+      '<span class="am-vbar"><b>Liz walks you through it</b><span id="amVidT">Listen &middot; ' + clock(OV_AUDIO.dur) + '</span><span class="am-prog"><i id="amVidP"></i></span></span>';
+  }
+  // With the Guide showing, her own picture on the right is the player (one Liz, not two); folded away, the player sits beside the cards.
+  function railPlayer(on) {
+    if (on) { guideEl.innerHTML = vidUi(); guideEl.classList.add('am-vid-ui'); guideEl.id = 'dgGuide'; guideEl.setAttribute('role', 'button'); guideEl.setAttribute('tabindex', '0'); guideEl.dataset.ovplay = '1'; }
+    else if (guideEl.dataset.ovplay) { guideEl.innerHTML = ''; guideEl.classList.remove('am-vid-ui'); guideEl.setAttribute('role', 'img'); guideEl.removeAttribute('tabindex'); delete guideEl.dataset.ovplay; }
+  }
+  function clock(t) { t = Math.max(0, Math.round(t || 0)); return Math.floor(t / 60) + ':' + ('0' + t % 60).slice(-2); }
+  function drawOps() {
+    var box = $('amOps'); if (!box) return;
+    var w = box.offsetWidth || 700;
+    car.per = w >= 640 ? 3 : w >= 400 ? 2 : 1;
+    car.start = Math.max(0, Math.min(car.start, OPS.length - car.per));
+    box.style.setProperty('--per', car.per);
+    box.innerHTML = OPS.slice(car.start, car.start + car.per).map(function (o, i) {
+      return '<a class="am-op' + (car.start + i === car.on ? ' is-on' : '') + '" href="' + o[1] + '"><i style="' + pic(o[0]) + '" aria-hidden="true"></i><div><b>' + esc(o[2]) + '</b><span>' + esc(o[3]) + '</span></div></a>';
+    }).join('');
+    var pages = OPS.length - car.per + 1;
+    $('amDots').innerHTML = Array.apply(null, Array(pages)).map(function (_, i) { return '<button type="button" data-dot="' + i + '" aria-label="Show from ' + (i + 1) + '"' + (i === car.start ? ' aria-current="true"' : '') + '></button>'; }).join('');
+    var bs = document.querySelectorAll('[data-car]');
+    if (bs.length) { bs[0].disabled = car.start === 0; bs[1].disabled = car.start >= pages - 1; }
+  }
+  function ovSync() {
+    if (!ovAudio) return;
+    var t = ovAudio.currentTime, on = -1;
+    OV_AUDIO.cues.forEach(function (c, i) { if (t >= c && i < OPS.length) on = i; });
+    if (t >= OV_AUDIO.cues[OPS.length]) on = -1;
+    var p = $('amVidP'), tt = $('amVidT');
+    if (p) p.style.width = (100 * t / (ovAudio.duration || OV_AUDIO.dur)) + '%';
+    if (tt) tt.textContent = (ovAudio.paused ? 'Paused' : 'Playing') + ' \u00b7 ' + clock(t) + ' / ' + clock(ovAudio.duration || OV_AUDIO.dur);
+    if (on !== car.on) {
+      car.on = on;
+      if (on >= 0 && (on < car.start || on >= car.start + car.per)) car.start = on;
+      drawOps();
+    }
+  }
+  function ovToggle() {
+    if (!ovAudio) {
+      ovAudio = new Audio(OV_AUDIO.src);
+      ovAudio.addEventListener('timeupdate', ovSync);
+      ovAudio.addEventListener('ended', function () { car.on = -1; drawOps(); ovIcon(); var tt = $('amVidT'); if (tt) tt.textContent = 'Listen again \u00b7 ' + clock(OV_AUDIO.dur); });
+      ovAudio.addEventListener('play', ovIcon); ovAudio.addEventListener('pause', ovIcon);
+    }
+    if (ovAudio.paused) ovAudio.play().catch(function () {}); else ovAudio.pause();
+  }
+  function ovIcon() {
+    var ic = $('amVidIc'); if (!ic || !ovAudio) return;
+    ic.innerHTML = ovAudio.paused ? '<path d="M8 5v14l11-7z"/>' : '<path d="M7 5h4v14H7zM13 5h4v14h-4z"/>';
+    var v = $('amVid') || guideEl; v.setAttribute('aria-label', (ovAudio.paused ? 'Play' : 'Pause') + ': Liz walks you through it');
+    ovSync();
+  }
+
   var VIEWS = {
     overview: function () {
-      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
-      }).join('');
       var mode = guideMode(), lizPic = art('liz');
       var choose = !mode
         ? '<div class="am-choose"><i style="' + (lizPic ? "background-image:url('" + lizPic + "')" : '') + '" aria-hidden="true"></i><div><b>Want Liz to walk you through it?</b>' +
-          '<p>She goes tab by tab with you. Or look around on your own; she waits in the corner whenever you want her.</p></div>' +
+          '<p>Tab by tab, or look around yourself while she waits in the corner.</p></div>' +
           '<div class="dg-btns"><button type="button" class="dg-btn" data-mode="walk">Walk me through it</button><button type="button" class="dg-btn dg-ghost" data-mode="self">I\'ll look around myself</button></div></div>'
         : '<p class="am-chose">' + (mode === 'self' ? 'You are looking around on your own. <button type="button" data-mode="walk">Have Liz walk you through it</button>' : 'Liz is walking you through it. <button type="button" data-mode="self">Look around on your own</button>') + '</p>';
-      var ops = [
-        ['link', '#/link', 'Share it with anyone, anywhere', 'Your link works in every city. Friends far away, people you meet traveling, your audience online.'],
-        ['intro', '#/stories', 'Introduce us', 'Business owners, podcasters, organizers: the people doing the work, wherever they are.'],
-        ['stories', '#/stories', 'Tell the stories', 'Be on our podcast, bring us someone with a story, or raise your hand to host.'],
-        ['voice', '#/stories', 'Be the voice of your community', 'Tell us what is happening where you are, and it can become the Daily Pulse.'],
-        ['paid', '#/paid', 'Paid work', 'Campaigns, events and press that need someone like you, with what they pay.']
-      ].map(function (o) { return '<a class="am-op" href="' + o[1] + '"><i style="' + pic(o[0]) + '" aria-hidden="true"></i><div><b>' + esc(o[2]) + '</b><span>' + esc(o[3]) + '</span></div></a>'; }).join('');
-      return head('Welcome, ' + first(), 'You were hand selected', 'We invited you, personally, because of what you have already given the movement: ' + prof().reason + '. As one of our first Ambassadors you represent Vegans Explore wherever you go. You are not bound to one city: you help us reach as many places as possible, and bring us the people and stories worth telling. Your Founding Membership is <b>on us</b>.') +
-        choose + '<h3 class="am-sec">The opportunity</h3><div class="am-ops">' + ops + '</div>' +
-        '<h3 class="am-sec">Everything in this Guide</h3><div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start with why it matters');
+      return head('Welcome, ' + first(), 'You were hand selected', 'For what you have already given the movement: ' + prof().reason + '. As one of our first Ambassadors you represent Vegans Explore wherever you go. Your Founding Membership is <b>on us</b>.') +
+        choose +
+        '<div class="am-ovrow' + (mode === 'self' ? '' : ' solo') + '"><div class="am-car"><div class="am-ops" id="amOps"></div>' +
+        '<div class="am-car-nav"><button type="button" class="am-arrow" data-car="-1" aria-label="Back">&#8249;</button><div class="am-dots" id="amDots"></div><button type="button" class="am-arrow" data-car="1" aria-label="More">&#8250;</button></div></div>' +
+        (mode === 'self' ? '<button type="button" class="am-video am-vid-ui" id="amVid" style="' + (lizPic ? "background-image:url('" + lizPic + "')" : '') + '" aria-label="Play: Liz walks you through it">' + vidUi() + '</button>' : '') + '</div>' +
+        nextBtn('why', 'Start with why it matters');
     },
     why: function () {
       // The profile decides which reasons come first (Sean, 2026-10-28); the default is the balance Sean set on 2026-10-27, for the
@@ -653,7 +738,10 @@
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
+    if (cur !== 'overview' && ovAudio && !ovAudio.paused) ovAudio.pause();
     main.innerHTML = VIEWS[cur]();
+    railPlayer(cur === 'overview' && guideMode() !== 'self');
+    if (cur === 'overview') { drawOps(); ovIcon(); setTimeout(drawOps, 80); }
     main.scrollTop = 0;
     menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
     sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
@@ -676,6 +764,9 @@
     if ((b = e.target.closest('[data-copy-link]'))) return copy(link(), b);
     if ((b = e.target.closest('[data-copy]'))) return copy(messageText(messages()[+b.dataset.copy]), b);
     if ((b = e.target.closest('[data-mode]'))) { setMode(b.dataset.mode); draw(); return; }
+    if (e.target.closest('#amVid') || e.target.closest('[data-ovplay]')) return ovToggle();
+    if ((b = e.target.closest('[data-car]'))) { car.start += +b.dataset.car; drawOps(); return; }
+    if ((b = e.target.closest('[data-dot]'))) { car.start = +b.dataset.dot; drawOps(); return; }
     if ((b = e.target.closest('[data-kind]'))) { storyKind = b.dataset.kind; draw(); var f = $('stName') || $('stAbout'); if (f) f.focus(); return; }
     if (e.target.closest('#stSend')) return sendStory();
     if (e.target.closest('#askSend')) return sendAsk();
@@ -692,6 +783,8 @@
     }
   });
   window.addEventListener('hashchange', function () { if (M) draw(); });
+  window.addEventListener('resize', function () { if (cur === 'overview') drawOps(); });
+  guideEl.addEventListener('keydown', function (e) { if (guideEl.dataset.ovplay && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); ovToggle(); } });
 
   function gate(html) { $('amGate').innerHTML = html; $('amGate').hidden = false; $('dgApp').hidden = true; $('amTop').hidden = true; }
   function start() {

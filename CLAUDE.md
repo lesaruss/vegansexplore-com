@@ -1073,7 +1073,13 @@ people with a story), What to share, **Anywhere** (`#/city`, was Your city: not 
 questions (plus Do I have to stick to one city?, and **Not on the list? Ask us**: `ve-auth` `guide_ask_person`, `agent_slug`
 `ambassador-guide`, emailed and kept on `guide_kb_gaps`), Your progress. The Overview asks **Want Liz to walk you through it?** (Walk me
 through it / I'll look around myself, `localStorage` `am_guide_mode`); looking around folds the Guide into the corner (`/public/ve-guide-min.js`,
-`#dgApp`, `#dgRail` `data-guide="liz"`, `#dgFold`), and Hide me / Show me change the choice too. **Depot > Ambassadors > Stories**
+`#dgApp`, `#dgRail` `data-guide="liz"`, `#dgFold`), and Hide me / Show me change the choice too. **The Overview is minimal** (Sean, 2026-10-30: "keep it to three... with a toggle where it just
+advances to the next one in that space... the video playing to the right with rounded corners... it's just an image with the audio
+playing in the background"): no tile list; the five opportunities three at a time (two, then one, as the column narrows) with arrows
+and dots (`OPS`, `drawOps`), and **Liz walks you through it**, her voice over her picture (`OV_AUDIO`: el-media tts in her voice,
+`vegan-media/media/liz/ambassador-guide/overview-v1.mp3`, 51 s, checked word for word with `stt`; draft lines, Sean's to change). As she
+reaches each one (`OV_AUDIO.cues`, from the recording's alignment) that card lights and slides into view. With the Guide showing, her
+picture in the rail is the player (one Liz, not two); folded away, the player sits beside the cards. It pauses when they leave the tab. **Depot > Ambassadors > Stories**
 (`#stories/<status>`: New, Contacted, Done; `ve-ambassador` `admin_list` `stories`, `story_status`).
 
 ## Member profiles and partner windows (LOCKED by Sean 2026-10-28, playbook `ve-member-profiles-partner-windows`)
