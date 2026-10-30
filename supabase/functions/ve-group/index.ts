@@ -130,7 +130,7 @@ async function sendBatch(items: { to: string; subject: string; html: string }[])
   }
   return ids;
 }
-// The Group Partner application's questions, in order, as Sean reads them (the Guide's FORM in groups/welcome.html asks them).
+// The Group Partner application's questions, in order, as the team reads them (the Guide's FORM in groups/welcome.html asks them).
 const APPLY_FIELDS: [string, string][] = [
   ['group_name', 'Group'], ['chapter', 'Chapter'], ['city', 'City'], ['events_link', 'Where they post events'], ['other_links', 'Other links'],
   ['started', 'Started'], ['entity', 'Organization'], ['size', 'Members or followers'], ['turnout', 'Usually at an event'], ['frequency', 'How often'],
@@ -139,6 +139,11 @@ const APPLY_FIELDS: [string, string][] = [
   ['instagram', 'Instagram'], ['heard', 'How they heard of us'], ['host_here', 'Would host events here'], ['share_link', 'Would share the link'],
   ['worth_it', 'What would make it worth it'], ['revenue_use', 'What steady money would let them do'], ['anything_else', 'Anything else'], ['confirm', 'Confirmed'],
 ];
+const MEET_FIELDS: [string, string][] = [['name', 'Name'], ['email', 'Email'], ['group_name', 'Group'], ['chapter', 'Where it meets'], ['phone', 'Phone'],
+  ['times', 'Good days and times'], ['topic', 'What they would like to talk about']];
+const CHAPTER_SLUG: Record<string, string> = { 'South Florida': 'south-florida', 'Central Florida': 'central-florida', 'North Florida': 'north-florida',
+  'Atlanta': 'atlanta', 'Washington, D.C.': 'washington-dc', 'Maryland': 'maryland', 'Virginia': 'virginia', 'Delaware': 'delaware', 'West Virginia': 'west-virginia',
+  'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'London': 'london' };
 const APPLY_REQUIRED = ['group_name', 'chapter', 'city', 'events_link', 'size', 'turnout', 'frequency', 'kinds', 'paid', 'platforms', 'team', 'name', 'email', 'role',
   'host_here', 'share_link', 'worth_it'];
 const FOOT = `<p style="font-size:12px;color:#777;margin:18px 0 0">Vegans Explore, a LESARUSS brand. 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p>`;
@@ -412,11 +417,11 @@ Deno.serve(async (req) => {
     if (a.confirm !== true) return json({ error: 'confirm', message: 'Tick the box to confirm your answers.' }, 400);
     const { count } = await db.from('ve_group_applications').select('id', { count: 'exact', head: true }).ilike('organizer_email', email)
       .gte('created_at', new Date(Date.now() - 86400000).toISOString());
-    if ((count || 0) >= 3) return json({ error: 'too_many', message: 'We already have your application. Sean will write back.' }, 429);
+    if ((count || 0) >= 3) return json({ error: 'too_many', message: 'We already have your application. Our team will write back.' }, 429);
     const code = clean(body.invite_code, 64).replace(/[^A-Za-z0-9_-]/g, '');
     let listingId: string | null = null;
     if (code) { const { data: inv } = await db.from('universe_invites').select('listing_id').eq('code', code).eq('points_to', 'group').maybeSingle(); listingId = inv?.listing_id || null; }
-    const { data: row, error: ae } = await db.from('ve_group_applications').insert({ group_name: out.group_name.slice(0, 160), chapter: out.chapter || null, city: out.city || null,
+    const { data: row, error: ae } = await db.from('ve_group_applications').insert({ kind: 'application', group_name: out.group_name.slice(0, 160), chapter: out.chapter || null, city: out.city || null,
       organizer_name: out.name.slice(0, 120), organizer_email: email, answers: out, invite_code: code || null, listing_id: listingId, member_id: member?.id || null }).select('id').single();
     if (ae || !row) { console.error('apply', ae); return json({ error: 'save_failed', message: 'That did not save. Try again in a minute.' }, 500); }
     const rows = APPLY_FIELDS.filter(([k]) => out[k] && k !== 'confirm').map(([k, label]) =>
@@ -427,9 +432,40 @@ Deno.serve(async (req) => {
       `<p><a href="${SITE}/admin/depot/group-partners#app/${row.id}">Read it in the Depot</a></p></div>`, email);
     await sendOne(email, `We have your application: ${out.group_name}`,
       `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px"><p>Hi ${esc(firstName(out.name))},</p>` +
-      `<p>Thank you for telling us about <b>${esc(out.group_name)}</b>. Sean reads every application himself and will write back, usually within a few days.</p>` +
+      `<p>Thank you for telling us about <b>${esc(out.group_name)}</b>. Our team reads every application and will write back, usually within a few days.</p>` +
       `<p>In the meantime, you can look around the sample club again: <a href="${SITE}/groups/sample" style="color:#1f5f22;font-weight:700">Sprout Social Society</a>.</p>${FOOT}</div>`);
     return json({ ok: true, id: row.id });
+  }
+
+  // ---- Request a meeting (the Guide's #/meet; Sean, 2026-10-30: "they can request a meeting... community managers who can be that person
+  // they speak to... don't put my name in there. Make it general"). Saved beside the applications (kind 'meeting'), sent to the chapter's
+  // Community Manager when it has one and always to the team inbox; the person only ever hears "our team".
+  if (action === 'meet') {
+    const a = (body.answers && typeof body.answers === 'object') ? body.answers : {};
+    const out: Record<string, string> = {};
+    for (const [k] of MEET_FIELDS) { const t = clean(a[k], 1200); if (t) out[k] = t; }
+    const email = (out.email || '').toLowerCase();
+    if (!out.name || !out.group_name || !out.chapter) return json({ error: 'missing', message: 'Your name, your group and where it meets, please.' }, 400);
+    if (!isEmail(email)) return json({ error: 'bad_email', message: 'That email does not look right.' }, 400);
+    const { count } = await db.from('ve_group_applications').select('id', { count: 'exact', head: true }).eq('kind', 'meeting').ilike('organizer_email', email)
+      .gte('created_at', new Date(Date.now() - 86400000).toISOString());
+    if ((count || 0) >= 3) return json({ error: 'too_many', message: 'We already have your request. Someone will reach out.' }, 429);
+    const code = clean(body.invite_code, 64).replace(/[^A-Za-z0-9_-]/g, '');
+    const { data: row, error: me } = await db.from('ve_group_applications').insert({ kind: 'meeting', group_name: out.group_name.slice(0, 160), chapter: out.chapter,
+      city: null, organizer_name: out.name.slice(0, 120), organizer_email: email, answers: out, invite_code: code || null, member_id: member?.id || null }).select('id').single();
+    if (me || !row) { console.error('meet', me); return json({ error: 'save_failed', message: 'That did not save. Try again in a minute.' }, 500); }
+    const slug = CHAPTER_SLUG[out.chapter] || null;
+    const { data: cms } = slug ? await db.from('members').select('name, email').eq('ve_role', 'community_manager').eq('membership_status', 'active').eq('home_community', slug) : { data: [] };
+    const rows = MEET_FIELDS.filter(([k]) => out[k]).map(([k, label]) =>
+      `<tr><td style="padding:6px 12px 6px 0;color:#555;vertical-align:top;white-space:nowrap">${esc(label)}</td><td style="padding:6px 0">${esc(out[k]).replace(/\n/g, '<br>')}</td></tr>`).join('');
+    const html = (who: string) => `<div style="font-family:sans-serif;font-size:14px;line-height:1.5;color:#1a1a1a;max-width:640px"><p>${who}<b>${esc(out.group_name)}</b> would like to talk about being a Group Partner before applying. Reply to this email to set a time with ${esc(firstName(out.name))}.</p>` +
+      `<table style="border-collapse:collapse;font-size:14px">${rows}</table><p><a href="${SITE}/admin/depot/group-partners#app/${row.id}">See it in the Depot</a></p></div>`;
+    for (const cm of (cms || [])) if (cm.email && isEmail(cm.email)) await sendOne(cm.email, `A group would like to talk: ${out.group_name}`, html(`Hi ${esc(firstName(cm.name))}, a group in your chapter: `), email);
+    await sendOne(SEAN_EMAIL, `[Groups] Meeting request: ${out.group_name} (${out.chapter})${(cms || []).length ? '' : ', no Community Manager there yet'}`, html(''), email);
+    await sendOne(email, 'We have your request', `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px"><p>Hi ${esc(firstName(out.name))},</p>` +
+      `<p>Thank you for reaching out about <b>${esc(out.group_name)}</b>. Someone from our team will email you to set a time that suits you.</p>` +
+      `<p>In the meantime, you can look around our sample club: <a href="${SITE}/groups/sample" style="color:#1f5f22;font-weight:700">Sprout Social Society</a>.</p>${FOOT}</div>`);
+    return json({ ok: true, id: row.id, routed: (cms || []).length ? 'community_manager' : 'team' });
   }
 
   // ---- Tickets and guest passes, on the event (no listing_id).

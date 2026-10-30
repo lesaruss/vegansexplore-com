@@ -450,11 +450,11 @@ Deno.serve(async (req) => {
 
     // ---- Applications from the Group Partner Guide's Apply tab (ve-group 'apply'). Reading one never invites anyone.
     if (action === 'applications') {
-      const { data, error } = await db.from('ve_group_applications').select('id, created_at, group_name, chapter, city, organizer_name, organizer_email, status, answers, listing_id')
+      const { data, error } = await db.from('ve_group_applications').select('id, created_at, kind, group_name, chapter, city, organizer_name, organizer_email, status, answers, listing_id')
         .order('created_at', { ascending: false }).limit(500);
       if (error) return json({ error: 'load_failed', message: error.message }, 500);
-      return json({ ok: true, applications: (data || []).map((r: any) => ({ id: r.id, at: r.created_at, group: r.group_name, chapter: r.chapter, city: r.city,
-        name: r.organizer_name, email: r.organizer_email, status: r.status, turnout: r.answers?.turnout || null, size: r.answers?.size || null, listing_id: r.listing_id })) });
+      return json({ ok: true, applications: (data || []).map((r: any) => ({ id: r.id, kind: r.kind || 'application', at: r.created_at, group: r.group_name, chapter: r.chapter, city: r.city,
+        name: r.organizer_name, email: r.organizer_email, status: r.status, turnout: r.answers?.turnout || null, size: r.answers?.size || null, times: r.answers?.times || null, listing_id: r.listing_id })) });
     }
     if (action === 'application_get') {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);

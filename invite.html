@@ -250,7 +250,7 @@
           }
           if (invite.points_to === 'group') {
             $('done-title').textContent = 'Welcome, Group Partner.';
-            $('done-lede').textContent = 'Thank you for saying yes for ' + ((invite.org && invite.org.name) || 'your group') + '. Your Founding Membership is active, and Sean will be in touch to set up your group’s home on Vegans Explore.';
+            $('done-lede').textContent = 'Thank you for saying yes for ' + ((invite.org && invite.org.name) || 'your group') + '. Your Founding Membership is active, and our team will be in touch to set up your group’s home on Vegans Explore.';
             $('done-next').textContent = 'Open the Group Partner Guide';
           }
           if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Become a Founding Member any time from your dashboard.';
