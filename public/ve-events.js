@@ -25,6 +25,9 @@
    Usage (after /public/ve-hubs.js and /public/ve-city-banner.js; /public/ve-auth.js for submitting):
      var cal = VEEvents.mount(el, { key: 'events', city: 'south-florida', urlState: true });
      cal.setCity('atlanta');   // the city banner's pick ('' is every city)
+     // filterMenu: true (Sean, 2026-10-30): the page's banner lists the kinds (onState({kinds, cat, catLabel, location, chapter}),
+     // cal.setCat(kind)), Upcoming / Past are tabs, and Filters holds Location (Continent, Country, Chapter) and Sort;
+     // location: {continent, country, chapter} to start, onLocation(loc, hub) on every pick, cal.location().
    Helpers the Depot shares: VEEvents.zonedToISO, VEEvents.isoToLocal, VEEvents.uploadFlyer, VEEvents.readFlyer,
    VEEvents.shrink, VEEvents.TZS, VEEvents.CATS, VEEvents.COUNTRIES, VEEvents.continentOf, VEEvents.api.
 */
@@ -158,6 +161,33 @@
     '.vev-count{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);margin:0 0 12px;}',
     '.vev-group{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin:18px 0 10px;}',
     '.vev-group:first-child{margin-top:0;}',
+    // The menu layout (opts.filterMenu, Sean 2026-10-30: the Directory's navigation on Events): Upcoming / Past as the tab row,
+    // then the search, the location tag and Filters; Location (Continent, Country, Chapter) and Sort in its dropdown.
+    '.vev-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;margin:0 0 16px;}',
+    '.vev-tabs button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:13px 18px;border:0;border-bottom:2px solid transparent;margin-bottom:-2px;background:transparent;color:#666;cursor:pointer;}',
+    '.vev-tabs button[aria-pressed="true"]{color:#1a1a1a;border-bottom-color:var(--vb-accent,#5EC47A);}',
+    '.vev-tabs button:hover:not([aria-pressed="true"]){color:#333;border-bottom-color:#ccc;}',
+    '.vev-bar{position:relative;display:flex;align-items:center;gap:16px;margin-bottom:14px;}',
+    '.vev-bar .vev-search{flex:1 1 auto;min-width:0;}',
+    '.vev-fbtn{flex:0 0 auto;min-width:132px;height:46px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;}',
+    '.vev-fbtn:hover,.vev-fbtn[aria-expanded="true"]{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f);}',
+    '.vev-fbtn[aria-expanded="true"]{background:var(--vb-soft,#f0faf4);}',
+    '.vev-fcount{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--vb-accent-ink,#2d7a4f);color:#fff;font-size:10px;line-height:18px;letter-spacing:0;text-align:center;}',
+    '.vev-fcount[hidden],.vev-ltag[hidden]{display:none;}',
+    '.vev-ltag{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}',
+    '.vev-ltag:hover{border-color:var(--vb-accent-ink,#2d7a4f);}',
+    '.vev-ltag .x{font-size:15px;line-height:1;margin-left:2px;}',
+    '.vev-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);overflow:hidden;}',
+    '.vev-pop[hidden]{display:none;}',
+    '.vev-psec{padding:18px 20px;}.vev-psec+.vev-psec{border-top:1px solid #eee;}',
+    '.vev-ph{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#1a1a1a;margin:0 0 12px;}',
+    '.vev-pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;}',
+    '.vev-pf{display:flex;flex-direction:column;gap:6px;min-width:0;}',
+    '.vev-pf span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666;}',
+    '.vev-pf select{width:100%;min-width:0;height:40px;padding:0 44px 0 12px;font-size:12px;}',
+    '.vev-pf select:disabled{background-color:#f4f4f4;color:#999;cursor:not-allowed;border-color:#e6e6e6;}',
+    '.vev-pfoot{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;background:#fafafa;}',
+    '@media(max-width:600px){.vev-bar{flex-wrap:wrap;gap:10px}.vev-bar .vev-search{flex:1 1 100%;order:-1}.vev-fbtn{flex:1 1 auto}.vev-pgrid{grid-template-columns:minmax(0,1fr);gap:12px}.vev-psec{padding:16px}.vev-pfoot{padding:12px 16px}.vev-pfoot .vev-btn{flex:1 1 0}}',
     // The dashboard's event row (center-console .event-row), one look everywhere.
     '.vev-row{display:flex;align-items:stretch;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;overflow:hidden;margin-bottom:10px;background:#fff;transition:border-color .15s,box-shadow .15s;}',
     '.vev-row:hover{border-color:var(--vb-go,#2d7d31);box-shadow:0 3px 14px rgba(0,0,0,.06);}',
@@ -364,11 +394,35 @@
     var tenant = opts.tenant || VE_TENANT, brandCal = tenant !== VE_TENANT;
     st.kind = opts.kind === 'funding' ? 'funding' : 'event';
     var fund = function () { return st.kind === 'funding'; };
+    // The menu layout (opts.filterMenu; Sean, 2026-10-30, after the Directory: "do something similar to the events"). The page's
+    // banner lists the kinds of event (opts.onState hands it the kinds; setCat picks one), Upcoming / Past are the tab row, and
+    // the location is picked in Filters: Continent, Country, Chapter (st.city), each waiting on the one above. A country with
+    // one choice fills itself; a chapter never does, since events happen everywhere, not only in our chapters. The location
+    // is never in the address (an old ?where= link is read once); the page keeps it (opts.onLocation).
+    var menu = !!opts.filterMenu && !brandCal;
+    st.loc = { continent: '', country: '' };
+    function hubOf(slug) { return slug && window.VECityBanner ? VECityBanner.hubBySlug(slug) : null; }
+    function locSetCity(slug) {
+      var h = hubOf(slug);
+      st.city = h ? h.slug : '';
+      if (h) st.loc = { continent: h.continent || '', country: h.countryCode || '' };
+    }
+    if (menu) {
+      var l0 = opts.location || {};
+      if (l0.chapter || st.city) locSetCity(l0.chapter || st.city);
+      else st.loc = { continent: l0.continent || '', country: norm(l0.country || '') };
+      if (st.where) {
+        if (st.where.indexOf('c:') === 0) st.loc = { continent: st.where.slice(2), country: '' };
+        else st.loc = { continent: (COUNTRIES[norm(st.where)] || [])[1] || '', country: norm(st.where) };
+        st.city = ''; st.where = '';
+      }
+    }
 
     function syncUrl() {
       if (!useUrl) return;
       var q = new URLSearchParams(location.search);
       ['q', 'where', 'cat'].forEach(function (k) { if (st[k]) q.set(k, st[k]); else q.delete(k); });
+      if (menu) q.delete('where');
       if (st.when === 'past') q.set('when', 'past'); else q.delete('when');
       if (st.sort === 'city') q.set('sort', 'city'); else q.delete('sort');
       var s = q.toString();
@@ -384,6 +438,8 @@
         var t = new Date(e.ends_at || e.starts_at).getTime();
         if (st.when === 'past' ? t >= now : t < now) return false;
         if (!inCity(e)) return false;
+        if (menu && st.loc.continent && continentOf(e) !== st.loc.continent) return false;
+        if (menu && st.loc.country && norm(e.country) !== st.loc.country) return false;
         if (st.where) {
           if (st.where.indexOf('c:') === 0 ? continentOf(e) !== st.where.slice(2) : norm(e.country) !== st.where) return false;
         }
@@ -424,7 +480,97 @@
       return html;
     }
 
+    /* ---------- the menu layout's location and Filters ---------- */
+    function locChoices(level) {
+      var seen = {}, out = [], hubs = window.VE_HUBS || [];
+      if (level === 'continent') {
+        (all || []).forEach(function (e) { seen[continentOf(e)] = 1; });
+        hubs.forEach(function (h) { if (h.continent) seen[h.continent] = 1; });
+        return CONTINENTS.filter(function (c) { return seen[c]; }).map(function (c) { return { value: c, label: c }; });
+      }
+      if (level === 'country') {
+        (all || []).forEach(function (e) { var c = norm(e.country); if (c && continentOf(e) === st.loc.continent) seen[c] = 1; });
+        hubs.forEach(function (h) { if (h.continent === st.loc.continent && h.countryCode) seen[h.countryCode] = 1; });
+        return Object.keys(seen).sort(function (a, b) { return countryName(a).localeCompare(countryName(b)); }).map(function (c) { return { value: c, label: countryName(c) }; });
+      }
+      hubs.forEach(function (h) { if (h.countryCode === st.loc.country) out.push({ value: h.slug, label: h.name }); });
+      return out;
+    }
+    function locName() { var h = hubOf(st.city); return h ? h.name : st.loc.country ? countryName(st.loc.country) : st.loc.continent || ''; }
+    function locNow() { return { continent: st.loc.continent, country: st.loc.country, chapter: st.city }; }
+    function paintLoc() {
+      if (!menu) return;
+      var all0 = { continent: 'All continents', country: 'All countries', chapter: 'All chapters' };
+      el.querySelectorAll('[data-loc]').forEach(function (sel) {
+        var lv = sel.getAttribute('data-loc'), list = lv === 'continent' ? locChoices(lv) : lv === 'country' ? (st.loc.continent ? locChoices(lv) : []) : (st.loc.country ? locChoices(lv) : []);
+        var waiting = (lv === 'country' && !st.loc.continent) || (lv === 'chapter' && !st.loc.country);
+        sel.innerHTML = '<option value="">' + (lv === 'chapter' && !waiting && !list.length ? 'No chapter here yet' : all0[lv]) + '</option>' +
+          list.map(function (c) { return '<option value="' + esc(c.value) + '">' + esc(c.label) + '</option>'; }).join('');
+        sel.value = (lv === 'chapter' ? st.city : st.loc[lv]) || '';
+        sel.disabled = waiting || (lv !== 'continent' && !list.length);
+      });
+      var tag = el.querySelector('[data-v="ltag"]'), n = locName();
+      if (tag) { tag.hidden = !n; tag.querySelector('[data-v="lname"]').textContent = n; tag.setAttribute('aria-label', 'Showing ' + n + '. Show every location'); }
+      var cnt = el.querySelector('.vev-fcount');
+      if (cnt) { var k = st.sort !== 'date' ? 1 : 0; cnt.textContent = k; cnt.hidden = !k; }
+    }
+    function locChanged() {
+      paintLoc(); st.shown = 40; drawRows();
+      if (opts.onLocation) opts.onLocation(locNow(), hubOf(st.city));
+    }
+    function setLevel(lv, v) {
+      if (lv === 'continent') { st.loc = { continent: v || '', country: '' }; st.city = ''; }
+      else if (lv === 'country') { st.loc.country = v || ''; st.city = ''; }
+      else locSetCity(v);
+      if (lv === 'continent' && v) { var c = locChoices('country'); if (c.length === 1) st.loc.country = c[0].value; }
+    }
+    function drawMenu() {
+      var pin = '<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>';
+      var popId = (el.id || 'vev') + '-filters';
+      el.innerHTML =
+        '<div class="vev-tabs" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">Upcoming</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">Past</button></div>' +
+        '<div class="vev-bar">' +
+          '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
+            '<input type="search" data-v="q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
+          '<button type="button" class="vev-ltag" data-v="ltag" hidden title="Show every location">' + pin + '<span data-v="lname"></span><span class="x" aria-hidden="true">&times;</span></button>' +
+          '<button type="button" class="vev-fbtn" data-v="fbtn" aria-expanded="false" aria-controls="' + popId + '" title="Location and sort">' +
+            '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
+            '<span>Filters</span><span class="vev-fcount" hidden></span></button>' +
+          '<div class="vev-pop" id="' + popId + '" role="region" aria-label="Location and sort" hidden>' +
+            '<div class="vev-psec"><div class="vev-ph">Location</div><div class="vev-pgrid">' +
+              [['continent', 'Continent'], ['country', 'Country'], ['chapter', 'Chapter']].map(function (x) { return '<label class="vev-pf"><span>' + x[1] + '</span><select data-loc="' + x[0] + '" aria-label="' + x[1] + '"></select></label>'; }).join('') +
+            '</div></div>' +
+            '<div class="vev-psec"><div class="vev-ph">Sort</div><div class="vev-pgrid"><label class="vev-pf"><span>Sort by</span><select data-v="sort" aria-label="Sort by"><option value="date">Soonest</option><option value="city">City, A to Z</option></select></label></div></div>' +
+            '<div class="vev-pfoot"><button type="button" class="vev-btn ghost" data-v="reset">Reset filters</button><button type="button" class="vev-btn green" data-v="done">Done</button></div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="vev-count" data-v="count" aria-live="polite">' + (all ? '' : 'Loading events…') + '</p>' +
+        '<div data-v="list"></div>';
+      var sortSel = el.querySelector('[data-v="sort"]'); sortSel.value = st.sort === 'city' ? 'city' : 'date';
+      var pop = el.querySelector('.vev-pop'), fbtn = el.querySelector('[data-v="fbtn"]');
+      var close = function () { pop.hidden = true; fbtn.setAttribute('aria-expanded', 'false'); };
+      fbtn.addEventListener('click', function () { var open = pop.hidden; pop.hidden = !open; fbtn.setAttribute('aria-expanded', open ? 'true' : 'false'); if (open) { var f = pop.querySelector('select:not(:disabled)'); if (f) f.focus(); } });
+      pop.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { close(); fbtn.focus(); } });
+      el.querySelector('[data-v="done"]').addEventListener('click', function () { close(); fbtn.focus(); });
+      el.querySelector('[data-v="reset"]').addEventListener('click', function () { st.sort = 'date'; sortSel.value = 'date'; syncUrl(); paintLoc(); drawRows(); });
+      sortSel.addEventListener('change', function () { st.sort = sortSel.value; syncUrl(); paintLoc(); drawRows(); });
+      el.querySelectorAll('[data-loc]').forEach(function (sel) { sel.addEventListener('change', function () { setLevel(sel.getAttribute('data-loc'), sel.value); locChanged(); }); });
+      el.querySelector('[data-v="ltag"]').addEventListener('click', function () { setLevel('continent', ''); locChanged(); });
+      var timer;
+      el.querySelector('[data-v="q"]').addEventListener('input', function (ev) { clearTimeout(timer); timer = setTimeout(function () { st.q = ev.target.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150); });
+      el.querySelectorAll('[data-when]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          st.when = b.getAttribute('data-when'); st.shown = 40;
+          el.querySelectorAll('[data-when]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          syncUrl(); drawRows();
+        });
+      });
+      paintLoc();
+      drawRows();
+    }
+
     function drawList() {
+      if (menu) return drawMenu();
       el.innerHTML =
         '<div class="vev-tools">' +
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
@@ -463,19 +609,22 @@
       filtered(true).forEach(function (e) { cats[e.category || 'other'] = 1; });
       var keys = Object.keys(cats).sort(function (a, b) { return catLabel(a).localeCompare(catLabel(b)); });
       if (st.cat && keys.indexOf(st.cat) < 0) keys.push(st.cat);
-      pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">' + (fund() ? 'All funding' : 'All kinds') + '</button>'].concat(keys.map(function (k) {
+      if (menu && opts.onState) opts.onState({ cat: st.cat, catLabel: st.cat ? catLabel(st.cat) : 'All events', location: locName(), chapter: st.city,
+        kinds: [{ value: '', label: 'All events' }].concat(keys.map(function (k) { return { value: k, label: catLabel(k) }; })) });
+      if (pills) pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">' + (fund() ? 'All funding' : 'All kinds') + '</button>'].concat(keys.map(function (k) {
         return '<button type="button" class="vev-pill" data-cat="' + esc(k) + '" aria-pressed="' + (st.cat === k) + '">' + esc(catLabel(k)) + '</button>';
       })).join('');
       var list = filtered(false), past = st.when === 'past';
       var hub = st.city && window.VECityBanner ? VECityBanner.hubBySlug(st.city) : null;
       var wl = st.where ? (st.where.indexOf('c:') === 0 ? st.where.slice(2) : countryName(st.where)) : '';
       var whereTxt = hub ? ' in ' + hub.name : (wl ? ' in ' + wl : '');
+      if (menu && locName()) whereTxt = ' in ' + locName();
       el.querySelector('[data-v="count"]').textContent = fund()
         ? list.length + (past ? ' closed' : ' open') + (list.length === 1 ? ' opportunity' : ' opportunities') + whereTxt
         : list.length + (past ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + whereTxt;
       var box = el.querySelector('[data-v="list"]');
       if (!list.length) {
-        var clear = st.q || st.cat || st.where ? '<a href="#" data-go="clear">' + (fund() ? 'See every opportunity' : 'see every event') + '</a>' : '';
+        var clear = st.q || st.cat || st.where || (menu && locName()) ? '<a href="#" data-go="clear">' + (fund() ? 'See every opportunity' : 'see every event') + '</a>' : '';
         box.innerHTML = fund()
           ? '<div class="vev-empty">' + (past ? 'Nothing closed here yet.' : 'No open funding' + esc(whereTxt) + ' yet. We add grants, accelerators and pitch competitions every week, each checked on its official page.') + (clear ? ' ' + clear + '.' : '') + '</div>'
           : brandCal
@@ -500,7 +649,11 @@
           var k = a.getAttribute('data-go');
           if (k === 'submit') go('#submit/1');
           else if (k === 'more') { st.shown += 40; drawRows(); }
-          else { st.q = ''; st.cat = ''; st.where = ''; syncUrl(); drawList(); }
+          else {
+            st.q = ''; st.cat = ''; st.where = ''; syncUrl();
+            if (menu && locName()) { setLevel('continent', ''); if (opts.onLocation) opts.onLocation(locNow(), null); }
+            drawList();
+          }
         });
       });
     }
@@ -1152,7 +1305,13 @@
     load().then(function () { if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) { drawList(); } });
 
     return {
-      setCity: function (slug) { st.city = slug || ''; st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) drawRows(); },
+      setCity: function (slug) {
+        if (menu) { if (slug) locSetCity(slug); else setLevel('continent', ''); paintLoc(); } else st.city = slug || '';
+        st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) drawRows();
+      },
+      // The menu layout: the banner's kind of event, and where the filter's location stands.
+      setCat: function (k) { st.cat = k || ''; st.shown = 40; syncUrl(); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) go(''); else drawRows(); },
+      location: function () { return locNow(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
       home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
