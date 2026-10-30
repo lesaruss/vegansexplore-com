@@ -3936,7 +3936,9 @@ function renderListing(l){
   var photosTabContent = photoHtml ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>' : '';
 
   // SEO: title, OG tags, schema.org
-  var _ogTitle = VB ? esc(brandTitle(l.name)) : esc(l.name) + ' — VEGANS EXPLORE';
+  // The same title api/listing.js serves (keep them in step): the city only for a local business.
+  var _titleCity = listingKind(l) === 'place' && l.address_city && !/Nonprofit|Rescue|Sanctuar|Advocacy|Organization|Groups|Events/i.test(l.category || '') ? ' in ' + l.address_city + (l.address_state ? ', ' + l.address_state : '') : '';
+  var _ogTitle = VB ? esc(brandTitle(l.name)) : esc(l.name + _titleCity) + ' — Vegans Explore';
   var _ogDesc = ((l.description || l.tagline || '')+(l.address_city && !mediaKind ? ' · '+l.address_city+(l.address_state?', '+l.address_state:'') : '')).substring(0,200) || 'Find the best Vegan-friendly businesses on VEGANS EXPLORE.';
   var _ogImg = l.logo_url || 'https://vegansexplore.com/public/og-default.jpg';
   document.title = _ogTitle;
