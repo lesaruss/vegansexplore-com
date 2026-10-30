@@ -915,9 +915,16 @@ second confirm of one session refused (the card form itself was not paid: checko
   itself"): **The community** (a short pitch, three chips, then real groups from the Directory with the Directory's card, most upcoming
   events first, and their next events, at most two a group; read live with the anon key), **Try the demo** (slim As a member / As the
   organizer tiles and the demo sign-in on the left, a live scaled preview of `/groups/sample` on the right sized to fit without scrolling;
-  the organizer preview sets `ve_group_demo` so it skips the sign-in), What you get (Why it matters and What your group gets merged), The
-  numbers (the ladder as bars, tickets, and the guest pass), **Your part** (slim cards and a preview of the organizer's Your members),
-  Questions, Say yes (`?c=<code>` goes to `/invite?c=<code>`; without one, mail links to contact@lesaruss.com). Old `#/why` and `#/guest`
+  the organizer preview sets `ve_group_demo` so it skips the sign-in), What you get (Why it matters and What your group gets merged; the
+  cards beside four of the sample club's photos, which step aside while Dani shows, `.gp-art`), The numbers (the ladder as bars, tickets,
+  and the guest pass), **Your part** (slim cards and a preview of the organizer's Your members), Questions, and **Apply** (Sean, 2026-10-30:
+  "It needs to be an intake... take this seriously. Answer these questions. Let us determine if you're a right fit"; migration
+  `20261030_group_applications.sql`): five steps, one per view (`#/yes/1` to `/5`, `FORM` in the page): Your group, Your people, How you run
+  it, You, The fit; Next checks the step, answers kept in the browser (`localStorage` `gp_apply`) until sent through `ve-group` `apply`
+  (three a day per email; `APPLY_FIELDS` and `APPLY_REQUIRED` there match `FORM`), saved in `ve_group_applications` (RLS on, no
+  policies), emailed to Sean with every answer and a confirmation to them; from an invitation (`?c=`) it ends on Open my invitation.
+  **Depot > Group Partners > Applications** (`#apps/<status>`, `#app/<id>`; `ve-groups` `applications`, `application_get`,
+  `application_save`): New, Reviewing, Accepted, Declined, every answer, a private note; marking one sends nothing. Old `#/why` and `#/guest`
   land on What you get and The numbers (`ALIAS`). A preview, a group card, an event or See every group opens full screen in the page
   (`openView`, with Open in a new tab and Close or Escape). **Dani steps aside** when someone clicks around on their own: following her
   tour (Back / Next, a page's Next button, Take the tour with Dani, her picture) keeps her; any other move folds her into the corner, and
