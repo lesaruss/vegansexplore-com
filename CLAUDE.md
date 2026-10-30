@@ -3236,6 +3236,24 @@ our socials and "A LESARUSS brand" (lesaruss.com). Socials, checked 2026-10-26: 
 - `/contact` (`contact.html`): one mail link per reason to contact@lesaruss.com with the subject filled in (no form yet), the
   address, the socials and the LESARUSS card.
 
+## Search and share previews, built in (Sean, 2026-10-30)
+
+"When we're building stuff, we're doing it for search and discoverability... not doing it after." Every page that should be found
+ships with them on the first pass, never as a later fix:
+
+- **In the HTML the server sends**, not only set by JavaScript: a real `<title>` ("Name — Vegans Explore"), a `meta description`
+  (about 150 characters, what the page is), `<link rel="canonical">`, `og:title`, `og:description`, `og:image` (1200 x 630; the
+  fallback is `/public/og-default.jpg`, never a file that does not exist) and `twitter:card`. Link previews (Facebook, iMessage,
+  Slack) never run JavaScript.
+- **A page built from the database** gets a server function that writes them in, like `api/listing.js` (every
+  `/directory/<slug>`, with schema.org data: Restaurant, LocalBusiness, Organization, Person, PodcastSeries, Book, Movie) and
+  `api/pulse-article.js` (`/pulse/<slug>`). Change `api/listing.js` with the SEO block in `directory/listing.html` (search "SEO:
+  title, OG tags"): both use the same title, the city only for a local business.
+- **The sitemap is live**: `/sitemap.xml` is `api/sitemap.js` (the main pages, every chapter, every live Guide, every approved
+  listing, every published Pulse article). A new page to be found goes in its `PAGES` or `GUIDES`, a new chapter in `CHAPTERS`.
+  Never link a redirect from it.
+- Pages that should not be found (samples, Depot, account, welcome Guides for invitees) carry `noindex` and stay out of the sitemap.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
