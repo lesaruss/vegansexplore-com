@@ -579,10 +579,14 @@ async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
 // People (the People section, 2026-10-28) wear their own photo, never a business logo: the logo jobs leave them out.
 const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
 const notPerson = (l: any) => !PEOPLE_CATS.includes(l.category);
+// LESARUSS.ai's own listings (its tags) are not Vegans Explore's to fix: the logo jobs leave them out (Sean, 2026-10-30: "the depot
+// was pulling in thumbnails for those as well. It should only be focused on Vegans Explore items").
+const LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
+const ours = (l: any) => notPerson(l) && !(l.tags || []).some((t: string) => LR_TAGS.includes(t));
 async function chainFill(): Promise<number> {
-  const { data: all } = await allRows(() => db.from('listings').select('id, name, category, website, instagram, ig_handle, parent_id, logo_url, address_city, logo_checked:details->logo_checked, logo_letter_ok:details->logo_letter_ok')
+  const { data: all } = await allRows(() => db.from('listings').select('id, name, category, tags, website, instagram, ig_handle, parent_id, logo_url, address_city, logo_checked:details->logo_checked, logo_letter_ok:details->logo_letter_ok')
     .eq('status', 'approved').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').order('id'));
-  const rows = ((all || []) as any[]).filter(notPerson);
+  const rows = ((all || []) as any[]).filter(ours);
   const has = rows.filter((l) => String(l.logo_url || '').includes(OUR_LOGO));
   if (!has.length) return 0;
   const byId = new Map(rows.map((l) => [l.id, l]));
@@ -633,12 +637,12 @@ function relookDue(x: any): boolean {
 }
 async function logoSweep(n: number) {
   const chain = await chainFill();
-  const { data: q } = await allRows(() => db.from('listings').select('id, name, category, address_city, website, instagram, ig_handle, details')
+  const { data: q } = await allRows(() => db.from('listings').select('id, name, category, tags, address_city, website, instagram, ig_handle, details')
     .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
     .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
   const { data: had } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, why, checked_at').order('listing_id'));
   const seen = new Map((had || []).map((x: any) => [x.listing_id, x]));
-  const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok && notPerson(l));
+  const listed = (q || []).filter((l: any) => !l.details?.logo_letter_ok && ours(l));
   // Never looked at first, then the ones it found nothing for, looked at again once their look is due (relookDue).
   const fresh = listed.filter((l: any) => !seen.has(l.id));
   const again = listed.filter((l: any) => relookDue(seen.get(l.id)))
@@ -766,11 +770,11 @@ Deno.serve(async (req) => {
 
   if (action === 'logo_queue') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
-    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, tiktok, vote_count, details')
+    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, tags, address_city, address_state, website, instagram, facebook, tiktok, vote_count, details')
       .eq('status', 'approved').or('logo_url.is.null,logo_url.eq.').or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
       .order('vote_count', { ascending: false, nullsFirst: false }).order('name').order('id'));
     if (error) return json({ error: error.message }, 400);
-    const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok && notPerson(l));
+    const all = (data || []).filter((l: any) => !l.details?.logo_letter_ok && ours(l));
     const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, url, source, background, why, candidates, checked_at').order('listing_id'));
     const sug = new Map((sg || []).map((x: any) => [x.listing_id, x]));
     const cities = [...new Set(all.map((l: any) => l.address_city).filter(Boolean))].sort();
@@ -809,12 +813,12 @@ Deno.serve(async (req) => {
 
   if (action === 'logo_done') {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
-    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, facebook, logo_url, status, details')
+    const { data, error } = await allRows(() => db.from('listings').select('id, slug, name, category, tags, address_city, address_state, website, instagram, facebook, logo_url, status, details')
       .not('details->logo_checked', 'is', null).order('id'));
     if (error) return json({ error: error.message }, 400);
     const { data: sg } = await allRows(() => db.from('ve_logo_suggestions').select('listing_id, status, source').eq('status', 'used').order('listing_id'));
     const swept = new Map((sg || []).map((x: any) => [x.listing_id, x.source]));
-    const rows = (data || []).filter((l: any) => l.logo_url).map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city,
+    const rows = (data || []).filter((l: any) => l.logo_url && !(l.tags || []).some((t: string) => LR_TAGS.includes(t))).map((l: any) => ({ id: l.id, slug: l.slug, name: l.name, category: l.category, city: l.address_city,
       state: l.address_state, website: l.website, instagram: l.instagram, facebook: l.facebook, logo_url: l.logo_url, live: l.status === 'approved',
       by: l.details?.logo_checked?.by || '', at: l.details?.logo_checked?.at || '', w: l.details?.logo_checked?.w || null, h: l.details?.logo_checked?.h || null,
       sweep: swept.get(l.id) || null })).sort((a: any, b: any) => String(b.at).localeCompare(String(a.at)));
