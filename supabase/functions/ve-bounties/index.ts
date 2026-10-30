@@ -168,7 +168,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -286,7 +286,7 @@ async function heldForViewer(ids: string[], viewer: Viewer): Promise<Set<string>
   const me = viewer.email.toLowerCase();
   return new Set((data || []).filter((r) => String(r.reserved_email).toLowerCase() === me).map((r) => r.id));
 }
-const payText = (b: any) => `${b.cash_cents ? `$${(b.cash_cents / 100).toLocaleString('en-US')} + ` : ''}${b.points.toLocaleString()} points`;
+const payText = (b: any) => [b.cash_cents ? `$${(b.cash_cents / 100).toLocaleString('en-US')}` : '', b.perk || '', b.points ? `${b.points.toLocaleString()} points` : ''].filter(Boolean).join(' + ');
 const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted } : null;
 async function takenCounts(ids: string[]) {
   const out: Record<string, number> = {};
@@ -479,8 +479,14 @@ Deno.serve(async (req) => {
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
       if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders. Get your Passport to claim a spot.' }, 403);
       // A host night seats a set number of creators across all its jobs.
-      const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug, reserved_email, reserved_until').eq('id', body.bounty_id).maybeSingle();
+      const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug, reserved_email, reserved_until, apply_mode').eq('id', body.bounty_id).maybeSingle();
       if (cb && !cityOk(viewer, cb.community_slug)) return json({ error: 'not_found' }, 404);
+      // A gig that asks for an application or an audition is applied to, never claimed (the Gig Board, 2026-10-30).
+      if (cb && cb.apply_mode && cb.apply_mode !== 'claim') return json({ error: 'apply_needed', message: 'This gig takes an application. Apply on the Gig Board.' }, 409);
+      if (cb) {
+        const { data: fit } = await db.rpc('ve_gig_fit', { p_bounty: body.bounty_id, p_member: viewer.id });
+        if (fit && fit.ok === false) return json({ error: 'not_qualified', message: 'You do not meet this gig\'s requirements yet.', checks: fit.checks }, 409);
+      }
       if (cb && heldNow(cb) && String(cb.reserved_email || '').toLowerCase() !== String(viewer.email || '').toLowerCase()) {
         return json({ error: 'held', message: `This one is held for the city's Community Manager until ${new Date(cb.reserved_until).toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'America/New_York' })}. If they pass, it opens to everyone.` }, 409);
       }
@@ -582,6 +588,86 @@ Deno.serve(async (req) => {
       if (parts.length && new Set(done).size < parts.length) return json({ error: 'parts', message: 'This job needs every part done. Tick each one when it is in your upload.' }, 400);
       await db.from('ve_bounty_submissions').update({ note: note || null, links, parts_done: [...new Set(done)], status: 'submitted', submitted_at: nowIso(), license_at: nowIso(), updated_at: nowIso() }).eq('id', s.id);
       return json({ ok: true, status: 'submitted' });
+    }
+
+    // ---------- The Gig Board (Sean, 2026-10-30): applying, auditions, and the team's decision. A gig with apply_mode 'apply' or
+    // 'audition' collects an application (a ve_bounty_submissions row, status 'applied'); the team shortlists, asks for an audition,
+    // books one (the row turns 'claimed' and the bounty lifecycle takes over) or says not this time.
+    case 'apply': {
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to apply.' }, 401);
+      if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
+      if (!viewer.passport) return json({ error: 'passport', message: 'Gigs are for Passport holders.' }, 403);
+      const { data: b } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('id', body.bounty_id).maybeSingle();
+      if (!b || b.status !== 'open' || (!b.remote && !cityOk(viewer, b.community_slug))) return json({ error: 'not_found', message: 'This gig is not open.' }, 404);
+      if (b.apply_mode === 'claim') return json({ error: 'claim_it', message: 'This one is claimed, not applied to.' }, 409);
+      const closes = b.apply_by || b.claims_close_at || b.due_at;
+      if (closes && Date.now() > ms(closes)) return json({ error: 'closed', message: 'Applications for this gig are closed.' }, 409);
+      const { data: fit } = await db.rpc('ve_gig_fit', { p_bounty: b.id, p_member: viewer.id });
+      if (fit && fit.ok === false) return json({ error: 'not_qualified', message: 'You do not meet this gig\'s requirements yet.', checks: fit.checks }, 409);
+      const a = body.application || {};
+      const app: Record<string, string> = {};
+      for (const k of (b.asks || [])) {
+        const v = clean(a[k], k === 'pitch' ? 600 : 1200);
+        if (!v) return json({ error: 'missing', field: k, message: 'Fill in every step before you send it.' }, 400);
+        if (k === 'audition' && !/^https?:\/\/\S+\.\S+/.test(v)) return json({ error: 'bad_link', field: k, message: 'Your audition needs to be a full link.' }, 400);
+        app[k] = v;
+      }
+      const { data: had } = await db.from('ve_bounty_submissions').select('id, status, application').eq('bounty_id', b.id).eq('member_id', viewer.id).maybeSingle();
+      if (had && !['applied', 'audition', 'shortlisted'].includes(had.status)) return json({ error: 'already', message: 'You already have this one.' }, 409);
+      const status = had && had.status === 'audition' ? 'shortlisted' : had ? had.status : 'applied';
+      const row = { application: { ...(had?.application || {}), ...app }, status, applied_at: new Date().toISOString() };
+      const { error } = had ? await db.from('ve_bounty_submissions').update(row).eq('id', had.id)
+        : await db.from('ve_bounty_submissions').insert({ bounty_id: b.id, member_id: viewer.id, ...row });
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      const c = await memberContact(viewer.id);
+      await sendEmail('contact@lesaruss.com', `New ${had ? 'audition' : 'application'}: ${b.title}`,
+        P(`<b>${esc(c.first || 'A member')}</b> ${had ? 'sent their audition for' : 'applied to'} <b>${esc(b.title)}</b>.`) +
+        Object.keys(app).map((k) => P(`<b>${esc(k)}:</b> ${esc(app[k])}`)).join('') + P(`Decide in Depot &gt; Bounties.`));
+      return json({ ok: true, status });
+    }
+
+    case 'applicants': {
+      if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
+      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, apply_mode, asks').eq('id', body.bounty_id).maybeSingle();
+      if (!b || !(await canDecide(viewer, b.community_slug))) return json({ error: 'forbidden' }, 403);
+      const { data: subs } = await db.from('ve_bounty_submissions').select('id, member_id, status, application, applied_at, decided_at').eq('bounty_id', b.id)
+        .in('status', ['applied', 'shortlisted', 'audition', 'not_selected', 'claimed']).order('applied_at', { ascending: true });
+      const ids = (subs || []).map((x) => x.member_id);
+      const { data: ms2 } = ids.length ? await db.from('members').select('id, name, email, avatar_url').in('id', ids) : { data: [] };
+      const { data: doors } = ids.length ? await db.from('ve_ambassador_door').select('member_id, platforms, chapters, skills, active_at').in('member_id', ids) : { data: [] };
+      const by = (arr: any[], k: string) => Object.fromEntries((arr || []).map((x) => [x[k], x]));
+      const M = by(ms2 || [], 'id'), Dd = by(doors || [], 'member_id');
+      return json({ bounty: b, applicants: (subs || []).map((x) => ({ ...x, member: M[x.member_id] || null, door: Dd[x.member_id] || null })) });
+    }
+
+    case 'applicant_decide': {
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const decision = String(body.decision || '');
+      const NEXT: Record<string, string> = { shortlist: 'shortlisted', audition: 'audition', book: 'claimed', not_selected: 'not_selected' };
+      if (!NEXT[decision]) return json({ error: 'bad_decision' }, 400);
+      const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status').eq('id', body.id).maybeSingle();
+      if (!s) return json({ error: 'not_found' }, 404);
+      const { data: b } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('id', s.bounty_id).maybeSingle();
+      if (!b || !(await canDecide(viewer, b.community_slug))) return json({ error: 'forbidden' }, 403);
+      if (!['applied', 'shortlisted', 'audition'].includes(s.status)) return json({ error: 'decided', message: 'This application is already decided.' }, 409);
+      if (decision === 'book' && b.slots) {
+        const { count } = await db.from('ve_bounty_submissions').select('id', { count: 'exact', head: true }).eq('bounty_id', b.id).in('status', ['claimed', 'in_progress', 'submitted', 'changes', 'approved']);
+        if ((count || 0) >= b.slots) return json({ error: 'full', message: `Every spot is booked (${b.slots}).` }, 409);
+      }
+      const now = new Date().toISOString();
+      const patch: Record<string, unknown> = { status: NEXT[decision], decided_at: now, decided_by: viewer.id, review_note: clean(body.note, 2000) || null };
+      if (decision === 'book') patch.claimed_at = now;
+      const { error } = await db.from('ve_bounty_submissions').update(patch).eq('id', s.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      const c = await memberContact(s.member_id), note = clean(body.note, 2000);
+      const words: Record<string, [string, string]> = {
+        shortlist: [`You're shortlisted: ${b.title}`, `You made the shortlist for <b>${esc(b.title)}</b>. We'll be in touch as soon as the choice is made.`],
+        audition: [`Audition for ${b.title}`, `We'd love to see more. <b>${esc(b.title)}</b> asks for an audition: ${esc(b.audition_prompt || 'a short video')}. Send it from the gig on the Gig Board.`],
+        book: [`You're booked: ${b.title}`, `You're booked for <b>${esc(b.title)}</b> (${payText(b)}). Everything you need is on the gig's page.`],
+        not_selected: [`About ${b.title}`, `Thank you for applying to <b>${esc(b.title)}</b>. This one went another way, and every gig you apply to builds your record. New gigs land on the board every week.`]
+      };
+      await sendEmail(c.email, words[decision][0], P(`Hi ${esc(c.first)},`) + P(words[decision][1]) + (note ? P(esc(note)) : '') + P(`<a href="${SITE}/gigs#gig/${b.id}">Open the gig</a>`));
+      return json({ ok: true, status: NEXT[decision] });
     }
 
     case 'thread':
