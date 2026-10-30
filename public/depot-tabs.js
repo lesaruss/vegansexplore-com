@@ -6,7 +6,10 @@
 // The Depot lives in the dashboard (Sean, 2026-10-27: "the depot should be a tool... in the dashboard"). A Depot page opened on
 // its own by a signed-in super admin moves to /dashboard/depot/<page>, keeping its query and #view. Anyone else is left where
 // they are (the page's own sign-in check answers them).
+// The dashboard loads this file only for the page list (window.VE_DEPOT_LIST_ONLY): Your tools' search lists every Depot page
+// (Sean, 2026-10-30), read from TABS below, so there is one list.
 (function () {
+  if (window.VE_DEPOT_LIST_ONLY) return;
   var top = true; try { top = window.self === window.top; } catch (e) { top = false; }
   if (!top) return;
   var m = null; try { m = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) {}
@@ -53,6 +56,8 @@
     { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
     { group: 'Site', href: '/admin/depot/services', label: 'Services' }
   ];
+  window.VE_DEPOT_TABS = TABS;
+  if (window.VE_DEPOT_LIST_ONLY) return;
   // Sean, 2026-09-29: a drop-down to the right of the page title instead of a row of tabs,
   // so the pages feel less busy. The current page is the selected option.
   // Sean, 2026-09-29: the drop-down sits on the far right, "Go to" on one line. Its styles are
@@ -138,7 +143,7 @@
 
 // Guided tour (public/ve-tour.js, Sean 2026-10-03): every Depot page gets the "Take the tour" button.
 (function () {
-  if (window.VETour || document.querySelector('script[src="/public/ve-tour.js"]')) return;
+  if (window.VE_DEPOT_LIST_ONLY || window.VETour || document.querySelector('script[src="/public/ve-tour.js"]')) return;
   function add() { var s = document.createElement('script'); s.src = '/public/ve-tour.js'; s.defer = true; document.body.appendChild(s); }
   if (document.body) add(); else document.addEventListener('DOMContentLoaded', add);
 })();

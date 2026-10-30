@@ -323,6 +323,55 @@
   a.dash-preview-card{text-decoration:none;color:inherit;transition:border-color .15s,box-shadow .15s;}
   a.dash-preview-card:hover{border-color:var(--ve-green);box-shadow:0 4px 18px rgba(58,155,62,0.10);}
   .dash-preview-icon{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:10px;}
+  /* Recent activity (Sean, 2026-10-30): every feed the same size, the latest 100 scrolling inside the box. */
+  #dash-recent{margin-bottom:28px;}
+  #dash-recent .dash-preview-body{height:268px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;margin-right:-6px;}
+  .dash-preview-who{width:32px;height:32px;border-radius:50%;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ve-border);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font:inherit;font-size:12px;font-weight:800;color:#fff;background:var(--ve-green);overflow:hidden;}
+  .dash-preview-who img{width:100%;height:100%;object-fit:cover;}
+  .dash-preview-who:hover,.dash-preview-who:focus-visible{box-shadow:0 0 0 2.5px var(--ve-green);outline:none;}
+  button.dash-preview-av{border:none;padding:0;cursor:pointer;font:inherit;font-size:12px;font-weight:800;}
+  button.dash-preview-av:hover,button.dash-preview-av:focus-visible{box-shadow:0 0 0 2.5px var(--ve-green-dark);outline:none;}
+  /* Your tools: a search and category filters over every tool (Sean, 2026-10-30). */
+  .dash-tools-bar{display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;margin-bottom:12px;}
+  .dash-tools-bar .dash-section-title{margin:0;}
+  .dash-tools-search{flex:0 1 420px;min-width:0;width:100%;min-height:44px;padding:10px 14px 10px 40px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;font:inherit;font-size:14px;color:var(--ve-text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231f5f22' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E") no-repeat 14px center;}
+  .dash-tools-search:focus-visible{outline:3px solid #22C55E;outline-offset:1px;}
+  .dash-tools-cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+  .dash-tools-cats button{font:inherit;font-size:12.5px;font-weight:700;color:var(--ve-text-75);background:#fff;border:1.5px solid var(--ve-border);border-radius:6px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;}
+  .dash-tools-cats button span{font-size:11px;color:var(--ve-text-50);font-weight:700;}
+  .dash-tools-cats button:hover{border-color:var(--ve-green);}
+  .dash-tools-cats button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
+  .dash-tools-cats button[aria-selected="true"] span{color:rgba(255,255,255,0.8);}
+  .dash-tool-cat{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-dark);margin:-4px 0 4px;}
+  @media (max-width:640px){ .dash-tools-search{flex-basis:100%;} .dash-tools-cats{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;} .dash-tools-cats button{flex:0 0 auto;} }
+  /* A member, in a lightbox (Sean, 2026-10-30: "a light box of who that person is... I don't have to go off this page"). */
+  .dash-mc{position:fixed;inset:0;z-index:2000;background:rgba(10,20,12,0.55);display:flex;align-items:center;justify-content:center;padding:16px;}
+  .dash-mc-box{background:#fff;border-radius:14px;width:min(560px,100%);max-height:calc(100vh - 32px);overflow-y:auto;padding:24px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.25);}
+  .dash-mc-x{position:absolute;top:12px;right:12px;width:36px;height:36px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;font-size:20px;line-height:1;cursor:pointer;color:var(--ve-text-75);}
+  .dash-mc-top{display:flex;gap:16px;align-items:center;margin-bottom:16px;padding-right:40px;}
+  .dash-mc-av{width:72px;height:72px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;background:var(--ve-green);overflow:hidden;}
+  .dash-mc-av img{width:100%;height:100%;object-fit:cover;}
+  .dash-mc-name{font-size:20px;font-weight:800;color:var(--ve-text);line-height:1.2;word-break:break-word;}
+  .dash-mc-email{font-size:13px;color:var(--ve-text-75);word-break:break-all;margin-top:2px;}
+  .dash-mc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .dash-mc-tag{font-size:11px;font-weight:700;border-radius:6px;padding:3px 8px;background:var(--ve-green-light);color:var(--ve-green-dark);}
+  .dash-mc-tag.muted{background:#f2f2f2;color:var(--ve-text-75);}
+  .dash-mc-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px;}
+  .dash-mc-stat{border:1.5px solid var(--ve-border);border-radius:10px;padding:10px 12px;}
+  .dash-mc-stat b{display:block;font-size:18px;font-weight:800;color:var(--ve-text);}
+  .dash-mc-stat span{font-size:11px;color:var(--ve-text-50);font-weight:700;}
+  .dash-mc-h{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin:16px 0 6px;}
+  .dash-mc-facts{font-size:13px;color:var(--ve-text-75);line-height:1.7;margin:0;padding:0;list-style:none;}
+  .dash-mc-facts b{color:var(--ve-text);font-weight:700;}
+  .dash-mc-list{margin:0;padding:0;list-style:none;}
+  .dash-mc-list li{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0;border-top:1px solid var(--ve-border);}
+  .dash-mc-list li:first-child{border-top:none;}
+  .dash-mc-list a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .dash-mc-list a:hover{text-decoration:underline;}
+  .dash-mc-list span{color:var(--ve-text-50);white-space:nowrap;font-size:12px;}
+  .dash-mc-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .dash-mc-acts button{font:inherit;font-size:13px;font-weight:700;border-radius:6px;padding:9px 14px;cursor:pointer;border:1.5px solid var(--ve-green-dark);background:#fff;color:var(--ve-green-dark);}
+  @media (max-width:480px){ .dash-mc-stats{grid-template-columns:repeat(2,minmax(0,1fr));} .dash-mc-box{padding:20px 16px;} }
   /* In-place console frame (Sean, 2026-09-22): a tool/page opens INSIDE the
      dashboard window, replacing its content with a breadcrumb back -- not a
      pop-up. .detail-open hides every other direct child of #dash-content. */
@@ -649,6 +698,8 @@
 <script src="/public/ve-events.js"></script>
 <script src="/public/ve-media.js"></script>
 <script src="/public/ve-episodes.js"></script>
+<script>window.VE_DEPOT_LIST_ONLY = true;</script>
+<script src="/public/depot-tabs.js"></script>
 
 <div class="console-backdrop"></div>
 
@@ -892,9 +943,21 @@
 
 
       <!-- Everything else, three across (Sean, 2026-10-04). renderDashboardPreviews(). -->
+      <!-- Super admins: Recent members, votes, leads, events and guest reviews, each the latest 100 scrolling inside the same
+           size box (Sean, 2026-10-30). Then Your tools with a search and category filters, so any tool, Depot pages included,
+           is a few letters away. renderDashboardPreviews(). -->
       <div class="dash-home-overview">
-      <p class="dash-section-title">Your tools</p>
+      <div id="dash-recent" hidden>
+        <p class="dash-section-title">Recent activity</p>
+        <div id="dash-recent-grid" class="dash-preview-grid"></div>
+      </div>
+      <div class="dash-tools-bar">
+        <p class="dash-section-title">Your tools</p>
+        <input type="search" id="dash-tools-search" class="dash-tools-search" placeholder="Search your tools (try Depot, Invites, Links)" aria-label="Search your tools" autocomplete="off">
+      </div>
+      <div id="dash-tools-cats" class="dash-tools-cats" role="tablist" aria-label="Filter your tools"></div>
       <div id="dash-previews"></div>
+      <p id="dash-tools-none" class="dash-preview-empty" hidden>No tool matches that. Try another word.</p>
       </div>
 
     </div>
@@ -3324,22 +3387,96 @@
     var b = document.createElement('span'); b.className = 'dash-preview-count'; b.textContent = n;
     titleEl.appendChild(b);
   }
-  function dpRows(body, rows, mapFn) {
+  // A row: the picture on the left, the name and a line under it, and, for a vote, the member who cast it on the right. When a
+  // row knows its member (memberId, or who.id), their picture opens who they are in a lightbox (memberCard).
+  function dpPic(el, p) {
+    if (p.url) { var img = document.createElement('img'); img.src = p.url; img.alt = ''; img.loading = 'lazy'; el.appendChild(img); }
+    else { el.textContent = (String(p.name || '?').trim().charAt(0) || '?').toUpperCase(); if (p.color) el.style.background = p.color; }
+  }
+  function dpRows(body, rows, mapFn, max) {
     body.innerHTML = '';
-    var five = (rows || []).slice(0, 5);
-    if (!five.length) { body.innerHTML = '<p class="dash-preview-empty">Nothing here yet.</p>'; return; }
-    five.forEach(function (r) {
+    var list = (rows || []).slice(0, max || 100);
+    if (!list.length) { body.innerHTML = '<p class="dash-preview-empty">Nothing here yet.</p>'; return; }
+    list.forEach(function (r) {
       var m = mapFn(r) || {};
       var row = document.createElement('div'); row.className = 'dash-preview-row';
-      var av = document.createElement('span'); av.className = 'dash-preview-av';
-      if (m.url) { var img = document.createElement('img'); img.src = m.url; img.alt = ''; av.appendChild(img); }
-      else { av.textContent = (String(m.name || '?').trim().charAt(0) || '?').toUpperCase(); if (m.color) av.style.background = m.color; }
+      var av = document.createElement(m.memberId ? 'button' : 'span'); av.className = 'dash-preview-av';
+      if (m.memberId) { av.type = 'button'; av.title = 'Who is ' + (m.name || 'this member') + '?'; av.setAttribute('aria-label', 'See who ' + (m.name || 'this member') + ' is'); av.addEventListener('click', function () { memberCard(m.memberId); }); }
+      dpPic(av, m);
       var rb = document.createElement('div'); rb.className = 'dash-preview-rowbody';
       var nm = document.createElement('div'); nm.className = 'dash-preview-name'; nm.textContent = m.name || '—';
       var mt = document.createElement('div'); mt.className = 'dash-preview-meta'; mt.textContent = m.meta || '';
       rb.appendChild(nm); rb.appendChild(mt);
       row.appendChild(av); row.appendChild(rb);
+      if (m.who) {
+        var who = document.createElement('button'); who.type = 'button'; who.className = 'dash-preview-who';
+        who.title = m.who.name || 'Member'; who.setAttribute('aria-label', 'See who ' + (m.who.name || 'this member') + ' is');
+        dpPic(who, m.who);
+        if (m.who.id) who.addEventListener('click', function () { memberCard(m.who.id); });
+        row.appendChild(who);
+      }
       body.appendChild(row);
+    });
+  }
+  function dpWhen(s) {
+    try { var d = new Date(s); if (isNaN(d.getTime())) return ''; return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ', ' + d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }); }
+    catch (e) { return ''; }
+  }
+
+  // Who a member is, in a lightbox over the dashboard (Sean, 2026-10-30), from ve-dashboard member_card (super admins).
+  var MC_COMMUNITY = function (slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? (h.name || h.title || slug) : slug; };
+  function memberCard(id) {
+    var old = document.getElementById('dash-mc'); if (old) old.remove();
+    var back = document.activeElement;
+    var wrap = document.createElement('div'); wrap.className = 'dash-mc'; wrap.id = 'dash-mc';
+    wrap.innerHTML = '<div class="dash-mc-box" role="dialog" aria-modal="true" aria-label="Member"><button type="button" class="dash-mc-x" aria-label="Close">&times;</button><p class="dash-preview-empty">Loading&hellip;</p></div>';
+    document.body.appendChild(wrap);
+    var box = wrap.querySelector('.dash-mc-box');
+    function close() { wrap.remove(); document.removeEventListener('keydown', onKey); if (back && back.focus) back.focus(); }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap || e.target.closest('.dash-mc-x')) close(); });
+    box.querySelector('.dash-mc-x').focus();
+    dvCall({ action: 'member_card', member_id: id }).then(function (d) {
+      if (!document.body.contains(wrap)) return;
+      if (!d || !d.ok) { box.innerHTML = '<button type="button" class="dash-mc-x" aria-label="Close">&times;</button><p class="dash-preview-empty">Couldn\'t load this member.</p>'; return; }
+      var m = d.member, lv = d.level || {}, pts = d.points || {}, c = d.counts || {}, e = dvEsc;
+      var name = m.name || m.username || m.email || 'Member';
+      var STATUS = { active: 'Active member', pending_payment: 'Has not paid yet', cancelled: 'Cancelled', canceled: 'Cancelled' };
+      var ROLE = { community_manager: 'Community Manager', ambassador: 'Ambassador' };
+      var tags = [STATUS[m.membership_status] || m.membership_status, m.founding_member ? 'Founding Member' : '', ROLE[m.ve_role] || '', m.is_superadmin ? 'Super admin' : '']
+        .filter(Boolean).map(function (t) { return '<span class="dash-mc-tag">' + e(t) + '</span>'; }).join('') +
+        (m.member_class && m.member_class !== 'member' ? '<span class="dash-mc-tag muted">' + e({ internal: 'Team or test', agent: 'Guide account', quarantined: 'Set aside' }[m.member_class] || m.member_class) + '</span>' : '');
+      var av = m.avatar_url ? '<img src="' + e(m.avatar_url) + '" alt="">' : e(name.trim().charAt(0).toUpperCase());
+      var stat = function (n, label) { return '<div class="dash-mc-stat"><b>' + e(n == null ? '0' : Number(n).toLocaleString()) + '</b><span>' + e(label) + '</span></div>'; };
+      var facts = [
+        ['Joined', m.created_at ? new Date(m.created_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : ''],
+        ['Member since', m.entry_paid_at ? new Date(m.entry_paid_at).toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }) : ''],
+        ['Home chapter', m.home_community ? MC_COMMUNITY(m.home_community) : ''],
+        ['Instagram', m.instagram_handle ? '@' + String(m.instagram_handle).replace(/^@/, '') : ''],
+        ['Referral link', m.referral_code ? 'vegansexplore.com/r/' + m.referral_code : ''],
+        ['Joined with their link', m.referral_count ? String(m.referral_count) : '']
+      ].filter(function (f) { return f[1]; }).map(function (f) { return '<li><b>' + e(f[0]) + ':</b> ' + e(f[1]) + '</li>'; }).join('');
+      var votes = (d.recent_votes || []).map(function (v) {
+        return '<li>' + (v.slug ? '<a href="/directory/' + encodeURIComponent(v.slug) + '" data-mc-listing="' + e(v.slug) + '">' + e(v.name || v.slug) + '</a>' : '<span>A removed listing</span>') + '<span>' + e(dpWhen(v.at)) + '</span></li>';
+      }).join('');
+      var owned = (d.listings || []).map(function (l) { return '<li><a href="/directory/' + encodeURIComponent(l.slug) + '" data-mc-listing="' + e(l.slug) + '">' + e(l.name) + '</a><span>Owner</span></li>'; }).join('');
+      box.innerHTML = '<button type="button" class="dash-mc-x" aria-label="Close">&times;</button>' +
+        '<div class="dash-mc-top"><div class="dash-mc-av"' + (m.color && !m.avatar_url ? ' style="background:' + e(m.color) + '"' : '') + '>' + av + '</div>' +
+        '<div style="min-width:0"><div class="dash-mc-name">' + e(name) + '</div>' + (m.email ? '<div class="dash-mc-email">' + e(m.email) + '</div>' : '') + '<div class="dash-mc-tags">' + tags + '</div></div></div>' +
+        '<div class="dash-mc-stats">' + stat(lv.level || 1, 'Level') + stat(pts.available_points != null ? pts.available_points : m.lesars_balance, 'Points to spend') + stat(lv.lifetime != null ? lv.lifetime : pts.total_points, 'Lifetime points') +
+        stat(c.votes, 'Votes') + stat(c.checkins, 'Check-ins') + stat((c.saves || 0) + (c.episodes || 0), 'Saves') + '</div>' +
+        (facts ? '<ul class="dash-mc-facts">' + facts + '</ul>' : '') +
+        (owned ? '<p class="dash-mc-h">Their listings</p><ul class="dash-mc-list">' + owned + '</ul>' : '') +
+        '<p class="dash-mc-h">Latest votes</p>' + (votes ? '<ul class="dash-mc-list">' + votes + '</ul>' : '<p class="dash-preview-empty">No votes yet.</p>') +
+        (m.email ? '<div class="dash-mc-acts"><button type="button" data-mc-copy>Copy email</button></div>' : '');
+      box.querySelector('.dash-mc-x').focus();
+      var cp = box.querySelector('[data-mc-copy]');
+      if (cp) cp.addEventListener('click', function () { try { navigator.clipboard.writeText(m.email); cp.textContent = 'Copied'; } catch (err) {} });
+      // A listing opens under the Directory tab, in the dashboard.
+      Array.prototype.forEach.call(box.querySelectorAll('[data-mc-listing]'), function (a) {
+        a.addEventListener('click', function (ev) { ev.preventDefault(); close(); if (window.activateDashTab) activateDashTab('directory'); openDashboardListing(a.getAttribute('data-mc-listing')); });
+      });
     });
   }
   function dpFetch(url, payload) {
@@ -3367,6 +3504,7 @@
   function dpAccessCard(c) {
     var card = document.createElement('a'); card.className = 'dash-preview-card'; card.href = '#';
     card.innerHTML = '<div class="dash-preview-icon ve-ficon">' + FICON(c.icon) + '</div>' +
+      (c.catLabel ? '<div class="dash-tool-cat">' + c.catLabel + '</div>' : '') +
       '<div class="dash-preview-head" style="margin-bottom:6px;"><span class="dash-preview-title">' + c.title + '</span><span class="dash-preview-viewall">Open →</span></div>' +
       '<div class="dash-preview-desc">' + c.desc + '</div>';
     card.addEventListener('click', function (e) { e.preventDefault(); c.fn(); });
@@ -3522,61 +3660,152 @@
     return t;
   }
 
+  // Your tools' categories, in the order the filter shows them (Sean, 2026-10-30: "if there's a way to put these in categories...
+  // use some filters to sort through all the different tools").
+  var TOOL_CATS = [['community', 'Community'], ['learn', 'Guides and learning'], ['you', 'Your account'], ['admin', 'Admin'], ['depot', 'Depot pages'], ['coming', 'Coming 2027']];
+  var TOOL_CAT_OF = { 'Bounties': 'community', 'Campaigns': 'community', 'Opportunities': 'community', 'Community Board': 'community', 'Communities': 'community',
+    'Guides': 'learn', 'Choose Your Guide': 'learn', 'Certification': 'learn', 'The Ambassador Guide': 'learn',
+    'My Saves': 'you', 'Points and levels': 'you', 'Contribute': 'you', 'Paid work: your checklist': 'you',
+    'Secret Shopper': 'community', 'Passport Challenge': 'coming', 'Vegans Explore Tours': 'coming' };
+  var DEPOT_ICON = { Insights: 'chart', Directory: 'store', Content: 'news', People: 'star', Site: 'box' };
+  var toolsCat = 'all';
+  // A Depot page opens under the Depot tab, at /dashboard/depot/<page>.
+  function openDepotPage(href) {
+    var page = String(href).replace(/^\/admin\/depot\/?/, '');
+    history.pushState({ tabKey: 'depot' }, '', '/dashboard/depot' + (page ? '/' + page : ''));
+    if (window.activateDashTab) { window.activateDashTab('depot', { skipHistory: true }); openDepot(true); }
+  }
+  // Draws the tools with the search and the category filter over them. Typing narrows across every category; Enter opens the first.
+  function renderToolGrid(grid, tools) {
+    tools.forEach(function (c) {
+      c.cat = c.cat || TOOL_CAT_OF[c.title] || 'community';
+      var cl = TOOL_CATS.filter(function (x) { return x[0] === c.cat; })[0];
+      if (!c.catLabel) c.catLabel = cl ? cl[1] : '';
+      var card = dpAccessCard(c);
+      card.setAttribute('data-cat', c.cat);
+      card.setAttribute('data-q', (c.title + ' ' + c.desc + ' ' + c.catLabel + ' ' + (c.keywords || '')).toLowerCase().replace(/<[^>]+>/g, ''));
+      grid.appendChild(card);
+    });
+    var cats = document.getElementById('dash-tools-cats'), search = document.getElementById('dash-tools-search'), none = document.getElementById('dash-tools-none');
+    var used = TOOL_CATS.filter(function (x) { return tools.some(function (t) { return t.cat === x[0]; }); });
+    if (!used.some(function (x) { return x[0] === toolsCat; })) toolsCat = 'all';
+    if (cats) {
+      cats.hidden = used.length < 2;
+      cats.innerHTML = [['all', 'All']].concat(used).map(function (x) {
+        var n = x[0] === 'all' ? tools.length : tools.filter(function (t) { return t.cat === x[0]; }).length;
+        return '<button type="button" role="tab" data-cat="' + x[0] + '" aria-selected="' + (toolsCat === x[0]) + '">' + x[1] + ' <span>' + n + '</span></button>';
+      }).join('');
+      cats.onclick = function (e) { var b = e.target.closest('[data-cat]'); if (!b) return; toolsCat = b.getAttribute('data-cat'); apply(); };
+    }
+    function apply() {
+      var q = search ? search.value.trim().toLowerCase() : '', words = q.split(/\s+/).filter(Boolean), shown = 0;
+      Array.prototype.forEach.call(grid.children, function (card) {
+        var hit = words.every(function (w) { return card.getAttribute('data-q').indexOf(w) >= 0; });
+        // A search looks through every category; with no search, the filter picks one.
+        var ok = q ? hit : (toolsCat === 'all' || card.getAttribute('data-cat') === toolsCat);
+        card.style.display = ok ? '' : 'none'; if (ok) shown++;
+      });
+      if (cats) Array.prototype.forEach.call(cats.children, function (b) { b.setAttribute('aria-selected', String(!q && b.getAttribute('data-cat') === toolsCat)); });
+      if (none) none.hidden = shown > 0;
+    }
+    if (search) {
+      search.oninput = apply;
+      search.onkeydown = function (e) {
+        if (e.key === 'Escape') { search.value = ''; apply(); }
+        if (e.key !== 'Enter') return;
+        var first = Array.prototype.filter.call(grid.children, function (c) { return c.style.display !== 'none'; })[0];
+        if (first) { e.preventDefault(); first.click(); }
+      };
+    }
+    apply();
+  }
+
   function renderDashboardPreviews(member) {
     var host = document.getElementById('dash-previews');
     if (!host) return;
     host.innerHTML = '';
     var grid = document.createElement('div'); grid.className = 'dash-preview-grid';
     host.appendChild(grid);
+    var recentWrap = document.getElementById('dash-recent'), recent = document.getElementById('dash-recent-grid');
+    if (recentWrap) recentWrap.hidden = !member.is_superadmin;
 
-    if (member.is_superadmin) {
-      grid.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
+    if (member.is_superadmin && recent) {
+      // Recent activity (Sean, 2026-10-30): the latest 100 of each, scrolling inside boxes of the same size.
+      recent.innerHTML = '';
+      recent.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
         dpFetch('/functions/v1/ve-members-admin?action=list_all_members', { token: token }).then(function (d) {
           // Real members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03).
           var rows = ((d && d.members) || []).filter(function (m) { return m.member_class === 'member'; }).sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
           dpCount(t, rows.length);
-          dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color }; });
+          dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color, url: m.avatar_url, memberId: m.id }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpDataCard('Events waiting', '/admin/depot/events', function (token, body, t) {
+      // Recent Votes: what got the vote, and who gave it on the right (Sean, 2026-10-30: "who's voting, who's getting the votes").
+      recent.appendChild(dpDataCard('Recent Votes', '/admin/depot/analytics#directory', function (token, body, t) {
+        dvCall({ action: 'recent_votes', limit: 100 }).then(function (d) {
+          var rows = (d && d.votes) || [];
+          if (!d || !d.ok) { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; return; }
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (v) {
+            var who = v.member || {}, l = v.listing || {}, wn = who.name || who.email || 'Member';
+            return { name: l.name || 'A removed listing', url: l.logo_url, meta: wn + ' · ' + dpWhen(v.at), who: { id: who.id, name: wn, url: who.avatar_url, color: who.color } };
+          });
+          // A listing's name opens it under the Directory tab.
+          Array.prototype.forEach.call(body.querySelectorAll('.dash-preview-row'), function (row, i) {
+            var l = rows[i] && rows[i].listing; if (!l || !l.slug) return;
+            var nm = row.querySelector('.dash-preview-name'); nm.style.cursor = 'pointer'; nm.title = 'Open ' + (l.name || 'the listing');
+            nm.addEventListener('click', function () { if (window.activateDashTab) activateDashTab('directory'); openDashboardListing(l.slug); });
+          });
+        });
+      }));
+      recent.appendChild(dpDataCard('Recent Leads', '/dashboard/leads', function (token, body, t) {
+        dpFetch('/functions/v1/ve-rewards?action=list_initiative_interest', { token: token }).then(function (d) {
+          var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
+          dpCount(t, rows.length);
+          dpRows(body, rows, function (it) {
+            var who = it.members ? (it.members.display_name || it.members.name || it.members.email) : null;
+            return { name: who || 'Interest', meta: [it.action_type, it.initiative_slug].filter(Boolean).join(' · ') || dpDate(it.created_at), memberId: it.member_id || (it.members && it.members.id) || null };
+          });
+        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
+      }));
+      recent.appendChild(dpDataCard('Events waiting', '/admin/depot/events', function (token, body, t) {
         dpFetch('/functions/v1/ve-rewards?action=list_pending_events', { token: token, status: 'pending' }).then(function (d) {
           var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
           dpCount(t, rows.length);
           dpRows(body, rows, function (e) { return { name: e.title || 'Event', meta: [e.city, dpDate(e.starts_at || e.created_at)].filter(Boolean).join(' · ') }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpDataCard('Recent Leads', '/dashboard/leads', function (token, body, t) {
-        dpFetch('/functions/v1/ve-rewards?action=list_initiative_interest', { token: token }).then(function (d) {
-          var rows = ((d && d.items) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
-          dpCount(t, rows.length);
-          dpRows(body, rows, function (it) {
-            var who = it.members ? (it.members.display_name || it.members.email) : null;
-            return { name: who || 'Interest', meta: [it.action_type, it.initiative_slug].filter(Boolean).join(' · ') || dpDate(it.created_at) };
-          });
-        }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
-      }));
-      grid.appendChild(dpDataCard('Guest Reviews', '/dashboard/guest-reviews', function (token, body, t) {
+      recent.appendChild(dpDataCard('Guest Reviews', '/dashboard/guest-reviews', function (token, body, t) {
         dpFetch('/functions/v1/ve-auth?action=list_guest_reviews', { token: token }).then(function (d) {
           var rows = ((d && d.applications) || []).slice().sort(function (a, b) { return new Date(b.created_at || 0) - new Date(a.created_at || 0); });
           dpCount(t, rows.length);
           dpRows(body, rows, function (a) { return { name: a.name || a.email || 'Applicant', meta: a.email && a.name ? a.email : dpDate(a.created_at) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
-      grid.appendChild(dpAccessCard({ icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', fn: function () { if (window.activateDashTab) window.activateDashTab('depot'); else openConsoleFrame('/admin/depot', 'The Depot'); } }));
-      grid.appendChild(dpAccessCard({ icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', fn: function () { openConsoleFrame('/pulse', 'Community Board'); } }));
-      grid.appendChild(dpAccessCard({ icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } }));
-      grid.appendChild(dpAccessCard({ icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } }));
-      grid.appendChild(dpAccessCard({ icon: 'chart', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }));
+
+      var tools = [
+        { cat: 'admin', icon: 'box', title: 'The Depot', desc: 'Media, onboarding, the Pulse desk and every admin tool.', keywords: 'admin', href: '/admin/depot', fn: function () { if (window.activateDashTab) window.activateDashTab('depot'); else openConsoleFrame('/admin/depot', 'The Depot'); } },
+        { cat: 'admin', icon: 'pin', title: 'Community Board', desc: 'Requests and offers in every city. Hide or restore reported posts here.', keywords: 'pulse moderate', fn: function () { openConsoleFrame('/pulse', 'Community Board'); } },
+        { cat: 'admin', icon: 'eye', title: 'Secret Shopper', desc: 'Visits for restaurants that bought the $149 audit: set the day, then write the report.', fn: function () { openShopper(''); } },
+        { cat: 'admin', icon: 'link', title: 'Links', desc: 'Make tracked links for a campaign. Every click shows up on Leads with its tags.', href: '/admin/depot/links', fn: function () { openConsoleFrame('/admin/depot/links', 'Links'); } },
+        { cat: 'admin', icon: 'chart', title: 'Community Insights', desc: 'Per-community market research from the Mission Survey — gaps, demand, spend, NPS.', fn: function () { openConsoleFrame('/dashboard/insights', 'Community Insights'); } }
+      ];
       // Everything that was on the Tools tab is here too (Sean, 2026-10-26).
-      memberTools(member, true).forEach(function (c) { if (c.title !== 'Community Board') grid.appendChild(dpAccessCard(c)); });
+      memberTools(member, true).forEach(function (c) { if (c.title !== 'Community Board' && c.title !== 'Secret Shopper') tools.push(c); });
+      // Every Depot page, so typing its name gets there (public/depot-tabs.js TABS).
+      var had = tools.map(function (x) { return x.href; }).filter(Boolean);
+      (window.VE_DEPOT_TABS || []).forEach(function (d) {
+        if (had.indexOf(d.href) >= 0) return;
+        tools.push({ cat: 'depot', catLabel: 'Depot · ' + d.group, icon: DEPOT_ICON[d.group] || 'box', title: d.label, desc: 'Depot > ' + d.group + ' > ' + d.label, keywords: 'depot admin', fn: function () { openDepotPage(d.href); } });
+      });
+      renderToolGrid(grid, tools);
       return;
     }
 
     // Everyone else: their tools, the version's first (renderVersion sets DASH_VERSION and draws this again).
     var access = memberTools(member, false);
-    // The version's tools come first (renderVersion sets DASH_VERSION and draws this again).
     var first = DASH_TOOLS_FIRST[DASH_VERSION] || [], rank = function (c) { var i = first.indexOf(c.title); return i < 0 ? 99 : i; };
-    access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).forEach(function (x) { grid.appendChild(dpAccessCard(x[2])); });
+    renderToolGrid(grid, access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; }));
   }
 
   function renderDirectory(member) {

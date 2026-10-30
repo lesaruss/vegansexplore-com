@@ -10,7 +10,7 @@
 <meta property="og:site_name" content="VEGANS EXPLORE"/>
 <meta id="og-title" property="og:title" content="VEGANS EXPLORE Directory"/>
 <meta id="og-description" property="og:description" content="Find the best Vegan-friendly businesses near you."/>
-<meta id="og-image" property="og:image" content="https://vegansexplore.com/public/og-default.png"/>
+<meta id="og-image" property="og:image" content="https://vegansexplore.com/public/og-default.jpg"/>
 <meta name="twitter:card" content="summary_large_image"/>
 <meta id="meta-description" name="description" content="Find the best Vegan-friendly businesses near you."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -2350,7 +2350,7 @@ function loadBrandSite(l){
             '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li><li>A front-row seat on every campaign and city as it opens</li></ul>' +
             (FIRST ? '<p class="bd-small">' + B + ' would be our first Brand Partner.</p>' : '') +
             '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
-            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask our team a question</a></div>' +
             '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
           pic: '<div class="bd-price"><small>Front Row Start</small><b>$0</b><span>today</span><em>Then $111 a quarter from January 2027.<br>Renews every three months. Cancel any time.</em></div>' }
       : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
@@ -2360,7 +2360,7 @@ function loadBrandSite(l){
             '<li>A front-row seat on every campaign and city as it opens</li></ul>' +
             (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
             '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
-            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask Sean a question</a></div>' +
+            '<a class="bd-btn o" href="' + esc(askHref) + '">Ask our team a question</a></div>' +
             '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
           pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' };
     var SLIDES = [
@@ -3936,9 +3936,11 @@ function renderListing(l){
   var photosTabContent = photoHtml ? '<div style="padding:32px 40px 40px">'+photoHtml+'</div>' : '';
 
   // SEO: title, OG tags, schema.org
-  var _ogTitle = VB ? esc(brandTitle(l.name)) : esc(l.name) + ' — VEGANS EXPLORE';
+  // The same title api/listing.js serves (keep them in step): the city only for a local business.
+  var _titleCity = listingKind(l) === 'place' && l.address_city && !/Nonprofit|Rescue|Sanctuar|Advocacy|Organization|Groups|Events/i.test(l.category || '') ? ' in ' + l.address_city + (l.address_state ? ', ' + l.address_state : '') : '';
+  var _ogTitle = VB ? esc(brandTitle(l.name)) : esc(l.name + _titleCity) + ' — Vegans Explore';
   var _ogDesc = ((l.description || l.tagline || '')+(l.address_city && !mediaKind ? ' · '+l.address_city+(l.address_state?', '+l.address_state:'') : '')).substring(0,200) || 'Find the best Vegan-friendly businesses on VEGANS EXPLORE.';
-  var _ogImg = l.logo_url || 'https://vegansexplore.com/public/og-default.png';
+  var _ogImg = l.logo_url || 'https://vegansexplore.com/public/og-default.jpg';
   document.title = _ogTitle;
   var _metaMap = {'og-title':_ogTitle,'og-description':_ogDesc,'og-image':_ogImg,'meta-description':_ogDesc};
   Object.keys(_metaMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.setAttribute('content',_metaMap[id]); });

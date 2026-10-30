@@ -514,6 +514,22 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
   `lesaruss_secrets.LESARUSS_AI_STRIPE_WEBHOOK_SECRET`). Proven 2026-10-29: a free LESARUSS
   account refused, an internal Diplomat signed in and voted once, a second vote and a Vegans Explore listing refused, then removed.
 
+- **The front door** (LOCKED by Sean 2026-10-29, playbook `lesaruss-ai-front-door`, canon `canon-lesaruss-ai-front-door`): LESARUSS.ai
+  runs this engine with business topics in place of cities. Build order: Media podcasts and the Pulse, Funding (a tab on the events
+  engine) and Events, the Guides page and the Join Guide, the dashboard on lesaruss.ai, Labs and Advertising; LESARUSS 360 in the footer
+  and dashboard. **Podcasts** (migration `20261029_lesaruss_ai_podcasts.sql`): 23 marketing, leadership and development shows found on
+  Apple Podcasts, About from each feed's own description, tag `lesaruss-ai-directory-candidate` (so Vegans Explore's Directory and Media,
+  `rank` in `ve-media.js`, leave them out), `crawl_source` `lesaruss-ai-podcasts`, `specialty` the topic, no How Vegan.
+- **The Pulse by topic** (built 2026-10-30, migration `20261030_lesaruss_ai_topic_pulse.sql`; Sean: "it's really not going to be
+  focused on regional stuff"). lesaruss.ai/pulse is this site's `pulse.html` (proxied) in brand mode (`VE_BRAND.pulse`): the banner
+  picks a business topic (AI, Funding, Marketing, Leadership, Creators, Business operations, Events, or All topics; `?topic=`), never a
+  city, and only the Pulse tab shows (no city boards, Suggest a Topic or ads). A topic is `ve_board_posts.community_slug` `lr-<topic>`
+  (`ve-board` `LR_TOPICS`, `lr-all` lists them all); anyone reads, commenting and reporting need a LESARUSS member
+  (`lr_member_entitled`), and a LESARUSS sign-in takes part only there. Its stories are 21 business feeds (`ve_news_feeds` scope `topic`,
+  brand `lesaruss-ai`, `city_slug` the topic; TechCrunch, Crunchbase, Marketing Dive, Fast Company, Tubefilter, BizBash...), every story
+  kept with status `national` so it stays out of the Depot Inbox. The seven topics are in `pulse_auto` (queued 6 PM Eastern, out at 7 AM),
+  and the writer's `pulse_topic_write` instructions carry a LESARUSS.ai section (business voice, no cities or Vegan framing).
+
 ## Analytics (Sean, 2026-10-28)
 
 "Use the same exact structure as the analytics section in BCPS Marcom... put it in our depot... see what's popular, what's
@@ -834,7 +850,14 @@ or for a Passport holder's email, a second pass at another group event), a test-
 unpaid return refused, paid twice in a rolled-back transaction (once only, wrong session refused), then a real Stripe test payment
 marked paid, the door, the dashboard, and a Stripe test refund of $40.00 with $1.51 kept; then removed. The Stripe card form itself
 was not paid (checkout.stripe.com and api.stripe.com are blocked from the build session; the test payment went through pg_net).
-Not yet: a check on the type's limit at the moment of payment (two buyers paying for the last ticket at once both get one).
+**Seats are held at checkout** (migration `20261029_group_tickets_holds_policy.sql`): an open checkout counts against a type's limit
+for 35 minutes (Stripe expires it at 30); `ve_ticket_order_open` locks the type's row, counts what is left and writes the order in one
+step, and `ve_ticket_left` gives the page the same count. A stale pending order is never canceled, so a late payment still confirms.
+The same migration put tickets, the guest pass and Group Partners in the Guides' facts and three saved answers, and `/policies` has
+**Group Partners** and **Event tickets** under Membership and the guest pass and door list under Privacy.
+**No invitations yet** (Sean, 2026-10-29: "we're not going to send to anybody just yet... I just need to make sure I get my hands on
+everything once it's locked in. I'm selectively sending it out"): no Group Partner invitation goes out until Sean has reviewed the
+program and picks who gets one; keep building so every piece is ready.
 
 **The sample group, the Guide and the console** (Sean, 2026-10-29: "Let's not bank on Vegan Social Club... I want us to create our
 own mock club so people can go through it... the same way we did the business... a general username and password... in the depot...
@@ -897,9 +920,31 @@ second confirm of one session refused (the card form itself was not paid: checko
   Insights, Your page, Opportunities and Guides; hours, menu, audit, check-ins, ads and the Partner plan are hidden for a Group Partner.
   Every number in the demo follows `canon-ve-group-partners`; every button that would save says so in a toast (`demo_only`).
 - **`/groups/welcome`** is the **Group Partner Guide** (`groups/welcome.html`, the Nonprofit Partner Guide's layout, Dani narrating in
-  text, `noindex`, public): Overview, Why it matters, What your group gets, The numbers, The guest pass, **Try the demo** (opens
-  `/groups/sample` and `/groups/sample?view=owner` in a new tab, with the demo sign-in), Your part, Questions, Say yes (`?c=<code>` goes
-  to `/invite?c=<code>`; without one, mail links to contact@lesaruss.com).
+  text, `noindex`, public). Seven tabs since 2026-10-30 (Sean: "a little drab... Do we need it to be that much?... lead with the community
+  itself"): **The community** (a short pitch, three chips, then real groups from the Directory with the Directory's card, most upcoming
+  events first, and their next events, at most two a group; read live with the anon key), **Try the demo** (slim As a member / As the
+  organizer tiles and the demo sign-in on the left, a live scaled preview of `/groups/sample` on the right sized to fit without scrolling;
+  the organizer preview sets `ve_group_demo` so it skips the sign-in), What you get (Why it matters and What your group gets merged; the
+  cards beside four of the sample club's photos, which step aside while Dani shows, `.gp-art`), The numbers (the ladder as bars, tickets,
+  and the guest pass), **Your part** (slim cards and a preview of the organizer's Your members), Questions, and **Apply** (Sean, 2026-10-30:
+  "It needs to be an intake... take this seriously. Answer these questions. Let us determine if you're a right fit"; migration
+  `20261030_group_applications.sql`): five steps, one per view (`#/yes/1` to `/5`, `FORM` in the page): Your group, Your people, How you run
+  it, You, The fit; Next checks the step, answers kept in the browser (`localStorage` `gp_apply`) until sent through `ve-group` `apply`
+  (three a day per email; `APPLY_FIELDS` and `APPLY_REQUIRED` there match `FORM`), saved in `ve_group_applications` (RLS on, no
+  policies), emailed to Sean with every answer and a confirmation to them; from an invitation (`?c=`) it ends on Open my invitation.
+  **Depot > Group Partners > Applications** (`#apps/<status>`, `#app/<id>`; `ve-groups` `applications`, `application_get`,
+  `application_save`): New, Reviewing, Accepted, Declined, every answer, a private note; marking one sends nothing. **Request a meeting**
+  (Sean, 2026-10-30: "I don't want to be in the mix like that... it would be my goal to get community managers who can be that person they
+  speak to... don't put my name in there. Make it general"; migration `20261030_group_meeting_requests.sql`): Apply's first step offers
+  it (`#/meet`, `MEET` in the page, not a tour tab): name, email, group, where it meets, phone, good times, what to talk about, sent
+  through `ve-group` `meet` (three a day per email) as a `ve_group_applications` row with `kind` `meeting`, emailed to the chapter's
+  active Community Managers (`home_community`), else the team inbox, reply-to the requester; they are told only that our team will be in
+  touch. Depot > Group Partners > **Meeting requests** (`#meets/<status>`: New, Set up, Met, Closed). **No public copy names Sean**: a
+  page or email a group reads says our team; a person who wants to talk is routed to a Community Manager, else the team. Old `#/why` and `#/guest`
+  land on What you get and The numbers (`ALIAS`). A preview, a group card, an event or See every group opens full screen in the page
+  (`openView`, with Open in a new tab and Close or Escape). **Dani steps aside** when someone clicks around on their own: following her
+  tour (Back / Next, a page's Next button, Take the tour with Dani, her picture) keeps her; any other move folds her into the corner, and
+  brought back by hand she stays for the visit (`gp_dani_pinned`).
 - A listing's sidebar shows Follow only when it has a social link (it was an empty card on listings with none).
 - **Depot > People > Group Partners** (`/admin/depot/group-partners`, after Nonprofit Partners; migration `20261029_group_partners.sql`,
   run through the one-time `ve-once-group-partners`, now the 410 stub; edge function `ve-groups`, super admin or the admin token). One view
@@ -3035,7 +3080,19 @@ that we're selling"), and a tile in Your tools.
   Directory; Just starting shows its `wizard` cards as numbered first steps; every version shows its What's new. Cards are
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
-- Edge function `ve-dashboard` (`home`, `set_version`; verify_jwt off, the member token checked inside).
+- Edge function `ve-dashboard` (`home`, `set_version`, `recent_votes`, `member_card`; verify_jwt off, the member token checked inside).
+- **Recent activity and the tools search** (Sean, 2026-10-30: "a log of user votes... an icon of the person that voted... a light box
+  of who that person is... I don't have to go off this page"; "a little eyebrow... your tools, and then it has a search... put these in
+  categories"). Super admins get **Recent activity** above Your tools: Recent Members, **Recent Votes**, Recent Leads, Events waiting and
+  Guest Reviews, each the latest 100 scrolling inside a box of the same height (`#dash-recent`, `dpRows`). A vote row is the listing (its
+  name opens it under the Directory tab), who and when, and the voter's picture on the right (`ve-dashboard` `recent_votes`, from
+  `listing_daily_votes`). Any member picture there opens **who they are** in a lightbox (`memberCard`, `ve-dashboard` `member_card`, super
+  admins only): status, Founding Member, role, level, points, votes, check-ins, saves, joined, home chapter, Instagram, their link, their
+  listings and latest votes, Copy email. **Your tools** has a search (every word must match title, line or category; Enter opens the first;
+  Escape clears) and category filters (`TOOL_CATS`, `TOOL_CAT_OF`: Community, Guides and learning, Your account, Admin, Depot pages, Coming
+  2027; a new tool takes `cat` or a `TOOL_CAT_OF` row). For super admins every Depot page is a tool too, read from `TABS` in
+  `public/depot-tabs.js` (the dashboard loads it with `window.VE_DEPOT_LIST_ONLY`, which only exposes `window.VE_DEPOT_TABS`), opening
+  under the Depot tab (`openDepotPage`), so a new Depot page joins the search with its `TABS` row.
 - **A listing opened in the dashboard has its own address** (Sean, 2026-10-27: "if somebody just wanted to share a link to their
   page"): `/dashboard/directory/<slug>` (rewrite in `vercel.json`; back and forward move between the Directory and the listing),
   **Copy link** beside the breadcrumb copies the public `/directory/<slug>`, and the address opened signed out goes straight to
@@ -3209,6 +3266,24 @@ our socials and "A LESARUSS brand" (lesaruss.com). Socials, checked 2026-10-26: 
   a rewrite to an outside host for an old path; redirect it to a page we serve.
 - `/contact` (`contact.html`): one mail link per reason to contact@lesaruss.com with the subject filled in (no form yet), the
   address, the socials and the LESARUSS card.
+
+## Search and share previews, built in (Sean, 2026-10-30)
+
+"When we're building stuff, we're doing it for search and discoverability... not doing it after." Every page that should be found
+ships with them on the first pass, never as a later fix:
+
+- **In the HTML the server sends**, not only set by JavaScript: a real `<title>` ("Name — Vegans Explore"), a `meta description`
+  (about 150 characters, what the page is), `<link rel="canonical">`, `og:title`, `og:description`, `og:image` (1200 x 630; the
+  fallback is `/public/og-default.jpg`, never a file that does not exist) and `twitter:card`. Link previews (Facebook, iMessage,
+  Slack) never run JavaScript.
+- **A page built from the database** gets a server function that writes them in, like `api/listing.js` (every
+  `/directory/<slug>`, with schema.org data: Restaurant, LocalBusiness, Organization, Person, PodcastSeries, Book, Movie) and
+  `api/pulse-article.js` (`/pulse/<slug>`). Change `api/listing.js` with the SEO block in `directory/listing.html` (search "SEO:
+  title, OG tags"): both use the same title, the city only for a local business.
+- **The sitemap is live**: `/sitemap.xml` is `api/sitemap.js` (the main pages, every chapter, every live Guide, every approved
+  listing, every published Pulse article). A new page to be found goes in its `PAGES` or `GUIDES`, a new chapter in `CHAPTERS`.
+  Never link a redirect from it.
+- Pages that should not be found (samples, Depot, account, welcome Guides for invitees) carry `noindex` and stay out of the sitemap.
 
 ## Image conventions
 

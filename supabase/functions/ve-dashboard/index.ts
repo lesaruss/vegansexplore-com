@@ -12,6 +12,11 @@
 //   The version follows the survey and their listings only: the dropdown is gone (Sean, 2026-10-28: "we should know who they are...
 //   using a survey to figure out how to tailor this experience"), so members.dashboard_version is no longer read.
 // POST { action: 'set_version', version }   kept for old pages; it no longer changes what home returns
+// POST { action: 'recent_votes', limit? }   super admins: the latest Directory votes (listing_daily_votes), newest first, up to 100,
+//   each with the listing and the member who voted (Sean, 2026-10-30: "a log of user votes... who they vote for... an icon of the
+//   person that voted").
+// POST { action: 'member_card', member_id } super admins: who a member is, for the dashboard's lightbox: account, level, points,
+//   their votes, check-ins, saves and listings, so Sean never leaves the page.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -54,7 +59,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, dashboard_version, membership_status, mission_survey_completed_at').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'set_version') {
@@ -85,6 +90,41 @@ Deno.serve(async (req) => {
     return json({ ok: true, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
       listings: listings || [], cards, level: level || null,
       survey: { completed: !!member.mission_survey_completed_at, earned: prof?.earned ?? 0, total: prof?.total ?? 250, active: member.membership_status === 'active' } });
+  }
+
+  if (body.action === 'recent_votes') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const limit = Math.min(100, Math.max(1, Number(body.limit) || 100));
+    const { data: votes, error } = await db.from('listing_daily_votes').select('id, member_id, listing_id, created_at').order('created_at', { ascending: false }).limit(limit);
+    if (error) return json({ error: 'load_failed' }, 500);
+    const mids = [...new Set((votes || []).map((v: any) => v.member_id).filter(Boolean))];
+    const lids = [...new Set((votes || []).map((v: any) => v.listing_id).filter(Boolean))];
+    const [{ data: ms }, { data: ls }] = await Promise.all([
+      mids.length ? db.from('members').select('id, name, email, avatar_url, color, member_class').in('id', mids) : Promise.resolve({ data: [] }),
+      lids.length ? db.from('listings').select('id, name, slug, logo_url, category').in('id', lids) : Promise.resolve({ data: [] }),
+    ]);
+    const M = new Map((ms || []).map((m: any) => [m.id, m])), L = new Map((ls || []).map((l: any) => [l.id, l]));
+    return json({ ok: true, votes: (votes || []).map((v: any) => ({ id: v.id, at: v.created_at, member: M.get(v.member_id) || { id: v.member_id }, listing: L.get(v.listing_id) || { id: v.listing_id } })) });
+  }
+
+  if (body.action === 'member_card') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const id = String(body.member_id || '');
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: 'bad_member' }, 400);
+    const { data: m } = await db.from('members').select('id, name, email, username, avatar_url, color, member_class, membership_status, ve_role, ve_tier, founding_member, ambassador_profile, home_community, created_at, entry_paid_at, lesars_balance, referral_code, referral_count, instagram_handle, is_superadmin').eq('id', id).maybeSingle();
+    if (!m) return json({ error: 'not_found' }, 404);
+    const count = (t: string) => db.from(t).select('id', { count: 'exact', head: true }).eq('member_id', id);
+    const [{ data: level }, { data: pts }, votesN, checkinsN, savesN, epN, { data: recent }, { data: owned }] = await Promise.all([
+      db.rpc('ve_member_level', { p_member: id }),
+      db.from('member_points').select('total_points, available_points').eq('member_id', id).limit(1).maybeSingle(),
+      count('listing_daily_votes'), count('ve_checkins'), count('ve_listing_saves'), count('ve_episode_saves'),
+      db.from('listing_daily_votes').select('created_at, listings(name, slug)').eq('member_id', id).order('created_at', { ascending: false }).limit(8),
+      db.from('listings').select('name, slug').eq('status', 'approved').eq('owner_member_id', id).order('name').limit(10),
+    ]);
+    return json({ ok: true, member: m, level: level || null, points: pts || null,
+      counts: { votes: votesN.count || 0, checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
+      recent_votes: (recent || []).map((r: any) => ({ at: r.created_at, name: r.listings?.name || null, slug: r.listings?.slug || null })),
+      listings: owned || [] });
   }
 
   return json({ error: 'unknown_action' }, 400);

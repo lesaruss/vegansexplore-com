@@ -2,6 +2,24 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
+  "functions": {
+    "api/listing.js": { "includeFiles": "directory/listing.html" }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+      ]
+    },
+    {
+      "source": "/((?!ads/).*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "frame-ancestors 'self' https://lesaruss.ai https://*.lesaruss.ai https://vegansexplore.com https://*.vegansexplore.com" }
+      ]
+    }
+  ],
   "rewrites": [
     {
       "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
@@ -24,8 +42,12 @@
       "destination": "/passport"
     },
     {
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
       "source": "/directory/:slug",
-      "destination": "/directory/listing"
+      "destination": "/api/listing?slug=:slug"
     },
     {
       "source": "/products/:slug",
