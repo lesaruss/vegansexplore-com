@@ -2669,10 +2669,11 @@
   // site in renderCommunitySection. Sean: "when I click on your
   // communities, those should change the community that you see in that
   // top pill box with the drop down. And right now it doesn't."
-  function switchActiveCity(slug, member) {
+  // keepDirectory: the Directory's own location filter picked the city, so the Directory is already showing it.
+  function switchActiveCity(slug, member, keepDirectory) {
     setActiveCity(slug);
     renderCityPill(member);
-    renderDirectory(member);
+    if (!keepDirectory) renderDirectory(member);
     renderLeaderboard(member);
     renderEventsTab(member);
     // 2026-09-07 (Logan, Sean caught live): switching cities left Your
@@ -2841,23 +2842,6 @@
     });
   }
 
-  // Local Directory tab (2026-09-07, Sean, Fieldy field note): reuses the
-  // same VE Region Directory widget already live on every public
-  // /communities/[city] hub page (see public/ve-region-directory.js),
-  // scoped to whichever communities the member has actually joined instead
-  // of one hardcoded region. matchListing/counties are copied verbatim from
-  // each region's own hub page so results match exactly.
-  // Built from VE_HUBS (/public/ve-hubs.js) since 2026-10-27, when the DMV became three chapters and North Florida joined, so
-  // the dashboard and the city hubs match the same listings: each hub's match rule, and its counties where it has them.
-  var VE_DASH_REGION_CONFIG = {};
-  (window.VE_HUBS || []).forEach(function (h) {
-    var m = h.match || {};
-    VE_DASH_REGION_CONFIG[h.slug] = {
-      matchListing: function (l) { return !!((m.cities || m.states) && (!m.cities || m.cities.indexOf(l.address_city) > -1) && (!m.states || m.states.indexOf(l.address_state) > -1)); },
-      counties: h.page && h.page.counties
-    };
-  });
-
   // Events tab (2026-09-07, Sean direction): reuses the shared
   // VEHubNews.renderEvents() component already live on every community hub
   // page, scoped by the same city-name terms as the leaderboard.
@@ -2912,18 +2896,20 @@
   }
 
   var DASH_ALL = { events: false, directory: false }, dashEvBanner = null, dashEvCal = null, dashDirBanner = null;
-  // The Directory tab's banner names the section on show, and on Media its picker lists the kinds of media instead of the cities
-  // (Sean, 2026-10-29), the same as /directory.
+  // The Directory tab's banner is the Directory's menu, the same as /directory (LOCKED by Sean 2026-10-30, canon
+  // canon-ve-directory-navigation): its picker lists the sections, the line under the title names the section and its location
+  // ("Food · South Florida"), and the chapter's art and ads follow the location picked in the filter.
   function dashDirSection(k, label, subs) {
+    var L = (subs && subs.location) || {}, chapter = L.applies ? L.chapter || '' : '';
+    if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dash-dir-ad-rail'), chapter);
     if (!dashDirBanner) return;
-    dashDirBanner.setLabel(label);
-    // A kind picked while a listing is open shows that kind (Sean, 2026-10-29: "If I were to now select YouTube, I would expect it to
-    // switch to the YouTube main directory, but it doesn't do anything"): the listing closes first.
-    if (k === 'media' && subs && subs.list.length) dashDirBanner.setChoices(subs.list, subs.active, function (v) {
+    // A section picked while a listing is open shows that section (Sean, 2026-10-29): the listing closes first.
+    dashDirBanner.setChoices(subs.sections, k, function (v) {
       if (listingSlugFromPath()) closeDashboardListing();
-      subs.pick(v);
-    }, 'Kind of media');
-    else dashDirBanner.setChoices(null);
+      dashDirBanner.autoFold(); subs.open(v);
+    }, 'Section');
+    dashDirBanner.setLabel(label + (L.applies && L.name ? ' \u00b7 ' + L.name : ''));
+    dashDirBanner.setArt(chapter);
   }
   // A banner reports its first city while it mounts; only a pick after that (dashEvBanner / dashDirBanner set) counts.
   function dashBannerPick(which, slug, member) {
@@ -4197,15 +4183,12 @@
     // A /dashboard/directory/<slug> address opens that listing over the Directory once it is drawn.
     if (listingSlugFromPath()) { var landSlug = listingSlugFromPath(); setTimeout(function () { if (listingSlugFromPath() === landSlug) openDashboardListing(landSlug, '', true); }, 0); }
     var active = DASH_ALL.directory ? '' : getActiveCity(member);
-    if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dash-dir-ad-rail'), active || '');
     if (window.VECityBanner) {
       if (!dashDirBanner) {
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {
-          key: 'dash-dir', param: false, initial: active || '', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities',
+          key: 'dash-dir', param: false, title: 'Vegan Directory', allTitle: 'Food', pickLabel: 'Section',
           sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
-          // A city picked while a listing is open shows that city's Directory (the listing closes).
-          onChange: function (s) { if (!dashDirBanner) return; if (listingSlugFromPath()) closeDashboardListing(); dashBannerPick('directory', s, member); },
-          // Directory home: the Directory as the menu opens it, its first section, in the city picked (Sean, 2026-10-27).
+          // Directory home: the Directory as the menu opens it, its first section, in the location picked (Sean, 2026-10-27).
           home: { label: 'Directory home', href: '/dashboard/directory', onClick: function () {
             if (location.pathname + location.search !== '/dashboard/directory') history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');
             renderDirectory(member);
@@ -4213,32 +4196,22 @@
           actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }]
         });
         mount.addEventListener('click', function (e) { if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) dashDirBanner.autoFold(); });
-      } else dashDirBanner.setQuiet(active || '');
-    }
-    // All cities: every listing, by region, the same as /directory.
-    if (!active && window.VERegionDirectory) {
-      window.VERegionDirectory.init({ mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; }, onOpenListing: openDashboardListing, url: '/dashboard/directory', onSection: dashDirSection });
-      return;
-    }
-    var cfg = active ? VE_DASH_REGION_CONFIG[active] : null;
-    if (!cfg) {
-      mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Choose a city to see its local business directory.</p>';
-      return;
+      }
     }
     if (!window.VERegionDirectory) {
       mount.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Directory is loading&hellip;</p>';
       return;
     }
-    var initConfig = {
-      mount: 'dash-directory-mount',
-      hub: active,
-      matchListing: cfg.matchListing,
-      onOpenListing: openDashboardListing,
-      url: '/dashboard/directory',
-      onSection: dashDirSection
-    };
-    if (cfg.counties) initConfig.counties = cfg.counties;
-    window.VERegionDirectory.init(initConfig);
+    // Every listing, the location picked in the filter (canon-ve-directory-navigation). It starts on the dashboard's active city,
+    // and a chapter picked there becomes the active city; every location widens only this tab (DASH_ALL).
+    window.VERegionDirectory.init({
+      mount: 'dash-directory-mount', hub: '', regions: true, matchListing: function () { return true; },
+      onOpenListing: openDashboardListing, url: '/dashboard/directory', sectionMenu: true, onSection: dashDirSection,
+      location: { initial: active || '', onChange: function (loc, hub) {
+        DASH_ALL.directory = !hub;
+        if (hub) switchActiveCity(hub.slug, member, true);
+      } }
+    });
   }
 
   // The Depot tab (Sean, 2026-10-27): /dashboard/depot/<page> frames /admin/depot/<page>, with the page's query and hash.

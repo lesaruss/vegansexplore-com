@@ -58,6 +58,14 @@
     { slug: 'london', state: 'GB', name: 'London', tz: 'Europe/London', match: { cities: ['London'] }, places: ['London'], page: { boardAreas: ['Central London', 'North London', 'East London', 'South London', 'West London'], short: 'London', brand: 'London Vegans', regions: 'Shoreditch &middot; Camden &middot; South Bank', banner: '/communities/london/banner.jpg', alt: 'London anime-style illustration of Tower Bridge and the Shard at night', area: 'London, from Shoreditch to South Bank', eventCities: ['London'], adPrefix: 've-london-hub' } }
   ];
   var list = function (a) { return '(' + a.map(function (c) { return '"' + c + '"'; }).join(',') + ')'; };
+  // Each chapter's country and continent, for the Directory's Location filter (Sean, 2026-10-30, canon
+  // canon-ve-directory-navigation: Continent > Country > Chapter). Every chapter is in the United States unless named here;
+  // a chapter in a new country adds its state code here.
+  var WHERE = { GB: ['United Kingdom', 'Europe'] };
+  hubs.forEach(function (h) {
+    var w = WHERE[h.state] || ['United States', 'North America'];
+    h.country = w[0]; h.continent = w[1];
+  });
   hubs.forEach(function (h) {
     var f = [];
     if (h.match.states) f.push('address_state=in.' + list(h.match.states));

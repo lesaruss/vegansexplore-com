@@ -25,7 +25,8 @@
      banner.autoFold();   // call on the first click into the page's content: folds unless the visitor chose
      banner.setAction('Post a job');   // the page's own button can change with what the page shows (the Pulse's tabs)
      banner.set('atlanta'); banner.setQuiet('atlanta'); banner.current(); banner.hub(); banner.matches(hub, {city, state});
-     banner.setChoices([{value, label}], value, pick) lists something else for a while (Media's kinds); setChoices(null) puts the cities back.
+     banner.setChoices([{value, label}], value, pick) lists something else for a while (the Directory's sections); setChoices(null) puts the cities back.
+     banner.setArt('atlanta') changes the picture only, while the picker lists something else.
    Options for the dashboard: initial (the city when the address bar has none) and param: false (leave the address bar alone).
    A page that is not about a city (Media, Sean 2026-10-27: "no one's trying to make media just for one location") picks from
    its own list instead: choices: [{value, label}] (no All option; the picked label goes under the title), pickLabel (what
@@ -301,6 +302,9 @@
       autoFold: function () { if (!chosen) { autoFolded = true; fold(true); } },
       setAction: function (label) { if (actionBtn && label) actionBtn.textContent = label; },
       setHome: function (href) { if (homeBtn && href) homeBtn.href = href; },
+      // setArt(slug): the chapter's picture behind the banner without touching the picker, for a page whose picker lists something
+      // else (the Directory's sections; its location is in the filter, canon-ve-directory-navigation). '' is the all cities art.
+      setArt: function (slug) { current = hubBySlug(slug) ? slug : ''; paint(); },
       setLabel: function (text) { label = text || ''; if (swapped) { cityEl.textContent = label; fitTitle(); return; } show(current, true); },
       setChoices: function (list, value, pick, pickLabel) {
         if (list && list.length) {

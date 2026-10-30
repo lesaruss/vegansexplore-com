@@ -132,14 +132,37 @@
     // The sub-sections fill the row under the tabs (Sean, 2026-10-27; the search moved under them, beside the filter icon).
     + '.vrd-root .subcat-list{flex:1 1 0;min-width:0;display:flex;flex-wrap:wrap;gap:8px 6px}'
     // The search and the filter icon, one row under the tabs; the filters drop down under the icon (Sean, 2026-10-27).
-    + '.vrd-root .vrd-tools{position:relative;display:flex;align-items:center;gap:10px;margin-bottom:16px}'
+    // The button reads Filters with how many are set, wider, a clear gap after the search (Sean, 2026-10-30, canon
+    // canon-ve-directory-navigation: "make it clear that that's the filter").
+    + '.vrd-root .vrd-tools{position:relative;display:flex;align-items:center;gap:16px;margin-bottom:16px}'
     + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:0}'
     + '.vrd-root .vrd-tools .vrd-search-input{height:44px;border-radius:6px;padding:0 14px 0 34px;font-size:13px}'
-    + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;min-width:132px;height:44px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}'
     + '.vrd-root .vrd-filter-btn:hover,.vrd-root .vrd-filter-btn[aria-expanded=true]{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f)}'
     + '.vrd-root .vrd-filter-btn[aria-expanded=true]{background:var(--vb-soft,#f0faf4)}'
     + '.vrd-root .vrd-filter-btn:focus-visible{outline:2px solid var(--vb-accent,#5EC47A);outline-offset:2px}'
-    + '.vrd-root .vrd-filter-count{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--vb-accent-ink,#2d7a4f);color:#fff;font-size:10px;font-weight:800;line-height:18px;text-align:center}'
+    + '.vrd-root .vrd-filter-count{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--vb-accent-ink,#2d7a4f);color:#fff;font-size:10px;font-weight:800;line-height:18px;letter-spacing:0;text-align:center}'
+    + '.vrd-root .vrd-filter-count[hidden]{display:none}'
+    // The location on show, by the search, with an x to clear it: never hidden inside the filter (canon-ve-directory-navigation).
+    + '.vrd-root .vrd-loc-tag{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}'
+    + '.vrd-root .vrd-loc-tag[hidden]{display:none}'
+    + '.vrd-root .vrd-loc-tag:hover{border-color:var(--vb-accent-ink,#2d7a4f)}'
+    + '.vrd-root .vrd-loc-tag .vrd-x{font-size:15px;line-height:1;margin-left:2px}'
+    // Location, first in the filter: Continent, Country, Chapter, each waiting on the one before.
+    + '.vrd-root .vrd-loc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}'
+    + '.vrd-root .vrd-loc-grid .sb-f{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
+    + '.vrd-root .vrd-loc-grid .geo-label{margin:0;font-size:10px;letter-spacing:.08em;color:#666}'
+    + '.vrd-root .vrd-loc-grid .sb-f select{flex:0 0 auto;height:40px}'
+    + '.vrd-root .vrd-loc-grid .sb-f select:disabled{background-color:#f4f4f4;color:#999;cursor:not-allowed;border-color:#e6e6e6}'
+    + '.vrd-root .vrd-pop-sec.vrd-loc[hidden]{display:none}'
+    // With the sections in the page's banner, the tab row under it is the section's sub-sections (canon-ve-directory-navigation).
+    + '.vrd-root.vrd-menu-out .cat-tabs{display:none}'
+    + '.vrd-root .vrd-subtabs{display:flex;flex-wrap:wrap;gap:0;border-bottom:2px solid #e8e8e8;margin:-16px 0 16px}'
+    + '.vrd-root .vrd-subtabs .subcat-pill{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:13px 16px;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-2px;background:transparent;color:#666;white-space:nowrap}'
+    + '.vrd-root .vrd-subtabs .subcat-pill.sc-active{background:transparent;color:#1a1a1a;border-color:var(--vb-accent,#5EC47A)}'
+    + '.vrd-root .vrd-subtabs .subcat-pill:hover:not(.sc-active){color:#333;border-color:#ccc}'
+    + '@media(max-width:768px){.vrd-root .vrd-subtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.vrd-root .vrd-subtabs::-webkit-scrollbar{display:none}.vrd-root .vrd-subtabs .subcat-pill{font-size:10px;padding:12px}}'
+    + '@media(max-width:600px){.vrd-root .vrd-tools{flex-wrap:wrap;gap:10px}.vrd-root .vrd-tools .vrd-search-wrap{flex:1 1 100%;order:-1}.vrd-root .vrd-filter-btn{flex:1 1 auto}.vrd-root .vrd-loc-grid{grid-template-columns:minmax(0,1fr);gap:12px}}'
     + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);padding:0;overflow:hidden}'
     + '.vrd-root .vrd-filter-pop[hidden]{display:none}'
     + '.vrd-root .vrd-pop-sec{padding:18px 20px}'
@@ -269,7 +292,13 @@
       '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="newest" data-years hidden>Newest first</option><option value="oldest" data-years hidden>Oldest first</option>' +
       '</select></span>';
     var geoHtml = '';
-    if (config && config.regions) {
+    if (config && config.location) {
+      // Location mode (canon-ve-directory-navigation): the chapter is picked in the Location section above, so Area is that
+      // chapter's cities. The region dropdown stays hidden; it only carries each chapter's cities (populateGeoBar).
+      geoHtml = '<span class="geo-label">Area</span>' +
+        '<select aria-label="Filter by region" class="sort-select" data-vrd-region="' + cat.key + '" style="display:none"><option value="">All regions</option></select>' +
+        '<select aria-label="Filter by city" class="sort-select" data-vrd-city="' + cat.key + '"><option value="">All Cities</option></select>';
+    } else if (config && config.regions) {
       // Every city (/directory): a region first, then its cities.
       geoHtml = '<span class="geo-label">Area</span>' +
         '<select aria-label="Filter by region" class="sort-select" data-vrd-region="' + cat.key + '"><option value="">All regions</option></select>' +
@@ -345,15 +374,29 @@
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
     // as an icon to the right of the search... they see the filter options and sort by options appear as a drop down. When they
     // click the icon again it closes"). The icon shows how many filters are set.
-    var filterBtn = '<button type="button" class="vrd-filter-btn" data-vrd-filter aria-expanded="false" aria-controls="' + cat.key + '-filters" aria-label="Sort and filter" title="Sort and filter">' +
-      '<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
-      '<span class="vrd-filter-count" hidden></span></button>';
+    // It reads Filters, with how many are set (Sean, 2026-10-30: "make it clear that that's the filter").
+    var filterBtn = '<button type="button" class="vrd-filter-btn" data-vrd-filter aria-expanded="false" aria-controls="' + cat.key + '-filters" title="Sort and filter">' +
+      '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
+      '<span>Filters</span><span class="vrd-filter-count" hidden></span></button>';
+    // Location mode: the chapter on show as a tag by the search, and the Location section first in the filter.
+    var locOn = config && config.location && LOC_SECTIONS.indexOf(cat.key) >= 0;
+    var locTag = locOn ? '<button type="button" class="vrd-loc-tag" data-vrd-loc-clear hidden title="Show every location">' +
+      '<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>' +
+      '<span data-vrd-loc-name></span><span class="vrd-x" aria-hidden="true">&times;</span></button>' : '';
+    var locSec = locOn ? '<div class="vrd-pop-sec vrd-loc"><div class="vrd-pop-h">Location</div><div class="vrd-loc-grid">' +
+      LOC_LEVELS.map(function (lv) { return '<span class="sb-f"><span class="geo-label">' + lv[1] + '</span><select class="sort-select" aria-label="' + lv[1] + '" data-vrd-loc="' + lv[0] + '"></select></span>'; }).join('') +
+      '</div></div>' : '';
+    // With the sections in the page's banner (config.sectionMenu), the sub-sections are the tab row under it, not in the filter.
+    var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns + '</div>' : '';
+    var subInPop = cat.subcats.length && !subTabs;
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
       // The sub-sections are in the dropdown too, first (Sean, 2026-10-27: "It should also have the Restaurant, Bakeries, Food
       // Truck options in the icon as well"); the search says which one is showing ("Search Restaurants...").
-      '<div class="vrd-tools">' + searchHtml + filterBtn +
+      subTabs +
+      '<div class="vrd-tools">' + searchHtml + locTag + filterBtn +
       '<div class="vrd-filter-pop" id="' + cat.key + '-filters" role="region" aria-label="Sort and filter" hidden>' +
-        (cat.subcats.length ? '<div class="vrd-pop-sec"><div class="vrd-pop-h">' + esc(cat.label) + '</div><div class="subcat-list">' + subcatBtns + '</div></div>' : '') +
+        locSec +
+        (subInPop ? '<div class="vrd-pop-sec"><div class="vrd-pop-h">' + esc(cat.label) + '</div><div class="subcat-list">' + subcatBtns + '</div></div>' : '') +
         '<div class="vrd-pop-sec"><div class="vrd-pop-h">Sort and filter</div>' + buildBar(cat, config) + '</div>' +
         '<div class="vrd-pop-foot"><button type="button" class="vrd-pop-btn" data-vrd-reset>Reset filters</button>' +
         '<button type="button" class="vrd-pop-btn vrd-pop-done" data-vrd-done>Done</button></div>' +
@@ -372,7 +415,7 @@
         return '<button class="cat-tab' + (c.key === 'food' ? ' active' : '') + '" data-vrd-tab="' + c.key + '" role="tab">' + c.icon + ' ' + c.label + '</button>';
       }).join('') + '</div>';
     var panels = catsFor().map(function (c) { return skeletonForCat(c, config); }).join('');
-    return '<div class="vrd-root">' + tabs + panels + '</div>';
+    return '<div class="vrd-root' + (config && config.sectionMenu ? ' vrd-menu-out' : '') + '">' + tabs + panels + '</div>';
   }
 
   function makeAvatar(l) {
@@ -590,6 +633,99 @@
     'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true },
     'Activists': { geo: false }, 'Content Creators': { geo: false }, 'Athletes': { geo: false }, 'Physicians': { geo: false, spec: true },
     'Health Experts': { geo: false }, 'Chefs': { geo: false }, 'Founders': { geo: false } };
+  // Location (Sean, 2026-10-30, canon canon-ve-directory-navigation: "you would pick the location, maybe the continent... then
+  // the country, and then the city... grayed out until you choose the first one"). With config.location the city leaves the page's
+  // banner and is picked first in the filter: Continent, Country, Chapter (VE_HUBS[].continent, .country), then Area, the
+  // chapter's cities. Every listing is loaded once and the location filters the cards by data-hubs, so a pick redraws nothing.
+  // Media and People have no location, nor do the brand sub-sections unless Sells at is Markets & events (geoApplies).
+  var LOC_SECTIONS = ['food', 'products', 'services', 'community', 'vetting'];
+  var LOC_LEVELS = [['continent', 'Continent'], ['country', 'Country'], ['chapter', 'Chapter']];
+  var LOC = { continent: '', country: '', chapter: '' }, LOCCFG = null;
+  function locHubs() { return window.VE_HUBS || []; }
+  function locHub() { return LOC.chapter ? locHubs().filter(function (h) { return h.slug === LOC.chapter; })[0] || null : null; }
+  function locChoices(level) {
+    var seen = {}, out = [];
+    locHubs().forEach(function (h) {
+      var v, label;
+      if (level === 'continent') { v = h.continent; label = v; }
+      else if (level === 'country') { if (h.continent !== LOC.continent) return; v = h.country; label = v; }
+      else { if (h.country !== LOC.country) return; v = h.slug; label = h.name; }
+      if (v && !seen[v]) { seen[v] = 1; out.push({ value: v, label: label }); }
+    });
+    return out;
+  }
+  // A level with one choice fills itself (Europe fills the United Kingdom, which fills London).
+  function locFill() {
+    if (LOC.continent && !LOC.country) { var c = locChoices('country'); if (c.length === 1) LOC.country = c[0].value; }
+    if (LOC.country && !LOC.chapter) { var h = locChoices('chapter'); if (h.length === 1) LOC.chapter = h[0].value; }
+  }
+  function locSetTo(level, v) {
+    if (level === 'continent') LOC = { continent: v || '', country: '', chapter: '' };
+    else if (level === 'country') { LOC.country = v || ''; LOC.chapter = ''; }
+    else {
+      LOC.chapter = v || '';
+      var h = locHub(); if (h) { LOC.country = h.country; LOC.continent = h.continent; }
+    }
+    if (v) locFill();
+  }
+  // initial: a chapter's slug, or {continent, country, chapter} as the page kept it.
+  function locFrom(init) {
+    LOC = { continent: '', country: '', chapter: '' };
+    if (!init) return;
+    if (typeof init === 'string') { if (locHubs().some(function (h) { return h.slug === init; })) locSetTo('chapter', init); return; }
+    if (init.chapter && locHubs().some(function (h) { return h.slug === init.chapter; })) { locSetTo('chapter', init.chapter); return; }
+    if (init.continent && locChoices('continent').some(function (c) { return c.value === init.continent; })) {
+      locSetTo('continent', init.continent);
+      if (init.country && locChoices('country').some(function (c) { return c.value === init.country; })) locSetTo('country', init.country);
+    }
+  }
+  // The chapters the location covers, or null for every location.
+  function locSet() {
+    if (LOC.chapter) return [LOC.chapter];
+    if (!LOC.continent) return null;
+    return locHubs().filter(function (h) { return h.continent === LOC.continent && (!LOC.country || h.country === LOC.country); }).map(function (h) { return h.slug; });
+  }
+  function locName() { var h = locHub(); return h ? h.name : LOC.country || LOC.continent || ''; }
+  function geoApplies(panel) {
+    if (!panel) return false;
+    var sf = subFiltersFor(panel, currentSubcat(panel)), sells = panel.querySelector('[data-vrd-sells]');
+    return !(sf.geo === false && !(sf.sells && sells && sells.value === '1'));
+  }
+  function locApplies(panel) { return !!LOCCFG && !!panel && LOC_SECTIONS.indexOf(panel.id.replace(/^board-/, '')) >= 0 && geoApplies(panel); }
+  // The tag by the search and the Location section show only where location applies.
+  function locShow(panel) {
+    var on = locApplies(panel), sec = panel.querySelector('.vrd-loc'), tag = panel.querySelector('[data-vrd-loc-clear]');
+    if (sec) sec.hidden = !on;
+    if (tag) { var n = locName(); tag.hidden = !(on && n); var nm = tag.querySelector('[data-vrd-loc-name]'); if (nm) nm.textContent = n; tag.setAttribute('aria-label', 'Showing ' + n + '. Show every location'); }
+  }
+  // Every panel's three dropdowns, its tag and its Area (the chapter's cities) as LOC stands.
+  function locPaint(root) {
+    if (!LOCCFG) return;
+    var all = { continent: 'All continents', country: 'All countries', chapter: 'All chapters' };
+    root.querySelectorAll('.board-panel').forEach(function (panel) {
+      panel.querySelectorAll('[data-vrd-loc]').forEach(function (sel) {
+        var lv = sel.getAttribute('data-vrd-loc');
+        var waiting = (lv === 'country' && !LOC.continent) || (lv === 'chapter' && !LOC.country);
+        sel.innerHTML = '<option value="">' + all[lv] + '</option>' + (waiting ? '' : locChoices(lv).map(function (c) { return '<option value="' + esc(c.value) + '">' + esc(c.label) + '</option>'; }).join(''));
+        sel.value = LOC[lv] || ''; sel.disabled = waiting;
+      });
+      var bar = panel.querySelector('.sort-bar'), regionSel = bar && bar.querySelector('[data-vrd-region]'), citySel = bar && bar.querySelector('[data-vrd-city]');
+      if (regionSel && citySel) {
+        var map = {}; try { map = JSON.parse(regionSel.dataset.cities || '{}'); } catch (e) {}
+        var keep = citySel.value, cities = LOC.chapter ? map[LOC.chapter] || [] : [];
+        citySel.innerHTML = '<option value="">All Cities</option>' + cities.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join('');
+        citySel.value = cities.indexOf(keep) >= 0 ? keep : ''; citySel.style.display = '';
+      }
+      locShow(panel);
+    });
+  }
+  function locChanged(root) {
+    locPaint(root);
+    root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, null, true); countFilters(panel); });
+    tellSection(root, LOCCFG);
+    if (LOCCFG.location.onChange) LOCCFG.location.onChange({ continent: LOC.continent, country: LOC.country, chapter: LOC.chapter }, locHub());
+  }
+
   // Which regions (hub slugs) a listing counts in on /directory: its address's, the chapters it serves, '*' for every one.
   function hubsOf(l) {
     var c = l.communities || [];
@@ -735,6 +871,7 @@
     bindCardClicks(root, config);
     bindAdmin(root);
 
+    locPaint(root);
     root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, config, true); });
   }
 
@@ -766,7 +903,8 @@
     }
     // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
     var sells = bar.querySelector('[data-vrd-sells]');
-    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = sf.geo === false && !(sf.sells && sells && sells.value === '1');
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = (sf.geo === false && !(sf.sells && sells && sells.value === '1')) || (!!LOCCFG && !LOC.chapter);
+    if (LOCCFG) locShow(panel);
   }
 
   function applyPanelFilters(panel, state, resetPage) {
@@ -799,6 +937,9 @@
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
     var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
     if (sf.geo === false && sells !== '1') { city = ''; county = ''; region = ''; }
+    // Location mode: the chapters the location covers, wherever it applies (locApplies).
+    var hubSet = null;
+    if (LOCCFG) { region = ''; if (locApplies(panel)) hubSet = locSet(); }
     // Search is scoped to this panel/category only (2026-09-07, Logan, Sean
     // correction) -- each panel has its own [data-vrd-search] input now.
     var searchInput = panel.querySelector('[data-vrd-search]');
@@ -812,6 +953,7 @@
       if (city) { geoOk = card.dataset.city === city; }
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
       if (geoOk && region) { var hs = card.dataset.hubs || ''; geoOk = hs === '*' || hs.split('|').indexOf(region) > -1; }
+      if (geoOk && hubSet) { var hl = card.dataset.hubs || ''; geoOk = hl === '*' || hl.split('|').some(function (x) { return hubSet.indexOf(x) > -1; }); }
       if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
       if (booktype && card.dataset.booktype !== booktype) geoOk = false;
       if (htype && card.dataset.htype !== htype) geoOk = false;
@@ -947,7 +1089,12 @@
       pick: function (v) {
         var b = pills.filter(function (x) { return x.getAttribute('data-vrd-subcat') === v; })[0];
         if (b && !b.classList.contains('sc-active')) b.click();
-      }
+      },
+      // The sections, for a banner that is the Directory's menu (config.sectionMenu, canon-ve-directory-navigation), and open(key).
+      sections: catsFor().map(function (x) { return { value: x.key, label: x.label }; }),
+      open: function (k) { var t = root.querySelector('[data-vrd-tab="' + k + '"]'); if (t && !t.classList.contains('active')) t.click(); },
+      // Location mode: whether this section and sub-section use the location, and what it is.
+      location: LOCCFG ? { applies: locApplies(panel), name: locName(), chapter: LOC.chapter, continent: LOC.continent, country: LOC.country } : null
     });
   }
   // How many filters differ from where they started, on the icon.
@@ -956,6 +1103,7 @@
     if (!badge) return;
     var n = 0;
     panel.querySelectorAll('.vrd-filter-pop select').forEach(function (sel) {
+      if (sel.hasAttribute('data-vrd-loc')) return;
       var wrap = sel.closest('.vrd-sub'); if (wrap && wrap.hidden) return;
       if (sel.style.display === 'none' || sel.hidden) return;
       if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart) n++;
@@ -1054,7 +1202,18 @@
       });
     });
     root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat], [data-vrd-spec]').forEach(function (sel) {
-      sel.addEventListener('change', function () { var panel = sel.closest('.board-panel'); if (sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); applyPanelFilters(panel, state, true); });
+      sel.addEventListener('change', function () {
+        var panel = sel.closest('.board-panel');
+        if (sel.hasAttribute('data-vrd-sells')) { syncSubFilters(panel); if (panel.classList.contains('active')) tellSection(root, state); }
+        applyPanelFilters(panel, state, true);
+      });
+    });
+
+    root.querySelectorAll('[data-vrd-loc]').forEach(function (sel) {
+      sel.addEventListener('change', function () { locSetTo(sel.getAttribute('data-vrd-loc'), sel.value); locChanged(root); });
+    });
+    root.querySelectorAll('[data-vrd-loc-clear]').forEach(function (b) {
+      b.addEventListener('click', function () { locSetTo('continent', ''); locChanged(root); });
     });
 
     root.querySelectorAll('[data-vrd-city]').forEach(function (sel) {
@@ -1217,8 +1376,13 @@
       if (!root) return;
       useBrand(config.brand);
       injectStyleOnce();
+      // config.location = {initial, onChange(loc, hub)}: the location is picked in the filter (canon-ve-directory-navigation).
+      LOCCFG = config.location ? config : null;
+      if (LOCCFG) locFrom(config.location.initial);
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
+      locPaint(root);
+      root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); });
       fetchAll(root, config);
       tellSection(root, config);
       if (config.url) {

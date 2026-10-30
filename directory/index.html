@@ -13,8 +13,8 @@
        sure it's up to code"). Every city's listings through /public/ve-region-directory.js, the
        same component the city hubs use, so the sections, badges, vegan filters, search, the
        public vetting rule (/public/ve-trust.js) and votes match everywhere. The banner is the shared
-       city banner (/public/ve-city-banner.js, 2026-10-26), the same one Events and Communities wear:
-       the chosen city's art (New York for all cities), ?city=<hub slug>, Collapse / Expand. */
+       city banner (/public/ve-city-banner.js, 2026-10-26); since 2026-10-30 its dropdown is the Directory's sections and the
+       location is picked in the filter (canon-ve-directory-navigation). */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
@@ -86,52 +86,44 @@
 
   <script>
   (function () {
-    // Same rule as each hub page: the city must be in `cities` and the state in `states`, whichever are given.
-    function matcher(hub) {
-      if (!hub) return function () { return true; };
-      return function (l) {
-        if (hub.match.cities && hub.match.cities.indexOf(l.address_city) < 0) return false;
-        if (hub.match.states && hub.match.states.indexOf(l.address_state) < 0) return false;
-        return true;
-      };
+    // The banner's dropdown is the Directory's menu and the location is picked in the filter (LOCKED by Sean 2026-10-30, canon
+    // canon-ve-directory-navigation: "what should be in this drop down is the actual directory main navigation... the first
+    // thing in the filter would be choosing the city"). Every listing loads once; the filter's Continent > Country > Chapter
+    // narrows the cards, the line under the title reads "Food · South Florida", and the chapter's art and ads follow it.
+    // The location is kept across visits (localStorage ve_dir_loc), never in the address: a shared link opens in the
+    // visitor's own location. First visit: a member's home chapter, else every location.
+    var LOC_KEY = 've_dir_loc', loc0 = null;
+    try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
+    if (!loc0) { try { var old = sessionStorage.getItem('ve_dir_city'); if (old) loc0 = old; } catch (e) {} }
+    if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = me.home_community; }
+    // An old ?city= link still opens on that chapter before the address drops it.
+    var q0 = new URLSearchParams(location.search);
+    if (q0.get('city') !== null) {
+      loc0 = q0.get('city') || { continent: '' };
+      q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash);
     }
-    var lastSection = null;
-    function show(slug, hub) {
-      if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dir-ad-rail'), hub ? hub.slug : '');
-      try { sessionStorage.setItem('ve_dir_city', slug || ''); } catch (e) {}
-      // url: each section and sub-section has its own address, ?tab=food&sub=markets, kept as the city changes (Sean, 2026-10-27).
-      if (window.VERegionDirectory) VERegionDirectory.init({ mount: 've-region-directory', hub: hub ? hub.slug : '', regions: !hub, matchListing: matcher(hub), url: '/directory',
-        // The line under Vegan Directory names the section on show (Sean, 2026-10-27: "is it redundant for us to have the title as
-        // well as the dropdown?"): the city is in the picker.
-        onSection: function (key, label, subs) { lastSection = [key, label, subs]; if (banner) { banner.setLabel(label); mediaPick(key, subs); } } });
-    }
-    // The city is not in the address (Sean, 2026-10-27: "it could be the same URL for North Florida, Atlanta... it would just show
-    // different things based off of what location it's pulling"): the pick is kept for the visit, and an old ?city= link still
-    // opens on that city before the address drops it.
-    var q0 = new URLSearchParams(location.search), city0 = q0.get('city');
-    if (city0 === null) { try { city0 = sessionStorage.getItem('ve_dir_city') || ''; } catch (e) { city0 = ''; } }
-    else { q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash); }
-    // Expanded on landing; the first click into a section folds it, unless the visitor chose with the button
-    // (Sean, 2026-10-24: "an option to collapse and still see the city selector"). The key keeps earlier visits' choice.
     var banner = VECityBanner.mount('dir-hero', {
-      key: 'dir', title: 'Vegan Directory', allTitle: 'Every City', allLabel: 'All cities', param: false, initial: city0,
+      key: 'dir', title: 'Vegan Directory', allTitle: 'Food', param: false, pickLabel: 'Section',
       sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
       // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
       home: { label: 'Directory home', href: '/directory' },
       // Submit your listing (Sean, 2026-10-27): Join the Directory's Add it, $11 or 1,100 points a listing.
-      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }],
-      onChange: show
+      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }]
     });
-    // Media is not about a city (Sean, 2026-10-29: "the drop down shows the cities, and instead it should show the different
-    // types... podcasts, YouTube, news outlets, documentary films, books, and any new thing"): on Media the picker lists its kinds
-    // and picks one; every other section has the cities back.
-    function mediaPick(key, subs) {
-      if (key === 'media' && subs && subs.list.length) banner.setChoices(subs.list, subs.active, subs.pick, 'Kind of media');
-      else banner.setChoices(null);
+    var rail = document.getElementById('dir-ad-rail');
+    // The section on show: the banner lists the sections with it picked, names it with its location, wears the chapter's art,
+    // and the rail runs that chapter's two banners (Media and People, which have no location, the all cities pair).
+    function onSection(key, label, subs) {
+      var L = subs.location || {}, chapter = L.applies ? L.chapter || '' : '';
+      banner.setChoices(subs.sections, key, function (k) { banner.autoFold(); subs.open(k); }, 'Section');
+      banner.setLabel(label + (L.applies && L.name ? ' \u00b7 ' + L.name : ''));
+      banner.setArt(chapter);
+      if (window.VEAdRail) VEAdRail.chapter(rail, chapter);
     }
-    // The first draw ran while the banner was being made: name its section now (and, on Media, list its kinds).
-    if (lastSection) { banner.setLabel(lastSection[1]); mediaPick(lastSection[0], lastSection[2]); }
-    else { var t0 = document.querySelector('#ve-region-directory .cat-tab.active'); if (t0) banner.setLabel(t0.textContent.trim()); }
+    VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
+      // url: each section and sub-section has its own address, ?tab=food&sub=markets (Sean, 2026-10-27).
+      url: '/directory', sectionMenu: true, onSection: onSection,
+      location: { initial: loc0, onChange: function (loc) { try { localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {} } } });
     document.getElementById('ve-region-directory').addEventListener('click', function (e) {
       if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) banner.autoFold();
     });

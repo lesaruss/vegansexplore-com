@@ -1824,6 +1824,38 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   Contribute left the welcome row (Sean, 2026-10-26), the welcome row (with View As) shows only on the Dashboard tab, and every
   banner, on the dashboard or a public page, sits 24px under the menu (`.vcb` margin in `ve-city-banner.js`).
 
+## Directory navigation (LOCKED by Sean 2026-10-30, playbook `ve-directory-navigation`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-directory-navigation`; migration
+`20261030_directory_navigation_canon.sql`). Sean: "what should be in this drop down is the actual directory main navigation... the
+first thing in the filter would be choosing the city... continent, then... the country, and then... the city... grayed out until you
+choose the first one." Built the same day on `/directory` and the dashboard's Directory tab; the city hubs are unchanged (their
+Directory is their chapter's).
+
+- **The banner's dropdown is the Directory's menu**: Food, Products, Services, Media, Community, People, Being vetted (members),
+  Review (super admins) (`config.sectionMenu`; `tellSection` passes `subs.sections` and `subs.open(key)`; the banner's `setChoices`).
+  The line under the title is the section and, where it applies, the location ("Food · South Florida"); the banner wears the
+  chapter's art (`VECityBanner` `setArt(slug)`, which leaves the picker alone).
+- **The row under the banner is the section's sub-sections** (`.vrd-subtabs`, the pills as tabs; the section tab row is hidden,
+  `.vrd-menu-out`), out of the filter. On phones it scrolls sideways.
+- **The filter button reads Filters** with how many are set, wider, 16px after the search (every page with the component, hubs too).
+- **Location is first in the filter** (`config.location = {initial, onChange(loc, hub)}`): Continent, Country, Chapter
+  (`VE_HUBS[].continent`, `.country`, set in `ve-hubs.js` from `WHERE`; a chapter in a new country adds its state code there),
+  each disabled until the one above is picked, a level with one choice filled by itself (Europe fills the United Kingdom and London),
+  All at every level, then Area (the chapter's cities). Every listing loads once and the location filters the cards by `data-hubs`
+  (`LOC`, `locSet`, `locApplies` in `ve-region-directory.js`), so a pick redraws nothing. A **tag by the search** names the location
+  with an x that clears it (`[data-vrd-loc-clear]`); the location never hides inside the filter and is not counted on the button.
+- **Where it applies**: Food, Products, Services, Community, Being vetted (`LOC_SECTIONS`); not Media or People; not Food Brands or
+  Nutrition & Supplements unless Sells at is Markets & events (`geoApplies`). Where it does not apply, the location filters nothing.
+- **Remembered across visits**: `/directory` keeps it in `localStorage` `ve_dir_loc` (a first visit takes the member's home chapter,
+  else every location); never in the address, and an old `?city=` link still opens on that chapter. The dashboard starts on its
+  active city, and a chapter picked there becomes the active city (`switchActiveCity(slug, member, true)`), every location widening
+  only the tab (`DASH_ALL.directory`).
+- **The ad rail follows it**: the chapter's two banners where the location applies and a chapter is picked, else the All cities pair.
+- **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
+  keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
+  an Area step in location mode (Area is the chapter's cities).
+
 ## Media (Sean, 2026-10-27)
 
 "Let's do media instead of shows... what we're showing on media is our featured media plus the top 12 listings voted by you
@@ -1853,12 +1885,8 @@ there, never something members add or follow (the Follow Shows tiles and modal a
   listing holds Listen here and the platforms. The old `/podcast/<slug>/` pages are gone and forward to the listings (`vercel.json`). Pre-Vegans got
   its listing the same day (`20261027_featured_podcasts.sql`); its feed's last episode is February 2025, so it reads On hiatus.
 
-**The Directory's Media picker lists the kinds of media** (Sean, 2026-10-29: "the drop down shows the cities, and instead it should
-show the different types... podcasts, YouTube, news outlets, documentary films, books, and any new thing"). On the Directory's Media
-section (`/directory` and the dashboard's Directory tab) the banner's picker is Podcasts, YouTube, News Outlets, Documentaries & Films,
-Books and All media, the section's own pills (`tellSection` in `ve-region-directory.js` passes them to `onSection(key, label, subs)`), so a
-new sub-section joins it; a pick opens that pill, a pill updates the picker, and any other section has the cities back
-(`VECityBanner` `setChoices(list, value, pick)`, `setChoices(null)`; `mediaPick` in `directory/index.html`, `dashDirSection` in center-console).
+**The Directory's Media picker lists the kinds of media** (Sean, 2026-10-29) was replaced on 2026-10-30 by Directory navigation
+(below): the banner lists the sections everywhere, and Media's kinds are the tab row under it.
 
 **YouTube channels** (Sean, 2026-10-29: "find some popular YouTube vegan channels... any new video that pops up will show on their page...
 the video on the left, and then a summary, like a 250 character summary... all their Instagrams... below it, you will see thumbnails of
