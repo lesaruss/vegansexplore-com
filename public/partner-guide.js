@@ -382,7 +382,7 @@
       forms = form('buy-' + o.slug, 'checkout', o, 'Continue to secure checkout');
     } else if (o.exit === 'meeting') {
       var soldOut = o.slug === 'activation-partner' && d.activation_spots_left <= 0;
-      actions = '<button type="button" class="vpg-btn" data-open="meet-' + o.slug + '">Book a call with Sean</button>' +
+      actions = '<button type="button" class="vpg-btn" data-open="meet-' + o.slug + '">Book a call with our team</button>' +
         (soldOut ? '' : '<button type="button" class="vpg-btn ghost" data-open="hold-' + o.slug + '">Reserve, 7-day hold</button>');
       forms = form('meet-' + o.slug, 'meeting', o, 'Request my call') + (soldOut ? '' : form('hold-' + o.slug, 'reserve', o, 'Hold my spot for 7 days'));
     } else {
@@ -399,9 +399,9 @@
 
   function questionStep() {
     var c = city();
-    var who = G.state.audience === 'national_brand' ? 'National brand questions go straight to Sean.'
+    var who = G.state.audience === 'national_brand' ? 'National brand questions go to the Vegans Explore team.'
       : (c.status === 'live' && c.manager_name && c.manager_routed
-        ? 'Your question goes to ' + esc(c.manager_name) + ', our ' + esc(c.name) + ' Community Manager, with Sean copied.'
+        ? 'Your question goes to ' + esc(c.manager_name) + ', our ' + esc(c.name) + ' Community Manager.'
         : 'Your question goes to the Vegans Explore team.');
     return '<h2 class="vpg-q-title" id="vpg-q-title">Ask us anything.</h2><p class="vpg-q-sub">' + who + ' We reply by email.</p>' + form('question', 'question', null, 'Send my question', true);
   }
@@ -409,8 +409,8 @@
   function form(id, kind, offer, submitLabel, always) {
     var me = member(), business = G.state.audience && G.state.audience !== 'attendee';
     var f = '<form class="vpg-form' + (always ? ' always' : '') + '" id="vpg-f-' + id + '" data-kind="' + kind + '" data-offer="' + (offer ? offer.slug : '') + '" novalidate>';
-    if (kind === 'reserve') f += '<p class="vpg-hint" style="margin:0;">Your spot is held for 7 days while pricing is finalized with Sean. No payment today.</p>';
-    if (kind === 'meeting') f += '<p class="vpg-hint" style="margin:0;">You will get Sean\'s calendar right after this, plus a copy by email.</p>';
+    if (kind === 'reserve') f += '<p class="vpg-hint" style="margin:0;">Your spot is held for 7 days while we finalize pricing with you. No payment today.</p>';
+    if (kind === 'meeting') f += '<p class="vpg-hint" style="margin:0;">You will get a link to pick a time right after this, plus a copy by email.</p>';
     f += '<div class="vpg-row"><label>Name<input class="vpg-input" name="name" autocomplete="name" required value="' + esc(me.name || '') + '"></label>' +
       '<label>Email<input class="vpg-input" name="email" type="email" autocomplete="email" required value="' + esc(me.email || '') + '"></label></div>';
     if (business || kind === 'question') f += '<div class="vpg-row"><label>Business or organization' + (kind === 'question' ? ' (optional)' : '') + '<input class="vpg-input" name="company" autocomplete="organization"></label>' +
@@ -491,8 +491,8 @@
         var msg = {
           question: 'Got it. Your question is on its way, and we emailed you a copy.',
           notify: 'You are on the list. The team will reach out when it opens.',
-          meeting: 'Request received. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Pick a time on Sean\'s calendar</a>. The link is in your email too.',
-          reserve: 'Your spot is held until ' + esc(new Date(j.hold_expires_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) + '. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Book your call with Sean</a> to finalize pricing.'
+          meeting: 'Request received. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Pick a time with our team</a>. The link is in your email too.',
+          reserve: 'Your spot is held until ' + esc(new Date(j.hold_expires_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })) + '. <a href="' + esc(j.meeting_url) + '" target="_blank" rel="noopener">Book your call with our team</a> to finalize pricing.'
         }[kind];
         f.innerHTML = '<p class="vpg-msg ok" role="status">' + msg + '</p>';
       })
