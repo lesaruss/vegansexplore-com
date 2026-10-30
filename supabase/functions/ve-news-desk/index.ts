@@ -11,7 +11,10 @@
 //                  Vegan food or living (vegan, plant-based, meatless, dairy-free, ...).
 //   scope 'search' a Google News search for one hub (search_query, with intitle: so the headline is
 //                  about Vegan food). The same search, run month by month, is how the desk looks back to June.
-// Flagged stories land in ve_news_leads with the reason they were flagged.
+//   scope 'topic'  another brand's business outlet for one topic (LESARUSS.ai's Pulse, Sean 2026-10-29: business RSS sources,
+//                  the banner picks a topic where Vegans Explore picks a city). city_slug holds the topic ('lr-ai', 'lr-funding'...);
+//                  every story is kept, since the outlet is the topic. feed_url, or a Google News search_query.
+// Flagged stories land in ve_news_leads with the reason they were flagged, under the feed's brand.
 //
 // The Depot Inbox (Sean, 2026-09-28, content engine plan): ve_news_leads is the one queue for every
 // story idea. origin says where it came from: 'feed' (the sources above), 'link' (Sean pasted a
@@ -179,6 +182,7 @@ function cityHits(text: string): { slug: string; term: string }[] {
 interface Flag { city_slug: string | null; reason: string; matched_terms: string[]; headline_match: boolean; status?: string }
 function judge(feed: any, it: Item): Flag | null {
   const text = it.title + ' ' + (it.summary || '');
+  if (feed.scope === 'topic') return { city_slug: feed.city_slug, reason: `${feed.feed_name}: ${feed.city_slug}`, matched_terms: [], headline_match: true };
   if (feed.scope === 'vegan') {
     const inTitle = cityHits(it.title), all = cityHits(text);
     const hit = inTitle[0] || all[0];
@@ -201,7 +205,7 @@ function judge(feed: any, it: Item): Flag | null {
 }
 
 function feedUrl(feed: any, month?: string): string {
-  if (feed.scope !== 'search') return feed.feed_url;
+  if (feed.scope !== 'search' && !(feed.scope === 'topic' && feed.search_query)) return feed.feed_url;
   let q = feed.search_query;
   if (month) {
     const [y, m] = month.split('-').map(Number);
@@ -223,7 +227,8 @@ async function pullFeed(feed: any, month?: string): Promise<{ found: number; fla
     for (const it of items) {
       let title = it.title;
       // Google News titles end in " - Outlet"; the outlet is in <source>.
-      if (feed.scope === 'search' && it.source && title.endsWith(' - ' + it.source)) title = title.slice(0, -(it.source.length + 3));
+      const news = !!feed.search_query && (feed.scope === 'search' || feed.scope === 'topic');
+      if (news && it.source && title.endsWith(' - ' + it.source)) title = title.slice(0, -(it.source.length + 3));
       const when = it.date ? new Date(it.date) : null;
       const at = when && !isNaN(when.getTime()) ? when.toISOString() : null;
       if (at && at < LOOK_BACK_FROM) continue;
@@ -231,9 +236,9 @@ async function pullFeed(feed: any, month?: string): Promise<{ found: number; fla
       if (!f) continue;
       flagged++;
       rows.push({
-        feed_id: feed.id, source_name: feed.scope === 'search' ? (it.source || 'Google News') : feed.feed_name,
+        feed_id: feed.id, brand_slug: feed.brand_slug || 'vegans-explore', source_name: news ? (it.source || 'Google News') : feed.feed_name,
         title: title.slice(0, 300), title_key: titleKey(title), url: it.link, published_at: at,
-        summary: feed.scope === 'search' ? null : it.summary, image_url: it.image, ...f,
+        summary: news ? null : it.summary, image_url: it.image, ...f,
       });
     }
     if (rows.length) {
@@ -778,14 +783,15 @@ Deno.serve(async (req) => {
 
   if (body.action === 'feed_save') {
     const scope = String(body.scope || '');
-    if (!['vegan', 'local', 'search'].includes(scope)) return json({ error: 'bad_scope' }, 400);
+    if (!['vegan', 'local', 'search', 'topic'].includes(scope)) return json({ error: 'bad_scope' }, 400);
     const city = body.city_slug ? String(body.city_slug) : null;
+    if (scope === 'topic' && (saveBrand === 'vegans-explore' || !/^[a-z0-9-]{2,40}$/.test(city || ''))) return json({ error: 'topic_required' }, 400);
     // City hubs are Vegans Explore's; another brand's feed has no city.
     if (saveBrand === 'vegans-explore' && scope !== 'vegan' && !HUB_SLUGS.includes(city || '')) return json({ error: 'city_required' }, 400);
     const name = plain(body.feed_name, 80);
     if (!name) return json({ error: 'name_required' }, 400);
-    const row: Record<string, unknown> = { brand_slug: saveBrand, feed_name: name, scope, city_slug: scope === 'vegan' || saveBrand !== 'vegans-explore' ? null : city, locale: body.locale === 'GB' ? 'GB' : 'US' };
-    if (scope === 'search') {
+    const row: Record<string, unknown> = { brand_slug: saveBrand, feed_name: name, scope, city_slug: scope === 'topic' ? city : scope === 'vegan' || saveBrand !== 'vegans-explore' ? null : city, locale: body.locale === 'GB' ? 'GB' : 'US' };
+    if (scope === 'search' || (scope === 'topic' && body.search_query)) {
       const q = String(body.search_query || '').trim().slice(0, 300);
       if (!q) return json({ error: 'query_required' }, 400);
       row.search_query = q; row.feed_url = 'google-news';

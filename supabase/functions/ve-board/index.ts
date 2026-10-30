@@ -51,6 +51,12 @@
 // and the question. The sections are ve_board_posts.briefing (cleanBriefing below). Publishing
 // marks every Inbox story the briefing used, so tomorrow's briefing does not repeat it.
 //
+// LESARUSS.ai's Pulse (Sean, 2026-10-29, playbook lesaruss-ai-front-door: "the banner picks a topic where Vegans Explore
+// picks a city"): the same briefings, writer and comments, by business topic. A topic scope is 'lr-<topic>' (LR_TOPICS) and
+// 'lr-all' lists every topic; only the Pulse lane exists there. Anyone reads; commenting and reporting are for LESARUSS
+// members (lr_member_entitled: a Diplomat or a LESARUSS Passport holder), and a LESARUSS sign-in (token brand 'lesaruss-ai')
+// takes part only there. The writer's leads for a topic are ve_news_leads with brand_slug 'lesaruss-ai' and city_slug the topic.
+//
 // Authorization: Bearer <ve_token>, checked here the same way ve-votes and ve-auth check it
 // (verify_jwt is false on deploy). Reports email that city's Community Manager with Sean
 // copied (ve_partner_cities.manager_email), or Sean alone while a city has none. Three reports
@@ -84,11 +90,17 @@ const KINDS = Object.values(LANES).flatMap((l) => l.kinds);
 const LANE_OF: Record<string, string> = Object.fromEntries(Object.entries(LANES).flatMap(([lane, l]) => l.kinds.map((k) => [k, lane])));
 const NATIONAL = 'national';
 const TOPIC_SCOPES = [...COMMUNITIES, NATIONAL];
+const LR_TOPICS = ['lr-ai', 'lr-funding', 'lr-marketing', 'lr-leadership', 'lr-creators', 'lr-operations', 'lr-events'];
+const LR_ALL = 'lr-all';
+const isLr = (scope: string) => LR_TOPICS.includes(scope);
+const LR_SITE = 'https://lesaruss.ai';
 // ve_partner_cities / ve_staff_invites slug -> hub slug (the reverse of MANAGER_CITY).
 const HUB_FOR_CITY: Record<string, string> = Object.fromEntries(Object.entries(MANAGER_CITY).map(([hub, city]) => [city, hub]));
 const SCOPE_NAME: Record<string, string> = {
   'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York',
   philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', national: 'National',
+  'lr-ai': 'AI', 'lr-funding': 'Funding', 'lr-marketing': 'Marketing', 'lr-leadership': 'Leadership', 'lr-creators': 'Creators',
+  'lr-operations': 'Business operations', 'lr-events': 'Events',
 };
 const REASONS = ['not_who_they_say', 'unsafe', 'scam', 'spam', 'harassment', 'other'];
 const REASON_LABEL: Record<string, string> = {
@@ -116,7 +128,7 @@ function b64urlDecodeToBytes(s: string): Uint8Array {
   return out;
 }
 // Same key derivation as ve-auth's signJWT / decodeToken.
-async function verifyToken(token: string): Promise<string | null> {
+async function verifyToken(token: string): Promise<{ sub: string; brand: string } | null> {
   try {
     const [header, payload, sig] = token.split('.');
     if (!header || !payload || !sig) return null;
@@ -124,7 +136,7 @@ async function verifyToken(token: string): Promise<string | null> {
     const key = await crypto.subtle.importKey('raw', secret, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
     if (!(await crypto.subtle.verify('HMAC', key, b64urlDecodeToBytes(sig), new TextEncoder().encode(`${header}.${payload}`)))) return null;
     const d = JSON.parse(new TextDecoder().decode(b64urlDecodeToBytes(payload)));
-    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? { sub: d.sub, brand: typeof d.brand === 'string' ? d.brand : 'vegans-explore' } : null;
   } catch { return null; }
 }
 
@@ -132,18 +144,29 @@ const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.replace(/\
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 
-type Viewer = { id: string; name: string | null; email: string | null; active: boolean; moderator: boolean; admin: boolean; cm: boolean; home: string | null } | null;
+type Viewer = { id: string; name: string | null; email: string | null; active: boolean; moderator: boolean; admin: boolean; cm: boolean; home: string | null; lesaruss: boolean } | null;
 
 async function loadViewer(req: Request): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const id = token ? await verifyToken(token) : null;
-  if (!id) return null;
+  const who = token ? await verifyToken(token) : null;
+  if (!who) return null;
   const { data: m } = await db.from('members')
-    .select('id, name, email, membership_status, is_superadmin, staff_role, ve_role, home_community').eq('id', id).maybeSingle();
+    .select('id, name, email, membership_status, is_superadmin, staff_role, ve_role, home_community').eq('id', who.sub).maybeSingle();
   if (!m) return null;
   const cm = m.staff_role === 'community_manager' || m.ve_role === 'community_manager';
   const moderator = !!m.is_superadmin || cm;
-  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active', moderator, admin: !!m.is_superadmin, cm, home: m.home_community || null };
+  const lesaruss = who.brand === 'lesaruss-ai';
+  // A LESARUSS sign-in is a member here only on LESARUSS.ai's topics (memberOn).
+  return { id: m.id, name: m.name, email: m.email, active: m.membership_status === 'active' && !lesaruss, moderator: moderator && !lesaruss, admin: !!m.is_superadmin, cm: cm && !lesaruss, home: m.home_community || null, lesaruss };
+}
+
+// Whether the viewer takes part where a post lives: a LESARUSS.ai topic needs a LESARUSS member, a city board our active member.
+async function memberOn(viewer: Viewer, lr: boolean): Promise<boolean> {
+  if (!viewer) return false;
+  if (!lr) return viewer.active;
+  if (viewer.admin) return true;
+  const { data } = await db.rpc('lr_member_entitled', { p_member: viewer.id });
+  return data === true;
 }
 
 // What a reader can see about the person behind a post: enough to decide whether to trust
@@ -177,6 +200,7 @@ async function posterCards(ids: string[]) {
 const PULSE_POSTER = { name: 'Daily Pulse', initials: 'DP', color: '#cfe8d0', avatar: null, pulse: true };
 // A pinned "How it works" post speaks for Vegans Explore, not for the account that holds it.
 const TEAM_POSTER = { name: 'Vegans Explore', initials: 'VE', color: '#cfe8d0', avatar: null, team: true };
+const LR_POSTER = { name: 'LESARUSS.ai Pulse', initials: 'LR', color: '#FFE3C2', avatar: null, pulse: true };
 
 function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
   const topic = p.kind === 'topic';
@@ -185,7 +209,7 @@ function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
     status: p.status, resolved_at: p.resolved_at, reply_count: p.reply_count, created_at: topic ? (p.published_at || p.created_at) : p.created_at,
     contact: viewer?.active ? p.contact : null, has_contact: !!p.contact,
     pinned: !!p.pinned, mine: !topic && !p.pinned && !!viewer && viewer.id === p.member_id,
-    poster: topic ? PULSE_POSTER : p.pinned ? TEAM_POSTER : (cards[p.member_id] || null),
+    poster: topic ? (isLr(p.community_slug) ? LR_POSTER : PULSE_POSTER) : p.pinned ? TEAM_POSTER : (cards[p.member_id] || null),
     ...(topic ? { question: p.question, source_name: p.source_name, source_url: p.source_url, published_at: p.published_at, briefing: p.briefing || null } : {}),
   };
 }
@@ -195,7 +219,7 @@ function shapePost(p: any, cards: Record<string, unknown>, viewer: Viewer) {
 // Community Manager their own city (their invite's city first, then their home community).
 async function deskScopes(viewer: Viewer): Promise<string[]> {
   if (!viewer) return [];
-  if (viewer.admin) return TOPIC_SCOPES;
+  if (viewer.admin) return [...TOPIC_SCOPES, ...LR_TOPICS];
   if (!viewer.cm) return [];
   const { data: invite } = viewer.email
     ? await db.from('ve_staff_invites').select('city_slug').ilike('email', viewer.email).maybeSingle()
@@ -290,9 +314,12 @@ async function ownsListing(memberId: string): Promise<boolean> {
   return !!(data && data.length);
 }
 
-const needMember = (viewer: Viewer) => {
+const needMember = async (viewer: Viewer, lr = false) => {
   if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to join the conversation.' }, 401);
-  if (!viewer.active) return json({ error: 'payment_required', message: 'Become a Founding Member to post, reply and help your community on the Board.' }, 402);
+  if (!(await memberOn(viewer, lr))) {
+    return json({ error: 'payment_required', message: lr ? 'Commenting on the LESARUSS.ai Pulse is for LESARUSS members: Diplomats and LESARUSS Passport holders.'
+      : 'Become a Founding Member to post, reply and help your community on the Board.' }, 402);
+  }
   return null;
 };
 
@@ -304,11 +331,26 @@ Deno.serve(async (req) => {
   const viewer = await loadViewer(req);
   const business = viewer ? await ownsListing(viewer.id) : false;
   const viewerOut = viewer ? { signed_in: true, member: viewer.active, moderator: viewer.moderator, business } : { signed_in: false, member: false, moderator: false, business: false };
+  const lrViewer = async () => ({ ...viewerOut, member: await memberOn(viewer, true), business: false });
 
   switch (body.action) {
     case 'list': {
       const community = clean(body.community, 40);
       const all = community === 'all';
+      if (community === LR_ALL || isLr(community)) {
+        if (body.lane !== 'pulse') return json({ error: 'bad_lane' }, 400);
+        let t = db.from('ve_board_posts')
+          .select('id, community_slug, member_id, kind, category, title, body, area, contact, status, resolved_at, reply_count, created_at, question, source_name, source_url, published_at, briefing')
+          .eq('kind', 'topic').in('community_slug', community === LR_ALL ? LR_TOPICS : [community]).in('status', ['open', 'resolved'])
+          .order('published_at', { ascending: false }).limit(PAGE);
+        const before = clean(body.before, 40);
+        if (before && !isNaN(Date.parse(before))) t = t.lt('published_at', before);
+        const text = clean(body.q, 120);
+        if (text) t = t.textSearch('search', text, { type: 'websearch', config: 'english' });
+        const { data, error } = await t;
+        if (error) return json({ error: 'list_failed', message: error.message }, 500);
+        return json({ posts: (data || []).map((p) => shapePost(p, {}, viewer)), more: (data || []).length === PAGE, viewer: await lrViewer() });
+      }
       if (!all && !COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
       if (body.lane === 'pulse') {
         let t = db.from('ve_board_posts')
@@ -362,12 +404,12 @@ Deno.serve(async (req) => {
       return json({
         post: { ...shapePost(p, cards, viewer), hidden_reason: viewer?.moderator ? p.hidden_reason : undefined },
         replies: visible.map((r) => ({ id: r.id, body: r.body, created_at: r.created_at, hidden: r.status === 'hidden', mine: viewer?.id === r.member_id, poster: cards[r.member_id] || null })),
-        viewer: viewerOut,
+        viewer: isLr(p.community_slug) ? await lrViewer() : viewerOut,
       });
     }
 
     case 'create': {
-      const gate = needMember(viewer); if (gate) return gate;
+      const gate = await needMember(viewer); if (gate) return gate;
       const community = clean(body.community, 40);
       if (!COMMUNITIES.includes(community)) return json({ error: 'bad_community' }, 400);
       if (!KINDS.includes(body.kind)) return json({ error: 'bad_kind', message: 'Choose what kind of post this is.' }, 400);
@@ -389,11 +431,11 @@ Deno.serve(async (req) => {
     }
 
     case 'reply': {
-      const gate = needMember(viewer); if (gate) return gate;
       if (!isId(body.post_id)) return json({ error: 'bad_id' }, 400);
+      const { data: p } = await db.from('ve_board_posts').select('id, status, community_slug').eq('id', body.post_id).maybeSingle();
+      const gate = await needMember(viewer, !!p && isLr(p.community_slug)); if (gate) return gate;
       const text = clean(body.body, 2000);
       if (!text) return json({ error: 'bad_body', message: 'Write a reply first.' }, 400);
-      const { data: p } = await db.from('ve_board_posts').select('id, status').eq('id', body.post_id).maybeSingle();
       if (!p || p.status === 'hidden' || p.status === 'draft') return json({ error: 'not_found' }, 404);
       if (await countSince('ve_board_replies', 'member_id', viewer!.id) >= LIMITS.reply) return json({ error: 'rate_limited', message: 'You have replied a lot today. Try again tomorrow.' }, 429);
       const { data, error } = await db.from('ve_board_replies').insert({ post_id: p.id, member_id: viewer!.id, body: text }).select('id').single();
@@ -418,7 +460,7 @@ Deno.serve(async (req) => {
     }
 
     case 'report': {
-      const gate = needMember(viewer); if (gate) return gate;
+      if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to join the conversation.' }, 401);
       if (!REASONS.includes(body.reason)) return json({ error: 'bad_reason', message: 'Choose a reason.' }, 400);
       const details = clean(body.details, 1000) || null;
       let post: any = null, reply: any = null;
@@ -432,6 +474,7 @@ Deno.serve(async (req) => {
         post = data;
       }
       if (!post) return json({ error: 'not_found' }, 404);
+      const gate = await needMember(viewer, isLr(post.community_slug)); if (gate) return gate;
       // A topic is the Daily Pulse's post: a report on it is about the topic, not the person who approved it.
       const reported = reply ? reply.member_id : (post.kind === 'topic' || post.pinned ? null : post.member_id);
       if (reported && reported === viewer!.id) return json({ error: 'own_post', message: 'You cannot report your own post.' }, 400);
@@ -454,7 +497,7 @@ Deno.serve(async (req) => {
         ? { report_count: reports, ...(hide ? { status: 'hidden' } : {}) }
         : { report_count: reports, ...(hide ? { status: 'hidden', hidden_reason: `Hidden after ${reports} reports, awaiting review` } : {}) }).eq('id', reply ? reply.id : post.id);
       const hub = post.community_slug;
-      const link = `${SITE}/pulse?city=${hub}&post=${post.id}`;
+      const link = isLr(hub) ? `${LR_SITE}/pulse?topic=${hub.slice(3)}&post=${post.id}` : `${SITE}/pulse?city=${hub}&post=${post.id}`;
       await sendEmail(await reportRecipients(hub), `[Community Board] Report: ${REASON_LABEL[body.reason]}${hide ? ' (now hidden)' : ''}`,
         `<p style="font-family:sans-serif;font-size:15px;line-height:1.6">A member reported ${reply ? 'a reply on' : 'a post on'} the ${esc(hub)} Community Board.</p>
 <p style="font-family:sans-serif;font-size:14px;line-height:1.6"><b>Reason:</b> ${esc(REASON_LABEL[body.reason])}<br><b>Post:</b> ${esc(post.title || '')}<br>
@@ -496,7 +539,7 @@ ${reply ? `<b>Reply:</b> ${esc(String(reply.body).slice(0, 400))}<br>` : ''}${de
       // city sees every story tagged to it, including ones members and Community Managers sent in.
       const national = scope === NATIONAL;
       let leads = db.from('ve_news_leads').select('id, title, summary, url, source_name, city_slug, published_at' + (national ? ', ve_news_feeds!inner(scope)' : ''))
-        .eq('brand_slug', 'vegans-explore').is('topic_post_id', null).neq('status', 'dismissed')
+        .eq('brand_slug', isLr(scope) ? 'lesaruss-ai' : 'vegans-explore').is('topic_post_id', null).neq('status', 'dismissed')
         .or(`published_at.gte.${since},and(published_at.is.null,created_at.gte.${since})`)
         .order('published_at', { ascending: false, nullsFirst: false }).order('created_at', { ascending: false }).limit(15);
       leads = national ? leads.eq('ve_news_feeds.scope', 'vegan') : leads.eq('city_slug', scope);
