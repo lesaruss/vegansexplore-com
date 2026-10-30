@@ -194,6 +194,71 @@
     .gp-login p{margin:0;font-size:13px;line-height:1.5;color:var(--ink75);}
     @media (max-width:700px){.gp-demo{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:900px){.dg-fold{display:inline-flex;}}
+    /* The visual pass (Sean, 2026-10-30: "a little drab... lead with the community itself... a thumbnail... full screen... Dani
+       minimized by default if they just start clicking around"). */
+    .gp-hero{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin:0 0 6px;}
+    .gp-hero .dg-lede{margin:0;}
+    .gp-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0 18px;}
+    .gp-chip{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--gl);border:1px solid var(--gm);}
+    .gp-chip i{flex:0 0 40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--gm);display:flex;align-items:center;justify-content:center;color:var(--g);}
+    .gp-chip b{display:block;font-size:14px;font-weight:900;line-height:1.2;}
+    .gp-chip span{display:block;font-size:12px;color:var(--ink75);line-height:1.35;margin-top:2px;}
+    .gp-sec{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:18px 0 10px;}
+    .gp-sec h3{margin:0;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .gp-sec a,.gp-sec button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);background:none;border:0;cursor:pointer;padding:0;}
+    .gp-groups .rank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:12px;}
+    .gp-events{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:10px;}
+    .gp-ev{display:flex;gap:12px;align-items:center;text-align:left;width:100%;font:inherit;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#fff;cursor:pointer;color:var(--ink);transition:transform .12s,box-shadow .12s;}
+    .gp-ev:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.08);}
+    .gp-ev .gp-date{flex:0 0 52px;height:56px;border-radius:10px;background:var(--g);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;}
+    .gp-ev .gp-date small{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#c5f2c7;}
+    .gp-ev .gp-date b{font-size:22px;font-weight:900;margin-top:3px;}
+    .gp-ev strong{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;font-weight:800;line-height:1.3;}
+    .gp-ev span{display:block;font-size:12px;color:var(--ink55);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .gp-skel{height:84px;border-radius:12px;background:linear-gradient(90deg,#f1f4f1 0%,#e7ece7 50%,#f1f4f1 100%);background-size:200% 100%;animation:gpSk 1.2s infinite linear;}
+    @keyframes gpSk{from{background-position:200% 0}to{background-position:-200% 0}}
+    .gp-empty{font-size:13.5px;color:var(--ink55);margin:0;}
+    /* Two columns: slim tiles on the left, a live preview on the right. */
+    .gp-split{display:grid;grid-template-columns:minmax(260px,340px) minmax(0,1fr);gap:20px;align-items:start;}
+    .gp-side{display:flex;flex-direction:column;gap:10px;}
+    .gp-pick{display:block;width:100%;text-align:left;font:inherit;padding:14px 16px;border-radius:12px;border:2px solid transparent;background:var(--g);color:#fff;cursor:pointer;transition:transform .12s,box-shadow .12s;}
+    .gp-pick.alt{background:#14301c;}
+    .gp-pick:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.15);}
+    .gp-pick[aria-pressed="true"]{border-color:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,.25);}
+    .gp-pick small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;}
+    .gp-pick b{display:block;font-size:17px;font-weight:900;margin:3px 0 2px;}
+    .gp-pick span{display:block;font-size:12.5px;line-height:1.45;color:#e6f4e7;}
+    .gp-side .gp-login{margin:0;padding:12px 14px;}
+    .gp-side .gp-login dl{margin:6px 0 8px;font-size:13px;}
+    .gp-slim{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;display:flex;gap:12px;align-items:flex-start;}
+    .gp-slim i{flex:0 0 36px;height:36px;border-radius:10px;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center;}
+    .gp-slim b{display:block;font-size:14px;font-weight:900;}
+    .gp-slim p{margin:2px 0 0;font-size:12.5px;line-height:1.45;color:var(--ink75);}
+    .gp-thumb{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#f3f6f3;box-shadow:0 10px 30px rgba(0,0,0,.10);height:480px;}
+    .gp-thumb iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0;pointer-events:none;background:#fff;}
+    .gp-thumb-open{position:absolute;inset:0;width:100%;border:0;background:transparent;cursor:zoom-in;display:flex;align-items:flex-end;justify-content:flex-end;padding:14px;font:inherit;}
+    .gp-thumb-open span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:rgba(10,18,12,.85);color:#fff;padding:9px 12px;border-radius:6px;}
+    .gp-thumb-open:hover span,.gp-thumb-open:focus-visible span{background:var(--g);}
+    .gp-thumb-open:focus-visible{outline:3px solid #F69820;outline-offset:-3px;}
+    .gp-cap{font-size:12px;color:var(--ink55);margin:8px 2px 0;}
+    /* The ladder as bars. */
+    .gp-bars{display:flex;flex-direction:column;gap:6px;margin:0 0 16px;}
+    .gp-bar{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;align-items:center;font-size:12.5px;color:var(--ink75);}
+    .gp-bar div{height:26px;border-radius:6px;background:var(--gl);overflow:hidden;}
+    .gp-bar div i{display:flex;align-items:center;justify-content:flex-end;height:100%;padding-right:8px;background:var(--g);color:#fff;font-style:normal;font-size:12.5px;font-weight:900;border-radius:6px;}
+    .gp-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:12px;}
+    .gp-cards .gp-slim{height:100%;}
+    /* Full screen, in the page. */
+    .gp-view{position:fixed;inset:0;z-index:1000;background:rgba(6,14,8,.82);display:flex;flex-direction:column;padding:14px;}
+    .gp-view-bar{display:flex;align-items:center;gap:10px;color:#fff;padding:0 2px 10px;}
+    .gp-view-bar b{flex:1;min-width:0;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .gp-view-bar a,.gp-view-bar button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;text-decoration:none;cursor:pointer;white-space:nowrap;}
+    .gp-view-bar button{background:#22C55E;border-color:#22C55E;color:#03170a;}
+    .gp-view iframe{flex:1;width:100%;border:0;border-radius:10px;background:#fff;}
+    html.gp-view-on,html.gp-view-on body{overflow:hidden;}
+    #dgGuide{cursor:pointer;}
+    @media (max-width:1100px){.gp-chips{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:900px){.gp-groups .rank-card:nth-child(n+5){display:none;}.gp-split{grid-template-columns:minmax(0,1fr);}.gp-thumb{height:auto;aspect-ratio:3/4;}.gp-view{padding:8px;}.gp-view-bar a{display:none;}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -230,120 +295,176 @@
 
 <script src="/public/footer.js"></script>
 </div>
+<script src="/public/ve-region-directory.js"></script>
 <script>
 (function () {
   // Every term here is the locked one (canon canon-ve-group-partners, CLAUDE.md Group Partners). Change them there first, then here.
+  // Seven tabs since 2026-10-30 (Sean: "Do we need it to be that much?... lead with the community itself"): Why it matters and What
+  // your group gets became What you get, and the guest pass joined The numbers; their old addresses land there (ALIAS).
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Dani. If you run a Vegan social club, a meetup, a potluck or a dinner group, this is for you. One tab at a time.' },
-    { k: 'why', label: 'Why it matters', say: 'You already bring people together. We give your group a home, bring more people to it, and pay you as it grows.' },
-    { k: 'gets', label: 'What your group gets', say: 'Here is everything your group gets as a Group Partner, and none of it costs you anything.' },
-    { k: 'numbers', label: 'The numbers', say: 'The more members your group brings in, the bigger your share. It starts at twenty percent and climbs to fifty.' },
-    { k: 'guest', label: 'The guest pass', say: 'Nobody has to pay to try you out. A newcomer comes to one free event first, then joins if they love it.' },
-    { k: 'demo', label: 'Try the demo', say: 'See it for yourself. Open our sample club as a member, then as the organizer. Click around, nothing is real.' },
+    { k: 'overview', label: 'The community', say: 'Hi, I\'m Dani. These are real groups on Vegans Explore, and what they have coming up. Yours could be next. Want the tour? Press Next.' },
+    { k: 'demo', label: 'Try the demo', say: 'This is our sample club. Look at it as a member, then as the organizer. Tap the picture to open it full screen. Nothing is real.' },
+    { k: 'gets', label: 'What you get', say: 'Your group gets a home, more people and a share of every member it brings in, and none of it costs you anything.' },
+    { k: 'numbers', label: 'The numbers', say: 'The more members your group brings in, the bigger your share: twenty percent, climbing to fifty. And nobody pays to try you out.' },
     { k: 'part', label: 'Your part', say: 'Your part is simple: share your link and host your events here. The more you do, the more it unlocks.' },
     { k: 'questions', label: 'Questions', say: 'Here are straight answers to what organizers ask us most.' },
     { k: 'yes', label: 'Say yes', say: 'Ready? Say yes and we set your group up. And if you want to talk it through first, we are here.' }
   ];
-  var BLURB = {
-    why: 'What it does for your group.', gets: 'Your page, your events, our promotion.', numbers: 'Your share, from 20% up to 50%.',
-    guest: 'One free event, then the Passport.', demo: 'Our sample club, as a member and as the organizer.', part: 'Share your link, host here.',
-    questions: 'Straight answers.', yes: 'Set your group up.'
-  };
+  var ALIAS = { why: 'gets', guest: 'numbers' };
   var ICONS = {
-    why: '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21.2l7.8-7.7 1-1.1a5.5 5.5 0 0 0 0-7.8z"/>',
-    gets: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
-    numbers: '<path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M21 16V5"/>',
-    guest: '<path d="M3 9a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 0 0-4V4H3z"/><path d="M13 4v14"/>',
-    demo: '<rect x="2" y="4" width="20" height="14" rx="2"/><path d="M8 21h8M12 18v3"/><path d="M10 8l5 3-5 3z"/>',
-    part: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
-    questions: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6V14M12 17h.01"/>',
-    yes: '<path d="M20 6 9 17l-5-5"/>'
+    page: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 13h8M8 16h5"/>',
+    share: '<path d="M3 20h18"/><path d="M6 16v-4M11 16V8M16 16v-6M21 16V5"/>',
+    ticket: '<path d="M3 9a2 2 0 0 0 0 4v5h18v-5a2 2 0 0 0 0-4V4H3z"/><path d="M13 4v14"/>',
+    home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+    pay: '<circle cx="12" cy="12" r="9"/><path d="M15 9.5c-.5-1-1.6-1.5-3-1.5-1.7 0-3 .9-3 2.2 0 3 6 1.6 6 4.6 0 1.3-1.3 2.2-3 2.2-1.4 0-2.6-.6-3-1.6M12 6v2M12 16v2"/>',
+    promo: '<path d="M3 11v2a1 1 0 0 0 1 1h3l5 4V6L7 10H4a1 1 0 0 0-1 1z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/>',
+    reach: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    cal: '<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/>',
+    star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+    gift: '<rect x="3" y="8" width="18" height="13" rx="1"/><path d="M3 12h18M12 8v13M12 8S10.5 3 8 3a2.5 2.5 0 0 0 0 5M12 8s1.5-5 4-5a2.5 2.5 0 0 1 0 5"/>',
+    link: '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>',
+    lock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
   };
-  var LADDER = [['Start', '20%'], ['25', '25%'], ['75', '30%'], ['150', '35%'], ['300', '40%'], ['600', '45%'], ['1,000', '50%']];
+  var LADDER = [['Start', 20], ['25 members', 25], ['75', 30], ['150', 35], ['300', 40], ['600', 45], ['1,000', 50]];
   var FEES = [['Vegans Explore', '5% of a paid ticket. Free events free.', 1], ['Eventbrite', '3.7% + $1.79 a ticket, plus card processing'],
     ['Luma (free plan)', '5% a ticket'], ['Posh', '10% + $0.99 a ticket'], ['Partiful', 'reported at about 10% + $2 a ticket']];
-  var DEMO = '/groups/sample';
+  var DEMO = { member: '/groups/sample', owner: '/groups/sample?tab=brand', members: '/groups/sample?tab=brand&pd=gmembers' };
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var code = (new URLSearchParams(location.search).get('c') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64);
 
-  function icon(k) { return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (ICONS[k] || '') + '</svg>'; }
+  function icon(k, n) { n = n || 22; return '<svg width="' + n + '" height="' + n + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[k] || '') + '</svg>'; }
   var $ = function (id) { return document.getElementById(id); };
   var main = $('dgMain'), menu = $('dgMenu'), sel = $('dgMenuSelect'), guideEl = $('dgGuide'), bubble = $('dgBubble'), tourEl = $('dgTour'), tourM = $('dgTourM');
-  var cur = 'overview';
+  var cur = 'overview', demoView = 'member';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
-  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
-  function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '">' + esc(label) + '</a></div>'; }
+  function slim(ic, title, body) { return '<div class="gp-slim"><i>' + icon(ic, 18) + '</i><div><b>' + esc(title) + '</b><p>' + body + '</p></div></div>'; }
+  function chip(ic, title, body) { return '<div class="gp-chip"><i>' + icon(ic) + '</i><div><b>' + esc(title) + '</b><span>' + esc(body) + '</span></div></div>'; }
+  function nextBtn(k, label) { return '<div class="dg-btns"><a class="dg-btn" href="#/' + k + '" data-tour>' + esc(label) + '</a></div>'; }
   function qa(q, a) { return '<div class="am-qa"><b>' + esc(q) + '</b><p>' + a + '</p></div>'; }
   function mail(subject, label, ghost) { return '<a class="dg-btn' + (ghost ? ' dg-ghost' : '') + '" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent(subject) + '">' + esc(label) + '</a>'; }
+  // A live, scaled-down look at a page; tapping it opens the page full screen in this one (openView).
+  function thumb(url, title, cap) {
+    return '<div class="gp-thumb" data-thumb><iframe tabindex="-1" aria-hidden="true" title="' + esc(title) + '" src="' + esc(url) + '"></iframe>' +
+      '<button type="button" class="gp-thumb-open" data-view-url="' + esc(url) + '" data-view-title="' + esc(title) + '"><span>Open full screen</span></button></div>' +
+      (cap ? '<p class="gp-cap">' + esc(cap) + '</p>' : '');
+  }
+
+  // ---------- The community: real groups on Vegans Explore and what they have coming up, read live from the Directory.
+  var COMM = null;
+  function rest(path) {
+    return fetch(SB + '/rest/v1/' + path, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+      .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; });
+  }
+  function loadCommunity() {
+    if (COMM) return Promise.resolve(COMM);
+    var F = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,communities,extra_categories';
+    return Promise.all([
+      rest('listings?select=' + F + '&status=eq.approved&or=(category.eq.Groups,extra_categories.ov.{Groups})&limit=500'),
+      rest('events?select=id,title,starts_at,timezone,city,state,host_listing_id&status=eq.approved&host_listing_id=not.is.null&starts_at=gte.' +
+        encodeURIComponent(new Date().toISOString()) + '&order=starts_at.asc&limit=400')
+    ]).then(function (r) {
+      var groups = r[0] || [], byId = {}, count = {};
+      groups.forEach(function (g) { byId[g.id] = g; count[g.id] = 0; });
+      var events = (r[1] || []).filter(function (e) { return byId[e.host_listing_id]; });
+      events.forEach(function (e) { count[e.host_listing_id]++; });
+      groups.sort(function (a, b) { return (count[b.id] - count[a.id]) || ((b.vote_count || 0) - (a.vote_count || 0)) || String(a.name).localeCompare(b.name); });
+      // The next events, no more than two from one group, so the strip shows the range.
+      var per = {}, next = [];
+      events.forEach(function (e) { if (next.length < 6 && (per[e.host_listing_id] || 0) < 2) { per[e.host_listing_id] = (per[e.host_listing_id] || 0) + 1; next.push(e); } });
+      COMM = { groups: groups, byId: byId, next: next };
+      return COMM;
+    });
+  }
+  function evTile(e, g) {
+    var tz = e.timezone || 'America/New_York', d = new Date(e.starts_at);
+    var mon = d.toLocaleString('en-US', { month: 'short', timeZone: tz }), day = d.toLocaleString('en-US', { day: 'numeric', timeZone: tz });
+    var where = [g && g.name, e.city].filter(Boolean).join(' · ');
+    return '<button type="button" class="gp-ev" data-view-url="/events#event/' + esc(e.id) + '" data-view-title="' + esc(e.title) + '">' +
+      '<div class="gp-date"><small>' + esc(mon) + '</small><b>' + esc(day) + '</b></div><div style="min-width:0"><strong>' + esc(e.title) + '</strong><span>' + esc(where) + '</span></div></button>';
+  }
+  function fillCommunity() {
+    var gBox = $('gpGroups'), eBox = $('gpEvents');
+    if (!gBox) return;
+    loadCommunity().then(function (c) {
+      if (!$('gpGroups')) return;
+      var show = c.groups.slice(0, 8);
+      gBox.innerHTML = show.length && window.VERegionDirectory
+        ? '<div class="vrd-root"><div class="rank-grid" id="gpGroupGrid">' + show.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('') + '</div></div>'
+        : '<p class="gp-empty">The groups are loading slowly. <a href="/directory?tab=community&sub=groups">See them in the Directory</a>.</p>';
+      var grid = $('gpGroupGrid');
+      if (grid) VERegionDirectory.wire(grid, function (slug, name) { openView('/directory/' + encodeURIComponent(slug), name || 'A group on Vegans Explore'); });
+      eBox.innerHTML = c.next.length ? '<div class="gp-events">' + c.next.map(function (e) { return evTile(e, c.byId[e.host_listing_id]); }).join('') + '</div>'
+        : '<p class="gp-empty">No group events are on the calendar this week. <a href="/events">See every event</a>.</p>';
+    });
+  }
 
   var VIEWS = {
     overview: function () {
-      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
-      }).join('');
-      return head('Welcome', 'Host your group on Vegans Explore', 'A <b>Group Partner</b> is a Vegan group that makes Vegans Explore its home: your members, your events and your board in one place, with us promoting you. Your group earns a share of every member it brings in, from <b>20% up to 50%</b>. It is for Vegan social clubs, meetup groups, potlucks and dinner clubs.') +
-        '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
+      var skel = '<div class="gp-events">' + [0, 1, 2, 3].map(function () { return '<div class="gp-skel"></div>'; }).join('') + '</div>';
+      return '<div class="gp-hero"><div>' + head('For Vegan social clubs, meetups, potlucks and dinner clubs', 'Your group, at home on Vegans Explore',
+        'Groups already host their community and events here. A <b>Group Partner</b> gets its page, its events and our promotion on us, and a share of every member it brings in.') + '</div>' +
+        '<div class="dg-btns" style="margin:0"><a class="dg-btn" href="#/demo">Try the demo</a><button type="button" class="dg-btn dg-ghost" data-tour-start>Take the tour with Dani</button></div></div>' +
+        '<div class="gp-chips">' + chip('page', 'Your page and events', 'Members, events and a board. Free.') +
+        chip('share', 'Up to 50% of every Passport', 'From 20%, rising as your group brings people in.') +
+        chip('ticket', 'Tickets for 5%', 'Free events stay free. A guest pass to try you out.') + '</div>' +
+        '<div class="gp-sec"><h3>Groups on Vegans Explore</h3><button type="button" data-view-url="/directory?tab=community&sub=groups" data-view-title="Groups in the Directory">See every group</button></div>' +
+        '<div class="gp-groups" id="gpGroups">' + skel + '</div>' +
+        '<div class="gp-sec"><h3>Coming up with these groups</h3><button type="button" data-view-url="/events" data-view-title="Vegan events">See the calendar</button></div>' +
+        '<div id="gpEvents">' + skel + '</div>';
     },
-    why: function () {
-      return head('Why it matters', 'You bring people together. We help you do more of it', 'Running a group takes time, and the tools you use today were not made for Vegans. Vegans Explore is a community for Vegans, city by city, and your group gets a real home in it.') +
-        '<div class="dg-grid">' +
-        card('Your members get a home', 'One place for your events, your people and your conversation, plus everything a Passport opens: the Vegan places near them, the Daily Pulse, Guides and points.', 'Your members') +
-        card('You get paid for growing', 'Every person who joins Vegans Explore through your group earns your group a share of their Passport, from 20% up to 50% as you grow.', 'Income') +
-        card('We promote you', 'We run our own ads to send people to the groups on Vegans Explore, and feature the groups that host here.', 'Promotion') +
-        card('Anyone, anywhere, can join you', 'A member in California who visits South Florida often can join your group. Your community is not limited to who lives nearby.', 'Reach') +
-        '</div>' + nextBtn('gets', 'Next: what your group gets');
+    demo: function () {
+      return head('Try the demo', 'Click around our sample club', 'Sprout Social Society is invented, so you can see exactly what your members would see, and what you would see running it.') +
+        '<div class="gp-split"><div class="gp-side">' +
+        '<button type="button" class="gp-pick" data-demo="member" aria-pressed="' + (demoView === 'member') + '"><small>As a member</small><b>See it as a member</b><span>The page, its events, the board, joining and RSVPs.</span></button>' +
+        '<button type="button" class="gp-pick alt" data-demo="owner" aria-pressed="' + (demoView === 'owner') + '"><small>As the organizer</small><b>See it as the organizer</b><span>Your members, events, earnings and your link.</span></button>' +
+        '<div class="gp-login"><div class="dg-k">The demo sign-in</div><dl><dt>Username</dt><dd>demo@vegansexplore.com</dd><dt>Password</dt><dd>explore11</dd></dl>' +
+        '<p>If the demo asks. Nothing is charged, sent or saved.</p></div>' + nextBtn('gets', 'Next: what you get') + '</div>' +
+        '<div id="gpDemoThumb">' + thumb(DEMO[demoView], demoView === 'owner' ? 'The sample club, as the organizer' : 'The sample club, as a member',
+          'Tap it to open it full screen.') + '</div></div>';
     },
     gets: function () {
-      return head('What your group gets', 'Everything, on us', 'None of this costs your group anything.') +
-        '<div class="dg-grid">' +
-        card('A community page', 'Your group\'s own page: your members, your events and your board, where your people talk between events.', 'Your page') +
-        card('Your events, and your history', 'Every event on your page and on our events calendar, and every past event stays, so newcomers see a group that shows up.', 'Events') +
-        card('Our ads, driving people to you', 'We put our own ad money behind the groups on Vegans Explore, in your city and beyond.', 'Promotion') +
-        card('Featured community', 'Groups that host here are featured where members look for something to do.', 'Featured') +
-        card('Bounties first', 'Your group gets first pick of bounties: paid points for real things, like hosting a meetup at a new Vegan spot.', 'Bounties') +
-        card('Your organizer, on us', 'The person who runs your group gets a Founding Membership on us: the full Passport and 1,100 points, theirs to keep.', 'Founding Membership') +
+      return head('What you get', 'A home for your group, on us', 'You already bring people together. Vegans Explore is a community for Vegans, city by city, and your group gets a real home in it. None of this costs your group anything.') +
+        '<div class="gp-cards">' +
+        slim('home', 'A community page', 'Your members, your events and your board, where your people talk between events.') +
+        slim('cal', 'Your events, and your history', 'On your page and our calendar. Past events stay, so newcomers see a group that shows up.') +
+        slim('pay', 'Paid for growing', 'A share of every Passport bought through your group, from 20% up to 50%.') +
+        slim('promo', 'Our ads, sending people to you', 'We put our own ad money behind the groups here, in your city and beyond.') +
+        slim('reach', 'Anyone, anywhere, can join', 'A member who visits your city often can join your group too.') +
+        slim('star', 'Featured, and bounties first', 'Featured where members look for something to do, and first pick of bounties.') +
+        slim('gift', 'Your organizer, on us', 'A Founding Membership: the full Passport and 1,100 points, theirs to keep.') +
         '</div>' + nextBtn('numbers', 'Next: the numbers');
     },
     numbers: function () {
-      return head('The numbers', 'Your share grows with your group', 'Your group earns a share of every $11 Passport (and Guide) bought by someone who joins through your group\'s link. The share is set by how many members your group has brought in, all time, and a new share counts from the day you reach it.') +
-        '<table class="gp-ladder"><thead><tr><th>Members brought in</th><th>Your share</th></tr></thead><tbody>' +
-        LADDER.map(function (r) { return '<tr><td>' + esc(r[0]) + '</td><td><b>' + esc(r[1]) + '</b></td></tr>'; }).join('') + '</tbody></table>' +
+      return head('The numbers', 'Your share grows with your group', 'Your group earns a share of every $11 Passport (and Guide) bought by someone who joins through your group\'s link, set by how many members it has brought in, all time. A new share counts from the day you reach it.') +
+        '<div class="gp-bars" role="table" aria-label="Members brought in and your share">' + LADDER.map(function (r) {
+          return '<div class="gp-bar" role="row"><span role="rowheader">' + esc(r[0]) + '</span><div role="cell"><i style="width:' + (r[1] * 2) + '%">' + r[1] + '%</i></div></div>';
+        }).join('') + '</div>' +
+        '<div class="gp-cards" style="margin-bottom:16px">' +
+        slim('clock', 'When you get paid', 'Each payment waits 30 days in case of a refund. We pay once $25 is ready, after a W-9 (the group\'s, or the organizer\'s if the group is not its own company).') +
+        slim('lock', 'What it is', 'Referral earnings paid by LESARUSS Inc. When you share your link, say that your group earns when people join with it.') + '</div>' +
         '<h3 class="am-sec">Tickets</h3><p class="dg-lede">When you sell tickets here, <b>we take 5% of a paid ticket</b> and the rest is yours. Free events are free. The card processing is paid by the buyer, and you can pass our 5% on to them too.</p>' +
         '<ul class="gp-fees">' + FEES.map(function (f) { return '<li' + (f[2] ? ' class="us"' : '') + '><span>' + esc(f[0]) + '</span><span>' + esc(f[1]) + '</span></li>'; }).join('') + '</ul>' +
-        '<p class="dg-lede" style="font-size:13px">Other platforms\' fees as published in 2026. Partiful does not publish its fee; the figure is what has been reported.</p>' +
-        '<div class="dg-grid">' +
-        card('When you get paid', 'Each payment waits 30 days in case of a refund, then it is ready. We pay once $25 is ready.', 'Timing') +
-        card('What we need first', 'A W-9 before the first payment: your group\'s, or the organizer\'s if the group is not its own company.', 'Before the first payment') +
-        card('What it is', 'Referral earnings paid by LESARUSS Inc. When you share your link, say that your group earns when people join with it.', 'Straight talk') +
-        '</div>' + nextBtn('guest', 'Next: the guest pass');
-    },
-    guest: function () {
-      return head('The guest pass', 'Nobody pays to try you out', 'A free event should feel free. So newcomers get a guest pass.') +
+        '<p class="dg-lede" style="font-size:12.5px;margin-top:-8px">Other platforms\' fees as published in 2026. Partiful does not publish its fee; the figure is what has been reported.</p>' +
+        '<h3 class="am-sec">The guest pass: nobody pays to try you out</h3>' +
         '<ol class="am-steps">' +
-        '<li><b>Their first free event</b>A newcomer comes to one of your free events as a guest. No account needed to try you out.</li>' +
-        '<li><b>From their second</b>They join Vegans Explore with the Passport: $11, one time, with 1,100 points to start.</li>' +
+        '<li><b>Their first free event</b>A newcomer comes as our guest. No account needed.</li>' +
+        '<li><b>From their second</b>They join with the Passport: $11, one time, with 1,100 points.</li>' +
         '<li><b>Your group earns</b>Your share of their Passport, when they join through your group.</li>' +
-        '<li><b>Paid events</b>A paid ticket needs the Passport from the start.</li></ol>' +
-        '<p class="dg-lede">It is $11 once, not a monthly fee, and it opens every group, every city and every Guide on Vegans Explore.</p>' + nextBtn('demo', 'Next: try the demo');
-    },
-    demo: function () {
-      return head('Try the demo', 'Click around our sample club', 'We built a sample group so you can see exactly what your members would see, and what you would see running it. It opens in a new tab.') +
-        '<div class="gp-demo">' +
-        '<a href="' + DEMO + '" target="_blank" rel="noopener"><small>As a member</small><b>See it as a member</b><span>The group\'s page, its events, the board, joining and RSVPs.</span></a>' +
-        '<a class="alt" href="' + DEMO + '?view=owner" target="_blank" rel="noopener"><small>As the organizer</small><b>See it as the organizer</b><span>Your members, your events, your earnings and your link.</span></a></div>' +
-        '<div class="gp-login"><div class="dg-k">The demo sign-in</div><dl><dt>Username</dt><dd>demo@vegansexplore.com</dd><dt>Password</dt><dd>explore11</dd></dl>' +
-        '<p>Use it if the demo asks you to sign in. It is a simulation: nothing is charged, nothing is sent and nothing you do is saved.</p></div>' +
-        nextBtn('part', 'Next: your part');
+        '<li><b>Paid events</b>A paid ticket needs the Passport from the start.</li></ol>' + nextBtn('part', 'Next: your part');
     },
     part: function () {
       return head('Your part', 'Share your link, host here', 'Every group stays listed on Vegans Explore with its events, whatever it decides. Being a Group Partner is about hosting here.') +
-        '<div class="dg-grid">' +
-        card('Share your link', 'Your group has its own link. Put it in your bio, your posts and your event messages. Everyone who joins through it counts to your group.', 'Your link') +
-        card('Host your events here', 'Post your events on Vegans Explore, and send your people here to RSVP and buy tickets.', 'Your events') +
-        card('Hosting only here unlocks more', 'When your group hosts its events only on Vegans Explore, it unlocks the share ladder, featured status, our ads and first pick of bounties.', 'Earned, not required') +
-        '</div>' + nextBtn('questions', 'Next: questions');
+        '<div class="gp-split"><div class="gp-side">' +
+        slim('link', 'Share your link', 'In your bio, your posts and your event messages. Everyone who joins through it counts to your group.') +
+        slim('cal', 'Host your events here', 'Post them on Vegans Explore and send your people here to RSVP and buy tickets.') +
+        slim('star', 'Hosting only here unlocks more', 'The share ladder, featured status, our ads and first pick of bounties. Earned, not required.') +
+        nextBtn('questions', 'Next: questions') + '</div>' +
+        '<div>' + thumb(DEMO.members, 'Your members, in the organizer\'s dashboard', 'Your link, your share and who joined through you, in the sample club\'s dashboard. Tap it to open it full screen.') + '</div></div>';
     },
     questions: function () {
       return head('Questions', 'Straight answers') +
@@ -365,12 +486,65 @@
     }
   };
 
+  // The previews fill the space beside the tiles without the page scrolling: the page is drawn at desktop width (phone width on a
+  // phone) and scaled down to the box.
+  function fitThumbs() {
+    [].forEach.call(main.querySelectorAll('[data-thumb]'), function (t) {
+      var phone = window.innerWidth <= 900;
+      if (!phone) {
+        var top = t.getBoundingClientRect().top - main.getBoundingClientRect().top + main.scrollTop;
+        t.style.height = Math.max(380, Math.min(760, main.clientHeight - top - 40)) + 'px';
+      } else t.style.height = '';
+      var vw = phone ? 420 : 1280, s = t.clientWidth / vw, f = t.querySelector('iframe');
+      f.style.width = vw + 'px'; f.style.height = Math.ceil(t.clientHeight / s) + 'px'; f.style.transform = 'scale(' + s + ')';
+    });
+  }
+  window.addEventListener('resize', fitThumbs);
+  // The content area widens when Dani folds into the corner (after the view is drawn), so refit then too.
+  if (window.ResizeObserver) new ResizeObserver(function () { fitThumbs(); }).observe(main);
+
+  // Full screen, inside this page; Open in a new tab is there too. Escape or Close comes back.
+  var viewEl = null;
+  function openView(url, title) {
+    closeView();
+    viewEl = document.createElement('div');
+    viewEl.className = 'gp-view'; viewEl.setAttribute('role', 'dialog'); viewEl.setAttribute('aria-modal', 'true'); viewEl.setAttribute('aria-label', title);
+    viewEl.innerHTML = '<div class="gp-view-bar"><b>' + esc(title) + '</b><a href="' + esc(url) + '" target="_blank" rel="noopener">Open in a new tab</a><button type="button" data-view-close>Close</button></div>' +
+      '<iframe title="' + esc(title) + '" src="' + esc(url) + '"></iframe>';
+    document.body.appendChild(viewEl);
+    document.documentElement.classList.add('gp-view-on');
+    viewEl.querySelector('[data-view-close]').focus();
+  }
+  function closeView() {
+    if (!viewEl) return;
+    viewEl.remove(); viewEl = null;
+    document.documentElement.classList.remove('gp-view-on');
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeView(); });
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('[data-view-close]')) { closeView(); return; }
+    var v = e.target.closest('[data-view-url]');
+    if (v) { e.preventDefault(); openView(v.getAttribute('data-view-url'), v.getAttribute('data-view-title') || 'Vegans Explore'); return; }
+    var d = e.target.closest('[data-demo]');
+    if (d) {
+      demoView = d.getAttribute('data-demo');
+      // The organizer side opens on the demo sign-in; the preview skips it the same way signing in would (groupDemoSignedIn).
+      if (demoView === 'owner') { try { sessionStorage.setItem('ve_group_demo', '1'); } catch (x) {} }
+      [].forEach.call(main.querySelectorAll('[data-demo]'), function (b) { b.setAttribute('aria-pressed', String(b === d)); });
+      $('gpDemoThumb').innerHTML = thumb(DEMO[demoView], demoView === 'owner' ? 'The sample club, as the organizer' : 'The sample club, as a member', 'Tap it to open it full screen.');
+      fitThumbs();
+    }
+  });
+
   function draw() {
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    k = ALIAS[k] || k;
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
     main.innerHTML = VIEWS[cur]();
     main.scrollTop = 0;
+    if (cur === 'overview') fillCommunity();
+    fitThumbs();
     menu.innerHTML = TABS.map(function (x) { return '<a href="#/' + x.k + '"' + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
     sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
     var pic = window.VEGuideArt ? VEGuideArt('dani', 'square') : null;
@@ -381,21 +555,39 @@
     tourEl.innerHTML = tourM.innerHTML = nav;
   }
 
-  // Hide Dani (ve-guide-min.js turns it into Hide me / Show me and floats her in the corner when folded).
-  var foldBtn = $('dgFold'), railEl = $('dgRail');
+  // Dani (Sean, 2026-10-30: "if they don't click on Dani to take them through the tour, if they just start clicking around and
+  // looking at stuff themselves, then she becomes minimized by default"). She greets them on arrival. Following her tour (Back /
+  // Next, the page's Next buttons, Take the tour with Dani, or her picture) keeps her; any other move folds her into the corner.
+  // Brought back by hand, she stays for the visit (gp_dani_pinned). ve-guide-min.js draws the corner square and Hide me / Show me.
+  var foldBtn = $('dgFold'), railEl = $('dgRail'), viaTour = false, first = true;
+  function store(k, v) { try { if (v) sessionStorage.setItem(k, '1'); else sessionStorage.removeItem(k); } catch (e) {} }
+  function stored(k) { try { return !!sessionStorage.getItem(k); } catch (e) { return false; } }
   function setFold(folded) {
     railEl.classList.toggle('dg-folded', folded);
     foldBtn.textContent = folded ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!folded));
-    try { sessionStorage.setItem('gp_dani_folded', folded ? '1' : ''); } catch (e) {}
+    store('gp_dani_folded', folded);
   }
-  foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
-  try { if (sessionStorage.getItem('gp_dani_folded')) setFold(true); } catch (e) {}
+  foldBtn.addEventListener('click', function () { var unfold = railEl.classList.contains('dg-folded'); setFold(!unfold); store('gp_dani_pinned', unfold); });
+  if (stored('gp_dani_folded')) setFold(true);
+  document.addEventListener('click', function (e) {
+    if (e.target.closest('.dg-tnav,[data-tour]')) viaTour = true;
+    if (e.target.closest('[data-tour-start],#dgGuide')) {
+      e.preventDefault(); setFold(false); store('gp_dani_pinned', true);
+      viaTour = true; location.hash = '#/' + TABS[Math.min(TABS.length - 1, TABS.indexOf(tab(cur)) + 1)].k;
+    }
+  }, true);
+  function route() {
+    if (!first && !viaTour && !stored('gp_dani_pinned') && !railEl.classList.contains('dg-folded')) setFold(true);
+    viaTour = false; first = false;
+    draw();
+  }
 
   sel.addEventListener('change', function () { location.hash = '#/' + sel.value; });
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
-  window.addEventListener('hashchange', draw);
+  window.addEventListener('hashchange', route);
   document.documentElement.classList.add('dg-fit');
-  draw();
+  if (window.VERegionDirectory) VERegionDirectory.css();
+  route();
 })();
 </script>
 <script src="/public/ve-guide-min.js"></script>
