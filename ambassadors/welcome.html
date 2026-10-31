@@ -233,9 +233,18 @@
     .am-vid-ui .am-prog{height:4px;border-radius:2px;background:rgba(255,255,255,.3);margin-top:8px;overflow:hidden;}
     .am-vid-ui .am-prog i{display:block;height:100%;width:0;background:#4ade80;}
     .am-vid-ui:focus-visible{outline:3px solid #F69820;outline-offset:3px;}
+    /* At 900 px and under the Guide is a 110 px square (ve-guide-corner.js): a smaller play button and only the progress line. */
+    @media (max-width:900px){
+      .am-vid-ui .am-play{width:40px;height:40px;top:46%;}
+      .am-vid-ui .am-play svg{width:18px;height:18px;}
+      .am-vid-ui .am-vbar{padding:14px 8px 7px;}
+      .am-vid-ui .am-vbar b,.am-vid-ui .am-vbar #amVidT{display:none;}
+      .am-vid-ui .am-prog{margin-top:0;}
+    }
     @media (max-width:900px){.am-ovrow{grid-template-columns:minmax(0,1fr);}.am-video{min-height:240px;order:-1;}}
     [hidden]{display:none !important;}
   </style>
+<script src="/public/ve-guide-corner.js"></script>
 </head>
 <body>
 <div class="page-frame">
