@@ -724,6 +724,13 @@ judge whether food is safe by how a place looks online; businesses want marketin
   the owner refused before sending and when editing, a missing answer and an off-list choice refused, sent with the numbers frozen, the owner
   reading it and seeing it in their reports, a change after sending refused), then removed. Not yet: Google and social numbers in the report
   (the page says they join as we connect them), and a Community Manager's view of all their accounts beyond the check-in list.
+  **The monthly rotation: IN PROGRESS** (2026-10-31; on the branch, not deployed or merged; playbook `ve-front-of-house` BUILD RECORD 2
+  has the full list). Done: `ve_branddesk_campaigns` (migration `20261031_branddesk_rotation.sql`, applied), the idea library and
+  blueprints (`CAMPAIGNS` in `ve-branddesk`) with `campaign_library`, `campaign_list`, `campaign_get`, `campaign_create`, `campaign_save`,
+  `campaign_calendar`, `checkin_send` planning next month's campaign and a due photo night (code compiled, NOT deployed), `/business/campaign`
+  (`business/campaign.html`, The plan / The blueprint / How it went, `?preview=1`) and Your campaigns on the client dashboard (view
+  `campaigns`). To do: deploy `ve-branddesk`, Depot > BrandDesk `#rotation` board, Preview journeys steps, browser checks, the live proof
+  on a [TEST] client, then document it here and merge on Sean's word.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
