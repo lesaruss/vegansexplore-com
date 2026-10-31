@@ -184,7 +184,7 @@
     '.vg :focus-visible{outline:3px solid #F69820;outline-offset:2px;}'
   ].join('');
 
-  var KIND = { campaign: 'Paid campaign', collab: 'Collaboration', hosting: 'Hosting', event: 'Event', content: 'Content', photo: 'Photo shoot', bounty: 'Bounty' };
+  var KIND = { campaign: 'Paid campaign', collab: 'Collaboration', hosting: 'Hosting', event: 'Event', content: 'Content', photo: 'Photo shoot', visit: 'Visit', bounty: 'Bounty' };
   var MODE = { apply: 'Apply', audition: 'Audition', claim: 'Claim it' };
   var STATUS = { applied: ['Applied', ''], shortlisted: ['Shortlisted', 'ok'], audition: ['Audition requested', 'warn'], booked: ['Booked', 'ok'],
     delivered: ['Delivered, results counting', 'ok'], paid: ['Paid', 'dark'], not_selected: ['Not selected', ''] };
@@ -207,6 +207,7 @@
     hosting: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
     event: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     content: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/>',
+    visit: '<path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>',
     photo: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/><path d="M17.5 10.5h.01"/>',
     bounty: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
     board: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',

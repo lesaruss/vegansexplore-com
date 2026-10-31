@@ -494,6 +494,9 @@
         var hist = (h.coaching.length ? '<p class="meta" style="margin-top:8px"><b>Earlier coaching:</b> ' + h.coaching.map(function (x) { return esc(x.note) + ' <i>(' + esc(x.bounty) + ')</i>'; }).join(' &middot; ') + '</p>' : '') +
           (h.strikes.length ? '<p class="meta"><b>Strikes:</b> ' + h.strikes.map(function (x) { return esc(REASON[x.reason] || x.reason) + (x.cleared_at ? ' (cleared)' : ''); }).join(', ') + '</p>' : '');
         var parts = (b.parts || []).length ? '<p class="meta" style="margin-top:6px"><b>Parts ticked:</b> ' + (s.parts_done || []).length + ' of ' + b.parts.length + '</p>' : '';
+        // A visit (BrandDesk): where the phone was at I'm here, and whether the meal was on the house (FTC).
+        if (s.visit_at || s.visit_comped != null) parts += '<p class="meta" style="margin-top:6px"><b>Visit:</b> ' + (s.visit_at ? 'I\'m here ' + esc(day(s.visit_at)) + (s.visit_distance_m != null ? ', ' + s.visit_distance_m + ' m from the pin' : '') : 'no I\'m here') +
+          (s.visit_comped == null ? '' : s.visit_comped ? ' &middot; <b>meal on the house</b> (they must say so when they post)' : ' &middot; paid for their meal') + (s.library_at ? ' &middot; photos in the client\'s Library' : '') + '</p>';
         return '<div class="sub-card" data-id="' + s.id + '" data-points="' + (b.points || 0) + '">' +
           '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span>' +
           (s.overdue ? '<span class="pill p-rejected">Waiting ' + s.waited_days + ' days</span>' : '') +

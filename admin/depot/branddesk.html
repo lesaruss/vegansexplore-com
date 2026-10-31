@@ -75,6 +75,7 @@
     .form textarea{min-height:110px;width:100%;box-sizing:border-box;}
     .form select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
     .tag.applied{background:#eef1ee;}.tag.shortlisted,.tag.claimed{background:#e3f3e5;color:#1E5F2A;}.tag.audition{background:#fff4e0;color:#8a5200;}.tag.not_selected{background:#fde8e8;color:#a61b1b;}
+      .tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;white-space:nowrap}.tbl th{font-size:12px;color:#666;font-weight:700}
   </style>
 </head>
 <body>
@@ -145,8 +146,9 @@
           '<a class="btn btn-ghost btn-sm" href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Their brand kit</a>' +
           '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
           (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section>' +
-          '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
-        if (slug) drawShoot(slug);
+          '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section>' +
+          '<section class="card" id="visits"><h2>Member visits</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
+        if (slug) { drawShoot(slug); drawVisits(slug); }
         VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
         var cx = $('cx');
         if (cx) cx.addEventListener('click', function () {
@@ -236,6 +238,44 @@
             btn.disabled = false; m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not post.';
           });
         };
+      }
+      // ---- Member visits: a weekly visit bounty (ve-bounties visit_*). Members claim it, tap I'm here at the restaurant, send photos;
+      // approved photos land in this client's Library.
+      var VWORD = { claimed: 'Claimed', submitted: 'Waiting for review', changes: 'Changes asked', approved: 'Approved', rejected: 'Not approved', no_show: 'No-show' };
+      function drawVisits(slug) {
+        var box = $('visits'); if (!box) return;
+        bapi({ action: 'visit_get', slug: slug }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = '<h2>Member visits</h2><p class="empty" style="padding:0">This did not load.</p>'; return; }
+          var D = d.defaults || {}, c = d.current;
+          var head = '<div class="bar"><h2 style="margin:0">Member visits</h2><span class="tag ' + (c ? 'active' : 'checkout') + '">' + (c ? 'This week on the board' + (d.repeating ? ', every week' : '') : 'Not posted') + '</span></div>' +
+            '<p class="sub" style="margin:8px 0 0">Members in ' + esc(CHAPTERS[d.chapter] || 'their chapter') + ' claim a visit, tap I\'m here at the restaurant (their phone checks it), and send at least ' + (D.min_photos || 3) + ' photos with a line on what they had. You approve each one in Depot &gt; Bounties; the points are paid then and the photos go into their Library. Members pay for their own meal unless you set a perk.</p>';
+          var list = (d.visits || []).length ? '<div style="overflow-x:auto;margin-top:12px"><table class="tbl"><thead><tr><th>Member</th><th>Where it stands</th><th>I\'m here</th><th>Photos</th><th>Meal</th></tr></thead><tbody>' +
+            d.visits.map(function (v) { return '<tr><td>' + esc(v.name) + '</td><td>' + esc(VWORD[v.status] || v.status) + (v.in_library ? ', in their Library' : '') + '</td><td>' + (v.visit_at ? esc(day(v.visit_at)) + (v.distance_m != null ? ' (' + v.distance_m + ' m)' : '') : 'Not yet') + '</td><td>' + v.photos + '</td><td>' + (v.comped == null ? '' : v.comped ? 'On the house' : 'Paid') + '</td></tr>'; }).join('') + '</tbody></table></div>'
+            : '<p class="sub" style="margin:12px 0 0">No visits yet.</p>';
+          if (c) {
+            box.innerHTML = head + '<div class="kv" style="margin-top:12px"><div><span>This week</span>' + c.taken + ' of ' + c.slots + ' claimed, ' + c.points + ' points each</div><div><span>Claims close</span>' + esc(day(c.claims_close_at)) + '</div>' + (c.perk ? '<div><span>Perk</span>' + esc(c.perk) + '</div>' : '') + '</div>' + list +
+              '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/bounties?community=' + esc(c.community_slug) + '&id=' + esc(c.id) + '" target="_blank" rel="noopener">See it on the board</a>' +
+              (d.repeating ? '<button type="button" class="btn btn-ghost btn-sm" data-v-stop>Stop after this week</button>' : '') + '<button type="button" class="btn btn-bad btn-sm" data-v-now>Take it down now</button></p><p class="msg" id="v-msg" role="status"></p>';
+            var stop = function (now) { bapi({ action: 'visit_cancel', slug: slug, now: now }).then(function (r) { if (r && r.ok) drawVisits(slug); else { $('v-msg').className = 'msg err'; $('v-msg').textContent = 'That did not go through.'; } }); };
+            var s1 = box.querySelector('[data-v-stop]'); if (s1) s1.onclick = function () { stop(false); };
+            box.querySelector('[data-v-now]').onclick = function () { if (window.confirm('Take this week\'s visit down and stop repeating it? Anyone who claimed it is left with nothing to do.')) stop(true); };
+            return;
+          }
+          box.innerHTML = head + (d.listing && !d.listing.pinned ? '<p class="msg err" style="margin-top:10px">This listing has no map pin yet, so I\'m here cannot check a visit. It fills on the nightly pass from their Google place.</p>' : '') +
+            '<form class="form" id="vf" style="margin-top:12px"><label>Points a visit<input type="number" id="v-pts" min="10" max="5000" step="10" value="' + (D.points || 150) + '"></label>' +
+            '<label>Visits a week<input type="number" id="v-slots" min="1" max="20" value="' + (D.slots || 3) + '"></label>' +
+            '<label style="flex-basis:100%">A perk the restaurant offers our members (optional)<input type="text" id="v-perk" maxlength="200" placeholder="A free drink with any entree"></label>' +
+            '<label style="flex-basis:100%">Anything members should know (optional)<input type="text" id="v-note" maxlength="600" placeholder="The patio is best before 6"></label>' +
+            '<label style="flex-basis:100%;flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="v-rep" checked style="width:auto"> Post a new one every week</label></form>' + list +
+            '<p style="margin-top:12px"><button class="btn" type="button" id="v-post"' + (d.listing && d.listing.pinned && d.chapter ? '' : ' disabled') + '>Post this week\'s visit</button></p><p class="msg" id="v-msg" role="status"></p>';
+          $('v-post').onclick = function () {
+            var btn = this, m = $('v-msg'); btn.disabled = true; m.className = 'msg'; m.textContent = 'Posting...';
+            bapi({ action: 'visit_post', slug: slug, points: +$('v-pts').value, slots: +$('v-slots').value, perk: $('v-perk').value, note: $('v-note').value, repeat: $('v-rep').checked }).then(function (r) {
+              if (r && r.ok) { drawVisits(slug); return; }
+              btn.disabled = false; m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not post.';
+            });
+          };
+        });
       }
       // ---- The pitch list: the presence-gap ranking (ve_branddesk_ranking) and one pitch page per business (ve-branddesk pitch_*).
       var PST = { draft: 'Draft', ready: 'Ready to send', sent: 'Sent', viewed: 'Opened it', chose: 'Answered', client: 'Client', closed: 'Closed' };

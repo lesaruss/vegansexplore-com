@@ -176,6 +176,14 @@
     .status.no_show { background: #fde8e8; color: var(--ve-danger); }
     .standing { margin: 18px 0 0; }
     .fine { font-size: 12.5px; line-height: 1.55; color: var(--ve-text-60); margin-top: 10px; }
+    .visit { border: 1px solid var(--ve-line, #e5e5e5); border-radius: 8px; padding: 14px 16px; margin: 0 0 14px; }
+    .visit.done { background: var(--ve-green-light); border-color: transparent; color: var(--ve-green-deep); }
+    .visit p { margin: 0; }
+    .visit .claimrow { margin-top: 10px; }
+    .comped { border: 0; padding: 0; margin: 14px 0 0; }
+    .comped legend { font-weight: 700; margin-bottom: 6px; padding: 0; }
+    .comped label { display: flex; gap: 8px; align-items: flex-start; margin: 6px 0; }
+    .comped input { margin-top: 3px; }
     .claimrow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
     .rd h4 { font-size: 14px; font-weight: 800; margin: 14px 0 4px; }
     .rd ul { margin: 0 0 0 20px; font-size: 14px; line-height: 1.6; color: var(--ve-text-75); }
@@ -252,6 +260,7 @@
             </div>
             <div class="box" id="d-work" hidden>
               <h3>Your submission</h3>
+              <div class="visit" id="visit-box" hidden></div>
               <div class="drop" id="drop">
                 <p>Drag files here, or</p>
                 <p style="margin-top:8px"><label class="btn btn-ghost" for="pick">Choose files</label><input id="pick" type="file" multiple class="visually-hidden"></p>
@@ -261,7 +270,10 @@
               <label class="f" for="links">Links <span class="hint">One per line: Google Drive, Dropbox, YouTube (unlisted is fine)</span><textarea id="links" rows="3" style="min-height:80px" placeholder="https://"></textarea></label>
               <label class="f" for="note" id="note-label">A note for the reviewer <span class="hint" id="note-hint">Optional. For the write-up, paste the whole piece here.</span><textarea id="note" rows="5"></textarea></label>
               <div id="parts-box" hidden><p class="label" style="margin-top:14px">Tick each part that is in your upload</p><div class="parts-check" id="parts-check"></div></div>
-              <label class="check" for="license"><input type="checkbox" id="license"><span>This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
+              <fieldset class="comped" id="comped-box" hidden><legend>Was your meal on the house?</legend>
+                <label><input type="radio" name="comped" value="no"><span>No, I paid for it</span></label>
+                <label><input type="radio" name="comped" value="yes"><span>Yes, it was on the house (or a perk). I will say so in anything I post.</span></label></fieldset>
+              <label class="check" for="license"><input type="checkbox" id="license"><span id="license-words">This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
               <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
               <p class="msg" id="msg" role="status" aria-live="polite"></p>
             </div>
@@ -624,8 +636,14 @@
       $('links').value = m.links ? m.links.join('\n') : '';
       $('note').value = m.note || '';
       $('license').checked = false;
+      var visit = b.gig_kind === 'visit';
+      renderVisit();
+      $('comped-box').hidden = !visit;
+      [].forEach.call(document.querySelectorAll('input[name=comped]'), function (r) { r.checked = visit && m.visit_comped != null && r.value === (m.visit_comped ? 'yes' : 'no'); });
+      $('license-words').textContent = visit ? 'These are my own photos, taken on this visit, and anyone in them said yes. Vegans Explore and the restaurant may use, edit and repost them, with credit to me.'
+        : 'This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.';
       var writeup = b.kind === 'writeup';
-      $('note-hint').textContent = writeup ? 'Paste your whole write-up here, or upload it as a document.' : 'Optional: anything the reviewer should know.';
+      $('note-hint').textContent = visit ? 'What you had and what stood out (a line or two).' : writeup ? 'Paste your whole write-up here, or upload it as a document.' : 'Optional: anything the reviewer should know.';
       $('note').rows = writeup ? 14 : 4;
       $('submit').textContent = m.status === 'submitted' ? 'Update my submission' : m.status === 'changes' ? 'Send my changes' : 'Submit for review';
       $('msg').textContent = '';
@@ -663,7 +681,7 @@
 
     function renderRundown() {
       var r = state.rundown, det = state.details, b = state.current;
-      if (!r) { $('d-rundown').hidden = true; } else {
+      if (!r || b.gig_kind === 'visit') { $('d-rundown').hidden = true; } else {
         $('d-rundown').hidden = false;
         $('d-rundown').innerHTML = '<h3>Your rundown</h3>' + (r.intro ? '<p>' + esc(r.intro) + '</p>' : '') +
           (r.sections || []).map(function (s) { return '<h4>' + esc(s.heading) + '</h4><ul>' + (s.items || []).map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</ul>'; }).join('') +
@@ -673,7 +691,7 @@
       if (!det) { $('d-details').hidden = true; return; }
       var e = b.event;
       $('d-details').hidden = false;
-      $('d-details').innerHTML = '<h3>Event details</h3>' +
+      $('d-details').innerHTML = '<h3>' + (b.gig_kind === 'visit' ? 'Your visit guide' : 'Event details') + '</h3>' +
         (e ? '<p><strong>' + esc(e.title) + '</strong><br>' + esc(when(e.starts_at)) + (e.ends_at ? ' to ' + esc(new Date(e.ends_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: tz() })) : '') + '</p>' : '') +
         (det.address ? '<p>' + esc(det.address) + ' &middot; <a href="https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(det.address) + '" target="_blank" rel="noopener noreferrer">Map</a></p>' : '') +
         (e && e.ticket_url ? '<p><a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener noreferrer">Event page and tickets</a></p>' : '') +
@@ -760,14 +778,49 @@
     ['dragleave', 'drop'].forEach(function (t) { drop.addEventListener(t, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
     drop.addEventListener('drop', function (e) { uploadAll(e.dataTransfer.files); });
 
+    // ---- A visit (BrandDesk): the phone's location shows they are at the restaurant (ve-bounties visit_here).
+    function renderVisit() {
+      var b = state.current, m = state.mine, box = $('visit-box');
+      if (b.gig_kind !== 'visit') { box.hidden = true; return; }
+      box.hidden = false;
+      if (m && m.visit_at) {
+        box.className = 'visit done';
+        box.innerHTML = '<p><strong>You were here</strong> on ' + esc(when(m.visit_at)) + '. Upload at least 3 photos and send it in.</p>';
+        return;
+      }
+      box.className = 'visit';
+      box.innerHTML = '<p><strong>At the restaurant?</strong> Tap I\'m here. Your phone checks you are there; only the distance is kept.</p>' +
+        '<div class="claimrow"><button type="button" class="btn btn-primary" id="here">I\'m here</button></div><p class="msg" id="here-msg" role="status" aria-live="polite"></p>';
+      $('here').addEventListener('click', function () {
+        var btn = this, msg = $('here-msg');
+        if (!navigator.geolocation) { msg.className = 'msg'; msg.textContent = 'This browser cannot share your location. Try your phone\'s browser.'; return; }
+        btn.disabled = true; msg.className = 'msg ok'; msg.textContent = 'Finding you...';
+        navigator.geolocation.getCurrentPosition(function (pos) {
+          call({ action: 'visit_here', bounty_id: state.current.id, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }).then(function (d) {
+            btn.disabled = false;
+            if (d.error) { msg.className = 'msg'; msg.textContent = d.message || 'That did not go through.'; return; }
+            state.mine.visit_at = d.visit_at; renderVisit();
+          });
+        }, function () { btn.disabled = false; msg.className = 'msg'; msg.textContent = 'We need your location to check the visit. Allow it for this site and tap again.'; },
+        { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+      });
+    }
+
     $('submit').addEventListener('click', function () {
       var boxes = Array.prototype.slice.call($('parts-check').querySelectorAll('input[data-part]'));
       var partsDone = boxes.filter(function (x) { return x.checked; }).map(function (x) { return Number(x.getAttribute('data-part')); });
       if (boxes.length && partsDone.length < boxes.length) { $('msg').className = 'msg'; $('msg').textContent = 'This job needs every part. Tick each one when it is in your upload.'; boxes.filter(function (x) { return !x.checked; })[0].focus(); return; }
       if (!$('license').checked) { $('msg').className = 'msg'; $('msg').textContent = 'Tick the box to confirm this is your own work and Vegans Explore may use it.'; $('license').focus(); return; }
+      var visit = state.current.gig_kind === 'visit', comped;
+      if (visit) {
+        if (!state.mine.visit_at) { $('msg').className = 'msg'; $('msg').textContent = 'Tap I\'m here while you are at the restaurant first.'; return; }
+        var pick = document.querySelector('input[name=comped]:checked');
+        if (!pick) { $('msg').className = 'msg'; $('msg').textContent = 'Tell us whether your meal was on the house.'; document.querySelector('input[name=comped]').focus(); return; }
+        comped = pick.value === 'yes';
+      }
       var links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
       $('submit').disabled = true; $('msg').className = 'msg ok'; $('msg').textContent = 'Sending it in...';
-      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, parts_done: partsDone, license: true }).then(function (d) {
+      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, parts_done: partsDone, license: true, comped: comped }).then(function (d) {
         $('submit').disabled = false;
         if (d.error) { $('msg').className = 'msg'; $('msg').textContent = d.message || 'That did not go through. Please try again.'; return; }
         open(state.current.id);

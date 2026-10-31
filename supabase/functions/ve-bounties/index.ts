@@ -174,7 +174,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by, shoot_listing_id';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by, shoot_listing_id, visit_listing_id, repeat_weekly';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -293,7 +293,7 @@ async function heldForViewer(ids: string[], viewer: Viewer): Promise<Set<string>
   return new Set((data || []).filter((r) => String(r.reserved_email).toLowerCase() === me).map((r) => r.id));
 }
 const payText = (b: any) => [b.cash_cents ? `$${(b.cash_cents / 100).toLocaleString('en-US')}` : '', b.perk || '', b.points ? `${b.points.toLocaleString()} points` : ''].filter(Boolean).join(' + ');
-const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted } : null;
+const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted, visit_at: s.visit_at || null, visit_distance_m: s.visit_distance_m ?? null, visit_comped: s.visit_comped ?? null, library_at: s.library_at || null } : null;
 async function takenCounts(ids: string[]) {
   const out: Record<string, number> = {};
   if (!ids.length) return out;
@@ -353,11 +353,12 @@ async function cron() {
   const now = Date.now();
   // A host's 90-day featured run ends; listings featured some other way never carry featured_until.
   await db.from('listings').update({ is_featured: false, featured_until: null }).lt('featured_until', nowIso());
+  const visits_posted = await repostVisits();
   const { data: subs } = await db.from('ve_bounty_submissions').select('*').in('status', ['claimed', 'changes']).limit(1000);
-  if (!subs || !subs.length) return { checked: 0 };
+  if (!subs || !subs.length) return { checked: 0, visits_posted };
   const { data: bs } = await db.from('ve_bounties').select(BOUNTY_COLS).in('id', [...new Set(subs.map((s) => s.bounty_id))]);
   const byId: Record<string, any> = {}; for (const b of bs || []) byId[b.id] = b;
-  const out = { checked: subs.length, reminders: 0, no_shows: 0, auto_submitted: 0, lapsed: 0 };
+  const out = { checked: subs.length, reminders: 0, no_shows: 0, auto_submitted: 0, lapsed: 0, visits_posted };
   for (const s of subs) {
     const b = byId[s.bounty_id]; if (!b || b.status === 'canceled') continue;
     const due = ms(b.due_at), start = ms(b.event_starts_at), end = ms(b.event_ends_at) || start + 6 * HOUR;
@@ -442,6 +443,89 @@ async function bookPhotographer(b: any, memberId: string, byId: string, first: s
     await db.from('ve_branddesk_accounts').update({ onboarding: ob, updated_at: new Date().toISOString() }).eq('id', acct.id);
   }
   return SHOT_LIST(l.slug);
+}
+
+// ---- Visit bounties (BrandDesk): members visit a managed restaurant, prove it with the phone's location, and send photos.
+// Logan's defaults, Sean's to change: 150 points a visit, 3 spots a week, at least 3 photos, claims for 6 days, 2 more to upload.
+const VISIT_DEFAULTS = { points: 150, slots: 3, min_photos: 3, claim_days: 6, upload_days: 2 };
+const VISIT_RADIUS_M = 150;                     // the check-in rule: 150 m plus up to 100 m of the phone's own uncertainty
+const LIBRARY = 'branddesk-library';
+function metersApart(a: number, b: number, c: number, d: number) {
+  const R = 6371000, r = Math.PI / 180, x = (c - a) * r, y = (d - b) * r;
+  const h = Math.sin(x / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(y / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(h));
+}
+function visitGuide(l: any, perk: string | null) {
+  const addr = [l.address_street, l.address_city, l.address_state, l.address_zip].filter(Boolean).join(', ');
+  return [
+    addr ? `Where: ${l.name}, ${addr}.` : `Where: ${l.name}.`,
+    `1. Go as a regular guest. Order what you would really eat, and pay for it yourself${perk ? ` (the restaurant offers this perk to our members on this visit: ${perk}; ask for it when you order)` : ''}.`,
+    `2. When you are there, open this bounty and tap I'm here. Your phone checks you are at the restaurant; nothing else is kept.`,
+    `3. Shoot on your phone: wipe the lens, no flash, light from a window if you can. Every dish from three-quarters (the way you see it sitting down) and once from straight above. One wide shot of the room, and the outside by day. People only with their yes.`,
+    `4. Upload at least ${VISIT_DEFAULTS.min_photos} photos at full size (straight from the camera, no filters), and a line on what you had and what stood out.`,
+    `5. If your meal was on the house, tick it when you submit, and say so in anything you post ("my meal was on the house", or #ad). That is the law, and it keeps everyone's word good.`,
+    `The team approves each visit before the points are paid. The best photos are credited to you on the restaurant's page and our socials, and members whose photos keep being approved are first in line for paid work.`,
+  ].join('\n');
+}
+async function visitChapter(l: any) {
+  const { data: ch } = await db.rpc('ve_chapter_of', { p_city: l.address_city || '', p_state: l.address_state || '' });
+  let chapter = String(ch || ''); if (chapter === 'dc') chapter = 'washington-dc';
+  return COMMUNITIES.includes(chapter) ? chapter : '';
+}
+async function postVisit(l: any, o: { points: number; slots: number; perk: string | null; note: string; repeat: boolean }, byId: string | null) {
+  const chapter = await visitChapter(l);
+  if (!chapter) return { error: 'no_chapter' };
+  const now = Date.now(), close = new Date(now + VISIT_DEFAULTS.claim_days * DAY), due = new Date(now + (VISIT_DEFAULTS.claim_days + VISIT_DEFAULTS.upload_days) * DAY);
+  const brief = `Visit ${l.name}${l.address_city ? ' in ' + l.address_city : ''}, a Vegan business we manage, this week. Eat there, tap I'm here when you arrive, and send at least ${VISIT_DEFAULTS.min_photos} photos from your phone with a line on what you had. ` +
+    `Your photos help them look as good online as they are in person. ${o.perk ? `They offer our members this perk on the visit: ${o.perk}. ` : 'You pay for your own meal. '}` +
+    `A meal on the house is said so when you post.` + (o.note ? ' ' + o.note : '');
+  const row = { community_slug: chapter, kind: 'photos', gig_kind: 'visit', apply_mode: 'claim', asks: [], title: `Visit: ${l.name}`.slice(0, 140), brief: brief.slice(0, 4000),
+    deliverable: `At least ${VISIT_DEFAULTS.min_photos} photos from your visit, and a line on what you had`, points: o.points, slots: o.slots, perk: o.perk, partner_name: String(l.name).slice(0, 120),
+    partner_listing_id: l.id, visit_listing_id: l.id, repeat_weekly: o.repeat, status: 'open', created_by: byId, claims_close_at: close.toISOString(), due_at: due.toISOString(),
+    event_details: visitGuide(l, o.perk).slice(0, 6000) };
+  const { data, error } = await db.from('ve_bounties').insert(row).select('id').single();
+  if (error) return { error: 'save_failed', message: error.message };
+  return { ok: true, id: data.id };
+}
+// Next week's visit, once this week's claims close (hourly cron). Only while the client is active; a paused one waits.
+async function repostVisits() {
+  const { data: due } = await db.from('ve_bounties').select('id, visit_listing_id, points, slots, perk, brief').eq('gig_kind', 'visit').eq('repeat_weekly', true).eq('status', 'open').lt('claims_close_at', nowIso()).limit(50);
+  let posted = 0;
+  for (const b of due || []) {
+    const { data: acct } = await db.from('ve_branddesk_accounts').select('status').eq('listing_id', b.visit_listing_id).in('status', ['active', 'paused', 'canceling']).maybeSingle();
+    if (!acct) { await db.from('ve_bounties').update({ repeat_weekly: false, updated_at: nowIso() }).eq('id', b.id); continue; }
+    if (acct.status === 'paused') continue;
+    const { data: l } = await db.from('listings').select('id, slug, name, address_street, address_city, address_state, address_zip').eq('id', b.visit_listing_id).maybeSingle();
+    if (!l) continue;
+    const note = String(b.brief || '').split('A meal on the house is said so when you post.')[1]?.trim() || '';
+    const r = await postVisit(l, { points: b.points, slots: b.slots || VISIT_DEFAULTS.slots, perk: b.perk, note, repeat: true }, null);
+    if ((r as any).ok) { await db.from('ve_bounties').update({ repeat_weekly: false, updated_at: nowIso() }).eq('id', b.id); posted++; }
+  }
+  return posted;
+}
+// Approved visit photos go into the client's Library (ve_branddesk_files), so they own them like the rest of their pictures.
+async function visitToLibrary(b: any, s: any, memberName: string) {
+  if (!b.visit_listing_id || s.library_at) return 0;
+  const { data: acct } = await db.from('ve_branddesk_accounts').select('id').eq('listing_id', b.visit_listing_id).in('status', ['active', 'paused', 'canceling']).maybeSingle();
+  if (!acct) return 0;
+  const { data: l } = await db.from('listings').select('slug').eq('id', b.visit_listing_id).maybeSingle();
+  if (!l) return 0;
+  const day = new Date().toISOString().slice(0, 10);
+  let n = 0;
+  for (const f of (s.files || []) as any[]) {
+    if (!/^image\//.test(f.type || '') || (f.size || 0) > 40 * 1024 * 1024) continue;
+    const { data: blob } = await db.storage.from(BUCKET).download(f.path);
+    if (!blob) continue;
+    const name = String(f.name || 'photo.jpg').replace(/[^\w.\-]+/g, '-').slice(-80);
+    const path = `${l.slug}/photo/visit-${day}-${crypto.randomUUID().slice(0, 6)}-${name}`;
+    const { error } = await db.storage.from(LIBRARY).upload(path, blob, { contentType: f.type, upsert: false });
+    if (error) { console.error('library', error.message); continue; }
+    await db.from('ve_branddesk_files').insert({ account_id: acct.id, listing_id: b.visit_listing_id, kind: 'photo', title: `Member visit, ${day}`.slice(0, 120), path, bytes: f.size || blob.size, mime: f.type,
+      note: `By ${memberName || 'a member'}, approved from a visit bounty`, added_by: s.reviewed_by || null });
+    n++;
+  }
+  await db.from('ve_bounty_submissions').update({ library_at: nowIso() }).eq('id', s.id);
+  return n;
 }
 
 Deno.serve(async (req) => {
@@ -572,6 +656,7 @@ Deno.serve(async (req) => {
     case 'upload_url':
     case 'file_added':
     case 'file_remove':
+    case 'visit_here':
     case 'submit': {
       if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in first.' }, 401);
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
@@ -591,6 +676,20 @@ Deno.serve(async (req) => {
         return json({ ok: true, late });
       }
       if (!workOpen(b, s)) return json({ error: 'closed', message: 'The deadline for this bounty has passed.' }, 409);
+
+      if (body.action === 'visit_here') {
+        if (b.gig_kind !== 'visit' || !b.visit_listing_id) return json({ error: 'not_visit' }, 400);
+        const lat = Number(body.lat), lng = Number(body.lng), acc = Number(body.accuracy);
+        if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return json({ error: 'no_location', message: 'We could not read your location. Turn on location for this site and try again.' }, 400);
+        if (!isFinite(acc) || acc > 500) return json({ error: 'fuzzy', message: 'Your phone is not sure where it is yet. Step outside or near a window and try again.' }, 400);
+        const { data: l } = await db.from('listings').select('latitude, longitude, name').eq('id', b.visit_listing_id).maybeSingle();
+        if (!l || l.latitude == null || l.longitude == null) return json({ error: 'no_pin', message: 'This restaurant has no map pin yet. Ask your Community Manager.' }, 409);
+        const dist = Math.round(metersApart(lat, lng, Number(l.latitude), Number(l.longitude)));
+        if (dist > VISIT_RADIUS_M + Math.min(Math.max(acc, 0), 100)) return json({ error: 'too_far', distance_m: dist, message: `You look to be about ${dist >= 1000 ? (dist / 1000).toFixed(1) + ' km' : dist + ' m'} from ${l.name}. Tap I'm here once you are there.` }, 409);
+        const at = nowIso();
+        await db.from('ve_bounty_submissions').update({ visit_at: at, visit_distance_m: dist, visit_accuracy_m: Math.round(acc), updated_at: at }).eq('id', s.id);
+        return json({ ok: true, visit_at: at, distance_m: dist });
+      }
 
       if (body.action === 'upload_url') {
         const size = Number(body.size) || 0;
@@ -623,12 +722,20 @@ Deno.serve(async (req) => {
       if (body.license !== true) return json({ error: 'license', message: 'Tick the box to confirm this is your own work and Vegans Explore may use it.' }, 400);
       const note = clean(body.note, 10000);
       const links = (Array.isArray(body.links) ? body.links : []).map((l: unknown) => clean(l, 1000)).filter(isUrl).slice(0, 50);
-      if (!files.length && !links.length && note.length < 200) return json({ error: 'empty', message: 'Add your files, a link, or your write-up before you submit.' }, 400);
+      let visitPatch: Record<string, unknown> = {};
+      if (b.gig_kind === 'visit') {
+        if (!s.visit_at) return json({ error: 'not_here', message: 'Tap I\'m here while you are at the restaurant first. It is how we know the visit happened.' }, 400);
+        const photos = files.filter((f) => /^image\//.test(f.type || '')).length;
+        if (photos < VISIT_DEFAULTS.min_photos) return json({ error: 'photos', message: `Upload at least ${VISIT_DEFAULTS.min_photos} photos from your visit.` }, 400);
+        if (typeof body.comped !== 'boolean') return json({ error: 'comped', message: 'Tell us whether your meal was on the house.' }, 400);
+        if (note.length < 10) return json({ error: 'note', message: 'Add a line on what you had and what stood out.' }, 400);
+        visitPatch = { visit_comped: body.comped };
+      } else if (!files.length && !links.length && note.length < 200) return json({ error: 'empty', message: 'Add your files, a link, or your write-up before you submit.' }, 400);
       // A bundle pays only when every part is done (Sean, 2026-10-04).
       const parts: string[] = b.parts || [];
       const done = (Array.isArray(body.parts_done) ? body.parts_done : []).map((n: unknown) => Math.floor(Number(n))).filter((n: number) => n >= 0 && n < parts.length);
       if (parts.length && new Set(done).size < parts.length) return json({ error: 'parts', message: 'This job needs every part done. Tick each one when it is in your upload.' }, 400);
-      await db.from('ve_bounty_submissions').update({ note: note || null, links, parts_done: [...new Set(done)], status: 'submitted', submitted_at: nowIso(), license_at: nowIso(), updated_at: nowIso() }).eq('id', s.id);
+      await db.from('ve_bounty_submissions').update({ ...visitPatch, note: note || null, links, parts_done: [...new Set(done)], status: 'submitted', submitted_at: nowIso(), license_at: nowIso(), updated_at: nowIso() }).eq('id', s.id);
       return json({ ok: true, status: 'submitted' });
     }
 
@@ -729,6 +836,45 @@ Deno.serve(async (req) => {
       await db.from('ve_cartridges').update({ data, updated_at: new Date().toISOString(), updated_by: viewer.id }).eq('listing_id', l.id);
       await db.from('ve_cartridge_edits').insert({ listing_id: l.id, member_id: viewer.id, section: 'photos', state: 'shoot_posted', before: null, after: data.photos.shoot });
       return json({ ok: true, gig_id: made.id, counts: shootCounts(data) });
+    }
+
+    // ---- Visit bounties for BrandDesk clients (super admins): post this week's visit, see the visits, stop it.
+    case 'visit_get':
+    case 'visit_post':
+    case 'visit_cancel': {
+      if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
+      const { data: l } = await db.from('listings').select('id, slug, name, address_street, address_city, address_state, address_zip, latitude, longitude, status').eq('slug', clean(body.slug, 120)).eq('status', 'approved').maybeSingle();
+      if (!l) return json({ error: 'not_found' }, 404);
+      const { data: gigs } = await db.from('ve_bounties').select(BOUNTY_COLS + ', created_at').eq('visit_listing_id', l.id).neq('status', 'canceled').order('created_at', { ascending: false }).limit(12);
+      const current = (gigs || []).find((g: any) => g.status === 'open' && Date.now() < ms(g.claims_close_at)) || null;
+      if (body.action === 'visit_get') {
+        const ids = (gigs || []).map((g: any) => g.id);
+        const { data: subs } = ids.length ? await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, visit_at, visit_distance_m, visit_comped, points_awarded, library_at, files, submitted_at').in('bounty_id', ids).neq('status', 'released').order('claimed_at', { ascending: false }) : { data: [] };
+        const mids = [...new Set((subs || []).map((x: any) => x.member_id))];
+        const { data: ms3 } = mids.length ? await db.from('members').select('id, name').in('id', mids) : { data: [] };
+        const nm = Object.fromEntries((ms3 || []).map((m: any) => [m.id, m.name]));
+        const repeating = (gigs || []).some((g: any) => g.repeat_weekly && g.status === 'open');
+        return json({ ok: true, listing: { id: l.id, slug: l.slug, name: l.name, pinned: l.latitude != null && l.longitude != null }, chapter: await visitChapter(l), defaults: VISIT_DEFAULTS, repeating,
+          current: current ? { ...current, taken: (await takenCounts([current.id]))[current.id] || 0 } : null,
+          weeks: (gigs || []).map((g: any) => ({ id: g.id, claims_close_at: g.claims_close_at, status: g.status, points: g.points, slots: g.slots })),
+          visits: (subs || []).map((x: any) => ({ id: x.id, bounty_id: x.bounty_id, name: nm[x.member_id] || 'A member', status: x.status, visit_at: x.visit_at, distance_m: x.visit_distance_m, comped: x.visit_comped,
+            photos: (x.files || []).filter((f: any) => /^image\//.test(f.type || '')).length, points: x.points_awarded, in_library: !!x.library_at, submitted_at: x.submitted_at })) });
+      }
+      if (body.action === 'visit_cancel') {
+        // Stops the weekly repeat; this week's visit stays for anyone who already claimed it, unless "now" takes it down too.
+        await db.from('ve_bounties').update({ repeat_weekly: false, updated_at: nowIso() }).eq('visit_listing_id', l.id).eq('repeat_weekly', true);
+        if (body.now === true && current) await db.from('ve_bounties').update({ status: 'canceled', updated_at: nowIso() }).eq('id', current.id);
+        return json({ ok: true });
+      }
+      if (current) return json({ error: 'already', message: 'This week\'s visit is already on the board.' }, 409);
+      if (l.latitude == null || l.longitude == null) return json({ error: 'no_pin', message: 'This listing has no map pin, so I\'m here cannot check the visit. Its Google place fills it on the nightly pass.' }, 409);
+      const points = Math.round(Number(body.points) || VISIT_DEFAULTS.points), slots = Math.round(Number(body.slots) || VISIT_DEFAULTS.slots);
+      if (points < 10 || points > 5000) return json({ error: 'bad_points', message: 'Points are between 10 and 5,000.' }, 400);
+      if (slots < 1 || slots > 20) return json({ error: 'bad_slots', message: 'Between 1 and 20 visits a week.' }, 400);
+      const r: any = await postVisit(l, { points, slots, perk: clean(body.perk, 200) || null, note: clean(body.note, 600), repeat: body.repeat !== false }, viewer.id);
+      if (r.error === 'no_chapter') return json({ error: 'no_chapter', message: 'This business is not in one of our chapters, so members there cannot see the visit.' }, 409);
+      if (r.error) return json(r, 500);
+      return json({ ok: true, gig_id: r.id });
     }
 
     case 'applicants': {
@@ -852,9 +998,9 @@ Deno.serve(async (req) => {
 
     case 'review': {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-      const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, revisions, parts_done, files').eq('id', body.id).maybeSingle();
+      const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, revisions, parts_done, files, library_at').eq('id', body.id).maybeSingle();
       if (!s) return json({ error: 'not_found' }, 404);
-      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id, cash_cents').eq('id', s.bounty_id).maybeSingle();
+      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id, cash_cents, gig_kind, visit_listing_id').eq('id', s.bounty_id).maybeSingle();
       if (!b || !(await reviewCities(viewer)).includes(b.community_slug)) return json({ error: 'forbidden' }, 403);
       if (!['submitted', 'changes'].includes(s.status)) return json({ error: 'not_reviewable', message: 'This one is not waiting on a review.' }, 409);
       const note = clean(body.note, 2000) || null;
@@ -876,9 +1022,11 @@ Deno.serve(async (req) => {
           const { data: camp } = await db.from('ve_bounty_campaigns').select(CAMPAIGN_COLS).eq('id', b.campaign_id).maybeSingle();
           try { await applyHost(camp, s); } catch (e) { console.error('applyHost', e); }
         }
+        let library = 0;
+        if (paid?.awarded && b.gig_kind === 'visit') { try { library = await visitToLibrary(b, { ...s, reviewed_by: viewer!.id }, c.first); } catch (e) { console.error('visitToLibrary', e); } }
         if (paid?.awarded) await sendEmail(c.email, `You earned ${points.toLocaleString()} points: ${b.title}`,
           P(`Hi ${esc(c.first)},`) + P(`Your work for <b>${esc(b.title)}</b> is approved, and <b>${points.toLocaleString()} points</b> are in your account${points < b.points ? ` (of ${b.points.toLocaleString()})` : ''}.${b.cash_cents ? ` The $${(b.cash_cents / 100).toLocaleString('en-US')} comes from Sean directly.` : ''} Thank you for showing up for your city.`) + (note ? P(esc(note)) : '') + coachHtml + P(`<a href="${link}">See your bounties</a>`));
-        return json({ ok: true, ...paid });
+        return json({ ok: true, ...paid, library });
       }
       if (decision === 'changes') {
         if (!note) return json({ error: 'note', message: 'Say what needs to change.' }, 400);
