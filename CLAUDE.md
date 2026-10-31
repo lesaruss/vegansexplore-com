@@ -479,7 +479,22 @@ judge whether food is safe by how a place looks online; businesses want marketin
   price. 2. **$11**: the Vegan Restaurant Guide (every fix, Or have us do it; the pitch page's Not now offers it too). 3. **The BrandDesk
   pitch page** only after a sign (clicked their link, claimed, ran the free check, bought the Guide, Have us do it, Talk to someone) or for
   Sean's warm list; never a cold $500 ask. Outreach starts in the chapters with the biggest gaps and the most signs; every city stays off
-  until Sean turns it on. To build: the free check's top fixes in the first email, and a Signs filter on the pitch list.
+  until Sean turns it on. **Both built 2026-10-31** (Sean: "then the handshakes"). **The first email** (migration
+  `20261031_handshake_free_check_email.sql`): `ve_outreach_free_check(listing)` takes their latest finished audit from the last 45 days (the monthly
+  check-ups), the free check's items to fix, three at most, most important first, each in the check's own words, and a link to their whole free
+  check in the Vegan Restaurant Guide (`#/audit/r/<id>`, the free view for anyone); `ve_outreach_render` (the old one kept as
+  `ve_outreach_render_base`, called first) fills `{free_check}`, now after the guide line in the Day 0 template. No price. A business with no recent
+  check-up gets the email as it was: with the check taken back out, all 234 business emails rendered byte for byte as before; 33 of 78 first
+  emails carry one. An upgrade to the offer, so it may go in during a city's 15-day commitment. **Signs** (migration `20261031_handshake_signs.sql`):
+  `ve_branddesk_signs()`, per listing, each sign with its latest time: clicked (their outreach link or a reply), claimed, checked (ran the free
+  check), opened (opened their free check, the email's link), guide (the Vegan Restaurant Guide bought by the owner or the email we write to),
+  asked (Have us do it / Talk to our team, by slug or email), talked (I'm ready, Let me think about it or Talk to someone on a pitch page).
+  `ve_free_check_events` (RLS on, no policies), written by `ve-restaurant-audit` (v16): every free check asked for a listed business, a reused one
+  too (which wrote nothing before), and every opening of a business's check by anyone outside the team, once a visitor a day. The pitch list
+  (Depot > BrandDesk > Pitch list) has **Ready for a pitch (a sign or warm)** and **Showed a sign**, each row and each business's page shows its
+  signs, and **Send it from me refuses a business with no sign that is not on the warm list** (`no_sign`; ticking warm is Sean's override).
+  Proven live 2026-10-31: the cold send refused with the pitch left a draft and checkout still closed, the business's check opened and its sign on
+  the list and its page, the filters drawn; the events, the draft and the proof's free check removed.
 - **They rent the service, they own the assets** (Sean, 2026-10-31: "they paid for those photos... so they have that peace of mind to know
   that if things don't work out, they can always have the pieces to start fresh again somewhere else"; canon v2). Stop paying and the
   website and management stop; what we made is theirs, downloadable at any time, said in the pitch. **The severance package**: their
@@ -827,10 +842,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   project (home and menu written on the server with all 51 items, noindex, no-store, robots disallowing, an unknown token 404), approving before it
   was sent refused, sent (the owner emailed), Sean's OK with no note refused, changes asked by the owner, sent again, approved by the owner as
   version 1 with the name recorded, the owner refused adding a domain; the preview and both views rendered in a browser with no errors; then every
-  row removed (the connector held the delete, so through the one-time `ve-once-bd-sites`, now the 410 stub). `ve-branddesk` deployed from commit
-  af127c1 (version 18, source sha256 matched); the hosting project's first production build from 80b5135. **Not proven yet: the domain, SSL and the final check on a real domain**: the test DNS record
-  (a CNAME on a subdomain we hold) was stopped by the build session's safety check and waits on Sean's go. Not built yet: the point-of-sale cart on
-  a live site, a branded preview address, and the client's own Google Search Console.
+  row removed (the connector held the delete, so through the one-time `ve-once-bd-sites`, now the 410 stub). **The domain, proven live the same day** (Sean: "go
+  ahead with the domain proof"): a DNS-only CNAME `bd-test-lovelife.lesaruss.com` on Cloudflare, our own domain refused without the test
+  flag, then added (typed as `https://BD-TEST-LOVELIFE.lesaruss.com/` and cleaned), verified and pointed at once, SSL issued within a minute, the
+  final check 9 of 9 and Live on its own, the owner and team emailed, the onboarding step ticked; a preview path on their domain answers 404.
+  **Take it down** shows "This website is not here" within about a minute (`s-maxage=30, stale-while-revalidate=30`; the first proof had 600 and
+  served a page 110 s stale), though a page's cached copy can show once more on its first visit after that; the hosting function keeps only working
+  sites in memory (30 s), so a site put back up answers at once. Then the domain was taken off (it keeps a taken-down site down), the DNS record and
+  every row removed, `ve-once-bd-sites` back to the 410 stub. `ve-branddesk` v19 (commit 434f81a), the hosting project's production build from
+  4e0e6d1 (it builds from `main` on its own; the proof's builds were sent from the branch). Not built yet: the point-of-sale cart on a live site, a
+  branded preview address, purging Vercel's cache on a takedown, and the client's own Google Search Console.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
