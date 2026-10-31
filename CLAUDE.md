@@ -828,7 +828,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   was sent refused, sent (the owner emailed), Sean's OK with no note refused, changes asked by the owner, sent again, approved by the owner as
   version 1 with the name recorded, the owner refused adding a domain; the preview and both views rendered in a browser with no errors; then every
   row removed (the connector held the delete, so through the one-time `ve-once-bd-sites`, now the 410 stub). `ve-branddesk` deployed from commit
-  9c1a9ae (version 17, source sha256 matched). **Not proven yet: the domain, SSL and the final check on a real domain**: the test DNS record
+  af127c1 (version 18, source sha256 matched); the hosting project's first production build from 80b5135. **Not proven yet: the domain, SSL and the final check on a real domain**: the test DNS record
   (a CNAME on a subdomain we hold) was stopped by the build session's safety check and waits on Sean's go. Not built yet: the point-of-sale cart on
   a live site, a branded preview address, and the client's own Google Search Console.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
