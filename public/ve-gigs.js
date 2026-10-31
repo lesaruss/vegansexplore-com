@@ -219,7 +219,7 @@
 
   // Kai's lines (Sean, 2026-10-30), one per view of the walkthrough and one per step of the application, and her voice. Each text must
   // match its recording, voices/creator-guide/kai-<key>-v1.mp3 in vegan-media; change a line and record it again (the next -v2). Her
-  // voice is a stand-in until Sean picks hers.
+  // voice is ElevenLabs' Jessica (cgSgspJ2msm6clMCkdW9), approved by Sean 2026-10-31; write Vegan as "Veegan" in the text sent to it.
   var LINES = {
     overview: 'Hi, I\'m Kai. I make Vegan food and fitness videos in Miami, and this is my Creator Dashboard. Press Start the walkthrough and I\'ll show you around: the gigs, the ones I\'m in, my media kit and how you rise. At the end, you can apply.',
     dashboard: 'This is what I see when I sign in: the gigs open to me, the ones I\'m in, how complete my media kit is and where I stand. Tap any tile to jump in.',
