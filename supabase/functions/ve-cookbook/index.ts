@@ -34,7 +34,7 @@ const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
-const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-survival-guide': 'The Vegan Restaurant Survival Guide',
+const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide',
   'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };

@@ -1,4 +1,4 @@
-/* The Vegan Restaurant Survival Guide (rebuilt 2026-10-10 on the Dairy Guide playbook, docs/guides/BUILD-A-GUIDE.md).
+/* The Vegan Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook, docs/guides/BUILD-A-GUIDE.md).
  *
  * The tabs are the tour. Liz stays on the right of every tab and talks about it; the tab's content sits on the left, on
  * one screen. Back / N of M / Next under Liz walks the tabs in order. The address bar carries the view (#/audit/r/<id>,
@@ -22,7 +22,7 @@
  * The full audit is its own add-on, never part of the Guide (Sean, 2026-10-10): it is bought here, but anyone can buy it.
  */
 (function () {
-  var SLUG = 'vegan-restaurant-survival-guide';
+  var SLUG = 'vegan-restaurant-guide';
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var AUDIT_URL = SB + '/functions/v1/ve-restaurant-audit';
@@ -678,7 +678,7 @@
       var pct = Math.round(100 * right / Q.length), pass = pct >= 80;
       if (pass && !badge()) store('rg_badge', new Date().toISOString());
       main.innerHTML = crumb([['Test yourself', '#/quiz'], ['Your score']]) + head('Your score', pct + '%', pass ? 'You passed. The Entrepreneur Track badge is yours.' : 'You need 80% for the badge. Look over the fixes and try again.') +
-        (pass ? '<div class="rg-badge"><i>' + ICON.quiz.replace(/#1f5f22/g, '#ffffff') + '</i><div><b>Entrepreneur Track</b><span>The Vegan Restaurant Survival Guide</span></div></div>' : '') +
+        (pass ? '<div class="rg-badge"><i>' + ICON.quiz.replace(/#1f5f22/g, '#ffffff') + '</i><div><b>Entrepreneur Track</b><span>The Vegan Restaurant Guide</span></div></div>' : '') +
         '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/quiz/1" data-retake>Take it again</a><a class="dg-btn dg-ghost" href="#/fixes">Back to the fixes</a></div>';
       return;
     }

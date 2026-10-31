@@ -422,6 +422,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/guides/vegan-restaurant-survival-guide",
+      "destination": "/guides/vegan-restaurant-guide",
+      "permanent": true
+    },
     { "source": "/r/:code([A-Za-z0-9]{4,16})", "destination": "/passport?ref=:code", "permanent": false },
     {
       "source": "/communities/dmv",
