@@ -325,7 +325,7 @@
       var open = SECTIONS.filter(function (s) { return st(s[0]) !== 'locked'; });
       fill('next', '<div class="vg-split"><div><div class="vg-eyebrow">What happens next</div><h2 class="vg-h">' + (open.length ? 'Lock in every part' : 'Ready for the frame') + '</h2>' +
         '<p class="vg-lede">When every part is locked, our team checks the kit and plugs it into the website frame. Your site takes on these colors, this type, this voice, this menu and these photos. Nothing else has to be built.</p>' +
-        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p></div>' +
+        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p>' + (LIVE ? '' : '<a class="vg-btn" href="/business/sample/site" target="_blank" rel="noopener">See the website it makes</a>') + '</div>' +
         '<div class="bk-card"><h3>' + (open.length ? 'Still to do' : 'Every part is locked') + '</h3>' + (open.length ? open.map(function (s) {
           return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') : '<p>Our team checks it next.</p>') + '</div></div>');
     }

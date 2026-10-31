@@ -38,6 +38,10 @@
       "destination": "/business/brand"
     },
     {
+      "source": "/business/sample/site",
+      "destination": "/business/site"
+    },
+    {
       "source": "/groups/sample",
       "destination": "/directory/listing"
     },

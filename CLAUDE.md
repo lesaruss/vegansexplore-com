@@ -57,6 +57,8 @@ this list follows the rule above. A new exception goes on this list first.
   footer would never be seen).
 - **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
   everything in `ads/` (Sean, 2026-10-04).
+- **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
+  (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
@@ -518,7 +520,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   Sign in; no kit: Start their brand kit for super admins, else it is started when they join). Proven 2026-10-31 on Love Life Cafe
   through the ops path (signed out refused, admin, the kit filled with its 51 items in 11 sections, its hours, logo and tagline, Colors
   locked and logged, a non-storage picture refused, an upload link issued), then removed; the page's states checked against mocked
-  answers. Not yet: cuisines show as their slugs (american); a real upload end to end from the browser. Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  answers. Not yet: cuisines show as their slugs (american); a real upload end to end from the browser.
+  **The frame** (2026-10-31): `business/site.html`, Green Leaf Kitchen's website at `/business/sample/site`, drawn only from the Cartridge
+  (the sample's, plus what was changed in the sample brand kit this visit): its colors by role (`--c-page`, `--c-text`, `--c-accent`,
+  `--c-soft`, `--c-highlight`, `--c-ink`) and two typefaces; a sticky bar (logo, Menu, Our story, Visit, Order); the hero (a photo of the
+  space, Open now / Opens today at / Closed now worked out from the hours in Eastern time, the voice's website line, the two-sentence
+  story, See the menu, Order, Directions); a today strip (today's hours, address, tap to call, how Vegan); Favorites (items tagged
+  Favorite with photos first, three); Our story; the whole menu by section with photos and tags; the space (three pictures); Right now
+  (the voice's Instagram line, later the month's campaign); Visit (address, directions, details, the week's hours with today marked); a
+  footer with Managed by Vegans Explore BrandDesk; on phones a fixed Call / Directions / Order bar. It writes the Restaurant and its
+  menu as schema.org data. Order goes to their ordering link, else the menu. The brand kit's last slide links to it. Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit

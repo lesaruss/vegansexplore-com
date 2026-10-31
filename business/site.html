@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Green Leaf Kitchen — Sample BrandDesk website</title>
+  <meta name="description" content="A sample restaurant website on the BrandDesk frame, drawn entirely from the restaurant's brand kit.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <style>
+    /* The BrandDesk restaurant frame (canon canon-ve-front-of-house v4 to v7: "a cartridge, just plug it into the template"). This
+       page is the client's own website, not a Vegans Explore page, so it loads neither nav.js nor footer.js (CLAUDE.md exceptions).
+       Everything that makes it theirs comes from their Cartridge: colors by role (--c-page, --c-text, --c-accent, --c-soft,
+       --c-highlight, --c-ink), the two typefaces, the logo, the voice's lines, the story, the menu with its photos, the space, the
+       hours and the details. Nothing here is written for one restaurant. The sample reads /business/sample/cartridge.js plus what was
+       changed in the sample brand kit this visit. */
+    *{box-sizing:border-box;}
+    html{scroll-behavior:smooth;scroll-padding-top:76px;}
+    body{margin:0;background:var(--c-page);color:var(--c-text);font-family:var(--f-body),system-ui,sans-serif;font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;}
+    a{color:inherit;}
+    h1,h2,h3,.f-h{font-family:var(--f-head),Georgia,serif;font-weight:var(--f-head-w);line-height:1.08;margin:0;}
+    .wrap{padding:0 40px;}
+    .sample{background:#2b1d06;color:#ffd79a;font:600 12px/1.45 system-ui,sans-serif;padding:8px 40px;}
+    .sample b{color:#F69820;letter-spacing:.12em;text-transform:uppercase;font-size:10px;margin-right:8px;}
+    .sample a{color:#ffd79a;font-weight:700;}
+    /* Top bar */
+    .top{position:sticky;top:0;z-index:20;background:var(--c-page);border-bottom:1px solid color-mix(in srgb,var(--c-text) 12%,transparent);}
+    .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px;}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
+    .brand img{width:44px;height:44px;border-radius:8px;object-fit:cover;}
+    .brand span{font-family:var(--f-head);font-weight:var(--f-head-w);font-size:20px;}
+    .links{display:flex;align-items:center;gap:26px;font-weight:600;font-size:15px;}
+    .links a{text-decoration:none;}
+    .links a:hover{text-decoration:underline;text-underline-offset:4px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:46px;padding:12px 22px;border-radius:6px;font-weight:700;font-size:15px;text-decoration:none;border:2px solid var(--c-accent);background:var(--c-accent);color:var(--c-page);cursor:pointer;}
+    .btn:hover{filter:brightness(1.08);}
+    .btn.ghost{background:transparent;color:inherit;border-color:currentColor;}
+    /* Hero */
+    .hero{position:relative;min-height:min(78vh,720px);display:flex;align-items:flex-end;color:#fff;background:#111 center/cover no-repeat;}
+    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.82) 0%,rgba(0,0,0,.6) 45%,rgba(0,0,0,.15) 80%),linear-gradient(to top,rgba(0,0,0,.55),transparent 45%);}
+    .hero .wrap{position:relative;width:100%;padding-top:80px;padding-bottom:64px;}
+    .hero h1{font-size:clamp(40px,6vw,76px);max-width:820px;margin-bottom:16px;}
+    .hero p{font-size:clamp(17px,1.6vw,21px);max-width:620px;margin:0 0 26px;opacity:.95;}
+    .hero .btns{display:flex;flex-wrap:wrap;gap:12px;}
+    .hero .btn.ghost{color:#fff;}
+    .open{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:6px;background:rgba(0,0,0,.45);font-weight:700;font-size:14px;margin-bottom:18px;}
+    .open i{width:9px;height:9px;border-radius:50%;background:#4ade80;}
+    .open.closed i{background:#f87171;}
+    /* Today strip */
+    .today{background:var(--c-soft);}
+    .today .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:14px 34px;padding-top:16px;padding-bottom:16px;font-weight:600;font-size:15px;}
+    .today .badge{background:var(--c-highlight);color:var(--c-ink);padding:5px 10px;border-radius:6px;font-weight:800;font-size:13px;}
+    /* Sections */
+    section.s{padding:84px 0;}
+    .eyebrow{font-weight:800;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--c-accent);margin-bottom:12px;}
+    .s h2{font-size:clamp(30px,3.4vw,46px);margin-bottom:14px;}
+    .lede{font-size:18px;max-width:760px;margin:0 0 34px;opacity:.88;}
+    .dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px;}
+    .dish{background:color-mix(in srgb,var(--c-soft) 55%,var(--c-page));border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+    .dish img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;}
+    .dish div{padding:18px 20px 22px;}
+    .dish h3{font-size:22px;display:flex;justify-content:space-between;gap:12px;margin-bottom:8px;}
+    .dish p{margin:0;font-size:15px;opacity:.9;}
+    .story{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center;}
+    .story img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;}
+    .story p{font-size:17px;margin:0 0 14px;}
+    .dark{background:var(--c-text);color:var(--c-page);}
+    .dark .eyebrow{color:var(--c-highlight);}
+    .space{display:grid;grid-template-columns:2fr 1fr;grid-template-rows:240px 240px;gap:14px;}
+    .space img{width:100%;height:100%;object-fit:cover;border-radius:12px;display:block;}
+    .space img:first-child{grid-row:span 2;}
+    .visit{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px;}
+    .hours{display:grid;grid-template-columns:auto 1fr;gap:6px 26px;font-size:16px;}
+    .hours .now{font-weight:800;color:var(--c-accent);}
+    .visit ul{padding-left:18px;margin:16px 0 0;}
+    .quote{font-family:var(--f-head);font-weight:var(--f-head-w);font-size:clamp(26px,3vw,40px);max-width:900px;margin:0 0 18px;}
+    /* Menu view */
+    .menu-sec{margin-bottom:46px;}
+    .menu-sec h3{font-size:28px;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid color-mix(in srgb,var(--c-text) 15%,transparent);}
+    .items{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:18px 28px;}
+    .item{display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;align-items:start;}
+    .item img,.item .noph{width:112px;height:112px;border-radius:10px;object-fit:cover;display:block;background:var(--c-soft);}
+    .item h4{margin:0 0 4px;font-family:var(--f-head);font-weight:var(--f-head-w);font-size:19px;display:flex;justify-content:space-between;gap:12px;}
+    .item p{margin:0 0 6px;font-size:15px;opacity:.9;}
+    .tag{display:inline-block;margin-right:6px;padding:2px 8px;border-radius:6px;background:var(--c-soft);font-size:12px;font-weight:700;}
+    footer.site{background:var(--c-text);color:var(--c-page);padding:48px 0 96px;font-size:14px;}
+    footer.site .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:24px;align-items:flex-start;}
+    .managed{opacity:.7;font-size:12.5px;margin-top:10px;}
+    .bar{display:none;}
+    @media (max-width:900px){
+      .wrap,.sample{padding-left:16px;padding-right:16px;}
+      .links a:not(.btn){display:none;}
+      .story,.visit{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .space{grid-template-columns:1fr 1fr;grid-template-rows:200px 140px;}.hero::before{background:rgba(0,0,0,.62);}.hero .btns a:nth-child(3){display:none;}.hero .wrap{padding-bottom:40px;}.space img:first-child{grid-row:auto;grid-column:span 2;}
+      section.s{padding:56px 0;}
+      .item{grid-template-columns:84px minmax(0,1fr);}.item img,.item .noph{width:84px;height:84px;}
+      .bar{display:grid;grid-template-columns:1fr 1fr 1fr;position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--c-text);}
+      .bar a{display:flex;align-items:center;justify-content:center;min-height:56px;color:var(--c-page);font-weight:800;text-decoration:none;font-size:15px;}
+      .bar a+a{border-left:1px solid color-mix(in srgb,var(--c-page) 25%,transparent);}
+    }
+  </style>
+</head>
+<body>
+  <div class="sample" id="sampleBar"><b>Sample</b>This is Green Leaf Kitchen's website on our BrandDesk frame, a made-up restaurant. Everything on it comes from its <a href="/business/sample/brand">brand kit</a>; change the kit and this page changes with it.</div>
+  <div id="site"></div>
+
+  <script src="/business/sample/cartridge.js"></script>
+  <script>
+  (function () {
+    // The Cartridge: the sample's, with whatever was changed in the sample brand kit this visit (its finished copy).
+    var C = window.VE_CARTRIDGE;
+    try { var s = JSON.parse(sessionStorage.getItem('ve_cartridge_sample_done') || 'null'); if (s) C = s; } catch (e) {}
+    var B = C.brand, I = C.info, V = C.voice, biz = C.business;
+    function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+
+    // Colors by role and the two typefaces.
+    var root = document.documentElement.style;
+    B.colors.forEach(function (c) { root.setProperty('--c-' + c.role, c.hex); });
+    root.setProperty('--f-head', "'" + B.type.heading.family + "'"); root.setProperty('--f-head-w', B.type.heading.weight);
+    root.setProperty('--f-body', "'" + B.type.body.family + "'");
+    var fl = document.createElement('link'); fl.rel = 'stylesheet';
+    fl.href = 'https://fonts.googleapis.com/css2?family=' + B.type.heading.family.replace(/ /g, '+') + ':wght@' + B.type.heading.weight + '&family=' + B.type.body.family.replace(/ /g, '+') + ':wght@400;600;700;800&display=swap';
+    document.head.appendChild(fl);
+    document.title = biz.name + ' · ' + (C.story.tagline || biz.city);
+
+    // Open now: read from the hours in the restaurant's own time zone ("8 AM to 3 PM", "Closed").
+    var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var nowNY = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })), today = DAYS[nowNY.getDay()];
+    function mins(t) { var m = String(t).trim().match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/i); if (!m) return null; var h = +m[1] % 12 + (/pm/i.test(m[3]) ? 12 : 0); return h * 60 + (+m[2] || 0); }
+    function span(d) { var h = I.hours[d] || ''; var p = h.split(/\s+to\s+/i); if (p.length !== 2) return null; var a = mins(p[0]), b = mins(p[1]); return a == null || b == null ? null : [a, b <= a ? b + 1440 : b]; }
+    var sp = span(today), cur = nowNY.getHours() * 60 + nowNY.getMinutes(), isOpen = !!sp && cur >= sp[0] && cur < sp[1];
+    var openLine = isOpen ? 'Open now · until ' + I.hours[today].split(/\s+to\s+/i)[1] : (sp && cur < sp[0] ? 'Opens today at ' + I.hours[today].split(/\s+to\s+/i)[0] : 'Closed now');
+
+    var items = []; C.menu.sections.forEach(function (s) { s.items.forEach(function (it) { items.push(Object.assign({ section: s.name }, it)); }); });
+    var withPhoto = items.filter(function (i) { return i.photo && i.photo.src; });
+    var picks = withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') >= 0; }).concat(withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') < 0; })).slice(0, 3);
+    var space = C.photos.space.filter(function (s) { return s.src; }).map(function (s) { return s.src; });
+    var heroImg = space[0] || (picks[0] && picks[0].photo.src) || '';
+    var addr = [I.address.street, I.address.city, I.address.state + ' ' + I.address.zip].join(', ');
+    var maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(biz.name + ', ' + addr);
+    var tel = 'tel:' + I.phone.replace(/[^\d+]/g, '');
+    var order = I.ordering && I.ordering.order_url ? I.ordering.order_url : '#menu';
+    var logo = B.logo.primary && B.logo.primary.src;
+
+    function dish(i) { return '<article class="dish"><img src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '" loading="lazy"><div><h3><span>' + esc(i.name) + '</span><span>' + esc(i.price) + '</span></h3><p>' + esc(i.copy || i.was) + '</p></div></article>'; }
+    function menuItem(i) { return '<div class="item">' + (i.photo && i.photo.src ? '<img src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '" loading="lazy">' : '<span class="noph" aria-hidden="true"></span>') +
+      '<div><h4><span>' + esc(i.name) + '</span><span>' + esc(i.price) + '</span></h4><p>' + esc(i.copy || i.was) + '</p>' + (i.tags || []).map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div></div>'; }
+
+    var top = '<header class="top"><div class="wrap"><a class="brand" href="#top">' + (logo ? '<img src="' + esc(logo) + '" alt="">' : '') + '<span>' + esc(biz.name) + '</span></a>' +
+      '<nav class="links"><a href="#menu">Menu</a><a href="#story">Our story</a><a href="#visit">Visit</a><a class="btn" href="' + esc(order) + '">Order</a></nav></div></header>';
+
+    var home = '<div id="top" class="hero" style="background-image:url(\'' + esc(heroImg) + '\')"><div class="wrap">' +
+      '<span class="open' + (isOpen ? '' : ' closed') + '"><i></i>' + esc(openLine) + '</span>' +
+      '<h1>' + esc(V.samples && V.samples.hero ? V.samples.hero : C.story.tagline) + '</h1><p>' + esc(C.story.short || C.story.tagline) + '</p>' +
+      '<div class="btns"><a class="btn" href="#menu">See the menu</a><a class="btn ghost" href="' + esc(order) + '">Order</a><a class="btn ghost" href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a></div></div></div>' +
+      '<div class="today"><div class="wrap"><span>Today: ' + esc(I.hours[today]) + '</span><span>' + esc(addr) + '</span><a href="' + esc(tel) + '">' + esc(I.phone) + '</a>' + (biz.vegan ? '<span class="badge">' + esc(biz.vegan) + '</span>' : '') + '</div></div>' +
+      (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><h2>What people come back for</h2><p class="lede">' + esc((V.sounds_like ? '' : '') + 'Made here, every day.') + '</p><div class="dishes">' + picks.map(dish).join('') + '</div>' +
+        '<p style="margin-top:28px"><a class="btn ghost" href="#menu">See the whole menu</a></p></div></section>' : '') +
+      '<section class="s dark" id="story"><div class="wrap story"><div><div class="eyebrow">Our story</div><h2>' + esc(C.story.tagline) + '</h2>' + C.story.long.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>' +
+        (space[1] || space[0] ? '<img src="' + esc(space[1] || space[0]) + '" alt="Inside ' + esc(biz.name) + '" loading="lazy">' : '') + '</div></section>' +
+      '<section class="s" id="menu"><div class="wrap"><div class="eyebrow">Menu</div><h2>The menu</h2><p class="lede">' + esc(biz.vegan === '100% Vegan' ? 'Everything here is Vegan.' : '') + '</p>' +
+        C.menu.sections.map(function (s) { return '<div class="menu-sec"><h3>' + esc(s.name) + '</h3><div class="items">' + s.items.map(menuItem).join('') + '</div></div>'; }).join('') + '</div></section>' +
+      (space.length ? '<section class="s" style="padding-top:0"><div class="wrap"><div class="eyebrow">The space</div><h2>Come sit with us</h2><div class="space">' + space.concat(withPhoto.map(function (i) { return i.photo.src; })).slice(0, 3).map(function (u) { return '<img src="' + esc(u) + '" alt="" loading="lazy">'; }).join('') + '</div></div></section>' : '') +
+      (V.samples && V.samples.instagram ? '<section class="s" style="background:var(--c-soft)"><div class="wrap"><div class="eyebrow">Right now</div><p class="quote">' + esc(V.samples.instagram) + '</p></div></section>' : '') +
+      '<section class="s" id="visit"><div class="wrap visit"><div><div class="eyebrow">Visit</div><h2>Find us</h2><p style="font-size:18px;margin:0 0 6px">' + esc(addr) + '</p><p style="margin:0 0 20px"><a href="' + esc(tel) + '">' + esc(I.phone) + '</a></p>' +
+        '<a class="btn" href="' + esc(maps) + '" target="_blank" rel="noopener">Get directions</a>' + (I.details.length ? '<ul>' + I.details.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' : '') + '</div>' +
+        '<div><div class="eyebrow">Hours</div><div class="hours">' + DAYS.slice(1).concat(DAYS[0]).map(function (d) { return '<span class="' + (d === today ? 'now' : '') + '">' + d + '</span><span class="' + (d === today ? 'now' : '') + '">' + esc(I.hours[d] || 'Closed') + '</span>'; }).join('') + '</div></div></div></section>' +
+      '<footer class="site"><div class="wrap"><div><div class="f-h" style="font-size:22px;margin-bottom:6px">' + esc(biz.name) + '</div><div>' + esc(addr) + ' · ' + esc(I.phone) + '</div>' +
+        '<div class="managed">Managed by <a href="https://vegansexplore.com/business">Vegans Explore BrandDesk</a></div></div>' +
+        '<div><a href="https://vegansexplore.com' + esc(I.links.directory || '/directory') + '">Find us on Vegans Explore</a></div></div></footer>' +
+      '<nav class="bar" aria-label="Quick actions"><a href="' + esc(tel) + '">Call</a><a href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a><a href="' + esc(order) + '">Order</a></nav>';
+    document.getElementById('site').innerHTML = top + home;
+
+    // Search engines: the Restaurant and its menu, as Google reads them (the live site writes this on the server).
+    var ld = { '@context': 'https://schema.org', '@type': 'Restaurant', name: biz.name, description: C.story.short, image: heroImg ? [location.origin + heroImg] : undefined,
+      telephone: I.phone, servesCuisine: biz.cuisines, address: { '@type': 'PostalAddress', streetAddress: I.address.street, addressLocality: I.address.city, addressRegion: I.address.state, postalCode: I.address.zip },
+      hasMenu: { '@type': 'Menu', hasMenuSection: C.menu.sections.map(function (s) { return { '@type': 'MenuSection', name: s.name, hasMenuItem: s.items.map(function (i) { return { '@type': 'MenuItem', name: i.name, description: i.copy || i.was, offers: { '@type': 'Offer', price: String(i.price).replace(/[^\d.]/g, ''), priceCurrency: 'USD' } }; }) }; }) } };
+    var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld); document.head.appendChild(sc);
+  })();
+  </script>
+</body>
+</html>
