@@ -644,6 +644,32 @@ judge whether food is safe by how a place looks online; businesses want marketin
   asked, a non-link refused, trial sent, booked, photographer added, onboarding ticked, web copy and original uploaded, a rename and a lock
   from the photographer ignored, the logo refused, done, a stranger refused). Not yet: paying the photographer (Stripe Connect payouts; by
   hand until then) and the client seeing the shoot's progress on their dashboard.
+  **The presence-gap ranking and the pitch pages** (built 2026-10-31; migration `20261031_branddesk_pitches.sql`). **Depot > BrandDesk >
+  Pitch list** (`#pitches`, `ve-branddesk` `ranking`, `ve_branddesk_ranking(chapter)`): every open food place (Restaurants, Bakeries &
+  Cafes, Food Trucks, Vendors, Catering, Meal Prep, Markets; main listings only, no grocery chains, no LESARUSS.ai listings, no current
+  client, no closure flag) with a finished full audit (the monthly check-ups), ranked by **gap x worth**: the gap is 100 minus their
+  presence (audit score over its maximum), the worth weighs how Vegan (1.0, 0.75, 0.65), Google reviews (on a log scale to 500), rating
+  (1.0 from 4.3 down to 0.55) and our members' votes (up to 1.5x) (Logan's defaults, Sean's to change). Sean's **warm list** comes first.
+  Filters: chapter, Warm list, Not prepared yet, We have their email, Sent no answer, Answered; each row with presence, Google, their
+  biggest gap and the pitch's state. On 2026-10-31 it ranked 225 businesses (South Florida 84, New York 43). **One business**
+  (`#pitch/<slug>`, `pitch_admin`, `pitch_save`, `pitch_send`): what we found (presence by area and the fixes their page will show), then
+  their name and email (from Business outreach's contact or the listing), the look their home page is shown in (`PITCH_LOOKS`: Fresh
+  neighborhood, Island bright, Night lounge, Street heat), Sean's opening in his own words, the warm tick; Prepare their page (a
+  `ve_branddesk_pitches` row: a code, their latest full audit), See their page, Copy the link, Send me a test, Send it from me (through
+  `email-send`, brand `lesaruss`, from Sean, replies to contact@lesaruss.com, the unsubscribe and postal footer, subject "We looked at
+  <business> before reaching out", their own tracked link `/go/bd-<code>`, initiative `branddesk-pitch`; **sending also opens checkout for
+  that business**, `branddesk.allowed`), and What happened (sent, opened how often, their answer, the follow-up date), Close or Open it
+  again. **Their page** is `/business/pitch?c=<code>` (`business/pitch.html`, guided view, `noindex`; `pitch_view` counts a view unless the
+  viewer is a super admin or `&preview=1`): Prepared for you ("We looked at <business> before we reached out", Sean's opening, the tone:
+  running a Vegan business is a lot, you don't have to carry all of it), What we found (presence and its four areas, what already works,
+  their Google rating), What is holding you back (up to six fixes in plain words), **their home page on our frame as a still** (an iframe
+  of `business/site.html?pitch=<code>`, scaled, nothing clickable; `pitch_site` builds a Cartridge from their Directory page: name, logo,
+  tagline, description, hours, address, menu items, gallery photos, the chosen look's colors and type; the frame skips Favorites and The
+  space when there are no photos), Your first two weeks (`PLAN`), What it costs and Yours to keep, and **the choice** (`pitch_choice`): I'm
+  ready (goes to `/business/managed?listing=<slug>`, checkout opened), Let me think about it (a date, required), Talk to someone (an email
+  or phone), Not now. Each choice is emailed to the team (reply-to them), confirmed to them, and lands in the **Inbox** (`ve_inbox_items`
+  source `branddesk_pitch`, linking to the pitch in the Depot; a contact name starting [TEST] stays out). `/business/pitch?c=sample` is
+  Green Leaf Kitchen's, in Preview journeys > BrandDesk with the pitch list and the shot list. The pitch page's words never name BrandDesk.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
@@ -656,7 +682,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages; visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
