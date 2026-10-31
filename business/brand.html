@@ -150,17 +150,49 @@
       <div class="bk-ed-body" id="bkEdBody"></div><div class="bk-ed-foot" id="bkEdFoot"></div></div>
   </div>
 
+  <script src="/public/ve-auth.js"></script>
   <script src="/business/sample/cartridge.js"></script>
   <script>
   (function () {
     // ---- The Cartridge for this visit: the finished sample, or a new client's empty one (?as=new). Changes save for the visit.
-    var NEW = /[?&]as=new\b/.test(location.search), KEY = 've_cartridge_sample_' + (NEW ? 'new' : 'done');
+    // A real client's kit is /business/brand?listing=<slug>: loaded from and saved to ve-brand-kit (ve_cartridges). Without
+    // ?listing it is the sample (Green Leaf Kitchen), which saves for the visit only.
+    var LIVE = decodeURIComponent((location.search.match(/[?&]listing=([^&#]+)/) || [])[1] || ''), ROLE = LIVE ? 'none' : 'owner', PEOPLE = null;
+    var NEW = !LIVE && /[?&]as=new\b/.test(location.search), KEY = 've_cartridge_sample_' + (NEW ? 'new' : 'done');
     var BASE = JSON.parse(JSON.stringify(window.VE_CARTRIDGE));
     var SECTIONS = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
     if (NEW) SECTIONS.forEach(function (s) { BASE.meta.approvals[s[0]] = { state: 'not_started' }; });
     var C = BASE;
-    try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved) C = saved; } catch (e) {}
-    function save() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+    if (!LIVE) try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved) C = saved; } catch (e) {}
+    function save() { if (!LIVE) try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+    var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-brand-kit';
+    function api(action, body) {
+      var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(), h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, slug: LIVE }, body || {})) })
+        .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+    }
+    var PARTS = { logo: function (d) { return d.brand.logo; }, colors: function (d) { return d.brand.colors; }, type: function (d) { return d.brand.type; }, photos: function (d) { return d.photos.space; } };
+    function partOf(k) { return PARTS[k] ? PARTS[k](C) : C[k]; }
+    // Pictures: on the sample they stay in the browser; on a real kit they go to our storage first and the kit keeps that link.
+    function toJpeg(file, max) {
+      return new Promise(function (res, rej) { var img = new Image(), u = URL.createObjectURL(file);
+        img.onload = function () { var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u); c.toBlob(function (b) { b ? res(b) : rej(new Error('That picture could not be read.')); }, 'image/jpeg', 0.9); };
+        img.onerror = function () { rej(new Error('That file is not a picture we can read.')); }; img.src = u; });
+    }
+    function upload(file, kind) {
+      if (!LIVE) return kind === 'logo' ? shrinkKeep(file, 900) : shrink(file);
+      var ok = /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 15728640;
+      return (ok ? Promise.resolve(file) : toJpeg(file, 4000)).then(function (f) {
+        return api('kit_photo_url', { kind: kind, content_type: f.type || 'image/jpeg', bytes: f.size }).then(function (u) {
+          if (!u.ok) throw new Error(u.error === 'file_size' ? 'That file is over 15 MB.' : 'The upload could not start. Try again.');
+          return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg', 'x-upsert': 'false' }, body: f }).then(function (r) {
+            if (!r.ok) throw new Error('The upload did not finish. Try again.');
+            return api('kit_photo_done', { path: u.path });
+          }).then(function (d) { if (!d.ok) throw new Error(d.error === 'not_a_picture' ? 'That file is not a picture.' : 'The upload did not finish. Try again.'); return { src: d.url, w: d.width, h: d.height }; });
+        });
+      });
+    }
 
     // The kit shows its own colors only once they are chosen; until then, a neutral kit.
     var NEUTRAL = { page: '#FFFFFF', text: '#1F2937', accent: '#16A34A', soft: '#F3F4F6', highlight: '#F59E0B', ink: '#111827' };
@@ -194,7 +226,9 @@
     };
     function howCard(k) { var h = HOW[k]; return '<div class="bk-card bk-how"><h3>What we need</h3><p>' + esc(h.need) + '</p><p>' + esc(h.why) + '</p>' +
       '<dl><dt>Who</dt><dd>' + esc(h.who) + '</dd><dt>Takes</dt><dd>' + esc(h.time) + '</dd></dl></div>'; }
+    function canEdit(k) { return ROLE !== 'photographer' || k === 'photos' || k === 'menu'; }
     function editRow(k) { var s = st(k), lbl = s === 'not_started' ? 'Start' : 'Edit';
+      if (!canEdit(k)) return '<div class="bk-edit-row">' + tag(s) + '</div>';
       var a = C.meta.approvals[k] || {};
       return '<div class="bk-edit-row"><button class="vg-btn" type="button" data-edit="' + k + '">' + lbl + '</button>' + tag(s) +
         (a.at ? '<span style="font-size:13px;opacity:.8">' + (s === 'locked' ? 'Locked ' : 'Saved ') + esc(a.at) + '</span>' : '') + '</div>' +
@@ -205,7 +239,8 @@
     function render() {
       paint();
       var B = C.brand, name = C.business.name, cols = colorsOf();
-      document.getElementById('bkNote').innerHTML = '<strong>Sample</strong>' + esc(name) + ' is a made-up restaurant. ' +
+      if (LIVE) document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>' + esc(name) + '\'s brand kit. ' + ({ admin: 'You are on the team (super admin).', owner: 'You are the owner.', editor: 'You can edit every part.', photographer: 'You can upload photos.' })[ROLE] + ' Every change is saved for the whole team. <a href="/directory/' + encodeURIComponent(LIVE) + '">See the Directory page</a>';
+      else document.getElementById('bkNote').innerHTML = '<strong>Sample</strong>' + esc(name) + ' is a made-up restaurant. ' +
         (NEW ? 'This is the kit a new client opens: every part starts empty, with what we need. Try it: your changes stay for this visit only. <a href="/business/sample/brand">See the finished kit</a>'
              : 'This is its finished kit: the Cartridge our website frame reads, and where the owner edits it. <a href="/business/sample/brand?as=new">Start it as a new client</a>') +
         ' · <a href="#" data-reset>Start over</a>';
@@ -221,7 +256,7 @@
       fill('cartridge', '<div class="vg-split"><div><div class="vg-eyebrow">Your kit</div><h2 class="vg-h">Everything that makes ' + esc(C.business.short) + ' look and sound like itself</h2>' +
         '<p class="vg-lede">One place for your logo, colors, type, voice, story, every menu item and photo, and your details. Our website frame reads it, so your site, your Directory page, Google, social and the delivery apps all say the same thing.</p>' +
         '<p class="vg-lede">Go part by part. Each one shows what we need until you start it, and you lock it in when it is right. It is yours: if you ever leave, the whole kit goes with you.</p></div>' +
-        '<div class="bk-card"><h3>Where each part stands</h3>' + SECTIONS.map(function (s) { return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') + '</div></div>');
+        '<div><div class="bk-card"><h3>Where each part stands</h3>' + SECTIONS.map(function (s) { return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') + '</div>' + teamCard() + '</div></div>');
 
       function sect(k, eyebrow, title, lede, content) {
         fill(k, '<div class="vg-split' + (k === 'menu' ? ' bk-wide' : '') + '"><div><div class="vg-eyebrow">' + eyebrow + '</div><h2 class="vg-h">' + title + '</h2>' +
@@ -303,7 +338,14 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ed.classList.contains('on')) closeEd(); });
 
     function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
-    function setState(k, s) { C.meta.approvals[k] = { state: s, by: 'You', at: today() }; save(); render(); }
+    function setState(k, s) {
+      if (!LIVE) { C.meta.approvals[k] = { state: s, by: 'You', at: today() }; save(); render(); return; }
+      var note = document.getElementById('bkNote'), was = note.innerHTML; note.innerHTML = '<strong>Saving</strong>' + esc((SECTIONS.filter(function (x) { return x[0] === k; })[0] || [k, k])[1]) + '...';
+      api('kit_save', { section: k, part: partOf(k), state: s }).then(function (d) {
+        if (!d.ok) { note.innerHTML = '<strong>Not saved</strong>' + esc(d.error === 'photos_only' ? 'Photographers can save photos only.' : d.error === 'upload_first' ? 'A picture was not uploaded yet. Try again.' : 'Something went wrong. Your change was not saved; try again.'); return; }
+        C = d.cartridge; render();
+      }).catch(function () { note.innerHTML = was; alert('Your change was not saved. Check your connection and try again.'); });
+    }
 
     // Colors: why colors matter, ready palettes, your own with a live readability score, then lock.
     var PRESETS = [
@@ -511,7 +553,7 @@
       edBody.oninput = null;
       edBody.onchange = function (e) {
         var f = e.target.closest('[data-m-photo]'); if (!f || !f.files[0]) return; var msg = document.getElementById('bkPhMsg');
-        shrink(f.files[0]).then(function (p) {
+        msg.textContent = 'Uploading...'; upload(f.files[0], 'menu').then(function (p) {
           edBody._photo = { src: p.src }; var box = edBody.querySelector('.bk-bigph'); box.outerHTML = '<img src="' + p.src + '" alt="" class="bk-bigph">';
           msg.textContent = Math.max(p.w, p.h) < 3000 ? 'Saved. This one is ' + p.w + ' x ' + p.h + ' px, under our standard of 3000 px, so it is fine for now and we will reshoot it.' : 'Saved.';
         }).catch(function (err) { msg.textContent = err.message; });
@@ -653,7 +695,7 @@
       openEd('Logo', '', '<span class="bk-msg">Lock it in when this is the logo you want everywhere.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-l-save>Save draft</button><button class="bk-b" type="button" data-l-lock>Lock it in</button>');
       draw(); edBody.oninput = null; edBody.onclick = null;
       edBody.onchange = function (e) { var f = e.target.closest('[data-l-file]'); if (!f || !f.files[0]) return;
-        shrinkKeep(f.files[0], 900).then(function (p) { src = p.src; draw(); var m = document.getElementById('bkLMsg'); m.textContent = Math.min(p.w, p.h) < 400 ? 'Got it. It is small (' + p.w + ' x ' + p.h + ' px), so we will redraw it as a clean vector.' : 'Got it.'; })
+        document.getElementById('bkLMsg').textContent = 'Uploading...'; upload(f.files[0], 'logo').then(function (p) { src = p.src; draw(); var m = document.getElementById('bkLMsg'); m.textContent = Math.min(p.w, p.h) < 400 ? 'Got it. It is small (' + p.w + ' x ' + p.h + ' px), so we will redraw it as a clean vector.' : 'Got it.'; })
           .catch(function (err) { document.getElementById('bkLMsg').textContent = err.message; }); };
       edFoot.onclick = function (e) { var lock = e.target.closest('[data-l-lock]'), sv = e.target.closest('[data-l-save]'); if (!lock && !sv) return;
         if (!src) { alertIn('Upload your logo first.'); return; }
@@ -674,7 +716,7 @@
       openEd('Photos', '', '<span class="bk-msg">Lock it in when every shot is in.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-p-save>Save draft</button><button class="bk-b" type="button" data-p-lock>Lock it in</button>');
       draw(); edBody.oninput = null; edBody.onclick = null;
       edBody.onchange = function (e) { var f = e.target.closest('[data-p-file]'); if (!f || !f.files[0]) return; var n = +f.dataset.pFile;
-        shrink(f.files[0]).then(function (p) { sp[n].src = p.src; sp[n].state = 'shot'; draw(); }).catch(function (err) { document.getElementById('bkPMsg').textContent = err.message; }); };
+        document.getElementById('bkPMsg').textContent = 'Uploading...'; upload(f.files[0], 'space').then(function (p) { sp[n].src = p.src; sp[n].state = 'shot'; draw(); }).catch(function (err) { document.getElementById('bkPMsg').textContent = err.message; }); };
       edFoot.onclick = function (e) { var lock = e.target.closest('[data-p-lock]'), sv = e.target.closest('[data-p-save]'); if (!lock && !sv) return;
         var missing = sp.filter(function (s) { return !s.src; }).length;
         if (lock && missing) { alertIn(missing + ' shots still to upload. Save a draft until they are in.'); return; }
@@ -689,12 +731,60 @@
       if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
     });
 
-    render();
+    // ---- Your team (a real kit): the owner and super admins add an editor or a photographer by the email they sign in with.
+    function teamCard() {
+      if (!LIVE || !PEOPLE) return '';
+      return '<div class="bk-card" style="margin-top:16px"><h3>Your team</h3>' + (PEOPLE.length ? PEOPLE.map(function (p) {
+        return '<div class="bk-sect"><span>' + esc(p.name || p.email) + ' <span class="bk-muted">' + esc(p.email) + '</span></span><span>' + tag(p.role === 'photographer' ? 'to_shoot' : 'in_progress').replace(/>[^<]+</, '>' + (p.role === 'photographer' ? 'Photos' : 'Editor') + '<') +
+          ' <a href="#" data-p-rm="' + esc(p.member_id) + '" style="color:inherit;font-size:13px;margin-left:8px">Remove</a></span></div>'; }).join('') : '<p class="bk-muted">Only you so far.</p>') +
+        '<form data-p-add style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><input name="email" type="email" required placeholder="Their email" style="flex:1;min-width:180px;min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font:inherit">' +
+        '<select name="role" style="min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 36px 8px 10px;font:inherit;appearance:none;-webkit-appearance:none;background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%23374151%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E&quot;) no-repeat right 12px center"><option value="editor">Can edit everything</option><option value="photographer">Photos only</option></select>' +
+        '<button class="bk-b" type="submit">Add</button></form><p class="bk-muted" id="bkTeamMsg" style="margin:8px 0 0"></p></div>';
+    }
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('[data-p-add]'); if (!f) return; e.preventDefault(); var m = document.getElementById('bkTeamMsg');
+      api('kit_people_add', { email: f.email.value, role: f.role.value }).then(function (d) { if (!d.ok) { m.textContent = d.message || 'They could not be added.'; return; } PEOPLE = d.people; render(); });
+    });
+    document.addEventListener('click', function (e) {
+      var r = e.target.closest('[data-p-rm]'); if (!r) return; e.preventDefault();
+      api('kit_people_remove', { member_id: r.dataset.pRm }).then(function (d) { if (d.ok) { PEOPLE = d.people; render(); } });
+    });
+
+    // ---- Start: the sample draws at once; a real kit loads first, then the guided view starts.
+    function guided() { var sc = document.createElement('script'); sc.src = '/public/ve-guided.js'; document.body.appendChild(sc); }
+    function gate(title, line, button) {
+      document.querySelectorAll('#bkStage .vg-slide').forEach(function (x) { if (x.id !== 'cover') x.remove(); });
+      fill('cover', '<div class="vg-split"><div><div class="vg-eyebrow">BrandDesk · Brand kit</div><h1 class="vg-h vg-xl">' + esc(title) + '</h1><p class="vg-lede">' + line + '</p>' + (button || '') + '</div><div></div></div>');
+      document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>Your brand kit: everything that makes your business look and sound like itself.';
+      guided();
+    }
+    function boot() {
+      if (!LIVE) { render(); guided(); return; }
+      if (!(window.VEAuth && VEAuth.getToken && VEAuth.getToken())) {
+        gate('Sign in to open your brand kit', 'Your brand kit is for your business and the people you add to it.', '<button class="vg-btn" type="button" data-signin>Sign in</button>'); return; }
+      api('kit_get').then(function (d) {
+        if (d._status === 401) { gate('Sign in to open your brand kit', 'Your session ended. Sign in again.', '<button class="vg-btn" type="button" data-signin>Sign in</button>'); return; }
+        if (d.error === 'not_found') { gate('We could not find that business', 'Check the link, or open it from your dashboard.'); return; }
+        if (d.error === 'not_yours') { gate(d.listing.name + '\'s brand kit', 'This kit is for the business and the people it adds. If you work there, ask the owner to add you with the email you sign in with.'); return; }
+        if (!d.ok) { gate('The brand kit did not open', 'Try again in a moment.'); return; }
+        ROLE = d.role; PEOPLE = d.people || null;
+        if (!d.cartridge) {
+          if (ROLE === 'admin') gate(d.listing.name, 'No brand kit yet. Starting one fills it from their Directory listing (name, city, hours, phone, address, menu, logo); every part starts Not started for them to work through.', '<button class="vg-btn" type="button" data-kit-start>Start their brand kit</button>');
+          else gate(d.listing.name, 'Your brand kit is not set up yet. Our team starts it when you join BrandDesk, and you will get an email when it is ready.');
+          return;
+        }
+        C = d.cartridge; render(); guided();
+      }).catch(function () { gate('The brand kit did not open', 'Check your connection and try again.'); });
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-signin]')) { if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal(function () { location.reload(); }); else location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); }
+      var k = e.target.closest('[data-kit-start]'); if (k) { k.disabled = true; api('kit_create').then(function (d) { if (d.ok) location.reload(); else { k.disabled = false; alert('It could not be started: ' + (d.error || 'unknown')); } }); }
+    });
+    boot();
   })();
   </script>
 
   <script src="/public/footer.js"></script>
   </div>
-  <script src="/public/ve-guided.js"></script>
 </body>
 </html>

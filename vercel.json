@@ -34,6 +34,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/business/sample/brand",
+      "destination": "/business/brand"
+    },
+    {
       "source": "/groups/sample",
       "destination": "/directory/listing"
     },

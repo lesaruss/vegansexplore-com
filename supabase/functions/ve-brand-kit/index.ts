@@ -19,6 +19,7 @@
 //   kit_photo_url {slug, kind, content_type, bytes} -> { path, signed_url }   (kind: logo, menu, space; jpg, png, webp; 15 MB)
 //   kit_photo_done {slug, path}         -> { url, width, height }   checked it is there and is a picture
 //   kit_people_add {slug, email, role} / kit_people_remove {slug, member_id}   the owner or a super admin
+// Ops: LESARUSS_ADMIN_TOKEN as the bearer with as_member acts as that member (testing, HQ).
 // verify_jwt is false: the member token is checked here.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -299,7 +300,9 @@ Deno.serve(async (req) => {
   try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   if (String(b.action || '').startsWith('kit_')) {
     const t = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '') || String(b.token || '');
-    const id = t ? await verifyToken(t) : null;
+    // Ops (testing, HQ): the LESARUSS admin token acting as a named member.
+    const admin = await secret('LESARUSS_ADMIN_TOKEN');
+    const id = admin && t === admin && /^[0-9a-f-]{36}$/.test(String(b.as_member || '')) ? String(b.as_member) : t ? await verifyToken(t) : null;
     if (!id) return json({ error: 'signed_out' }, 401);
     return kit(b, id);
   }
