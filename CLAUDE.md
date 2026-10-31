@@ -467,6 +467,17 @@ judge whether food is safe by how a place looks online; businesses want marketin
   reveal**: a still picture of their own home page on our template, nothing clickable, then **I'm ready** (the setup checkout), **Let me
   think about it** (they pick a follow-up date) or **Talk to someone** (their Community Manager, else Sean), each landing in the Inbox. The
   why is prosperity: the movement grows through commerce.
+- **The photo standard, the Cartridge and frames** (Sean, 2026-10-31; canon v4). Every food item and drink has a high-quality photo; our
+  Higgsfield photos for the sample restaurants are the standard photographers meet (a paid three-item trial, else the blueprint). The
+  **Cartridge** is one file per client (brand, voice, upgraded copy, menu, photos, info, point of sale) that plugs into a fixed, always
+  improving **frame**; it is also the severance asset sheet. Ordering feeds their point of sale (Square first; Toast through its partner
+  program or middleware, to be researched). The Vault (gift cards as a marketing exchange) is tabled; members do not spend points at
+  managed restaurants. Later frames: products, coaches, the media kit. Built in the client's order: **Green Leaf Kitchen's Cartridge**
+  (`business/sample/cartridge.js`, `window.VE_CARTRIDGE`, its shape in the header) and **its brand kit** (`/business/sample/brand`,
+  `business/sample/brand.html`, guided view, `noindex`: cover, the Cartridge and where each part stands, logo and its files, colors with
+  contrast worked out on the page, type, voice, story, menu copy (their words struck through, ours, price, tags, photo or To shoot), the
+  photo standard and shot list, hours and details, into the frame). The page draws only from the Cartridge, so a second restaurant's kit
+  is its own Cartridge on the same page. Next: the intake, the frame, then a second restaurant in another city.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
