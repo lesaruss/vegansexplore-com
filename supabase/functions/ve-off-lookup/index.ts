@@ -4,7 +4,8 @@
 //   { action: 'save', items: [{url, path}] (25) } -> copies checked files into the public vegan-media bucket under
 //                                                   media/logos/, media/products/, media/communities/ (city art) or
 //                                                   media/brand-door/ (the For <Brand> tour: Maya's clips and posters,
-//                                                   2026-10-09); pictures, and mp4 video for brand-door; returns URLs.
+//                                                   2026-10-09); pictures (12 MB), and mp4 video for brand-door (20 MB since
+//                                                   2026-10-31, a 5 s Kling clip can pass 8 MB); returns URLs.
 //   { action: 'yt', ids: [...] (25) }             -> YouTube oEmbed for each video id: its title, channel and channel link,
 //                                                   so a trailer is checked before a listing names it (2026-10-29).
 //   { action: 'page', urls: [...] (25) }          -> each page's status, final address and <title>, so a where-to-watch link
@@ -97,7 +98,7 @@ Deno.serve(async (req) => {
         const r = await fetch(url, { headers: { 'User-Agent': UA } });
         const type = (r.headers.get('content-type') || '').split(';')[0];
         const buf = new Uint8Array(await r.arrayBuffer());
-        if (!r.ok || !(video ? type === 'video/mp4' : /^image\//.test(type)) || buf.length > (video ? 8_000_000 : 12_000_000)) { out[path] = { error: `${r.status} ${type} ${buf.length}` }; return; }
+        if (!r.ok || !(video ? type === 'video/mp4' : /^image\//.test(type)) || buf.length > (video ? 20_000_000 : 12_000_000)) { out[path] = { error: `${r.status} ${type} ${buf.length}` }; return; }
         const key = 'media/' + path;
         const { error } = await db.storage.from('vegan-media').upload(key, buf, { contentType: type, upsert: true, cacheControl: '86400' });
         out[path] = error ? { error: error.message } : { url: `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/${key}`, bytes: buf.length };
