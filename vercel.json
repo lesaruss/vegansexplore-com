@@ -69,6 +69,10 @@
       "destination": "/business/site"
     },
     {
+      "source": "/business/sample/shoot",
+      "destination": "/business/shoot"
+    },
+    {
       "source": "/groups/sample",
       "destination": "/directory/listing"
     },

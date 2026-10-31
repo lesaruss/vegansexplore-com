@@ -51,6 +51,15 @@
     .form input{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;text-transform:none;letter-spacing:0;font-weight:400;}
     .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:6px;}.msg.err{color:#a61b1b;}
     @media (max-width:640px){.irow{grid-template-columns:minmax(0,1fr) auto;}.irow .tag{grid-column:1;justify-self:start;}}
+    .picks{border:1px solid var(--ve-border);border-radius:10px;max-height:320px;overflow-y:auto;padding:4px 12px;background:#fff;margin:12px 0;}
+    .picks h3{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin:12px 0 4px;}
+    .picks label{display:flex;gap:8px;align-items:center;font-size:13.5px;padding:5px 0;cursor:pointer;}
+    .picks small{color:var(--ve-text-75);}
+    .appl{border-top:1px solid var(--ve-border);padding:12px 0;}
+    .appl:first-child{border-top:0;}
+    .appl p{font-size:13.5px;margin:4px 0;overflow-wrap:anywhere;}
+    .appl .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .tag.applied{background:#eef1ee;}.tag.shortlisted,.tag.claimed{background:#e3f3e5;color:#1E5F2A;}.tag.audition{background:#fff4e0;color:#8a5200;}.tag.not_selected{background:#fde8e8;color:#a61b1b;}
   </style>
 </head>
 <body>
@@ -120,7 +129,9 @@
           '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '" target="_blank" rel="noopener">Their page</a>' +
           '<a class="btn btn-ghost btn-sm" href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Their brand kit</a>' +
           '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
-          (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section><div id="bd"></div>';
+          (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section>' +
+          '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
+        if (slug) drawShoot(slug);
         VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
         var cx = $('cx');
         if (cx) cx.addEventListener('click', function () {
@@ -131,6 +142,85 @@
             m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not go through.';
           });
         });
+      }
+      // ---- The starter shoot: posted to the Gig Board as a photo gig; its shot list is drawn from their brand kit (ve-bounties shoot_*).
+      var BFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
+      function bapi(body) { return fetch(BFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      var SWORD = { applied: 'Applied', shortlisted: 'Shortlisted', audition: 'Trial requested', claimed: 'Booked', not_selected: 'Not selected' };
+      function money(c) { return '$' + (c / 100).toLocaleString('en-US'); }
+      function dateIn(days) { var d = new Date(Date.now() + days * 864e5); return d.toISOString().slice(0, 10); }
+      function drawShoot(slug) {
+        var box = $('shoot'); if (!box) return;
+        bapi({ action: 'shoot_get', slug: slug }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = '<h2>The starter shoot</h2><p class="empty" style="padding:0">This did not load.</p>'; return; }
+          if (!d.has_kit) { box.innerHTML = '<h2>The starter shoot</h2><p class="sub" style="margin:0">The shot list is drawn from their brand kit. <a href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Start their brand kit</a> first, then post the shoot here.</p>'; return; }
+          if (!d.gig) return drawShootForm(box, slug, d);
+          var g = d.gig, c = d.counts || { shot: 0, total: 0 };
+          box.innerHTML = '<div class="bar"><h2 style="margin:0">The starter shoot</h2><span class="tag ' + (g.taken ? 'active' : 'checkout') + '">' + (g.taken ? 'Photographer booked' : g.status === 'open' ? 'On the Gig Board' : esc(g.status)) + '</span></div>' +
+            '<div class="kv"><div><span>Fee</span>' + money(g.cash_cents || 0) + ' and ' + (g.points || 0) + ' points</div><div><span>Applications close</span>' + esc(day(g.apply_by)) + '</div><div><span>Shot by</span>' + esc(day(g.due_at)) + '</div>' +
+            '<div><span>Shot list</span>' + c.shot + ' of ' + c.total + ' shot (' + c.items + ' menu items, ' + c.space + ' of the space)</div>' + (d.shoot && d.shoot.done_at ? '<div><span>Photographer says done</span>' + esc(day(d.shoot.done_at)) + '</div>' : '') + '</div>' +
+            (d.shoot && d.shoot.done_note ? '<p class="sub" style="margin:10px 0 0">' + esc(d.shoot.done_note) + '</p>' : '') +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="' + esc(d.shot_list) + '" target="_blank" rel="noopener">Open the shot list</a>' +
+            '<button type="button" class="btn btn-bad btn-sm" data-shoot-cancel>Take it down</button></p><p class="msg" id="sh-msg" role="status"></p>' +
+            '<h2 style="margin-top:16px">Applicants</h2><div id="appl"><p class="empty" style="padding:0">Loading...</p></div>';
+          box.querySelector('[data-shoot-cancel]').onclick = function () {
+            if (!window.confirm('Take this shoot off the Gig Board? Anyone who applied stays on record.')) return;
+            bapi({ action: 'shoot_cancel', slug: slug }).then(function (r) { if (r && r.ok) drawShoot(slug); else { $('sh-msg').className = 'msg err'; $('sh-msg').textContent = 'That did not go through.'; } });
+          };
+          bapi({ action: 'applicants', bounty_id: g.id }).then(function (r) {
+            var A = (r && r.applicants) || [], el = $('appl'); if (!el) return;
+            if (!A.length) { el.innerHTML = '<p class="empty" style="padding:0">No one yet. Photographers in the chapter see it on the Gig Board until ' + esc(day(g.apply_by)) + '.</p>'; return; }
+            var hasTrial = (g.asks || []).indexOf('trial') > -1;
+            el.innerHTML = A.map(function (x) {
+              var ap = x.application || {}, link = function (t) { return esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); };
+              var open = ['applied', 'shortlisted', 'audition'].indexOf(x.status) > -1;
+              return '<div class="appl"><div class="bar" style="margin:0"><b>' + esc(x.member ? x.member.name : 'A member') + '</b><span class="tag ' + esc(x.status) + '">' + esc(SWORD[x.status] || x.status) + '</span></div>' +
+                (x.member ? '<p><small>' + esc(x.member.email) + '</small></p>' : '') +
+                (ap.pitch ? '<p><b>Pitch:</b> ' + esc(ap.pitch) + '</p>' : '') + (ap.examples ? '<p><b>Examples:</b> ' + link(ap.examples) + '</p>' : '') + (ap.rate ? '<p><b>Rate and dates:</b> ' + esc(ap.rate) + '</p>' : '') +
+                (ap.trial ? '<p><b>Trial photos:</b> ' + link(ap.trial) + '</p>' : '') +
+                (open ? '<div class="acts">' + (x.status === 'applied' ? '<button class="btn btn-ghost btn-sm" data-dec="shortlist" data-id="' + esc(x.id) + '">Shortlist</button>' : '') +
+                  (hasTrial && x.status !== 'audition' ? '<button class="btn btn-ghost btn-sm" data-dec="audition" data-id="' + esc(x.id) + '">Ask for the paid trial</button>' : '') +
+                  '<button class="btn btn-sm" data-dec="book" data-id="' + esc(x.id) + '">Book them</button><button class="btn btn-bad btn-sm" data-dec="not_selected" data-id="' + esc(x.id) + '">Not selected</button></div>' : '') + '</div>';
+            }).join('');
+            el.onclick = function (e) {
+              var b = e.target.closest('[data-dec]'); if (!b) return;
+              var dec = b.dataset.dec, note = '';
+              if (dec === 'audition') { note = window.prompt('Which three dishes, and when they can shoot them (this goes in the email):', ''); if (note === null) return; }
+              if (dec === 'book' && !window.confirm('Book them? They get the shot list by email and become the photographer on this brand kit.')) return;
+              b.disabled = true;
+              bapi({ action: 'applicant_decide', id: b.dataset.id, decision: dec, note: note }).then(function (r) {
+                if (r && r.ok) { drawShoot(slug); return; }
+                b.disabled = false; $('sh-msg').className = 'msg err'; $('sh-msg').textContent = (r && r.message) || 'That did not go through.';
+              });
+            };
+          });
+        });
+      }
+      function drawShootForm(box, slug, d) {
+        var D = d.defaults || {}, menu = (d.menu || []).slice(), pick = {}, n = 0;
+        menu.filter(function (m) { return m.favorite; }).concat(menu.filter(function (m) { return !m.favorite; })).forEach(function (m) { if (n < 15 && !m.shot) { pick[m.key] = true; n++; } });
+        var secs = []; menu.forEach(function (m) { if (secs.indexOf(m.section) < 0) secs.push(m.section); });
+        box.innerHTML = '<h2>The starter shoot</h2><p class="sub">Post it to the Gig Board: photographers in their chapter apply with a pitch, examples and their dates, you can ask for a paid three-dish trial, and the one you book gets the shot list. The setup covers up to 15 menu items and the space.</p>' +
+          '<form class="form" id="shf"><label>Fee ($)<input type="number" id="sh-rate" min="50" max="10000" step="5" value="' + (D.rate_cents || 45000) / 100 + '" required></label>' +
+          '<label>Paid trial ($, 0 for none)<input type="number" id="sh-trial" min="0" max="1000" step="5" value="' + (D.trial_cents || 7500) / 100 + '"></label>' +
+          '<label>Applications close<input type="date" id="sh-apply" value="' + dateIn(7) + '" required></label><label>Shot by<input type="date" id="sh-due" value="' + dateIn(21) + '" required></label>' +
+          '<label style="flex-basis:100%">Anything photographers should know (optional)<input type="text" id="sh-note" maxlength="600" placeholder="Parking, the best morning, a dish that sells out"></label></form>' +
+          '<p class="sub" style="margin:14px 0 0"><b id="sh-n"></b> menu items in this shoot, Favorites first. Items already photographed are left unticked.</p>' +
+          '<div class="picks">' + (menu.length ? secs.map(function (sname) { return '<h3>' + esc(sname) + '</h3>' + menu.filter(function (m) { return m.section === sname; }).map(function (m) {
+            return '<label><input type="checkbox" data-k="' + esc(m.key) + '"' + (pick[m.key] ? ' checked' : '') + '>' + esc(m.name) + (m.favorite ? ' <small>Favorite</small>' : '') + (m.shot ? ' <small>has a photo</small>' : '') + '</label>'; }).join(''); }).join('') : '<p class="empty">Their brand kit has no menu yet. Add it there first.</p>') + '</div>' +
+          '<p style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" type="button" id="sh-post"' + (menu.length ? '' : ' disabled') + '>Post it to the Gig Board</button></p><p class="msg" id="sh-msg" role="status"></p>';
+        var count = function () { var c = box.querySelectorAll('[data-k]:checked').length; $('sh-n').textContent = c; return c; };
+        count(); box.querySelector('.picks').onchange = count;
+        $('sh-post').onclick = function () {
+          var items = [].map.call(box.querySelectorAll('[data-k]:checked'), function (i) { return i.dataset.k; }), m = $('sh-msg');
+          if (!items.length) { m.className = 'msg err'; m.textContent = 'Tick the menu items in this shoot.'; return; }
+          var btn = this; btn.disabled = true; m.className = 'msg'; m.textContent = 'Posting...';
+          bapi({ action: 'shoot_post', slug: slug, items: items, rate_cents: Math.round(+$('sh-rate').value * 100), trial_cents: Math.round(+$('sh-trial').value * 100),
+            apply_by: $('sh-apply').value + 'T23:59:00', due_at: $('sh-due').value + 'T23:59:00', note: $('sh-note').value }).then(function (r) {
+            if (r && r.ok) { drawShoot(slug); return; }
+            btn.disabled = false; m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not post.';
+          });
+        };
       }
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list', m;

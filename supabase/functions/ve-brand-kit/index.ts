@@ -18,6 +18,10 @@
 //                                       ve_cartridge_edits row with what it replaced
 //   kit_photo_url {slug, kind, content_type, bytes} -> { path, signed_url }   (kind: logo, menu, space; jpg, png, webp; 15 MB)
 //   kit_photo_done {slug, path}         -> { url, width, height }   checked it is there and is a picture
+//   kit_photo_url {slug, kind: 'full', content_type, bytes, title} -> the full-size original, into the client's BrandDesk Library
+//                                       (private bucket branddesk-library, <slug>/photo/...; 40 MB; only while they have an account)
+//   kit_photo_done {slug, path, full: true, title, width, height} -> a ve_branddesk_files row (kind photo) for that original
+//   shoot_done {slug, note}             the photographer says the shoot is in: stamps photos.shoot.done_at, emails the team
 //   kit_people_add {slug, email, role} / kit_people_remove {slug, member_id}   the owner or a super admin
 // Ops: LESARUSS_ADMIN_TOKEN as the bearer with as_member acts as that member (testing, HQ).
 //
@@ -33,6 +37,7 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
+const LIB = 'branddesk-library';
 const MODEL = 'claude-opus-5-5';
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -249,7 +254,8 @@ async function kit(b: any, memberId: string) {
       (data.menu?.sections || []).forEach((s: any) => (s.items || []).forEach((it: any) => { const p = photos.get(s.name + '|' + it.name); if (p) it.photo = p; }));
     } else setPart(data, section, part);
     data.meta = data.meta || {}; data.meta.approvals = data.meta.approvals || {};
-    data.meta.approvals[section] = { state, by: clean(m.name, 60) || 'Team', at: new Date().toISOString().slice(0, 10) };
+    // A photographer's upload never moves a section's state (a locked menu stays locked); everyone else's save sets it.
+    if (role !== 'photographer') data.meta.approvals[section] = { state, by: clean(m.name, 60) || 'Team', at: new Date().toISOString().slice(0, 10) };
     data.meta.updated = new Date().toISOString().slice(0, 10);
     const allLocked = SECTIONS.every((k) => data.meta.approvals[k]?.state === 'locked');
     const status = cart.status === 'building' && allLocked ? 'locked' : cart.status === 'locked' && !allLocked ? 'building' : cart.status;
@@ -258,6 +264,52 @@ async function kit(b: any, memberId: string) {
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     await db.from('ve_cartridge_edits').insert({ listing_id: l.id, member_id: memberId, section, state, before, after: getPart(data, section) ?? null });
     return json({ ok: true, cartridge: data, status });
+  }
+
+  // The photographer's full-size original goes to the client's Library (they own it); the web copy goes on the kit as before.
+  const libAccount = async () => {
+    const { data } = await db.from('ve_branddesk_accounts').select('id').eq('listing_id', l.id).in('status', ['active', 'paused', 'canceling']).order('created_at', { ascending: false }).limit(1);
+    return (data || [])[0]?.id || null;
+  };
+  if (b.action === 'kit_photo_url' && b.kind === 'full') {
+    if (!cart) return json({ error: 'no_kit' }, 404);
+    const acct = await libAccount();
+    if (!acct) return json({ error: 'no_library', message: 'No Library yet: only the web copy is kept.' }, 409);
+    const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[String(b.content_type || '')];
+    if (!ext) return json({ error: 'file_type' }, 400);
+    const bytes = Number(b.bytes) || 0;
+    if (bytes <= 0 || bytes > 41943040) return json({ error: 'file_size', message: 'Up to 40 MB a photo.' }, 400);
+    const path = `${l.slug}/photo/${new Date().toISOString().slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+    const { data: up, error } = await db.storage.from(LIB).createSignedUploadUrl(path);
+    if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
+    return json({ ok: true, path, signed_url: up.signedUrl });
+  }
+  if (b.action === 'kit_photo_done' && b.full) {
+    const path = String(b.path || ''), acct = await libAccount();
+    if (!acct || !path.startsWith(`${l.slug}/photo/`) || path.includes('..')) return json({ error: 'bad_path' }, 400);
+    const name = path.split('/').pop() || '';
+    const { data: found } = await db.storage.from(LIB).list(`${l.slug}/photo`, { search: name, limit: 5 });
+    const obj = (found || []).find((o: any) => o.name === name);
+    if (!obj) return json({ error: 'not_uploaded' }, 409);
+    const w = Math.round(Number(b.width) || 0) || null, h = Math.round(Number(b.height) || 0) || null;
+    const { data: row, error } = await db.from('ve_branddesk_files').insert({ account_id: acct, listing_id: l.id, kind: 'photo', title: clean(b.title, 140) || 'Photo',
+      path, bytes: obj.metadata?.size || null, mime: obj.metadata?.mimetype || null, width: w, height: h, note: role === 'photographer' ? 'From the shoot' : null, added_by: memberId }).select('id').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    return json({ ok: true, file_id: row.id });
+  }
+  if (b.action === 'shoot_done') {
+    if (!cart || !(cart.data as any)?.photos?.shoot) return json({ error: 'no_shoot' }, 404);
+    if (!['admin', 'photographer', 'owner'].includes(role)) return json({ error: 'forbidden' }, 403);
+    const data = cart.data as any, sh = data.photos.shoot, keys = new Set<string>(sh.items || []);
+    let n = 0, done = 0;
+    (data.menu?.sections || []).forEach((s: any) => (s.items || []).forEach((it: any) => { if (keys.has(s.name + '|' + it.name)) { n++; if (it.photo?.state === 'shot') done++; } }));
+    (data.photos.space || []).forEach((x: any) => { n++; if (x.state === 'shot') done++; });
+    sh.done_at = new Date().toISOString(); sh.done_by = memberId; sh.done_note = clean(b.note, 1000);
+    await db.from('ve_cartridges').update({ data, updated_at: new Date().toISOString(), updated_by: memberId }).eq('listing_id', l.id);
+    await db.from('ve_cartridge_edits').insert({ listing_id: l.id, member_id: memberId, section: 'photos', state: 'shoot_done', before: null, after: sh });
+    await mail(TEAM_EMAIL, `Shoot in: ${l.name} (${done} of ${n})`, `<p><b>${escH(m.name || 'The photographer')}</b> says the shoot for <b>${escH(l.name)}</b> is in: ${done} of ${n} shots uploaded.</p>` +
+      (sh.done_note ? `<p>${escH(sh.done_note)}</p>` : '') + `<p><a href="https://vegansexplore.com/business/shoot?listing=${encodeURIComponent(l.slug)}">Open the shot list</a></p>`, m.email || TEAM_EMAIL);
+    return json({ ok: true, done, total: n });
   }
 
   if (b.action === 'kit_photo_url') {
@@ -348,7 +400,7 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
   let b: any = {};
   try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
-  if (String(b.action || '').startsWith('kit_')) {
+  if (String(b.action || '').startsWith('kit_') || b.action === 'shoot_done') {
     const t = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '') || String(b.token || '');
     // Ops (testing, HQ): the LESARUSS admin token acting as a named member.
     const admin = await secret('LESARUSS_ADMIN_TOKEN');

@@ -94,12 +94,20 @@
       pay: { type: 'paid', cents: 180000 }, mode: 'audition', chapters: ['new-york'], posted: at(-2, 10), closes: at(10), spots: 1, applicants: 64,
       req: { min_followers: 25000, platforms: ['instagram', 'tiktok'], level: 3 },
       brief: 'The face of a three-location launch: opening night, a recipe series and a month of posts.', deliverables: ['6 posts over a month', 'Opening night appearance'],
-      timeline: 'One month.', audition: 'Record 60 seconds pitching the opening night to your audience.', asks: ['pitch', 'examples', 'audition', 'rate'] }
+      timeline: 'One month.', audition: 'Record 60 seconds pitching the opening night to your audience.', asks: ['pitch', 'examples', 'audition', 'rate'] },
+    // A BrandDesk client's starter shoot (the sample restaurant): booked, so My gigs opens its shot list.
+    { id: 'g11', img: '/business/sample/img/m-latte.webp', title: 'Photo shoot: Green Leaf Kitchen', partner: { name: 'Green Leaf Kitchen', kind: 'Restaurant' }, kind: 'photo',
+      pay: { type: 'paid', cents: 45000, points: 250 }, mode: 'apply', chapters: ['south-florida'], posted: at(-6, 10), closes: at(-1), spots: 1, applicants: 9,
+      req: {}, brief: 'Green Leaf Kitchen, a Vegan business we manage, needs its starter shoot: 15 menu items and 8 shots of the space and the team. Every photo meets one standard, written on the shot list: the same surface, angle and light for every dish, plated the way it leaves the kitchen, full size. Before we book, we may ask for a paid trial ($75): three dishes we name, shot to the standard.',
+      deliverables: ['Every shot on the shot list, full size, uploaded to the shot list', 'Each dish twice: three-quarter and overhead'], timeline: 'One morning at the restaurant, uploads within a week.',
+      audition: 'A paid trial ($75): three dishes we name, shot to the standard on the shot list. Send the link to the folder.', asks: ['pitch', 'examples', 'rate', 'trial'],
+      shoot: '/business/sample/shoot' }
   ];
 
   var mine = [
     { gig: 'g1', status: 'audition', at: at(-1, 14), next: 'Record your audition by ' + new Date(now + 3 * DAY).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) },
     { gig: 'g2', status: 'shortlisted', at: at(-2, 16), next: 'The brand picks this week' },
+    { gig: 'g11', status: 'booked', at: at(-1, 11), next: 'Your shot list is ready' },
     { gig: 'g4', status: 'booked', at: at(-5, 10), next: 'Your night is set: posts due in 9 days' },
     { gig: 'g5', status: 'applied', at: at(0, 9), next: 'Waiting for the brand' },
     { gig: 'g9', status: 'not_selected', at: at(-6, 9), next: 'The group chose a creator in Philadelphia' },

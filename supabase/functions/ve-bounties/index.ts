@@ -148,9 +148,15 @@ const ms = (iso: string | null | undefined) => (iso ? new Date(iso).getTime() : 
 const nowIso = () => new Date().toISOString();
 
 type Viewer = { id: string; name: string | null; email: string | null; admin: boolean; cm: boolean; leader: boolean; home: string | null; passport: boolean } | null;
-async function loadViewer(req: Request): Promise<Viewer> {
+async function loadViewer(req: Request, body: any = {}): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const id = token ? await verifyToken(token) : null;
+  // Ops (testing, HQ): the LESARUSS admin token acting as a named member.
+  let id: string | null = null;
+  if (token && /^[0-9a-f-]{36}$/.test(String(body.as_member || ''))) {
+    const { data: adm } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+    if (adm?.value && token === adm.value) id = String(body.as_member);
+  }
+  if (!id) id = token ? await verifyToken(token) : null;
   if (!id) return null;
   const { data: m } = await db.from('members').select('id, name, email, is_superadmin, staff_role, ve_role, home_community, membership_status').eq('id', id).maybeSingle();
   if (!m) return null;
@@ -168,7 +174,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by, shoot_listing_id';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -405,6 +411,39 @@ async function cron() {
   return out;
 }
 
+// ---- Photo shoots (BrandDesk): a client's starter shoot is a gig, and its shot list is their Cartridge (ve_cartridges).
+const SHOT_LIST = (slug: string) => `/business/shoot?listing=${encodeURIComponent(slug)}`;
+const SHOOT_POINTS = 250;                      // on top of the fee, once it is delivered (Logan's default)
+const SHOOT_DEFAULTS = { rate_cents: 45000, trial_cents: 7500, max_items: 60 };
+const shootKey = (sec: string, name: string) => `${sec}|${name}`;
+function shootCounts(data: any) {
+  const shoot = data?.photos?.shoot || null, keys = new Set<string>(shoot?.items || []);
+  let items = 0, itemsShot = 0, space = 0, spaceShot = 0;
+  (data?.menu?.sections || []).forEach((s: any) => (s.items || []).forEach((it: any) => {
+    if (!keys.has(shootKey(s.name, it.name))) return; items++; if (it.photo?.state === 'shot') itemsShot++; }));
+  (data?.photos?.space || []).forEach((x: any) => { space++; if (x.state === 'shot') spaceShot++; });
+  return { items, items_shot: itemsShot, space, space_shot: spaceShot, total: items + space, shot: itemsShot + spaceShot };
+}
+async function bookPhotographer(b: any, memberId: string, byId: string, first: string) {
+  const { data: l } = await db.from('listings').select('id, slug, name').eq('id', b.shoot_listing_id).maybeSingle();
+  if (!l) return SHOT_LIST('');
+  const { data: had } = await db.from('ve_cartridge_people').select('role').eq('listing_id', l.id).eq('member_id', memberId).maybeSingle();
+  if (!had) await db.from('ve_cartridge_people').insert({ listing_id: l.id, member_id: memberId, role: 'photographer', added_by: byId });
+  const { data: cart } = await db.from('ve_cartridges').select('data').eq('listing_id', l.id).maybeSingle();
+  if (cart?.data?.photos) {
+    const data = cart.data; const { data: m } = await db.from('members').select('name').eq('id', memberId).maybeSingle();
+    data.photos.shoot = { ...(data.photos.shoot || {}), booked: { member_id: memberId, name: m?.name || first || '', at: new Date().toISOString() } };
+    await db.from('ve_cartridges').update({ data, updated_at: new Date().toISOString(), updated_by: byId }).eq('listing_id', l.id);
+  }
+  const { data: acct } = await db.from('ve_branddesk_accounts').select('id, onboarding').eq('listing_id', l.id).in('status', ['active', 'paused', 'canceling']).maybeSingle();
+  if (acct) {
+    const ob = acct.onboarding || {};
+    ob.shoot = { done_at: new Date().toISOString(), by: byId, note: `Booked from the Gig Board: ${first || 'the photographer'}` };
+    await db.from('ve_branddesk_accounts').update({ onboarding: ob, updated_at: new Date().toISOString() }).eq('id', acct.id);
+  }
+  return SHOT_LIST(l.slug);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -417,7 +456,7 @@ Deno.serve(async (req) => {
     return json(await cron());
   }
 
-  const viewer = await loadViewer(req);
+  const viewer = await loadViewer(req, body);
   const viewerInfo = async () => viewer ? { signed_in: true, passport: viewer.passport, standing: await standing(viewer.id) } : { signed_in: false };
 
   switch (body.action) {
@@ -436,7 +475,10 @@ Deno.serve(async (req) => {
       const bounties = await withCampaigns(await withEvents(rows));
       const taken = await takenCounts(bounties.map((b) => b.id));
       const forMe = await heldForViewer(bounties.filter(heldNow).map((b) => b.id), viewer);
-      const shaped = bounties.map(({ _address, ...b }) => ({ ...b, taken: taken[b.id] || 0, spots_left: b.slots == null ? null : Math.max(0, b.slots - (taken[b.id] || 0)), claims_open: claimsOpen(b), mine: mine[b.id] || null, held: heldNow(b), held_for_you: forMe.has(b.id) }));
+      const shootIds = [...new Set(bounties.map((b: any) => b.shoot_listing_id).filter(Boolean))];
+      const { data: shootLs } = shootIds.length ? await db.from('listings').select('id, slug').in('id', shootIds) : { data: [] };
+      const shootSlug = Object.fromEntries((shootLs || []).map((l: any) => [l.id, l.slug]));
+      const shaped = bounties.map(({ _address, ...b }) => ({ ...b, shoot_slug: b.shoot_listing_id ? shootSlug[b.shoot_listing_id] || null : null, taken: taken[b.id] || 0, spots_left: b.slots == null ? null : Math.max(0, b.slots - (taken[b.id] || 0)), claims_open: claimsOpen(b), mine: mine[b.id] || null, held: heldNow(b), held_for_you: forMe.has(b.id) }));
       // Campaign cards, soonest deadline first (Sean, 2026-10-04).
       const cids = [...new Set(shaped.map((b) => b.campaign_id).filter(Boolean))];
       const { data: cs } = cids.length ? await db.from('ve_bounty_campaigns').select(CAMPAIGN_COLS).in('id', cids) : { data: [] };
@@ -606,24 +648,87 @@ Deno.serve(async (req) => {
       if (fit && fit.ok === false) return json({ error: 'not_qualified', message: 'You do not meet this gig\'s requirements yet.', checks: fit.checks }, 409);
       const a = body.application || {};
       const app: Record<string, string> = {};
-      for (const k of (b.asks || [])) {
-        const v = clean(a[k], k === 'pitch' ? 600 : 1200);
-        if (!v) return json({ error: 'missing', field: k, message: 'Fill in every step before you send it.' }, 400);
-        if (k === 'audition' && !/^https?:\/\/\S+\.\S+/.test(v)) return json({ error: 'bad_link', field: k, message: 'Your audition needs to be a full link.' }, 400);
-        app[k] = v;
-      }
       const { data: had } = await db.from('ve_bounty_submissions').select('id, status, application').eq('bounty_id', b.id).eq('member_id', viewer.id).maybeSingle();
       if (had && !['applied', 'audition', 'shortlisted'].includes(had.status)) return json({ error: 'already', message: 'You already have this one.' }, 409);
+      // Once an audition (or a photographer's paid trial) is asked for, only that is sent. The trial is never asked up front.
+      const asked = had && had.status === 'audition';
+      const need = (b.asks || []).filter((k: string) => asked ? (k === 'audition' || k === 'trial') : k !== 'trial');
+      for (const k of need) {
+        const v = clean(a[k], k === 'pitch' ? 600 : 1200);
+        if (!v) return json({ error: 'missing', field: k, message: 'Fill in every step before you send it.' }, 400);
+        if ((k === 'audition' || k === 'trial') && !/^https?:\/\/\S+\.\S+/.test(v)) return json({ error: 'bad_link', field: k, message: k === 'trial' ? 'Your trial photos need to be a full link to the folder.' : 'Your audition needs to be a full link.' }, 400);
+        app[k] = v;
+      }
       const status = had && had.status === 'audition' ? 'shortlisted' : had ? had.status : 'applied';
       const row = { application: { ...(had?.application || {}), ...app }, status, applied_at: new Date().toISOString() };
       const { error } = had ? await db.from('ve_bounty_submissions').update(row).eq('id', had.id)
         : await db.from('ve_bounty_submissions').insert({ bounty_id: b.id, member_id: viewer.id, ...row });
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       const c = await memberContact(viewer.id);
-      await sendEmail('contact@lesaruss.com', `New ${had ? 'audition' : 'application'}: ${b.title}`,
-        P(`<b>${esc(c.first || 'A member')}</b> ${had ? 'sent their audition for' : 'applied to'} <b>${esc(b.title)}</b>.`) +
-        Object.keys(app).map((k) => P(`<b>${esc(k)}:</b> ${esc(app[k])}`)).join('') + P(`Decide in Depot &gt; Bounties.`));
+      const word = asked ? (b.gig_kind === 'photo' ? 'trial photos' : 'audition') : 'application';
+      await sendEmail('contact@lesaruss.com', `New ${word}: ${b.title}`,
+        P(`<b>${esc(c.first || 'A member')}</b> ${asked ? 'sent their ' + word + ' for' : 'applied to'} <b>${esc(b.title)}</b>.`) +
+        Object.keys(app).map((k) => P(`<b>${esc(k)}:</b> ${esc(app[k])}`)).join('') + P(b.gig_kind === 'photo' ? `Decide in Depot &gt; BrandDesk, on the client's page.` : `Decide in Depot &gt; Bounties.`));
       return json({ ok: true, status });
+    }
+
+
+    // ---- Photo shoots for BrandDesk clients (super admins): post the starter shoot to the Gig Board, see it, cancel it.
+    case 'shoot_get':
+    case 'shoot_post':
+    case 'shoot_cancel': {
+      if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
+      const { data: l } = await db.from('listings').select('id, slug, name, address_city, address_state, status').eq('slug', clean(body.slug, 120)).eq('status', 'approved').maybeSingle();
+      if (!l) return json({ error: 'not_found' }, 404);
+      const { data: cart } = await db.from('ve_cartridges').select('data').eq('listing_id', l.id).maybeSingle();
+      const { data: gigs } = await db.from('ve_bounties').select(BOUNTY_COLS + ', created_at').eq('shoot_listing_id', l.id).neq('status', 'canceled').order('created_at', { ascending: false }).limit(1);
+      const gig = (gigs || [])[0] || null;
+      if (body.action === 'shoot_get') {
+        const taken = gig ? ((await takenCounts([gig.id]))[gig.id] || 0) : 0;
+        return json({ ok: true, listing: { id: l.id, slug: l.slug, name: l.name }, has_kit: !!cart, shoot: cart?.data?.photos?.shoot || null,
+          counts: cart ? shootCounts(cart.data) : null,
+          menu: cart ? (cart.data?.menu?.sections || []).flatMap((s: any) => (s.items || []).map((it: any) => ({ key: shootKey(s.name, it.name), section: s.name, name: it.name,
+            favorite: (it.tags || []).includes('Favorite'), shot: it.photo?.state === 'shot' }))) : [], gig: gig ? { ...gig, taken } : null, defaults: SHOOT_DEFAULTS, shot_list: SHOT_LIST(l.slug) });
+      }
+      if (body.action === 'shoot_cancel') {
+        if (!gig) return json({ error: 'no_gig' }, 404);
+        await db.from('ve_bounties').update({ status: 'canceled', updated_at: new Date().toISOString() }).eq('id', gig.id);
+        if (cart?.data?.photos?.shoot) { const data = cart.data; delete data.photos.shoot; await db.from('ve_cartridges').update({ data, updated_at: new Date().toISOString(), updated_by: viewer.id }).eq('listing_id', l.id); }
+        return json({ ok: true });
+      }
+      if (!cart) return json({ error: 'no_kit', message: 'Start their brand kit first: the shot list is drawn from it.' }, 409);
+      if (gig) return json({ error: 'already', message: 'This business already has a shoot on the Gig Board.' }, 409);
+      let chapter = '';
+      const { data: ch } = await db.rpc('ve_chapter_of', { p_city: l.address_city || '', p_state: l.address_state || '' });
+      chapter = String(ch || ''); if (chapter === 'dc') chapter = 'washington-dc';
+      if (!COMMUNITIES.includes(chapter)) return json({ error: 'no_chapter', message: 'This business is not in one of our chapters, so a local photographer cannot be found on the board.' }, 409);
+      const data = cart.data, all = new Set<string>();
+      (data.menu?.sections || []).forEach((s: any) => (s.items || []).forEach((it: any) => all.add(shootKey(s.name, it.name))));
+      const items = [...new Set((Array.isArray(body.items) ? body.items : []).map((k: any) => String(k)).filter((k: string) => all.has(k)))];
+      if (!items.length) return json({ error: 'no_items', message: 'Pick the menu items in this shoot.' }, 400);
+      if (items.length > SHOOT_DEFAULTS.max_items) return json({ error: 'too_many', message: `Up to ${SHOOT_DEFAULTS.max_items} items in one shoot.` }, 400);
+      const rate = Math.round(Number(body.rate_cents) || 0), trial = Math.round(Number(body.trial_cents) || 0);
+      if (rate < 5000 || rate > 1000000) return json({ error: 'bad_rate', message: 'The fee is between $50 and $10,000.' }, 400);
+      if (trial < 0 || trial > 100000) return json({ error: 'bad_trial', message: 'The trial is between $0 and $1,000.' }, 400);
+      const applyBy = body.apply_by ? new Date(body.apply_by) : new Date(Date.now() + 7 * DAY), dueAt = body.due_at ? new Date(body.due_at) : new Date(Date.now() + 21 * DAY);
+      if (isNaN(+applyBy) || isNaN(+dueAt) || +applyBy < Date.now() || +dueAt <= +applyBy) return json({ error: 'bad_dates', message: 'Applications close before the shoot is due, and both are in the future.' }, 400);
+      const space = (data.photos?.space || []).length, city = [l.address_city, l.address_state].filter(Boolean).join(', ');
+      const money = (c: number) => '$' + (c / 100).toLocaleString('en-US');
+      const brief = `${l.name}${city ? ', ' + city : ''}, a Vegan business we manage, needs its starter shoot: ${items.length} menu ${items.length === 1 ? 'item' : 'items'} and ${space} shots of the space and the team. ` +
+        `Every photo meets one standard, written on the shot list: the same surface, angle and light for every dish, plated the way it leaves the kitchen, full size. ` +
+        `One shoot feeds their website, Google, the delivery apps and their social. Apply with your pitch, two or three examples of food work and your dates.` +
+        (trial ? ` Before we book, we may ask for a paid trial (${money(trial)}): three dishes we name, shot to the standard.` : '') + (clean(body.note, 600) ? ' ' + clean(body.note, 600) : '');
+      const row = { community_slug: chapter, kind: 'photos', gig_kind: 'photo', apply_mode: 'apply', asks: trial ? ['pitch', 'examples', 'rate', 'trial'] : ['pitch', 'examples', 'rate'],
+        title: `Photo shoot: ${l.name}`.slice(0, 140), brief: brief.slice(0, 4000), deliverable: 'Every shot on the shot list, full size, uploaded to the shot list', points: SHOOT_POINTS, slots: 1,
+        cash_cents: rate, partner_name: l.name.slice(0, 120), partner_listing_id: l.id, shoot_listing_id: l.id, status: 'open', created_by: viewer.id,
+        apply_by: applyBy.toISOString(), claims_close_at: applyBy.toISOString(), due_at: dueAt.toISOString(),
+        audition_prompt: trial ? `A paid trial (${money(trial)}): three dishes we name, shot to the standard on the shot list. Send the link to the folder.` : null };
+      const { data: made, error } = await db.from('ve_bounties').insert(row).select('id').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      data.photos = data.photos || {}; data.photos.shoot = { gig: made.id, items, rate_cents: rate, trial_cents: trial, posted_at: new Date().toISOString(), posted_by: viewer.id };
+      await db.from('ve_cartridges').update({ data, updated_at: new Date().toISOString(), updated_by: viewer.id }).eq('listing_id', l.id);
+      await db.from('ve_cartridge_edits').insert({ listing_id: l.id, member_id: viewer.id, section: 'photos', state: 'shoot_posted', before: null, after: data.photos.shoot });
+      return json({ ok: true, gig_id: made.id, counts: shootCounts(data) });
     }
 
     case 'applicants': {
@@ -660,7 +765,14 @@ Deno.serve(async (req) => {
       const { error } = await db.from('ve_bounty_submissions').update(patch).eq('id', s.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       const c = await memberContact(s.member_id), note = clean(body.note, 2000);
-      const words: Record<string, [string, string]> = {
+      let shotList = '';
+      if (b.gig_kind === 'photo' && b.shoot_listing_id && decision === 'book') shotList = await bookPhotographer(b, s.member_id, viewer!.id, c.first);
+      const words: Record<string, [string, string]> = b.gig_kind === 'photo' ? {
+        shortlist: [`You're shortlisted: ${b.title}`, `You made the shortlist for <b>${esc(b.title)}</b>. Next we may ask for a paid trial: three dishes, shot to our standard.`],
+        audition: [`Your paid trial: ${b.title}`, `We'd like a paid trial for <b>${esc(b.title)}</b>: ${esc(b.audition_prompt || 'three dishes from their menu, shot to our standard')}. When they're shot, open the gig on the Gig Board and send us the link to the folder.`],
+        book: [`You're booked: ${b.title}`, `You're booked for <b>${esc(b.title)}</b> (${payText(b)}). Your shot list is ready: every shot, the standard each one meets, and where to upload it. <a href="${SITE}${shotList}">Open the shot list</a>`],
+        not_selected: [`About ${b.title}`, `Thank you for applying to <b>${esc(b.title)}</b>. This one went another way. New shoots land on the Gig Board as our clients sign up.`]
+      } : {
         shortlist: [`You're shortlisted: ${b.title}`, `You made the shortlist for <b>${esc(b.title)}</b>. We'll be in touch as soon as the choice is made.`],
         audition: [`Audition for ${b.title}`, `We'd love to see more. <b>${esc(b.title)}</b> asks for an audition: ${esc(b.audition_prompt || 'a short video')}. Send it from the gig on the Gig Board.`],
         book: [`You're booked: ${b.title}`, `You're booked for <b>${esc(b.title)}</b> (${payText(b)}). Everything you need is on the gig's page.`],
