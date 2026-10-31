@@ -541,7 +541,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   pictures up to 12 MB). **Make it yours** (the showroom switch, built 2026-10-31): the sample bar's Their brand / Island bright / Night
   lounge redraws the same site from the same Cartridge with only the brand slots changed, the colors by role and the two typefaces
   (`LOOKS` and `applyLook` in `business/site.html`, the brand kit's ready palettes and type pairings; `sessionStorage` `ve_site_look`); on
-  a dark page the header wears the reversed logo. A new look is a `LOOKS` row. The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  a dark page the header wears the reversed logo. A new look is a `LOOKS` row.
+  **Managed by us and Have us do it** (built 2026-10-31): `/business` has a **Managed by us** tab (`managed` in `BIZ` in `passport.html`:
+  what we do, Yours to keep, What it costs, the sample site and brand kit; the name BrandDesk stays off it until the trademark check),
+  and the Restaurant Guide has **Or have us do it** on every Fix in an audit (`itemRow`) and **Rather we did it?** on each fix page
+  (`viewFix`). All open one request window, `/public/ve-managed.js` (`VEManaged.open({from, fix, business, listing})`, or any element
+  with `data-managed`), sent to `ve-brand-kit` `managed_interest` (anyone, 3 a day per email): a `ve_initiative_interest` row
+  (initiative `branddesk`, `tier_label` the business, `note` what they want, tags `branddesk`, `from-<page>`, `fix-<id>`, `wants-<x>`),
+  an email to the team (reply-to them) and a confirmation to them from Vegans Explore. The Inbox shows it as a **Managed marketing
+  request** (migration `20261031_branddesk_requests_inbox.sql`; a business starting [TEST] stays out of the Inbox and sends no email).
+  Nothing is charged: the setup checkout comes with the contract and Stripe step. The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
