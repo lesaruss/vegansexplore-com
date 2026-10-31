@@ -617,7 +617,30 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
   full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a
   second refused, cancelled cleanly; cancel reported $1,000 still owed; a real Checkout session opened, an unpaid return went back as
-  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed.  The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed.
+  **The photographer shot list on the Gig Board** (built 2026-10-31; migration `20261031_photo_shoot_gigs.sql`). A client's starter shoot
+  is a gig, `ve_bounties.gig_kind` `photo` with `shoot_listing_id`, posted from **Depot > BrandDesk > a client > The starter shoot**
+  (`ve-bounties` `shoot_get`, `shoot_post`, `shoot_cancel`; super admins): the fee (default $450, plus 250 points on delivery), an optional
+  paid trial (default $75), when applications close and when it is shot by, a note, and the menu items in it (Favorites first, 15 ticked,
+  items with a photo unticked; their brand kit must exist first). It shows on the Gig Board in their chapter (kind Photo shoot);
+  photographers apply with a pitch, examples and their rate and dates. **The paid trial** is the ask `trial`, never asked up front: Ask for
+  the paid trial (decision `audition`, the three dishes in the note) lets them send the link to their trial photos (`apply` then takes only
+  that; an audition gig's audition now works the same way). **Book them** makes them the kit's photographer (`ve_cartridge_people`; an
+  editor is never downgraded), records `photos.shoot.booked`, ticks the client's onboarding step `shoot` and emails them the shot list.
+  **The shot list** is `/business/shoot?listing=<slug>` (`business/shoot.html`, `noindex`; sample `/business/sample/shoot`, Green Leaf
+  Kitchen on a shoot day, saved for the visit): the standard (`brand.photo`, `photos.spec`), progress, To shoot / Shot / All, the space and
+  the team, then each item in `photos.shoot.items` ("Section|Name"); one shot per view (`#shot/<n>`, Back / Shot N of M / Next shot): what it
+  is, the parts of the standard that apply, a note for the team, and each dish twice (three-quarter `photo.src`, the one the site uses;
+  overhead `photo.overhead`). An upload keeps a 1920 px web copy on the kit and the full-size original in their Library (`kit_photo_url`
+  kind `full`, `branddesk-library/<slug>/photo/`, 40 MB; `kit_photo_done` `full` writes the `ve_branddesk_files` row; only with an
+  account); under 3000 px on the long side it says so. A photographer's save changes only photos and never moves a section's state; no
+  logo. **Tell the team it is done** (`ve-brand-kit` `shoot_done`) stamps `photos.shoot.done_at` and emails the team. My gigs opens a booked
+  shoot's shot list; the sample board has it as Kai's booked gig (`g11`). `ve-bounties` now takes the ops token with `as_member`. Proven
+  2026-10-31 on Love Life Cafe with a [TEST] client and the Logan test account (post, second post refused, apply without the trial, trial
+  asked, a non-link refused, trial sent, booked, photographer added, onboarding ticked, web copy and original uploaded, a rename and a lock
+  from the photographer ignored, the logo refused, done, a stranger refused). Not yet: paying the photographer (Stripe Connect payouts; by
+  hand until then) and the client seeing the shoot's progress on their dashboard.
+  The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
@@ -628,7 +651,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
-  contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board; the ranking and pitch
+  contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
   pages; visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
