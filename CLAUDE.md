@@ -3652,6 +3652,24 @@ ships with them on the first pass, never as a later fix:
   Never link a redirect from it.
 - Pages that should not be found (samples, Depot, account, welcome Guides for invitees) carry `noindex` and stay out of the sitemap.
 
+## Pictures and page weight (Sean, 2026-10-31)
+
+"The site overall just feels very sluggish." The Rich Roll page flickered on phones and drew only its first episode: every
+episode thumbnail was the show's own art at full size (up to 3000 x 3000, 0.1 to 3.9 MB each, 20 a page), and iPhone Safari ran out
+of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that day:
+
+- **Pictures from other sites go through Vercel's resizer**: `/_vercel/image?url=<encoded>&w=<width>&q=75` (`images` in
+  `vercel.json`: `sizes` lists the allowed widths, `remotePatterns` the allowed hosts, cached 31 days). An `<img>` with
+  `loading="lazy"`, `decoding="async"`, width and height, and an `onerror` that falls back to the original link (`small` and `img` in
+  `public/ve-episodes.js`). Ask for about twice the size shown. A new podcast host is a `remotePatterns` row; until then its art falls
+  back to full size. Never open the resizer to every host (anyone could run their pictures through our bill).
+- **Pictures in the repo are sized before they are committed**: a photo is a JPEG (never a PNG unless it needs transparency), at most
+  1920 px wide for a landscape hero, 1440 px for a portrait one, about 900 x 1200 for a Guide portrait, quality about 80. A city banner
+  should be under about 500 KB. On 2026-10-31 the Guide portraits (5 MB PNGs) became 100-165 KB JPEGs and the Philadelphia and D.C.
+  banners JPEGs; the old PNGs stay for outside links.
+- Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
+  shows, the admin editor and business dashboard scripts included for visitors.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
