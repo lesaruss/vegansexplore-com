@@ -2018,6 +2018,9 @@ sometimes there's multiple people on the podcast"): a listing can also belong to
 person keeps their own family (their books and channel stay theirs); a shared show is its own family plus each host's, so it shows on
 every host's page, and its own page lists only its people and itself. First: the Vegans Who Lift Podcast (`vegans-who-lift`, with
 `brooke-sellers` and `john-thomas`; migration `20261030_brooke_john_shared_podcast.sql`). Neither bio names the other (Sean, same day).
+**On phones the tab row is a dropdown** (Sean, 2026-10-31: "Do the same drop-down treatment for media"): on a media listing
+(show or work) or a People page with two tabs or more, at 768 px and under the tabs are one full-width dropdown (`mobileTabMenu` and
+`.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as they appear.
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
