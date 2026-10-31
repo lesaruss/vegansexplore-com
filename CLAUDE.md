@@ -3667,6 +3667,11 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
   1920 px wide for a landscape hero, 1440 px for a portrait one, about 900 x 1200 for a Guide portrait, quality about 80. A city banner
   should be under about 500 KB. On 2026-10-31 the Guide portraits (5 MB PNGs) became 100-165 KB JPEGs and the Philadelphia and D.C.
   banners JPEGs; the old PNGs stay for outside links.
+- **A listing opened from the dashboard on a phone is its own page** (Sean, 2026-10-31: "it keeps restarting... it locks the whole
+  thing, so I can't even click the menu"). `/dashboard/directory/<slug>` frames the listing on desktop only; at 760 px and under,
+  `openDashboardListing` (and a script at the top of `center-console.html`, before the dashboard loads) goes to `/directory/<slug>`.
+  Framed on a phone, the listing was a fixed 1800 px box that took every swipe (the listing marks itself `ve-embedded`, so `nav.js`
+  never sizes its frame) and the phone held the dashboard and the listing page at once, so Safari dropped the frame and reloaded it.
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
 
