@@ -63,7 +63,7 @@
     { k: 'tips', label: 'The 10 tips', lock: 1, voice: 'tab-tips', say: 'Ten moves from hobby to professional, each with a real Vegan creator doing it and three things you can start this week. The first one, purpose and niche, is open to try.' },
     { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are creators and channels in our Directory. See how they show up, and vote for the ones you watch.' },
     { k: 'pulse', label: 'Pulse', lock: 1, voice: 'tab-pulse', say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.' },
-    { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved lives here: your tips, episodes and creators.' },
+    { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved is right here: your tips, episodes and creators.' },
     { k: 'join', label: 'Get access', guest: 1, voice: 'tab-join', say: 'The Creator Guide is eleven dollars, or eleven hundred points, and it\'s yours to keep.' },
     { k: 'next', label: 'Become a creator' }
   ];
