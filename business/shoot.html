@@ -190,7 +190,7 @@
     function put(u, f) { return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg', 'x-upsert': 'false' }, body: f }).then(function (r) { if (!r.ok) throw new Error('The upload did not finish. Try again.'); }); }
     function upload(file, x, title, say) {
       return readImg(file).then(function (o) {
-        var w = o.img.width, h = o.img.height, small = Math.min(w, h) < 1200;
+        var w = o.img.width, h = o.img.height, small = Math.max(w, h) < 3000;
         if (!LIVE) return scaled(o.img, 900, 'data', 0.82).then(function (d) { URL.revokeObjectURL(o.url); return { src: d, w: w, h: h, small: small }; });
         return scaled(o.img, 1920, 'blob', 0.86).then(function (web) {
           say('Uploading the web copy...');
