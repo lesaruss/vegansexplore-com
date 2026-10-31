@@ -161,7 +161,7 @@ width (three-fourths and one-fourth, the slot a full 300 px). Under every ad, fi
 Vegans Explore** links to `/business#/found`, the business page's Get found (`CTA` in the script; Sean, 2026-10-27). The rail sticks 16px under
 the site's menu (`--ve-nav-h`, set by `nav.js`).
 
-**Every slot filled** (Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
+**Every slot filled** (retired 2026-10-31 for our Guides, below; Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
 we can slowly systematically update the real estate later on"; migration `20261027_humble_cabbage_test_campaign.sql`). Every
 slot the site draws carries a Humble Cabbage ad under its one sponsor campaign (`ad_sponsor_campaigns` `humble-cabbage`), its
 characters spread across pages (never the paused "$5 to the LESARUSS Foundation" art), each page with its own tracked link
@@ -183,8 +183,22 @@ takes only this sponsor's campaigns. **Members by name**: each banner leaves thr
 `ve-guide-dairy`, `ve-guide-stadium`, `ve-creator-banner`; initiative `ve-house-banners`, tags `house-banner` and the Guide), so
 `ve-links` logs every click, `nav.js` names the signed-in member on it, and `ve_initiative_interest` keeps each member's clicks and count
 for `/dashboard/leads` (filter the campaign ve-house-banners and the Guide's tag, export for follow-ups). A new Guide banner is a
-`GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link. Humble Cabbage keeps
-every other slot (the Directory, Media, Events, the Pulse and the city hubs).
+`GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link.
+
+**Our Guides fill every rail slot; Humble Cabbage is retired for now** (Sean, 2026-10-31: "we should have the majority of our ads be the
+guides instead of Humble Cabbage, because that is a better front door... just make them all our guides, but just create an assortment of
+them around the different places"; migration `20261031_guide_ads_retire_humble_cabbage.sql`). Every Humble Cabbage campaign and its sponsor
+campaign are `paused` (kept for their history; one set back to active returns that slot). Six rail campaigns under the house sponsor
+(`ve-house-banners`, ids `...0c0de5a14001` to `14006`): the Dairy, Restaurant, Stadium & Arena, Airport, Nonprofit and Creator Guides,
+each the HTML5 ad `/ads/guides/guide.html?g=<guide slug>` (the listing banner's animated card: four scenes, a headline each, the Guide's
+line on a tall slot, Get the <Guide> · $11; it fits any slot, and drops the line on a short or wide one) and its own `/go/` link
+(`ve-guide-dairy`, `-restaurant`, `-stadium`, `-airport`, `-nonprofit`, `-creator`). Each slot carries one Guide, spread so neighbouring
+slots differ and the Stadium & Arena Guide shows only in chapters with mapped venues (the plan is in the migration). `ad-resolve` counts the
+impression and `ad-click` the click by slot, and `ve-links` names the member who clicked (campaign ve-house-banners on `/dashboard/leads`).
+A new Guide ad is a `G` entry in `guide.html`, an `ad_campaigns` row under the sponsor, its `/go/` link and the slots it takes. A real
+advertiser takes a slot by linking its campaign to the placement (`ad-resolve` serves the newest active campaign linked to a slot).
+**On phones the rail runs the full width** (Sean, 2026-10-31: "not full width on mobile"): at 900 px and under the slots fill the row, two
+side by side where there is room and one per row on a phone, and a tall slot becomes a wide box there (`ve-ad-rail.js`).
 
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Vegans Explore Guide</title>
+<!--
+  Our Guides as the ads in every rail slot (Sean, 2026-10-31: "let's actually just retire Humble Cabbage for now and just make them
+  all our guides, but just create an assortment of them around the different places"). One HTML5 ad for every Guide and every slot:
+  ?g=<guide slug> picks the Guide, and the host (public/ve-ad-creative.js) passes the tracked /go/ link as ?clickTag=. The same
+  animated card as the house banners on listings (VEPromo.guideCard): four scenes from the Guide's own art, a headline each, a line and
+  Get the Guide. It fills any slot: a 300 x 600 shows the line, a 300 x 250 (or a phone's full-width box) keeps the headline and button.
+  A click opens the clickTag and tells the page so the ad system counts it (ad-click).
+-->
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0f1f17;font-family:Montserrat,system-ui,-apple-system,"Segoe UI",sans-serif}
+  a{position:absolute;inset:0;display:block;color:#fff;text-decoration:none;cursor:pointer}
+  .f{position:absolute;inset:0;background-size:cover;background-position:center 25%;opacity:0;animation:f 16s infinite}
+  .f:nth-child(1){animation-delay:0s}.f:nth-child(2){animation-delay:4s}.f:nth-child(3){animation-delay:8s}.f:nth-child(4){animation-delay:12s}
+  @keyframes f{0%{opacity:0;transform:scale(1.02)}5%{opacity:1}25%{opacity:1}30%{opacity:0;transform:scale(1.12)}100%{opacity:0}}
+  a:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 42%,rgba(0,0,0,0) 70%)}
+  .c{position:absolute;left:0;right:0;bottom:0;padding:16px;z-index:1}
+  small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#bef264;margin:0 0 6px}
+  .h{display:block;position:relative;height:26px;margin:0 0 6px}
+  .h b{position:absolute;left:0;right:0;top:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:20px;font-weight:900;line-height:1.25;opacity:0;animation:t 16s infinite;text-shadow:0 1px 3px rgba(0,0,0,.55)}
+  .h b:nth-child(1){animation-delay:0s}.h b:nth-child(2){animation-delay:4s}.h b:nth-child(3){animation-delay:8s}.h b:nth-child(4){animation-delay:12s}
+  @keyframes t{0%{opacity:0;transform:translateY(8px)}5%{opacity:1;transform:none}25%{opacity:1}30%{opacity:0;transform:translateY(-6px)}100%{opacity:0}}
+  p{font-size:13px;line-height:1.5;margin:0 0 12px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  em{display:block;text-align:center;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#22c55e;color:#062b14;border-radius:6px;padding:11px 12px}
+  a:hover em,a:focus-visible em{background:#16a34a;color:#fff}
+  a:focus-visible{outline:3px solid #22c55e;outline-offset:-3px}
+  /* A short or wide slot (300 x 250, a phone's full-width box): no line, a tighter card. */
+  @media (min-aspect-ratio:4/5){ .c{padding:12px 14px} p{display:none} .h{height:24px;margin-bottom:8px} .h b{font-size:18px} em{padding:9px 10px} }
+  @media (max-height:200px){ small{display:none} }
+  @media (prefers-reduced-motion:reduce){ .f,.h b{animation:none} .f:first-child,.h b:first-child{opacity:1} }
+</style>
+</head>
+<body>
+<a id="ad" href="#" aria-label="Vegans Explore Guide"></a>
+<script>
+(function () {
+  var SBM = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/';
+  var SITE = 'https://vegansexplore.com';
+  // Each Guide's art is ours (its banner, its own pictures). No counts in the words: a Guide's words never count its items.
+  var G = {
+    'vegan-dairy-guide': { kicker: 'The Vegan Dairy Guide', cta: 'Get the Dairy Guide', href: '/guides/vegan-dairy-guide',
+      line: 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.',
+      frames: [[SBM + 'guides/banners/vegan-dairy-guide.jpg', 'Life after dairy'], [SBM + 'guides/dairy/s-milk-in-coffee.jpg', 'Swap the milk'],
+        [SBM + 'guides/dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'guides/dairy-guide-billboard.jpg', 'The brands worth buying']] },
+    'vegan-restaurant-survival-guide': { kicker: 'The Restaurant Guide', cta: 'Get the Restaurant Guide', href: '/guides/vegan-restaurant-survival-guide',
+      line: 'A free check of your restaurant online, then the fixes that bring people through the door, with Liz.',
+      frames: [[SBM + 'guides/banners/vegan-restaurant-survival-guide.jpg', 'Run a Vegan restaurant?'], [SITE + '/business/sample/img/photo-1.jpg', 'Check your page for free'],
+        [SITE + '/public/guides/thumb-directory.jpg', 'Get found in your city'], [SBM + 'liz/restaurant-guide/rg-poster-first.jpg', 'Fix what keeps people away']] },
+    'stadium-arena-guide': { kicker: 'The Stadium & Arena Guide', cta: 'Get the Stadium Guide', href: '/guides/stadium-arena-guide',
+      line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
+      frames: [[SITE + '/public/guides/stadium-arena-guide.jpg', 'Vegan eats on game day'], [SITE + '/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
+        [SITE + '/public/guides/venues/madison-square-garden.webp', 'Arenas and ballparks', 'background-size:auto 125%;background-position:50% 70%'], [SITE + '/public/guides/venues/citi-field.webp', 'Get there from your seat', 'background-size:auto 150%;background-position:50% 72%']] },
+    'airport-guide': { kicker: 'The Airport Guide', cta: 'Get the Airport Guide', href: '/guides/airport-guide',
+      line: 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.',
+      frames: [[SITE + '/public/guides/airport-guide.jpg', 'Vegan food at your gate'], [SITE + '/public/guides/airports/fll.webp', 'Before or after security', 'background-size:auto 125%;background-position:62% 70%'],
+        [SITE + '/public/guides/airports/jfk.webp', 'Get me to my gate', 'background-size:auto 135%;background-position:45% 75%'], [SITE + '/public/guides/airports/lhr.webp', 'From Miami to Heathrow', 'background-size:auto 150%;background-position:50% 72%']] },
+    'nonprofit-guide': { kicker: 'The Nonprofit Guide', cta: 'Get the Nonprofit Guide', href: '/guides/nonprofit-guide',
+      line: 'Ten tips for Vegan nonprofits, rescues and sanctuaries to grow their support, with Dani.',
+      frames: [[SITE + '/public/guides/nonprofit-guide.jpg', 'Run a rescue or nonprofit?'], [SITE + '/public/guides/thumb-community.jpg', 'Grow your community'],
+        [SITE + '/public/guides/thumb-bounties.jpg', 'Bring in local support'], [SITE + '/public/guides/thumb-directory.jpg', 'Get found in your city']] },
+    'creator-guide': { kicker: 'The Creator Guide', cta: 'Get the Creator Guide', href: '/guides/creator-guide',
+      line: 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.',
+      frames: [[SITE + '/public/guides/creator-guide.jpg', 'Create Vegan content?'], [SITE + '/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'],
+        [SITE + '/gigs/sample/img/post-event.webp', 'Host our events'], [SITE + '/gigs/sample/img/post-market.webp', 'Tell local stories']] }
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  var q = new URLSearchParams(location.search);
+  var g = G[q.get('g')] || G['vegan-dairy-guide'];
+  // Only an https link the host passes is followed; anything else goes to the Guide itself.
+  var clickTag = q.get('clickTag') || '';
+  if (!/^https:\/\//.test(clickTag)) clickTag = SITE + g.href;
+  var a = document.getElementById('ad');
+  a.href = clickTag; a.setAttribute('aria-label', g.cta);
+  a.innerHTML = g.frames.map(function (f) { return '<span class="f" style="background-image:url(\'' + esc(f[0]) + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
+    '<span class="c"><small>' + esc(g.kicker) + '</small><span class="h" aria-hidden="true">' +
+    g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
+    '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span>';
+  a.addEventListener('click', function (e) {
+    e.preventDefault();
+    try { parent.postMessage({ veAd: 'click' }, '*'); } catch (err) {}
+    window.open(clickTag, '_blank', 'noopener');
+  });
+})();
+</script>
+</body>
+</html>
