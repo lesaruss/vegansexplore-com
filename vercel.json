@@ -422,6 +422,7 @@
     }
   ],
   "redirects": [
+    { "source": "/branddesk-sites/:path*", "destination": "/business", "permanent": false },
     {
       "source": "/guides/vegan-restaurant-survival-guide",
       "destination": "/guides/vegan-restaurant-guide",

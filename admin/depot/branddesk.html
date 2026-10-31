@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
-       one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
+       one client (#a/<id>, #a/<id>/website, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
        website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
        The rotation board (#rotation): every client's campaigns by month. Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -423,7 +423,7 @@
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list', m;
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
-        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
+        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(website|library|sheet|campaigns|reports|social))?$/))) return drawOne(m[1], m[2]);
         if (r === 'open') return drawOpen();
         if (r === 'pitches') return drawPitches();
         if ((m = r.match(/^rotation(?:\/([a-z]+))?$/))) return drawRotation(m[1]);

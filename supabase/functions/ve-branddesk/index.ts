@@ -49,6 +49,13 @@
 //   social_posted {account_id, id, links} the team: an approved post is posted, with its live links on each platform
 //   social_skip {account_id, id, restore?}  the team
 //   social_sweep                        cron (x-cron-secret); also run by checkin_sweep: posts 48 hours away are approved on their own
+//   site_public {host|preview}          anyone (the branddesk-sites hosting project): the site for a domain (its approved Cartridge) or a
+//                                        preview token (the brand kit as it is now), with the base path and the origin
+//   site_get {account_id|slug}          the owner or a super admin: their website, its preview address, domain, checks and every step
+//   site_decide {account_id, decision: approve|changes, name, note}   the owner (a super admin only with a note saying how they agreed)
+//   site_start / site_look {look} / site_send {note} / site_domain {domain} / site_domain_check / site_domain_remove / site_check /
+//   site_status {status: paused|resume|ended}   super admin: make it, send it for their OK, connect and check their domain, launch
+//   sites_project {project, host}       super admin, once: the shared hosting project
 // GET ?confirm=<session id>              the return from Stripe and ve-stripe-webhook (metadata type ve_branddesk, confirm_fn
 //                                        ve-branddesk): activates the account once and goes back to /business/managed.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -385,6 +392,7 @@ const STEPS: [string, string, string, string][] = [
   ['domain', 'Manager access to their domain settings', 'Access to your domain settings (you keep the domain)', 'team'],
   ['socials', 'Manager access to their two social platforms', 'Access to your two social platforms', 'team'],
   ['shoot', 'Starter shoot booked (up to 15 menu items)', 'Your starter photo shoot', 'team'],
+  ['website', 'Their website live on their domain (final check passed)', 'Your new website, live on your domain', 'auto'],
   ['library', 'First files in their Library', 'Your Library', 'auto'],
 ];
 const GATED_KINDS = ['photo', 'video', 'logo', 'brand', 'graphic', 'menu_board'];
@@ -425,12 +433,14 @@ async function setupPaid(a: any): Promise<boolean> {
 
 async function stepState(a: any) {
   const o = a.onboarding || {};
-  const [{ data: kit }, { data: arc }, { count: files }] = await Promise.all([
+  const [{ data: kit }, { data: arc }, { count: files }, { data: site }] = await Promise.all([
     db.from('ve_cartridges').select('status, updated_at').eq('listing_id', a.listing_id).maybeSingle(),
     db.from('ve_branddesk_archives').select('status, finished_at').eq('account_id', a.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1),
     db.from('ve_branddesk_files').select('id', { count: 'exact', head: true }).eq('account_id', a.id).is('removed_at', null).neq('kind', 'archive'),
+    db.from('ve_branddesk_sites').select('launched_at').eq('account_id', a.id).maybeSingle(),
   ]);
   const auto: Record<string, string | null> = {
+    website: site?.launched_at || null,
     archive: arc?.[0]?.finished_at || null,
     brand_kit: kit ? (kit.updated_at || a.activated_at) : null,
     library: files ? a.activated_at : null,
@@ -1625,6 +1635,8 @@ Deno.serve(async (req) => {
       case 'checkin_sweep': case 'checkin_start': case 'checkin_list': case 'checkin_get': case 'checkin_save': case 'checkin_send': return await checkins(req, b, m);
       case 'social_sweep': case 'social_platforms': case 'social_chapters': case 'social_list': case 'social_get': case 'social_setup':
       case 'social_decide': case 'social_post_save': case 'social_send': case 'social_posted': case 'social_skip': return await social(req, b, m);
+      case 'site_public': case 'site_get': case 'site_start': case 'site_look': case 'site_send': case 'site_decide': case 'site_domain': case 'site_domain_check':
+      case 'site_domain_remove': case 'site_check': case 'site_status': case 'sites_project': return await sites(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }
@@ -1633,3 +1645,297 @@ Deno.serve(async (req) => {
     return json({ error: 'server', message: String((e as Error).message || e).slice(0, 300) }, 500);
   }
 });
+
+// ---- The website launch (built 2026-10-31; Sean: "we're going to go ahead with the website launch").
+// A client's real website: their Cartridge (ve_cartridges) on the same frame as business/site.html, only the brand slots changing. One
+// shared hosting project (Vercel branddesk-sites, ve_site_settings branddesk.sites) serves every client by the domain asked for and calls
+// site_public. The steps: site_start (we make it, status building) -> site_send (the owner gets the preview, <host>/p/<token>, never
+// indexed) -> site_decide (the owner approves, typing their name, or asks for changes; the approval is a site event and freezes the
+// Cartridge as `published`) -> site_domain (their domain added to the hosting project, status connecting; DNS is theirs to point) ->
+// site_domain_check (DNS, Vercel's verification, SSL) -> site_check (the final check of every page over https on their domain; all
+// passing launches it). After launch, a change to the brand kit goes live only when sent and approved again (review waiting).
+const SITE_PAGES: [string, string][] = [['', 'Home'], ['menu', 'Menu'], ['order', 'Order'], ['about', 'About'], ['visit', 'Visit']];
+const SITE_SERVES = ['approved', 'connecting', 'live'];
+const siteToken = () => Array.from(crypto.getRandomValues(new Uint8Array(20)), (x) => 'abcdefghjkmnpqrstuvwxyz23456789'[x % 31]).join('');
+async function sitesConf(): Promise<{ project: string | null; host: string }> {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'branddesk').maybeSingle();
+  const s = ((data?.value || {}) as any).sites || {};
+  return { project: s.project || null, host: s.host || 'branddesk-sites.vercel.app' };
+}
+async function vercel(method: string, path: string, body?: unknown) {
+  const [t, team] = await Promise.all([secret('VERCEL_TOKEN'), secret('VERCEL_TEAM_ID')]);
+  if (!t || !team) throw new Error('vercel token missing');
+  const r = await fetch(`https://api.vercel.com${path}${path.includes('?') ? '&' : '?'}teamId=${team}`, { method,
+    headers: { Authorization: `Bearer ${t}`, ...(body ? { 'Content-Type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  return { status: r.status, ok: r.ok, data: d as any };
+}
+const SHOT_SET = (shot: string) => /dusk|night|lights on/i.test(shot) ? 'night' : /outside|front|sign|patio/i.test(shot) ? 'outside' : /owner|team|staff|chef/i.test(shot) ? 'team' : 'inside';
+const absUrl = (u: unknown) => { const s = String(u || ''); return s.startsWith('/') && !s.startsWith('//') ? SITE + s : /^https:\/\//.test(s) ? s : ''; };
+const filled = (v: unknown) => typeof v === 'string' ? !!v.trim() : Array.isArray(v) ? v.length > 0 : !!v;
+// The frame's Cartridge for a real site: their brand kit over what their Directory page holds (the same build as a pitch's still), every
+// picture a full https link (a client's domain cannot read paths on vegansexplore.com). A kit's colors count only with all six roles.
+async function siteCartridge(site: any, l: any, kit: any) {
+  const base: any = await pitchCartridge(l, site.look && PITCH_LOOKS[site.look] ? site.look : 'fresh');
+  delete base.pitch; base.meta = { frame: 'restaurant', site: true, built: new Date().toISOString() };
+  const k = kit || {};
+  if (k.business) base.business = { ...base.business, ...Object.fromEntries(Object.entries(k.business).filter(([, v]) => filled(v))) };
+  const kb = k.brand || {};
+  const roles = new Set((kb.colors || []).filter((c: any) => /^#[0-9a-f]{6}$/i.test(c.hex || '')).map((c: any) => c.role));
+  if (!site.look && ['page', 'text', 'accent', 'soft', 'highlight', 'ink'].every((r) => roles.has(r))) {
+    base.brand.colors = kb.colors; if (kb.type?.heading?.family && kb.type?.body?.family) base.brand.type = kb.type;
+  }
+  if (kb.logo?.primary?.src) base.brand.logo.primary = { src: kb.logo.primary.src };
+  base.brand.logo.files = (kb.logo?.files || []).filter((f: any) => f.src).map((f: any) => ({ name: f.name, src: f.src }));
+  const v = k.voice || {}; if (filled(v.samples?.hero)) base.voice = { samples: { ...base.voice.samples, ...Object.fromEntries(Object.entries(v.samples).filter(([, x]) => filled(x))) } };
+  const st = k.story || {};
+  base.story = { tagline: filled(st.tagline) ? st.tagline : base.story.tagline, short: filled(st.short) ? st.short : base.story.short, long: filled(st.long) ? [].concat(st.long) : base.story.long };
+  const secs = ((k.menu || {}).sections || []).map((s: any) => ({ name: s.name, items: (s.items || []).filter((i: any) => filled(i.name)).map((i: any) => ({ name: i.name, price: i.price || '', tags: i.tags || [],
+    copy: filled(i.copy) ? i.copy : i.was || '', photo: i.photo?.src ? { state: 'shot', src: i.photo.src } : { state: 'to_shoot' } })) })).filter((s: any) => s.items.length);
+  if (secs.length) base.menu = { sections: secs };
+  const space = (((k.photos || {}).space) || []).filter((p: any) => p.src).map((p: any) => ({ shot: p.shot, set: p.set || SHOT_SET(p.shot || ''), state: 'shot', src: p.src }));
+  if (space.length) base.photos = { space };
+  const ki = k.info || {}, bi = base.info;
+  if (ki.address && filled(ki.address.street)) bi.address = { ...bi.address, ...ki.address };
+  if (filled(ki.phone)) bi.phone = ki.phone;
+  if (ki.hours && Object.values(ki.hours).some((h) => filled(h) && !/^closed$/i.test(String(h)))) bi.hours = { ...bi.hours, ...ki.hours };
+  if (filled(ki.details)) bi.details = ki.details;
+  const kl = ki.links || {};
+  const ig = String(kl.instagram || '').trim();
+  bi.links = { ...bi.links, ...Object.fromEntries(Object.entries(kl).filter(([, x]) => filled(x))), instagram: ig ? (/^https?:/.test(ig) ? ig : 'https://instagram.com/' + ig.replace(/^@/, '')) : bi.links.instagram, directory: '/directory/' + l.slug };
+  // Ordering on a live site is their own ordering page (the cart that sends to their point of sale is not connected yet); no page, a call.
+  const order = (ki.ordering && /^https:\/\//.test(ki.ordering.order_url || '')) ? ki.ordering.order_url : (/^https:\/\//.test(bi.ordering.order_url || '') && /order|toast|square|clover|chownow/i.test(bi.ordering.order_url) ? bi.ordering.order_url : '');
+  bi.ordering = { state: 'link', order_url: order, pos: ki.ordering?.pos && ki.ordering.pos !== 'None yet' ? ki.ordering.pos : '', pickup_minutes: ki.ordering?.pickup_minutes || 20 };
+  // Every picture a full https link.
+  base.brand.logo.primary.src = absUrl(base.brand.logo.primary.src);
+  base.brand.logo.files.forEach((f: any) => { f.src = absUrl(f.src); });
+  base.menu.sections.forEach((s: any) => s.items.forEach((i: any) => { if (i.photo?.src) i.photo.src = absUrl(i.photo.src); if (!i.photo.src) i.photo = { state: 'to_shoot' }; }));
+  base.photos.space = base.photos.space.map((p: any) => ({ ...p, src: absUrl(p.src) })).filter((p: any) => p.src);
+  return base;
+}
+async function siteRow(accountId: string) { return (await db.from('ve_branddesk_sites').select('*').eq('account_id', accountId).maybeSingle()).data; }
+async function siteEvent(siteId: string, kind: string, m: any, note?: string | null, data?: unknown, byName?: string) {
+  await db.from('ve_branddesk_site_events').insert({ site_id: siteId, kind, by_member: m?.id || null, by_name: byName || m?.name || null, note: note || null, data: data ?? null });
+}
+const siteUpd = async (id: string, patch: Record<string, unknown>) => (await db.from('ve_branddesk_sites').update({ ...patch, updated_at: new Date().toISOString() }).eq('id', id).select('*').single()).data;
+function cleanDomain(v: unknown) {
+  const d = String(v || '').trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/.*$/, '').replace(/\.$/, '').replace(/^www\./, '');
+  return /^(?=.{4,200}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,24}$/.test(d) ? d : '';
+}
+// A bare domain also gets www (sent to it); a subdomain stands alone. Two-part endings (co.uk, com.au) count as one.
+function isApex(d: string) { const p = d.split('.'); return p.length === 2 || (p.length === 3 && /^(co|com|org|net|gov|ac)$/.test(p[1]) && p[2].length === 2); }
+async function probe(url: string, ms = 12000) {
+  try { const r = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(ms), headers: { 'User-Agent': 'VegansExplore-BrandDesk-Check/1.0', 'Cache-Control': 'no-cache' } });
+    return { status: r.status, location: r.headers.get('location'), text: r.status === 200 && /html|xml|text/.test(r.headers.get('content-type') || '') ? await r.text() : '', error: null as string | null };
+  } catch (e) { return { status: 0, location: null, text: '', error: String((e as Error).message || e).slice(0, 160) }; }
+}
+async function domainState(site: any, project: string) {
+  const d = site.domain, out: any = { checked_at: new Date().toISOString(), records: [] as any[] };
+  const [pd, cfg] = await Promise.all([vercel('GET', `/v9/projects/${project}/domains/${d}`), vercel('GET', `/v6/domains/${d}/config`)]);
+  out.on_project = pd.ok; out.verified = pd.ok ? pd.data.verified !== false : false; out.verification = pd.data?.verification || [];
+  out.misconfigured = cfg.ok ? !!cfg.data.misconfigured : true;
+  const ip = cfg.data?.recommendedIPv4?.find((x: any) => x.rank === 1)?.value?.[0] || '76.76.21.21';
+  const cname = String(cfg.data?.recommendedCNAME?.find((x: any) => x.rank === 1)?.value || 'cname.vercel-dns.com').replace(/\.$/, '');
+  if (isApex(d)) { out.records.push({ type: 'A', name: '@', value: ip }); if (site.www) out.records.push({ type: 'CNAME', name: 'www', value: cname }); }
+  else out.records.push({ type: 'CNAME', name: d.split('.')[0], value: cname });
+  (out.verification || []).forEach((v: any) => out.records.push({ type: v.type, name: v.domain, value: v.value, why: 'Proves the domain is theirs to use here' }));
+  const p = await probe(`https://${d}/robots.txt`);
+  out.ssl = p.status > 0; out.serving = p.status === 200 && /BrandDesk/.test(p.text); out.ssl_error = p.error;
+  return out;
+}
+const SITE_WORD: Record<string, string> = { building: 'Being built', preview: 'Waiting for the owner', changes: 'Changes asked', approved: 'Approved, no domain yet', connecting: 'Connecting their domain', live: 'Live', paused: 'Taken down for now', ended: 'Ended' };
+function siteShape(s: any, conf: { host: string }) {
+  if (!s) return null;
+  return { id: s.id, status: s.status, status_word: SITE_WORD[s.status], review: s.review, look: s.look, preview_url: `https://${conf.host}/p/${s.preview_token}/`,
+    live_url: s.domain ? `https://${s.domain}/` : null, domain: s.domain, www: s.www, domain_state: s.domain_state, sent_at: s.sent_at, change_note: s.change_note, change_at: s.change_at,
+    approved_at: s.approved_at, approved_name: s.approved_name, published_version: s.published_version, published: !!s.published, checks: s.checks, checked_at: s.checked_at,
+    launched_at: s.launched_at, created_at: s.created_at, updated_at: s.updated_at };
+}
+async function ownerOf(a: any) { return (await db.from('members').select('id, name, email').eq('id', a.member_id).maybeSingle()).data; }
+
+async function sites(req: Request, b: any, m: any) {
+  const action = String(b.action), conf = await sitesConf();
+  // The hosting project asks for a site by the domain it was reached on, or by a preview token. Anyone; only published sites by domain.
+  if (action === 'site_public') {
+    let s: any = null, mode = 'live', redirect: string | null = null;
+    if (b.preview) {
+      const t = clean(b.preview, 40).toLowerCase(); if (!/^[a-z0-9]{12,40}$/.test(t)) return json({ ok: false, error: 'not_found' }, 404);
+      s = (await db.from('ve_branddesk_sites').select('*').eq('preview_token', t).maybeSingle()).data; mode = 'preview';
+      if (!s || s.status === 'ended') return json({ ok: false, error: 'not_found' }, 404);
+    } else {
+      const h = String(b.host || '').toLowerCase().replace(/:\d+$/, '').replace(/\.$/, '');
+      const bare = h.replace(/^www\./, '');
+      s = (await db.from('ve_branddesk_sites').select('*').eq('domain', bare).maybeSingle()).data;
+      if (!s) return json({ ok: false, error: 'not_found' }, 404);
+      if (h !== bare) redirect = `https://${bare}`;
+      if (!SITE_SERVES.includes(s.status) || !s.published) return json({ ok: false, error: 'offline' }, 404);
+    }
+    const [{ data: a }, l] = await Promise.all([db.from('ve_branddesk_accounts').select('status, test').eq('id', s.account_id).maybeSingle(), pitchListing({ id: s.listing_id })]);
+    if (!a || !l || (mode === 'live' && !LIVE_STATES.includes(a.status))) return json({ ok: false, error: 'offline' }, 404);
+    let cart = s.published;
+    if (mode === 'preview') cart = await siteCartridge(s, l, (await db.from('ve_cartridges').select('data').eq('listing_id', s.listing_id).maybeSingle()).data?.data);
+    return json({ ok: true, mode, redirect, name: cart.business?.name || l.name, slug: l.slug, cartridge: cart,
+      base: mode === 'preview' ? `/p/${s.preview_token}/` : '/', origin: mode === 'preview' ? `https://${conf.host}` : `https://${s.domain}`,
+      dashboard: `${SITE}/directory/${l.slug}?tab=brand&pd=managed&bd=website`, version: s.published_version, test: !!a.test });
+  }
+  if (action === 'sites_project') {
+    if (!m?.is_superadmin) return json({ error: 'admin_only' }, 403);
+    // Super admin, once: where the shared hosting project is (its id and its own address for previews).
+    const p = clean(b.project, 64), h = clean(b.host, 120).toLowerCase();
+    if (!/^prj_[A-Za-z0-9]{10,}$/.test(p) || !/^[a-z0-9.-]+\.[a-z]{2,}$/.test(h)) return json({ error: 'bad_project' }, 400);
+    await saveSettings({ sites: { project: p, host: h } }, m.id);
+    return json({ ok: true, sites: { project: p, host: h } });
+  }
+  const a = await accountFor(b, m);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const admin = !!m.is_superadmin;
+  const l = await pitchListing({ id: a.listing_id });
+  const isOwner = a.member_id === m.id || (await db.from('listings').select('owner_member_id').eq('id', a.listing_id).maybeSingle()).data?.owner_member_id === m.id;
+  let s = await siteRow(a.id);
+  const out = async (extra: Record<string, unknown> = {}) => {
+    s = await siteRow(a.id);
+    const ev = s ? ((await db.from('ve_branddesk_site_events').select('kind, by_name, note, data, at').eq('site_id', s.id).order('at', { ascending: false }).limit(50)).data || []) : [];
+    const { data: kit } = await db.from('ve_cartridges').select('status, updated_at').eq('listing_id', a.listing_id).maybeSingle();
+    return json({ ok: true, admin, owner: isOwner, site: siteShape(s, conf), events: ev, kit: kit ? { status: kit.status, updated_at: kit.updated_at } : null,
+      listing: l ? { name: l.name, slug: l.slug, website: l.website } : null, looks: Object.fromEntries(Object.entries(PITCH_LOOKS).map(([k, v]) => [k, v.name])), host: conf.host,
+      pages: SITE_PAGES.map((p) => ({ path: p[0], name: p[1] })), account: { id: a.id, status: a.status, test: a.test }, ...extra });
+  };
+  if (action === 'site_get') return await out();
+  if (action === 'site_decide') {
+    if (!s || s.review !== 'waiting') return json({ error: 'nothing_to_approve' }, 409);
+    const note = clean(b.note, 1000), name = clean(b.name, 120);
+    if (!isOwner && !note) return json({ error: 'note_needed', message: 'Say how the owner approved it (by phone, by email...).' }, 400);
+    if (b.decision === 'changes') {
+      if (!note) return json({ error: 'note_needed' }, 400);
+      s = await siteUpd(s.id, { review: 'changes', change_note: note, change_at: new Date().toISOString(), status: ['building', 'preview'].includes(s.status) ? 'changes' : s.status });
+      await siteEvent(s.id, 'changes', m, note);
+      await mail(TEAM_EMAIL, `Website changes asked: ${l?.name}`, `<p>${esc(m.name || 'The owner')} asked for changes to ${esc(l?.name || '')}'s website:</p><blockquote>${esc(note)}</blockquote><p><a href="${SITE}/admin/depot/branddesk#a/${a.id}/website">Open it in the Depot</a></p>`);
+      return await out();
+    }
+    if (b.decision !== 'approve') return json({ error: 'bad_decision' }, 400);
+    if (!name || name.length < 3) return json({ error: 'name_needed' }, 400);
+    const kit = (await db.from('ve_cartridges').select('data').eq('listing_id', a.listing_id).maybeSingle()).data?.data;
+    const published = await siteCartridge(s, l, kit);
+    const now = new Date().toISOString(), version = (s.published_version || 0) + 1;
+    s = await siteUpd(s.id, { review: null, change_note: null, published, published_version: version, approved_at: now, approved_by: m.id, approved_name: name,
+      status: ['building', 'preview', 'changes'].includes(s.status) ? 'approved' : s.status });
+    await siteEvent(s.id, 'approved', m, note || null, { version, name, on_behalf: !isOwner, ip: req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null }, name);
+    await mail(TEAM_EMAIL, `Website approved: ${l?.name} (version ${version})`, `<p>${esc(name)} approved ${esc(l?.name || '')}'s website${isOwner ? '' : ' (recorded by ' + esc(m.name || 'the team') + ': ' + esc(note) + ')'}.</p>` +
+      `<p>${s.status === 'approved' ? 'Next: add their domain.' : 'Their domain now serves this version.'}</p><p><a href="${SITE}/admin/depot/branddesk#a/${a.id}/website">Open it in the Depot</a></p>`);
+    return await out();
+  }
+  if (!admin) return json({ error: 'admin_only' }, 403);
+  if (action === 'site_start') {
+    if (s) return await out();
+    const { data: kit } = await db.from('ve_cartridges').select('id').eq('listing_id', a.listing_id).maybeSingle();
+    if (!kit) return json({ error: 'no_kit', message: 'Start their brand kit first.' }, 409);
+    const { data: made, error } = await db.from('ve_branddesk_sites').insert({ account_id: a.id, listing_id: a.listing_id, preview_token: siteToken(), created_by: m.id }).select('*').single();
+    if (error) throw error;
+    await siteEvent(made.id, 'made', m);
+    return await out();
+  }
+  if (!s) return json({ error: 'no_site' }, 409);
+  if (action === 'site_look') {
+    const look = b.look && PITCH_LOOKS[b.look] ? b.look : null;
+    await siteUpd(s.id, { look }); await siteEvent(s.id, 'look', m, look ? PITCH_LOOKS[look].name : 'Their brand kit');
+    return await out();
+  }
+  if (action === 'site_send') {
+    if (['paused', 'ended'].includes(s.status)) return json({ error: 'not_now' }, 409);
+    const owner = await ownerOf(a); if (!owner?.email) return json({ error: 'no_owner' }, 409);
+    const first = !s.published;
+    s = await siteUpd(s.id, { review: 'waiting', sent_at: new Date().toISOString(), sent_by: m.id, status: ['building', 'changes'].includes(s.status) ? 'preview' : s.status });
+    await siteEvent(s.id, 'sent', m, clean(b.note, 1000) || null);
+    const pv = `https://${conf.host}/p/${s.preview_token}/`, dash = `${SITE}/directory/${l?.slug}?tab=brand&pd=managed&bd=website`;
+    await mail(owner.email, first ? `Your new website is ready to look at, ${l?.name}` : `An update to your website is ready to look at`,
+      `<p>Hi ${esc((owner.name || '').split(' ')[0] || 'there')},</p><p>${first ? `Your new website is built. It is on a private preview address for now, so only you and our team can see it.` : `We made changes to your website. They are on your private preview address; your live site stays as it is until you say yes.`}</p>` +
+      (clean(b.note, 1000) ? `<p>${esc(clean(b.note, 1000))}</p>` : '') +
+      `<p><a href="${pv}">Look at your website</a></p><p>When you are happy with it, approve it on your dashboard (or tell us what to change): <a href="${dash}">Managed by us, Your website</a>.</p><p>The Vegans Explore team</p>`);
+    return await out();
+  }
+  if (action === 'site_domain') {
+    if (!s.published) return json({ error: 'not_approved', message: 'The owner approves the site first.' }, 409);
+    if (!conf.project) return json({ error: 'no_project' }, 500);
+    const d = cleanDomain(b.domain); if (!d) return json({ error: 'bad_domain' }, 400);
+    if (/(^|\.)(vegansexplore\.com|vercel\.app|lesaruss\.ai)$/.test(d) && !(b.test_domain && a.test)) return json({ error: 'not_theirs' }, 400);
+    const other = (await db.from('ve_branddesk_sites').select('id').eq('domain', d).neq('id', s.id).maybeSingle()).data; if (other) return json({ error: 'domain_used' }, 409);
+    if (s.domain && s.domain !== d) return json({ error: 'remove_first', message: 'Take the old domain off first.' }, 409);
+    const www = isApex(d);
+    const add = async (name: string, extra: Record<string, unknown> = {}) => {
+      const r = await vercel('POST', `/v10/projects/${conf.project}/domains`, { name, ...extra });
+      if (r.ok || r.status === 409 && /already/i.test(JSON.stringify(r.data)) && (await vercel('GET', `/v9/projects/${conf.project}/domains/${name}`)).ok) return null;
+      return r.data?.error?.message || `Vercel said ${r.status}`;
+    };
+    const e1 = await add(d); if (e1) return json({ error: 'vercel', message: e1 }, 409);
+    if (www) { const e2 = await add('www.' + d, { redirect: d, redirectStatusCode: 308 }); if (e2) return json({ error: 'vercel', message: 'www: ' + e2 }, 409); }
+    s = await siteUpd(s.id, { domain: d, www, domain_added_at: new Date().toISOString(), status: s.status === 'live' ? 'live' : 'connecting' });
+    const st = await domainState(s, conf.project); s = await siteUpd(s.id, { domain_state: st });
+    await siteEvent(s.id, 'domain', m, d, { www });
+    return await out();
+  }
+  if (action === 'site_domain_check') {
+    if (!s.domain || !conf.project) return json({ error: 'no_domain' }, 409);
+    await vercel('POST', `/v9/projects/${conf.project}/domains/${s.domain}/verify`);
+    await siteUpd(s.id, { domain_state: await domainState(s, conf.project) });
+    return await out();
+  }
+  if (action === 'site_domain_remove') {
+    if (!s.domain || !conf.project) return json({ error: 'no_domain' }, 409);
+    for (const n of (s.www ? ['www.' + s.domain] : []).concat([s.domain])) await vercel('DELETE', `/v9/projects/${conf.project}/domains/${n}`);
+    await siteEvent(s.id, 'domain_removed', m, s.domain);
+    await siteUpd(s.id, { domain: null, www: false, domain_state: {}, checks: null, checked_at: null, status: s.status === 'ended' ? 'ended' : s.published ? 'approved' : s.status });
+    return await out();
+  }
+  if (action === 'site_check') {
+    if (!s.domain || !s.published) return json({ error: 'no_domain' }, 409);
+    const d = s.domain, origin = `https://${d}`, name = String(s.published.business?.name || l?.name || '');
+    const nameHtml = esc(name);
+    const checks: any[] = [];
+    const add = (what: string, url: string, ok: boolean, note: string) => checks.push({ what, url, ok, note });
+    for (const [p, label] of SITE_PAGES) {
+      const url = `${origin}/${p}`, r = await probe(url);
+      const canon = r.text.includes(`rel="canonical" href="${origin}/${p}"`);
+      const ok = r.status === 200 && (r.text.includes(nameHtml) || r.text.includes(name)) && canon && !/name="robots" content="noindex/.test(r.text);
+      add(`${label} page`, url, ok, r.status === 0 ? `Did not open over https (${r.error})` : r.status !== 200 ? `Answered ${r.status}` : !canon ? 'Its canonical address is not this page' : ok ? 'Opens over https, with their name, its own address and open to search' : 'Missing their name, or marked not for search');
+    }
+    const rb = await probe(`${origin}/robots.txt`); add('robots.txt', `${origin}/robots.txt`, rb.status === 200 && rb.text.includes(`${origin}/sitemap.xml`), rb.status === 200 ? 'Points search engines at the sitemap' : `Answered ${rb.status}`);
+    const sm = await probe(`${origin}/sitemap.xml`); add('Sitemap', `${origin}/sitemap.xml`, sm.status === 200 && SITE_PAGES.every(([p]) => sm.text.includes(`<loc>${origin}/${p}</loc>`)), sm.status === 200 ? 'Lists every page' : `Answered ${sm.status}`);
+    const http = await probe(`http://${d}/`); add('http goes to https', `http://${d}/`, [301, 302, 307, 308].includes(http.status) && String(http.location || '').startsWith(`https://${d}`), http.status ? `Answered ${http.status}${http.location ? ' to ' + http.location : ''}` : String(http.error));
+    if (s.www) { const w = await probe(`https://www.${d}/`); add('www goes to their domain', `https://www.${d}/`, [301, 308, 307, 302].includes(w.status) && String(w.location || '').startsWith(origin), w.status ? `Answered ${w.status}` : `Did not open (${w.error}); check the www record`); }
+    // Every picture the site shows, from the approved Cartridge.
+    const C = s.published, pics = new Set<string>();
+    if (C.brand?.logo?.primary?.src) pics.add(C.brand.logo.primary.src);
+    (C.brand?.logo?.files || []).forEach((f: any) => f.src && pics.add(f.src));
+    (C.photos?.space || []).forEach((p: any) => p.src && pics.add(p.src));
+    (C.menu?.sections || []).forEach((sec: any) => (sec.items || []).forEach((i: any) => i.photo?.src && pics.add(i.photo.src)));
+    const list = Array.from(pics).slice(0, 60); let bad: string[] = [];
+    for (let i = 0; i < list.length; i += 8) {
+      const rs = await Promise.all(list.slice(i, i + 8).map(async (u) => { try { const r = await fetch(u, { method: 'HEAD', signal: AbortSignal.timeout(10000) }); return r.ok && /image/.test(r.headers.get('content-type') || '') ? null : u; } catch { return u; } }));
+      bad = bad.concat(rs.filter(Boolean) as string[]);
+    }
+    add('Every picture', '', !bad.length, list.length ? (bad.length ? `${bad.length} of ${list.length} did not load: ${bad.slice(0, 3).join(', ')}` : `All ${list.length} load`) : 'No pictures yet (the site uses their name and colors)');
+    const allOk = checks.every((c) => c.ok), now = new Date().toISOString();
+    const patch: Record<string, unknown> = { checks, checked_at: now, domain_state: { ...(s.domain_state || {}), ssl: checks[0].ok || s.domain_state?.ssl } };
+    let launched = false;
+    if (allOk && s.status === 'connecting') { patch.status = 'live'; patch.launched_at = now; patch.launched_by = m.id; launched = true; }
+    s = await siteUpd(s.id, patch);
+    await siteEvent(s.id, launched ? 'launched' : 'checked', m, `${checks.filter((c) => c.ok).length} of ${checks.length} passed`);
+    if (launched) {
+      const owner = await ownerOf(a);
+      if (owner?.email) await mail(owner.email, `Your new website is live: ${d}`, `<p>Hi ${esc((owner.name || '').split(' ')[0] || 'there')},</p><p>Your new website is live at <a href="${origin}">${d}</a>, with a secure connection, and every page checked. Search engines can find it now.</p><p>The domain stays yours. Anything you want changed, tell us on your dashboard or reply to this email.</p><p>The Vegans Explore team</p>`);
+      await mail(TEAM_EMAIL, `Website live: ${l?.name} at ${d}`, `<p>${esc(l?.name || '')} is live at <a href="${origin}">${d}</a>. Every check passed.</p>`);
+    }
+    return await out({ launched });
+  }
+  if (action === 'site_status') {
+    const to = String(b.status);
+    if (to === 'paused' && ['approved', 'connecting', 'live'].includes(s.status)) { await siteUpd(s.id, { status: 'paused' }); await siteEvent(s.id, 'paused', m, clean(b.note, 500)); }
+    else if (to === 'resume' && s.status === 'paused') { await siteUpd(s.id, { status: s.launched_at && s.domain ? 'live' : s.domain ? 'connecting' : s.published ? 'approved' : 'building' }); await siteEvent(s.id, 'resumed', m); }
+    else if (to === 'ended') {
+      if (s.domain && conf.project) for (const n of (s.www ? ['www.' + s.domain] : []).concat([s.domain])) await vercel('DELETE', `/v9/projects/${conf.project}/domains/${n}`);
+      await siteUpd(s.id, { status: 'ended', review: null, domain: null, www: false }); await siteEvent(s.id, 'ended', m, clean(b.note, 500));
+    } else return json({ error: 'bad_status' }, 400);
+    return await out();
+  }
+  return json({ error: 'unknown_action' }, 400);
+}

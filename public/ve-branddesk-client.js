@@ -1,7 +1,7 @@
 /* ve-branddesk-client.js: a managed client's own space (BrandDesk, canon canon-ve-front-of-house; onboarding built 2026-10-31).
  * "They rent the service, they own the assets" (Sean, 2026-10-31): their Library, their asset sheet and how onboarding stands.
  *
- *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports'|'campaigns'|'social', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
+ *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'website'|'library'|'sheet'|'reports'|'campaigns'|'social', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
  *
  * Three views, one at a time:
  *   start    Getting started: the onboarding checklist (ve-branddesk steps), their plan, and where things are
@@ -10,6 +10,9 @@
  *            always theirs.
  *   sheet    the asset sheet: everything about the business in one place, from their Cartridge (ve_cartridges), with Download the
  *            menu (CSV) and Download the asset sheet (HTML)
+ *   website    Your website (the website launch, ve-branddesk site_*): the private preview, the owner's approval (their name typed) or
+ *              changes, their domain with the DNS records to add, SSL, the final check of every page, and every step with who and when.
+ *              Admin (Depot) adds Build their website, the look, Send it for their OK, Add their domain, Check it, Run the final check.
  *   social     Your social (the social add-on): posts waiting for the owner's OK, coming up and posted (social_get / social_decide)
  *   campaigns  Your campaigns: the month's campaign from the rotation (ve_branddesk_campaigns), when, and how it went
  *   reports  Monthly reports: each month's check-in once it is sent (ve-branddesk checkin_get), one report per view
@@ -179,7 +182,7 @@
       }, function () { el.innerHTML = '<div class="vebd"><p class="vebd-muted">This did not load. Try again in a moment.</p></div>'; });
     }
     function sub() {
-      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns']].concat(D.account && D.account.social ? [['social', 'Your social']] : []).concat([['reports', 'Monthly reports']]).map(function (v) {
+      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['website', 'Your website'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns']].concat(D.account && D.account.social ? [['social', 'Your social']] : []).concat([['reports', 'Monthly reports']]).map(function (v) {
         return '<a href="#" data-bdv="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
     }
     function drawStart() {
@@ -340,11 +343,112 @@
         });
       });
     }
+    // ---- Your website (the website launch): preview, the owner's approval, their domain, the final check.
+    var WEB = null;
+    var WEV = { made: 'Started building it', look: 'Look set', sent: 'Sent to the owner for their OK', approved: 'Approved', changes: 'Changes asked', domain: 'Domain added',
+      domain_removed: 'Domain taken off', checked: 'Final check run', launched: 'Launched: live on their domain', paused: 'Taken down for now', resumed: 'Put back up', ended: 'Ended' };
+    function sampleWeb() {
+      var at = function (d) { var x = new Date(); x.setDate(x.getDate() - d); return x.toISOString(); };
+      return { ok: true, sample: true, admin: false, owner: true, host: 'sites.example', listing: { name: (D.listing || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, kit: { status: 'locked' },
+        looks: { fresh: 'Fresh neighborhood', island: 'Island bright', night: 'Night lounge', street: 'Street heat' },
+        pages: [{ path: '', name: 'Home' }, { path: 'menu', name: 'Menu' }, { path: 'order', name: 'Order' }, { path: 'about', name: 'About' }, { path: 'visit', name: 'Visit' }],
+        site: { id: 'sample', status: 'preview', status_word: 'Waiting for the owner', review: 'waiting', preview_url: '/business/sample/site', live_url: null, domain: null, published_version: 0, sent_at: at(1) },
+        events: [{ kind: 'sent', by_name: 'Our team', at: at(1), note: 'Everything comes from your brand kit. Have a look on your phone too.' }, { kind: 'made', by_name: 'Our team', at: at(3) }] };
+    }
+    function drawWebsite() {
+      if (!WEB) {
+        frame('<p class="vebd-muted">Loading...</p>');
+        (D.sample ? Promise.resolve(sampleWeb()) : api({ action: 'site_get', account_id: D.account.id })).then(function (d) {
+          if (!d || !d.ok) { frame('<section class="vebd-card"><p class="vebd-muted">This did not load. Try again in a moment.</p></section>'); return; }
+          WEB = d; drawWebsite();
+        });
+        return;
+      }
+      var W = WEB, S = W.site, A = !!W.admin, out = '';
+      var pageLinks = function (base) { return (W.pages || []).map(function (p) { var u = /^https?:|^\//.test(base) ? base + (D.sample && p.path ? '#/' + p.path : p.path) : base; return '<a class="vebd-btn o sm" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a>'; }).join(' '); };
+      if (!S) {
+        out += '<section class="vebd-card"><h4>' + (A ? 'Their website' : 'Your website') + '</h4><p>' + (A ? 'Their website is built from their brand kit on our frame: their colors, type, logo, words, menu and photos. Start it once the brand kit has their basics; it shows on a private preview until they approve it.' :
+          'We are building your new website from your brand kit. When it is ready you get a private preview to look at, and it goes live on your domain only once you approve it.') + '</p>' +
+          (A ? (W.kit ? '<button type="button" class="vebd-btn" data-web="start">Build their website</button>' : '<p class="vebd-muted">Start their brand kit first (Their brand kit, above).</p>') : '') + '<p class="vebd-msg" data-webmsg role="status"></p></section>';
+        return frame(out);
+      }
+      var pill = S.status === 'live' ? 'ok' : ['preview', 'changes', 'connecting'].indexOf(S.status) >= 0 ? 'wait' : '';
+      out += '<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">' + (A ? 'Their website' : 'Your website') + '</h4><span class="vebd-pill ' + pill + '">' + esc(S.status_word || S.status) + '</span></div>';
+      if (S.live_url && S.status === 'live') out += '<p><b>Live at <a href="' + esc(S.live_url) + '" target="_blank" rel="noopener">' + esc(S.domain) + '</a></b>' + (S.launched_at ? ' since ' + esc(day(S.launched_at)) : '') + '.</p><p>' + pageLinks(S.live_url) + '</p>';
+      out += '<p class="vebd-muted" style="margin-top:6px">' + (S.published ? 'The private preview always shows the brand kit as it is now; ' + (A ? 'their' : 'your') + ' live site shows version ' + esc(S.published_version) + ', the one ' + (A ? 'they' : 'you') + ' approved' + (S.approved_name ? ' (' + esc(S.approved_name) + ', ' + esc(day(S.approved_at)) + ')' : '') + '.' :
+        'This is a private preview: only ' + (A ? 'they and our team' : 'you and our team') + ' can see it, and search engines cannot.') + '</p>' +
+        '<p><a class="vebd-btn" href="' + esc(S.preview_url) + '" target="_blank" rel="noopener">Look at the preview</a> ' + pageLinks(S.preview_url) + '</p></section>';
+      // The owner's OK.
+      if (S.review === 'waiting' && (W.owner || W.sample)) out += '<section class="vebd-card"><h4>' + (S.published ? 'An update is waiting for your OK' : 'Is it ready to go live?') + '</h4>' +
+        '<p>Look through every page on your phone and your computer. When you are happy, type your name and approve it. ' + (S.published ? 'Your live site changes as soon as you do.' : 'Then we connect your domain and check every page before it goes live.') + '</p>' +
+        '<form class="vebd-form" data-webok><label>Your full name<input name="name" autocomplete="name" required minlength="3" maxlength="120"></label><div><button class="vebd-btn" type="submit">Approve my website</button></div></form>' +
+        '<p style="margin:12px 0 4px"><button type="button" class="vebd-btn o sm" data-webch-open>Ask for changes instead</button></p><form class="vebd-form" data-webch hidden><label>What would you like changed?<textarea name="note" rows="3" maxlength="1000" required></textarea></label><div><button class="vebd-btn o" type="submit">Send it to us</button></div></form>' +
+        '<p class="vebd-msg" data-webmsg role="status"></p></section>';
+      else if (S.review === 'changes') out += '<section class="vebd-card"><h4>' + (A ? 'They asked for changes' : 'You asked for changes') + '</h4><p>' + esc(S.change_note || '') + '</p><p class="vebd-muted">' + esc(day(S.change_at)) + (A ? '. Make them in their brand kit, then send it again.' : '. We are on it; you will get the preview again.') + '</p></section>';
+      else if (S.review === 'waiting' && A) out += '<section class="vebd-card"><h4>Waiting for their OK</h4><p class="vebd-muted">Sent ' + esc(day(S.sent_at)) + '. They approve it on their dashboard. If they said yes another way (a call, an email), record it here with how.</p>' +
+        '<form class="vebd-form" data-webok><label>Their name, as they gave it<input name="name" required minlength="3" maxlength="120"></label><label>How they said yes<input name="note" required maxlength="500" placeholder="On the phone with Sean, Nov 2"></label><div><button class="vebd-btn o" type="submit">Record their OK</button></div></form><p class="vebd-msg" data-webmsg role="status"></p></section>';
+      // The team's tools.
+      if (A) {
+        out += '<section class="vebd-card"><h4>Build and send</h4><form class="vebd-form" data-weblook><label>The look<select name="look"><option value="">Their brand kit (colors and type)</option>' +
+          Object.keys(W.looks || {}).map(function (k) { return '<option value="' + esc(k) + '"' + (S.look === k ? ' selected' : '') + '>' + esc(W.looks[k]) + '</option>'; }).join('') + '</select></label><div><button class="vebd-btn o" type="submit">Save the look</button></div></form>' +
+          '<p class="vebd-muted" style="margin-top:8px">Their kit\'s colors count once all six roles are set; until then the site wears the look picked here (Fresh neighborhood by default).</p>' +
+          (['paused', 'ended'].indexOf(S.status) < 0 ? '<form class="vebd-form" data-websend style="margin-top:10px"><label>A line for their email (optional)<input name="note" maxlength="1000" placeholder="Everything comes from your brand kit."></label><div><button class="vebd-btn" type="submit">' + (S.review === 'waiting' ? 'Send it again' : 'Send it to them for their OK') + '</button></div></form>' : '') +
+          '<p class="vebd-msg" data-webmsg role="status"></p></section>';
+        var ds = S.domain_state || {};
+        out += '<section class="vebd-card"><h4>Their domain</h4>' + (!S.published ? '<p class="vebd-muted">Their domain is connected once they approve the site.</p>' : !S.domain ?
+          '<p>The domain stays theirs. Add it here: it is attached to our hosting, and we show the records they (or whoever runs their domain) add. A bare domain also gets www, sent to it.</p><form class="vebd-form" data-webdom><label>Their domain<input name="domain" placeholder="greenleafkitchen.com" required></label><div><button class="vebd-btn" type="submit">Add their domain</button></div></form>' :
+          '<p><b>' + esc(S.domain) + '</b>' + (S.www ? ' (and www.' + esc(S.domain) + ', sent to it)' : '') + '</p>' +
+          '<div class="vebd-kv" style="margin-bottom:10px"><dt>On our hosting</dt><dd>' + (ds.on_project ? 'Yes' : 'No') + '</dd><dt>Their DNS</dt><dd>' + (ds.misconfigured === false ? 'Pointed at us' : 'Not pointed at us yet') + '</dd>' +
+          '<dt>Secure (SSL)</dt><dd>' + (ds.ssl ? 'Yes' : 'Not yet' + (ds.ssl_error ? ' (' + esc(ds.ssl_error) + ')' : '')) + '</dd><dt>Last looked</dt><dd>' + esc(ds.checked_at ? new Date(ds.checked_at).toLocaleString() : '') + '</dd></div>' +
+          ((ds.records || []).length && ds.misconfigured !== false ? '<p>They add these at their domain company, then we check again (SSL follows on its own within minutes):</p><table class="vebd-menu"><thead><tr><th>Type</th><th>Name</th><th>Value</th></tr></thead><tbody>' +
+            ds.records.map(function (r) { return '<tr><td>' + esc(r.type) + '</td><td>' + esc(r.name) + '</td><td style="overflow-wrap:anywhere">' + esc(r.value) + '</td></tr>'; }).join('') + '</tbody></table>' : '') +
+          '<p style="margin-top:10px"><button type="button" class="vebd-btn o" data-web="domain_check">Check the domain</button> <button type="button" class="vebd-btn" data-web="check">Run the final check</button> <button type="button" class="vebd-btn o sm" data-web="domain_remove">Take the domain off</button></p>') +
+          '<p class="vebd-msg" data-webmsg role="status"></p></section>';
+      }
+      if (S.checks && S.checks.length) out += '<section class="vebd-card"><h4>The final check</h4><p class="vebd-muted">' + esc(new Date(S.checked_at).toLocaleString()) + ': ' + S.checks.filter(function (c) { return c.ok; }).length + ' of ' + S.checks.length + ' passed.</p><ul class="vebd-list">' +
+        S.checks.map(function (c) { return '<li><span><b>' + esc(c.what) + '</b><br><small class="vebd-muted">' + esc(c.note) + '</small></span><span class="vebd-pill ' + (c.ok ? 'ok' : 'wait') + '">' + (c.ok ? 'Passed' : 'Not yet') + '</span></li>'; }).join('') + '</ul></section>';
+      if (A && ['approved', 'connecting', 'live', 'paused'].indexOf(S.status) >= 0) out += '<section class="vebd-card"><h4>Take it down</h4><p class="vebd-muted">Taking it down shows a plain page on their domain until it is put back. Ending it takes their domain off our hosting (their old site, the domain and everything in their Library stay theirs).</p><p>' +
+        (S.status === 'paused' ? '<button type="button" class="vebd-btn o" data-web="resume">Put it back up</button>' : '<button type="button" class="vebd-btn o" data-web="pause">Take it down for now</button>') + ' <button type="button" class="vebd-btn o sm" data-web="end">End it</button></p><p class="vebd-msg" data-webmsg role="status"></p></section>';
+      out += '<section class="vebd-card"><h4>Every step</h4><ul class="vebd-list">' + (W.events || []).map(function (e) {
+        return '<li><span><b>' + esc(WEV[e.kind] || e.kind) + (e.kind === 'approved' && e.data && e.data.version ? ', version ' + esc(e.data.version) : '') + '</b><br><small class="vebd-muted">' + esc(e.by_name || '') + (e.note ? ' &middot; ' + esc(e.note) : '') + '</small></span><small class="vebd-muted">' + esc(new Date(e.at).toLocaleString()) + '</small></li>'; }).join('') + '</ul></section>';
+      frame(out);
+      wireWebsite();
+    }
+    function wireWebsite() {
+      var msg = function (t, bad) { var m = el.querySelectorAll('[data-webmsg]'); m.forEach(function (x) { x.textContent = t; x.classList.toggle('bad', !!bad); }); };
+      var call = function (body, ok) {
+        if (WEB.sample) { msg('Sample: nothing is saved or sent.'); return; }
+        msg('Working...');
+        api(Object.assign({ account_id: D.account.id }, body)).then(function (d) {
+          if (d && d.ok) { WEB = d; drawWebsite(); if (ok) msg(typeof ok === 'function' ? ok(d) : ok); return; }
+          msg((d && d.message) || ({ no_kit: 'Start their brand kit first.', name_needed: 'Type your full name.', note_needed: 'Say how they agreed.', bad_domain: 'That is not a domain.', domain_used: 'Another client has that domain.', not_theirs: 'That is one of our own domains.', nothing_to_approve: 'There is nothing waiting for an OK.' })[d && d.error] || 'That did not go through.', true);
+        }, function () { msg('That did not go through.', true); });
+      };
+      el.querySelectorAll('[data-web]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var k = b.dataset.web;
+          if (k === 'end' && !confirm('End their website? Their domain comes off our hosting.')) return;
+          if (k === 'domain_remove' && !confirm('Take ' + WEB.site.domain + ' off our hosting? The site stops answering on it.')) return;
+          b.disabled = true;
+          var map = { start: { action: 'site_start' }, domain_check: { action: 'site_domain_check' }, check: { action: 'site_check' }, domain_remove: { action: 'site_domain_remove' },
+            pause: { action: 'site_status', status: 'paused' }, resume: { action: 'site_status', status: 'resume' }, end: { action: 'site_status', status: 'ended' } };
+          call(map[k], k === 'check' ? function (d) { return d.launched ? 'Every check passed. It is live, and the owner has been emailed.' : 'Checked. See what is not there yet below.'; } : k === 'domain_check' ? 'Looked again.' : '');
+        });
+      });
+      var f;
+      if ((f = el.querySelector('[data-webok]'))) f.addEventListener('submit', function (e) { e.preventDefault(); var E = f.elements; call({ action: 'site_decide', decision: 'approve', name: E.namedItem('name').value, note: E.namedItem('note') ? E.namedItem('note').value : '' }, 'Approved. Thank you.'); });
+      if ((f = el.querySelector('[data-webch]'))) { var fc = f; el.querySelector('[data-webch-open]').addEventListener('click', function () { fc.hidden = false; fc.elements.namedItem('note').focus(); });
+        fc.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_decide', decision: 'changes', note: fc.elements.namedItem('note').value }, 'Sent. We will make the changes and send it again.'); }); }
+      if ((f = el.querySelector('[data-weblook]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_look', look: e.target.elements.namedItem('look').value || null }, 'Saved. The preview wears it now.'); });
+      if ((f = el.querySelector('[data-websend]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_send', note: e.target.elements.namedItem('note').value }, 'Sent. They have the preview link by email.'); });
+      if ((f = el.querySelector('[data-webdom]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_domain', domain: e.target.elements.namedItem('domain').value }, 'Added. Send them the records below.'); });
+    }
     function draw() {
       if (!D) return load();
       if (view === 'reports') return drawReports();
       if (view === 'campaigns') return drawCampaigns();
       if (view === 'social') return drawSocial();
+      if (view === 'website') return drawWebsite();
       var body = view === 'library' ? drawLibrary() : view === 'sheet' ? drawSheet() : drawStart();
       el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
@@ -443,7 +547,7 @@
       ((C.photos || {}).space || []).forEach(function (p) { if (p.src) add('photo', p.shot, p.src); });
       ((C.menu || {}).sections || []).forEach(function (sec) { (sec.items || []).forEach(function (it) { if (it.photo && it.photo.src) add('photo', it.name, it.photo.src, sec.name); }); });
       var steps = [['welcome', 'Your welcome call'], ['owner', 'We confirm you run the business'], ['archive', 'A copy of your current website, kept for you'], ['brand_kit', 'Your brand kit'],
-        ['google', 'Your Google profile, with us as a manager'], ['domain', 'Access to your domain settings (you keep the domain)'], ['socials', 'Access to your two social platforms'], ['shoot', 'Your starter photo shoot'], ['library', 'Your Library']]
+        ['google', 'Your Google profile, with us as a manager'], ['domain', 'Access to your domain settings (you keep the domain)'], ['socials', 'Access to your two social platforms'], ['shoot', 'Your starter photo shoot'], ['website', 'Your new website, live on your domain'], ['library', 'Your Library']]
         .map(function (s) { return { key: s[0], client: s[1], team: s[1], how: 'team', done_at: now }; });
       return { ok: true, admin: false, sample: true, unlocked: true, steps: steps, files: files, archives: [],
         account: { id: 'sample', status: 'active', setup_plan: '3', social: true, activated_at: '2026-10-14' },
