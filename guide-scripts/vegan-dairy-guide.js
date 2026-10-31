@@ -41,18 +41,27 @@
   var ALIASES_URL = SB + '/rest/v1/ve_store_aliases?select=alias,listings(slug,name,status)';
   var BOOKS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Books&tags=cs.%7Bdairy-guide-book%7D';
   // The Dairy-Free Pulse (Sean, 2026-10-09: "it's literally the pulse but just on dairy free food"): our published
-  // episodes and interviews about dairy, in this order. A new one is its ve_pulse_content slug here.
+  // episodes and interviews about dairy, in this order. Since 2026-10-31 each is its podcast episode, not the video (Sean: "the
+  // new style of just having the podcast clip that you can play... you just see the logo of the podcast"), the Restaurant Guide's
+  // way: [ve_pulse_content slug, the show's Directory slug, the episode's guid in that show's feed (ve_podcast_feeds)]. Matched by
+  // title and date 2026-10-31; Dr. Barnard's Ep 018 is the feed's "Food's Impact on Overall Health" (both recorded at Plant, Miami).
   var PULSE_PICKS = [
-    'why-ditching-dairy-is-so-hard-ep-5-pre-vegans-podcast',
-    'dotsie-bausch-switch4good-adsoy-act',
-    'dr-neal-barnard-pcrm-cheese-trap-ep018-soflo-vegans-podcast',
-    'maizly-worlds-first-corn-milk-tim-leclercq',
-    'plant-based-milk-schools-dairy-monopoly-bill',
-    'eu-ban-vegan-words-burger-milk-labeling',
-    'top-vegan-alternatives-for-eggs-cheese-more-vegans-who-lift-podcast-season-3-finale',
-    'simple-plant-based-swaps-that-make-life-easier'
+    ['why-ditching-dairy-is-so-hard-ep-5-pre-vegans-podcast', 'pre-vegans-podcast', '828e4e30-6bf2-4533-a4a9-d9fa173f4e11'],
+    ['dotsie-bausch-switch4good-adsoy-act', 'vegans-explore-podcast', '9ff7e9a2-8e55-49a9-bbaf-6fa7fe5a5c01'],
+    ['dr-neal-barnard-pcrm-cheese-trap-ep018-soflo-vegans-podcast', 'soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/640629552'],
+    ['maizly-worlds-first-corn-milk-tim-leclercq', 'vegans-explore-podcast', 'e5ee0546-01b6-4cff-bbdb-72270557b47f'],
+    ['plant-based-milk-schools-dairy-monopoly-bill', 'vegans-explore-podcast', '33c5126d-a2a4-4a20-8437-1a7fa327d191'],
+    ['eu-ban-vegan-words-burger-milk-labeling', 'vegans-explore-podcast', '66ae133e-4e31-42a1-833b-b3ea55c78774'],
+    ['top-vegan-alternatives-for-eggs-cheese-more-vegans-who-lift-podcast-season-3-finale', 'vegans-who-lift-podcast', 'a994304c-d89d-426e-b8e4-6191dbce088b'],
+    ['simple-plant-based-swaps-that-make-life-easier', 'vegans-explore-podcast', '307884ac-57db-414c-b17a-30fc82eb83bc']
   ];
-  var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,youtube_id,thumbnail_url,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.join(',') + ')';
+  var PODCAST_FN = SB + '/functions/v1/ve-podcast';
+  var SHOW_SLUGS = PULSE_PICKS.map(function (x) { return x[1]; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
+  var SHOWS_URL = SB + '/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=in.(' + SHOW_SLUGS.join(',') + ')';
+  var PULSE_URL = SB + '/rest/v1/ve_pulse_content?select=slug,title,podcast_show,youtube_id,thumbnail_url,summary,published_at&status=eq.published&slug=in.(' + PULSE_PICKS.map(function (x) { return x[0]; }).join(',') + ')';
+  // From other shows (Sean, 2026-10-31: "pull in other podcasts as well too, from the RSS that match... that topic"): the newest dairy
+  // episodes from the other podcasts in our Directory, read from their feeds by ve_topic_episodes (migration 20261031_ve_topic_episodes.sql).
+  var OTHERS_URL = SB + '/rest/v1/rpc/ve_topic_episodes';
   var CATS = ['Milk', 'Coffee Creamer', 'Butter', 'Cheese Slices', 'Cheese Spreads', 'Shredded Cheese', 'Parmesan', 'Sour Cream', 'Feta', 'Cream Cheese', 'Yogurt', 'Ice Cream'];
   var SWAP_GROUPS = ['Milk & cream', 'Butter', 'Cheese', 'Yogurt & sour cream'];
   // What visitors see listed under the free swap (names only; the how-to comes with membership).
@@ -154,7 +163,7 @@
   // $11 or 1,100 points, and buying it makes the buyer a member. 'credit' (retired) was $11 or 1 Guide credit; anything else
   // keeps the old membership offer. Flipping the row switches the whole page at once.
   var ST = { rule: 'membership', cost: 1100, balance: 0, credits: 0, rate: 2500, cap: 3, active: false, via: null };
-  var BRANDS = null, BOOKS = null, PODS = null, PRODUCTS = {}, PRODUCT_BY_SLUG = {}, STORES = {};
+  var BRANDS = null, BOOKS = null, PODS = null, OTHERS = null, PRODUCTS = {}, PRODUCT_BY_SLUG = {}, STORES = {};
   var lookOpen = false, curTab = 'overview';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -336,10 +345,36 @@
     var on = !!GV.mine[kind][key];
     return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="' + kind + ':' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(kind, key) + '</b></button>';
   }
+  // An episode is its podcast row, the one a person's page uses (VEEpisodes.row): the show's square artwork, the title, the show,
+  // date and length, Play in the player docked above the list; ours add our vote and Save (My list), another show's links to it.
   function podCard(p) {
-    return '<div class="dg-pod-w"><a class="dg-pod" href="#/pulse/watch/' + encodeURIComponent(p.slug) + '"><div class="dg-pod-img" style="background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>' +
-      '<div class="dg-pod-b"><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + '</div><div class="dg-pod-t">' + esc(p.title) + '</div><div class="dg-pod-s">' + esc(p.summary || '') + '</div></div></a>' +
-      (member() ? '<div class="dg-acts dg-pod-acts">' + gvoteBtn('episode', p.slug) + saveBtn('episode', p.slug) + '</div>' : '') + '</div>';
+    if (!p.ep || !window.VEEpisodes) return '';
+    var show = { name: p.show.name, image: p.show.logo_url || '' };
+    return VEEpisodes.row(Object.assign({}, p.ep, { summary: '', image: show.image || p.ep.image || '' }), show,
+      { showName: true, acts: member() ? gvoteBtn('episode', p.slug) + saveBtn('episode', p.slug) : '' });
+  }
+  function otherCard(o) {
+    if (!window.VEEpisodes) return '';
+    var show = { name: o.show.name, image: o.show.image || '' };
+    return VEEpisodes.row(Object.assign({}, o.episode, { summary: '', image: show.image || o.episode.image || '' }), show,
+      { showName: true, acts: '<a class="vep-btn" href="/directory/' + encodeURIComponent(o.show.slug) + '" target="_blank" rel="noopener">The show</a>' });
+  }
+  function playEp(key) {
+    var p = (PODS || []).filter(function (x) { return '|' + x.ep.guid === key; })[0];
+    if (p) { VEEpisodes.play(Object.assign({}, p.ep, { image: p.show.logo_url || p.ep.image || '' }), { name: p.show.name, image: p.show.logo_url || '' }); return; }
+    var o = (OTHERS || []).filter(function (x) { return '|' + x.episode.guid === key; })[0];
+    if (o) VEEpisodes.play(Object.assign({}, o.episode, { image: o.show.image || o.episode.image || '' }), { name: o.show.name, image: o.show.image || '' });
+  }
+  // A redraw (votes loading, another tab) would drop a playing episode: the player moves into the new dock (a move in the same
+  // task keeps it playing) or, with no dock on screen, to the foot of the window.
+  function keepPlayer(bar) {
+    if (!bar) return;
+    // A view that started another episode while it drew made a new player: the old one stops and stays out (two showed, 2026-10-31).
+    var cur = document.getElementById('vep-player');
+    if (cur && cur !== bar) { var old = bar.querySelector('audio'); if (old) old.pause(); return; }
+    var dock = main.querySelector('.vep-dock[data-vep-always]');
+    if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
+    else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }
   }
 
   // ---------- views ----------
@@ -366,7 +401,13 @@
   var LOCKED_FACTS = ['What the cancer research shows', 'Plants cover the nutrients', 'Better for the planet'];
   function viewPulse(sub) {
     var parts = String(sub || '').split('/'), mode = parts[0] === 'listen' || parts[0] === 'watch' ? 'listen' : 'research';
-    if (parts[0] === 'watch' && parts[1]) return viewWatch(decodeURIComponent(parts[1]));
+    // An old #/pulse/watch/<slug> link (search, My list) opens the list and plays that episode.
+    if (parts[0] === 'watch' && parts[1]) {
+      viewPulse('listen');
+      var w = (PODS || []).filter(function (x) { return x.slug === decodeURIComponent(parts[1]); })[0];
+      if (w && member()) playEp('|' + w.ep.guid);
+      return;
+    }
     var t = toggles([['The research', '#/pulse'], ['Podcasts and interviews', '#/pulse/listen']], mode === 'research' ? 'The research' : 'Podcasts and interviews');
     var html = head('The Dairy-Free Pulse', mode === 'research' ? 'What the research says' : 'Podcasts and interviews',
       mode === 'research' ? 'Every fact with its source linked. Links, not proof, where the research says so.' : 'Our conversations about dairy: athletes, doctors, founders and the fight over the word milk.', t);
@@ -381,26 +422,15 @@
           (n < facts.length - 1 ? '<a class="dg-fact-next" href="#/pulse/fact/' + (n + 1) + '">Next fact &rsaquo;</a>' : '')) + '</div></div>';
     } else {
       var pods = PODS ? PODS.map(function (x, i) { return [x, i]; }).sort(function (a, b) { return gvCount('episode', b[0].slug) - gvCount('episode', a[0].slug) || a[1] - b[1]; }).map(function (x) { return x[0]; }) : null;
-      var grid = pods ? (pods.map(podCard).join('') || '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>';
+      var grid = pods ? (pods.length ? '<div class="vep-list">' + pods.map(podCard).join('') + '</div>' : '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>';
+      var more = OTHERS && OTHERS.length ? '<h3 class="dg-eps-h">From other shows</h3><p class="dg-eps-sub">The newest episodes on dairy from the podcasts in our Directory.</p>' +
+        '<div class="vep-list">' + OTHERS.map(otherCard).join('') + '</div>' : '';
       if (member() && !gvLoaded) loadGVotes(function () { if (curTab === 'pulse' && /listen/.test(location.hash)) viewPulse('listen'); });
-      html += member() ? '<div class="dg-pods">' + grid + '</div>' : gated('<div class="dg-pods">' + grid + '</div>', 'Every episode on dairy', 'Watch our podcasts and interviews on dairy right here in the Guide.');
+      var body = '<h3 class="dg-eps-h">From Vegans Explore</h3><div class="dg-eps">' + grid + '</div>' + (more ? '<div class="dg-eps">' + more + '</div>' : '');
+      html += member() ? '<div class="vep-dock" data-vep-always></div>' + body : gated(body, 'Every episode on dairy', 'Listen to our podcasts and interviews on dairy, and the newest from other shows, right here in the Guide.');
     }
     main.innerHTML = html;
   }
-  function viewWatch(slug) {
-    if (access === 'checking') { main.innerHTML = '<div class="dg-loading">Loading...</div>'; return; }
-    if (!member()) { location.replace('#/pulse/listen'); return; }
-    var p = null; (PODS || []).forEach(function (x) { if (x.slug === slug) p = x; });
-    if (!p) { main.innerHTML = crumb([['Pulse', '#/pulse'], ['Podcasts and interviews', '#/pulse/listen']]) + '<div class="dg-loading">' + (PODS ? 'That episode is not in the Guide.' : 'Loading...') + '</div>'; return; }
-    var date = p.published_at ? new Date(p.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : '';
-    main.innerHTML = crumb([['Pulse', '#/pulse'], ['Podcasts and interviews', '#/pulse/listen'], [p.title]]) +
-      '<div class="dg-watch"><div>' + (p.youtube_id
-        ? '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(p.youtube_id) + '?rel=0" title="' + esc(p.title) + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture" allowfullscreen></iframe>'
-        : '<div class="dg-pod-img" style="border-radius:12px;background-image:url(\'' + esc(p.thumbnail_url || '') + '\')"></div>') + '</div>' +
-      '<div><div class="dg-pod-show">' + esc(p.podcast_show || 'Vegans Explore') + (date ? ' &middot; ' + esc(date) : '') + '</div><h2 class="dg-h1" style="font-size:22px">' + esc(p.title) + '</h2><p>' + esc(p.summary || '') + '</p>' +
-      '<a class="dg-btn dg-ghost" href="/pulse/' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">' + (p.youtube_id ? 'Episode notes' : 'Open the episode') + '</a></div></div>';
-  }
-
   function viewBrands(catSlug) {
     var cat = catSlug ? catBySlug(catSlug) : null;
     var h = (cat ? crumb([['Brands', '#/brands'], [cat]]) : '') + head('Brands', cat ? esc(cat) : 'The brands to buy',
@@ -792,6 +822,7 @@
       }).catch(function () { el.disabled = false; });
       return;
     }
+    if ((el = e.target.closest('[data-vep-play]'))) { e.preventDefault(); playEp(el.getAttribute('data-vep-play')); return; }
     if ((el = e.target.closest('[data-gvote]'))) {
       var kk = el.getAttribute('data-gvote').split(':'), kind = kk[0], key = kk[1], gon = !GV.mine[kind][key];
       if (!member()) { location.hash = '#/join'; return; }
@@ -866,7 +897,7 @@
       if (sec[1] === 'swaps') { items = find(MEM.swaps, function (x) { return slugify(x.replace); }); html = '<div class="dg-srows">' + items.map(function (x) { return swapCard(x); }).join('') + '</div>'; }
       else if (sec[1] === 'recipes') { items = find(COOK, function (x) { return x.slug; }); html = '<div class="dg-srows">' + items.map(function (x) { return recipeTile(x); }).join('') + '</div>'; }
       else if (sec[1] === 'brands' || sec[1] === 'cookbooks') { items = find(sec[1] === 'brands' ? BRANDS : BOOKS, function (x) { return x.slug; }); html = dirGrid('dgMLGrid', items.map(dirCard).join('')); }
-      else { items = find(PODS, function (x) { return x.slug; }); html = '<div class="dg-pods">' + items.map(podCard).join('') + '</div>'; }
+      else { items = find(PODS, function (x) { return x.slug; }); html = '<div class="vep-dock" data-vep-always></div><div class="dg-eps"><div class="vep-list">' + items.map(podCard).join('') + '</div></div>'; }
       el.innerHTML = items.length ? html : '<p class="dg-empty">Nothing saved here yet. Tap Save on any of the <a href="' + sec[3] + '">' + esc(sec[0].toLowerCase()) + '</a> and it shows up here.</p>';
       var g = document.getElementById('dgMLGrid'); if (g) wireCards(g);
     };
@@ -1136,9 +1167,11 @@
     if (member() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
+    var bar = document.getElementById('vep-player');
     ({ overview: viewOverview, pulse: function () { viewPulse(sub); }, brands: function () { viewBrands(sub); }, swaps: function () { viewSwaps(sub); },
        cookbook: function () { viewCookbook(sub); }, look: function () { viewLook(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); },
        listing: function () { viewListing(decodeURIComponent(sub)); }, product: function () { viewProduct(decodeURIComponent(sub)); } })[view]();
+    keepPlayer(bar);
     var moved = key !== curTab;
     curTab = key;
     cueMaya(key);
@@ -1166,15 +1199,40 @@
   }
   // Brands, cookbooks and the Pulse episodes are public rows, so everyone loads them: members use them, and the blurred
   // previews show the real thing to everyone else.
+  // Each of our episodes comes from its show's own feed through ve-podcast (the audio streams from the show's host).
+  function feedEp(show, guid) {
+    return fetch(PODCAST_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'episode', slug: show, guid: guid }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d && d.episode; }).catch(function () { return null; });
+  }
   function loadPublic() {
+    if (window.VEEpisodes) VEEpisodes.css();
+    var eps = Promise.all(PULSE_PICKS.map(function (x) { return feedEp(x[1], x[2]); }));
+    var others = fetch(OTHERS_URL, { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_topic: 'dairy', p_limit: 24 }) })
+      .then(function (r) { return r.json(); }).catch(function () { return []; });
+    Promise.all([rest(SHOWS_URL).catch(function () { return []; }), eps, others]).then(function (r) {
+      var shows = Array.isArray(r[0]) ? r[0] : [];
+      OTHERS = Array.isArray(r[2]) ? r[2].filter(function (o) { return o && o.show && o.episode && o.episode.audio; }) : [];
+      PODS_EPS = PULSE_PICKS.map(function (x, i) { var show = shows.filter(function (y) { return y.slug === x[1]; })[0], ep = r[1][i]; return show && ep && ep.audio ? { show: show, ep: ep } : null; });
+      joinPods();
+    });
     Promise.all([rest(BRANDS_URL), rest(BOOKS_URL), rest(PRODUCTS_URL).catch(function () { return []; }), rest(ALIASES_URL).catch(function () { return []; }), rest(PULSE_URL).catch(function () { return []; })]).then(function (r) {
       BRANDS = Array.isArray(r[0]) ? r[0] : []; BOOKS = Array.isArray(r[1]) ? r[1] : [];
       (Array.isArray(r[2]) ? r[2] : []).forEach(function (p) { PRODUCTS[p.brand_listing_id + '|' + p.product_type] = p.id; PRODUCT_BY_SLUG[p.slug] = p; });
       (Array.isArray(r[3]) ? r[3] : []).forEach(function (a) { if (a.listings && a.listings.status === 'approved') STORES[a.alias] = a.listings; });
-      var pods = Array.isArray(r[4]) ? r[4] : [];
-      PODS = PULSE_PICKS.map(function (s) { return pods.filter(function (p) { return p.slug === s; })[0]; }).filter(Boolean);
+      PULSE_ROWS = Array.isArray(r[4]) ? r[4] : [];
+      joinPods(true);
       route();
-    }).catch(function () { BRANDS = BRANDS || []; BOOKS = BOOKS || []; PODS = PODS || []; route(); });
+    }).catch(function () { BRANDS = BRANDS || []; BOOKS = BOOKS || []; PULSE_ROWS = PULSE_ROWS || []; joinPods(true); route(); });
+  }
+  // Our episodes are ready once both the Pulse rows and their feed episodes are in; each arrives on its own.
+  var PULSE_ROWS = null, PODS_EPS = null;
+  function joinPods(quiet) {
+    if (!PULSE_ROWS || !PODS_EPS) return;
+    PODS = PULSE_PICKS.map(function (x, i) {
+      var p = PULSE_ROWS.filter(function (y) { return y.slug === x[0]; })[0], fe = PODS_EPS[i];
+      return p && fe ? Object.assign({}, p, fe) : null;
+    }).filter(Boolean);
+    if (!quiet && (curTab === 'pulse' || curTab === 'mylist')) route();
   }
   function setStatus(msg) { [].forEach.call(document.querySelectorAll('.dg-status'), function (e) { e.textContent = msg; }); }
 
