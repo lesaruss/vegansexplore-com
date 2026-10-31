@@ -116,7 +116,14 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
   var ACTION_TYPE_LABELS = { pledge: 'Pledge', ticket: 'Attend / Waitlist', vendor_tier: 'Vendor Tier Interest', sponsor_tier: 'Sponsor Tier Interest', link_click: 'Clicked a link' };
   var activeTag = 'all';
   var shown = [];
-  var CAMPAIGN_TITLES = {};
+  // Readable names for campaigns that have no campaigns row (only live ones with a page send a title), so no slug shows here.
+  // A campaigns row's title wins over these.
+  var CAMPAIGN_TITLES = {
+    've-house-banners': 'House banners (Guides and Become a creator)', 'event-promotion': 'Event promotion',
+    'nonprofit-partners': 'Nonprofit Partners', 'ad-placement': 'Ad placements', 'business-outreach': 'Business outreach',
+    'ambassadors': 'Ambassadors', 'people-profiles': 'People profiles', 'huge-vegan-survey': 'Huge Vegan Survey',
+    'vegan-dairy-guide': 'Vegan Dairy Guide', 'brand-partners': 'Brand Partners'
+  };
   var allLeads = [];
   var activeCampaign = 'all';
   var activeMode = 'needs_action';
