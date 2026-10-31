@@ -841,13 +841,17 @@ async function pitchAdmin(b: any, m: any) {
   if (action === 'ranking') {
     const { data, error } = await db.rpc('ve_branddesk_ranking', { p_chapter: b.chapter ? clean(b.chapter, 40) : null });
     if (error) return json({ error: 'ranking_failed', message: error.message }, 500);
-    return json({ ok: true, rows: data || [] });
+    // The handshake (canon v8): each business's signs, so the pitch goes only to one that showed a sign, or to the warm list.
+    const { data: sg } = await db.rpc('ve_branddesk_signs');
+    const signs = new Map((sg || []).map((x: any) => [x.listing_id, x.signs]));
+    return json({ ok: true, rows: (data || []).map((r: any) => ({ ...r, signs: signs.get(r.listing_id) || [] })) });
   }
   const l = await pitchListing({ slug: b.slug }); if (!l) return json({ error: 'not_found' }, 404);
   let { data: p } = await db.from('ve_branddesk_pitches').select('*').eq('listing_id', l.id).maybeSingle();
   if (action === 'pitch_admin') {
     const { data: rank } = await db.rpc('ve_branddesk_ranking', { p_chapter: null });
-    const row = (rank || []).find((r: any) => r.listing_id === l.id) || null;
+    const row: any = (rank || []).find((r: any) => r.listing_id === l.id) || null;
+    if (row) row.signs = ((await db.rpc('ve_branddesk_signs')).data || []).find((x: any) => x.listing_id === l.id)?.signs || [];
     const audit = p?.audit_id || row?.audit_id || null;
     return json({ ok: true, listing: { id: l.id, name: l.name, slug: l.slug, city: l.address_city, category: l.category }, pitch: p, rank: row,
       summary: await auditSummary(audit), looks: Object.fromEntries(Object.entries(PITCH_LOOKS).map(([k, v]) => [k, v.name])), plan: PLAN });
@@ -885,6 +889,11 @@ async function pitchAdmin(b: any, m: any) {
     const to = test ? String(m.email || '').toLowerCase() : String(p.contact_email || '');
     if (!to) return json({ error: 'no_email', message: 'Add their email first.' }, 400);
     if (!test && !p.audit_id) return json({ error: 'no_audit', message: 'This business has no audit yet.' }, 409);
+    // A handshake before the ask (canon v8): never a cold pitch. Only a business that showed a sign, or one on Sean's warm list.
+    if (!test && !p.warm) {
+      const { data: sg } = await db.rpc('ve_branddesk_signs');
+      if (!(sg || []).some((x: any) => x.listing_id === l.id)) return json({ error: 'no_sign', message: 'They have not shown a sign yet (clicked their link, claimed, ran the free check, bought the Guide, asked us). Tick them as warm if you know them.' }, 409);
+    }
     let code = p.link_code;
     const dest = `${SITE}/business/pitch?c=${p.code}`;
     if (!test && !code) {
@@ -1883,7 +1892,7 @@ async function sites(req: Request, b: any, m: any) {
     if (!s.domain || !conf.project) return json({ error: 'no_domain' }, 409);
     for (const n of (s.www ? ['www.' + s.domain] : []).concat([s.domain])) await vercel('DELETE', `/v9/projects/${conf.project}/domains/${n}`);
     await siteEvent(s.id, 'domain_removed', m, s.domain);
-    await siteUpd(s.id, { domain: null, www: false, domain_state: {}, checks: null, checked_at: null, status: s.status === 'ended' ? 'ended' : s.published ? 'approved' : s.status });
+    await siteUpd(s.id, { domain: null, www: false, domain_state: {}, checks: null, checked_at: null, status: ['ended', 'paused'].includes(s.status) ? s.status : s.published ? 'approved' : s.status });
     return await out();
   }
   if (action === 'site_check') {
