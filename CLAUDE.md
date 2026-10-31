@@ -446,10 +446,21 @@ judge whether food is safe by how a place looks online; businesses want marketin
   community night with a coaching sheet.
 - **The pitch**: a presence-gap ranking on the monthly check-ups, then a personal guided page per business (their audit, their site mocked
   on our template, the two-week plan, the price), sent from Sean through business outreach, city by city, with his approval.
+- **They rent the service, they own the assets** (Sean, 2026-10-31: "they paid for those photos... so they have that peace of mind to know
+  that if things don't work out, they can always have the pieces to start fresh again somewhere else"; canon v2). Stop paying and the
+  website and management stop; what we made is theirs, downloadable at any time, said in the pitch. **The severance package**: their
+  **Library** on the business dashboard (every photo and video at full size, the logo in every format, the brand kit, graphics and menu
+  boards; each file or Download everything as a ZIP); the **asset sheet**, kept current (all copy, the menu with descriptions and prices,
+  also as a spreadsheet, hours, links, colors, fonts, the Google details); **their original website archived at onboarding** (a snapshot
+  of any site, Wix and Squarespace included; WordPress also its export so it can be restored); and always theirs: the domain, the Google
+  profile (they are primary owner, we a manager), their socials and their Directory listing (stays free). On notice: the ZIP and asset
+  sheet sent at once, a handoff call, 30 days to download, then the library closes and the template site comes down. Every shoot
+  agreement assigns copyright to us so we can pass it on; full-size downloads unlock once the setup is paid in full. **Pause**: up to 3
+  months a year at $99 a month (V's default), the site and library stay, no management, the $99 to Vegans Explore.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
-  contract, Stripe (setup installments and monthly) and onboarding; the photographer shot list on the Gig Board; the ranking and pitch
+  contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board; the ranking and pitch
   pages; visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
