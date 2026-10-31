@@ -57,6 +57,8 @@ this list follows the rule above. A new exception goes on this list first.
   footer would never be seen).
 - **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
   everything in `ads/` (Sean, 2026-10-04).
+- **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
+  story|carousel`, from the podcast's brand kit; 2026-10-31).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
   (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
@@ -697,8 +699,10 @@ judge whether food is safe by how a place looks online; businesses want marketin
   broadcast tower, no characters, the title set in Montserrat; `vegan-media/media/podcast/brand/`), the description locked, the cast (Sean
   hosts; Kai, Liz, Dani, Nori and, when the week has their story, Maya, River and Theo), and the sound (intro and outro as MP3s in
   `media/podcast/sound/`, a bed per segment, the commercial bed and airplane effect, the Airport Guide commercial, Kai's tag), each playable;
-  cast, sound and voice are drafts. Its stage wears the cover's art without words. Not yet: the outputs the podcast frame makes (episode
-  art, the YouTube frame, Reel, Story and carousel templates).
+  cast, sound and voice are drafts. Its stage wears the cover's art without words. **The frame's outputs** are `business/podcast-frame.html`: `?kind=episode` (3000 square,
+  the tower art with the episode title in the sky), `youtube` (1920 x 1080, the studio scene, the ON AIR sign beside the title), `story`
+  (1080 x 1920) and `carousel` (1080 x 1350), with `&title= &sub= &n= &date= &kicker=`, screenshotted at the kind's size. No characters,
+  no words in the art, Montserrat, the logo's colors.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
