@@ -221,7 +221,7 @@
   // match its recording, voices/creator-guide/kai-<key>-v1.mp3 in vegan-media; change a line and record it again (the next -v2). Her
   // voice is a stand-in until Sean picks hers.
   var LINES = {
-    overview: 'Hi, I\'m Kai. I make Vegan food and fitness videos in Miami, and this is my Creator Dashboard. Press Next and I\'ll show you around: the gigs, the ones I\'m in, my media kit and how you rise. At the end, you can apply.',
+    overview: 'Hi, I\'m Kai. I make Vegan food and fitness videos in Miami, and this is my Creator Dashboard. Press Start the walkthrough and I\'ll show you around: the gigs, the ones I\'m in, my media kit and how you rise. At the end, you can apply.',
     dashboard: 'This is what I see when I sign in: the gigs open to me, the ones I\'m in, how complete my media kit is and where I stand. Tap any tile to jump in.',
     board: 'Every gig our partners post lands here. Filter by pay, kind and city, open one to see what it asks, and check whether you qualify. Try applying. Nothing is sent in the demo.',
     mine: 'Everything I applied to, auditioned for or got booked on is right here, by status, with what happens next. Anything you tried on Open gigs shows up here too.',
@@ -241,7 +241,7 @@
   // view plays its line by itself (cue), and Pause turns it off. Any button with data-kai-voice="<key>" plays or pauses that line.
   var VOICE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/creator-guide/kai-';
   // A line recorded again plays its newer take (Sean, 2026-10-31: "lives here" was read as the verb, so those lines say "is right here").
-  var VOICE_VER = { mine: 2, 'tab-mylist': 2 };
+  var VOICE_VER = { mine: 2, 'tab-mylist': 2, overview: 2 };
   var voice = (function () {
     var a = null, cur = '', cued = '';
     function isOn() { try { return sessionStorage.getItem('ve_kai_voice') === '1'; } catch (e) { return false; } }
