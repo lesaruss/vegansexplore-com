@@ -752,6 +752,38 @@ judge whether food is safe by how a place looks online; businesses want marketin
   campaigns and the results without the blueprint, and was refused editing and adding; a stranger (the Liz account) was refused reading and
   listing; then every row and the event removed. Deployed from commit b7c8c11 (source sha256 matched). Not yet: a reminder to the Community
   Manager as a step comes due, the owner's choice of campaign on their dashboard, and paying creators for an influencer night.
+  **The social add-on, phase 1** (built 2026-10-31; Sean: "Start on the social add-on"; migration `20261031_branddesk_social.sql`). The canon
+  locks +$500 a month, two platforms "so customers who stay off Meta still find them", offered in a city once we have the talent; the rest is
+  Logan's defaults, Sean's to change: 12 posts a month, the 48-hour OK, the four platforms, at least one off Meta. **Setup** (`ve_branddesk_social`,
+  one row a client, RLS on, no policies): two platforms of Instagram, Facebook, TikTok and YouTube, one of them TikTok or YouTube (`PLATFORMS` in
+  `ve-branddesk`), their handles (a pasted link becomes the @handle), the **social manager** (an account by the email they sign in with, never
+  a Guide account), posts a month, Setting up / Running / Paused (Running needs a manager). Set in **Depot > BrandDesk > a client > Social**.
+  **Posts** (`ve_branddesk_social_posts`): when, where (the client's platforms), photo / carousel / video / story, the caption (2,200
+  characters) and up to 10 pictures from their Library; Draft, then **sent for the owner's OK** (one email a send), Approved (by the owner, or
+  **on its own 48 hours before its date** if they say nothing: `socialApproveDue`, run by the daily `checkin_sweep`, `social_sweep` and every
+  read), Change asked (their note, emailed to the manager), Posted (the live link on each platform, checked against that platform's site), or
+  Skipped. A change after sending makes it a draft again. Posting is by hand; nothing goes through the platforms' APIs yet. **The team** is a
+  super admin, the client's social manager or the chapter's Community Manager (`socialTeam`); the social team may add photos, videos and
+  graphics to the client's Library (`accountForFiles`). **`/business/social`** (`business/social.html`, `noindex`): their clients (this month
+  against the target, drafts, waiting, change asked, to post), one client's month (`?account=&month=YYYY-MM`, Send N for their OK, New post),
+  one post (`&post=<id>|new`: the editor beside their Library, Mark it posted with the links); `?preview=1` is Green Leaf Kitchen's. **The owner**
+  sees **Managed by us > Your social** (`&bd=social`, shown only with the add-on): Waiting for your OK (Looks good / Ask for a change), Coming
+  up, Posted with its links; every post not yet out whatever the month, and what went out this month. **Social at checkout opens by chapter**
+  (`ve_site_settings` `branddesk.social_chapters`, set in Depot > BrandDesk > Who can sign up > Where social is open; super admins always):
+  `plan` returns `social_open`, `/business/managed` and the pitch page's sign-up hide the option where it is closed, and `checkout` refuses
+  it (`social_not_open`). Every write to the `branddesk` setting now merges (`saveSettings`), since `allow` used to write the whole value
+  back. Actions `social_platforms`, `social_chapters`, `social_list`, `social_get`, `social_setup`, `social_post_save`, `social_send`,
+  `social_decide`, `social_posted`, `social_skip`, `social_sweep`. Preview journeys > BrandDesk has the planner, a client's month, a post and
+  Your social. Deployed from commit 1e65808 (version 15, source sha256 matched). **Proven live 2026-10-31** on a [TEST] client on Love Life
+  Cafe (the Logan test account as the owner, Cookbook Tester 1 as the social manager, Sean through the admin token): Meta-only and one platform
+  refused, the owner and a stranger refused setup and reading, `social_open` false for the owner and true for a super admin; set up with the
+  link and the email's capitals cleaned; three posts drafted, a picture from outside the Library and a platform they do not have refused; sent;
+  the post 30 hours away approved on its own, one approved by the owner, an empty change note refused, a change asked, the owner refused
+  editing and a stranger refused approving; a TikTok link on Instagram and posting an unapproved post refused, one posted with its link; the
+  reworked post back to draft; the manager's list right; the sweep refused a wrong secret; then every row removed (through the one-time
+  `ve-once-social-cleanup`, now the 410 stub, as the connector held the delete). **Not yet (phase 2)**: social numbers (followers and reach)
+  in the monthly report, paying the social manager (gig work, Stripe Connect), a reminder when a post is due to go out, and posting through
+  the platforms' APIs once the Meta tokens are in.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
@@ -780,7 +812,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31). Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31); the social add-on, phase 1 (built 2026-10-31). Then
+  social phase 2 and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
