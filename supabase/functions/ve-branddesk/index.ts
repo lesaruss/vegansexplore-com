@@ -1827,7 +1827,7 @@ async function sites(req: Request, b: any, m: any) {
   if (!admin) return json({ error: 'admin_only' }, 403);
   if (action === 'site_start') {
     if (s) return await out();
-    const { data: kit } = await db.from('ve_cartridges').select('id').eq('listing_id', a.listing_id).maybeSingle();
+    const { data: kit } = await db.from('ve_cartridges').select('listing_id').eq('listing_id', a.listing_id).maybeSingle();
     if (!kit) return json({ error: 'no_kit', message: 'Start their brand kit first.' }, 409);
     const { data: made, error } = await db.from('ve_branddesk_sites').insert({ account_id: a.id, listing_id: a.listing_id, preview_token: siteToken(), created_by: m.id }).select('*').single();
     if (error) throw error;
