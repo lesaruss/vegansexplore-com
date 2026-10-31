@@ -3,5 +3,5 @@
   "private": true,
   "description": "BrandDesk client websites: one shared hosting project, every client site served from its Cartridge on the frame (business/site.html).",
   "scripts": { "build": "node build.js" },
-  "engines": { "node": ">=20" }
+  "engines": { "node": ">=22" }
 }

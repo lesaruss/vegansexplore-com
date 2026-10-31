@@ -15,6 +15,6 @@ fs.mkdirSync(fn, { recursive: true });
 fs.mkdirSync(path.join(out, 'static'), { recursive: true });
 fs.copyFileSync(path.join(__dirname, 'server.js'), path.join(fn, 'index.js'));
 fs.writeFileSync(path.join(fn, 'frame.js'), 'module.exports = ' + JSON.stringify(frame) + ';\n');
-fs.writeFileSync(path.join(fn, '.vc-config.json'), JSON.stringify({ runtime: 'nodejs20.x', handler: 'index.js', launcherType: 'Nodejs', shouldAddHelpers: false, maxDuration: 15 }));
+fs.writeFileSync(path.join(fn, '.vc-config.json'), JSON.stringify({ runtime: 'nodejs22.x', handler: 'index.js', launcherType: 'Nodejs', shouldAddHelpers: false, maxDuration: 15 }));
 fs.writeFileSync(path.join(out, 'config.json'), JSON.stringify({ version: 3, routes: [{ src: '/(.*)', dest: '/site' }] }, null, 2));
 console.log('branddesk-sites: frame ' + frame.length + ' bytes, output written');
