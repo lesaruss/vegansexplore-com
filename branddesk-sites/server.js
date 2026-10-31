@@ -23,7 +23,8 @@ async function lookup(key, body, fresh) {
     const r = await fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(9000) });
     d = await r.json();
   } catch (e) { if (hit) return hit.d; return { ok: false, error: 'unreachable' }; }
-  if (d && (d.ok || d.error === 'not_found' || d.error === 'offline')) cache.set(key, { at: Date.now(), d });
+  // Only a working site is kept (30 s), so a site put back up or newly connected answers at once; a takedown shows within about a minute.
+  if (d && d.ok) cache.set(key, { at: Date.now(), d }); else cache.delete(key);
   return d;
 }
 
