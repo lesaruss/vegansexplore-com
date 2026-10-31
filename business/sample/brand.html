@@ -118,6 +118,7 @@
     .bk-bigph{width:100%;max-width:420px;aspect-ratio:4/5;object-fit:cover;border-radius:12px;display:flex;background:#f3f4f6;}
     .bk-bigph.bk-empty{align-items:center;justify-content:center;font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.1em;text-transform:uppercase;color:#6b7280;}
     .bk-soon{max-width:720px;}
+    .bk-two{grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));max-width:none;}
     .bk-warn{background:#fef3c7;color:#713f12;border-radius:10px;padding:12px 16px;font-size:14px;line-height:1.5;margin-bottom:20px;}
     @media (max-width:900px){.bk-wide{grid-template-columns:minmax(0,1fr);}.bk-cover{grid-template-columns:minmax(0,1fr);gap:22px;}.bk-scroll{max-height:none;}.bk-item{grid-template-columns:64px minmax(0,1fr);}.bk-item .bk-price{grid-column:2;}.bk-thumb{width:64px;height:64px;}
       .bk-ed-box{inset:0;border-radius:0;}.bk-ed-cols{grid-template-columns:minmax(0,1fr);}.bk-ed-body{padding:18px 16px;}.bk-ed-head,.bk-ed-foot{padding:12px 16px;}.bk-role{grid-template-columns:48px minmax(0,1fr);}.bk-role .hex{grid-column:2;}.bk-mrow{grid-template-columns:56px minmax(0,1fr);}.bk-mrow .bk-price,.bk-mrow .bk-tag{grid-column:2;justify-self:start;}}
@@ -242,8 +243,10 @@
 
       sect('type', 'Type', 'Two typefaces', shown('type') ? '<b>' + esc(B.type.heading.family) + '</b> for headings: ' + esc(B.type.heading.why) + ' <b>' + esc(B.type.body.family) + '</b> for everything else: ' + esc(B.type.body.why) : 'We pair two typefaces with your logo and show them on your real menu. You approve.', function () {
         var it = C.menu.sections[0].items[0];
-        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px">Come hungry.</p><p class="bk-type-h" style="font-size:26px">' + esc(C.menu.sections[0].name) + '</p>' +
-          '<p class="bk-type-h" style="font-size:18px">' + esc(it.name) + ' · ' + esc(it.price) + '</p><p style="margin:10px 0 0">' + esc(it.copy) + '</p></div>';
+        var T = B.type, hf = "font-family:'" + T.heading.family + "',sans-serif;font-weight:" + T.heading.weight + ';';
+        if (T.google && !document.querySelector('link[href="' + T.google + '"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = T.google; document.head.appendChild(l); }
+        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px;' + hf + '">' + esc(shown('voice') ? C.voice.samples.hero : 'Come hungry.') + '</p><p class="bk-type-h" style="font-size:26px;' + hf + '">' + esc(C.menu.sections[0].name) + '</p>' +
+          '<p class="bk-type-h" style="font-size:18px;' + hf + '">' + esc(it.name) + ' · ' + esc(it.price) + '</p><p style="margin:10px 0 0;font-family:\'' + T.body.family + '\',sans-serif">' + esc(it.copy) + '</p></div>';
       });
 
       var V = C.voice;
@@ -535,26 +538,154 @@
       };
     }
 
-    // The other editors are built next; until then each says what it will do, so nothing pretends to work.
-    var SOON = {
-      logo: 'Upload your logo (a file or a photo of your sign). We clean it up and make the vector, reversed, mark-only, one-line, social and delivery-app versions, and each one appears here to approve.',
-      type: 'Pick from heading and text pairs chosen to match your logo, each shown on your real menu, then lock it in.',
-      voice: 'A short course on finding your voice: how you would greet a regular, three words that describe you, examples from other businesses, then the words you use and never use. It writes sample lines for your site, Instagram and Google replies for you to approve.',
-      story: 'Write it in your words or press Suggest and our AI drafts it from your old website and your answers. Edit any word, then lock it in.',
-      menu: 'Every item with its price, tags and description. Add new items, upload a photo onto each one, or press Suggest for a description in your voice. New items go on your website.',
-      photos: 'Every shot on the list takes its upload. Your photographer or Community Manager can upload here too. Each one is checked against the standard.',
-      info: 'Hours for each day, holiday hours, address, phone, parking and accessibility, and your ordering system.'
-    };
-    function editSoon(k, title) {
-      openEd(title, '<div class="bk-soon"><h4>Coming next</h4><p style="font-size:15px;line-height:1.65">' + esc(SOON[k]) + '</p>' + howCard(k).replace('bk-card bk-how', 'bk-card bk-how" style="box-shadow:none;border:1px solid #e5e7eb') + '</div>',
-        '<span class="bk-msg">This editor is being built. Colors, Voice and Menu work today.</span><button class="bk-b ghost" type="button" data-ed-close>Close</button>');
+    // ---- A paginated editor: step names on top, Back / Step N of M / Next, the last step holds Save draft and Lock it in.
+    function stepper(title, steps, onDone) {
+      var i = 0;
+      function draw() {
+        edBody.innerHTML = '<div class="bk-steps">' + steps.map(function (s, n) { return '<span class="' + (n === i ? 'on' : '') + '">' + (n + 1) + '. ' + esc(s.name) + '</span>'; }).join('') + '</div>' + steps[i].draw();
+        var last = i === steps.length - 1, ready = !steps[i].ready || steps[i].ready();
+        edFoot.innerHTML = '<span class="bk-msg">Step ' + (i + 1) + ' of ' + steps.length + '</span>' + (i ? '<button class="bk-b ghost" type="button" data-s-back>Back</button>' : '<button class="bk-b ghost" type="button" data-ed-close>Cancel</button>') +
+          (last ? '<button class="bk-b ghost" type="button" data-s-save' + (ready ? '' : ' disabled') + '>Save draft</button><button class="bk-b" type="button" data-s-lock' + (ready ? '' : ' disabled') + '>Lock it in</button>' : '<button class="bk-b" type="button" data-s-next>Next</button>');
+        edBody.scrollTop = 0; if (steps[i].after) steps[i].after();
+      }
+      openEd(title, '', ''); edBody.oninput = null; edBody.onchange = null; edBody.onclick = null;
+      edFoot.onclick = function (e) {
+        if (e.target.closest('[data-s-back]')) { steps[i].keep && steps[i].keep(true); i--; draw(); return; }
+        if (e.target.closest('[data-s-next]')) { if (steps[i].keep && steps[i].keep() === false) return; i++; draw(); return; }
+        var lock = e.target.closest('[data-s-lock]'), sv = e.target.closest('[data-s-save]'); if (!lock && !sv) return;
+        if (steps[i].keep && steps[i].keep() === false) return;
+        try { onDone(!!lock); closeEd(); } catch (err) { alertIn('This sample could not keep that for the visit. Try a smaller picture.'); }
+      };
+      return { draw: draw };
+    }
+
+    // ---- Story: their answers, then the story written from them (Suggest), every word editable.
+    function editStory() {
+      var a = (C.story && C.story.answers) || {}, d = shown('story') ? { tagline: C.story.tagline, short: C.story.short, long: C.story.long.slice() } : null, S;
+      S = stepper('Story', [
+        { name: 'Your answers', draw: function () {
+            return '<div class="bk-form">' + field('How did it start?', 'start', a.start, { area: true, rows: 3, max: 600, ph: 'Who, when, and why this corner' }) +
+              field('What do you cook?', 'food', a.food, { area: true, rows: 2, max: 400 }) + field('Who comes in?', 'who', a.who, { area: true, rows: 2, max: 400 }) +
+              field('What are you proud of?', 'proud', a.proud, { area: true, rows: 2, max: 400 }) +
+              field('Your old About text, if you have one', 'old', a.old, { area: true, rows: 4, max: 1200, help: 'Paste it from your current website. We keep what is true and say it better.' }) + '</div>'; },
+          keep: function (back) { ['start', 'food', 'who', 'proud', 'old'].forEach(function (k) { a[k] = val(edBody, k); }); if (!back && !a.start && !a.old) { alertIn('Tell us how it started, or paste your old About text.'); return false; } } },
+        { name: 'Your story', ready: function () { return !!d; }, draw: function () {
+            return '<div class="bk-sugg"><button class="bk-b" type="button" data-st-suggest>' + (d ? 'Write it again from my answers' : 'Write my story from my answers') + '</button><span class="bk-msg" id="bkSMsg"></span></div>' +
+              (d ? '<div class="bk-form">' + field('In one line', 'tagline', d.tagline, { max: 120 }) + field('In two sentences', 'short', d.short, { area: true, rows: 3, max: 320 }) +
+                field('About us', 'long', d.long.join('\n\n'), { area: true, rows: 9, help: 'A blank line starts a new paragraph.' }) + '</div>'
+                : '<p class="bk-muted">We write it from your answers, nothing you did not say. Then change any word.</p>'); },
+          after: function () {
+            edBody.onclick = function (e) {
+              var b = e.target.closest('[data-st-suggest]'); if (!b) return; var m = document.getElementById('bkSMsg');
+              b.disabled = true; m.textContent = 'Writing your story...';
+              suggest('story', { answers: a }).then(function (r) { d = { tagline: r.tagline, short: r.short, long: r.long }; S.draw(); })
+                .catch(function (err) { b.disabled = false; m.textContent = err.message; });
+            };
+          },
+          keep: function () { if (!d || !edBody.querySelector('[name="tagline"]')) return; d = { tagline: val(edBody, 'tagline'), short: val(edBody, 'short'), long: val(edBody, 'long').split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean) }; } }
+      ], function (lock) { C.story = { tagline: d.tagline, short: d.short, long: d.long, answers: a }; setState('story', lock ? 'locked' : 'in_progress'); });
+      S.draw();
+    }
+
+    // ---- Hours and details: three steps.
+    var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], POS = ['Square', 'Toast', 'Clover', 'Other', 'None yet'];
+    function editInfo() {
+      var I = JSON.parse(JSON.stringify(C.info));
+      stepper('Hours and details', [
+        { name: 'Hours', draw: function () { return '<div class="bk-form bk-two">' + DAYS.map(function (dname) { return field(dname, 'h_' + dname, I.hours[dname], { max: 40, ph: '8 AM to 3 PM, or Closed' }); }).join('') + '</div><p class="bk-muted" style="margin-top:12px">Holiday hours are set from your dashboard once you launch.</p>'; },
+          keep: function () { DAYS.forEach(function (dname) { I.hours[dname] = val(edBody, 'h_' + dname) || 'Closed'; }); } },
+        { name: 'Find us', draw: function () { return '<div class="bk-form bk-two">' + field('Street', 'street', I.address.street) + field('City', 'city', I.address.city) + field('State', 'state', I.address.state, { max: 20 }) + field('ZIP', 'zip', I.address.zip, { max: 10 }) +
+            field('Phone', 'phone', I.phone, { max: 20 }) + field('Email', 'email', I.email, { max: 120 }) + '</div><div class="bk-form" style="margin-top:14px">' + field('Good to know (one a line)', 'details', I.details.join('\n'), { area: true, rows: 4, help: 'Parking, patio, accessibility, dogs, kids.' }) + '</div>'; },
+          keep: function (back) { I.address = { street: val(edBody, 'street'), city: val(edBody, 'city'), state: val(edBody, 'state'), zip: val(edBody, 'zip') }; I.phone = val(edBody, 'phone'); I.email = val(edBody, 'email'); I.details = lines(val(edBody, 'details'));
+            if (!back && (!I.address.street || !I.address.city || !I.phone)) { alertIn('We need the street, the city and a phone number.'); return false; } } },
+        { name: 'Ordering', draw: function () {
+            return '<div class="bk-form"><label class="bk-f"><span>What do you ring orders up on?</span><select name="pos">' + POS.map(function (p) { return '<option' + (p === I.ordering.pos ? ' selected' : '') + '>' + p + '</option>'; }).join('') + '</select><small>Square connects first. Toast and the others come next. Until then, Order on your site goes to the link below.</small></label>' +
+              field('Where people order online today', 'order_url', I.ordering.order_url, { ph: 'https://...', max: 300 }) + '</div>'; },
+          keep: function () { var p = val(edBody, 'pos'); I.ordering = { pos: p, state: p === 'None yet' ? 'not_started' : 'to_connect', order_url: val(edBody, 'order_url') || null, note: I.ordering.note }; } }
+      ], function (lock) { C.info = I; setState('info', lock ? 'locked' : 'in_progress'); }).draw();
+    }
+
+    // ---- Type: pairings matched to the logo, each shown on their real name and menu.
+    var PAIRS = [
+      { h: 'Nunito', hw: 900, b: 'DM Sans', feel: 'Round and friendly, like a neighborhood sign.' },
+      { h: 'Fraunces', hw: 800, b: 'Work Sans', feel: 'Warm and a little old-fashioned, like a bakery chalkboard.' },
+      { h: 'Archivo Black', hw: 400, b: 'Inter', feel: 'Bold and loud, like a burger shack or a food truck.' },
+      { h: 'Playfair Display', hw: 800, b: 'Lato', feel: 'Elegant and grown up, for dinner and cocktails.' }
+    ];
+    function loadFonts(list) { var id = 'bkFonts'; if (document.getElementById(id)) return; var l = document.createElement('link'); l.id = id; l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?' + list.map(function (f) { return 'family=' + f.replace(/ /g, '+') + ':wght@400;700;800;900'; }).join('&') + '&display=swap'; document.head.appendChild(l); }
+    function editType() {
+      loadFonts(['Fraunces', 'Work Sans', 'Archivo Black', 'Inter', 'Playfair Display', 'Lato']);
+      var cur = shown('type') ? C.brand.type.heading.family : PAIRS[0].h, it = C.menu.sections[0].items[0];
+      openEd('Type', '<p class="bk-soon" style="font-size:15px;line-height:1.65;margin-bottom:18px">Two typefaces: one for headings, one for everything else. Each pair is shown on your name and your menu. Pick the one that sounds like you.</p><div class="bk-grid">' + PAIRS.map(function (p) {
+        return '<button type="button" class="bk-preset bk-tp' + (p.h === cur ? ' on' : '') + '" data-type="' + esc(p.h) + '" style="padding:18px"><span style="display:block;font-family:\'' + p.h + '\';font-weight:' + p.hw + ';font-size:28px;line-height:1.1;margin-bottom:8px">' + esc(C.business.name) + '</span>' +
+          '<span style="display:block;font-family:\'' + p.h + '\';font-weight:' + p.hw + ';font-size:17px">' + esc(it.name) + ' · ' + esc(it.price) + '</span><span style="display:block;font-family:\'' + p.b + '\';font-size:14px;line-height:1.5;margin:6px 0 10px">' + esc(it.copy || it.was) + '</span>' +
+          '<small style="display:block;color:#6b7280">' + esc(p.h) + ' and ' + esc(p.b) + '. ' + esc(p.feel) + '</small></button>'; }).join('') + '</div>',
+        '<span class="bk-msg">Matched to your logo by our team. You approve.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-t-save>Save draft</button><button class="bk-b" type="button" data-t-lock>Lock it in</button>');
+      edBody.oninput = null; edBody.onchange = null;
+      edBody.onclick = function (e) { var b = e.target.closest('[data-type]'); if (!b) return; cur = b.dataset.type; edBody.querySelectorAll('.bk-tp').forEach(function (x) { x.classList.toggle('on', x === b); }); };
+      edFoot.onclick = function (e) {
+        var lock = e.target.closest('[data-t-lock]'), sv = e.target.closest('[data-t-save]'); if (!lock && !sv) return;
+        var p = PAIRS.filter(function (x) { return x.h === cur; })[0];
+        C.brand.type = { heading: { family: p.h, weight: p.hw, why: p.feel }, body: { family: p.b, weight: 400, why: 'Plain and easy at small sizes: menus, hours, prices.' },
+          google: 'https://fonts.googleapis.com/css2?family=' + p.h.replace(/ /g, '+') + ':wght@' + p.hw + '&family=' + p.b.replace(/ /g, '+') + ':wght@400;700&display=swap' };
+        setState('type', lock ? 'locked' : 'in_progress'); closeEd();
+      };
+    }
+
+    // ---- Logo: their file in, our files out.
+    function shrinkKeep(file, max) {
+      return new Promise(function (res, rej) {
+        var img = new Image(), url = URL.createObjectURL(file);
+        img.onload = function () { var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res({ src: c.toDataURL(/png|svg|webp/.test(file.type) ? 'image/png' : 'image/jpeg', 0.86), w: img.width, h: img.height }); };
+        img.onerror = function () { rej(new Error('That file is not a picture we can read.')); }; img.src = url;
+      });
+    }
+    function editLogo() {
+      var L = JSON.parse(JSON.stringify(C.brand.logo)), src = shown('logo') ? L.primary.src : '';
+      function draw() {
+        edBody.innerHTML = '<div class="bk-ed-cols"><div><h4>Your logo</h4>' + (src ? '<img src="' + esc(src) + '" alt="Your logo" class="bk-bigph" style="aspect-ratio:1;object-fit:contain;background:#f9fafb">' : '<div class="bk-bigph bk-empty" style="aspect-ratio:1">No logo yet</div>') +
+          '<label class="bk-b" style="margin-top:12px;cursor:pointer">' + (src ? 'Replace it' : 'Upload your logo') + '<input type="file" accept="image/*" data-l-file hidden></label><p class="bk-muted" id="bkLMsg" style="margin-top:10px">Any file you have: a PNG, an SVG, or a clear photo of your sign.</p></div>' +
+          '<div><h4>The files we make from it</h4>' + L.files.map(function (f) { return '<div class="bk-check"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
+          '<p class="bk-muted" style="margin-top:12px">Each file appears here for you to approve as we finish it. You keep every one of them.</p></div></div>';
+      }
+      openEd('Logo', '', '<span class="bk-msg">Lock it in when this is the logo you want everywhere.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-l-save>Save draft</button><button class="bk-b" type="button" data-l-lock>Lock it in</button>');
+      draw(); edBody.oninput = null; edBody.onclick = null;
+      edBody.onchange = function (e) { var f = e.target.closest('[data-l-file]'); if (!f || !f.files[0]) return;
+        shrinkKeep(f.files[0], 900).then(function (p) { src = p.src; draw(); var m = document.getElementById('bkLMsg'); m.textContent = Math.min(p.w, p.h) < 400 ? 'Got it. It is small (' + p.w + ' x ' + p.h + ' px), so we will redraw it as a clean vector.' : 'Got it.'; })
+          .catch(function (err) { document.getElementById('bkLMsg').textContent = err.message; }); };
+      edFoot.onclick = function (e) { var lock = e.target.closest('[data-l-lock]'), sv = e.target.closest('[data-l-save]'); if (!lock && !sv) return;
+        if (!src) { alertIn('Upload your logo first.'); return; }
+        L.primary = { src: src, state: 'have', note: L.primary.note && shown('logo') ? L.primary.note : 'Their logo as they sent it. We make the other files from it.' }; L.files[0].state = 'have'; C.brand.logo = L;
+        try { setState('logo', lock ? 'locked' : 'in_progress'); closeEd(); } catch (err) { alertIn('That picture is too big for this sample. Try a smaller one.'); } };
+    }
+
+    // ---- Photos: every shot of the space and the team takes its upload (menu photos go on each menu item).
+    function editPhotos() {
+      var sp = JSON.parse(JSON.stringify(C.photos.space)), menuN = 0, menuShot = 0;
+      C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { menuN++; if (i.photo && i.photo.src) menuShot++; }); });
+      function draw() {
+        edBody.innerHTML = '<div class="bk-sugg"><b>The space and the team · ' + sp.filter(function (s) { return s.src; }).length + ' of ' + sp.length + '</b><span class="bk-muted">Menu photos: ' + menuShot + ' of ' + menuN + ', uploaded on each item in Menu.</span></div>' +
+          sp.map(function (s, n) { var ph = s.src ? '<img class="bk-thumb" src="' + esc(s.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+            return '<div class="bk-mrow" style="cursor:default">' + ph + '<span><b>' + esc(s.shot) + '</b><small>' + (s.src ? 'Shot' : 'For your photographer') + '</small></span><span></span><label class="bk-b ghost" style="cursor:pointer;min-height:36px;padding:8px 14px">' + (s.src ? 'Replace' : 'Upload') + '<input type="file" accept="image/*" data-p-file="' + n + '" hidden></label></div>'; }).join('') +
+          '<p class="bk-muted" id="bkPMsg" style="margin-top:10px">Your photographer or Community Manager can upload here too. Every photo is checked against the standard.</p>';
+      }
+      openEd('Photos', '', '<span class="bk-msg">Lock it in when every shot is in.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-p-save>Save draft</button><button class="bk-b" type="button" data-p-lock>Lock it in</button>');
+      draw(); edBody.oninput = null; edBody.onclick = null;
+      edBody.onchange = function (e) { var f = e.target.closest('[data-p-file]'); if (!f || !f.files[0]) return; var n = +f.dataset.pFile;
+        shrink(f.files[0]).then(function (p) { sp[n].src = p.src; sp[n].state = 'shot'; draw(); }).catch(function (err) { document.getElementById('bkPMsg').textContent = err.message; }); };
+      edFoot.onclick = function (e) { var lock = e.target.closest('[data-p-lock]'), sv = e.target.closest('[data-p-save]'); if (!lock && !sv) return;
+        var missing = sp.filter(function (s) { return !s.src; }).length;
+        if (lock && missing) { alertIn(missing + ' shots still to upload. Save a draft until they are in.'); return; }
+        C.photos.space = sp; try { setState('photos', lock ? 'locked' : 'in_progress'); closeEd(); } catch (err) { alertIn('This sample could not keep that many photos for the visit.'); } };
     }
 
     document.addEventListener('click', function (e) {
       var r = e.target.closest('[data-reset]'); if (r) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.reload(); return; }
       var b = e.target.closest('[data-edit]'); if (!b) return;
       var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
-      if (k === 'colors') editColors(); else if (k === 'voice') editVoice(); else if (k === 'menu') editMenu(); else editSoon(k, title);
+      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos })[k]();
       if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
     });
 

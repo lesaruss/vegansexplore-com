@@ -496,8 +496,14 @@ judge whether food is safe by how a place looks online; businesses want marketin
   photo uploaded onto the item, shrunk to 900 px in the browser for the sample), Remove item, Save draft, Lock it in. **Suggest** is the
   edge function `ve-brand-kit` (`suggest`, kinds `menu_item`, `story`, `voice`; Claude Opus 5.5, structured output, only the owner's own
   words and ingredients, Vegan capitalized, no dashes; 20 a day for a visitor, 200 for a signed-in member; every suggestion logged in
-  `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). The other editors (logo, type,
-  story, photos, info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). **Every section has its editor**
+  (2026-10-31): **Logo** (upload any file or a photo of the sign, the files we make from it listed with their state), **Type** (four
+  pairings shown on their own name and menu: Nunito and DM Sans, Fraunces and Work Sans, Archivo Black and Inter, Playfair Display and
+  Lato; the kit's Type slide then wears the pair), **Story** (two steps: how it started, what they cook, who comes in, what they are
+  proud of, their old About; then Suggest writes the one line, two sentences and About, every word editable), **Hours and details**
+  (three steps: each day's hours; street, city, state, ZIP, phone, email, good to know; what they ring orders up on, Square first, and
+  where people order online today), **Photos** (every shot of the space and the team takes its upload; menu photos go on each menu
+  item; Lock it in waits until every shot is in). Multi-step editors share `stepper()` (step names, Back / Step N of M / Next). Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
