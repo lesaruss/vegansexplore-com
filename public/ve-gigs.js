@@ -154,23 +154,30 @@
     '@media (max-width:600px){.vg-tour-at{order:-1;flex-basis:100%;}.vg-tour{justify-content:space-between;}}',
     '.vg-thumb{flex:0 0 56px;width:56px;height:56px;border-radius:10px;background:var(--gl) center/cover no-repeat;color:var(--g);display:flex;align-items:center;justify-content:center;}',
     '.vg-tt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:3px;}',
-    '.vg-tile{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,3fr);gap:14px;align-items:start;}',
-    '.vg-tile>.vg-thumb{width:100%;height:auto;aspect-ratio:1/1;border-radius:12px;}.vg-tile>.vg-thumb svg{width:34%;height:auto;}',
-    '.vg-tile-r{min-width:0;display:flex;flex-direction:column;gap:6px;height:100%;}',
-    '.vg-kindrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}',
+    '.vg-tile{gap:12px;}',
+    '.vg-tile-h{display:grid;grid-template-columns:104px minmax(0,1fr);gap:14px;align-items:start;}',
+    '.vg-tile-h>.vg-thumb{width:104px;height:104px;border-radius:12px;}.vg-tile-h>.vg-thumb svg{width:36px;height:36px;}',
+    '.vg-tile-r{min-width:0;display:flex;flex-direction:column;gap:4px;}',
+    '.vg-tile-r .vg-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.vg-tile-r .vg-line,.vg-tile-r .vg-next{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.vg-tile .vg-tags{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);}',
+    '.vg-tag.mode{background:#1a1a1a;color:#fff;}.vg-tag.mode.aud{background:#7a4b00;}',
+    '.vg-tag.kind{background:#e9eefb;color:#2f4a8a;}',
+    '.vg-tag.place{background:#fff;color:#1a1a1a;box-shadow:inset 0 0 0 1px var(--line);}',
+    '@media (max-width:700px){.vg-tile-h{grid-template-columns:84px minmax(0,1fr);}.vg-tile-h>.vg-thumb{width:84px;height:84px;}}',
     '.vg-ico{flex:0 0 44px;width:44px;height:44px;border-radius:10px;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center;}',
     '.vg-go-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}',
-    '.vg-top2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:stretch;margin:0 0 16px;}',
-    '.vg-kai-box{display:flex;gap:12px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:10px 12px;min-width:0;}',
-    '.vg-kai-box>i{flex:0 0 64px;height:64px;border-radius:10px;background:#fff center 20%/cover no-repeat;}',
-    '.vg-kai-box p{margin:0 0 6px;font-size:13.5px;line-height:1.5;}.vg-kai-box b{color:var(--g);}',
-    '.vg-top2 .vg-tour{margin:0;flex-direction:column;justify-content:center;gap:8px;}',
-    '.vg-top2 .vg-tour-r{display:flex;width:100%;justify-content:space-between;gap:8px;}',
-    '.vg-top2 .vg-tour-at{flex:0 0 auto;}',
+    '.vg-gbar{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:6px 16px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:14px 16px 0;margin:0 0 16px;overflow:hidden;}',
+    '.vg-gbar>i{width:72px;height:72px;border-radius:12px;background:#fff center 20%/cover no-repeat;grid-row:1;}',
+    '.vg-gbar-at{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin:0 0 4px;}.vg-gbar-at em{font-style:normal;color:#1a1a1a;}',
+    '.vg-gbar-t p{margin:0 0 8px;font-size:14px;line-height:1.5;}.vg-gbar-t p b{color:var(--g);}',
+    '.vg-gbar-nav{display:flex;gap:8px;align-items:center;}.vg-gbar-nav .vg-btn{min-height:40px;padding:9px 16px;white-space:nowrap;}',
+    '.vg-gbar-prog{grid-column:1/-1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin:8px -16px 0;}',
+    '.vg-gbar-prog span{height:5px;background:var(--gm);}.vg-gbar-prog span.on{background:var(--g);}',
+    '@media (max-width:760px){.vg-gbar{grid-template-columns:56px minmax(0,1fr);}.vg-gbar>i{width:56px;height:56px;align-self:start;}.vg-gbar-nav{grid-column:1/-1;justify-content:space-between;}}',
     '.vg-kai-play{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;min-height:34px;border-radius:6px;border:1.5px solid var(--g);background:#fff;color:var(--g);cursor:pointer;}',
     '.vg-kai-play[aria-pressed=true]{background:var(--g);color:#fff;}',
     '.vg-kai .vg-kai-play{margin-top:10px;}',
-    '@media (max-width:820px){.vg-top2{grid-template-columns:minmax(0,1fr);}}',
     '.vg :focus-visible{outline:3px solid #F69820;outline-offset:2px;}'
   ].join('');
 
@@ -352,26 +359,31 @@
         (title || '') + (active === 'dashboard' || active === 'board' ? strip() : '');
     }
 
+    function modeTag(g) { return '<span class="vg-tag mode' + (g.mode === 'audition' ? ' aud' : '') + '">' + esc(MODE[g.mode]) + '</span>'; }
+    function kindTag(g) { return '<span class="vg-tag kind">' + esc(KIND[g.kind] || g.kind) + '</span>'; }
     function card(g) {
       var ch = checks(g, C), ok = ch.every(function (x) { return x.ok; }), m = mineOf(g.id), miss = ch.filter(function (x) { return !x.ok; })[0];
-      return '<a class="vg-card vg-tile' + (ok ? '' : ' no') + '" href="#gig/' + esc(g.id) + '">' + thumb(g.img, g.kind) + '<div class="vg-tile-r">' +
-        '<div class="vg-kindrow"><span class="vg-partner">' + esc(g.partner.name) + ' · ' + esc(KIND[g.kind] || g.kind) + '</span><span class="vg-tag ' + (g.mode === 'audition' ? 'warn' : '') + '">' + esc(MODE[g.mode]) + '</span></div>' +
-        '<div class="vg-title">' + esc(g.title) + '</div><div class="vg-pay">' + esc(payText(g.pay)) + '</div>' +
-        '<div class="vg-line">' + esc([where(g)].concat(ch.map(function (x) { return x.label; }).filter(function (l) { return !/^Shows up/.test(l); })).join(' · ')) + '</div>' +
-        '<div class="vg-tags">' + (m ? '<span class="vg-tag ' + STATUS[m.status][1] + '">' + STATUS[m.status][0] + '</span>' : ok ? '<span class="vg-tag ok">You qualify</span>' : '<span class="vg-tag no">' + esc(miss.need) + '</span>') +
+      // The tile (Sean, 2026-10-30: "clean... compact and not busy and uniformed"): the picture with the partner, title, pay and what it asks
+      // beside it, then every pill in one row under both, in one order, colored by what it is: how you get it, the kind, where, you, then facts.
+      var reqs = ch.map(function (x) { return x.label; }).filter(function (l) { return !/^Shows up/.test(l); });
+      return '<a class="vg-card vg-tile' + (ok ? '' : ' no') + '" href="#gig/' + esc(g.id) + '"><div class="vg-tile-h">' + thumb(g.img, g.kind) + '<div class="vg-tile-r">' +
+        '<span class="vg-partner">' + esc(g.partner.name) + '</span><div class="vg-title">' + esc(g.title) + '</div><div class="vg-pay">' + esc(payText(g.pay)) + '</div>' +
+        (reqs.length ? '<div class="vg-line">' + esc(reqs.join(' · ')) + '</div>' : '') + '</div></div>' +
+        '<div class="vg-tags">' + modeTag(g) + kindTag(g) + '<span class="vg-tag place">' + esc(where(g)) + '</span>' +
+        (m ? '<span class="vg-tag ' + STATUS[m.status][1] + '">' + STATUS[m.status][0] + '</span>' : ok ? '<span class="vg-tag ok">You qualify</span>' : '<span class="vg-tag no">' + esc(miss.need) + '</span>') +
         '<span class="vg-tag">' + esc(closesText(g)) + '</span>' + (g.spots ? '<span class="vg-tag">' + g.spots + (g.spots === 1 ? ' spot' : ' spots') + '</span>' : '') +
-        (g.applicants ? '<span class="vg-tag">' + num(g.applicants) + ' applied</span>' : '') + '</div></div></a>';
+        (g.applicants ? '<span class="vg-tag">' + num(g.applicants) + ' applied</span>' : '') + '</div></a>';
     }
 
     // My gigs wear the board's tile (Sean, 2026-10-30: "my gigs should look the same way... three columns"), with where it stands.
     function mineCard(m) {
       var g = gig(m.gig), s = STATUS[m.status], aud = g && m.status === 'audition' && (g.asks || []).indexOf('audition') > -1;
       // Where it stands is the first pill at the bottom (Sean, 2026-10-30: "we could put the booked as the first thing in the bottom pills").
-      var inner = thumb(g ? g.img : m.img, g ? g.kind : 'content') + '<div class="vg-tile-r"><span class="vg-partner">' + esc(g ? g.partner.name + ' · ' + (KIND[g.kind] || g.kind) : 'Past gig') + '</span><div class="vg-title">' + esc(g ? g.title : m.title) + '</div>' +
+      var inner = '<div class="vg-tile-h">' + thumb(g ? g.img : m.img, g ? g.kind : 'content') + '<div class="vg-tile-r"><span class="vg-partner">' + esc(g ? g.partner.name : 'Past gig') + '</span><div class="vg-title">' + esc(g ? g.title : m.title) + '</div>' +
         (g ? '<div class="vg-pay">' + esc(payText(g.pay)) + '</div>' : '') +
-        (m.next ? '<div class="vg-next' + (aud ? ' warn' : '') + '">' + esc(m.next) + '</div>' : '') +
-        '<div class="vg-tags"><span class="vg-tag ' + s[1] + '">' + s[0] + '</span>' + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') + (g ? '<span class="vg-tag">' + esc(where(g)) + '</span>' : '') +
-        (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div></div>';
+        (m.next ? '<div class="vg-next' + (aud ? ' warn' : '') + '">' + esc(m.next) + '</div>' : '') + '</div></div>' +
+        '<div class="vg-tags"><span class="vg-tag ' + s[1] + '">' + s[0] + '</span>' + (g ? kindTag(g) + '<span class="vg-tag place">' + esc(where(g)) + '</span>' : '') + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') +
+        (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div>';
       var href = aud ? '#apply/' + g.id + '/' + ((g.asks || []).indexOf('audition') + 1) : g ? '#gig/' + g.id : '';
       return href ? '<a class="vg-card vg-tile" href="' + esc(href) + '">' + inner + '</a>' : '<div class="vg-card vg-tile">' + inner + '</div>';
     }
@@ -603,12 +615,15 @@
       var j = i + dir; if (j < 0 || j >= TOUR.length) return '';
       var n = TOUR[j]; return '#' + (n.subs ? 'profile/' + n.subs[dir > 0 ? 0 : n.subs.length - 1] : n.v === 'join' ? 'join/1' : n.v);
     }
-    function tourBar(h, where) {
+    function tourNav(h) {
       var at = tourAt(h), t = TOUR[at.i], back = tourHash(at.i, at.sub, -1), next = t.v === 'join' ? '' : tourHash(at.i, at.sub, 1);
       var nextName = next ? (t.subs && at.sub < t.subs.length - 1 ? 'Next view' : 'Next: ' + TOUR[at.i + 1].name) : '';
-      var bk = back ? '<a class="vg-btn ghost" href="' + back + '">Back</a>' : '<span></span>', nx = next ? '<a class="vg-btn" href="' + next + '">' + esc(nextName) + '</a>' : '<span></span>';
-      var atx = '<span class="vg-tour-at">Step ' + (at.i + 1) + ' of ' + TOUR.length + ' <em>· ' + esc(t.name) + (t.subs ? ' (' + (at.sub + 1) + ' of ' + t.subs.length + ')' : '') + '</em></span>';
-      return '<nav class="vg-tour' + (where === 'bottom' ? ' bottom' : '') + '" aria-label="Walkthrough">' + (where === 'top' ? atx + '<div class="vg-tour-r">' + bk + nx + '</div>' : bk + atx + nx) + '</nav>';
+      return { at: at, t: t, bk: back ? '<a class="vg-btn ghost" href="' + back + '">Back</a>' : '<span></span>', nx: next ? '<a class="vg-btn" href="' + next + '">' + esc(nextName) + '</a>' : '<span></span>',
+        label: 'Step ' + (at.i + 1) + ' of ' + TOUR.length + ' <em>· ' + esc(t.name) + (t.subs ? ' (' + (at.sub + 1) + ' of ' + t.subs.length + ')' : '') + '</em>' };
+    }
+    function tourBar(h) {
+      var n = tourNav(h);
+      return '<nav class="vg-tour bottom" aria-label="Walkthrough">' + n.bk + '<span class="vg-tour-at">' + n.label + '</span>' + n.nx + '</nav>';
     }
     // Which of Kai's lines goes with a view: the step of the walkthrough, or a step of the application ('' when she has nothing to say).
     function lineKey(h) {
@@ -618,13 +633,15 @@
       if (v === 'join') { var n = parseInt(h[1], 10) || 1; return h[1] === 'done' ? '' : n === 1 && opts.tour !== false ? 'join' : 'form-' + Math.min(n, FORM.length); }
       return LINES[v] ? v : '';
     }
-    // After the landing, Kai sits at the top (Sean, 2026-10-30: "two column where one Kai in the text bubble is on the left and the back
-    // and next and open gigs is on the right, and two columns equal spacing, equal sizing... minimize the top row"), so the demo below
-    // has the full width.
+    // After the landing, Kai sits at the top so the demo below has the full width (Sean, 2026-10-30). One guide bar, not two boxes (Sean,
+    // the same day: "it doesn't look solid like the other ones... what if we put it in the same section where Kai is"): Kai, the step
+    // and her line, Back and Next, and a progress line of the seven steps along its foot.
     function topRow(h) {
-      var key = lineKey(h);
-      return '<div class="vg-top2"><div class="vg-kai-box"><i style="background-image:url(\'' + esc(KAI_IMG) + '\')" role="img" aria-label="Kai Monroe"></i><div><p><b>Kai:</b> ' + esc(LINES[key] || '') + '</p>' +
-        (key ? voice.button(key) : '') + '</div></div>' + tourBar(h, 'top') + '</div>';
+      var key = lineKey(h), n = tourNav(h), prog = '';
+      for (var i = 0; i < TOUR.length; i++) prog += '<span class="' + (i <= n.at.i ? 'on' : '') + '"></span>';
+      return '<nav class="vg-gbar" aria-label="Walkthrough"><i style="background-image:url(\'' + esc(KAI_IMG) + '\')" role="img" aria-label="Kai Monroe"></i>' +
+        '<div class="vg-gbar-t"><div class="vg-gbar-at">' + n.label + '</div><p><b>Kai:</b> ' + esc(LINES[key] || '') + '</p>' + (key ? voice.button(key) : '') + '</div>' +
+        '<div class="vg-gbar-nav">' + n.bk + n.nx + '</div><div class="vg-gbar-prog" aria-hidden="true">' + prog + '</div></nav>';
     }
 
     // The creator application (Sean, 2026-10-30: "We want to know as much as we can about them to see the scope of what we can apply them
@@ -711,7 +728,7 @@
         : h[0] === 'join' ? V.join(h[1]) : h[0] === 'dashboard' ? V.dashboard() : guide ? V.overview() : V.dashboard();
       if (guide && opts.tour !== false && !(h[0] === 'join' && h[1] === 'done')) {
         var land = h[0] === 'overview' || !h[0], fin = h[0] === 'join' || land;
-        html = (land ? '' : topRow(h)) + html + (fin ? '' : tourBar(h, 'bottom'));
+        html = (land ? '' : topRow(h)) + html + (fin ? '' : tourBar(h));
       }
       el.innerHTML = BASE === '#' ? html : html.replace(/href="#(?!\/)/g, 'href="' + BASE);
       promoStep(h);

@@ -1141,7 +1141,9 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   she is at the top of the screen... two column where one Kai in the text bubble is on the left and the back and next and open gigs is
   on the right... minimize the top row... we want them to see the full demo"). The walkthrough's landing keeps her on the right; every
   step after it opens with one row of two equal columns (`.vg-top2`, `topRow` in `ve-gigs.js`): Kai, her line and Play on the left, Step
-  N of 7 with Back and Next on the right (one column on phones), so the demo below runs full width. On every other tab she is in the
+  N of 7 with Back and Next on the right (one column on phones), so the demo below runs full width. Since the same day it is **one guide
+  bar** (`.vg-gbar`, Sean: "it doesn't look solid like the other ones... what if we put it in the same section where Kai is"): Kai,
+  Step N of 7 over her line and Play, Back and Next on the right, and a seven-part progress line along its foot. On every other tab she is in the
   Guide's rail (`data-guide="kai"`, `VE_GUIDE_ART.kai` in `footer.js`, `drawKai`), and on Become a creator her line is the tip for the
   application step on screen. The tabs end My list (members) or Get access, then **Become a creator**, always last. **Her voice**: every
   line is recorded (`LINES` in `ve-gigs.js` for the walkthrough and the application, each tab's `say` and `voice` in
@@ -1152,10 +1154,11 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   concurrent limit), so send them two at a time. **Every gig has a picture** (Sean: "each one should have a little square with rounded
   corner image... inviting and visual"): `img` on a gig (the sample's are `gigs/sample/img/gig-g<n>.webp`, illustrative, Higgsfield
   2026-10-30), shown square on the board's tiles and My gigs (so Up next too), else the flat icon of its kind (`thumb`, `ICON`); the
-  dashboard's four tiles wear flat icons. **The tile** (Sean, 2026-10-30: "the image being a fourth... have the text, have everything
-  else stretch out"): the picture a fourth of the tile on the left, everything else the three-fourths on the right (`.vg-tile`,
-  `.vg-tile-r`); on the board the first row is the partner and kind with Apply / Audition / Claim it beside it (`.vg-kindrow`), and on
-  My gigs where it stands (Booked, Audition requested...) is the first pill at the bottom. Your Creator Dashboard and Open gigs put
+  dashboard's four tiles wear flat icons. **The tile** (Sean, 2026-10-30: "clean... compact and not busy and uniformed"): the picture
+  (104 px, 84 on phones) with the partner, title, pay and one more line beside it (what it asks on the board, what happens next on My
+  gigs; `.vg-tile-h`, `.vg-tile-r`), then every pill in one row under both, colored by what it is and always in this order: how you get
+  it (Apply / Audition / Claim it, `.mode`), the kind (`.kind`), where (`.place`), then on the board You qualify or what it needs and the
+  facts (closes, spots, applied); on My gigs where it stands (Booked, Audition requested...) comes first. Your Creator Dashboard and Open gigs put
   their title above Kai's strip (`head(active, title)`).
   Not yet (Sean's direction): People doing it marking the creators who have registered with us, and the Pulse tab carrying articles
   for creators beside the podcasts, sortable.
