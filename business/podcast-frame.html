@@ -15,7 +15,7 @@
       ?kind=youtube   1920 x 1080  the full episode's video frame (the studio scene)
       ?kind=story     1080 x 1920  a Story or Reel frame
       ?kind=carousel  1080 x 1350  the first slide of a carousel
-    &title= &sub= (the line under it) &n= (episode number) &date= (YYYY-MM-DD) &kicker= (the small line on top)
+    &title= &sub= (the line under it) &n= (episode number) &date= (YYYY-MM-DD) &kicker= (the small line on top) &foot= &foot2= (the footer lines, for a post that is about Vegans Explore rather than the show) &last=1 (a carousel's last slide: no Swipe)
     Locked by Sean 2026-10-31: no characters on the cover art, the art carries no words, titles in Montserrat, the logo's colors.
   -->
   <style>
@@ -41,7 +41,7 @@
     var ART = { tower: M + 'art-b-v1.png', studio: M + 'art-c-v1.png' };
     var q = new URLSearchParams(location.search), kind = q.get('kind') || 'episode';
     var SIZE = { episode: [3000, 3000], youtube: [1920, 1080], story: [1080, 1920], carousel: [1080, 1350] }[kind] || [3000, 3000];
-    var title = q.get('title') || 'Founders Report', sub = q.get('sub') || '', n = q.get('n'), date = q.get('date'), kicker = q.get('kicker');
+    var title = q.get('title') || 'Vegans Explore Podcast', sub = q.get('sub') || '', n = q.get('n'), date = q.get('date'), kicker = q.get('kicker'), foot = q.get('foot'), foot2 = q.get('foot2'), last = q.get('last') === '1';
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
     function when() { if (!date) return ''; var d = new Date(date + 'T12:00:00'); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); }
     var meta = [n ? 'Episode ' + n : '', when()].filter(Boolean).join(' · ');
@@ -68,8 +68,8 @@
         '</div>' +
         '<div class="t" style="left:' + 7 * u + 'px;right:' + 7 * u + 'px;bottom:' + 15 * u + 'px">' +
           (meta ? '<span class="pill" style="font-size:' + 3.2 * u + 'px;padding:' + 1.6 * u + 'px ' + 3 * u + 'px">' + esc(meta) + '</span>' : '') +
-          '<div class="m" style="font-size:' + 4.2 * u + 'px;margin-top:' + 5 * u + 'px">Vegans Explore Podcast</div>' +
-          '<div class="s" style="font-size:' + 4 * u + 'px;margin-top:' + 1.6 * u + 'px;color:var(--mint)">Tap in every Sunday</div>' +
+          '<div class="m" style="font-size:' + 4.2 * u + 'px;margin-top:' + 5 * u + 'px">' + esc(foot || 'Vegans Explore Podcast') + '</div>' +
+          '<div class="s" style="font-size:' + 4 * u + 'px;margin-top:' + 1.6 * u + 'px;color:var(--mint)">' + esc(foot2 || 'Tap in every Sunday') + '</div>' +
         '</div>';
     } else if (kind === 'carousel') {
       f.style.backgroundImage = 'url(' + ART.tower + ')'; f.style.backgroundPosition = '58% center';
@@ -80,7 +80,7 @@
           (sub ? '<div class="s" style="font-size:' + 4.6 * u + 'px;margin-top:' + 2.6 * u + 'px">' + esc(sub) + '</div>' : '') +
         '</div>' +
         '<div class="t" style="left:' + 7 * u + 'px;right:' + 7 * u + 'px;bottom:' + 7 * u + 'px;display:flex;justify-content:space-between;align-items:center">' +
-          '<span class="m" style="font-size:' + 3.2 * u + 'px">Vegans Explore Podcast</span><span class="m" style="font-size:' + 3.2 * u + 'px;color:var(--orange);white-space:nowrap">Swipe &rarr;</span></div>';
+          '<span class="m" style="font-size:' + 3.2 * u + 'px">' + esc(foot || 'Vegans Explore Podcast') + '</span>' + (last ? '' : '<span class="m" style="font-size:' + 3.2 * u + 'px;color:var(--orange);white-space:nowrap">Swipe &rarr;</span>') + '</div>';
     } else {
       f.style.backgroundImage = 'url(' + ART.tower + ')';
       html = '<div class="shade" style="background:linear-gradient(180deg,rgba(15,31,20,.55) 0%,rgba(15,31,20,0) 42%)"></div>' +
