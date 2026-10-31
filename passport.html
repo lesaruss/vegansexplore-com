@@ -166,6 +166,7 @@
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-managed.js" defer></script>
 <script>
 (function () {
   // Each tab: who shows it (a Guide from VE_GUIDE_ART, footer.js), what they say, and what the page holds. Every fact here
@@ -193,6 +194,7 @@
     { k: 'dash', label: 'Your dashboard', g: 'liz', say: 'Your dashboard sits on your own page: your numbers, who comes back, your menu, ads and what you can take part in.' },
     { k: 'found', label: 'Get found', g: 'nori', say: 'Members find you in the Directory, the Guides, the Daily Pulse and at our events. Here is what is live and what is coming.' },
     { k: 'partner', label: 'Partner plan', g: 'maya', say: 'When you want the full experience, the Partner plan puts you in the front row of every campaign.' },
+    { k: 'managed', label: 'Managed by us', g: 'dani', say: 'Running a restaurant is a lot. If you would rather we handled your website, Google, photos and brand, this is how that works.' },
     { k: 'start', label: 'Get started', g: 'liz', say: 'Eleven dollars, one time. Your 1,100 welcome points cover your page. Come join us!' }
   ];
   var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
@@ -373,6 +375,23 @@
         card('Start with the basics', 'Not ready? Your page and dashboard come with the $11. Add the Partner plan any time.', 'Members') +
         '</div>' + startBtns();
     },
+    // Managed by us (BrandDesk, canon canon-ve-front-of-house; 2026-10-31). The name BrandDesk stays off this public page until its
+    // trademark check; the request goes to ve-brand-kit managed_interest and lands in the dashboard's Inbox (/public/ve-managed.js).
+    managed: function () {
+      return head('Managed by us', 'A marketing team for your restaurant', 'This is a lot to carry, and you do not have to carry it alone. A real person on our team does the hard parts, and you keep your brand kit up to date. <b>From $500 a month.</b>') +
+        '<div class="dg-grid">' +
+        card('Your website, built for you', 'On our restaurant template, fed by your page here, with your menu, photos, hours and online ordering. <a href="/business/sample/site" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
+        card('Google, handled', 'Your Google profile claimed and complete: hours, photos, posts and replies to reviews.', 'Included') +
+        card('Every dish photographed', 'A starter shoot of up to 15 menu items, all on one surface and angle, so your menu looks like one place.', 'Included') +
+        card('Your logo and brand kit', 'Colors, type, your voice and your story in one place you can edit. <a href="/business/sample/brand" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
+        card('A person who knows you', 'A monthly check-in with your Community Manager, a campaign every month, and your results on your dashboard.', 'Included') +
+        card('Yours to keep', 'Your domain, your photos and your brand kit are yours. Download everything any time. If you ever leave, you keep the pieces.', 'Always') +
+        '</div>' +
+        '<div class="dg-card" style="margin-top:14px"><b>What it costs</b><p><b>$1,500 to set up</b>, at once or over 3 or 6 months. Then <b>$500 a month</b>. Social media is <b>$500 a month more</b> for two platforms. ' +
+        '12 months, then month to month. Need a break? Pause up to 3 months a year for $99 a month and your site stays up.</p>' +
+        '<p>We are starting with a small group of restaurants, city by city, where we have a Community Manager. Tell us about yours.</p></div>' +
+        '<div class="dg-btns"><button type="button" class="dg-btn" data-managed="business">Talk to our team</button><a href="/business/sample/site" target="_blank" rel="noopener" style="font-size:13px;font-weight:800;color:var(--g)">See a sample website</a></div>';
+    },
     start: function () {
       var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
       var steps = '<div class="dg-access"><ul>' +
@@ -388,7 +407,7 @@
     }
   };
   var BIZ_BLURB = { page: 'Claim it or add it. Yours to keep up to date.', dash: 'Your numbers, check-ins, menu and ads.', found: 'The Directory, Events, ads and Guides.',
-    partner: 'Front Row Start, then $111 a quarter.', start: '$11 one time. Your points cover your page.' };
+    partner: 'Front Row Start, then $111 a quarter.', managed: 'We do your website, Google, photos and brand.', start: '$11 one time. Your points cover your page.' };
   var BLURB = {
     places: 'Vote for the places you love, every day.', community: 'Your city\'s hub, its Daily Pulse and its Board.',
     guides: 'Mini apps, $11 or 1,100 points each.', points: 'Earn them, spend them, give them. Levels 1 to 3.',

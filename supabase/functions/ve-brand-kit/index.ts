@@ -20,6 +20,12 @@
 //   kit_photo_done {slug, path}         -> { url, width, height }   checked it is there and is a picture
 //   kit_people_add {slug, email, role} / kit_people_remove {slug, member_id}   the owner or a super admin
 // Ops: LESARUSS_ADMIN_TOKEN as the bearer with as_member acts as that member (testing, HQ).
+//
+// Managed by us (BrandDesk requests, anyone; 3 a day per email):
+//   managed_interest {name, email, business, listing?, city?, phone?, wants[], note?, from: business|audit|fix, fix?}
+//   -> a ve_initiative_interest row (initiative branddesk, action sponsor_tier, tier_label the business, note what they asked for,
+//   tags branddesk and where it came from), which the Inbox reads as a Managed marketing request; an email to the team (reply-to them)
+//   and a short confirmation to them from Vegans Explore. Nothing is sold here: the setup checkout is not built yet.
 // verify_jwt is false: the member token is checked here.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -293,6 +299,50 @@ async function kit(b: any, memberId: string) {
   return json({ error: 'unknown_action' }, 400);
 }
 
+// ---- Managed by us: a business asks us to do the work (the Inbox picks it up).
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const TEAM_EMAIL = 'contact@lesaruss.com';
+const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
+const WANTS: Record<string, string> = { website: 'A website that looks the part', google: 'Google: profile, photos, posts, reviews', photos: 'Photos of every dish',
+  brand: 'A logo and brand kit', social: 'Social media', ordering: 'Online ordering', everything: 'All of it' };
+const FROMS: Record<string, string> = { business: 'For businesses: Managed by us', audit: 'Restaurant Guide: their audit', fix: 'Restaurant Guide: a fix' };
+const escH = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+async function mail(to: string, subject: string, html: string, replyTo: string) {
+  if (!RESEND_KEY) return;
+  try {
+    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ from: FROM, reply_to: replyTo, to: [to], subject, html }) });
+    if (!r.ok) console.error('Resend error:', await r.text());
+  } catch (e) { console.error('Resend failed:', e); }
+}
+async function managedInterest(req: Request, b: any) {
+  const name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), business = clean(b.business, 120);
+  if (!name || !business || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
+  const from = FROMS[b.from] ? String(b.from) : 'business';
+  const wants = list(b.wants, 7, 20).filter((w) => WANTS[w]);
+  const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  const member = tok ? await verifyToken(tok) : null;
+  const since = new Date(Date.now() - 864e5).toISOString();
+  const { count } = await db.from('ve_initiative_interest').select('id', { count: 'exact', head: true }).eq('initiative_slug', 'branddesk').ilike('email', email).gte('created_at', since);
+  if ((count || 0) >= 3) return json({ error: 'daily_limit' }, 429);
+  const city = clean(b.city, 80), phone = clean(b.phone, 40), note = clean(b.note, 1200), fix = clean(b.fix, 40), listing = clean(b.listing, 120);
+  const lines = [wants.length ? 'Wants: ' + wants.map((w) => WANTS[w]).join(', ') : '', city ? 'City: ' + city : '', phone ? 'Phone: ' + phone : '',
+    fix ? 'From the fix: ' + fix : '', listing ? 'Listing: /directory/' + listing : '', note ? 'Note: ' + note : ''].filter(Boolean);
+  const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: 'branddesk', action_type: 'sponsor_tier', status: 'new', source: 'form',
+    tier_label: business, name, email, member_id: member, note: lines.join(' · ').slice(0, 2000),
+    tags: ['branddesk', 'from-' + from].concat(fix ? ['fix-' + fix] : []).concat(listing ? [listing] : []).concat(wants.map((w) => 'wants-' + w)) });
+  if (error) { console.error(error); return json({ error: 'save_failed' }, 500); }
+  if (!business.startsWith('[TEST]')) {
+    await mail(TEAM_EMAIL, 'Managed marketing request: ' + business,
+      '<p><b>' + escH(name) + '</b> (' + escH(email) + ') asked about Managed by us for <b>' + escH(business) + '</b>.</p><p>Where: ' + escH(FROMS[from]) + '</p><p>' +
+      lines.map(escH).join('<br>') + '</p><p>It is in the Inbox on the dashboard. Reply to this email to answer them.</p>', email);
+    await mail(email, 'We got your note about ' + business,
+      '<p>Hi ' + escH(name.split(' ')[0]) + ',</p><p>Thanks for telling us about ' + escH(business) + '. Someone from our team will be in touch within a day to talk about what you need and what we can take off your plate.</p>' +
+      '<p>While you wait, here is a sample of the website we build for our clients: <a href="https://vegansexplore.com/business/sample/site">vegansexplore.com/business/sample/site</a></p><p>Vegans Explore team</p>', TEAM_EMAIL);
+  }
+  return json({ ok: true });
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -306,6 +356,7 @@ Deno.serve(async (req) => {
     if (!id) return json({ error: 'signed_out' }, 401);
     return kit(b, id);
   }
+  if (b.action === 'managed_interest') return managedInterest(req, b);
   if (b.action !== 'suggest') return json({ error: 'unknown_action' }, 400);
   const kind = String(b.kind || '');
   if (!SCHEMAS[kind]) return json({ error: 'unknown_kind' }, 400);
