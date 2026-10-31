@@ -147,6 +147,7 @@ async function activate(acct: any, customer: string, subId: string) {
   const { data } = await db.from('ve_branddesk_accounts').update({ status: 'active', stripe_customer: customer, stripe_subscription: subId, stripe_schedule: schedule,
     installments_left: n, activated_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', acct.id).eq('status', 'checkout').select('*').maybeSingle();
   if (!data) return acct;
+  if (acct.note === 'ops test') return data; // ops_test_activate sends no email
   const { data: l } = await db.from('listings').select('name, slug').eq('id', acct.listing_id).maybeSingle();
   const { data: m } = await db.from('members').select('name, email').eq('id', acct.member_id).maybeSingle();
   const tag = test ? '[TEST] ' : '';
