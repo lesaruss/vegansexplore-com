@@ -564,6 +564,9 @@
   // task keeps it playing) or, off the Pulse, to the foot of the window.
   function keepPlayer(bar) {
     if (!bar) return;
+    // A view that started another episode while it drew made a new player: the old one stops and stays out (two showed, 2026-10-31).
+    var cur = document.getElementById('vep-player');
+    if (cur && cur !== bar) { var old = bar.querySelector('audio'); if (old) old.pause(); return; }
     var dock = main.querySelector('.vep-dock[data-vep-always]');
     if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
     else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }

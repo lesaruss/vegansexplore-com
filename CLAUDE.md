@@ -1367,8 +1367,9 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   we're going (thirteen chapters, the Directory, our shows, brands and events as one buyer), The work (paid campaigns, collaborations,
   professional work Coming; hosting open now; events with the Dolphins showcase; the sample campaign), How it pays (this canon's terms),
   Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
-  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
-  profile's invitation email linking it.
+  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. **Comping a creator** (Sean, 2026-10-31): Depot > Ambassadors > Invite an
+  Ambassador with the profile **Creator**, the level and points: the membership is on us, the email links the Official Creator Guide
+  (`/creators/welcome?c=<code>`), and accepting on `/invite` says Welcome, official creator, and opens the Creator Guide.
 - **The Gig Board** (Sean, 2026-10-30: "the actual mechanism for them to find gigs... like Casting Networks or Backstage where they
   can go on daily and see what opportunities are available... whatever we create, I want become the way the bounties work as well...
   submit some proofs, some examples... audition... a certain requirement of followers... opportunities that are just for points...
@@ -2769,6 +2770,14 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's line on it was
   re-recorded the same day with Sean's approval ("The truth is how milk is really made...", `dg-look.mp4?v=3`, take 1 of 2,
   cut at 6.6 s on a closed-lip smile).
+- **The Pulse's episodes are podcast rows** (Sean, 2026-10-31: "the new style of just having the podcast clip that you can play...
+  you just see the logo of the podcast... pull in other podcasts as well too, from the RSS that match... that topic"). Podcasts and
+  interviews is the Restaurant Guide's way: `PULSE_PICKS` rows are [Pulse slug, show's Directory slug, feed guid], each read through
+  `ve-podcast` `episode` and drawn with `VEEpisodes.row` (the show's logo, Play in the player docked above, our vote and Save), two
+  across. Under them, **From other shows**: the newest dairy episodes from the other podcasts in our Directory,
+  `ve_topic_episodes('dairy')` (migration `20261031_ve_topic_episodes.sql`: titles matched on dairy words, our four shows and
+  LESARUSS.ai's left out, at most 3 a show, 24 in all), each with Play and The show. A new topic for another Guide is a `when` line
+  in that function. An old `#/pulse/watch/<slug>` link opens the list and plays the episode.
 - **Two experiences, two scripts** (Sean, 2026-10-10: "The first one is letting you know why you should get it. And then the
   other one is walking you through what you have"). Each tab's `say` is for visitors and `sayMember` for members who own the
   Guide; `clip()` plays `CLIPS_M[tab]` (`dg-m-<tab>.mp4`) to members and `CLIPS[tab]` to visitors, and switches the moment a
