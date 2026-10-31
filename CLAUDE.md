@@ -484,8 +484,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   only once they are chosen. **Colors editor** built: why colors matter, four ready palettes (Fresh neighborhood, Island bright, Night
   lounge, Street heat), their own six colors by role (page, text, accent, soft, highlight, ink; `brand.colors[].role`) with names and hex,
   a live preview, every pair's contrast and a readability score out of 100 (full marks at 4.5:1, half from 3:1), Save draft or Lock it
-  in (refused while a pair is under 3:1). The other editors (logo, type, voice, story, menu with uploads and AI suggestions, photos,
-  info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  in (refused while a pair is under 3:1). **Voice editor**: three steps (what a voice is, with three example businesses; five questions:
+  how they greet a regular, three words, the place as a person, what they never want to sound like, a vibe; their voice written from the
+  answers and editable: three words, how they sound, never, words to use and leave out, sample lines for the site, Instagram, a Google
+  reply and a closed day), then Save draft or Lock it in. **Menu editor**: the list (items, photo or To shoot, Add an item), then one item
+  at a time (Menu > item: name, section or a new one, price, tags, what is in it in their words, the description with **Suggest**, the
+  photo uploaded onto the item, shrunk to 900 px in the browser for the sample), Remove item, Save draft, Lock it in. **Suggest** is the
+  edge function `ve-brand-kit` (`suggest`, kinds `menu_item`, `story`, `voice`; Claude Opus 5.5, structured output, only the owner's own
+  words and ingredients, Vegan capitalized, no dashes; 20 a day for a visitor, 200 for a signed-in member; every suggestion logged in
+  `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). The other editors (logo, type,
+  story, photos, info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
