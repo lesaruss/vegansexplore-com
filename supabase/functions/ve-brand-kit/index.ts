@@ -23,6 +23,9 @@
 //   kit_photo_done {slug, path, full: true, title, width, height} -> a ve_branddesk_files row (kind photo) for that original
 //   shoot_done {slug, note}             the photographer says the shoot is in: stamps photos.shoot.done_at, emails the team
 //   kit_people_add {slug, email, role} / kit_people_remove {slug, member_id}   the owner or a super admin
+//   A brand that is not a listing (Vegans Explore itself) has its kit by `brand` instead of `slug` (ve_brand_cartridges, super
+//   admins only): kit_get {brand}, kit_create {brand, name}, kit_save {brand, section, part, state}. A podcast listing's kit_create
+//   starts the podcast frame (cover, colors, type, voice, story, cast, sound) with its parent brand's colors and type.
 // Ops: LESARUSS_ADMIN_TOKEN as the bearer with as_member acts as that member (testing, HQ).
 //
 // Managed by us (BrandDesk requests, anyone; 3 a day per email):
@@ -128,6 +131,11 @@ Return: personality (exactly three words), sounds_like (two sentences, how they 
 
 // ---- The kit: stored Cartridges, who may work on them, photo uploads.
 const SECTIONS = ['logo', 'colors', 'type', 'voice', 'story', 'menu', 'photos', 'info'];
+// A kit's frame decides its parts (2026-10-31): a restaurant's website, a brand that is not a listing (Vegans Explore itself,
+// ve_brand_cartridges), and a podcast, whose frame is the show (the cover, the episode art and the social templates).
+const FRAMES: Record<string, string[]> = { restaurant: SECTIONS, brand: ['logo', 'colors', 'type', 'voice', 'story'],
+  podcast: ['logo', 'colors', 'type', 'voice', 'story', 'cast', 'sound'] };
+const secs = (d: any) => FRAMES[d?.meta?.frame] || SECTIONS;
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 function getPart(d: any, k: string) { return k === 'logo' ? d.brand?.logo : k === 'colors' ? d.brand?.colors : k === 'type' ? d.brand?.type : k === 'photos' ? d.photos?.space : d[k]; }
 function setPart(d: any, k: string, v: any) {
@@ -207,7 +215,76 @@ async function startCartridge(l: any) {
       links: { website: l.website || '', instagram: l.instagram ? '@' + l.instagram : '', directory: '/directory/' + l.slug }, ordering: { pos: 'None yet', state: 'not_started', order_url: null, note: '' } },
   };
 }
+// A podcast's kit: the show's own parts on top of its parent brand's look (colors and type copied in as a starting point).
+async function startPodcast(l: any) {
+  const parent = 'vegans-explore';
+  const { data: p } = await db.from('ve_brand_cartridges').select('data').eq('brand_slug', parent).maybeSingle();
+  const pb = (p?.data as any)?.brand || {};
+  const parts = FRAMES.podcast;
+  return {
+    meta: { version: 1, status: 'building', frame: 'podcast', parent, updated: new Date().toISOString().slice(0, 10),
+      approvals: Object.fromEntries(parts.map((k) => [k, { state: 'not_started' }])), sources: ['Its Directory listing', 'The ' + parent + ' brand kit'] },
+    business: { name: l.name, short: l.name.replace(/ Podcast$/, ''), kind: 'Podcast', vegan: '', cuisines: [], city: '', chapter: '', since: null },
+    brand: { logo: { primary: { src: l.logo_url && l.logo_url.startsWith(PUBLIC) ? l.logo_url : '', state: l.logo_url ? 'have' : 'to_make', note: '' }, files: [], rules: [] },
+      colors: pb.colors || [], pairs: pb.pairs || [], type: pb.type || { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
+    voice: { personality: [], sounds_like: '', never: [], words: { use: [], avoid: [] }, samples: { hero: '', instagram: '', google_reply: '', closed: '' } },
+    story: { tagline: '', short: '', long: l.description ? [l.description] : [], answers: { old: l.description || '' } },
+    cast: { host: null, correspondents: [] }, sound: { pieces: [] },
+  };
+}
+// A brand's own kit (ve_brand_cartridges), for super admins: kit_get, kit_create {name}, kit_save {section, part, state}.
+async function brandKit(b: any, memberId: string) {
+  const slug = clean(b.brand, 60).toLowerCase();
+  if (!/^[a-z0-9-]{2,60}$/.test(slug)) return json({ error: 'bad_brand' }, 400);
+  const { data: m } = await db.from('members').select('id, name, is_superadmin').eq('id', memberId).maybeSingle();
+  if (!m) return json({ error: 'signed_out' }, 401);
+  if (!m.is_superadmin) return json({ error: 'not_yours', listing: { name: slug, slug } }, 403);
+  const { data: cart } = await db.from('ve_brand_cartridges').select('name, data, status').eq('brand_slug', slug).maybeSingle();
+  const listing = { id: null, name: cart?.name || slug, slug, brand: true };
+  if (b.action === 'kit_get') {
+    const { data: kids } = await db.from('ve_cartridges').select('listing_id, listings(name, slug)').eq('data->meta->>parent', slug);
+    return json({ ok: true, role: 'admin', listing, cartridge: cart?.data || null, status: cart?.status || null,
+      children: (kids || []).map((k: any) => ({ name: k.listings?.name, slug: k.listings?.slug })) });
+  }
+  if (b.action === 'kit_create') {
+    if (cart) return json({ ok: true, role: 'admin', listing, cartridge: cart.data, status: cart.status });
+    const name = clean(b.name, 80) || slug;
+    const parts = FRAMES.brand;
+    const data = { meta: { version: 1, status: 'building', frame: 'brand', updated: new Date().toISOString().slice(0, 10),
+        approvals: Object.fromEntries(parts.map((k) => [k, { state: 'not_started' }])), sources: [] },
+      business: { name, short: name, kind: 'Brand', vegan: '', cuisines: [], city: '', chapter: '', since: null },
+      brand: { logo: { primary: { src: '', state: 'to_make', note: '' }, files: [], rules: [] }, colors: [], pairs: [], type: { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
+      voice: { personality: [], sounds_like: '', never: [], words: { use: [], avoid: [] }, samples: { hero: '', instagram: '', google_reply: '', closed: '' } },
+      story: { tagline: '', short: '', long: [], answers: {} } };
+    const { error } = await db.from('ve_brand_cartridges').insert({ brand_slug: slug, name, data, created_by: memberId, updated_by: memberId });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    await db.from('ve_cartridge_edits').insert({ brand_slug: slug, member_id: memberId, section: 'kit', state: 'created', after: null });
+    return json({ ok: true, role: 'admin', listing: { ...listing, name }, cartridge: data, status: 'building' });
+  }
+  if (b.action === 'kit_save') {
+    if (!cart) return json({ error: 'no_kit' }, 404);
+    const data = cart.data as any, section = String(b.section || ''), state = b.state === 'locked' ? 'locked' : 'in_progress';
+    if (!secs(data).includes(section)) return json({ error: 'bad_section' }, 400);
+    const part = b.part;
+    if (part == null || JSON.stringify(part).length > 300000) return json({ error: 'too_big' }, 413);
+    if (!srcsOk(part)) return json({ error: 'upload_first' }, 400);
+    const before = getPart(data, section) ?? null;
+    setPart(data, section, part);
+    data.meta.approvals = data.meta.approvals || {};
+    data.meta.approvals[section] = { state, by: clean(m.name, 60) || 'Team', at: new Date().toISOString().slice(0, 10) };
+    data.meta.updated = new Date().toISOString().slice(0, 10);
+    const allLocked = secs(data).every((k) => data.meta.approvals[k]?.state === 'locked');
+    const status = cart.status === 'building' && allLocked ? 'locked' : cart.status === 'locked' && !allLocked ? 'building' : cart.status;
+    data.meta.status = status;
+    const { error } = await db.from('ve_brand_cartridges').update({ data, status, updated_at: new Date().toISOString(), updated_by: memberId }).eq('brand_slug', slug);
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    await db.from('ve_cartridge_edits').insert({ brand_slug: slug, member_id: memberId, section, state, before, after: getPart(data, section) ?? null });
+    return json({ ok: true, cartridge: data, status });
+  }
+  return json({ error: 'brand_kits_take_get_create_save' }, 400);
+}
 async function kit(b: any, memberId: string) {
+  if (b.brand) return brandKit(b, memberId);
   const slug = clean(b.slug, 120);
   const { data: m } = await db.from('members').select('id, name, email, is_superadmin').eq('id', memberId).maybeSingle();
   if (!m) return json({ error: 'signed_out' }, 401);
@@ -231,7 +308,7 @@ async function kit(b: any, memberId: string) {
   if (b.action === 'kit_create') {
     if (role !== 'admin') return json({ error: 'admins_only' }, 403);
     if (cart) return json({ ok: true, role, listing, cartridge: cart.data, status: cart.status, people: await people() });
-    const data = await startCartridge(l);
+    const data = l.category === 'Podcasts' ? await startPodcast(l) : await startCartridge(l);
     const { error } = await db.from('ve_cartridges').insert({ listing_id: l.id, data, created_by: memberId, updated_by: memberId });
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
     await db.from('ve_cartridge_edits').insert({ listing_id: l.id, member_id: memberId, section: 'kit', state: 'created', after: null });
@@ -241,7 +318,7 @@ async function kit(b: any, memberId: string) {
   if (b.action === 'kit_save') {
     if (!cart) return json({ error: 'no_kit' }, 404);
     const section = String(b.section || ''), state = b.state === 'locked' ? 'locked' : 'in_progress';
-    if (!SECTIONS.includes(section)) return json({ error: 'bad_section' }, 400);
+    if (!secs(cart.data).includes(section)) return json({ error: 'bad_section' }, 400);
     if (role === 'photographer' && section !== 'photos' && section !== 'menu') return json({ error: 'photos_only' }, 403);
     const part = b.part;
     if (part == null || JSON.stringify(part).length > 300000) return json({ error: 'too_big' }, 413);
@@ -257,7 +334,7 @@ async function kit(b: any, memberId: string) {
     // A photographer's upload never moves a section's state (a locked menu stays locked); everyone else's save sets it.
     if (role !== 'photographer') data.meta.approvals[section] = { state, by: clean(m.name, 60) || 'Team', at: new Date().toISOString().slice(0, 10) };
     data.meta.updated = new Date().toISOString().slice(0, 10);
-    const allLocked = SECTIONS.every((k) => data.meta.approvals[k]?.state === 'locked');
+    const allLocked = secs(data).every((k) => data.meta.approvals[k]?.state === 'locked');
     const status = cart.status === 'building' && allLocked ? 'locked' : cart.status === 'locked' && !allLocked ? 'building' : cart.status;
     data.meta.status = status;
     const { error } = await db.from('ve_cartridges').update({ data, status, updated_at: new Date().toISOString(), updated_by: memberId }).eq('listing_id', l.id);
