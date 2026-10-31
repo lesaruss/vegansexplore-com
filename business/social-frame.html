@@ -13,8 +13,8 @@
     ?kind=cover  &title= &sub= &kicker= &city=<hub slug>          a carousel's first slide (1080 x 1350)
     ?kind=guide  &g=<guide slug> &city=<hub slug> &n= &of=          one Guide on a chapter's art (1080 x 1350)
     ?kind=end    &title= &sub= &city=                               a carousel's last slide (1080 x 1350)
-  Every slide wears a different chapter's art, so the posts show the cities, and a Guide's banner is its own art (never a podcast
-  picture). The Guides' words match ads/guides/guide.html (G there); change both together. No counts in a Guide's words.
+  Every slide wears a different chapter's art, so the posts show the cities, and a Guide's card is its Guide in a scene (communities/social/scene-<guide>.webp,
+  Sean 2026-10-31: "images that look more like a scene versus them standing behind a white background"; never a podcast picture). The Guides' words match ads/guides/guide.html (G there); change both together. No counts in a Guide's words.
 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
@@ -58,12 +58,12 @@
   };
   // Each Guide: its banner, its name, its line (ads/guides/guide.html G), and its Guide.
   var G = {
-    'vegan-dairy-guide': ['The Vegan Dairy Guide', SBM + 'guides/banners/vegan-dairy-guide.jpg', 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.'],
-    'vegan-restaurant-guide': ['The Vegan Restaurant Guide', SBM + 'guides/banners/vegan-restaurant-guide.jpg', 'A free check of your restaurant online, then the fixes that bring people through the door, with Liz.'],
-    'stadium-arena-guide': ['The Stadium & Arena Guide', '/public/guides/stadium-arena-guide.jpg', 'Every Vegan stand at the stadiums and arenas near you, mapped by section, with River.'],
-    'airport-guide': ['The Airport Guide', '/public/guides/airport-guide.jpg', 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.'],
-    'nonprofit-guide': ['The Nonprofit Guide', '/public/guides/nonprofit-guide.jpg', 'Ten tips for Vegan nonprofits, rescues and sanctuaries to grow their support, with Dani.'],
-    'creator-guide': ['The Creator Guide', '/public/guides/creator-guide.jpg', 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.']
+    'vegan-dairy-guide': ['Vegan Dairy Guide', SBM + 'communities/social/scene-maya.webp', 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.'],
+    'vegan-restaurant-guide': ['Vegan Restaurant Guide', SBM + 'communities/social/scene-liz.webp', 'A free check of your restaurant online, then the fixes that bring people through the door, with Liz.'],
+    'stadium-arena-guide': ['Stadium & Arena Guide', SBM + 'communities/social/scene-river.webp', 'Every Vegan stand at the stadiums and arenas near you, mapped by section, with River.'],
+    'airport-guide': ['Airport Guide', SBM + 'communities/social/scene-nori.webp', 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.'],
+    'nonprofit-guide': ['Vegan Nonprofit Guide', SBM + 'communities/social/scene-dani.webp', 'Ten tips for Vegan nonprofits, rescues and sanctuaries to grow their support, with Dani.'],
+    'creator-guide': ['Creator Guide', SBM + 'communities/social/scene-kai.webp', 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.']
   };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   var q = new URLSearchParams(location.search), kind = q.get('kind') || 'cover';
