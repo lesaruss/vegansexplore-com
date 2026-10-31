@@ -2297,7 +2297,11 @@ Concept session with V, locked by Sean: "lock it, go with your defaults" (canon 
 (`VEGuideTab.pick`, `VEGuideTab.mount`; `GUIDES` and `MAP` there), loaded after the page shows by `loadGuideTab` in
 `directory/listing.html`, which then draws the right column's banner. Not on LESARUSS.ai (`VB`). A demo page shows it without
 counting. Ownership is `ve-guide-unlock` `status`. Views and clicks are `ve_promo_events`, promo `gt-<guide slug>`, cta `tab`, with the
-listing (`ve_promo_funnel('gt-vegan-dairy-guide', since)`); no Depot view of them yet. `?tab=guide` opens it. Sean: "this is how we can
+listing (`ve_promo_funnel('gt-vegan-dairy-guide', since)`). **Depot > Analytics > Guide tabs** (`#guidetabs`, built 2026-10-31,
+Sean: "build the Depot view for the Guide tab numbers") shows them for the page's period against the one before: By Guide (saw it,
+before, change, clicked, click rate, how many listings) and By listing (each listing's Guide, saw it, clicked, click rate), people
+counted once each; `ve_guide_tab_stats(from, to, prev_from, prev_to)` (migration `20261031_guide_tab_stats.sql`, service role only)
+through `ve-analytics` `guide_tabs`. `?tab=guide` opens it. Sean: "this is how we can
 continue to put those guides in front of people's faces. And if they already purchased it, it's right there in front of them."
 
 - **Every listing gets a Guide tab, for everyone**, named for its Guide (Dairy Guide, Creator Guide): a short squeeze page (the

@@ -34,3 +34,6 @@ returns jsonb language sql stable security definer set search_path = public as $
 $$;
 revoke all on function public.ve_guide_tab_stats(date, date, date, date) from public, anon, authenticated;
 grant execute on function public.ve_guide_tab_stats(date, date, date, date) to service_role;
+
+-- The live check's two test events (Love Life Cafe, view and click), removed after the check.
+delete from ve_promo_events where visitor = 'logan-test-gt-0002';
