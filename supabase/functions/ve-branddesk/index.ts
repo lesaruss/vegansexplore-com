@@ -32,6 +32,12 @@
 //   checkin_get {id}                    the team: everything; the client's owner: the report, once it is sent
 //   checkin_save {id, answers, summary, next_month}   the team, until it is sent
 //   checkin_send {id}                   the team: freezes the month's numbers and sends the report to the client
+//   campaign_library                    anyone: the idea library, each campaign's blueprint and results fields
+//   campaign_list {account_id?}         super admin (every client, the rotation board, or one client's); a Community Manager (theirs)
+//   campaign_get {id}                   the team: everything; the client's owner: what it is, when, and how it went
+//   campaign_create {account_id, kind, month}   super admin
+//   campaign_save {id, starts_at, ends_at, checks, note, results, status}   the team
+//   campaign_calendar {id}              the team: puts it on the Vegans Explore calendar, hosted by the restaurant (or moves it)
 // GET ?confirm=<session id>              the return from Stripe and ve-stripe-webhook (metadata type ve_branddesk, confirm_fn
 //                                        ve-branddesk): activates the account once and goes back to /business/managed.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -458,7 +464,9 @@ async function client(b: any, m: any) {
     listing: l, unlocked, steps, files: await signFiles(files || [], unlocked, admin), archives: archives || [],
     cartridge: kit ? { status: kit.status, updated_at: kit.updated_at, data: kit.data } : null,
     reports: ((await db.from('ve_branddesk_checkins').select('id, month, status, sent_at').eq('account_id', a.id).order('month', { ascending: false }).limit(36)).data || [])
-      .filter((r: any) => admin || r.status === 'sent').map((r: any) => ({ ...r, month_name: monthName(r.month) })) });
+      .filter((r: any) => admin || r.status === 'sent').map((r: any) => ({ ...r, month_name: monthName(r.month) })),
+    campaigns: ((await db.from('ve_branddesk_campaigns').select('*').eq('account_id', a.id).neq('status', 'skipped').order('month', { ascending: false }).limit(36)).data || [])
+      .map((r: any) => campaignShape(r, false)) });
 }
 
 async function stepSet(b: any, m: any) {
@@ -1096,7 +1104,201 @@ async function checkins(req: Request, b: any, m: any) {
       `<p>Hi ${esc(String(owner.name || '').split(' ')[0] || 'there')},</p><p>Here is how ${esc(monthName(row.month))} went for <b>${esc(l?.name || '')}</b>.</p>` +
       summary.split(/\n{2,}/).map((x) => `<p>${esc(x).replace(/\n/g, '<br>')}</p>`).join('') +
       `<p><b>Next month:</b> ${esc(next).replace(/\n/g, '<br>')}</p><p><a href="${link}">See the full report and the numbers</a> on your dashboard.</p><p>Vegans Explore</p>`);
-    return json({ ok: true, sent_at: at });
+    // Next month's rotation: the campaign they picked, and a photo night when one is due.
+    let planned: string[] = [];
+    try {
+      const { data: acct } = await db.from('ve_branddesk_accounts').select('*').eq('id', row.account_id).maybeSingle();
+      if (acct && LIVE_STATES.includes(acct.status)) {
+        const nm = nextMonthOf(row.month), kind = ROTATION_KIND[answers.campaign || ''];
+        if (kind && await makeCampaign(acct, nm, kind, m.id, row.id)) planned.push(kind);
+        if (photoNightDue(acct, nm) && await makeCampaign(acct, nm, 'photo_night', m.id, row.id)) planned.push('photo_night');
+      }
+    } catch (e) { console.error('rotation', e); }
+    return json({ ok: true, sent_at: at, planned });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
+// ---- The monthly rotation (canon-ve-front-of-house): one campaign a client a month from the idea library, picked at the check-in, plus a
+// photo night every two months after launch. Each campaign has a blueprint the Community Manager follows (when, what), what the
+// restaurant provides, and the results we record. Logan's defaults, Sean's to change.
+type Step = [string, string];
+const CAMPAIGNS: Record<string, { title: string; label: string; line: string; category: string; provides: string; steps: Step[]; coaching?: string[] }> = {
+  influencer_night: { title: 'Influencer night', label: 'Influencer night', category: 'food',
+    line: 'Five to ten local creators eat, film and post on one night, so the restaurant reaches their followers in a week.',
+    provides: 'The dishes for the creators, and a table with good light.',
+    steps: [['4 weeks before', 'Pick the date with the owner, and the four to six dishes to feature.'],
+      ['3 weeks before', 'Post it on the Gig Board as a perk gig in the chapter, and invite creators we know.'],
+      ['2 weeks before', 'Confirm the creators and send them the run of the night.'],
+      ['1 week before', 'Brief the kitchen and the staff; set aside the table with the best light.'],
+      ['On the night', 'Greet every creator; each one tags the restaurant and says the meal was on the house (#ad).'],
+      ['After', 'Collect the links to every post, add the best photos to their Library, and thank each creator.']] },
+  dj_night: { title: 'DJ night', label: 'DJ night', category: 'social',
+    line: 'A local DJ turns a quiet night into a night out, and gives everyone something to film.',
+    provides: 'The space and the power for the DJ; the restaurant\'s own music license covers the night.',
+    steps: [['4 weeks before', 'Pick the night (their quietest one) and book a local DJ.'],
+      ['3 weeks before', 'Put it on the Vegans Explore calendar and make the flyer.'],
+      ['2 weeks before', 'Post it on their Instagram and ours; tell our members in the chapter.'],
+      ['1 week before', 'A reminder post, and a special for the night with the owner.'],
+      ['On the night', 'Film three short clips and take photos of the room (people only with their yes).'],
+      ['After', 'Post the best clip, add the photos to their Library, and note how the night\'s sales compared.']] },
+  customer_appreciation: { title: 'Customer appreciation', label: 'Customer appreciation', category: 'food',
+    line: 'A thank-you to the regulars: a free taste, a treat or a discount, so they come back and bring someone.',
+    provides: 'The thank-you itself (a sample, a drink, a discount), agreed with the owner.',
+    steps: [['3 weeks before', 'Pick the thank-you with the owner, and a little extra for our Passport holders.'],
+      ['2 weeks before', 'Put it on the Vegans Explore calendar; post it on their Instagram and ours.'],
+      ['1 week before', 'A sign at the counter and a reminder post.'],
+      ['On the day', 'Photos of happy customers (only with their yes) and of the thank-you itself.'],
+      ['After', 'A thank-you post, the photos to their Library, and how many came.']] },
+  giveaway: { title: 'Giveaway', label: 'Giveaway', category: 'food',
+    line: 'One prize, one week, on their Instagram and ours, to bring new followers who live nearby.',
+    provides: 'The prize (a meal for two, a gift card or a bundle).',
+    steps: [['3 weeks before', 'Pick the prize and write the rules: who can enter, the end date, no purchase needed, how the winner is picked.'],
+      ['2 weeks before', 'The giveaway post on their Instagram, shared on ours.'],
+      ['1 week before', 'A reminder post; reply to comments.'],
+      ['The end date', 'Pick the winner at random, tell them privately, then announce it.'],
+      ['After', 'New followers and entries, and the winner\'s visit photographed for their Library.']] },
+  scavenger_stop: { title: 'Scavenger hunt stop', label: 'Scavenger hunt stop', category: 'social',
+    line: 'The restaurant is a stop on our scavenger hunt, so members come through the door to find the clue.',
+    provides: 'A small reward at the stop (a taste or a discount) and staff who know the word.',
+    steps: [['3 weeks before', 'Agree the clue and the reward at the stop with the owner.'],
+      ['2 weeks before', 'Add the stop to the hunt and put the hunt on the calendar.'],
+      ['1 week before', 'Brief the staff on the word and the reward.'],
+      ['During the hunt', 'Photos of hunters at the stop (only with their yes).'],
+      ['After', 'How many hunters came through, and the photos to their Library.']] },
+  community_night: { title: 'Community night', label: 'Community night', category: 'meetup',
+    line: 'A night for a cause or a conversation, hosted at the restaurant, that makes it a home for the local Vegan community.',
+    provides: 'The space for the evening and a set menu or a special.',
+    steps: [['4 weeks before', 'Pick the cause or topic with the owner (a local rescue, a talk, a cooking demo) and who hosts.'],
+      ['3 weeks before', 'Put it on the Vegans Explore calendar; send the host the coaching sheet.'],
+      ['2 weeks before', 'Invite our members in the chapter and the cause\'s own people.'],
+      ['1 week before', 'A reminder post; confirm the host and the set menu.'],
+      ['On the night', 'The host follows the coaching sheet; photos of the room (people only with their yes).'],
+      ['After', 'How many came, what was raised or learned, the photos to their Library, a thank-you post.']],
+    coaching: ['Welcome everyone at the start and thank the restaurant by name.', 'Ask people to say their first name and why they came.',
+      'Keep the talk or the demo to about ten minutes.', 'Leave time for questions; repeat each question so everyone hears it.',
+      'Give one clear thing to do next (a rescue to support, a date to come back, a member link).', 'Close by inviting everyone to stay and eat.'] },
+  photo_night: { title: 'Photo night', label: 'Photo night', category: 'food',
+    line: 'Every two months: a buffet-style creator night, with a few new dishes shot in a set-aside area to the photo standard.',
+    provides: 'The food for the buffet and the dishes to shoot. Included in the plan.',
+    steps: [['4 weeks before', 'Pick the date and the dishes to shoot with the owner.'],
+      ['3 weeks before', 'Book the photographer from the Gig Board and invite creators.'],
+      ['1 week before', 'Set aside the shooting area; brief the kitchen on plating to the standard.'],
+      ['On the night', 'Shoot each dish twice (three-quarter and overhead); creators eat and post.'],
+      ['After', 'The full-size photos to their Library and the brand kit, and the creators\' post links.']] },
+};
+const ROTATION_KIND: Record<string, string> = { 'Influencer night': 'influencer_night', 'DJ night': 'dj_night', 'Customer appreciation': 'customer_appreciation',
+  'Giveaway': 'giveaway', 'Scavenger hunt stop': 'scavenger_stop', 'Community night': 'community_night' };
+const RESULT_FIELDS: [string, string, string][] = [['came', 'How many came', 'number'], ['posts', 'Posts made about it', 'number'],
+  ['followers', 'New followers on their Instagram', 'number'], ['sales', 'How the night\'s sales compared', 'text'],
+  ['worked', 'What worked', 'text'], ['next_time', 'What to do differently next time', 'text']];
+const VE_TENANT = '00000000-0000-4000-a000-000000000002';
+const campaignLink = (id: string) => `${SITE}/business/campaign?id=${id}`;
+function nextMonthOf(month: string) { return monthBounds(month).to; }
+async function makeCampaign(a: any, month: string, kind: string, by: string | null, fromCheckin: string | null) {
+  if (!CAMPAIGNS[kind]) return null;
+  const cm = await chapterManager(a.listing_id);
+  const { data } = await db.from('ve_branddesk_campaigns').upsert({ account_id: a.id, listing_id: a.listing_id, month, kind, assigned_to: cm?.id || null,
+    created_by: by, from_checkin: fromCheckin }, { onConflict: 'account_id,month,kind', ignoreDuplicates: true }).select('id').maybeSingle();
+  return data?.id || null;
+}
+// Photo nights: every two months after launch, counted from the month they joined (months 2, 4, 6...).
+function photoNightDue(a: any, month: string) {
+  if (!a.activated_at) return false;
+  const act = new Date(a.activated_at), [y, mo] = month.split('-').map(Number);
+  const diff = (y - act.getUTCFullYear()) * 12 + (mo - (act.getUTCMonth() + 1));
+  return diff >= 2 && diff % 2 === 0;
+}
+function campaignShape(r: any, full: boolean) {
+  const c = CAMPAIGNS[r.kind] || ({} as any);
+  const base: any = { id: r.id, account_id: r.account_id, month: r.month, month_name: monthName(r.month), kind: r.kind, title: c.title, line: c.line, status: r.status,
+    starts_at: r.starts_at, ends_at: r.ends_at, event_id: r.event_id, results: r.results || {} };
+  if (full) Object.assign(base, { assigned_to: r.assigned_to, checks: r.checks || {}, note: r.note || '', provides: c.provides, steps: c.steps, coaching: c.coaching || null, updated_at: r.updated_at });
+  return base;
+}
+async function campaigns(b: any, m: any) {
+  const act = String(b.action);
+  if (act === 'campaign_library') return json({ ok: true, campaigns: CAMPAIGNS, results: RESULT_FIELDS, rotation: ROTATION });
+  if (!m) return json({ error: 'not_authenticated', message: 'Sign in first.' }, 401);
+  if (act === 'campaign_list') {
+    let q = db.from('ve_branddesk_campaigns').select('*, listings(name, slug)').order('month', { ascending: false }).order('starts_at', { ascending: true }).limit(300);
+    if (isId(b.account_id)) { if (!m.is_superadmin) return json({ error: 'forbidden' }, 403); q = q.eq('account_id', b.account_id); }
+    else if (!m.is_superadmin) q = q.eq('assigned_to', m.id);
+    const { data } = await q;
+    const ids = [...new Set((data || []).map((r: any) => r.assigned_to).filter(Boolean))];
+    const { data: who2 } = ids.length ? await db.from('members').select('id, name').in('id', ids) : { data: [] };
+    const nm = Object.fromEntries((who2 || []).map((x: any) => [x.id, x.name]));
+    return json({ ok: true, campaigns: (data || []).map((r: any) => ({ ...campaignShape(r, false), listing: r.listings, assigned_name: r.assigned_to ? nm[r.assigned_to] || null : null })),
+      library: Object.fromEntries(Object.entries(CAMPAIGNS).map(([k, v]) => [k, v.title])) });
+  }
+  if (act === 'campaign_create') {
+    if (!m.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const a = await accountFor(b, m, true);
+    if (!a || !LIVE_STATES.includes(a.status)) return json({ error: 'not_found', message: 'Only a live client gets campaigns.' }, 404);
+    const kind = String(b.kind || ''), month = /^\d{4}-\d{2}-01$/.test(String(b.month || '')) ? String(b.month) : (() => { const { y, mo } = etParts(); return monthStart(y, mo); })();
+    if (!CAMPAIGNS[kind]) return json({ error: 'bad_kind' }, 400);
+    const id = await makeCampaign(a, month, kind, m.id, null);
+    if (!id) return json({ error: 'already', message: 'That campaign is already planned for that month.' }, 409);
+    return json({ ok: true, id });
+  }
+  if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+  const { data: row } = await db.from('ve_branddesk_campaigns').select('*').eq('id', b.id).maybeSingle();
+  if (!row) return json({ error: 'not_found' }, 404);
+  const team = await checkinTeam(m, row);
+  const { data: l } = await db.from('listings').select('id, name, slug, owner_member_id, address_street, address_city, address_state, address_country').eq('id', row.listing_id).maybeSingle();
+  if (act === 'campaign_get') {
+    if (!team) {
+      const { data: a } = await db.from('ve_branddesk_accounts').select('member_id').eq('id', row.account_id).maybeSingle();
+      if (!(a?.member_id === m.id || l?.owner_member_id === m.id)) return json({ error: 'not_found' }, 404);
+    }
+    const { data: by } = row.assigned_to ? await db.from('members').select('name').eq('id', row.assigned_to).maybeSingle() : { data: null };
+    return json({ ok: true, team, campaign: campaignShape(row, team), listing: { name: l?.name, slug: l?.slug }, results_fields: RESULT_FIELDS, assigned_name: by?.name || null });
+  }
+  if (!team) return json({ error: 'forbidden' }, 403);
+  const now = new Date().toISOString();
+  if (act === 'campaign_save') {
+    const patch: Record<string, unknown> = { updated_at: now, updated_by: m.id };
+    const when = (v: unknown) => { if (v === null || v === '') return null; const d = new Date(String(v)); return isNaN(+d) ? undefined : d.toISOString(); };
+    if ('starts_at' in b) { const v = when(b.starts_at); if (v === undefined) return json({ error: 'bad_date' }, 400); patch.starts_at = v; }
+    if ('ends_at' in b) { const v = when(b.ends_at); if (v === undefined) return json({ error: 'bad_date' }, 400); patch.ends_at = v; }
+    if (b.checks && typeof b.checks === 'object') {
+      const steps = (CAMPAIGNS[row.kind]?.steps || []).length, checks: Record<string, string> = {};
+      for (const [k, v] of Object.entries(b.checks)) { const i = Number(k); if (Number.isInteger(i) && i >= 0 && i < steps && v) checks[String(i)] = typeof v === 'string' && !isNaN(+new Date(v)) ? v : now; }
+      patch.checks = checks;
+    }
+    if ('note' in b) patch.note = String(b.note ?? '').replace(/\r/g, '').trim().slice(0, 2000) || null;
+    if (b.results && typeof b.results === 'object') {
+      const res: Record<string, unknown> = {};
+      for (const [k, , t] of RESULT_FIELDS) { if (!(k in b.results)) continue; const v = b.results[k];
+        if (t === 'number') { if (v === '' || v === null) continue; const n = Math.round(Number(v)); if (!(n >= 0 && n <= 1000000)) return json({ error: 'bad_number', field: k }, 400); res[k] = n; }
+        else { const x = String(v ?? '').replace(/\r/g, '').trim().slice(0, 1200); if (x) res[k] = x; } }
+      patch.results = res;
+    }
+    if (b.status) {
+      const st = String(b.status);
+      if (!['planned', 'scheduled', 'done', 'skipped'].includes(st)) return json({ error: 'bad_status' }, 400);
+      if (st === 'done' && !(patch.starts_at ?? row.starts_at)) return json({ error: 'no_date', message: 'Set the date it happened first.' }, 400);
+      patch.status = st;
+    } else if (row.status === 'planned' && (patch.starts_at ?? row.starts_at)) patch.status = 'scheduled';
+    await db.from('ve_branddesk_campaigns').update(patch).eq('id', row.id);
+    return json({ ok: true, status: patch.status || row.status });
+  }
+  if (act === 'campaign_calendar') {
+    if (!row.starts_at) return json({ error: 'no_date', message: 'Set the date and time first.' }, 400);
+    const c = CAMPAIGNS[row.kind];
+    const title = `${c.title} at ${l?.name}`.slice(0, 140);
+    const fields = { title, description: `${c.line} At ${l?.name}${l?.address_city ? ', ' + l.address_city : ''}. Open to everyone; Passport holders may find a little extra.`,
+      starts_at: row.starts_at, ends_at: row.ends_at || new Date(+new Date(row.starts_at) + 3 * 3600000).toISOString(), location_name: l?.name,
+      city: l?.address_city || null, state: l?.address_state || null, ticket_url: `${SITE}/directory/${l?.slug}`, category: c.category, host_listing_id: row.listing_id };
+    if (row.event_id) {
+      await db.from('events').update(fields).eq('id', row.event_id);
+      return json({ ok: true, event_id: row.event_id, moved: true });
+    }
+    const { data: ev, error } = await db.from('events').insert({ ...fields, tenant_id: VE_TENANT, author_id: m.id, status: 'approved', source: 'admin',
+      country: l?.address_country || 'US', continent: (l?.address_country || 'US') === 'GB' ? 'Europe' : 'North America' }).select('id').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    await db.from('ve_branddesk_campaigns').update({ event_id: ev.id, status: row.status === 'planned' ? 'scheduled' : row.status, updated_at: now, updated_by: m.id }).eq('id', row.id);
+    return json({ ok: true, event_id: ev.id });
   }
   return json({ error: 'unknown_action' }, 400);
 }
@@ -1139,6 +1341,7 @@ Deno.serve(async (req) => {
       case 'file_remove': return await fileRemove(b, m);
       case 'ranking': case 'pitch_admin': case 'pitch_save': case 'pitch_send': return await pitchAdmin(b, m);
       case 'pitch_view': case 'pitch_site': case 'pitch_choice': return await pitchPublic(req, b, m);
+      case 'campaign_library': case 'campaign_list': case 'campaign_get': case 'campaign_create': case 'campaign_save': case 'campaign_calendar': return await campaigns(b, m);
       case 'checkin_sweep': case 'checkin_start': case 'checkin_list': case 'checkin_get': case 'checkin_save': case 'checkin_send': return await checkins(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);

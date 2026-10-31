@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Campaign — Vegans Explore</title>
+  <meta name="description" content="A managed marketing client's campaign of the month: the plan, the blueprint to follow, and how it went.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://vegansexplore.com/business/campaign">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- The monthly rotation (BrandDesk, canon canon-ve-front-of-house; built 2026-10-31). For the client's Community Manager (or a super admin):
+       /business/campaign lists theirs; ?id=<campaign>&view=plan|blueprint|results is one campaign, one view at a time: The plan (the date, the
+       Vegans Explore calendar, a note), The blueprint (each step to tick, and the coaching sheet for a community night), How it went (the
+       results, then Mark it done). The idea library and blueprints are CAMPAIGNS in ve-branddesk. ?preview=1 is a sample, nothing saved. -->
+  <style>
+    :root{--g:#1E7A3E;--gd:#14532D;--soft:#EAF4EC;--line:rgba(0,0,0,.12);}
+    body{margin:0;background:#fff;color:#14261a;font-family:Montserrat,system-ui,sans-serif;}
+    main{padding:40px 40px 80px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 6px;}
+    .crumb{font-size:13px;font-weight:700;margin:0 0 14px;}.crumb a{color:var(--g);text-decoration:none;}
+    h1{font-size:clamp(26px,3.2vw,38px);font-weight:900;margin:0 0 8px;line-height:1.1;}
+    h2{font-size:19px;font-weight:900;margin:0 0 12px;}
+    .lede{font-size:15.5px;line-height:1.6;max-width:860px;color:rgba(0,0,0,.72);margin:0 0 18px;}
+    .note{background:#FFF4D6;border:1px solid #F1D28A;border-radius:10px;padding:10px 14px;font-size:13.5px;margin:0 0 18px;max-width:860px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px;}
+    .tabs a{font-size:13.5px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.18);color:#14261a;text-decoration:none;}
+    .tabs a.on{background:var(--g);border-color:var(--g);color:#fff;}
+    .tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;background:#f3f4f2;color:#333;vertical-align:middle;}
+    .tag.planned{background:#fff4e0;color:#8a5200;}.tag.scheduled{background:#e8f0fe;color:#1d4ed8;}.tag.done{background:var(--soft);color:var(--gd);}.tag.skipped{background:#f3f4f2;color:#555;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:16px;}
+    .box{border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+    .box p{font-size:14.5px;line-height:1.6;margin:0 0 8px;}
+    label.f{display:block;font-weight:800;font-size:13.5px;margin:0 0 14px;}
+    label.f input,label.f textarea{display:block;width:100%;box-sizing:border-box;margin-top:6px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 12px;font:inherit;font-weight:500;font-size:15px;}
+    label.f textarea{min-height:90px;resize:vertical;line-height:1.5;}
+    .steps{list-style:none;margin:0;padding:0;max-width:960px;}
+    .steps li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;padding:12px 0;border-top:1px solid var(--line);align-items:start;}
+    .steps li:first-child{border-top:0;}
+    .steps input{width:20px;height:20px;margin-top:2px;accent-color:var(--g);}
+    .steps b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.55);}
+    .steps span{font-size:15px;line-height:1.5;}.steps small{display:block;font-size:12px;color:var(--g);font-weight:700;margin-top:2px;}
+    .steps li.done span{color:rgba(0,0,0,.55);}
+    ol.coach{margin:0;padding-left:20px;}ol.coach li{font-size:14.5px;line-height:1.6;margin:0 0 6px;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 20px;border-radius:6px;border:2px solid var(--g);background:var(--g);color:#fff;font:800 14.5px/1 inherit;font-family:inherit;cursor:pointer;text-decoration:none;}
+    .btn.ghost{background:#fff;color:var(--g);}.btn.quiet{background:#fff;color:#555;border-color:rgba(0,0,0,.2);}.btn[disabled]{opacity:.6;cursor:wait;}
+    .msg{font-weight:700;font-size:14px;margin:10px 0 0;min-height:1em;color:var(--g);}.msg.err{color:#B42318;}
+    .list{list-style:none;margin:0;padding:0;}
+    .list li{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line);flex-wrap:wrap;}
+    .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:0 16px;}
+    @media print{.page-frame>*:not(main),.tabs,.row,.crumb,.note{display:none!important;}main{padding:0;}}
+    @media(max-width:700px){main{padding:24px 16px 60px;}}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main id="app"><p>Loading...</p></main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+  var app = document.getElementById('app');
+  var P = new URLSearchParams(location.search), ID = P.get('id') || '', PREVIEW = P.get('preview') === '1';
+  var VIEWS = [['plan', 'The plan'], ['blueprint', 'The blueprint'], ['results', 'How it went']];
+  var STATUS = { planned: 'Planned', scheduled: 'Date set', done: 'Done', skipped: 'Skipped' };
+  var D = null, C = null, view = (P.get('view') || 'plan');
+  if (!VIEWS.some(function (v) { return v[0] === view; })) view = 'plan';
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function when(d) { return d ? new Date(d).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
+  function local(d) { if (!d) return ''; var x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); }
+  function token() { try { return (window.VEAuth && VEAuth.getToken()) || ''; } catch (e) { return ''; } }
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function setUrl(push) { var u = new URL(location.href); u.searchParams.set('view', view); history[push ? 'pushState' : 'replaceState'](null, '', u.pathname + u.search); }
+  window.addEventListener('popstate', function () { view = new URLSearchParams(location.search).get('view') || 'plan'; if (C) draw(); });
+  function msg(t, bad) { var m = document.getElementById('msg'); if (m) { m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t || ''; } }
+
+  function sample() {
+    var n = new Date(), next = new Date(n.getFullYear(), n.getMonth() + 1, 1);
+    var start = new Date(next.getFullYear(), next.getMonth(), 12, 19, 0);
+    return api({ action: 'campaign_library' }).catch(function () { return {}; }).then(function (lib) {
+      var c = ((lib && lib.campaigns) || {}).community_night || { title: 'Community night', line: 'A night for a cause or a conversation, hosted at the restaurant.', provides: 'The space and a set menu.', steps: [['4 weeks before', 'Pick the cause or topic with the owner.']], coaching: ['Welcome everyone at the start.'] };
+      return { ok: true, team: true, listing: { name: 'Green Leaf Kitchen', slug: 'sample' }, assigned_name: 'Your Community Manager', results_fields: (lib && lib.results) || [['came', 'How many came', 'number'], ['worked', 'What worked', 'text']],
+        campaign: { id: 'sample', kind: 'community_night', title: c.title, line: c.line, provides: c.provides, steps: c.steps, coaching: c.coaching, status: 'scheduled',
+          month: next.toISOString().slice(0, 10), month_name: next.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }), starts_at: start.toISOString(), ends_at: new Date(+start + 3 * 3600000).toISOString(),
+          checks: { 0: new Date().toISOString(), 1: new Date().toISOString() }, note: 'Paws of Fort Lauderdale talks about fostering; Chef Alex does a set menu at $25.', results: {}, event_id: null } };
+    });
+  }
+  function drawList() {
+    app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly campaigns</h1><p class="lede">Each managed client gets one campaign a month from the rotation, picked at their check-in, and a photo night every two months. Set the date, follow the blueprint, put it on our calendar, then record how it went.</p><div id="ls"><p>Loading...</p></div>';
+    api({ action: 'campaign_list' }).then(function (d) {
+      var box = document.getElementById('ls');
+      if (!d || !d.ok) { box.innerHTML = '<p>This did not load.</p>'; return; }
+      var R = (d.campaigns || []).filter(function (r) { return r.status !== 'skipped'; });
+      box.innerHTML = R.length ? '<ul class="list">' + R.map(function (r) {
+        return '<li><span><b>' + esc((r.listing || {}).name || 'A client') + ':</b> ' + esc(r.title) + ', ' + esc(r.month_name) + '<br><small>' + (r.starts_at ? esc(when(r.starts_at)) : 'No date yet') + '</small></span>' +
+          '<span><span class="tag ' + r.status + '">' + esc(STATUS[r.status]) + '</span> <a class="btn ghost" style="min-height:38px;padding:8px 14px;font-size:13px" href="/business/campaign?id=' + esc(r.id) + '">Open</a></span></li>'; }).join('') + '</ul>'
+        : '<p>No campaigns are waiting on you. They appear here once a client picks next month\'s at their check-in.</p>';
+    });
+  }
+  function load() {
+    if (PREVIEW) return sample().then(function (d) { D = d; C = d.campaign; draw(); });
+    if (!token()) {
+      app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly campaign</h1><p class="lede">Sign in with the account you use as a Community Manager.</p><button class="btn" id="si">Sign in</button>';
+      document.getElementById('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the campaign.', function () { location.reload(); }); };
+      return;
+    }
+    if (!ID) return drawList();
+    api({ action: 'campaign_get', id: ID }).then(function (d) {
+      if (!d || !d.ok || !d.team) { app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly campaign</h1><p class="lede">This campaign is not one you can open. If it should be, ask the team.</p><p><a class="btn ghost" href="/business/campaign">Your campaigns</a></p>'; return; }
+      D = d; C = d.campaign; draw();
+    });
+  }
+  function save(body) {
+    if (PREVIEW) return Promise.resolve({ ok: true, preview: true });
+    return api(Object.assign({ action: 'campaign_save', id: C.id }, body));
+  }
+  function head() {
+    return '<p class="crumb"><a href="/business/campaign">Monthly campaigns</a> &rsaquo; ' + esc(D.listing.name) + ', ' + esc(C.month_name) + '</p>' +
+      (PREVIEW ? '<div class="note"><b>Sample.</b> Green Leaf Kitchen is made up. Nothing here is saved or put on the calendar.</div>' : '') +
+      '<p class="k">' + esc(C.month_name) + ' campaign</p><h1>' + esc(C.title) + ' at ' + esc(D.listing.name) + ' <span class="tag ' + C.status + '">' + esc(STATUS[C.status]) + '</span></h1>' +
+      '<p class="lede">' + esc(C.line) + (D.assigned_name ? ' Led by ' + esc(D.assigned_name) + '.' : '') + '</p>' +
+      '<nav class="tabs">' + VIEWS.map(function (v) { return '<a href="#" data-v="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
+  }
+  function draw() {
+    var body = view === 'blueprint' ? drawBlueprint() : view === 'results' ? drawResults() : drawPlan();
+    app.innerHTML = head() + body;
+    app.querySelectorAll('[data-v]').forEach(function (a) { a.onclick = function (e) { e.preventDefault(); view = a.dataset.v; setUrl(true); draw(); }; });
+    wire();
+  }
+  function drawPlan() {
+    return '<div class="grid"><div class="box"><h2>When</h2>' +
+      '<label class="f">Starts<input type="datetime-local" id="st" value="' + local(C.starts_at) + '"></label>' +
+      '<label class="f">Ends<input type="datetime-local" id="en" value="' + local(C.ends_at) + '"></label>' +
+      '<label class="f">A note for the team (who hosts, the special, anything agreed)<textarea id="note" maxlength="2000">' + esc(C.note) + '</textarea></label>' +
+      '<div class="row"><button class="btn" id="save">Save</button></div></div>' +
+      '<div class="box"><h2>What the restaurant provides</h2><p>' + esc(C.provides) + '</p>' +
+      '<h2 style="margin-top:16px">On our calendar</h2>' + (C.event_id ? '<p>It is on the Vegans Explore calendar, hosted by ' + esc(D.listing.name) + '.</p><div class="row" style="margin-top:6px"><a class="btn ghost" href="/events#event/' + esc(C.event_id) + '" target="_blank" rel="noopener">See it on the calendar</a><button class="btn quiet" id="cal">Move it to the new date</button></div>'
+        : '<p>Once the date is set, put it on the calendar so our members in the chapter see it. It shows on the restaurant\'s page too.</p><div class="row" style="margin-top:6px"><button class="btn" id="cal"' + (C.starts_at ? '' : ' disabled') + '>Put it on the calendar</button></div>') +
+      '</div></div><p class="msg" id="msg" role="status"></p>' +
+      '<div class="row"><button class="btn quiet" id="skip">' + (C.status === 'skipped' ? 'Bring it back' : 'Skip this month') + '</button></div>';
+  }
+  function drawBlueprint() {
+    var done = 0, n = (C.steps || []).length;
+    var items = (C.steps || []).map(function (s, i) { var at = C.checks[i]; if (at) done++;
+      return '<li class="' + (at ? 'done' : '') + '"><input type="checkbox" data-step="' + i + '"' + (at ? ' checked' : '') + ' aria-label="' + esc(s[1]) + '"><div><b>' + esc(s[0]) + '</b><span>' + esc(s[1]) + '</span>' + (at ? '<small>Done ' + esc(day(at)) + '</small>' : '') + '</div></li>'; }).join('');
+    return '<div class="box"><h2>The blueprint <span class="tag ' + (done === n ? 'done' : 'planned') + '">' + done + ' of ' + n + '</span></h2><ul class="steps">' + items + '</ul></div>' +
+      (C.coaching ? '<div class="box" style="margin-top:16px"><h2>The coaching sheet, for the host</h2><ol class="coach">' + C.coaching.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol><div class="row"><button class="btn ghost" id="print">Print it</button></div></div>' : '') +
+      '<p class="msg" id="msg" role="status"></p>';
+  }
+  function drawResults() {
+    var R = C.results || {}, F = D.results_fields || [];
+    var nums = F.filter(function (f) { return f[2] === 'number'; }), texts = F.filter(function (f) { return f[2] !== 'number'; });
+    return '<div class="box"><h2>How it went</h2><p style="font-size:13.5px;color:rgba(0,0,0,.65)">The owner sees these on their dashboard, beside their monthly report.</p><div class="two">' +
+      nums.map(function (f) { return '<label class="f">' + esc(f[1]) + '<input type="number" min="0" data-r="' + f[0] + '" value="' + esc(R[f[0]] == null ? '' : R[f[0]]) + '"></label>'; }).join('') + '</div>' +
+      texts.map(function (f) { return '<label class="f">' + esc(f[1]) + '<textarea data-r="' + f[0] + '" maxlength="1200">' + esc(R[f[0]] || '') + '</textarea></label>'; }).join('') +
+      '<div class="row"><button class="btn ghost" id="rsave">Save</button><button class="btn" id="done"' + (C.status === 'done' ? ' disabled' : '') + '>' + (C.status === 'done' ? 'Done' : 'Save and mark it done') + '</button></div><p class="msg" id="msg" role="status"></p></div>';
+  }
+  function results() { var r = {}; app.querySelectorAll('[data-r]').forEach(function (i) { r[i.dataset.r] = i.value; }); return r; }
+  function wire() {
+    var sv = document.getElementById('save');
+    if (sv) sv.onclick = function () {
+      var st = document.getElementById('st').value, en = document.getElementById('en').value;
+      if (st && en && new Date(en) <= new Date(st)) { msg('It has to end after it starts.', true); return; }
+      sv.disabled = true; msg('Saving...');
+      save({ starts_at: st ? new Date(st).toISOString() : null, ends_at: en ? new Date(en).toISOString() : null, note: document.getElementById('note').value }).then(function (r) {
+        sv.disabled = false; if (!r || !r.ok) { msg((r && r.message) || 'That did not save.', true); return; }
+        C.starts_at = st ? new Date(st).toISOString() : null; C.ends_at = en ? new Date(en).toISOString() : null; C.note = document.getElementById('note').value; if (r.status) C.status = r.status;
+        draw(); msg(PREVIEW ? 'In the sample nothing is saved.' : 'Saved.' + (C.event_id ? ' Move it on the calendar too if the date changed.' : ''));
+      });
+    };
+    var cal = document.getElementById('cal');
+    if (cal) cal.onclick = function () {
+      if (PREVIEW) { msg('In the sample nothing goes on the calendar. A real one shows on /events and the restaurant\'s page, hosted by them.'); return; }
+      cal.disabled = true; msg('Putting it on the calendar...');
+      api({ action: 'campaign_calendar', id: C.id }).then(function (r) {
+        cal.disabled = false; if (!r || !r.ok) { msg((r && r.message) || 'That did not go on the calendar.', true); return; }
+        C.event_id = r.event_id; if (C.status === 'planned') C.status = 'scheduled'; draw(); msg(r.moved ? 'Moved on the calendar.' : 'It is on the calendar.');
+      });
+    };
+    var sk = document.getElementById('skip');
+    if (sk) sk.onclick = function () {
+      var to = C.status === 'skipped' ? (C.starts_at ? 'scheduled' : 'planned') : 'skipped';
+      if (to === 'skipped' && !window.confirm('Skip ' + C.title + ' this month? It stays on record as skipped.')) return;
+      save({ status: to }).then(function (r) { if (r && r.ok) { C.status = to; draw(); } else msg((r && r.message) || 'That did not save.', true); });
+    };
+    app.querySelectorAll('[data-step]').forEach(function (b) {
+      b.onchange = function () {
+        var checks = Object.assign({}, C.checks); if (b.checked) checks[b.dataset.step] = new Date().toISOString(); else delete checks[b.dataset.step];
+        save({ checks: checks }).then(function (r) { if (r && r.ok) { C.checks = checks; draw(); } else { b.checked = !b.checked; msg('That did not save.', true); } });
+      };
+    });
+    var pr = document.getElementById('print'); if (pr) pr.onclick = function () { window.print(); };
+    var rs = document.getElementById('rsave'), dn = document.getElementById('done');
+    var saveR = function (markDone) {
+      var R = results(); msg('Saving...');
+      save(markDone ? { results: R, status: 'done' } : { results: R }).then(function (r) {
+        if (!r || !r.ok) { msg((r && r.message) || 'That did not save.', true); return; }
+        C.results = R; if (markDone) C.status = 'done'; draw(); msg(PREVIEW ? 'In the sample nothing is saved.' : markDone ? 'Marked done. The owner sees how it went on their dashboard.' : 'Saved.');
+      });
+    };
+    if (rs) rs.onclick = function () { saveR(false); };
+    if (dn) dn.onclick = function () { saveR(true); };
+  }
+  if (ID || PREVIEW) setUrl(false);
+  load();
+})();
+</script>
+</body>
+</html>
