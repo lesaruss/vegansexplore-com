@@ -2508,13 +2508,15 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   clips (about -15 LUFS). On phones (900 px and under) she is full width on top with her words under her and a **Hide Maya /
   Show Maya** switch (`#dgFold`, kept for the visit), and Back / N of M / Next sit under the content (`#dgTourM`); Next goes
   back up to her.
-- **The Guide in the corner** (trial on the Dairy Guide only, waiting on Sean before it rolls out; Sean, 2026-10-30, from the J9
+- **The Guide in the corner** (live on the Dairy Guide, approved by Sean 2026-10-31; the other Guides follow once he says roll it out; Sean, 2026-10-30, from the J9
   proposal page: "V is in the top left-hand corner... that could be something we could do for our other guides, because sometimes
   it's too much when they're on the page"). At 900 px and under the rail is a row above the content: Maya as a 110 px rounded
   square (mid shot, cover) top left, her bubble beside her with its tail pointing at her, Start the tour / Pause and Hide me under
   the bubble (stacked under 560 px), the name line hidden, Back / N of M / Next at the bottom (`#dgTourM`). Captions are too small
   to read on the square, so at that width they show in her bubble instead (`capMode`, `onCue` in the Guide script). Replaces the
-  full-width Maya above for the Dairy Guide; the other Guides still put her full width on top until Sean approves.
+  full-width Maya above for the Dairy Guide; the other Guides still put her full width on top until Sean says roll it out.
+  **Get access on desktop** (Sean, 2026-10-31): above 1180 px the title, its line and the list sit on the left and the price box on
+  the right, its top level with the line under the title and its bottom with the list (`.dg-join` in the page); stacked at 1180 px and under.
 - **Minimize the Guide** (Sean, 2026-10-28: "if I'm using this tool, I don't want to see River on the right-hand side"; then "let's
   make him actually overlap at the bottom of the page and not create a whole column... a square... with rounded corners... show
   me, hide me... if the name's long, it's going to throw it off... the hide me... below the pagination, like a rectangular button").
