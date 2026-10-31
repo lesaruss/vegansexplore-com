@@ -684,6 +684,240 @@ async function archive(b: any, m: any) {
   return json(r);
 }
 
+// ---- The pitch: the presence-gap ranking and one personal page per business (canon canon-ve-front-of-house v1 and v3).
+// Prepared, never dressed as an instant scan: "We looked at your business before we reached out." The page shows their latest
+// full audit, a still of their home page on our frame, the two weeks, the price, and three choices that land in the Inbox.
+const PITCH_LOOKS: Record<string, { name: string; c: Record<string, string>; h: [string, number]; b: string }> = {
+  fresh: { name: 'Fresh neighborhood', c: { page: '#FBF5E6', text: '#1E4D2B', accent: '#2E7D32', soft: '#DCE8D2', highlight: '#E0A030', ink: '#1F2420' }, h: ['Nunito', 900], b: 'DM Sans' },
+  island: { name: 'Island bright', c: { page: '#FFFFFF', text: '#0F3D3E', accent: '#0B7A64', soft: '#E3F5EF', highlight: '#FFB000', ink: '#1A1A1A' }, h: ['Fraunces', 800], b: 'Work Sans' },
+  night: { name: 'Night lounge', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, h: ['Playfair Display', 800], b: 'Lato' },
+  street: { name: 'Street heat', c: { page: '#FFF8F0', text: '#2A1A14', accent: '#C2410C', soft: '#FDE7D3', highlight: '#FACC15', ink: '#1C1917' }, h: ['Archivo Black', 400], b: 'Inter' },
+};
+const PLAN = [
+  { when: 'Day 1', title: 'A welcome call', text: 'We meet, you tell us what you want people to know, and we start your brand kit from what you already have.' },
+  { when: 'Days 1 to 3', title: 'Your Google profile', text: 'Claimed, hours, photos, categories and the details people search for. Google\'s own verification can take longer; that part is theirs.' },
+  { when: 'Days 2 to 5', title: 'Your logo and brand kit', text: 'A clean logo in every size, your colors, your type and your voice, written down so everything matches.' },
+  { when: 'Days 3 to 7', title: 'Your starter photo shoot', text: 'Up to 15 dishes and your space, shot to one standard, so every photo of your food looks like it belongs together.' },
+  { when: 'Days 5 to 10', title: 'Your new website', text: 'Built on our frame and fed by your Directory page: menu, hours, ordering and directions, ready for phones.' },
+  { when: 'Days 10 to 14', title: 'Launch', text: 'Your site goes live, your Vegans Explore page and dashboard are ready, and we pick your first month\'s campaign together.' },
+];
+const AREA_NAMES: Record<string, string> = { google: 'Google', web: 'Your website', seo: 'Being found in search', social: 'Social' };
+const pitchCode = () => Array.from(crypto.getRandomValues(new Uint8Array(10)), (x) => 'abcdefghjkmnpqrstuvwxyz23456789'[x % 31]).join('');
+const P_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const P_VEGAN: Record<string, string> = { fully_vegan: '100% Vegan', vegan_options: 'Vegan options', vegan_friendly: 'Vegan friendly' };
+function pHours(h: any): Record<string, string> {
+  let v = h; if (typeof v === 'string') { try { v = JSON.parse(v); } catch { v = null; } }
+  const out: Record<string, string> = {};
+  if (Array.isArray(v)) v.forEach((x: any) => { const d = x?.day || x?.name; if (d) out[d] = String(x.hours || x.openingHours || x.time || ''); });
+  else if (v && typeof v === 'object') Object.keys(v).forEach((d) => { out[d] = String(v[d] ?? ''); });
+  const tidy = (s: string) => s.replace(/\s*[–—-]\s*/g, ' to ').replace(/:00/g, '').replace(/ | /g, ' ').trim();
+  return Object.fromEntries(P_DAYS.map((d) => [d, out[d] ? tidy(out[d]) : 'Closed']));
+}
+async function pitchListing(where: { slug?: string; id?: string }) {
+  let q = db.from('listings').select('id, name, slug, category, vegan_status, cuisines, tagline, description, phone, website, instagram, facebook, tiktok, address_street, address_city, address_state, address_zip, google_hours_json, logo_url, gallery_urls, menu_crawl_url, status');
+  q = where.id ? q.eq('id', where.id) : q.eq('slug', clean(where.slug, 120));
+  const { data } = await q.eq('status', 'approved').maybeSingle();
+  return data;
+}
+async function auditSummary(auditId: string | null) {
+  if (!auditId) return null;
+  const { data: a } = await db.from('ve_audits').select('id, score, max_score, areas, items, facts, created_at').eq('id', auditId).maybeSingle();
+  if (!a || !a.max_score) return null;
+  const { data: crit } = await db.from('ve_audit_criteria').select('key, label, area, weight, why').eq('active', true);
+  const C = new Map((crit || []).map((c: any) => [c.key, c]));
+  const items = (a.items || []).map((i: any) => ({ ...i, c: C.get(i.key) })).filter((i: any) => i.c);
+  const fixes = items.filter((i: any) => i.state === 'fix').sort((x: any, y: any) => y.c.weight - x.c.weight);
+  const goods = items.filter((i: any) => i.state === 'good').sort((x: any, y: any) => y.c.weight - x.c.weight);
+  const g = a.facts?.google || {};
+  return {
+    looked_on: a.created_at, presence: Math.round(a.score * 100 / a.max_score),
+    areas: Object.keys(AREA_NAMES).filter((k) => a.areas?.[k]?.max).map((k) => ({ key: k, name: AREA_NAMES[k], pct: Math.round(a.areas[k].score * 100 / a.areas[k].max) })),
+    fixes: fixes.slice(0, 6).map((i: any) => ({ label: i.c.label, why: i.c.why, found: clean(i.found, 220), area: AREA_NAMES[i.c.area] || i.c.area })),
+    fix_count: fixes.length, goods: goods.slice(0, 5).map((i: any) => i.c.label), good_count: goods.length,
+    google: { rating: g.rating ?? null, reviews: g.reviews ?? null, photos: g.photos ?? null },
+  };
+}
+async function pitchCartridge(l: any, look: string) {
+  const L = PITCH_LOOKS[look] || PITCH_LOOKS.fresh;
+  const { data: items } = await db.from('ve_menu_items').select('category, name, description, price_display, is_gluten_free, is_featured, sort_order').eq('listing_id', l.id).eq('is_available', true).order('sort_order').limit(200);
+  const sections: any[] = [];
+  (items || []).forEach((it: any) => {
+    const name = clean(it.category, 60) || 'Menu';
+    let s = sections.find((x) => x.name === name); if (!s) { s = { name, items: [] }; sections.push(s); }
+    s.items.push({ name: clean(it.name, 80), price: clean(it.price_display, 20), tags: [it.is_gluten_free ? 'Gluten-free' : '', it.is_featured ? 'Favorite' : ''].filter(Boolean), copy: clean(it.description, 300), photo: { state: 'to_shoot' } });
+  });
+  const desc = clean(l.description, 1200), first = (desc.match(/^.*?[.!?](\s|$)/) || [desc])[0].trim();
+  const photos = (Array.isArray(l.gallery_urls) ? l.gallery_urls : []).filter((u: any) => typeof u === 'string' && /^(https:\/\/|\/)/.test(u)).slice(0, 6);
+  return {
+    pitch: true, meta: { status: 'pitch' },
+    business: { name: l.name, short: l.name, kind: l.category, vegan: P_VEGAN[l.vegan_status] || '', cuisines: l.cuisines || [], city: [l.address_city, l.address_state].filter(Boolean).join(', ') },
+    brand: { logo: { primary: { src: l.logo_url || '' }, files: [] }, colors: Object.keys(L.c).map((role) => ({ role, hex: L.c[role] })),
+      type: { heading: { family: L.h[0], weight: L.h[1] }, body: { family: L.b, weight: 400 } }, photo: {} },
+    voice: { samples: { hero: clean(l.tagline, 120) || first || l.name } },
+    story: { tagline: clean(l.tagline, 120) || l.name, short: first, long: desc ? [desc] : [] },
+    menu: { sections },
+    photos: { space: photos.map((src: string, i: number) => ({ shot: i ? 'Inside' : 'Outside', set: i ? 'inside' : 'outside', state: 'shot', src })) },
+    info: { address: { street: l.address_street || '', city: l.address_city || '', state: l.address_state || '', zip: l.address_zip || '' }, phone: l.phone || '',
+      hours: pHours(l.google_hours_json), details: [], map_query: [l.name, l.address_street, l.address_city, l.address_state].filter(Boolean).join(', '),
+      links: { website: l.website || '', instagram: l.instagram ? 'https://instagram.com/' + String(l.instagram).replace(/^@/, '') : '', facebook: l.facebook || '', tiktok: l.tiktok || '', directory: '/directory/' + l.slug },
+      ordering: { state: 'link', order_url: l.website || '', pos: '' } },
+  };
+}
+async function pitchByCode(code: unknown) {
+  const c = clean(code, 20).toLowerCase(); if (!/^[a-z0-9]{8,20}$/.test(c)) return null;
+  const { data } = await db.from('ve_branddesk_pitches').select('*').eq('code', c).maybeSingle();
+  return data && data.status !== 'closed' ? data : null;
+}
+async function emailSend(payload: Record<string, unknown>) {
+  const admin = await secret('LESARUSS_ADMIN_TOKEN');
+  const r = await fetch(`${SUPABASE_URL}/functions/v1/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin}` }, body: JSON.stringify(payload) });
+  return await r.json().catch(() => ({ ok: false, error: `email-send ${r.status}` }));
+}
+async function allowListing(slug: string, by: string | null) {
+  const s = await settings(); if (s.allowed.includes(slug)) return;
+  await db.from('ve_site_settings').update({ value: { live: s.live, allowed: s.allowed.concat([slug]) }, updated_at: new Date().toISOString(), updated_by: by }).eq('key', 'branddesk');
+}
+
+async function pitchAdmin(b: any, m: any) {
+  if (!m?.is_superadmin) return json({ error: 'admin_only' }, 403);
+  const action = String(b.action);
+  if (action === 'ranking') {
+    const { data, error } = await db.rpc('ve_branddesk_ranking', { p_chapter: b.chapter ? clean(b.chapter, 40) : null });
+    if (error) return json({ error: 'ranking_failed', message: error.message }, 500);
+    return json({ ok: true, rows: data || [] });
+  }
+  const l = await pitchListing({ slug: b.slug }); if (!l) return json({ error: 'not_found' }, 404);
+  let { data: p } = await db.from('ve_branddesk_pitches').select('*').eq('listing_id', l.id).maybeSingle();
+  if (action === 'pitch_admin') {
+    const { data: rank } = await db.rpc('ve_branddesk_ranking', { p_chapter: null });
+    const row = (rank || []).find((r: any) => r.listing_id === l.id) || null;
+    const audit = p?.audit_id || row?.audit_id || null;
+    return json({ ok: true, listing: { id: l.id, name: l.name, slug: l.slug, city: l.address_city, category: l.category }, pitch: p, rank: row,
+      summary: await auditSummary(audit), looks: Object.fromEntries(Object.entries(PITCH_LOOKS).map(([k, v]) => [k, v.name])), plan: PLAN });
+  }
+  if (action === 'pitch_save') {
+    const now = new Date().toISOString();
+    const patch: Record<string, unknown> = { updated_at: now };
+    if ('note' in b) patch.note = String(b.note ?? '').replace(/\r/g, '').trim().slice(0, 1500) || null;
+    if ('look' in b && PITCH_LOOKS[b.look]) patch.look = b.look;
+    if ('contact_name' in b) patch.contact_name = clean(b.contact_name, 120) || null;
+    if ('contact_email' in b) { const e = clean(b.contact_email, 200).toLowerCase(); if (e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) return json({ error: 'bad_email' }, 400); patch.contact_email = e || null; }
+    if ('warm' in b) patch.warm = !!b.warm;
+    if (['draft', 'ready', 'closed'].includes(b.status)) patch.status = b.status;
+    if (!p) {
+      const { data: rank } = await db.rpc('ve_branddesk_ranking', { p_chapter: null });
+      const row = (rank || []).find((r: any) => r.listing_id === l.id);
+      let auditId = row?.audit_id || null;
+      if (!auditId) { const { data: a } = await db.from('ve_audits').select('id').eq('listing_id', l.id).eq('status', 'done').eq('tier', 'full').order('created_at', { ascending: false }).limit(1); auditId = a?.[0]?.id || null; }
+      if (!('contact_email' in b) && row?.contact_email) patch.contact_email = row.contact_email;
+      const ins = { listing_id: l.id, code: pitchCode(), audit_id: auditId, created_by: m.id, ...patch };
+      const { data, error } = await db.from('ve_branddesk_pitches').insert(ins).select('*').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      p = data;
+    } else {
+      if (b.refresh_audit) { const { data: a } = await db.from('ve_audits').select('id').eq('listing_id', l.id).eq('status', 'done').eq('tier', 'full').order('created_at', { ascending: false }).limit(1); if (a?.[0]) patch.audit_id = a[0].id; }
+      const { data, error } = await db.from('ve_branddesk_pitches').update(patch).eq('id', p.id).select('*').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      p = data;
+    }
+    return json({ ok: true, pitch: p });
+  }
+  if (action === 'pitch_send') {
+    if (!p) return json({ error: 'no_pitch' }, 404);
+    const test = b.test === true;
+    const to = test ? String(m.email || '').toLowerCase() : String(p.contact_email || '');
+    if (!to) return json({ error: 'no_email', message: 'Add their email first.' }, 400);
+    if (!test && !p.audit_id) return json({ error: 'no_audit', message: 'This business has no audit yet.' }, 409);
+    let code = p.link_code;
+    const dest = `${SITE}/business/pitch?c=${p.code}`;
+    if (!test && !code) {
+      for (let i = 0; i < 4 && !code; i++) {
+        const c = 'bd-' + pitchCode().slice(0, 7);
+        const { error } = await db.from('ve_links').insert({ code: c, label: ('BrandDesk pitch: ' + l.name).slice(0, 120), destination: dest, initiative_slug: 'branddesk-pitch',
+          tags: ['branddesk-pitch', 'branddesk'], channel: 'email', recipient_email: to.slice(0, 200), recipient_name: (p.contact_name || l.name).slice(0, 120), active: true });
+        if (!error) code = c;
+      }
+      if (code) await db.from('ve_branddesk_pitches').update({ link_code: code }).eq('id', p.id);
+    }
+    const link = test ? dest + '&preview=1' : code ? `${SITE}/go/${code}` : dest;
+    const first = clean(p.contact_name, 60).split(' ')[0];
+    const paras = [
+      `Hi ${first || 'there'},`,
+      ...(p.note ? String(p.note).split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean) : []),
+      `I'm Sean, I run Vegans Explore. We looked at ${l.name} online before I reached out, and I put together a short page for you: what we found, what your home page could look like on our frame, and what your first two weeks with us would be.`,
+      `<a href="${link}">See what we put together for ${esc(l.name)}</a>`,
+      `There's no pressure either way. If it's not the right time, the page says so too.`,
+      `Sean A. Russell<br>Vegans Explore`,
+    ];
+    const why = `You are getting this because ${l.name} is listed in the Vegans Explore Directory`;
+    const linkIdx = paras.length - 3;
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">${paras.map((x, i) => `<p style="margin:0 0 16px">${i === linkIdx || i === paras.length - 1 ? x : esc(x)}</p>`).join('')}` +
+      `<p style="margin:28px 0 0;font-size:12px;line-height:1.5;color:#777">${esc(why)}. <a href="{{unsubscribe_url}}" style="color:#777">Don't email me again</a>.<br>{{postal_address}}</p></div>`;
+    const text = paras.map((x) => x.replace(/<a href="([^"]+)">([^<]+)<\/a>/, '$2: $1').replace(/<br>/g, '\n')).join('\n\n') + `\n\n--\n${why}.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
+    const subject = (test ? '[Test] ' : '') + `We looked at ${l.name} before reaching out`;
+    const res = await emailSend({ brand: 'lesaruss', campaign_ref: test ? `bd-pitch-test-${p.id}-${Date.now()}` : `bd-pitch-${p.id}`, list_ref: 'branddesk-pitch',
+      subject, html, text, recipients: [{ email: to, first_name: first || undefined, name: p.contact_name || undefined }] });
+    const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
+    if (test) return json({ ok: result === 'sent' || result === 'already_sent', result, to, detail: res?.errors || res?.results?.[0]?.error || null });
+    if (result !== 'sent' && result !== 'already_sent') return json({ error: 'send_failed', result, detail: res?.results?.[0]?.error || res?.error || res?.errors || null }, 502);
+    await allowListing(l.slug, m.id);
+    const { data } = await db.from('ve_branddesk_pitches').update({ status: 'sent', sent_at: new Date().toISOString(), sent_by: m.id, updated_at: new Date().toISOString() }).eq('id', p.id).select('*').single();
+    return json({ ok: true, result, pitch: data });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
+async function pitchPublic(req: Request, b: any, m: any) {
+  const p = await pitchByCode(b.code);
+  if (!p) return json({ error: 'not_found' }, 404);
+  const l = await pitchListing({ id: p.listing_id }); if (!l) return json({ error: 'not_found' }, 404);
+  const action = String(b.action);
+  if (action === 'pitch_site') return json({ ok: true, cartridge: await pitchCartridge(l, p.look) });
+  if (action === 'pitch_view') {
+    const team = !!m?.is_superadmin || b.preview === true;
+    if (!team) {
+      const now = new Date().toISOString();
+      await db.from('ve_branddesk_pitches').update({ views: (p.views || 0) + 1, last_viewed_at: now, first_viewed_at: p.first_viewed_at || now,
+        status: ['sent', 'ready', 'draft'].includes(p.status) ? 'viewed' : p.status }).eq('id', p.id);
+    }
+    const { data: cm } = await db.from('members').select('name').eq('ve_role', 'community_manager').eq('membership_status', 'active').eq('home_community', (await db.rpc('ve_chapter_of', { p_city: l.address_city || '', p_state: l.address_state || '' })).data || '').limit(1);
+    return json({ ok: true, team, business: { name: l.name, slug: l.slug, city: l.address_city, logo: l.logo_url || null, category: l.category },
+      contact: { name: p.contact_name || '', email: p.contact_email || '' }, note: p.note || '', look: p.look, look_name: (PITCH_LOOKS[p.look] || PITCH_LOOKS.fresh).name,
+      summary: await auditSummary(p.audit_id), plan: Array.isArray(p.plan) && p.plan.length ? p.plan : PLAN,
+      prices: { setup: AMOUNTS.setup, setup3: AMOUNTS.setup3, setup6: AMOUNTS.setup6, monthly: AMOUNTS.monthly, social: AMOUNTS.social },
+      who: cm?.[0]?.name ? clean(cm[0].name, 60).split(' ')[0] : null, choice: p.choice, follow_up_on: p.follow_up_on, managed: `/business/managed?listing=${encodeURIComponent(l.slug)}` });
+  }
+  if (action === 'pitch_choice') {
+    const choice = ['ready', 'think', 'talk', 'no'].includes(b.choice) ? b.choice : '';
+    if (!choice) return json({ error: 'bad_choice' }, 400);
+    if (p.choice_at && Date.now() - Date.parse(p.choice_at) < 20000) return json({ error: 'slow_down' }, 429);
+    const team = !!m?.is_superadmin || b.preview === true;
+    const date = choice === 'think' && /^\d{4}-\d{2}-\d{2}$/.test(String(b.follow_up_on || '')) ? String(b.follow_up_on) : null;
+    if (choice === 'think' && !date) return json({ error: 'date_needed', message: 'Pick a day for us to check back.' }, 400);
+    const note = String(b.note ?? '').replace(/\r/g, '').trim().slice(0, 1200) || null;
+    const name = clean(b.name, 120) || p.contact_name || null;
+    const email = clean(b.email, 200).toLowerCase() || p.contact_email || null;
+    if (choice === 'talk' && !email && !clean(b.phone, 40)) return json({ error: 'contact_needed', message: 'Leave an email or phone so we can reach you.' }, 400);
+    const phone = clean(b.phone, 40);
+    if (team) return json({ ok: true, preview: true, next: choice === 'ready' ? `/business/managed?listing=${encodeURIComponent(l.slug)}&preview=plan` : null });
+    await db.from('ve_branddesk_pitches').update({ choice, choice_at: new Date().toISOString(), choice_note: [note, phone ? 'Phone: ' + phone : ''].filter(Boolean).join('\n') || null,
+      follow_up_on: date, contact_name: name, contact_email: email, status: 'chose', updated_at: new Date().toISOString() }).eq('id', p.id);
+    if (choice === 'ready') await allowListing(l.slug, p.sent_by || p.created_by || null);
+    const WORD: Record<string, string> = { ready: 'is ready to start', think: 'wants to think it over', talk: 'wants to talk to someone', no: 'says not now' };
+    await mail(TEAM_EMAIL, `${l.name} ${WORD[choice]} (BrandDesk pitch)`,
+      `<p><b>${esc(name || l.name)}</b>${email ? ' (' + esc(email) + ')' : ''}${phone ? ', ' + esc(phone) : ''} ${WORD[choice]} after their pitch page for <b>${esc(l.name)}</b>.</p>` +
+      (date ? `<p>Check back on <b>${esc(date)}</b>.</p>` : '') + (note ? `<p>${esc(note).replace(/\n/g, '<br>')}</p>` : '') +
+      `<p>It is in the Inbox, and in <a href="${SITE}/admin/depot/branddesk#pitch/${l.slug}">Depot &gt; BrandDesk</a>. Reply within 24 hours.</p>`, email || TEAM_EMAIL);
+    if (email && choice !== 'ready') {
+      const line = choice === 'think' ? `We'll check back with you on ${new Date(date + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}. Nothing changes before then.`
+        : choice === 'talk' ? 'Someone from our team will reach out within a day.' : 'Thank you for looking. Your Vegans Explore page stays yours, free, whatever you decide.';
+      await mail(email, `About ${l.name} and Vegans Explore`, `<p>${esc(name ? 'Hi ' + name.split(' ')[0] + ',' : 'Hi,')}</p><p>${esc(line)}</p><p>Vegans Explore</p>`);
+    }
+    return json({ ok: true, next: choice === 'ready' ? `/business/managed?listing=${encodeURIComponent(l.slug)}` : null });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -720,6 +954,8 @@ Deno.serve(async (req) => {
       case 'file_upload_url': return await fileUploadUrl(b, m);
       case 'file_done': return await fileDone(b, m);
       case 'file_remove': return await fileRemove(b, m);
+      case 'ranking': case 'pitch_admin': case 'pitch_save': case 'pitch_send': return await pitchAdmin(b, m);
+      case 'pitch_view': case 'pitch_site': case 'pitch_choice': return await pitchPublic(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }

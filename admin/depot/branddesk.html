@@ -59,6 +59,21 @@
     .appl:first-child{border-top:0;}
     .appl p{font-size:13.5px;margin:4px 0;overflow-wrap:anywhere;}
     .appl .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .prow{display:grid;grid-template-columns:44px minmax(0,1.6fr) 90px 110px minmax(0,1.4fr) 120px auto;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--ve-border);font-size:13.5px;}
+    .prow:first-child{border-top:0;}.prow.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);background:#f7f8f6;position:sticky;top:0;z-index:1;}
+    .prow b{display:block;font-size:14px;}.prow small{display:block;color:var(--ve-text-75);font-size:12.5px;}
+    .rank{font-weight:900;font-size:16px;color:var(--ve-green-deep);}
+    .pct{font-weight:900;font-size:15px;}
+    .warm{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#fff4e0;color:#8a5200;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+    @media (max-width:900px){.prow{grid-template-columns:36px minmax(0,1fr) auto;}.prow .hide-m{display:none;}}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px;}
+    .tools input,.tools select{font:inherit;font-size:14px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .bars2{display:grid;gap:8px;margin-top:10px;}.bars2 div{font-size:12.5px;}.bars2 i{display:block;height:8px;border-radius:5px;background:#e3e7e3;margin-top:3px;overflow:hidden;}.bars2 i span{display:block;height:100%;background:var(--ve-green-deep);}
+    .form textarea,.form select{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;text-transform:none;letter-spacing:0;font-weight:400;background:#fff;}
+    .form textarea{min-height:110px;width:100%;box-sizing:border-box;}
+    .form select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
     .tag.applied{background:#eef1ee;}.tag.shortlisted,.tag.claimed{background:#e3f3e5;color:#1E5F2A;}.tag.audition{background:#fff4e0;color:#8a5200;}.tag.not_selected{background:#fde8e8;color:#a61b1b;}
   </style>
 </head>
@@ -92,7 +107,7 @@
       function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
       function nav(on) {
-        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
+        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
           '<a class="btn btn-ghost" href="/business/sample?tab=brand&pd=managed" target="_blank" rel="noopener">See the client view (sample)</a></div>';
       }
       function drawList() {
@@ -222,11 +237,90 @@
           });
         };
       }
+      // ---- The pitch list: the presence-gap ranking (ve_branddesk_ranking) and one pitch page per business (ve-branddesk pitch_*).
+      var PST = { draft: 'Draft', ready: 'Ready to send', sent: 'Sent', viewed: 'Opened it', chose: 'Answered', client: 'Client', closed: 'Closed' };
+      var CHOICE = { ready: 'Ready to start', think: 'Thinking it over', talk: 'Wants to talk', no: 'Not now' };
+      var CHAPTERS = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      var rank = null, pf = { ch: '', show: 'all', q: '' };
+      try { pf = Object.assign(pf, JSON.parse(sessionStorage.getItem('ve_bd_pitch_filter') || '{}')); } catch (e) {}
+      function pstatus(r) { return r.choice ? CHOICE[r.choice] : r.pitch_status ? PST[r.pitch_status] : 'Not prepared'; }
+      function ptag(r) { return r.choice === 'ready' ? 'active' : r.choice ? 'paused' : r.pitch_status === 'sent' || r.pitch_status === 'viewed' ? 'checkout' : r.pitch_status ? '' : 'ended'; }
+      function drawPitches() {
+        if (!rank) { app.innerHTML = nav('pitches') + '<p class="empty">Ranking every business with a check-up...</p>'; return api({ action: 'ranking' }).then(function (d) { rank = (d && d.rows) || []; drawPitches(); }); }
+        var chs = {}; rank.forEach(function (r) { if (r.chapter) chs[r.chapter] = (chs[r.chapter] || 0) + 1; });
+        var q = pf.q.toLowerCase(), rows = rank.filter(function (r) {
+          if (pf.ch && r.chapter !== pf.ch) return false;
+          if (pf.show === 'warm' && !r.warm) return false; if (pf.show === 'new' && r.pitch_id) return false;
+          if (pf.show === 'sent' && !(r.pitch_status === 'sent' || r.pitch_status === 'viewed')) return false; if (pf.show === 'chose' && !r.choice) return false;
+          if (pf.show === 'email' && !r.contact_email) return false;
+          return !q || (r.name + ' ' + (r.city || '')).toLowerCase().indexOf(q) > -1;
+        });
+        app.innerHTML = nav('pitches') +
+          '<p class="sub">Every food place with a monthly check-up, most to gain first: how far their online presence is from a full score, weighed by how real and loved they are (Google rating and reviews, how Vegan, our members\' votes). Warm ones you mark come first. Open one to prepare its page and send it from you.</p>' +
+          '<div class="tools"><input id="pq" type="search" placeholder="Search a business or city" value="' + esc(pf.q) + '">' +
+          '<select id="pch"><option value="">Every chapter (' + rank.length + ')</option>' + Object.keys(chs).sort(function (a, b) { return chs[b] - chs[a]; }).map(function (c) { return '<option value="' + c + '"' + (c === pf.ch ? ' selected' : '') + '>' + esc(CHAPTERS[c] || c) + ' (' + chs[c] + ')</option>'; }).join('') + '</select>' +
+          '<select id="pshow">' + [['all', 'Everyone'], ['warm', 'Warm list'], ['new', 'Not prepared yet'], ['email', 'We have their email'], ['sent', 'Sent, no answer'], ['chose', 'Answered']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === pf.show ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+          '<div class="list" style="max-height:72vh"><div class="prow head"><span>#</span><span>Business</span><span class="hide-m">Presence</span><span class="hide-m">Google</span><span class="hide-m">Their biggest gap</span><span class="hide-m">Pitch</span><span></span></div>' +
+          (rows.length ? rows.map(function (r) {
+            return '<div class="prow"><span class="rank">' + (rank.indexOf(r) + 1) + '</span><span><b>' + esc(r.name) + (r.warm ? '<span class="warm">Warm</span>' : '') + '</b><small>' + esc([r.city, CHAPTERS[r.chapter]].filter(Boolean).join(' · ')) + ' · gap ' + r.gap_score + (r.contact_email ? '' : ' · no email yet') + '</small></span>' +
+              '<span class="pct hide-m">' + r.presence + '%</span><span class="hide-m">' + (r.rating ? esc(r.rating) + ' · ' + r.reviews + ' reviews' : 'No rating') + '</span>' +
+              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
+              '<span class="hide-m"><span class="tag ' + ptag(r) + '">' + esc(pstatus(r)) + '</span></span><a class="btn btn-ghost btn-sm" href="#pitch/' + esc(r.slug) + '">Open</a></div>';
+          }).join('') : '<p class="empty">Nothing matches.</p>') + '</div>';
+        var save = function () { try { sessionStorage.setItem('ve_bd_pitch_filter', JSON.stringify(pf)); } catch (e) {} };
+        $('pq').addEventListener('input', function () { pf.q = this.value; save(); clearTimeout(drawPitches.t); drawPitches.t = setTimeout(function () { drawPitches(); var i = $('pq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 250); });
+        $('pch').addEventListener('change', function () { pf.ch = this.value; save(); drawPitches(); });
+        $('pshow').addEventListener('change', function () { pf.show = this.value; save(); drawPitches(); });
+      }
+      function drawPitch(slug) {
+        app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a></p><p class="empty">Loading...</p>';
+        api({ action: 'pitch_admin', slug: slug }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a></p><p class="empty">That business is not here.</p>'; return; }
+          var L = d.listing, P = d.pitch, S = d.summary, R = d.rank || {};
+          var url = P ? location.origin + '/business/pitch?c=' + P.code : '';
+          app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a> &rsaquo; ' + esc(L.name) + '</p>' +
+            '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(L.name) + '</h2><span class="tag ' + (P ? ptag({ pitch_status: P.status, choice: P.choice }) : 'ended') + '">' + esc(P ? (P.choice ? CHOICE[P.choice] : PST[P.status]) : 'Not prepared') + '</span></div>' +
+            '<div class="kv"><div><span>Where</span>' + esc([L.city, CHAPTERS[R.chapter]].filter(Boolean).join(' · ')) + '</div><div><span>Presence</span>' + (S ? S.presence + '%' : 'No audit yet') + '</div>' +
+            '<div><span>Gap score</span>' + (R.gap_score != null ? R.gap_score : 'Not ranked') + '</div><div><span>Google</span>' + (S && S.google.rating ? esc(S.google.rating) + ' stars, ' + esc(S.google.reviews) + ' reviews' : 'No rating') + '</div>' +
+            (S ? '<div><span>Looked on</span>' + esc(day(S.looked_on)) + '</div>' : '') + '</div>' +
+            (S ? '<div class="bars2">' + S.areas.map(function (a) { return '<div>' + esc(a.name) + ' ' + a.pct + '%<i><span style="width:' + a.pct + '%"></span></i></div>'; }).join('') + '</div>' +
+              '<h2 style="margin-top:16px">What their page will show</h2><ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6">' + S.fixes.map(function (f) { return '<li><b>' + esc(f.label) + '</b>: ' + esc(f.found) + '</li>'; }).join('') + '</ul>' : '') +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/directory/' + esc(L.slug) + '" target="_blank" rel="noopener">Their Directory page</a></p></section>' +
+            '<section class="card"><h2>Their page</h2><div class="form">' +
+            '<label>Their name<input id="p-name" value="' + esc(P ? P.contact_name : '') + '" placeholder="Who you are writing to"></label>' +
+            '<label>Their email<input id="p-email" type="email" value="' + esc(P ? P.contact_email : R.contact_email || '') + '" placeholder="Where the email goes"></label>' +
+            '<label>Their home page shown in<select id="p-look">' + Object.keys(d.looks).map(function (k) { return '<option value="' + k + '"' + ((P ? P.look : 'fresh') === k ? ' selected' : '') + '>' + esc(d.looks[k]) + '</option>'; }).join('') + '</select></label>' +
+            '<label style="flex-basis:100%;min-width:0">Your opening, in your words (it opens the email and their page)<textarea id="p-note" maxlength="1500" placeholder="Something only you would know: where you met, what you love there.">' + esc(P ? P.note : '') + '</textarea></label>' +
+            '<label style="flex-direction:row;align-items:center;gap:8px;flex-basis:100%"><input type="checkbox" id="p-warm"' + (P && P.warm ? ' checked' : '') + ' style="min-height:0"> On my warm list (first in the ranking)</label></div>' +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="p-save">' + (P ? 'Save' : 'Prepare their page') + '</button>' +
+            (P ? '<a class="btn btn-ghost" href="/business/pitch?c=' + esc(P.code) + '&preview=1" target="_blank" rel="noopener">See their page</a><button class="btn btn-ghost" type="button" id="p-copy">Copy the link</button>' +
+              '<button class="btn btn-ghost" type="button" id="p-test">Send me a test</button>' + (P.status === 'closed' ? '' : '<button class="btn" type="button" id="p-send">' + (P.sent_at ? 'Send it again' : 'Send it from me') + '</button>') : '') + '</p>' +
+            '<p class="msg" id="p-msg" role="status"></p><p class="sub" style="margin:4px 0 0;font-size:13px">The email comes from you (Sean A. Russell), replies to contact@lesaruss.com, and carries their own tracked link. Sending also opens checkout for this business.</p></section>' +
+            (P ? '<section class="card"><h2>What happened</h2><div class="kv"><div><span>Sent</span>' + (P.sent_at ? esc(day(P.sent_at)) : 'Not yet') + '</div><div><span>Opened it</span>' + (P.views ? P.views + ' time' + (P.views === 1 ? '' : 's') + ', last ' + esc(day(P.last_viewed_at)) : 'Not yet') + '</div>' +
+              '<div><span>Their answer</span>' + (P.choice ? esc(CHOICE[P.choice]) + ', ' + esc(day(P.choice_at)) : 'None yet') + '</div>' + (P.follow_up_on ? '<div><span>Check back</span>' + esc(day(P.follow_up_on + 'T12:00:00')) + '</div>' : '') + '</div>' +
+              (P.choice_note ? '<p class="sub" style="margin:10px 0 0;white-space:pre-wrap">' + esc(P.choice_note) + '</p>' : '') +
+              '<p style="margin-top:12px">' + (P.status === 'closed' ? '<button class="btn btn-ghost btn-sm" type="button" id="p-open">Open it again</button>' : '<button class="btn btn-bad btn-sm" type="button" id="p-close">Close this pitch</button>') + '</p></section>' : '');
+          var msg = function (t, bad) { var m = $('p-msg'); m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t; };
+          var body = function () { return { action: 'pitch_save', slug: L.slug, contact_name: $('p-name').value, contact_email: $('p-email').value, look: $('p-look').value, note: $('p-note').value, warm: $('p-warm').checked }; };
+          $('p-save').onclick = function () { msg('Saving...'); api(body()).then(function (r) { if (r && r.ok) { rank = null; msg('Saved.'); if (!P) drawPitch(slug); return; } msg(r && r.error === 'bad_email' ? 'That email does not look right.' : 'That did not save.', true); }); };
+          if ($('p-copy')) $('p-copy').onclick = function () { navigator.clipboard.writeText(url).then(function () { msg('Copied. A copied link is not tracked by name; Send it from me is.'); }); };
+          if ($('p-test')) $('p-test').onclick = function () { msg('Saving and sending you a test...'); api(body()).then(function () { return api({ action: 'pitch_send', slug: L.slug, test: true }); }).then(function (r) { msg(r && r.ok ? 'Sent to ' + r.to + '.' : 'The test did not send (' + ((r && (r.result || r.error)) || 'unknown') + ').', !(r && r.ok)); }); };
+          if ($('p-send')) $('p-send').onclick = function () {
+            if (!$('p-email').value.trim()) return msg('Add their email first.', true);
+            if (!window.confirm('Send ' + L.name + '\'s page to ' + $('p-email').value.trim() + ' from you now?')) return;
+            msg('Sending...'); api(body()).then(function () { return api({ action: 'pitch_send', slug: L.slug }); }).then(function (r) { if (r && r.ok) { rank = null; drawPitch(slug); return; } msg((r && r.message) || 'It did not send (' + ((r && (r.result || r.error)) || 'unknown') + ').', true); });
+          };
+          if ($('p-close')) $('p-close').onclick = function () { api({ action: 'pitch_save', slug: L.slug, status: 'closed' }).then(function () { rank = null; drawPitch(slug); }); };
+          if ($('p-open')) $('p-open').onclick = function () { api({ action: 'pitch_save', slug: L.slug, status: 'ready' }).then(function () { rank = null; drawPitch(slug); }); };
+        });
+      }
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list', m;
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
         if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
         if (r === 'open') return drawOpen();
+        if (r === 'pitches') return drawPitches();
+        if ((m = r.match(/^pitch\/([a-z0-9-]+)$/))) return drawPitch(m[1]);
         drawList();
       }
       function start() {

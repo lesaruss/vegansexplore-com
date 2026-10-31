@@ -150,8 +150,16 @@
   <script src="/business/sample/cartridge.js"></script>
   <script>
   (function () {
-    var C = window.VE_CARTRIDGE;
-    try { var s = JSON.parse(sessionStorage.getItem('ve_cartridge_sample_done') || 'null'); if (s) C = s; } catch (e) {}
+    // ?pitch=<code>: a business's own home page on the frame, built from its Directory page for its pitch (ve-branddesk pitch_site).
+    var PITCH = new URLSearchParams(location.search).get('pitch');
+    if (PITCH) {
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pitch_site', code: PITCH }) })
+        .then(function (r) { return r.json(); }).then(function (d) { if (d && d.ok) run(d.cartridge); else document.getElementById('site').innerHTML = '<p style="padding:60px 24px;font-family:sans-serif">This preview is not available.</p>'; },
+          function () { document.getElementById('site').innerHTML = '<p style="padding:60px 24px;font-family:sans-serif">This preview did not load.</p>'; });
+    } else run(null);
+    function run(PC) {
+    var C = PC || window.VE_CARTRIDGE;
+    if (!PC) try { var s = JSON.parse(sessionStorage.getItem('ve_cartridge_sample_done') || 'null'); if (s) C = s; } catch (e) {}
     var B = C.brand, I = C.info, V = C.voice, biz = C.business;
     // The sample shows both ordering setups: connected to their point of sale, or a link to where they order today.
     var MODE = 'pos'; try { MODE = sessionStorage.getItem('ve_site_order_mode') || (I.ordering && I.ordering.state === 'connected' ? 'pos' : 'link'); } catch (e) {}
@@ -166,9 +174,9 @@
       { key: 'island', name: 'Island bright', c: { page: '#FFFFFF', text: '#0F3D3E', accent: '#0B7A64', soft: '#E3F5EF', highlight: '#FFB000', ink: '#1A1A1A' }, h: 'Fraunces', hw: 800, b: 'Work Sans' },
       { key: 'night', name: 'Night lounge', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, h: 'Playfair Display', hw: 800, b: 'Lato' }
     ];
-    var LOOK = 'theirs'; try { LOOK = sessionStorage.getItem('ve_site_look') || 'theirs'; } catch (e) {}
+    var LOOK = 'theirs'; try { if (!PC) LOOK = sessionStorage.getItem('ve_site_look') || 'theirs'; } catch (e) {}
     // ?look=<key> opens the site in that look (Depot > Preview journeys > BrandDesk).
-    var lookQ = new URLSearchParams(location.search).get('look'); if (lookQ) LOOK = lookQ;
+    var lookQ = new URLSearchParams(location.search).get('look'); if (lookQ && !PC) LOOK = lookQ;
     if (!LOOKS.some(function (l) { return l.key === LOOK; })) LOOK = 'theirs';
     var root = document.documentElement.style, DARK_PAGE = false;
     function lum(hex) { var n = parseInt(String(hex).replace('#', ''), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255; }
@@ -250,11 +258,11 @@
           '<h1>' + esc(V.samples && V.samples.hero ? V.samples.hero : C.story.tagline) + '</h1><p>' + esc(C.story.short || C.story.tagline) + '</p>' +
           '<div class="btns"><a class="btn" href="#/menu">See the menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order</a><a class="btn ghost" href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a></div></div></div>' +
           '<div class="today"><div class="wrap"><span>Today: ' + esc(I.hours[today]) + '</span><span>' + esc(addr) + '</span><a href="' + esc(tel) + '">' + esc(I.phone) + '</a>' + (biz.vegan ? '<span class="badge">' + esc(biz.vegan) + '</span>' : '') + '</div></div>' +
-          '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><h2>What people come back for</h2><div class="dishes">' + picks.map(function (i) { return dish(i, false); }).join('') + '</div>' +
-          '<p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="#/menu">See the whole menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>' +
+          (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><h2>What people come back for</h2><div class="dishes">' + picks.map(function (i) { return dish(i, false); }).join('') + '</div>' +
+          '<p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="#/menu">See the whole menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>' : '') +
           '<section class="s dark"><div class="wrap split"><div><div class="eyebrow">Our story</div><h2>' + esc(C.story.tagline) + '</h2><p>' + esc(C.story.long[0] || '') + '</p><p><a class="btn ghost" href="#/about" style="color:inherit">Read our story</a></p></div>' +
           ((spaceOf('team')[0] || spaceOf('inside')[0] || {}).src ? '<img src="' + esc((spaceOf('team')[0] || spaceOf('inside')[0]).src) + '" alt="' + esc(biz.name) + '" loading="lazy">' : '') + '</div></section>' +
-          '<section class="s"><div class="wrap"><div class="eyebrow">The space</div><h2>Come sit with us</h2><div data-gallery>' + gallery() + '</div></div></section>' +
+          (space.length ? '<section class="s"><div class="wrap"><div class="eyebrow">The space</div><h2>Come sit with us</h2><div data-gallery>' + gallery() + '</div></div></section>' : '') +
           (V.samples && V.samples.instagram ? '<section class="s" style="background:var(--c-soft)"><div class="wrap"><div class="eyebrow">Right now</div><p class="quote">' + esc(V.samples.instagram) + '</p></div></section>' : '') +
           '<section class="s"><div class="wrap">' + visitBlock() + '</div></section>';
       },
@@ -307,7 +315,7 @@
     function route() { var h = location.hash.replace(/^#\/?/, '').split('/')[0]; return PAGES[h] ? h : 'home'; }
     function draw() {
       var page = route();
-      document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.</span>' +
+      if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.</span>' +
         '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
       var top = '<header class="top"><div class="wrap"><a class="brand" href="#/">' + (logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
@@ -351,7 +359,8 @@
     var ld = { '@context': 'https://schema.org', '@type': 'Restaurant', name: biz.name, description: C.story.short, image: heroImg ? [location.origin + heroImg] : undefined,
       telephone: I.phone, servesCuisine: biz.cuisines, address: { '@type': 'PostalAddress', streetAddress: I.address.street, addressLocality: I.address.city, addressRegion: I.address.state, postalCode: I.address.zip },
       hasMenu: { '@type': 'Menu', hasMenuSection: C.menu.sections.map(function (s) { return { '@type': 'MenuSection', name: s.name, hasMenuItem: s.items.map(function (i) { return { '@type': 'MenuItem', name: i.name, description: i.copy || i.was, offers: { '@type': 'Offer', price: String(price(i.price)), priceCurrency: 'USD' } }; }) }; }) } };
-    var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld); document.head.appendChild(sc);
+    if (!PC) { var sc = document.createElement('script'); sc.type = 'application/ld+json'; sc.textContent = JSON.stringify(ld); document.head.appendChild(sc); }
+    }
   })();
   </script>
 </body>
