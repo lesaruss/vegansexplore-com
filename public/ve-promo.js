@@ -8,6 +8,9 @@
  *                                                               (form: true, for People who are not creators, opens a short claim
  *                                                               request in the card instead: name, email, a link that shows it is
  *                                                               them, a note; ve-ambassador person_claim, promo 'profile-claim')
+ *   VEPromo.guideCard(el, slug, ctx)    the same animated card for a Guide (GUIDE_ADS: the Airport, Dairy and Stadium & Arena Guides;
+ *                                        Sean, 2026-10-31: "create that for other guides and sprinkle it throughout the website"), four
+ *                                        scenes from the Guide's own art, tracked as promo 'guide-<slug>' (view, click) from ctx.page
  *   VEPromo.step(promo, step)          'landed' or 'started' on the destination, sent with where the visitor clicked
  *   VEPromo.source(promo)              {page, listing_id, cta, claim, claim_name, channel, visitor} for the application, or null
  *
@@ -134,6 +137,38 @@
     });
   }
 
+  // The Guide banners: four scenes each from art we already hold (the Guide in their banner, then what the Guide covers), a headline
+  // per scene, one line and the button. No counts in the words (a Guide's words never count its items).
+  var SBM = SB + '/storage/v1/object/public/vegan-media/media/guides/';
+  var GUIDE_ADS = {
+    'airport-guide': { kicker: 'The Airport Guide', href: '/guides/airport-guide', cta: 'Get the Airport Guide',
+      line: 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.',
+      frames: [['/public/guides/airport-guide.jpg', 'Vegan food at your gate'], ['/public/guides/airports/fll.webp', 'Before or after security', 'background-size:auto 125%;background-position:62% 70%'],
+        ['/public/guides/airports/jfk.webp', 'Get me to my gate', 'background-size:auto 135%;background-position:45% 75%'], ['/public/guides/airports/lhr.webp', 'From Miami to Heathrow', 'background-size:auto 150%;background-position:50% 72%']] },
+    'vegan-dairy-guide': { kicker: 'The Vegan Dairy Guide', href: '/guides/vegan-dairy-guide', cta: 'Get the Dairy Guide',
+      line: 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.',
+      frames: [[SBM + 'banners/vegan-dairy-guide.jpg', 'Life after dairy'], [SBM + 'dairy/s-milk-in-coffee.jpg', 'Swap the milk'],
+        [SBM + 'dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'dairy-guide-billboard.jpg', 'The brands worth buying']] },
+    'stadium-arena-guide': { kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
+      line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
+      frames: [['/public/guides/stadium-arena-guide.jpg', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
+        ['/public/guides/venues/madison-square-garden.webp', 'Arenas and ballparks', 'background-size:auto 125%;background-position:50% 70%'], ['/public/guides/venues/citi-field.webp', 'Get there from your seat', 'background-size:auto 150%;background-position:50% 72%']] }
+  };
+  function guideCard(el, slug, ctx) {
+    var g = GUIDE_ADS[slug]; if (!el || !g) return;
+    ctx = ctx || {};
+    if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
+    var promo = 'guide-' + slug, base = { page: ctx.page || location.pathname, listing_id: ctx.listing_id || null, cta: 'ad' };
+    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(g.href) + '" data-vpc="ad" aria-label="' + esc(g.cta) + '">' +
+      g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
+      '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
+        g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
+        '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span></a></div>';
+    var a = el.querySelector('.vpc-ad');
+    onScreen(a, function () { send(promo, 'view', base); });
+    a.addEventListener('click', function () { click(promo, base); });
+  }
+
   // The short claim (Sean, 2026-10-31: "a short claim request for people who aren't creators"), in the card itself. A signed-in member's
   // name and email are filled in and their token sent, so approving links the profile to their account.
   function claimForm(card, ctx, base) {
@@ -180,5 +215,5 @@
     body.querySelector('.vpc-open').addEventListener('click', open);
   }
 
-  window.VEPromo = { creatorCards: creatorCards, step: step, source: source, click: click };
+  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS), step: step, source: source, click: click };
 })();
