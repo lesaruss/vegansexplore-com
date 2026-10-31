@@ -244,7 +244,7 @@
       // to go through the whole process myself"). From the door to their Library, on the sample business, Green Leaf Kitchen. Nothing
       // is saved, sent or charged in a Preview step; Live page steps are the real pages (the sample's are invented data).
       JOURNEYS.branddesk = {
-        intro: 'A restaurant signing up for managed marketing, from the first look to their Library, shown on the sample business, Green Leaf Kitchen. Preview steps save, send and charge nothing; live steps are the real pages.',
+        intro: 'A restaurant signing up for managed marketing, from the first look to their Library and the monthly rotation, shown on the sample business, Green Leaf Kitchen. Preview steps save, send and charge nothing; live steps are the real pages.',
         steps: [
           { t: 'The door: Managed by us', d: 'The business page\u2019s Managed by us tab: what we do, what is theirs to keep, what it costs, the sample site and brand kit.', u: '/business#/managed', k: 'live' },
           { t: 'Asking for help', d: 'Talk to our team (and every Have us do it) opens this window. Sent, it lands in your Inbox as a Managed marketing request. In preview nothing sends.', u: '/business?managed=preview#/managed', k: 'pv' },
@@ -280,6 +280,11 @@
           { t: 'The monthly check-in', d: 'Their Community Manager fills it in with the owner each month, due by the 10th: how it went, what is coming, next month\u2019s campaign, then the report. Sample: nothing saved.', u: '/business/checkin?preview=1&step=1', k: 'pv' },
           { t: 'The check-in: the report', d: 'What the month meant and what we do next, beside the report as the owner will see it, with the month\u2019s numbers.', u: '/business/checkin?preview=1&step=4', k: 'pv' },
           { t: 'Their dashboard: Monthly reports', d: 'Each sent report on their dashboard: the numbers against last month, next month and what they told us. They are emailed when it lands.', u: '/business/sample?tab=brand&pd=managed&bd=reports&r=sample-report', k: 'pv' },
+          { t: 'The campaign: the plan', d: 'Next month\u2019s campaign from the rotation, planned when the check-in is sent: set the date and time, put it on the Vegans Explore calendar hosted by the restaurant. Sample: nothing saved.', u: '/business/campaign?preview=1&view=plan', k: 'pv' },
+          { t: 'The campaign: the blueprint', d: 'What the restaurant provides and each step to tick, week by week; a community night adds the host\u2019s coaching sheet.', u: '/business/campaign?preview=1&view=blueprint', k: 'pv' },
+          { t: 'The campaign: how it went', d: 'How many came, posts, new followers, sales, what worked and what to change, then Mark it done.', u: '/business/campaign?preview=1&view=results', k: 'pv' },
+          { t: 'Their dashboard: Your campaigns', d: 'The owner sees each month\u2019s campaign, its date and how it went.', u: '/business/sample?tab=brand&pd=managed&bd=campaigns', k: 'pv' },
+          { t: 'What you see: the rotation board', d: 'Every client\u2019s campaigns by month: the client, the campaign, the date, where it stands and the Community Manager, each with Open.', u: '/admin/depot/branddesk#rotation', k: 'live' },
           { t: 'What you see: Depot > BrandDesk', d: 'Every client: their signature, plan and onboarding, Mark done, Archive it now, Add to their Library.', u: '/admin/depot/branddesk#list', k: 'live' },
           { t: 'What you see: Who can sign up', d: 'Open checkout for one business at a time.', u: '/admin/depot/branddesk#open', k: 'live' },
           { t: 'What you see: the Inbox', d: 'Managed marketing requests arrive in the Inbox, first in Recent activity on your Dashboard, with a 24-hour reply clock.', u: '/dashboard', k: 'live' }

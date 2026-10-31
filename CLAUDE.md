@@ -724,13 +724,32 @@ judge whether food is safe by how a place looks online; businesses want marketin
   the owner refused before sending and when editing, a missing answer and an off-list choice refused, sent with the numbers frozen, the owner
   reading it and seeing it in their reports, a change after sending refused), then removed. Not yet: Google and social numbers in the report
   (the page says they join as we connect them), and a Community Manager's view of all their accounts beyond the check-in list.
-  **The monthly rotation: IN PROGRESS** (2026-10-31; on the branch, not deployed or merged; playbook `ve-front-of-house` BUILD RECORD 2
-  has the full list). Done: `ve_branddesk_campaigns` (migration `20261031_branddesk_rotation.sql`, applied), the idea library and
-  blueprints (`CAMPAIGNS` in `ve-branddesk`) with `campaign_library`, `campaign_list`, `campaign_get`, `campaign_create`, `campaign_save`,
-  `campaign_calendar`, `checkin_send` planning next month's campaign and a due photo night (code compiled, NOT deployed), `/business/campaign`
-  (`business/campaign.html`, The plan / The blueprint / How it went, `?preview=1`) and Your campaigns on the client dashboard (view
-  `campaigns`). To do: deploy `ve-branddesk`, Depot > BrandDesk `#rotation` board, Preview journeys steps, browser checks, the live proof
-  on a [TEST] client, then document it here and merge on Sean's word.
+  **The monthly rotation** (built 2026-10-31; migration `20261031_branddesk_rotation.sql`). One campaign a client a month from the **idea
+  library** (`CAMPAIGNS` in `ve-branddesk`: influencer night, DJ night, customer appreciation, giveaway, scavenger hunt stop, community night
+  with a coaching sheet for the host, and the photo night), each with a **blueprint** (what the restaurant provides, then each step by when:
+  4 weeks before ... After) and the same **results** (`RESULT_FIELDS`: how many came, posts, new followers, how sales compared, what worked,
+  what to do differently). Rows in `ve_branddesk_campaigns` (one per client, month and kind; RLS on, no policies): status planned, scheduled
+  (a date is set), done, skipped; `checks` (the blueprint steps ticked, with when), `results`, `event_id`, `from_checkin`, `assigned_to` (the
+  chapter's active Community Manager, else the team). **Sending a check-in plans next month**: the check-in's campaign answer becomes next
+  month's campaign, and a **photo night** is added every two months counted from the month they joined (months 2, 4, 6...). **`/business/campaign`**
+  (`business/campaign.html`, `noindex`): with no id, the campaigns waiting on the person; `?id=<campaign>&view=plan|blueprint|results`, one
+  view at a time: **The plan** (the date and time, a note, **Put it on our calendar**: an approved Vegans Explore `events` row hosted by the
+  restaurant, `host_listing_id`, so it shows on `/events` and their page; moved if the date changes), **The blueprint** (tick each step; a
+  community night adds the coaching sheet with Print it), **How it went** (the results, then **Mark it done**, refused without a date).
+  `?preview=1` is Green Leaf Kitchen's, nothing saved. Who: a super admin, the assigned Community Manager or the chapter's (`checkinTeam`);
+  the owner reads their own (no blueprint or note) and never edits. The owner sees them on their dashboard: **Managed by us > Your campaigns**
+  (`&bd=campaigns`, coming up and done with how it went; super admins get Add a campaign). **Depot > BrandDesk > Rotation** (`#rotation`,
+  `#rotation/<status>`): every client's campaigns by month, newest first, with the client, the campaign, the date (and On the calendar), the
+  status, the Community Manager and Open; a table on desktop, one card a campaign on phones. Actions `campaign_library` (public), `campaign_list`
+  (super admin every client or one `account_id`; a Community Manager theirs), `campaign_get`, `campaign_create` (super admin, a live client),
+  `campaign_save`, `campaign_calendar`. Preview journeys > BrandDesk has the three campaign views, Your campaigns and the rotation board. The
+  blueprints, the results fields and the photo night's timing are Logan's defaults, Sean's to change. **Proven live 2026-10-31** on a [TEST]
+  client on Love Life Cafe (the Logan test account as the owner, Sean through the admin token): the check-in sent and planned November's
+  community night and the due photo night; the date saved (status Date set, an out-of-range step dropped); Put it on our calendar made an
+  approved event hosted by the listing; results saved and Mark it done; a negative count and done with no date refused; the owner saw both
+  campaigns and the results without the blueprint, and was refused editing and adding; a stranger (the Liz account) was refused reading and
+  listing; then every row and the event removed. Deployed from commit b7c8c11 (source sha256 matched). Not yet: a reminder to the Community
+  Manager as a step comes due, the owner's choice of campaign on their dashboard, and paying creators for an influencer night.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
@@ -741,7 +760,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties and the monthly check-in and report (built 2026-10-31), the rotation. Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31). Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

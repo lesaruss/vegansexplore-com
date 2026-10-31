@@ -12,7 +12,7 @@
     /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
        one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
        website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
-       Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
+       The rotation board (#rotation): every client's campaigns by month. Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green-deep:#1f5f22;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--vb-accent:#1f5f22;}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -76,6 +76,8 @@
     .form select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
     .tag.applied{background:#eef1ee;}.tag.shortlisted,.tag.claimed{background:#e3f3e5;color:#1E5F2A;}.tag.audition{background:#fff4e0;color:#8a5200;}.tag.not_selected{background:#fde8e8;color:#a61b1b;}
       .tbl{width:100%;border-collapse:collapse;font-size:14px}.tbl th,.tbl td{text-align:left;padding:8px 10px;border-bottom:1px solid #eee;white-space:nowrap}.tbl th{font-size:12px;color:#666;font-weight:700}
+      .rtbl td{white-space:normal;vertical-align:middle}.rtbl small{color:var(--ve-text-75);font-size:12px}
+      @media (max-width:640px){.rtbl thead{display:none}.rtbl tr{display:block;padding:10px 12px;border-bottom:1px solid #eee}.rtbl td{display:block;border:0;padding:2px 0}.rtbl td:last-child{padding-top:8px}}
   </style>
 </head>
 <body>
@@ -108,7 +110,7 @@
       function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
       function nav(on) {
-        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
+        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#rotation" class="' + (on === 'rotation' ? 'on' : '') + '">Rotation</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
           '<a class="btn btn-ghost" href="/business/sample?tab=brand&pd=managed" target="_blank" rel="noopener">See the client view (sample)</a></div>';
       }
       function drawList() {
@@ -354,12 +356,35 @@
           if ($('p-open')) $('p-open').onclick = function () { api({ action: 'pitch_save', slug: L.slug, status: 'ready' }).then(function () { rank = null; drawPitch(slug); }); };
         });
       }
+      // The rotation board (#rotation, #rotation/<status>): every client's campaigns by month, newest month first (ve-branddesk campaign_list,
+      // no account_id). Each row: the client, the campaign, its date, where it stands, the Community Manager, and Open (/business/campaign?id=).
+      var rot = null, RST = { planned: 'Planned', scheduled: 'Date set', done: 'Done', skipped: 'Skipped' };
+      function drawRotation(filter) {
+        filter = RST[filter] ? filter : 'all';
+        if (!rot) { app.innerHTML = nav('rotation') + '<p class="empty">Loading...</p>'; return api({ action: 'campaign_list' }).then(function (d) { rot = d && d.ok ? d.campaigns : []; drawRotation(filter); }); }
+        var C = rot.filter(function (c) { return filter === 'all' || c.status === filter; }), months = {}, order = [];
+        C.forEach(function (c) { if (!months[c.month]) { months[c.month] = []; order.push(c.month); } months[c.month].push(c); });
+        var count = function (st) { return rot.filter(function (c) { return st === 'all' || c.status === st; }).length; };
+        var when = function (c) { return c.starts_at ? new Date(c.starts_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'No date yet'; };
+        app.innerHTML = nav('rotation') + '<p class="sub">Every client\'s campaigns, month by month. A check-in plans the next month\'s campaign and any photo night that is due; a campaign here can also be added from a client\'s Your campaigns.</p>' +
+          '<nav class="views" style="margin-bottom:12px">' + ['all', 'planned', 'scheduled', 'done', 'skipped'].map(function (k) {
+            return '<a href="#rotation' + (k === 'all' ? '' : '/' + k) + '" class="' + (k === filter ? 'on' : '') + '">' + (k === 'all' ? 'All' : RST[k]) + ' (' + count(k) + ')</a>'; }).join('') + '</nav>' +
+          (order.length ? order.map(function (mo) {
+            return '<h2 style="margin-top:18px">' + esc(months[mo][0].month_name || mo) + '</h2><div class="list" style="max-height:none;margin-bottom:8px"><table class="tbl rtbl"><thead><tr><th>Client</th><th>Campaign</th><th>Date</th><th>Status</th><th>Community Manager</th><th></th></tr></thead><tbody>' +
+              months[mo].map(function (c) {
+                return '<tr><td><b>' + esc(c.listing ? c.listing.name : 'A client') + '</b></td><td>' + esc(c.title || c.kind) + '</td><td>' + esc(when(c)) + (c.event_id ? '<br><small>On the calendar</small>' : '') + '</td>' +
+                  '<td><span class="tag ' + (c.status === 'done' ? 'active' : c.status === 'skipped' ? 'ended' : c.status === 'planned' ? 'paused' : '') + '">' + esc(RST[c.status] || c.status) + '</span></td>' +
+                  '<td>' + esc(c.assigned_name || 'The team') + '</td><td><a class="btn btn-ghost btn-sm" href="/business/campaign?id=' + esc(c.id) + '" target="_blank" rel="noopener">Open</a></td></tr>';
+              }).join('') + '</tbody></table></div>';
+          }).join('') : '<p class="empty">' + (filter === 'all' ? 'No campaigns yet. The first is planned when a client\'s check-in is sent.' : 'None here.') + '</p>');
+      }
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list', m;
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
         if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
         if (r === 'open') return drawOpen();
         if (r === 'pitches') return drawPitches();
+        if ((m = r.match(/^rotation(?:\/([a-z]+))?$/))) return drawRotation(m[1]);
         if ((m = r.match(/^pitch\/([a-z0-9-]+)$/))) return drawPitch(m[1]);
         drawList();
       }
