@@ -175,9 +175,10 @@ only banner on the right-hand side... remove the humble cabbage... make sure we'
 many times they clicked it... follow-up communications"; migration `20261031_house_banners.sql`). A Directory listing's right column
 has no billboard or Humble Cabbage any more: a **People page** shows only "Is this you?" and the **Become a creator** banner, and **every
 other listing** (not a brand page, which keeps its Guide house ad) shows one animated **Guide banner** (`guideBanner` in
-`directory/listing.html`, `VEPromo.guideCard` and `GUIDE_ADS` in `public/ve-promo.js`): the Vegan Dairy Guide on a food place or food
-brand (`FOOD_CATS`), else the Airport, Dairy or Stadium & Arena Guide at random; four scenes from the Guide's own art, a headline each, a
-line and Get the <Guide> · $11. A demo page shows it without counting (`preview`). **Tracked as ads**: the sponsor campaign
+`directory/listing.html`, `VEPromo.guideCard` and `GUIDE_ADS` in `public/ve-promo.js`): the Airport, Dairy or Stadium & Arena Guide at
+random; four scenes from the Guide's own art, a headline each, a
+line and Get the <Guide> · $11; never the Guide the listing's Guide tab shows (below), so a food place's is the Airport or Stadium &
+Arena Guide. A demo page shows it without counting (`preview`). **Tracked as ads**: the sponsor campaign
 `ve-house-banners` (Vegans Explore) holds a campaign per banner, linked to two placements, the listing's right column
 (`ve-listing-house-banner`) and the People page's (`ve-people-house-banner`), with their own `page_slug` so `ad-resolve` never counts
 them; the page counts a view (the banner on screen, bots left out) and a click into `ad_impressions` through `ve_house_ad_count`, which
@@ -2246,8 +2247,12 @@ Directory is their chapter's).
 ## The Guide tab on every listing (LOCKED by Sean 2026-10-31, playbook `ve-listing-guide-tab`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-listing-guide-tab`; migration
-`20261031_listing_guide_tab_canon.sql`). **Not built yet.** Sean: "this is how we can continue to put those guides in front of
-people's faces. And if they already purchased it, it's right there in front of them."
+`20261031_listing_guide_tab_canon.sql`). **Built 2026-10-31** (Sean: "hand it to Logan, build it"): `/public/ve-guide-tab.js`
+(`VEGuideTab.pick`, `VEGuideTab.mount`; `GUIDES` and `MAP` there), loaded after the page shows by `loadGuideTab` in
+`directory/listing.html`, which then draws the right column's banner. Not on LESARUSS.ai (`VB`). A demo page shows it without
+counting. Ownership is `ve-guide-unlock` `status`. Views and clicks are `ve_promo_events`, promo `gt-<guide slug>`, cta `tab`, with the
+listing (`ve_promo_funnel('gt-vegan-dairy-guide', since)`); no Depot view of them yet. `?tab=guide` opens it. Sean: "this is how we can
+continue to put those guides in front of people's faces. And if they already purchased it, it's right there in front of them."
 
 - **Every listing gets a Guide tab, for everyone**, named for its Guide (Dairy Guide, Creator Guide): a short squeeze page (the
   Guide's banner, its one line, three or four things inside, **Open the Guide** to the full Guide page in the same window, never
