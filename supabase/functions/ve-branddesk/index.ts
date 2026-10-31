@@ -1445,8 +1445,11 @@ async function social(req: Request, b: any, m: any) {
     const mb = monthBounds(month);
     let q = db.from('ve_branddesk_social_posts').select('*').eq('account_id', a.id).order('planned_at', { ascending: true, nullsFirst: false }).limit(200);
     const { data: all } = await q;
-    const P = (all || []).filter((p: any) => (team || p.status !== 'draft') &&
-      ((p.planned_at && p.planned_at >= mb.from + 'T05:00:00Z' && p.planned_at < mb.to + 'T05:00:00Z') || (!p.planned_at && team) || (!owner ? false : p.status === 'review')));
+    // The team sees the month (and undated drafts); the owner sees everything not yet out (waiting, change asked, approved, any month)
+    // and what went out this month.
+    const inMonth = (p: any) => p.planned_at && p.planned_at >= mb.from + 'T05:00:00Z' && p.planned_at < mb.to + 'T05:00:00Z';
+    const P = (all || []).filter((p: any) => team ? (inMonth(p) || !p.planned_at)
+      : (['review', 'changes', 'approved'].includes(p.status) || (p.status === 'posted' && inMonth(p))));
     const thumbs = await socialThumbs([...new Set(P.flatMap((p: any) => p.media || []))] as string[]);
     let files: any[] = [];
     if (team) {
@@ -1562,7 +1565,7 @@ async function social(req: Request, b: any, m: any) {
     for (const [k, v] of Object.entries(b.links || {})) {
       if (!(p.platforms || []).includes(k) || !PLATFORMS[k] || !v) continue;
       let u: URL; try { u = new URL(String(v)); } catch { return json({ error: 'bad_link', platform: k, message: 'That ' + PLATFORMS[k].name + ' link does not look right.' }, 400); }
-      if (u.protocol !== 'https:' || !PLATFORMS[k].host.test(u.hostname)) return json({ error: 'bad_link', platform: k, message: 'That is not a ' + PLATFORMS[k].name + ' link.' }, 400);
+      if (u.protocol !== 'https:' || !PLATFORMS[k].host.test(u.hostname)) return json({ error: 'bad_link', platform: k, message: 'That is not ' + (/^[AEIOU]/.test(PLATFORMS[k].name) ? 'an ' : 'a ') + PLATFORMS[k].name + ' link.' }, 400);
       links[k] = u.toString();
     }
     if (!Object.keys(links).length) return json({ error: 'no_links', message: 'Add the link to the live post.' }, 400);
