@@ -478,7 +478,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   program or middleware, to be researched). The Vault (gift cards as a marketing exchange) is tabled; members do not spend points at
   managed restaurants. Later frames: products, coaches, the media kit. Built in the client's order: **Green Leaf Kitchen's Cartridge**
   (`business/sample/cartridge.js`, `window.VE_CARTRIDGE`, its shape in the header) and **its brand kit** (`/business/sample/brand`,
-  `business/sample/brand.html`, guided view, `noindex`: cover, the Cartridge and where each part stands, logo and its files, colors with
+  `business/brand.html` (a rewrite in `vercel.json`), guided view, `noindex`: cover, the Cartridge and where each part stands, logo and its files, colors with
   contrast worked out on the page, type, voice, story, menu copy (their words struck through, ours, price, tags, photo or To shoot), the
   photo standard and shot list, hours and details, into the frame). The page draws only from the Cartridge, so a second restaurant's kit
   is its own Cartridge on the same page. **The brand kit is the intake and the owner's editor** (Sean, 2026-10-31; canon v5): each
@@ -503,7 +503,22 @@ judge whether food is safe by how a place looks online; businesses want marketin
   proud of, their old About; then Suggest writes the one line, two sentences and About, every word editable), **Hours and details**
   (three steps: each day's hours; street, city, state, ZIP, phone, email, good to know; what they ring orders up on, Square first, and
   where people order online today), **Photos** (every shot of the space and the team takes its upload; menu photos go on each menu
-  item; Lock it in waits until every shot is in). Multi-step editors share `stepper()` (step names, Back / Step N of M / Next). Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  item; Lock it in waits until every shot is in). Multi-step editors share `stepper()` (step names, Back / Step N of M / Next).
+  **Real kits are stored** (2026-10-31; migration `20261031_ve_cartridges.sql`): `/business/brand?listing=<slug>` loads and saves a client's
+  Cartridge through `ve-brand-kit` (`kit_get`, `kit_create`, `kit_save`, `kit_photo_url`, `kit_photo_done`, `kit_people_add`,
+  `kit_people_remove`; the member token, or ops with `LESARUSS_ADMIN_TOKEN` and `as_member`). `ve_cartridges` (one per listing: `data`,
+  `status` building, locked when every part is, launched, paused, ended), `ve_cartridge_people` (an **editor**, every section, or a
+  **photographer**, photos and menu photos only; added by the owner or a super admin by the email they sign in with) and
+  `ve_cartridge_edits` (every save with what it replaced); RLS on, no policies. Who: a super admin (admin), the listing's owner, or a
+  person added; anyone else sees whose kit it is and to ask the owner. A super admin **starts** a kit (`kit_create`), filled from the
+  listing (name, city, how Vegan, hours, phone, address, every menu item from `ve_menu_items` with its words as "was", the logo when it
+  is in our storage, the tagline and description), every part Not started. Pictures upload to `vegan-media/media/brandkit/<slug>/`
+  (logo, menu, space; JPEG, PNG or WebP up to 15 MB, anything else converted in the browser) and a save that points a picture anywhere
+  but our storage or this site is refused (`upload_first`). The page loads the guided view only after the kit is read (signed out:
+  Sign in; no kit: Start their brand kit for super admins, else it is started when they join). Proven 2026-10-31 on Love Life Cafe
+  through the ops path (signed out refused, admin, the kit filled with its 51 items in 11 sections, its hours, logo and tagline, Colors
+  locked and logged, a non-storage picture refused, an upload link issued), then removed; the page's states checked against mocked
+  answers. Not yet: cuisines show as their slugs (american); a real upload end to end from the browser. Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
