@@ -495,12 +495,13 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). The other editors (logo, type,
   story, photos, info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
-- **Captured, not locked** (Sean, 2026-10-31; playbook `ve-front-of-house`): Front of House is the framework for **LESARUSS.ai business
-  services** too, with the $111 Diplomat folded into the subscription as a bonus; the promise is that a real person does every hard
-  part and the owner only keeps the brand kit current; data across clients predicts what grows a business; every improvement reaches
-  every member; **photo nights** (a buffet-style influencer night, dishes shot in a set-aside area, new photos and content every two
-  months); an **idea library** of campaigns clients pick from, each with a blueprint the Community Manager follows. Not decided: the
-  LESARUSS.ai pricing and name, photo nights against the starter shoot, who pays the buffet food.
+- **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). Front of House is the framework for LESARUSS.ai's business
+  services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named Front of House until a non-food
+  frame needs another name (Sean's call). The promise: a real person does every hard part and the owner only keeps the brand kit
+  current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
+  months after launch (a buffet-style influencer night, a few dishes shot in a set-aside area), included and part of the rotation; the
+  restaurant provides the food, the starter shoot stays. An **idea library** of campaigns clients pick from, each with a blueprint the
+  Community Manager follows.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;

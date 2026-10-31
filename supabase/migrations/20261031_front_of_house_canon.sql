@@ -37,3 +37,5 @@ where not exists (select 1 from public.playbook_records where slug = 've-front-o
 
 -- v3 (Sean 2026-10-31): the Vegan Restaurant Guide, premium listing, prepared audits, first page, reveal. Applied the same day
 -- (body keys mission, guide, premium_listing, incubator, prepared_audits, first_page, reveal; build replaced).
+
+-- v6 (Sean 2026-10-31): LESARUSS.ai business services, promise, compounding, photo nights, idea library. Applied the same day.
