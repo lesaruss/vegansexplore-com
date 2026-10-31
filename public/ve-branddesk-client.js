@@ -1,7 +1,7 @@
 /* ve-branddesk-client.js: a managed client's own space (BrandDesk, canon canon-ve-front-of-house; onboarding built 2026-10-31).
  * "They rent the service, they own the assets" (Sean, 2026-10-31): their Library, their asset sheet and how onboarding stands.
  *
- *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet', go: function (view) {}, admin: bool, load?: fn -> Promise })
+ *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
  *
  * Three views, one at a time:
  *   start    Getting started: the onboarding checklist (ve-branddesk steps), their plan, and where things are
@@ -10,6 +10,8 @@
  *            always theirs.
  *   sheet    the asset sheet: everything about the business in one place, from their Cartridge (ve_cartridges), with Download the
  *            menu (CSV) and Download the asset sheet (HTML)
+ *   reports  Monthly reports: each month's check-in once it is sent (ve-branddesk checkin_get), one report per view
+ *   VEBrandDesk.reportHtml(checkin, steps) draws a report; /business/checkin uses it for the preview.
  * admin: true (Depot > BrandDesk) adds ticking steps, Archive their website and adding files to the Library.
  * load stands in for the server on the sample business (/business/sample), which has no account.
  */
@@ -60,6 +62,9 @@
       '.vebd-form label{font-size:12px;font-weight:800;display:flex;flex-direction:column;gap:4px;}.vebd-form input,.vebd-form select{font:inherit;font-size:14px;min-height:40px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:8px 10px;background:#fff;}' +
       '.vebd-form select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' stroke=\'%23333\' stroke-width=\'2\' fill=\'none\'/%3E%3C/svg%3E") no-repeat right 16px center;}' +
       '.vebd-msg{font-size:12.5px;font-weight:700;min-height:18px;color:var(--vb-accent,#1E7A3E);}.vebd-msg.bad{color:#B42318;}' +
+      '.vebd-nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 6px;}.vebd-num{border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:12px 14px;}' +
+      '.vebd-num b{display:block;font-size:26px;font-weight:900;line-height:1.1;}.vebd-num span{font-size:12.5px;color:rgba(0,0,0,.62);}.vebd-num i{font-style:normal;font-size:12px;font-weight:800;}.vebd-num i.up{color:#1E5F2A;}.vebd-num i.dn{color:#8a5200;}' +
+      '.vebd-rep p.lead{font-size:15px;}.vebd-list{list-style:none;margin:0;padding:0;}.vebd-list li{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid rgba(0,0,0,.07);}.vebd-list li:first-child{border-top:0;}' +
       '@media(max-width:640px){.vebd-kv{grid-template-columns:1fr;gap:2px;}.vebd-kv dd{margin-bottom:8px;}.vebd-menu .was{display:none;}}';
     document.head.appendChild(s);
   }
@@ -130,11 +135,35 @@
     return new Promise(function (ok, bad) { var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js'; s.onload = function () { ok(window.JSZip); }; s.onerror = bad; document.head.appendChild(s); });
   }
 
+  // ---- One month's report (the monthly check-in, once sent; the check-in page previews it the same way)
+  var ACT_WORD = { website: 'Website visits', directions: 'Directions', call: 'Calls', order: 'Orders started', menu: 'Menu opened', social: 'Social links', photos: 'Photos opened', gallery: 'Photos opened' };
+  function reportHtml(r, steps) {
+    css();
+    var N = (r.numbers && r.numbers.now) || {}, B = (r.numbers && r.numbers.before) || {}, A = r.answers || {};
+    var ch = function (a, b) { a = +a || 0; b = +b || 0; if (!b) return a ? '<i class="up">New this month</i>' : '<i>&nbsp;</i>'; var d = Math.round((a - b) / b * 100); return '<i class="' + (d >= 0 ? 'up' : 'dn') + '">' + (d >= 0 ? '+' : '') + d + '% on last month</i>'; };
+    var tile = function (n, b, label) { return '<div class="vebd-num"><b>' + (+n || 0).toLocaleString() + '</b><span>' + esc(label) + '</span><br>' + ch(n, b) + '</div>'; };
+    var acts = Object.keys(N.actions || {}).reduce(function (t, k) { return t + (+N.actions[k] || 0); }, 0), actsB = Object.keys(B.actions || {}).reduce(function (t, k) { return t + (+B.actions[k] || 0); }, 0);
+    var nums = '<div class="vebd-nums">' + tile(N.views, B.views, 'Views of your page') + tile(N.visitors, B.visitors, 'People who saw it') + tile(acts, actsB, 'Calls, directions, orders and clicks') +
+      tile(N.checkins, B.checkins, 'Member check-ins') + tile(N.visits, B.visits, 'Member visits with photos') + tile(N.files, B.files, 'New files in your Library') + '</div>';
+    var actRows = Object.keys(N.actions || {}).map(function (k) { return [ACT_WORD[k] || k, (+N.actions[k]).toLocaleString()]; });
+    var kv = function (rows) { return '<dl class="vebd-kv">' + rows.filter(function (x) { return x[1]; }).map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>'; };
+    var said = [];
+    var MINE = { rating: 'How the month was', busiest: 'Busiest and quiet times', sold_best: 'What sold best', heard: 'What customers said', menu: 'Menu changes coming',
+      hours: 'Hours and closures', events: 'What you are hosting', campaign: 'Campaign for next month', from_us: 'What you thought of our work', needs: 'What you need from us' };
+    (steps || []).forEach(function (st) { st.q.forEach(function (q) { if (A[q.k]) said.push([MINE[q.k] || q.label, A[q.k]]); }); });
+    var paras = function (t) { return String(t || '').split(/\n{2,}/).map(function (x) { return '<p class="lead">' + esc(x).replace(/\n/g, '<br>') + '</p>'; }).join(''); };
+    return '<div class="vebd vebd-rep"><section class="vebd-card"><h4>' + esc(r.month_name || '') + '</h4>' + (r.summary ? paras(r.summary) : '<p class="vebd-muted">What the month meant goes here.</p>') + '</section>' +
+      '<section class="vebd-card"><h4>The numbers</h4>' + nums + (actRows.length ? '<div style="margin-top:10px">' + kv(actRows) + '</div>' : '') +
+      '<p class="vebd-muted" style="margin:8px 0 0">From your Vegans Explore page' + (r.sent_at ? ', for the whole month' : ', so far this month') + '. Google and social numbers join here as we connect them.</p></section>' +
+      '<section class="vebd-card"><h4>Next month</h4>' + (r.next_month ? paras(r.next_month) : '<p class="vebd-muted">What we do next goes here.</p>') + (A.campaign && A.campaign !== 'None this month' ? '<p><b>Your campaign:</b> ' + esc(A.campaign) + '</p>' : '') + '</section>' +
+      (said.length ? '<section class="vebd-card"><h4>What you told us</h4>' + kv(said) + '</section>' : '') + '</div>';
+  }
+
   function mount(el, o) {
     o = o || {}; css();
     var D = null, kindFilter = '';
     var view = o.view || 'start';
-    function go(v) { view = v; if (o.go) o.go(v); draw(); }
+    function go(v) { view = v; reportId = ''; if (o.go) o.go(v); draw(); }
     function load() {
       el.innerHTML = '<div class="vebd"><p class="vebd-muted">Loading...</p></div>';
       (o.load ? o.load() : api({ action: 'client', slug: o.slug, account_id: o.account_id })).then(function (d) {
@@ -143,7 +172,7 @@
       }, function () { el.innerHTML = '<div class="vebd"><p class="vebd-muted">This did not load. Try again in a moment.</p></div>'; });
     }
     function sub() {
-      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet']].map(function (v) {
+      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['reports', 'Monthly reports']].map(function (v) {
         return '<a href="#" data-bdv="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
     }
     function drawStart() {
@@ -196,13 +225,47 @@
       return '<div class="vebd-bar"><p class="vebd-muted" style="margin:0">' + (S.from_kit ? 'From your brand kit, updated ' + esc(day(S.updated)) + '. We keep it current every month.' : 'From your Directory page. Your brand kit fills in the rest as we build it.') + '</p>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap">' + (S.menu.length ? '<button type="button" class="vebd-btn o" id="vebd-csv">Download the menu (spreadsheet)</button>' : '') + '<button type="button" class="vebd-btn" id="vebd-html">Download the asset sheet</button></div></div>' + sheetHtml(S, false);
     }
+    var reportId = o.report || '', RCACHE = {};
+    function frame(body) {
+      el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
+      wire();
+    }
+    function drawReports() {
+      var R = D.reports || [];
+      if (reportId) {
+        var back = '<div class="vebd-bar"><a href="#" class="vebd-btn o sm" data-bdr="">Monthly reports</a></div>';
+        if (RCACHE[reportId]) { frame(back + reportHtml(RCACHE[reportId].checkin, RCACHE[reportId].steps)); return; }
+        frame(back + '<p class="vebd-muted">Loading...</p>');
+        (o.loadReport ? o.loadReport(reportId) : api({ action: 'checkin_get', id: reportId })).then(function (d) {
+          if (!d || !d.ok) { frame(back + '<p class="vebd-muted">This report did not load.</p>'); return; }
+          RCACHE[reportId] = d; drawReports();
+        });
+        return;
+      }
+      var list = R.length ? '<ul class="vebd-list">' + R.map(function (r) {
+        return '<li><span><b>' + esc(r.month_name) + '</b>' + (r.status === 'sent' ? '<br><small class="vebd-muted">Sent ' + esc(day(r.sent_at)) + '</small>' : '') + '</span>' +
+          (r.status === 'sent' ? '<a href="#" class="vebd-btn sm" data-bdr="' + esc(r.id) + '">Read it</a>' : '<span class="vebd-pill wait">' + (r.status === 'due' ? 'Check-in due' : 'Being written') + '</span>' + (o.admin || D.admin ? ' <a class="vebd-btn o sm" href="/business/checkin?id=' + esc(r.id) + '">Open the check-in</a>' : '')) + '</li>'; }).join('') + '</ul>'
+        : '<p class="vebd-muted" style="margin:0">Your first report comes after your first full month with us: your Community Manager checks in with you, then it lands here.</p>';
+      var start = (D.admin && !D.sample && ['active', 'paused', 'canceling'].indexOf(D.account.status) >= 0) ? '<p style="margin:12px 0 0"><button type="button" class="vebd-btn o sm" id="vebd-ci">Open this month\'s check-in</button> <span class="vebd-msg" id="vebd-ci-msg"></span></p>' : '';
+      frame('<section class="vebd-card"><h4>Monthly reports</h4><p class="vebd-muted">Every month your Community Manager checks in with you: how the month went, what is coming, and the campaign you want next. Then your report lands here with the month\'s numbers.</p>' + list + start + '</section>');
+      var ci = el.querySelector('#vebd-ci');
+      if (ci) ci.addEventListener('click', function () {
+        ci.disabled = true;
+        api({ action: 'checkin_start', account_id: D.account.id }).then(function (d) {
+          if (d && d.ok) { location.href = '/business/checkin?id=' + d.id; return; }
+          ci.disabled = false; var m = el.querySelector('#vebd-ci-msg'); m.className = 'vebd-msg bad'; m.textContent = (d && d.message) || 'That did not open.';
+        });
+      });
+    }
     function draw() {
       if (!D) return load();
+      if (view === 'reports') return drawReports();
       var body = view === 'library' ? drawLibrary() : view === 'sheet' ? drawSheet() : drawStart();
       el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
     }
     function wire() {
+      el.querySelectorAll('[data-bdr]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); reportId = a.dataset.bdr; if (o.goReport) o.goReport(reportId); drawReports(); }); });
       el.querySelectorAll('[data-bdv]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.bdv); }); });
       el.querySelectorAll('[data-bdk]').forEach(function (b) { b.addEventListener('click', function () { kindFilter = b.dataset.bdk; draw(); }); });
       el.querySelectorAll('[data-bdstep]').forEach(function (b) {
@@ -299,8 +362,26 @@
         .map(function (s) { return { key: s[0], client: s[1], team: s[1], how: 'team', done_at: now }; });
       return { ok: true, admin: false, sample: true, unlocked: true, steps: steps, files: files, archives: [],
         account: { id: 'sample', status: 'active', setup_plan: '3', social: true, activated_at: '2026-10-14' },
-        listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C } };
+        listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C },
+        reports: [sampleMonth()] };
     });
   }
-  window.VEBrandDesk = { mount: mount, sampleData: sampleData, sheetModel: sheetModel };
+  // The sample business's report for last month, sent on the 6th of this one (made up, like Green Leaf Kitchen itself).
+  function sampleMonth() {
+    var n = new Date(), m = new Date(Date.UTC(n.getFullYear(), n.getMonth() - 1, 1, 12)), sent = new Date(Date.UTC(n.getFullYear(), n.getMonth(), Math.min(6, n.getDate()), 15));
+    return { id: 'sample-report', month: m.toISOString().slice(0, 10), month_name: m.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }), status: 'sent', sent_at: sent.toISOString() };
+  }
+  function sampleReport() {
+    var sm = sampleMonth();
+    return Promise.resolve({ ok: true, steps: SAMPLE_STEPS, checkin: { id: 'sample-report', month: sm.month, month_name: sm.month_name, status: 'sent', sent_at: sm.sent_at,
+      summary: sm.month_name.split(' ')[0] + ' was your best month with us so far. Your new website and the starter shoot went live in the second week, and the people who found you on Vegans Explore went up by almost half. The jackfruit tacos are now the most opened dish on your page.\n\nThree members visited for their visit bounty and sent photos of the brunch plates, which are in your Library and on your Google profile.',
+      next_month: 'A customer appreciation night on the second Thursday, with a creator from your chapter filming it. We shoot the two new fall items the week before, and post your holiday hours on Google and your page by the 20th.',
+      answers: { rating: 'Good', busiest: 'Saturday and Sunday brunch; Tuesday nights are quiet.', sold_best: 'Jackfruit tacos and the turmeric latte. The kale salad did not move.', heard: 'People keep asking for a gluten-free bread.', menu: 'Two fall items: a pumpkin curry and a pecan bar.', hours: 'Closed on Thanksgiving.', campaign: 'Customer appreciation', from_us: 'They liked the photos. Asked for Google posts more often.', needs: 'Holiday hours posted.' },
+      numbers: { now: { views: 1240, visitors: 860, actions: { website: 96, directions: 141, call: 38, order: 52, menu: 210 }, checkins: 27, visits: 3, files: 34 },
+        before: { views: 840, visitors: 590, actions: { website: 61, directions: 88, call: 30, order: 21, menu: 120 }, checkins: 14, visits: 0, files: 0 } } } });
+  }
+  var SAMPLE_STEPS = [{ q: [{ k: 'rating', label: 'How was the month for the business?' }, { k: 'busiest', label: 'When were they busiest, and when was it quiet?' }, { k: 'sold_best', label: 'What sold best? Anything that did not move?' }, { k: 'heard', label: 'What did customers say?' }] },
+    { q: [{ k: 'menu', label: 'Any menu changes coming?' }, { k: 'hours', label: 'Any change to hours, closures or holidays?' }] },
+    { q: [{ k: 'from_us', label: 'What did they like from us, and what should we do better?' }, { k: 'needs', label: 'Anything they need from us?' }] }];
+  window.VEBrandDesk = { mount: mount, sampleData: sampleData, sampleReport: sampleReport, sheetModel: sheetModel, reportHtml: reportHtml };
 })();

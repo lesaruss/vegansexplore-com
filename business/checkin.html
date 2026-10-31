@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monthly Check-in — Vegans Explore</title>
+  <meta name="description" content="The monthly check-in with a managed marketing client: how the month went, what is coming, and their report.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://vegansexplore.com/business/checkin">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- The monthly check-in (BrandDesk, canon canon-ve-front-of-house; built 2026-10-31). For the client's Community Manager (or a super
+       admin): /business/checkin lists theirs; ?id=<check-in>&step=1..4 is one check-in, one step per view: How the month went, What's coming,
+       Next month (the fixed questions, ve-branddesk CHECKIN_STEPS), then The report (the month's numbers so far, what the month meant, what we
+       do next, previewed as the client sees it) and Send it to them. ?preview=1 is a sample (Preview journeys), nothing saved. -->
+  <style>
+    :root{--g:#1E7A3E;--gd:#14532D;--soft:#EAF4EC;--line:rgba(0,0,0,.12);}
+    body{margin:0;background:#fff;color:#14261a;font-family:Montserrat,system-ui,sans-serif;}
+    main{padding:40px 40px 80px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 6px;}
+    .crumb{font-size:13px;font-weight:700;margin:0 0 14px;}.crumb a{color:var(--g);text-decoration:none;}
+    h1{font-size:clamp(26px,3.2vw,38px);font-weight:900;margin:0 0 8px;line-height:1.1;}
+    .lede{font-size:15.5px;line-height:1.6;max-width:860px;color:rgba(0,0,0,.72);margin:0 0 20px;}
+    .note{background:#FFF4D6;border:1px solid #F1D28A;border-radius:10px;padding:10px 14px;font-size:13.5px;margin:0 0 18px;max-width:860px;}
+    .steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px;}
+    .steps span{font-size:13px;font-weight:800;padding:8px 12px;border-radius:6px;background:#f3f4f2;color:rgba(0,0,0,.55);}
+    .steps span.on{background:var(--g);color:#fff;}.steps span.done{background:var(--soft);color:var(--gd);}
+    .q{max-width:860px;margin:0 0 22px;}
+    .q > b{display:block;font-size:16px;font-weight:800;margin:0 0 8px;}.q > b small{font-size:12px;font-weight:700;color:#8a5200;margin-left:6px;}
+    .q textarea{display:block;width:100%;box-sizing:border-box;min-height:92px;border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 12px;font:inherit;font-size:15px;line-height:1.5;resize:vertical;}
+    .opts{display:flex;gap:8px;flex-wrap:wrap;}
+    .opts label{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:6px;padding:10px 14px;font-weight:700;font-size:14px;cursor:pointer;}
+    .opts label.on{border-color:var(--g);background:var(--soft);color:var(--gd);}
+    .opts input{accent-color:var(--g);}
+    .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:26px;max-width:860px;}
+    .nav small{font-weight:800;color:rgba(0,0,0,.55);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 22px;border-radius:6px;border:2px solid var(--g);background:var(--g);color:#fff;font:800 15px/1 inherit;font-family:inherit;cursor:pointer;text-decoration:none;}
+    .btn.ghost{background:#fff;color:var(--g);}.btn[disabled]{opacity:.6;cursor:wait;}
+    .msg{font-weight:700;font-size:14px;margin:12px 0 0;min-height:1em;color:var(--g);}.msg.err{color:#B42318;}
+    .list{list-style:none;margin:0;padding:0;max-width:960px;}
+    .list li{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:14px 0;border-top:1px solid var(--line);flex-wrap:wrap;}
+    .tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;background:#f3f4f2;color:#333;}
+    .tag.due{background:#fff4e0;color:#8a5200;}.tag.ok{background:var(--soft);color:var(--gd);}
+    @media(max-width:980px){.two{grid-template-columns:1fr;}}
+    @media(max-width:700px){main{padding:24px 16px 60px;}.nav{flex-wrap:wrap;}}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main id="app"><p>Loading...</p></main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-branddesk-client.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+  var app = document.getElementById('app');
+  var P = new URLSearchParams(location.search), ID = P.get('id') || '', PREVIEW = P.get('preview') === '1';
+  var STEP_NAMES = ['How the month went', "What's coming", 'Next month', 'The report'];
+  var D = null, C = null, step = Math.min(4, Math.max(1, parseInt(P.get('step') || '1', 10) || 1));
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function token() { try { return (window.VEAuth && VEAuth.getToken()) || ''; } catch (e) { return ''; } }
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function setUrl(push) { var u = new URL(location.href); u.searchParams.set('step', String(step)); history[push ? 'pushState' : 'replaceState'](null, '', u.pathname + u.search); }
+  window.addEventListener('popstate', function () { step = Math.min(4, Math.max(1, parseInt(new URLSearchParams(location.search).get('step') || '1', 10) || 1)); draw(); });
+
+  function sample() {
+    return VEBrandDesk.sampleReport().then(function (r) {
+      var c = r.checkin; c.status = 'in_progress'; c.sent_at = null;
+      return { ok: true, team: true, checkin: c, listing: { name: 'Green Leaf Kitchen', slug: 'sample' }, assigned_name: 'Your Community Manager', steps: [
+        { key: 'month', title: 'How the month went', q: [{ k: 'rating', label: 'How was the month for the business?', type: 'choice', options: ['Great', 'Good', 'Okay', 'Slow', 'Hard'], required: true }, { k: 'busiest', label: 'When were they busiest, and when was it quiet?', type: 'text' }, { k: 'sold_best', label: 'What sold best? Anything that did not move?', type: 'text', required: true }, { k: 'heard', label: 'What did customers say (reviews, comments, at the counter)?', type: 'text' }] },
+        { key: 'coming', title: "What's coming", q: [{ k: 'menu', label: 'Any menu changes coming? A new item gets its photo on the next shoot.', type: 'text' }, { k: 'hours', label: 'Any change to hours, closures or holidays?', type: 'text' }, { k: 'events', label: 'Anything they are hosting or taking part in?', type: 'text' }] },
+        { key: 'next', title: 'Next month', q: [{ k: 'campaign', label: 'Which campaign do they want next month?', type: 'choice', options: ['Influencer night', 'DJ night', 'Customer appreciation', 'Giveaway', 'Scavenger hunt stop', 'Community night', 'None this month'], required: true }, { k: 'from_us', label: 'What did they like from us this month, and what should we do better?', type: 'text' }, { k: 'needs', label: 'Anything they need from us?', type: 'text' }] }] };
+    });
+  }
+
+  // ---- No id: the check-ins this person does
+  function drawList() {
+    app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly check-ins</h1><p class="lede">Each managed client gets a check-in every month, due by the 10th: talk with the owner, go through the questions, then write what the month meant and what we do next. Sending it puts their report on their dashboard.</p><div id="ls"><p>Loading...</p></div>';
+    api({ action: 'checkin_list' }).then(function (d) {
+      var box = document.getElementById('ls');
+      if (!d || !d.ok) { box.innerHTML = '<p>This did not load.</p>'; return; }
+      var R = d.checkins || [];
+      box.innerHTML = R.length ? '<ul class="list">' + R.map(function (r) {
+        return '<li><span><b>' + esc((r.listing || {}).name || 'A client') + '</b>, ' + esc(r.month_name) + '<br><small>' + (r.status === 'sent' ? 'Sent ' + esc(day(r.sent_at)) : 'Due by the 10th') + '</small></span>' +
+          '<span><span class="tag ' + (r.status === 'sent' ? 'ok' : 'due') + '">' + (r.status === 'sent' ? 'Sent' : r.status === 'due' ? 'Not started' : 'In progress') + '</span> <a class="btn ghost" style="min-height:38px;padding:8px 14px;font-size:13px" href="/business/checkin?id=' + esc(r.id) + '">Open</a></span></li>'; }).join('') + '</ul>'
+        : '<p>No check-ins are waiting on you.</p>';
+    });
+  }
+
+  function load() {
+    if (PREVIEW) return sample().then(function (d) { D = d; C = d.checkin; draw(); });
+    if (!token()) {
+      app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly check-in</h1><p class="lede">Sign in with the account you use as a Community Manager.</p><button class="btn" id="si">Sign in</button>';
+      document.getElementById('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the check-in.', function () { location.reload(); }); };
+      return;
+    }
+    if (!ID) return drawList();
+    api({ action: 'checkin_get', id: ID }).then(function (d) {
+      if (!d || !d.ok) { app.innerHTML = '<p class="k">BrandDesk</p><h1>Monthly check-in</h1><p class="lede">This check-in is not one you can open. If it should be, ask the team.</p><p><a class="btn ghost" href="/business/checkin">Your check-ins</a></p>'; return; }
+      D = d; C = d.checkin;
+      if (!d.team) { location.replace('/directory/' + d.listing.slug + '?tab=brand&pd=managed&bd=reports&r=' + C.id); return; }
+      draw();
+    });
+  }
+
+  function head() {
+    return '<p class="crumb"><a href="/business/checkin">Monthly check-ins</a> &rsaquo; ' + esc(D.listing.name) + ', ' + esc(C.month_name) + '</p>' +
+      (PREVIEW ? '<div class="note"><b>Sample.</b> Green Leaf Kitchen is made up. Nothing here is saved or sent.</div>' : '') +
+      '<p class="k">Monthly check-in</p><h1>' + esc(D.listing.name) + ': ' + esc(C.month_name) + '</h1>' +
+      (C.status === 'sent' ? '' : '<p class="lede">Talk with the owner (a call or a visit) and fill this in with them. ' + (D.assigned_name ? 'Assigned to ' + esc(D.assigned_name) + '. ' : '') + 'Due by the 10th.</p>');
+  }
+  function stepsBar() { return '<div class="steps">' + STEP_NAMES.map(function (n, i) { return '<span class="' + (i + 1 === step ? 'on' : i + 1 < step ? 'done' : '') + '">' + (i + 1) + '. ' + n + '</span>'; }).join('') + '</div>'; }
+  function navBar(last) {
+    return '<div class="nav">' + (step > 1 ? '<button class="btn ghost" id="back">Back</button>' : '<span></span>') + '<small>Step ' + step + ' of 4</small>' +
+      (last ? '<span style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" id="save">Save draft</button><button class="btn" id="send">Send it to them</button></span>' : '<button class="btn" id="next">Save and next</button>') + '</div><p class="msg" id="msg" role="status"></p>';
+  }
+  function qHtml(q) {
+    var v = C.answers[q.k] || '', req = q.required ? '<small>Required</small>' : '';
+    if (q.type === 'choice') return '<div class="q"><b>' + esc(q.label) + req + '</b><div class="opts">' + q.options.map(function (o) {
+      return '<label class="' + (v === o ? 'on' : '') + '"><input type="radio" name="' + q.k + '" value="' + esc(o) + '"' + (v === o ? ' checked' : '') + '>' + esc(o) + '</label>'; }).join('') + '</div></div>';
+    return '<div class="q"><b>' + esc(q.label) + req + '</b><textarea data-k="' + q.k + '" maxlength="1200">' + esc(v) + '</textarea></div>';
+  }
+  function collect() {
+    var st = D.steps[step - 1]; if (!st) return;
+    st.q.forEach(function (q) {
+      if (q.type === 'choice') { var c = app.querySelector('input[name="' + q.k + '"]:checked'); C.answers[q.k] = c ? c.value : (C.answers[q.k] || ''); }
+      else { var t = app.querySelector('textarea[data-k="' + q.k + '"]'); if (t) C.answers[q.k] = t.value.trim(); }
+    });
+  }
+  function msg(t, bad) { var m = document.getElementById('msg'); if (m) { m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t || ''; } }
+  function save(extra) {
+    if (PREVIEW) return Promise.resolve({ ok: true });
+    return api(Object.assign({ action: 'checkin_save', id: C.id, answers: C.answers }, extra || {}));
+  }
+  function go(n) { step = n; setUrl(true); draw(); window.scrollTo(0, 0); }
+
+  function draw() {
+    if (C.status === 'sent') {
+      app.innerHTML = head() + '<div class="note" style="background:#EAF4EC;border-color:#BFE0C6">Sent ' + esc(day(C.sent_at)) + '. This is the report as they see it, and it stays as it went.</div>' + VEBrandDesk.reportHtml(C, D.steps);
+      return;
+    }
+    if (step < 4) {
+      var st = D.steps[step - 1];
+      app.innerHTML = head() + stepsBar() + '<h2 style="font-size:20px;font-weight:900;margin:0 0 16px">' + esc(st.title) + '</h2>' + st.q.map(qHtml).join('') + navBar(false);
+      app.querySelectorAll('.opts input').forEach(function (r) { r.addEventListener('change', function () { r.closest('.opts').querySelectorAll('label').forEach(function (l) { l.classList.toggle('on', l.contains(r)); }); }); });
+      var back = document.getElementById('back'); if (back) back.onclick = function () { collect(); go(step - 1); };
+      document.getElementById('next').onclick = function () {
+        collect();
+        var miss = st.q.filter(function (q) { return q.required && !C.answers[q.k]; })[0];
+        if (miss) { msg('Answer this one first: ' + miss.label, true); return; }
+        var b = this; b.disabled = true; msg('Saving...');
+        save().then(function (r) { b.disabled = false; if (r && r.ok) go(step + 1); else msg((r && r.message) || 'That did not save.', true); });
+      };
+      return;
+    }
+    app.innerHTML = head() + stepsBar() + '<div class="two"><div>' +
+      '<div class="q"><b>What the month meant for them<small>Required</small></b><p class="lede" style="font-size:13.5px;margin:0 0 8px">In plain words, to the owner: what went well, what the numbers show, what you heard. A blank line starts a new paragraph.</p><textarea id="summary" style="min-height:200px" maxlength="4000">' + esc(C.summary) + '</textarea></div>' +
+      '<div class="q"><b>What we do next month<small>Required</small></b><textarea id="nextm" style="min-height:120px" maxlength="4000">' + esc(C.next_month) + '</textarea></div>' + navBar(true) +
+      '</div><div><p class="k">What they will see</p><div id="pv"></div></div></div>';
+    var pv = function () { C.summary = document.getElementById('summary').value; C.next_month = document.getElementById('nextm').value; document.getElementById('pv').innerHTML = VEBrandDesk.reportHtml(C, D.steps); };
+    pv(); document.getElementById('summary').addEventListener('input', pv); document.getElementById('nextm').addEventListener('input', pv);
+    document.getElementById('back').onclick = function () { pv(); save({ summary: C.summary, next_month: C.next_month }); go(3); };
+    document.getElementById('save').onclick = function () { pv(); var b = this; b.disabled = true; msg('Saving...'); save({ summary: C.summary, next_month: C.next_month }).then(function (r) { b.disabled = false; msg(r && r.ok ? 'Saved.' : ((r && r.message) || 'That did not save.'), !(r && r.ok)); }); };
+    document.getElementById('send').onclick = function () {
+      pv();
+      if (C.summary.trim().length < 40) { msg('Write what the month meant for them (a few sentences).', true); return; }
+      if (C.next_month.trim().length < 20) { msg('Say what we do next month.', true); return; }
+      if (PREVIEW) { msg('In the sample nothing is sent. A real one emails the owner and opens the report on their dashboard.'); return; }
+      if (!window.confirm('Send ' + D.listing.name + "'s " + C.month_name + ' report? The numbers are frozen then and it cannot be changed.')) return;
+      var b = this; b.disabled = true; msg('Sending...');
+      api({ action: 'checkin_send', id: C.id, answers: C.answers, summary: C.summary, next_month: C.next_month }).then(function (r) {
+        b.disabled = false;
+        if (r && r.ok) { C.status = 'sent'; C.sent_at = r.sent_at; draw(); window.scrollTo(0, 0); return; }
+        msg((r && r.message) || 'That did not send.', true);
+      });
+    };
+  }
+  if (ID || PREVIEW) setUrl(false);
+  load();
+})();
+</script>
+</body>
+</html>

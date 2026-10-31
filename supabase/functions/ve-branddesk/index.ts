@@ -25,6 +25,13 @@
 //   step {account_id, step, done, note}  super admin: tick or untick an onboarding step
 //   archive {account_id, url?}           super admin: archive their website now (also started at activation)
 //   file_upload_url / file_done / file_remove   super admin: add to or take from their Library (bucket branddesk-library)
+//   checkin_sweep                      cron (x-cron-secret): open this month's check-in for every active client, email whoever does it;
+//                                        a reminder on the 10th
+//   checkin_start {account_id}          super admin: open this month's check-in now
+//   checkin_list {account_id?}          super admin (one client's), or a Community Manager (theirs)
+//   checkin_get {id}                    the team: everything; the client's owner: the report, once it is sent
+//   checkin_save {id, answers, summary, next_month}   the team, until it is sent
+//   checkin_send {id}                   the team: freezes the month's numbers and sends the report to the client
 // GET ?confirm=<session id>              the return from Stripe and ve-stripe-webhook (metadata type ve_branddesk, confirm_fn
 //                                        ve-branddesk): activates the account once and goes back to /business/managed.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -449,7 +456,9 @@ async function client(b: any, m: any) {
       pause_from: a.pause_from, pause_until: a.pause_until, website_url: a.website_url || l?.website || null, agreement_version: a.agreement_version,
       agreed_name: admin ? a.agreed_name : undefined, note: admin ? a.note : undefined, owner },
     listing: l, unlocked, steps, files: await signFiles(files || [], unlocked, admin), archives: archives || [],
-    cartridge: kit ? { status: kit.status, updated_at: kit.updated_at, data: kit.data } : null });
+    cartridge: kit ? { status: kit.status, updated_at: kit.updated_at, data: kit.data } : null,
+    reports: ((await db.from('ve_branddesk_checkins').select('id, month, status, sent_at').eq('account_id', a.id).order('month', { ascending: false }).limit(36)).data || [])
+      .filter((r: any) => admin || r.status === 'sent').map((r: any) => ({ ...r, month_name: monthName(r.month) })) });
 }
 
 async function stepSet(b: any, m: any) {
@@ -924,6 +933,174 @@ async function pitchPublic(req: Request, b: any, m: any) {
   return json({ error: 'unknown_action' }, 400);
 }
 
+
+// ---- The monthly check-in and report (canon-ve-front-of-house: "a monthly Community Manager check-in on a fixed question set").
+// Logan's defaults, Sean's to change: the questions, opened on each client's month after the one they joined, reminder on the 10th.
+const ROTATION = ['Influencer night', 'DJ night', 'Customer appreciation', 'Giveaway', 'Scavenger hunt stop', 'Community night', 'None this month'];
+const CHECKIN_STEPS = [
+  { key: 'month', title: 'How the month went', q: [
+    { k: 'rating', label: 'How was the month for the business?', type: 'choice', options: ['Great', 'Good', 'Okay', 'Slow', 'Hard'], required: true },
+    { k: 'busiest', label: 'When were they busiest, and when was it quiet?', type: 'text' },
+    { k: 'sold_best', label: 'What sold best? Anything that did not move?', type: 'text', required: true },
+    { k: 'heard', label: 'What did customers say (reviews, comments, at the counter)?', type: 'text' } ] },
+  { key: 'coming', title: "What's coming", q: [
+    { k: 'menu', label: 'Any menu changes coming? A new item gets its photo on the next shoot.', type: 'text' },
+    { k: 'hours', label: 'Any change to hours, closures or holidays?', type: 'text' },
+    { k: 'events', label: 'Anything they are hosting or taking part in?', type: 'text' } ] },
+  { key: 'next', title: 'Next month', q: [
+    { k: 'campaign', label: 'Which campaign do they want next month?', type: 'choice', options: ROTATION, required: true },
+    { k: 'from_us', label: 'What did they like from us this month, and what should we do better?', type: 'text' },
+    { k: 'needs', label: 'Anything they need from us?', type: 'text' } ] },
+];
+const CHECKIN_Q = CHECKIN_STEPS.flatMap((st) => st.q);
+const TZ_ET = 'America/New_York';
+function etParts(d = new Date()) {
+  const f = new Intl.DateTimeFormat('en-CA', { timeZone: TZ_ET, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+  const [y, mo, da] = f.split('-').map(Number); return { y, mo, da };
+}
+const monthStart = (y: number, mo: number) => `${y}-${String(mo).padStart(2, '0')}-01`;
+function monthBounds(month: string) {
+  const [y, mo] = month.split('-').map(Number);
+  const next = mo === 12 ? monthStart(y + 1, 1) : monthStart(y, mo + 1), prev = mo === 1 ? monthStart(y - 1, 12) : monthStart(y, mo - 1);
+  return { from: month, to: next, prev };
+}
+const monthName = (month: string) => new Date(month + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+async function chapterOfListing(listingId: string) {
+  const { data: l } = await db.from('listings').select('address_city, address_state').eq('id', listingId).maybeSingle();
+  const { data: ch } = await db.rpc('ve_chapter_of', { p_city: l?.address_city || '', p_state: l?.address_state || '' });
+  const c = String(ch || ''); return c === 'dc' ? 'washington-dc' : c;
+}
+async function chapterManager(listingId: string) {
+  const ch = await chapterOfListing(listingId);
+  if (!ch) return null;
+  const { data } = await db.from('members').select('id, name, email').eq('ve_role', 'community_manager').eq('home_community', ch).eq('membership_status', 'active').limit(1);
+  return data?.[0] || null;
+}
+async function checkinTeam(m: any, row: any) {
+  if (!m) return false;
+  if (m.is_superadmin || row.assigned_to === m.id) return true;
+  const { data: me } = await db.from('members').select('ve_role, home_community').eq('id', m.id).maybeSingle();
+  return me?.ve_role === 'community_manager' && !!me.home_community && me.home_community === await chapterOfListing(row.listing_id);
+}
+async function monthNumbers(listingId: string, month: string) {
+  const b = monthBounds(month);
+  const [{ data: now }, { data: before }] = await Promise.all([
+    db.rpc('ve_branddesk_month_numbers', { p_listing: listingId, p_from: b.from, p_to: b.to }),
+    db.rpc('ve_branddesk_month_numbers', { p_listing: listingId, p_from: b.prev, p_to: b.from }),
+  ]);
+  return { now: now || {}, before: before || {}, through: new Date().toISOString() };
+}
+const checkinLink = (id: string) => `${SITE}/business/checkin?id=${id}`;
+async function openCheckin(a: any, month: string) {
+  const { data: had } = await db.from('ve_branddesk_checkins').select('*').eq('account_id', a.id).eq('month', month).maybeSingle();
+  if (had) return { row: had, made: false };
+  const cm = await chapterManager(a.listing_id);
+  const { data: row, error } = await db.from('ve_branddesk_checkins').insert({ account_id: a.id, listing_id: a.listing_id, month, assigned_to: cm?.id || null }).select('*').single();
+  if (error) throw new Error(error.message);
+  const { data: l } = await db.from('listings').select('name').eq('id', a.listing_id).maybeSingle();
+  await mail(cm?.email || TEAM_EMAIL, `Monthly check-in: ${l?.name || 'a client'} (${monthName(month)})`,
+    `<p>${cm ? 'Hi ' + esc(String(cm.name || '').split(' ')[0]) + ',' : 'Team,'}</p><p>It is time for <b>${esc(l?.name || '')}</b>'s monthly check-in for ${esc(monthName(month))}. ` +
+    `Talk with the owner (a call or a visit), go through the questions with them, then write what the month meant and what we do next. Sending it puts their report on their dashboard.</p>` +
+    `<p><a href="${checkinLink(row.id)}">Open the check-in</a>. Due by the 10th.</p>`);
+  return { row, made: true };
+}
+function checkinShape(r: any) {
+  return { id: r.id, account_id: r.account_id, month: r.month, month_name: monthName(r.month), status: r.status, assigned_to: r.assigned_to, answers: r.answers || {},
+    summary: r.summary || '', next_month: r.next_month || '', numbers: r.numbers || null, sent_at: r.sent_at, updated_at: r.updated_at };
+}
+async function checkins(req: Request, b: any, m: any) {
+  const act = String(b.action);
+  if (act === 'checkin_sweep') {
+    const sec = await secret('CRON_SECRET');
+    if (!sec || req.headers.get('x-cron-secret') !== sec) return json({ error: 'forbidden' }, 403);
+    const { y, mo, da } = etParts(), month = monthStart(y, mo);
+    const { data: accts } = await db.from('ve_branddesk_accounts').select('*').in('status', ['active', 'canceling']).lt('activated_at', month + 'T05:00:00Z');
+    let opened = 0, reminded = 0;
+    for (const a of accts || []) {
+      try {
+        const { row, made } = await openCheckin(a, month); if (made) opened++;
+        if (da >= 10 && row.status !== 'sent' && !row.reminded_at && !made) {
+          const { data: who2 } = row.assigned_to ? await db.from('members').select('email, name').eq('id', row.assigned_to).maybeSingle() : { data: null };
+          const { data: l } = await db.from('listings').select('name').eq('id', a.listing_id).maybeSingle();
+          await mail(who2?.email || TEAM_EMAIL, `Reminder: ${l?.name || 'a client'}'s check-in is due`, `<p>${esc(l?.name || '')}'s monthly check-in for ${esc(monthName(month))} has not been sent yet. It was due by the 10th.</p><p><a href="${checkinLink(row.id)}">Open the check-in</a></p>`);
+          await db.from('ve_branddesk_checkins').update({ reminded_at: new Date().toISOString() }).eq('id', row.id);
+          reminded++;
+        }
+      } catch (e) { console.error('checkin_sweep', a.id, e); }
+    }
+    return json({ ok: true, month, accounts: (accts || []).length, opened, reminded });
+  }
+  if (!m) return json({ error: 'not_authenticated', message: 'Sign in first.' }, 401);
+  if (act === 'checkin_start') {
+    if (!m.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const a = await accountFor(b, m, true);
+    if (!a || !LIVE_STATES.includes(a.status)) return json({ error: 'not_found', message: 'Only a live client gets a check-in.' }, 404);
+    const { y, mo } = etParts();
+    const { row } = await openCheckin(a, monthStart(y, mo));
+    return json({ ok: true, id: row.id });
+  }
+  if (act === 'checkin_list') {
+    let q = db.from('ve_branddesk_checkins').select('*, listings(name, slug)').order('month', { ascending: false }).limit(100);
+    if (isId(b.account_id)) { if (!m.is_superadmin) return json({ error: 'forbidden' }, 403); q = q.eq('account_id', b.account_id); }
+    else if (!m.is_superadmin) q = q.eq('assigned_to', m.id);
+    const { data } = await q;
+    return json({ ok: true, checkins: (data || []).map((r: any) => ({ ...checkinShape(r), listing: r.listings })) });
+  }
+  if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+  const { data: row } = await db.from('ve_branddesk_checkins').select('*').eq('id', b.id).maybeSingle();
+  if (!row) return json({ error: 'not_found' }, 404);
+  const team = await checkinTeam(m, row);
+  const { data: l } = await db.from('listings').select('id, name, slug, owner_member_id').eq('id', row.listing_id).maybeSingle();
+  if (act === 'checkin_get') {
+    if (!team) {
+      const { data: a } = await db.from('ve_branddesk_accounts').select('member_id').eq('id', row.account_id).maybeSingle();
+      if (row.status !== 'sent' || !(a?.member_id === m.id || l?.owner_member_id === m.id)) return json({ error: 'not_found' }, 404);
+    }
+    const out = checkinShape(row);
+    if (!out.numbers) out.numbers = await monthNumbers(row.listing_id, row.month);
+    const { data: by } = row.assigned_to ? await db.from('members').select('name').eq('id', row.assigned_to).maybeSingle() : { data: null };
+    return json({ ok: true, team, checkin: out, listing: { name: l?.name, slug: l?.slug }, steps: CHECKIN_STEPS, assigned_name: by?.name || null });
+  }
+  if (!team) return json({ error: 'forbidden' }, 403);
+  if (row.status === 'sent') return json({ error: 'sent', message: 'This report is sent and stays as it went.' }, 409);
+  const answers: Record<string, string> = { ...(row.answers || {}) };
+  const inA = b.answers && typeof b.answers === 'object' ? b.answers : {};
+  for (const q of CHECKIN_Q) {
+    if (!(q.k in inA)) continue;
+    const v = String(inA[q.k] ?? '').replace(/\r/g, '').trim().slice(0, 1200);
+    if (q.type === 'choice' && v && !(q.options || []).includes(v)) return json({ error: 'bad_choice', field: q.k }, 400);
+    answers[q.k] = v;
+  }
+  const txt = (v: unknown, n: number) => String(v ?? '').replace(/\r/g, '').trim().slice(0, n);
+  const patch: Record<string, unknown> = { answers, status: 'in_progress', updated_at: new Date().toISOString(), updated_by: m.id };
+  if ('summary' in b) patch.summary = txt(b.summary, 4000) || null;
+  if ('next_month' in b) patch.next_month = txt(b.next_month, 4000) || null;
+  if (act === 'checkin_save') {
+    await db.from('ve_branddesk_checkins').update(patch).eq('id', row.id);
+    return json({ ok: true });
+  }
+  if (act === 'checkin_send') {
+    const missing = CHECKIN_Q.filter((q) => q.required && !answers[q.k]).map((q) => q.k);
+    if (missing.length) return json({ error: 'missing', fields: missing, message: 'Answer every question marked required first.' }, 400);
+    const summary = String(patch.summary ?? row.summary ?? ''), next = String(patch.next_month ?? row.next_month ?? '');
+    if (summary.length < 40) return json({ error: 'summary', message: 'Write what the month meant for them (a few sentences).' }, 400);
+    if (next.length < 20) return json({ error: 'next_month', message: 'Say what we do next month.' }, 400);
+    const numbers = await monthNumbers(row.listing_id, row.month);
+    const at = new Date().toISOString();
+    const { data: done } = await db.from('ve_branddesk_checkins').update({ ...patch, status: 'sent', numbers, sent_at: at, sent_by: m.id }).eq('id', row.id).neq('status', 'sent').select('id').maybeSingle();
+    if (!done) return json({ error: 'sent', message: 'This report is already sent.' }, 409);
+    const { data: a } = await db.from('ve_branddesk_accounts').select('member_id, test').eq('id', row.account_id).maybeSingle();
+    const { data: owner } = a ? await db.from('members').select('name, email').eq('id', a.member_id).maybeSingle() : { data: null };
+    const link = `${SITE}/directory/${l?.slug}?tab=brand&pd=managed&bd=reports&r=${row.id}`;
+    if (owner?.email) await mail(owner.email, `Your ${monthName(row.month)} report from Vegans Explore`,
+      `<p>Hi ${esc(String(owner.name || '').split(' ')[0] || 'there')},</p><p>Here is how ${esc(monthName(row.month))} went for <b>${esc(l?.name || '')}</b>.</p>` +
+      summary.split(/\n{2,}/).map((x) => `<p>${esc(x).replace(/\n/g, '<br>')}</p>`).join('') +
+      `<p><b>Next month:</b> ${esc(next).replace(/\n/g, '<br>')}</p><p><a href="${link}">See the full report and the numbers</a> on your dashboard.</p><p>Vegans Explore</p>`);
+    return json({ ok: true, sent_at: at });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -962,6 +1139,7 @@ Deno.serve(async (req) => {
       case 'file_remove': return await fileRemove(b, m);
       case 'ranking': case 'pitch_admin': case 'pitch_save': case 'pitch_send': return await pitchAdmin(b, m);
       case 'pitch_view': case 'pitch_site': case 'pitch_choice': return await pitchPublic(req, b, m);
+      case 'checkin_sweep': case 'checkin_start': case 'checkin_list': case 'checkin_get': case 'checkin_save': case 'checkin_send': return await checkins(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }

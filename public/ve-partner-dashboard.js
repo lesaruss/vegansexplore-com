@@ -700,8 +700,9 @@
     function mountManaged() {
       var box = el.querySelector('#vpd-bd'); if (!box) return;
       var run = function () {
-        VEBrandDesk.mount(box, { slug: l.slug, view: q('bd') || 'start', load: REAL ? null : VEBrandDesk.sampleData,
-          go: function (v) { var u = new URL(location.href); if (v === 'start') u.searchParams.delete('bd'); else u.searchParams.set('bd', v); history.pushState(null, '', u.pathname + u.search + u.hash); } });
+        VEBrandDesk.mount(box, { slug: l.slug, view: q('bd') || 'start', report: q('r') || '', load: REAL ? null : VEBrandDesk.sampleData, loadReport: REAL ? null : VEBrandDesk.sampleReport,
+          go: function (v) { var u = new URL(location.href); u.searchParams.delete('r'); if (v === 'start') u.searchParams.delete('bd'); else u.searchParams.set('bd', v); history.pushState(null, '', u.pathname + u.search + u.hash); },
+          goReport: function (id) { var u = new URL(location.href); if (id) u.searchParams.set('r', id); else u.searchParams.delete('r'); history.pushState(null, '', u.pathname + u.search + u.hash); } });
       };
       if (window.VEBrandDesk) return run();
       var s = document.createElement('script'); s.src = '/public/ve-branddesk-client.js'; s.onload = run; document.head.appendChild(s);
