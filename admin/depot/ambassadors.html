@@ -510,9 +510,13 @@
             '<section class="card"><h2>Profile requests</h2>' + (Q.length ? '<div class="list">' + Q.map(function (c) {
               var what = c.listing ? 'Claims <a href="/directory/' + encodeURIComponent(c.listing.slug) + '" target="_blank" rel="noopener">' + esc(c.listing.name) + '</a>'
                 : 'Asks for a new profile: <b>' + esc(c.new_profile && c.new_profile.name) + '</b>, ' + esc(c.new_profile && c.new_profile.title) + (c.new_profile && c.new_profile.bio ? '<br><span class="hint">' + esc(c.new_profile.bio) + '</span>' : '');
-              return '<div class="irow"><div><b>' + esc(c.member ? c.member.name : 'An Ambassador') + '</b> <small>' + esc(c.member ? c.member.email : '') + ' &middot; ' + esc(day(c.created_at)) + '</small><div style="font-size:13.5px;margin-top:4px">' + what + '</div>' +
-                (c.note ? '<small>Their note: ' + esc(c.note) + '</small>' : '') + '</div><span></span>' +
-                '<button type="button" class="btn btn-sm" data-dec="' + esc(c.id) + '" data-ok="1">Approve</button><button type="button" class="btn btn-bad btn-sm" data-dec="' + esc(c.id) + '" data-ok="0">Decline</button></div>';
+              // "Is this you?" from a People page (source 'page'; Sean, 2026-10-31): name, email and a link that shows it is them, account or not.
+              var pg = c.source === 'page', nm = c.member ? c.member.name : (c.contact_name || 'An Ambassador'), em = c.member ? c.member.email : (c.contact_email || '');
+              var proof = /^https?:\/\//i.test(c.proof_url || '') ? '<small>How to check: <a href="' + esc(c.proof_url) + '" target="_blank" rel="noopener">' + esc(c.proof_url) + '</a></small><br>' : '';
+              var acct = pg ? '<small>' + (c.member_id ? 'Signed in: Link it gives them this profile.' : 'No account yet: write to them from the Inbox; Checked closes it here.') + '</small>' : '';
+              return '<div class="irow"><div><b>' + esc(nm) + '</b> <small>' + esc(em) + ' &middot; ' + esc(day(c.created_at)) + (pg ? ' &middot; Is this you?' : '') + '</small><div style="font-size:13.5px;margin-top:4px">' + what + '</div>' +
+                proof + (c.note ? '<small>Their note: ' + esc(c.note) + '</small><br>' : '') + acct + '</div><span></span>' +
+                '<button type="button" class="btn btn-sm" data-dec="' + esc(c.id) + '" data-ok="1">' + (pg && !c.member_id ? 'Checked' : pg ? 'Link it' : 'Approve') + '</button><button type="button" class="btn btn-bad btn-sm" data-dec="' + esc(c.id) + '" data-ok="0">Decline</button></div>';
             }).join('') + '</div>' : '<p class="empty">None waiting.</p>') + '<span class="msg" id="dmsg" role="status"></span></section>' +
             '<section class="card"><h2>Their checklists</h2><div class="list">' + (A.length ? A.map(function (a) {
               var steps = DSTEPS.map(function (s) { return '<span class="tag ' + (a.steps[s[0]] ? 't-joined' : 't-ready') + '">' + (a.steps[s[0]] ? '&#10003; ' : '') + s[1] + '</span>'; }).join(' ');

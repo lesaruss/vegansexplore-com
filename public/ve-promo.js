@@ -5,6 +5,9 @@
  *
  *   VEPromo.creatorCards(el, {page, listing_id, name, claim})   the animated ad (Kai, in our illustration style) and, when claim is
  *                                                               set, "Is this you, <first name>?" above it
+ *                                                               (form: true, for People who are not creators, opens a short claim
+ *                                                               request in the card instead: name, email, a link that shows it is
+ *                                                               them, a note; ve-ambassador person_claim, promo 'profile-claim')
  *   VEPromo.step(promo, step)          'landed' or 'started' on the destination, sent with where the visitor clicked
  *   VEPromo.source(promo)              {page, listing_id, cta, claim, claim_name, channel, visitor} for the application, or null
  *
@@ -85,6 +88,16 @@
     '.vpc-copy p{font-size:12.5px;line-height:1.5;margin:0 0 12px;color:rgba(255,255,255,.92);text-shadow:0 1px 2px rgba(0,0,0,.5)}' +
     '.vpc-copy em{display:block;text-align:center;font-style:normal;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:var(--vb-go,#22c55e);color:#062b14;border-radius:6px;padding:11px 12px}' +
     '.vpc-ad:hover em{background:var(--vb-go-hover,#16a34a);color:#fff}' +
+    '.vpc-claim button.vpc-open{font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--vb-accent-ink,#14532d);border:1px solid var(--vb-accent,#16a34a);border-radius:6px;padding:8px 14px;background:#fff;cursor:pointer}' +
+    '.vpc-form label{display:block;font-size:11.5px;font-weight:700;color:#333;margin:0 0 8px}' +
+    '.vpc-form input,.vpc-form textarea{display:block;width:100%;box-sizing:border-box;margin-top:4px;font:inherit;font-size:13px;font-weight:400;border:1px solid #cfd8d2;border-radius:6px;padding:8px 10px;background:#fff;color:#111}' +
+    '.vpc-form textarea{min-height:56px;resize:vertical}' +
+    '.vpc-form input[aria-invalid=true]{border-color:#b42318}' +
+    '.vpc-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:4px}' +
+    '.vpc-acts button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:9px 14px;cursor:pointer}' +
+    '.vpc-send{background:var(--vb-go,#22c55e);color:#062b14;border:1px solid var(--vb-go,#22c55e)}.vpc-send:disabled{opacity:.6;cursor:default}' +
+    '.vpc-cancel{background:#fff;color:#333;border:1px solid #cfd8d2}' +
+    '.vpc-msg{font-size:12px;color:#b42318;margin:6px 0 0}.vpc-done{font-size:12.5px;line-height:1.55;color:#14532d;margin:0}' +
     '@media(prefers-reduced-motion:reduce){.vpc-f,.vpc-lines b{animation:none}.vpc-f:first-child,.vpc-lines b:first-child{opacity:1}}';
   var FRAMES = [['/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'], ['/gigs/sample/img/post-event.webp', 'Host our events'],
     ['/gigs/sample/img/post-market.webp', 'Tell local stories'], ['/gigs/sample/img/post-protein.webp', 'Work with Vegan brands']];
@@ -96,7 +109,10 @@
     var page = ctx.page || location.pathname;
     var claimHref = '/gigs/sample?claim=' + encodeURIComponent(ctx.claim || '') + '#join/1';
     el.innerHTML = '<div class="vpc">' +
-      (ctx.claim ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
+      (ctx.claim && ctx.form ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
+        '<div class="vpc-body"><p>Claim your profile. Tell us it is you, and once our team confirms it, your profile is linked to your account and kept up to date with you.</p>' +
+        '<button type="button" class="vpc-open">Claim your profile</button></div></div>' : '') +
+      (ctx.claim && !ctx.form ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
         '<p>Claim your profile. Once our team confirms it is you, keep it up to date, and get matched with paid work as one of our official creators.</p>' +
         '<a href="' + esc(claimHref) + '" data-vpc-go="claim">Claim your profile</a></div>' : '') +
       '<a class="vpc-ad" href="/gigs/sample#overview" data-vpc="ad" data-vpc-go="ad" aria-label="Become an official Vegans Explore creator">' +
@@ -107,13 +123,61 @@
     var base = { page: page, listing_id: ctx.listing_id || null, claim_name: ctx.name || '' };
     el.querySelectorAll('[data-vpc]').forEach(function (card) {
       var cta = card.getAttribute('data-vpc');
-      onScreen(card, function () { send('creator-register', 'view', Object.assign({ cta: cta }, base)); });
+      var promo = cta === 'claim' && ctx.form ? 'profile-claim' : 'creator-register';
+      onScreen(card, function () { send(promo, 'view', Object.assign({ cta: cta }, base)); });
     });
+    if (ctx.form) claimForm(el.querySelector('.vpc-claim'), ctx, base);
     el.addEventListener('click', function (e) {
       var a = e.target.closest('[data-vpc-go]'); if (!a) return;
       var cta = a.getAttribute('data-vpc-go');
       click('creator-register', Object.assign({ cta: cta, claim: cta === 'claim' ? ctx.claim : '' }, base));
     });
+  }
+
+  // The short claim (Sean, 2026-10-31: "a short claim request for people who aren't creators"), in the card itself. A signed-in member's
+  // name and email are filled in and their token sent, so approving links the profile to their account.
+  function claimForm(card, ctx, base) {
+    if (!card) return;
+    var body = card.querySelector('.vpc-body');
+    var m = null; try { m = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? VEAuth.getMember() : null; } catch (e) {}
+    function open() {
+      send('profile-claim', 'click', Object.assign({ cta: 'claim' }, base));
+      body.innerHTML = '<form class="vpc-form" novalidate>' +
+        '<label>Your name<input name="name" autocomplete="name" maxlength="120" value="' + esc(m && m.name || '') + '"></label>' +
+        '<label>Your email<input name="email" type="email" autocomplete="email" maxlength="200" value="' + esc(m && m.email || '') + '"></label>' +
+        '<label>A link that shows it is you<input name="proof" maxlength="300" placeholder="Your Instagram, website or a page about you"></label>' +
+        '<label>Anything we should know (optional)<textarea name="note" maxlength="500"></textarea></label>' +
+        '<div class="vpc-acts"><button type="submit" class="vpc-send">Send to our team</button><button type="button" class="vpc-cancel">Cancel</button></div>' +
+        '<p class="vpc-msg" role="alert" hidden></p></form>';
+      var f = body.querySelector('form'), E = f.elements, msg = f.querySelector('.vpc-msg');
+      f.querySelector('.vpc-cancel').addEventListener('click', reset);
+      f.addEventListener('input', function (e) { if (e.target.getAttribute('aria-invalid')) { e.target.removeAttribute('aria-invalid'); msg.hidden = true; } });
+      (f.querySelector('input[name=name]').value ? f.querySelector('input[name=proof]') : f.querySelector('input[name=name]')).focus();
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var v = { name: E.name.value.trim(), email: E.email.value.trim(), proof: E.proof.value.trim(), note: E.note.value.trim() };
+        ['name', 'email', 'proof'].forEach(function (k) { E[k].removeAttribute('aria-invalid'); });
+        var bad = !v.name ? 'name' : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email) ? 'email' : !v.proof ? 'proof' : '';
+        if (bad) { E[bad].setAttribute('aria-invalid', 'true'); E[bad].focus(); msg.hidden = false;
+          msg.textContent = bad === 'name' ? 'Give your name.' : bad === 'email' ? 'That email does not look right.' : 'Add a link that shows it is you.'; return; }
+        var btn = f.querySelector('.vpc-send'); btn.disabled = true; btn.textContent = 'Sending...'; msg.hidden = true;
+        var h = { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + ANON };
+        try { var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(); if (t && m) h.Authorization = 'Bearer ' + t; } catch (e2) {}
+        fetch(SB + '/functions/v1/ve-ambassador', { method: 'POST', headers: h,
+          body: JSON.stringify(Object.assign({ action: 'person_claim', listing_id: ctx.listing_id, visitor: visitor() }, v)) })
+          .then(function (r) { return r.json().catch(function () { return {}; }); })
+          .then(function (d) {
+            if (d && d.ok) { body.innerHTML = '<p class="vpc-done" role="status">Thank you. Our team will check it is you and write back to ' + esc(v.email) + ', usually within a few days.</p>'; return; }
+            btn.disabled = false; btn.textContent = 'Send to our team'; msg.hidden = false;
+            msg.textContent = (d && d.message) || 'That did not send. Try again in a minute.';
+            if (d && d.fields && d.fields[0] && E[d.fields[0]]) E[d.fields[0]].setAttribute('aria-invalid', 'true');
+          })
+          .catch(function () { btn.disabled = false; btn.textContent = 'Send to our team'; msg.hidden = false; msg.textContent = 'That did not send. Try again in a minute.'; });
+      });
+    }
+    var first = body.innerHTML;
+    function reset() { body.innerHTML = first; body.querySelector('.vpc-open').addEventListener('click', open); }
+    body.querySelector('.vpc-open').addEventListener('click', open);
   }
 
   window.VEPromo = { creatorCards: creatorCards, step: step, source: source, click: click };

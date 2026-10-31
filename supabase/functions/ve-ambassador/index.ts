@@ -28,6 +28,10 @@
 //   POST { action: 'creator_funnel', days? }  -> where creators came from: by page and channel, viewed, clicked, opened the walkthrough,
 //        started, sent, accepted (ve_promo_funnel, promo 'creator-register'; default the last 90 days)
 //   POST { action: 'creator_journey', id }  -> one application's steps, from the card they clicked to the application
+// Anyone, no sign-in ("Is this you?" on a People page that is not a creator's; Sean, 2026-10-31: "a short claim request for people who
+// aren't creators"):
+//   POST { action: 'person_claim', listing_id, name, email, proof, note? }  a ve_profile_claims row (source 'page'); a signed-in member's
+//        token, when sent, links it to them. Three a day per email; emails Sean; the Inbox and Paid work's Profile requests list it.
 // Anyone, no sign-in (the creator pathway's last step, /gigs/sample#join/1 to /5; Sean, 2026-10-30):
 //   POST { action: 'creator_apply', answers, attribution?, claim? }  saves ve_creator_applications, emails Sean every answer and confirms to them; three a day
 //        per email. A signed-in member's token, when sent, links the application to them.
@@ -122,12 +126,12 @@ async function memberOf(req: Request, body: any): Promise<string | null> {
   return await verifyToken(token);
 }
 
-async function sendOne(to: string, subject: string, html: string): Promise<string | null> {
+async function sendOne(to: string, subject: string, html: string, replyTo?: string): Promise<string | null> {
   if (!RESEND_KEY) return null;
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, reply_to: SEAN_EMAIL, to: [to], subject, html }),
+      body: JSON.stringify({ from: FROM, reply_to: replyTo || SEAN_EMAIL, to: [to], subject, html }),
     });
     const d = res.ok ? await res.json() : null;
     if (!res.ok) console.error('Resend error:', await res.text());
@@ -288,6 +292,44 @@ Deno.serve(async (req) => {
     return json({ ok: true, sent });
   }
 
+  // ---- "Is this you?" for People who are not creators (Sean, 2026-10-31). A short request, account or not; the team checks it is them.
+  if (action === 'person_claim') {
+    if (!isId(body.listing_id)) return json({ error: 'bad_request' }, 400);
+    const name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase(), note = clean(body.note, 500) || null;
+    let proof = clean(body.proof, 300);
+    if (proof && !/^https?:\/\//i.test(proof)) proof = /^@?[A-Za-z0-9._]{2,40}$/.test(proof) ? 'https://www.instagram.com/' + proof.replace(/^@/, '') : 'https://' + proof;
+    if (!name) return json({ error: 'missing', message: 'Give your name.', fields: ['name'] }, 400);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: 'bad_email', message: 'That email does not look right.', fields: ['email'] }, 400);
+    if (!proof || !/^https?:\/\/[^\s<>"]+\.[^\s<>"]+$/i.test(proof)) return json({ error: 'missing', message: 'Add a link that shows it is you: your Instagram, your website or a page about you.', fields: ['proof'] }, 400);
+    const { data: l } = await db.from('listings').select('id, name, slug, owner_member_id, status, category, details').eq('id', body.listing_id).maybeSingle();
+    if (!l || l.status !== 'approved' || !PEOPLE_CATS.includes(l.category)) return json({ error: 'not_found' }, 404);
+    if (l.owner_member_id || l.details?.person?.member_id) return json({ error: 'taken', message: 'This profile is already linked to an account. If it is yours, write to contact@lesaruss.com.' }, 409);
+    const { count } = await db.from('ve_profile_claims').select('id', { count: 'exact', head: true }).ilike('contact_email', email)
+      .gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
+    if ((count || 0) >= 3) return json({ error: 'too_many', message: 'We have your request already. Our team will write back.' }, 429);
+    const who = await memberOf(req, body).catch(() => null);
+    if (who) {
+      const { data: open } = await db.from('ve_profile_claims').select('id').eq('member_id', who).eq('status', 'pending').maybeSingle();
+      if (open) return json({ error: 'waiting', message: 'Your request is with our team already. We will write back.' }, 409);
+    }
+    const { data: c, error } = await db.from('ve_profile_claims').insert({ member_id: who || null, listing_id: l.id, note, source: 'page',
+      contact_name: name, contact_email: email, proof_url: proof }).select('id').single();
+    if (error || !c) { console.error('person_claim', error); return json({ error: 'save_failed', message: 'That did not send. Try again in a minute.' }, 500); }
+    const vis = /^[A-Za-z0-9-]{8,64}$/.test(String(body.visitor || '')) ? String(body.visitor) : null;
+    await db.from('ve_promo_events').insert({ promo: 'profile-claim', step: 'sent', visitor: vis, page: `/directory/${l.slug}`, listing_id: l.id, cta: 'claim',
+      ref_id: c.id, member_id: who || null });
+    await sendOne(SEAN_EMAIL, `[People] ${name} says ${l.name} is them`, wrap(
+      `<p><b>${esc(name)}</b> (${esc(email)}) says the People profile <a href="${SITE}/directory/${esc(l.slug)}">${esc(l.name)}</a> is them.</p>` +
+      `<p><b>How to check:</b> <a href="${esc(proof)}">${esc(proof)}</a></p>` + (note ? `<p>Their note: ${esc(note)}</p>` : '') +
+      `<p>${who ? 'They are signed in, so approving links the profile to their account.' : 'They have no account yet: reply to them from the Inbox, and invite them when it checks out.'}</p>` +
+      `<p><a href="${SITE}/admin/depot/ambassadors#door">Profile requests in Depot &gt; Ambassadors &gt; Paid work</a></p>`), email);
+    await sendOne(email, `We have your request for ${l.name}${/s$/i.test(l.name) ? "'" : "'s"} profile`, wrap(
+      `<p style="margin:0 0 12px">Hi ${esc(firstName(name))},</p>` +
+      `<p style="margin:0 0 16px">Thank you for telling us your profile on Vegans Explore is you. Our team will check it and write back, usually within a few days. Once it is confirmed, it is yours to keep up to date.</p>` +
+      btn(`${SITE}/directory/${l.slug}`, 'See your profile')));
+    return json({ ok: true, id: c.id });
+  }
+
   // ---- The creator application (Sean, 2026-10-30: "the last step is the intake... We want to know as much as we can about them").
   // Anyone, no sign-in. What a campaign will match on (chapters, topics, formats, gig kinds, platforms and reach) gets its own column.
   if (action === 'creator_apply') {
@@ -412,19 +454,31 @@ Deno.serve(async (req) => {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
       const { data: c } = await db.from('ve_profile_claims').select('*').eq('id', body.id).maybeSingle();
       if (!c || c.status !== 'pending') return json({ error: 'not_pending' }, 409);
-      const { data: who } = await db.from('members').select('id, name, email').eq('id', c.member_id).maybeSingle();
+      const { data: who } = c.member_id ? await db.from('members').select('id, name, email').eq('id', c.member_id).maybeSingle() : { data: null };
       const at = new Date().toISOString();
+      // "Is this you?" from a People page (source 'page'): the person may have no account yet.
+      const page = c.source === 'page', toEmail = who?.email || c.contact_email, toName = who?.name || c.contact_name || '';
+      const { data: cl } = c.listing_id ? await db.from('listings').select('slug').eq('id', c.listing_id).maybeSingle() : { data: null };
+      const profileUrl = cl?.slug ? `${SITE}/directory/${cl.slug}` : SITE;
       if (body.approve !== true) {
         await db.from('ve_profile_claims').update({ status: 'declined', decided_at: at, decided_by: member.id, decision_note: clean(body.note, 500) || null }).eq('id', c.id);
-        if (who?.email) await sendOne(who.email, 'About your Vegans Explore profile', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 12px">We could not give you that profile as asked.${body.note ? ' ' + esc(clean(body.note, 500)) : ''}</p><p style="margin:0 0 16px">Reply to this email and we will sort it out with you.</p>` + btn(DOOR, 'Open your checklist')));
+        if (toEmail) await sendOne(toEmail, 'About your Vegans Explore profile', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(toName))},</p><p style="margin:0 0 12px">We could not ${page ? 'confirm that profile is yours' : 'give you that profile as asked'}.${body.note ? ' ' + esc(clean(body.note, 500)) : ''}</p><p style="margin:0 0 16px">Reply to this email and we will sort it out with you.</p>` + (page ? btn(profileUrl, 'See the profile') : btn(DOOR, 'Open your checklist'))));
         return json({ ok: true, status: 'declined' });
+      }
+      // No account to link it to: approving marks it checked; the team writes to them (the Inbox) and invites them.
+      if (!c.member_id) {
+        await db.from('ve_profile_claims').update({ status: 'approved', decided_at: at, decided_by: member.id, decision_note: clean(body.note, 500) || null }).eq('id', c.id);
+        return json({ ok: true, status: 'approved', linked: false });
       }
       let listingId = c.listing_id;
       if (listingId) {
         const { data: l } = await db.from('listings').select('id, owner_member_id, status, category').eq('id', listingId).maybeSingle();
         if (!l || l.status !== 'approved' || !PEOPLE_CATS.includes(l.category)) return json({ error: 'listing_gone' }, 409);
         if (l.owner_member_id && l.owner_member_id !== c.member_id) return json({ error: 'owned', message: 'Someone else already holds that profile.' }, 409);
-        await db.from('listings').update({ owner_member_id: c.member_id, claimed_by_member_id: c.member_id, claim_status: 'verified', updated_at: at }).eq('id', listingId);
+        const { data: ld } = await db.from('listings').select('details').eq('id', listingId).maybeSingle();
+        const det = ld?.details || {};
+        await db.from('listings').update({ owner_member_id: c.member_id, claimed_by_member_id: c.member_id, claim_status: 'verified', updated_at: at,
+          details: { ...det, person: { ...(det.person || {}), member_id: c.member_id } } }).eq('id', listingId);
       } else {
         const np = c.new_profile || {};
         const name = clean(np.name, 120) || who?.name || 'New profile';
@@ -441,14 +495,15 @@ Deno.serve(async (req) => {
         listingId = made.id;
       }
       await db.from('ve_profile_claims').update({ status: 'approved', listing_id: listingId, decided_at: at, decided_by: member.id, decision_note: clean(body.note, 500) || null }).eq('id', c.id);
-      await db.from('ve_listing_edits').insert({ listing_id: listingId, member_id: member.id, field: 'owner_member_id', old_value: null, new_value: c.member_id, meta: { source: 'ambassador_door', claim: c.id } });
-      if (who?.email) await sendOne(who.email, 'Your Vegans Explore profile is yours', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 16px">Your profile in the Directory is now yours to keep current: your photo, what you do and your bio. It is the first step of your checklist for paid work.</p>` + btn(`${DOOR}?step=profile`, 'Finish your profile')));
+      await db.from('ve_listing_edits').insert({ listing_id: listingId, member_id: member.id, field: 'owner_member_id', old_value: null, new_value: c.member_id, meta: { source: page ? 'is_this_you' : 'ambassador_door', claim: c.id } });
+      if (who?.email && page) await sendOne(who.email, 'Your Vegans Explore profile is yours', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 16px">We confirmed it is you: your profile in the Directory is now linked to your account. To change your photo, what you do or your bio, reply to this email and we will update it for you.</p>` + btn(profileUrl, 'See your profile')));
+      else if (who?.email) await sendOne(who.email, 'Your Vegans Explore profile is yours', wrap(`<p style="margin:0 0 12px">Hi ${esc(firstName(who.name))},</p><p style="margin:0 0 16px">Your profile in the Directory is now yours to keep current: your photo, what you do and your bio. It is the first step of your checklist for paid work.</p>` + btn(`${DOOR}?step=profile`, 'Finish your profile')));
       return json({ ok: true, status: 'approved', listing_id: listingId });
     }
     const [{ data: ambs }, { data: rows }, { data: pend }, { data: stories }, { data: creators }] = await Promise.all([
       db.from('members').select('id, name, email, avatar_url, ambassador_profile').eq('ve_role', 'ambassador').order('name'),
       db.from('ve_ambassador_door').select('*'),
-      db.from('ve_profile_claims').select('id, member_id, listing_id, new_profile, note, created_at').eq('status', 'pending').order('created_at'),
+      db.from('ve_profile_claims').select('id, member_id, listing_id, new_profile, note, created_at, source, contact_name, contact_email, proof_url').eq('status', 'pending').order('created_at'),
       db.from('ve_ambassador_stories').select('id, member_id, kind, name, about, place, contact, status, status_at, created_at').order('created_at', { ascending: false }).limit(200),
       db.from('ve_creator_applications').select('*').order('created_at', { ascending: false }).limit(500),
     ]);
@@ -464,6 +519,9 @@ Deno.serve(async (req) => {
     const lids = (pend || []).map((c: any) => c.listing_id).filter(Boolean);
     const { data: ls } = lids.length ? await db.from('listings').select('id, name, slug').in('id', lids) : { data: [] };
     const names: Record<string, any> = {}; for (const a of ambs || []) names[a.id] = a;
+    const cm = [...new Set((pend || []).map((c: any) => c.member_id).filter((id: string) => id && !names[id]))];
+    const { data: cms } = cm.length ? await db.from('members').select('id, name, email').in('id', cm) : { data: [] };
+    for (const m of cms || []) names[m.id] = m;
     const claims = (pend || []).map((c: any) => ({ ...c, member: names[c.member_id] ? { name: names[c.member_id].name, email: names[c.member_id].email } : null,
       listing: (ls || []).find((l: any) => l.id === c.listing_id) || null }));
     const sids = [...new Set((stories || []).map((x: any) => x.member_id).filter((id: string) => !names[id]))];
