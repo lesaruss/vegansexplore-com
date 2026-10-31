@@ -79,13 +79,17 @@
   function briefing(t) {
     var b = t.briefing; if (!b) return '';
     var out = '<div class="vep-brief">';
-    if ((b.stories || []).length) {
-      out += '<section><h4>What people are talking about</h4><ol>' + b.stories.map(function (x) {
-        var u = safe(x.url);
-        return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
-          (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</li>';
-      }).join('') + '</ol></section>';
-    }
+    // Since 2026-10-31 a city's briefing carries the national news after its own (Sean: "feature the Philadelphia
+    // news first, then the national, so it's all in one pulse"): stories marked national get their own heading.
+    var story = function (x) {
+      var u = safe(x.url);
+      return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
+        (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</li>';
+    };
+    var local = (b.stories || []).filter(function (x) { return !x.national; });
+    var wide = (b.stories || []).filter(function (x) { return x.national; });
+    if (local.length) out += '<section><h4>What people are talking about</h4><ol>' + local.map(story).join('') + '</ol></section>';
+    if (wide.length) out += '<section><h4>Across the country</h4><ol>' + wide.map(story).join('') + '</ol></section>';
     if ((b.events || []).length) {
       out += '<section><h4>Heads up</h4><ul class="vep-ev">' + b.events.map(function (x) {
         var u = safe(x.url);
