@@ -60,6 +60,10 @@
     .pt-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px;}
     .pt-strip img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#fff;}
     .pt-strip img.pt-contain{object-fit:contain;padding:6px;box-sizing:border-box;}
+    .pt-guide .pt-hero{aspect-ratio:2/1;background:#fff;object-fit:contain;}
+    .pt-guide .su-keys{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+    .pt-guide .su-keys li{padding:8px 10px;font-size:13px;line-height:1.4;}
+    @media (max-width:640px){.pt-guide .su-keys{grid-template-columns:1fr;}}
     .pt-hero{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.45);}
     .pt-price{font:900 clamp(30px,3.4vw,46px)/1.05 'Montserrat',sans-serif;}
     .pt-price small{font-size:15px;font-weight:700;opacity:.85;}
@@ -222,7 +226,7 @@
           '<div class="pt-choices">' + choice('ready', 'I\'m ready', 'Pick your plan and sign up, right here. It takes a few minutes.') +
           choice('think', 'Let me think about it', 'Pick a day and we\'ll check back then. Nothing before.') +
           choice('talk', 'Talk to someone', 'A real person from our team reaches out within a day.') +
-          choice('no', 'Not now, thanks', 'Your Vegans Explore page stays yours, free.') + '</div></div>' +
+          choice('no', 'Not now, thanks', 'No problem. Take our Vegan Restaurant Guide with you.') + '</div></div>' +
           '<div>' + still('ptStill2') + '<p class="pt-cap">' + name + ', on our frame.</p></div></div>', ' data-vg-choose');
       // The ready path: the plan, the agreement, review and pay, all here.
       html += slide('su-plan', 'Your plan', '<div id="suPlan"></div>', ' data-path="ready"');
@@ -231,7 +235,7 @@
       // The other paths: one slide each, with its form.
       html += slide('ch-think', 'Let me think about it', formSlide('think', 'Let me think about it', 'Pick a day and we\'ll check back then. Nothing before.', IMG + 's-outside-dusk.webp'), ' data-path="think"');
       html += slide('ch-talk', 'Talk to someone', formSlide('talk', 'Talk to someone', 'A real person from our team reaches out within a day. Tell us the best way to reach you.', IMG + 's-team.webp'), ' data-path="talk"');
-      html += slide('ch-no', 'Not now', formSlide('no', 'Not now, thanks', 'Thank you for looking. Your Vegans Explore page stays yours, free, whatever you decide. If something changes, this page will still be here.', IMG + 's-counter.webp'), ' data-path="no"');
+      html += slide('ch-no', 'Not now', formSlide('no', 'Not now, thanks', 'Thank you for looking. If now is not the time to hand it off, you can still start on your own. Our Vegan Restaurant Survival Guide walks you through the same kind of check we ran for ' + name + ', the fixes in plain words, and how to get found by the Vegans near you. Tell us anything you want us to know.', null, guideCard()), ' data-path="no"');
       stage.innerHTML = html;
       drawSignup();
       var note = document.getElementById('ptNote');
@@ -242,7 +246,16 @@
       var sc = document.createElement('script'); sc.src = '/public/ve-guided.js'; document.body.appendChild(sc);
     }
     function scaleStill() { document.querySelectorAll('.pt-still').forEach(function (b) { if (!b.offsetWidth) return; b.querySelector('iframe').style.transform = 'scale(' + (b.offsetWidth / +b.getAttribute('data-w')) + ')'; }); }
-    function formSlide(choice, title, line, pic) {
+    // Not now: the Vegan Restaurant Survival Guide, so they can start on their own (Sean, 2026-10-31).
+    function guideCard() {
+      var href = '/guides/vegan-restaurant-survival-guide?from=pitch';
+      return '<div class="pt-card pt-guide"><a href="' + href + '" target="_blank" rel="noopener"><img class="pt-hero" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg" alt="Liz, the Guide, holding a chalkboard that reads OPEN" loading="lazy"></a>' +
+        '<div class="pt-area" style="margin-top:12px">A Guide for restaurant owners</div><b>The Vegan Restaurant Survival Guide</b>' +
+        '<ul class="su-keys"><li>A free check of your Google listing, website and social</li><li>Every fix in plain words, in the order that matters for you</li><li>Our interviews with Vegan business owners</li><li>How to get featured on Vegans Explore</li></ul>' +
+        '<p style="margin-top:12px"><a class="vg-btn" href="' + href + '" target="_blank" rel="noopener">Open the Guide</a></p>' +
+        '<p class="pt-cap">$11 or 1,100 points, yours to keep, and the $11 makes you a member. The free check is open to everyone.</p></div>';
+    }
+    function formSlide(choice, title, line, pic, side) {
       var c = D.contact || {}, d = new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10);
       var who = '<label>Your name<input data-f="name" autocomplete="name" value="' + esc(c.name) + '"></label><label>Your email<input data-f="email" type="email" autocomplete="email" value="' + esc(c.email) + '"></label>';
       var fields = choice === 'think' ? '<label>When should we check back?<input data-f="date" type="date" value="' + d + '" min="' + new Date().toISOString().slice(0, 10) + '"></label>' + who + '<label>Anything on your mind (optional)<textarea data-f="note" maxlength="1200"></textarea></label>'
@@ -251,7 +264,7 @@
       return '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">Your call</div><h2 class="vg-h">' + esc(title) + '</h2><p class="vg-lede">' + line + '</p>' +
         '<div class="pt-form" data-form="' + choice + '">' + fields + '<p><button class="vg-btn" type="button" data-send="' + choice + '">' + (choice === 'think' ? 'Check back then' : choice === 'talk' ? 'Have someone reach out' : 'Send') + '</button> ' +
         '<button class="vg-btn vg-btn-ghost" type="button" data-vg-go="choose">Change my answer</button></p><div class="pt-msg" role="status"></div></div></div>' +
-        '<div><img class="pt-hero" src="' + pic + '" alt="" loading="lazy">' + sampleCap() + '</div></div>';
+        '<div>' + (side || '<img class="pt-hero" src="' + pic + '" alt="" loading="lazy">' + sampleCap()) + '</div></div>';
     }
     function send(choice, btn) {
       var box = btn.closest('[data-form]'), v = function (k) { var e = box.querySelector('[data-f="' + k + '"]'); return e ? e.value.trim() : ''; }, m = box.querySelector('.pt-msg');
@@ -260,7 +273,7 @@
       if (choice === 'talk' && !body.email && !body.phone) { m.className = 'pt-msg err'; m.textContent = 'Leave an email or a phone so we can reach you.'; return; }
       var done = function () {
         m.className = 'pt-msg';
-        m.textContent = (PREVIEW ? 'Preview: nothing was saved. ' : '') + (choice === 'think' ? 'Thank you. We\'ll check back on ' + new Date(body.follow_up_on + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + '.' : choice === 'talk' ? 'Thank you. Someone from our team will reach out within a day.' : 'Thank you for looking. Your Vegans Explore page stays yours, free.');
+        m.textContent = (PREVIEW ? 'Preview: nothing was saved. ' : '') + (choice === 'think' ? 'Thank you. We\'ll check back on ' + new Date(body.follow_up_on + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + '.' : choice === 'talk' ? 'Thank you. Someone from our team will reach out within a day.' : 'Thank you for looking. The Guide is there whenever you want it.');
         btn.disabled = true;
       };
       if (SAMPLE) return done();

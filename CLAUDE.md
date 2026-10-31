@@ -676,7 +676,10 @@ judge whether food is safe by how a place looks online; businesses want marketin
   four picked cards (only the picked one is green; `data-vg-path`). **I'm ready stays on the page**: its path is Your plan, The agreement (the
   full text opens in a window on the page) and Review and pay beside a mock-up of their home page (`#su-plan`, `#su-agree`, `#su-pay`); Pay
   records the choice, then `checkout` with `back` (`/business/pitch?c=<code>`), so Stripe returns to the pitch (`&status=done|cancelled|unpaid#su-pay`).
-  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`).
+  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`). **Not now offers the Vegan Restaurant Survival Guide** (Sean, 2026-10-31: "I don't get... your Vegans Explore page stays yours
+  free... maybe we're sharing the vegan restaurant guide with them"): its card (Liz's banner, what is in it, Open the Guide at
+  `/guides/vegan-restaurant-survival-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
+  business that says no can still start on its own (`guideCard` in `business/pitch.html`).
   `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
