@@ -1176,7 +1176,8 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   application step on screen. The tabs end My list (members) or Get access, then **Become a creator**, always last. **Her voice**: every
   line is recorded (`LINES` in `ve-gigs.js` for the walkthrough and the application, each tab's `say` and `voice` in
   `creator-guide.js`; `vegan-media/media/voices/creator-guide/kai-<key>-v1.mp3`, el-media tts with the ElevenLabs premade voice Jessica,
-  `cgSgspJ2msm6clMCkdW9`, Kai's voice, approved by Sean 2026-10-31 and used by no other Guide; every line that says Vegan is recorded from text
+  `cgSgspJ2msm6clMCkdW9`, Kai's voice, approved by Sean 2026-10-31 and used by no other Guide, on her HQ roster profile (`artists` kai,
+  its Voice module) and `character_agents` kai, migration `20261031_kai_roster_voice.sql`; every line that says Vegan is recorded from text
   spelled "Veegan"), and `VEGigs.voice` plays them: nothing plays until the visitor presses
   Play Kai, then each new view or tab plays its line by itself until they press Pause (`sessionStorage` `ve_kai_voice`). A line's text
   must match its recording; change one and record it again (`-v2`, and its key in `VOICE_VER`). Never write "lives here" in a recorded line: the voice reads it as the verb (Sean, 2026-10-31); say "is right here". Still to fix, held by Sean (2026-10-31) until the Guides are revisited: Liz's Restaurant Guide clips `rg-m-audit`, `rg-m-pulse` and `rg-mylist` say "lives here" (lip-synced video, about 20 to 50 Higgsfield credits each). el-media refuses more than two recordings at once (ElevenLabs'
