@@ -3,7 +3,7 @@
 // based off certain metrics"). The BCPS page reads monthly GA4 snapshots; this reads GA4 live for any period, cached 3 hours.
 //   POST { action: 'report', from, to, prev_from, prev_to, refresh?, bots? }   super admin (the VE token) or ops (LESARUSS_ADMIN_TOKEN)
 //   bots: 'hide' (the default) leaves out likely crawlers, 'show' counts everything Google counted.
-//   -> { ga: {...} | null, ga_error?, internal: ve_analytics_internal(...), chapters: [...], fetched_at }
+//   -> { ga: {...} | null, ga_error?, internal: ve_analytics_internal(...), chapters: [...], guide_tabs: ve_guide_tab_stats(...) (Guide tab views and clicks), fetched_at }
 // Traffic: Google Analytics 4, property 432623792 (vegansexplore.com), read with the LESARUSS analytics reader
 // (lesaruss_secrets GA4_SERVICE_ACCOUNT_JSON, which has Viewer on it). Our own numbers: ve_analytics_internal (migration
 // 20261028_ve_analytics.sql). Chapters are ve_outreach_cities (kind city): a visitor counts in a chapter by Google's city,
@@ -206,10 +206,12 @@ Deno.serve(async (req) => {
       }
     }
 
-    const [{ data: internal, error: ie }, { data: chaps }] = await Promise.all([
+    const [{ data: internal, error: ie }, { data: chaps }, { data: guideTabs, error: ge }] = await Promise.all([
       db.rpc('ve_analytics_internal', { p_from: from, p_to: to, p_prev_from: prev_from, p_prev_to: prev_to }),
       db.from('ve_outreach_cities').select('community_slug, name, states, cities').eq('kind', 'city').neq('community_slug', 'brands'),
+      db.rpc('ve_guide_tab_stats', { p_from: from, p_to: to, p_prev_from: prev_from, p_prev_to: prev_to }),
     ]);
+    if (ge) console.error('ve-analytics guide tabs:', ge);
     if (ie) { console.error('ve-analytics internal:', ie); return json({ error: 'load_failed' }, 500); }
 
     // One row per chapter: Google's visitors from there, now and before, its hub's page views, and our own numbers.
@@ -248,7 +250,7 @@ Deno.serve(async (req) => {
     }
     out.cities = Object.values(cities).sort((a, b) => b.users - a.users).slice(0, 200);
 
-    return json({ ok: true, bots: hideBots ? 'hide' : 'show', ga: ga ? out : null, ga_error: gaError, fetched_at: fetchedAt, internal: { ...internal, chapters: undefined, content: undefined }, chapters, content });
+    return json({ ok: true, bots: hideBots ? 'hide' : 'show', ga: ga ? out : null, ga_error: gaError, fetched_at: fetchedAt, internal: { ...internal, chapters: undefined, content: undefined }, chapters, content, guide_tabs: guideTabs ?? { guides: [], listings: [] } });
   } catch (e) {
     console.error('ve-analytics:', e);
     return json({ error: 'server_error' }, 500);

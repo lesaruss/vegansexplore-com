@@ -188,7 +188,7 @@
     function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('ve_an_' + k) || 'null'); localStorage.setItem('ve_an_' + k, JSON.stringify(v)); } catch (e) { return null; } }
 
     var TABS = [['pages', 'Top pages'], ['communities', 'Communities'], ['pulse', 'Daily Pulse'], ['directory', 'Directory'],
-      ['sources', 'Traffic sources'], ['places', 'Places'], ['campaigns', 'Campaigns'], ['ads', 'Ads'], ['members', 'Members']];
+      ['sources', 'Traffic sources'], ['places', 'Places'], ['campaigns', 'Campaigns'], ['ads', 'Ads'], ['guidetabs', 'Guide tabs'], ['members', 'Members']];
     var CHAPTER_NAME = {};
     var state = { range: '30', from: '', to: '', bots: true, tab: 'pages', data: null, q: {}, page: {}, size: {}, sort: {} };
 
@@ -468,6 +468,32 @@
             { k: 'clicks', h: 'Clicks', n: 1, w: function (r) { return fmt(r.clicks); } },
             { k: 'ctr', h: 'Click rate', n: 1, w: function (r) { return (r.ctr * 100).toFixed(2) + '%'; } },
           ], { noun: 'slots', sort: { k: 'impressions' }, text: function (r) { return r.page + ' ' + r.slot; } });
+      },
+      guidetabs: function (d) {
+        var gt = d.guide_tabs || {}, NAME = { 'vegan-dairy-guide': 'Vegan Dairy Guide', 'vegan-restaurant-guide': 'Vegan Restaurant Guide', 'creator-guide': 'Creator Guide',
+          'nonprofit-guide': 'Nonprofit Guide', 'group-partner': 'Group Partner Guide', 'welcome': 'Welcome Guide (Passport)', 'nutrition-guide': 'Nutrition Guide' };
+        var gname = function (k) { return NAME[k] || k; };
+        var rate = function (c, v) { return v ? Math.round(c / v * 100) + '%' : '-'; };
+        var gs = (gt.guides || []).map(function (r) { return Object.assign({ name: gname(r.guide), rate: r.views ? r.clicks / r.views : 0 }, r); });
+        var ls = (gt.listings || []).map(function (r) { return Object.assign({ gname: gname(r.guide), rate: r.views ? r.clicks / r.views : 0 }, r); });
+        var maxG = Math.max.apply(null, gs.map(function (r) { return r.views; }).concat([0]));
+        var maxL = Math.max.apply(null, ls.map(function (r) { return r.views; }).concat([0]));
+        return '<p class="intro">The Guide tab on every listing: how many people saw each Guide\'s tab (the card on screen) and how many clicked Open the Guide, people counted once each. Bots, demo pages and LESARUSS.ai are not counted. Counting started 2026-10-31.</p>' +
+          '<h3>By Guide</h3>' + table('gtg', gs, [
+            { k: 'name', h: 'Guide', cls: 't', label: false, w: function (r) { return esc(r.name) + '<small>on ' + fmt(r.listings) + ' listing' + (r.listings === 1 ? '' : 's') + '</small>'; } },
+            { k: 'views', h: 'Saw it', n: 1, w: function (r) { return bar(r.views, maxG); } },
+            { k: 'views_prev', h: 'Before', n: 1, w: function (r) { return fmt(r.views_prev); } },
+            { k: 'change', h: 'Change', w: function (r) { return change(r.views, r.views_prev); } },
+            { k: 'clicks', h: 'Clicked', n: 1, w: function (r) { return fmt(r.clicks); } },
+            { k: 'rate', h: 'Click rate', n: 1, w: function (r) { return rate(r.clicks, r.views); } },
+          ], { noSearch: true, sort: { k: 'views' }, empty: 'No one has seen a Guide tab in this period yet.' }) +
+          '<h3>By listing</h3>' + table('gtl', ls, [
+            { k: 'name', h: 'Listing', cls: 't', label: false, w: function (r) { return '<a href="/directory/' + esc(r.slug) + '?tab=guide" target="_blank" rel="noopener">' + esc(r.name) + '</a><small>' + esc(r.category || '') + '</small>'; } },
+            { k: 'gname', h: 'Guide', w: function (r) { return '<span class="chip">' + esc(r.gname) + '</span>'; } },
+            { k: 'views', h: 'Saw it', n: 1, w: function (r) { return bar(r.views, maxL); } },
+            { k: 'clicks', h: 'Clicked', n: 1, w: function (r) { return fmt(r.clicks); } },
+            { k: 'rate', h: 'Click rate', n: 1, w: function (r) { return rate(r.clicks, r.views); } },
+          ], { noun: 'listings or Guides', sort: { k: 'views' }, empty: 'No one has seen a Guide tab in this period yet.', text: function (r) { return r.name + ' ' + r.category + ' ' + r.gname; } });
       },
       members: function (d) {
         var m = d.internal.members || {}, rows = (m.by_day || []).slice().reverse();
