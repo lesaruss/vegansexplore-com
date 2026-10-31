@@ -472,6 +472,13 @@ judge whether food is safe by how a place looks online; businesses want marketin
   community night with a coaching sheet.
 - **The pitch**: a presence-gap ranking on the monthly check-ups, then a personal guided page per business (their audit, their site mocked
   on our template, the two-week plan, the price), sent from Sean through business outreach, city by city, with his approval.
+- **A handshake before the ask** (LOCKED by Sean 2026-10-31, "lock it"; canon v8, migration `20261031_branddesk_handshake_canon.sql`;
+  Sean: "is this too heavy of an ask for people who don't even know us?... we need a handshake before we ask them to commit to $500 a
+  month"). 1. **Free**: business outreach's first email gives them their page with the top things from their free restaurant check, no
+  price. 2. **$11**: the Vegan Restaurant Guide (every fix, Or have us do it; the pitch page's Not now offers it too). 3. **The BrandDesk
+  pitch page** only after a sign (clicked their link, claimed, ran the free check, bought the Guide, Have us do it, Talk to someone) or for
+  Sean's warm list; never a cold $500 ask. Outreach starts in the chapters with the biggest gaps and the most signs; every city stays off
+  until Sean turns it on. To build: the free check's top fixes in the first email, and a Signs filter on the pitch list.
 - **They rent the service, they own the assets** (Sean, 2026-10-31: "they paid for those photos... so they have that peace of mind to know
   that if things don't work out, they can always have the pieces to start fresh again somewhere else"; canon v2). Stop paying and the
   website and management stop; what we made is theirs, downloadable at any time, said in the pitch. **The severance package**: their
