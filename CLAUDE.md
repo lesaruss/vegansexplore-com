@@ -553,10 +553,10 @@ judge whether food is safe by how a place looks online; businesses want marketin
   Nothing is charged there.
   **The contract and Stripe** (built 2026-10-31; Sean: "approve both", test mode first and the agreement as a draft for the lawyer;
   migration `20261031_branddesk_accounts.sql`, edge function `ve-branddesk`). **`/business/agreement`** (`business/agreement.html`,
-  `noindex`) is the Managed Marketing Agreement, version `2026-10-31-draft` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together),
-  written from the locked terms, its open questions in yellow notes with the answer written in (30 days' notice after 12 months; on an
-  early end only the unpaid setup is owed; work pauses 14 days after a missed payment, the agreement may end at 30; Florida law), marked
-  Draft for legal review. **`/business/managed?listing=<slug>`** (`business/managed.html`, `noindex`; the reveal's I'm ready lands here)
+  `noindex`) is the Managed Marketing Agreement, version `2026-10-31` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together, and
+  a change is a new version), written from the locked terms (30 days' notice after 12 months; on an early end only the unpaid setup is
+  owed; work pauses 14 days after a missed payment, the agreement may end at 30; Florida law). Approved by Sean 2026-10-31 ("I was able
+  to review it, and I'm okay with the terms"); it has no liability or indemnity clause. **`/business/managed?listing=<slug>`** (`business/managed.html`, `noindex`; the reveal's I'm ready lands here)
   is three steps (`?step=`): Your plan (the setup at once, in 3 x $500 or 6 x $250; social +$500; what is due today and each month),
   The agreement (the key points, the full text, full name typed and I agree ticked), Review and pay (Stripe Checkout). Back with
   `&status=done` it waits for the account and welcomes them; a client already with us sees their plan and can **Pause** (1 to 3 months)
@@ -569,8 +569,10 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (from the next billing date, $99 for the months asked, then back, at most 3 months in 12, not while the setup is being paid);
   `cancel` (super admin) ends at the period's end and says what setup is still owed. The function pins `Stripe-Version` 2024-06-20 (the
   LESARUSS test account's default answers schedules with `plans`). The return trip and ve-stripe-webhook (`metadata.type` `ve_branddesk`,
-  `confirm_fn` `ve-branddesk`) activate the account once and email the client and the team. **Test mode** (the LESARUSS test key) until
-  `branddesk.live` is true: Sean's go-live word after he reads the agreement. Proven 2026-10-31 in test mode through `ops_test_activate`
+  `confirm_fn` `ve-branddesk`) activate the account once and email the client and the team. **Live since 2026-10-31** (Sean: "go live"):
+  `branddesk.live` true, the Vegans Explore Stripe key; false puts it back on the LESARUSS test key. Checked live the same day as a super
+  admin on Sobe Vegan (setup in 3 with social: a live session for $1,500 due today), the session expired and the row removed. `allowed`
+  is empty, so checkout opens only for super admins until Sean opens a listing (`ve-branddesk` `allow`). Proven 2026-10-31 in test mode through `ops_test_activate`
   (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
   full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a
   second refused, cancelled cleanly; cancel reported $1,000 still owed; a real Checkout session opened, an unpaid return went back as
