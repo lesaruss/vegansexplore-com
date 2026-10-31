@@ -81,8 +81,10 @@
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/liz/restaurant-guide/';
   var CLIPS = {}, CLIPS_M = {};
   ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = { video: CLIP_BASE + 'rg-' + k + '.mp4?v=1', poster: CLIP_BASE + 'rg-poster-' + k + '.jpg?v=1' }; });
-  // Re-recorded 2026-10-31 (Sean): "lives here" became "is right here" / "is here"; raise a clip's number on every re-record.
-  var CLIP_V = { audit: 2, pulse: 2, mylist: 2 };
+  // Re-recorded 2026-10-31 (Sean): "lives here" became "is right here" / "is here". The same day Sean found the lip sync
+  // inconsistent ("it has the opposite effect"), so these three are Liz's still picture with her voice. Raise a clip's number on
+  // every re-record.
+  var CLIP_V = { audit: 3, pulse: 3, mylist: 3 };
   ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'rg-m-' + k + '.mp4?v=' + (CLIP_V[k] || 1), poster: CLIP_BASE + 'rg-poster-m-' + k + '.jpg?v=' + (CLIP_V[k] || 1) }; });
   CLIPS.join_credit = { video: CLIP_BASE + 'rg-join-c.mp4?v=1', poster: CLIP_BASE + 'rg-poster-join-c.jpg?v=1' };
   // The first page shows her arms folded with an open smile (the playbook), before the tour starts.
