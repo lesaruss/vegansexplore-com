@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Managed Marketing — Vegans Explore</title>
+  <meta name="description" content="Sign up for managed marketing from Vegans Explore: your plan, the agreement, and a secure checkout.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://vegansexplore.com/business/managed">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- BrandDesk sign-up (canon canon-ve-front-of-house; built 2026-10-31): the reveal's "I'm ready" lands here.
+       /business/managed?listing=<slug>[&step=1|2|3][&status=done|cancelled|unpaid], or ?preview=plan|agreement|pay|done|client|closed|signin. Three steps (your plan, the agreement, pay), then
+       Stripe Checkout through ve-branddesk; a client already with us sees their plan and can pause. Live since 2026-10-31 (test mode only if branddesk.live is turned off). -->
+  <style>
+    :root{--g:#1E7A3E;--gd:#14532D;--soft:#EAF4EC;--line:rgba(0,0,0,.12);}
+    body{margin:0;background:#fff;color:#14261a;font-family:Montserrat,system-ui,sans-serif;}
+    main{padding:40px 40px 80px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 6px;}
+    h1{font-size:clamp(28px,3.4vw,42px);font-weight:900;margin:0 0 10px;line-height:1.1;}
+    .lede{font-size:16px;line-height:1.6;max-width:860px;color:rgba(0,0,0,.75);margin:0 0 20px;}
+    .test{background:#FFF4D6;border:1px solid #F1D28A;border-radius:10px;padding:10px 14px;font-size:13.5px;margin:0 0 20px;max-width:860px;}
+    .steps{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px;}
+    .steps span{font-size:13px;font-weight:800;padding:8px 12px;border-radius:6px;background:#f3f4f2;color:rgba(0,0,0,.55);}
+    .steps span.on{background:var(--g);color:#fff;}.steps span.done{background:var(--soft);color:var(--gd);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;}
+    .opt{border:1.5px solid var(--line);border-radius:12px;padding:16px 18px;cursor:pointer;display:block;}
+    .opt.on{border-color:var(--g);background:var(--soft);}
+    .opt input{margin-right:8px;accent-color:var(--g);}
+    .opt b{font-size:16px;}.opt p{margin:6px 0 0;font-size:14px;line-height:1.5;color:rgba(0,0,0,.7);}
+    .opt strong{display:block;font-size:24px;font-weight:900;color:var(--g);margin-top:6px;}
+    h2{font-size:20px;font-weight:900;margin:26px 0 12px;}
+    .sum{border:1px solid var(--line);border-radius:12px;padding:16px 18px;max-width:640px;font-size:15px;}
+    .sum div{display:flex;justify-content:space-between;gap:16px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,.06);}
+    .sum div:last-child{border:0;}.sum .tot{font-weight:900;font-size:17px;}
+    ul.keys{max-width:860px;padding-left:20px;}ul.keys li{font-size:15px;line-height:1.6;margin:0 0 6px;}
+    label.f{display:block;font-weight:700;font-size:14px;margin:16px 0 0;max-width:520px;}
+    label.f input{display:block;width:100%;box-sizing:border-box;margin-top:6px;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 12px;font:inherit;font-weight:500;}
+    label.ck{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-size:14.5px;line-height:1.5;max-width:860px;cursor:pointer;}
+    label.ck input{margin-top:3px;width:18px;height:18px;accent-color:var(--g);flex:none;}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:28px;max-width:860px;}
+    .nav small{font-weight:800;color:rgba(0,0,0,.55);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:12px 22px;border-radius:6px;border:2px solid var(--g);background:var(--g);color:#fff;font:800 15px/1 inherit;font-family:inherit;cursor:pointer;text-decoration:none;}
+    .btn.ghost{background:#fff;color:var(--g);}.btn[disabled]{opacity:.6;cursor:wait;}
+    .err{color:#B42318;font-weight:700;font-size:14px;margin:12px 0 0;min-height:1em;}
+    .box{border:1px solid var(--line);border-radius:12px;padding:18px 20px;max-width:860px;font-size:15px;line-height:1.6;}
+    .box + .box{margin-top:14px;}
+    .tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;background:var(--soft);color:var(--gd);}
+    select{appearance:none;-webkit-appearance:none;min-height:46px;border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 44px 10px 12px;font:inherit;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23555' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    @media(max-width:700px){main{padding:24px 16px 60px;}}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main id="app"><p>Loading...</p></main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-managed.js" defer></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+  var app = document.getElementById('app');
+  var q = new URLSearchParams(location.search), SLUG = q.get('listing') || '';
+  // Preview (Depot > Preview journeys > BrandDesk): ?preview=plan|agreement|pay|done|client|closed|signin shows that screen for the
+  // sample business with a sample owner, signed out; nothing is saved, sent or charged.
+  var PV = q.get('preview') || '';
+  if (PV) SLUG = 'sample';
+  var KEY = 've_bd_choice_' + SLUG, P = null;
+  var C = { setup: 'full', social: false, name: '', agree: false };
+  if (PV) C = { setup: '3', social: true, name: 'Alex Rivera', agree: true };
+  else try { Object.assign(C, JSON.parse(sessionStorage.getItem(KEY) || '{}')); } catch (e) {}
+  if (PV) {
+    P = { ok: true, test: false, allowed: PV !== 'closed', listing: { name: 'Green Leaf Kitchen', slug: 'sample', city: 'Fort Lauderdale' }, managed: PV === 'client', agreement_version: '2026-10-31',
+      amounts: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900 },
+      account: PV === 'client' || PV === 'done' ? { id: 'sample', status: 'active', setup_plan: 'full', social: true, activated_at: new Date().toISOString(), pause_from: null } : null };
+    if ({ plan: 1, agreement: 2, pay: 3 }[PV]) q.set('step', { plan: 1, agreement: 2, pay: 3 }[PV]);
+    var bar = document.createElement('div'); bar.className = 'test'; bar.style.margin = innerWidth <= 700 ? '16px 16px 0' : '24px 40px 0';
+    bar.innerHTML = '<b>Preview.</b> The sample business, Green Leaf Kitchen, with a sample owner. Nothing is saved, sent or charged.';
+    app.parentNode.insertBefore(bar, app);
+  }
+  function save() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function $(c) { return (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: c % 100 ? 2 : 0 }); }
+  function token() { if (PV) return PV === 'signin' ? '' : 'preview'; try { return VEAuth.isLoggedIn() ? VEAuth.getToken() : ''; } catch (e) { return ''; } }
+  function call(body) {
+    var t = token();
+    return fetch(FN, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, t ? { Authorization: 'Bearer ' + t } : {}), body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); });
+  }
+  function step() { var s = +(q.get('step') || 1); return s >= 1 && s <= 3 ? s : 1; }
+  function go(s) { if (PV) { q.set('step', s); draw(); window.scrollTo(0, 0); return; } q.set('step', s); q.delete('status'); history.pushState(null, '', location.pathname + '?' + q); draw(); window.scrollTo(0, 0); }
+  window.addEventListener('popstate', function () { q = new URLSearchParams(location.search); draw(); });
+
+  function head(lede) {
+    return '<div class="k">Managed marketing</div><h1>' + esc(P ? P.listing.name : 'Managed marketing') + '</h1>' + (lede ? '<p class="lede">' + lede + '</p>' : '') +
+      (P && P.test ? '<div class="test"><b>Test mode.</b> No real card is charged. Use Stripe\'s test card 4242 4242 4242 4242, any future date and any CVC.</div>' : '');
+  }
+  function talk() { return '<button type="button" class="btn ghost" data-managed="business" data-business="' + esc(P ? P.listing.name : '') + '" data-listing="' + esc(SLUG) + '">Talk to our team</button>'; }
+  function totals() {
+    var A = P.amounts, n = C.setup === '3' ? 3 : C.setup === '6' ? 6 : 0;
+    var setupNow = n === 3 ? A.setup3 : n === 6 ? A.setup6 : A.setup, monthly = A.monthly + (C.social ? A.social : 0);
+    return { n: n, today: monthly + setupNow, monthly: monthly, inst: n ? setupNow : 0 };
+  }
+  function summary() {
+    var t = totals(), A = P.amounts;
+    return '<div class="sum"><div><span>Managed marketing, monthly</span><b>' + $(A.monthly) + '</b></div>' +
+      (C.social ? '<div><span>Social media, two platforms</span><b>' + $(A.social) + '</b></div>' : '') +
+      '<div><span>Setup' + (t.n ? ', payment 1 of ' + t.n : '') + '</span><b>' + $(t.n ? t.inst : A.setup) + '</b></div>' +
+      '<div class="tot"><span>Due today</span><span>' + $(t.today) + '</span></div>' +
+      '<div><span>Then each month</span><b>' + $(t.monthly + t.inst) + (t.n ? ' for ' + (t.n - 1) + ' more month' + (t.n > 2 ? 's' : '') + ', then ' + $(t.monthly) : '') + '</b></div></div>';
+  }
+  function stepsBar(s) {
+    return '<div class="steps">' + ['Your plan', 'The agreement', 'Review and pay'].map(function (n, i) { return '<span class="' + (i + 1 === s ? 'on' : i + 1 < s ? 'done' : '') + '">' + (i + 1) + '. ' + n + '</span>'; }).join('') + '</div>';
+  }
+  function navRow(s, nextLabel) {
+    return '<p class="err" id="err" aria-live="polite"></p><div class="nav">' + (s > 1 ? '<button type="button" class="btn ghost" data-back>Back</button>' : '<span></span>') +
+      '<small>Step ' + s + ' of 3</small><button type="button" class="btn" data-next>' + nextLabel + '</button></div>';
+  }
+
+  function viewPlan() {
+    var A = P.amounts;
+    var opts = [['full', 'Pay the setup now', 'All at once.', $(A.setup)], ['3', 'In 3 payments', 'Over your first 3 months.', '3 x ' + $(A.setup3)], ['6', 'In 6 payments', 'Over your first 6 months.', '6 x ' + $(A.setup6)]];
+    return head('A real person on our team does the hard parts: your website, Google, photos, your brand and a campaign every month. You keep your brand kit up to date.') + stepsBar(1) +
+      '<h2>How you want to pay the $1,500 setup</h2><div class="grid">' + opts.map(function (o) {
+        return '<label class="opt' + (C.setup === o[0] ? ' on' : '') + '"><input type="radio" name="setup" value="' + o[0] + '"' + (C.setup === o[0] ? ' checked' : '') + '><b>' + o[1] + '</b><p>' + o[2] + '</p><strong>' + o[3] + '</strong></label>';
+      }).join('') + '</div>' +
+      '<h2>Add social media?</h2><div class="grid"><label class="opt' + (C.social ? ' on' : '') + '"><input type="checkbox" name="social"' + (C.social ? ' checked' : '') + '><b>Social media, two platforms</b><p>We plan, make and post on two platforms you pick.</p><strong>+' + $(A.social) + ' a month</strong></label></div>' +
+      '<h2>What you pay</h2>' + summary() + navRow(1, 'Next');
+  }
+  function viewAgree() {
+    return head('Read the agreement before you sign. Here is what matters most.') + stepsBar(2) +
+      '<ul class="keys"><li><b>12 months</b>, then month to month.</li><li><b>You own what we make</b>: photos, your logo and brand kit, your copy. Your domain, Google profile and social accounts stay yours.</li>' +
+      '<li><b>Leaving early</b>: the service ends at the end of the month you paid for, and any unpaid part of the setup is due.</li>' +
+      '<li><b>Pause</b> up to 3 months a year for $99 a month, once the setup is paid.</li><li><b>When it ends</b>, you get every file and your asset sheet, and 30 days to download anything else.</li></ul>' +
+      '<p><a href="/business/agreement" target="_blank" rel="noopener" style="font-weight:800;color:var(--g)">Read the full Managed Marketing Agreement</a></p>' +
+      '<label class="f">Your full name<input name="name" autocomplete="name" value="' + esc(C.name) + '"></label>' +
+      '<label class="ck"><input type="checkbox" name="agree"' + (C.agree ? ' checked' : '') + '><span>I agree to the Managed Marketing Agreement for ' + esc(P.listing.name) + ', and I am authorized to sign for this business.</span></label>' +
+      navRow(2, 'Next');
+  }
+  function viewPay(note) {
+    return head(note || 'Check it over. The next screen is Stripe\'s secure checkout.') + stepsBar(3) + summary() +
+      '<div class="box" style="margin-top:14px">Signed by <b>' + esc(C.name) + '</b>. Our team confirms you run ' + esc(P.listing.name) + ' before work starts; if not, we refund you in full.</div>' +
+      navRow(3, 'Continue to secure checkout');
+  }
+  function viewMine(a) {
+    var A = P.amounts, plan = a.setup_plan === 'full' ? 'Setup paid in full' : 'Setup in ' + a.setup_plan + ' payments';
+    var paused = a.pause_from ? '<div class="box"><span class="tag">Pause set</span><p>Paused from <b>' + esc(a.pause_from) + '</b> to <b>' + esc(a.pause_until) + '</b>, at ' + $(A.pause) + ' a month. Your site stays up.</p>' +
+      '<button type="button" class="btn ghost" data-unpause>Cancel the pause</button></div>' :
+      '<div class="box"><b>Need a break?</b><p>Pause up to 3 months a year for ' + $(A.pause) + ' a month, starting on your next billing date. Your website and Library stay up.</p>' +
+      '<select id="months"><option value="1">1 month</option><option value="2">2 months</option><option value="3">3 months</option></select> <button type="button" class="btn ghost" data-pause>Pause</button></div>';
+    return head('You are with us. Thank you.') + '<div class="box"><span class="tag">' + (a.status === 'canceling' ? 'Ending at the end of this month' : 'Active') + '</span>' +
+      '<p>' + plan + '. ' + $(A.monthly) + ' a month' + (a.social ? ', plus social media ' + $(A.social) : '') + '. Started ' + esc((a.activated_at || '').slice(0, 10)) + '.</p>' +
+      '<p>To change your plan or give notice, write to contact@lesaruss.com.</p></div>' + (a.status === 'active' ? paused : '') + '<p class="err" id="err"></p>';
+  }
+
+  function draw() {
+    if (!SLUG) { app.innerHTML = head('Open this page from the link we sent you, or tell us about your business and we will reach out.') + talk(); return; }
+    if (!P) { app.innerHTML = '<p>Loading...</p>'; call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.error) { app.innerHTML = head('We could not find that business.') + talk(); return; } P = d; draw(); }); return; }
+    var status = q.get('status');
+    if (PV === 'done') { app.innerHTML = head('Welcome aboard! We sent the details to your email. Someone from our team reaches out within a day to book your welcome call.') + viewMine(P.account).replace(/^[\s\S]*?<div class="box">/, '<div class="box">'); return; }
+    if (status === 'done' && !P.account) {
+      app.innerHTML = head('Payment received. Setting things up...');
+      var tries = 0; (function poll() { call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.account) { P = d; app.innerHTML = head('Welcome aboard! We sent the details to your email. Someone from our team reaches out within a day to book your welcome call.') + viewMine(d.account).replace(/^[\s\S]*?<div class="box">/, '<div class="box">'); return; } if (++tries < 10) setTimeout(poll, 2500); else app.innerHTML = head('Your payment went through. It is taking a moment to show here; we will email you either way.'); }); })();
+      return;
+    }
+    if (P.account) { app.innerHTML = viewMine(P.account); return; }
+    if (P.managed) { app.innerHTML = head(esc(P.listing.name) + ' is already with us. Sign in with the account that signed up to see your plan.'); return; }
+    if (!token()) {
+      app.innerHTML = head('Sign in with the account for your business to continue.') + '<button type="button" class="btn" data-signin>Sign in</button> ' + talk();
+      return;
+    }
+    if (!P.allowed) { app.innerHTML = head('Managed marketing is not open for ' + esc(P.listing.name) + ' yet. We are starting with a small group of restaurants, city by city. Tell us about yours and our team will reach out.') + talk(); return; }
+    var s = step();
+    if (s >= 2 && !C.setup) s = 1;
+    if (s === 3 && !(C.agree && C.name.trim().length >= 3)) s = 2;
+    app.innerHTML = s === 1 ? viewPlan() : s === 2 ? viewAgree() : viewPay(status === 'cancelled' ? 'Checkout was closed. Nothing was charged. Pick up where you left off.' : status === 'unpaid' ? 'The payment did not go through. Nothing was charged. Try again.' : '');
+  }
+
+  app.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.name === 'setup') { C.setup = t.value; save(); draw(); }
+    if (t.name === 'social') { C.social = t.checked; save(); draw(); }
+    if (t.name === 'agree') { C.agree = t.checked; save(); }
+  });
+  app.addEventListener('input', function (e) { if (e.target.name === 'name') { C.name = e.target.value; save(); } });
+  app.addEventListener('click', function (e) {
+    var t = e.target.closest('button'); if (!t) return;
+    var err = document.getElementById('err'), say = function (m) { if (err) err.textContent = m; };
+    if (t.hasAttribute('data-signin')) { VEAuth.showAuthModal('Sign in with the account for your business.', function () { P = null; draw(); }, 'login'); return; }
+    if (t.hasAttribute('data-back')) { go(step() - 1); return; }
+    if (t.hasAttribute('data-next')) {
+      var s = step();
+      if (s === 2 && C.name.trim().length < 3) { say('Type your full name to sign.'); return; }
+      if (s === 2 && !C.agree) { say('Tick the box to agree.'); return; }
+      if (s < 3) { go(s + 1); return; }
+      if (PV) { say('Preview: here the owner goes on to Stripe\'s secure checkout. Nothing is charged.'); return; }
+      t.disabled = true; t.textContent = 'Opening checkout...';
+      call({ action: 'checkout', slug: SLUG, setup: C.setup, social: C.social, agreed_name: C.name.trim(), agree: C.agree, origin: location.origin }).then(function (d) {
+        if (d.url) { location.href = d.url; return; }
+        t.disabled = false; t.textContent = 'Continue to secure checkout'; say(d.message || 'Checkout did not open. Try again in a minute.');
+      }).catch(function () { t.disabled = false; t.textContent = 'Continue to secure checkout'; say('Checkout did not open. Try again in a minute.'); });
+      return;
+    }
+    if (PV && (t.hasAttribute('data-pause') || t.hasAttribute('data-unpause'))) { say('Preview: a pause starts on the next billing date. Nothing is saved.'); return; }
+    if (t.hasAttribute('data-pause') || t.hasAttribute('data-unpause')) {
+      var body = t.hasAttribute('data-pause') ? { action: 'pause', account_id: P.account.id, months: +document.getElementById('months').value } : { action: 'pause_cancel', account_id: P.account.id };
+      t.disabled = true;
+      call(body).then(function (d) { if (d.ok) { P = null; draw(); } else { t.disabled = false; say(d.message || 'That did not go through.'); } });
+    }
+  });
+  draw();
+})();
+</script>
+</body>
+</html>
