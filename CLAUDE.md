@@ -457,6 +457,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   sheet sent at once, a handoff call, 30 days to download, then the library closes and the template site comes down. Every shoot
   agreement assigns copyright to us so we can pass it on; full-size downloads unlock once the setup is paid in full. **Pause**: up to 3
   months a year at $99 a month (V's default), the site and library stay, no management, the $99 to Vegans Explore.
+- **The door, the pitch and the reveal** (Sean, 2026-10-31; canon v3). The Restaurant Guide becomes **The Vegan Restaurant Guide**: what we
+  can do for your Vegan restaurant, $11 makes them a member, a living manual on the Creator Guide's model (every tab what to click, each
+  item Live or Coming), with a **Front of House** demo tab and Launch a product (Coming). A client's **premium listing** wears their brand
+  with a small Managed by Vegans Explore mark and never buys rank. **Prepared audits**: a quick audit on every food place, a presence-gap
+  ranking, the full audit and a person's plan for the next 30 to contact, Sean's warm list first, worded "We looked at your business
+  before we reached out", never dressed as an instant scan. The first page sets the tone (this is a lot; you don't have to carry it; the
+  infrastructure for the Vegan movement; a marketing team from $500 a month); membership is "$11 to get in", never "$11 a month". **The
+  reveal**: a still picture of their own home page on our template, nothing clickable, then **I'm ready** (the setup checkout), **Let me
+  think about it** (they pick a follow-up date) or **Talk to someone** (their Community Manager, else Sean), each landing in the Inbox. The
+  why is prosperity: the movement grows through commerce.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;

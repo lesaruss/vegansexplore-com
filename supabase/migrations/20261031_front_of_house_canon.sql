@@ -34,3 +34,6 @@ where not exists (select 1 from public.playbook_records where slug = 've-front-o
 
 -- v2 (Sean 2026-10-31): the severance package. Applied the same day; body keys severance, leaving, rights, pause, and build extended.
 -- See canon-ve-front-of-house v2 in knowledge_records for the full text, and the playbook_records update row for ve-front-of-house.
+
+-- v3 (Sean 2026-10-31): the Vegan Restaurant Guide, premium listing, prepared audits, first page, reveal. Applied the same day
+-- (body keys mission, guide, premium_listing, incubator, prepared_audits, first_page, reveal; build replaced).
