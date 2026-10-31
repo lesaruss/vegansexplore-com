@@ -60,18 +60,18 @@
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. This Guide shows what may be quietly hurting your restaurant, and how to fix it. Start with a free check of your business.',
       sayMember: 'Welcome in. Start with your free check. The fixes, the interviews and the promotions all line up around what it finds.' },
     { k: 'audit', label: 'Your audit', say: 'Pick your business and I\'ll check your Google listing, website, search and social, then list what you can fix right away. Free.',
-      sayMember: 'Your free check lives here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
+      sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
     { k: 'fixes', label: 'The fixes', lock: 1, say: 'These are the mistakes that close Vegan restaurants, from location to burnout, each with what to do instead. One is open for you to try.',
       sayMember: 'Here are your fixes, in the order your audit puts them. Each shows what to do this week. Save the ones you\'re working on.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Here are our interviews with Vegan business owners: what worked, what didn\'t, and the research behind it. New ones keep coming.',
-      sayMember: 'Every business interview we\'ve recorded lives here, with the research. Play any of them right here. We keep adding more.' },
+      sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
     { k: 'featured', label: 'Get featured', say: 'Being great isn\'t enough if no one can find you. Here\'s how the Directory works, and how restaurants get featured.',
       sayMember: 'Here\'s your Directory page. Claim it, keep your hours and photos fresh, and see who\'s finding you on your Partner Dashboard.' },
     { k: 'promos', label: 'Promotions', say: 'We run campaigns, events, features and ads that bring members through your door. Here\'s what each one does for a restaurant.',
       sayMember: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.' },
     { k: 'quiz', label: 'Test yourself', lock: 1, say: 'When you\'ve worked through the fixes, take the quiz. Pass it and you earn the Entrepreneur Track badge.',
       sayMember: 'Ready? Take the quiz. Score eighty percent or better and the Entrepreneur Track badge is yours.' },
-    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: fixes, interviews and promotions, so you can pick up where you left off.' },
+    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: fixes, interviews and promotions, so you can pick up where you left off.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'Get the whole Guide for eleven dollars, or one Guide credit. It\'s yours to keep, and it keeps growing.',
       sayCredit: 'You have a Guide credit. Use it here and the whole Guide is yours to keep.',
       // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
@@ -81,7 +81,11 @@
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/liz/restaurant-guide/';
   var CLIPS = {}, CLIPS_M = {};
   ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = { video: CLIP_BASE + 'rg-' + k + '.mp4?v=1', poster: CLIP_BASE + 'rg-poster-' + k + '.jpg?v=1' }; });
-  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'rg-m-' + k + '.mp4?v=1', poster: CLIP_BASE + 'rg-poster-m-' + k + '.jpg?v=1' }; });
+  // Re-recorded 2026-10-31 (Sean): "lives here" became "is right here" / "is here". The same day Sean found the lip sync
+  // inconsistent ("it has the opposite effect"), so these three are Liz's still picture with her voice. Raise a clip's number on
+  // every re-record.
+  var CLIP_V = { audit: 3, pulse: 3, mylist: 3 };
+  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'rg-m-' + k + '.mp4?v=' + (CLIP_V[k] || 1), poster: CLIP_BASE + 'rg-poster-m-' + k + '.jpg?v=' + (CLIP_V[k] || 1) }; });
   CLIPS.join_credit = { video: CLIP_BASE + 'rg-join-c.mp4?v=1', poster: CLIP_BASE + 'rg-poster-join-c.jpg?v=1' };
   // The first page shows her arms folded with an open smile (the playbook), before the tour starts.
   CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=1';
