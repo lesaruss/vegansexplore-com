@@ -706,6 +706,24 @@ judge whether food is safe by how a place looks online; businesses want marketin
   away and a 900 m fix refused, I'm here at 23 m, one photo and no meal answer refused, submitted, approved for 150 points with 3 photos in
   the Library, next week posted by the cron, a non-admin refused), then removed. Not yet: crediting the best photos on the listing and our
   socials, and the scouting list (members whose visits keep being approved, toward Ambassador and the Gig Board).
+  **The monthly check-in and report** (built 2026-10-31; migration `20261031_branddesk_checkins.sql`). One `ve_branddesk_checkins` row a
+  client a month (RLS on, no policies). Cron `ve-branddesk-checkins` (13:07 UTC daily, `ve-branddesk` `checkin_sweep`, x-cron-secret) opens
+  this month's for every active or canceling client that joined before the month began, assigned to the chapter's active Community Manager
+  (else the team inbox), and emails them the link; from the 10th, one reminder if it is not sent. **`/business/checkin`** (`business/checkin.html`,
+  `noindex`): with no id, the person's check-ins; `?id=<check-in>&step=1..4`, one step per view, Save and next: How the month went (how it was,
+  required; busiest and quiet times; what sold best, required; what customers said), What's coming (menu changes, hours and closures, what they
+  host), Next month (the campaign from the rotation, required; what they thought of our work; what they need), then **The report**: what the
+  month meant and what we do next (both required) beside the report as the owner sees it, Save draft, **Send it to them**. Questions are
+  `CHECKIN_STEPS` in `ve-branddesk` (Logan's defaults, Sean's to change). Who: a super admin, the assigned Community Manager or the chapter's
+  (`checkinTeam`). Sending freezes the month's numbers (`ve_branddesk_month_numbers(listing, from, to)`: page views, people, what they did next
+  by kind, member check-ins, approved member visits, new Library files, against the month before), emails the owner the summary with a link,
+  and the report opens on their dashboard: **Managed by us > Monthly reports** (`&bd=reports&r=<id>`, `VEBrandDesk.reportHtml`; the owner reads
+  only sent ones). In Depot > BrandDesk a client's Monthly reports has **Open this month's check-in** (`checkin_start`). Actions `checkin_list`,
+  `checkin_get`, `checkin_save`, `checkin_send`. The sample business shows last month's made-up report; Preview journeys > BrandDesk has the
+  check-in (`?preview=1`) and the report. Proven 2026-10-31 on a [TEST] client (opened by the cron, a wrong secret refused, the reminder once,
+  the owner refused before sending and when editing, a missing answer and an off-list choice refused, sent with the numbers frozen, the owner
+  reading it and seeing it in their reports, a change after sending refused), then removed. Not yet: Google and social numbers in the report
+  (the page says they join as we connect them), and a Community Manager's view of all their accounts beyond the check-in list.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
@@ -716,7 +734,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties (built 2026-10-31), the monthly check-in and report, the rotation. Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties and the monthly check-in and report (built 2026-10-31), the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
