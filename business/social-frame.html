@@ -11,7 +11,8 @@
   target for Vegans Explore's own posts that are not the podcast's (the podcast's are business/podcast-frame.html). No nav or footer:
   listed under the exceptions in CLAUDE.md. The social studio screenshots it at the kind's size.
     ?kind=cover  &title= &sub= &kicker= &city=<hub slug>          a carousel's first slide (1080 x 1350)
-    ?kind=guide  &g=<guide slug> &city=<hub slug> &n= &of=          one Guide on a chapter's art (1080 x 1350)
+    ?kind=guide  &g=<guide slug> &city=<hub slug> &n= &of= &price=  one Guide on a chapter's art (1080 x 1350); the price
+                                                                    reads $11 (Sean, 2026-10-31: points only where members are)
     ?kind=end    &title= &sub= &city=                               a carousel's last slide (1080 x 1350)
   Every slide wears a different chapter's art, so the posts show the cities, and a Guide's card is its Guide in a scene (communities/social/scene-<guide>.webp,
   Sean 2026-10-31: "images that look more like a scene versus them standing behind a white background"; never a podcast picture). The Guides' words match ads/guides/guide.html (G there); change both together. No counts in a Guide's words.
@@ -79,7 +80,7 @@
       '<div class="city">Our <b>' + esc(city[0]) + '</b> chapter</div>' +
       '<div class="card" style="top:190px"><div class="art" style="background-image:url(\'' + esc(g[1]) + '\')"></div>' +
       '<div class="body"><div class="name">' + esc(g[0]) + '</div><div class="line">' + esc(g[2]) + '</div>' +
-      '<span class="price">$11 or 1,100 points</span></div></div>' + bar;
+      '<span class="price">' + esc(q.get('price') || '$11') + '</span></div></div>' + bar;
   } else {
     var title = q.get('title') || 'Find your Guide', sub = q.get('sub') || '', kicker = q.get('kicker') || '';
     html = '<div class="shade" style="background:linear-gradient(180deg,rgba(15,31,20,.88) 0%,rgba(15,31,20,.55) 45%,rgba(15,31,20,.2) 70%,rgba(15,31,20,.7) 100%)"></div>' +
