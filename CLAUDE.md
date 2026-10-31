@@ -1889,7 +1889,8 @@ Directory is their chapter's).
   The line under the title is the section and, where it applies, the location ("Food · South Florida"); the banner wears the
   chapter's art (`VECityBanner` `setArt(slug)`, which leaves the picker alone).
 - **The row under the banner is the section's sub-sections** (`.vrd-subtabs`, the pills as tabs; the section tab row is hidden,
-  `.vrd-menu-out`), out of the filter. On phones it scrolls sideways.
+  `.vrd-menu-out`), out of the filter. On phones (768 px and under) it is one full-width dropdown (`.vrd-subsel`, which clicks the
+  matching tab and follows it), never a sideways scroll (Sean, 2026-10-31: "a little clanky").
 - **The filter button reads Filters** with how many are set, wider, 16px after the search (every page with the component, hubs too).
 - **Location is first in the filter** (`config.location = {initial, onChange(loc, hub)}`): Continent, Country, Chapter
   (`VE_HUBS[].continent`, `.country`, set in `ve-hubs.js` from `WHERE`; a chapter in a new country adds its state code there),
