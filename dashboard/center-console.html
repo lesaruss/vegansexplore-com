@@ -3694,7 +3694,7 @@
   // The inbox (Sean, 2026-10-30). Every request, newest first, filtered by Open, Late, Not opened, Done and All; a row opens the
   // request in a lightbox, which counts as opened when its assignee (the chapter's Community Manager, else the team) opens it.
   var IB_TABS = [['open', 'Open'], ['late', 'Late'], ['new', 'Not opened'], ['done', 'Done'], ['all', 'All']];
-  var ibTab = 'open', ibRows = [], ibMember = null, ibBody = null, ibTitle = null, ibSel = null;
+  var ibTab = 'open', ibPicked = false, ibRows = [], ibMember = null, ibBody = null, ibTitle = null, ibSel = null;
   function ibClock(r) {
     var h = function (ms) { var x = Math.abs(ms) / 3600000; return x < 1 ? Math.max(1, Math.round(x * 60)) + ' min' : (x < 48 ? Math.round(x) + ' h' : Math.round(x / 24) + ' days'); };
     if (r.status === 'replied') return { text: 'Replied in ' + (r.reply_hours < 1 ? Math.max(1, Math.round(r.reply_hours * 60)) + ' min' : r.reply_hours + ' h'), late: r.reply_hours > 24 };
@@ -3709,7 +3709,7 @@
     return dpDataCard('Inbox', null, function (token, body, t) {
       ibBody = body; ibTitle = t;
       ibSel = document.createElement('select'); ibSel.className = 'dash-ib-filter'; ibSel.setAttribute('aria-label', 'Filter the inbox');
-      ibSel.addEventListener('change', function () { ibTab = ibSel.value; drawInbox(); });
+      ibSel.addEventListener('change', function () { ibTab = ibSel.value; ibPicked = true; drawInbox(); });
       t.parentNode.appendChild(ibSel);
       renderInbox(ibMember);
     });
@@ -3721,6 +3721,9 @@
     dvCall({ action: 'inbox' }).then(function (d) {
       if (!d || !d.ok) { ibBody.innerHTML = '<p class="dash-preview-empty">Couldn\'t load the inbox.</p>'; return; }
       ibRows = d.rows || [];
+      // Open first; with nothing open, All, so the box never reads empty when there is history (Sean, 2026-10-31). A filter picked
+      // by hand stays for the visit.
+      if (!ibPicked) ibTab = ibRows.some(function (r) { return r.status === 'new' || r.status === 'opened'; }) ? 'open' : 'all';
       drawInbox();
     });
   }

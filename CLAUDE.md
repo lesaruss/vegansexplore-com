@@ -3356,7 +3356,8 @@ one: assigned to the chapter's active Community Manager (the request's chapter, 
 **Opened** only when that person opens it (with no Community Manager, a super admin); **Replied** or **Closed, no reply needed**, by
 hand (`ve-dashboard` `inbox`, `inbox_open`, `inbox_set`). The reply clock is **24 hours from when it came in** ("no more than... 24
 hours... sooner the better", `INBOX_DUE_HOURS`); the head shows open, late and the average reply time, which is how a Community
-Manager's work will be measured. Filter Open, Late, Not opened, Done, All; a row opens the request in a window (who, chapter,
+Manager's work will be measured. Filter Open, Late, Not opened, Done, All (it opens on Open, or on All when nothing is open, Sean
+2026-10-31; a filter picked by hand stays for the visit); a row opens the request in a window (who, chapter,
 assigned to, opened, reply by, a team note, the reply box, Mark replied, Close, Open where it came in). **Replying from the Inbox**
 (Sean, 2026-10-30: "go with your recommendation"; migration `20261030_ve_inbox_replies.sql`): the window's **Reply to <name>** (a
 subject and the message, a blank line a new paragraph) sends an email from VEGANS EXPLORE <hello@vegansexplore.com>, signed with the
