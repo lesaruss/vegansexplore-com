@@ -1934,7 +1934,7 @@ length, read again after 6 hours on a visit or by the same hourly `refresh` (10 
 five series are listed (`site` meatlessmuscle.com); her pages read it and keep their typed list as the fallback. YouTube refuses our server its channel pages (a blank page) and its RSS feeds (404
 for every channel, Google's own included; checked 2026-10-29), so it reads YouTube's Data API v3 with `YOUTUBE_API_KEY`, else
 `GOOGLE_PLACES_API_KEY` (Sean turned the YouTube Data API on for it the same day). A News Outlet with a channel gets the same page
-(`isYouTubeL`: Plant Based News, which also shows under YouTube). **The first 12** (migration `20261029_youtube_channels.sql`, each found
+(`isYouTubeL`; Plant Based News was one until 2026-10-30, now split into a News Outlet and a YouTube listing, below). **The first 12** (migration `20261029_youtube_channels.sql`, each found
 through `resolve`, its About written from the channel's own description, links only the ones the channel publishes, its own picture as the
 logo): Pick Up Limes, Rainbow Plant Life, Mic the Vegan, NutritionFacts.org, Earthling Ed (YouTube) (one listing a name: his People profile is
 Earthling Ed), Sweet Simple Vegan, Cheap Lazy Vegan, Simnett Nutrition, BOSH!, Sarah's Vegan Kitchen, The Happy Pear (from the May import)
@@ -1950,9 +1950,23 @@ once from their home page (`<link rel="alternate">`, then /feed/, /rss, /index.r
 (`admin_feed`). The latest 100 are kept in `ve_outlet_feeds`, read again after 3 hours. **A general outlet shows only its Vegan and animal
 stories** (`details.news_filter` `vegan`, `VEGAN_RE` in the function, English and Spanish), and with none the section stays hidden: WLRN,
 WPTV, CBS 12, Diario Las Américas, Miami's Community Newspapers, Westside Gazette and Las Olas Insider. Vegan outlets show every story.
-On 2026-10-30: VegNews, Plant Based News, Sentient Media, VegWorld, WPTV, CBS 12 (its local feed, `cbs12.com/news/local.rss`, which its
-home page does not name), Las Olas Insider and Miami's Community Newspapers showed stories; Diario Las Américas (`rss/pages/lo-ultimo.xml`)
-and Westside Gazette had none that matched; VegOut's and WLRN's feeds are published empty and UnchainedTV has none.
+On 2026-10-30: VegNews, Plant Based News, Sentient Media, UnchainedTV (its feed is on unchainedtv.com, `latest-news/feed/`, which
+the listing's unchained.tv does not name), WPTV, CBS 12 (its local feed, `cbs12.com/news/local.rss`, which its home page does not name),
+Las Olas Insider and Miami's Community Newspapers showed stories; Diario Las Américas (`rss/pages/lo-ultimo.xml`) and Westside Gazette had
+none that matched; WLRN's feed is published empty. **The cleanup the same day** (Sean, 2026-10-30; migration
+`20261030_news_outlets_cleanup.sql`, run through the one-time `ve-once-news-outlets`, now the 410 stub): the seven local outlets had been
+hidden from Vegans Explore by the LESARUSS.ai tag `lesaruss-ai-directory-candidate` (which the Directory and Media leave out); it came off,
+so they showed here, and their How Vegan was cleared (they are not Vegan outlets). **Then six went back to LESARUSS.ai only** (Sean,
+the same day: "I'm not sure exactly why they're there... for Lasaris AI"; they were made 2026-10-29 by a Google Places search for
+LESARUSS.ai; migration `20261030_local_outlets_back_to_lesaruss_ai.sql`, run through `ve-once-outlets-lr`, now the 410 stub): Diario Las
+Américas, Las Olas Insider, Miami's Community Newspapers, Westside Gazette, CBS 12 and WPTV carry the candidate tag again. **WLRN stays
+on both** (it has had Susan Hargreaves on). **A news outlet leads its family's tabs** under its own name (`familyKind` -1 in
+`directory/listing.html`; Sean: "Let's put the plant-based news tab first, because that's their main thing"): Plant Based News, Podcast,
+YouTube, then the page's own tabs and Partner Dashboard. VegOut ("not that active anymore") and VegWorld (latest story February 23, 2026) were Removed (Directory review's Removed list
+puts them back). **Plant Based News is two listings** (Sean: "that should be the default when you look on news outlets and not their
+YouTube channel. When you're on YouTube, you should see their YouTube channel"): the News Outlet (`plant-based-news`, its stories, the
+votes) and **Plant Based News (YouTube)** (`plant-based-news-youtube`, the channel and its `ve_youtube_feeds` row), linked as the family
+`plant-based-news` with its podcast.
 
 **Linked pages** (Sean, 2026-10-29: "his overview page and then have a tab for his podcast and then have a tab for his other thing... it
 just goes to those pages... you see the URL change as well. All that is cross discovery, and it doesn't bog down his page"; migration

@@ -1704,7 +1704,9 @@ function loadFilmPods(l){
 // Shared shows (Sean, 2026-10-30: "the podcast and YouTube channels, they should be able to be shared by multiple people because
 // sometimes there's multiple people on the podcast"): a listing can also belong to other families, details.families. A person's page
 // lists every show they share; the shared show's own page lists only its people and itself (not each host's books or channel).
-function familyKind(x){ return isPersonL(x) ? 0 : x.category === 'Podcasts' ? 1 : isYouTubeL(x) ? 2 : x.category === 'Books' ? 3 : 4; }
+// A news outlet leads its family, its own name as the tab (Sean, 2026-10-30, Plant Based News: "that's their main thing. So that tab
+// should be first"), so it sorts before the people.
+function familyKind(x){ return x.category === 'News Outlets' && !isYouTubeL(x) ? -1 : isPersonL(x) ? 0 : x.category === 'Podcasts' ? 1 : isYouTubeL(x) ? 2 : x.category === 'Books' ? 3 : 4; }
 function loadFamily(l){
   var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
   var fams = [d.family].concat(Array.isArray(d.families) ? d.families : []).filter(function(f, i, all){
@@ -1729,7 +1731,7 @@ function loadFamily(l){
       var items = []; rows.forEach(function(x){ if(familyKind(x) !== 3 || !BOOKS) items.push(x); else if(items.indexOf(BOOKS) < 0) items.push(BOOKS); });
       var WORD = ['Overview', 'Podcast', 'YouTube', 'Book'];
       var count = {}; items.forEach(function(x){ if(x.books) return; var k = familyKind(x); count[k] = (count[k] || 0) + 1; });
-      function label(x){ if(x.books) return 'Books'; var k = familyKind(x); return count[k] > 1 || k > 3 ? x.name : WORD[k]; }
+      function label(x){ if(x.books) return 'Books'; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
       var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id; })[0];
       var at = items.indexOf(mine);
       ov.textContent = label(mine);
