@@ -2162,6 +2162,9 @@ function renderSidebar(l){
       '<a class="bb-cta" href="/partners">Your ad here<span>Advertise with Vegans Explore</span></a>'+
     '</div>';
   if(VB) billboardHtml = '';
+  // A Guide banner in the right column of every other listing, in place of the billboard's ad (Sean, 2026-10-31: "that's the only
+  // banner on the right-hand side... remove the humble cabbage"); filled by guideBanner. A brand page keeps its own.
+  var houseHtml = VB ? '' : '<div id="ve-house-banner"></div>';
 
   // A brand page keeps its right column for the ad (Sean, 2026-10-08: "keep the right hand side for advertisement...
   // the shorter ad... stationary throughout that page").
@@ -2175,7 +2178,7 @@ function renderSidebar(l){
       '<div id="pp-promo"></div>'+
       (site ? '<div class="side-card"><div class="side-card-title">Website</div>'+site+'</div>' : '')+
       (socials.length ? '<div class="side-card"><div class="side-card-title">Follow</div><div class="social-row">'+socials.join('')+'</div></div>' : '')+
-      communityCard+billboardHtml+'</div>';
+      communityCard+'</div>';
   }
   if(l._brandSite) return '<div class="listing-sidebar bsite-rail">'+(l._campaign ? campaignSideCard(l._campaign) : '')+'<div class="bsite-nf" id="bsite-nf" hidden></div>'+billboardHtml+'</div>';
   return '<div class="listing-sidebar">'+
@@ -2185,7 +2188,7 @@ function renderSidebar(l){
     (deliveryPills ? '<div class="side-card"><div class="side-card-title">Delivery</div><div class="social-row">'+deliveryPills+'</div></div>' : '')+
     collabBadges+
     communityCard+
-    billboardHtml+
+    houseHtml+
     claimSection+
     '<div id="ve-owner-verified"></div>'+
     '</div>';
@@ -3004,7 +3007,7 @@ function ppPromo(l){
   var creator = l.category === 'Content Creators' || (l.extra_categories || []).indexOf('Content Creators') >= 0;
   function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug, form: !creator }); }
   if(window.VEPromo) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-promo.js'; s.onload = go; document.head.appendChild(s);
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=2'; s.onload = go; document.head.appendChild(s);
 }
 function ytThumb(id){ return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/mqdefault.jpg'; }
 function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
@@ -4525,6 +4528,21 @@ function houseAd(l){
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 
+// The Guide banner on a listing (Sean, 2026-10-31: "put the airport guide, the dairy guide, the stadium and arena guide... spread that
+// throughout the directory on the different listings"): a food place or food brand shows the Dairy Guide, anything else one of the
+// three at random. /public/ve-promo.js draws it and counts it as a house ad (ad_impressions, campaign ve-house-banners) and through its
+// tracked /go/ link; a demo shows it without counting.
+function guideBanner(l){
+  var el = document.getElementById('ve-house-banner'); if(!el) return;
+  function go(){
+    var all = VEPromo.guides || ['airport-guide', 'vegan-dairy-guide', 'stadium-arena-guide'];
+    var slug = FOOD_CATS.indexOf(l.category) >= 0 ? 'vegan-dairy-guide' : all[Math.floor(Math.random() * all.length)];
+    VEPromo.guideCard(el, slug, { page: '/directory/' + (l.slug || ''), listing_id: l.id || null, preview: typeof DEMO !== 'undefined' && !!DEMO });
+  }
+  if(window.VEPromo && VEPromo.guideCard) return go();
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=2'; s.onload = go; document.head.appendChild(s);
+}
+
 function veAdClick(placementId, campaignId){
   try {
     var payload = JSON.stringify({ placement_id: placementId, campaign_id: campaignId });
@@ -4873,7 +4891,7 @@ if(!slug || slug === 'listing'){
           if(body && hero){ body.appendChild(ib); hero.classList.add('has-vla'); }
         }
       }
-      if(l._brandSite) houseAd(l); else loadBillboardAds();
+      if(l._brandSite) houseAd(l); else if(!isPersonL(l)) guideBanner(l);
       veTrack(l, 'view');
       trackActions(l);
       ownerVerifiedCard(l);
