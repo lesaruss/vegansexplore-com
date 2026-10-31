@@ -2243,6 +2243,28 @@ Directory is their chapter's).
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
 
+## The Guide tab on every listing (LOCKED by Sean 2026-10-31, playbook `ve-listing-guide-tab`)
+
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-listing-guide-tab`; migration
+`20261031_listing_guide_tab_canon.sql`). **Not built yet.** Sean: "this is how we can continue to put those guides in front of
+people's faces. And if they already purchased it, it's right there in front of them."
+
+- **Every listing gets a Guide tab, for everyone**, named for its Guide (Dairy Guide, Creator Guide): a short squeeze page (the
+  Guide's banner, its one line, three or four things inside, **Open the Guide** to the full Guide page in the same window, never
+  framed). Someone who owns the Guide sees **Open your Guide** and no price box.
+- **The Partner Dashboard stays its own tab**, right after the Guide tab, for the owner and super admins (and a brand on its door
+  link, as today). Super admins see the Guide tab too.
+- **The map** (one table in one file, a new Guide is one row): food places and Food Brands, the Vegan Dairy Guide; Content Creators,
+  YouTube and Podcasts, the Creator Guide; Activists, Nonprofits, Rescues and Sanctuaries, the Nonprofit Guide; Groups, the Group
+  Partner Guide; Nutrition & Supplements, Physicians and Health Experts, the Nutrition Guide once it exists (Dairy until then);
+  anything else, the Welcome Guide (the Passport Guide).
+- **Restaurants**: visitors see the Dairy Guide; the owner and super admins also see the Vegan Restaurant Guide on that tab.
+- **No repeat**: the right column's house banner (`guideBanner`) never shows the tab's Guide; with the Dairy Guide on the tab it
+  rotates to another Guide (Airport, Stadium & Arena).
+- **Guides to make**: sections with no real match (Nutrition, Products such as clothing and beauty, Services, Studios), Nutrition
+  first.
+- Tracked like the house banners: views and clicks per Guide per listing.
+
 ## Media (Sean, 2026-10-27)
 
 "Let's do media instead of shows... what we're showing on media is our featured media plus the top 12 listings voted by you
