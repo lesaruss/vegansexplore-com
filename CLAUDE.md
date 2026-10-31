@@ -688,6 +688,24 @@ judge whether food is safe by how a place looks online; businesses want marketin
   sign in to pay); a return in a browser with no sign-up saved goes to The agreement.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
+  **Visit bounties** (built 2026-10-31; migration `20261031_visit_bounties.sql`). A weekly visit to a managed restaurant is a claim gig,
+  `ve_bounties.gig_kind` `visit` with `visit_listing_id`, posted from **Depot > BrandDesk > a client > Member visits** (`ve-bounties`
+  `visit_get`, `visit_post`, `visit_cancel`; super admins): points a visit (default 150), visits a week (3), an optional perk the restaurant
+  offers our members, a note, and Post a new one every week (`repeat_weekly`: when this week's claims close, the hourly `cron` posts next
+  week's with the same settings while the client's account is active, waits while it is paused, and stops when it ends; Stop after this week,
+  Take it down now). Claims are open 6 days, uploads 2 more (`VISIT_DEFAULTS`, Logan's defaults, Sean's to change). It shows on /bounties
+  (More jobs) and the Gig Board (kind Visit) in the restaurant's chapter, for Passport holders. The holder's **visit guide** (`event_details`):
+  the address, go as a regular guest and pay for the meal unless there is a perk, the phone shooting guide (three-quarters and overhead, no
+  flash, the room, the outside, people only with their yes), and the FTC line (a meal on the house is said so when posted). **I'm here**
+  (`visit_here`): the phone's location within 150 m of the listing's pin plus up to 100 m of its accuracy, a fix worse than 500 m refused,
+  only the distance kept (`ve_bounty_submissions.visit_at`, `visit_distance_m`, `visit_accuracy_m`). **Submit** needs I'm here, at least 3
+  photos, a line on what they had and **Was your meal on the house?** (`visit_comped`), and the license covers the restaurant too. Depot >
+  Bounties shows the reviewer the visit and the meal. **Approve** pays the points and copies the photos (images up to 40 MB) into the
+  client's Library (`ve_branddesk_files` kind photo, `branddesk-library/<slug>/photo/visit-<date>-...`, `library_at`). Proven 2026-10-31 on
+  Love Life Cafe with a [TEST] client and the Logan test account (post, second post refused, claim, submit before I'm here refused, 36 km
+  away and a 900 m fix refused, I'm here at 23 m, one photo and no meal answer refused, submitted, approved for 150 points with 3 photos in
+  the Library, next week posted by the cron, a non-admin refused), then removed. Not yet: crediting the best photos on the listing and our
+  socials, and the scouting list (members whose visits keep being approved, toward Ambassador and the Gig Board).
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
@@ -698,7 +716,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties (built 2026-10-31), the monthly check-in and report, the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

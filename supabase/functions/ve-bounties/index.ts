@@ -450,6 +450,7 @@ async function bookPhotographer(b: any, memberId: string, byId: string, first: s
 const VISIT_DEFAULTS = { points: 150, slots: 3, min_photos: 3, claim_days: 6, upload_days: 2 };
 const VISIT_RADIUS_M = 150;                     // the check-in rule: 150 m plus up to 100 m of the phone's own uncertainty
 const LIBRARY = 'branddesk-library';
+const VISIT_FTC = 'If your meal is on the house, say so when you post.';
 function metersApart(a: number, b: number, c: number, d: number) {
   const R = 6371000, r = Math.PI / 180, x = (c - a) * r, y = (d - b) * r;
   const h = Math.sin(x / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin(y / 2) ** 2;
@@ -478,7 +479,7 @@ async function postVisit(l: any, o: { points: number; slots: number; perk: strin
   const now = Date.now(), close = new Date(now + VISIT_DEFAULTS.claim_days * DAY), due = new Date(now + (VISIT_DEFAULTS.claim_days + VISIT_DEFAULTS.upload_days) * DAY);
   const brief = `Visit ${l.name}${l.address_city ? ' in ' + l.address_city : ''}, a Vegan business we manage, this week. Eat there, tap I'm here when you arrive, and send at least ${VISIT_DEFAULTS.min_photos} photos from your phone with a line on what you had. ` +
     `Your photos help them look as good online as they are in person. ${o.perk ? `They offer our members this perk on the visit: ${o.perk}. ` : 'You pay for your own meal. '}` +
-    `A meal on the house is said so when you post.` + (o.note ? ' ' + o.note : '');
+    VISIT_FTC + (o.note ? ' ' + o.note : '');
   const row = { community_slug: chapter, kind: 'photos', gig_kind: 'visit', apply_mode: 'claim', asks: [], title: `Visit: ${l.name}`.slice(0, 140), brief: brief.slice(0, 4000),
     deliverable: `At least ${VISIT_DEFAULTS.min_photos} photos from your visit, and a line on what you had`, points: o.points, slots: o.slots, perk: o.perk, partner_name: String(l.name).slice(0, 120),
     partner_listing_id: l.id, visit_listing_id: l.id, repeat_weekly: o.repeat, status: 'open', created_by: byId, claims_close_at: close.toISOString(), due_at: due.toISOString(),
@@ -497,7 +498,7 @@ async function repostVisits() {
     if (acct.status === 'paused') continue;
     const { data: l } = await db.from('listings').select('id, slug, name, address_street, address_city, address_state, address_zip').eq('id', b.visit_listing_id).maybeSingle();
     if (!l) continue;
-    const note = String(b.brief || '').split('A meal on the house is said so when you post.')[1]?.trim() || '';
+    const note = String(b.brief || '').split(VISIT_FTC)[1]?.trim() || '';
     const r = await postVisit(l, { points: b.points, slots: b.slots || VISIT_DEFAULTS.slots, perk: b.perk, note, repeat: true }, null);
     if ((r as any).ok) { await db.from('ve_bounties').update({ repeat_weekly: false, updated_at: nowIso() }).eq('id', b.id); posted++; }
   }
