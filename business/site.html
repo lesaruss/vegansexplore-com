@@ -167,6 +167,8 @@
       { key: 'night', name: 'Night lounge', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, h: 'Playfair Display', hw: 800, b: 'Lato' }
     ];
     var LOOK = 'theirs'; try { LOOK = sessionStorage.getItem('ve_site_look') || 'theirs'; } catch (e) {}
+    // ?look=<key> opens the site in that look (Depot > Preview journeys > BrandDesk).
+    var lookQ = new URLSearchParams(location.search).get('look'); if (lookQ) LOOK = lookQ;
     if (!LOOKS.some(function (l) { return l.key === LOOK; })) LOOK = 'theirs';
     var root = document.documentElement.style, DARK_PAGE = false;
     function lum(hex) { var n = parseInt(String(hex).replace('#', ''), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255; }

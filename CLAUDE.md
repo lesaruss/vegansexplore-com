@@ -593,7 +593,12 @@ judge whether food is safe by how a place looks online; businesses want marketin
   as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
   (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
   links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
-  `branddesk.allowed`). Not yet: emailing the client when a file lands, the 30-day download window after an end (`ended` closes the
+  `branddesk.allowed`). **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
+  the components visually without having to go through the whole process myself"): 25 steps from Managed by us to the Inbox, on the
+  sample business; `/business/managed?preview=plan|agreement|pay|done|client|closed|signin` (a sample owner, nothing charged),
+  `/business/sample/site?look=island|night`, and `?managed=preview` on any page with `ve-managed.js` (opens the request window, sends
+  nothing). The whole build is also written up in the playbook `ve-front-of-house` (the BUILD RECORD row, migration
+  `20261031_branddesk_build_record.sql`). Not yet: emailing the client when a file lands, the 30-day download window after an end (`ended` closes the
   Library), and a Community Manager's view of their accounts. Proven 2026-10-31 in test mode through `ops_test_activate`
   (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
   full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a

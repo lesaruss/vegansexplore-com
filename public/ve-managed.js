@@ -29,6 +29,8 @@
   }
   function me() { try { return JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch (e) { return null; } }
   function token() { try { return (window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() && VEAuth.getToken()) || ''; } catch (e) { return ''; } }
+  // ?managed=preview opens the window on load and never sends (Depot > Preview journeys > BrandDesk).
+  var PREVIEW = /[?&]managed=preview\b/.test(location.search);
   function open(o) {
     o = o || {}; css();
     var m = token() ? me() : null, picked = {};
@@ -58,6 +60,7 @@
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('email'))) { err.textContent = 'An email we can reach you at, please.'; f.email.focus(); return; }
       if (!v('business')) { err.textContent = 'The name of your business, please.'; f.business.focus(); return; }
       err.textContent = ''; var go = f.querySelector('.go'); go.disabled = true; go.textContent = 'Sending...';
+      if (PREVIEW) { wrap.querySelector('.vem').innerHTML = '<h3>Got it, thank you</h3><p class="lead">Preview: nothing was sent. Here the team gets their note in the Inbox as a Managed marketing request, and they get a confirmation email.</p><div class="acts"><button type="button" class="go no" style="color:#fff">Close</button></div>'; return; }
       var t = token();
       fetch(FN, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, t ? { Authorization: 'Bearer ' + t } : {}),
         body: JSON.stringify({ action: 'managed_interest', from: o.from || 'business', fix: o.fix || '', listing: o.listing || '', name: v('name'), email: v('email'),
@@ -72,6 +75,7 @@
     });
   }
   window.VEManaged = { open: open };
+  if (PREVIEW) { var go0 = function () { open({ from: 'business', business: 'Green Leaf Kitchen' }); }; if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go0); else setTimeout(go0, 300); }
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('[data-managed]'); if (!a) return;
     e.preventDefault(); open({ from: a.dataset.managed || 'business', fix: a.dataset.fix || '', business: a.dataset.business || '', listing: a.dataset.listing || '' });

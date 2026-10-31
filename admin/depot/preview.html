@@ -82,6 +82,7 @@
           <button type="button" data-j="guide" aria-pressed="false">Your Guide</button>
           <button type="button" data-j="join" aria-pressed="false">Join the Directory</button>
           <button type="button" data-j="amb" aria-pressed="false">Ambassador</button>
+          <button type="button" data-j="branddesk" aria-pressed="false">BrandDesk</button>
         </div>
         <label id="prof-wrap" hidden>Profile <select id="prof">
           <option value="">Balanced</option>
@@ -238,6 +239,39 @@
           { t: 'Their dashboard', d: 'Shown as an Ambassador with this profile: Your numbers (points, level, earned this year), the Ambassador Guide first in Your tools and in Guides. The numbers are your own account\u2019s.', u: '/dashboard?view_as=ambassador&profile={p}', k: 'pv' },
           { t: 'What you see', d: 'Depot > Ambassadors: their status, profile, level, points, link visitors, who joined and what they earned.', u: '/admin/depot/ambassadors#list', k: 'live' }
         ])
+      };
+      // BrandDesk, managed marketing (Sean, 2026-10-31: "a preview journey... where I can see all the components visually without having
+      // to go through the whole process myself"). From the door to their Library, on the sample business, Green Leaf Kitchen. Nothing
+      // is saved, sent or charged in a Preview step; Live page steps are the real pages (the sample's are invented data).
+      JOURNEYS.branddesk = {
+        intro: 'A restaurant signing up for managed marketing, from the first look to their Library, shown on the sample business, Green Leaf Kitchen. Preview steps save, send and charge nothing; live steps are the real pages.',
+        steps: [
+          { t: 'The door: Managed by us', d: 'The business page\u2019s Managed by us tab: what we do, what is theirs to keep, what it costs, the sample site and brand kit.', u: '/business#/managed', k: 'live' },
+          { t: 'Asking for help', d: 'Talk to our team (and every Have us do it) opens this window. Sent, it lands in your Inbox as a Managed marketing request. In preview nothing sends.', u: '/business?managed=preview#/managed', k: 'pv' },
+          { t: 'From the Restaurant Guide', d: 'Every fix page asks Rather we did it?, and every Fix in an audit has Or have us do it, both opening the same window.', u: '/guides/vegan-restaurant-survival-guide#/fixes/info', k: 'live' },
+          { t: 'Their website: home', d: 'The frame, drawn only from their Cartridge: open or closed now, favorites, their story, the space, visit.', u: '/business/sample/site', k: 'live' },
+          { t: 'Their website: the menu', d: 'Filtered by section, every dish photographed the same way.', u: '/business/sample/site#/menu', k: 'live' },
+          { t: 'Their website: ordering', d: 'Connected to their point of sale: a cart, pickup time, Pay and place order (the sample only shows the order number).', u: '/business/sample/site#/order', k: 'live' },
+          { t: 'Make it yours: Island bright', d: 'The same site and the same Cartridge, only the colors and type changed.', u: '/business/sample/site?look=island', k: 'live' },
+          { t: 'Make it yours: Night lounge', d: 'A dark look; the header wears the reversed logo.', u: '/business/sample/site?look=night', k: 'live' },
+          { t: 'The brand kit, finished', d: 'Every part locked: logo, colors, type, voice, story, menu copy, photos, hours, into the frame.', u: '/business/sample/brand', k: 'live' },
+          { t: 'The brand kit, a new client', d: 'Day one: every part Not started, each saying what we need, why, who and how long. Saves for the visit only.', u: '/business/sample/brand?as=new', k: 'live' },
+          { t: 'The agreement', d: 'Version 2026-10-31, what they sign.', u: '/business/agreement', k: 'live' },
+          { t: 'Sign up 1: Your plan', d: 'The setup at once, in 3 or in 6; social +$500; what is due today and each month.', u: '/business/managed?preview=plan', k: 'pv' },
+          { t: 'Sign up 2: The agreement', d: 'The key points, the full text, their name typed and I agree ticked.', u: '/business/managed?preview=agreement', k: 'pv' },
+          { t: 'Sign up 3: Review and pay', d: 'Then Stripe\u2019s secure checkout. In preview the button only says so.', u: '/business/managed?preview=pay', k: 'pv' },
+          { t: 'If they are not signed in', d: 'They sign in with the account for the business first.', u: '/business/managed?preview=signin', k: 'pv' },
+          { t: 'If you have not opened them yet', d: 'Checkout opens only for businesses you open in Depot > BrandDesk > Who can sign up; anyone else gets Talk to our team.', u: '/business/managed?preview=closed', k: 'pv' },
+          { t: 'Stripe checkout', d: 'Stripe\u2019s own page, live: a real card is charged. It cannot be previewed.', k: 'na' },
+          { t: 'Welcome aboard', d: 'Back from Stripe. They and the team are emailed; their website archive starts on its own.', u: '/business/managed?preview=done', k: 'pv' },
+          { t: 'Their plan and Pause', d: 'Coming back later: their plan, and Pause 1 to 3 months at $99 a month.', u: '/business/managed?preview=client', k: 'pv' },
+          { t: 'Their dashboard: Getting started', d: 'Managed by us on their business dashboard: the onboarding checklist and their plan.', u: '/business/sample?tab=brand&pd=managed', k: 'pv' },
+          { t: 'Their dashboard: Your Library', d: 'Every file we make, full size; Download everything as one ZIP with the asset sheet and menu inside.', u: '/business/sample?tab=brand&pd=managed&bd=library', k: 'pv' },
+          { t: 'Their dashboard: Your asset sheet', d: 'Everything about the business in one place, from their brand kit; the menu as a spreadsheet.', u: '/business/sample?tab=brand&pd=managed&bd=sheet', k: 'pv' },
+          { t: 'What you see: Depot > BrandDesk', d: 'Every client: their signature, plan and onboarding, Mark done, Archive it now, Add to their Library.', u: '/admin/depot/branddesk#list', k: 'live' },
+          { t: 'What you see: Who can sign up', d: 'Open checkout for one business at a time.', u: '/admin/depot/branddesk#open', k: 'live' },
+          { t: 'What you see: the Inbox', d: 'Managed marketing requests arrive in the Inbox, first in Recent activity on your Dashboard, with a 24-hour reply clock.', u: '/dashboard', k: 'live' }
+        ]
       };
       var LABEL = { live: 'Live page', pv: 'Preview', na: 'Not previewable' };
       var j = 'member', size = 'phone', cur = -1;

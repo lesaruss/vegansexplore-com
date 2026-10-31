@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- BrandDesk sign-up (canon canon-ve-front-of-house; built 2026-10-31): the reveal's "I'm ready" lands here.
-       /business/managed?listing=<slug>[&step=1|2|3][&status=done|cancelled|unpaid]. Three steps (your plan, the agreement, pay), then
+       /business/managed?listing=<slug>[&step=1|2|3][&status=done|cancelled|unpaid], or ?preview=plan|agreement|pay|done|client|closed|signin. Three steps (your plan, the agreement, pay), then
        Stripe Checkout through ve-branddesk; a client already with us sees their plan and can pause. Live since 2026-10-31 (test mode only if branddesk.live is turned off). -->
   <style>
     :root{--g:#1E7A3E;--gd:#14532D;--soft:#EAF4EC;--line:rgba(0,0,0,.12);}
@@ -63,20 +63,34 @@
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
   var app = document.getElementById('app');
   var q = new URLSearchParams(location.search), SLUG = q.get('listing') || '';
+  // Preview (Depot > Preview journeys > BrandDesk): ?preview=plan|agreement|pay|done|client|closed|signin shows that screen for the
+  // sample business with a sample owner, signed out; nothing is saved, sent or charged.
+  var PV = q.get('preview') || '';
+  if (PV) SLUG = 'sample';
   var KEY = 've_bd_choice_' + SLUG, P = null;
   var C = { setup: 'full', social: false, name: '', agree: false };
-  try { Object.assign(C, JSON.parse(sessionStorage.getItem(KEY) || '{}')); } catch (e) {}
+  if (PV) C = { setup: '3', social: true, name: 'Alex Rivera', agree: true };
+  else try { Object.assign(C, JSON.parse(sessionStorage.getItem(KEY) || '{}')); } catch (e) {}
+  if (PV) {
+    P = { ok: true, test: false, allowed: PV !== 'closed', listing: { name: 'Green Leaf Kitchen', slug: 'sample', city: 'Fort Lauderdale' }, managed: PV === 'client', agreement_version: '2026-10-31',
+      amounts: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900 },
+      account: PV === 'client' || PV === 'done' ? { id: 'sample', status: 'active', setup_plan: 'full', social: true, activated_at: new Date().toISOString(), pause_from: null } : null };
+    if ({ plan: 1, agreement: 2, pay: 3 }[PV]) q.set('step', { plan: 1, agreement: 2, pay: 3 }[PV]);
+    var bar = document.createElement('div'); bar.className = 'test'; bar.style.margin = innerWidth <= 700 ? '16px 16px 0' : '24px 40px 0';
+    bar.innerHTML = '<b>Preview.</b> The sample business, Green Leaf Kitchen, with a sample owner. Nothing is saved, sent or charged.';
+    app.parentNode.insertBefore(bar, app);
+  }
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function $(c) { return (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: c % 100 ? 2 : 0 }); }
-  function token() { try { return VEAuth.isLoggedIn() ? VEAuth.getToken() : ''; } catch (e) { return ''; } }
+  function token() { if (PV) return PV === 'signin' ? '' : 'preview'; try { return VEAuth.isLoggedIn() ? VEAuth.getToken() : ''; } catch (e) { return ''; } }
   function call(body) {
     var t = token();
     return fetch(FN, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, t ? { Authorization: 'Bearer ' + t } : {}), body: JSON.stringify(body) })
       .then(function (r) { return r.json(); });
   }
   function step() { var s = +(q.get('step') || 1); return s >= 1 && s <= 3 ? s : 1; }
-  function go(s) { q.set('step', s); q.delete('status'); history.pushState(null, '', location.pathname + '?' + q); draw(); window.scrollTo(0, 0); }
+  function go(s) { if (PV) { q.set('step', s); draw(); window.scrollTo(0, 0); return; } q.set('step', s); q.delete('status'); history.pushState(null, '', location.pathname + '?' + q); draw(); window.scrollTo(0, 0); }
   window.addEventListener('popstate', function () { q = new URLSearchParams(location.search); draw(); });
 
   function head(lede) {
@@ -145,6 +159,7 @@
     if (!SLUG) { app.innerHTML = head('Open this page from the link we sent you, or tell us about your business and we will reach out.') + talk(); return; }
     if (!P) { app.innerHTML = '<p>Loading...</p>'; call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.error) { app.innerHTML = head('We could not find that business.') + talk(); return; } P = d; draw(); }); return; }
     var status = q.get('status');
+    if (PV === 'done') { app.innerHTML = head('Welcome aboard! We sent the details to your email. Someone from our team reaches out within a day to book your welcome call.') + viewMine(P.account).replace(/^[\s\S]*?<div class="box">/, '<div class="box">'); return; }
     if (status === 'done' && !P.account) {
       app.innerHTML = head('Payment received. Setting things up...');
       var tries = 0; (function poll() { call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.account) { P = d; app.innerHTML = head('Welcome aboard! We sent the details to your email. Someone from our team reaches out within a day to book your welcome call.') + viewMine(d.account).replace(/^[\s\S]*?<div class="box">/, '<div class="box">'); return; } if (++tries < 10) setTimeout(poll, 2500); else app.innerHTML = head('Your payment went through. It is taking a moment to show here; we will email you either way.'); }); })();
@@ -180,6 +195,7 @@
       if (s === 2 && C.name.trim().length < 3) { say('Type your full name to sign.'); return; }
       if (s === 2 && !C.agree) { say('Tick the box to agree.'); return; }
       if (s < 3) { go(s + 1); return; }
+      if (PV) { say('Preview: here the owner goes on to Stripe\'s secure checkout. Nothing is charged.'); return; }
       t.disabled = true; t.textContent = 'Opening checkout...';
       call({ action: 'checkout', slug: SLUG, setup: C.setup, social: C.social, agreed_name: C.name.trim(), agree: C.agree, origin: location.origin }).then(function (d) {
         if (d.url) { location.href = d.url; return; }
@@ -187,6 +203,7 @@
       }).catch(function () { t.disabled = false; t.textContent = 'Continue to secure checkout'; say('Checkout did not open. Try again in a minute.'); });
       return;
     }
+    if (PV && (t.hasAttribute('data-pause') || t.hasAttribute('data-unpause'))) { say('Preview: a pause starts on the next billing date. Nothing is saved.'); return; }
     if (t.hasAttribute('data-pause') || t.hasAttribute('data-unpause')) {
       var body = t.hasAttribute('data-pause') ? { action: 'pause', account_id: P.account.id, months: +document.getElementById('months').value } : { action: 'pause_cancel', account_id: P.account.id };
       t.disabled = true;
