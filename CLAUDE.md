@@ -59,6 +59,8 @@ this list follows the rule above. A new exception goes on this list first.
   everything in `ads/` (Sean, 2026-10-04).
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
+- **The social frame**, the render target for Vegans Explore's own posts that are not the podcast's: `business/social-frame.html`
+  (`?kind=cover|guide|end`, each slide on a different chapter's art; Sean, 2026-10-31: "the podcast should be the podcast").
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
   (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 

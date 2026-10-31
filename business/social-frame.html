@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Social frame — Vegans Explore</title>
+<!--
+  The social frame (Sean, 2026-10-31: "the podcast should be the podcast. The rest of it should have a different animation... pull
+  from the cities... use some of the existing stuff that we have... I don't want to see the same thing go out twice"). A render
+  target for Vegans Explore's own posts that are not the podcast's (the podcast's are business/podcast-frame.html). No nav or footer:
+  listed under the exceptions in CLAUDE.md. The social studio screenshots it at the kind's size.
+    ?kind=cover  &title= &sub= &kicker= &city=<hub slug>          a carousel's first slide (1080 x 1350)
+    ?kind=guide  &g=<guide slug> &city=<hub slug> &n= &of=          one Guide on a chapter's art (1080 x 1350)
+    ?kind=end    &title= &sub= &city=                               a carousel's last slide (1080 x 1350)
+  Every slide wears a different chapter's art, so the posts show the cities, and a Guide's banner is its own art (never a podcast
+  picture). The Guides' words match ads/guides/guide.html (G there); change both together. No counts in a Guide's words.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root { --forest:#2D5C27; --bright:#3A9B3E; --mint:#E8F5E9; --orange:#F69820; --ink:#1A1A1A; --night:#0F1F14; }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--night);font-family:Montserrat,system-ui,sans-serif}
+  #f{position:relative;width:1080px;height:1350px;overflow:hidden;color:#fff;background:var(--night) center/cover no-repeat}
+  .shade{position:absolute;inset:0}
+  .t{position:absolute;left:84px;right:84px}
+  .k{font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--orange);font-size:30px}
+  .h{font-weight:900;text-transform:uppercase;line-height:1.02;font-size:104px;text-wrap:balance;text-shadow:0 2px 18px rgba(0,0,0,.45)}
+  .s{font-weight:600;font-size:38px;line-height:1.35;color:rgba(255,255,255,.94);text-shadow:0 1px 10px rgba(0,0,0,.5)}
+  .card{position:absolute;left:84px;right:84px;background:#fff;color:var(--ink);border-radius:28px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45)}
+  .card .art{width:100%;aspect-ratio:16/10;background:#fff center/cover no-repeat}
+  .card .body{padding:34px 40px 40px}
+  .card .name{font-weight:900;font-size:50px;line-height:1.08;text-transform:uppercase}
+  .card .line{font-weight:500;font-size:31px;line-height:1.4;margin-top:14px;color:#333}
+  .price{display:inline-block;margin-top:24px;background:var(--bright);color:#fff;font-weight:800;font-size:27px;letter-spacing:.04em;padding:14px 22px;border-radius:10px}
+  .city{position:absolute;left:84px;top:70px;font-weight:800;font-size:26px;letter-spacing:.18em;text-transform:uppercase;background:rgba(15,31,20,.72);padding:12px 18px;border-radius:10px}
+  .city b{color:var(--orange)}
+  .bar{position:absolute;left:0;right:0;bottom:0;height:120px;padding:0 84px;display:flex;align-items:center;justify-content:space-between;background:rgba(15,31,20,.92);border-top:4px solid var(--bright)}
+  .bar span{font-weight:800;font-size:30px;letter-spacing:.06em}
+  .bar .n{color:var(--orange);letter-spacing:.14em}
+  .logo{height:64px;width:auto;max-width:420px;object-fit:contain}
+</style>
+</head>
+<body>
+<div id="f"></div>
+<script>
+(function () {
+  var SITE = 'https://vegansexplore.com', SBM = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/';
+  var CITY = {
+    'south-florida': ['South Florida', '/communities/south-florida/banner.jpg'], 'central-florida': ['Central Florida', '/communities/central-florida/banner.jpg'],
+    'north-florida': ['North Florida', '/communities/north-florida/banner.jpg'], 'atlanta': ['Atlanta', '/communities/atlanta/banner.jpg'],
+    'washington-dc': ['Washington, D.C.', '/communities/washington-dc/banner.jpg'], 'delaware': ['Delaware', '/communities/delaware/banner.jpg'],
+    'maryland': ['Maryland', SBM + 'communities/maryland/banner.jpg'], 'virginia': ['Virginia', '/communities/virginia/banner.jpg'],
+    'west-virginia': ['West Virginia', '/communities/west-virginia/banner.jpg'], 'new-york': ['New York', '/communities/new-york/banner.jpg'],
+    'philadelphia': ['Philadelphia', '/communities/philadelphia/banner.jpg'], 'los-angeles': ['Los Angeles', '/communities/los-angeles/banner.jpg'],
+    'london': ['London', '/communities/london/banner.jpg']
+  };
+  // Each Guide: its banner, its name, its line (ads/guides/guide.html G), and its Guide.
+  var G = {
+    'vegan-dairy-guide': ['The Vegan Dairy Guide', SBM + 'guides/banners/vegan-dairy-guide.jpg', 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.'],
+    'vegan-restaurant-guide': ['The Vegan Restaurant Guide', SBM + 'guides/banners/vegan-restaurant-guide.jpg', 'A free check of your restaurant online, then the fixes that bring people through the door, with Liz.'],
+    'stadium-arena-guide': ['The Stadium & Arena Guide', '/public/guides/stadium-arena-guide.jpg', 'Every Vegan stand at the stadiums and arenas near you, mapped by section, with River.'],
+    'airport-guide': ['The Airport Guide', '/public/guides/airport-guide.jpg', 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.'],
+    'nonprofit-guide': ['The Nonprofit Guide', '/public/guides/nonprofit-guide.jpg', 'Ten tips for Vegan nonprofits, rescues and sanctuaries to grow their support, with Dani.'],
+    'creator-guide': ['The Creator Guide', '/public/guides/creator-guide.jpg', 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.']
+  };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var q = new URLSearchParams(location.search), kind = q.get('kind') || 'cover';
+  var city = CITY[q.get('city')] || CITY['south-florida'];
+  var f = document.getElementById('f');
+  f.style.backgroundImage = 'url(' + city[1] + ')';
+  var bar = '<div class="bar"><img class="logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt="Vegans Explore" onerror="this.outerHTML=\'<span>VEGANS EXPLORE</span>\'">' +
+    '<span class="n">' + esc(q.get('n') && q.get('of') ? q.get('n') + ' / ' + q.get('of') : (q.get('foot') || 'vegansexplore.com/guides')) + '</span></div>';
+  var html = '';
+  if (kind === 'guide') {
+    var g = G[q.get('g')] || G['vegan-dairy-guide'];
+    html = '<div class="shade" style="background:linear-gradient(180deg,rgba(15,31,20,.25) 0%,rgba(15,31,20,.55) 55%,rgba(15,31,20,.85) 100%)"></div>' +
+      '<div class="city">Our <b>' + esc(city[0]) + '</b> chapter</div>' +
+      '<div class="card" style="top:190px"><div class="art" style="background-image:url(\'' + esc(g[1]) + '\')"></div>' +
+      '<div class="body"><div class="name">' + esc(g[0]) + '</div><div class="line">' + esc(g[2]) + '</div>' +
+      '<span class="price">$11 or 1,100 points</span></div></div>' + bar;
+  } else {
+    var title = q.get('title') || 'Find your Guide', sub = q.get('sub') || '', kicker = q.get('kicker') || '';
+    html = '<div class="shade" style="background:linear-gradient(180deg,rgba(15,31,20,.88) 0%,rgba(15,31,20,.55) 45%,rgba(15,31,20,.2) 70%,rgba(15,31,20,.7) 100%)"></div>' +
+      '<div class="t" style="top:110px">' + (kicker ? '<div class="k" style="margin-bottom:26px">' + esc(kicker) + '</div>' : '') +
+      '<div class="h">' + esc(title) + '</div>' + (sub ? '<div class="s" style="margin-top:30px">' + esc(sub) + '</div>' : '') +
+      (kind === 'end' ? '<span class="price" style="font-size:34px;margin-top:40px">' + esc(q.get('cta') || 'Link in bio') + '</span>' : '') +
+      '</div>' + bar;
+  }
+  f.innerHTML = html;
+})();
+</script>
+</body>
+</html>
