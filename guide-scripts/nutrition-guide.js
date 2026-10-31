@@ -392,7 +392,7 @@
     main.innerHTML = head('Experts', 'Health professionals near you', 'Doctors, dietitians, chiropractors and other practices in our Directory, by chapter. Not listed yet? Add the practice you trust.', t) +
       '<div class="dg-tools">' + chapterPick('ntProCh', ch) + '<span class="dg-count">' + (PROS ? list.length + ' shown' : '') + '</span></div>' +
       (PROS ? (list.length ? cards(list, 'ntPros') : '<p class="dg-empty">None listed in this chapter yet.</p>') : '<div class="dg-loading">Loading...</div>') +
-      '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="/claim?add=1">Add a practice</a><a class="dg-btn dg-ghost" href="https://www.eatright.org/find-a-nutrition-expert" target="_blank" rel="noopener" title="The Academy of Nutrition and Dietetics' directory, eatright.org">Find a dietitian</a></div>' + note();
+      '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="/claim?add=1">Add a practice</a><a class="dg-btn dg-ghost" href="https://www.eatright.org/find-a-nutrition-expert" target="_blank" rel="noopener" title="The directory of the Academy of Nutrition and Dietetics, eatright.org">Find a dietitian</a></div>' + note();
     wireCards('ntPros', '#/experts');
     var sel = document.getElementById('ntProCh'); if (sel) sel.addEventListener('change', function () { store('nt_chapter', sel.value); viewExperts('pros'); });
   }
