@@ -238,6 +238,15 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   `UI-SELECT-ARROW-TOO-CLOSE-TO-EDGE`): `appearance:none`, an SVG chevron at `background-position:right 16px center`,
   `padding-right` 44px or more. Copy the `select` rule in `claim.html`.
 - Buttons, tabs and inputs use a 6px corner radius, not pills (canon rule 13, Sean 2026-10-09).
+- **Speak instead of typing on every field** (Sean, 2026-10-31: "make sure we have the record the dictation feature on all things
+  where people are going to type in information"). `/public/ve-dictate.js`, loaded by `nav.js` on every page and by the dashboard
+  itself: in any textarea or text field, a small mic floats at the field's right edge while it has focus (no page's layout changes);
+  tapped, the browser's own speech recognition writes what is said at the cursor until Stop, Escape or silence (the native value setter
+  and an input event, so every page's own handlers see it). Nothing is recorded by us. Left out: email, password, number, phone, web
+  address and date fields, fields under 12 characters, autocomplete or inputmode for email, phone, codes or cards, a placeholder
+  starting https:// or @, read-only and disabled fields, and anything marked `data-dictate="off"` (the Ambassadors, Founding Members
+  and Group Partners consoles keep their own Speak buttons that way). No mic where the browser has no speech recognition (Firefox). A
+  new form needs nothing: it gets the mic.
 
 ## Guided view for mocks and walkthroughs (LOCKED 2026-10-04)
 

@@ -9,6 +9,13 @@
   (document.head || document.documentElement).appendChild(s);
 })();
 
+/* ---- Speak instead of typing on every field (Sean, 2026-10-31): /public/ve-dictate.js puts a mic on the field in use. ---- */
+(function () {
+  if (window.VEDictate || document.querySelector('script[src*="ve-dictate.js"]')) return;
+  var s = document.createElement('script'); s.src = '/public/ve-dictate.js'; s.async = true;
+  (document.head || document.documentElement).appendChild(s);
+})();
+
 /* ---- How this visit came in (Sean, 2026-10-30: "which channels are showing up the most") ----
  * The first page of a visit keeps where it came from in sessionStorage ve_landing {channel, vl, page}: utm_source, a tracked
  * /go/ link (?vl=, named by its code on the server), the referring site, or "Direct or an app" (WhatsApp and texts send none).

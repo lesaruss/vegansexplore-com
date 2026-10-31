@@ -185,6 +185,7 @@
 
       // Speak instead of typing: the browser's own speech recognition, added to the note as it hears it. Phones' keyboards have a mic too.
       function dictation(btn, area) {
+        area.setAttribute('data-dictate', 'off');   // its own Speak button, so the site-wide mic stays off it
         var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SR) { btn.hidden = true; return; }
         var rec = null, base = '';
