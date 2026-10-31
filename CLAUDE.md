@@ -60,7 +60,7 @@ this list follows the rule above. A new exception goes on this list first.
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
-  (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
+  (`/business/sample/site`, Green Leaf Kitchen's; every real client's site, served by `branddesk-sites/`). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
@@ -792,6 +792,45 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `ve-once-social-cleanup`, now the 410 stub, as the connector held the delete). **Not yet (phase 2)**: social numbers (followers and reach)
   in the monthly report, paying the social manager (gig work, Stripe Connect), a reminder when a post is due to go out, and posting through
   the platforms' APIs once the Meta tokens are in.
+  **The website launch, the real client site** (built 2026-10-31; Sean: "we're going to go ahead with the website launch"; migration
+  `20261031_branddesk_websites.sql`). Each client's site is their Cartridge (`ve_cartridges`) on the same frame as `business/site.html`, only the
+  brand slots changing. **One shared hosting project serves every client**: Vercel `branddesk-sites` (`prj_fwcoroEU9vkhwbWNChxQf2Bi1JhF`, this repo,
+  root directory `branddesk-sites/`, `ve_site_settings` `branddesk.sites` {project, host}). Its build (`branddesk-sites/build.js`) copies the frame in
+  and writes Vercel's Build Output: one Node function (`branddesk-sites/server.js`) answers every request by the domain asked for, calling
+  `ve-branddesk` `site_public`, and serves each page at its own address (`/`, `/menu`, `/order`, `/about`, `/visit`) with its title, description,
+  canonical, share picture, schema.org Restaurant and menu and a plain-text version of the page written on the server, plus `robots.txt` and
+  `sitemap.xml` per domain; the frame draws over it (`window.VE_SITE`: `href()` for real addresses, ordering on their own ordering page or a call,
+  since the point-of-sale cart is not connected; the sample and pitch stills are unchanged). A push that changes the frame or that folder rebuilds
+  it (`commandForIgnoringBuildStep`), so **every client gets the improved frame at once**. Project defaults checked: Vercel made it with login
+  protection on every `vercel.app` address (`all_except_custom_domains`), which would have hidden the preview; it is `preview` only now, so
+  `branddesk-sites.vercel.app` is public; Node 22. **The steps** (`ve_branddesk_sites`, one per client, and `ve_branddesk_site_events`, every step with
+  who and when; RLS on, no policies): **Build their website** (`site_start`, super admin, needs their brand kit; status building) -> **Send it to them for
+  their OK** (`site_send`: the owner is emailed the private preview, `https://branddesk-sites.vercel.app/p/<token>/`, always the brand kit as it is now,
+  never indexed or cached; review waiting) -> the owner **approves** on their dashboard, typing their name, or **asks for changes**
+  (`site_decide`; a super admin can record an OK given another way only with a note saying how). Approving freezes the Cartridge as `published` (a
+  version number) and records the name, version and address: **their domain serves only what they approved**, and a later brand kit change goes live
+  only after it is sent and approved again (the live site stays up meanwhile). -> **Add their domain** (`site_domain`, super admin, after approval:
+  attached to the hosting project through the Vercel API with the server's `VERCEL_TOKEN`; a bare domain also gets www sent to it with a 308; our
+  own domains refused; status connecting) with the records they add at their domain company (A `@` and CNAME `www`, or a CNAME for a subdomain, from
+  Vercel's own recommendation) -> **Check the domain** (`site_domain_check`: on our hosting, DNS pointed, SSL, which Vercel issues on its own once DNS
+  points) -> **Run the final check** (`site_check`: every page over https on their domain with their name, its own canonical address and open to
+  search; robots.txt pointing at the sitemap; the sitemap listing every page; http sent to https; www sent to their domain; every picture in the
+  approved Cartridge loads). All passing makes it **Live** (`launched_at`), emails the owner and the team, and ticks the new onboarding step **Your
+  new website, live on your domain** on its own. `site_status` takes it down for now (a plain page on their domain), puts it back, or ends it (their
+  domain comes off our hosting). Their domain is served only while their account is active, paused or ending. **Where**: the client's
+  **Managed by us > Your website** (`&bd=website`; the preview, Approve my website with their name, Ask for changes, the domain's state, the final
+  check, every step) and **Depot > BrandDesk > a client > Your website** (`#a/<id>/website`: the same view with Build their website, the look, Send it
+  for their OK, Record their OK, Add their domain with the records, Check the domain, Run the final check, Take it down, End it); both are
+  `VEBrandDesk.mount` view `website`. Preview journeys > BrandDesk has the owner's approval (the sample) and the team's view. **Proven live
+  2026-10-31** on a [TEST] client on Love Life Cafe (the Logan test account as the owner, Sean through the admin token): building with no brand kit
+  refused, a stranger refused reading it, the kit started from the listing (11 menu sections, the logo), built, the preview served by the hosting
+  project (home and menu written on the server with all 51 items, noindex, no-store, robots disallowing, an unknown token 404), approving before it
+  was sent refused, sent (the owner emailed), Sean's OK with no note refused, changes asked by the owner, sent again, approved by the owner as
+  version 1 with the name recorded, the owner refused adding a domain; the preview and both views rendered in a browser with no errors; then every
+  row removed (the connector held the delete, so through the one-time `ve-once-bd-sites`, now the 410 stub). `ve-branddesk` deployed from commit
+  9c1a9ae (version 17, source sha256 matched). **Not proven yet: the domain, SSL and the final check on a real domain**: the test DNS record
+  (a CNAME on a subdomain we hold) was stopped by the build session's safety check and waits on Sean's go. Not built yet: the point-of-sale cart on
+  a live site, a branded preview address, and the client's own Google Search Console.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
@@ -820,8 +859,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31); the social add-on, phase 1 (built 2026-10-31). Then
-  social phase 2 and the ad console.
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31); the social add-on, phase 1 (built 2026-10-31); the website launch (built 2026-10-31, the
+  domain step waiting on its live proof). Then the two handshake builds, social phase 2 and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

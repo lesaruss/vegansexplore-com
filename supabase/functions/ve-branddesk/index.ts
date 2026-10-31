@@ -1857,7 +1857,7 @@ async function sites(req: Request, b: any, m: any) {
     if (!s.published) return json({ error: 'not_approved', message: 'The owner approves the site first.' }, 409);
     if (!conf.project) return json({ error: 'no_project' }, 500);
     const d = cleanDomain(b.domain); if (!d) return json({ error: 'bad_domain' }, 400);
-    if (/(^|\.)(vegansexplore\.com|vercel\.app|lesaruss\.ai)$/.test(d) && !(b.test_domain && a.test)) return json({ error: 'not_theirs' }, 400);
+    if (/(^|\.)(vegansexplore\.com|vercel\.app|lesaruss\.ai|lesaruss\.com)$/.test(d) && !(b.test_domain && a.test)) return json({ error: 'not_theirs' }, 400);
     const other = (await db.from('ve_branddesk_sites').select('id').eq('domain', d).neq('id', s.id).maybeSingle()).data; if (other) return json({ error: 'domain_used' }, 409);
     if (s.domain && s.domain !== d) return json({ error: 'remove_first', message: 'Take the old domain off first.' }, 409);
     const www = isApex(d);
