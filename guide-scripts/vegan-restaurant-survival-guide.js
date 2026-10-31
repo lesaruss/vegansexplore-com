@@ -431,7 +431,8 @@
     return '<div class="rg-item"><span class="rg-st rg-st-' + esc(it.state || 'fix') + '">' + esc(STATE[it.state || 'fix']) + '</span><div><span class="rg-area">' + esc(AREA[it.area || c.area] || '') + '</span><br><b>' + esc(it.label || c.label || it.key) + '</b></div>' +
       (it.found ? '<p>' + esc(it.found) + '</p>' : '') +
       (full && it.why ? '<p>' + esc(it.why) + '</p>' : '') + (full && it.how && it.state !== 'good' ? '<p class="rg-how"><strong>How to fix it:</strong> ' + esc(it.how) + '</p>' : '') +
-      (ch && it.state === 'fix' ? '<a href="#/fixes/' + esc(ch) + '">Read the fix in the Guide &rsaquo;</a>' : '') + '</div>';
+      (ch && it.state === 'fix' ? '<a href="#/fixes/' + esc(ch) + '">Read the fix in the Guide &rsaquo;</a>' : '') +
+      (it.state === 'fix' ? ' <a href="#" class="rg-have" data-managed="audit" data-fix="' + esc(ch || it.key) + '" data-business="' + esc(LAST && LAST.business || '') + '">Or have us do it &rsaquo;</a>' : '') + '</div>';
   }
   function drawFree(d) {
     var n = (d.todo || []).length;
@@ -536,6 +537,8 @@
       '<div class="dg-head"><div><div class="dg-k">Fix ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(f.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', f.id) + '</div>' : '') + '</div>' +
       '<p class="rg-problem">' + esc(f.problem) + '</p><h3>What you can do</h3><ul>' + f.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
       '<h3>This week</h3><div class="rg-week"><b>Your action</b>' + esc(f.action) + '</div>' +
+      '<div class="rg-week" style="margin-top:12px"><b>Rather we did it?</b>Our team can take this off your plate, along with your website, Google, photos and brand. ' +
+      '<a href="#" data-managed="fix" data-fix="' + esc(f.id) + '" data-business="' + esc(LAST && LAST.business || '') + '">Have us do it &rsaquo;</a></div>' +
       '<div class="rg-fixnav"><button type="button" class="dg-btn' + (done[f.id] ? ' dg-ghost' : '') + '" data-done="' + esc(f.id) + '">' + (done[f.id] ? 'Done. Mark not done' : 'Mark it done') + '</button>' +
       (nextOpen ? '<a class="dg-tnav next" href="#/fixes/' + nextOpen.id + '">Next fix &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/quiz">Take the quiz &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">Get every fix &rsaquo;</a>') + '</div></div>' +
       (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine fixes', 3), 'The other nine fixes', 'Location, branding, search, social, photos, reviews, the menu, community and burnout, in your order.') + '</div>' : '');

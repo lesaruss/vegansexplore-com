@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>BrandDesk | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
+       one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
+       website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
+       Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green-deep:#1f5f22;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--vb-accent:#1f5f22;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .views{display:flex;gap:6px;flex-wrap:wrap;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    .tag{font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px;background:#eef1ee;color:#333;white-space:nowrap;}
+    .tag.active{background:#e3f3e5;color:#1E5F2A;}.tag.paused,.tag.checkout{background:#fff4e0;color:#8a5200;}.tag.canceling,.tag.ended,.tag.abandoned{background:#fde8e8;color:#a61b1b;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:14px;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:10px 16px;font-size:13.5px;}
+    .kv span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .form{display:flex;gap:10px;flex-wrap:wrap;align-items:end;}
+    .form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px;}
+    .form input{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;text-transform:none;letter-spacing:0;font-weight:400;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:6px;}.msg.err{color:#a61b1b;}
+    @media (max-width:640px){.irow{grid-template-columns:minmax(0,1fr) auto;}.irow .tag{grid-column:1;justify-self:start;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>BrandDesk</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Managed marketing clients: their onboarding, their Library and asset sheet (the same screens they see on their business dashboard), and which businesses can check out.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-branddesk-client.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null;
+      var ST = { checkout: 'At checkout', active: 'Active', paused: 'Paused', canceling: 'Ending', ended: 'Ended', abandoned: 'Did not finish' };
+      var PLAN = { full: 'Setup paid at once', '3': 'Setup in 3', '6': 'Setup in 6' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
+      function nav(on) {
+        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
+          '<a class="btn btn-ghost" href="/business/sample?tab=brand&pd=managed" target="_blank" rel="noopener">See the client view (sample)</a></div>';
+      }
+      function drawList() {
+        var A = (data.accounts || []).filter(function (a) { return a.status !== 'abandoned' && !(a.status === 'checkout' && Date.now() - Date.parse(a.created_at) > 864e5); });
+        app.innerHTML = nav('list') + (data.settings && !data.settings.live ? '<p class="sub"><b>Checkout is in test mode.</b></p>' : '') + '<div class="list">' + (A.length ? A.map(function (a) {
+          var ticks = Object.keys(a.onboarding || {}).length;
+          return '<div class="irow"><div><b>' + esc(a.listings ? a.listings.name : 'A business') + (a.test ? ' [test]' : '') + '</b><small>' + esc(a.members ? a.members.name + ' (' + a.members.email + ')' : '') + ' &middot; ' +
+            esc(PLAN[a.setup_plan]) + (a.social ? ', with social' : '') + ' &middot; since ' + esc(day(a.activated_at || a.created_at)) + ' &middot; ' + ticks + ' onboarding steps ticked</small></div>' +
+            '<span class="tag ' + esc(a.status) + '">' + esc(ST[a.status] || a.status) + '</span><a class="btn btn-ghost btn-sm" href="#a/' + esc(a.id) + '">Open</a></div>';
+        }).join('') : '<p class="empty">No managed marketing clients yet. When a business signs up at /business/managed, it shows here.</p>') + '</div>';
+      }
+      function drawOpen() {
+        var S = data.settings || { allowed: [] };
+        app.innerHTML = nav('open') + '<section class="card"><h2>Who can sign up</h2><p class="sub">Checkout at /business/managed opens only for these businesses (and for super admins). Checkout is ' + (S.live ? '<b>live</b>: real cards are charged.' : '<b>in test mode</b>.') + '</p>' +
+          '<div class="list" style="margin-bottom:12px">' + (S.allowed.length ? S.allowed.map(function (s) {
+            return '<div class="irow"><div><b>' + esc(s) + '</b><small><a href="/business/managed?listing=' + esc(s) + '" target="_blank" rel="noopener">vegansexplore.com/business/managed?listing=' + esc(s) + '</a></small></div><span></span><button type="button" class="btn btn-ghost btn-sm" data-close="' + esc(s) + '">Close it</button></div>';
+          }).join('') : '<p class="empty">No business is open yet.</p>') + '</div>' +
+          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>';
+        var set = function (slug, on) { var m = $('op-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          api({ action: 'allow', slug: slug, on: on }).then(function (d) { if (d && d.ok) { data.settings.allowed = d.allowed; drawOpen(); return; } m.className = 'msg err'; m.textContent = d && d.error === 'not_found' ? 'No listing at that address.' : 'That did not save.'; }); };
+        $('op').addEventListener('submit', function (e) { e.preventDefault(); var v = $('op-slug').value.trim().replace(/^.*\/directory\//, '').replace(/[?#].*$/, ''); if (v) set(v, true); });
+        app.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { set(b.dataset.close, false); }); });
+      }
+      function drawOne(id, view) {
+        var a = (data.accounts || []).filter(function (x) { return x.id === id; })[0];
+        if (!a) { app.innerHTML = '<p class="crumb"><a href="#list">BrandDesk</a></p><p class="empty">That client is not here.</p>'; return; }
+        var slug = a.listings ? a.listings.slug : '';
+        app.innerHTML = '<p class="crumb"><a href="#list">BrandDesk</a> &rsaquo; ' + esc(a.listings ? a.listings.name : '') + '</p>' +
+          '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(a.listings ? a.listings.name : '') + (a.test ? ' [test]' : '') + '</h2><span class="tag ' + esc(a.status) + '">' + esc(ST[a.status] || a.status) + '</span></div>' +
+          '<div class="kv"><div><span>Signed by</span>' + esc(a.agreed_name) + ', ' + esc(day(a.agreed_at)) + '</div><div><span>Account</span>' + esc(a.members ? a.members.name + ', ' + a.members.email : '') + '</div>' +
+          '<div><span>Plan</span>' + esc(PLAN[a.setup_plan]) + (a.social ? ', social' : '') + '</div><div><span>Agreement</span>' + esc(a.agreement_version) + '</div>' +
+          '<div><span>Setup paid in full</span>' + (a.setup_paid_at ? esc(day(a.setup_paid_at)) : 'Not yet') + '</div>' + (a.pause_from ? '<div><span>Pause</span>' + esc(day(a.pause_from)) + ' to ' + esc(day(a.pause_until)) + '</div>' : '') + '</div>' +
+          (a.note ? '<p class="sub" style="margin:10px 0 0">' + esc(a.note) + '</p>' : '') +
+          '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '" target="_blank" rel="noopener">Their page</a>' +
+          '<a class="btn btn-ghost btn-sm" href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Their brand kit</a>' +
+          '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
+          (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section><div id="bd"></div>';
+        VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
+        var cx = $('cx');
+        if (cx) cx.addEventListener('click', function () {
+          var why = window.prompt('End their plan at the end of the period they paid for. A note for the record (their notice):'); if (why === null) return;
+          var m = $('cx-msg'); m.className = 'msg'; m.textContent = 'Ending...';
+          api({ action: 'cancel', account_id: id, note: why }).then(function (d) {
+            if (d && d.ok) { m.textContent = 'Done. It ends at the end of the paid period.' + (d.setup_owed_cents ? ' Setup still owed: $' + (d.setup_owed_cents / 100).toLocaleString() + ' (invoice it).' : ''); load(); return; }
+            m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not go through.';
+          });
+        });
+      }
+      function draw() {
+        var r = location.hash.replace(/^#/, '') || 'list', m;
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
+        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
+        if (r === 'open') return drawOpen();
+        drawList();
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

@@ -41,6 +41,7 @@
     { group: 'Admin', href: '/dashboard/secret-shopper', label: 'Secret Shopper', kind: 'dash' },
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
     { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
+    { group: 'Directory', href: '/admin/depot/branddesk', label: 'BrandDesk' },
     { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
     { group: 'Directory', href: '/admin/depot/events', label: 'Events' },
     { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
