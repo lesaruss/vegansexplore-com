@@ -320,7 +320,7 @@
         (paid ? '<h2 class="vg-h">Welcome aboard</h2><p class="vg-lede" id="suDone">Payment received. Setting things up...</p>'
           : '<h2 class="vg-h">Review and pay</h2>' + (note ? '<p class="pt-msg err">' + note + '</p>' : '') + summary() +
             '<div class="su-sign">Signed by <b>' + esc(C.name || 'you') + '</b>. Our team confirms you run ' + name + ' before work starts; if not, we refund you in full.</div>' +
-            '<p style="margin-top:14px"><button type="button" class="vg-btn" data-pay>' + (SAMPLE || D.team || token() ? 'Continue to secure checkout' : 'Sign in to continue') + '</button> <button type="button" class="vg-btn vg-btn-ghost" data-vg-go="su-agree">Back</button></p>' +
+            '<p style="margin-top:14px"><button type="button" class="vg-btn" data-pay>' + (SAMPLE || D.team || token() ? 'Continue to secure checkout' : 'Sign in to continue') + '</button></p>' +
             '<p class="pt-cap">The next screen is Stripe\'s secure checkout. You come back here when you are done.</p><div class="pt-msg" id="suPayMsg" role="status"></div>') +
         '</div><div><div class="vg-eyebrow">' + name + ', as we\'ll build it</div>' + still('ptStill3') + '<p class="pt-cap">Your home page on our frame. After your brand kit and your shoot it wears your colors and your food.</p></div></div>';
       scaleStill();
@@ -380,7 +380,7 @@
     });
 
     function gate(t, line) { stage.outerHTML = '<div class="pt-gate"><h1 style="font-size:26px">' + esc(t) + '</h1><p>' + line + '</p></div>'; }
-    if (SAMPLE) { D = sampleData(); loadC(); if (!C.name) C.name = 'Alex Rivera'; render(); loadPlan(); return; }
+    if (SAMPLE) { D = sampleData(); var fresh = true; try { fresh = !sessionStorage.getItem(KEY); } catch (e) {} loadC(); if (fresh) { C.name = 'Alex Rivera'; C.agree = true; } render(); loadPlan(); return; }
     if (!/^[a-z0-9]{8,20}$/.test(CODE)) return gate('This page was not found', 'Check the link in the email we sent you.');
     api({ action: 'pitch_view', code: CODE, preview: PREVIEW }).then(function (d) {
       if (!d || !d.ok) return gate('This page was not found', 'Check the link in the email we sent you, or write to contact@lesaruss.com.');
