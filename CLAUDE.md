@@ -683,6 +683,22 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
+- **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
+  this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
+  in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
+  voice, story, **the cast**, **sound**); the page shows only the frame's slides. **A brand that is not a listing** keeps its kit in
+  `ve_brand_cartridges` (by `brand_slug`, super admins only; `kit_get` / `kit_create` / `kit_save` with `brand` instead of `slug`; its saves
+  are `ve_cartridge_edits` rows with `brand_slug`), opened at `/business/brand?brand=<slug>`. **Vegans Explore's own kit**
+  (`?brand=vegans-explore`): the logo files (`/public/logo-ve-landscape-v1.svg`, `-inverted.svg`, `ve-logo-mark.svg`), the logo's colors
+  (forest #2D5C27 on light, bright #3A9B3E on dark and buttons, mint #E8F5E9, orange #F69820, ink #1A1A1A, night #0F1F14; Sean,
+  2026-10-31: "the green is the same as our logo") and Montserrat, locked; its voice and story are drafts for Sean. **A listing's kit can
+  name a parent** (`data.meta.parent`): a podcast listing's `kit_create` starts the podcast frame with the parent's colors, pairs and type.
+  **The Vegans Explore Podcast's kit** (`?listing=vegans-explore-podcast`, parent `vegans-explore`): cover B locked (the night city with a
+  broadcast tower, no characters, the title set in Montserrat; `vegan-media/media/podcast/brand/`), the description locked, the cast (Sean
+  hosts; Kai, Liz, Dani, Nori and, when the week has their story, Maya, River and Theo), and the sound (intro and outro as MP3s in
+  `media/podcast/sound/`, a bed per segment, the commercial bed and airplane effect, the Airport Guide commercial, Kai's tag), each playable;
+  cast, sound and voice are drafts. Its stage wears the cover's art without words. Not yet: the outputs the podcast frame makes (episode
+  art, the YouTube frame, Reel, Story and carousel templates).
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two

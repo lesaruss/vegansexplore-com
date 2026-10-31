@@ -142,6 +142,8 @@
     <section class="vg-slide" id="menu" data-title="Menu"></section>
     <section class="vg-slide" id="photos" data-title="Photos"></section>
     <section class="vg-slide" id="info" data-title="Hours and details"></section>
+    <section class="vg-slide" id="cast" data-title="The cast"></section>
+    <section class="vg-slide" id="sound" data-title="Sound"></section>
     <section class="vg-slide" id="next" data-title="Into the frame"></section>
   </main>
 
@@ -157,10 +159,21 @@
     // ---- The Cartridge for this visit: the finished sample, or a new client's empty one (?as=new). Changes save for the visit.
     // A real client's kit is /business/brand?listing=<slug>: loaded from and saved to ve-brand-kit (ve_cartridges). Without
     // ?listing it is the sample (Green Leaf Kitchen), which saves for the visit only.
-    var LIVE = decodeURIComponent((location.search.match(/[?&]listing=([^&#]+)/) || [])[1] || ''), ROLE = LIVE ? 'none' : 'owner', PEOPLE = null;
+    var BRAND = decodeURIComponent((location.search.match(/[?&]brand=([^&#]+)/) || [])[1] || ''), CHILDREN = [];
+    // A brand that is not a listing (Vegans Explore itself) opens by ?brand=<slug> (ve_brand_cartridges, super admins only).
+    var LIVE = BRAND || decodeURIComponent((location.search.match(/[?&]listing=([^&#]+)/) || [])[1] || ''), ROLE = LIVE ? 'none' : 'owner', PEOPLE = null;
     var NEW = !LIVE && /[?&]as=new\b/.test(location.search), KEY = 've_cartridge_sample_' + (NEW ? 'new' : 'done');
     var BASE = JSON.parse(JSON.stringify(window.VE_CARTRIDGE));
     var SECTIONS = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
+    // A kit's frame decides its parts (2026-10-31; FRAMES in ve-brand-kit): a restaurant's website, a brand, a podcast.
+    var FRAME_SECS = { brand: [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story']],
+      podcast: [['logo', 'Cover art'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['cast', 'The cast'], ['sound', 'Sound']] };
+    function frame() { return (C && C.meta && C.meta.frame) || 'restaurant'; }
+    function useFrame() {
+      SECTIONS = FRAME_SECS[frame()] || SECTIONS;
+      var keep = { cover: 1, cartridge: 1, next: 1 }; SECTIONS.forEach(function (x) { keep[x[0]] = 1; });
+      document.querySelectorAll('#bkStage .vg-slide').forEach(function (x) { if (!keep[x.id]) x.remove(); else if (x.id === 'logo') x.setAttribute('data-title', SECTIONS[0][1]); });
+    }
     if (NEW) SECTIONS.forEach(function (s) { BASE.meta.approvals[s[0]] = { state: 'not_started' }; });
     var C = BASE;
     if (!LIVE) try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved) C = saved; } catch (e) {}
@@ -168,7 +181,7 @@
     var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-brand-kit';
     function api(action, body) {
       var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(), h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
-      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, slug: LIVE }, body || {})) })
+      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action }, BRAND ? { brand: BRAND } : { slug: LIVE }, body || {})) })
         .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
     }
     var PARTS = { logo: function (d) { return d.brand.logo; }, colors: function (d) { return d.brand.colors; }, type: function (d) { return d.brand.type; }, photos: function (d) { return d.photos.space; } };
@@ -222,6 +235,8 @@
       story: { need: 'How it started and what you are about, in your own words.', why: 'People trust a face and a reason. It goes on your About and your Directory page.', who: 'You write it, or we draft it from your old site and you edit.', time: '10 minutes' },
       menu: { need: 'Every item and drink, its price and a photo.', why: 'Menus are the first thing people open. We copy yours in and write each description; you check it and add new items here.', who: 'You check it. We write and photograph it.', time: '20 minutes' },
       photos: { need: 'Every dish, every drink, your space and your team, shot to our standard.', why: 'Photos are what make someone hungry enough to come in.', who: 'Our photographer shoots them and uploads them here.', time: 'One shoot' },
+      cast: { need: 'The host and every correspondent: what each covers and the voice they record with.', why: 'Listeners come back for the people. Each voice is set once, on the Guide\'s profile, and never picked again.', who: 'The team.', time: '10 minutes' },
+      sound: { need: 'The intro, the outro, a bed for each segment, the commercial beds and effects, and the closing tag.', why: 'The same sounds every week are how the show is recognized in the first three seconds.', who: 'The team.', time: 'Once' },
       info: { need: 'Hours, address, phone, parking, and how people order.', why: 'Change it here and your website, your Directory page and Google change with it. No more "are you open?" calls.', who: 'You. Your Community Manager checks it with you every month.', time: '5 minutes' }
     };
     function howCard(k) { var h = HOW[k]; return '<div class="bk-card bk-how"><h3>What we need</h3><p>' + esc(h.need) + '</p><p>' + esc(h.why) + '</p>' +
@@ -239,22 +254,25 @@
     function render() {
       paint();
       var B = C.brand, name = C.business.name, cols = colorsOf();
-      if (LIVE) document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>' + esc(name) + '\'s brand kit. ' + ({ admin: 'You are on the team (super admin).', owner: 'You are the owner.', editor: 'You can edit every part.', photographer: 'You can upload photos.' })[ROLE] + ' Every change is saved for the whole team. <a href="/directory/' + encodeURIComponent(LIVE) + '">See the Directory page</a>';
+      if (BRAND) document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>' + esc(name) + '\'s own brand kit, the source for everything we make under it' + (CHILDREN.length ? ': ' + CHILDREN.map(function (k) { return '<a href="/business/brand?listing=' + encodeURIComponent(k.slug) + '">' + esc(k.name) + '</a>'; }).join(', ') : '') + '. Team only.';
+      else if (LIVE) document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>' + esc(name) + '\'s brand kit. ' + (C.meta.parent ? 'It takes its look from <a href="/business/brand?brand=' + encodeURIComponent(C.meta.parent) + '">the ' + esc(C.meta.parent.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); })) + ' brand kit</a>. ' : '') + ({ admin: 'You are on the team (super admin).', owner: 'You are the owner.', editor: 'You can edit every part.', photographer: 'You can upload photos.' })[ROLE] + ' Every change is saved for the whole team. <a href="/directory/' + encodeURIComponent(LIVE) + '">See the Directory page</a>';
       else document.getElementById('bkNote').innerHTML = '<strong>Sample</strong>' + esc(name) + ' is a made-up restaurant. ' +
         (NEW ? 'This is the kit a new client opens: every part starts empty, with what we need. Try it: your changes stay for this visit only. <a href="/business/sample/brand">See the finished kit</a>'
              : 'This is its finished kit: the Cartridge our website frame reads, and where the owner edits it. <a href="/business/sample/brand?as=new">Start it as a new client</a>') +
         ' · <a href="#" data-reset>Start over</a>';
-      var bgs = C.photos.space.filter(function (s) { return s.src; }); document.getElementById('bkStage').setAttribute('data-bg', bgs.length ? bgs[0].src : '');
+      var bgs = ((C.photos && C.photos.space) || []).filter(function (s) { return s.src; }); var art = (B.logo.files || []).filter(function (f) { return f.src && /without words/i.test(f.name); })[0];
+      document.getElementById('bkStage').setAttribute('data-bg', frame() === 'podcast' && art ? art.src : bgs.length ? bgs[0].src : '');
 
       var done = SECTIONS.filter(function (s) { return st(s[0]) === 'locked'; }).length;
       fill('cover', '<div class="bk-cover"><div>' + (shown('logo') ? '<img src="' + esc(B.logo.primary.src) + '" alt="' + esc(name) + ' logo">' : '<div class="bk-nologo">No logo yet<span style="font-weight:600;letter-spacing:0;text-transform:none;font-size:13px">It comes in at step one</span></div>') + '</div><div>' +
         '<div class="vg-eyebrow">Brand kit · BrandDesk</div><h1 class="vg-h vg-xl">' + esc(name) + '</h1>' +
         (shown('story') ? '<p class="vg-lede">' + esc(C.story.tagline) + '</p>' : '<p class="vg-lede">Everything that makes your business look and sound like itself, built here one part at a time.</p>') +
-        '<p class="vg-lede" style="font-size:14px;opacity:.85">' + done + ' of ' + SECTIONS.length + ' parts locked · ' + esc(C.business.city) + '</p>' +
+        '<p class="vg-lede" style="font-size:14px;opacity:.85">' + done + ' of ' + SECTIONS.length + ' parts locked' + (C.business.city ? ' · ' + esc(C.business.city) : '') + '</p>' +
         '<button class="vg-btn" type="button" data-vg-next>' + (done ? 'See your kit' : 'Start your kit') + '</button></div></div>');
 
       fill('cartridge', '<div class="vg-split"><div><div class="vg-eyebrow">Your kit</div><h2 class="vg-h">Everything that makes ' + esc(C.business.short) + ' look and sound like itself</h2>' +
-        '<p class="vg-lede">One place for your logo, colors, type, voice, story, every menu item and photo, and your details. Our website frame reads it, so your site, your Directory page, Google, social and the delivery apps all say the same thing.</p>' +
+        '<p class="vg-lede">' + (({ brand: 'One place for the logo, colors, type, voice and story. Every kit under this brand starts from it, so everything we make looks and sounds like one family.',
+          podcast: 'One place for the cover, colors, type, voice, story, the cast and the sound. The show\'s frame reads it: the cover, every episode\'s art, the YouTube frame and the social templates.' })[frame()] || 'One place for your logo, colors, type, voice, story, every menu item and photo, and your details. Our website frame reads it, so your site, your Directory page, Google, social and the delivery apps all say the same thing.') + '</p>' +
         '<p class="vg-lede">Go part by part. Each one shows what we need until you start it, and you lock it in when it is right. It is yours: if you ever leave, the whole kit goes with you.</p></div>' +
         '<div><div class="bk-card"><h3>Where each part stands</h3>' + SECTIONS.map(function (s) { return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') + '</div>' + teamCard() + '</div></div>');
 
@@ -263,8 +281,10 @@
           '<p class="vg-lede">' + lede + '</p>' + editRow(k) + '</div>' + (shown(k) ? content() : howCard(k)) + '</div>');
       }
 
-      sect('logo', 'Logo', 'Your logo', shown('logo') ? esc(B.logo.primary.note) : 'Send us any version you have. We clean it up and make every file you will need.', function () {
-        return '<div class="bk-card bk-scroll"><h3>The files</h3>' + B.logo.files.map(function (f) { return '<div class="bk-sect"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
+      var pod = frame() === 'podcast';
+      sect('logo', pod ? 'Cover' : 'Logo', pod ? 'The cover' : frame() === 'brand' ? 'The logo' : 'Your logo', shown('logo') ? esc(B.logo.primary.note) : 'Send us any version you have. We clean it up and make every file you will need.', function () {
+        return '<div class="bk-card bk-scroll">' + (B.logo.primary.src ? '<img src="' + esc(B.logo.primary.src) + '" alt="" style="display:block;max-width:' + (pod ? '260px' : '100%') + ';max-height:260px;border-radius:8px;margin-bottom:14px;background:' + (pod ? 'transparent' : '#fff') + '">' : '') +
+          '<h3>The files</h3>' + B.logo.files.map(function (f) { return '<div class="bk-sect"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
           '<h3 style="margin-top:16px">How to use it</h3><ul>' + B.logo.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div>';
       });
 
@@ -277,10 +297,10 @@
       });
 
       sect('type', 'Type', 'Two typefaces', shown('type') ? '<b>' + esc(B.type.heading.family) + '</b> for headings: ' + esc(B.type.heading.why) + ' <b>' + esc(B.type.body.family) + '</b> for everything else: ' + esc(B.type.body.why) : 'We pair two typefaces with your logo and show them on your real menu. You approve.', function () {
-        var it = C.menu.sections[0].items[0];
+        var it = (C.menu && C.menu.sections && C.menu.sections[0] && C.menu.sections[0].items[0]) || { name: C.business.name, copy: C.story.short || C.story.tagline || '' };
         var T = B.type, hf = "font-family:'" + T.heading.family + "',sans-serif;font-weight:" + T.heading.weight + ';';
         if (T.google && !document.querySelector('link[href="' + T.google + '"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = T.google; document.head.appendChild(l); }
-        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px;' + hf + '">' + esc(shown('voice') ? C.voice.samples.hero : 'Come hungry.') + '</p><p class="bk-type-h" style="font-size:26px;' + hf + '">' + esc(C.menu.sections[0].name) + '</p>' +
+        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px;' + hf + '">' + esc(shown('voice') ? C.voice.samples.hero : 'Come hungry.') + '</p><p class="bk-type-h" style="font-size:26px;' + hf + '">' + esc(C.menu && C.menu.sections && C.menu.sections[0] ? C.menu.sections[0].name : C.business.name) + '</p>' +
           '<p class="bk-type-h" style="font-size:18px;' + hf + '">' + esc(it.name) + ' · ' + esc(it.price) + '</p><p style="margin:10px 0 0;font-family:\'' + T.body.family + '\',sans-serif">' + esc(it.copy) + '</p></div>';
       });
 
@@ -294,6 +314,7 @@
         return '<div class="bk-card"><h3>About us</h3>' + C.story.long.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
       });
 
+      if (frame() === 'restaurant') {
       var shotN = 0, allN = 0;
       C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { allN++; if (i.photo.state === 'shot') shotN++; }); });
       C.photos.space.forEach(function (s) { allN++; if (s.state === 'shot') shotN++; });
@@ -321,11 +342,29 @@
           '<h3 style="margin-top:16px">Find us</h3><p>' + esc(I.address.street) + ', ' + esc(I.address.city) + ', ' + esc(I.address.state) + ' ' + esc(I.address.zip) + ' · ' + esc(I.phone) + '</p>' +
           '<p class="bk-muted">' + esc(I.details.join(' · ')) + '</p><div class="bk-sect"><span>Ordering: ' + esc(I.ordering.pos) + '</span>' + tag(I.ordering.state) + '</div></div>';
       });
+      }
+
+      if (frame() === 'podcast') {
+        var CA = C.cast || {}, SO = C.sound || {};
+        sect('cast', 'The cast', 'Who you hear', shown('cast') ? esc(CA.summary || '') : 'The host and the correspondents, what each one covers and the voice they record with.', function () {
+          var all = (CA.host ? [CA.host] : []).concat(CA.correspondents || []);
+          return '<div class="bk-card bk-scroll">' + all.map(function (p) {
+            return '<div class="bk-sect" style="align-items:flex-start"><span><b>' + esc(p.name) + '</b> · ' + esc(p.role) + '<br><span class="bk-muted">' + esc(p.covers || '') + '</span></span>' +
+              (p.note ? '<span class="bk-muted" style="text-align:right;max-width:45%">' + esc(p.note) + '</span>' : '') + '</div>'; }).join('') + '</div>';
+        });
+        sect('sound', 'Sound', 'How the show sounds', shown('sound') ? esc(SO.summary || '') : 'The intro and outro, a bed under each segment, the commercial beds and effects, and the closing tag.', function () {
+          return '<div class="bk-card bk-scroll">' + (SO.pieces || []).map(function (x) {
+            return '<div style="padding:10px 0;border-bottom:1px solid rgba(0,0,0,.08)"><b>' + esc(x.name) + '</b> <span class="bk-muted">' + esc(x.use || '') + '</span>' +
+              (x.src ? '<audio controls preload="none" src="' + esc(x.src) + '" style="display:block;width:100%;margin-top:6px"></audio>' : '<p class="bk-muted" style="margin:4px 0 0">' + esc(x.file || '') + '</p>') + '</div>'; }).join('') + '</div>';
+        });
+      }
 
       var open = SECTIONS.filter(function (s) { return st(s[0]) !== 'locked'; });
       fill('next', '<div class="vg-split"><div><div class="vg-eyebrow">What happens next</div><h2 class="vg-h">' + (open.length ? 'Lock in every part' : 'Ready for the frame') + '</h2>' +
+        (({ brand: '<p class="vg-lede">Every kit under this brand starts from these parts. Change one here and the next thing we make wears it.</p>',
+          podcast: '<p class="vg-lede">The show\'s frame reads this kit: the cover, every episode\'s art, the YouTube frame, the Reels and carousels. Change a part here and the next episode wears it.</p>' })[frame()] ||
         '<p class="vg-lede">When every part is locked, our team checks the kit and plugs it into the website frame. Your site takes on these colors, this type, this voice, this menu and these photos. Nothing else has to be built.</p>' +
-        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p>' + (LIVE ? '' : '<a class="vg-btn" href="/business/sample/site" target="_blank" rel="noopener">See the website it makes</a>') + '</div>' +
+        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p>') + (LIVE ? '' : '<a class="vg-btn" href="/business/sample/site" target="_blank" rel="noopener">See the website it makes</a>') + '</div>' +
         '<div class="bk-card"><h3>' + (open.length ? 'Still to do' : 'Every part is locked') + '</h3>' + (open.length ? open.map(function (s) {
           return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') : '<p>Our team checks it next.</p>') + '</div></div>');
     }
@@ -355,6 +394,13 @@
       { name: 'Street heat', mood: 'Bold, fast, hungry. Burgers, tacos, food trucks.', c: { page: '#FFF8F0', text: '#2A1A14', accent: '#C2410C', soft: '#FDE7D3', highlight: '#FACC15', ink: '#1C1917' }, names: ['Bun', 'Char', 'Chili', 'Peach', 'Mustard', 'Ink'] }
     ];
     var ROLES = [['page', 'Page', 'The background everywhere'], ['text', 'Text', 'Headings, words, dark panels'], ['accent', 'Buttons', 'Buttons and links'], ['soft', 'Soft', 'Soft panels and tags'], ['highlight', 'Highlight', 'One highlight a screen'], ['ink', 'Ink', 'Small print, words on the highlight']];
+    // The cast and the sound are filled by the team (ve-brand-kit kit_save); here they are checked and locked.
+    function editLock(k) {
+      var t = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
+      openEd(t, '<p>' + esc(HOW[k].need) + '</p><p class="bk-muted">The team fills this part. Check it on the slide, then lock it in, or keep it as a draft while it changes.</p>',
+        '<button class="bk-b ghost" type="button" data-lk="draft">Save draft</button><button class="bk-b" type="button" data-lk="lock">Lock it in</button>');
+      edFoot.querySelectorAll('[data-lk]').forEach(function (b) { b.addEventListener('click', function () { setState(k, b.dataset.lk === 'lock' ? 'locked' : 'in_progress'); closeEd(); }); });
+    }
     function editColors() {
       var draft = {}, names = {};
       (shown('colors') ? C.brand.colors : []).forEach(function (c) { draft[c.role] = c.hex; names[c.role] = c.name; });
@@ -727,7 +773,7 @@
       var r = e.target.closest('[data-reset]'); if (r) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.reload(); return; }
       var b = e.target.closest('[data-edit]'); if (!b) return;
       var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
-      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos })[k]();
+      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos, cast: editLock, sound: editLock })[k](k);
       if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
     });
 
@@ -767,13 +813,14 @@
         if (d.error === 'not_found') { gate('We could not find that business', 'Check the link, or open it from your dashboard.'); return; }
         if (d.error === 'not_yours') { gate(d.listing.name + '\'s brand kit', 'This kit is for the business and the people it adds. If you work there, ask the owner to add you with the email you sign in with.'); return; }
         if (!d.ok) { gate('The brand kit did not open', 'Try again in a moment.'); return; }
-        ROLE = d.role; PEOPLE = d.people || null;
+        ROLE = d.role; PEOPLE = d.people || null; CHILDREN = d.children || [];
         if (!d.cartridge) {
-          if (ROLE === 'admin') gate(d.listing.name, 'No brand kit yet. Starting one fills it from their Directory listing (name, city, hours, phone, address, menu, logo); every part starts Not started for them to work through.', '<button class="vg-btn" type="button" data-kit-start>Start their brand kit</button>');
+          if (ROLE === 'admin' && BRAND) gate(d.listing.name, 'No brand kit yet for this brand. Start it and fill each part: logo, colors, type, voice and story.', '<button class="vg-btn" type="button" data-kit-start>Start the brand kit</button>');
+          else if (ROLE === 'admin') gate(d.listing.name, 'No brand kit yet. Starting one fills it from their Directory listing (name, city, hours, phone, address, menu, logo); every part starts Not started for them to work through.', '<button class="vg-btn" type="button" data-kit-start>Start their brand kit</button>');
           else gate(d.listing.name, 'Your brand kit is not set up yet. Our team starts it when you join BrandDesk, and you will get an email when it is ready.');
           return;
         }
-        C = d.cartridge; render(); guided();
+        C = d.cartridge; useFrame(); render(); guided();
       }).catch(function () { gate('The brand kit did not open', 'Check your connection and try again.'); });
     }
     document.addEventListener('click', function (e) {

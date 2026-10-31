@@ -136,6 +136,8 @@ const SECTIONS = ['logo', 'colors', 'type', 'voice', 'story', 'menu', 'photos', 
 const FRAMES: Record<string, string[]> = { restaurant: SECTIONS, brand: ['logo', 'colors', 'type', 'voice', 'story'],
   podcast: ['logo', 'colors', 'type', 'voice', 'story', 'cast', 'sound'] };
 const secs = (d: any) => FRAMES[d?.meta?.frame] || SECTIONS;
+// The color pairs every frame scores for readability (the same five a restaurant's kit starts with).
+const PAIRS = [['text', 'page', 'Headings and text'], ['page', 'accent', 'Button words'], ['page', 'text', 'Words on the dark panels'], ['ink', 'highlight', 'Words on a highlight'], ['text', 'soft', 'Words on a soft panel']];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 function getPart(d: any, k: string) { return k === 'logo' ? d.brand?.logo : k === 'colors' ? d.brand?.colors : k === 'type' ? d.brand?.type : k === 'photos' ? d.photos?.space : d[k]; }
 function setPart(d: any, k: string, v: any) {
@@ -226,7 +228,7 @@ async function startPodcast(l: any) {
       approvals: Object.fromEntries(parts.map((k) => [k, { state: 'not_started' }])), sources: ['Its Directory listing', 'The ' + parent + ' brand kit'] },
     business: { name: l.name, short: l.name.replace(/ Podcast$/, ''), kind: 'Podcast', vegan: '', cuisines: [], city: '', chapter: '', since: null },
     brand: { logo: { primary: { src: l.logo_url && l.logo_url.startsWith(PUBLIC) ? l.logo_url : '', state: l.logo_url ? 'have' : 'to_make', note: '' }, files: [], rules: [] },
-      colors: pb.colors || [], pairs: pb.pairs || [], type: pb.type || { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
+      colors: pb.colors || [], pairs: (pb.pairs && pb.pairs.length) ? pb.pairs : PAIRS, type: pb.type || { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
     voice: { personality: [], sounds_like: '', never: [], words: { use: [], avoid: [] }, samples: { hero: '', instagram: '', google_reply: '', closed: '' } },
     story: { tagline: '', short: '', long: l.description ? [l.description] : [], answers: { old: l.description || '' } },
     cast: { host: null, correspondents: [] }, sound: { pieces: [] },
@@ -253,7 +255,7 @@ async function brandKit(b: any, memberId: string) {
     const data = { meta: { version: 1, status: 'building', frame: 'brand', updated: new Date().toISOString().slice(0, 10),
         approvals: Object.fromEntries(parts.map((k) => [k, { state: 'not_started' }])), sources: [] },
       business: { name, short: name, kind: 'Brand', vegan: '', cuisines: [], city: '', chapter: '', since: null },
-      brand: { logo: { primary: { src: '', state: 'to_make', note: '' }, files: [], rules: [] }, colors: [], pairs: [], type: { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
+      brand: { logo: { primary: { src: '', state: 'to_make', note: '' }, files: [], rules: [] }, colors: [], pairs: PAIRS, type: { heading: { family: 'Montserrat', weight: 900, why: '' }, body: { family: 'Montserrat', weight: 400, why: '' } } },
       voice: { personality: [], sounds_like: '', never: [], words: { use: [], avoid: [] }, samples: { hero: '', instagram: '', google_reply: '', closed: '' } },
       story: { tagline: '', short: '', long: [], answers: {} } };
     const { error } = await db.from('ve_brand_cartridges').insert({ brand_slug: slug, name, data, created_by: memberId, updated_by: memberId });
