@@ -151,6 +151,7 @@
         '<p class="vpc-msg" role="alert" hidden></p></form>';
       var f = body.querySelector('form'), E = f.elements, msg = f.querySelector('.vpc-msg');
       f.querySelector('.vpc-cancel').addEventListener('click', reset);
+      f.addEventListener('input', function (e) { if (e.target.getAttribute('aria-invalid')) { e.target.removeAttribute('aria-invalid'); msg.hidden = true; } });
       (f.querySelector('input[name=name]').value ? f.querySelector('input[name=proof]') : f.querySelector('input[name=name]')).focus();
       f.addEventListener('submit', function (e) {
         e.preventDefault();
