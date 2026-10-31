@@ -27,13 +27,17 @@
       updated: '2026-10-31',
       frame: 'restaurant',
       sample: true,
+      // One entry per section of the brand kit. States: not_started (the kit shows instructions only), in_progress, in_review (with
+      // the owner), revising, locked (approved; the content shows with Edit).
       approvals: {
-        brand: { state: 'approved', by: 'Owner', at: '2026-10-24', note: 'Second round: the turmeric accent came in, the darker green stayed.' },
-        voice: { state: 'approved', by: 'Owner', at: '2026-10-24' },
-        story: { state: 'approved', by: 'Owner', at: '2026-10-26', note: 'Asked us to name the bakery down the street. Kept it unnamed until they agree.' },
-        menu: { state: 'approved', by: 'Owner', at: '2026-10-27' },
-        photos: { state: 'to_make', note: 'Four of twenty shot. The rest are booked.' },
-        info: { state: 'approved', by: 'Owner', at: '2026-10-22' }
+        logo: { state: 'locked', by: 'Owner', at: '2026-10-22', note: 'We keep their stacked logo and make the other six files.' },
+        colors: { state: 'locked', by: 'Owner', at: '2026-10-24', note: 'Second round: the turmeric highlight came in, the darker green stayed.' },
+        type: { state: 'locked', by: 'Owner', at: '2026-10-24' },
+        voice: { state: 'locked', by: 'Owner', at: '2026-10-24' },
+        story: { state: 'locked', by: 'Owner', at: '2026-10-26', note: 'Asked us to name the bakery down the street. Kept it unnamed until the bakery agrees.' },
+        menu: { state: 'locked', by: 'Owner', at: '2026-10-27' },
+        photos: { state: 'in_progress', note: 'Four shot. The rest are booked.' },
+        info: { state: 'locked', by: 'Owner', at: '2026-10-22' }
       },
       sources: ['Their old website (archived at intake)', 'Their Google profile', 'Their Instagram', 'The intake call', 'Their menu as printed']
     },
@@ -64,15 +68,17 @@
         rules: ['Clear space all round equal to the leaf\'s width.', 'Never smaller than 120 px (1 inch) wide.',
           'Only on cream, white or forest. Never on a photo without a panel behind it.', 'Never stretched, recolored, outlined or shadowed.']
       },
+      // Colors by role, so any frame knows which is the page, the text, the buttons. The names are the client's own.
       colors: [
-        { key: 'forest', name: 'Forest', hex: '#1E4D2B', role: 'Text, headings, the dark panels' },
-        { key: 'leaf', name: 'Leaf', hex: '#2E7D32', role: 'Buttons and links (the logo\'s green)' },
-        { key: 'cream', name: 'Cream', hex: '#FBF5E6', role: 'The page, everywhere' },
-        { key: 'sage', name: 'Sage', hex: '#DCE8D2', role: 'Soft panels, tags, the hours strip' },
-        { key: 'turmeric', name: 'Turmeric', hex: '#E0A030', role: 'One highlight a screen: a badge, a new dish' },
-        { key: 'charcoal', name: 'Charcoal', hex: '#1F2420', role: 'Small print, prices' }
+        { role: 'page', name: 'Cream', hex: '#FBF5E6', job: 'The page, everywhere' },
+        { role: 'text', name: 'Forest', hex: '#1E4D2B', job: 'Text, headings, the dark panels' },
+        { role: 'accent', name: 'Leaf', hex: '#2E7D32', job: 'Buttons and links' },
+        { role: 'soft', name: 'Sage', hex: '#DCE8D2', job: 'Soft panels, tags, the hours strip' },
+        { role: 'highlight', name: 'Turmeric', hex: '#E0A030', job: 'One highlight a screen: a badge, a new dish' },
+        { role: 'ink', name: 'Charcoal', hex: '#1F2420', job: 'Small print, and words on the highlight' }
       ],
-      pairs: [['forest', 'cream'], ['leaf', 'cream'], ['cream', 'forest'], ['charcoal', 'turmeric'], ['forest', 'sage']],
+      // The pairs a frame draws, [words, background, where]. The kit scores readability from these.
+      pairs: [['text', 'page', 'Headings and text'], ['page', 'accent', 'Button words'], ['page', 'text', 'Words on the dark panels'], ['ink', 'highlight', 'Words on a highlight'], ['text', 'soft', 'Words on a soft panel']],
       type: {
         heading: { family: 'Nunito', weight: 900, why: 'Round and bold like the wordmark, so the site and the sign read as one.' },
         body: { family: 'DM Sans', weight: 400, why: 'Plain and easy at small sizes: menus, hours, prices.' },

@@ -477,7 +477,16 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `business/sample/brand.html`, guided view, `noindex`: cover, the Cartridge and where each part stands, logo and its files, colors with
   contrast worked out on the page, type, voice, story, menu copy (their words struck through, ours, price, tags, photo or To shoot), the
   photo standard and shot list, hours and details, into the frame). The page draws only from the Cartridge, so a second restaurant's kit
-  is its own Cartridge on the same page. Next: the intake, the frame, then a second restaurant in another city.
+  is its own Cartridge on the same page. **The brand kit is the intake and the owner's editor** (Sean, 2026-10-31; canon v5): each
+  section is Not started (only What we need: the need, why, who, how long), In progress, or Locked (the content, Edit, and a warning in
+  the editor that changing a locked brand part sets them back). `?as=new` opens the sample as a new client with every part empty; the
+  sample saves for the visit (`sessionStorage` `ve_cartridge_sample_new|done`, Start over clears it). The kit wears the client's colors
+  only once they are chosen. **Colors editor** built: why colors matter, four ready palettes (Fresh neighborhood, Island bright, Night
+  lounge, Street heat), their own six colors by role (page, text, accent, soft, highlight, ink; `brand.colors[].role`) with names and hex,
+  a live preview, every pair's contrast and a readability score out of 100 (full marks at 4.5:1, half from 3:1), Save draft or Lock it
+  in (refused while a pair is under 3:1). The other editors (logo, type, voice, story, menu with uploads and AI suggestions, photos,
+  info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  domain, SSL, sweep), and a second restaurant in another city.
 - **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;

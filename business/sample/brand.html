@@ -5,51 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex">
   <title>Green Leaf Kitchen Brand Kit — Vegans Explore</title>
-  <meta name="description" content="A sample Front of House brand kit: the Cartridge that makes Green Leaf Kitchen look and sound like itself.">
+  <meta name="description" content="A sample Front of House brand kit: the Cartridge that makes Green Leaf Kitchen look and sound like itself, and where the owner builds it.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* The brand kit is the Cartridge drawn for people (canon canon-ve-front-of-house v4). Every word, color and file on this page
-       comes from /business/sample/cartridge.js, so a second restaurant's kit is its own Cartridge on this same page. */
-    .bk-card{background:var(--bk-cream);color:var(--bk-forest);border-radius:12px;padding:24px 26px;box-shadow:0 18px 40px rgba(0,0,0,0.35);font-family:'DM Sans',sans-serif;}
-    .bk-card h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;margin:0 0 10px;color:var(--bk-forest);}
+    /* The brand kit, the intake and the owner's editor are one page (canon canon-ve-front-of-house v5; Sean, 2026-10-31: "this could
+       be one and the same"). Every word, color and file here comes from the Cartridge (/business/sample/cartridge.js). Each section is
+       Not started (instructions only), In progress, or Locked (the content, with Edit). The sample saves for the visit only. */
+    .bk-card{background:var(--bk-page);color:var(--bk-text);border-radius:12px;padding:24px 26px;box-shadow:0 18px 40px rgba(0,0,0,0.35);font-family:'DM Sans',sans-serif;}
+    .bk-card h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;margin:0 0 10px;color:var(--bk-text);}
     .bk-card p,.bk-card li{font-size:14.5px;line-height:1.6;}
-    .bk-card ul{margin:0;padding-left:18px;}
+    .bk-card ul,.bk-card ol{margin:0;padding-left:18px;}
+    .bk-muted{font-size:13px;opacity:.75;}
     .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;}
     .bk-grid.bk-six{grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));}
     .bk-grid.bk-five{grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));}
     .bk-scroll{max-height:calc(100vh - 360px);overflow-y:auto;scrollbar-width:thin;}
-    .bk-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;}
-    .bk-ok{background:#dcfce7;color:#14532d;} .bk-wait{background:#fef3c7;color:#713f12;} .bk-make{background:#e0e7ff;color:#1e1b4b;}
+    .bk-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
+    .bk-ok{background:#dcfce7;color:#14532d;} .bk-wait{background:#fef3c7;color:#713f12;} .bk-make{background:#e0e7ff;color:#1e1b4b;} .bk-none{background:#e5e7eb;color:#1f2937;}
     .bk-cover{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:48px;align-items:center;}
-    .bk-cover img{width:100%;max-width:420px;border-radius:14px;display:block;box-shadow:0 18px 40px rgba(0,0,0,0.4);}
-    .bk-sect{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(30,77,43,0.14);font-size:14.5px;}
+    .bk-cover img,.bk-nologo{width:100%;max-width:420px;aspect-ratio:1;border-radius:14px;display:block;box-shadow:0 18px 40px rgba(0,0,0,0.4);}
+    .bk-nologo{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:rgba(255,255,255,0.06);border:2px dashed rgba(255,255,255,0.35);box-shadow:none;color:#fff;font:800 12px/1.4 'Montserrat',sans-serif;letter-spacing:0.12em;text-transform:uppercase;text-align:center;}
+    .bk-sect{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:14.5px;}
     .bk-sect:last-child{border-bottom:0;}
     .bk-sw{border-radius:12px;overflow:hidden;background:#fff;color:#1F2420;font-family:'DM Sans',sans-serif;box-shadow:0 10px 26px rgba(0,0,0,0.3);}
     .bk-sw div{height:96px;}
     .bk-sw p{margin:0;padding:10px 14px 2px;font-weight:700;font-size:14px;}
     .bk-sw small{display:block;padding:0 14px 12px;font-size:12.5px;color:#4b5563;line-height:1.45;}
     .bk-pair{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;}
-    .bk-pair span{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.06em;}
+    .bk-pair span{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.06em;white-space:nowrap;}
     .bk-type-h{font-family:'Nunito',sans-serif;font-weight:900;line-height:1.05;margin:0 0 8px;}
-    .bk-q{border-left:4px solid var(--bk-leaf);padding:8px 0 8px 14px;margin:0 0 12px;font-size:15px;line-height:1.55;}
-    .bk-q b{display:block;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.12em;text-transform:uppercase;color:var(--bk-leaf);margin-bottom:6px;}
-    .bk-item{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid rgba(30,77,43,0.14);}
+    .bk-q{border-left:4px solid var(--bk-accent);padding:8px 0 8px 14px;margin:0 0 12px;font-size:15px;line-height:1.55;}
+    .bk-q b{display:block;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.12em;text-transform:uppercase;color:var(--bk-accent);margin-bottom:6px;}
+    .bk-item{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.12);}
     .bk-item:last-child{border-bottom:0;}
-    .bk-thumb{box-sizing:border-box;width:88px;height:88px;border-radius:10px;object-fit:cover;display:block;background:var(--bk-sage);}
-    .bk-thumb.bk-empty{display:flex;align-items:center;justify-content:center;text-align:center;font:800 9.5px/1.3 'Montserrat',sans-serif;letter-spacing:0.06em;text-transform:uppercase;color:var(--bk-forest);padding:6px;}
+    .bk-thumb{box-sizing:border-box;width:88px;height:88px;border-radius:10px;object-fit:cover;display:block;background:var(--bk-soft);}
+    .bk-thumb.bk-empty{display:flex;align-items:center;justify-content:center;text-align:center;font:800 9.5px/1.3 'Montserrat',sans-serif;letter-spacing:0.06em;text-transform:uppercase;color:var(--bk-text);padding:6px;}
     .bk-item h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;margin:0 0 4px;}
-    .bk-was{font-size:12.5px;color:#6b7280;text-decoration:line-through;text-decoration-color:rgba(107,114,128,0.5);margin:0 0 4px;}
+    .bk-was{font-size:12.5px;opacity:.6;text-decoration:line-through;margin:0 0 4px;}
     .bk-price{font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;}
-    .bk-sec{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:var(--bk-leaf);margin:18px 0 2px;}
+    .bk-sec{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:var(--bk-accent);margin:18px 0 2px;}
     .bk-sec:first-child{margin-top:0;}
-    .bk-shot{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(30,77,43,0.14);font-size:14px;}
+    .bk-shot{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:14px;}
     .bk-shot img,.bk-shot .bk-thumb{width:56px;height:56px;flex:none;}
     .bk-shot .bk-label{flex:1;}
     .bk-hours{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:14.5px;}
     .bk-hours b{font-weight:700;}
+    @media (min-width:901px) and (max-height:820px){.bk-sw div{height:60px;}.bk-pair{padding:9px 12px;}}
     .bk-wide{grid-template-columns:minmax(0,0.7fr) minmax(0,1.3fr);}
-    @media (max-width:900px){.bk-wide{grid-template-columns:minmax(0,1fr);}.bk-cover{grid-template-columns:minmax(0,1fr);gap:22px;}.bk-scroll{max-height:none;}.bk-item{grid-template-columns:64px minmax(0,1fr);}.bk-item .bk-price{grid-column:2;}.bk-thumb{width:64px;height:64px;}}
+    .bk-edit-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:8px;}
+    .bk-how{background:#fff;color:#1f2937;}
+    .bk-how h3{color:#14532d;}
+    .bk-how dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:12px 0 0;font-size:14px;}
+    .bk-how dt{font-weight:700;}
+    .bk-how dd{margin:0;}
+
+    /* The editor: one section at a time, over the kit */
+    .bk-ed{position:fixed;inset:0;z-index:100000;display:none;background:rgba(0,0,0,0.6);}
+    .bk-ed.on{display:block;}
+    .bk-ed-box{position:absolute;inset:24px;max-width:none;background:#fff;color:#1f2937;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;font-family:'DM Sans',sans-serif;}
+    .bk-ed-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid #e5e7eb;}
+    .bk-ed-head h2{margin:0;font:900 18px/1.2 'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:0.02em;}
+    .bk-ed-body{flex:1;overflow-y:auto;padding:24px;}
+    .bk-ed-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:12px;padding:14px 24px;border-top:1px solid #e5e7eb;}
+    .bk-b{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 20px;border-radius:6px;font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:#16a34a;color:#fff;}
+    .bk-b:hover{background:#15803d;}
+    .bk-b.ghost{background:#fff;color:#1f2937;border:1.5px solid #d1d5db;}
+    .bk-b.ghost:hover{border-color:#6b7280;}
+    .bk-b[disabled]{opacity:.45;cursor:not-allowed;}
+    .bk-ed-cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:28px;align-items:start;}
+    .bk-ed h4{font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#15803d;margin:0 0 12px;}
+    .bk-why{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;margin-bottom:24px;}
+    .bk-why div{background:#f3f4f6;border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.55;}
+    .bk-why b{display:block;font-size:14px;margin-bottom:4px;}
+    .bk-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;margin-bottom:24px;}
+    .bk-preset{border:2px solid #e5e7eb;border-radius:10px;overflow:hidden;cursor:pointer;background:#fff;text-align:left;padding:0;font:inherit;color:inherit;}
+    .bk-preset:hover,.bk-preset.on{border-color:#16a34a;}
+    .bk-preset .strip{display:flex;height:44px;}
+    .bk-preset .strip i{flex:1;}
+    .bk-preset p{margin:0;padding:10px 12px;font-size:13px;line-height:1.4;}
+    .bk-preset p b{display:block;font-size:14px;}
+    .bk-role{display:grid;grid-template-columns:52px minmax(0,1fr) 120px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+    .bk-role input[type=color]{width:52px;height:44px;border:1px solid #d1d5db;border-radius:6px;padding:2px;background:#fff;cursor:pointer;}
+    .bk-role input[type=text]{width:100%;box-sizing:border-box;min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font:inherit;font-size:14px;}
+    .bk-role small{display:block;font-size:12px;color:#6b7280;margin-top:3px;}
+    .bk-score{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+    .bk-score b{font:900 44px/1 'Montserrat',sans-serif;}
+    .bk-prev{border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:16px;}
+    .bk-prev .top{padding:18px 18px 14px;}
+    .bk-prev .top h5{margin:0 0 6px;font:900 24px/1.05 'Nunito',sans-serif;}
+    .bk-prev .top p{margin:0 0 12px;font-size:13.5px;}
+    .bk-prev .btn{display:inline-block;padding:9px 16px;border-radius:6px;font-weight:700;font-size:13px;}
+    .bk-prev .band{padding:12px 18px;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .bk-prev .badge{padding:4px 9px;border-radius:6px;font-weight:700;font-size:12px;}
+    .bk-check{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:13.5px;}
+    .bk-msg{font-size:13px;color:#6b7280;margin-right:auto;}
+    .bk-soon{max-width:720px;}
+    .bk-warn{background:#fef3c7;color:#713f12;border-radius:10px;padding:12px 16px;font-size:14px;line-height:1.5;margin-bottom:20px;}
+    @media (max-width:900px){.bk-wide{grid-template-columns:minmax(0,1fr);}.bk-cover{grid-template-columns:minmax(0,1fr);gap:22px;}.bk-scroll{max-height:none;}.bk-item{grid-template-columns:64px minmax(0,1fr);}.bk-item .bk-price{grid-column:2;}.bk-thumb{width:64px;height:64px;}
+      .bk-ed-box{inset:0;border-radius:0;}.bk-ed-cols{grid-template-columns:minmax(0,1fr);}.bk-ed-body{padding:18px 16px;}.bk-ed-head,.bk-ed-foot{padding:12px 16px;}.bk-role{grid-template-columns:48px minmax(0,1fr);}.bk-role .hex{grid-column:2;}}
   </style>
 </head>
 <body>
@@ -57,134 +111,267 @@
 
   <script src="/public/nav.js"></script>
 
-  <div class="vg-note"><strong>Sample</strong>Green Leaf Kitchen is a made-up restaurant. This is the brand kit a Front of House client gets: their Cartridge, the one file our website frame reads. <a href="/business/sample">See its Directory page</a></div>
+  <div class="vg-note" id="bkNote"></div>
 
-  <main class="vg-stage" id="bkStage" aria-label="Green Leaf Kitchen brand kit"></main>
+  <main class="vg-stage" id="bkStage" aria-label="Brand kit">
+    <section class="vg-slide" id="cover" data-title="Cover"></section>
+    <section class="vg-slide" id="cartridge" data-title="Your kit"></section>
+    <section class="vg-slide" id="logo" data-title="Logo"></section>
+    <section class="vg-slide" id="colors" data-title="Colors"></section>
+    <section class="vg-slide" id="type" data-title="Type"></section>
+    <section class="vg-slide" id="voice" data-title="Voice"></section>
+    <section class="vg-slide" id="story" data-title="Story"></section>
+    <section class="vg-slide" id="menu" data-title="Menu"></section>
+    <section class="vg-slide" id="photos" data-title="Photos"></section>
+    <section class="vg-slide" id="info" data-title="Hours and details"></section>
+    <section class="vg-slide" id="next" data-title="Into the frame"></section>
+  </main>
+
+  <div class="bk-ed" id="bkEd" role="dialog" aria-modal="true" aria-labelledby="bkEdTitle">
+    <div class="bk-ed-box"><div class="bk-ed-head"><h2 id="bkEdTitle"></h2><button class="bk-b ghost" type="button" data-ed-close>Close</button></div>
+      <div class="bk-ed-body" id="bkEdBody"></div><div class="bk-ed-foot" id="bkEdFoot"></div></div>
+  </div>
 
   <script src="/business/sample/cartridge.js"></script>
   <script>
   (function () {
-    var C = window.VE_CARTRIDGE, B = C.brand, stage = document.getElementById('bkStage');
-    var col = {}; B.colors.forEach(function (c) { col[c.key] = c.hex; });
-    var root = document.documentElement.style;
-    root.setProperty('--bk-cream', col.cream); root.setProperty('--bk-forest', col.forest);
-    root.setProperty('--bk-leaf', col.leaf); root.setProperty('--bk-sage', col.sage);
-    stage.setAttribute('data-bg', C.photos.space.filter(function (s) { return s.src; })[0].src);
+    // ---- The Cartridge for this visit: the finished sample, or a new client's empty one (?as=new). Changes save for the visit.
+    var NEW = /[?&]as=new\b/.test(location.search), KEY = 've_cartridge_sample_' + (NEW ? 'new' : 'done');
+    var BASE = JSON.parse(JSON.stringify(window.VE_CARTRIDGE));
+    var SECTIONS = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
+    if (NEW) SECTIONS.forEach(function (s) { BASE.meta.approvals[s[0]] = { state: 'not_started' }; });
+    var C = BASE;
+    try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved) C = saved; } catch (e) {}
+    function save() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+
+    // The kit shows its own colors only once they are chosen; until then, a neutral kit.
+    var NEUTRAL = { page: '#FFFFFF', text: '#1F2937', accent: '#16A34A', soft: '#F3F4F6', highlight: '#F59E0B', ink: '#111827' };
+    function st(k) { return (C.meta.approvals[k] || {}).state || 'not_started'; }
+    function shown(k) { return st(k) !== 'not_started'; }
+    function colorsOf() { var o = {}; (shown('colors') ? C.brand.colors : []).forEach(function (c) { o[c.role] = c.hex; }); Object.keys(NEUTRAL).forEach(function (r) { if (!o[r]) o[r] = NEUTRAL[r]; }); return o; }
+    function paint() { var c = colorsOf(), r = document.documentElement.style; Object.keys(c).forEach(function (k) { r.setProperty('--bk-' + k, c[k]); }); }
 
     function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-    var STATE = { approved: ['Approved', 'bk-ok'], in_review: ['With the owner', 'bk-wait'], revising: ['Being revised', 'bk-wait'],
-      to_make: ['We are making it', 'bk-make'], have: ['Have it', 'bk-ok'], shot: ['Shot', 'bk-ok'], to_shoot: ['To shoot', 'bk-make'],
-      to_connect: ['To connect', 'bk-make'] };
+    var STATE = { locked: ['Locked', 'bk-ok'], approved: ['Locked', 'bk-ok'], in_progress: ['In progress', 'bk-wait'], in_review: ['With the owner', 'bk-wait'],
+      revising: ['Being revised', 'bk-wait'], not_started: ['Not started', 'bk-none'], to_make: ['We are making it', 'bk-make'], have: ['Have it', 'bk-ok'],
+      shot: ['Shot', 'bk-ok'], to_shoot: ['To shoot', 'bk-make'], to_connect: ['To connect', 'bk-make'] };
     function tag(s) { var t = STATE[s] || [s, 'bk-wait']; return '<span class="bk-tag ' + t[1] + '">' + esc(t[0]) + '</span>'; }
-    function appr(k) { var a = C.meta.approvals[k] || {}; return tag(a.state) + (a.note ? '<p style="margin:10px 0 0;font-size:13px;color:#4b5563">' + esc(a.note) + '</p>' : ''); }
     // WCAG contrast, worked out here so the kit never claims a ratio it does not have.
     function lum(hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
     function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
-    function slide(id, title, html) { var s = document.createElement('section'); s.className = 'vg-slide'; s.id = id; s.setAttribute('data-title', title); s.innerHTML = html; stage.appendChild(s); }
+    function grade(r) { return r >= 4.5 ? 'Easy to read' : r >= 3 ? 'Big text only' : 'Hard to read'; }
+    // Readability score: every pair the frame draws, full marks at 4.5:1 or better, half from 3:1, none under.
+    function score(cols, pairs) { var pts = 0; pairs.forEach(function (p) { var r = ratio(cols[p[0]], cols[p[1]]); pts += r >= 4.5 ? 1 : r >= 3 ? 0.5 : 0; }); return Math.round(100 * pts / pairs.length); }
 
-    var name = C.business.name, sections = [['brand', 'Logo, colors and type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu copy'], ['photos', 'Photos'], ['info', 'Hours and details']];
+    // ---- What each section needs from the owner, shown until they start it.
+    var HOW = {
+      logo: { need: 'Your logo, any file you have. Even a photo of your sign works.', why: 'It goes on your website, Google, social and the delivery apps, so it has to be the same everywhere.', who: 'You send it. We make the other six files.', time: '5 minutes' },
+      colors: { need: 'The colors your business wears everywhere: six, each with a job.', why: 'Colors are how people recognize you before they read a word. Pick a ready palette or make your own and we score how readable it is.', who: 'You choose. We check it.', time: '10 minutes' },
+      type: { need: 'Two typefaces: one for headings, one for everything else.', why: 'We pair them with your logo so your sign and your site read as one.', who: 'We suggest. You approve.', time: '2 minutes' },
+      voice: { need: 'How you sound: the words you use and the ones you never do.', why: 'Every caption, reply and menu line should sound like the same person behind the counter.', who: 'A short course, then you lock it in.', time: '15 minutes' },
+      story: { need: 'How it started and what you are about, in your own words.', why: 'People trust a face and a reason. It goes on your About and your Directory page.', who: 'You write it, or we draft it from your old site and you edit.', time: '10 minutes' },
+      menu: { need: 'Every item and drink, its price and a photo.', why: 'Menus are the first thing people open. We copy yours in and write each description; you check it and add new items here.', who: 'You check it. We write and photograph it.', time: '20 minutes' },
+      photos: { need: 'Every dish, every drink, your space and your team, shot to our standard.', why: 'Photos are what make someone hungry enough to come in.', who: 'Our photographer shoots them and uploads them here.', time: 'One shoot' },
+      info: { need: 'Hours, address, phone, parking, and how people order.', why: 'Change it here and your website, your Directory page and Google change with it. No more "are you open?" calls.', who: 'You. Your Community Manager checks it with you every month.', time: '5 minutes' }
+    };
+    function howCard(k) { var h = HOW[k]; return '<div class="bk-card bk-how"><h3>What we need</h3><p>' + esc(h.need) + '</p><p>' + esc(h.why) + '</p>' +
+      '<dl><dt>Who</dt><dd>' + esc(h.who) + '</dd><dt>Takes</dt><dd>' + esc(h.time) + '</dd></dl></div>'; }
+    function editRow(k) { var s = st(k), lbl = s === 'not_started' ? 'Start' : 'Edit';
+      var a = C.meta.approvals[k] || {};
+      return '<div class="bk-edit-row"><button class="vg-btn" type="button" data-edit="' + k + '">' + lbl + '</button>' + tag(s) +
+        (a.at ? '<span style="font-size:13px;opacity:.8">' + (s === 'locked' ? 'Locked ' : 'Saved ') + esc(a.at) + '</span>' : '') + '</div>' +
+        (a.note && s !== 'not_started' ? '<p class="vg-lede" style="font-size:13.5px;opacity:.85;margin-top:10px">' + esc(a.note) + '</p>' : ''); }
+    function fill(id, html) { document.getElementById(id).innerHTML = html; }
 
-    slide('cover', 'Cover',
-      '<div class="bk-cover"><div><img src="' + esc(B.logo.primary.src) + '" alt="' + esc(name) + ' logo"></div><div>' +
-      '<div class="vg-eyebrow">Brand kit · Front of House</div><h1 class="vg-h vg-xl">' + esc(name) + '</h1>' +
-      '<p class="vg-lede">' + esc(C.story.tagline) + '</p>' +
-      '<p class="vg-lede" style="font-size:14px;opacity:.85">' + esc(C.business.vegan) + ' · ' + esc(C.business.cuisines.join(', ')) + ' · ' + esc(C.business.city) + '</p>' +
-      '<p class="vg-lede" style="font-size:14px;opacity:.85">Cartridge version ' + C.meta.version + ', ' + (C.meta.status === 'locked' ? 'locked' : 'in progress') + ' ' + esc(C.meta.updated) + '</p></div></div>');
+    // ---- The slides
+    function render() {
+      paint();
+      var B = C.brand, name = C.business.name, cols = colorsOf();
+      document.getElementById('bkNote').innerHTML = '<strong>Sample</strong>' + esc(name) + ' is a made-up restaurant. ' +
+        (NEW ? 'This is the kit a new client opens: every part starts empty, with what we need. Try it: your changes stay for this visit only. <a href="/business/sample/brand">See the finished kit</a>'
+             : 'This is its finished kit: the Cartridge our website frame reads, and where the owner edits it. <a href="/business/sample/brand?as=new">Start it as a new client</a>') +
+        ' · <a href="#" data-reset>Start over</a>';
+      var bgs = C.photos.space.filter(function (s) { return s.src; }); document.getElementById('bkStage').setAttribute('data-bg', bgs.length ? bgs[0].src : '');
 
-    slide('cartridge', 'The Cartridge',
-      '<div class="vg-split"><div><div class="vg-eyebrow">What this is</div><h2 class="vg-h">Everything that makes ' + esc(C.business.short) + ' look and sound like itself</h2>' +
-      '<p class="vg-lede">This is the Cartridge: one file with the logo, colors, type, voice, story, every menu item and photo, and the details. Our website frame reads it, so the site, the Directory page, Google, social and the delivery apps all say the same thing.</p>' +
-      '<p class="vg-lede">Every part is approved by the owner before it goes live. And it is theirs: if they ever leave, this whole kit and every file in it goes with them.</p></div>' +
-      '<div class="bk-card"><h3>Where each part stands</h3>' + sections.map(function (s) {
-        var a = C.meta.approvals[s[0]] || {}; return '<div class="bk-sect"><span>' + esc(s[1]) + '</span>' + tag(a.state) + '</div>';
-      }).join('') + '<p style="margin:14px 0 0;font-size:13px;color:#4b5563">Built from: ' + esc(C.meta.sources.join(', ')) + '.</p></div></div>');
+      var done = SECTIONS.filter(function (s) { return st(s[0]) === 'locked'; }).length;
+      fill('cover', '<div class="bk-cover"><div>' + (shown('logo') ? '<img src="' + esc(B.logo.primary.src) + '" alt="' + esc(name) + ' logo">' : '<div class="bk-nologo">No logo yet<span style="font-weight:600;letter-spacing:0;text-transform:none;font-size:13px">It comes in at step one</span></div>') + '</div><div>' +
+        '<div class="vg-eyebrow">Brand kit · Front of House</div><h1 class="vg-h vg-xl">' + esc(name) + '</h1>' +
+        (shown('story') ? '<p class="vg-lede">' + esc(C.story.tagline) + '</p>' : '<p class="vg-lede">Everything that makes your business look and sound like itself, built here one part at a time.</p>') +
+        '<p class="vg-lede" style="font-size:14px;opacity:.85">' + done + ' of ' + SECTIONS.length + ' parts locked · ' + esc(C.business.city) + '</p>' +
+        '<button class="vg-btn" type="button" data-vg-next>' + (done ? 'See your kit' : 'Start your kit') + '</button></div></div>');
 
-    slide('logo', 'Logo',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Logo</div><h2 class="vg-h">The leaf and the fork</h2>' +
-      '<p class="vg-lede">' + esc(B.logo.primary.note) + '</p><div class="bk-card"><h3>How to use it</h3><ul>' +
-      B.logo.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div></div>' +
-      '<div class="bk-card"><h3>The files</h3>' + B.logo.files.map(function (f) {
-        return '<div class="bk-sect"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>';
-      }).join('') + '</div></div>');
+      fill('cartridge', '<div class="vg-split"><div><div class="vg-eyebrow">Your kit</div><h2 class="vg-h">Everything that makes ' + esc(C.business.short) + ' look and sound like itself</h2>' +
+        '<p class="vg-lede">One place for your logo, colors, type, voice, story, every menu item and photo, and your details. Our website frame reads it, so your site, your Directory page, Google, social and the delivery apps all say the same thing.</p>' +
+        '<p class="vg-lede">Go part by part. Each one shows what we need until you start it, and you lock it in when it is right. It is yours: if you ever leave, the whole kit goes with you.</p></div>' +
+        '<div class="bk-card"><h3>Where each part stands</h3>' + SECTIONS.map(function (s) { return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') + '</div></div>');
 
-    slide('colors', 'Colors',
-      '<div class="vg-eyebrow">Colors</div><h2 class="vg-h">Six colors, each with a job</h2>' +
-      '<div class="bk-grid bk-six" style="margin-bottom:18px">' + B.colors.map(function (c) {
-        return '<div class="bk-sw"><div style="background:' + c.hex + '"></div><p>' + esc(c.name) + ' · ' + c.hex + '</p><small>' + esc(c.role) + '</small></div>';
-      }).join('') + '</div>' +
-      '<div class="bk-grid bk-five">' + B.pairs.map(function (p) {
-        var fg = col[p[0]], bg = col[p[1]], r = ratio(fg, bg);
-        return '<div class="bk-pair" style="color:' + fg + ';background:' + bg + '">' + esc(p[0][0].toUpperCase() + p[0].slice(1)) + ' on ' + esc(p[1]) +
-          '<span>' + r.toFixed(1) + ':1 ' + (r >= 4.5 ? 'AA' : r >= 3 ? 'AA large text' : 'not for text') + '</span></div>';
-      }).join('') + '</div>');
+      function sect(k, eyebrow, title, lede, content) {
+        fill(k, '<div class="vg-split' + (k === 'menu' ? ' bk-wide' : '') + '"><div><div class="vg-eyebrow">' + eyebrow + '</div><h2 class="vg-h">' + title + '</h2>' +
+          '<p class="vg-lede">' + lede + '</p>' + editRow(k) + '</div>' + (shown(k) ? content() : howCard(k)) + '</div>');
+      }
 
-    slide('type', 'Type',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Type</div><h2 class="vg-h">Two typefaces</h2>' +
-      '<p class="vg-lede"><b>' + esc(B.type.heading.family) + '</b> for headings. ' + esc(B.type.heading.why) + '</p>' +
-      '<p class="vg-lede"><b>' + esc(B.type.body.family) + '</b> for everything else. ' + esc(B.type.body.why) + '</p></div>' +
-      '<div class="bk-card"><p class="bk-type-h" style="font-size:44px">Come hungry.</p><p class="bk-type-h" style="font-size:26px">All-day breakfast</p>' +
-      '<p class="bk-type-h" style="font-size:18px">Sunrise Plate · $15</p><p style="margin:10px 0 0">' + esc(C.menu.sections[0].items[0].copy) + '</p>' +
-      '<p style="margin:10px 0 0;font-size:12.5px;color:#4b5563">Open today 8 AM to 3 PM · 123 Sample Street</p></div></div>');
+      sect('logo', 'Logo', 'Your logo', shown('logo') ? esc(B.logo.primary.note) : 'Send us any version you have. We clean it up and make every file you will need.', function () {
+        return '<div class="bk-card bk-scroll"><h3>The files</h3>' + B.logo.files.map(function (f) { return '<div class="bk-sect"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
+          '<h3 style="margin-top:16px">How to use it</h3><ul>' + B.logo.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div>';
+      });
 
-    var V = C.voice;
-    slide('voice', 'Voice',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Voice</div><h2 class="vg-h">' + esc(V.personality.join(', ')) + '</h2>' +
-      '<p class="vg-lede">' + esc(V.sounds_like) + '</p><div class="bk-card"><h3>We never</h3><ul>' +
-      V.never.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('') + '</ul>' +
-      '<p style="margin:12px 0 0"><b>Words we use:</b> ' + esc(V.words.use.join(', ')) + '<br><b>Words we leave out:</b> ' + esc(V.words.avoid.join(', ')) + '</p></div></div>' +
-      '<div class="bk-card">' + [['On the website', V.samples.hero], ['On Instagram', V.samples.instagram], ['Answering a Google review', V.samples.google_reply], ['When we close for the day', V.samples.closed]].map(function (q) {
-        return '<p class="bk-q"><b>' + esc(q[0]) + '</b>' + esc(q[1]) + '</p>';
-      }).join('') + '</div></div>');
+      sect('colors', 'Colors', shown('colors') ? 'Six colors, each with a job' : 'Pick your colors', shown('colors') ? 'Readability score ' + score(cols, B.pairs) + ' of 100, worked out from every pair the website draws.' : 'Choose a ready palette or make your own. We score how easy it is to read before you lock it in.', function () {
+        return '<div><div class="bk-grid bk-six" style="margin-bottom:14px">' + B.colors.map(function (c) {
+          return '<div class="bk-sw"><div style="background:' + c.hex + '"></div><p>' + esc(c.name) + ' · ' + c.hex + '</p><small>' + esc(c.job) + '</small></div>';
+        }).join('') + '</div><div class="bk-grid bk-five">' + B.pairs.map(function (p) {
+          var r = ratio(cols[p[0]], cols[p[1]]); return '<div class="bk-pair" style="color:' + cols[p[0]] + ';background:' + cols[p[1]] + '">' + esc(p[2]) + '<span>' + r.toFixed(1) + ':1</span></div>';
+        }).join('') + '</div></div>';
+      });
 
-    slide('story', 'Story',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Story</div><h2 class="vg-h">How we tell it</h2>' +
-      '<div class="bk-card"><h3>In one line</h3><p>' + esc(C.story.tagline) + '</p><h3 style="margin-top:14px">In two sentences</h3><p>' + esc(C.story.short) + '</p></div></div>' +
-      '<div class="bk-card"><h3>About us</h3>' + C.story.long.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + appr('story') + '</div></div>');
+      sect('type', 'Type', 'Two typefaces', shown('type') ? '<b>' + esc(B.type.heading.family) + '</b> for headings: ' + esc(B.type.heading.why) + ' <b>' + esc(B.type.body.family) + '</b> for everything else: ' + esc(B.type.body.why) : 'We pair two typefaces with your logo and show them on your real menu. You approve.', function () {
+        var it = C.menu.sections[0].items[0];
+        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px">Come hungry.</p><p class="bk-type-h" style="font-size:26px">' + esc(C.menu.sections[0].name) + '</p>' +
+          '<p class="bk-type-h" style="font-size:18px">' + esc(it.name) + ' · ' + esc(it.price) + '</p><p style="margin:10px 0 0">' + esc(it.copy) + '</p></div>';
+      });
 
-    slide('menu', 'Menu copy',
-      '<div class="vg-split bk-wide"><div><div class="vg-eyebrow">Menu copy</div><h2 class="vg-h">Every item, rewritten and photographed</h2>' +
-      '<p class="vg-lede">We start from their words (struck through) and write it so it sounds like ' + esc(C.business.short) + ' and makes you hungry. Nothing is promised that is not on the plate.</p>' +
-      '<p class="vg-lede">Every food item and every drink gets a photo to our standard.</p></div>' +
-      '<div class="bk-card bk-scroll">' + C.menu.sections.map(function (s) {
-        return '<p class="bk-sec">' + esc(s.name) + '</p>' + s.items.map(function (it) {
-          var ph = it.photo.src ? '<img class="bk-thumb" src="' + esc(it.photo.src) + '" alt="' + esc(it.name) + '">' : '<div class="bk-thumb bk-empty">To shoot</div>';
-          return '<div class="bk-item">' + ph + '<div><h4>' + esc(it.name) + '</h4><p class="bk-was">' + esc(it.was) + '</p><p style="margin:0 0 6px">' + esc(it.copy) + '</p>' +
-            it.tags.map(function (t) { return '<span class="bk-tag" style="background:var(--bk-sage);color:var(--bk-forest);margin-right:6px">' + esc(t) + '</span>'; }).join('') + '</div>' +
-            '<div class="bk-price">' + esc(it.price) + '</div></div>';
+      var V = C.voice;
+      sect('voice', 'Voice', shown('voice') ? esc(V.personality.join(', ')) : 'Find your voice', shown('voice') ? esc(V.sounds_like) : 'A short course: how you would talk to a regular, the words you use and the ones you never do. Then you lock it in.', function () {
+        return '<div class="bk-card">' + [['On the website', V.samples.hero], ['On Instagram', V.samples.instagram], ['Answering a Google review', V.samples.google_reply], ['When we close for the day', V.samples.closed]].map(function (q) {
+          return '<p class="bk-q"><b>' + esc(q[0]) + '</b>' + esc(q[1]) + '</p>'; }).join('') + '<p class="bk-muted" style="margin:0">We never: ' + esc(V.never.join('; ')) + '.</p></div>';
+      });
+
+      sect('story', 'Story', 'How we tell it', shown('story') ? esc(C.story.short) : 'In your words, or we draft it from your old website and you edit it.', function () {
+        return '<div class="bk-card"><h3>About us</h3>' + C.story.long.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
+      });
+
+      var shotN = 0, allN = 0;
+      C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { allN++; if (i.photo.state === 'shot') shotN++; }); });
+      C.photos.space.forEach(function (s) { allN++; if (s.state === 'shot') shotN++; });
+      sect('menu', 'Menu', 'Every item, written and photographed', shown('menu') ? 'Their words struck through, ours under them. Every food item and every drink gets a photo to our standard. New items added here go on the website.' : 'We copy your current menu in and write each description. You check it, add new items, and upload photos onto each one.', function () {
+        return '<div class="bk-card bk-scroll">' + C.menu.sections.map(function (s) {
+          return '<p class="bk-sec">' + esc(s.name) + '</p>' + s.items.map(function (it) {
+            var ph = it.photo.src ? '<img class="bk-thumb" src="' + esc(it.photo.src) + '" alt="' + esc(it.name) + '">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+            return '<div class="bk-item">' + ph + '<div><h4>' + esc(it.name) + '</h4><p class="bk-was">' + esc(it.was) + '</p><p style="margin:0 0 6px">' + esc(it.copy) + '</p>' +
+              it.tags.map(function (t) { return '<span class="bk-tag" style="background:var(--bk-soft);color:var(--bk-text);margin-right:6px">' + esc(t) + '</span>'; }).join('') + '</div><div class="bk-price">' + esc(it.price) + '</div></div>';
+          }).join('');
+        }).join('') + '</div>';
+      });
+
+      var P = C.photos.spec;
+      sect('photos', 'Photos · ' + shotN + ' of ' + allN + ' shot', 'The standard every photo meets', esc(B.photo.look), function () {
+        return '<div class="bk-card bk-scroll"><h3>The standard</h3><ul>' + [['Angles', P.angles], ['The set', P.set], ['Light', P.light], ['Drinks', P.drinks], ['Plating', P.plate], ['Delivered', P.crops]].map(function (r) {
+          return '<li><b>' + r[0] + ':</b> ' + esc(r[1]) + '</li>'; }).join('') + '</ul><h3 style="margin-top:16px">The space and the team</h3>' + C.photos.space.map(function (s) {
+          var ph = s.src ? '<img class="bk-thumb" src="' + esc(s.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+          return '<div class="bk-shot">' + ph + '<span class="bk-label">' + esc(s.shot) + '</span>' + tag(s.state) + '</div>'; }).join('') + '</div>';
+      });
+
+      var I = C.info;
+      sect('info', 'Hours and details', 'One place for the facts', 'Change it here and your website, your Directory page and Google change with it.', function () {
+        return '<div class="bk-card"><h3>Hours</h3><div class="bk-hours">' + Object.keys(I.hours).map(function (d) { return '<b>' + d + '</b><span>' + esc(I.hours[d]) + '</span>'; }).join('') + '</div>' +
+          '<h3 style="margin-top:16px">Find us</h3><p>' + esc(I.address.street) + ', ' + esc(I.address.city) + ', ' + esc(I.address.state) + ' ' + esc(I.address.zip) + ' · ' + esc(I.phone) + '</p>' +
+          '<p class="bk-muted">' + esc(I.details.join(' · ')) + '</p><div class="bk-sect"><span>Ordering: ' + esc(I.ordering.pos) + '</span>' + tag(I.ordering.state) + '</div></div>';
+      });
+
+      var open = SECTIONS.filter(function (s) { return st(s[0]) !== 'locked'; });
+      fill('next', '<div class="vg-split"><div><div class="vg-eyebrow">What happens next</div><h2 class="vg-h">' + (open.length ? 'Lock in every part' : 'Ready for the frame') + '</h2>' +
+        '<p class="vg-lede">When every part is locked, our team checks the kit and plugs it into the website frame. Your site takes on these colors, this type, this voice, this menu and these photos. Nothing else has to be built.</p>' +
+        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p></div>' +
+        '<div class="bk-card"><h3>' + (open.length ? 'Still to do' : 'Every part is locked') + '</h3>' + (open.length ? open.map(function (s) {
+          return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') : '<p>Our team checks it next.</p>') + '</div></div>');
+    }
+
+    // ---- The editors
+    var ed = document.getElementById('bkEd'), edBody = document.getElementById('bkEdBody'), edFoot = document.getElementById('bkEdFoot'), edTitle = document.getElementById('bkEdTitle'), lastFocus = null;
+    function openEd(title, body, foot) { lastFocus = document.activeElement; edTitle.textContent = title; edBody.innerHTML = body; edFoot.innerHTML = foot; ed.classList.add('on'); document.body.style.overflow = 'hidden'; edBody.scrollTop = 0; var f = ed.querySelector('[data-ed-close]'); if (f) f.focus(); }
+    function closeEd() { ed.classList.remove('on'); document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
+    ed.addEventListener('click', function (e) { if (e.target === ed || e.target.closest('[data-ed-close]')) closeEd(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ed.classList.contains('on')) closeEd(); });
+
+    function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
+    function setState(k, s) { C.meta.approvals[k] = { state: s, by: 'You', at: today() }; save(); render(); }
+
+    // Colors: why colors matter, ready palettes, your own with a live readability score, then lock.
+    var PRESETS = [
+      { name: 'Fresh neighborhood', mood: 'Calm, natural, made with care. Cafes, bowls, brunch.', c: { page: '#FBF5E6', text: '#1E4D2B', accent: '#2E7D32', soft: '#DCE8D2', highlight: '#E0A030', ink: '#1F2420' }, names: ['Cream', 'Forest', 'Leaf', 'Sage', 'Turmeric', 'Charcoal'] },
+      { name: 'Island bright', mood: 'Sunny, loud, fun. Caribbean, juice bars, smoothies.', c: { page: '#FFFFFF', text: '#0F3D3E', accent: '#0B7A64', soft: '#E3F5EF', highlight: '#FFB000', ink: '#1A1A1A' }, names: ['White', 'Deep Teal', 'Palm', 'Seafoam', 'Mango', 'Ink'] },
+      { name: 'Night lounge', mood: 'Grown up, warm, evening. Cocktails, dinner, date night.', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, names: ['Night', 'Linen', 'Brass', 'Moss', 'Gold', 'Night'] },
+      { name: 'Street heat', mood: 'Bold, fast, hungry. Burgers, tacos, food trucks.', c: { page: '#FFF8F0', text: '#2A1A14', accent: '#C2410C', soft: '#FDE7D3', highlight: '#FACC15', ink: '#1C1917' }, names: ['Bun', 'Char', 'Chili', 'Peach', 'Mustard', 'Ink'] }
+    ];
+    var ROLES = [['page', 'Page', 'The background everywhere'], ['text', 'Text', 'Headings, words, dark panels'], ['accent', 'Buttons', 'Buttons and links'], ['soft', 'Soft', 'Soft panels and tags'], ['highlight', 'Highlight', 'One highlight a screen'], ['ink', 'Ink', 'Small print, words on the highlight']];
+    function editColors() {
+      var draft = {}, names = {};
+      (shown('colors') ? C.brand.colors : []).forEach(function (c) { draft[c.role] = c.hex; names[c.role] = c.name; });
+      if (!draft.page) { PRESETS[0].names.forEach(function (n, i) { names[ROLES[i][0]] = n; }); draft = JSON.parse(JSON.stringify(PRESETS[0].c)); }
+      var body = '<div class="bk-why">' +
+        '<div><b>People see color first</b>They recognize you by it before they read your name. Use the same colors everywhere: sign, site, menus, posts.</div>' +
+        '<div><b>Warm colors feel hungry</b>Reds, oranges and yellows wake up appetite. Use them for one highlight, not everything.</div>' +
+        '<div><b>Greens and earth tones feel fresh</b>They say natural and made with care. Most of the page can live here.</div>' +
+        '<div><b>60, 30, 10</b>About 60% your page color, 30% your text and panels, 10% buttons and highlights.</div></div>' +
+        '<h4>Start from a palette</h4><div class="bk-presets">' + PRESETS.map(function (p, i) {
+          return '<button class="bk-preset" type="button" data-preset="' + i + '"><div class="strip">' + ROLES.map(function (r) { return '<i style="background:' + p.c[r[0]] + '"></i>'; }).join('') + '</div><p><b>' + esc(p.name) + '</b>' + esc(p.mood) + '</p></button>';
+        }).join('') + '</div>' +
+        '<div class="bk-ed-cols"><div><h4>Or make your own</h4><div id="bkRoles"></div></div><div><h4>How it reads</h4><div id="bkLive"></div></div></div>';
+      var foot = '<span class="bk-msg">' + (st('colors') === 'locked' ? 'These are locked. Changing them changes your whole brand.' : 'Save a draft any time. Lock it in when it is right.') + '</span>' +
+        '<button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-col-save>Save draft</button><button class="bk-b" type="button" data-col-lock>Lock it in</button>';
+      openEd('Colors', body, foot);
+      function drawRoles() {
+        document.getElementById('bkRoles').innerHTML = ROLES.map(function (r) {
+          return '<div class="bk-role"><input type="color" value="' + draft[r[0]] + '" data-role="' + r[0] + '" aria-label="' + r[1] + ' color"><div><input type="text" value="' + esc(names[r[0]] || '') + '" data-name="' + r[0] + '" aria-label="' + r[1] + ' color name" data-dictate="off"><small>' + r[1] + ': ' + r[2] + '</small></div>' +
+            '<input class="hex" type="text" value="' + draft[r[0]].toUpperCase() + '" data-hex="' + r[0] + '" aria-label="' + r[1] + ' hex" maxlength="7" data-dictate="off"></div>';
         }).join('');
-      }).join('') + '</div></div>');
+      }
+      function drawLive() {
+        var sc = score(draft, C.brand.pairs), worst = C.brand.pairs.map(function (p) { return ratio(draft[p[0]], draft[p[1]]); }).sort(function (a, b) { return a - b; })[0];
+        document.getElementById('bkLive').innerHTML =
+          '<div class="bk-prev" style="background:' + draft.page + ';color:' + draft.text + '"><div class="top"><h5 style="color:' + draft.text + '">' + esc(C.business.name) + '</h5><p>All-day breakfast, big bowls and good coffee.</p>' +
+          '<span class="btn" style="background:' + draft.accent + ';color:' + draft.page + '">See the menu</span></div>' +
+          '<div class="band" style="background:' + draft.soft + ';color:' + draft.text + '">Open today 8 AM to 3 PM <span class="badge" style="background:' + draft.highlight + ';color:' + draft.ink + '">New dish</span></div>' +
+          '<div class="band" style="background:' + draft.text + ';color:' + draft.page + '">Come hungry.</div></div>' +
+          '<div class="bk-score"><b style="color:' + (sc >= 90 ? '#15803d' : sc >= 70 ? '#b45309' : '#b91c1c') + '">' + sc + '</b><span>of 100 for readability</span></div>' +
+          C.brand.pairs.map(function (p) { var r = ratio(draft[p[0]], draft[p[1]]); return '<div class="bk-check"><span>' + esc(p[2]) + '</span><span>' + r.toFixed(1) + ':1 · ' + grade(r) + '</span></div>'; }).join('') +
+          '<p class="bk-muted" style="margin-top:12px">' + (worst >= 4.5 ? 'Every pair is easy to read. Ready to lock in.' : worst >= 3 ? 'Some pairs only work for big text. You can lock it in, but try darkening the text or lightening the page.' : 'Some words would be hard to read. Fix the pairs marked Hard to read before you lock it in.') + '</p>';
+        var lock = edFoot.querySelector('[data-col-lock]'); if (lock) lock.disabled = worst < 3;
+      }
+      drawRoles(); drawLive();
+      edBody.oninput = function (e) {
+        var t = e.target;
+        if (t.dataset.role) { draft[t.dataset.role] = t.value; var h = edBody.querySelector('[data-hex="' + t.dataset.role + '"]'); if (h) h.value = t.value.toUpperCase(); drawLive(); }
+        else if (t.dataset.hex && /^#[0-9a-f]{6}$/i.test(t.value)) { draft[t.dataset.hex] = t.value; var c = edBody.querySelector('[data-role="' + t.dataset.hex + '"]'); if (c) c.value = t.value; drawLive(); }
+        else if (t.dataset.name) names[t.dataset.name] = t.value;
+        edBody.querySelectorAll('.bk-preset').forEach(function (b) { b.classList.remove('on'); });
+      };
+      edBody.onclick = function (e) {
+        var b = e.target.closest('[data-preset]'); if (!b) return;
+        var p = PRESETS[+b.dataset.preset]; draft = JSON.parse(JSON.stringify(p.c)); p.names.forEach(function (n, i) { names[ROLES[i][0]] = n; });
+        drawRoles(); drawLive(); edBody.querySelectorAll('.bk-preset').forEach(function (x) { x.classList.toggle('on', x === b); });
+      };
+      edFoot.onclick = function (e) {
+        var lock = e.target.closest('[data-col-lock]'), sv = e.target.closest('[data-col-save]'); if (!lock && !sv) return;
+        var jobs = {}; BASE.brand.colors.forEach(function (c) { jobs[c.role] = c.job; });
+        C.brand.colors = ROLES.map(function (r) { return { role: r[0], name: (names[r[0]] || r[1]).trim() || r[1], hex: draft[r[0]].toUpperCase(), job: jobs[r[0]] || r[2] }; });
+        setState('colors', lock ? 'locked' : 'in_progress'); closeEd();
+      };
+    }
 
-    var P = C.photos.spec, shotN = 0, allN = 0;
-    C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { allN++; if (i.photo.state === 'shot') shotN++; }); });
-    C.photos.space.forEach(function (s) { allN++; if (s.state === 'shot') shotN++; });
-    slide('photos', 'Photos',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Photos · ' + shotN + ' of ' + allN + ' shot</div><h2 class="vg-h">The standard every photo meets</h2>' +
-      '<p class="vg-lede">' + esc(B.photo.look) + '</p><div class="bk-card bk-scroll" style="max-height:calc(100vh - 510px);min-height:200px"><ul>' +
-      [['Angles', P.angles], ['The set', P.set], ['Light', P.light], ['Drinks', P.drinks], ['Plating', P.plate], ['Delivered', P.crops]].map(function (r) {
-        return '<li><b>' + r[0] + ':</b> ' + esc(r[1]) + '</li>';
-      }).join('') + '<li><b>Never:</b> ' + esc(B.photo.never) + '</li></ul></div></div>' +
-      '<div class="bk-card bk-scroll"><h3>The space and the team</h3>' + C.photos.space.map(function (s) {
-        var ph = s.src ? '<img class="bk-thumb" src="' + esc(s.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
-        return '<div class="bk-shot">' + ph + '<span class="bk-label">' + esc(s.shot) + '</span>' + tag(s.state) + '</div>';
-      }).join('') + '</div></div>');
+    // The other editors are built next; until then each says what it will do, so nothing pretends to work.
+    var SOON = {
+      logo: 'Upload your logo (a file or a photo of your sign). We clean it up and make the vector, reversed, mark-only, one-line, social and delivery-app versions, and each one appears here to approve.',
+      type: 'Pick from heading and text pairs chosen to match your logo, each shown on your real menu, then lock it in.',
+      voice: 'A short course on finding your voice: how you would greet a regular, three words that describe you, examples from other businesses, then the words you use and never use. It writes sample lines for your site, Instagram and Google replies for you to approve.',
+      story: 'Write it in your words or press Suggest and our AI drafts it from your old website and your answers. Edit any word, then lock it in.',
+      menu: 'Every item with its price, tags and description. Add new items, upload a photo onto each one, or press Suggest for a description in your voice. New items go on your website.',
+      photos: 'Every shot on the list takes its upload. Your photographer or Community Manager can upload here too. Each one is checked against the standard.',
+      info: 'Hours for each day, holiday hours, address, phone, parking and accessibility, and your ordering system.'
+    };
+    function editSoon(k, title) {
+      openEd(title, '<div class="bk-soon"><h4>Coming next</h4><p style="font-size:15px;line-height:1.65">' + esc(SOON[k]) + '</p>' + howCard(k).replace('bk-card bk-how', 'bk-card bk-how" style="box-shadow:none;border:1px solid #e5e7eb') + '</div>',
+        '<span class="bk-msg">This editor is being built. Colors works today.</span><button class="bk-b ghost" type="button" data-ed-close>Close</button>');
+    }
 
-    var I = C.info;
-    slide('info', 'Hours and details',
-      '<div class="vg-split"><div><div class="vg-eyebrow">Hours and details</div><h2 class="vg-h">One place for the facts</h2>' +
-      '<p class="vg-lede">Change it here and the website, the Directory page and Google all change with it. Their Community Manager checks it with them every month.</p>' +
-      '<div class="bk-card"><h3>Find us</h3><p>' + esc(I.address.street) + ', ' + esc(I.address.city) + ', ' + esc(I.address.state) + ' ' + esc(I.address.zip) + '<br>' + esc(I.phone) + ' · ' + esc(I.email) + '</p>' +
-      '<p style="margin:8px 0 0">' + esc(I.details.join(' · ')) + '</p></div></div>' +
-      '<div class="bk-card"><h3>Hours</h3><div class="bk-hours">' + Object.keys(I.hours).map(function (d) { return '<b>' + d + '</b><span>' + esc(I.hours[d]) + '</span>'; }).join('') + '</div>' +
-      '<h3 style="margin-top:16px">Ordering</h3><div class="bk-sect"><span>' + esc(I.ordering.pos) + '</span>' + tag(I.ordering.state) + '</div><p style="margin:8px 0 0;font-size:13px;color:#4b5563">' + esc(I.ordering.note) + '</p></div></div>');
+    document.addEventListener('click', function (e) {
+      var r = e.target.closest('[data-reset]'); if (r) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.reload(); return; }
+      var b = e.target.closest('[data-edit]'); if (!b) return;
+      var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
+      if (k === 'colors') editColors(); else editSoon(k, title);
+      if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
+    });
 
-    slide('next', 'Into the frame',
-      '<div class="vg-split"><div><div class="vg-eyebrow">What happens next</div><h2 class="vg-h">Locked, then plugged in</h2>' +
-      '<p class="vg-lede">Once the owner approves the last part, the Cartridge is locked and plugged into our restaurant frame. The website takes on these colors, this type, this voice, this menu and these photos. Nothing else about the site has to be built.</p>' +
-      '<p class="vg-lede">Every improvement we make to the frame reaches ' + esc(C.business.short) + ' and every other client at the same time.</p>' +
-      '<a class="vg-btn" href="/business/sample">See its Directory page</a></div>' +
-      '<div class="bk-card"><h3>Still open</h3>' + sections.filter(function (s) { return (C.meta.approvals[s[0]] || {}).state !== 'approved'; }).map(function (s) {
-        return '<div class="bk-sect"><span>' + esc(s[1]) + '</span>' + tag(C.meta.approvals[s[0]].state) + '</div>';
-      }).join('') + '<p style="margin:12px 0 0">' + B.logo.files.filter(function (f) { return f.state !== 'have'; }).length + ' logo files to make · ' + (allN - shotN) + ' photos to shoot</p></div></div>');
+    render();
   })();
   </script>
 
