@@ -167,14 +167,16 @@
     '@media (max-width:700px){.vg-tile-h{grid-template-columns:84px minmax(0,1fr);}.vg-tile-h>.vg-thumb{width:84px;height:84px;}}',
     '.vg-ico{flex:0 0 44px;width:44px;height:44px;border-radius:10px;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center;}',
     '.vg-go-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}',
-    '.vg-gbar{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:6px 16px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:14px 16px 0;margin:0 0 16px;overflow:hidden;}',
-    '.vg-gbar>i{width:72px;height:72px;border-radius:12px;background:#fff center 20%/cover no-repeat;grid-row:1;}',
+    '.vg-gbar{display:grid;grid-template-columns:132px minmax(0,1fr) auto;gap:8px 28px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:14px 18px 0;margin:0 0 16px;overflow:hidden;}',
+    '.vg-gbar-kai{display:flex;flex-direction:column;gap:8px;align-self:start;}',
+    '.vg-gbar-kai>i{display:block;width:100%;aspect-ratio:1/1;border-radius:12px;background:#fff center 20%/cover no-repeat;}',
+    '.vg-gbar-kai .vg-kai-play{width:100%;justify-content:center;}',
     '.vg-gbar-at{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin:0 0 4px;}.vg-gbar-at em{font-style:normal;color:#1a1a1a;}',
-    '.vg-gbar-t p{margin:0 0 8px;font-size:14px;line-height:1.5;}.vg-gbar-t p b{color:var(--g);}',
-    '.vg-gbar-nav{display:flex;gap:8px;align-items:center;}.vg-gbar-nav .vg-btn{min-height:40px;padding:9px 16px;white-space:nowrap;}',
-    '.vg-gbar-prog{grid-column:1/-1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin:8px -16px 0;}',
+    '.vg-gbar-t p{margin:0;font-size:14px;line-height:1.5;max-width:760px;}.vg-gbar-t p b{color:var(--g);}',
+    '.vg-gbar-nav{display:flex;gap:12px;align-items:center;}.vg-gbar-nav .vg-btn{min-height:40px;padding:9px 16px;white-space:nowrap;}',
+    '.vg-gbar-prog{grid-column:1/-1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:4px;margin:8px -18px 0;}',
     '.vg-gbar-prog span{height:5px;background:var(--gm);}.vg-gbar-prog span.on{background:var(--g);}',
-    '@media (max-width:760px){.vg-gbar{grid-template-columns:56px minmax(0,1fr);}.vg-gbar>i{width:56px;height:56px;align-self:start;}.vg-gbar-nav{grid-column:1/-1;justify-content:space-between;}}',
+    '@media (max-width:760px){.vg-gbar{grid-template-columns:104px minmax(0,1fr);gap:12px 14px;padding:14px 14px 0;}.vg-gbar-nav{grid-column:1/-1;justify-content:space-between;}.vg-gbar-prog{margin:4px -14px 0;}}',
     '.vg-kai-play{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:7px 12px;min-height:34px;border-radius:6px;border:1.5px solid var(--g);background:#fff;color:var(--g);cursor:pointer;}',
     '.vg-kai-play[aria-pressed=true]{background:var(--g);color:#fff;}',
     '.vg-kai .vg-kai-play{margin-top:10px;}',
@@ -639,8 +641,9 @@
     function topRow(h) {
       var key = lineKey(h), n = tourNav(h), prog = '';
       for (var i = 0; i < TOUR.length; i++) prog += '<span class="' + (i <= n.at.i ? 'on' : '') + '"></span>';
-      return '<nav class="vg-gbar" aria-label="Walkthrough"><i style="background-image:url(\'' + esc(KAI_IMG) + '\')" role="img" aria-label="Kai Monroe"></i>' +
-        '<div class="vg-gbar-t"><div class="vg-gbar-at">' + n.label + '</div><p><b>Kai:</b> ' + esc(LINES[key] || '') + '</p>' + (key ? voice.button(key) : '') + '</div>' +
+      // Kai's picture sits on her Play button, the same width (Sean, 2026-10-30).
+      return '<nav class="vg-gbar" aria-label="Walkthrough"><div class="vg-gbar-kai"><i style="background-image:url(\'' + esc(KAI_IMG) + '\')" role="img" aria-label="Kai Monroe"></i>' + (key ? voice.button(key) : '') + '</div>' +
+        '<div class="vg-gbar-t"><div class="vg-gbar-at">' + n.label + '</div><p><b>Kai:</b> ' + esc(LINES[key] || '') + '</p></div>' +
         '<div class="vg-gbar-nav">' + n.bk + n.nx + '</div><div class="vg-gbar-prog" aria-hidden="true">' + prog + '</div></nav>';
     }
 
