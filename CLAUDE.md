@@ -538,7 +538,10 @@ judge whether food is safe by how a place looks online; businesses want marketin
   Call / Directions / Order bar. It writes the Restaurant and its menu as schema.org data. Its 24 menu photos and 7 space photos
   (`business/sample/img/m-*.webp`, `s-*.webp`, Higgsfield 2026-10-31, the same surface and angle for every dish, from the existing photos
   as references; full size in `vegan-media/media/communities/green-leaf-kitchen/`, copied through `ve-off-lookup` `save`, which takes
-  pictures up to 12 MB). The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  pictures up to 12 MB). **Make it yours** (the showroom switch, built 2026-10-31): the sample bar's Their brand / Island bright / Night
+  lounge redraws the same site from the same Cartridge with only the brand slots changed, the colors by role and the two typefaces
+  (`LOOKS` and `applyLook` in `business/site.html`, the brand kit's ready palettes and type pairings; `sessionStorage` `ve_site_look`); on
+  a dark page the header wears the reversed logo. A new look is a `LOOKS` row. The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit

@@ -25,7 +25,9 @@
     .sample{background:#2b1d06;color:#ffd79a;font:600 12px/1.45 system-ui,sans-serif;padding:8px 40px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;}
     .sample b{color:#F69820;letter-spacing:.12em;text-transform:uppercase;font-size:10px;}
     .sample a{color:#ffd79a;font-weight:700;}
-    .sample .seg{display:inline-flex;border:1px solid rgba(255,215,154,.4);border-radius:6px;overflow:hidden;margin-left:auto;}
+    .sample .seg{display:inline-flex;border:1px solid rgba(255,215,154,.4);border-radius:6px;overflow:hidden;}
+    .sample .seg.push{margin-left:auto;}
+    .brand img.rev{object-fit:contain;padding:3px;}
     .sample .seg button{background:none;border:0;color:#ffd79a;font:700 11.5px/1 system-ui,sans-serif;padding:7px 10px;cursor:pointer;}
     .sample .seg button.on{background:#ffd79a;color:#2b1d06;}
     .top{position:sticky;top:0;z-index:20;background:var(--c-page);border-bottom:1px solid color-mix(in srgb,var(--c-text) 12%,transparent);}
@@ -157,13 +159,29 @@
     function saveCart() { try { sessionStorage.setItem('ve_site_cart', JSON.stringify(CART)); } catch (e) {} }
     function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
-    var root = document.documentElement.style;
-    B.colors.forEach(function (c) { root.setProperty('--c-' + c.role, c.hex); });
-    root.setProperty('--f-head', "'" + B.type.heading.family + "'"); root.setProperty('--f-head-w', B.type.heading.weight);
-    root.setProperty('--f-body', "'" + B.type.body.family + "'");
-    var fl = document.createElement('link'); fl.rel = 'stylesheet';
-    fl.href = 'https://fonts.googleapis.com/css2?family=' + B.type.heading.family.replace(/ /g, '+') + ':wght@' + B.type.heading.weight + '&family=' + B.type.body.family.replace(/ /g, '+') + ':wght@400;600;700;800&display=swap';
-    document.head.appendChild(fl);
+    // Make it yours (BrandDesk): the same site and the same Cartridge, only the brand slots change (colors by role and the two
+    // typefaces). "Their brand" is the Cartridge as it is; the others borrow the brand kit's ready palettes and type pairings.
+    var LOOKS = [
+      { key: 'theirs', name: 'Their brand' },
+      { key: 'island', name: 'Island bright', c: { page: '#FFFFFF', text: '#0F3D3E', accent: '#0B7A64', soft: '#E3F5EF', highlight: '#FFB000', ink: '#1A1A1A' }, h: 'Fraunces', hw: 800, b: 'Work Sans' },
+      { key: 'night', name: 'Night lounge', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, h: 'Playfair Display', hw: 800, b: 'Lato' }
+    ];
+    var LOOK = 'theirs'; try { LOOK = sessionStorage.getItem('ve_site_look') || 'theirs'; } catch (e) {}
+    if (!LOOKS.some(function (l) { return l.key === LOOK; })) LOOK = 'theirs';
+    var root = document.documentElement.style, DARK_PAGE = false;
+    function lum(hex) { var n = parseInt(String(hex).replace('#', ''), 16); return (0.299 * (n >> 16 & 255) + 0.587 * (n >> 8 & 255) + 0.114 * (n & 255)) / 255; }
+    function applyLook() {
+      var L = LOOKS.filter(function (l) { return l.key === LOOK; })[0], cols = {}, h, hw, b;
+      B.colors.forEach(function (c) { cols[c.role] = c.hex; });
+      if (L.c) { cols = L.c; h = L.h; hw = L.hw; b = L.b; } else { h = B.type.heading.family; hw = B.type.heading.weight; b = B.type.body.family; }
+      Object.keys(cols).forEach(function (k) { root.setProperty('--c-' + k, cols[k]); });
+      DARK_PAGE = lum(cols.page) < 0.4;
+      root.setProperty('--f-head', "'" + h + "'"); root.setProperty('--f-head-w', hw); root.setProperty('--f-body', "'" + b + "'");
+      var id = 'siteFonts-' + LOOK; if (!document.getElementById(id)) { var fl = document.createElement('link'); fl.id = id; fl.rel = 'stylesheet';
+        fl.href = 'https://fonts.googleapis.com/css2?family=' + h.replace(/ /g, '+') + ':wght@' + hw + '&family=' + b.replace(/ /g, '+') + ':wght@400;600;700;800&display=swap';
+        document.head.appendChild(fl); }
+    }
+    applyLook();
 
     var DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     var nowNY = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })), today = DAYS[nowNY.getDay()];
@@ -288,8 +306,9 @@
     function draw() {
       var page = route();
       document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.</span>' +
+        '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
-      var top = '<header class="top"><div class="wrap"><a class="brand" href="#/">' + (logo ? '<img src="' + esc(logo) + '" alt="">' : '') + '<span>' + esc(biz.name) + '</span></a>' +
+      var top = '<header class="top"><div class="wrap"><a class="brand" href="#/">' + (logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
         '<button class="burger" type="button" aria-label="Menu" data-burger><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>' +
         '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn" href="' + esc(orderHref()) + '">Order</a></nav></div></header>';
       var L = I.links || {}, social = ['instagram', 'tiktok', 'facebook'].filter(function (k) { return L[k]; });
@@ -310,6 +329,7 @@
     document.addEventListener('click', function (e) {
       var t;
       if ((t = e.target.closest('[data-burger]'))) { document.getElementById('links').classList.toggle('openm'); return; }
+      if ((t = e.target.closest('[data-look]'))) { LOOK = t.dataset.look; try { sessionStorage.setItem('ve_site_look', LOOK); } catch (x) {} applyLook(); draw(); return; }
       if ((t = e.target.closest('[data-mode]'))) { MODE = t.dataset.mode; try { sessionStorage.setItem('ve_site_order_mode', MODE); } catch (x) {} draw(); return; }
       if ((t = e.target.closest('[data-sec]'))) { activeSec = +t.dataset.sec; t.closest('[data-menu]').innerHTML = menuBlock(route() === 'order'); return; }
       if ((t = e.target.closest('[data-set]'))) { activeSet = t.dataset.set; document.querySelectorAll('[data-gallery]').forEach(function (g) { g.innerHTML = gallery(); }); return; }
