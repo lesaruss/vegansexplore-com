@@ -25,6 +25,8 @@
  *   audit     their audits and the $49 / $149 audit, through the Restaurant Guide (restaurants and other food places)
  *   guides    the Guides: theirs, free, or $11 or 1,100 points
  *   plan      Founding Member and the Partner plan
+ *   managed   Managed by us, for a managed marketing (BrandDesk) client: onboarding, their Library and asset sheet (&bd=start|library|sheet,
+ *             /public/ve-branddesk-client.js, ve-branddesk client); on the sample business, Green Leaf Kitchen's
  *
  *   VEPartnerDash.mount(el, listing, { editPage: function (step) {}, call?: function (body) -> Promise, onJoin?: function () {} })
  *   call and onJoin stand in for ve-claims and the $11 checkout on the sample business (/business/sample, Sean 2026-10-27).
@@ -33,7 +35,7 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
-  var VIEWS = [['home', 'Home'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
@@ -163,7 +165,7 @@
       photos: ['Photos', 'Photos from your events, so people can picture showing up.', 'photos'] }) : CHECK;
     function go(view, extra) {
       var u = new URL(location.href);
-      u.searchParams.set('tab', 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item');
+      u.searchParams.set('tab', 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item'); u.searchParams.delete('bd');
       if (view && view !== 'home') u.searchParams.set('pd', view); else u.searchParams.delete('pd');
       if (extra) Object.keys(extra).forEach(function (k) { u.searchParams.set(k, extra[k]); });
       history.pushState(null, '', u.pathname + u.search + u.hash);
@@ -175,6 +177,11 @@
       api({ action: 'owner_dashboard', listing_id: l.id, days: days }).then(function (d) {
         if (!d || !d.ok) { el.innerHTML = '<div class="vpd"><p class="vpd-empty">We could not open your dashboard just now. Try again in a moment.</p></div>'; return; }
         D = d;
+        // A managed marketing client (BrandDesk) gets Managed by us: onboarding, their Library and asset sheet (ve-branddesk). The sample
+        // business is the showroom, so it shows Green Leaf Kitchen's.
+        if (!REAL) D.bd = l.slug === 'sample';
+        else { fetch(SB + '/functions/v1/ve-branddesk', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify({ action: 'plan', slug: l.slug }) })
+          .then(function (r) { return r.json(); }).then(function (p) { if (p && p.account && ['active', 'paused', 'canceling'].indexOf(p.account.status) >= 0) { D.bd = true; draw(); } }).catch(function () {}); }
         // A real group's announcements, members and partnership come from ve-group (the sample's are in its demo file).
         if (opts.call || !d.open || !D.listing || D.listing.kind !== 'group') return cb();
         gapi({ action: 'dash', listing_id: l.id }).then(function (g) { if (g && g.ok) mergeGroup(g); cb(); });
@@ -193,6 +200,7 @@
         if (v[0] === 'gift') return !!D.group && (!REAL || !!D.lead);
         // A Group Partner's dashboard: no hours, menu, audit, check-ins, ads or Partner plan; its members are its audience.
         if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
+        if (v[0] === 'managed') return !!D.bd;
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
         if (v[0] === 'audit') return D.listing.food;
         if (v[0] === 'checkins') return KIND === 'place';
@@ -242,7 +250,7 @@
         (todo.length ? '<div class="vpd-grid">' + todo.map(function (c) {
           var m = CK[c.k];
           var act = c.k === 'menu' ? '<a class="vpd-btn sm" href="?tab=brand&pd=menu" data-vpd="menu">Add it</a>'
-            : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-survival-guide#/audit">Run it</a>'
+            : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-guide#/audit">Run it</a>'
             : '<button type="button" class="vpd-btn sm" data-vpd-edit="' + m[2] + '">Add it</button>';
           return '<div class="vpd-card"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p>' + act + '</div>';
         }).join('') + '</div>' : '') +
@@ -426,7 +434,7 @@
 
     // ---- Audit
     function drawAudit() {
-      var G = '/guides/vegan-restaurant-survival-guide';
+      var G = '/guides/vegan-restaurant-guide';
       var list = D.audits.length ? '<div class="vpd-list">' + D.audits.map(function (a) {
         var done = a.status === 'done';
         // Our monthly check-up runs every check, but it is ours: the owner reads what to fix, not a score they paid for.
@@ -685,10 +693,22 @@
       return out;
     }
 
-    var VIEW_FN = { gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    var VIEW_FN = { managed: drawManaged, gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
+    // Managed by us (BrandDesk): the client's onboarding, Library and asset sheet, drawn by /public/ve-branddesk-client.js (&bd=<view>).
+    function drawManaged() { return '<div id="vpd-bd"><p class="vpd-empty">Loading...</p></div>'; }
+    function mountManaged() {
+      var box = el.querySelector('#vpd-bd'); if (!box) return;
+      var run = function () {
+        VEBrandDesk.mount(box, { slug: l.slug, view: q('bd') || 'start', load: REAL ? null : VEBrandDesk.sampleData,
+          go: function (v) { var u = new URL(location.href); if (v === 'start') u.searchParams.delete('bd'); else u.searchParams.set('bd', v); history.pushState(null, '', u.pathname + u.search + u.hash); } });
+      };
+      if (window.VEBrandDesk) return run();
+      var s = document.createElement('script'); s.src = '/public/ve-branddesk-client.js'; s.onload = run; document.head.appendChild(s);
+    }
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
+      if (view === 'managed') mountManaged();
       el.querySelectorAll('[data-vpd]').forEach(function (a) {
         a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.vpd, a.dataset.vpdItem ? { item: a.dataset.vpdItem } : null); });
       });

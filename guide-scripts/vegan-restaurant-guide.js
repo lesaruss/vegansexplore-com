@@ -1,4 +1,4 @@
-/* The Vegan Restaurant Survival Guide (rebuilt 2026-10-10 on the Dairy Guide playbook, docs/guides/BUILD-A-GUIDE.md).
+/* The Vegan Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook, docs/guides/BUILD-A-GUIDE.md).
  *
  * The tabs are the tour. Liz stays on the right of every tab and talks about it; the tab's content sits on the left, on
  * one screen. Back / N of M / Next under Liz walks the tabs in order. The address bar carries the view (#/audit/r/<id>,
@@ -22,7 +22,7 @@
  * The full audit is its own add-on, never part of the Guide (Sean, 2026-10-10): it is bought here, but anyone can buy it.
  */
 (function () {
-  var SLUG = 'vegan-restaurant-survival-guide';
+  var SLUG = 'vegan-restaurant-guide';
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var AUDIT_URL = SB + '/functions/v1/ve-restaurant-audit';
@@ -77,18 +77,18 @@
       // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
       sayPoints: 'The Restaurant Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
   ];
-  // Liz on camera (recorded 2026-10-10): el-media voice, Wan 2.7 from one pose per tab, cut by hand where her mouth closes.
+  // Liz's voice over her still picture, one pose per tab (Sean, 2026-10-31: "I don't like the animations. It's inconsistent...
+  // I don't want to see her animated at the beginning either"). Each file is an MP4 of the sharp still with the line she recorded
+  // on 2026-10-10 (Your audit, Pulse and My list re-recorded 2026-10-31 without "lives here"), so the player is unchanged. Maya's
+  // Dairy Guide clips stay animated. Raise CLIP_V when the files change.
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/liz/restaurant-guide/';
-  var CLIPS = {}, CLIPS_M = {};
-  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = { video: CLIP_BASE + 'rg-' + k + '.mp4?v=1', poster: CLIP_BASE + 'rg-poster-' + k + '.jpg?v=1' }; });
-  // Re-recorded 2026-10-31 (Sean): "lives here" became "is right here" / "is here". The same day Sean found the lip sync
-  // inconsistent ("it has the opposite effect"), so these three are Liz's still picture with her voice. Raise a clip's number on
-  // every re-record.
-  var CLIP_V = { audit: 3, pulse: 3, mylist: 3 };
-  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'rg-m-' + k + '.mp4?v=' + (CLIP_V[k] || 1), poster: CLIP_BASE + 'rg-poster-m-' + k + '.jpg?v=' + (CLIP_V[k] || 1) }; });
-  CLIPS.join_credit = { video: CLIP_BASE + 'rg-join-c.mp4?v=1', poster: CLIP_BASE + 'rg-poster-join-c.jpg?v=1' };
+  var CLIP_V = 4, CLIPS = {}, CLIPS_M = {};
+  function lizClip(name) { return { video: CLIP_BASE + 'rg-' + name + '.mp4?v=' + CLIP_V, poster: CLIP_BASE + 'rg-poster-' + name + '.jpg?v=' + CLIP_V }; }
+  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = lizClip(k); });
+  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = lizClip('m-' + k); });
+  CLIPS.join_credit = lizClip('join-c');
   // The first page shows her arms folded with an open smile (the playbook), before the tour starts.
-  CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=1';
+  CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=' + CLIP_V;
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -431,7 +431,8 @@
     return '<div class="rg-item"><span class="rg-st rg-st-' + esc(it.state || 'fix') + '">' + esc(STATE[it.state || 'fix']) + '</span><div><span class="rg-area">' + esc(AREA[it.area || c.area] || '') + '</span><br><b>' + esc(it.label || c.label || it.key) + '</b></div>' +
       (it.found ? '<p>' + esc(it.found) + '</p>' : '') +
       (full && it.why ? '<p>' + esc(it.why) + '</p>' : '') + (full && it.how && it.state !== 'good' ? '<p class="rg-how"><strong>How to fix it:</strong> ' + esc(it.how) + '</p>' : '') +
-      (ch && it.state === 'fix' ? '<a href="#/fixes/' + esc(ch) + '">Read the fix in the Guide &rsaquo;</a>' : '') + '</div>';
+      (ch && it.state === 'fix' ? '<a href="#/fixes/' + esc(ch) + '">Read the fix in the Guide &rsaquo;</a>' : '') +
+      (it.state === 'fix' ? ' <a href="#" class="rg-have" data-managed="audit" data-fix="' + esc(ch || it.key) + '" data-business="' + esc(LAST && LAST.business || '') + '">Or have us do it &rsaquo;</a>' : '') + '</div>';
   }
   function drawFree(d) {
     var n = (d.todo || []).length;
@@ -536,6 +537,8 @@
       '<div class="dg-head"><div><div class="dg-k">Fix ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(f.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', f.id) + '</div>' : '') + '</div>' +
       '<p class="rg-problem">' + esc(f.problem) + '</p><h3>What you can do</h3><ul>' + f.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
       '<h3>This week</h3><div class="rg-week"><b>Your action</b>' + esc(f.action) + '</div>' +
+      '<div class="rg-week" style="margin-top:12px"><b>Rather we did it?</b>Our team can take this off your plate, along with your website, Google, photos and brand. ' +
+      '<a href="#" data-managed="fix" data-fix="' + esc(f.id) + '" data-business="' + esc(LAST && LAST.business || '') + '">Have us do it &rsaquo;</a></div>' +
       '<div class="rg-fixnav"><button type="button" class="dg-btn' + (done[f.id] ? ' dg-ghost' : '') + '" data-done="' + esc(f.id) + '">' + (done[f.id] ? 'Done. Mark not done' : 'Mark it done') + '</button>' +
       (nextOpen ? '<a class="dg-tnav next" href="#/fixes/' + nextOpen.id + '">Next fix &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/quiz">Take the quiz &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">Get every fix &rsaquo;</a>') + '</div></div>' +
       (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine fixes', 3), 'The other nine fixes', 'Location, branding, search, social, photos, reviews, the menu, community and burnout, in your order.') + '</div>' : '');
@@ -561,6 +564,9 @@
   // task keeps it playing) or, off the Pulse, to the foot of the window.
   function keepPlayer(bar) {
     if (!bar) return;
+    // A view that started another episode while it drew made a new player: the old one stops and stays out (two showed, 2026-10-31).
+    var cur = document.getElementById('vep-player');
+    if (cur && cur !== bar) { var old = bar.querySelector('audio'); if (old) old.pause(); return; }
     var dock = main.querySelector('.vep-dock[data-vep-always]');
     if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
     else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }
@@ -672,7 +678,7 @@
       var pct = Math.round(100 * right / Q.length), pass = pct >= 80;
       if (pass && !badge()) store('rg_badge', new Date().toISOString());
       main.innerHTML = crumb([['Test yourself', '#/quiz'], ['Your score']]) + head('Your score', pct + '%', pass ? 'You passed. The Entrepreneur Track badge is yours.' : 'You need 80% for the badge. Look over the fixes and try again.') +
-        (pass ? '<div class="rg-badge"><i>' + ICON.quiz.replace(/#1f5f22/g, '#ffffff') + '</i><div><b>Entrepreneur Track</b><span>The Vegan Restaurant Survival Guide</span></div></div>' : '') +
+        (pass ? '<div class="rg-badge"><i>' + ICON.quiz.replace(/#1f5f22/g, '#ffffff') + '</i><div><b>Entrepreneur Track</b><span>The Vegan Restaurant Guide</span></div></div>' : '') +
         '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/quiz/1" data-retake>Take it again</a><a class="dg-btn dg-ghost" href="#/fixes">Back to the fixes</a></div>';
       return;
     }

@@ -275,6 +275,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .tab-btn.tab-ext svg{vertical-align:1px;margin-left:2px}
 .tab-btn.tab-fam{text-decoration:none}
+/* Media and People pages on phones: the tab row is one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "Do the same
+   drop-down treatment for media", after the Directory's sub-sections). mobileTabMenu builds it from the tabs and follows them. */
+.lt-sel{display:none}
+@media(max-width:768px){
+  .listing-tabs.lt-has-sel{display:block;padding:12px 16px;overflow:visible}
+  .listing-tabs.lt-has-sel>.tab-btn{display:none!important}
+  .listing-tabs.lt-has-sel .lt-sel{display:block;width:100%;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font:800 13px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
+  .listing-tabs.lt-has-sel .lt-sel:focus{outline:none;border-color:var(--ve-green)}
+}
 .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}
 .bk-card{display:flex;flex-direction:column;gap:6px;text-align:left;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ve-text)}
 .bk-card b{font-size:13px;font-weight:800;line-height:1.35}.bk-card small{font-size:12px;color:var(--ve-text-75)}
@@ -1707,6 +1716,30 @@ function loadFilmPods(l){
 // A news outlet leads its family, its own name as the tab (Sean, 2026-10-30, Plant Based News: "that's their main thing. So that tab
 // should be first"), so it sorts before the people.
 function familyKind(x){ return x.category === 'News Outlets' && !isYouTubeL(x) ? -1 : isPersonL(x) ? 0 : x.category === 'Podcasts' ? 1 : isYouTubeL(x) ? 2 : x.category === 'Books' ? 3 : 4; }
+// The phone dropdown for a listing's tabs (CSS above). Every tab that shows (a family link, Books, Photos...) is an option; picking one
+// clicks it, so tabs, links and their tracking work as they do on desktop. It shows only once there are two tabs or more.
+function mobileTabMenu(){
+  var nav = document.querySelector('.listing-tabs'); if(!nav || nav.querySelector('.lt-sel')) return;
+  var sel = document.createElement('select'); sel.className = 'lt-sel'; sel.setAttribute('aria-label', 'Sections');
+  nav.insertBefore(sel, nav.firstChild);
+  var tabs = [];
+  function build(){
+    tabs = Array.prototype.filter.call(nav.children, function(t){
+      return t.classList.contains('tab-btn') && t.style.display !== 'none' && !t.hidden && !t.hasAttribute('data-sub'); });
+    var on = tabs.filter(function(t){ return t.classList.contains('active'); })[0] || tabs[0];
+    sel.innerHTML = tabs.map(function(t, i){
+      return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.textContent.replace(/\(opens.*\)/i, '').trim()) + '</option>'; }).join('');
+    nav.classList.toggle('lt-has-sel', tabs.length > 1);
+  }
+  sel.addEventListener('change', function(){
+    var t = tabs[+sel.value]; if(t) t.click();
+    setTimeout(build, 0); // a link that opens a new tab leaves this page on the tab it was on
+  });
+  build();
+  if(window.MutationObserver) new MutationObserver(function(ms){
+    if(ms.some(function(m){ return !sel.contains(m.target); })) build();
+  }).observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+}
 function loadFamily(l){
   var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
   var fams = [d.family].concat(Array.isArray(d.families) ? d.families : []).filter(function(f, i, all){
@@ -2375,7 +2408,7 @@ function loadBrandSite(l){
     // The narrator: the Guide of the brand's Guide (VEProducts.GUIDES[...][2]), else Liz.
     var NARR = BD.narrator || (firstGuide && firstGuide[2]) || 'liz';
     var NARR_NAME = NARR.charAt(0).toUpperCase() + NARR.slice(1);
-    var narrArt = window.VEGuideArt ? VEGuideArt(NARR, 'square') : '/public/guides/' + NARR + '.png';
+    var narrArt = window.VEGuideArt ? VEGuideArt(NARR, 'square') : '/public/guides/' + NARR + '.jpg';
     var firstStore = storeList[0];
     var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
     var B = esc(l.name);
@@ -4522,7 +4555,7 @@ function houseAd(l){
   if(!g) return loadBillboardAds();
   // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
   // A Guide without one falls back to its Guide's square portrait.
-  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png');
+  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
   el.classList.add('bb-filled');
   el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
@@ -4901,6 +4934,7 @@ if(!slug || slug === 'listing'){
       if(l.category === 'News Outlets' && !DEMO) loadNewsStories(l);
       if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
+      if(listingKind(l) === 'show' || listingKind(l) === 'work' || isPersonL(l)) mobileTabMenu();
       if(isPersonL(l)){ loadPerson(l); ppPromo(l); }
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them

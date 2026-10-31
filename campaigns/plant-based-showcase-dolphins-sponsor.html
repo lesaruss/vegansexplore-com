@@ -72,7 +72,7 @@
   var INITIATIVE_SLUG = 'vegans-explore-initiative-plant-based-showcase';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-  function guideImg(name) { return '/public/guides/' + esc(name || 'pascal') + '.png'; }
+  function guideImg(name) { return '/public/guides/' + esc(name || 'pascal') + '.jpg'; }
 
   function call(action, payload, token) {
     return fetch(SUPABASE_URL + '/functions/v1/ve-rewards?action=' + action, {

@@ -57,6 +57,8 @@ this list follows the rule above. A new exception goes on this list first.
   footer would never be seen).
 - **Ad creatives**, HTML5 ads that load inside an ad slot's frame, not as pages:
   everything in `ads/` (Sean, 2026-10-04).
+- **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
+  (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
@@ -161,7 +163,7 @@ width (three-fourths and one-fourth, the slot a full 300 px). Under every ad, fi
 Vegans Explore** links to `/business#/found`, the business page's Get found (`CTA` in the script; Sean, 2026-10-27). The rail sticks 16px under
 the site's menu (`--ve-nav-h`, set by `nav.js`).
 
-**Every slot filled** (Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
+**Every slot filled** (retired 2026-10-31 for our Guides, below; Sean, 2026-10-27: "imagine Humble Cabbage wasn't one of our brands... a test campaign pre-launch... and
 we can slowly systematically update the real estate later on"; migration `20261027_humble_cabbage_test_campaign.sql`). Every
 slot the site draws carries a Humble Cabbage ad under its one sponsor campaign (`ad_sponsor_campaigns` `humble-cabbage`), its
 characters spread across pages (never the paused "$5 to the LESARUSS Foundation" art), each page with its own tracked link
@@ -183,8 +185,26 @@ takes only this sponsor's campaigns. **Members by name**: each banner leaves thr
 `ve-guide-dairy`, `ve-guide-stadium`, `ve-creator-banner`; initiative `ve-house-banners`, tags `house-banner` and the Guide), so
 `ve-links` logs every click, `nav.js` names the signed-in member on it, and `ve_initiative_interest` keeps each member's clicks and count
 for `/dashboard/leads` (filter the campaign ve-house-banners and the Guide's tag, export for follow-ups). A new Guide banner is a
-`GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link. Humble Cabbage keeps
-every other slot (the Directory, Media, Events, the Pulse and the city hubs).
+`GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link.
+
+**Our Guides fill the rails, Humble Cabbage the second of each pair** (Sean, 2026-10-31: "we should have the majority of our ads be the
+guides instead of Humble Cabbage, because that is a better front door... just make them all our guides, but just create an assortment of
+them around the different places"; migration `20261031_guide_ads_retire_humble_cabbage.sql`). Every Humble Cabbage campaign and its sponsor
+campaign are `paused` (kept for their history; one set back to active returns that slot). Six rail campaigns under the house sponsor
+(`ve-house-banners`, ids `...0c0de5a14001` to `14006`): the Dairy, Restaurant, Stadium & Arena, Airport, Nonprofit and Creator Guides,
+each the HTML5 ad `/ads/guides/guide.html?g=<guide slug>` (the listing banner's animated card: four scenes, a headline each, the Guide's
+line on a tall slot, Get the <Guide> · $11; it fits any slot, and drops the line on a short or wide one) and its own `/go/` link
+(`ve-guide-dairy`, `-restaurant`, `-stadium`, `-airport`, `-nonprofit`, `-creator`). Each slot carries one Guide, spread so neighbouring
+slots differ and the Stadium & Arena Guide shows only in chapters with mapped venues (the plan is in the migration). `ad-resolve` counts the
+impression and `ad-click` the click by slot, and `ve-links` names the member who clicked (campaign ve-house-banners on `/dashboard/leads`).
+**Then, the same day** (Sean: "on the ones that have the two smaller ads together, make one of them humble cabbage... it's a little
+distracting seeing both of them move at the same time... The longer ones that are the guides can stay"; migration
+`20261031_pairs_humble_cabbage_second.sql`): every pair of 300 x 250s (`ve-directory-landscape-2` and each `ve-<chapter>-hub-landscape-2`)
+shows that slot's own Humble Cabbage campaign again, its still image, with the Guide in slot 1; the tall slots stay Guides. Humble
+Cabbage's sponsor campaign is active again; its other campaigns stay paused. A new Guide ad is a `G` entry in `guide.html`, an `ad_campaigns` row under the sponsor, its `/go/` link and the slots it takes. A real
+advertiser takes a slot by linking its campaign to the placement (`ad-resolve` serves the newest active campaign linked to a slot).
+**On phones the rail runs the full width** (Sean, 2026-10-31: "not full width on mobile"): at 900 px and under the slots fill the row, two
+side by side where there is room and one per row on a phone, and a tall slot becomes a wide box there (`ve-ad-rail.js`).
 
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
@@ -414,6 +434,266 @@ for businesses that is a squeeze page for them."
   that would save says so in a toast, and joining goes to `/business#/start`. Its logo and four photos (`business/sample/img/`,
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
+
+## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
+
+**The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
+Front of House until then; the canon and playbook slugs keep `front-of-house`. One word, B and D capitals. Trademark and domain check
+before it goes on a public page (BrandDeck, a brand-management tool, is close).
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-front-of-house`; migration `20261031_front_of_house_canon.sql`).
+**Not built yet.** Sean: "they don't have a solid brand presence... You can't find a logo. Their website looks like it was made in 2014...
+I want to create a management package for vegan businesses that's accessible... I have had somebody literally say that to me." People
+judge whether food is safe by how a place looks online; businesses want marketing help, not more promotion. Restaurants are the way in.
+
+- **The offer**: **$1,500 setup** (at once or over 3 or 6 months; the rest owed on an early cancel): the
+  full audit, a logo and brand kit, Google Business Profile claimed and complete, the website on our template fed by their listing, their
+  Directory page and dashboard, a starter shoot of up to 15 menu items, two weeks for what we control (Google's verification shows as
+  waiting). **$500 a month**: the managed website (the template improves for every client), Google (hours, photos, posts, reviews), a
+  monthly Community Manager check-in on a fixed question set, a campaign a month, live results on the business dashboard, the ad console
+  with a capped allowance (worded "included the day it opens" until it is live). **Social +$500 a month** for two platforms; the shop's
+  one-platform $400 stays for businesses that are not managed. 12 months, then month to month; they own their domain and content.
+- **The split**: $250 to the account's Community Manager (gig work, never an amount in public copy), $250 to Vegans Explore. 10 accounts
+  per Community Manager to start; a full one means hiring the next. A city opens to BrandDesk when it has a Community Manager.
+- **The showroom**: Green Leaf Kitchen (`/business/sample`) gets its website on the real template, exactly what a client gets minus their
+  brand; the template changes only through brand slots (fonts, colors, logo, voice, photo look), like LESARUSS.ai's variables. A
+  make-it-yours switch shows it in two or three looks. `/business` gets a **Managed by us** module; the Restaurant Guide's audit links every
+  Fix to it (Have us do it).
+- **Photos shot like Airbnb** from a fixed shot list (outside by day and dusk, inside wide, every menu item on one surface and angle, the
+  team; customers only with consent). One shoot feeds the site, Google, the delivery apps and social. New menu item: added on the dashboard,
+  a shoot requested, an influencer night launches it.
+- **Visits every week** from creators (perk gigs; paid macro creators as an add-on), Community Managers in house where creators are thin,
+  and **member visit bounties** open to everyone: the phone's location proves the visit, a phone shooting guide on the gig, team approval
+  before points, the best credited on the listing and our socials. Members pay their own meal unless the restaurant offers a perk; a comped
+  visit is disclosed (FTC). Members whose shots keep being approved are scouted toward Ambassador and the Gig Board.
+- **A monthly rotation** across managed businesses: influencer night, DJ night, customer appreciation, giveaways, a scavenger hunt stop, a
+  community night with a coaching sheet.
+- **The pitch**: a presence-gap ranking on the monthly check-ups, then a personal guided page per business (their audit, their site mocked
+  on our template, the two-week plan, the price), sent from Sean through business outreach, city by city, with his approval.
+- **They rent the service, they own the assets** (Sean, 2026-10-31: "they paid for those photos... so they have that peace of mind to know
+  that if things don't work out, they can always have the pieces to start fresh again somewhere else"; canon v2). Stop paying and the
+  website and management stop; what we made is theirs, downloadable at any time, said in the pitch. **The severance package**: their
+  **Library** on the business dashboard (every photo and video at full size, the logo in every format, the brand kit, graphics and menu
+  boards; each file or Download everything as a ZIP); the **asset sheet**, kept current (all copy, the menu with descriptions and prices,
+  also as a spreadsheet, hours, links, colors, fonts, the Google details); **their original website archived at onboarding** (a snapshot
+  of any site, Wix and Squarespace included; WordPress also its export so it can be restored); and always theirs: the domain, the Google
+  profile (they are primary owner, we a manager), their socials and their Directory listing (stays free). On notice: the ZIP and asset
+  sheet sent at once, a handoff call, 30 days to download, then the library closes and the template site comes down. Every shoot
+  agreement assigns copyright to us so we can pass it on; full-size downloads unlock once the setup is paid in full. **Pause**: up to 3
+  months a year at $99 a month (V's default), the site and library stay, no management, the $99 to Vegans Explore.
+- **The door, the pitch and the reveal** (Sean, 2026-10-31; canon v3). The Restaurant Guide becomes **The Vegan Restaurant Guide**: what we
+  can do for your Vegan restaurant, $11 makes them a member, a living manual on the Creator Guide's model (every tab what to click, each
+  item Live or Coming), with a **BrandDesk** demo tab and Launch a product (Coming). A client's **premium listing** wears their brand
+  with a small Managed by Vegans Explore mark and never buys rank. **Prepared audits**: a quick audit on every food place, a presence-gap
+  ranking, the full audit and a person's plan for the next 30 to contact, Sean's warm list first, worded "We looked at your business
+  before we reached out", never dressed as an instant scan. The first page sets the tone (this is a lot; you don't have to carry it; the
+  infrastructure for the Vegan movement; a marketing team from $500 a month); membership is "$11 to get in", never "$11 a month". **The
+  reveal**: a still picture of their own home page on our template, nothing clickable, then **I'm ready** (the setup checkout), **Let me
+  think about it** (they pick a follow-up date) or **Talk to someone** (their Community Manager, else Sean), each landing in the Inbox. The
+  why is prosperity: the movement grows through commerce.
+- **The photo standard, the Cartridge and frames** (Sean, 2026-10-31; canon v4). Every food item and drink has a high-quality photo; our
+  Higgsfield photos for the sample restaurants are the standard photographers meet (a paid three-item trial, else the blueprint). The
+  **Cartridge** is one file per client (brand, voice, upgraded copy, menu, photos, info, point of sale) that plugs into a fixed, always
+  improving **frame**; it is also the severance asset sheet. Ordering feeds their point of sale (Square first; Toast through its partner
+  program or middleware, to be researched). The Vault (gift cards as a marketing exchange) is tabled; members do not spend points at
+  managed restaurants. Later frames: products, coaches, the media kit. Built in the client's order: **Green Leaf Kitchen's Cartridge**
+  (`business/sample/cartridge.js`, `window.VE_CARTRIDGE`, its shape in the header) and **its brand kit** (`/business/sample/brand`,
+  `business/brand.html` (a rewrite in `vercel.json`), guided view, `noindex`: cover, the Cartridge and where each part stands, logo and its files, colors with
+  contrast worked out on the page, type, voice, story, menu copy (their words struck through, ours, price, tags, photo or To shoot), the
+  photo standard and shot list, hours and details, into the frame). The page draws only from the Cartridge, so a second restaurant's kit
+  is its own Cartridge on the same page. **The brand kit is the intake and the owner's editor** (Sean, 2026-10-31; canon v5): each
+  section is Not started (only What we need: the need, why, who, how long), In progress, or Locked (the content, Edit, and a warning in
+  the editor that changing a locked brand part sets them back). `?as=new` opens the sample as a new client with every part empty; the
+  sample saves for the visit (`sessionStorage` `ve_cartridge_sample_new|done`, Start over clears it). The kit wears the client's colors
+  only once they are chosen. **Colors editor** built: why colors matter, four ready palettes (Fresh neighborhood, Island bright, Night
+  lounge, Street heat), their own six colors by role (page, text, accent, soft, highlight, ink; `brand.colors[].role`) with names and hex,
+  a live preview, every pair's contrast and a readability score out of 100 (full marks at 4.5:1, half from 3:1), Save draft or Lock it
+  in (refused while a pair is under 3:1). **Voice editor**: three steps (what a voice is, with three example businesses; five questions:
+  how they greet a regular, three words, the place as a person, what they never want to sound like, a vibe; their voice written from the
+  answers and editable: three words, how they sound, never, words to use and leave out, sample lines for the site, Instagram, a Google
+  reply and a closed day), then Save draft or Lock it in. **Menu editor**: the list (items, photo or To shoot, Add an item), then one item
+  at a time (Menu > item: name, section or a new one, price, tags, what is in it in their words, the description with **Suggest**, the
+  photo uploaded onto the item, shrunk to 900 px in the browser for the sample), Remove item, Save draft, Lock it in. **Suggest** is the
+  edge function `ve-brand-kit` (`suggest`, kinds `menu_item`, `story`, `voice`; Claude Opus 5.5, structured output, only the owner's own
+  words and ingredients, Vegan capitalized, no dashes; 20 a day for a visitor, 200 for a signed-in member; every suggestion logged in
+  `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). **Every section has its editor**
+  (2026-10-31): **Logo** (upload any file or a photo of the sign, the files we make from it listed with their state), **Type** (four
+  pairings shown on their own name and menu: Nunito and DM Sans, Fraunces and Work Sans, Archivo Black and Inter, Playfair Display and
+  Lato; the kit's Type slide then wears the pair), **Story** (two steps: how it started, what they cook, who comes in, what they are
+  proud of, their old About; then Suggest writes the one line, two sentences and About, every word editable), **Hours and details**
+  (three steps: each day's hours; street, city, state, ZIP, phone, email, good to know; what they ring orders up on, Square first, and
+  where people order online today), **Photos** (every shot of the space and the team takes its upload; menu photos go on each menu
+  item; Lock it in waits until every shot is in). Multi-step editors share `stepper()` (step names, Back / Step N of M / Next).
+  **Real kits are stored** (2026-10-31; migration `20261031_ve_cartridges.sql`): `/business/brand?listing=<slug>` loads and saves a client's
+  Cartridge through `ve-brand-kit` (`kit_get`, `kit_create`, `kit_save`, `kit_photo_url`, `kit_photo_done`, `kit_people_add`,
+  `kit_people_remove`; the member token, or ops with `LESARUSS_ADMIN_TOKEN` and `as_member`). `ve_cartridges` (one per listing: `data`,
+  `status` building, locked when every part is, launched, paused, ended), `ve_cartridge_people` (an **editor**, every section, or a
+  **photographer**, photos and menu photos only; added by the owner or a super admin by the email they sign in with) and
+  `ve_cartridge_edits` (every save with what it replaced); RLS on, no policies. Who: a super admin (admin), the listing's owner, or a
+  person added; anyone else sees whose kit it is and to ask the owner. A super admin **starts** a kit (`kit_create`), filled from the
+  listing (name, city, how Vegan, hours, phone, address, every menu item from `ve_menu_items` with its words as "was", the logo when it
+  is in our storage, the tagline and description), every part Not started. Pictures upload to `vegan-media/media/brandkit/<slug>/`
+  (logo, menu, space; JPEG, PNG or WebP up to 15 MB, anything else converted in the browser) and a save that points a picture anywhere
+  but our storage or this site is refused (`upload_first`). The page loads the guided view only after the kit is read (signed out:
+  Sign in; no kit: Start their brand kit for super admins, else it is started when they join). Proven 2026-10-31 on Love Life Cafe
+  through the ops path (signed out refused, admin, the kit filled with its 51 items in 11 sections, its hours, logo and tagline, Colors
+  locked and logged, a non-storage picture refused, an upload link issued), then removed; the page's states checked against mocked
+  answers. Not yet: cuisines show as their slugs (american); a real upload end to end from the browser.
+  **The frame** (2026-10-31): `business/site.html`, Green Leaf Kitchen's website at `/business/sample/site`, drawn only from the Cartridge
+  (the sample's, plus what was changed in the sample brand kit this visit): its colors by role (`--c-page`, `--c-text`, `--c-accent`,
+  `--c-soft`, `--c-highlight`, `--c-ink`) and two typefaces. **Pages, not one long page** (Sean, 2026-10-31: "why are we on a one pager";
+  a menu page and a visit page each answer their own search, and the menu has its own link to share): Home, Menu, Order, About and Visit
+  (`#/menu`, `#/order`, `#/about`, `#/visit`; the real store serves them as their own paths). Home: the hero (the outside by day, Open now /
+  Opens today at / Closed now from the hours in Eastern time, the voice's website line, the story, See the menu, Order, Directions), the
+  today strip, Favorites, Our story, **the space with toggles** (Outside, At night, Inside, The team: `photos.space[].set`), Right now,
+  Visit. **The menu** filters by section: tabs on desktop, a dropdown on phones (`.mtabs`, `.msel`), 4 to 6 items a section, every item
+  with its photo. **Ordering** (`info.ordering`): `state` `connected` is the point-of-sale version: Add on every item, a cart (quantities,
+  subtotal, tax, name, pickup time, a note, Pay and place order, which in the sample only shows the order number; live it goes to their
+  Square checkout and lands on their kitchen screen); otherwise Order opens their own ordering page. The sample bar switches the two
+  (`sessionStorage` `ve_site_order_mode`, the cart in `ve_site_cart`). **Visit**: address, directions and details | a Google map | the
+  week's hours with today marked. The footer: the **reversed logo** (`brand.logo.files` Reversed, `logo-reverse.png`), the pages, address,
+  today's hours, Managed by Vegans Explore BrandDesk, and Instagram, TikTok and Facebook (`info.links`). On phones a menu button and a fixed
+  Call / Directions / Order bar. It writes the Restaurant and its menu as schema.org data. Its 24 menu photos and 7 space photos
+  (`business/sample/img/m-*.webp`, `s-*.webp`, Higgsfield 2026-10-31, the same surface and angle for every dish, from the existing photos
+  as references; full size in `vegan-media/media/communities/green-leaf-kitchen/`, copied through `ve-off-lookup` `save`, which takes
+  pictures up to 12 MB). **Make it yours** (the showroom switch, built 2026-10-31): the sample bar's Their brand / Island bright / Night
+  lounge redraws the same site from the same Cartridge with only the brand slots changed, the colors by role and the two typefaces
+  (`LOOKS` and `applyLook` in `business/site.html`, the brand kit's ready palettes and type pairings; `sessionStorage` `ve_site_look`); on
+  a dark page the header wears the reversed logo. A new look is a `LOOKS` row.
+  **Managed by us and Have us do it** (built 2026-10-31): `/business` has a **Managed by us** tab (`managed` in `BIZ` in `passport.html`:
+  what we do, Yours to keep, What it costs, the sample site and brand kit; the name BrandDesk stays off it until the trademark check),
+  and the Restaurant Guide has **Or have us do it** on every Fix in an audit (`itemRow`) and **Rather we did it?** on each fix page
+  (`viewFix`). All open one request window, `/public/ve-managed.js` (`VEManaged.open({from, fix, business, listing})`, or any element
+  with `data-managed`), sent to `ve-brand-kit` `managed_interest` (anyone, 3 a day per email): a `ve_initiative_interest` row
+  (initiative `branddesk`, `tier_label` the business, `note` what they want, tags `branddesk`, `from-<page>`, `fix-<id>`, `wants-<x>`),
+  an email to the team (reply-to them) and a confirmation to them from Vegans Explore. The Inbox shows it as a **Managed marketing
+  request** (migration `20261031_branddesk_requests_inbox.sql`; a business starting [TEST] stays out of the Inbox and sends no email).
+  Nothing is charged there.
+  **The contract and Stripe** (built 2026-10-31; Sean: "approve both", test mode first and the agreement as a draft for the lawyer;
+  migration `20261031_branddesk_accounts.sql`, edge function `ve-branddesk`). **`/business/agreement`** (`business/agreement.html`,
+  `noindex`) is the Managed Marketing Agreement, version `2026-10-31` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together, and
+  a change is a new version), written from the locked terms (30 days' notice after 12 months; on an early end only the unpaid setup is
+  owed; work pauses 14 days after a missed payment, the agreement may end at 30; Florida law). Approved by Sean 2026-10-31 ("I was able
+  to review it, and I'm okay with the terms"); it has no liability or indemnity clause. **`/business/managed?listing=<slug>`** (`business/managed.html`, `noindex`; the reveal's I'm ready lands here)
+  is three steps (`?step=`): Your plan (the setup at once, in 3 x $500 or 6 x $250; social +$500; what is due today and each month),
+  The agreement (the key points, the full text, full name typed and I agree ticked), Review and pay (Stripe Checkout). Back with
+  `&status=done` it waits for the account and welcomes them; a client already with us sees their plan and can **Pause** (1 to 3 months)
+  or cancel a pause set. Signed out: sign in; a listing not opened yet: Talk to our team. **Checkout opens only for listings Sean opens**
+  (`ve_site_settings` `branddesk.allowed`, `ve-branddesk` `allow`) and for super admins. **Stripe**: one subscription per client
+  (`ve_branddesk_accounts`: plan, social, status checkout | active | paused | canceling | ended | abandoned, Stripe ids, the signature
+  with name, time, address and version; RLS on, no policies), priced from reusable Prices found by lookup key (`bd_monthly_v1`,
+  `bd_social_v1`, `bd_setup_v1` one-time, `bd_setup3_v1`, `bd_setup6_v1`, `bd_pause_v1`; made once per Stripe account by the function).
+  Installments are their own monthly item, and a subscription schedule takes it off after 3 or 6 payments; **Pause** is a schedule too
+  (from the next billing date, $99 for the months asked, then back, at most 3 months in 12, not while the setup is being paid);
+  `cancel` (super admin) ends at the period's end and says what setup is still owed. The function pins `Stripe-Version` 2024-06-20 (the
+  LESARUSS test account's default answers schedules with `plans`). The return trip and ve-stripe-webhook (`metadata.type` `ve_branddesk`,
+  `confirm_fn` `ve-branddesk`) activate the account once and email the client and the team. **Live since 2026-10-31** (Sean: "go live"):
+  `branddesk.live` true, the Vegans Explore Stripe key; false puts it back on the LESARUSS test key. Checked live the same day as a super
+  admin on Sobe Vegan (setup in 3 with social: a live session for $1,500 due today), the session expired and the row removed. `allowed`
+  is empty, so checkout opens only for super admins until Sean opens a listing (`ve-branddesk` `allow`).
+  **Onboarding, the Library and the asset sheet** (built 2026-10-31; migration `20261031_branddesk_onboarding.sql`). Activation sets
+  `setup_paid_at` when the setup is paid at once (installments: once their paid invoices reach 3 or 6, checked on read) and starts the
+  **website archive** of the listing's website at once: `ve-branddesk` reads every page on their site (up to 40) and the pictures,
+  styles, fonts and scripts they use (500 files, 60 MB, two minutes; analytics left out), points the links at the copies so it opens
+  offline, adds `manifest.json` and `README.txt`, and saves one ZIP in their Library (`ve_branddesk_archives`: platform, pages, files;
+  a WordPress site is noted so the team asks for its own export). Proven on Love Life Cafe's site: 15 pages and 40 files, 9.7 MB, its home
+  page opening offline. **The Library** is `ve_branddesk_files` in the private bucket `branddesk-library` (`<slug>/<kind>/<file>`; kinds
+  photo, video, logo, brand, graphic, menu_board, document, archive): signed links an hour long, a 900 px preview for pictures, and
+  full-size downloads of what we make only once the setup is paid in full (their archive and documents always). **The onboarding
+  checklist** (`STEPS` in `ve-branddesk`, `ve_branddesk_accounts.onboarding`): welcome call (within 2 days), confirmed they run it, website
+  archived (on its own), brand kit started (on its own, a `ve_cartridges` row), Google manager access, domain access, social access (with
+  social only), starter shoot booked, first files in the Library (on its own). Actions `client`, `step`, `archive`, `file_upload_url`,
+  `file_done`, `file_remove` (the owner reads `client`; the rest are super admin). **The client sees it** on their business dashboard as
+  **Managed by us** (`?tab=brand&pd=managed&bd=start|library|sheet`, shown when `ve-branddesk` `plan` finds their live account), drawn by
+  `/public/ve-branddesk-client.js` (`VEBrandDesk.mount`): Getting started, Your Library (by kind, Download, and **Download everything**, a ZIP
+  made in the browser with the asset sheet and the menu as a spreadsheet inside) and **Your asset sheet** (from their Cartridge, else their
+  listing: the business, hours, links, story, colors, type, logo files, voice, the menu; Download the menu as CSV, Download the asset sheet
+  as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
+  (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
+  links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
+  `branddesk.allowed`). **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
+  the components visually without having to go through the whole process myself"): 25 steps from Managed by us to the Inbox, on the
+  sample business; `/business/managed?preview=plan|agreement|pay|done|client|closed|signin` (a sample owner, nothing charged),
+  `/business/sample/site?look=island|night`, and `?managed=preview` on any page with `ve-managed.js` (opens the request window, sends
+  nothing). The whole build is also written up in the playbook `ve-front-of-house` (the BUILD RECORD row, migration
+  `20261031_branddesk_build_record.sql`). Not yet: emailing the client when a file lands, the 30-day download window after an end (`ended` closes the
+  Library), and a Community Manager's view of their accounts. Proven 2026-10-31 in test mode through `ops_test_activate`
+  (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
+  full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a
+  second refused, cancelled cleanly; cancel reported $1,000 still owed; a real Checkout session opened, an unpaid return went back as
+  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed.
+  **The photographer shot list on the Gig Board** (built 2026-10-31; migration `20261031_photo_shoot_gigs.sql`). A client's starter shoot
+  is a gig, `ve_bounties.gig_kind` `photo` with `shoot_listing_id`, posted from **Depot > BrandDesk > a client > The starter shoot**
+  (`ve-bounties` `shoot_get`, `shoot_post`, `shoot_cancel`; super admins): the fee (default $450, plus 250 points on delivery), an optional
+  paid trial (default $75), when applications close and when it is shot by, a note, and the menu items in it (Favorites first, 15 ticked,
+  items with a photo unticked; their brand kit must exist first). It shows on the Gig Board in their chapter (kind Photo shoot);
+  photographers apply with a pitch, examples and their rate and dates. **The paid trial** is the ask `trial`, never asked up front: Ask for
+  the paid trial (decision `audition`, the three dishes in the note) lets them send the link to their trial photos (`apply` then takes only
+  that; an audition gig's audition now works the same way). **Book them** makes them the kit's photographer (`ve_cartridge_people`; an
+  editor is never downgraded), records `photos.shoot.booked`, ticks the client's onboarding step `shoot` and emails them the shot list.
+  **The shot list** is `/business/shoot?listing=<slug>` (`business/shoot.html`, `noindex`; sample `/business/sample/shoot`, Green Leaf
+  Kitchen on a shoot day, saved for the visit): the standard (`brand.photo`, `photos.spec`), progress, To shoot / Shot / All, the space and
+  the team, then each item in `photos.shoot.items` ("Section|Name"); one shot per view (`#shot/<n>`, Back / Shot N of M / Next shot): what it
+  is, the parts of the standard that apply, a note for the team, and each dish twice (three-quarter `photo.src`, the one the site uses;
+  overhead `photo.overhead`). An upload keeps a 1920 px web copy on the kit and the full-size original in their Library (`kit_photo_url`
+  kind `full`, `branddesk-library/<slug>/photo/`, 40 MB; `kit_photo_done` `full` writes the `ve_branddesk_files` row; only with an
+  account); under 3000 px on the long side it says so. A photographer's save changes only photos and never moves a section's state; no
+  logo. **Tell the team it is done** (`ve-brand-kit` `shoot_done`) stamps `photos.shoot.done_at` and emails the team. My gigs opens a booked
+  shoot's shot list; the sample board has it as Kai's booked gig (`g11`). `ve-bounties` now takes the ops token with `as_member`. Proven
+  2026-10-31 on Love Life Cafe with a [TEST] client and the Logan test account (post, second post refused, apply without the trial, trial
+  asked, a non-link refused, trial sent, booked, photographer added, onboarding ticked, web copy and original uploaded, a rename and a lock
+  from the photographer ignored, the logo refused, done, a stranger refused). Not yet: paying the photographer (Stripe Connect payouts; by
+  hand until then) and the client seeing the shoot's progress on their dashboard.
+  **The presence-gap ranking and the pitch pages** (built 2026-10-31; migration `20261031_branddesk_pitches.sql`). **Depot > BrandDesk >
+  Pitch list** (`#pitches`, `ve-branddesk` `ranking`, `ve_branddesk_ranking(chapter)`): every open food place (Restaurants, Bakeries &
+  Cafes, Food Trucks, Vendors, Catering, Meal Prep, Markets; main listings only, no grocery chains, no LESARUSS.ai listings, no current
+  client, no closure flag) with a finished full audit (the monthly check-ups), ranked by **gap x worth**: the gap is 100 minus their
+  presence (audit score over its maximum), the worth weighs how Vegan (1.0, 0.75, 0.65), Google reviews (on a log scale to 500), rating
+  (1.0 from 4.3 down to 0.55) and our members' votes (up to 1.5x) (Logan's defaults, Sean's to change). Sean's **warm list** comes first.
+  Filters: chapter, Warm list, Not prepared yet, We have their email, Sent no answer, Answered; each row with presence, Google, their
+  biggest gap and the pitch's state. On 2026-10-31 it ranked 225 businesses (South Florida 84, New York 43). **One business**
+  (`#pitch/<slug>`, `pitch_admin`, `pitch_save`, `pitch_send`): what we found (presence by area and the fixes their page will show), then
+  their name and email (from Business outreach's contact or the listing), the look their home page is shown in (`PITCH_LOOKS`: Fresh
+  neighborhood, Island bright, Night lounge, Street heat), Sean's opening in his own words, the warm tick; Prepare their page (a
+  `ve_branddesk_pitches` row: a code, their latest full audit), See their page, Copy the link, Send me a test, Send it from me (through
+  `email-send`, brand `lesaruss`, from Sean, replies to contact@lesaruss.com, the unsubscribe and postal footer, subject "We looked at
+  <business> before reaching out", their own tracked link `/go/bd-<code>`, initiative `branddesk-pitch`; **sending also opens checkout for
+  that business**, `branddesk.allowed`), and What happened (sent, opened how often, their answer, the follow-up date), Close or Open it
+  again. **Their page** is `/business/pitch?c=<code>` (`business/pitch.html`, guided view, `noindex`; `pitch_view` counts a view unless the
+  viewer is a super admin or `&preview=1`): Prepared for you ("We looked at <business> before we reached out", Sean's opening, the tone:
+  running a Vegan business is a lot, you don't have to carry all of it), What we found (presence and its four areas, what already works,
+  their Google rating), What is holding you back (up to six fixes in plain words), **their home page on our frame as a still** (an iframe
+  of `business/site.html?pitch=<code>`, scaled, nothing clickable; `pitch_site` builds a Cartridge from their Directory page: name, logo,
+  tagline, description, hours, address, menu items, gallery photos, the chosen look's colors and type; the frame skips Favorites and The
+  space when there are no photos), Your first two weeks (`PLAN`), What it costs and Yours to keep, and **the choice** (`pitch_choice`): I'm
+  ready (goes to `/business/managed?listing=<slug>`, checkout opened), Let me think about it (a date, required), Talk to someone (an email
+  or phone), Not now. Each choice is emailed to the team (reply-to them), confirmed to them, and lands in the **Inbox** (`ve_inbox_items`
+  source `branddesk_pitch`, linking to the pitch in the Depot; a contact name starting [TEST] stays out). `/business/pitch?c=sample` is
+  Green Leaf Kitchen's, in Preview journeys > BrandDesk with the pitch list and the shot list. The pitch page's words never name BrandDesk. **The same look all the way** (Sean, 2026-10-31: "it feels like it takes me to a completely different environment... keep it in the same
+  look and feel"; "let's not lose the visual elements"): the stage wears the business's chapter art, dark (`pitch_view` returns `chapter`;
+  `VE_HUBS[].page.banner`), the logo sits centered on the cover with the city under it, the fixes sit beside their site on a phone, the two
+  weeks and Yours to keep carry pictures (the sample restaurant's, captioned as such on a real business's page), and the choice is one of
+  four picked cards (only the picked one is green; `data-vg-path`). **I'm ready stays on the page**: its path is Your plan, The agreement (the
+  full text opens in a window on the page) and Review and pay beside a mock-up of their home page (`#su-plan`, `#su-agree`, `#su-pay`); Pay
+  records the choice, then `checkout` with `back` (`/business/pitch?c=<code>`), so Stripe returns to the pitch (`&status=done|cancelled|unpaid#su-pay`).
+  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`). **Not now offers the Vegan Restaurant Guide** (Sean, 2026-10-31: "I don't get... your Vegans Explore page stays yours
+  free... maybe we're sharing the vegan restaurant guide with them"): its card (Liz's banner, what is in it, Open the Guide at
+  `/guides/vegan-restaurant-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
+  business that says no can still start on its own (`guideCard` in `business/pitch.html`).
+  `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
+  The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  domain, SSL, sweep), and a second restaurant in another city.
+- **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
+  services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
+  current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
+  months after launch (a buffet-style influencer night, a few dishes shot in a set-aside area), included and part of the rotation; the
+  restaurant provides the food, the starter shoot stays. An **idea library** of campaigns clients pick from, each with a blueprint the
+  Community Manager follows.
+- **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
+  through a reseller, our own delivery app.
+- **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
+  contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
@@ -1098,8 +1378,9 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   we're going (thirteen chapters, the Directory, our shows, brands and events as one buyer), The work (paid campaigns, collaborations,
   professional work Coming; hosting open now; events with the Dolphins showcase; the sample campaign), How it pays (this canon's terms),
   Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
-  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
-  profile's invitation email linking it.
+  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. **Comping a creator** (Sean, 2026-10-31): Depot > Ambassadors > Invite an
+  Ambassador with the profile **Creator**, the level and points: the membership is on us, the email links the Official Creator Guide
+  (`/creators/welcome?c=<code>`), and accepting on `/invite` says Welcome, official creator, and opens the Creator Guide.
 - **The Gig Board** (Sean, 2026-10-30: "the actual mechanism for them to find gigs... like Casting Networks or Backstage where they
   can go on daily and see what opportunities are available... whatever we create, I want become the way the bounties work as well...
   submit some proofs, some examples... audition... a certain requirement of followers... opportunities that are just for points...
@@ -1180,7 +1461,7 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   its Voice module) and `character_agents` kai, migration `20261031_kai_roster_voice.sql`; every line that says Vegan is recorded from text
   spelled "Veegan"), and `VEGigs.voice` plays them: nothing plays until the visitor presses
   Play Kai, then each new view or tab plays its line by itself until they press Pause (`sessionStorage` `ve_kai_voice`). A line's text
-  must match its recording; change one and record it again (`-v2`, and its key in `VOICE_VER`). Never write "lives here" in a recorded line: the voice reads it as the verb (Sean, 2026-10-31); say "is right here". Liz's Restaurant Guide clips `rg-m-audit`, `rg-m-pulse` and `rg-mylist` said it; re-recorded 2026-10-31 on Sean's go ("is right here", "is here"; `CLIP_V` in the Guide script). The lip-synced takes (36 credits) were dropped the same day (Sean: "I don't like the animations. It's inconsistent... Let's just use a still image of Liz and keep the audio"): each is now an MP4 of Liz's still picture with her voice, and My list got a new pose in her house style (phone up, hand on hip, `nano_banana_pro` from the quiz poster; its old picture was drawn off-model). el-media refuses more than two recordings at once (ElevenLabs'
+  must match its recording; change one and record it again (`-v2`, and its key in `VOICE_VER`). Never write "lives here" in a recorded line: the voice reads it as the verb (Sean, 2026-10-31); say "is right here". Liz's Restaurant Guide clips `rg-m-audit`, `rg-m-pulse` and `rg-mylist` said it; re-recorded 2026-10-31 on Sean's go ("is right here", "is here"). **Liz is never animated in the Restaurant Guide** (Sean, 2026-10-31: "I don't like the animations. It's inconsistent... it looks blurry... I don't want to see her animated at the beginning either"; Maya's Dairy Guide clips stay, "I like Maya's"): all 17 of her clips are MP4s of a sharp still with her recorded line (the audio taken from the clips as they played, the three re-recorded lines from their new mp3s), every pose redrawn crisp at 2048 px with `nano_banana_pro` from its old 640 px frame, same pose, hands and face (2 credits each), stored at 960 px; My list got a new on-model pose (phone up, hand on hip). `CLIP_V` in the Guide script versions them all. el-media refuses more than two recordings at once (ElevenLabs'
   concurrent limit), so send them two at a time. **Every gig has a picture** (Sean: "each one should have a little square with rounded
   corner image... inviting and visual"): `img` on a gig (the sample's are `gigs/sample/img/gig-g<n>.webp`, illustrative, Higgsfield
   2026-10-30), shown square on the board's tiles and My gigs (so Up next too), else the flat icon of its kind (`thumb`, `ICON`); the
@@ -1889,7 +2170,8 @@ Directory is their chapter's).
   The line under the title is the section and, where it applies, the location ("Food · South Florida"); the banner wears the
   chapter's art (`VECityBanner` `setArt(slug)`, which leaves the picker alone).
 - **The row under the banner is the section's sub-sections** (`.vrd-subtabs`, the pills as tabs; the section tab row is hidden,
-  `.vrd-menu-out`), out of the filter. On phones it scrolls sideways.
+  `.vrd-menu-out`), out of the filter. On phones (768 px and under) it is one full-width dropdown (`.vrd-subsel`, which clicks the
+  matching tab and follows it), never a sideways scroll (Sean, 2026-10-31: "a little clanky").
 - **The filter button reads Filters** with how many are set, wider, 16px after the search (every page with the component, hubs too).
 - **Location is first in the filter** (`config.location = {initial, onChange(loc, hub)}`): Continent, Country, Chapter
   (`VE_HUBS[].continent`, `.country`, set in `ve-hubs.js` from `WHERE`; a chapter in a new country adds its state code there),
@@ -2017,6 +2299,9 @@ sometimes there's multiple people on the podcast"): a listing can also belong to
 person keeps their own family (their books and channel stay theirs); a shared show is its own family plus each host's, so it shows on
 every host's page, and its own page lists only its people and itself. First: the Vegans Who Lift Podcast (`vegans-who-lift`, with
 `brooke-sellers` and `john-thomas`; migration `20261030_brooke_john_shared_podcast.sql`). Neither bio names the other (Sean, same day).
+**On phones the tab row is a dropdown** (Sean, 2026-10-31: "Do the same drop-down treatment for media"): on a media listing
+(show or work) or a People page with two tabs or more, at 768 px and under the tabs are one full-width dropdown (`mobileTabMenu` and
+`.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as they appear.
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
@@ -2496,6 +2781,14 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   is one fact at a time (`#/look/<n>`) with its number and an icon (`LOOK_STATS`, from the cited facts). Maya's line on it was
   re-recorded the same day with Sean's approval ("The truth is how milk is really made...", `dg-look.mp4?v=3`, take 1 of 2,
   cut at 6.6 s on a closed-lip smile).
+- **The Pulse's episodes are podcast rows** (Sean, 2026-10-31: "the new style of just having the podcast clip that you can play...
+  you just see the logo of the podcast... pull in other podcasts as well too, from the RSS that match... that topic"). Podcasts and
+  interviews is the Restaurant Guide's way: `PULSE_PICKS` rows are [Pulse slug, show's Directory slug, feed guid], each read through
+  `ve-podcast` `episode` and drawn with `VEEpisodes.row` (the show's logo, Play in the player docked above, our vote and Save), two
+  across. Under them, **From other shows**: the newest dairy episodes from the other podcasts in our Directory,
+  `ve_topic_episodes('dairy')` (migration `20261031_ve_topic_episodes.sql`: titles matched on dairy words, our four shows and
+  LESARUSS.ai's left out, at most 3 a show, 24 in all), each with Play and The show. A new topic for another Guide is a `when` line
+  in that function. An old `#/pulse/watch/<slug>` link opens the list and plays the episode.
 - **Two experiences, two scripts** (Sean, 2026-10-10: "The first one is letting you know why you should get it. And then the
   other one is walking you through what you have"). Each tab's `say` is for visitors and `sayMember` for members who own the
   Guide; `clip()` plays `CLIPS_M[tab]` (`dg-m-<tab>.mp4`) to members and `CLIPS[tab]` to visitors, and switches the moment a
@@ -2601,7 +2894,7 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
 
 "We could give them a simple audit for free and then in the actual guide, we go a bit deeper... just like BCPSMarcomm...
 scans their page for a set of defined criteria. Look at Google Local, SEO, Web and social." It is the heart of the Restaurant
-Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide below) and a hook for business outreach.
+Guide (`guides/vegan-restaurant-guide.html`, see The Restaurant Guide below) and a hook for business outreach.
 
 - Criteria (`ve_audit_criteria`, migration `20261010_ve_restaurant_audit.sql`): 40 weighted checks in four areas (Google Local,
   SEO, Web, Social), each with a label, why, how to fix, the Guide chapter it links to (`chapter`, the step ids in the Guide)
@@ -2682,7 +2975,17 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide b
 
 ## The Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook)
 
-`guides/vegan-restaurant-survival-guide.html` and `guide-scripts/vegan-restaurant-survival-guide.js` (the old 10-step page and
+**Its name is The Vegan Restaurant Guide** (Sean, 2026-10-31: "We'll change it to the vegan restaurant guide, because that should have
+been changed already"; canon `canon-ve-front-of-house` v3; migration `20261031_vegan_restaurant_guide_name.sql`): the page, its card, the
+Passport's business tab, the sample business, the pitch, `ve-cookbook`, the `ve_guides` title, its dashboard card and its house-banner
+link. It was the Vegan Restaurant Survival Guide. **Its address is `/guides/vegan-restaurant-guide`** (Sean, the same day: "let's use
+this opportunity to change the URL because we haven't really sold anything yet... anywhere that it is referenced, take the time and fix
+it"; migration `20261031_vegan_restaurant_guide_slug.sql`): the page and script files, `ve_guides.slug`, the cookbook and audit functions,
+the catalog, sitemap, house ad, dashboard cards, tracked link, business dashboard, Passport, pitch, Preview journeys, the playbooks and the
+banner (`banners/vegan-restaurant-guide.jpg`). The old address redirects there (`vercel.json`). The one purchase, Sean's own, is tied
+to the Guide's id, so it carried over.
+
+`guides/vegan-restaurant-guide.html` and `guide-scripts/vegan-restaurant-guide.js` (the old 10-step page and
 its gate script are gone). Liz is the Guide, on the right of every tab, one lip-synced clip per tab for visitors (`CLIPS`,
 `rg-<tab>.mp4`) and members (`CLIPS_M`, `rg-m-<tab>.mp4`) in `vegan-media/media/liz/restaurant-guide/`, lines approved by Sean;
 the first page shows her arms folded with an open smile (`rg-poster-first.jpg`). Liz's mouth sits higher in frame than Maya's,
@@ -2696,9 +2999,9 @@ through `ve-podcast` `episode`, drawn with `VEEpisodes.row` two across, Play in 
 Partner plan; find your page; top-voted Vegan restaurants), **Promotions** (each Live or Coming; never a planned thing shown as
 live), **Test yourself** (ten questions, one per view, 80% earns the Entrepreneur Track badge, kept in the browser), My list
 (fixes, interviews, promotions through `ve-cookbook` saves; `ve_guide_saves` and `ve_guide_votes` take `fix` and `promo`),
-Get access. Slug `vegan-restaurant-survival-guide` (owners from before keep it); the members-only fixes, quiz and two facts are
+Get access. Slug `vegan-restaurant-guide` (was `vegan-restaurant-survival-guide`) (owners from before keep it); the members-only fixes, quiz and two facts are
 that row's `content_html`. Banner: Liz in the cream tee holding a chalkboard reading OPEN
-(`vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg`).
+(`vegan-media/media/guides/banners/vegan-restaurant-guide.jpg`).
 
 ## Finding new places: the backlog check (Sean, 2026-10-10)
 
@@ -3651,6 +3954,29 @@ ships with them on the first pass, never as a later fix:
   listing, every published Pulse article). A new page to be found goes in its `PAGES` or `GUIDES`, a new chapter in `CHAPTERS`.
   Never link a redirect from it.
 - Pages that should not be found (samples, Depot, account, welcome Guides for invitees) carry `noindex` and stay out of the sitemap.
+
+## Pictures and page weight (Sean, 2026-10-31)
+
+"The site overall just feels very sluggish." The Rich Roll page flickered on phones and drew only its first episode: every
+episode thumbnail was the show's own art at full size (up to 3000 x 3000, 0.1 to 3.9 MB each, 20 a page), and iPhone Safari ran out
+of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that day:
+
+- **Pictures from other sites go through Vercel's resizer**: `/_vercel/image?url=<encoded>&w=<width>&q=75` (`images` in
+  `vercel.json`: `sizes` lists the allowed widths, `remotePatterns` the allowed hosts, cached 31 days). An `<img>` with
+  `loading="lazy"`, `decoding="async"`, width and height, and an `onerror` that falls back to the original link (`small` and `img` in
+  `public/ve-episodes.js`). Ask for about twice the size shown. A new podcast host is a `remotePatterns` row; until then its art falls
+  back to full size. Never open the resizer to every host (anyone could run their pictures through our bill).
+- **Pictures in the repo are sized before they are committed**: a photo is a JPEG (never a PNG unless it needs transparency), at most
+  1920 px wide for a landscape hero, 1440 px for a portrait one, about 900 x 1200 for a Guide portrait, quality about 80. A city banner
+  should be under about 500 KB. On 2026-10-31 the Guide portraits (5 MB PNGs) became 100-165 KB JPEGs and the Philadelphia and D.C.
+  banners JPEGs; the old PNGs stay for outside links.
+- **A listing opened from the dashboard on a phone is its own page** (Sean, 2026-10-31: "it keeps restarting... it locks the whole
+  thing, so I can't even click the menu"). `/dashboard/directory/<slug>` frames the listing on desktop only; at 760 px and under,
+  `openDashboardListing` (and a script at the top of `center-console.html`, before the dashboard loads) goes to `/directory/<slug>`.
+  Framed on a phone, the listing was a fixed 1800 px box that took every swipe (the listing marks itself `ve-embedded`, so `nav.js`
+  never sizes its frame) and the phone held the dashboard and the listing page at once, so Safari dropped the frame and reloaded it.
+- Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
+  shows, the admin editor and business dashboard scripts included for visitors.
 
 ## Image conventions
 

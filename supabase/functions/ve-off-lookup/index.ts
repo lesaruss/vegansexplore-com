@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
         const r = await fetch(url, { headers: { 'User-Agent': UA } });
         const type = (r.headers.get('content-type') || '').split(';')[0];
         const buf = new Uint8Array(await r.arrayBuffer());
-        if (!r.ok || !(video ? type === 'video/mp4' : /^image\//.test(type)) || buf.length > (video ? 8_000_000 : 5_000_000)) { out[path] = { error: `${r.status} ${type} ${buf.length}` }; return; }
+        if (!r.ok || !(video ? type === 'video/mp4' : /^image\//.test(type)) || buf.length > (video ? 8_000_000 : 12_000_000)) { out[path] = { error: `${r.status} ${type} ${buf.length}` }; return; }
         const key = 'media/' + path;
         const { error } = await db.storage.from('vegan-media').upload(key, buf, { contentType: type, upsert: true, cacheControl: '86400' });
         out[path] = error ? { error: error.message } : { url: `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/${key}`, bytes: buf.length };

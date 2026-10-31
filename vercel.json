@@ -2,6 +2,33 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "outputDirectory": ".",
+  "images": {
+    "sizes": [64, 128, 160, 256, 384, 480, 640, 828, 1080, 1440, 1920],
+    "remotePatterns": [
+      {"protocol": "https", "hostname": "^fwbhwfxpncrsfhttimna\\.supabase\\.co$", "pathname": "^/storage/v1/object/public/.*$"},
+      {"protocol": "https", "hostname": "^d3t3ozftmdmh3i\\.cloudfront\\.net$"},
+      {"protocol": "https", "hostname": "^static\\.libsyn\\.com$"},
+      {"protocol": "https", "hostname": "^artwork\\.captivate\\.fm$"},
+      {"protocol": "https", "hostname": "^megaphone\\.imgix\\.net$"},
+      {"protocol": "https", "hostname": "^storage\\.buzzsprout\\.com$"},
+      {"protocol": "https", "hostname": "^www\\.ourhenhouse\\.org$"},
+      {"protocol": "https", "hostname": "^substackcdn\\.com$"},
+      {"protocol": "https", "hostname": "^media\\.rss\\.com$"},
+      {"protocol": "https", "hostname": "^hosting-media\\.riverside\\.com$"},
+      {"protocol": "https", "hostname": "^nutritionfacts\\.org$"},
+      {"protocol": "https", "hostname": "^assets\\.nutritionfacts\\.org$"},
+      {"protocol": "https", "hostname": "^assets\\.pippa\\.io$"},
+      {"protocol": "https", "hostname": "^media\\.zencastr\\.com$"},
+      {"protocol": "https", "hostname": "^pbcdn1\\.podbean\\.com$"},
+      {"protocol": "https", "hostname": "^mcdn\\.podbean\\.com$"},
+      {"protocol": "https", "hostname": "^img\\.transistorcdn\\.com$"},
+      {"protocol": "https", "hostname": "^assets\\.podomatic\\.net$"},
+      {"protocol": "https", "hostname": "^is1-ssl\\.mzstatic\\.com$"}
+    ],
+    "minimumCacheTTL": 2678400,
+    "formats": ["image/webp"],
+    "qualities": [75]
+  },
   "functions": {
     "api/listing.js": { "includeFiles": "directory/listing.html" }
   },
@@ -32,6 +59,18 @@
     {
       "source": "/business/sample",
       "destination": "/directory/listing"
+    },
+    {
+      "source": "/business/sample/brand",
+      "destination": "/business/brand"
+    },
+    {
+      "source": "/business/sample/site",
+      "destination": "/business/site"
+    },
+    {
+      "source": "/business/sample/shoot",
+      "destination": "/business/shoot"
     },
     {
       "source": "/groups/sample",
@@ -383,6 +422,11 @@
     }
   ],
   "redirects": [
+    {
+      "source": "/guides/vegan-restaurant-survival-guide",
+      "destination": "/guides/vegan-restaurant-guide",
+      "permanent": true
+    },
     { "source": "/r/:code([A-Za-z0-9]{4,16})", "destination": "/passport?ref=:code", "permanent": false },
     {
       "source": "/communities/dmv",

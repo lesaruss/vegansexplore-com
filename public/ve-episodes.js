@@ -32,7 +32,7 @@
     '.vep-count{font-size:12px;font-weight:700;color:rgba(26,26,26,.68)}' +
     '.vep-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:12px}' +
     '.vep-row{display:grid;grid-template-columns:72px 1fr auto;gap:14px;align-items:start;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:12px;background:#fff}' +
-    '.vep-img{width:72px;height:72px;border-radius:8px;background:#EAF7EA center/cover no-repeat}' +
+    '.vep-img{width:72px;height:72px;border-radius:8px;background:#EAF7EA center/cover no-repeat;display:block;object-fit:cover}' +
     '.vep-t{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#1a1a1a;text-decoration:none}' +
     'a.vep-t:hover{color:#1f5f22;text-decoration:underline}' +
     '.vep-meta{font-size:11.5px;font-weight:700;color:rgba(26,26,26,.68);margin:3px 0 4px}' +
@@ -64,6 +64,21 @@
     'body.vep-on{padding-bottom:84px}@media(max-width:700px){body.vep-on{padding-bottom:116px}}';
   function css() { if (document.getElementById('vep-css')) return; var s = document.createElement('style'); s.id = 'vep-css'; s.textContent = STYLE; document.head.appendChild(s); }
 
+  // Episode art comes from each show's host at full size (up to 3000 x 3000, 0.1 to 4 MB each), 20 to a page. On a phone that
+  // ran Safari out of picture memory, so the list flickered and only the first rows drew (Sean, 2026-10-31). Every thumbnail
+  // goes through Vercel's resizer (images in vercel.json; a host must be in its remotePatterns) and loads only near the
+  // screen; if the resizer refuses one, the original link is used instead.
+  function small(url, w) {
+    if (!/^https:\/\//.test(url || '')) return url || '';
+    var h = location.hostname, base = /(^|\.)vegansexplore\.com$|\.vercel\.app$/.test(h) ? '' : 'https://vegansexplore.com';
+    return base + '/_vercel/image?url=' + encodeURIComponent(url) + '&w=' + w + '&q=75';
+  }
+  function img(url, w, extra) {
+    if (!url) return '<div class="vep-img"' + (extra || '') + '></div>';
+    return '<img class="vep-img" src="' + esc(small(url, w)) + '" data-src="' + esc(url) + '" alt="" loading="lazy" decoding="async" width="' + w + '" height="' + w + '"' +
+      ' onerror="if(this.src!==this.dataset.src){this.src=this.dataset.src}else{this.onerror=null}"' + (extra || '') + '>';
+  }
+
   // ---- the player ----
   var now = null; // {key, ep, show}
   function keyOf(ep, show) { return (show && show.id || '') + '|' + ep.guid; }
@@ -92,7 +107,7 @@
     }
     now = { key: key, ep: ep, show: show };
     if (window.veEpisodePlayed) try { window.veEpisodePlayed(ep, show); } catch (e) {}
-    bar.innerHTML = '<div class="vep-img" style="background-image:url(\'' + esc(ep.image || (show && show.image) || '') + '\')"></div>' +
+    bar.innerHTML = img(ep.image || (show && show.image) || '', 128) +
       '<div style="min-width:0"><div class="pt">' + esc(ep.title) + '</div><div class="ps">' + esc((show && show.name) || '') + '</div></div>' +
       '<audio controls preload="metadata" src="' + esc(ep.audio) + '"></audio>' +
       '<button type="button" class="vx" aria-label="Close the player">' + I.x + '</button>';
@@ -138,7 +153,7 @@
     o = o || {};
     var key = keyOf(ep, show), saved = !!o.saved;
     return '<div class="vep-row">' +
-      '<div class="vep-img" style="background-image:url(\'' + esc(ep.image || show.image || '') + '\')" role="img" aria-label=""></div>' +
+      img(ep.image || show.image || '', 160) +
       '<div style="min-width:0">' +
         (o.href ? '<a class="vep-t" href="' + esc(o.href) + '" data-vep-open="' + esc(ep.guid) + '">' + esc(ep.title) + '</a>' : '<div class="vep-t">' + esc(ep.title) + '</div>') +
         '<div class="vep-meta">' + esc([[o.pre, o.showName ? show.name : ''].filter(Boolean).join(' on '), when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
@@ -233,7 +248,7 @@
         cache[ep.guid] = ep; if (d.show && d.show.image) show.image = d.show.image;
         if (d.saved && saved.indexOf(ep.guid) < 0) saved.push(ep.guid);
         root.innerHTML = '<nav class="vep-crumb" aria-label="Breadcrumb"><button type="button">Episodes</button> / ' + esc(ep.title) + '</nav>' +
-          '<article class="vep-one"><div class="vep-img" style="background-image:url(\'' + esc(ep.image || show.image) + '\')" role="img" aria-label=""></div><div>' +
+          '<article class="vep-one">' + img(ep.image || show.image || '', 480) + '<div>' +
           '<h2>' + esc(ep.title) + '</h2><div class="vep-meta">' + esc([ep.season ? 'Season ' + ep.season : '', ep.episode ? 'Episode ' + ep.episode : '', when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
           '<div class="vep-acts"><button type="button" class="vep-btn go" data-vep-play="' + esc(keyOf(ep, show)) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' +
             '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + !!d.saved + '">' + (d.saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' +

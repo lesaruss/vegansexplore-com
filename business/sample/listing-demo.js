@@ -83,7 +83,7 @@
     ],
     audits: [], orders: [],
     guides: [
-      { slug: 'vegan-restaurant-survival-guide', title: 'The Vegan Restaurant Survival Guide', description: 'Your Google listing, website and social, checked and fixed in order, with Liz.', access_rule: 'points', owned: true },
+      { slug: 'vegan-restaurant-guide', title: 'The Vegan Restaurant Guide', description: 'Your Google listing, website and social, checked and fixed in order, with Liz.', access_rule: 'points', owned: true },
       { slug: 'vegan-dairy-guide', title: 'The Vegan Dairy Guide', description: 'The brands, swaps and recipes members use to leave dairy behind, with Maya.', access_rule: 'points', owned: false }
     ],
     opportunities: [{ id: 'sample-role', title: 'Community Manager', opportunity_type: 'Gig work', commitment: 'A few hours a week', compensation: 'Paid as the community grows', city_slug: 'south-florida' }],

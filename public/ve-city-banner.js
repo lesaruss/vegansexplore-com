@@ -35,7 +35,7 @@
 (function () {
   if (window.VECityBanner) return;
 
-  var ART = { philadelphia: 'banner.png', dmv: 'banner.png' };
+  var ART = {};
   var MOBILE_ART = { 'new-york': 'hero-mobile.jpg', london: 'hero-mobile.jpg' };
   var CHEVRON = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23ffffff' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E\")";
 

@@ -238,6 +238,11 @@
           $('done-next').href = next;
           $('done-next').textContent = invite.dinner ? 'See your seat' : invite.points_to === 'community_manager' ? 'See the role' : invite.points_to === 'ambassador' ? 'Start as an Ambassador' : 'Go to your dashboard';
           $('done-lede').textContent = invite.comp ? 'Your Founding Membership is active. Thank you for what you do for this community.' : 'Your account is ready.';
+          if (invite.points_to === 'ambassador' && invite.profile === 'creator') {
+            $('done-title').textContent = 'Welcome, official creator.';
+            $('done-lede').textContent = 'Your Founding Membership is active, on us, with nothing to pay. The Official Creator Guide shows the work, how it pays and your next steps.';
+            $('done-next').textContent = 'Open the Creator Guide';
+          }
           if (invite.points_to === 'nonprofit') {
             $('done-title').textContent = 'Welcome, Nonprofit Partner.';
             $('done-lede').textContent = ((invite.org && invite.org.name) || 'Your organization') + ' is a Vegans Explore Nonprofit Partner, and your Founding Membership is active. Your partner Guide has your link and your kit.';
@@ -320,8 +325,8 @@
       $('accept').addEventListener('click', function () { say('Preview: accepting makes a real account, so it is turned off here.', 'ok'); });
       if (pv === 'wrong') say('This invitation is for j*****@example.com. Sign in or create your account with that email to accept it. We signed you out of the other account: press Accept and use that email.', 'err');
       if (pv === 'done') {
-        $('done-next').href = '/ambassadors/welcome' + (prof ? '?profile=' + encodeURIComponent(prof) : '');
-        $('done-next').textContent = 'Start as an Ambassador';
+        $('done-next').href = prof === 'creator' ? '/creators/welcome' : '/ambassadors/welcome' + (prof ? '?profile=' + encodeURIComponent(prof) : '');
+        $('done-next').textContent = prof === 'creator' ? 'Open the Creator Guide' : 'Start as an Ambassador';
         $('done-lede').textContent = 'Your Founding Membership is active. Thank you for what you do for this community.';
         show('done');
       }

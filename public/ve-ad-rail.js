@@ -65,8 +65,9 @@
     '.vear-cta span{display:block;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(26,26,26,0.68);margin-top:2px;}',
     '.vear-cta:hover{text-decoration:underline;}',
     '.vear-ph:focus-visible,.vear-slot a.vear-ad:focus-visible{outline:2px solid #1a1a1a;outline-offset:-2px;}',
-    // Narrow screens: the rail drops under the content, slots side by side.
-    '@media (max-width:900px){.vear-layout{grid-template-columns:minmax(0,1fr);}.vear-rail{position:static;flex-direction:row;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(0,0,0,0.1);padding-top:18px;}.vear-label,.vear-cta{width:100%;}.vear-slot{flex:1 1 220px;max-width:300px;margin:0;}}'
+    // Narrow screens: the rail drops under the content and runs the full width (Sean, 2026-10-31: the ads "are not full width on
+    // mobile"); two slots sit side by side where there is room, one per row on a phone. A tall slot becomes a wide box there.
+    '@media (max-width:900px){.vear-layout{grid-template-columns:minmax(0,1fr);}.vear-rail{position:static;flex-direction:row;flex-wrap:wrap;border-top:1px solid rgba(0,0,0,0.1);padding-top:18px;}.vear-label,.vear-cta{width:100%;}.vear-slot{flex:1 1 280px;max-width:none;margin:0;}.vear-slot.tower{aspect-ratio:6/5;}}'
   ].join('');
   var st = document.createElement('style'); st.id = 'vear-style'; st.textContent = css; document.head.appendChild(st);
   // HTML5 ad creatives render through the shared helper; load it if the page did not.

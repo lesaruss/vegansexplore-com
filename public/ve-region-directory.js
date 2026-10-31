@@ -161,7 +161,12 @@
     + '.vrd-root .vrd-subtabs .subcat-pill{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:13px 16px;border:0;border-bottom:2px solid transparent;border-radius:0;margin-bottom:-2px;background:transparent;color:#666;white-space:nowrap}'
     + '.vrd-root .vrd-subtabs .subcat-pill.sc-active{background:transparent;color:#1a1a1a;border-color:var(--vb-accent,#5EC47A)}'
     + '.vrd-root .vrd-subtabs .subcat-pill:hover:not(.sc-active){color:#333;border-color:#ccc}'
-    + '@media(max-width:768px){.vrd-root .vrd-subtabs{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}.vrd-root .vrd-subtabs::-webkit-scrollbar{display:none}.vrd-root .vrd-subtabs .subcat-pill{font-size:10px;padding:12px}}'
+    // Phones: the sub-sections are one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "a little clanky... a
+    // drop-down menu instead that runs the length of that section on mobile"). It clicks the matching tab, so both stay one control.
+    + '.vrd-root .vrd-subsel{display:none}'
+    + '@media(max-width:768px){.vrd-root .vrd-subtabs{border-bottom:0;margin:-8px 0 14px}.vrd-root .vrd-subtabs .subcat-pill{display:none}'
+    + '.vrd-root .vrd-subsel{display:block;width:100%;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font-family:Montserrat,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
+    + '.vrd-root .vrd-subsel:focus{outline:none;border-color:var(--vb-accent,#5EC47A)}}'
     + '@media(max-width:600px){.vrd-root .vrd-tools{flex-wrap:wrap;gap:10px}.vrd-root .vrd-tools .vrd-search-wrap{flex:1 1 100%;order:-1}.vrd-root .vrd-filter-btn{flex:1 1 auto}.vrd-root .vrd-loc-grid{grid-template-columns:minmax(0,1fr);gap:12px}}'
     + '.vrd-root .vrd-filter-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);padding:0;overflow:hidden}'
     + '.vrd-root .vrd-filter-pop[hidden]{display:none}'
@@ -387,7 +392,10 @@
       LOC_LEVELS.map(function (lv) { return '<span class="sb-f"><span class="geo-label">' + lv[1] + '</span><select class="sort-select" aria-label="' + lv[1] + '" data-vrd-loc="' + lv[0] + '"></select></span>'; }).join('') +
       '</div></div>' : '';
     // With the sections in the page's banner (config.sectionMenu), the sub-sections are the tab row under it, not in the filter.
-    var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns + '</div>' : '';
+    var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns +
+      '<select class="vrd-subsel" data-vrd-subsel aria-label="' + esc(cat.label) + '">' +
+      (cat.allFirst ? ['All'] : []).concat(cat.subcats, cat.allFirst ? [] : ['All']).map(function (s, i) { return '<option value="' + esc(s) + '"' + (i ? '' : ' selected') + '>' + esc(s) + '</option>'; }).join('') +
+      '</select></div>' : '';
     var subInPop = cat.subcats.length && !subTabs;
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
       // The sub-sections are in the dropdown too, first (Sean, 2026-10-27: "It should also have the Restaurant, Bakeries, Food
@@ -1169,6 +1177,18 @@
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
         if (panel.classList.contains('active')) tellSection(root, state);
       });
+    });
+
+    // The phone dropdown follows whichever tab is active, however it changed (a tap, the address, a redraw).
+    root.querySelectorAll('[data-vrd-subsel]').forEach(function (sel) {
+      var row = sel.parentNode;
+      function follow() { var on = row.querySelector('.subcat-pill.sc-active'); if (on && sel.value !== on.getAttribute('data-vrd-subcat')) sel.value = on.getAttribute('data-vrd-subcat'); }
+      sel.addEventListener('change', function () {
+        var pill = Array.prototype.filter.call(row.querySelectorAll('[data-vrd-subcat]'), function (p) { return p.getAttribute('data-vrd-subcat') === sel.value; })[0];
+        if (pill) pill.click();
+      });
+      if (window.MutationObserver) new MutationObserver(follow).observe(row, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      follow();
     });
 
     root.querySelectorAll('[data-vrd-county]').forEach(function (sel) {

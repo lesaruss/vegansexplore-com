@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Green Leaf Kitchen Brand Kit — Vegans Explore</title>
+  <meta name="description" content="A sample BrandDesk brand kit: the Cartridge that makes Green Leaf Kitchen look and sound like itself, and where the owner builds it.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Nunito:wght@800;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* The brand kit, the intake and the owner's editor are one page (canon canon-ve-front-of-house v5; Sean, 2026-10-31: "this could
+       be one and the same"). Every word, color and file here comes from the Cartridge (/business/sample/cartridge.js). Each section is
+       Not started (instructions only), In progress, or Locked (the content, with Edit). The sample saves for the visit only. */
+    .bk-card{background:var(--bk-page);color:var(--bk-text);border-radius:12px;padding:24px 26px;box-shadow:0 18px 40px rgba(0,0,0,0.35);font-family:'DM Sans',sans-serif;}
+    .bk-card h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:20px;margin:0 0 10px;color:var(--bk-text);}
+    .bk-card p,.bk-card li{font-size:14.5px;line-height:1.6;}
+    .bk-card ul,.bk-card ol{margin:0;padding-left:18px;}
+    .bk-muted{font-size:13px;opacity:.75;}
+    .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;}
+    .bk-grid.bk-six{grid-template-columns:repeat(auto-fill,minmax(min(180px,100%),1fr));}
+    .bk-grid.bk-five{grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));}
+    .bk-scroll{max-height:calc(100vh - 360px);overflow-y:auto;scrollbar-width:thin;}
+    .bk-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}
+    .bk-ok{background:#dcfce7;color:#14532d;} .bk-wait{background:#fef3c7;color:#713f12;} .bk-make{background:#e0e7ff;color:#1e1b4b;} .bk-none{background:#e5e7eb;color:#1f2937;}
+    .bk-cover{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:48px;align-items:center;}
+    .bk-cover img,.bk-nologo{width:100%;max-width:420px;aspect-ratio:1;border-radius:14px;display:block;box-shadow:0 18px 40px rgba(0,0,0,0.4);}
+    .bk-nologo{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;background:rgba(255,255,255,0.06);border:2px dashed rgba(255,255,255,0.35);box-shadow:none;color:#fff;font:800 12px/1.4 'Montserrat',sans-serif;letter-spacing:0.12em;text-transform:uppercase;text-align:center;}
+    .bk-sect{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:14.5px;}
+    .bk-sect:last-child{border-bottom:0;}
+    .bk-sw{border-radius:12px;overflow:hidden;background:#fff;color:#1F2420;font-family:'DM Sans',sans-serif;box-shadow:0 10px 26px rgba(0,0,0,0.3);}
+    .bk-sw div{height:96px;}
+    .bk-sw p{margin:0;padding:10px 14px 2px;font-weight:700;font-size:14px;}
+    .bk-sw small{display:block;padding:0 14px 12px;font-size:12.5px;color:#4b5563;line-height:1.45;}
+    .bk-pair{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;}
+    .bk-pair span{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.06em;white-space:nowrap;}
+    .bk-type-h{font-family:'Nunito',sans-serif;font-weight:900;line-height:1.05;margin:0 0 8px;}
+    .bk-q{border-left:4px solid var(--bk-accent);padding:8px 0 8px 14px;margin:0 0 12px;font-size:15px;line-height:1.55;}
+    .bk-q b{display:block;font:800 10.5px/1 'Montserrat',sans-serif;letter-spacing:0.12em;text-transform:uppercase;color:var(--bk-accent);margin-bottom:6px;}
+    .bk-item{display:grid;grid-template-columns:88px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.12);}
+    .bk-item:last-child{border-bottom:0;}
+    .bk-thumb{box-sizing:border-box;width:88px;height:88px;border-radius:10px;object-fit:cover;display:block;background:var(--bk-soft);}
+    .bk-thumb.bk-empty{display:flex;align-items:center;justify-content:center;text-align:center;font:800 9.5px/1.3 'Montserrat',sans-serif;letter-spacing:0.06em;text-transform:uppercase;color:var(--bk-text);padding:6px;}
+    .bk-item h4{font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;margin:0 0 4px;}
+    .bk-was{font-size:12.5px;opacity:.6;text-decoration:line-through;margin:0 0 4px;}
+    .bk-price{font-family:'Nunito',sans-serif;font-weight:900;font-size:17px;}
+    .bk-sec{font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:var(--bk-accent);margin:18px 0 2px;}
+    .bk-sec:first-child{margin-top:0;}
+    .bk-shot{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(0,0,0,0.12);font-size:14px;}
+    .bk-shot img,.bk-shot .bk-thumb{width:56px;height:56px;flex:none;}
+    .bk-shot .bk-label{flex:1;}
+    .bk-hours{display:grid;grid-template-columns:auto 1fr;gap:4px 18px;font-size:14.5px;}
+    .bk-hours b{font-weight:700;}
+    @media (min-width:901px) and (max-height:820px){.bk-sw div{height:60px;}.bk-pair{padding:9px 12px;}}
+    .bk-wide{grid-template-columns:minmax(0,0.7fr) minmax(0,1.3fr);}
+    .bk-edit-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:8px;}
+    .bk-how{background:#fff;color:#1f2937;}
+    .bk-how h3{color:#14532d;}
+    .bk-how dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:12px 0 0;font-size:14px;}
+    .bk-how dt{font-weight:700;}
+    .bk-how dd{margin:0;}
+
+    /* The editor: one section at a time, over the kit */
+    .bk-ed{position:fixed;inset:0;z-index:100000;display:none;background:rgba(0,0,0,0.6);}
+    .bk-ed.on{display:block;}
+    .bk-ed-box{position:absolute;inset:24px;max-width:none;background:#fff;color:#1f2937;border-radius:12px;display:flex;flex-direction:column;overflow:hidden;font-family:'DM Sans',sans-serif;}
+    .bk-ed-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid #e5e7eb;}
+    .bk-ed-head h2{margin:0;font:900 18px/1.2 'Montserrat',sans-serif;text-transform:uppercase;letter-spacing:0.02em;}
+    .bk-ed-body{flex:1;overflow-y:auto;padding:24px;}
+    .bk-ed-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:12px;padding:14px 24px;border-top:1px solid #e5e7eb;}
+    .bk-b{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:10px 20px;border-radius:6px;font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:#16a34a;color:#fff;}
+    .bk-b:hover{background:#15803d;}
+    .bk-b.ghost{background:#fff;color:#1f2937;border:1.5px solid #d1d5db;}
+    .bk-b.ghost:hover{border-color:#6b7280;}
+    .bk-b[disabled]{opacity:.45;cursor:not-allowed;}
+    .bk-ed-cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,0.9fr);gap:28px;align-items:start;}
+    .bk-ed h4{font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.14em;text-transform:uppercase;color:#15803d;margin:0 0 12px;}
+    .bk-why{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;margin-bottom:24px;}
+    .bk-why div{background:#f3f4f6;border-radius:10px;padding:14px 16px;font-size:13.5px;line-height:1.55;}
+    .bk-why b{display:block;font-size:14px;margin-bottom:4px;}
+    .bk-presets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;margin-bottom:24px;}
+    .bk-preset{border:2px solid #e5e7eb;border-radius:10px;overflow:hidden;cursor:pointer;background:#fff;text-align:left;padding:0;font:inherit;color:inherit;}
+    .bk-preset:hover,.bk-preset.on{border-color:#16a34a;}
+    .bk-preset .strip{display:flex;height:44px;}
+    .bk-preset .strip i{flex:1;}
+    .bk-preset p{margin:0;padding:10px 12px;font-size:13px;line-height:1.4;}
+    .bk-preset p b{display:block;font-size:14px;}
+    .bk-role{display:grid;grid-template-columns:52px minmax(0,1fr) 120px;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+    .bk-role input[type=color]{width:52px;height:44px;border:1px solid #d1d5db;border-radius:6px;padding:2px;background:#fff;cursor:pointer;}
+    .bk-role input[type=text]{width:100%;box-sizing:border-box;min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font:inherit;font-size:14px;}
+    .bk-role small{display:block;font-size:12px;color:#6b7280;margin-top:3px;}
+    .bk-score{display:flex;align-items:baseline;gap:10px;margin-bottom:12px;}
+    .bk-score b{font:900 44px/1 'Montserrat',sans-serif;}
+    .bk-prev{border-radius:12px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:16px;}
+    .bk-prev .top{padding:18px 18px 14px;}
+    .bk-prev .top h5{margin:0 0 6px;font:900 24px/1.05 'Nunito',sans-serif;}
+    .bk-prev .top p{margin:0 0 12px;font-size:13.5px;}
+    .bk-prev .btn{display:inline-block;padding:9px 16px;border-radius:6px;font-weight:700;font-size:13px;}
+    .bk-prev .band{padding:12px 18px;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .bk-prev .badge{padding:4px 9px;border-radius:6px;font-weight:700;font-size:12px;}
+    .bk-check{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:13.5px;}
+    .bk-msg{font-size:13px;color:#6b7280;margin-right:auto;}
+    .bk-steps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
+    .bk-steps span{padding:8px 12px;border-radius:6px;background:#f3f4f6;font:800 11px/1 'Montserrat',sans-serif;letter-spacing:0.08em;text-transform:uppercase;color:#6b7280;}
+    .bk-steps span.on{background:#dcfce7;color:#14532d;}
+    .bk-form{display:grid;gap:14px;max-width:820px;}
+    .bk-f{display:grid;gap:6px;}
+    .bk-f>span{font-weight:700;font-size:14px;}
+    .bk-f small{font-size:12.5px;color:#6b7280;}
+    .bk-f input,.bk-f textarea,.bk-f select{width:100%;box-sizing:border-box;min-height:42px;border:1px solid #d1d5db;border-radius:6px;padding:9px 12px;font:inherit;font-size:14.5px;color:#111827;background:#fff;}
+    .bk-f select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23374151' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .bk-sugg{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+    .bk-mrow{display:grid;grid-template-columns:64px minmax(0,1fr) auto auto;gap:14px;align-items:center;width:100%;padding:10px 12px;margin-bottom:8px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;text-align:left;font:inherit;color:inherit;cursor:pointer;}
+    .bk-mrow:hover{border-color:#16a34a;}
+    .bk-mrow .bk-thumb{width:64px;height:64px;}
+    .bk-mrow b{display:block;font-size:15px;}
+    .bk-mrow small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;color:#6b7280;}
+    .bk-bigph{width:100%;max-width:420px;aspect-ratio:4/5;object-fit:cover;border-radius:12px;display:flex;background:#f3f4f6;}
+    .bk-bigph.bk-empty{align-items:center;justify-content:center;font:800 12px/1 'Montserrat',sans-serif;letter-spacing:0.1em;text-transform:uppercase;color:#6b7280;}
+    .bk-soon{max-width:720px;}
+    .bk-two{grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));max-width:none;}
+    .bk-warn{background:#fef3c7;color:#713f12;border-radius:10px;padding:12px 16px;font-size:14px;line-height:1.5;margin-bottom:20px;}
+    @media (max-width:900px){.bk-wide{grid-template-columns:minmax(0,1fr);}.bk-cover{grid-template-columns:minmax(0,1fr);gap:22px;}.bk-scroll{max-height:none;}.bk-item{grid-template-columns:64px minmax(0,1fr);}.bk-item .bk-price{grid-column:2;}.bk-thumb{width:64px;height:64px;}
+      .bk-ed-box{inset:0;border-radius:0;}.bk-ed-cols{grid-template-columns:minmax(0,1fr);}.bk-ed-body{padding:18px 16px;}.bk-ed-head,.bk-ed-foot{padding:12px 16px;}.bk-role{grid-template-columns:48px minmax(0,1fr);}.bk-role .hex{grid-column:2;}.bk-mrow{grid-template-columns:56px minmax(0,1fr);}.bk-mrow .bk-price,.bk-mrow .bk-tag{grid-column:2;justify-self:start;}}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <div class="vg-note" id="bkNote"></div>
+
+  <main class="vg-stage" id="bkStage" aria-label="Brand kit">
+    <section class="vg-slide" id="cover" data-title="Cover"></section>
+    <section class="vg-slide" id="cartridge" data-title="Your kit"></section>
+    <section class="vg-slide" id="logo" data-title="Logo"></section>
+    <section class="vg-slide" id="colors" data-title="Colors"></section>
+    <section class="vg-slide" id="type" data-title="Type"></section>
+    <section class="vg-slide" id="voice" data-title="Voice"></section>
+    <section class="vg-slide" id="story" data-title="Story"></section>
+    <section class="vg-slide" id="menu" data-title="Menu"></section>
+    <section class="vg-slide" id="photos" data-title="Photos"></section>
+    <section class="vg-slide" id="info" data-title="Hours and details"></section>
+    <section class="vg-slide" id="next" data-title="Into the frame"></section>
+  </main>
+
+  <div class="bk-ed" id="bkEd" role="dialog" aria-modal="true" aria-labelledby="bkEdTitle">
+    <div class="bk-ed-box"><div class="bk-ed-head"><h2 id="bkEdTitle"></h2><button class="bk-b ghost" type="button" data-ed-close>Close</button></div>
+      <div class="bk-ed-body" id="bkEdBody"></div><div class="bk-ed-foot" id="bkEdFoot"></div></div>
+  </div>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/business/sample/cartridge.js"></script>
+  <script>
+  (function () {
+    // ---- The Cartridge for this visit: the finished sample, or a new client's empty one (?as=new). Changes save for the visit.
+    // A real client's kit is /business/brand?listing=<slug>: loaded from and saved to ve-brand-kit (ve_cartridges). Without
+    // ?listing it is the sample (Green Leaf Kitchen), which saves for the visit only.
+    var LIVE = decodeURIComponent((location.search.match(/[?&]listing=([^&#]+)/) || [])[1] || ''), ROLE = LIVE ? 'none' : 'owner', PEOPLE = null;
+    var NEW = !LIVE && /[?&]as=new\b/.test(location.search), KEY = 've_cartridge_sample_' + (NEW ? 'new' : 'done');
+    var BASE = JSON.parse(JSON.stringify(window.VE_CARTRIDGE));
+    var SECTIONS = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
+    if (NEW) SECTIONS.forEach(function (s) { BASE.meta.approvals[s[0]] = { state: 'not_started' }; });
+    var C = BASE;
+    if (!LIVE) try { var saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); if (saved) C = saved; } catch (e) {}
+    function save() { if (!LIVE) try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+    var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-brand-kit';
+    function api(action, body) {
+      var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(), h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, slug: LIVE }, body || {})) })
+        .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+    }
+    var PARTS = { logo: function (d) { return d.brand.logo; }, colors: function (d) { return d.brand.colors; }, type: function (d) { return d.brand.type; }, photos: function (d) { return d.photos.space; } };
+    function partOf(k) { return PARTS[k] ? PARTS[k](C) : C[k]; }
+    // Pictures: on the sample they stay in the browser; on a real kit they go to our storage first and the kit keeps that link.
+    function toJpeg(file, max) {
+      return new Promise(function (res, rej) { var img = new Image(), u = URL.createObjectURL(file);
+        img.onload = function () { var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u); c.toBlob(function (b) { b ? res(b) : rej(new Error('That picture could not be read.')); }, 'image/jpeg', 0.9); };
+        img.onerror = function () { rej(new Error('That file is not a picture we can read.')); }; img.src = u; });
+    }
+    function upload(file, kind) {
+      if (!LIVE) return kind === 'logo' ? shrinkKeep(file, 900) : shrink(file);
+      var ok = /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 15728640;
+      return (ok ? Promise.resolve(file) : toJpeg(file, 4000)).then(function (f) {
+        return api('kit_photo_url', { kind: kind, content_type: f.type || 'image/jpeg', bytes: f.size }).then(function (u) {
+          if (!u.ok) throw new Error(u.error === 'file_size' ? 'That file is over 15 MB.' : 'The upload could not start. Try again.');
+          return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg', 'x-upsert': 'false' }, body: f }).then(function (r) {
+            if (!r.ok) throw new Error('The upload did not finish. Try again.');
+            return api('kit_photo_done', { path: u.path });
+          }).then(function (d) { if (!d.ok) throw new Error(d.error === 'not_a_picture' ? 'That file is not a picture.' : 'The upload did not finish. Try again.'); return { src: d.url, w: d.width, h: d.height }; });
+        });
+      });
+    }
+
+    // The kit shows its own colors only once they are chosen; until then, a neutral kit.
+    var NEUTRAL = { page: '#FFFFFF', text: '#1F2937', accent: '#16A34A', soft: '#F3F4F6', highlight: '#F59E0B', ink: '#111827' };
+    function st(k) { return (C.meta.approvals[k] || {}).state || 'not_started'; }
+    function shown(k) { return st(k) !== 'not_started'; }
+    function colorsOf() { var o = {}; (shown('colors') ? C.brand.colors : []).forEach(function (c) { o[c.role] = c.hex; }); Object.keys(NEUTRAL).forEach(function (r) { if (!o[r]) o[r] = NEUTRAL[r]; }); return o; }
+    function paint() { var c = colorsOf(), r = document.documentElement.style; Object.keys(c).forEach(function (k) { r.setProperty('--bk-' + k, c[k]); }); }
+
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+    var STATE = { locked: ['Locked', 'bk-ok'], approved: ['Locked', 'bk-ok'], in_progress: ['In progress', 'bk-wait'], in_review: ['With the owner', 'bk-wait'],
+      revising: ['Being revised', 'bk-wait'], not_started: ['Not started', 'bk-none'], to_make: ['We are making it', 'bk-make'], have: ['Have it', 'bk-ok'],
+      shot: ['Shot', 'bk-ok'], to_shoot: ['To shoot', 'bk-make'], to_connect: ['To connect', 'bk-make'] };
+    function tag(s) { var t = STATE[s] || [s, 'bk-wait']; return '<span class="bk-tag ' + t[1] + '">' + esc(t[0]) + '</span>'; }
+    // WCAG contrast, worked out here so the kit never claims a ratio it does not have.
+    function lum(hex) { var n = parseInt(hex.slice(1), 16); return [n >> 16, n >> 8 & 255, n & 255].map(function (v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (a, v, i) { return a + v * [0.2126, 0.7152, 0.0722][i]; }, 0); }
+    function ratio(a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+    function grade(r) { return r >= 4.5 ? 'Easy to read' : r >= 3 ? 'Big text only' : 'Hard to read'; }
+    // Readability score: every pair the frame draws, full marks at 4.5:1 or better, half from 3:1, none under.
+    function score(cols, pairs) { var pts = 0; pairs.forEach(function (p) { var r = ratio(cols[p[0]], cols[p[1]]); pts += r >= 4.5 ? 1 : r >= 3 ? 0.5 : 0; }); return Math.round(100 * pts / pairs.length); }
+
+    // ---- What each section needs from the owner, shown until they start it.
+    var HOW = {
+      logo: { need: 'Your logo, any file you have. Even a photo of your sign works.', why: 'It goes on your website, Google, social and the delivery apps, so it has to be the same everywhere.', who: 'You send it. We make the other six files.', time: '5 minutes' },
+      colors: { need: 'The colors your business wears everywhere: six, each with a job.', why: 'Colors are how people recognize you before they read a word. Pick a ready palette or make your own and we score how readable it is.', who: 'You choose. We check it.', time: '10 minutes' },
+      type: { need: 'Two typefaces: one for headings, one for everything else.', why: 'We pair them with your logo so your sign and your site read as one.', who: 'We suggest. You approve.', time: '2 minutes' },
+      voice: { need: 'How you sound: the words you use and the ones you never do.', why: 'Every caption, reply and menu line should sound like the same person behind the counter.', who: 'A short course, then you lock it in.', time: '15 minutes' },
+      story: { need: 'How it started and what you are about, in your own words.', why: 'People trust a face and a reason. It goes on your About and your Directory page.', who: 'You write it, or we draft it from your old site and you edit.', time: '10 minutes' },
+      menu: { need: 'Every item and drink, its price and a photo.', why: 'Menus are the first thing people open. We copy yours in and write each description; you check it and add new items here.', who: 'You check it. We write and photograph it.', time: '20 minutes' },
+      photos: { need: 'Every dish, every drink, your space and your team, shot to our standard.', why: 'Photos are what make someone hungry enough to come in.', who: 'Our photographer shoots them and uploads them here.', time: 'One shoot' },
+      info: { need: 'Hours, address, phone, parking, and how people order.', why: 'Change it here and your website, your Directory page and Google change with it. No more "are you open?" calls.', who: 'You. Your Community Manager checks it with you every month.', time: '5 minutes' }
+    };
+    function howCard(k) { var h = HOW[k]; return '<div class="bk-card bk-how"><h3>What we need</h3><p>' + esc(h.need) + '</p><p>' + esc(h.why) + '</p>' +
+      '<dl><dt>Who</dt><dd>' + esc(h.who) + '</dd><dt>Takes</dt><dd>' + esc(h.time) + '</dd></dl></div>'; }
+    function canEdit(k) { return ROLE !== 'photographer' || k === 'photos' || k === 'menu'; }
+    function editRow(k) { var s = st(k), lbl = s === 'not_started' ? 'Start' : 'Edit';
+      if (!canEdit(k)) return '<div class="bk-edit-row">' + tag(s) + '</div>';
+      var a = C.meta.approvals[k] || {};
+      return '<div class="bk-edit-row"><button class="vg-btn" type="button" data-edit="' + k + '">' + lbl + '</button>' + tag(s) +
+        (a.at ? '<span style="font-size:13px;opacity:.8">' + (s === 'locked' ? 'Locked ' : 'Saved ') + esc(a.at) + '</span>' : '') + '</div>' +
+        (a.note && s !== 'not_started' ? '<p class="vg-lede" style="font-size:13.5px;opacity:.85;margin-top:10px">' + esc(a.note) + '</p>' : ''); }
+    function fill(id, html) { document.getElementById(id).innerHTML = html; }
+
+    // ---- The slides
+    function render() {
+      paint();
+      var B = C.brand, name = C.business.name, cols = colorsOf();
+      if (LIVE) document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>' + esc(name) + '\'s brand kit. ' + ({ admin: 'You are on the team (super admin).', owner: 'You are the owner.', editor: 'You can edit every part.', photographer: 'You can upload photos.' })[ROLE] + ' Every change is saved for the whole team. <a href="/directory/' + encodeURIComponent(LIVE) + '">See the Directory page</a>';
+      else document.getElementById('bkNote').innerHTML = '<strong>Sample</strong>' + esc(name) + ' is a made-up restaurant. ' +
+        (NEW ? 'This is the kit a new client opens: every part starts empty, with what we need. Try it: your changes stay for this visit only. <a href="/business/sample/brand">See the finished kit</a>'
+             : 'This is its finished kit: the Cartridge our website frame reads, and where the owner edits it. <a href="/business/sample/brand?as=new">Start it as a new client</a>') +
+        ' · <a href="#" data-reset>Start over</a>';
+      var bgs = C.photos.space.filter(function (s) { return s.src; }); document.getElementById('bkStage').setAttribute('data-bg', bgs.length ? bgs[0].src : '');
+
+      var done = SECTIONS.filter(function (s) { return st(s[0]) === 'locked'; }).length;
+      fill('cover', '<div class="bk-cover"><div>' + (shown('logo') ? '<img src="' + esc(B.logo.primary.src) + '" alt="' + esc(name) + ' logo">' : '<div class="bk-nologo">No logo yet<span style="font-weight:600;letter-spacing:0;text-transform:none;font-size:13px">It comes in at step one</span></div>') + '</div><div>' +
+        '<div class="vg-eyebrow">Brand kit · BrandDesk</div><h1 class="vg-h vg-xl">' + esc(name) + '</h1>' +
+        (shown('story') ? '<p class="vg-lede">' + esc(C.story.tagline) + '</p>' : '<p class="vg-lede">Everything that makes your business look and sound like itself, built here one part at a time.</p>') +
+        '<p class="vg-lede" style="font-size:14px;opacity:.85">' + done + ' of ' + SECTIONS.length + ' parts locked · ' + esc(C.business.city) + '</p>' +
+        '<button class="vg-btn" type="button" data-vg-next>' + (done ? 'See your kit' : 'Start your kit') + '</button></div></div>');
+
+      fill('cartridge', '<div class="vg-split"><div><div class="vg-eyebrow">Your kit</div><h2 class="vg-h">Everything that makes ' + esc(C.business.short) + ' look and sound like itself</h2>' +
+        '<p class="vg-lede">One place for your logo, colors, type, voice, story, every menu item and photo, and your details. Our website frame reads it, so your site, your Directory page, Google, social and the delivery apps all say the same thing.</p>' +
+        '<p class="vg-lede">Go part by part. Each one shows what we need until you start it, and you lock it in when it is right. It is yours: if you ever leave, the whole kit goes with you.</p></div>' +
+        '<div><div class="bk-card"><h3>Where each part stands</h3>' + SECTIONS.map(function (s) { return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') + '</div>' + teamCard() + '</div></div>');
+
+      function sect(k, eyebrow, title, lede, content) {
+        fill(k, '<div class="vg-split' + (k === 'menu' ? ' bk-wide' : '') + '"><div><div class="vg-eyebrow">' + eyebrow + '</div><h2 class="vg-h">' + title + '</h2>' +
+          '<p class="vg-lede">' + lede + '</p>' + editRow(k) + '</div>' + (shown(k) ? content() : howCard(k)) + '</div>');
+      }
+
+      sect('logo', 'Logo', 'Your logo', shown('logo') ? esc(B.logo.primary.note) : 'Send us any version you have. We clean it up and make every file you will need.', function () {
+        return '<div class="bk-card bk-scroll"><h3>The files</h3>' + B.logo.files.map(function (f) { return '<div class="bk-sect"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
+          '<h3 style="margin-top:16px">How to use it</h3><ul>' + B.logo.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div>';
+      });
+
+      sect('colors', 'Colors', shown('colors') ? 'Six colors, each with a job' : 'Pick your colors', shown('colors') ? 'Readability score ' + score(cols, B.pairs) + ' of 100, worked out from every pair the website draws.' : 'Choose a ready palette or make your own. We score how easy it is to read before you lock it in.', function () {
+        return '<div><div class="bk-grid bk-six" style="margin-bottom:14px">' + B.colors.map(function (c) {
+          return '<div class="bk-sw"><div style="background:' + c.hex + '"></div><p>' + esc(c.name) + ' · ' + c.hex + '</p><small>' + esc(c.job) + '</small></div>';
+        }).join('') + '</div><div class="bk-grid bk-five">' + B.pairs.map(function (p) {
+          var r = ratio(cols[p[0]], cols[p[1]]); return '<div class="bk-pair" style="color:' + cols[p[0]] + ';background:' + cols[p[1]] + '">' + esc(p[2]) + '<span>' + r.toFixed(1) + ':1</span></div>';
+        }).join('') + '</div></div>';
+      });
+
+      sect('type', 'Type', 'Two typefaces', shown('type') ? '<b>' + esc(B.type.heading.family) + '</b> for headings: ' + esc(B.type.heading.why) + ' <b>' + esc(B.type.body.family) + '</b> for everything else: ' + esc(B.type.body.why) : 'We pair two typefaces with your logo and show them on your real menu. You approve.', function () {
+        var it = C.menu.sections[0].items[0];
+        var T = B.type, hf = "font-family:'" + T.heading.family + "',sans-serif;font-weight:" + T.heading.weight + ';';
+        if (T.google && !document.querySelector('link[href="' + T.google + '"]')) { var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = T.google; document.head.appendChild(l); }
+        return '<div class="bk-card"><p class="bk-type-h" style="font-size:44px;' + hf + '">' + esc(shown('voice') ? C.voice.samples.hero : 'Come hungry.') + '</p><p class="bk-type-h" style="font-size:26px;' + hf + '">' + esc(C.menu.sections[0].name) + '</p>' +
+          '<p class="bk-type-h" style="font-size:18px;' + hf + '">' + esc(it.name) + ' · ' + esc(it.price) + '</p><p style="margin:10px 0 0;font-family:\'' + T.body.family + '\',sans-serif">' + esc(it.copy) + '</p></div>';
+      });
+
+      var V = C.voice;
+      sect('voice', 'Voice', shown('voice') ? esc(V.personality.join(', ')) : 'Find your voice', shown('voice') ? esc(V.sounds_like) : 'A short course: how you would talk to a regular, the words you use and the ones you never do. Then you lock it in.', function () {
+        return '<div class="bk-card">' + [['On the website', V.samples.hero], ['On Instagram', V.samples.instagram], ['Answering a Google review', V.samples.google_reply], ['When we close for the day', V.samples.closed]].map(function (q) {
+          return '<p class="bk-q"><b>' + esc(q[0]) + '</b>' + esc(q[1]) + '</p>'; }).join('') + '<p class="bk-muted" style="margin:0">We never: ' + esc(V.never.join('; ')) + '.</p></div>';
+      });
+
+      sect('story', 'Story', 'How we tell it', shown('story') ? esc(C.story.short) : 'In your words, or we draft it from your old website and you edit it.', function () {
+        return '<div class="bk-card"><h3>About us</h3>' + C.story.long.map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') + '</div>';
+      });
+
+      var shotN = 0, allN = 0;
+      C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { allN++; if (i.photo.state === 'shot') shotN++; }); });
+      C.photos.space.forEach(function (s) { allN++; if (s.state === 'shot') shotN++; });
+      sect('menu', 'Menu', 'Every item, written and photographed', shown('menu') ? 'Their words struck through, ours under them. Every food item and every drink gets a photo to our standard. New items added here go on the website.' : 'We copy your current menu in and write each description. You check it, add new items, and upload photos onto each one.', function () {
+        return '<div class="bk-card bk-scroll">' + C.menu.sections.map(function (s) {
+          return '<p class="bk-sec">' + esc(s.name) + '</p>' + s.items.map(function (it) {
+            var ph = it.photo.src ? '<img class="bk-thumb" src="' + esc(it.photo.src) + '" alt="' + esc(it.name) + '">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+            return '<div class="bk-item">' + ph + '<div><h4>' + esc(it.name) + '</h4><p class="bk-was">' + esc(it.was) + '</p><p style="margin:0 0 6px">' + esc(it.copy) + '</p>' +
+              it.tags.map(function (t) { return '<span class="bk-tag" style="background:var(--bk-soft);color:var(--bk-text);margin-right:6px">' + esc(t) + '</span>'; }).join('') + '</div><div class="bk-price">' + esc(it.price) + '</div></div>';
+          }).join('');
+        }).join('') + '</div>';
+      });
+
+      var P = C.photos.spec;
+      sect('photos', 'Photos · ' + shotN + ' of ' + allN + ' shot', 'The standard every photo meets', esc(B.photo.look), function () {
+        return '<div class="bk-card bk-scroll"><h3>The standard</h3><ul>' + [['Angles', P.angles], ['The set', P.set], ['Light', P.light], ['Drinks', P.drinks], ['Plating', P.plate], ['Delivered', P.crops]].map(function (r) {
+          return '<li><b>' + r[0] + ':</b> ' + esc(r[1]) + '</li>'; }).join('') + '</ul><h3 style="margin-top:16px">The space and the team</h3>' + C.photos.space.map(function (s) {
+          var ph = s.src ? '<img class="bk-thumb" src="' + esc(s.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+          return '<div class="bk-shot">' + ph + '<span class="bk-label">' + esc(s.shot) + '</span>' + tag(s.state) + '</div>'; }).join('') + '</div>';
+      });
+
+      var I = C.info;
+      sect('info', 'Hours and details', 'One place for the facts', 'Change it here and your website, your Directory page and Google change with it.', function () {
+        return '<div class="bk-card"><h3>Hours</h3><div class="bk-hours">' + Object.keys(I.hours).map(function (d) { return '<b>' + d + '</b><span>' + esc(I.hours[d]) + '</span>'; }).join('') + '</div>' +
+          '<h3 style="margin-top:16px">Find us</h3><p>' + esc(I.address.street) + ', ' + esc(I.address.city) + ', ' + esc(I.address.state) + ' ' + esc(I.address.zip) + ' · ' + esc(I.phone) + '</p>' +
+          '<p class="bk-muted">' + esc(I.details.join(' · ')) + '</p><div class="bk-sect"><span>Ordering: ' + esc(I.ordering.pos) + '</span>' + tag(I.ordering.state) + '</div></div>';
+      });
+
+      var open = SECTIONS.filter(function (s) { return st(s[0]) !== 'locked'; });
+      fill('next', '<div class="vg-split"><div><div class="vg-eyebrow">What happens next</div><h2 class="vg-h">' + (open.length ? 'Lock in every part' : 'Ready for the frame') + '</h2>' +
+        '<p class="vg-lede">When every part is locked, our team checks the kit and plugs it into the website frame. Your site takes on these colors, this type, this voice, this menu and these photos. Nothing else has to be built.</p>' +
+        '<p class="vg-lede">After launch, this page is where you update your site: a new dish, new hours, a new photo.</p>' + (LIVE ? '' : '<a class="vg-btn" href="/business/sample/site" target="_blank" rel="noopener">See the website it makes</a>') + '</div>' +
+        '<div class="bk-card"><h3>' + (open.length ? 'Still to do' : 'Every part is locked') + '</h3>' + (open.length ? open.map(function (s) {
+          return '<div class="bk-sect"><a href="#' + s[0] + '" style="color:inherit">' + esc(s[1]) + '</a>' + tag(st(s[0])) + '</div>'; }).join('') : '<p>Our team checks it next.</p>') + '</div></div>');
+    }
+
+    // ---- The editors
+    var ed = document.getElementById('bkEd'), edBody = document.getElementById('bkEdBody'), edFoot = document.getElementById('bkEdFoot'), edTitle = document.getElementById('bkEdTitle'), lastFocus = null;
+    function openEd(title, body, foot) { lastFocus = document.activeElement; edTitle.textContent = title; edBody.innerHTML = body; edFoot.innerHTML = foot; ed.classList.add('on'); document.body.style.overflow = 'hidden'; edBody.scrollTop = 0; var f = ed.querySelector('[data-ed-close]'); if (f) f.focus(); }
+    function closeEd() { ed.classList.remove('on'); document.body.style.overflow = ''; if (lastFocus) lastFocus.focus(); }
+    ed.addEventListener('click', function (e) { if (e.target === ed || e.target.closest('[data-ed-close]')) closeEd(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && ed.classList.contains('on')) closeEd(); });
+
+    function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
+    function setState(k, s) {
+      if (!LIVE) { C.meta.approvals[k] = { state: s, by: 'You', at: today() }; save(); render(); return; }
+      var note = document.getElementById('bkNote'), was = note.innerHTML; note.innerHTML = '<strong>Saving</strong>' + esc((SECTIONS.filter(function (x) { return x[0] === k; })[0] || [k, k])[1]) + '...';
+      api('kit_save', { section: k, part: partOf(k), state: s }).then(function (d) {
+        if (!d.ok) { note.innerHTML = '<strong>Not saved</strong>' + esc(d.error === 'photos_only' ? 'Photographers can save photos only.' : d.error === 'upload_first' ? 'A picture was not uploaded yet. Try again.' : 'Something went wrong. Your change was not saved; try again.'); return; }
+        C = d.cartridge; render();
+      }).catch(function () { note.innerHTML = was; alert('Your change was not saved. Check your connection and try again.'); });
+    }
+
+    // Colors: why colors matter, ready palettes, your own with a live readability score, then lock.
+    var PRESETS = [
+      { name: 'Fresh neighborhood', mood: 'Calm, natural, made with care. Cafes, bowls, brunch.', c: { page: '#FBF5E6', text: '#1E4D2B', accent: '#2E7D32', soft: '#DCE8D2', highlight: '#E0A030', ink: '#1F2420' }, names: ['Cream', 'Forest', 'Leaf', 'Sage', 'Turmeric', 'Charcoal'] },
+      { name: 'Island bright', mood: 'Sunny, loud, fun. Caribbean, juice bars, smoothies.', c: { page: '#FFFFFF', text: '#0F3D3E', accent: '#0B7A64', soft: '#E3F5EF', highlight: '#FFB000', ink: '#1A1A1A' }, names: ['White', 'Deep Teal', 'Palm', 'Seafoam', 'Mango', 'Ink'] },
+      { name: 'Night lounge', mood: 'Grown up, warm, evening. Cocktails, dinner, date night.', c: { page: '#14201A', text: '#F3EBDD', accent: '#C8A15A', soft: '#22332A', highlight: '#C8A15A', ink: '#14201A' }, names: ['Night', 'Linen', 'Brass', 'Moss', 'Gold', 'Night'] },
+      { name: 'Street heat', mood: 'Bold, fast, hungry. Burgers, tacos, food trucks.', c: { page: '#FFF8F0', text: '#2A1A14', accent: '#C2410C', soft: '#FDE7D3', highlight: '#FACC15', ink: '#1C1917' }, names: ['Bun', 'Char', 'Chili', 'Peach', 'Mustard', 'Ink'] }
+    ];
+    var ROLES = [['page', 'Page', 'The background everywhere'], ['text', 'Text', 'Headings, words, dark panels'], ['accent', 'Buttons', 'Buttons and links'], ['soft', 'Soft', 'Soft panels and tags'], ['highlight', 'Highlight', 'One highlight a screen'], ['ink', 'Ink', 'Small print, words on the highlight']];
+    function editColors() {
+      var draft = {}, names = {};
+      (shown('colors') ? C.brand.colors : []).forEach(function (c) { draft[c.role] = c.hex; names[c.role] = c.name; });
+      if (!draft.page) { PRESETS[0].names.forEach(function (n, i) { names[ROLES[i][0]] = n; }); draft = JSON.parse(JSON.stringify(PRESETS[0].c)); }
+      var body = '<div class="bk-why">' +
+        '<div><b>People see color first</b>They recognize you by it before they read your name. Use the same colors everywhere: sign, site, menus, posts.</div>' +
+        '<div><b>Warm colors feel hungry</b>Reds, oranges and yellows wake up appetite. Use them for one highlight, not everything.</div>' +
+        '<div><b>Greens and earth tones feel fresh</b>They say natural and made with care. Most of the page can live here.</div>' +
+        '<div><b>60, 30, 10</b>About 60% your page color, 30% your text and panels, 10% buttons and highlights.</div></div>' +
+        '<h4>Start from a palette</h4><div class="bk-presets">' + PRESETS.map(function (p, i) {
+          return '<button class="bk-preset" type="button" data-preset="' + i + '"><div class="strip">' + ROLES.map(function (r) { return '<i style="background:' + p.c[r[0]] + '"></i>'; }).join('') + '</div><p><b>' + esc(p.name) + '</b>' + esc(p.mood) + '</p></button>';
+        }).join('') + '</div>' +
+        '<div class="bk-ed-cols"><div><h4>Or make your own</h4><div id="bkRoles"></div></div><div><h4>How it reads</h4><div id="bkLive"></div></div></div>';
+      var foot = '<span class="bk-msg">' + (st('colors') === 'locked' ? 'These are locked. Changing them changes your whole brand.' : 'Save a draft any time. Lock it in when it is right.') + '</span>' +
+        '<button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-col-save>Save draft</button><button class="bk-b" type="button" data-col-lock>Lock it in</button>';
+      openEd('Colors', body, foot);
+      function drawRoles() {
+        document.getElementById('bkRoles').innerHTML = ROLES.map(function (r) {
+          return '<div class="bk-role"><input type="color" value="' + draft[r[0]] + '" data-role="' + r[0] + '" aria-label="' + r[1] + ' color"><div><input type="text" value="' + esc(names[r[0]] || '') + '" data-name="' + r[0] + '" aria-label="' + r[1] + ' color name" data-dictate="off"><small>' + r[1] + ': ' + r[2] + '</small></div>' +
+            '<input class="hex" type="text" value="' + draft[r[0]].toUpperCase() + '" data-hex="' + r[0] + '" aria-label="' + r[1] + ' hex" maxlength="7" data-dictate="off"></div>';
+        }).join('');
+      }
+      function drawLive() {
+        var sc = score(draft, C.brand.pairs), worst = C.brand.pairs.map(function (p) { return ratio(draft[p[0]], draft[p[1]]); }).sort(function (a, b) { return a - b; })[0];
+        document.getElementById('bkLive').innerHTML =
+          '<div class="bk-prev" style="background:' + draft.page + ';color:' + draft.text + '"><div class="top"><h5 style="color:' + draft.text + '">' + esc(C.business.name) + '</h5><p>All-day breakfast, big bowls and good coffee.</p>' +
+          '<span class="btn" style="background:' + draft.accent + ';color:' + draft.page + '">See the menu</span></div>' +
+          '<div class="band" style="background:' + draft.soft + ';color:' + draft.text + '">Open today 8 AM to 3 PM <span class="badge" style="background:' + draft.highlight + ';color:' + draft.ink + '">New dish</span></div>' +
+          '<div class="band" style="background:' + draft.text + ';color:' + draft.page + '">Come hungry.</div></div>' +
+          '<div class="bk-score"><b style="color:' + (sc >= 90 ? '#15803d' : sc >= 70 ? '#b45309' : '#b91c1c') + '">' + sc + '</b><span>of 100 for readability</span></div>' +
+          C.brand.pairs.map(function (p) { var r = ratio(draft[p[0]], draft[p[1]]); return '<div class="bk-check"><span>' + esc(p[2]) + '</span><span>' + r.toFixed(1) + ':1 · ' + grade(r) + '</span></div>'; }).join('') +
+          '<p class="bk-muted" style="margin-top:12px">' + (worst >= 4.5 ? 'Every pair is easy to read. Ready to lock in.' : worst >= 3 ? 'Some pairs only work for big text. You can lock it in, but try darkening the text or lightening the page.' : 'Some words would be hard to read. Fix the pairs marked Hard to read before you lock it in.') + '</p>';
+        var lock = edFoot.querySelector('[data-col-lock]'); if (lock) lock.disabled = worst < 3;
+      }
+      drawRoles(); drawLive();
+      edBody.oninput = function (e) {
+        var t = e.target;
+        if (t.dataset.role) { draft[t.dataset.role] = t.value; var h = edBody.querySelector('[data-hex="' + t.dataset.role + '"]'); if (h) h.value = t.value.toUpperCase(); drawLive(); }
+        else if (t.dataset.hex && /^#[0-9a-f]{6}$/i.test(t.value)) { draft[t.dataset.hex] = t.value; var c = edBody.querySelector('[data-role="' + t.dataset.hex + '"]'); if (c) c.value = t.value; drawLive(); }
+        else if (t.dataset.name) names[t.dataset.name] = t.value;
+        edBody.querySelectorAll('.bk-preset').forEach(function (b) { b.classList.remove('on'); });
+      };
+      edBody.onclick = function (e) {
+        var b = e.target.closest('[data-preset]'); if (!b) return;
+        var p = PRESETS[+b.dataset.preset]; draft = JSON.parse(JSON.stringify(p.c)); p.names.forEach(function (n, i) { names[ROLES[i][0]] = n; });
+        drawRoles(); drawLive(); edBody.querySelectorAll('.bk-preset').forEach(function (x) { x.classList.toggle('on', x === b); });
+      };
+      edFoot.onclick = function (e) {
+        var lock = e.target.closest('[data-col-lock]'), sv = e.target.closest('[data-col-save]'); if (!lock && !sv) return;
+        var jobs = {}; BASE.brand.colors.forEach(function (c) { jobs[c.role] = c.job; });
+        C.brand.colors = ROLES.map(function (r) { return { role: r[0], name: (names[r[0]] || r[1]).trim() || r[1], hex: draft[r[0]].toUpperCase(), job: jobs[r[0]] || r[2] }; });
+        setState('colors', lock ? 'locked' : 'in_progress'); closeEd();
+      };
+    }
+
+    // ---- Suggest: our AI, through ve-brand-kit (logged, 20 a day for a visitor to the sample). Never saved until the owner saves.
+    var SUGGEST_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-brand-kit';
+    function visitorId() { try { var v = localStorage.getItem('ve_visitor'); if (!v) { v = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('ve_visitor', v); } return v; } catch (e) { return ''; } }
+    function suggest(kind, extra) {
+      var biz = C.business, V = C.voice, body = { action: 'suggest', kind: kind, visitor: visitorId(),
+        business: { name: biz.name, short: biz.short, city: biz.city, vegan: biz.vegan, cuisines: biz.cuisines },
+        voice: shown('voice') ? { personality: V.personality, sounds_like: V.sounds_like, never: V.never, use: V.words.use, avoid: V.words.avoid } : null };
+      Object.keys(extra || {}).forEach(function (k) { body[k] = extra[k]; });
+      var h = { 'Content-Type': 'application/json' };
+      try { var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(); if (t) h.Authorization = 'Bearer ' + t; } catch (e) {}
+      return fetch(SUGGEST_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.ok) throw new Error(d && d.error === 'daily_limit' ? 'That is today\'s suggestions for this sample. Try again tomorrow.' : 'Suggest did not answer. Try again in a moment.');
+        return d;
+      });
+    }
+    function field(label, name, val, opts) {
+      opts = opts || {};
+      var input = opts.area ? '<textarea name="' + name + '" rows="' + (opts.rows || 3) + '"' + (opts.max ? ' maxlength="' + opts.max + '"' : '') + ' placeholder="' + esc(opts.ph || '') + '">' + esc(val || '') + '</textarea>'
+        : '<input type="text" name="' + name + '" value="' + esc(val || '') + '"' + (opts.max ? ' maxlength="' + opts.max + '"' : '') + ' placeholder="' + esc(opts.ph || '') + '">';
+      return '<label class="bk-f"><span>' + esc(label) + '</span>' + input + (opts.help ? '<small>' + esc(opts.help) + '</small>' : '') + '</label>';
+    }
+    function val(root, name) { var el = root.querySelector('[name="' + name + '"]'); return el ? el.value.trim() : ''; }
+    function lines(s) { return String(s || '').split(/\n|;/).map(function (x) { return x.trim(); }).filter(Boolean); }
+    function words(s) { return String(s || '').split(/,|\n/).map(function (x) { return x.trim(); }).filter(Boolean); }
+
+    // ---- Voice: a short course in three steps (what a voice is, your answers, your voice), then lock.
+    var VOICE_EXAMPLES = [
+      { who: 'A taco window', words: 'Loud, playful, generous', line: 'Tacos are up. Bring a friend, bring two.' },
+      { who: 'A quiet tea room', words: 'Calm, careful, kind', line: 'A slow pot of jasmine and a window seat. Take your time.' },
+      { who: 'A burger shack', words: 'Bold, cheeky, hungry', line: 'Double stack. Extra sauce. Napkins at your own risk.' }
+    ];
+    var VIBES = ['Warm and neighborly', 'Playful and loud', 'Calm and thoughtful', 'Bold and confident', 'Elegant and grown up'];
+    function editVoice() {
+      var step = 1, a = (C.voice && C.voice.answers) || {}, draft = shown('voice') ? JSON.parse(JSON.stringify(C.voice)) : null;
+      function draw() {
+        var body = '<div class="bk-steps">' + ['What a voice is', 'Your answers', 'Your voice'].map(function (t, i) { return '<span class="' + (i + 1 === step ? 'on' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
+        if (step === 1) {
+          body += '<div class="bk-soon"><p style="font-size:15px;line-height:1.65">Your voice is how your business sounds in words: your menu, your posts, how you answer a review, the sign on the door when you close early. It should sound like the same person behind the counter every time.</p>' +
+            '<p style="font-size:15px;line-height:1.65">Three places, three voices:</p></div><div class="bk-why">' + VOICE_EXAMPLES.map(function (e) {
+              return '<div><b>' + esc(e.who) + '</b><span style="display:block;color:#15803d;font-weight:700;margin-bottom:6px">' + esc(e.words) + '</span>"' + esc(e.line) + '"</div>'; }).join('') + '</div>' +
+            '<p class="bk-muted" style="max-width:720px">Same food business, different people. None is right or wrong. Next, five questions about yours, then we write your voice for you to change and lock.</p>';
+        } else if (step === 2) {
+          body += '<div class="bk-form">' + field('How do you greet a regular when they walk in?', 'greet', a.greet, { area: true, rows: 2, ph: 'Hey! The usual?' }) +
+            field('Three words that describe your place', 'words', a.words, { ph: 'Warm, sunny, easy' }) +
+            field('If your place were a person, who would it be?', 'person', a.person, { area: true, rows: 2, ph: 'The neighbor who always has something on the stove' }) +
+            field('What do you never want to sound like?', 'never', a.never, { area: true, rows: 2, ph: 'Preachy, or like a diet ad' }) +
+            '<label class="bk-f"><span>Pick the closest vibe</span><select name="vibe">' + VIBES.map(function (v) { return '<option' + (a.vibe === v ? ' selected' : '') + '>' + esc(v) + '</option>'; }).join('') + '</select></label></div>';
+        } else {
+          body += '<div class="bk-sugg"><button class="bk-b" type="button" data-v-suggest>' + (draft ? 'Write it again from my answers' : 'Write my voice from my answers') + '</button><span class="bk-msg" id="bkVMsg"></span></div>';
+          if (draft) body += '<div class="bk-form">' + field('Three words', 'personality', draft.personality.join(', ')) +
+            field('How you sound', 'sounds_like', draft.sounds_like, { area: true, rows: 2 }) +
+            field('You never (one a line)', 'never', draft.never.join('\n'), { area: true, rows: 4 }) +
+            field('Words you use', 'use', draft.words.use.join(', ')) + field('Words you leave out', 'avoid', draft.words.avoid.join(', ')) +
+            field('Your website\'s first line', 's_hero', draft.samples.hero) + field('An Instagram post', 's_instagram', draft.samples.instagram, { area: true, rows: 3 }) +
+            field('Answering a happy Google review', 's_google_reply', draft.samples.google_reply, { area: true, rows: 2 }) + field('Closed for the day', 's_closed', draft.samples.closed) + '</div>';
+          else body += '<p class="bk-muted">We read your answers and write your voice with sample lines. You can change every word before you lock it.</p>';
+        }
+        var foot = '<span class="bk-msg">Step ' + step + ' of 3</span>' + (step > 1 ? '<button class="bk-b ghost" type="button" data-v-back>Back</button>' : '<button class="bk-b ghost" type="button" data-ed-close>Cancel</button>') +
+          (step < 3 ? '<button class="bk-b" type="button" data-v-next>Next</button>' : '<button class="bk-b ghost" type="button" data-v-save' + (draft ? '' : ' disabled') + '>Save draft</button><button class="bk-b" type="button" data-v-lock' + (draft ? '' : ' disabled') + '>Lock it in</button>');
+        edBody.innerHTML = body; edFoot.innerHTML = foot; edBody.scrollTop = 0;
+      }
+      function keepAnswers() { if (step === 2) ['greet', 'words', 'person', 'never', 'vibe'].forEach(function (k) { a[k] = val(edBody, k); }); }
+      function keepDraft() { if (step === 3 && draft && edBody.querySelector('[name="sounds_like"]')) {
+        draft.personality = words(val(edBody, 'personality')).slice(0, 3); draft.sounds_like = val(edBody, 'sounds_like'); draft.never = lines(val(edBody, 'never'));
+        draft.words = { use: words(val(edBody, 'use')), avoid: words(val(edBody, 'avoid')) };
+        draft.samples = { hero: val(edBody, 's_hero'), instagram: val(edBody, 's_instagram'), google_reply: val(edBody, 's_google_reply'), closed: val(edBody, 's_closed') }; } }
+      openEd('Voice', '', ''); draw();
+      edBody.oninput = null; edBody.onclick = function (e) {
+        if (!e.target.closest('[data-v-suggest]')) return;
+        keepDraft(); var btn = e.target.closest('[data-v-suggest]'), msg = document.getElementById('bkVMsg');
+        if (!a.greet && !a.words) { msg.textContent = 'Answer the questions in step 2 first.'; return; }
+        btn.disabled = true; msg.textContent = 'Writing your voice...';
+        suggest('voice', { answers: a }).then(function (d) {
+          draft = { personality: d.personality.slice(0, 3), sounds_like: d.sounds_like, never: d.never, words: { use: d.use, avoid: d.avoid }, samples: d.samples }; draw();
+        }).catch(function (err) { btn.disabled = false; msg.textContent = err.message; });
+      };
+      edFoot.onclick = function (e) {
+        if (e.target.closest('[data-v-next]')) { keepAnswers(); if (step === 2 && !a.greet && !a.words) { alertIn('Answer at least the first two questions.'); return; } step++; draw(); }
+        else if (e.target.closest('[data-v-back]')) { keepAnswers(); keepDraft(); step--; draw(); }
+        else if (e.target.closest('[data-v-save]') || e.target.closest('[data-v-lock]')) {
+          keepDraft(); if (!draft) return; draft.answers = a; C.voice = draft;
+          setState('voice', e.target.closest('[data-v-lock]') ? 'locked' : 'in_progress'); closeEd();
+        }
+      };
+    }
+    function alertIn(text) { var m = edFoot.querySelector('.bk-msg'); if (m) { m.textContent = text; m.style.color = '#b91c1c'; } }
+
+    // ---- Menu: the list, then one item at a time (Menu > item), with photo upload and Suggest.
+    function shrink(file) {
+      return new Promise(function (res, rej) {
+        var img = new Image(), url = URL.createObjectURL(file);
+        img.onload = function () { var s = Math.min(1, 900 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+          c.width = Math.round(img.width * s); c.height = Math.round(img.height * s); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+          URL.revokeObjectURL(url); res({ src: c.toDataURL('image/jpeg', 0.82), w: img.width, h: img.height }); };
+        img.onerror = function () { rej(new Error('That file is not a picture we can read.')); }; img.src = url;
+      });
+    }
+    function editMenu() {
+      var M = JSON.parse(JSON.stringify(C.menu)), view = 'list', cur = null;
+      function all() { var out = []; M.sections.forEach(function (s, si) { s.items.forEach(function (it, ii) { out.push({ s: s, si: si, it: it, ii: ii }); }); }); return out; }
+      function drawList() {
+        view = 'list';
+        var n = all().length, shot = all().filter(function (x) { return x.it.photo && x.it.photo.src; }).length;
+        edTitle.textContent = 'Menu';
+        edBody.innerHTML = '<div class="bk-sugg"><b>' + n + ' items · ' + shot + ' with a photo</b><button class="bk-b" type="button" data-m-new>Add an item</button></div>' +
+          M.sections.map(function (s) { return '<h4 style="margin-top:18px">' + esc(s.name) + '</h4>' + s.items.map(function (it) {
+            var ph = it.photo && it.photo.src ? '<img class="bk-thumb" src="' + esc(it.photo.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+            return '<button type="button" class="bk-mrow" data-m-open="' + esc(s.name) + '|' + esc(it.name) + '">' + ph + '<span><b>' + esc(it.name) + '</b><small>' + esc(it.copy || it.was || 'No description yet') + '</small></span><span class="bk-price">' + esc(it.price || '') + '</span><span class="bk-tag ' + (it.photo && it.photo.src ? 'bk-ok">Photo' : 'bk-make">To shoot') + '</span></button>';
+          }).join(''); }).join('');
+        edFoot.innerHTML = '<span class="bk-msg">' + (st('menu') === 'locked' ? 'Locked. New items still go on your website once you save.' : 'Check every item, then lock it in.') + '</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-m-save>Save draft</button><button class="bk-b" type="button" data-m-lock>Lock it in</button>';
+        edBody.scrollTop = 0;
+      }
+      function drawItem(x) {
+        view = 'item'; cur = x; var it = x ? x.it : { name: '', price: '', tags: [], was: '', copy: '', photo: { state: 'to_shoot' } };
+        var secName = x ? x.s.name : M.sections[0].name;
+        edTitle.innerHTML = '<a href="#" data-m-list style="color:inherit">Menu</a> &rsaquo; ' + esc(it.name || 'New item');
+        var ph = it.photo && it.photo.src ? '<img src="' + esc(it.photo.src) + '" alt="" class="bk-bigph">' : '<div class="bk-bigph bk-empty">No photo yet</div>';
+        edBody.innerHTML = '<div class="bk-ed-cols"><div class="bk-form">' + field('Name', 'name', it.name, { max: 80 }) +
+          '<label class="bk-f"><span>Section</span><select name="section">' + M.sections.map(function (s) { return '<option' + (s.name === secName ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '<option value="__new">A new section...</option></select></label>' +
+          field('New section name', 'newsec', '', { max: 40, ph: 'Only if you picked a new section' }) +
+          field('Price', 'price', it.price, { max: 12, ph: '$12' }) + field('Tags', 'tags', (it.tags || []).join(', '), { ph: 'Gluten-free, Spicy, Favorite' }) +
+          field('What is in it, in your words', 'was', it.was, { area: true, rows: 2, max: 400, help: 'Every ingredient. We write the description from this and never add anything that is not on the plate.' }) +
+          '<label class="bk-f"><span>Description on your menu</span><textarea name="copy" rows="3" maxlength="300">' + esc(it.copy || '') + '</textarea><small><button class="bk-b ghost" type="button" data-m-suggest style="min-height:34px;padding:6px 14px;margin-top:6px">Suggest</button> <span id="bkMMsg"></span></small></label></div>' +
+          '<div><h4>Photo</h4>' + ph + '<label class="bk-b" style="margin-top:12px;cursor:pointer">' + (it.photo && it.photo.src ? 'Replace the photo' : 'Upload a photo') + '<input type="file" accept="image/*" data-m-photo hidden></label>' +
+          '<p class="bk-muted" style="margin-top:10px">Shot to our standard: the same table and light as the rest of your menu, three-quarter and overhead, at least 3000 px on the long side. On this sample it stays for this visit only.</p><p class="bk-muted" id="bkPhMsg"></p></div></div>';
+        edFoot.innerHTML = (x ? '<button class="bk-b ghost" type="button" data-m-del style="margin-right:auto;color:#b91c1c">Remove item</button>' : '<span class="bk-msg"></span>') +
+          '<button class="bk-b ghost" type="button" data-m-list>Back to the menu</button><button class="bk-b" type="button" data-m-keep>Save item</button>';
+        edBody.scrollTop = 0; edBody._photo = it.photo && it.photo.src ? it.photo : null;
+      }
+      function keepItem() {
+        var name = val(edBody, 'name'); if (!name) { alertIn('Give the item a name.'); return false; }
+        var sec = val(edBody, 'section'); if (sec === '__new') { sec = val(edBody, 'newsec'); if (!sec) { alertIn('Name the new section.'); return false; } }
+        var item = { name: name, price: val(edBody, 'price'), tags: words(val(edBody, 'tags')), was: val(edBody, 'was'), copy: val(edBody, 'copy'),
+          photo: edBody._photo ? { state: 'shot', src: edBody._photo.src } : { state: 'to_shoot' } };
+        if (cur) cur.s.items.splice(cur.s.items.indexOf(cur.it), 1);
+        var target = M.sections.filter(function (s) { return s.name === sec; })[0]; if (!target) { target = { name: sec, items: [] }; M.sections.push(target); }
+        if (cur && cur.s === target) target.items.splice(cur.ii, 0, item); else target.items.push(item);
+        M.sections = M.sections.filter(function (s) { return s.items.length; }); return true;
+      }
+      openEd('Menu', '', ''); drawList();
+      edBody.oninput = null;
+      edBody.onchange = function (e) {
+        var f = e.target.closest('[data-m-photo]'); if (!f || !f.files[0]) return; var msg = document.getElementById('bkPhMsg');
+        msg.textContent = 'Uploading...'; upload(f.files[0], 'menu').then(function (p) {
+          edBody._photo = { src: p.src }; var box = edBody.querySelector('.bk-bigph'); box.outerHTML = '<img src="' + p.src + '" alt="" class="bk-bigph">';
+          msg.textContent = Math.max(p.w, p.h) < 3000 ? 'Saved. This one is ' + p.w + ' x ' + p.h + ' px, under our standard of 3000 px, so it is fine for now and we will reshoot it.' : 'Saved.';
+        }).catch(function (err) { msg.textContent = err.message; });
+      };
+      edBody.onclick = function (e) {
+        var o = e.target.closest('[data-m-open]'); if (o) { var k = o.dataset.mOpen.split('|'); drawItem(all().filter(function (x) { return x.s.name === k[0] && x.it.name === k[1]; })[0]); return; }
+        if (e.target.closest('[data-m-new]')) { cur = null; drawItem(null); return; }
+        if (e.target.closest('[data-m-list]')) { e.preventDefault(); drawList(); return; }
+        var sg = e.target.closest('[data-m-suggest]'); if (!sg) return;
+        var msg = document.getElementById('bkMMsg'), name = val(edBody, 'name'), was = val(edBody, 'was');
+        if (!name || !was) { msg.textContent = 'Fill in the name and what is in it first.'; return; }
+        sg.disabled = true; msg.textContent = 'Writing...';
+        suggest('menu_item', { item: { name: name, section: val(edBody, 'section'), price: val(edBody, 'price'), tags: words(val(edBody, 'tags')), was: was } })
+          .then(function (d) { edBody.querySelector('[name="copy"]').value = d.copy; msg.textContent = 'Change any word, then Save item.'; sg.disabled = false; })
+          .catch(function (err) { msg.textContent = err.message; sg.disabled = false; });
+      };
+      edTitle.onclick = function (e) { if (e.target.closest('[data-m-list]')) { e.preventDefault(); drawList(); } };
+      edFoot.onclick = function (e) {
+        if (e.target.closest('[data-m-list]')) { drawList(); return; }
+        if (e.target.closest('[data-m-keep]')) { if (keepItem()) drawList(); return; }
+        if (e.target.closest('[data-m-del]')) { if (cur) { cur.s.items.splice(cur.s.items.indexOf(cur.it), 1); M.sections = M.sections.filter(function (s) { return s.items.length; }); } drawList(); return; }
+        var lock = e.target.closest('[data-m-lock]'), sv = e.target.closest('[data-m-save]'); if (!lock && !sv) return;
+        C.menu = M; try { setState('menu', lock ? 'locked' : 'in_progress'); closeEd(); } catch (err) { alertIn('This sample could not keep that many photos for the visit. Remove one and try again.'); }
+      };
+    }
+
+    // ---- A paginated editor: step names on top, Back / Step N of M / Next, the last step holds Save draft and Lock it in.
+    function stepper(title, steps, onDone) {
+      var i = 0;
+      function draw() {
+        edBody.innerHTML = '<div class="bk-steps">' + steps.map(function (s, n) { return '<span class="' + (n === i ? 'on' : '') + '">' + (n + 1) + '. ' + esc(s.name) + '</span>'; }).join('') + '</div>' + steps[i].draw();
+        var last = i === steps.length - 1, ready = !steps[i].ready || steps[i].ready();
+        edFoot.innerHTML = '<span class="bk-msg">Step ' + (i + 1) + ' of ' + steps.length + '</span>' + (i ? '<button class="bk-b ghost" type="button" data-s-back>Back</button>' : '<button class="bk-b ghost" type="button" data-ed-close>Cancel</button>') +
+          (last ? '<button class="bk-b ghost" type="button" data-s-save' + (ready ? '' : ' disabled') + '>Save draft</button><button class="bk-b" type="button" data-s-lock' + (ready ? '' : ' disabled') + '>Lock it in</button>' : '<button class="bk-b" type="button" data-s-next>Next</button>');
+        edBody.scrollTop = 0; if (steps[i].after) steps[i].after();
+      }
+      openEd(title, '', ''); edBody.oninput = null; edBody.onchange = null; edBody.onclick = null;
+      edFoot.onclick = function (e) {
+        if (e.target.closest('[data-s-back]')) { steps[i].keep && steps[i].keep(true); i--; draw(); return; }
+        if (e.target.closest('[data-s-next]')) { if (steps[i].keep && steps[i].keep() === false) return; i++; draw(); return; }
+        var lock = e.target.closest('[data-s-lock]'), sv = e.target.closest('[data-s-save]'); if (!lock && !sv) return;
+        if (steps[i].keep && steps[i].keep() === false) return;
+        try { onDone(!!lock); closeEd(); } catch (err) { alertIn('This sample could not keep that for the visit. Try a smaller picture.'); }
+      };
+      return { draw: draw };
+    }
+
+    // ---- Story: their answers, then the story written from them (Suggest), every word editable.
+    function editStory() {
+      var a = (C.story && C.story.answers) || {}, d = shown('story') ? { tagline: C.story.tagline, short: C.story.short, long: C.story.long.slice() } : null, S;
+      S = stepper('Story', [
+        { name: 'Your answers', draw: function () {
+            return '<div class="bk-form">' + field('How did it start?', 'start', a.start, { area: true, rows: 3, max: 600, ph: 'Who, when, and why this corner' }) +
+              field('What do you cook?', 'food', a.food, { area: true, rows: 2, max: 400 }) + field('Who comes in?', 'who', a.who, { area: true, rows: 2, max: 400 }) +
+              field('What are you proud of?', 'proud', a.proud, { area: true, rows: 2, max: 400 }) +
+              field('Your old About text, if you have one', 'old', a.old, { area: true, rows: 4, max: 1200, help: 'Paste it from your current website. We keep what is true and say it better.' }) + '</div>'; },
+          keep: function (back) { ['start', 'food', 'who', 'proud', 'old'].forEach(function (k) { a[k] = val(edBody, k); }); if (!back && !a.start && !a.old) { alertIn('Tell us how it started, or paste your old About text.'); return false; } } },
+        { name: 'Your story', ready: function () { return !!d; }, draw: function () {
+            return '<div class="bk-sugg"><button class="bk-b" type="button" data-st-suggest>' + (d ? 'Write it again from my answers' : 'Write my story from my answers') + '</button><span class="bk-msg" id="bkSMsg"></span></div>' +
+              (d ? '<div class="bk-form">' + field('In one line', 'tagline', d.tagline, { max: 120 }) + field('In two sentences', 'short', d.short, { area: true, rows: 3, max: 320 }) +
+                field('About us', 'long', d.long.join('\n\n'), { area: true, rows: 9, help: 'A blank line starts a new paragraph.' }) + '</div>'
+                : '<p class="bk-muted">We write it from your answers, nothing you did not say. Then change any word.</p>'); },
+          after: function () {
+            edBody.onclick = function (e) {
+              var b = e.target.closest('[data-st-suggest]'); if (!b) return; var m = document.getElementById('bkSMsg');
+              b.disabled = true; m.textContent = 'Writing your story...';
+              suggest('story', { answers: a }).then(function (r) { d = { tagline: r.tagline, short: r.short, long: r.long }; S.draw(); })
+                .catch(function (err) { b.disabled = false; m.textContent = err.message; });
+            };
+          },
+          keep: function () { if (!d || !edBody.querySelector('[name="tagline"]')) return; d = { tagline: val(edBody, 'tagline'), short: val(edBody, 'short'), long: val(edBody, 'long').split(/\n\s*\n/).map(function (x) { return x.trim(); }).filter(Boolean) }; } }
+      ], function (lock) { C.story = { tagline: d.tagline, short: d.short, long: d.long, answers: a }; setState('story', lock ? 'locked' : 'in_progress'); });
+      S.draw();
+    }
+
+    // ---- Hours and details: three steps.
+    var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], POS = ['Square', 'Toast', 'Clover', 'Other', 'None yet'];
+    function editInfo() {
+      var I = JSON.parse(JSON.stringify(C.info));
+      stepper('Hours and details', [
+        { name: 'Hours', draw: function () { return '<div class="bk-form bk-two">' + DAYS.map(function (dname) { return field(dname, 'h_' + dname, I.hours[dname], { max: 40, ph: '8 AM to 3 PM, or Closed' }); }).join('') + '</div><p class="bk-muted" style="margin-top:12px">Holiday hours are set from your dashboard once you launch.</p>'; },
+          keep: function () { DAYS.forEach(function (dname) { I.hours[dname] = val(edBody, 'h_' + dname) || 'Closed'; }); } },
+        { name: 'Find us', draw: function () { return '<div class="bk-form bk-two">' + field('Street', 'street', I.address.street) + field('City', 'city', I.address.city) + field('State', 'state', I.address.state, { max: 20 }) + field('ZIP', 'zip', I.address.zip, { max: 10 }) +
+            field('Phone', 'phone', I.phone, { max: 20 }) + field('Email', 'email', I.email, { max: 120 }) + '</div><div class="bk-form" style="margin-top:14px">' + field('Good to know (one a line)', 'details', I.details.join('\n'), { area: true, rows: 4, help: 'Parking, patio, accessibility, dogs, kids.' }) + '</div>'; },
+          keep: function (back) { I.address = { street: val(edBody, 'street'), city: val(edBody, 'city'), state: val(edBody, 'state'), zip: val(edBody, 'zip') }; I.phone = val(edBody, 'phone'); I.email = val(edBody, 'email'); I.details = lines(val(edBody, 'details'));
+            if (!back && (!I.address.street || !I.address.city || !I.phone)) { alertIn('We need the street, the city and a phone number.'); return false; } } },
+        { name: 'Ordering', draw: function () {
+            return '<div class="bk-form"><label class="bk-f"><span>What do you ring orders up on?</span><select name="pos">' + POS.map(function (p) { return '<option' + (p === I.ordering.pos ? ' selected' : '') + '>' + p + '</option>'; }).join('') + '</select><small>Square connects first. Toast and the others come next. Until then, Order on your site goes to the link below.</small></label>' +
+              field('Where people order online today', 'order_url', I.ordering.order_url, { ph: 'https://...', max: 300 }) + '</div>'; },
+          keep: function () { var p = val(edBody, 'pos'); I.ordering = { pos: p, state: p === 'None yet' ? 'not_started' : 'to_connect', order_url: val(edBody, 'order_url') || null, note: I.ordering.note }; } }
+      ], function (lock) { C.info = I; setState('info', lock ? 'locked' : 'in_progress'); }).draw();
+    }
+
+    // ---- Type: pairings matched to the logo, each shown on their real name and menu.
+    var PAIRS = [
+      { h: 'Nunito', hw: 900, b: 'DM Sans', feel: 'Round and friendly, like a neighborhood sign.' },
+      { h: 'Fraunces', hw: 800, b: 'Work Sans', feel: 'Warm and a little old-fashioned, like a bakery chalkboard.' },
+      { h: 'Archivo Black', hw: 400, b: 'Inter', feel: 'Bold and loud, like a burger shack or a food truck.' },
+      { h: 'Playfair Display', hw: 800, b: 'Lato', feel: 'Elegant and grown up, for dinner and cocktails.' }
+    ];
+    function loadFonts(list) { var id = 'bkFonts'; if (document.getElementById(id)) return; var l = document.createElement('link'); l.id = id; l.rel = 'stylesheet';
+      l.href = 'https://fonts.googleapis.com/css2?' + list.map(function (f) { return 'family=' + f.replace(/ /g, '+') + ':wght@400;700;800;900'; }).join('&') + '&display=swap'; document.head.appendChild(l); }
+    function editType() {
+      loadFonts(['Fraunces', 'Work Sans', 'Archivo Black', 'Inter', 'Playfair Display', 'Lato']);
+      var cur = shown('type') ? C.brand.type.heading.family : PAIRS[0].h, it = C.menu.sections[0].items[0];
+      openEd('Type', '<p class="bk-soon" style="font-size:15px;line-height:1.65;margin-bottom:18px">Two typefaces: one for headings, one for everything else. Each pair is shown on your name and your menu. Pick the one that sounds like you.</p><div class="bk-grid">' + PAIRS.map(function (p) {
+        return '<button type="button" class="bk-preset bk-tp' + (p.h === cur ? ' on' : '') + '" data-type="' + esc(p.h) + '" style="padding:18px"><span style="display:block;font-family:\'' + p.h + '\';font-weight:' + p.hw + ';font-size:28px;line-height:1.1;margin-bottom:8px">' + esc(C.business.name) + '</span>' +
+          '<span style="display:block;font-family:\'' + p.h + '\';font-weight:' + p.hw + ';font-size:17px">' + esc(it.name) + ' · ' + esc(it.price) + '</span><span style="display:block;font-family:\'' + p.b + '\';font-size:14px;line-height:1.5;margin:6px 0 10px">' + esc(it.copy || it.was) + '</span>' +
+          '<small style="display:block;color:#6b7280">' + esc(p.h) + ' and ' + esc(p.b) + '. ' + esc(p.feel) + '</small></button>'; }).join('') + '</div>',
+        '<span class="bk-msg">Matched to your logo by our team. You approve.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-t-save>Save draft</button><button class="bk-b" type="button" data-t-lock>Lock it in</button>');
+      edBody.oninput = null; edBody.onchange = null;
+      edBody.onclick = function (e) { var b = e.target.closest('[data-type]'); if (!b) return; cur = b.dataset.type; edBody.querySelectorAll('.bk-tp').forEach(function (x) { x.classList.toggle('on', x === b); }); };
+      edFoot.onclick = function (e) {
+        var lock = e.target.closest('[data-t-lock]'), sv = e.target.closest('[data-t-save]'); if (!lock && !sv) return;
+        var p = PAIRS.filter(function (x) { return x.h === cur; })[0];
+        C.brand.type = { heading: { family: p.h, weight: p.hw, why: p.feel }, body: { family: p.b, weight: 400, why: 'Plain and easy at small sizes: menus, hours, prices.' },
+          google: 'https://fonts.googleapis.com/css2?family=' + p.h.replace(/ /g, '+') + ':wght@' + p.hw + '&family=' + p.b.replace(/ /g, '+') + ':wght@400;700&display=swap' };
+        setState('type', lock ? 'locked' : 'in_progress'); closeEd();
+      };
+    }
+
+    // ---- Logo: their file in, our files out.
+    function shrinkKeep(file, max) {
+      return new Promise(function (res, rej) {
+        var img = new Image(), url = URL.createObjectURL(file);
+        img.onload = function () { var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+          c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res({ src: c.toDataURL(/png|svg|webp/.test(file.type) ? 'image/png' : 'image/jpeg', 0.86), w: img.width, h: img.height }); };
+        img.onerror = function () { rej(new Error('That file is not a picture we can read.')); }; img.src = url;
+      });
+    }
+    function editLogo() {
+      var L = JSON.parse(JSON.stringify(C.brand.logo)), src = shown('logo') ? L.primary.src : '';
+      function draw() {
+        edBody.innerHTML = '<div class="bk-ed-cols"><div><h4>Your logo</h4>' + (src ? '<img src="' + esc(src) + '" alt="Your logo" class="bk-bigph" style="aspect-ratio:1;object-fit:contain;background:#f9fafb">' : '<div class="bk-bigph bk-empty" style="aspect-ratio:1">No logo yet</div>') +
+          '<label class="bk-b" style="margin-top:12px;cursor:pointer">' + (src ? 'Replace it' : 'Upload your logo') + '<input type="file" accept="image/*" data-l-file hidden></label><p class="bk-muted" id="bkLMsg" style="margin-top:10px">Any file you have: a PNG, an SVG, or a clear photo of your sign.</p></div>' +
+          '<div><h4>The files we make from it</h4>' + L.files.map(function (f) { return '<div class="bk-check"><span>' + esc(f.name) + '</span>' + tag(f.state) + '</div>'; }).join('') +
+          '<p class="bk-muted" style="margin-top:12px">Each file appears here for you to approve as we finish it. You keep every one of them.</p></div></div>';
+      }
+      openEd('Logo', '', '<span class="bk-msg">Lock it in when this is the logo you want everywhere.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-l-save>Save draft</button><button class="bk-b" type="button" data-l-lock>Lock it in</button>');
+      draw(); edBody.oninput = null; edBody.onclick = null;
+      edBody.onchange = function (e) { var f = e.target.closest('[data-l-file]'); if (!f || !f.files[0]) return;
+        document.getElementById('bkLMsg').textContent = 'Uploading...'; upload(f.files[0], 'logo').then(function (p) { src = p.src; draw(); var m = document.getElementById('bkLMsg'); m.textContent = Math.min(p.w, p.h) < 400 ? 'Got it. It is small (' + p.w + ' x ' + p.h + ' px), so we will redraw it as a clean vector.' : 'Got it.'; })
+          .catch(function (err) { document.getElementById('bkLMsg').textContent = err.message; }); };
+      edFoot.onclick = function (e) { var lock = e.target.closest('[data-l-lock]'), sv = e.target.closest('[data-l-save]'); if (!lock && !sv) return;
+        if (!src) { alertIn('Upload your logo first.'); return; }
+        L.primary = { src: src, state: 'have', note: L.primary.note && shown('logo') ? L.primary.note : 'Their logo as they sent it. We make the other files from it.' }; L.files[0].state = 'have'; C.brand.logo = L;
+        try { setState('logo', lock ? 'locked' : 'in_progress'); closeEd(); } catch (err) { alertIn('That picture is too big for this sample. Try a smaller one.'); } };
+    }
+
+    // ---- Photos: every shot of the space and the team takes its upload (menu photos go on each menu item).
+    function editPhotos() {
+      var sp = JSON.parse(JSON.stringify(C.photos.space)), menuN = 0, menuShot = 0;
+      C.menu.sections.forEach(function (s) { s.items.forEach(function (i) { menuN++; if (i.photo && i.photo.src) menuShot++; }); });
+      function draw() {
+        edBody.innerHTML = '<div class="bk-sugg"><b>The space and the team · ' + sp.filter(function (s) { return s.src; }).length + ' of ' + sp.length + '</b><span class="bk-muted">Menu photos: ' + menuShot + ' of ' + menuN + ', uploaded on each item in Menu.</span></div>' +
+          sp.map(function (s, n) { var ph = s.src ? '<img class="bk-thumb" src="' + esc(s.src) + '" alt="">' : '<div class="bk-thumb bk-empty">To shoot</div>';
+            return '<div class="bk-mrow" style="cursor:default">' + ph + '<span><b>' + esc(s.shot) + '</b><small>' + (s.src ? 'Shot' : 'For your photographer') + '</small></span><span></span><label class="bk-b ghost" style="cursor:pointer;min-height:36px;padding:8px 14px">' + (s.src ? 'Replace' : 'Upload') + '<input type="file" accept="image/*" data-p-file="' + n + '" hidden></label></div>'; }).join('') +
+          '<p class="bk-muted" id="bkPMsg" style="margin-top:10px">Your photographer or Community Manager can upload here too. Every photo is checked against the standard.</p>';
+      }
+      openEd('Photos', '', '<span class="bk-msg">Lock it in when every shot is in.</span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b ghost" type="button" data-p-save>Save draft</button><button class="bk-b" type="button" data-p-lock>Lock it in</button>');
+      draw(); edBody.oninput = null; edBody.onclick = null;
+      edBody.onchange = function (e) { var f = e.target.closest('[data-p-file]'); if (!f || !f.files[0]) return; var n = +f.dataset.pFile;
+        document.getElementById('bkPMsg').textContent = 'Uploading...'; upload(f.files[0], 'space').then(function (p) { sp[n].src = p.src; sp[n].state = 'shot'; draw(); }).catch(function (err) { document.getElementById('bkPMsg').textContent = err.message; }); };
+      edFoot.onclick = function (e) { var lock = e.target.closest('[data-p-lock]'), sv = e.target.closest('[data-p-save]'); if (!lock && !sv) return;
+        var missing = sp.filter(function (s) { return !s.src; }).length;
+        if (lock && missing) { alertIn(missing + ' shots still to upload. Save a draft until they are in.'); return; }
+        C.photos.space = sp; try { setState('photos', lock ? 'locked' : 'in_progress'); closeEd(); } catch (err) { alertIn('This sample could not keep that many photos for the visit.'); } };
+    }
+
+    document.addEventListener('click', function (e) {
+      var r = e.target.closest('[data-reset]'); if (r) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.reload(); return; }
+      var b = e.target.closest('[data-edit]'); if (!b) return;
+      var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
+      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos })[k]();
+      if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
+    });
+
+    // ---- Your team (a real kit): the owner and super admins add an editor or a photographer by the email they sign in with.
+    function teamCard() {
+      if (!LIVE || !PEOPLE) return '';
+      return '<div class="bk-card" style="margin-top:16px"><h3>Your team</h3>' + (PEOPLE.length ? PEOPLE.map(function (p) {
+        return '<div class="bk-sect"><span>' + esc(p.name || p.email) + ' <span class="bk-muted">' + esc(p.email) + '</span></span><span>' + tag(p.role === 'photographer' ? 'to_shoot' : 'in_progress').replace(/>[^<]+</, '>' + (p.role === 'photographer' ? 'Photos' : 'Editor') + '<') +
+          ' <a href="#" data-p-rm="' + esc(p.member_id) + '" style="color:inherit;font-size:13px;margin-left:8px">Remove</a></span></div>'; }).join('') : '<p class="bk-muted">Only you so far.</p>') +
+        '<form data-p-add style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px"><input name="email" type="email" required placeholder="Their email" style="flex:1;min-width:180px;min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 10px;font:inherit">' +
+        '<select name="role" style="min-height:40px;border:1px solid #d1d5db;border-radius:6px;padding:8px 36px 8px 10px;font:inherit;appearance:none;-webkit-appearance:none;background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%23374151%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E&quot;) no-repeat right 12px center"><option value="editor">Can edit everything</option><option value="photographer">Photos only</option></select>' +
+        '<button class="bk-b" type="submit">Add</button></form><p class="bk-muted" id="bkTeamMsg" style="margin:8px 0 0"></p></div>';
+    }
+    document.addEventListener('submit', function (e) {
+      var f = e.target.closest('[data-p-add]'); if (!f) return; e.preventDefault(); var m = document.getElementById('bkTeamMsg');
+      api('kit_people_add', { email: f.email.value, role: f.role.value }).then(function (d) { if (!d.ok) { m.textContent = d.message || 'They could not be added.'; return; } PEOPLE = d.people; render(); });
+    });
+    document.addEventListener('click', function (e) {
+      var r = e.target.closest('[data-p-rm]'); if (!r) return; e.preventDefault();
+      api('kit_people_remove', { member_id: r.dataset.pRm }).then(function (d) { if (d.ok) { PEOPLE = d.people; render(); } });
+    });
+
+    // ---- Start: the sample draws at once; a real kit loads first, then the guided view starts.
+    function guided() { var sc = document.createElement('script'); sc.src = '/public/ve-guided.js'; document.body.appendChild(sc); }
+    function gate(title, line, button) {
+      document.querySelectorAll('#bkStage .vg-slide').forEach(function (x) { if (x.id !== 'cover') x.remove(); });
+      fill('cover', '<div class="vg-split"><div><div class="vg-eyebrow">BrandDesk · Brand kit</div><h1 class="vg-h vg-xl">' + esc(title) + '</h1><p class="vg-lede">' + line + '</p>' + (button || '') + '</div><div></div></div>');
+      document.getElementById('bkNote').innerHTML = '<strong>BrandDesk</strong>Your brand kit: everything that makes your business look and sound like itself.';
+      guided();
+    }
+    function boot() {
+      if (!LIVE) { render(); guided(); return; }
+      if (!(window.VEAuth && VEAuth.getToken && VEAuth.getToken())) {
+        gate('Sign in to open your brand kit', 'Your brand kit is for your business and the people you add to it.', '<button class="vg-btn" type="button" data-signin>Sign in</button>'); return; }
+      api('kit_get').then(function (d) {
+        if (d._status === 401) { gate('Sign in to open your brand kit', 'Your session ended. Sign in again.', '<button class="vg-btn" type="button" data-signin>Sign in</button>'); return; }
+        if (d.error === 'not_found') { gate('We could not find that business', 'Check the link, or open it from your dashboard.'); return; }
+        if (d.error === 'not_yours') { gate(d.listing.name + '\'s brand kit', 'This kit is for the business and the people it adds. If you work there, ask the owner to add you with the email you sign in with.'); return; }
+        if (!d.ok) { gate('The brand kit did not open', 'Try again in a moment.'); return; }
+        ROLE = d.role; PEOPLE = d.people || null;
+        if (!d.cartridge) {
+          if (ROLE === 'admin') gate(d.listing.name, 'No brand kit yet. Starting one fills it from their Directory listing (name, city, hours, phone, address, menu, logo); every part starts Not started for them to work through.', '<button class="vg-btn" type="button" data-kit-start>Start their brand kit</button>');
+          else gate(d.listing.name, 'Your brand kit is not set up yet. Our team starts it when you join BrandDesk, and you will get an email when it is ready.');
+          return;
+        }
+        C = d.cartridge; render(); guided();
+      }).catch(function () { gate('The brand kit did not open', 'Check your connection and try again.'); });
+    }
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-signin]')) { if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal(function () { location.reload(); }); else location.href = '/login?next=' + encodeURIComponent(location.pathname + location.search); }
+      var k = e.target.closest('[data-kit-start]'); if (k) { k.disabled = true; api('kit_create').then(function (d) { if (d.ok) location.reload(); else { k.disabled = false; alert('It could not be started: ' + (d.error || 'unknown')); } }); }
+    });
+    boot();
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>BrandDesk | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
+       one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
+       website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
+       Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green-deep:#1f5f22;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--vb-accent:#1f5f22;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);margin-bottom:16px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px 18px;margin:0 0 18px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-75);margin:0 0 12px;}
+    .crumb a{color:var(--ve-green-deep);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn-bad{background:#fff;color:#a61b1b;border:1px solid rgba(166,27,27,.4);}
+    .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .views{display:flex;gap:6px;flex-wrap:wrap;}
+    .views a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ve-text);text-decoration:none;background:#fff;}
+    .views a.on{border-color:var(--ve-green-deep);box-shadow:inset 0 -3px 0 var(--ve-green-deep);}
+    .list{border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;background:#fff;max-height:70vh;overflow-y:auto;}
+    .irow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--ve-border);}
+    .irow:first-child{border-top:0;}
+    .irow b{display:block;font-size:14px;}
+    .irow small{display:block;font-size:12.5px;color:var(--ve-text-75);overflow-wrap:anywhere;}
+    .tag{font-size:11px;font-weight:800;padding:3px 8px;border-radius:5px;background:#eef1ee;color:#333;white-space:nowrap;}
+    .tag.active{background:#e3f3e5;color:#1E5F2A;}.tag.paused,.tag.checkout{background:#fff4e0;color:#8a5200;}.tag.canceling,.tag.ended,.tag.abandoned{background:#fde8e8;color:#a61b1b;}
+    .empty{font-size:14px;color:var(--ve-text-75);padding:14px;}
+    .kv{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:10px 16px;font-size:13.5px;}
+    .kv span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .form{display:flex;gap:10px;flex-wrap:wrap;align-items:end;}
+    .form label{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);display:flex;flex-direction:column;gap:4px;flex:1;min-width:220px;}
+    .form input{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;text-transform:none;letter-spacing:0;font-weight:400;}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;margin-top:6px;}.msg.err{color:#a61b1b;}
+    @media (max-width:640px){.irow{grid-template-columns:minmax(0,1fr) auto;}.irow .tag{grid-column:1;justify-self:start;}}
+    .picks{border:1px solid var(--ve-border);border-radius:10px;max-height:320px;overflow-y:auto;padding:4px 12px;background:#fff;margin:12px 0;}
+    .picks h3{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);margin:12px 0 4px;}
+    .picks label{display:flex;gap:8px;align-items:center;font-size:13.5px;padding:5px 0;cursor:pointer;}
+    .picks small{color:var(--ve-text-75);}
+    .appl{border-top:1px solid var(--ve-border);padding:12px 0;}
+    .appl:first-child{border-top:0;}
+    .appl p{font-size:13.5px;margin:4px 0;overflow-wrap:anywhere;}
+    .appl .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .prow{display:grid;grid-template-columns:44px minmax(0,1.6fr) 90px 110px minmax(0,1.4fr) 120px auto;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--ve-border);font-size:13.5px;}
+    .prow:first-child{border-top:0;}.prow.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);background:#f7f8f6;position:sticky;top:0;z-index:1;}
+    .prow b{display:block;font-size:14px;}.prow small{display:block;color:var(--ve-text-75);font-size:12.5px;}
+    .rank{font-weight:900;font-size:16px;color:var(--ve-green-deep);}
+    .pct{font-weight:900;font-size:15px;}
+    .warm{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#fff4e0;color:#8a5200;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
+    @media (max-width:900px){.prow{grid-template-columns:36px minmax(0,1fr) auto;}.prow .hide-m{display:none;}}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px;}
+    .tools input,.tools select{font:inherit;font-size:14px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .bars2{display:grid;gap:8px;margin-top:10px;}.bars2 div{font-size:12.5px;}.bars2 i{display:block;height:8px;border-radius:5px;background:#e3e7e3;margin-top:3px;overflow:hidden;}.bars2 i span{display:block;height:100%;background:var(--ve-green-deep);}
+    .form textarea,.form select{font:inherit;font-size:14px;padding:9px 11px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;text-transform:none;letter-spacing:0;font-weight:400;background:#fff;}
+    .form textarea{min-height:110px;width:100%;box-sizing:border-box;}
+    .form select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .tag.applied{background:#eef1ee;}.tag.shortlisted,.tag.claimed{background:#e3f3e5;color:#1E5F2A;}.tag.audition{background:#fff4e0;color:#8a5200;}.tag.not_selected{background:#fde8e8;color:#a61b1b;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>BrandDesk</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Managed marketing clients: their onboarding, their Library and asset sheet (the same screens they see on their business dashboard), and which businesses can check out.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-branddesk-client.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('app'), data = null;
+      var ST = { checkout: 'At checkout', active: 'Active', paused: 'Paused', canceling: 'Ending', ended: 'Ended', abandoned: 'Did not finish' };
+      var PLAN = { full: 'Setup paid at once', '3': 'Setup in 3', '6': 'Setup in 6' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
+      function nav(on) {
+        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
+          '<a class="btn btn-ghost" href="/business/sample?tab=brand&pd=managed" target="_blank" rel="noopener">See the client view (sample)</a></div>';
+      }
+      function drawList() {
+        var A = (data.accounts || []).filter(function (a) { return a.status !== 'abandoned' && !(a.status === 'checkout' && Date.now() - Date.parse(a.created_at) > 864e5); });
+        app.innerHTML = nav('list') + (data.settings && !data.settings.live ? '<p class="sub"><b>Checkout is in test mode.</b></p>' : '') + '<div class="list">' + (A.length ? A.map(function (a) {
+          var ticks = Object.keys(a.onboarding || {}).length;
+          return '<div class="irow"><div><b>' + esc(a.listings ? a.listings.name : 'A business') + (a.test ? ' [test]' : '') + '</b><small>' + esc(a.members ? a.members.name + ' (' + a.members.email + ')' : '') + ' &middot; ' +
+            esc(PLAN[a.setup_plan]) + (a.social ? ', with social' : '') + ' &middot; since ' + esc(day(a.activated_at || a.created_at)) + ' &middot; ' + ticks + ' onboarding steps ticked</small></div>' +
+            '<span class="tag ' + esc(a.status) + '">' + esc(ST[a.status] || a.status) + '</span><a class="btn btn-ghost btn-sm" href="#a/' + esc(a.id) + '">Open</a></div>';
+        }).join('') : '<p class="empty">No managed marketing clients yet. When a business signs up at /business/managed, it shows here.</p>') + '</div>';
+      }
+      function drawOpen() {
+        var S = data.settings || { allowed: [] };
+        app.innerHTML = nav('open') + '<section class="card"><h2>Who can sign up</h2><p class="sub">Checkout at /business/managed opens only for these businesses (and for super admins). Checkout is ' + (S.live ? '<b>live</b>: real cards are charged.' : '<b>in test mode</b>.') + '</p>' +
+          '<div class="list" style="margin-bottom:12px">' + (S.allowed.length ? S.allowed.map(function (s) {
+            return '<div class="irow"><div><b>' + esc(s) + '</b><small><a href="/business/managed?listing=' + esc(s) + '" target="_blank" rel="noopener">vegansexplore.com/business/managed?listing=' + esc(s) + '</a></small></div><span></span><button type="button" class="btn btn-ghost btn-sm" data-close="' + esc(s) + '">Close it</button></div>';
+          }).join('') : '<p class="empty">No business is open yet.</p>') + '</div>' +
+          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>';
+        var set = function (slug, on) { var m = $('op-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          api({ action: 'allow', slug: slug, on: on }).then(function (d) { if (d && d.ok) { data.settings.allowed = d.allowed; drawOpen(); return; } m.className = 'msg err'; m.textContent = d && d.error === 'not_found' ? 'No listing at that address.' : 'That did not save.'; }); };
+        $('op').addEventListener('submit', function (e) { e.preventDefault(); var v = $('op-slug').value.trim().replace(/^.*\/directory\//, '').replace(/[?#].*$/, ''); if (v) set(v, true); });
+        app.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { set(b.dataset.close, false); }); });
+      }
+      function drawOne(id, view) {
+        var a = (data.accounts || []).filter(function (x) { return x.id === id; })[0];
+        if (!a) { app.innerHTML = '<p class="crumb"><a href="#list">BrandDesk</a></p><p class="empty">That client is not here.</p>'; return; }
+        var slug = a.listings ? a.listings.slug : '';
+        app.innerHTML = '<p class="crumb"><a href="#list">BrandDesk</a> &rsaquo; ' + esc(a.listings ? a.listings.name : '') + '</p>' +
+          '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(a.listings ? a.listings.name : '') + (a.test ? ' [test]' : '') + '</h2><span class="tag ' + esc(a.status) + '">' + esc(ST[a.status] || a.status) + '</span></div>' +
+          '<div class="kv"><div><span>Signed by</span>' + esc(a.agreed_name) + ', ' + esc(day(a.agreed_at)) + '</div><div><span>Account</span>' + esc(a.members ? a.members.name + ', ' + a.members.email : '') + '</div>' +
+          '<div><span>Plan</span>' + esc(PLAN[a.setup_plan]) + (a.social ? ', social' : '') + '</div><div><span>Agreement</span>' + esc(a.agreement_version) + '</div>' +
+          '<div><span>Setup paid in full</span>' + (a.setup_paid_at ? esc(day(a.setup_paid_at)) : 'Not yet') + '</div>' + (a.pause_from ? '<div><span>Pause</span>' + esc(day(a.pause_from)) + ' to ' + esc(day(a.pause_until)) + '</div>' : '') + '</div>' +
+          (a.note ? '<p class="sub" style="margin:10px 0 0">' + esc(a.note) + '</p>' : '') +
+          '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '" target="_blank" rel="noopener">Their page</a>' +
+          '<a class="btn btn-ghost btn-sm" href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Their brand kit</a>' +
+          '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
+          (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section>' +
+          '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
+        if (slug) drawShoot(slug);
+        VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
+        var cx = $('cx');
+        if (cx) cx.addEventListener('click', function () {
+          var why = window.prompt('End their plan at the end of the period they paid for. A note for the record (their notice):'); if (why === null) return;
+          var m = $('cx-msg'); m.className = 'msg'; m.textContent = 'Ending...';
+          api({ action: 'cancel', account_id: id, note: why }).then(function (d) {
+            if (d && d.ok) { m.textContent = 'Done. It ends at the end of the paid period.' + (d.setup_owed_cents ? ' Setup still owed: $' + (d.setup_owed_cents / 100).toLocaleString() + ' (invoice it).' : ''); load(); return; }
+            m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not go through.';
+          });
+        });
+      }
+      // ---- The starter shoot: posted to the Gig Board as a photo gig; its shot list is drawn from their brand kit (ve-bounties shoot_*).
+      var BFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-bounties';
+      function bapi(body) { return fetch(BFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      var SWORD = { applied: 'Applied', shortlisted: 'Shortlisted', audition: 'Trial requested', claimed: 'Booked', not_selected: 'Not selected' };
+      function money(c) { return '$' + (c / 100).toLocaleString('en-US'); }
+      function dateIn(days) { var d = new Date(Date.now() + days * 864e5); return d.toISOString().slice(0, 10); }
+      function drawShoot(slug) {
+        var box = $('shoot'); if (!box) return;
+        bapi({ action: 'shoot_get', slug: slug }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = '<h2>The starter shoot</h2><p class="empty" style="padding:0">This did not load.</p>'; return; }
+          if (!d.has_kit) { box.innerHTML = '<h2>The starter shoot</h2><p class="sub" style="margin:0">The shot list is drawn from their brand kit. <a href="/business/brand?listing=' + esc(slug) + '" target="_blank" rel="noopener">Start their brand kit</a> first, then post the shoot here.</p>'; return; }
+          if (!d.gig) return drawShootForm(box, slug, d);
+          var g = d.gig, c = d.counts || { shot: 0, total: 0 };
+          box.innerHTML = '<div class="bar"><h2 style="margin:0">The starter shoot</h2><span class="tag ' + (g.taken ? 'active' : 'checkout') + '">' + (g.taken ? 'Photographer booked' : g.status === 'open' ? 'On the Gig Board' : esc(g.status)) + '</span></div>' +
+            '<div class="kv"><div><span>Fee</span>' + money(g.cash_cents || 0) + ' and ' + (g.points || 0) + ' points</div><div><span>Applications close</span>' + esc(day(g.apply_by)) + '</div><div><span>Shot by</span>' + esc(day(g.due_at)) + '</div>' +
+            '<div><span>Shot list</span>' + c.shot + ' of ' + c.total + ' shot (' + c.items + ' menu items, ' + c.space + ' of the space)</div>' + (d.shoot && d.shoot.done_at ? '<div><span>Photographer says done</span>' + esc(day(d.shoot.done_at)) + '</div>' : '') + '</div>' +
+            (d.shoot && d.shoot.done_note ? '<p class="sub" style="margin:10px 0 0">' + esc(d.shoot.done_note) + '</p>' : '') +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="' + esc(d.shot_list) + '" target="_blank" rel="noopener">Open the shot list</a>' +
+            '<button type="button" class="btn btn-bad btn-sm" data-shoot-cancel>Take it down</button></p><p class="msg" id="sh-msg" role="status"></p>' +
+            '<h2 style="margin-top:16px">Applicants</h2><div id="appl"><p class="empty" style="padding:0">Loading...</p></div>';
+          box.querySelector('[data-shoot-cancel]').onclick = function () {
+            if (!window.confirm('Take this shoot off the Gig Board? Anyone who applied stays on record.')) return;
+            bapi({ action: 'shoot_cancel', slug: slug }).then(function (r) { if (r && r.ok) drawShoot(slug); else { $('sh-msg').className = 'msg err'; $('sh-msg').textContent = 'That did not go through.'; } });
+          };
+          bapi({ action: 'applicants', bounty_id: g.id }).then(function (r) {
+            var A = (r && r.applicants) || [], el = $('appl'); if (!el) return;
+            if (!A.length) { el.innerHTML = '<p class="empty" style="padding:0">No one yet. Photographers in the chapter see it on the Gig Board until ' + esc(day(g.apply_by)) + '.</p>'; return; }
+            var hasTrial = (g.asks || []).indexOf('trial') > -1;
+            el.innerHTML = A.map(function (x) {
+              var ap = x.application || {}, link = function (t) { return esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>'); };
+              var open = ['applied', 'shortlisted', 'audition'].indexOf(x.status) > -1;
+              return '<div class="appl"><div class="bar" style="margin:0"><b>' + esc(x.member ? x.member.name : 'A member') + '</b><span class="tag ' + esc(x.status) + '">' + esc(SWORD[x.status] || x.status) + '</span></div>' +
+                (x.member ? '<p><small>' + esc(x.member.email) + '</small></p>' : '') +
+                (ap.pitch ? '<p><b>Pitch:</b> ' + esc(ap.pitch) + '</p>' : '') + (ap.examples ? '<p><b>Examples:</b> ' + link(ap.examples) + '</p>' : '') + (ap.rate ? '<p><b>Rate and dates:</b> ' + esc(ap.rate) + '</p>' : '') +
+                (ap.trial ? '<p><b>Trial photos:</b> ' + link(ap.trial) + '</p>' : '') +
+                (open ? '<div class="acts">' + (x.status === 'applied' ? '<button class="btn btn-ghost btn-sm" data-dec="shortlist" data-id="' + esc(x.id) + '">Shortlist</button>' : '') +
+                  (hasTrial && x.status !== 'audition' ? '<button class="btn btn-ghost btn-sm" data-dec="audition" data-id="' + esc(x.id) + '">Ask for the paid trial</button>' : '') +
+                  '<button class="btn btn-sm" data-dec="book" data-id="' + esc(x.id) + '">Book them</button><button class="btn btn-bad btn-sm" data-dec="not_selected" data-id="' + esc(x.id) + '">Not selected</button></div>' : '') + '</div>';
+            }).join('');
+            el.onclick = function (e) {
+              var b = e.target.closest('[data-dec]'); if (!b) return;
+              var dec = b.dataset.dec, note = '';
+              if (dec === 'audition') { note = window.prompt('Which three dishes, and when they can shoot them (this goes in the email):', ''); if (note === null) return; }
+              if (dec === 'book' && !window.confirm('Book them? They get the shot list by email and become the photographer on this brand kit.')) return;
+              b.disabled = true;
+              bapi({ action: 'applicant_decide', id: b.dataset.id, decision: dec, note: note }).then(function (r) {
+                if (r && r.ok) { drawShoot(slug); return; }
+                b.disabled = false; $('sh-msg').className = 'msg err'; $('sh-msg').textContent = (r && r.message) || 'That did not go through.';
+              });
+            };
+          });
+        });
+      }
+      function drawShootForm(box, slug, d) {
+        var D = d.defaults || {}, menu = (d.menu || []).slice(), pick = {}, n = 0;
+        menu.filter(function (m) { return m.favorite; }).concat(menu.filter(function (m) { return !m.favorite; })).forEach(function (m) { if (n < 15 && !m.shot) { pick[m.key] = true; n++; } });
+        var secs = []; menu.forEach(function (m) { if (secs.indexOf(m.section) < 0) secs.push(m.section); });
+        box.innerHTML = '<h2>The starter shoot</h2><p class="sub">Post it to the Gig Board: photographers in their chapter apply with a pitch, examples and their dates, you can ask for a paid three-dish trial, and the one you book gets the shot list. The setup covers up to 15 menu items and the space.</p>' +
+          '<form class="form" id="shf"><label>Fee ($)<input type="number" id="sh-rate" min="50" max="10000" step="5" value="' + (D.rate_cents || 45000) / 100 + '" required></label>' +
+          '<label>Paid trial ($, 0 for none)<input type="number" id="sh-trial" min="0" max="1000" step="5" value="' + (D.trial_cents || 7500) / 100 + '"></label>' +
+          '<label>Applications close<input type="date" id="sh-apply" value="' + dateIn(7) + '" required></label><label>Shot by<input type="date" id="sh-due" value="' + dateIn(21) + '" required></label>' +
+          '<label style="flex-basis:100%">Anything photographers should know (optional)<input type="text" id="sh-note" maxlength="600" placeholder="Parking, the best morning, a dish that sells out"></label></form>' +
+          '<p class="sub" style="margin:14px 0 0"><b id="sh-n"></b> menu items in this shoot, Favorites first. Items already photographed are left unticked.</p>' +
+          '<div class="picks">' + (menu.length ? secs.map(function (sname) { return '<h3>' + esc(sname) + '</h3>' + menu.filter(function (m) { return m.section === sname; }).map(function (m) {
+            return '<label><input type="checkbox" data-k="' + esc(m.key) + '"' + (pick[m.key] ? ' checked' : '') + '>' + esc(m.name) + (m.favorite ? ' <small>Favorite</small>' : '') + (m.shot ? ' <small>has a photo</small>' : '') + '</label>'; }).join(''); }).join('') : '<p class="empty">Their brand kit has no menu yet. Add it there first.</p>') + '</div>' +
+          '<p style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" type="button" id="sh-post"' + (menu.length ? '' : ' disabled') + '>Post it to the Gig Board</button></p><p class="msg" id="sh-msg" role="status"></p>';
+        var count = function () { var c = box.querySelectorAll('[data-k]:checked').length; $('sh-n').textContent = c; return c; };
+        count(); box.querySelector('.picks').onchange = count;
+        $('sh-post').onclick = function () {
+          var items = [].map.call(box.querySelectorAll('[data-k]:checked'), function (i) { return i.dataset.k; }), m = $('sh-msg');
+          if (!items.length) { m.className = 'msg err'; m.textContent = 'Tick the menu items in this shoot.'; return; }
+          var btn = this; btn.disabled = true; m.className = 'msg'; m.textContent = 'Posting...';
+          bapi({ action: 'shoot_post', slug: slug, items: items, rate_cents: Math.round(+$('sh-rate').value * 100), trial_cents: Math.round(+$('sh-trial').value * 100),
+            apply_by: $('sh-apply').value + 'T23:59:00', due_at: $('sh-due').value + 'T23:59:00', note: $('sh-note').value }).then(function (r) {
+            if (r && r.ok) { drawShoot(slug); return; }
+            btn.disabled = false; m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not post.';
+          });
+        };
+      }
+      // ---- The pitch list: the presence-gap ranking (ve_branddesk_ranking) and one pitch page per business (ve-branddesk pitch_*).
+      var PST = { draft: 'Draft', ready: 'Ready to send', sent: 'Sent', viewed: 'Opened it', chose: 'Answered', client: 'Client', closed: 'Closed' };
+      var CHOICE = { ready: 'Ready to start', think: 'Thinking it over', talk: 'Wants to talk', no: 'Not now' };
+      var CHAPTERS = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      var rank = null, pf = { ch: '', show: 'all', q: '' };
+      try { pf = Object.assign(pf, JSON.parse(sessionStorage.getItem('ve_bd_pitch_filter') || '{}')); } catch (e) {}
+      function pstatus(r) { return r.choice ? CHOICE[r.choice] : r.pitch_status ? PST[r.pitch_status] : 'Not prepared'; }
+      function ptag(r) { return r.choice === 'ready' ? 'active' : r.choice ? 'paused' : r.pitch_status === 'sent' || r.pitch_status === 'viewed' ? 'checkout' : r.pitch_status ? '' : 'ended'; }
+      function drawPitches() {
+        if (!rank) { app.innerHTML = nav('pitches') + '<p class="empty">Ranking every business with a check-up...</p>'; return api({ action: 'ranking' }).then(function (d) { rank = (d && d.rows) || []; drawPitches(); }); }
+        var chs = {}; rank.forEach(function (r) { if (r.chapter) chs[r.chapter] = (chs[r.chapter] || 0) + 1; });
+        var q = pf.q.toLowerCase(), rows = rank.filter(function (r) {
+          if (pf.ch && r.chapter !== pf.ch) return false;
+          if (pf.show === 'warm' && !r.warm) return false; if (pf.show === 'new' && r.pitch_id) return false;
+          if (pf.show === 'sent' && !(r.pitch_status === 'sent' || r.pitch_status === 'viewed')) return false; if (pf.show === 'chose' && !r.choice) return false;
+          if (pf.show === 'email' && !r.contact_email) return false;
+          return !q || (r.name + ' ' + (r.city || '')).toLowerCase().indexOf(q) > -1;
+        });
+        app.innerHTML = nav('pitches') +
+          '<p class="sub">Every food place with a monthly check-up, most to gain first: how far their online presence is from a full score, weighed by how real and loved they are (Google rating and reviews, how Vegan, our members\' votes). Warm ones you mark come first. Open one to prepare its page and send it from you.</p>' +
+          '<div class="tools"><input id="pq" type="search" placeholder="Search a business or city" value="' + esc(pf.q) + '">' +
+          '<select id="pch"><option value="">Every chapter (' + rank.length + ')</option>' + Object.keys(chs).sort(function (a, b) { return chs[b] - chs[a]; }).map(function (c) { return '<option value="' + c + '"' + (c === pf.ch ? ' selected' : '') + '>' + esc(CHAPTERS[c] || c) + ' (' + chs[c] + ')</option>'; }).join('') + '</select>' +
+          '<select id="pshow">' + [['all', 'Everyone'], ['warm', 'Warm list'], ['new', 'Not prepared yet'], ['email', 'We have their email'], ['sent', 'Sent, no answer'], ['chose', 'Answered']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === pf.show ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+          '<div class="list" style="max-height:72vh"><div class="prow head"><span>#</span><span>Business</span><span class="hide-m">Presence</span><span class="hide-m">Google</span><span class="hide-m">Their biggest gap</span><span class="hide-m">Pitch</span><span></span></div>' +
+          (rows.length ? rows.map(function (r) {
+            return '<div class="prow"><span class="rank">' + (rank.indexOf(r) + 1) + '</span><span><b>' + esc(r.name) + (r.warm ? '<span class="warm">Warm</span>' : '') + '</b><small>' + esc([r.city, CHAPTERS[r.chapter]].filter(Boolean).join(' · ')) + ' · gap ' + r.gap_score + (r.contact_email ? '' : ' · no email yet') + '</small></span>' +
+              '<span class="pct hide-m">' + r.presence + '%</span><span class="hide-m">' + (r.rating ? esc(r.rating) + ' · ' + r.reviews + ' reviews' : 'No rating') + '</span>' +
+              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
+              '<span class="hide-m"><span class="tag ' + ptag(r) + '">' + esc(pstatus(r)) + '</span></span><a class="btn btn-ghost btn-sm" href="#pitch/' + esc(r.slug) + '">Open</a></div>';
+          }).join('') : '<p class="empty">Nothing matches.</p>') + '</div>';
+        var save = function () { try { sessionStorage.setItem('ve_bd_pitch_filter', JSON.stringify(pf)); } catch (e) {} };
+        $('pq').addEventListener('input', function () { pf.q = this.value; save(); clearTimeout(drawPitches.t); drawPitches.t = setTimeout(function () { drawPitches(); var i = $('pq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }, 250); });
+        $('pch').addEventListener('change', function () { pf.ch = this.value; save(); drawPitches(); });
+        $('pshow').addEventListener('change', function () { pf.show = this.value; save(); drawPitches(); });
+      }
+      function drawPitch(slug) {
+        app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a></p><p class="empty">Loading...</p>';
+        api({ action: 'pitch_admin', slug: slug }).then(function (d) {
+          if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a></p><p class="empty">That business is not here.</p>'; return; }
+          var L = d.listing, P = d.pitch, S = d.summary, R = d.rank || {};
+          var url = P ? location.origin + '/business/pitch?c=' + P.code : '';
+          app.innerHTML = '<p class="crumb"><a href="#pitches">Pitch list</a> &rsaquo; ' + esc(L.name) + '</p>' +
+            '<section class="card"><div class="bar"><h2 style="margin:0">' + esc(L.name) + '</h2><span class="tag ' + (P ? ptag({ pitch_status: P.status, choice: P.choice }) : 'ended') + '">' + esc(P ? (P.choice ? CHOICE[P.choice] : PST[P.status]) : 'Not prepared') + '</span></div>' +
+            '<div class="kv"><div><span>Where</span>' + esc([L.city, CHAPTERS[R.chapter]].filter(Boolean).join(' · ')) + '</div><div><span>Presence</span>' + (S ? S.presence + '%' : 'No audit yet') + '</div>' +
+            '<div><span>Gap score</span>' + (R.gap_score != null ? R.gap_score : 'Not ranked') + '</div><div><span>Google</span>' + (S && S.google.rating ? esc(S.google.rating) + ' stars, ' + esc(S.google.reviews) + ' reviews' : 'No rating') + '</div>' +
+            (S ? '<div><span>Looked on</span>' + esc(day(S.looked_on)) + '</div>' : '') + '</div>' +
+            (S ? '<div class="bars2">' + S.areas.map(function (a) { return '<div>' + esc(a.name) + ' ' + a.pct + '%<i><span style="width:' + a.pct + '%"></span></i></div>'; }).join('') + '</div>' +
+              '<h2 style="margin-top:16px">What their page will show</h2><ul style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6">' + S.fixes.map(function (f) { return '<li><b>' + esc(f.label) + '</b>: ' + esc(f.found) + '</li>'; }).join('') + '</ul>' : '') +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost btn-sm" href="/directory/' + esc(L.slug) + '" target="_blank" rel="noopener">Their Directory page</a></p></section>' +
+            '<section class="card"><h2>Their page</h2><div class="form">' +
+            '<label>Their name<input id="p-name" value="' + esc(P ? P.contact_name : '') + '" placeholder="Who you are writing to"></label>' +
+            '<label>Their email<input id="p-email" type="email" value="' + esc(P ? P.contact_email : R.contact_email || '') + '" placeholder="Where the email goes"></label>' +
+            '<label>Their home page shown in<select id="p-look">' + Object.keys(d.looks).map(function (k) { return '<option value="' + k + '"' + ((P ? P.look : 'fresh') === k ? ' selected' : '') + '>' + esc(d.looks[k]) + '</option>'; }).join('') + '</select></label>' +
+            '<label style="flex-basis:100%;min-width:0">Your opening, in your words (it opens the email and their page)<textarea id="p-note" maxlength="1500" placeholder="Something only you would know: where you met, what you love there.">' + esc(P ? P.note : '') + '</textarea></label>' +
+            '<label style="flex-direction:row;align-items:center;gap:8px;flex-basis:100%"><input type="checkbox" id="p-warm"' + (P && P.warm ? ' checked' : '') + ' style="min-height:0"> On my warm list (first in the ranking)</label></div>' +
+            '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="p-save">' + (P ? 'Save' : 'Prepare their page') + '</button>' +
+            (P ? '<a class="btn btn-ghost" href="/business/pitch?c=' + esc(P.code) + '&preview=1" target="_blank" rel="noopener">See their page</a><button class="btn btn-ghost" type="button" id="p-copy">Copy the link</button>' +
+              '<button class="btn btn-ghost" type="button" id="p-test">Send me a test</button>' + (P.status === 'closed' ? '' : '<button class="btn" type="button" id="p-send">' + (P.sent_at ? 'Send it again' : 'Send it from me') + '</button>') : '') + '</p>' +
+            '<p class="msg" id="p-msg" role="status"></p><p class="sub" style="margin:4px 0 0;font-size:13px">The email comes from you (Sean A. Russell), replies to contact@lesaruss.com, and carries their own tracked link. Sending also opens checkout for this business.</p></section>' +
+            (P ? '<section class="card"><h2>What happened</h2><div class="kv"><div><span>Sent</span>' + (P.sent_at ? esc(day(P.sent_at)) : 'Not yet') + '</div><div><span>Opened it</span>' + (P.views ? P.views + ' time' + (P.views === 1 ? '' : 's') + ', last ' + esc(day(P.last_viewed_at)) : 'Not yet') + '</div>' +
+              '<div><span>Their answer</span>' + (P.choice ? esc(CHOICE[P.choice]) + ', ' + esc(day(P.choice_at)) : 'None yet') + '</div>' + (P.follow_up_on ? '<div><span>Check back</span>' + esc(day(P.follow_up_on + 'T12:00:00')) + '</div>' : '') + '</div>' +
+              (P.choice_note ? '<p class="sub" style="margin:10px 0 0;white-space:pre-wrap">' + esc(P.choice_note) + '</p>' : '') +
+              '<p style="margin-top:12px">' + (P.status === 'closed' ? '<button class="btn btn-ghost btn-sm" type="button" id="p-open">Open it again</button>' : '<button class="btn btn-bad btn-sm" type="button" id="p-close">Close this pitch</button>') + '</p></section>' : '');
+          var msg = function (t, bad) { var m = $('p-msg'); m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t; };
+          var body = function () { return { action: 'pitch_save', slug: L.slug, contact_name: $('p-name').value, contact_email: $('p-email').value, look: $('p-look').value, note: $('p-note').value, warm: $('p-warm').checked }; };
+          $('p-save').onclick = function () { msg('Saving...'); api(body()).then(function (r) { if (r && r.ok) { rank = null; msg('Saved.'); if (!P) drawPitch(slug); return; } msg(r && r.error === 'bad_email' ? 'That email does not look right.' : 'That did not save.', true); }); };
+          if ($('p-copy')) $('p-copy').onclick = function () { navigator.clipboard.writeText(url).then(function () { msg('Copied. A copied link is not tracked by name; Send it from me is.'); }); };
+          if ($('p-test')) $('p-test').onclick = function () { msg('Saving and sending you a test...'); api(body()).then(function () { return api({ action: 'pitch_send', slug: L.slug, test: true }); }).then(function (r) { msg(r && r.ok ? 'Sent to ' + r.to + '.' : 'The test did not send (' + ((r && (r.result || r.error)) || 'unknown') + ').', !(r && r.ok)); }); };
+          if ($('p-send')) $('p-send').onclick = function () {
+            if (!$('p-email').value.trim()) return msg('Add their email first.', true);
+            if (!window.confirm('Send ' + L.name + '\'s page to ' + $('p-email').value.trim() + ' from you now?')) return;
+            msg('Sending...'); api(body()).then(function () { return api({ action: 'pitch_send', slug: L.slug }); }).then(function (r) { if (r && r.ok) { rank = null; drawPitch(slug); return; } msg((r && r.message) || 'It did not send (' + ((r && (r.result || r.error)) || 'unknown') + ').', true); });
+          };
+          if ($('p-close')) $('p-close').onclick = function () { api({ action: 'pitch_save', slug: L.slug, status: 'closed' }).then(function () { rank = null; drawPitch(slug); }); };
+          if ($('p-open')) $('p-open').onclick = function () { api({ action: 'pitch_save', slug: L.slug, status: 'ready' }).then(function () { rank = null; drawPitch(slug); }); };
+        });
+      }
+      function draw() {
+        var r = location.hash.replace(/^#/, '') || 'list', m;
+        if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
+        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
+        if (r === 'open') return drawOpen();
+        if (r === 'pitches') return drawPitches();
+        if ((m = r.match(/^pitch\/([a-z0-9-]+)$/))) return drawPitch(m[1]);
+        drawList();
+      }
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+        app.hidden = false;
+        window.addEventListener('hashchange', draw);
+        draw();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
