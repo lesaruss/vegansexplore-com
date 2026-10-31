@@ -118,7 +118,7 @@
       (ctx.claim && !ctx.form ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
         '<p>Claim your profile. Once our team confirms it is you, keep it up to date, and get matched with paid work as one of our official creators.</p>' +
         '<a href="' + esc(claimHref) + '" data-vpc-go="claim">Claim your profile</a></div>' : '') +
-      '<a class="vpc-ad" href="/gigs/sample#overview" data-vpc="ad" data-vpc-go="ad" aria-label="Become an official Vegans Explore creator">' +
+      '<a class="vpc-ad" href="' + (ctx.preview ? '/gigs/sample#overview' : '/go/ve-creator-banner') + '" data-vpc="ad" data-vpc-go="ad" aria-label="Become an official Vegans Explore creator">' +
         FRAMES.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')" aria-hidden="true"></span>'; }).join('') +
         '<span class="vpc-copy"><small>Vegans Explore creators</small><span class="vpc-lines" aria-hidden="true">' +
           FRAMES.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
@@ -127,46 +127,60 @@
     el.querySelectorAll('[data-vpc]').forEach(function (card) {
       var cta = card.getAttribute('data-vpc');
       var promo = cta === 'claim' && ctx.form ? 'profile-claim' : 'creator-register';
-      onScreen(card, function () { send(promo, 'view', Object.assign({ cta: cta }, base)); });
+      onScreen(card, function () { send(promo, 'view', Object.assign({ cta: cta }, base)); if (cta === 'ad' && !ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'view'); });
     });
     if (ctx.form) claimForm(el.querySelector('.vpc-claim'), ctx, base);
     el.addEventListener('click', function (e) {
       var a = e.target.closest('[data-vpc-go]'); if (!a) return;
       var cta = a.getAttribute('data-vpc-go');
       click('creator-register', Object.assign({ cta: cta, claim: cta === 'claim' ? ctx.claim : '' }, base));
+      if (cta === 'ad' && !ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'click');
     });
   }
 
   // The Guide banners: four scenes each from art we already hold (the Guide in their banner, then what the Guide covers), a headline
   // per scene, one line and the button. No counts in the words (a Guide's words never count its items).
   var SBM = SB + '/storage/v1/object/public/vegan-media/media/guides/';
+  // Each is a house campaign in the ad system (migration 20261031_house_banners.sql, sponsor ve-house-banners), so its views and clicks
+  // count in ad_impressions (ve_house_ad_count) beside every other ad, and it leaves through its own tracked /go/ link, which names the
+  // signed-in member who clicked (ve-links, nav.js) for /dashboard/leads (campaign ve-house-banners).
+  var HOUSE = { listing: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a12001', people: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a12002', creator: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13004' };
   var GUIDE_ADS = {
-    'airport-guide': { kicker: 'The Airport Guide', href: '/guides/airport-guide', cta: 'Get the Airport Guide',
+    'airport-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13001', go: '/go/ve-guide-airport', kicker: 'The Airport Guide', href: '/guides/airport-guide', cta: 'Get the Airport Guide',
       line: 'Where to eat Vegan in the airports you fly through, by terminal and gate, with Nori.',
       frames: [['/public/guides/airport-guide.jpg', 'Vegan food at your gate'], ['/public/guides/airports/fll.webp', 'Before or after security', 'background-size:auto 125%;background-position:62% 70%'],
         ['/public/guides/airports/jfk.webp', 'Get me to my gate', 'background-size:auto 135%;background-position:45% 75%'], ['/public/guides/airports/lhr.webp', 'From Miami to Heathrow', 'background-size:auto 150%;background-position:50% 72%']] },
-    'vegan-dairy-guide': { kicker: 'The Vegan Dairy Guide', href: '/guides/vegan-dairy-guide', cta: 'Get the Dairy Guide',
+    'vegan-dairy-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13002', go: '/go/ve-guide-dairy', kicker: 'The Vegan Dairy Guide', href: '/guides/vegan-dairy-guide', cta: 'Get the Dairy Guide',
       line: 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.',
       frames: [[SBM + 'banners/vegan-dairy-guide.jpg', 'Life after dairy'], [SBM + 'dairy/s-milk-in-coffee.jpg', 'Swap the milk'],
         [SBM + 'dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'dairy-guide-billboard.jpg', 'The brands worth buying']] },
-    'stadium-arena-guide': { kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
+    'stadium-arena-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13003', go: '/go/ve-guide-stadium', kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
       line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
       frames: [['/public/guides/stadium-arena-guide.jpg', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
         ['/public/guides/venues/madison-square-garden.webp', 'Arenas and ballparks', 'background-size:auto 125%;background-position:50% 70%'], ['/public/guides/venues/citi-field.webp', 'Get there from your seat', 'background-size:auto 150%;background-position:50% 72%']] }
   };
+  function adCount(placement, campaign, kind) {
+    if (BOT || !placement || !campaign) return;
+    try {
+      fetch(SB + '/rest/v1/rpc/ve_house_ad_count', { method: 'POST', keepalive: true,
+        headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + ANON },
+        body: JSON.stringify({ p_placement: placement, p_campaign: campaign, p_kind: kind }) }).catch(function () {});
+    } catch (e) {}
+  }
   function guideCard(el, slug, ctx) {
     var g = GUIDE_ADS[slug]; if (!el || !g) return;
     ctx = ctx || {};
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
     var promo = 'guide-' + slug, base = { page: ctx.page || location.pathname, listing_id: ctx.listing_id || null, cta: 'ad' };
-    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(g.href) + '" data-vpc="ad" aria-label="' + esc(g.cta) + '">' +
+    var placement = ctx.placement || HOUSE.listing;
+    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(ctx.preview ? g.href : g.go) + '" data-vpc="ad" aria-label="' + esc(g.cta) + '">' +
       g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
       '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
         g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
         '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span></a></div>';
     var a = el.querySelector('.vpc-ad');
-    onScreen(a, function () { send(promo, 'view', base); });
-    a.addEventListener('click', function () { click(promo, base); });
+    onScreen(a, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
+    a.addEventListener('click', function () { click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click'); });
   }
 
   // The short claim (Sean, 2026-10-31: "a short claim request for people who aren't creators"), in the card itself. A signed-in member's
@@ -215,5 +229,5 @@
     body.querySelector('.vpc-open').addEventListener('click', open);
   }
 
-  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS), step: step, source: source, click: click };
+  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS), house: HOUSE, step: step, source: source, click: click };
 })();

@@ -168,6 +168,24 @@ characters spread across pages (never the paused "$5 to the LESARUSS Foundation"
 (`/go/hc-ve-events`, `hc-ve-all-cities`, `hc-ve-<city>`, besides `hc-ve-pulse`, `hc-ve-sofl`, `hc-ve-directory`), so impressions
 (`ad_impressions`) and clicks read by page. A real advertiser takes a slot by replacing that slot's Humble Cabbage campaign.
 
+**House banners on listings** (Sean, 2026-10-31: "create that for other guides and sprinkle it throughout the website... that's the
+only banner on the right-hand side... remove the humble cabbage... make sure we're tracking it in ads... which member clicked it, how
+many times they clicked it... follow-up communications"; migration `20261031_house_banners.sql`). A Directory listing's right column
+has no billboard or Humble Cabbage any more: a **People page** shows only "Is this you?" and the **Become a creator** banner, and **every
+other listing** (not a brand page, which keeps its Guide house ad) shows one animated **Guide banner** (`guideBanner` in
+`directory/listing.html`, `VEPromo.guideCard` and `GUIDE_ADS` in `public/ve-promo.js`): the Vegan Dairy Guide on a food place or food
+brand (`FOOD_CATS`), else the Airport, Dairy or Stadium & Arena Guide at random; four scenes from the Guide's own art, a headline each, a
+line and Get the <Guide> · $11. A demo page shows it without counting (`preview`). **Tracked as ads**: the sponsor campaign
+`ve-house-banners` (Vegans Explore) holds a campaign per banner, linked to two placements, the listing's right column
+(`ve-listing-house-banner`) and the People page's (`ve-people-house-banner`), with their own `page_slug` so `ad-resolve` never counts
+them; the page counts a view (the banner on screen, bots left out) and a click into `ad_impressions` through `ve_house_ad_count`, which
+takes only this sponsor's campaigns. **Members by name**: each banner leaves through its own tracked link (`/go/ve-guide-airport`,
+`ve-guide-dairy`, `ve-guide-stadium`, `ve-creator-banner`; initiative `ve-house-banners`, tags `house-banner` and the Guide), so
+`ve-links` logs every click, `nav.js` names the signed-in member on it, and `ve_initiative_interest` keeps each member's clicks and count
+for `/dashboard/leads` (filter the campaign ve-house-banners and the Guide's tag, export for follow-ups). A new Guide banner is a
+`GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link. Humble Cabbage keeps
+every other slot (the Directory, Media, Events, the Pulse and the city hubs).
+
 Use `/public/ve-ad-rail.js`: wrap the content in `<div class="vear-layout"><div class="vear-main">`
 and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come from `ad_placements`
 (page_slug + slot_id) through the `ad-resolve` function; a rail fills, and counts an impression,
