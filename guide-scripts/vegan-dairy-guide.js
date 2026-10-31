@@ -892,7 +892,7 @@
       '<li><b>The community:</b> your member dashboard, Directory votes, the Community Board and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     if (!priced()) {
-      main.innerHTML = head('Get access', 'The Dairy Guide comes with membership', 'One $11 Founding Membership, one time, opens this Guide and the whole Vegans Explore community.') + list;
+      main.innerHTML = '<div class="dg-join">' + head('Get access', 'The Dairy Guide comes with membership', 'One $11 Founding Membership, one time, opens this Guide and the whole Vegans Explore community.') + list + '</div>';
       main.querySelector('.dg-access').insertAdjacentHTML('beforeend',
         '<div class="dg-pricebox"><div class="dg-big">$11<small>one time</small></div><p>' + (m === 'activate' ? 'Your account is not a Founding Member yet. Become one and the Guide opens right away.' :
           'Already a Vegans Explore member? It is already yours: <a href="#" data-signin>sign in</a> and the Guide opens.') + '</p>' +
@@ -907,7 +907,7 @@
             : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
           '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
           '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-      main.innerHTML = head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11, or 1,100 points. $11 is the price of admission: buying a Guide makes you a member, and the Passport comes with 1,100 welcome points.') + list;
+      main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11, or 1,100 points. $11 is the price of admission: buying a Guide makes you a member, and the Passport comes with 1,100 welcome points.') + list + '</div>';
       main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box2 + '</div>');
       return;
     }
@@ -925,7 +925,7 @@
           'Join for $11, one time, and your first Guide credit comes with it: unlock this Guide or any other. Already a member? <a href="#" data-signin>Sign in</a>.') + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + passport;
     }
-    main.innerHTML = head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11 or 1 Guide credit. The $11 Founding Membership, one time, comes with your first credit and the whole community.') + list;
+    main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11 or 1 Guide credit. The $11 Founding Membership, one time, comes with your first credit and the whole community.') + list + '</div>';
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
 

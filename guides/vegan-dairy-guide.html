@@ -218,6 +218,15 @@
     /* Get access */
     .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
     .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
+    /* Get access on desktop (Sean, 2026-10-31): two columns, the title, its line and the list on the left, the price box on the
+       right from the line under the title down, so it splits the space between the words and Maya. Stacked at 1180 px and under. */
+    @media (min-width:1181px){
+      .dg-join{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);column-gap:24px;align-items:start;}
+      .dg-join>.dg-head,.dg-join>.dg-lede,.dg-join .dg-access ul{grid-column:1;}
+      .dg-join>.dg-lede{max-width:none;}
+      .dg-join .dg-access{display:contents;}
+      .dg-join .dg-pricebox{grid-column:2;grid-row:2 / span 2;align-self:stretch;display:flex;flex-direction:column;justify-content:center;margin-bottom:6px;}
+    }
     .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
     .dg-access li::before{content:'';position:absolute;left:4px;top:15px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
     .dg-access li b{color:var(--ink);}
