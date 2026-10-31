@@ -1,7 +1,7 @@
 /* ve-guide-catalog.js: the Guide cards, one list for /guides and the dashboard's Guides tab (Sean, 2026-10-26: the
    dashboard should mimic "what we currently have on the main guides page"). Change a Guide here and both pages follow.
 
-   Live Guides wear their banner (800 x 500, the Guide on white; see Guide banners in CLAUDE.md). Guides still being
+   Live Guides wear their scene (/public/guides/scenes/<slug>.jpg, the Guide in a scene; Sean 2026-10-31, see Guide banners in CLAUDE.md). Guides still being
    made wear a flat line icon (Sean: "use flat images, flat icons for those") and show to signed-in members only, with
    Notify me; signed out, /guides shows only the live ones. The Welcome Guide is the Passport Guide (/passport), free.
 
@@ -76,22 +76,22 @@
     { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg', href: '/passport',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
       chips: [{ text: 'Free', cls: 'free' }], cta: 'Start the Welcome Guide' },
-    { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: BANNERS + 'vegan-dairy-guide.jpg', href: '/guides/vegan-dairy-guide',
+    { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: '/public/guides/scenes/vegan-dairy-guide.jpg', href: '/guides/vegan-dairy-guide',
       desc: 'Everything you need to go dairy-free: the brands to buy, swaps for every kind of dairy, recipes and cookbooks, the research and our interviews, with Maya walking you through it.',
       chips: [{ text: 'Walked through by Maya' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'vegan-restaurant-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Guide', banner: BANNERS + 'vegan-restaurant-guide.jpg', href: '/guides/vegan-restaurant-guide',
+    { slug: 'vegan-restaurant-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Guide', banner: '/public/guides/scenes/vegan-restaurant-guide.jpg', href: '/guides/vegan-restaurant-guide',
       desc: 'What may be quietly hurting your restaurant, and how to fix it: a free check of your Google listing, website and social, the fixes in your order, our interviews with business owners, and how to get featured, with Liz walking you through it.',
       chips: [{ text: 'Walked through by Liz' }, { text: 'Free check' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'stadium-arena-guide', shelf: 'everyday', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/stadium-arena-guide.jpg', href: '/guides/stadium-arena-guide',
+    { slug: 'stadium-arena-guide', shelf: 'everyday', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/scenes/stadium-arena-guide.jpg', href: '/guides/stadium-arena-guide',
       desc: 'Where to eat Vegan at the game: every stand and what it serves, a map of the bowl that takes you from your seat to the food, and fans keeping it right, with River walking you through it. Hard Rock Stadium is free.',
       chips: [{ text: 'Walked through by River' }, { text: 'Hard Rock Stadium free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'airport-guide', shelf: 'everyday', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/airport-guide.jpg', href: '/guides/airport-guide',
+    { slug: 'airport-guide', shelf: 'everyday', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/scenes/airport-guide.jpg', href: '/guides/airport-guide',
       desc: 'Vegan food at the airport, gate by gate: every spot before or after security, a map of the terminal that takes you from your gate to the food without screening again, and travelers keeping it right, with Nori walking you through it. Fort Lauderdale is free.',
       chips: [{ text: 'Walked through by Nori' }, { text: 'Fort Lauderdale free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg', href: '/guides/nonprofit-guide',
+    { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/scenes/nonprofit-guide.jpg', href: '/guides/nonprofit-guide',
       desc: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going: ten ways to fundraise and stay relevant, our nonprofit series and interviews, the Directory, businesses near you that fit a tie-in, and how to get found, with Dani walking you through it.',
       chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/creator-guide.jpg?v=2', href: '/guides/creator-guide',
+    { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/scenes/creator-guide.jpg', href: '/guides/creator-guide',
       desc: 'For Vegan creators going from hobby to professional: ten moves, each with a real creator doing it and three action items, the creators and channels in our Directory, our creator conversations, and your next step as an Ambassador, with Kai walking you through it.',
       chips: [{ text: 'Walked through by Kai' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'vegan-meat-alternatives', shelf: 'soon', see: 'members', soon: true, icon: 'burger', label: 'Food', title: 'The Vegan Meat Alternatives Guide',

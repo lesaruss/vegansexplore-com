@@ -2899,6 +2899,13 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   Guide is about (Maya: a glass of oat milk and a carton reading only OAT), every finger in frame, no other words. Made in
   Higgsfield (nano_banana_pro, 16:9, cropped to 16:10) from the Guide's current art, stored as
   `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
+  **Scenes replace the white banners on the cards** (Sean, 2026-10-31: "images that look more like a scene versus them standing behind a
+  white background... make sure these get on the website as well"): the Dairy, Restaurant, Stadium & Arena, Airport, Nonprofit and Creator
+  Guides' cards on `/guides` and the dashboard wear their Guide in a scene (`public/guides/scenes/<guide-slug>.jpg`, 1200 px, made in
+  Higgsfield from the Guide's art: Maya making almond milk, Liz with a restaurant owner, River cheering in the stands with a hot dog, Nori
+  picking a VEGAN box at an airport shop, Dani in her wheelchair at a sanctuary, Kai filming at a restaurant; `banner` in
+  `ve-guide-catalog.js`). The same scenes are the social frame's Guide cards (`communities/social/scene-<guide>.webp`). The white banners
+  stay in storage for the Guides' own pages and ads. A new Guide gets a scene the same way.
 - **The Guide list is one file** (Sean, 2026-10-26: the dashboard should mimic "what we currently have on the main guides
   page"): `/public/ve-guide-catalog.js` (`VEGuideCatalog.render(el, {member, source, open})`) draws the cards on `/guides` and
   the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Dani's
