@@ -52,7 +52,7 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const DAY_MS = 24 * 60 * 60 * 1000;
-const UA = 'Mozilla/5.0 (compatible; VegansExploreAudit/1.0; +https://vegansexplore.com/guides/vegan-restaurant-survival-guide)';
+const UA = 'Mozilla/5.0 (compatible; VegansExploreAudit/1.0; +https://vegansexplore.com/guides/vegan-restaurant-guide)';
 const LIMITS = { freePerVisitor: 5, fullPerMember: 10, freeReuseDays: 7 };
 
 const cors = {
@@ -627,7 +627,7 @@ async function inputsFrom(body: any): Promise<{ inputs?: any; listing_id?: strin
 const PRICES: Record<string, number> = { full: 4900, shopper: 14900 };
 const TIER_NAME: Record<string, string> = { full: 'Full restaurant audit', shopper: 'Full restaurant audit with Secret Shopper' };
 const SITE = 'https://vegansexplore.com';
-const GUIDE_URL = `${SITE}/guides/vegan-restaurant-survival-guide`;
+const GUIDE_URL = `${SITE}/guides/vegan-restaurant-guide`;
 const FN_URL = `${SUPABASE_URL}/functions/v1/ve-restaurant-audit`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));

@@ -248,8 +248,8 @@
     function scaleStill() { document.querySelectorAll('.pt-still').forEach(function (b) { if (!b.offsetWidth) return; b.querySelector('iframe').style.transform = 'scale(' + (b.offsetWidth / +b.getAttribute('data-w')) + ')'; }); }
     // Not now: the Vegan Restaurant Guide, so they can start on their own (Sean, 2026-10-31).
     function guideCard() {
-      var href = '/guides/vegan-restaurant-survival-guide?from=pitch';
-      return '<div class="pt-card pt-guide"><a href="' + href + '" target="_blank" rel="noopener"><img class="pt-hero" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg" alt="Liz, the Guide, holding a chalkboard that reads OPEN" loading="lazy"></a>' +
+      var href = '/guides/vegan-restaurant-guide?from=pitch';
+      return '<div class="pt-card pt-guide"><a href="' + href + '" target="_blank" rel="noopener"><img class="pt-hero" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/banners/vegan-restaurant-guide.jpg" alt="Liz, the Guide, holding a chalkboard that reads OPEN" loading="lazy"></a>' +
         '<div class="pt-area" style="margin-top:12px">A Guide for restaurant owners</div><b>The Vegan Restaurant Guide</b>' +
         '<ul class="su-keys"><li>A free check of your Google listing, website and social</li><li>Every fix in plain words, in the order that matters for you</li><li>Our interviews with Vegan business owners</li><li>How to get featured on Vegans Explore</li></ul>' +
         '<p style="margin-top:12px"><a class="vg-btn" href="' + href + '" target="_blank" rel="noopener">Open the Guide</a></p>' +

@@ -22,7 +22,7 @@
  * The full audit is its own add-on, never part of the Guide (Sean, 2026-10-10): it is bought here, but anyone can buy it.
  */
 (function () {
-  var SLUG = 'vegan-restaurant-survival-guide';
+  var SLUG = 'vegan-restaurant-guide';
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var AUDIT_URL = SB + '/functions/v1/ve-restaurant-audit';

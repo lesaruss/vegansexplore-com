@@ -16,7 +16,7 @@ const PAGES = ['/', '/explore', '/passport', '/welcome', '/directory', '/events'
   '/business', '/policies', '/contact'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia',
   'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
-const GUIDES = ['vegan-dairy-guide', 'vegan-restaurant-survival-guide', 'stadium-arena-guide', 'airport-guide', 'nonprofit-guide', 'creator-guide'];
+const GUIDES = ['vegan-dairy-guide', 'vegan-restaurant-guide', 'stadium-arena-guide', 'airport-guide', 'nonprofit-guide', 'creator-guide'];
 
 async function all(table, query) {
   const out = [];

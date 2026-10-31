@@ -250,7 +250,7 @@
         (todo.length ? '<div class="vpd-grid">' + todo.map(function (c) {
           var m = CK[c.k];
           var act = c.k === 'menu' ? '<a class="vpd-btn sm" href="?tab=brand&pd=menu" data-vpd="menu">Add it</a>'
-            : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-survival-guide#/audit">Run it</a>'
+            : c.k === 'audit' ? '<a class="vpd-btn sm" href="/guides/vegan-restaurant-guide#/audit">Run it</a>'
             : '<button type="button" class="vpd-btn sm" data-vpd-edit="' + m[2] + '">Add it</button>';
           return '<div class="vpd-card"><b>' + esc(m[0]) + '</b><p>' + esc(m[1]) + '</p>' + act + '</div>';
         }).join('') + '</div>' : '') +
@@ -434,7 +434,7 @@
 
     // ---- Audit
     function drawAudit() {
-      var G = '/guides/vegan-restaurant-survival-guide';
+      var G = '/guides/vegan-restaurant-guide';
       var list = D.audits.length ? '<div class="vpd-list">' + D.audits.map(function (a) {
         var done = a.status === 'done';
         // Our monthly check-up runs every check, but it is ours: the owner reads what to fix, not a score they paid for.

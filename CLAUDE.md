@@ -678,7 +678,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   records the choice, then `checkout` with `back` (`/business/pitch?c=<code>`), so Stripe returns to the pitch (`&status=done|cancelled|unpaid#su-pay`).
   Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`). **Not now offers the Vegan Restaurant Guide** (Sean, 2026-10-31: "I don't get... your Vegans Explore page stays yours
   free... maybe we're sharing the vegan restaurant guide with them"): its card (Liz's banner, what is in it, Open the Guide at
-  `/guides/vegan-restaurant-survival-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
+  `/guides/vegan-restaurant-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
   business that says no can still start on its own (`guideCard` in `business/pitch.html`).
   `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
@@ -2894,7 +2894,7 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
 
 "We could give them a simple audit for free and then in the actual guide, we go a bit deeper... just like BCPSMarcomm...
 scans their page for a set of defined criteria. Look at Google Local, SEO, Web and social." It is the heart of the Restaurant
-Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide below) and a hook for business outreach.
+Guide (`guides/vegan-restaurant-guide.html`, see The Restaurant Guide below) and a hook for business outreach.
 
 - Criteria (`ve_audit_criteria`, migration `20261010_ve_restaurant_audit.sql`): 40 weighted checks in four areas (Google Local,
   SEO, Web, Social), each with a label, why, how to fix, the Guide chapter it links to (`chapter`, the step ids in the Guide)
@@ -2978,9 +2978,14 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide b
 **Its name is The Vegan Restaurant Guide** (Sean, 2026-10-31: "We'll change it to the vegan restaurant guide, because that should have
 been changed already"; canon `canon-ve-front-of-house` v3; migration `20261031_vegan_restaurant_guide_name.sql`): the page, its card, the
 Passport's business tab, the sample business, the pitch, `ve-cookbook`, the `ve_guides` title, its dashboard card and its house-banner
-link. It was the Vegan Restaurant Survival Guide; the slug `vegan-restaurant-survival-guide` and every link to it stay.
+link. It was the Vegan Restaurant Survival Guide. **Its address is `/guides/vegan-restaurant-guide`** (Sean, the same day: "let's use
+this opportunity to change the URL because we haven't really sold anything yet... anywhere that it is referenced, take the time and fix
+it"; migration `20261031_vegan_restaurant_guide_slug.sql`): the page and script files, `ve_guides.slug`, the cookbook and audit functions,
+the catalog, sitemap, house ad, dashboard cards, tracked link, business dashboard, Passport, pitch, Preview journeys, the playbooks and the
+banner (`banners/vegan-restaurant-guide.jpg`). The old address redirects there (`vercel.json`). The one purchase, Sean's own, is tied
+to the Guide's id, so it carried over.
 
-`guides/vegan-restaurant-survival-guide.html` and `guide-scripts/vegan-restaurant-survival-guide.js` (the old 10-step page and
+`guides/vegan-restaurant-guide.html` and `guide-scripts/vegan-restaurant-guide.js` (the old 10-step page and
 its gate script are gone). Liz is the Guide, on the right of every tab, one lip-synced clip per tab for visitors (`CLIPS`,
 `rg-<tab>.mp4`) and members (`CLIPS_M`, `rg-m-<tab>.mp4`) in `vegan-media/media/liz/restaurant-guide/`, lines approved by Sean;
 the first page shows her arms folded with an open smile (`rg-poster-first.jpg`). Liz's mouth sits higher in frame than Maya's,
@@ -2994,9 +2999,9 @@ through `ve-podcast` `episode`, drawn with `VEEpisodes.row` two across, Play in 
 Partner plan; find your page; top-voted Vegan restaurants), **Promotions** (each Live or Coming; never a planned thing shown as
 live), **Test yourself** (ten questions, one per view, 80% earns the Entrepreneur Track badge, kept in the browser), My list
 (fixes, interviews, promotions through `ve-cookbook` saves; `ve_guide_saves` and `ve_guide_votes` take `fix` and `promo`),
-Get access. Slug `vegan-restaurant-survival-guide` (owners from before keep it); the members-only fixes, quiz and two facts are
+Get access. Slug `vegan-restaurant-guide` (was `vegan-restaurant-survival-guide`) (owners from before keep it); the members-only fixes, quiz and two facts are
 that row's `content_html`. Banner: Liz in the cream tee holding a chalkboard reading OPEN
-(`vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg`).
+(`vegan-media/media/guides/banners/vegan-restaurant-guide.jpg`).
 
 ## Finding new places: the backlog check (Sean, 2026-10-10)
 
