@@ -523,13 +523,22 @@ judge whether food is safe by how a place looks online; businesses want marketin
   answers. Not yet: cuisines show as their slugs (american); a real upload end to end from the browser.
   **The frame** (2026-10-31): `business/site.html`, Green Leaf Kitchen's website at `/business/sample/site`, drawn only from the Cartridge
   (the sample's, plus what was changed in the sample brand kit this visit): its colors by role (`--c-page`, `--c-text`, `--c-accent`,
-  `--c-soft`, `--c-highlight`, `--c-ink`) and two typefaces; a sticky bar (logo, Menu, Our story, Visit, Order); the hero (a photo of the
-  space, Open now / Opens today at / Closed now worked out from the hours in Eastern time, the voice's website line, the two-sentence
-  story, See the menu, Order, Directions); a today strip (today's hours, address, tap to call, how Vegan); Favorites (items tagged
-  Favorite with photos first, three); Our story; the whole menu by section with photos and tags; the space (three pictures); Right now
-  (the voice's Instagram line, later the month's campaign); Visit (address, directions, details, the week's hours with today marked); a
-  footer with Managed by Vegans Explore BrandDesk; on phones a fixed Call / Directions / Order bar. It writes the Restaurant and its
-  menu as schema.org data. Order goes to their ordering link, else the menu. The brand kit's last slide links to it. Then the real store per listing, the frame, Launch (check, connect, build with previews,
+  `--c-soft`, `--c-highlight`, `--c-ink`) and two typefaces. **Pages, not one long page** (Sean, 2026-10-31: "why are we on a one pager";
+  a menu page and a visit page each answer their own search, and the menu has its own link to share): Home, Menu, Order, About and Visit
+  (`#/menu`, `#/order`, `#/about`, `#/visit`; the real store serves them as their own paths). Home: the hero (the outside by day, Open now /
+  Opens today at / Closed now from the hours in Eastern time, the voice's website line, the story, See the menu, Order, Directions), the
+  today strip, Favorites, Our story, **the space with toggles** (Outside, At night, Inside, The team: `photos.space[].set`), Right now,
+  Visit. **The menu** filters by section: tabs on desktop, a dropdown on phones (`.mtabs`, `.msel`), 4 to 6 items a section, every item
+  with its photo. **Ordering** (`info.ordering`): `state` `connected` is the point-of-sale version: Add on every item, a cart (quantities,
+  subtotal, tax, name, pickup time, a note, Pay and place order, which in the sample only shows the order number; live it goes to their
+  Square checkout and lands on their kitchen screen); otherwise Order opens their own ordering page. The sample bar switches the two
+  (`sessionStorage` `ve_site_order_mode`, the cart in `ve_site_cart`). **Visit**: address, directions and details | a Google map | the
+  week's hours with today marked. The footer: the **reversed logo** (`brand.logo.files` Reversed, `logo-reverse.png`), the pages, address,
+  today's hours, Managed by Vegans Explore BrandDesk, and Instagram, TikTok and Facebook (`info.links`). On phones a menu button and a fixed
+  Call / Directions / Order bar. It writes the Restaurant and its menu as schema.org data. Its 24 menu photos and 7 space photos
+  (`business/sample/img/m-*.webp`, `s-*.webp`, Higgsfield 2026-10-31, the same surface and angle for every dish, from the existing photos
+  as references; full size in `vegan-media/media/communities/green-leaf-kitchen/`, copied through `ve-off-lookup` `save`, which takes
+  pictures up to 12 MB). The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit

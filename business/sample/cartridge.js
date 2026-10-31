@@ -36,7 +36,7 @@
         voice: { state: 'locked', by: 'Owner', at: '2026-10-24' },
         story: { state: 'locked', by: 'Owner', at: '2026-10-26', note: 'Asked us to name the bakery down the street. Kept it unnamed until the bakery agrees.' },
         menu: { state: 'locked', by: 'Owner', at: '2026-10-27' },
-        photos: { state: 'in_progress', note: 'Four shot. The rest are booked.' },
+        photos: { state: 'locked', by: 'Owner', at: '2026-10-31', note: 'Every dish, drink and the space, shot to the standard. Illustrative photos for this sample.' },
         info: { state: 'locked', by: 'Owner', at: '2026-10-22' }
       },
       sources: ['Their old website (archived at intake)', 'Their Google profile', 'Their Instagram', 'The intake call', 'Their menu as printed']
@@ -59,7 +59,7 @@
         files: [
           { name: 'Primary, stacked, on cream', state: 'have' },
           { name: 'Primary, vector (SVG and PDF)', state: 'to_make' },
-          { name: 'Reversed, cream on forest', state: 'to_make' },
+          { name: 'Reversed, cream on forest', state: 'have', src: IMG + 'logo-reverse.png' },
           { name: 'The mark alone (the leaf and fork)', state: 'to_make' },
           { name: 'Wordmark on one line', state: 'to_make' },
           { name: 'Social sizes (profile, cover, story)', state: 'to_make' },
@@ -119,9 +119,18 @@
           { name: 'Sunrise Plate', price: '$15', tags: ['Favorite'], photo: { state: 'shot', src: IMG + 'photo-1.jpg' },
             was: 'Tofu scramble, crispy potatoes, sauteed greens and sourdough toast.',
             copy: 'Turmeric tofu scramble, crispy rosemary potatoes, garlicky greens and two slices of toasted sourdough. The one most people order first.' },
-          { name: 'Banana Oat Pancakes', price: '$13', tags: [], photo: { state: 'to_shoot' },
+          { name: 'Banana Oat Pancakes', price: '$13', tags: [], photo: { state: 'shot', src: IMG + 'm-pancakes.webp' },
             was: 'Three pancakes with maple, cinnamon cashew cream and berries.',
-            copy: 'A stack of three, golden at the edges, with warm maple, cinnamon cashew cream and fresh berries.' }
+            copy: 'A stack of three, golden at the edges, with warm maple, cinnamon cashew cream and fresh berries.' },
+          { name: 'Sunrise Burrito', price: '$13', tags: ['Spicy'], photo: { state: 'shot', src: IMG + 'm-burrito.webp' },
+            was: 'Tofu scramble, black beans, potatoes and salsa verde in a flour tortilla.',
+            copy: 'Turmeric tofu scramble, black beans and crispy potatoes rolled up with bright salsa verde. Breakfast you can carry.' },
+          { name: 'Smashed Avocado Toast', price: '$12', tags: [], photo: { state: 'shot', src: IMG + 'm-avotoast.webp' },
+            was: 'Avocado on sourdough with chili flakes, pickled onion and microgreens.',
+            copy: 'Smashed avocado on toasted sourdough with chili flakes, pickled red onion, microgreens and a squeeze of lime.' },
+          { name: 'Chickpea Frittata', price: '$14', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-frittata.webp' },
+            was: 'Chickpea frittata with spinach and roasted peppers, side salad.',
+            copy: 'A thick slice of golden chickpea frittata with spinach and roasted red peppers, and a little arugula salad.' }
         ] },
         { name: 'Bowls', items: [
           { name: 'Green Goddess Bowl', price: '$16', tags: ['Gluten-free', 'Favorite'], photo: { state: 'shot', src: IMG + 'photo-2.jpg' },
@@ -129,32 +138,67 @@
             copy: 'Fluffy quinoa, charred broccoli, crispy roasted chickpeas and half an avocado under a bright herb tahini.' },
           { name: 'Jerk Jackfruit Bowl', price: '$17', tags: ['Gluten-free', 'Spicy'], photo: { state: 'shot', src: IMG + 'photo-3.jpg' },
             was: 'Jerk jackfruit, coconut rice and beans, plantains and mango slaw.',
-            copy: 'Slow-cooked jerk jackfruit with coconut rice and beans, sweet fried plantains and a crunchy mango slaw.' }
+            copy: 'Slow-cooked jerk jackfruit with coconut rice and beans, sweet fried plantains and a crunchy mango slaw.' },
+          { name: 'Peanut Tofu Noodle Bowl', price: '$16', tags: [], photo: { state: 'shot', src: IMG + 'm-noodles.webp' },
+            was: 'Rice noodles, crispy tofu, cabbage, carrots, edamame, cucumber and peanut sauce.',
+            copy: 'Rice noodles with crispy tofu, crunchy cabbage, carrots, edamame and cucumber, tossed in our creamy peanut sauce.' },
+          { name: 'Burrito Bowl', price: '$15', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-burritobowl.webp' },
+            was: 'Cilantro lime rice, black beans, corn salsa, pico, guacamole and crispy tofu.',
+            copy: 'Cilantro lime rice, black beans, charred corn salsa, pico de gallo, crispy tofu and a big scoop of guacamole.' },
+          { name: 'Mango Acai Bowl', price: '$13', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-acai.webp' },
+            was: 'Acai with mango, banana, granola and coconut.',
+            copy: 'Thick, cold acai topped with mango, banana, house granola and toasted coconut.' }
         ] },
         { name: 'Sandwiches', items: [
-          { name: 'Smoky Tempeh Club', price: '$15', tags: [], photo: { state: 'to_shoot' },
+          { name: 'Smoky Tempeh Club', price: '$15', tags: [], photo: { state: 'shot', src: IMG + 'm-club.webp' },
             was: 'Smoked tempeh, lettuce, tomato and chipotle aioli on toasted sourdough.',
             copy: 'Smoky tempeh stacked with crisp lettuce, ripe tomato and chipotle aioli on toasted sourdough.' },
-          { name: 'Buffalo Cauliflower Wrap', price: '$14', tags: ['Spicy'], photo: { state: 'to_shoot' },
+          { name: 'Buffalo Cauliflower Wrap', price: '$14', tags: ['Spicy'], photo: { state: 'shot', src: IMG + 'm-wrap.webp' },
             was: 'Crispy buffalo cauliflower, ranch, celery and greens in a spinach wrap.',
-            copy: 'Crispy buffalo cauliflower with cool ranch, celery and greens, rolled in a spinach wrap.' }
+            copy: 'Crispy buffalo cauliflower with cool ranch, celery and greens, rolled in a spinach wrap.' },
+          { name: 'Chickpea Salad Melt', price: '$14', tags: ['Favorite'], photo: { state: 'shot', src: IMG + 'm-melt.webp' },
+            was: 'Chickpea salad, vegan cheddar and tomato, grilled on sourdough.',
+            copy: 'Our dill chickpea salad and tomato under melted cheddar, grilled on sourdough until it crackles.' },
+          { name: 'BBQ Jackfruit Sandwich', price: '$15', tags: [], photo: { state: 'shot', src: IMG + 'm-bbq.webp' },
+            was: 'Pulled BBQ jackfruit with slaw on a toasted bun.',
+            copy: 'Pulled BBQ jackfruit piled high with crunchy slaw on a toasted bun. Bring napkins.' },
+          { name: 'Pesto Veggie Panini', price: '$14', tags: [], photo: { state: 'shot', src: IMG + 'm-panini.webp' },
+            was: 'Pesto, roasted zucchini, peppers, spinach and mozzarella, pressed.',
+            copy: 'Basil pesto, roasted zucchini and peppers, spinach and melty mozzarella, pressed hot and crisp.' }
         ] },
         { name: 'Drinks', items: [
-          { name: 'Oat Milk Latte', price: '$5', tags: ['Gluten-free'], photo: { state: 'to_shoot' },
+          { name: 'Oat Milk Latte', price: '$5', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-latte.webp' },
             was: 'Espresso and steamed oat milk. Hot or iced.',
             copy: 'A double shot and silky steamed oat milk. Hot or iced.' },
-          { name: 'Green Machine Smoothie', price: '$9', tags: ['Gluten-free'], photo: { state: 'to_shoot' },
+          { name: 'Iced Matcha Latte', price: '$6', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-matcha.webp' },
+            was: 'Matcha and oat milk over ice.',
+            copy: 'Bright ceremonial matcha poured over oat milk and ice.' },
+          { name: 'Cold Brew', price: '$5', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-coldbrew.webp' },
+            was: 'Cold brew coffee over ice, oat milk on request.',
+            copy: 'Steeped overnight, smooth and strong, over ice. Add a splash of oat milk.' },
+          { name: 'Green Machine Smoothie', price: '$9', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-smoothie.webp' },
             was: 'Spinach, mango, banana, ginger and coconut water.',
-            copy: 'Spinach, mango, banana and fresh ginger blended with coconut water. Green, cold and sweeter than it looks.' }
+            copy: 'Spinach, mango, banana and fresh ginger blended with coconut water. Green, cold and sweeter than it looks.' },
+          { name: 'Hibiscus Lemonade', price: '$5', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-hibiscus.webp' },
+            was: 'Hibiscus tea and fresh lemonade over ice.',
+            copy: 'Ruby red hibiscus and fresh-squeezed lemonade over ice, with a sprig of mint.' }
         ] },
         { name: 'Sweets', items: [
-          { name: 'Key Lime Cheesecake', price: '$8', tags: ['Favorite'], photo: { state: 'to_shoot' },
+          { name: 'Key Lime Cheesecake', price: '$8', tags: ['Favorite'], photo: { state: 'shot', src: IMG + 'm-cheesecake.webp' },
             was: 'Cashew key lime cheesecake on a graham crust.',
-            copy: 'Our cashew Key lime cheesecake on a buttery graham crust. Tart, creamy, and worth the drive.' }
+            copy: 'Our cashew Key lime cheesecake on a buttery graham crust. Tart, creamy, and worth the drive.' },
+          { name: 'Chocolate Chip Cookie', price: '$4', tags: [], photo: { state: 'shot', src: IMG + 'm-cookie.webp' },
+            was: 'Big chocolate chip cookie with sea salt.',
+            copy: 'Big, soft in the middle, crisp at the edge, with dark chocolate and a pinch of sea salt.' },
+          { name: 'Banana Bread', price: '$5', tags: [], photo: { state: 'shot', src: IMG + 'm-bananabread.webp' },
+            was: 'Banana bread with walnuts.',
+            copy: 'A thick slice of banana bread with walnuts and a caramelized top. Ask us to warm it.' },
+          { name: 'Coconut Mango Pudding', price: '$7', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-pudding.webp' },
+            was: 'Coconut chia pudding with mango.',
+            copy: 'Creamy coconut chia pudding layered with fresh mango and toasted coconut.' }
         ] }
       ]
     },
-
     photos: {
       spec: {
         angles: 'Every item twice: three-quarter (about 45 degrees) and straight overhead.',
@@ -164,15 +208,16 @@
         crops: '4:5 for the menu and Instagram, 1:1 for the delivery apps, 16:9 for the website hero. Full size, at least 3000 px on the long side.',
         plate: 'Plated the way it leaves the kitchen, wiped rims, sauce where the cook puts it. Never styled bigger than it is served.'
       },
+      // Each shot has a set, so the website can show Outside, At night, Inside and The team as toggles.
       space: [
-        { shot: 'Outside by day, the whole front and the sign', state: 'to_shoot' },
-        { shot: 'Outside at dusk, lights on', state: 'to_shoot' },
-        { shot: 'The room wide, from the front corner', state: 'shot', src: IMG + 'photo-4.jpg' },
-        { shot: 'The room wide, from the back corner', state: 'to_shoot' },
-        { shot: 'The counter and the pastry case', state: 'to_shoot' },
-        { shot: 'Details: the plants, the coffee bar, the chalkboard', state: 'to_shoot' },
-        { shot: 'The owner at the counter', state: 'to_shoot' },
-        { shot: 'The team, all together', state: 'to_shoot' }
+        { shot: 'Outside by day, the whole front and the sign', set: 'outside', state: 'shot', src: IMG + 's-outside-day.webp' },
+        { shot: 'Outside at dusk, lights on', set: 'night', state: 'shot', src: IMG + 's-outside-dusk.webp' },
+        { shot: 'The room wide, from the front corner', set: 'inside', state: 'shot', src: IMG + 'photo-4.jpg' },
+        { shot: 'The room wide, from the back corner', set: 'inside', state: 'shot', src: IMG + 's-room-back.webp' },
+        { shot: 'The counter and the pastry case', set: 'inside', state: 'shot', src: IMG + 's-counter.webp' },
+        { shot: 'Details: the plants and the coffee bar', set: 'inside', state: 'shot', src: IMG + 's-details.webp' },
+        { shot: 'The owner at the counter', set: 'team', state: 'shot', src: IMG + 's-owner.webp' },
+        { shot: 'The team, all together', set: 'team', state: 'shot', src: IMG + 's-team.webp' }
       ]
     },
 
@@ -182,8 +227,8 @@
       email: 'hello@example.com',
       hours: { Monday: '8 AM to 3 PM', Tuesday: '8 AM to 3 PM', Wednesday: '8 AM to 3 PM', Thursday: '8 AM to 9 PM', Friday: '8 AM to 10 PM', Saturday: '9 AM to 10 PM', Sunday: '9 AM to 3 PM' },
       details: ['Patio seating', 'Wheelchair accessible', 'Street parking and a lot behind the building', 'Dogs welcome on the patio'],
-      links: { website: 'https://example.com/green-leaf-kitchen', instagram: '@greenleafkitchen (sample)', google: 'Claimed, we are a manager', directory: '/business/sample' },
-      ordering: { pos: 'Square', state: 'to_connect', order_url: null, note: 'They ring up on Square. Menu sync and online orders come with the Square connection.' }
+      links: { website: 'https://example.com/green-leaf-kitchen', instagram: 'https://instagram.com/', tiktok: 'https://tiktok.com/', facebook: 'https://facebook.com/', google: 'Claimed, we are a manager', directory: '/business/sample' },
+      ordering: { pos: 'Square', state: 'connected', order_url: null, pickup_minutes: 20, note: 'They ring up on Square. Orders from the website go straight to their Square screen; the menu and prices stay in step.' }
     }
   };
 })();
