@@ -550,7 +550,32 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (initiative `branddesk`, `tier_label` the business, `note` what they want, tags `branddesk`, `from-<page>`, `fix-<id>`, `wants-<x>`),
   an email to the team (reply-to them) and a confirmation to them from Vegans Explore. The Inbox shows it as a **Managed marketing
   request** (migration `20261031_branddesk_requests_inbox.sql`; a business starting [TEST] stays out of the Inbox and sends no email).
-  Nothing is charged: the setup checkout comes with the contract and Stripe step. The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  Nothing is charged there.
+  **The contract and Stripe** (built 2026-10-31; Sean: "approve both", test mode first and the agreement as a draft for the lawyer;
+  migration `20261031_branddesk_accounts.sql`, edge function `ve-branddesk`). **`/business/agreement`** (`business/agreement.html`,
+  `noindex`) is the Managed Marketing Agreement, version `2026-10-31-draft` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together),
+  written from the locked terms, its open questions in yellow notes with the answer written in (30 days' notice after 12 months; on an
+  early end only the unpaid setup is owed; work pauses 14 days after a missed payment, the agreement may end at 30; Florida law), marked
+  Draft for legal review. **`/business/managed?listing=<slug>`** (`business/managed.html`, `noindex`; the reveal's I'm ready lands here)
+  is three steps (`?step=`): Your plan (the setup at once, in 3 x $500 or 6 x $250; social +$500; what is due today and each month),
+  The agreement (the key points, the full text, full name typed and I agree ticked), Review and pay (Stripe Checkout). Back with
+  `&status=done` it waits for the account and welcomes them; a client already with us sees their plan and can **Pause** (1 to 3 months)
+  or cancel a pause set. Signed out: sign in; a listing not opened yet: Talk to our team. **Checkout opens only for listings Sean opens**
+  (`ve_site_settings` `branddesk.allowed`, `ve-branddesk` `allow`) and for super admins. **Stripe**: one subscription per client
+  (`ve_branddesk_accounts`: plan, social, status checkout | active | paused | canceling | ended | abandoned, Stripe ids, the signature
+  with name, time, address and version; RLS on, no policies), priced from reusable Prices found by lookup key (`bd_monthly_v1`,
+  `bd_social_v1`, `bd_setup_v1` one-time, `bd_setup3_v1`, `bd_setup6_v1`, `bd_pause_v1`; made once per Stripe account by the function).
+  Installments are their own monthly item, and a subscription schedule takes it off after 3 or 6 payments; **Pause** is a schedule too
+  (from the next billing date, $99 for the months asked, then back, at most 3 months in 12, not while the setup is being paid);
+  `cancel` (super admin) ends at the period's end and says what setup is still owed. The function pins `Stripe-Version` 2024-06-20 (the
+  LESARUSS test account's default answers schedules with `plans`). The return trip and ve-stripe-webhook (`metadata.type` `ve_branddesk`,
+  `confirm_fn` `ve-branddesk`) activate the account once and email the client and the team. **Test mode** (the LESARUSS test key) until
+  `branddesk.live` is true: Sean's go-live word after he reads the agreement. Proven 2026-10-31 in test mode through `ops_test_activate`
+  (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
+  full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a
+  second refused, cancelled cleanly; cancel reported $1,000 still owed; a real Checkout session opened, an unpaid return went back as
+  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed. Not yet: a Depot view of
+  accounts (`list` answers), the welcome steps after payment (onboarding, website archive, Library). The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
