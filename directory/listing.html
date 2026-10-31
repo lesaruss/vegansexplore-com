@@ -3000,7 +3000,9 @@ function ppPromo(l){
   var p = personOf(l), m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
   var held = !!(l.owner_member_id || p.member_id), mine = !!(m && (m.id === l.owner_member_id || m.id === p.member_id));
   if(mine) return;
-  function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug }); }
+  // A creator claims through the creator application; anyone else in People sends the short claim (Sean, 2026-10-31).
+  var creator = l.category === 'Content Creators' || (l.extra_categories || []).indexOf('Content Creators') >= 0;
+  function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug, form: !creator }); }
   if(window.VEPromo) return go();
   var s = document.createElement('script'); s.src = '/public/ve-promo.js'; s.onload = go; document.head.appendChild(s);
 }
