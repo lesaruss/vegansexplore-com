@@ -1,12 +1,12 @@
 // ve-branddesk: signing a business up for managed marketing (BrandDesk, canon canon-ve-front-of-house; the contract and Stripe step,
-// Sean approved 2026-10-31: "approve both", test mode first and the agreement as a draft for the lawyer).
+// Sean approved 2026-10-31: "approve both", then went live the same day: "go live, I was able to review it, and I'm okay with the terms").
 //
 // Money (canon): $1,500 setup, at once or as 3 x $500 or 6 x $250 a month; $500 a month; social +$500 a month for two platforms;
 // pause up to 3 months a year at $99 a month. 12 months, then month to month (the agreement, /business/agreement).
 // Stripe: one subscription per client, priced from reusable Prices found by lookup key (made once per Stripe account, BD below).
 // Installments ride on the subscription as their own monthly item and a subscription schedule takes that item off after 3 or 6
-// payments; a pause is a schedule too (from the next billing date, the $99 price for 1 to 3 months, then back). Test mode
-// (the LESARUSS test key) until ve_site_settings branddesk.live is true, which waits for Sean's go-live word.
+// payments; a pause is a schedule too (from the next billing date, the $99 price for 1 to 3 months, then back). Live (the
+// Vegans Explore key) while ve_site_settings branddesk.live is true (since 2026-10-31); false puts it back on the LESARUSS test key.
 // Checkout opens only for listings in ve_site_settings branddesk.allowed (Sean opens them one at a time, "with his approval"), and
 // always for super admins (testing).
 //
@@ -32,7 +32,7 @@ const SITE = 'https://vegansexplore.com';
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const TEAM_EMAIL = 'contact@lesaruss.com';
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
-export const AGREEMENT_VERSION = '2026-10-31-draft';
+export const AGREEMENT_VERSION = '2026-10-31';
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, GET, OPTIONS' };
 const json = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, n);

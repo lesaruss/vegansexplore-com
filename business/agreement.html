@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- The client agreement for managed marketing (BrandDesk, canon canon-ve-front-of-house, written 2026-10-31 from the locked terms).
-       A DRAFT for the lawyer: the yellow boxes are open questions, each with the default written in. The version here must match
+       Approved by Sean 2026-10-31 (live). A change is a new version: the version here must match
        AGREEMENT_VERSION in supabase/functions/ve-branddesk/index.ts, which records the version each client signs. -->
   <style>
     body{margin:0;background:#fff;color:#14261a;font-family:Montserrat,system-ui,sans-serif;}
@@ -21,15 +21,11 @@
     .toc a:hover{color:#1E7A3E;}
     .doc h1{font-size:clamp(30px,3.6vw,44px);font-weight:900;margin:0 0 8px;line-height:1.1;}
     .doc .meta{font-size:13px;color:rgba(0,0,0,.6);margin:0 0 18px;}
-    .draft{background:#FFF4D6;border:1px solid #F1D28A;border-radius:12px;padding:14px 18px;font-size:14px;line-height:1.55;max-width:860px;margin:0 0 28px;}
-    .draft b{color:#7a4f00;}
     .doc section{padding-top:8px;margin-bottom:30px;scroll-margin-top:calc(var(--ve-nav-h,72px) + 16px);}
     .doc h2{font-size:21px;font-weight:900;margin:0 0 10px;}
     .doc p,.doc li{font-size:15px;line-height:1.7;max-width:860px;}
     .doc ul{padding-left:20px;margin:0 0 12px;}
     .doc li{margin:0 0 6px;}
-    .note{background:#FFF8E6;border-left:4px solid #E0A030;border-radius:6px;padding:10px 14px;font-size:13.5px;line-height:1.55;max-width:860px;margin:10px 0 0;}
-    .note b{color:#7a4f00;}
     .price{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;max-width:860px;margin:6px 0 12px;}
     .price div{border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:14px 16px;}
     .price strong{display:block;font-size:22px;font-weight:900;color:#1E7A3E;}
@@ -49,8 +45,7 @@
     <a href="#late">12. Payments that fail</a><a href="#fine">13. The fine print</a><a href="#signing">14. Signing</a></nav></aside>
   <div class="doc">
     <h1>Managed Marketing Agreement</h1>
-    <p class="meta">Version 2026-10-31-draft · Vegans Explore, a brand of LESARUSS Inc.</p>
-    <div class="draft"><b>Draft for legal review.</b> This is written from the terms we have set and is not yet approved by counsel. Until it is, checkout runs in test mode and no card is charged. The yellow notes are open questions, each with the answer we wrote in for now.</div>
+    <p class="meta">Version 2026-10-31 · Vegans Explore, a brand of LESARUSS Inc.</p>
 
     <section id="parties"><h2>1. Who this is between</h2>
       <p>This agreement is between LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301, doing business as Vegans Explore ("we", "us"), and the business named when you sign ("you").</p>
@@ -82,12 +77,10 @@
       <p>Your prices stay as signed for your first 12 months.</p></section>
 
     <section id="term"><h2>4. How long it runs</h2>
-      <p>The first term is 12 months from the day you sign. After that it continues month to month, and either of us can end it with 30 days' notice in writing.</p>
-      <div class="note"><b>Open question:</b> the notice period after the first 12 months. Written in: 30 days.</div></section>
+      <p>The first term is 12 months from the day you sign. After that it continues month to month, and either of us can end it with 30 days' notice in writing.</p></section>
 
     <section id="early"><h2>5. Ending it early</h2>
-      <p>You can end the agreement in the first 12 months by telling us in writing at contact@lesaruss.com. The service ends at the end of the month you have already paid for. Any part of the setup fee not yet paid becomes due.</p>
-      <div class="note"><b>Open question:</b> whether the monthly fees for the rest of the first 12 months are owed on an early end. Our terms say only that the rest of the setup is owed. Written in: they are not owed.</div></section>
+      <p>You can end the agreement in the first 12 months by telling us in writing at contact@lesaruss.com. The service ends at the end of the month you have already paid for. Any part of the setup fee not yet paid becomes due.</p></section>
 
     <section id="pause"><h2>6. Pausing</h2>
       <p>You can pause for up to 3 months in any 12 months, for $99 a month. A pause starts on your next billing date and ends on its own. While paused, your website and your Library stay up, and we stop managing. You can pause once your setup is paid in full.</p></section>
@@ -118,15 +111,13 @@
       <p>We work hard to grow your business, but we cannot promise sales, ratings or search rankings. Being a client never buys a higher place in the Vegans Explore Directory: your page can wear your brand, and the order still comes from member votes.</p></section>
 
     <section id="late"><h2>12. Payments that fail</h2>
-      <p>If a payment fails, Stripe tries again and we let you know. If a payment is still unpaid 14 days after it was due, we pause our work (your website stays up) until it is paid. After 30 days unpaid, we may end the agreement as an early end under section 5.</p>
-      <div class="note"><b>Open question:</b> the 14 and 30 days. Written in as our default.</div></section>
+      <p>If a payment fails, Stripe tries again and we let you know. If a payment is still unpaid 14 days after it was due, we pause our work (your website stays up) until it is paid. After 30 days unpaid, we may end the agreement as an early end under section 5.</p></section>
 
     <section id="fine"><h2>13. The fine print</h2>
-      <p>After your first 12 months, we give you 30 days' notice of any price change. This agreement is governed by the laws of Florida. It is the whole agreement between us about managed marketing; a change needs both of us in writing (email counts).</p>
-      <div class="note"><b>For counsel:</b> limits on liability, indemnity, how this ties to our Privacy Policy (/policies#privacy), and any clauses needed for a business that is outside Florida.</div></section>
+      <p>After your first 12 months, we give you 30 days' notice of any price change. This agreement is governed by the laws of Florida. It is the whole agreement between us about managed marketing; a change needs both of us in writing (email counts).</p></section>
 
     <section id="signing"><h2>14. Signing</h2>
-      <div class="sign">You sign at checkout by typing your full name and ticking "I agree to the Managed Marketing Agreement". We keep a record of your name, the date and time, this version (2026-10-31-draft) and the address you signed from, and send you a copy by email.</div></section>
+      <div class="sign">You sign at checkout by typing your full name and ticking "I agree to the Managed Marketing Agreement". We keep a record of your name, the date and time, this version (2026-10-31) and the address you signed from, and send you a copy by email.</div></section>
   </div>
 </main>
 <script src="/public/footer.js"></script>
