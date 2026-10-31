@@ -38,11 +38,11 @@
       '.vebd-sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;}.vebd-sub a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.18);color:#14261a;text-decoration:none;background:#fff;}' +
       '.vebd-sub a.on{border-color:var(--vb-accent,#1E7A3E);box-shadow:inset 0 -3px 0 var(--vb-accent,#1E7A3E);}' +
       '.vebd-card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:16px 18px;margin:0 0 16px;}' +
-      '.vebd-soc{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;}.vebd-soc-pics{display:grid;grid-template-columns:1fr 1fr;gap:4px;}' +
+      '.vebd-list li.vebd-soc{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;justify-content:stretch;}.vebd-form[hidden]{display:none;}.vebd-form textarea{font:inherit;font-size:14px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box;}.vebd-soc-pics{display:grid;grid-template-columns:1fr 1fr;gap:4px;}' +
       '.vebd-soc-pics .th{display:block;aspect-ratio:1;border-radius:8px;background:#eef1ee center/cover no-repeat;}.vebd-soc-pics .th:only-child{grid-column:1/-1;}' +
       '.vebd-soc-pics .th.none{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#555;text-transform:capitalize;grid-column:1/-1;}' +
       '.vebd-soc-cap{font-size:14.5px;line-height:1.55;margin:8px 0 0;white-space:normal;}.vebd-soc-ask{margin-top:10px;}.vebd-soc-ask .vebd-form{margin-top:10px;}' +
-      '@media(max-width:560px){.vebd-soc{grid-template-columns:84px minmax(0,1fr);gap:10px;}}' +
+      '@media(max-width:560px){.vebd-list li.vebd-soc{grid-template-columns:84px minmax(0,1fr);gap:10px;}}' +
       '.vebd h4{font-size:15px;font-weight:900;margin:0 0 10px;}.vebd p{font-size:14px;line-height:1.6;margin:0 0 10px;}' +
       '.vebd-muted{color:rgba(0,0,0,.62);font-size:13px;}.vebd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}' +
       '.vebd-step{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px 0;border-top:1px solid rgba(0,0,0,.07);}' +
