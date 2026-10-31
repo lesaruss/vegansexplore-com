@@ -224,7 +224,7 @@
     overview: 'Hi, I\'m Kai. I make Vegan food and fitness videos in Miami, and this is my Creator Dashboard. Press Next and I\'ll show you around: the gigs, the ones I\'m in, my media kit and how you rise. At the end, you can apply.',
     dashboard: 'This is what I see when I sign in: the gigs open to me, the ones I\'m in, how complete my media kit is and where I stand. Tap any tile to jump in.',
     board: 'Every gig our partners post lands here. Filter by pay, kind and city, open one to see what it asks, and check whether you qualify. Try applying. Nothing is sent in the demo.',
-    mine: 'Everything I applied to, auditioned for or got booked on lives here, by status, with what happens next. Anything you tried on Open gigs shows up here too.',
+    mine: 'Everything I applied to, auditioned for or got booked on is right here, by status, with what happens next. Anything you tried on Open gigs shows up here too.',
     'profile-you': 'My media kit is the page partners judge me by. This is how I see it, with what would make it stronger. Press Next to see it the way others do.',
     'profile-partner': 'This is what a brand sees once I\'m shortlisted. No rates and no contact details. They book me through Vegans Explore.',
     'profile-public': 'This is my page in the People directory, my link in bio. No rates, results or audience numbers.',
@@ -240,6 +240,8 @@
   // One player for the page. The first Play turns Kai's voice on for the visit (sessionStorage ve_kai_voice); from then on every new
   // view plays its line by itself (cue), and Pause turns it off. Any button with data-kai-voice="<key>" plays or pauses that line.
   var VOICE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/creator-guide/kai-';
+  // A line recorded again plays its newer take (Sean, 2026-10-31: "lives here" was read as the verb, so those lines say "is right here").
+  var VOICE_VER = { mine: 2, 'tab-mylist': 2 };
   var voice = (function () {
     var a = null, cur = '', cued = '';
     function isOn() { try { return sessionStorage.getItem('ve_kai_voice') === '1'; } catch (e) { return false; } }
@@ -254,7 +256,7 @@
     }
     function play(key) {
       if (!a) { a = new Audio(); a.preload = 'auto'; ['play', 'pause', 'ended'].forEach(function (ev) { a.addEventListener(ev, sync); }); }
-      if (cur !== key) { cur = key; a.src = VOICE_URL + key + '-v1.mp3'; } else if (a.ended) a.currentTime = 0;
+      if (cur !== key) { cur = key; a.src = VOICE_URL + key + '-v' + (VOICE_VER[key] || 1) + '.mp3'; } else if (a.ended) a.currentTime = 0;
       var pr = a.play(); if (pr && pr.catch) pr.catch(function () { sync(); });
     }
     function stop() { if (a && !a.paused) a.pause(); }
