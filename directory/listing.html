@@ -4565,15 +4565,36 @@ function houseAd(l){
 // throughout the directory on the different listings"): a food place or food brand shows the Dairy Guide, anything else one of the
 // three at random. /public/ve-promo.js draws it and counts it as a house ad (ad_impressions, campaign ve-house-banners) and through its
 // tracked /go/ link; a demo shows it without counting.
-function guideBanner(l){
+// It never shows the Guide the listing's Guide tab shows (canon-ve-listing-guide-tab, Sean 2026-10-31): a food place's tab is the
+// Dairy Guide, so its banner is the Airport or Stadium & Arena Guide.
+function guideBanner(l, tabGuide){
   var el = document.getElementById('ve-house-banner'); if(!el) return;
   function go(){
-    var all = VEPromo.guides || ['airport-guide', 'vegan-dairy-guide', 'stadium-arena-guide'];
-    var slug = FOOD_CATS.indexOf(l.category) >= 0 ? 'vegan-dairy-guide' : all[Math.floor(Math.random() * all.length)];
+    var all = (VEPromo.guides || ['airport-guide', 'vegan-dairy-guide', 'stadium-arena-guide']).filter(function(s){ return s !== tabGuide; });
+    var slug = all[Math.floor(Math.random() * all.length)];
     VEPromo.guideCard(el, slug, { page: '/directory/' + (l.slug || ''), listing_id: l.id || null, preview: typeof DEMO !== 'undefined' && !!DEMO });
   }
   if(window.VEPromo && VEPromo.guideCard) return go();
   var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=2'; s.onload = go; document.head.appendChild(s);
+}
+
+// The Guide tab on every listing (LOCKED by Sean 2026-10-31, canon-ve-listing-guide-tab): a short squeeze page for the Guide that
+// fits this listing (/public/ve-guide-tab.js), for everyone, before Partner Dashboard; a food place's owner and super admins also
+// get the Vegan Restaurant Guide there. Loaded after the page shows, then the right column's banner, which never repeats it.
+// Not on another brand's site (LESARUSS.ai has its own Guides).
+function loadGuideTab(l){
+  function side(tg){ if(l._brandSite) houseAd(l); else if(!isPersonL(l)) guideBanner(l, tg); }
+  if(VB){ side(null); return; }
+  function go(){
+    var m = null; try{ m = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; }catch(e){}
+    var owner = !!(m && (m.id === l.owner_member_id || m.id === l.claimed_by_member_id));
+    var admin = !!(m && m.is_superadmin && window.VEAuth && VEAuth.getMember && VEAuth.getMember());
+    var p = null; try{ p = VEGuideTab.mount(l, { owner: owner, admin: admin, preview: !!DEMO }); }catch(e){}
+    side(p ? p.primary : null);
+  }
+  if(window.VEGuideTab) return go();
+  var s = document.createElement('script'); s.src = '/public/ve-guide-tab.js?v=1'; s.onload = go; s.onerror = function(){ side(null); };
+  document.head.appendChild(s);
 }
 
 function veAdClick(placementId, campaignId){
@@ -4924,7 +4945,7 @@ if(!slug || slug === 'listing'){
           if(body && hero){ body.appendChild(ib); hero.classList.add('has-vla'); }
         }
       }
-      if(l._brandSite) houseAd(l); else if(!isPersonL(l)) guideBanner(l);
+      loadGuideTab(l);
       veTrack(l, 'view');
       trackActions(l);
       ownerVerifiedCard(l);

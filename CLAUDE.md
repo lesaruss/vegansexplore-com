@@ -177,9 +177,10 @@ only banner on the right-hand side... remove the humble cabbage... make sure we'
 many times they clicked it... follow-up communications"; migration `20261031_house_banners.sql`). A Directory listing's right column
 has no billboard or Humble Cabbage any more: a **People page** shows only "Is this you?" and the **Become a creator** banner, and **every
 other listing** (not a brand page, which keeps its Guide house ad) shows one animated **Guide banner** (`guideBanner` in
-`directory/listing.html`, `VEPromo.guideCard` and `GUIDE_ADS` in `public/ve-promo.js`): the Vegan Dairy Guide on a food place or food
-brand (`FOOD_CATS`), else the Airport, Dairy or Stadium & Arena Guide at random; four scenes from the Guide's own art, a headline each, a
-line and Get the <Guide> · $11. A demo page shows it without counting (`preview`). **Tracked as ads**: the sponsor campaign
+`directory/listing.html`, `VEPromo.guideCard` and `GUIDE_ADS` in `public/ve-promo.js`): the Airport, Dairy or Stadium & Arena Guide at
+random; four scenes from the Guide's own art, a headline each, a
+line and Get the <Guide> · $11; never the Guide the listing's Guide tab shows (below), so a food place's is the Airport or Stadium &
+Arena Guide. A demo page shows it without counting (`preview`). **Tracked as ads**: the sponsor campaign
 `ve-house-banners` (Vegans Explore) holds a campaign per banner, linked to two placements, the listing's right column
 (`ve-listing-house-banner`) and the People page's (`ve-people-house-banner`), with their own `page_slug` so `ad-resolve` never counts
 them; the page counts a view (the banner on screen, bots left out) and a click into `ad_impressions` through `ve_house_ad_count`, which
@@ -2328,6 +2329,36 @@ Directory is their chapter's).
 - **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
+
+## The Guide tab on every listing (LOCKED by Sean 2026-10-31, playbook `ve-listing-guide-tab`)
+
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-listing-guide-tab`; migration
+`20261031_listing_guide_tab_canon.sql`). **Built 2026-10-31** (Sean: "hand it to Logan, build it"): `/public/ve-guide-tab.js`
+(`VEGuideTab.pick`, `VEGuideTab.mount`; `GUIDES` and `MAP` there), loaded after the page shows by `loadGuideTab` in
+`directory/listing.html`, which then draws the right column's banner. Not on LESARUSS.ai (`VB`). A demo page shows it without
+counting. Ownership is `ve-guide-unlock` `status`. Views and clicks are `ve_promo_events`, promo `gt-<guide slug>`, cta `tab`, with the
+listing (`ve_promo_funnel('gt-vegan-dairy-guide', since)`). **Depot > Analytics > Guide tabs** (`#guidetabs`, built 2026-10-31,
+Sean: "build the Depot view for the Guide tab numbers") shows them for the page's period against the one before: By Guide (saw it,
+before, change, clicked, click rate, how many listings) and By listing (each listing's Guide, saw it, clicked, click rate), people
+counted once each; `ve_guide_tab_stats(from, to, prev_from, prev_to)` (migration `20261031_guide_tab_stats.sql`, service role only)
+through `ve-analytics` `guide_tabs`. `?tab=guide` opens it. Sean: "this is how we can
+continue to put those guides in front of people's faces. And if they already purchased it, it's right there in front of them."
+
+- **Every listing gets a Guide tab, for everyone**, named for its Guide (Dairy Guide, Creator Guide): a short squeeze page (the
+  Guide's banner, its one line, three or four things inside, **Open the Guide** to the full Guide page in the same window, never
+  framed). Someone who owns the Guide sees **Open your Guide** and no price box.
+- **The Partner Dashboard stays its own tab**, right after the Guide tab, for the owner and super admins (and a brand on its door
+  link, as today). Super admins see the Guide tab too.
+- **The map** (one table in one file, a new Guide is one row): food places and Food Brands, the Vegan Dairy Guide; Content Creators,
+  YouTube and Podcasts, the Creator Guide; Activists, Nonprofits, Rescues and Sanctuaries, the Nonprofit Guide; Groups, the Group
+  Partner Guide; Nutrition & Supplements, Physicians and Health Experts, the Nutrition Guide once it exists (Dairy until then);
+  anything else, the Welcome Guide (the Passport Guide).
+- **Restaurants**: visitors see the Dairy Guide; the owner and super admins also see the Vegan Restaurant Guide on that tab.
+- **No repeat**: the right column's house banner (`guideBanner`) never shows the tab's Guide; with the Dairy Guide on the tab it
+  rotates to another Guide (Airport, Stadium & Arena).
+- **Guides to make**: sections with no real match (Nutrition, Products such as clothing and beauty, Services, Studios), Nutrition
+  first.
+- Tracked like the house banners: views and clicks per Guide per listing.
 
 ## Media (Sean, 2026-10-27)
 
