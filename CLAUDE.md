@@ -185,7 +185,7 @@ takes only this sponsor's campaigns. **Members by name**: each banner leaves thr
 for `/dashboard/leads` (filter the campaign ve-house-banners and the Guide's tag, export for follow-ups). A new Guide banner is a
 `GUIDE_ADS` entry, an `ad_campaigns` row under the sponsor, its `ad_campaign_placements` row and its `/go/` link.
 
-**Our Guides fill every rail slot; Humble Cabbage is retired for now** (Sean, 2026-10-31: "we should have the majority of our ads be the
+**Our Guides fill the rails, Humble Cabbage the second of each pair** (Sean, 2026-10-31: "we should have the majority of our ads be the
 guides instead of Humble Cabbage, because that is a better front door... just make them all our guides, but just create an assortment of
 them around the different places"; migration `20261031_guide_ads_retire_humble_cabbage.sql`). Every Humble Cabbage campaign and its sponsor
 campaign are `paused` (kept for their history; one set back to active returns that slot). Six rail campaigns under the house sponsor
@@ -195,7 +195,11 @@ line on a tall slot, Get the <Guide> · $11; it fits any slot, and drops the lin
 (`ve-guide-dairy`, `-restaurant`, `-stadium`, `-airport`, `-nonprofit`, `-creator`). Each slot carries one Guide, spread so neighbouring
 slots differ and the Stadium & Arena Guide shows only in chapters with mapped venues (the plan is in the migration). `ad-resolve` counts the
 impression and `ad-click` the click by slot, and `ve-links` names the member who clicked (campaign ve-house-banners on `/dashboard/leads`).
-A new Guide ad is a `G` entry in `guide.html`, an `ad_campaigns` row under the sponsor, its `/go/` link and the slots it takes. A real
+**Then, the same day** (Sean: "on the ones that have the two smaller ads together, make one of them humble cabbage... it's a little
+distracting seeing both of them move at the same time... The longer ones that are the guides can stay"; migration
+`20261031_pairs_humble_cabbage_second.sql`): every pair of 300 x 250s (`ve-directory-landscape-2` and each `ve-<chapter>-hub-landscape-2`)
+shows that slot's own Humble Cabbage campaign again, its still image, with the Guide in slot 1; the tall slots stay Guides. Humble
+Cabbage's sponsor campaign is active again; its other campaigns stay paused. A new Guide ad is a `G` entry in `guide.html`, an `ad_campaigns` row under the sponsor, its `/go/` link and the slots it takes. A real
 advertiser takes a slot by linking its campaign to the placement (`ad-resolve` serves the newest active campaign linked to a slot).
 **On phones the rail runs the full width** (Sean, 2026-10-31: "not full width on mobile"): at 900 px and under the slots fill the row, two
 side by side where there is room and one per row on a phone, and a tall slot becomes a wide box there (`ve-ad-rail.js`).
