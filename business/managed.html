@@ -77,7 +77,7 @@
       account: PV === 'client' || PV === 'done' ? { id: 'sample', status: 'active', setup_plan: 'full', social: true, activated_at: new Date().toISOString(), pause_from: null } : null };
     if ({ plan: 1, agreement: 2, pay: 3 }[PV]) q.set('step', { plan: 1, agreement: 2, pay: 3 }[PV]);
     var bar = document.createElement('div'); bar.className = 'test'; bar.style.margin = innerWidth <= 700 ? '16px 16px 0' : '24px 40px 0';
-    bar.innerHTML = '<b>Preview.</b> The sample business, Green Leaf Kitchen, with a sample owner. Nothing is saved, sent or charged.';
+    bar.innerHTML = '<b>Preview.</b> The sample business, Green Leaf Kitchen, and its made-up owner, Alex Rivera. Nothing is saved, sent or charged.';
     app.parentNode.insertBefore(bar, app);
   }
   function save() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }

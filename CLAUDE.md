@@ -669,7 +669,15 @@ judge whether food is safe by how a place looks online; businesses want marketin
   ready (goes to `/business/managed?listing=<slug>`, checkout opened), Let me think about it (a date, required), Talk to someone (an email
   or phone), Not now. Each choice is emailed to the team (reply-to them), confirmed to them, and lands in the **Inbox** (`ve_inbox_items`
   source `branddesk_pitch`, linking to the pitch in the Depot; a contact name starting [TEST] stays out). `/business/pitch?c=sample` is
-  Green Leaf Kitchen's, in Preview journeys > BrandDesk with the pitch list and the shot list. The pitch page's words never name BrandDesk.
+  Green Leaf Kitchen's, in Preview journeys > BrandDesk with the pitch list and the shot list. The pitch page's words never name BrandDesk. **The same look all the way** (Sean, 2026-10-31: "it feels like it takes me to a completely different environment... keep it in the same
+  look and feel"; "let's not lose the visual elements"): the stage wears the business's chapter art, dark (`pitch_view` returns `chapter`;
+  `VE_HUBS[].page.banner`), the logo sits centered on the cover with the city under it, the fixes sit beside their site on a phone, the two
+  weeks and Yours to keep carry pictures (the sample restaurant's, captioned as such on a real business's page), and the choice is one of
+  four picked cards (only the picked one is green; `data-vg-path`). **I'm ready stays on the page**: its path is Your plan, The agreement (the
+  full text opens in a window on the page) and Review and pay beside a mock-up of their home page (`#su-plan`, `#su-agree`, `#su-pay`); Pay
+  records the choice, then `checkout` with `back` (`/business/pitch?c=<code>`), so Stripe returns to the pitch (`&status=done|cancelled|unpaid#su-pay`).
+  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`).
+  `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business

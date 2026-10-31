@@ -184,7 +184,9 @@ async function confirm(sessionId: string): Promise<Response> {
     if (s.metadata?.type !== 've_branddesk' || !isId(s.metadata?.account_id)) return go(`${SITE}/business#/managed`);
     const { data: acct } = await db.from('ve_branddesk_accounts').select('*').eq('id', s.metadata.account_id).maybeSingle();
     const { data: l } = acct ? await db.from('listings').select('slug').eq('id', acct.listing_id).maybeSingle() : { data: null };
-    const back = (st: string) => `${s.metadata.origin || SITE}/business/managed?listing=${encodeURIComponent(l?.slug || '')}&status=${st}`;
+    // A sign-up started on a pitch page goes back to it (metadata.back, a /business/pitch path checked at checkout).
+    const back = (st: string) => /^\/business\/pitch\?c=[a-z0-9]{8,20}$/.test(String(s.metadata.back || '')) ? `${s.metadata.origin || SITE}${s.metadata.back}&status=${st}#su-pay`
+      : `${s.metadata.origin || SITE}/business/managed?listing=${encodeURIComponent(l?.slug || '')}&status=${st}`;
     if (!acct || acct.stripe_session !== s.id) return go(back('unknown'));
     if (s.status !== 'complete' || !['paid', 'no_payment_required'].includes(s.payment_status)) return go(back('unpaid'));
     await activate(acct, String(s.customer), String(s.subscription));
@@ -220,6 +222,7 @@ async function checkout(req: Request, b: any, m: any) {
   if (live?.length) return json({ error: 'already_managed', message: 'This business is already with us.' }, 409);
   const test = !s.live;
   const origin = /^https:\/\/(vegansexplore\.com|vegansexplore-[a-z0-9-]+\.vercel\.app|localhost:\d+)$/.test(String(b.origin || '')) ? String(b.origin) : SITE;
+  const backPath = /^\/business\/pitch\?c=[a-z0-9]{8,20}$/.test(String(b.back || '')) ? String(b.back) : '';
   const { data: acct, error } = await db.from('ve_branddesk_accounts').insert({ listing_id: l.id, member_id: m.id, setup_plan: setup, social: !!b.social, test,
     agreement_version: AGREEMENT_VERSION, agreed_name: name, agreed_ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || null }).select('*').single();
   if (error) return json({ error: 'save_failed' }, 500);
@@ -228,12 +231,13 @@ async function checkout(req: Request, b: any, m: any) {
     if (b.social) items.push(await price(test, 'bd_social_v1'));
     items.push(await price(test, setup === 'full' ? 'bd_setup_v1' : setup === '3' ? 'bd_setup3_v1' : 'bd_setup6_v1'));
     const p = new URLSearchParams({ mode: 'subscription', success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/business/managed?listing=${encodeURIComponent(l.slug)}&status=cancelled`,
+      cancel_url: backPath ? `${origin}${backPath}&status=cancelled#su-pay` : `${origin}/business/managed?listing=${encodeURIComponent(l.slug)}&status=cancelled`,
       'metadata[type]': 've_branddesk', 'metadata[confirm_fn]': 've-branddesk', 'metadata[account_id]': acct.id, 'metadata[origin]': origin,
       'subscription_data[metadata][program]': 'branddesk', 'subscription_data[metadata][account_id]': acct.id, 'subscription_data[metadata][listing]': l.slug,
       'subscription_data[description]': 'Managed marketing for ' + l.name });
     if (m.email) p.set('customer_email', m.email);
     if (test) p.set('metadata[test]', 'true');
+    if (backPath) p.set('metadata[back]', backPath);
     items.forEach((pr, i) => { p.set(`line_items[${i}][price]`, pr); p.set(`line_items[${i}][quantity]`, '1'); });
     const sj = await stripe(test, 'POST', 'checkout/sessions', p);
     await db.from('ve_branddesk_accounts').update({ stripe_session: sj.id }).eq('id', acct.id);
@@ -880,8 +884,10 @@ async function pitchPublic(req: Request, b: any, m: any) {
       await db.from('ve_branddesk_pitches').update({ views: (p.views || 0) + 1, last_viewed_at: now, first_viewed_at: p.first_viewed_at || now,
         status: ['sent', 'ready', 'draft'].includes(p.status) ? 'viewed' : p.status }).eq('id', p.id);
     }
-    const { data: cm } = await db.from('members').select('name').eq('ve_role', 'community_manager').eq('membership_status', 'active').eq('home_community', (await db.rpc('ve_chapter_of', { p_city: l.address_city || '', p_state: l.address_state || '' })).data || '').limit(1);
-    return json({ ok: true, team, business: { name: l.name, slug: l.slug, city: l.address_city, logo: l.logo_url || null, category: l.category },
+    const chapter = (await db.rpc('ve_chapter_of', { p_city: l.address_city || '', p_state: l.address_state || '' })).data || '';
+    const { data: cm } = await db.from('members').select('name').eq('ve_role', 'community_manager').eq('membership_status', 'active').eq('home_community', chapter).limit(1);
+    return json({ ok: true, team, business: { name: l.name, slug: l.slug, city: l.address_city, state: l.address_state || '', chapter, logo: l.logo_url || null, category: l.category,
+        photos: (Array.isArray(l.gallery_urls) ? l.gallery_urls : []).filter((u: any) => typeof u === 'string').slice(0, 6) },
       contact: { name: p.contact_name || '', email: p.contact_email || '' }, note: p.note || '', look: p.look, look_name: (PITCH_LOOKS[p.look] || PITCH_LOOKS.fresh).name,
       summary: await auditSummary(p.audit_id), plan: Array.isArray(p.plan) && p.plan.length ? p.plan : PLAN,
       prices: { setup: AMOUNTS.setup, setup3: AMOUNTS.setup3, setup6: AMOUNTS.setup6, monthly: AMOUNTS.monthly, social: AMOUNTS.social },
