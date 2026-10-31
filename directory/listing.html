@@ -2375,7 +2375,7 @@ function loadBrandSite(l){
     // The narrator: the Guide of the brand's Guide (VEProducts.GUIDES[...][2]), else Liz.
     var NARR = BD.narrator || (firstGuide && firstGuide[2]) || 'liz';
     var NARR_NAME = NARR.charAt(0).toUpperCase() + NARR.slice(1);
-    var narrArt = window.VEGuideArt ? VEGuideArt(NARR, 'square') : '/public/guides/' + NARR + '.png';
+    var narrArt = window.VEGuideArt ? VEGuideArt(NARR, 'square') : '/public/guides/' + NARR + '.jpg';
     var firstStore = storeList[0];
     var LOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>';
     var B = esc(l.name);
@@ -4522,7 +4522,7 @@ function houseAd(l){
   if(!g) return loadBillboardAds();
   // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
   // A Guide without one falls back to its Guide's square portrait.
-  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.png');
+  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
   el.classList.add('bb-filled');
   el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';

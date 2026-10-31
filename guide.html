@@ -167,10 +167,10 @@
   (function(){
     var GUIDES = [
       { id: 'liz',   name: 'Liz',   title: 'Business',       image: 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_015752_69e54fd1-337e-4e81-8708-8029766146a8_min.webp',   desc: 'Building a Vegan business. Get listed, grow your audience, and connect with customers.' },
-      { id: 'maya',  name: 'Maya',  title: 'Pre-Vegan',      image: '/public/guides/maya.png',  desc: 'Vegan-curious. Real answers, real support, and a clear path to make the shift.' },
-      { id: 'theo',  name: 'Theo',  title: 'Seasoned Vegan', image: '/public/guides/theo.png',  desc: 'Already living it. Deepen your impact, mentor others, and connect with the global movement.' },
-      { id: 'nori',  name: 'Nori',  title: 'Traveler',       image: '/public/guides/nori.png',  desc: 'On the move. Find Vegan food wherever you land: new cities, airports, stadiums and arenas.' },
-      { id: 'dani',  name: 'Dani',  title: 'Nonprofit',      image: '/public/guides/dani.png',  desc: 'Running a Vegan org. Build your community on the platform and grow your base.' },
+      { id: 'maya',  name: 'Maya',  title: 'Pre-Vegan',      image: '/public/guides/maya.jpg',  desc: 'Vegan-curious. Real answers, real support, and a clear path to make the shift.' },
+      { id: 'theo',  name: 'Theo',  title: 'Seasoned Vegan', image: '/public/guides/theo.jpg',  desc: 'Already living it. Deepen your impact, mentor others, and connect with the global movement.' },
+      { id: 'nori',  name: 'Nori',  title: 'Traveler',       image: '/public/guides/nori.jpg',  desc: 'On the move. Find Vegan food wherever you land: new cities, airports, stadiums and arenas.' },
+      { id: 'dani',  name: 'Dani',  title: 'Nonprofit',      image: '/public/guides/dani.jpg',  desc: 'Running a Vegan org. Build your community on the platform and grow your base.' },
       { id: 'river', name: 'River', title: 'Creator',        image: '/public/guides/river.jpg', desc: 'Creating content in the Vegan space. Grow your audience and earn through the ecosystem.' }
     ];
     var DEFAULT_GUIDE = 'liz';
@@ -322,7 +322,7 @@
     // full-width fields read "blown out"). The Community Manager application's layout: the question
     // and its answer on the left, the Guide on the right with a line for each part, over the member's
     // city art. On phones the Guide becomes a strip above the question.
-    var CITY_ART = { philadelphia: 'banner.png', dmv: 'banner.png' };
+    var CITY_ART = {};
     function cityArt(){
       var slug = status && status.home_community, hubs = window.VE_HUBS || [];
       var known = hubs.some(function(h){ return h.slug === slug; });

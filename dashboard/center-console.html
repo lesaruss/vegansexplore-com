@@ -1330,7 +1330,7 @@
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','delaware':'Delaware Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','west-virginia':'West Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
-  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.png','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/virginia/banner.jpg','delaware':'/communities/delaware/banner.jpg','west-virginia':'/communities/west-virginia/banner.jpg','north-florida':'/communities/north-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.png','south-florida':'/communities/south-florida/banner.jpg'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.jpg','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/virginia/banner.jpg','delaware':'/communities/delaware/banner.jpg','west-virginia':'/communities/west-virginia/banner.jpg','north-florida':'/communities/north-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.jpg','south-florida':'/communities/south-florida/banner.jpg'};
 
   // A listing link (/dashboard/directory/<slug>) opened signed out goes to the public listing page instead.
   function listingSlugFromPath() {
@@ -1834,10 +1834,10 @@
   // The square mid shot from the one map in /public/footer.js (VEGuideArt); g.img is the fallback.
   function personaArt(g) { return window.VEGuideArt ? window.VEGuideArt(g.key.replace(/^guide-/, ''), 'square') : g.img; }
   var GUIDE_PERSONAS = [
-    { key: 'guide-maya', href: '/dashboard/guide?guide=maya', img: '/public/guides/maya.png', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
-    { key: 'guide-theo', href: '/dashboard/guide?guide=theo', img: '/public/guides/theo.png', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
-    { key: 'guide-nori', href: '/dashboard/guide?guide=nori', img: '/public/guides/nori.png', title: 'Nori', desc: 'Traveler Guide. On the move -- find Vegan food wherever you land: new cities, airports, stadiums and arenas.' },
-    { key: 'guide-dani', href: '/dashboard/guide?guide=dani', img: '/public/guides/dani.png', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
+    { key: 'guide-maya', href: '/dashboard/guide?guide=maya', img: '/public/guides/maya.jpg', title: 'Maya', desc: 'Pre-Vegan Guide. Vegan-curious? Real answers, real support, and a clear path to make the shift.' },
+    { key: 'guide-theo', href: '/dashboard/guide?guide=theo', img: '/public/guides/theo.jpg', title: 'Theo', desc: 'Seasoned Vegan Guide. Already living it -- deepen your impact, mentor others, and connect with the global movement.' },
+    { key: 'guide-nori', href: '/dashboard/guide?guide=nori', img: '/public/guides/nori.jpg', title: 'Nori', desc: 'Traveler Guide. On the move -- find Vegan food wherever you land: new cities, airports, stadiums and arenas.' },
+    { key: 'guide-dani', href: '/dashboard/guide?guide=dani', img: '/public/guides/dani.jpg', title: 'Dani', desc: 'Nonprofit Guide. Running a Vegan org -- build your community on the platform and grow your base.' },
     { key: 'guide-river', href: '/dashboard/guide?guide=river', img: '/public/guides/river.jpg', title: 'River', desc: 'Creator Guide. Creating content in the Vegan space -- grow your audience and earn through the ecosystem.' }
   ];
 

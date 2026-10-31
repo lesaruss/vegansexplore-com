@@ -171,7 +171,7 @@ module.exports = async (req, res) => {
 
   const title = post.headline;
   const description = (post.excerpt || '').slice(0, 200);
-  const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.png';
+  const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.jpg';
   const caption = 'Read this on VEGANS EXPLORE Pulse: ' + title;
 
   // Above the article: a YouTube player, our own video or audio from the Depot, or the
@@ -217,7 +217,7 @@ module.exports = async (req, res) => {
     + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}'
     + ':root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-mid:#b8ddb9;--ve-green-light:#e8f5e9;--ve-orange:#F69820;--ve-orange-dark:#d4800f;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.50);--ve-text-30:rgba(26,26,26,0.30);}'
     + 'body{background:#f5f5f5;color:var(--ve-text);font-family:"Montserrat",sans-serif;-webkit-font-smoothing:antialiased;}'
-    + '.pulse-hero{position:relative;min-height:460px;overflow:hidden;background-image:url(\'/public/pulse-ve-banner.png\');background-size:cover;background-position:center;display:flex;align-items:flex-end;transition:max-height 0.32s ease,min-height 0.32s ease,opacity 0.25s ease;}'
+    + '.pulse-hero{position:relative;min-height:460px;overflow:hidden;background-image:url(\'/public/pulse-ve-banner.jpg\');background-size:cover;background-position:center;display:flex;align-items:flex-end;transition:max-height 0.32s ease,min-height 0.32s ease,opacity 0.25s ease;}'
     + '.pulse-hero.hero-collapsed{min-height:0;max-height:0;opacity:0;}'
     + '.pulse-hero::before{content:\'\';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.96) 0%,rgba(0,0,0,0.72) 58%,rgba(0,0,0,0.28) 78%,transparent 94%);z-index:1;}'
     + '.pulse-hero::after{content:\'\';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.32) 0%,transparent 28%);z-index:1;}'
@@ -230,7 +230,7 @@ module.exports = async (req, res) => {
     + '.pulse-hero .hero-ctas{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}'
     + '.pulse-hero .btn-hero-primary{background:var(--ve-orange);color:#fff;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:14px 30px;border-radius:4px;text-decoration:none;transition:background 0.15s;display:inline-block;border:none;cursor:pointer;font-family:inherit;}'
     + '.pulse-hero .btn-hero-primary:hover{background:var(--ve-orange-dark);}'
-    + '@media (max-width:640px){.pulse-hero{min-height:420px;background-image:url(\'/public/pulse-ve-banner-mobile.png\');background-position:center center;}.pulse-hero::before{background:rgba(0,0,0,0.32);}.pulse-hero::after{display:none;}.pulse-hero .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}}'
+    + '@media (max-width:640px){.pulse-hero{min-height:420px;background-image:url(\'/public/pulse-ve-banner-mobile.jpg\');background-position:center center;}.pulse-hero::before{background:rgba(0,0,0,0.32);}.pulse-hero::after{display:none;}.pulse-hero .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}}'
     + '.btn-join{display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;border-radius:4px;text-decoration:none;background:var(--ve-green);color:#fff;transition:background 0.15s;border:none;cursor:pointer;}'
     + '.btn-join:hover{background:var(--ve-green-dark);}'
     + '.member-bar{background:#1a1a1a;padding:14px 56px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}'
