@@ -20,6 +20,11 @@
 //   list                                 super admin: every account
 //   ops_test_activate {slug, setup, social}  ops only, test mode only: a test customer and subscription with Stripe's test card,
 //                                        activated the way a real checkout is (proves prices, installments and pause)
+//   client {slug|account_id}            the owner or a super admin: the onboarding checklist, Library (signed links; full size once
+//                                        the setup is paid in full), website archives and the Cartridge for the asset sheet
+//   step {account_id, step, done, note}  super admin: tick or untick an onboarding step
+//   archive {account_id, url?}           super admin: archive their website now (also started at activation)
+//   file_upload_url / file_done / file_remove   super admin: add to or take from their Library (bucket branddesk-library)
 // GET ?confirm=<session id>              the return from Stripe and ve-stripe-webhook (metadata type ve_branddesk, confirm_fn
 //                                        ve-branddesk): activates the account once and goes back to /business/managed.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -150,6 +155,10 @@ async function activate(acct: any, customer: string, subId: string) {
   const { data } = await db.from('ve_branddesk_accounts').update({ status: 'active', stripe_customer: customer, stripe_subscription: subId, stripe_schedule: schedule,
     installments_left: n, activated_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', acct.id).eq('status', 'checkout').select('*').maybeSingle();
   if (!data) return acct;
+  // Onboarding starts: the setup paid at once opens full-size downloads, and their current website is archived right away.
+  const { data: lw } = await db.from('listings').select('website').eq('id', acct.listing_id).maybeSingle();
+  await db.from('ve_branddesk_accounts').update({ setup_paid_at: n ? null : new Date().toISOString(), website_url: lw?.website || null }).eq('id', acct.id);
+  if (lw?.website) { try { await startArchive({ ...data, website_url: null }, lw.website, null); } catch (e) { console.error('archive start', e); } }
   if (acct.note === 'ops test') return data; // ops_test_activate sends no email
   const { data: l } = await db.from('listings').select('name, slug').eq('id', acct.listing_id).maybeSingle();
   const { data: m } = await db.from('members').select('name, email').eq('id', acct.member_id).maybeSingle();
@@ -158,11 +167,12 @@ async function activate(acct: any, customer: string, subId: string) {
   await mail(TEAM_EMAIL, `${tag}New managed marketing client: ${l?.name}`,
     `<p><b>${esc(l?.name || '')}</b> signed up for managed marketing (BrandDesk).</p><p>Signed by ${esc(acct.agreed_name)} (${esc(m?.email || '')}) on agreement ${esc(acct.agreement_version)}.<br>` +
     `Setup: ${setupWords}. Monthly: ${money(AMOUNTS.monthly)}${acct.social ? ' plus social ' + money(AMOUNTS.social) : ''}.</p>` +
-    `<p>Next: confirm they run this business, start their brand kit (<a href="${SITE}/business/brand?listing=${esc(l?.slug || '')}">their brand kit</a>), archive their current website, and book the welcome call.</p>`);
+    `<p>Next: book the welcome call within 2 days. Their onboarding checklist, Library and website archive (started now) are in <a href="${SITE}/admin/depot/branddesk#a/${acct.id}">Depot &rsaquo; BrandDesk</a>; their brand kit is <a href="${SITE}/business/brand?listing=${esc(l?.slug || '')}">here</a>.</p>`);
   if (m?.email) await mail(m.email, `${tag}Welcome aboard, ${l?.name}`,
     `<p>Hi ${esc((m.name || acct.agreed_name).split(' ')[0])},</p><p>You are in. Thank you for trusting us with ${esc(l?.name || 'your business')}.</p>` +
     `<p>What happens next: someone from our team reaches out within a day to confirm the details and book your welcome call. Then we start on your brand kit, your Google profile and your website, and we aim to have everything we control done in two weeks.</p>` +
-    `<p>Your plan: setup ${setupWords}, then ${money(AMOUNTS.monthly)} a month${acct.social ? ', plus ' + money(AMOUNTS.social) + ' a month for social media' : ''}. Your agreement is at <a href="${SITE}/business/agreement">vegansexplore.com/business/agreement</a>.</p><p>Vegans Explore team</p>`);
+    `<p>Your plan: setup ${setupWords}, then ${money(AMOUNTS.monthly)} a month${acct.social ? ', plus ' + money(AMOUNTS.social) + ' a month for social media' : ''}. Your agreement is at <a href="${SITE}/business/agreement">vegansexplore.com/business/agreement</a>.</p>` +
+    `<p>Everything we make for you lands in your Library, with your asset sheet, on your business dashboard: <a href="${SITE}/directory/${esc(l?.slug || '')}?tab=brand&pd=managed">your Managed by us page</a>. It is yours to keep.</p><p>Vegans Explore team</p>`);
   return data;
 }
 
@@ -324,6 +334,355 @@ async function opsTestActivate(b: any, m: any) {
   return json({ ok: true, account: done, subscription: sub.id, status: sub.status, first_invoice_cents: inv.amount_paid, first_invoice_status: inv.status });
 }
 
+// ---------------------------------------------------------------------------------------------------------------------------
+// Onboarding (2026-10-31; migration 20261031_branddesk_onboarding.sql). After payment: the welcome checklist, their website
+// archived, their Library (private bucket branddesk-library) and their asset sheet (from their Cartridge, ve_cartridges).
+// "They rent the service, they own the assets": full-size downloads of what we make open once the setup is paid in full; their
+// archived website and documents are always theirs.
+const BUCKET = 'branddesk-library';
+// [key, the team's words, the client's words, how it is done: auto | team]
+const STEPS: [string, string, string, string][] = [
+  ['welcome', 'Welcome call booked and held (within 2 days)', 'Your welcome call', 'team'],
+  ['owner', 'Confirmed they run this business', 'We confirm you run the business', 'team'],
+  ['archive', 'Their current website archived', 'A copy of your current website, kept for you', 'auto'],
+  ['brand_kit', 'Brand kit started', 'Your brand kit', 'auto'],
+  ['google', 'Google profile: we are a manager, they stay primary owner', 'Your Google profile, with us as a manager', 'team'],
+  ['domain', 'Manager access to their domain settings', 'Access to your domain settings (you keep the domain)', 'team'],
+  ['socials', 'Manager access to their two social platforms', 'Access to your two social platforms', 'team'],
+  ['shoot', 'Starter shoot booked (up to 15 menu items)', 'Your starter photo shoot', 'team'],
+  ['library', 'First files in their Library', 'Your Library', 'auto'],
+];
+const GATED_KINDS = ['photo', 'video', 'logo', 'brand', 'graphic', 'menu_board'];
+const FILE_KINDS = ['photo', 'video', 'logo', 'brand', 'graphic', 'menu_board', 'document', 'archive'];
+const safeName = (s: string) => clean(s, 120).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90) || 'file';
+
+async function accountFor(b: any, m: any, needAdmin = false) {
+  if (!m) return null;
+  if (needAdmin && !m.is_superadmin) return null;
+  let a: any = null;
+  if (isId(b.account_id)) a = (await db.from('ve_branddesk_accounts').select('*').eq('id', b.account_id).maybeSingle()).data;
+  else if (b.slug) {
+    const l = await listingBySlug(b.slug);
+    if (l) a = (await db.from('ve_branddesk_accounts').select('*').eq('listing_id', l.id).in('status', LIVE_STATES.concat(['ended']))
+      .order('created_at', { ascending: false }).limit(1)).data?.[0] || null;
+  }
+  if (!a) return null;
+  if (m.is_superadmin) return a;
+  const { data: l } = await db.from('listings').select('owner_member_id').eq('id', a.listing_id).maybeSingle();
+  return a.member_id === m.id || l?.owner_member_id === m.id ? a : null;
+}
+
+// The setup is paid in full: at once at checkout, or once the installments' invoices are paid. Kept in setup_paid_at.
+async function setupPaid(a: any): Promise<boolean> {
+  if (a.setup_paid_at) return true;
+  if (!a.stripe_subscription || a.status === 'checkout') return false;
+  let paid = a.setup_plan === 'full';
+  if (!paid) {
+    const n = installments(a.setup_plan);
+    try {
+      const inv = await stripe(a.test, 'GET', `invoices?subscription=${a.stripe_subscription}&status=paid&limit=12`);
+      paid = (inv.data || []).filter((i: any) => i.amount_paid > 0).length >= n;
+    } catch { return false; }
+  }
+  if (paid) await db.from('ve_branddesk_accounts').update({ setup_paid_at: new Date().toISOString() }).eq('id', a.id);
+  return paid;
+}
+
+async function stepState(a: any) {
+  const o = a.onboarding || {};
+  const [{ data: kit }, { data: arc }, { count: files }] = await Promise.all([
+    db.from('ve_cartridges').select('status, updated_at').eq('listing_id', a.listing_id).maybeSingle(),
+    db.from('ve_branddesk_archives').select('status, finished_at').eq('account_id', a.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1),
+    db.from('ve_branddesk_files').select('id', { count: 'exact', head: true }).eq('account_id', a.id).is('removed_at', null).neq('kind', 'archive'),
+  ]);
+  const auto: Record<string, string | null> = {
+    archive: arc?.[0]?.finished_at || null,
+    brand_kit: kit ? (kit.updated_at || a.activated_at) : null,
+    library: files ? a.activated_at : null,
+  };
+  return STEPS.filter((s) => s[0] !== 'socials' || a.social).map(([key, team, client, how]) => {
+    const st = o[key] || {};
+    const done = st.done_at || auto[key] || null;
+    return { key, team, client, how, done_at: done, by: st.by || null, note: st.note || null, auto: !st.done_at && !!auto[key] };
+  });
+}
+
+async function signFiles(rows: any[], unlocked: boolean, admin: boolean) {
+  return Promise.all(rows.map(async (f) => {
+    const open = admin || unlocked || !GATED_KINDS.includes(f.kind);
+    let view: string | null = null, download: string | null = null;
+    if (/^image\//.test(f.mime || '') && !/svg/.test(f.mime || '')) {
+      const r = await db.storage.from(BUCKET).createSignedUrl(f.path, 3600, { transform: { width: 900, height: 900, resize: 'contain' } });
+      view = r.data?.signedUrl || null;
+    }
+    if (open) {
+      const name = f.path.split('/').pop()!.replace(/^[0-9a-f]{8}-/, '');
+      const r = await db.storage.from(BUCKET).createSignedUrl(f.path, 3600, { download: name });
+      download = r.data?.signedUrl || null;
+    }
+    return { id: f.id, kind: f.kind, title: f.title, bytes: f.bytes, mime: f.mime, width: f.width, height: f.height, note: f.note,
+      created_at: f.created_at, view, download, locked: !open };
+  }));
+}
+
+// Everything the client's Library page and the Depot need for one account.
+async function client(b: any, m: any) {
+  const a = await accountFor(b, m);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const admin = !!m.is_superadmin;
+  const { data: l } = await db.from('listings').select('id, name, slug, category, address_street, address_city, address_state, address_zip, phone, email, website, instagram, facebook, tiktok, youtube, google_place_id, google_hours_json, logo_url, tagline, description')
+    .eq('id', a.listing_id).maybeSingle();
+  const unlocked = await setupPaid(a);
+  const [{ data: files }, { data: archives }, { data: kit }, steps] = await Promise.all([
+    db.from('ve_branddesk_files').select('*').eq('account_id', a.id).is('removed_at', null).order('created_at', { ascending: false }).limit(500),
+    db.from('ve_branddesk_archives').select('id, url, status, platform, pages, assets, bytes, note, created_at, finished_at').eq('account_id', a.id).order('created_at', { ascending: false }).limit(10),
+    db.from('ve_cartridges').select('data, status, updated_at').eq('listing_id', a.listing_id).maybeSingle(),
+    stepState(a),
+  ]);
+  const { data: owner } = admin ? await db.from('members').select('name, email').eq('id', a.member_id).maybeSingle() : { data: null };
+  return json({ ok: true, admin,
+    account: { id: a.id, status: a.status, test: a.test, setup_plan: a.setup_plan, social: a.social, activated_at: a.activated_at, setup_paid_at: a.setup_paid_at,
+      pause_from: a.pause_from, pause_until: a.pause_until, website_url: a.website_url || l?.website || null, agreement_version: a.agreement_version,
+      agreed_name: admin ? a.agreed_name : undefined, note: admin ? a.note : undefined, owner },
+    listing: l, unlocked, steps, files: await signFiles(files || [], unlocked, admin), archives: archives || [],
+    cartridge: kit ? { status: kit.status, updated_at: kit.updated_at, data: kit.data } : null });
+}
+
+async function stepSet(b: any, m: any) {
+  const a = await accountFor(b, m, true);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const key = String(b.step || '');
+  if (!STEPS.some((s) => s[0] === key)) return json({ error: 'step' }, 400);
+  const o = { ...(a.onboarding || {}) };
+  if (b.done === false) delete o[key];
+  else o[key] = { done_at: new Date().toISOString(), by: m.name || m.email, note: clean(b.note, 300) || null };
+  await db.from('ve_branddesk_accounts').update({ onboarding: o, updated_at: new Date().toISOString() }).eq('id', a.id);
+  return json({ ok: true, steps: await stepState({ ...a, onboarding: o }) });
+}
+
+async function fileUploadUrl(b: any, m: any) {
+  const a = await accountFor(b, m, true);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const kind = FILE_KINDS.includes(b.kind) ? b.kind : '';
+  if (!kind || kind === 'archive') return json({ error: 'kind' }, 400);
+  if (Number(b.bytes) > 500 * 1024 * 1024) return json({ error: 'too_big', message: 'Up to 500 MB a file.' }, 400);
+  const { data: l } = await db.from('listings').select('slug').eq('id', a.listing_id).maybeSingle();
+  const path = `${l!.slug}/${kind}/${crypto.randomUUID().slice(0, 8)}-${safeName(b.name || 'file')}`;
+  const { data, error } = await db.storage.from(BUCKET).createSignedUploadUrl(path);
+  if (error) return json({ error: 'upload_url', message: error.message }, 500);
+  return json({ ok: true, path, url: data.signedUrl, token: data.token });
+}
+async function fileDone(b: any, m: any) {
+  const a = await accountFor(b, m, true);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const path = String(b.path || '');
+  const { data: l } = await db.from('listings').select('slug').eq('id', a.listing_id).maybeSingle();
+  const parts = path.split('/');
+  if (parts[0] !== l!.slug || parts.length !== 3 || !FILE_KINDS.includes(parts[1]) || parts[1] === 'archive') return json({ error: 'path' }, 400);
+  const { data: found } = await db.storage.from(BUCKET).list(`${parts[0]}/${parts[1]}`, { search: parts[2], limit: 2 });
+  const obj = (found || []).find((o: any) => o.name === parts[2]);
+  if (!obj) return json({ error: 'not_uploaded' }, 400);
+  const { data, error } = await db.from('ve_branddesk_files').insert({ account_id: a.id, listing_id: a.listing_id, kind: parts[1], path,
+    title: clean(b.title, 140) || parts[2].replace(/^[0-9a-f]{8}-/, ''), bytes: (obj as any).metadata?.size ?? (Number(b.bytes) || null),
+    mime: (obj as any).metadata?.mimetype || clean(b.mime, 80) || null, width: Number(b.width) || null, height: Number(b.height) || null,
+    note: clean(b.note, 300) || null, added_by: m.id }).select('id').single();
+  if (error) return json({ error: 'save_failed' }, 500);
+  return json({ ok: true, id: data.id });
+}
+async function fileRemove(b: any, m: any) {
+  if (!m?.is_superadmin || !isId(b.file_id)) return json({ error: 'admin_only' }, 403);
+  await db.from('ve_branddesk_files').update({ removed_at: new Date().toISOString(), removed_by: m.id }).eq('id', b.file_id);
+  return json({ ok: true });
+}
+
+// ---- The website archive: every page on their site (up to 40) and the pictures, styles and fonts it uses, links pointed at
+// the copies so it opens offline, plus manifest.json and README.txt, as one ZIP in their Library. A site that builds itself
+// in the browser keeps what its server sends; that is said in the README.
+const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+const LIMITS = { pages: 40, assets: 500, bytes: 60 * 1024 * 1024, asset: 15 * 1024 * 1024, ms: 120000 };
+function platformOf(html: string) {
+  const h = html.toLowerCase();
+  if (/wixstatic\.com|x-wix|wix\.com/.test(h)) return 'wix';
+  if (/squarespace/.test(h)) return 'squarespace';
+  if (/wp-content|wp-includes|wordpress/.test(h)) return 'wordpress';
+  if (/cdn\.shopify\.com/.test(h)) return 'shopify';
+  if (/img1\.wsimg\.com|godaddy/.test(h)) return 'godaddy';
+  if (/weebly/.test(h)) return 'weebly';
+  if (/webflow/.test(h)) return 'webflow';
+  return 'other';
+}
+const PAGE_EXT = /\.(pdf|jpe?g|png|gif|webp|svg|mp4|mov|zip|docx?|xlsx?|css|js|ico|woff2?|ttf|mp3)(\?|$)/i;
+function pageFile(u: URL) {
+  let p = u.pathname.replace(/\/+$/, '') || '';
+  p = p.replace(/[^A-Za-z0-9/._-]+/g, '-').replace(/^\//, '');
+  const q = u.search ? '-' + Array.from(u.search).reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36) : '';
+  return 'site/' + (p ? p.replace(/\.html?$/, '') + q + '/index.html' : (q ? 'index' + q + '/index.html' : 'index.html'));
+}
+function assetFile(u: URL) {
+  const base = (u.pathname.replace(/[^A-Za-z0-9/._-]+/g, '-').replace(/^\/+/, '') || 'file').slice(-120);
+  const q = u.search ? '-' + Array.from(u.search).reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7).toString(36) : '';
+  const dot = base.lastIndexOf('.');
+  const name = dot > base.lastIndexOf('/') ? base.slice(0, dot) + q + base.slice(dot) : base + q;
+  return 'site/_assets/' + u.hostname + '/' + name;
+}
+function rel(from: string, to: string) {
+  const a = from.split('/').slice(0, -1), b = to.split('/');
+  let i = 0; while (i < a.length && i < b.length - 1 && a[i] === b[i]) i++;
+  return '../'.repeat(a.length - i) + b.slice(i).join('/');
+}
+async function grab(url: string, ms = 15000) {
+  const c = new AbortController(); const t = setTimeout(() => c.abort(), ms);
+  try { return await fetch(url, { headers: { 'User-Agent': UA, Accept: '*/*' }, redirect: 'follow', signal: c.signal }); }
+  finally { clearTimeout(t); }
+}
+
+async function runArchive(arcId: string, startUrl: string, slug: string, accountId: string, listingId: string, by: string | null) {
+  const t0 = Date.now();
+  const { default: JSZip } = await import('https://esm.sh/jszip@3.10.1');
+  const zip = new JSZip();
+  const start = new URL(startUrl);
+  const hostKey = (h: string) => h.replace(/^www\./, '');
+  const pages: any[] = [], assets = new Map<string, { file: string; bytes: number; type: string } | null>();
+  const queue: string[] = [start.href.split('#')[0]], seen = new Set<string>(queue);
+  let total = 0, platform = 'other', skipped = 0;
+  const htmls: { file: string; url: string; html: string; refs: [string, string][] }[] = [];
+  const cssQueue: { file: string; url: string; css: string }[] = [];
+  const wantAsset = (abs: string) => {
+    if (assets.has(abs) || assets.size >= LIMITS.assets) return;
+    assets.set(abs, null);
+  };
+  const absOf = (raw: string, base: string) => { try { const u = new URL(raw.trim().replace(/&amp;/g, '&'), base); return /^https?:$/.test(u.protocol) ? u : null; } catch { return null; } };
+
+  while (queue.length && pages.length < LIMITS.pages && Date.now() - t0 < LIMITS.ms * 0.5) {
+    const url = queue.shift()!;
+    let r: Response; try { r = await grab(url); } catch { pages.push({ url, status: 'failed' }); continue; }
+    const ct = r.headers.get('content-type') || '';
+    if (!r.ok || !/html/.test(ct)) { pages.push({ url, status: r.status }); try { await r.body?.cancel(); } catch { /* */ } continue; }
+    const html = await r.text();
+    if (!pages.length) platform = platformOf(html);
+    const finalUrl = r.url || url;
+    const file = pageFile(new URL(finalUrl));
+    const title = (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || '').replace(/\s+/g, ' ').trim().slice(0, 140);
+    pages.push({ url: finalUrl, file, status: r.status, title });
+    total += html.length;
+    const refs: [string, string][] = [];
+    // Links to more pages on the same site.
+    for (const mm of html.matchAll(/<a\b[^>]*?\bhref\s*=\s*["']([^"'#][^"']*)["']/gi)) {
+      const u = absOf(mm[1], finalUrl); if (!u || hostKey(u.hostname) !== hostKey(start.hostname)) continue;
+      u.hash = '';
+      if (PAGE_EXT.test(u.pathname)) { if (/\.pdf$/i.test(u.pathname)) { wantAsset(u.href); refs.push([mm[1], u.href]); } continue; }
+      refs.push([mm[1], 'page:' + u.href]);
+      if (!seen.has(u.href) && seen.size < LIMITS.pages * 3) { seen.add(u.href); queue.push(u.href); }
+    }
+    // Pictures, styles, icons, posters.
+    const take = (raw: string) => { const u = absOf(raw, finalUrl); if (u) { wantAsset(u.href); refs.push([raw, u.href]); } };
+    for (const mm of html.matchAll(/<(?:img|source|video|audio|input)\b[^>]*?\b(?:src|poster|data-src)\s*=\s*["']([^"']+)["']/gi)) take(mm[1]);
+    for (const mm of html.matchAll(/\b(?:srcset|data-srcset)\s*=\s*["']([^"']+)["']/gi)) mm[1].split(',').forEach((s) => { const raw = s.trim().split(/\s+/)[0]; if (raw) take(raw); });
+    for (const mm of html.matchAll(/<link\b[^>]*>/gi)) {
+      const tag = mm[0]; if (!/rel\s*=\s*["'][^"']*(stylesheet|icon|apple-touch-icon|preload)[^"']*["']/i.test(tag)) continue;
+      const h = tag.match(/href\s*=\s*["']([^"']+)["']/i); if (h) take(h[1]);
+    }
+    for (const mm of html.matchAll(/<meta\b[^>]*?property\s*=\s*["']og:image["'][^>]*?content\s*=\s*["']([^"']+)["']/gi)) take(mm[1]);
+    for (const mm of html.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) if (!/^data:/.test(mm[1])) take(mm[1]);
+    htmls.push({ file, url: finalUrl, html, refs });
+  }
+  // The assets, a few at a time; CSS files add their own fonts and pictures.
+  const list = () => Array.from(assets.entries()).filter(([, v]) => v === null).map(([k]) => k);
+  const fetched = new Set<string>();
+  while (Date.now() - t0 < LIMITS.ms && total < LIMITS.bytes) {
+    const batch = list().filter((u) => !fetched.has(u)).slice(0, 6);
+    if (!batch.length) break;
+    await Promise.all(batch.map(async (u) => {
+      fetched.add(u);
+      try {
+        const r = await grab(u, 20000);
+        const len = Number(r.headers.get('content-length') || 0);
+        if (!r.ok || len > LIMITS.asset) { skipped++; try { await r.body?.cancel(); } catch { /* */ } return; }
+        const buf = new Uint8Array(await r.arrayBuffer());
+        if (buf.length > LIMITS.asset || total + buf.length > LIMITS.bytes) { skipped++; return; }
+        total += buf.length;
+        const file = assetFile(new URL(u)), type = r.headers.get('content-type') || '';
+        assets.set(u, { file, bytes: buf.length, type });
+        if (/css/.test(type) || /\.css(\?|$)/i.test(u)) {
+          const css = new TextDecoder().decode(buf);
+          cssQueue.push({ file, url: u, css });
+          for (const mm of css.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/gi)) { if (/^data:/.test(mm[1])) continue; const a = absOf(mm[1], u); if (a) wantAsset(a.href); }
+          for (const mm of css.matchAll(/@import\s+["']([^"']+)["']/gi)) { const a = absOf(mm[1], u); if (a) wantAsset(a.href); }
+        } else zip.file(file, buf, { binary: true, compression: 'STORE' });
+      } catch { skipped++; }
+    }));
+  }
+  const pageFileOf = new Map(pages.filter((p) => p.file).map((p) => [p.url.split('#')[0], p.file]));
+  for (const c of cssQueue) {
+    const out = c.css.replace(/url\(\s*(["']?)([^"')]+)\1\s*\)/gi, (whole, q, raw) => {
+      const a = absOf(raw, c.url); const got = a && assets.get(a.href);
+      return got ? `url(${q}${rel(c.file, got.file)}${q})` : whole;
+    });
+    zip.file(c.file, out);
+  }
+  for (const h of htmls) {
+    let out = h.html;
+    const pairs = h.refs.map(([raw, target]) => {
+      if (target.startsWith('page:')) { const f = pageFileOf.get(target.slice(5)); return f ? [raw, rel(h.file, f)] : null; }
+      const got = assets.get(target); return got ? [raw, rel(h.file, got.file)] : null;
+    }).filter(Boolean) as [string, string][];
+    for (const [raw, to] of Array.from(new Map(pairs)).sort((x, y) => y[0].length - x[0].length)) out = out.split(`"${raw}"`).join(`"${to}"`).split(`'${raw}'`).join(`'${to}'`).split(`(${raw})`).join(`(${to})`);
+    zip.file(h.file, out);
+  }
+  const savedAssets = Array.from(assets.entries()).filter(([, v]) => v).map(([u, v]) => ({ url: u, file: v!.file, bytes: v!.bytes, type: v!.type }));
+  const when = new Date().toISOString();
+  const okPages = pages.filter((p) => p.file);
+  zip.file('manifest.json', JSON.stringify({ site: start.href, archived_at: when, platform, pages, assets: savedAssets, skipped }, null, 2));
+  zip.file('README.txt', [
+    `Your website, archived by Vegans Explore on ${when.slice(0, 10)}`, '', `Site: ${start.href}`, `Built with: ${platform}`,
+    `Pages saved: ${okPages.length}. Pictures, styles and fonts saved: ${savedAssets.length}.${skipped ? ` Files we could not save: ${skipped}.` : ''}`, '',
+    'Open site/index.html in a browser to see your home page as it was. Every page is in the site folder, and their pictures,',
+    'styles and fonts are in site/_assets. manifest.json lists every page and file with the address it came from.', '',
+    'This is a copy of what your website sent to a visitor that day. Parts a site builds in the browser (some menus, forms,',
+    'booking and shop widgets) may not work offline, but the words and pictures are here.',
+    platform === 'wordpress' ? '\nYour site runs on WordPress. Its own export (Tools > Export > All content in your WordPress admin) can restore it; we keep that in your Library too.' : '',
+    '', 'It is yours. Vegans Explore, a brand of LESARUSS Inc.',
+  ].join('\n'));
+  const out: Uint8Array = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+  const path = `${slug}/archive/${crypto.randomUUID().slice(0, 8)}-website-${hostKey(start.hostname)}-${when.slice(0, 10)}.zip`;
+  const up = await db.storage.from(BUCKET).upload(path, out, { contentType: 'application/zip', upsert: false });
+  if (up.error) throw new Error('upload: ' + up.error.message);
+  const { data: f } = await db.from('ve_branddesk_files').insert({ account_id: accountId, listing_id: listingId, kind: 'archive', path, bytes: out.length, mime: 'application/zip',
+    title: `Your website as it was, ${when.slice(0, 10)} (${hostKey(start.hostname)})`, added_by: by,
+    note: `${okPages.length} pages, ${savedAssets.length} files. Built with ${platform}.` }).select('id').single();
+  await db.from('ve_branddesk_archives').update({ status: 'done', platform, pages: okPages.length, assets: savedAssets.length, bytes: out.length, file_id: f?.id || null,
+    note: platform === 'wordpress' ? 'WordPress: ask them for the export (Tools > Export > All content) and add it to their Library.' : (skipped ? `${skipped} files could not be saved.` : null),
+    finished_at: new Date().toISOString() }).eq('id', arcId);
+}
+
+async function startArchive(a: any, url: string, by: string | null) {
+  let u: URL; try { u = new URL(/^https?:\/\//i.test(url) ? url : 'https://' + url); } catch { return { error: 'url' }; }
+  if (!/^https?:$/.test(u.protocol) || /vegansexplore\.com$|lesaruss/.test(u.hostname)) return { error: 'url' };
+  const { data: running } = await db.from('ve_branddesk_archives').select('id').eq('account_id', a.id).eq('status', 'running').gte('created_at', new Date(Date.now() - 10 * 60e3).toISOString()).limit(1);
+  if (running?.length) return { error: 'running', id: running[0].id };
+  const { data: l } = await db.from('listings').select('slug').eq('id', a.listing_id).maybeSingle();
+  const { data: arc } = await db.from('ve_branddesk_archives').insert({ account_id: a.id, listing_id: a.listing_id, url: u.href, started_by: by }).select('id').single();
+  if (!a.website_url) await db.from('ve_branddesk_accounts').update({ website_url: u.href }).eq('id', a.id);
+  const job = runArchive(arc!.id, u.href, l!.slug, a.id, a.listing_id, by).catch(async (e) => {
+    console.error('archive failed', e);
+    await db.from('ve_branddesk_archives').update({ status: 'failed', note: String((e as Error).message || e).slice(0, 300), finished_at: new Date().toISOString() }).eq('id', arc!.id);
+  });
+  // deno-lint-ignore no-explicit-any
+  const er = (globalThis as any).EdgeRuntime; if (er?.waitUntil) er.waitUntil(job); else await job;
+  return { ok: true, id: arc!.id, url: u.href };
+}
+async function archive(b: any, m: any) {
+  const a = await accountFor(b, m, true);
+  if (!a) return json({ error: 'not_found' }, 404);
+  const { data: l } = await db.from('listings').select('website').eq('id', a.listing_id).maybeSingle();
+  const url = clean(b.url, 500) || a.website_url || l?.website || '';
+  if (!url) return json({ error: 'no_website', message: 'This business has no website on file. Paste its address.' }, 400);
+  const r: any = await startArchive(a, url, m.id);
+  if (r.error === 'running') return json({ error: 'running', message: 'An archive is already running for them.' }, 409);
+  if (r.error) return json({ error: 'url', message: 'That does not look like a website address.' }, 400);
+  return json(r);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -354,6 +713,12 @@ Deno.serve(async (req) => {
         const { data } = await db.from('ve_branddesk_accounts').select('*, listings(name, slug), members(name, email)').order('created_at', { ascending: false }).limit(200);
         return json({ ok: true, accounts: data || [], settings: await settings() });
       }
+      case 'client': return await client(b, m);
+      case 'step': return await stepSet(b, m);
+      case 'archive': return await archive(b, m);
+      case 'file_upload_url': return await fileUploadUrl(b, m);
+      case 'file_done': return await fileDone(b, m);
+      case 'file_remove': return await fileRemove(b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }
