@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Shot List — Vegans Explore</title>
+  <meta name="description" content="The photographer's shot list for a BrandDesk client: every shot, the standard each one meets, and where to upload it.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The shot list (BrandDesk build order: the photographer shot list on the Gig Board; canon canon-ve-front-of-house v4).
+       A working tool, one thing per view: the list (#list, #list/shot, #list/all), then one shot (#shot/<n>), Shot list > shot.
+       Everything comes from the client's Cartridge: the standard (brand.photo, photos.spec), the space and team shots
+       (photos.space) and the menu items in this shoot (photos.shoot.items, "Section|Name", set when the shoot is posted).
+       Each dish is shot twice, three-quarter (photo.src, the one the site and the menu use) and overhead (photo.overhead).
+       An upload keeps a web copy (1920 px) on the kit and, for a client with BrandDesk, the full-size original in their Library.
+       /business/shoot?listing=<slug> is a real client (ve-brand-kit); /business/sample/shoot is Green Leaf Kitchen's, for the visit. */
+    :root{--sh-green:#1E5F2A;--sh-text:#111;--sh-75:rgba(0,0,0,.72);--sh-line:rgba(0,0,0,.14);--sh-bg:#f6f7f5;}
+    body{margin:0;font-family:'Montserrat',sans-serif;color:var(--sh-text);background:var(--sh-bg);}
+    [hidden]{display:none !important;}
+    .wrap{max-width:none;margin:0;padding:32px 40px 72px;}
+    @media (max-width:640px){.wrap{padding:22px 16px 56px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--sh-green);margin:0 0 6px;}
+    h1{font-size:clamp(24px,3.2vw,34px);font-weight:900;text-transform:uppercase;line-height:1.1;margin:0 0 8px;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--sh-75);margin:0 0 18px;max-width:860px;line-height:1.55;}
+    .sample{background:#fff7e0;border:1px solid #f2d48a;color:#6b4a00;border-radius:8px;padding:10px 14px;font-size:13.5px;margin:0 0 18px;}
+    .sample a{color:inherit;font-weight:800;}
+    .card{background:#fff;border:1px solid var(--sh-line);border-radius:12px;padding:18px 20px;margin:0 0 18px;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--sh-75);margin:0 0 12px;}
+    .crumb a{color:var(--sh-green);}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:6px;cursor:pointer;border:0;background:var(--sh-green);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;}
+    .btn.ghost{background:#fff;color:var(--sh-text);border:1px solid rgba(0,0,0,.28);}
+    .btn:disabled{opacity:.55;cursor:default;}
+    .prog{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 18px;}
+    .prog .bar{flex:1;min-width:200px;height:10px;border-radius:6px;background:#e3e7e3;overflow:hidden;}
+    .prog .bar i{display:block;height:100%;background:var(--sh-green);}
+    .prog b{font-size:14px;}
+    .std{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:10px 22px;font-size:13.5px;line-height:1.5;}
+    .std span{display:block;font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--sh-75);margin-bottom:2px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px;}
+    .chips a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--sh-text);text-decoration:none;background:#fff;}
+    .chips a[aria-current]{border-color:var(--sh-green);box-shadow:inset 0 -3px 0 var(--sh-green);}
+    .chips em{font-style:normal;color:var(--sh-75);margin-left:4px;}
+    .group{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--sh-75);margin:20px 0 8px;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:10px;}
+    .row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--sh-line);border-radius:10px;padding:10px 12px;color:inherit;text-decoration:none;}
+    .row:hover{border-color:var(--sh-green);}
+    .thumb{width:72px;height:72px;border-radius:8px;object-fit:cover;background:#eef1ee;display:block;}
+    .thumb.none{border:2px dashed rgba(0,0,0,.2);background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-75);text-align:center;}
+    .row b{display:block;font-size:14px;line-height:1.3;}
+    .row small{display:block;font-size:12.5px;color:var(--sh-75);margin-top:2px;}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:5px;white-space:nowrap;}
+    .tag.ok{background:#dcfce7;color:#14532d;}.tag.todo{background:#e0e7ff;color:#1e1b4b;}.tag.half{background:#fef3c7;color:#713f12;}
+    .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:22px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .slots{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .slot{background:#fff;border:1px solid var(--sh-line);border-radius:12px;padding:14px;}
+    .slot h3{font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin:0 0 4px;}
+    .slot p{font-size:12.5px;color:var(--sh-75);margin:0 0 10px;line-height:1.45;}
+    .slot .pic{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:8px;display:block;background:#eef1ee;}
+    .slot .pic.none{border:2px dashed rgba(0,0,0,.2);background:#fafafa;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--sh-75);}
+    .slot label.btn{margin-top:10px;width:100%;box-sizing:border-box;}
+    .slot .msg{font-size:12.5px;font-weight:700;min-height:18px;margin-top:8px;color:var(--sh-green);}
+    .slot .msg.err{color:#a61b1b;}
+    .facts{font-size:14px;line-height:1.6;}
+    .facts p{margin:0 0 10px;}
+    .facts ul{margin:0 0 10px;padding-left:18px;}
+    .note{width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.28);border-radius:6px;min-height:72px;}
+    .navrow{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;}
+    .navrow span{font-size:13px;font-weight:700;color:var(--sh-75);}
+    .done{background:#fff;border:2px solid var(--sh-green);border-radius:12px;padding:18px 20px;margin:18px 0 0;}
+    .gate{max-width:560px;margin:40px auto;background:#fff;border:1px solid var(--sh-line);border-radius:14px;padding:30px;text-align:center;}
+    .gate h1{font-size:22px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <div id="sample" class="sample" hidden>Sample: Green Leaf Kitchen's shoot day, so you can see what a photographer works from. Uploads stay in this browser for the visit. <a href="#" data-reset>Start over</a></div>
+    <main id="app"><p class="sub">Loading the shot list...</p></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/business/sample/cartridge.js"></script>
+  <script>
+  (function () {
+    var LIVE = decodeURIComponent((location.search.match(/[?&]listing=([^&#]+)/) || [])[1] || '');
+    var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-brand-kit', KEY = 've_shoot_sample', SAMPLE_N = 15;
+    var app = document.getElementById('app'), C = null, NAME = '', ROLE = 'none', SHOTS = [];
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(action, body) {
+      var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(), h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ action: action, slug: LIVE }, body || {})) })
+        .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+    }
+
+    // ---- The sample: Green Leaf Kitchen as it stands on a shoot day (three dishes in, the rest to shoot).
+    function sampleCartridge() {
+      var c = JSON.parse(JSON.stringify(window.VE_CARTRIDGE)), all = [];
+      c.menu.sections.forEach(function (s) { s.items.forEach(function (it) { all.push([s.name, it]); }); });
+      all.sort(function (a, b) { return (b[1].tags.indexOf('Favorite') > -1) - (a[1].tags.indexOf('Favorite') > -1); });
+      var pick = all.slice(0, SAMPLE_N), keys = pick.map(function (x) { return x[0] + '|' + x[1].name; });
+      c.menu.sections.forEach(function (s) { s.items.forEach(function (it) { var k = keys.indexOf(s.name + '|' + it.name);
+        if (k < 0 || k > 2) it.photo = { state: 'to_shoot' }; else it.photo = { state: 'shot', src: it.photo.src, overhead: { src: it.photo.src } }; }); });
+      c.photos.space.forEach(function (x, i) { if (i > 1) { x.state = 'to_shoot'; delete x.src; } });
+      c.photos.shoot = { items: keys, rate_cents: 45000, trial_cents: 7500, booked: { name: 'Sample photographer' } };
+      return c;
+    }
+    function save() { if (!LIVE) try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
+
+    // ---- The shots: the space and the team first, then each menu item in this shoot, in menu order.
+    function build() {
+      var keys = (C.photos.shoot && C.photos.shoot.items) || [], out = [];
+      (C.photos.space || []).forEach(function (x, i) { out.push({ kind: 'space', i: i, name: x.shot, group: 'The space and the team', ref: x }); });
+      C.menu.sections.forEach(function (s, si) { s.items.forEach(function (it, ii) {
+        if (keys.indexOf(s.name + '|' + it.name) < 0) return; it.photo = it.photo || { state: 'to_shoot' };
+        out.push({ kind: 'menu', si: si, ii: ii, name: it.name, group: s.name, ref: it, drink: /drink|coffee|tea|juice|smoothie|bar|cocktail/i.test(s.name) }); }); });
+      SHOTS = out;
+    }
+    function stateOf(x) {
+      if (x.kind === 'space') return x.ref.src ? 'ok' : 'todo';
+      var p = x.ref.photo || {}; return p.src && p.overhead && p.overhead.src ? 'ok' : p.src || (p.overhead && p.overhead.src) ? 'half' : 'todo';
+    }
+    var WORD = { ok: 'Shot', half: 'One of two', todo: 'To shoot' };
+    function thumbOf(x) { return x.kind === 'space' ? x.ref.src : (x.ref.photo && (x.ref.photo.src || (x.ref.photo.overhead && x.ref.photo.overhead.src))); }
+
+    function standard() {
+      var sp = C.photos.spec || {}, ph = (C.brand && C.brand.photo) || {};
+      var rows = [['The look', ph.look], ['Never', ph.never], ['Angles', sp.angles], ['The set', sp.set], ['Light', sp.light], ['Plating', sp.plate], ['Drinks', sp.drinks], ['Crops and size', sp.crops]];
+      return '<section class="card"><h2>The standard every photo meets</h2><div class="std">' + rows.filter(function (r) { return r[1]; }).map(function (r) { return '<div><span>' + esc(r[0]) + '</span>' + esc(r[1]) + '</div>'; }).join('') + '</div></section>';
+    }
+
+    function drawList(tab) {
+      tab = tab || 'todo';
+      var n = SHOTS.length, done = SHOTS.filter(function (x) { return stateOf(x) === 'ok'; }).length, sh = C.photos.shoot || {};
+      var counts = { todo: SHOTS.filter(function (x) { return stateOf(x) !== 'ok'; }).length, shot: done, all: n };
+      var list = SHOTS.map(function (x, k) { return [x, k]; }).filter(function (p) { var s = stateOf(p[0]); return tab === 'all' || (tab === 'shot' ? s === 'ok' : s !== 'ok'); });
+      var groups = [], html = '';
+      list.forEach(function (p) { var g = p[0].group; if (groups.indexOf(g) < 0) groups.push(g); });
+      groups.forEach(function (g) {
+        html += '<div class="group">' + esc(g) + '</div><div class="grid">' + list.filter(function (p) { return p[0].group === g; }).map(function (p) {
+          var x = p[0], s = stateOf(x), t = thumbOf(x);
+          return '<a class="row" href="#shot/' + p[1] + '">' + (t ? '<img class="thumb" src="' + esc(t) + '" alt="" loading="lazy">' : '<span class="thumb none">To shoot</span>') +
+            '<span><b>' + esc(x.name) + '</b><small>' + (x.kind === 'space' ? 'One photo' : 'Three-quarter and overhead') + '</small></span><span class="tag ' + s + '">' + WORD[s] + '</span></a>';
+        }).join('') + '</div>';
+      });
+      app.innerHTML = '<p class="eyebrow">Shot list' + (sh.booked && sh.booked.name ? ' · ' + esc(sh.booked.name) : '') + '</p><h1>' + esc(NAME) + ' photo shoot</h1>' +
+        '<p class="sub">Every shot this shoot needs, the standard each one meets, and where it goes. Open a shot, upload it, and it lands on their brand kit' + (LIVE ? ' and, at full size, in their Library' : '') + '. One shoot feeds their website, Google, the delivery apps and their social.</p>' +
+        '<div class="prog"><div class="bar"><i style="width:' + (n ? Math.round(done / n * 100) : 0) + '%"></i></div><b>' + done + ' of ' + n + ' shot</b></div>' +
+        standard() +
+        '<div class="chips">' + [['todo', 'To shoot'], ['shot', 'Shot'], ['all', 'All']].map(function (c) { return '<a href="#list/' + c[0] + '"' + (c[0] === tab ? ' aria-current="page"' : '') + '>' + c[1] + '<em>' + counts[c[0]] + '</em></a>'; }).join('') + '</div>' +
+        (list.length ? html : '<p class="sub">' + (tab === 'todo' ? 'Every shot is in.' : 'Nothing here yet.') + '</p>') +
+        (sh.done_at ? '<div class="done"><h2>Sent to the team</h2><p class="sub" style="margin:0">On ' + esc(new Date(sh.done_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })) + '. Upload more any time; the team sees every change.</p></div>'
+          : '<div class="done"><h2>When the shoot is in</h2><p class="sub">Tell the team it is done. Anything you could not shoot, say why (an item off the menu today, a room being painted).</p>' +
+            '<textarea class="note" id="doneNote" maxlength="1000" placeholder="Anything the team should know"></textarea><div class="navrow"><span>' + done + ' of ' + n + ' shot</span><button class="btn" type="button" data-done>Tell the team it is done</button></div><p class="slot msg" id="doneMsg" style="border:0;padding:0"></p></div>');
+    }
+
+    function slot(id, title, help, src) {
+      return '<div class="slot"><h3>' + esc(title) + '</h3><p>' + esc(help) + '</p>' + (src ? '<img class="pic" src="' + esc(src) + '" alt="">' : '<div class="pic none">Not shot yet</div>') +
+        '<label class="btn' + (src ? ' ghost' : '') + '">' + (src ? 'Replace' : 'Upload') + '<input type="file" accept="image/*" data-up="' + id + '" hidden></label><div class="msg" id="msg-' + id + '" role="status"></div></div>';
+    }
+    function drawShot(k) {
+      var x = SHOTS[k]; if (!x) return drawList();
+      var sp = C.photos.spec || {}, it = x.ref, p = it.photo || {}, about = '';
+      if (x.kind === 'menu') {
+        about = '<div class="facts">' + (it.copy || it.was ? '<p>' + esc(it.copy || it.was) + '</p>' : '') + '<p><b>' + esc(x.group) + '</b>' + (it.price ? ' · ' + esc(it.price) : '') + (it.tags && it.tags.length ? ' · ' + esc(it.tags.join(', ')) : '') + '</p>' +
+          '<ul>' + [sp.plate, x.drink ? sp.drinks : '', sp.set, sp.light].filter(Boolean).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>';
+      } else about = '<div class="facts"><ul>' + [C.brand && C.brand.photo && C.brand.photo.look, 'Wide and level, nothing cropped at the edges. People only with their OK.', sp.crops].filter(Boolean).map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>';
+      var slots = x.kind === 'menu' ? slot('main', 'Three-quarter', 'About 45 degrees. This is the one on their menu, website and the delivery apps.', p.src) + slot('overhead', 'Overhead', 'Straight down, the same set and plate.', p.overhead && p.overhead.src)
+        : slot('main', 'The photo', x.name, it.src);
+      app.innerHTML = '<p class="crumb"><a href="#list">Shot list</a> &rsaquo; ' + esc(x.name) + '</p><p class="eyebrow">' + esc(x.group) + '</p><h1>' + esc(x.name) + '</h1>' +
+        '<div class="two"><section class="card">' + about + '<label class="eyebrow" for="shotNote" style="display:block;margin-top:6px">A note for the team</label><textarea class="note" id="shotNote" maxlength="400" placeholder="Off the menu today, the plate we used, anything">' + esc((x.kind === 'menu' ? p.note : it.note) || '') + '</textarea>' +
+        '<div class="navrow"><span id="noteMsg"></span><button class="btn ghost" type="button" data-note>Save the note</button></div></section><div class="slots">' + slots + '</div></div>' +
+        '<div class="navrow"><a class="btn ghost" href="' + (k > 0 ? '#shot/' + (k - 1) : '#list') + '">Back</a><span>Shot ' + (k + 1) + ' of ' + SHOTS.length + '</span>' +
+        (k < SHOTS.length - 1 ? '<a class="btn" href="#shot/' + (k + 1) + '">Next shot</a>' : '<a class="btn" href="#list">Back to the list</a>') + '</div>';
+      app.onchange = function (e) { var f = e.target.closest('[data-up]'); if (f && f.files[0]) take(k, f.getAttribute('data-up'), f.files[0]); };
+    }
+
+    // ---- Pictures: a 1920 px web copy for the kit (the site, Google, the apps) and the original for their Library.
+    function readImg(file) {
+      return new Promise(function (res, rej) { var img = new Image(), u = URL.createObjectURL(file);
+        img.onload = function () { res({ img: img, url: u }); }; img.onerror = function () { URL.revokeObjectURL(u); rej(new Error('That file is not a picture we can read. Send a JPEG, PNG or WebP.')); }; img.src = u; });
+    }
+    function scaled(img, max, type, q) {
+      return new Promise(function (res) { var s = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); if (type === 'data') res(c.toDataURL('image/jpeg', q)); else c.toBlob(res, 'image/jpeg', q); });
+    }
+    function put(u, f) { return fetch(u.signed_url, { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg', 'x-upsert': 'false' }, body: f }).then(function (r) { if (!r.ok) throw new Error('The upload did not finish. Try again.'); }); }
+    function upload(file, x, title, say) {
+      return readImg(file).then(function (o) {
+        var w = o.img.width, h = o.img.height, small = Math.max(w, h) < 3000;
+        if (!LIVE) return scaled(o.img, 900, 'data', 0.82).then(function (d) { URL.revokeObjectURL(o.url); return { src: d, w: w, h: h, small: small }; });
+        return scaled(o.img, 1920, 'blob', 0.86).then(function (web) {
+          say('Uploading the web copy...');
+          return api('kit_photo_url', { kind: x.kind === 'menu' ? 'menu' : 'space', content_type: 'image/jpeg', bytes: web.size }).then(function (u) {
+            if (!u.ok) throw new Error('The upload could not start. Try again.');
+            return put(u, web).then(function () { return api('kit_photo_done', { path: u.path }); });
+          }).then(function (d) {
+            if (!d.ok) throw new Error('The upload did not finish. Try again.');
+            var orig = /^image\/(jpeg|png|webp)$/.test(file.type) && file.size <= 41943040 ? Promise.resolve(file) : scaled(o.img, 6000, 'blob', 0.92);
+            say('Saving the full size to their Library...');
+            return orig.then(function (f) { return api('kit_photo_url', { kind: 'full', content_type: f.type || 'image/jpeg', bytes: f.size }).then(function (u) {
+              if (!u.ok) return { library: false };
+              return put(u, f).then(function () { return api('kit_photo_done', { full: true, path: u.path, title: title, width: w, height: h }); }).then(function (r) { return { library: !!r.ok }; });
+            }); }).then(function (lib) { URL.revokeObjectURL(o.url); return { src: d.url, w: w, h: h, small: small, library: lib.library }; });
+          });
+        });
+      });
+    }
+    function persist(x) {
+      if (!LIVE) { save(); return Promise.resolve({ ok: true }); }
+      return x.kind === 'menu' ? api('kit_save', { section: 'menu', part: C.menu, state: 'in_progress' }) : api('kit_save', { section: 'photos', part: C.photos.space, state: 'in_progress' });
+    }
+    function take(k, which, file) {
+      var x = SHOTS[k], m = document.getElementById('msg-' + which), say = function (t, bad) { m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t; };
+      app.querySelectorAll('[data-up]').forEach(function (i) { i.disabled = true; });
+      say('Reading it...');
+      upload(file, x, x.name + (x.kind === 'menu' ? (which === 'overhead' ? ', overhead' : ', three-quarter') : ''), say).then(function (r) {
+        if (x.kind === 'menu') { var p = x.ref.photo = x.ref.photo || {}; if (which === 'overhead') p.overhead = { src: r.src }; else p.src = r.src; p.state = p.src ? 'shot' : 'to_shoot'; }
+        else { x.ref.src = r.src; x.ref.state = 'shot'; }
+        return persist(x).then(function (d) {
+          if (!d.ok) throw new Error('It uploaded but did not save to the kit. Try again.');
+          drawShot(k);
+          var m2 = document.getElementById('msg-' + which); m2.className = 'msg' + (r.small ? ' err' : '');
+          m2.textContent = r.small ? 'Saved, but it is small (' + r.w + ' x ' + r.h + ' px). The standard is 3000 px on the long side.' : 'Saved' + (r.library ? ', and the full size is in their Library.' : '.');
+        });
+      }).catch(function (err) { say(err.message, true); app.querySelectorAll('[data-up]').forEach(function (i) { i.disabled = false; }); });
+    }
+
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-reset]')) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.hash = '#list'; location.reload(); return; }
+      if (e.target.closest('[data-signin]')) { if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal(function () { location.reload(); }); return; }
+      var nb = e.target.closest('[data-note]');
+      if (nb) { var k = +(location.hash.match(/^#shot\/(\d+)/) || [])[1], x = SHOTS[k], v = document.getElementById('shotNote').value.trim().slice(0, 400), nm = document.getElementById('noteMsg');
+        if (x.kind === 'menu') { x.ref.photo = x.ref.photo || { state: 'to_shoot' }; x.ref.photo.note = v; } else x.ref.note = v;
+        nb.disabled = true; nm.textContent = 'Saving...'; persist(x).then(function (d) { nb.disabled = false; nm.textContent = d.ok ? 'Saved.' : 'That did not save.'; }); return; }
+      var db = e.target.closest('[data-done]');
+      if (db) { var note = document.getElementById('doneNote').value.trim(), dm = document.getElementById('doneMsg');
+        if (!LIVE) { C.photos.shoot.done_at = new Date().toISOString(); save(); drawList('all'); return; }
+        db.disabled = true; dm.textContent = 'Sending...';
+        api('shoot_done', { note: note }).then(function (d) { if (d.ok) { C.photos.shoot.done_at = new Date().toISOString(); drawList('all'); } else { db.disabled = false; dm.textContent = 'That did not send. Try again.'; } }); }
+    });
+
+    function route() {
+      var h = location.hash.replace(/^#/, ''), m;
+      if ((m = h.match(/^shot\/(\d+)$/))) drawShot(+m[1]); else drawList((h.match(/^list\/(todo|shot|all)$/) || [])[1]);
+      window.scrollTo(0, 0);
+    }
+    function gate(title, line, button) { app.innerHTML = '<div class="gate"><p class="eyebrow">Shot list</p><h1>' + esc(title) + '</h1><p class="sub">' + line + '</p>' + (button || '') + '</div>'; }
+    function start(c, name) { C = c; NAME = name; build(); window.addEventListener('hashchange', route); route(); }
+
+    if (!LIVE) {
+      document.getElementById('sample').hidden = false; var saved = null;
+      try { saved = JSON.parse(sessionStorage.getItem(KEY) || 'null'); } catch (e) {}
+      start(saved || sampleCartridge(), window.VE_CARTRIDGE.business.name); return;
+    }
+    if (!(window.VEAuth && VEAuth.getToken && VEAuth.getToken())) { gate('Sign in to open the shot list', 'The shot list is for the photographer booked on this shoot and the business.', '<button class="btn" type="button" data-signin>Sign in</button>'); return; }
+    api('kit_get').then(function (d) {
+      if (d._status === 401) return gate('Sign in to open the shot list', 'Your session ended. Sign in again.', '<button class="btn" type="button" data-signin>Sign in</button>');
+      if (d.error === 'not_found') return gate('We could not find that business', 'Check the link in your booking email.');
+      if (d.error === 'not_yours') return gate(d.listing.name + ' photo shoot', 'This shot list opens for the photographer booked on the shoot. If that is you, sign in with the email you applied with.');
+      if (!d.ok || !d.cartridge) return gate('The shot list did not open', 'Their brand kit is not set up yet. Our team will be in touch.');
+      ROLE = d.role;
+      if (!d.cartridge.photos || !d.cartridge.photos.shoot) return gate(d.listing.name + ' photo shoot', ROLE === 'admin' ? 'No shoot posted yet. Post it from Depot &gt; BrandDesk, on their page.' : 'No shoot is set up yet. Our team will be in touch.');
+      start(d.cartridge, d.listing.name);
+    }).catch(function () { gate('The shot list did not open', 'Check your connection and try again.'); });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

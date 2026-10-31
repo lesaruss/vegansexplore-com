@@ -184,7 +184,7 @@
     '.vg :focus-visible{outline:3px solid #F69820;outline-offset:2px;}'
   ].join('');
 
-  var KIND = { campaign: 'Paid campaign', collab: 'Collaboration', hosting: 'Hosting', event: 'Event', content: 'Content', bounty: 'Bounty' };
+  var KIND = { campaign: 'Paid campaign', collab: 'Collaboration', hosting: 'Hosting', event: 'Event', content: 'Content', photo: 'Photo shoot', bounty: 'Bounty' };
   var MODE = { apply: 'Apply', audition: 'Audition', claim: 'Claim it' };
   var STATUS = { applied: ['Applied', ''], shortlisted: ['Shortlisted', 'ok'], audition: ['Audition requested', 'warn'], booked: ['Booked', 'ok'],
     delivered: ['Delivered, results counting', 'ok'], paid: ['Paid', 'dark'], not_selected: ['Not selected', ''] };
@@ -193,6 +193,7 @@
     pitch: { name: 'Your pitch', label: 'Why you, for this one', help: 'Two or three lines: who your audience is and the angle you would take. Up to 600 characters.' },
     examples: { name: 'Examples', label: 'Links to two or three posts like this', help: 'Posts you made that show the kind of work this asks for. One link a line.' },
     audition: { name: 'Audition', label: 'Your audition video', help: 'A link to the video (unlisted YouTube, Google Drive, Dropbox or an Instagram post). One take is fine.' },
+    trial: { name: 'Trial photos', label: 'A link to your three trial photos', help: 'Full size, in a Google Drive or Dropbox folder anyone with the link can open. Shot to the standard on the gig.' },
     rate: { name: 'Rate and dates', label: 'Your rate and when you can do it', help: 'The fee is the brand\'s; say if you need more and why, and the dates that work.' }
   };
   var CHAPTER_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', dc: 'Washington, D.C.',
@@ -206,12 +207,20 @@
     hosting: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
     event: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     content: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/>',
+    photo: '<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/><path d="M17.5 10.5h.01"/>',
     bounty: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
     board: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
     mine: '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 13l2 2 4-4"/>',
     kit: '<rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="11" r="2.5"/><path d="M5.5 16.5c.8-1.6 2-2.5 3.5-2.5s2.7.9 3.5 2.5M15 10h4M15 13h3"/>',
     how: '<path d="M3 17l6-6 4 4 8-8M15 7h6v6"/>'
   };
+  // What a gig asks for at each stage: a photographer's paid trial (the ask 'trial') is never asked up front; once an audition or a
+  // trial is requested, only that is sent (ve-bounties apply agrees).
+  function audKey(g) { return (g.asks || []).indexOf('trial') > -1 ? 'trial' : (g.asks || []).indexOf('audition') > -1 ? 'audition' : ''; }
+  function stepsFor(g, m) { var a = g.asks || [];
+    if (m && m.status === 'audition') return a.filter(function (k) { return k === 'trial' || k === 'audition'; });
+    return a.filter(function (k) { return k !== 'trial'; }); }
+  function audWord(g) { return audKey(g) === 'trial' ? 'Send your trial photos' : 'Record your audition'; }
   function icon(k) { return SVG + (ICON[k] || ICON.bounty) + '</svg>'; }
   // A gig's picture: the partner's art when the gig has one, else the flat icon of its kind (Sean, 2026-10-30: "each one should have a
   // little square with rounded corner image... We want this to be inviting and visual").
@@ -383,14 +392,14 @@
 
     // My gigs wear the board's tile (Sean, 2026-10-30: "my gigs should look the same way... three columns"), with where it stands.
     function mineCard(m) {
-      var g = gig(m.gig), s = STATUS[m.status], aud = g && m.status === 'audition' && (g.asks || []).indexOf('audition') > -1;
+      var g = gig(m.gig), s = STATUS[m.status], aud = g && m.status === 'audition' && !!audKey(g), shoot = g && g.shoot && m.status === 'booked';
       // Where it stands is the first pill at the bottom (Sean, 2026-10-30: "we could put the booked as the first thing in the bottom pills").
       var inner = '<div class="vg-tile-h">' + thumb(g ? g.img : m.img, g ? g.kind : 'content') + '<div class="vg-tile-r"><span class="vg-partner">' + esc(g ? g.partner.name : 'Past gig') + '</span><div class="vg-title">' + esc(g ? g.title : m.title) + '</div>' +
         (g ? '<div class="vg-pay">' + esc(payText(g.pay)) + '</div>' : '') +
         (m.next ? '<div class="vg-next' + (aud ? ' warn' : '') + '">' + esc(m.next) + '</div>' : '') + '</div></div>' +
-        '<div class="vg-tags"><span class="vg-tag ' + s[1] + '">' + s[0] + '</span>' + (g ? kindTag(g) + '<span class="vg-tag place">' + esc(where(g)) + '</span>' : '') + (aud ? '<span class="vg-tag warn">Record your audition</span>' : '') +
+        '<div class="vg-tags"><span class="vg-tag ' + s[1] + '">' + s[0] + '</span>' + (g ? kindTag(g) + '<span class="vg-tag place">' + esc(where(g)) + '</span>' : '') + (aud ? '<span class="vg-tag warn">' + esc(audWord(g)) + '</span>' : '') + (shoot ? '<span class="vg-tag ok">Open the shot list</span>' : '') +
         (m.at ? '<span class="vg-tag">' + (m.status === 'applied' ? 'Applied ' : 'Updated ') + new Date(m.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + '</span>' : '') + '</div>';
-      var href = aud ? '#apply/' + g.id + '/' + ((g.asks || []).indexOf('audition') + 1) : g ? '#gig/' + g.id : '';
+      var href = shoot ? g.shoot : aud ? '#apply/' + g.id + '/1' : g ? '#gig/' + g.id : '';
       return href ? '<a class="vg-card vg-tile" href="' + esc(href) + '">' + inner + '</a>' : '<div class="vg-card vg-tile">' + inner + '</div>';
     }
 
@@ -477,13 +486,13 @@
       gig: function (id) {
         var g = gig(id); if (!g) return head('board') + '<div class="vg-empty">That gig is not on the board any more. <a href="#board">See every gig</a></div>';
         var ch = checks(g, C), ok = ch.every(function (x) { return x.ok; }), m = mineOf(g.id);
-        var audStep = (g.asks || []).indexOf('audition') + 1;
-        var act = m && m.status === 'audition' && audStep ? '<span class="vg-tag warn">Audition requested</span> <a class="vg-btn" href="#apply/' + esc(g.id) + '/' + audStep + '">Record your audition</a>'
+        var act = m && m.status === 'booked' && g.shoot ? '<span class="vg-tag ok">Booked</span> <a class="vg-btn" href="' + esc(g.shoot) + '">Open the shot list</a>'
+          : m && m.status === 'audition' && audKey(g) ? '<span class="vg-tag warn">' + (audKey(g) === 'trial' ? 'Trial requested' : 'Audition requested') + '</span> <a class="vg-btn" href="#apply/' + esc(g.id) + '/1">' + esc(audWord(g)) + '</a>'
           : m ? '<span class="vg-tag ' + STATUS[m.status][1] + '">' + STATUS[m.status][0] + '</span> <a class="vg-btn ghost" href="#mine">My gigs</a>'
           : !ok ? '<button class="vg-btn" disabled>' + esc(MODE[g.mode]) + '</button><p class="vg-help">You do not meet every requirement yet. Grow where it says, or watch for gigs with no minimum.</p>'
           : g.mode === 'claim' ? (g.href && !demo ? '<a class="vg-btn" href="' + esc(g.href) + '">Claim it</a>' : '<button class="vg-btn" data-claim="' + esc(g.id) + '">Claim it</button>')
           : '<a class="vg-btn" href="#apply/' + esc(g.id) + '/1">' + (g.mode === 'audition' ? 'Apply and audition' : 'Apply') + '</a>';
-        var steps = (g.asks || []).map(function (a) { return '<li>' + esc(ASK[a].name) + (a === 'audition' && g.audition ? ': ' + esc(g.audition) : '') + '</li>'; }).join('');
+        var steps = (g.asks || []).map(function (a) { return '<li>' + esc(ASK[a].name) + (a === 'trial' ? ', only when we ask' : '') + ((a === 'audition' || a === 'trial') && g.audition ? ': ' + esc(g.audition) : '') + '</li>'; }).join('');
         return head('board') + '<div class="vg-crumb"><a href="#board">Gigs</a> &rsaquo; ' + esc(g.title) + '</div>' +
           '<div class="vg-partner">' + esc(g.partner.name) + ' · ' + esc(g.partner.kind) + '</div><h2 class="vg-h">' + esc(g.title) + '</h2>' +
           '<div class="vg-two"><div>' +
@@ -491,19 +500,19 @@
           '<div class="vg-box"><h3>What you deliver</h3><ul>' + (g.deliverables || []).map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul><p style="margin-top:8px"><b>When:</b> ' + esc(g.timeline || '') + '</p></div>' +
           (steps ? '<div class="vg-box"><h3>What you send to apply</h3><ul>' + steps + '</ul></div>' : '<div class="vg-box"><h3>How it works</h3><p>No application: claim it, do it, send it in. Points land once the team approves it.</p></div>') +
           '</div><div>' +
-          '<div class="vg-box"><h3>Pay</h3><p class="vg-pay" style="font-size:18px">' + esc(payText(g.pay)) + '</p><p>' + (g.pay.type === 'paid' ? 'Your full fee: half when you are booked, half when your posts are live. Our fee is the brand\'s, on top, never taken from you.' : g.pay.type === 'points' ? 'Points once the team approves what you send.' : 'Perks on the day, and any points once it is delivered.') + '</p></div>' +
+          '<div class="vg-box"><h3>Pay</h3><p class="vg-pay" style="font-size:18px">' + esc(payText(g.pay)) + '</p><p>' + (g.pay.type === 'paid' && g.kind === 'photo' ? 'Your full fee: half when you are booked, half when every shot is in. A paid trial, when we ask for one, is paid on its own.' : g.pay.type === 'paid' ? 'Your full fee: half when you are booked, half when your posts are live. Our fee is the brand\'s, on top, never taken from you.' : g.pay.type === 'points' ? 'Points once the team approves what you send.' : 'Perks on the day, and any points once it is delivered.') + '</p></div>' +
           '<div class="vg-box"><h3>Who it is for</h3>' + (ch.length ? '<ul class="vg-req">' + ch.map(function (x) { return '<li><i class="' + (x.ok ? '' : 'no') + '">' + (x.ok ? '&#10003;' : '&times;') + '</i><span><b>' + esc(x.label) + '</b><br>' + esc(x.you) + '</span></li>'; }).join('') + '</ul>' : '<p>Open to everyone. No following needed.</p>') + '</div>' +
           '<div class="vg-box"><h3>Details</h3><p>' + esc(where(g)) + '<br>' + esc(closesText(g)) + (g.spots ? '<br>' + g.spots + (g.spots === 1 ? ' spot' : ' spots') : '') + (g.applicants ? '<br>' + num(g.applicants) + ' applied so far' : '') + '</p></div>' +
           '<div class="vg-btns">' + act + '</div></div></div>';
       },
       apply: function (id, n) {
         var g = gig(id); if (!g || g.mode === 'claim') return V.board();
-        var asks = (g.asks || []).concat(['send']), i = Math.min(Math.max(1, +n || 1), asks.length), a = asks[i - 1], f = state.form[id] = state.form[id] || {};
+        var askNow = stepsFor(g, mineOf(g.id)), asks = askNow.concat(['send']), i = Math.min(Math.max(1, +n || 1), asks.length), a = asks[i - 1], f = state.form[id] = state.form[id] || {};
         var stepsBar = '<div class="vg-steps">' + asks.map(function (k, j) { return '<span class="' + (j === i - 1 ? 'on' : '') + '">' + (k === 'send' ? 'Send' : ASK[k].name) + '</span>'; }).join('') + '</div>';
         var body;
-        if (a === 'send') body = '<div class="vg-box"><h3>Check and send</h3>' + (g.asks || []).map(function (k) { return '<p><b>' + esc(ASK[k].name) + ':</b> ' + esc(f[k] || 'Not filled in') + '</p>'; }).join('') +
+        if (a === 'send') body = '<div class="vg-box"><h3>Check and send</h3>' + askNow.map(function (k) { return '<p><b>' + esc(ASK[k].name) + ':</b> ' + esc(f[k] || 'Not filled in') + '</p>'; }).join('') +
           '<p class="vg-help">Your rates and numbers stay with our team. The partner sees your name and profile only once you are shortlisted.</p></div>';
-        else body = '<label class="vg-label" for="vg-in">' + esc(ASK[a].label) + '</label>' + (a === 'audition' && g.audition ? '<p class="vg-help" style="margin:0 0 8px"><b>The prompt:</b> ' + esc(g.audition) + '</p>' : '') +
+        else body = '<label class="vg-label" for="vg-in">' + esc(ASK[a].label) + '</label>' + ((a === 'audition' || a === 'trial') && g.audition ? '<p class="vg-help" style="margin:0 0 8px"><b>' + (a === 'trial' ? 'The trial' : 'The prompt') + ':</b> ' + esc(g.audition) + '</p>' : '') +
           (a === 'pitch' || a === 'rate' || a === 'examples' ? '<textarea id="vg-in" maxlength="' + (a === 'pitch' ? 600 : 1200) + '">' + esc(f[a] || (a === 'rate' && g.pay.cents ? money(g.pay.cents) + ' works for me. Available ' : '')) + '</textarea>' : '<input id="vg-in" type="url" placeholder="https://" value="' + esc(f[a] || '') + '">') +
           '<p class="vg-help">' + esc(ASK[a].help) + '</p>';
         return head('board') + '<div class="vg-crumb"><a href="#board">Gigs</a> &rsaquo; <a href="#gig/' + esc(id) + '">' + esc(g.title) + '</a> &rsaquo; Apply</div>' +
@@ -821,11 +830,11 @@
             chapters: [city], remote: !!b.remote, posted: b.created_at || new Date().toISOString(), closes: b.apply_by || b.claims_close_at || b.due_at, spots: b.spots_left,
             brief: b.brief, deliverables: [b.deliverable].filter(Boolean), timeline: b.due_at ? 'Due ' + new Date(b.due_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Open',
             href: mode === 'claim' ? '/bounties?community=' + encodeURIComponent(city) + (c ? '&campaign=' + encodeURIComponent(c.slug) : '') + '&id=' + b.id : '',
-            asks: b.asks || [], audition: b.audition_prompt || '', req: { min_followers: b.req_min_followers || 0, platforms: b.req_platforms || [], level: b.req_level || 0 } };
+            asks: b.asks || [], audition: b.audition_prompt || '', shoot: b.shoot_slug ? '/business/shoot?listing=' + encodeURIComponent(b.shoot_slug) : '', req: { min_followers: b.req_min_followers || 0, platforms: b.req_platforms || [], level: b.req_level || 0 } };
         });
         var mine = (d.bounties || []).filter(function (b) { return b.mine && b.mine.status !== 'released'; }).map(function (b) {
           var s = b.mine.status, map = { applied: 'applied', shortlisted: 'shortlisted', audition: 'audition', not_selected: 'not_selected', approved: 'paid', submitted: 'delivered' };
-          return { gig: b.id, status: map[s] || 'booked', next: s === 'approved' ? num(b.mine.points_awarded || b.points) + ' points' : map[s] ? '' : 'Open it in Bounties' };
+          return { gig: b.id, status: map[s] || 'booked', next: s === 'approved' ? num(b.mine.points_awarded || b.points) + ' points' : map[s] ? '' : b.shoot_slug ? 'Your shot list is ready' : 'Open it in Bounties' };
         });
         var creator = { name: m && m.name, avatar: m && (m.avatar_url || m.photo_url), city: CHAPTER_NAMES[city], chapters: [city], level: m && m.level || 1, points: m && m.points || 0 };
         return mount(el, { live: true, onView: opts.onView, send: function (id, app) {
