@@ -2147,6 +2147,18 @@ doorway into making them an ambassador." **Launched to everyone 2026-10-28** (Se
   link the account in the listing editor's Their Vegans Explore account. Proven 2026-10-30 end to end on the live database with a test
   visitor (claim card on Brooke's page, every step, the application, Accepted, the funnel and the journey). A new promotion is a new
   `promo` slug on the same table and functions.
+- **"Is this you?" for People who are not creators** (Sean, 2026-10-31: "can open a short claim request for people who aren't
+  creators"; migration `20261031_people_profile_claims.sql`). On an Activists, Athletes, Physicians, Health Experts, Chefs or Founders
+  page (not one also under Content Creators) the card's Claim your profile opens a short form in the card (`form: true` in
+  `VEPromo.creatorCards`, `claimForm` in `public/ve-promo.js`; `ppPromo` in `directory/listing.html` picks it): name, email, a link that
+  shows it is them (an Instagram handle becomes its link), a note; a signed-in member's name and email are filled in and their token
+  sent. `ve-ambassador` `person_claim` (anyone, three a day per email) saves a `ve_profile_claims` row with `source` `page`,
+  `contact_name`, `contact_email`, `proof_url` and `member_id` when signed in (the column is nullable now), emails Sean (reply-to them)
+  and confirms to them, and counts it as `sent` (promo `profile-claim`; the card's view and click count under the same promo). It shows
+  in the Inbox as Is this you? (profile claim) with their name and email, and in Depot > Ambassadors > Paid work's Profile requests with
+  How to check: **Link it** (signed in: `owner_member_id` and `details.person.member_id`, a `ve_listing_edits` row, an email saying we
+  update the profile for them on request) or **Checked** (no account: closes it here; the team writes to them from the Inbox and invites
+  them), and **Decline** (emails them with the note). A linked person who is not an Ambassador edits through the team for now.
 - Not built yet: people from events and articles beyond the Foodie Fest, and the Ambassador path from a profile.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
