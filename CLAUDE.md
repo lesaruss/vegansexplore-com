@@ -1143,8 +1143,9 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   step after it opens with one row of two equal columns (`.vg-top2`, `topRow` in `ve-gigs.js`): Kai, her line and Play on the left, Step
   N of 7 with Back and Next on the right (one column on phones), so the demo below runs full width. Since the same day it is **one guide
   bar** (`.vg-gbar`, Sean: "it doesn't look solid like the other ones... what if we put it in the same section where Kai is"): Kai,
-  Step N of 7 over her line, Back and Next on the right, and a seven-part progress line along its foot; her picture sits on Play Kai, the
-  same width (132 px, 104 on phones, `.vg-gbar-kai`), and on phones Back is left and Next right under them. On every other tab she is in the
+  Step N of 7 over her line, Back and Next on the right, and a seven-part progress line along its foot; Play Kai sits on the bottom of her
+  picture (104 px, 88 on phones, `.vg-gbar-kai`; Sean: "put the button at the bottom of the photo... condense it"), and on phones Back is
+  left and Next right under them. On every other tab she is in the
   Guide's rail (`data-guide="kai"`, `VE_GUIDE_ART.kai` in `footer.js`, `drawKai`), and on Become a creator her line is the tip for the
   application step on screen. The tabs end My list (members) or Get access, then **Become a creator**, always last. **Her voice**: every
   line is recorded (`LINES` in `ve-gigs.js` for the walkthrough and the application, each tab's `say` and `voice` in
