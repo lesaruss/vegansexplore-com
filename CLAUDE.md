@@ -415,6 +415,43 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
+## Front of House: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-front-of-house`; migration `20261031_front_of_house_canon.sql`).
+**Not built yet.** Sean: "they don't have a solid brand presence... You can't find a logo. Their website looks like it was made in 2014...
+I want to create a management package for vegan businesses that's accessible... I have had somebody literally say that to me." People
+judge whether food is safe by how a place looks online; businesses want marketing help, not more promotion. Restaurants are the way in.
+
+- **The offer** (name Front of House, V's default): **$1,500 setup** (at once or over 3 or 6 months; the rest owed on an early cancel): the
+  full audit, a logo and brand kit, Google Business Profile claimed and complete, the website on our template fed by their listing, their
+  Directory page and dashboard, a starter shoot of up to 15 menu items, two weeks for what we control (Google's verification shows as
+  waiting). **$500 a month**: the managed website (the template improves for every client), Google (hours, photos, posts, reviews), a
+  monthly Community Manager check-in on a fixed question set, a campaign a month, live results on the business dashboard, the ad console
+  with a capped allowance (worded "included the day it opens" until it is live). **Social +$500 a month** for two platforms; the shop's
+  one-platform $400 stays for businesses that are not managed. 12 months, then month to month; they own their domain and content.
+- **The split**: $250 to the account's Community Manager (gig work, never an amount in public copy), $250 to Vegans Explore. 10 accounts
+  per Community Manager to start; a full one means hiring the next. A city opens to Front of House when it has a Community Manager.
+- **The showroom**: Green Leaf Kitchen (`/business/sample`) gets its website on the real template, exactly what a client gets minus their
+  brand; the template changes only through brand slots (fonts, colors, logo, voice, photo look), like LESARUSS.ai's variables. A
+  make-it-yours switch shows it in two or three looks. `/business` gets a **Managed by us** module; the Restaurant Guide's audit links every
+  Fix to it (Have us do it).
+- **Photos shot like Airbnb** from a fixed shot list (outside by day and dusk, inside wide, every menu item on one surface and angle, the
+  team; customers only with consent). One shoot feeds the site, Google, the delivery apps and social. New menu item: added on the dashboard,
+  a shoot requested, an influencer night launches it.
+- **Visits every week** from creators (perk gigs; paid macro creators as an add-on), Community Managers in house where creators are thin,
+  and **member visit bounties** open to everyone: the phone's location proves the visit, a phone shooting guide on the gig, team approval
+  before points, the best credited on the listing and our socials. Members pay their own meal unless the restaurant offers a perk; a comped
+  visit is disclosed (FTC). Members whose shots keep being approved are scouted toward Ambassador and the Gig Board.
+- **A monthly rotation** across managed businesses: influencer night, DJ night, customer appreciation, giveaways, a scavenger hunt stop, a
+  community night with a coaching sheet.
+- **The pitch**: a presence-gap ranking on the monthly check-ups, then a personal guided page per business (their audit, their site mocked
+  on our template, the two-week plan, the price), sent from Sean through business outreach, city by city, with his approval.
+- **Pilot**: the business that asked Sean, plus two in South Florida, at the founding price as case studies. **Later**: a booth package
+  through a reseller, our own delivery app.
+- **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
+  contract, Stripe (setup installments and monthly) and onboarding; the photographer shot list on the Gig Board; the ranking and pitch
+  pages; visit bounties, the monthly check-in and report, the rotation. Then the social add-on and the ad console.
+
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
 Ten years of our episodes and interviews searchable by topic with timestamps, so a Guide can play the exact moment: "dairy"
