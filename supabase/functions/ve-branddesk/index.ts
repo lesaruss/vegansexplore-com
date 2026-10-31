@@ -78,9 +78,11 @@ async function stripeKey(test: boolean) {
   if (!String(k || '').startsWith('sk_test_')) throw new Error('test key missing');
   return k!;
 }
+// Pinned so subscription schedules read the same on every account (the LESARUSS test account's default answers with `plans`).
+const STRIPE_VERSION = '2024-06-20';
 async function stripe(test: boolean, method: string, path: string, params?: Record<string, string> | URLSearchParams) {
   const body = params ? (params instanceof URLSearchParams ? params : new URLSearchParams(params)).toString() : undefined;
-  const r = await fetch(`https://api.stripe.com/v1/${path}`, { method, headers: { Authorization: `Bearer ${await stripeKey(test)}`, ...(body ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) }, body });
+  const r = await fetch(`https://api.stripe.com/v1/${path}`, { method, headers: { Authorization: `Bearer ${await stripeKey(test)}`, 'Stripe-Version': STRIPE_VERSION, ...(body ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}) }, body });
   const d = await r.json();
   if (!r.ok) throw new Error(`stripe ${path}: ${d?.error?.message || r.status}`);
   return d;
@@ -107,6 +109,7 @@ async function mail(to: string, subject: string, html: string, replyTo = TEAM_EM
   } catch (e) { console.error('Resend failed', e); }
 }
 const money = (c: number) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: c % 100 ? 2 : 0 });
+function phaseItems(ph: any): string[] { return (ph.items || ph.plans || []).map((i: any) => { const x = i.price ?? i.plan; return typeof x === 'string' ? x : x.id; }); }
 function installments(plan: string) { return plan === '3' ? 3 : plan === '6' ? 6 : 0; }
 
 async function who(req: Request, b: any) {
@@ -134,7 +137,7 @@ async function activate(acct: any, customer: string, subId: string) {
     const sch = await stripe(test, 'POST', 'subscription_schedules', { from_subscription: subId });
     const ph = sch.phases[0];
     const instPrice = await price(test, acct.setup_plan === '3' ? 'bd_setup3_v1' : 'bd_setup6_v1');
-    const items = ph.items.map((i: any) => typeof i.price === 'string' ? i.price : i.price.id);
+    const items = phaseItems(ph);
     const p = new URLSearchParams();
     p.set('end_behavior', 'release'); p.set('proration_behavior', 'none');
     p.set('phases[0][start_date]', String(ph.start_date)); p.set('phases[0][iterations]', String(n));
@@ -253,7 +256,7 @@ async function pause(b: any, m: any) {
   const pausePrice = await price(a.test, 'bd_pause_v1');
   const sch = await stripe(a.test, 'POST', 'subscription_schedules', { from_subscription: a.stripe_subscription });
   const ph = sch.phases[0];
-  const items = ph.items.map((i: any) => typeof i.price === 'string' ? i.price : i.price.id);
+  const items = phaseItems(ph);
   const p = new URLSearchParams();
   p.set('end_behavior', 'release'); p.set('proration_behavior', 'none');
   p.set('phases[0][start_date]', String(ph.start_date)); p.set('phases[0][end_date]', String(ph.end_date));
