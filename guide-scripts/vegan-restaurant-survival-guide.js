@@ -77,18 +77,18 @@
       // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
       sayPoints: 'The Restaurant Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
   ];
-  // Liz on camera (recorded 2026-10-10): el-media voice, Wan 2.7 from one pose per tab, cut by hand where her mouth closes.
+  // Liz's voice over her still picture, one pose per tab (Sean, 2026-10-31: "I don't like the animations. It's inconsistent...
+  // I don't want to see her animated at the beginning either"). Each file is an MP4 of the sharp still with the line she recorded
+  // on 2026-10-10 (Your audit, Pulse and My list re-recorded 2026-10-31 without "lives here"), so the player is unchanged. Maya's
+  // Dairy Guide clips stay animated. Raise CLIP_V when the files change.
   var CLIP_BASE = SB + '/storage/v1/object/public/vegan-media/media/liz/restaurant-guide/';
-  var CLIPS = {}, CLIPS_M = {};
-  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = { video: CLIP_BASE + 'rg-' + k + '.mp4?v=1', poster: CLIP_BASE + 'rg-poster-' + k + '.jpg?v=1' }; });
-  // Re-recorded 2026-10-31 (Sean): "lives here" became "is right here" / "is here". The same day Sean found the lip sync
-  // inconsistent ("it has the opposite effect"), so these three are Liz's still picture with her voice. Raise a clip's number on
-  // every re-record.
-  var CLIP_V = { audit: 3, pulse: 3, mylist: 3 };
-  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'rg-m-' + k + '.mp4?v=' + (CLIP_V[k] || 1), poster: CLIP_BASE + 'rg-poster-m-' + k + '.jpg?v=' + (CLIP_V[k] || 1) }; });
-  CLIPS.join_credit = { video: CLIP_BASE + 'rg-join-c.mp4?v=1', poster: CLIP_BASE + 'rg-poster-join-c.jpg?v=1' };
+  var CLIP_V = 4, CLIPS = {}, CLIPS_M = {};
+  function lizClip(name) { return { video: CLIP_BASE + 'rg-' + name + '.mp4?v=' + CLIP_V, poster: CLIP_BASE + 'rg-poster-' + name + '.jpg?v=' + CLIP_V }; }
+  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'join'].forEach(function (k) { CLIPS[k] = lizClip(k); });
+  ['overview', 'audit', 'fixes', 'pulse', 'featured', 'promos', 'quiz', 'mylist'].forEach(function (k) { CLIPS_M[k] = lizClip('m-' + k); });
+  CLIPS.join_credit = lizClip('join-c');
   // The first page shows her arms folded with an open smile (the playbook), before the tour starts.
-  CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=1';
+  CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=' + CLIP_V;
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
