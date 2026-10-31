@@ -681,6 +681,11 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `/guides/vegan-restaurant-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
   business that says no can still start on its own (`guideCard` in `business/pitch.html`).
   `/business/managed` stays for direct links. Green Leaf Kitchen's made-up owner is Alex Rivera, said so on the sample.
+  **Proven live 2026-10-31** on a [TEST] pitch for On the Run Vegan with the Logan test account: I'm ready recorded and checkout opened for
+  it, a live Checkout session opened with the pitch as its way back, Stripe's return for the unpaid session landed on
+  `/business/pitch?c=<code>&status=unpaid#su-pay`, and the live page showed the unpaid, cancelled and paid screens on Review and pay; the
+  session was expired and every row removed. The paid return's Welcome aboard reads the account only for the signed-in owner (who had to
+  sign in to pay); a return in a browser with no sign-up saved goes to The agreement.
   The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
