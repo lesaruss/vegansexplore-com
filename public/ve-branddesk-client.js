@@ -1,7 +1,7 @@
 /* ve-branddesk-client.js: a managed client's own space (BrandDesk, canon canon-ve-front-of-house; onboarding built 2026-10-31).
  * "They rent the service, they own the assets" (Sean, 2026-10-31): their Library, their asset sheet and how onboarding stands.
  *
- *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports'|'campaigns', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
+ *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports'|'campaigns'|'social', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
  *
  * Three views, one at a time:
  *   start    Getting started: the onboarding checklist (ve-branddesk steps), their plan, and where things are
@@ -10,6 +10,7 @@
  *            always theirs.
  *   sheet    the asset sheet: everything about the business in one place, from their Cartridge (ve_cartridges), with Download the
  *            menu (CSV) and Download the asset sheet (HTML)
+ *   social     Your social (the social add-on): posts waiting for the owner's OK, coming up and posted (social_get / social_decide)
  *   campaigns  Your campaigns: the month's campaign from the rotation (ve_branddesk_campaigns), when, and how it went
  *   reports  Monthly reports: each month's check-in once it is sent (ve-branddesk checkin_get), one report per view
  *   VEBrandDesk.reportHtml(checkin, steps) draws a report; /business/checkin uses it for the preview.
@@ -37,6 +38,11 @@
       '.vebd-sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;}.vebd-sub a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.18);color:#14261a;text-decoration:none;background:#fff;}' +
       '.vebd-sub a.on{border-color:var(--vb-accent,#1E7A3E);box-shadow:inset 0 -3px 0 var(--vb-accent,#1E7A3E);}' +
       '.vebd-card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:16px 18px;margin:0 0 16px;}' +
+      '.vebd-soc{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;}.vebd-soc-pics{display:grid;grid-template-columns:1fr 1fr;gap:4px;}' +
+      '.vebd-soc-pics .th{display:block;aspect-ratio:1;border-radius:8px;background:#eef1ee center/cover no-repeat;}.vebd-soc-pics .th:only-child{grid-column:1/-1;}' +
+      '.vebd-soc-pics .th.none{display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#555;text-transform:capitalize;grid-column:1/-1;}' +
+      '.vebd-soc-cap{font-size:14.5px;line-height:1.55;margin:8px 0 0;white-space:normal;}.vebd-soc-ask{margin-top:10px;}.vebd-soc-ask .vebd-form{margin-top:10px;}' +
+      '@media(max-width:560px){.vebd-soc{grid-template-columns:84px minmax(0,1fr);gap:10px;}}' +
       '.vebd h4{font-size:15px;font-weight:900;margin:0 0 10px;}.vebd p{font-size:14px;line-height:1.6;margin:0 0 10px;}' +
       '.vebd-muted{color:rgba(0,0,0,.62);font-size:13px;}.vebd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}' +
       '.vebd-step{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:start;padding:11px 0;border-top:1px solid rgba(0,0,0,.07);}' +
@@ -173,7 +179,7 @@
       }, function () { el.innerHTML = '<div class="vebd"><p class="vebd-muted">This did not load. Try again in a moment.</p></div>'; });
     }
     function sub() {
-      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns'], ['reports', 'Monthly reports']].map(function (v) {
+      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns']].concat(D.account && D.account.social ? [['social', 'Your social']] : []).concat([['reports', 'Monthly reports']]).map(function (v) {
         return '<a href="#" data-bdv="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
     }
     function drawStart() {
@@ -259,6 +265,54 @@
         });
       });
     }
+    // ---- Your social (the social add-on): posts waiting for their OK, what is coming, and what went out with its links.
+    var SOC = null, SST = { review: ['Waiting for your OK', 'wait'], changes: ['Change asked', 'wait'], approved: ['Approved', ''], posted: ['Posted', 'ok'], draft: ['Draft', ''], skipped: ['Skipped', ''] };
+    function drawSocial() {
+      if (!SOC) {
+        frame('<p class="vebd-muted">Loading...</p>');
+        (D.sample ? Promise.resolve(sampleSocial()) : o.loadSocial ? o.loadSocial() : api({ action: 'social_get', account_id: D.account.id })).then(function (d) {
+          if (!d || !d.ok) { frame('<section class="vebd-card"><p class="vebd-muted">This did not load. Try again in a moment.</p></section>'); return; }
+          SOC = d; drawSocial();
+        });
+        return;
+      }
+      var S = SOC, P = S.posts || [], plat = function (k) { return (S.platforms[k] || {}).name || k; };
+      var when = function (d) { return d ? new Date(d).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'No date yet'; };
+      var card = function (p) {
+        var st = SST[p.status] || ['', ''];
+        var pics = (p.media || []).filter(function (x) { return x.view; }).map(function (x) { return '<span class="th" style="background-image:url(\'' + esc(x.view) + '\')"></span>'; }).join('');
+        var links = Object.keys(p.links || {}).map(function (k) { return '<a class="vebd-btn o sm" href="' + esc(p.links[k]) + '" target="_blank" rel="noopener">See it on ' + esc(plat(k)) + '</a>'; }).join(' ');
+        var ask = (p.status === 'review' || p.status === 'changes') && (S.owner || D.sample) ?
+          '<div class="vebd-soc-ask"><button type="button" class="vebd-btn sm" data-soc-ok="' + esc(p.id) + '">Looks good</button> <button type="button" class="vebd-btn o sm" data-soc-ch="' + esc(p.id) + '">Ask for a change</button>' +
+          '<form class="vebd-form" data-soc-form="' + esc(p.id) + '" hidden><label>What would you like changed?<textarea name="note" maxlength="1000" rows="3"></textarea></label><div><button class="vebd-btn sm" type="submit">Send it to us</button></div></form></div>' : '';
+        return '<li class="vebd-soc"><div class="vebd-soc-pics">' + (pics || '<span class="th none">' + esc(p.format) + '</span>') + '</div><div class="vebd-soc-bd">' +
+          '<div class="vebd-bar" style="margin:0 0 4px"><b>' + esc(when(p.planned_at)) + '</b><span class="vebd-pill ' + st[1] + '">' + st[0] + '</span></div>' +
+          '<small class="vebd-muted">' + esc((p.platforms || []).map(plat).join(' and ')) + ' &middot; ' + esc(p.format) + (p.approved_by === 'auto' ? ' &middot; approved on its own' : '') + '</small>' +
+          '<p class="vebd-soc-cap">' + esc(p.caption).replace(/\n/g, '<br>') + '</p>' + (p.owner_note ? '<p class="vebd-muted"><b>You asked:</b> ' + esc(p.owner_note) + '</p>' : '') +
+          (links ? '<p style="margin:6px 0 0">' + links + '</p>' : '') + ask + '<p class="vebd-msg" data-soc-msg="' + esc(p.id) + '" role="status"></p></div></li>';
+      };
+      var waiting = P.filter(function (p) { return p.status === 'review' || p.status === 'changes'; }), coming = P.filter(function (p) { return p.status === 'approved'; }), out = P.filter(function (p) { return p.status === 'posted'; });
+      var su = S.setup || {}, handles = (su.platforms || []).map(function (k) { return esc(plat(k)) + (su.handles && su.handles[k] ? ' ' + esc(su.handles[k]) : ''); }).join(' and ');
+      var team = (S.team || o.admin) && !D.sample ? '<p style="margin:10px 0 0"><a class="vebd-btn o sm" href="/business/social?account=' + esc(D.account.id) + '">Open the social planner</a></p>' : '';
+      frame('<section class="vebd-card"><h4>Your social</h4><p class="vebd-muted">' + (su.status === 'active' ? 'We post for you on ' + handles + ', about ' + esc(su.per_month) + ' posts a month' + (su.manager_name ? ', run by ' + esc(su.manager_name) : '') + '. Each post comes to you first: say OK or ask for a change. If we do not hear from you, it is approved on its own ' + esc(S.ok_hours) + ' hours before it goes out.'
+          : 'Your social media starts once we have access to your two platforms (we ask on your welcome call) and your social manager is set.') + '</p>' +
+        '<p class="vebd-muted" style="margin:0">' + esc(S.month_name) + ': ' + esc(S.counts.planned) + ' planned, ' + esc(S.counts.posted) + ' posted.</p>' + team + '</section>' +
+        '<section class="vebd-card"><h4>Waiting for your OK</h4>' + (waiting.length ? '<ul class="vebd-list">' + waiting.map(card).join('') + '</ul>' : '<p class="vebd-muted" style="margin:0">Nothing is waiting for you right now.</p>') + '</section>' +
+        (coming.length ? '<section class="vebd-card"><h4>Coming up</h4><ul class="vebd-list">' + coming.map(card).join('') + '</ul></section>' : '') +
+        (out.length ? '<section class="vebd-card"><h4>Posted</h4><ul class="vebd-list">' + out.map(card).join('') + '</ul></section>' : ''));
+      var decide = function (id, decision, note) {
+        var m = el.querySelector('[data-soc-msg="' + id + '"]');
+        if (D.sample) { m.textContent = 'In the sample nothing is sent.'; return; }
+        m.className = 'vebd-msg'; m.textContent = 'Sending...';
+        api({ action: 'social_decide', account_id: D.account.id, id: id, decision: decision, note: note }).then(function (d) {
+          if (d && d.ok) { SOC = null; drawSocial(); return; }
+          m.className = 'vebd-msg bad'; m.textContent = (d && d.message) || 'That did not send.';
+        });
+      };
+      el.querySelectorAll('[data-soc-ok]').forEach(function (b) { b.addEventListener('click', function () { decide(b.dataset.socOk, 'approve'); }); });
+      el.querySelectorAll('[data-soc-ch]').forEach(function (b) { b.addEventListener('click', function () { var f = el.querySelector('[data-soc-form="' + b.dataset.socCh + '"]'); f.hidden = !f.hidden; if (!f.hidden) f.note.focus(); }); });
+      el.querySelectorAll('[data-soc-form]').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); decide(f.dataset.socForm, 'changes', f.note.value); }); });
+    }
     function drawReports() {
       var R = D.reports || [];
       if (reportId) {
@@ -290,6 +344,7 @@
       if (!D) return load();
       if (view === 'reports') return drawReports();
       if (view === 'campaigns') return drawCampaigns();
+      if (view === 'social') return drawSocial();
       var body = view === 'library' ? drawLibrary() : view === 'sheet' ? drawSheet() : drawStart();
       el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
@@ -395,6 +450,24 @@
         listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C },
         reports: [sampleMonth()], campaigns: sampleCampaigns() };
     });
+  }
+  // The sample business's social month (made up): two posts waiting for the owner's OK, one coming up, two posted.
+  function sampleSocial() {
+    var C = window.VE_CARTRIDGE || {}, pics = [];
+    ((C.menu || {}).sections || []).forEach(function (sec) { (sec.items || []).forEach(function (it) { if (it.photo && it.photo.src) pics.push(it.photo.src); }); });
+    ((C.photos || {}).space || []).forEach(function (p) { if (p.src) pics.push(p.src); });
+    var pic = function (i) { return { id: 'm' + i, view: pics[i % Math.max(pics.length, 1)] || null }; };
+    var at = function (days, h) { var d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, 0, 0, 0); return d.toISOString(); };
+    var n = new Date(), month = n.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    return { ok: true, owner: true, team: false, sample: true, month_name: month, ok_hours: 48, counts: { planned: 12, posted: 2 },
+      platforms: { instagram: { name: 'Instagram', meta: true }, tiktok: { name: 'TikTok', meta: false }, facebook: { name: 'Facebook', meta: true }, youtube: { name: 'YouTube', meta: false } },
+      setup: { platforms: ['instagram', 'tiktok'], handles: { instagram: '@greenleafkitchen', tiktok: '@greenleafkitchen' }, per_month: 12, status: 'active', manager_name: 'Kai M.' },
+      posts: [
+        { id: 'p1', planned_at: at(4, 12), platforms: ['instagram', 'tiktok'], format: 'carousel', status: 'review', caption: 'Lunch is ready when you are. Our jackfruit tacos are back on the menu this week, with lime crema and pickled onions. Come hungry.', media: [pic(0), pic(1)], links: {} },
+        { id: 'p2', planned_at: at(6, 18), platforms: ['tiktok'], format: 'video', status: 'review', caption: 'Thirty seconds in our kitchen: the cashew queso, start to finish.', media: [pic(2)], links: {} },
+        { id: 'p3', planned_at: at(2, 11), platforms: ['instagram', 'tiktok'], format: 'photo', status: 'approved', caption: 'Weekend brunch starts Saturday at 10. The banana bread French toast is calling.', media: [pic(3)], links: {} },
+        { id: 'p4', planned_at: at(-3, 12), platforms: ['instagram', 'tiktok'], format: 'photo', status: 'posted', caption: 'New on the menu: the Green Leaf bowl. Quinoa, roasted sweet potato, kale and our tahini dressing.', media: [pic(4)], links: { instagram: 'https://www.instagram.com/', tiktok: 'https://www.tiktok.com/' } },
+        { id: 'p5', planned_at: at(-6, 17), platforms: ['instagram'], format: 'carousel', status: 'posted', caption: 'Thank you to everyone who came to customer appreciation night.', media: [pic(5), pic(6)], links: { instagram: 'https://www.instagram.com/' } }] };
   }
   // The sample business's report for last month, sent on the 6th of this one (made up, like Green Leaf Kitchen itself).
   function sampleMonth() {

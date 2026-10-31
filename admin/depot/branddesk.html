@@ -97,6 +97,7 @@
   </div>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-branddesk-client.js"></script>
   <script>
     (function () {
@@ -128,9 +129,17 @@
           '<div class="list" style="margin-bottom:12px">' + (S.allowed.length ? S.allowed.map(function (s) {
             return '<div class="irow"><div><b>' + esc(s) + '</b><small><a href="/business/managed?listing=' + esc(s) + '" target="_blank" rel="noopener">vegansexplore.com/business/managed?listing=' + esc(s) + '</a></small></div><span></span><button type="button" class="btn btn-ghost btn-sm" data-close="' + esc(s) + '">Close it</button></div>';
           }).join('') : '<p class="empty">No business is open yet.</p>') + '</div>' +
-          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>';
+          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>' +
+          '<section class="card"><h2>Where social is open</h2><p class="sub">The social add-on (+$500 a month, two platforms) shows at checkout only in the chapters ticked here, once we have the talent there. Super admins can always add it.</p>' +
+          '<div class="picks" id="sc">' + (window.VE_HUBS || []).map(function (h) { return '<label><input type="checkbox" value="' + esc(h.slug) + '"' + ((S.social_chapters || []).indexOf(h.slug) >= 0 ? ' checked' : '') + '> ' + esc(h.name) + '</label>'; }).join('') + '</div>' +
+          '<button class="btn" type="button" id="sc-save">Save</button><p class="msg" id="sc-msg" role="status"></p></section>';
         var set = function (slug, on) { var m = $('op-msg'); m.className = 'msg'; m.textContent = 'Saving...';
           api({ action: 'allow', slug: slug, on: on }).then(function (d) { if (d && d.ok) { data.settings.allowed = d.allowed; drawOpen(); return; } m.className = 'msg err'; m.textContent = d && d.error === 'not_found' ? 'No listing at that address.' : 'That did not save.'; }); };
+        $('sc-save').addEventListener('click', function () {
+          var m = $('sc-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          var ch = Array.prototype.map.call(document.querySelectorAll('#sc input:checked'), function (c) { return c.value; });
+          api({ action: 'social_chapters', chapters: ch }).then(function (d) { if (d && d.ok) { data.settings.social_chapters = d.social_chapters; m.textContent = 'Saved.'; return; } m.className = 'msg err'; m.textContent = 'That did not save.'; });
+        });
         $('op').addEventListener('submit', function (e) { e.preventDefault(); var v = $('op-slug').value.trim().replace(/^.*\/directory\//, '').replace(/[?#].*$/, ''); if (v) set(v, true); });
         app.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { set(b.dataset.close, false); }); });
       }
@@ -149,8 +158,10 @@
           '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
           (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section>' +
           '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section>' +
+          (a.social ? '<section class="card" id="social"><h2>Social</h2><p class="empty" style="padding:0">Loading...</p></section>' : '') +
           '<section class="card" id="visits"><h2>Member visits</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
         if (slug) { drawShoot(slug); drawVisits(slug); }
+        if (a.social) drawSocialSetup(a.id);
         VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
         var cx = $('cx');
         if (cx) cx.addEventListener('click', function () {
@@ -168,6 +179,37 @@
       var SWORD = { applied: 'Applied', shortlisted: 'Shortlisted', audition: 'Trial requested', claimed: 'Booked', not_selected: 'Not selected' };
       function money(c) { return '$' + (c / 100).toLocaleString('en-US'); }
       function dateIn(days) { var d = new Date(Date.now() + days * 864e5); return d.toISOString().slice(0, 10); }
+      // The social add-on: their two platforms (one off Meta), handles, the social manager, posts a month, and whether it is running.
+      function drawSocialSetup(id) {
+        var box = $('social'); if (!box) return;
+        api({ action: 'social_get', account_id: id }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = '<h2>Social</h2><p class="empty" style="padding:0">' + esc((d && d.message) || 'This did not load.') + '</p>'; return; }
+          var S = d.setup || {}, P = d.platforms || {}, names = { setup: 'Setting up', active: 'Running', paused: 'Paused' };
+          box.innerHTML = '<div class="bar"><h2 style="margin:0">Social</h2><span class="tag ' + (S.status === 'active' ? 'active' : S.status === 'paused' ? 'paused' : 'checkout') + '">' + esc(names[S.status] || S.status) + '</span></div>' +
+            '<p class="sub" style="margin:0 0 12px">Two platforms, one of them off Meta (TikTok or YouTube), so customers who stay off Meta still find them. ' + esc(d.month_name) + ': ' + esc(d.counts.planned) + ' planned, ' + esc(d.counts.posted) + ' posted.</p>' +
+            '<form class="form" id="so-form" style="flex-direction:column;align-items:stretch">' +
+            '<div style="display:flex;gap:16px;flex-wrap:wrap">' + Object.keys(P).map(function (k) {
+              return '<label style="flex:0 0 auto;min-width:0;flex-direction:row;align-items:center;gap:8px;font-size:13px"><input type="checkbox" name="pl" value="' + k + '"' + ((S.platforms || []).indexOf(k) >= 0 ? ' checked' : '') + ' style="min-height:0;width:18px;height:18px">' + esc(P[k].name) + (P[k].meta ? ' (Meta)' : '') + '</label>'; }).join('') + '</div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap">' + Object.keys(P).map(function (k) {
+              return '<label data-h="' + k + '"' + ((S.platforms || []).indexOf(k) >= 0 ? '' : ' hidden') + '>' + esc(P[k].name) + ' handle<input name="h-' + k + '" value="' + esc((S.handles || {})[k] || '') + '" placeholder="@their-handle"></label>'; }).join('') + '</div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap"><label>Social manager (the email they sign in with)<input name="mgr" type="email" value="' + esc(S.manager_email || '') + '" placeholder="name@example.com"></label>' +
+            '<label style="max-width:180px">Posts a month<input name="per" type="number" min="1" max="60" value="' + esc(S.per_month || 12) + '"></label>' +
+            '<label style="max-width:220px">Status<select name="st">' + ['setup', 'active', 'paused'].map(function (k) { return '<option value="' + k + '"' + (S.status === k ? ' selected' : '') + '>' + names[k] + '</option>'; }).join('') + '</select></label></div>' +
+            '<label>Team note<textarea name="note" maxlength="2000">' + esc(S.note || '') + '</textarea></label>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">Save</button><a class="btn btn-ghost" href="/business/social?account=' + esc(id) + '" target="_blank" rel="noopener">Open the social planner</a></div></form><p class="msg" id="so-msg" role="status"></p>';
+          var f = $('so-form');
+          f.querySelectorAll('[name=pl]').forEach(function (c) { c.addEventListener('change', function () { f.querySelector('[data-h="' + c.value + '"]').hidden = !c.checked; }); });
+          f.addEventListener('submit', function (e) {
+            e.preventDefault(); var m = $('so-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+            var plats = Array.prototype.map.call(f.querySelectorAll('[name=pl]:checked'), function (c) { return c.value; }), handles = {};
+            plats.forEach(function (k) { handles[k] = f['h-' + k].value; });
+            api({ action: 'social_setup', account_id: id, platforms: plats, handles: handles, manager_email: f.mgr.value, per_month: Number(f.per.value), status: f.st.value, note: f.note.value }).then(function (r) {
+              if (r && r.ok) { drawSocialSetup(id); return; }
+              m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not save.';
+            });
+          });
+        });
+      }
       function drawShoot(slug) {
         var box = $('shoot'); if (!box) return;
         bapi({ action: 'shoot_get', slug: slug }).then(function (d) {

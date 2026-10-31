@@ -38,6 +38,17 @@
 //   campaign_create {account_id, kind, month}   super admin
 //   campaign_save {id, starts_at, ends_at, checks, note, results, status}   the team
 //   campaign_calendar {id}              the team: puts it on the Vegans Explore calendar, hosted by the restaurant (or moves it)
+//   social_platforms                    anyone: the platforms (and which are Meta), formats, the hours before a post is approved on its own
+//   social_chapters {chapters}          super admin: the chapters social is open in at checkout (branddesk.social_chapters)
+//   social_list                         the team: the social clients they work (super admin every one; a social manager theirs; a CM their chapter's)
+//   social_get {account_id, month}      the team: setup, the month's posts, their Library; the owner: posts sent for their OK and after
+//   social_setup {account_id, platforms, handles, manager_email, per_month, status, note}   super admin: two platforms, one off Meta
+//   social_post_save {account_id, id?, planned_at, platforms, format, caption, media}   the team; a change after sending makes it a draft
+//   social_send {account_id, ids}        the team: drafts with a future date and a caption go to the owner for their OK (one email)
+//   social_decide {account_id, id, decision: approve|changes, note}   the owner (or a super admin): OK it or ask for a change
+//   social_posted {account_id, id, links} the team: an approved post is posted, with its live links on each platform
+//   social_skip {account_id, id, restore?}  the team
+//   social_sweep                        cron (x-cron-secret); also run by checkin_sweep: posts 48 hours away are approved on their own
 // GET ?confirm=<session id>              the return from Stripe and ve-stripe-webhook (metadata type ve_branddesk, confirm_fn
 //                                        ve-branddesk): activates the account once and goes back to /business/managed.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -86,9 +97,15 @@ async function secret(key: string): Promise<string | null> {
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
   const v = (data?.value as string) ?? null; return v && v !== 'pending' ? v : null;
 }
-async function settings(): Promise<{ live: boolean; allowed: string[] }> {
+async function settings(): Promise<{ live: boolean; allowed: string[]; social_chapters: string[] }> {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'branddesk').maybeSingle();
-  const v = (data?.value || {}) as any; return { live: v.live === true, allowed: Array.isArray(v.allowed) ? v.allowed : [] };
+  const v = (data?.value || {}) as any;
+  return { live: v.live === true, allowed: Array.isArray(v.allowed) ? v.allowed : [], social_chapters: Array.isArray(v.social_chapters) ? v.social_chapters : [] };
+}
+// Every write to the branddesk setting merges into what is there, so one key never wipes another.
+async function saveSettings(patch: Record<string, unknown>, by: string | null) {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'branddesk').maybeSingle();
+  await db.from('ve_site_settings').update({ value: { ...((data?.value || {}) as any), ...patch }, updated_at: new Date().toISOString(), updated_by: by }).eq('key', 'branddesk');
 }
 async function stripeKey(test: boolean) {
   if (!test) return Deno.env.get('STRIPE_SECRET_KEY') ?? '';
@@ -217,7 +234,7 @@ async function plan(b: any, m: any) {
   const acct = accts?.[0] || null;
   const mine = acct && m && (acct.member_id === m.id || m.is_superadmin) ? acct : null;
   return json({ ok: true, test: !s.live, allowed: s.allowed.includes(l.slug) || !!m?.is_superadmin, listing: { name: l.name, slug: l.slug, city: l.address_city || '' },
-    managed: !!acct, account: mine, amounts: AMOUNTS, agreement_version: AGREEMENT_VERSION });
+    managed: !!acct, account: mine, amounts: AMOUNTS, agreement_version: AGREEMENT_VERSION, social_open: await socialOpen(l.id, m, s) });
 }
 
 async function checkout(req: Request, b: any, m: any) {
@@ -233,6 +250,7 @@ async function checkout(req: Request, b: any, m: any) {
   if (b.agree !== true || name.length < 3) return json({ error: 'agree', message: 'Type your full name and tick the box to sign the agreement.' }, 400);
   const { data: live } = await db.from('ve_branddesk_accounts').select('id').eq('listing_id', l.id).in('status', LIVE_STATES).limit(1);
   if (live?.length) return json({ error: 'already_managed', message: 'This business is already with us.' }, 409);
+  if (b.social && !(await socialOpen(l.id, m, s))) return json({ error: 'social_not_open', message: 'Social media is not open in your city yet. Sign up without it and add it once it opens.' }, 403);
   const test = !s.live;
   const origin = /^https:\/\/(vegansexplore\.com|vegansexplore-[a-z0-9-]+\.vercel\.app|localhost:\d+)$/.test(String(b.origin || '')) ? String(b.origin) : SITE;
   const backPath = /^\/business\/pitch\?c=[a-z0-9]{8,20}$/.test(String(b.back || '')) ? String(b.back) : '';
@@ -481,8 +499,16 @@ async function stepSet(b: any, m: any) {
   return json({ ok: true, steps: await stepState({ ...a, onboarding: o }) });
 }
 
-async function fileUploadUrl(b: any, m: any) {
+// The Library takes files from a super admin, or from a client's social team (photos, videos and graphics only).
+async function accountForFiles(b: any, m: any, kind: string) {
   const a = await accountFor(b, m, true);
+  if (a) return a;
+  if (!m || !isId(b.account_id) || !['photo', 'video', 'graphic'].includes(kind)) return null;
+  const { data: x } = await db.from('ve_branddesk_accounts').select('*').eq('id', b.account_id).maybeSingle();
+  return x && x.social && await socialTeam(m, x, await socialRow(x.id)) ? x : null;
+}
+async function fileUploadUrl(b: any, m: any) {
+  const a = await accountForFiles(b, m, String(b.kind || ''));
   if (!a) return json({ error: 'not_found' }, 404);
   const kind = FILE_KINDS.includes(b.kind) ? b.kind : '';
   if (!kind || kind === 'archive') return json({ error: 'kind' }, 400);
@@ -494,7 +520,7 @@ async function fileUploadUrl(b: any, m: any) {
   return json({ ok: true, path, url: data.signedUrl, token: data.token });
 }
 async function fileDone(b: any, m: any) {
-  const a = await accountFor(b, m, true);
+  const a = await accountForFiles(b, m, String(b.path || '').split('/')[1] || '');
   if (!a) return json({ error: 'not_found' }, 404);
   const path = String(b.path || '');
   const { data: l } = await db.from('listings').select('slug').eq('id', a.listing_id).maybeSingle();
@@ -796,7 +822,7 @@ async function emailSend(payload: Record<string, unknown>) {
 }
 async function allowListing(slug: string, by: string | null) {
   const s = await settings(); if (s.allowed.includes(slug)) return;
-  await db.from('ve_site_settings').update({ value: { live: s.live, allowed: s.allowed.concat([slug]) }, updated_at: new Date().toISOString(), updated_by: by }).eq('key', 'branddesk');
+  await saveSettings({ allowed: s.allowed.concat([slug]) }, by);
 }
 
 async function pitchAdmin(b: any, m: any) {
@@ -1024,6 +1050,7 @@ async function checkins(req: Request, b: any, m: any) {
     const { y, mo, da } = etParts(), month = monthStart(y, mo);
     const { data: accts } = await db.from('ve_branddesk_accounts').select('*').in('status', ['active', 'canceling']).lt('activated_at', month + 'T05:00:00Z');
     let opened = 0, reminded = 0;
+    try { await socialApproveDue(); } catch (e) { console.error('social approve', e); }
     for (const a of accts || []) {
       try {
         const { row, made } = await openCheckin(a, month); if (made) opened++;
@@ -1303,6 +1330,256 @@ async function campaigns(b: any, m: any) {
   return json({ error: 'unknown_action' }, 400);
 }
 
+// ---- The social add-on, phase 1 (canon canon-ve-front-of-house: +$500 a month, two platforms so customers who stay off Meta still
+// find them, offered in a city once we have the talent). One setup row a client (ve_branddesk_social: the two platforms, their handles,
+// the social manager, posts a month) and one row a post (ve_branddesk_social_posts): the social manager drafts it, sends it to the owner
+// for their OK (it is approved on its own 48 hours before its date if they say nothing), then posts it by hand and records the links.
+// Nothing posts through the platforms' APIs yet. Social at checkout opens per chapter (branddesk.social_chapters); super admins always.
+// Logan's defaults, Sean's to change: 12 posts a month, the 48-hour OK, the four platforms, at least one off Meta.
+const PLATFORMS: Record<string, { name: string; meta: boolean; host: RegExp }> = {
+  instagram: { name: 'Instagram', meta: true, host: /(^|\.)instagram\.com$/ },
+  facebook: { name: 'Facebook', meta: true, host: /(^|\.)(facebook\.com|fb\.com|fb\.watch)$/ },
+  tiktok: { name: 'TikTok', meta: false, host: /(^|\.)tiktok\.com$/ },
+  youtube: { name: 'YouTube', meta: false, host: /(^|\.)(youtube\.com|youtu\.be)$/ },
+};
+const SOCIAL_FORMATS = ['photo', 'carousel', 'video', 'story'];
+const SOCIAL_OK_HOURS = 48;
+async function socialOpen(listingId: string, m: any, s?: { social_chapters: string[] }) {
+  if (m?.is_superadmin) return true;
+  const st = s || await settings();
+  if (!st.social_chapters.length) return false;
+  return st.social_chapters.includes(await chapterOfListing(listingId));
+}
+async function socialRow(accountId: string) {
+  return (await db.from('ve_branddesk_social').select('*').eq('account_id', accountId).maybeSingle()).data as any;
+}
+async function socialTeam(m: any, a: any, row: any) {
+  if (!m) return false;
+  if (m.is_superadmin || (row && row.manager_id === m.id)) return true;
+  const { data: me } = await db.from('members').select('ve_role, home_community').eq('id', m.id).maybeSingle();
+  return me?.ve_role === 'community_manager' && !!me.home_community && me.home_community === await chapterOfListing(a.listing_id);
+}
+async function socialOwner(m: any, a: any) {
+  if (!m) return false;
+  if (a.member_id === m.id) return true;
+  const { data: l } = await db.from('listings').select('owner_member_id').eq('id', a.listing_id).maybeSingle();
+  return l?.owner_member_id === m.id;
+}
+// A post waiting for the owner's OK is approved on its own once its date is 48 hours away.
+async function socialApproveDue(accountId?: string) {
+  let q = db.from('ve_branddesk_social_posts').update({ status: 'approved', approved_at: new Date().toISOString(), approved_by: 'auto', updated_at: new Date().toISOString() })
+    .eq('status', 'review').lte('planned_at', new Date(Date.now() + SOCIAL_OK_HOURS * 3600000).toISOString());
+  if (accountId) q = q.eq('account_id', accountId);
+  const { data } = await q.select('id');
+  return (data || []).length;
+}
+function postShape(p: any, team: boolean, thumbs: Record<string, string | null>) {
+  return { id: p.id, planned_at: p.planned_at, platforms: p.platforms || [], format: p.format, caption: p.caption || '', status: p.status,
+    owner_note: p.owner_note || '', sent_at: p.sent_at, approved_at: p.approved_at, approved_by: p.approved_by, links: p.links || {}, posted_at: p.posted_at,
+    media: (p.media || []).map((id: string) => ({ id, view: thumbs[id] || null })), ...(team ? { created_at: p.created_at, updated_at: p.updated_at } : {}) };
+}
+async function socialThumbs(ids: string[]) {
+  const out: Record<string, string | null> = {};
+  if (!ids.length) return out;
+  const { data } = await db.from('ve_branddesk_files').select('id, path, mime').in('id', ids).is('removed_at', null);
+  await Promise.all((data || []).map(async (f: any) => {
+    if (!/^image\//.test(f.mime || '') || /svg/.test(f.mime || '')) { out[f.id] = null; return; }
+    const r = await db.storage.from(BUCKET).createSignedUrl(f.path, 3600, { transform: { width: 600, height: 600, resize: 'cover' } });
+    out[f.id] = r.data?.signedUrl || null;
+  }));
+  return out;
+}
+function cleanCaption(v: unknown) { return String(v ?? '').replace(/\r/g, '').trim().slice(0, 2200); }
+async function social(req: Request, b: any, m: any) {
+  const act = String(b.action);
+  if (act === 'social_sweep') {
+    const sec = await secret('CRON_SECRET');
+    if (!sec || req.headers.get('x-cron-secret') !== sec) return json({ error: 'forbidden' }, 403);
+    return json({ ok: true, approved: await socialApproveDue() });
+  }
+  if (act === 'social_platforms') return json({ ok: true, platforms: Object.entries(PLATFORMS).map(([k, v]) => ({ key: k, name: v.name, meta: v.meta })), formats: SOCIAL_FORMATS, ok_hours: SOCIAL_OK_HOURS });
+  if (!m) return json({ error: 'not_authenticated', message: 'Sign in first.' }, 401);
+  if (act === 'social_chapters') {
+    if (!m.is_superadmin) return json({ error: 'admin_only' }, 403);
+    const chapters = Array.isArray(b.chapters) ? b.chapters.map((c: unknown) => clean(c, 40)).filter((c: string) => /^[a-z0-9-]{2,40}$/.test(c)) : [];
+    await saveSettings({ social_chapters: Array.from(new Set(chapters)) }, m.id);
+    return json({ ok: true, social_chapters: chapters });
+  }
+  if (act === 'social_list') {
+    const { data: accts } = await db.from('ve_branddesk_accounts').select('id, listing_id, status, test, member_id, listings(name, slug)').eq('social', true).in('status', LIVE_STATES);
+    const { data: rows } = await db.from('ve_branddesk_social').select('*');
+    const R = Object.fromEntries((rows || []).map((r: any) => [r.account_id, r]));
+    const mine: any[] = [];
+    for (const a of accts || []) if (await socialTeam(m, a, R[a.id])) mine.push(a);
+    const ids = mine.map((a) => a.id), { y, mo } = etParts(), from = monthStart(y, mo), to = monthBounds(from).to;
+    const { data: posts } = ids.length ? await db.from('ve_branddesk_social_posts').select('account_id, status, planned_at').in('account_id', ids) : { data: [] };
+    const mgr = [...new Set(Object.values(R).map((r: any) => r.manager_id).filter(Boolean))];
+    const { data: who2 } = mgr.length ? await db.from('members').select('id, name').in('id', mgr) : { data: [] };
+    const nm = Object.fromEntries((who2 || []).map((x: any) => [x.id, x.name]));
+    return json({ ok: true, admin: !!m.is_superadmin, clients: mine.map((a) => {
+      const r = R[a.id] || {}, P = (posts || []).filter((p: any) => p.account_id === a.id);
+      const inMonth = P.filter((p: any) => p.planned_at && p.planned_at >= from && p.planned_at < to + 'T05:00:00Z' && p.status !== 'skipped');
+      const count = (st: string) => P.filter((p: any) => p.status === st).length;
+      return { account_id: a.id, status: a.status, test: a.test, listing: a.listings, social_status: r.status || 'setup', platforms: r.platforms || [], per_month: r.per_month || 12,
+        manager_name: r.manager_id ? nm[r.manager_id] || null : null, this_month: inMonth.length, posted_this_month: inMonth.filter((p: any) => p.status === 'posted').length,
+        drafts: count('draft'), waiting: count('review'), changes: count('changes'), to_post: count('approved') };
+    }) });
+  }
+  if (!isId(b.account_id)) return json({ error: 'bad_id' }, 400);
+  const { data: a } = await db.from('ve_branddesk_accounts').select('*').eq('id', b.account_id).maybeSingle();
+  if (!a) return json({ error: 'not_found' }, 404);
+  let row = await socialRow(a.id);
+  const team = await socialTeam(m, a, row), owner = await socialOwner(m, a);
+  if (!team && !owner) return json({ error: 'not_found' }, 404);
+  if (!a.social) return json({ error: 'no_social', message: 'This client does not have the social add-on.' }, 409);
+  const now = new Date().toISOString();
+  if (!row && team) {
+    await db.from('ve_branddesk_social').insert({ account_id: a.id, listing_id: a.listing_id, updated_by: m.id }).select('*').maybeSingle();
+    row = await socialRow(a.id);
+  }
+  const { data: l } = await db.from('listings').select('name, slug').eq('id', a.listing_id).maybeSingle();
+
+  if (act === 'social_get') {
+    await socialApproveDue(a.id);
+    const month = /^\d{4}-\d{2}-01$/.test(String(b.month || '')) ? String(b.month) : (() => { const { y, mo } = etParts(); return monthStart(y, mo); })();
+    const mb = monthBounds(month);
+    let q = db.from('ve_branddesk_social_posts').select('*').eq('account_id', a.id).order('planned_at', { ascending: true, nullsFirst: false }).limit(200);
+    const { data: all } = await q;
+    const P = (all || []).filter((p: any) => (team || p.status !== 'draft') &&
+      ((p.planned_at && p.planned_at >= mb.from + 'T05:00:00Z' && p.planned_at < mb.to + 'T05:00:00Z') || (!p.planned_at && team) || (!owner ? false : p.status === 'review')));
+    const thumbs = await socialThumbs([...new Set(P.flatMap((p: any) => p.media || []))] as string[]);
+    let files: any[] = [];
+    if (team) {
+      const { data: F } = await db.from('ve_branddesk_files').select('*').eq('account_id', a.id).is('removed_at', null).in('kind', ['photo', 'video', 'graphic', 'logo']).order('created_at', { ascending: false }).limit(200);
+      files = await signFiles(F || [], true, true);
+    }
+    const { data: mgr } = row?.manager_id ? await db.from('members').select('name, email').eq('id', row.manager_id).maybeSingle() : { data: null };
+    const counted = (all || []).filter((p: any) => p.planned_at && p.planned_at >= mb.from + 'T05:00:00Z' && p.planned_at < mb.to + 'T05:00:00Z' && p.status !== 'skipped');
+    return json({ ok: true, team, owner, admin: !!m.is_superadmin, month, month_name: monthName(month), listing: { name: l?.name, slug: l?.slug },
+      account: { id: a.id, status: a.status, test: a.test },
+      setup: { platforms: row?.platforms || [], handles: row?.handles || {}, per_month: row?.per_month || 12, status: row?.status || 'setup',
+        manager_name: mgr?.name || null, ...(m.is_superadmin ? { manager_email: mgr?.email || '', note: row?.note || '' } : {}) },
+      platforms: Object.fromEntries(Object.entries(PLATFORMS).map(([k, v]) => [k, { name: v.name, meta: v.meta }])), ok_hours: SOCIAL_OK_HOURS,
+      counts: { planned: counted.length, posted: counted.filter((p: any) => p.status === 'posted').length },
+      posts: P.map((p: any) => postShape(p, team, thumbs)), files });
+  }
+  if (act === 'social_setup') {
+    if (!m.is_superadmin) return json({ error: 'admin_only' }, 403);
+    const plats = Array.isArray(b.platforms) ? [...new Set(b.platforms.map(String))].filter((p) => PLATFORMS[p as string]) as string[] : [];
+    if (plats.length !== 2) return json({ error: 'two_platforms', message: 'Pick two platforms.' }, 400);
+    if (plats.every((p) => PLATFORMS[p].meta)) return json({ error: 'off_meta', message: 'One of the two has to be off Meta (TikTok or YouTube), so customers who stay off Meta still find them.' }, 400);
+    const handles: Record<string, string> = {};
+    for (const p of plats) { const h = clean((b.handles || {})[p], 120).replace(/^https?:\/\/(www\.)?[^/]+\//, '@').replace(/\/$/, ''); if (h) handles[p] = h.startsWith('@') ? h : '@' + h; }
+    const patch: Record<string, unknown> = { platforms: plats, handles, updated_at: now, updated_by: m.id };
+    const per = Math.round(Number(b.per_month || 12));
+    if (!(per >= 1 && per <= 60)) return json({ error: 'per_month' }, 400);
+    patch.per_month = per;
+    if ('note' in b) patch.note = String(b.note ?? '').replace(/\r/g, '').trim().slice(0, 2000) || null;
+    if ('manager_email' in b) {
+      const em = clean(b.manager_email, 200).toLowerCase();
+      if (!em) patch.manager_id = null;
+      else {
+        const { data: mg } = await db.from('members').select('id, name, member_class, membership_status').ilike('email', em).maybeSingle();
+        if (!mg) return json({ error: 'no_account', message: 'No account signs in with that email.' }, 400);
+        if (mg.member_class === 'agent') return json({ error: 'agent', message: 'A Guide account cannot manage a client.' }, 400);
+        patch.manager_id = mg.id;
+      }
+    }
+    const st = ['setup', 'active', 'paused'].includes(String(b.status)) ? String(b.status) : (row?.status || 'setup');
+    if (st === 'active' && !(('manager_id' in patch) ? patch.manager_id : row?.manager_id)) return json({ error: 'manager', message: 'Add their social manager before turning it on.' }, 400);
+    patch.status = st;
+    await db.from('ve_branddesk_social').update(patch).eq('account_id', a.id);
+    return json({ ok: true });
+  }
+  if (act === 'social_decide') {
+    if (!owner && !m.is_superadmin) return json({ error: 'forbidden' }, 403);
+    if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+    const { data: p } = await db.from('ve_branddesk_social_posts').select('*').eq('id', b.id).eq('account_id', a.id).maybeSingle();
+    if (!p) return json({ error: 'not_found' }, 404);
+    if (!['review', 'changes'].includes(p.status) && !(p.status === 'approved' && b.decision === 'changes' && p.approved_by === 'auto')) return json({ error: 'not_waiting', message: 'This post is not waiting for your OK.' }, 409);
+    if (b.decision === 'approve') {
+      await db.from('ve_branddesk_social_posts').update({ status: 'approved', approved_at: now, approved_by: owner ? 'owner' : 'team', owner_note: null, updated_at: now, updated_by: m.id }).eq('id', p.id);
+      return json({ ok: true, status: 'approved' });
+    }
+    if (b.decision !== 'changes') return json({ error: 'decision' }, 400);
+    const note = String(b.note ?? '').replace(/\r/g, '').trim().slice(0, 1000);
+    if (note.length < 3) return json({ error: 'note', message: 'Say what you would like changed.' }, 400);
+    await db.from('ve_branddesk_social_posts').update({ status: 'changes', owner_note: note, approved_at: null, approved_by: null, updated_at: now, updated_by: m.id }).eq('id', p.id);
+    const { data: mg } = row?.manager_id ? await db.from('members').select('name, email').eq('id', row.manager_id).maybeSingle() : { data: null };
+    if (!a.test) await mail(mg?.email || TEAM_EMAIL, `${l?.name}: a change to a post`, `<p>${esc(l?.name || '')} asked for a change to the post planned for ${esc(p.planned_at ? new Date(p.planned_at).toLocaleString('en-US', { timeZone: 'America/New_York', dateStyle: 'medium', timeStyle: 'short' }) : 'no date yet')}:</p><blockquote>${esc(note).replace(/\n/g, '<br>')}</blockquote><p><a href="${SITE}/business/social?account=${a.id}&post=${p.id}">Open the post</a></p>`);
+    return json({ ok: true, status: 'changes' });
+  }
+  if (!team) return json({ error: 'forbidden' }, 403);
+  const allowed = (row?.platforms || []).length ? row.platforms : Object.keys(PLATFORMS);
+  if (act === 'social_post_save') {
+    let p: any = null;
+    if (b.id) {
+      if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+      p = (await db.from('ve_branddesk_social_posts').select('*').eq('id', b.id).eq('account_id', a.id).maybeSingle()).data;
+      if (!p) return json({ error: 'not_found' }, 404);
+      if (['posted', 'skipped'].includes(p.status)) return json({ error: 'locked', message: 'A posted or skipped post stays as it was.' }, 409);
+    }
+    const when = b.planned_at ? new Date(String(b.planned_at)) : null;
+    if (when && isNaN(+when)) return json({ error: 'bad_date' }, 400);
+    const plats = Array.isArray(b.platforms) ? [...new Set(b.platforms.map(String))].filter((x) => allowed.includes(x)) : (p?.platforms || allowed);
+    if (!plats.length) return json({ error: 'platforms', message: 'Pick where it goes.' }, 400);
+    const format = SOCIAL_FORMATS.includes(String(b.format)) ? String(b.format) : (p?.format || 'photo');
+    const media = Array.isArray(b.media) ? [...new Set(b.media.filter(isId))].slice(0, 10) as string[] : (p?.media || []);
+    if (media.length) {
+      const { data: okF } = await db.from('ve_branddesk_files').select('id').eq('account_id', a.id).is('removed_at', null).in('id', media);
+      if ((okF || []).length !== media.length) return json({ error: 'media', message: 'Pick pictures from their Library.' }, 400);
+    }
+    const fields = { planned_at: when ? when.toISOString() : null, platforms: plats, format, caption: 'caption' in b ? cleanCaption(b.caption) : (p?.caption || ''), media, updated_at: now, updated_by: m.id };
+    if (p) {
+      // A change after it was sent goes back to a draft, to be sent for their OK again.
+      const back = ['review', 'approved', 'changes'].includes(p.status);
+      await db.from('ve_branddesk_social_posts').update({ ...fields, ...(back ? { status: 'draft', sent_at: null, approved_at: null, approved_by: null } : {}) }).eq('id', p.id);
+      return json({ ok: true, id: p.id, status: back ? 'draft' : p.status });
+    }
+    const { data: made, error } = await db.from('ve_branddesk_social_posts').insert({ ...fields, account_id: a.id, listing_id: a.listing_id, created_by: m.id }).select('id').single();
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, id: made.id, status: 'draft' });
+  }
+  if (act === 'social_send') {
+    const ids = Array.isArray(b.ids) ? b.ids.filter(isId) : [];
+    if (!ids.length) return json({ error: 'none' }, 400);
+    const { data: P } = await db.from('ve_branddesk_social_posts').select('*').eq('account_id', a.id).in('id', ids).in('status', ['draft', 'changes']);
+    const ready = (P || []).filter((p: any) => p.planned_at && (p.caption || '').length >= 1 && (p.platforms || []).length && +new Date(p.planned_at) > Date.now());
+    if (!ready.length) return json({ error: 'not_ready', message: 'A post needs a future date, where it goes and a caption before it goes for their OK.' }, 400);
+    await db.from('ve_branddesk_social_posts').update({ status: 'review', sent_at: now, owner_note: null, updated_at: now, updated_by: m.id }).in('id', ready.map((p: any) => p.id));
+    const { data: ow } = await db.from('members').select('name, email').eq('id', a.member_id).maybeSingle();
+    if (ow?.email && !a.test) await mail(ow.email, `${ready.length === 1 ? 'A post is' : ready.length + ' posts are'} waiting for your OK`,
+      `<p>Hi ${esc(String(ow.name || '').split(' ')[0] || 'there')},</p><p>Your next ${ready.length === 1 ? 'post for ' + esc(l?.name || '') + ' is' : ready.length + ' posts for ' + esc(l?.name || '') + ' are'} ready. Have a look and say OK, or tell us what to change.</p>` +
+      `<p><a href="${SITE}/directory/${esc(l?.slug || '')}?tab=brand&pd=managed&bd=social">See your posts</a></p><p>If we do not hear from you, a post is approved on its own ${SOCIAL_OK_HOURS} hours before it goes out.</p><p>Vegans Explore</p>`);
+    return json({ ok: true, sent: ready.length, skipped: ids.length - ready.length });
+  }
+  if (act === 'social_posted') {
+    if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+    const { data: p } = await db.from('ve_branddesk_social_posts').select('*').eq('id', b.id).eq('account_id', a.id).maybeSingle();
+    if (!p) return json({ error: 'not_found' }, 404);
+    if (p.status !== 'approved' && !(p.status === 'posted' && b.edit)) return json({ error: 'not_approved', message: 'Only an approved post goes out.' }, 409);
+    const links: Record<string, string> = {};
+    for (const [k, v] of Object.entries(b.links || {})) {
+      if (!(p.platforms || []).includes(k) || !PLATFORMS[k] || !v) continue;
+      let u: URL; try { u = new URL(String(v)); } catch { return json({ error: 'bad_link', platform: k, message: 'That ' + PLATFORMS[k].name + ' link does not look right.' }, 400); }
+      if (u.protocol !== 'https:' || !PLATFORMS[k].host.test(u.hostname)) return json({ error: 'bad_link', platform: k, message: 'That is not a ' + PLATFORMS[k].name + ' link.' }, 400);
+      links[k] = u.toString();
+    }
+    if (!Object.keys(links).length) return json({ error: 'no_links', message: 'Add the link to the live post.' }, 400);
+    await db.from('ve_branddesk_social_posts').update({ status: 'posted', links, posted_at: p.posted_at || now, updated_at: now, updated_by: m.id }).eq('id', p.id);
+    return json({ ok: true });
+  }
+  if (act === 'social_skip') {
+    if (!isId(b.id)) return json({ error: 'bad_id' }, 400);
+    const { data: p } = await db.from('ve_branddesk_social_posts').select('status').eq('id', b.id).eq('account_id', a.id).maybeSingle();
+    if (!p) return json({ error: 'not_found' }, 404);
+    if (p.status === 'posted') return json({ error: 'locked' }, 409);
+    await db.from('ve_branddesk_social_posts').update({ status: b.restore ? 'draft' : 'skipped', updated_at: now, updated_by: m.id }).eq('id', b.id);
+    return json({ ok: true });
+  }
+  return json({ error: 'unknown_action' }, 400);
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -1325,7 +1602,7 @@ Deno.serve(async (req) => {
         const l = await listingBySlug(b.slug); if (!l) return json({ error: 'not_found' }, 404);
         const s = await settings();
         const allowed = b.on === false ? s.allowed.filter((x) => x !== l.slug) : Array.from(new Set(s.allowed.concat([l.slug])));
-        await db.from('ve_site_settings').update({ value: { live: s.live, allowed }, updated_at: new Date().toISOString(), updated_by: m.id }).eq('key', 'branddesk');
+        await saveSettings({ allowed }, m.id);
         return json({ ok: true, allowed });
       }
       case 'list': {
@@ -1343,6 +1620,8 @@ Deno.serve(async (req) => {
       case 'pitch_view': case 'pitch_site': case 'pitch_choice': return await pitchPublic(req, b, m);
       case 'campaign_library': case 'campaign_list': case 'campaign_get': case 'campaign_create': case 'campaign_save': case 'campaign_calendar': return await campaigns(b, m);
       case 'checkin_sweep': case 'checkin_start': case 'checkin_list': case 'checkin_get': case 'checkin_save': case 'checkin_send': return await checkins(req, b, m);
+      case 'social_sweep': case 'social_platforms': case 'social_chapters': case 'social_list': case 'social_get': case 'social_setup':
+      case 'social_decide': case 'social_post_save': case 'social_send': case 'social_posted': case 'social_skip': return await social(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Social Planner — Vegans Explore</title>
+  <meta name="description" content="The social planner for managed marketing clients: each client's posts for the month, sent to the owner for their OK, then posted.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://vegansexplore.com/business/social">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- The social add-on (BrandDesk, canon canon-ve-front-of-house; phase 1 built 2026-10-31). For a client's social manager, their
+       chapter's Community Manager or a super admin. /business/social lists their clients; ?account=<id>&month=YYYY-MM is one client's
+       month (every post, Send the drafts for their OK, New post); &post=<id>|new is one post (date, where it goes, format, caption,
+       pictures from their Library, Mark posted with the links). Data: ve-branddesk social_list, social_get, social_post_save,
+       social_send, social_posted, social_skip, file_upload_url, file_done. ?preview=1 is Green Leaf Kitchen's, nothing saved. -->
+  <style>
+    :root{--g:#1E7A3E;--gd:#14532D;--soft:#EAF4EC;--line:rgba(0,0,0,.12);}
+    body{margin:0;background:#fff;color:#14261a;font-family:Montserrat,system-ui,sans-serif;}
+    main{padding:40px 40px 80px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:0 0 6px;}
+    .crumb{font-size:13px;font-weight:700;margin:0 0 14px;}.crumb a{color:var(--g);text-decoration:none;}
+    h1{font-size:clamp(26px,3.2vw,38px);font-weight:900;margin:0 0 8px;line-height:1.1;}
+    h2{font-size:19px;font-weight:900;margin:0 0 12px;}
+    .lede{font-size:15.5px;line-height:1.6;max-width:860px;color:rgba(0,0,0,.72);margin:0 0 18px;}
+    .note{background:#FFF4D6;border:1px solid #F1D28A;border-radius:10px;padding:10px 14px;font-size:13.5px;margin:0 0 18px;max-width:860px;}
+    .tag{display:inline-block;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;background:#f3f4f2;color:#333;white-space:nowrap;}
+    .tag.review,.tag.changes,.tag.setup{background:#fff4e0;color:#8a5200;}.tag.approved{background:#e8f0fe;color:#1d4ed8;}.tag.posted,.tag.active{background:var(--soft);color:var(--gd);}.tag.skipped,.tag.paused{background:#f3f4f2;color:#555;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:16px;}
+    .box{border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+    .box p{font-size:14.5px;line-height:1.6;margin:0 0 8px;}
+    .client h3{font-size:17px;font-weight:900;margin:0 0 6px;}.client small{display:block;color:rgba(0,0,0,.65);font-size:13px;line-height:1.5;}
+    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:0 0 16px;}
+    .months{display:flex;gap:8px;align-items:center;font-weight:800;}
+    .months a{font-size:13.5px;font-weight:800;padding:8px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.18);color:#14261a;text-decoration:none;}
+    .meter{height:8px;border-radius:5px;background:#e3e7e3;overflow:hidden;margin:6px 0 0;max-width:420px;}.meter span{display:block;height:100%;background:var(--g);}
+    .posts{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;}
+    .posts li{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);}
+    .posts li:first-child{border-top:0;}
+    .posts .th{width:64px;height:64px;border-radius:8px;background:#eef1ee center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#555;text-transform:capitalize;}
+    .posts b{display:block;font-size:14.5px;}.posts small{display:block;font-size:13px;color:rgba(0,0,0,.65);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .posts .acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;}
+    label.f{display:block;font-weight:800;font-size:13.5px;margin:0 0 14px;}
+    label.f input,label.f textarea,label.f select{display:block;width:100%;box-sizing:border-box;margin-top:6px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 12px;font:inherit;font-weight:500;font-size:15px;background:#fff;}
+    label.f select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    label.f textarea{min-height:150px;resize:vertical;line-height:1.5;}
+    .count{font-size:12px;font-weight:700;color:rgba(0,0,0,.55);margin:-8px 0 14px;}
+    .checks{display:flex;gap:16px;flex-wrap:wrap;margin:6px 0 14px;}.checks label{display:flex;gap:8px;align-items:center;font-weight:700;font-size:14.5px;cursor:pointer;}
+    .checks input{width:20px;height:20px;accent-color:var(--g);}
+    .lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-height:360px;overflow-y:auto;padding:2px;}
+    .lib button{position:relative;aspect-ratio:1;border:2px solid transparent;border-radius:8px;background:#eef1ee center/cover no-repeat;cursor:pointer;padding:0;font:700 11px Montserrat;color:#555;}
+    .lib button.on{border-color:var(--g);box-shadow:0 0 0 2px var(--g) inset;}
+    .lib button i{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:var(--g);color:#fff;font-style:normal;font-size:12px;display:none;align-items:center;justify-content:center;}
+    .lib button.on i{display:flex;}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 20px;border-radius:6px;border:2px solid var(--g);background:var(--g);color:#fff;font:800 14.5px/1 inherit;font-family:inherit;cursor:pointer;text-decoration:none;}
+    .btn.sm{min-height:36px;padding:8px 14px;font-size:13px;}
+    .btn.ghost{background:#fff;color:var(--g);}.btn.quiet{background:#fff;color:#555;border-color:rgba(0,0,0,.2);}.btn[disabled]{opacity:.6;cursor:not-allowed;}
+    .msg{font-weight:700;font-size:14px;margin:10px 0 0;min-height:1em;color:var(--g);}.msg.err{color:#B42318;}
+    .ask{background:#FFF4D6;border:1px solid #F1D28A;border-radius:10px;padding:10px 14px;font-size:14px;margin:0 0 14px;}
+    .two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start;}
+    @media(max-width:900px){.two{grid-template-columns:1fr;}}
+    @media(max-width:700px){main{padding:24px 16px 60px;}.posts li{grid-template-columns:56px minmax(0,1fr);}.posts .th{width:56px;height:56px;}.posts .acts{grid-column:1/-1;justify-content:flex-start;}}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main id="app"><p>Loading...</p></main>
+<script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+  var app = document.getElementById('app');
+  var P = new URLSearchParams(location.search), PREVIEW = P.get('preview') === '1';
+  var ACC = P.get('account') || '', POST = P.get('post') || '', MONTH = /^\d{4}-\d{2}$/.test(P.get('month') || '') ? P.get('month') : '';
+  var ST = { draft: 'Draft', review: 'Waiting for their OK', changes: 'Change asked', approved: 'Approved', posted: 'Posted', skipped: 'Skipped' };
+  var SOCIAL_ST = { setup: 'Setting up', active: 'Running', paused: 'Paused' };
+  var FORMATS = [['photo', 'Photo'], ['carousel', 'Carousel'], ['video', 'Video or reel'], ['story', 'Story']];
+  var D = null, picked = [], keep = null;
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function when(d) { return d ? new Date(d).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'No date yet'; }
+  function local(d) { if (!d) return ''; var x = new Date(d); x.setMinutes(x.getMinutes() - x.getTimezoneOffset()); return x.toISOString().slice(0, 16); }
+  function token() { try { return (window.VEAuth && VEAuth.getToken()) || ''; } catch (e) { return ''; } }
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function msg(t, bad) { var m = document.getElementById('msg'); if (m) { m.className = 'msg' + (bad ? ' err' : ''); m.textContent = t || ''; } }
+  function go(params, push) {
+    var u = new URL(location.href); ['account', 'post', 'month'].forEach(function (k) { u.searchParams.delete(k); });
+    Object.keys(params).forEach(function (k) { if (params[k]) u.searchParams.set(k, params[k]); });
+    history[push === false ? 'replaceState' : 'pushState'](null, '', u.pathname + u.search);
+    ACC = params.account || ''; POST = params.post || ''; MONTH = params.month || ''; route();
+  }
+  window.addEventListener('popstate', function () { var q = new URLSearchParams(location.search); ACC = q.get('account') || ''; POST = q.get('post') || ''; MONTH = q.get('month') || ''; route(); });
+  function thisMonth() { var n = new Date(); return n.getFullYear() + '-' + String(n.getMonth() + 1).padStart(2, '0'); }
+  function shift(m, by) { var p = m.split('-').map(Number), d = new Date(p[0], p[1] - 1 + by, 1); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'); }
+  function sampleNote() { return PREVIEW ? '<div class="note"><b>Sample.</b> Green Leaf Kitchen is made up. Nothing here is saved, sent or posted.</div>' : ''; }
+
+  // ---- The sample (Green Leaf Kitchen), built from its Cartridge's photos.
+  function sample() {
+    var load = window.VE_CARTRIDGE ? Promise.resolve() : new Promise(function (ok) { var s = document.createElement('script'); s.src = '/business/sample/cartridge.js'; s.onload = ok; s.onerror = ok; document.head.appendChild(s); });
+    return load.then(function () {
+      var C = window.VE_CARTRIDGE || {}, files = [];
+      ((C.menu || {}).sections || []).forEach(function (sec) { (sec.items || []).forEach(function (it) { if (it.photo && it.photo.src) files.push({ id: 'f' + files.length, title: it.name, view: it.photo.src, kind: 'photo' }); }); });
+      ((C.photos || {}).space || []).forEach(function (p) { if (p.src) files.push({ id: 'f' + files.length, title: p.shot, view: p.src, kind: 'photo' }); });
+      var m = function (i) { var f = files[i % Math.max(files.length, 1)] || {}; return { id: f.id, view: f.view }; };
+      var at = function (days, h) { var d = new Date(); d.setDate(d.getDate() + days); d.setHours(h, 0, 0, 0); return d.toISOString(); };
+      var posts = [
+        { id: 's1', planned_at: at(-6, 17), platforms: ['instagram'], format: 'carousel', status: 'posted', caption: 'Thank you to everyone who came to customer appreciation night.', media: [m(5), m(6)], links: { instagram: 'https://www.instagram.com/' } },
+        { id: 's2', planned_at: at(-3, 12), platforms: ['instagram', 'tiktok'], format: 'photo', status: 'posted', caption: 'New on the menu: the Green Leaf bowl. Quinoa, roasted sweet potato, kale and our tahini dressing.', media: [m(4)], links: { instagram: 'https://www.instagram.com/', tiktok: 'https://www.tiktok.com/' } },
+        { id: 's3', planned_at: at(2, 11), platforms: ['instagram', 'tiktok'], format: 'photo', status: 'approved', approved_by: 'owner', caption: 'Weekend brunch starts Saturday at 10. The banana bread French toast is calling.', media: [m(3)], links: {} },
+        { id: 's4', planned_at: at(4, 12), platforms: ['instagram', 'tiktok'], format: 'carousel', status: 'review', caption: 'Lunch is ready when you are. Our jackfruit tacos are back on the menu this week, with lime crema and pickled onions. Come hungry.', media: [m(0), m(1)], links: {} },
+        { id: 's5', planned_at: at(6, 18), platforms: ['tiktok'], format: 'video', status: 'changes', owner_note: 'Can we use the new queso bowl photo instead?', caption: 'Thirty seconds in our kitchen: the cashew queso, start to finish.', media: [m(2)], links: {} },
+        { id: 's6', planned_at: at(9, 12), platforms: ['instagram', 'tiktok'], format: 'photo', status: 'draft', caption: 'Meet Alex, who opened Green Leaf Kitchen in 2019 with one burner and a lot of hope.', media: [m(7)], links: {} },
+        { id: 's7', planned_at: null, platforms: ['instagram'], format: 'story', status: 'draft', caption: '', media: [], links: {} }];
+      return { ok: true, sample: true, team: true, owner: false, admin: false, month_name: new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+        listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, account: { id: 'sample', status: 'active' }, ok_hours: 48,
+        setup: { platforms: ['instagram', 'tiktok'], handles: { instagram: '@greenleafkitchen', tiktok: '@greenleafkitchen' }, per_month: 12, status: 'active', manager_name: 'Kai M.' },
+        platforms: { instagram: { name: 'Instagram', meta: true }, facebook: { name: 'Facebook', meta: true }, tiktok: { name: 'TikTok', meta: false }, youtube: { name: 'YouTube', meta: false } },
+        counts: { planned: 7, posted: 2 }, posts: posts, files: files };
+    });
+  }
+  function plat(k) { return ((D && D.platforms) && D.platforms[k] ? D.platforms[k].name : k); }
+
+  // ---- Their clients
+  function drawList() {
+    app.innerHTML = '<p class="k">BrandDesk</p><h1>Social planner</h1><p class="lede">The managed marketing clients you run social for. Each month: draft the posts, send them to the owner for their OK, then post them and add the links. A post they do not answer is approved on its own 48 hours before it goes out.</p>' + sampleNote() + '<div id="ls"><p>Loading...</p></div>';
+    var box = document.getElementById('ls');
+    if (PREVIEW) { box.innerHTML = '<div class="grid">' + clientCard({ account_id: 'sample', listing: { name: 'Green Leaf Kitchen' }, social_status: 'active', platforms: ['instagram', 'tiktok'], per_month: 12, this_month: 7, posted_this_month: 2, drafts: 2, waiting: 1, changes: 1, to_post: 1, manager_name: 'Kai M.' }) + '</div>'; wireList(); return; }
+    api({ action: 'social_list' }).then(function (d) {
+      if (!d || !d.ok) { box.innerHTML = '<p>This did not load.</p>'; return; }
+      var C = d.clients || [];
+      box.innerHTML = C.length ? '<div class="grid">' + C.map(clientCard).join('') + '</div>' : '<p>No social clients are yours yet. A client shows here once the social add-on is set and you are their social manager.</p>';
+      wireList();
+    });
+  }
+  var NAMES = { instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', youtube: 'YouTube' };
+  function clientCard(c) {
+    var due = c.changes + c.drafts;
+    return '<div class="box client"><div class="bar" style="margin:0 0 6px"><h3 style="margin:0">' + esc((c.listing || {}).name || 'A client') + (c.test ? ' [test]' : '') + '</h3><span class="tag ' + esc(c.social_status) + '">' + esc(SOCIAL_ST[c.social_status] || c.social_status) + '</span></div>' +
+      '<small>' + esc((c.platforms || []).map(function (k) { return NAMES[k] || k; }).join(' and ') || 'Platforms not set yet') + (c.manager_name ? ' &middot; ' + esc(c.manager_name) : '') + '</small>' +
+      '<small>This month: ' + esc(c.this_month) + ' of ' + esc(c.per_month) + ' planned, ' + esc(c.posted_this_month) + ' posted</small><div class="meter"><span style="width:' + Math.min(100, Math.round(100 * c.this_month / Math.max(c.per_month, 1))) + '%"></span></div>' +
+      '<small style="margin-top:8px">' + [c.changes ? c.changes + ' change asked' : '', c.drafts ? c.drafts + ' drafts' : '', c.waiting ? c.waiting + ' waiting for their OK' : '', c.to_post ? c.to_post + ' to post' : ''].filter(Boolean).join(' &middot; ') + '</small>' +
+      '<div class="row" style="margin-top:12px"><a class="btn sm' + (due ? '' : ' ghost') + '" href="#" data-acc="' + esc(c.account_id) + '">Open</a></div></div>';
+  }
+  function wireList() { app.querySelectorAll('[data-acc]').forEach(function (a) { a.onclick = function (e) { e.preventDefault(); go({ account: a.dataset.acc }); }; }); }
+
+  // ---- One client's month
+  function load() {
+    if (PREVIEW) return sample();
+    return api({ action: 'social_get', account_id: ACC, month: (MONTH || thisMonth()) + '-01' });
+  }
+  function head(extra) {
+    return '<p class="crumb"><a href="#" data-home>Social planner</a> &rsaquo; ' + (extra ? '<a href="#" data-month>' + esc(D.listing.name) + '</a> &rsaquo; ' + extra : esc(D.listing.name)) + '</p>' + sampleNote();
+  }
+  function drawMonth() {
+    var su = D.setup || {}, m = MONTH || thisMonth(), PO = D.posts || [];
+    var drafts = PO.filter(function (p) { return (p.status === 'draft' || p.status === 'changes') && p.planned_at && p.caption && +new Date(p.planned_at) > Date.now(); });
+    var row = function (p) {
+      var pic = (p.media || [])[0] || {};
+      var act = p.status === 'approved' ? '<a class="btn sm" href="#" data-post="' + esc(p.id) + '">Post it</a>' : '<a class="btn sm ghost" href="#" data-post="' + esc(p.id) + '">Open</a>';
+      return '<li><div class="th"' + (pic.view ? ' style="background-image:url(\'' + esc(pic.view) + '\')"' : '') + '>' + (pic.view ? '' : esc(p.format)) + '</div><div><b>' + esc(when(p.planned_at)) + '</b>' +
+        '<small>' + esc((p.platforms || []).map(plat).join(' and ')) + ' &middot; ' + esc(p.format) + '</small><small>' + esc(p.caption || 'No caption yet') + '</small>' + (p.owner_note ? '<small style="color:#8a5200"><b>They asked:</b> ' + esc(p.owner_note) + '</small>' : '') + '</div>' +
+        '<div class="acts"><span class="tag ' + esc(p.status) + '">' + esc(ST[p.status] || p.status) + (p.approved_by === 'auto' ? ' (on its own)' : '') + '</span>' + act + '</div></li>';
+    };
+    var handles = (su.platforms || []).map(function (k) { return esc(plat(k)) + (su.handles && su.handles[k] ? ' ' + esc(su.handles[k]) : ''); }).join(' and ');
+    app.innerHTML = head() + '<p class="k">Social</p><h1>' + esc(D.listing.name) + ' <span class="tag ' + esc(su.status) + '">' + esc(SOCIAL_ST[su.status] || su.status) + '</span></h1>' +
+      '<p class="lede">' + (handles || 'Their two platforms are not set yet (Depot &gt; BrandDesk, their page).') + (su.manager_name ? ' &middot; Social manager: ' + esc(su.manager_name) : '') + ' &middot; ' + esc(su.per_month) + ' posts a month.</p>' +
+      '<div class="bar"><div class="months"><a href="#" data-mo="' + shift(m, -1) + '" aria-label="Last month">&lsaquo;</a><span>' + esc(D.month_name) + '</span><a href="#" data-mo="' + shift(m, 1) + '" aria-label="Next month">&rsaquo;</a></div>' +
+      '<div class="row" style="margin:0"><button class="btn ghost" id="send"' + (drafts.length ? '' : ' disabled') + '>Send ' + (drafts.length ? drafts.length + ' ' : '') + 'for their OK</button><button class="btn" id="new">New post</button></div></div>' +
+      '<p style="font-size:14px;font-weight:700;margin:0">' + esc(D.counts.planned) + ' of ' + esc(su.per_month) + ' planned, ' + esc(D.counts.posted) + ' posted</p><div class="meter" style="margin-bottom:16px"><span style="width:' + Math.min(100, Math.round(100 * D.counts.planned / Math.max(su.per_month, 1))) + '%"></span></div>' +
+      (PO.length ? '<ul class="posts">' + PO.map(row).join('') + '</ul>' : '<p>No posts this month yet. Start with New post.</p>') + '<p class="msg" id="msg" role="status"></p>';
+    app.querySelectorAll('[data-mo]').forEach(function (a) { a.onclick = function (e) { e.preventDefault(); go({ account: ACC, month: a.dataset.mo }); }; });
+    app.querySelectorAll('[data-post]').forEach(function (a) { a.onclick = function (e) { e.preventDefault(); go({ account: ACC, month: MONTH, post: a.dataset.post }); }; });
+    wireHead();
+    document.getElementById('new').onclick = function () { go({ account: ACC, month: MONTH, post: 'new' }); };
+    document.getElementById('send').onclick = function () {
+      if (PREVIEW) { msg('In the sample nothing is sent. Live, the owner gets one email with the posts waiting for their OK.'); return; }
+      var b = this; b.disabled = true; msg('Sending...');
+      api({ action: 'social_send', account_id: ACC, ids: drafts.map(function (p) { return p.id; }) }).then(function (r) {
+        if (!r || !r.ok) { b.disabled = false; msg((r && r.message) || 'That did not send.', true); return; }
+        reload('Sent ' + r.sent + ' for their OK.');
+      });
+    };
+  }
+  function wireHead() {
+    var h = app.querySelector('[data-home]'); if (h) h.onclick = function (e) { e.preventDefault(); go({}); };
+    var mo = app.querySelector('[data-month]'); if (mo) mo.onclick = function (e) { e.preventDefault(); go({ account: ACC, month: MONTH }); };
+  }
+  function reload(note) { load().then(function (d) { if (d && d.ok) { D = d; D._month = MONTH || ''; } route(); if (note) msg(note); }); }
+
+  // ---- One post
+  function drawPost() {
+    var su = D.setup || {}, isNew = POST === 'new';
+    var p = isNew ? { id: '', planned_at: null, platforms: (su.platforms || []).slice(), format: 'photo', caption: '', media: [], status: 'draft', links: {} } : (D.posts || []).filter(function (x) { return x.id === POST; })[0];
+    if (!p) { app.innerHTML = head('A post') + '<p>That post is not in this month. <a href="#" data-month>Back to the month</a></p>'; wireHead(); return; }
+    if (keep) { p = Object.assign({}, p, { planned_at: keep.planned_at, platforms: keep.platforms, format: keep.format, caption: keep.caption }); picked = keep.media.slice(); keep = null; }
+    else picked = (p.media || []).map(function (x) { return x.id; });
+    var locked = p.status === 'posted' || p.status === 'skipped';
+    var plats = (su.platforms && su.platforms.length ? su.platforms : Object.keys(D.platforms));
+    var lib = (D.files || []).map(function (f) {
+      return '<button type="button" data-f="' + esc(f.id) + '" class="' + (picked.indexOf(f.id) >= 0 ? 'on' : '') + '" title="' + esc(f.title) + '"' + (f.view ? ' style="background-image:url(\'' + esc(f.view) + '\')"' : '') + '><i>' + (picked.indexOf(f.id) + 1 || '') + '</i>' + (f.view ? '' : esc(f.title)) + '</button>'; }).join('');
+    var edit = '<div class="box"><h2>' + (isNew ? 'New post' : 'The post') + ' ' + (isNew ? '' : '<span class="tag ' + esc(p.status) + '">' + esc(ST[p.status]) + '</span>') + '</h2>' +
+      (p.owner_note ? '<div class="ask"><b>They asked:</b> ' + esc(p.owner_note) + '</div>' : '') +
+      (['review', 'approved'].indexOf(p.status) >= 0 ? '<div class="note">Changing it now makes it a draft again, to send for their OK.</div>' : '') +
+      '<label class="f">When it goes out<input type="datetime-local" id="at" value="' + local(p.planned_at) + '"' + (locked ? ' disabled' : '') + '></label>' +
+      '<div style="font-weight:800;font-size:13.5px">Where it goes</div><div class="checks">' + plats.map(function (k) { return '<label><input type="checkbox" data-pl="' + k + '"' + ((p.platforms || []).indexOf(k) >= 0 ? ' checked' : '') + (locked ? ' disabled' : '') + '>' + esc(plat(k)) + '</label>'; }).join('') + '</div>' +
+      '<label class="f">What it is<select id="fmt"' + (locked ? ' disabled' : '') + '>' + FORMATS.map(function (f) { return '<option value="' + f[0] + '"' + (p.format === f[0] ? ' selected' : '') + '>' + f[1] + '</option>'; }).join('') + '</select></label>' +
+      '<label class="f">Caption<textarea id="cap" maxlength="2200"' + (locked ? ' disabled' : '') + '>' + esc(p.caption) + '</textarea></label><p class="count" id="cnt"></p>' +
+      (locked ? '' : '<div class="row"><button class="btn ghost" id="save">Save draft</button><button class="btn" id="sendone">Save and send for their OK</button>' + (isNew ? '' : '<button class="btn quiet" id="skip">Skip it</button>') + '</div>') +
+      (p.status === 'skipped' ? '<div class="row"><button class="btn ghost" id="restore">Bring it back</button></div>' : '') + '<p class="msg" id="msg" role="status"></p></div>';
+    var pics = '<div class="box"><h2>Pictures</h2><p style="font-size:13.5px;color:rgba(0,0,0,.65)">From their Library, in the order you tap them (up to 10).</p>' + (lib ? '<div class="lib" id="lib">' + lib + '</div>' : '<p>Their Library has no pictures yet.</p>') +
+      (locked || PREVIEW ? '' : '<label class="f" style="margin-top:14px">Add to their Library<input type="file" id="up" accept="image/*,video/*" multiple></label><p class="msg" id="upmsg" role="status"></p>') + '</div>';
+    var post = (p.status === 'approved' || p.status === 'posted') ? '<div class="box" style="margin-top:16px"><h2>' + (p.status === 'posted' ? 'Posted' : 'Post it') + '</h2>' +
+      '<p style="font-size:14px">' + (p.status === 'posted' ? 'Posted ' + esc(when(p.posted_at)) + '. Fix a link here if it changed.' : 'Approved' + (p.approved_by === 'auto' ? ' on its own' : p.approved_by === 'owner' ? ' by the owner' : '') + '. Post it on each platform, then add the link to each live post.') + '</p>' +
+      (p.platforms || []).map(function (k) { return '<label class="f">' + esc(plat(k)) + ' link<input id="ln-' + k + '" type="url" placeholder="https://" value="' + esc((p.links || {})[k] || '') + '"></label>'; }).join('') +
+      '<div class="row"><button class="btn" id="posted">' + (p.status === 'posted' ? 'Save the links' : 'Mark it posted') + '</button></div></div>' : '';
+    app.innerHTML = head(isNew ? 'New post' : esc(when(p.planned_at))) + '<div class="two"><div>' + edit + post + '</div>' + pics + '</div>';
+    wireHead();
+    var cap = document.getElementById('cap'), cnt = document.getElementById('cnt');
+    var count = function () { cnt.textContent = cap.value.length + ' of 2,200 characters' + (cap.value.length > 150 ? '' : ''); }; count(); cap.addEventListener('input', count);
+    app.querySelectorAll('[data-f]').forEach(function (b) {
+      b.onclick = function () { if (locked) return; var id = b.dataset.f, i = picked.indexOf(id); if (i >= 0) picked.splice(i, 1); else if (picked.length < 10) picked.push(id);
+        app.querySelectorAll('[data-f]').forEach(function (x) { var j = picked.indexOf(x.dataset.f); x.classList.toggle('on', j >= 0); x.querySelector('i').textContent = j >= 0 ? j + 1 : ''; }); };
+    });
+    var body = function () {
+      var at = document.getElementById('at').value;
+      return { action: 'social_post_save', account_id: ACC, id: isNew ? undefined : p.id, planned_at: at ? new Date(at).toISOString() : null, format: document.getElementById('fmt').value, caption: cap.value, media: picked,
+        platforms: Array.prototype.map.call(app.querySelectorAll('[data-pl]:checked'), function (x) { return x.dataset.pl; }) };
+    };
+    var save = function (then) {
+      var bd = body();
+      if (!bd.platforms.length) { msg('Pick where it goes.', true); return; }
+      if (PREVIEW) { msg(then ? 'In the sample nothing is sent. Live, the owner is emailed to give their OK.' : 'In the sample nothing is saved.'); return; }
+      msg('Saving...');
+      api(bd).then(function (r) {
+        if (!r || !r.ok) { msg((r && r.message) || 'That did not save.', true); return; }
+        if (!then) { POST = r.id; history.replaceState(null, '', location.pathname + '?account=' + ACC + (MONTH ? '&month=' + MONTH : '') + '&post=' + r.id); return reload('Saved.'); }
+        api({ action: 'social_send', account_id: ACC, ids: [r.id] }).then(function (s) {
+          if (!s || !s.ok) { POST = r.id; reload(); setTimeout(function () { msg((s && s.message) || 'Saved, but it did not send.', true); }, 400); return; }
+          go({ account: ACC, month: MONTH }); setTimeout(function () { msg('Sent for their OK.'); }, 400);
+        });
+      });
+    };
+    var sv = document.getElementById('save'); if (sv) sv.onclick = function () { save(false); };
+    var so = document.getElementById('sendone'); if (so) so.onclick = function () { save(true); };
+    var sk = document.getElementById('skip'); if (sk) sk.onclick = function () { if (PREVIEW) { msg('In the sample nothing is saved.'); return; } api({ action: 'social_skip', account_id: ACC, id: p.id }).then(function () { go({ account: ACC, month: MONTH }); }); };
+    var rs = document.getElementById('restore'); if (rs) rs.onclick = function () { api({ action: 'social_skip', account_id: ACC, id: p.id, restore: true }).then(function () { reload('Back as a draft.'); }); };
+    var pd = document.getElementById('posted');
+    if (pd) pd.onclick = function () {
+      var links = {}; (p.platforms || []).forEach(function (k) { var v = document.getElementById('ln-' + k).value.trim(); if (v) links[k] = v; });
+      if (PREVIEW) { msg('In the sample nothing is saved. Live, the owner sees each link under Posted.'); return; }
+      api({ action: 'social_posted', account_id: ACC, id: p.id, links: links, edit: p.status === 'posted' }).then(function (r) {
+        if (!r || !r.ok) { msg((r && r.message) || 'That did not save.', true); return; }
+        reload('Posted. The owner sees it with its links.');
+      });
+    };
+    var up = document.getElementById('up');
+    if (up) up.onchange = function () {
+      var files = Array.prototype.slice.call(up.files || []), um = document.getElementById('upmsg'), n = 0;
+      um.className = 'msg'; um.textContent = 'Uploading...';
+      files.reduce(function (pr, f) {
+        return pr.then(function () {
+          var kind = /^video\//.test(f.type) ? 'video' : 'photo';
+          return api({ action: 'file_upload_url', account_id: ACC, kind: kind, name: f.name, mime: f.type, bytes: f.size }).then(function (u) {
+            if (!u || !u.ok) throw new Error((u && u.message) || 'upload link');
+            return fetch(u.url, { method: 'PUT', headers: { 'Content-Type': f.type || 'application/octet-stream', 'x-upsert': 'false' }, body: f }).then(function (r) {
+              if (!r.ok) throw new Error('upload');
+              return api({ action: 'file_done', account_id: ACC, path: u.path, bytes: f.size, mime: f.type, note: 'Added from the social planner' });
+            }).then(function (d) { if (!d || !d.ok) throw new Error('save'); n++; picked.push(d.id); });
+          });
+        });
+      }, Promise.resolve()).then(function () {
+        keep = body(); keep.media = picked.slice(); reload(n + ' added to their Library and picked.');
+      }, function (e) { um.className = 'msg err'; um.textContent = 'Stopped after ' + n + ': ' + (e.message || 'that did not upload') + '.'; });
+    };
+  }
+
+  function route() {
+    if (!PREVIEW && !token()) {
+      app.innerHTML = '<p class="k">BrandDesk</p><h1>Social planner</h1><p class="lede">Sign in with the account you use as a social manager.</p><button class="btn" id="si">Sign in</button>';
+      document.getElementById('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the social planner.', function () { location.reload(); }); };
+      return;
+    }
+    if (!ACC) { D = null; return drawList(); }
+    if (!D || D.account.id !== (PREVIEW ? 'sample' : ACC) || (D._month || '') !== (MONTH || '')) {
+      app.innerHTML = '<p>Loading...</p>';
+      return load().then(function (d) {
+        if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#" data-home>Social planner</a></p><p>' + esc((d && d.message) || 'This client is not one you can open.') + '</p>'; wireHead(); return; }
+        D = d; D._month = MONTH || ''; route();
+      });
+    }
+    if (POST) return drawPost();
+    drawMonth();
+  }
+  function start() { if (!PREVIEW && !window.VEAuth) return setTimeout(start, 150); route(); }
+  start();
+})();
+</script>
+</body>
+</html>
