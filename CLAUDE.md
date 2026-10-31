@@ -572,12 +572,33 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `confirm_fn` `ve-branddesk`) activate the account once and email the client and the team. **Live since 2026-10-31** (Sean: "go live"):
   `branddesk.live` true, the Vegans Explore Stripe key; false puts it back on the LESARUSS test key. Checked live the same day as a super
   admin on Sobe Vegan (setup in 3 with social: a live session for $1,500 due today), the session expired and the row removed. `allowed`
-  is empty, so checkout opens only for super admins until Sean opens a listing (`ve-branddesk` `allow`). Proven 2026-10-31 in test mode through `ops_test_activate`
+  is empty, so checkout opens only for super admins until Sean opens a listing (`ve-branddesk` `allow`).
+  **Onboarding, the Library and the asset sheet** (built 2026-10-31; migration `20261031_branddesk_onboarding.sql`). Activation sets
+  `setup_paid_at` when the setup is paid at once (installments: once their paid invoices reach 3 or 6, checked on read) and starts the
+  **website archive** of the listing's website at once: `ve-branddesk` reads every page on their site (up to 40) and the pictures,
+  styles, fonts and scripts they use (500 files, 60 MB, two minutes; analytics left out), points the links at the copies so it opens
+  offline, adds `manifest.json` and `README.txt`, and saves one ZIP in their Library (`ve_branddesk_archives`: platform, pages, files;
+  a WordPress site is noted so the team asks for its own export). Proven on Love Life Cafe's site: 15 pages and 40 files, 9.7 MB, its home
+  page opening offline. **The Library** is `ve_branddesk_files` in the private bucket `branddesk-library` (`<slug>/<kind>/<file>`; kinds
+  photo, video, logo, brand, graphic, menu_board, document, archive): signed links an hour long, a 900 px preview for pictures, and
+  full-size downloads of what we make only once the setup is paid in full (their archive and documents always). **The onboarding
+  checklist** (`STEPS` in `ve-branddesk`, `ve_branddesk_accounts.onboarding`): welcome call (within 2 days), confirmed they run it, website
+  archived (on its own), brand kit started (on its own, a `ve_cartridges` row), Google manager access, domain access, social access (with
+  social only), starter shoot booked, first files in the Library (on its own). Actions `client`, `step`, `archive`, `file_upload_url`,
+  `file_done`, `file_remove` (the owner reads `client`; the rest are super admin). **The client sees it** on their business dashboard as
+  **Managed by us** (`?tab=brand&pd=managed&bd=start|library|sheet`, shown when `ve-branddesk` `plan` finds their live account), drawn by
+  `/public/ve-branddesk-client.js` (`VEBrandDesk.mount`): Getting started, Your Library (by kind, Download, and **Download everything**, a ZIP
+  made in the browser with the asset sheet and the menu as a spreadsheet inside) and **Your asset sheet** (from their Cartridge, else their
+  listing: the business, hours, links, story, colors, type, logo files, voice, the menu; Download the menu as CSV, Download the asset sheet
+  as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
+  (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
+  links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
+  `branddesk.allowed`). Not yet: emailing the client when a file lands, the 30-day download window after an end (`ended` closes the
+  Library), and a Community Manager's view of their accounts. Proven 2026-10-31 in test mode through `ops_test_activate`
   (Stripe's test card): setup in 3 with social charged $1,500 first and its schedule ran 3 months then dropped the setup item; paid in
   full charged $2,000; Pause refused during installments, set from the next billing date for 2 months with the schedule matching, a
   second refused, cancelled cleanly; cancel reported $1,000 still owed; a real Checkout session opened, an unpaid return went back as
-  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed. Not yet: a Depot view of
-  accounts (`list` answers), the welcome steps after payment (onboarding, website archive, Library). The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
+  unpaid, a second sign-up and a signed-out checkout were refused. Test subscriptions canceled and rows removed.  The brand kit's last slide links to it. Then the real store per listing, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
 - **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
   services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit

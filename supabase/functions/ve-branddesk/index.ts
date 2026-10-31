@@ -635,7 +635,7 @@ async function runArchive(arcId: string, startUrl: string, slug: string, account
   const okPages = pages.filter((p) => p.file);
   zip.file('manifest.json', JSON.stringify({ site: start.href, archived_at: when, platform, pages, assets: savedAssets, skipped }, null, 2));
   zip.file('README.txt', [
-    `Your website, archived by Vegans Explore on ${when.slice(0, 10)}`, '', `Site: ${start.href}`, `Built with: ${platform}`,
+    `Your website, archived by Vegans Explore on ${when.slice(0, 10)}`, '', `Site: ${start.href}`, platform !== 'other' ? `Built with: ${platform}` : '',
     `Pages saved: ${okPages.length}. Pictures, styles and fonts saved: ${savedAssets.length}.${skipped ? ` Files we could not save: ${skipped}.` : ''}`, '',
     'Open site/index.html in a browser to see your home page as it was. Every page is in the site folder, and their pictures,',
     'styles and fonts are in site/_assets. manifest.json lists every page and file with the address it came from.', '',
@@ -650,7 +650,7 @@ async function runArchive(arcId: string, startUrl: string, slug: string, account
   if (up.error) throw new Error('upload: ' + up.error.message);
   const { data: f } = await db.from('ve_branddesk_files').insert({ account_id: accountId, listing_id: listingId, kind: 'archive', path, bytes: out.length, mime: 'application/zip',
     title: `Your website as it was, ${when.slice(0, 10)} (${hostKey(start.hostname)})`, added_by: by,
-    note: `${okPages.length} pages, ${savedAssets.length} files. Built with ${platform}.` }).select('id').single();
+    note: `${okPages.length} pages, ${savedAssets.length} files.${platform !== 'other' ? ' Built with ' + platform + '.' : ''}` }).select('id').single();
   await db.from('ve_branddesk_archives').update({ status: 'done', platform, pages: okPages.length, assets: savedAssets.length, bytes: out.length, file_id: f?.id || null,
     note: platform === 'wordpress' ? 'WordPress: ask them for the export (Tools > Export > All content) and add it to their Library.' : (skipped ? `${skipped} files could not be saved.` : null),
     finished_at: new Date().toISOString() }).eq('id', arcId);

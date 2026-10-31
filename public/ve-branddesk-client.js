@@ -46,6 +46,7 @@
       '.vebd-files{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;}' +
       '.vebd-file{border:1px solid rgba(0,0,0,.1);border-radius:12px;overflow:hidden;background:#fff;display:flex;flex-direction:column;}' +
       '.vebd-file .th{aspect-ratio:4/3;background:#f2f4f1 center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:rgba(0,0,0,.45);text-transform:uppercase;letter-spacing:.08em;}' +
+      '.vebd-file .th.logo{background-size:contain;background-color:#3c4a3f;background-origin:content-box;padding:14px;}' +
       '.vebd-file .bd{padding:10px 12px;display:flex;flex-direction:column;gap:6px;flex:1;}.vebd-file b{font-size:13px;line-height:1.35;overflow-wrap:anywhere;}' +
       '.vebd-file .row{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:auto;}' +
       '.vebd-chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px;}.vebd-chips button{font:inherit;font-size:12px;font-weight:800;padding:7px 11px;border-radius:6px;border:1px solid rgba(0,0,0,.16);background:#fff;cursor:pointer;color:#14261a;}' +
@@ -68,6 +69,9 @@
     var c = (D.cartridge && D.cartridge.data) || {}, l = D.listing || {};
     var info = c.info || {}, addr = info.address || {}, links = info.links || {};
     var hours = info.hours || l.google_hours_json || {};
+    // Google's hours come as a JSON string of [{day, hours}] or as {Day: text}.
+    if (typeof hours === 'string') { try { hours = JSON.parse(hours); } catch (e) { hours = {}; } }
+    if (Array.isArray(hours)) { var h = {}; hours.forEach(function (x) { if (x && x.day) h[x.day] = x.hours || x.text || ''; }); hours = h; }
     return {
       name: (c.business && c.business.name) || l.name || '',
       kind: (c.business && c.business.kind) || l.category || '', vegan: (c.business && c.business.vegan) || '',
@@ -84,7 +88,7 @@
   function sheetHtml(S, forFile) {
     var DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     var kv = function (rows) { return '<dl class="vebd-kv">' + rows.filter(function (r) { return r[1]; }).map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + r[1] + '</dd>'; }).join('') + '</dl>'; };
-    var a = function (u) { return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(String(u).replace(/^https?:\/\//, '')) + '</a>' : ''; };
+    var a = function (u) { if (u && !/^(https?:)?\/\//.test(u) && u.charAt(0) !== '/') return esc(u); return u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(String(u).replace(/^https?:\/\//, '')) + '</a>' : ''; };
     var st = S.story || {}, v = S.voice, b = S.brand || {};
     var out = '<section class="vebd-card"><h4>The business</h4>' + kv([['Name', esc(S.name)], ['Kind', esc(S.kind)], ['How Vegan', esc(S.vegan)], ['Food', esc((S.cuisines || []).join(', '))],
       ['Address', esc(S.address)], ['Phone', esc(S.phone)], ['Email', esc(S.email)], ['Google', a(S.google)]]) + '</section>';
@@ -150,7 +154,7 @@
           (s.done_at ? 'Done ' + esc(day(s.done_at)) + (s.by && D.admin ? ' by ' + esc(s.by) : '') + (s.auto && D.admin ? ' (on its own)' : '') + (s.note ? ' &middot; ' + esc(s.note) : '') : (s.how === 'auto' ? 'Happens on its own' : 'Coming up')) + '</small></div>' + tick + '</div>';
       }).join('');
       var arc = (D.archives || [])[0];
-      var plan = '<section class="vebd-card"><h4>Your plan</h4><p>' + esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + '. Since ' + esc(day(A.activated_at)) + '.' +
+      var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + '. Since ' + esc(day(A.activated_at)) + '.' +
         (A.pause_from ? ' Paused from ' + esc(day(A.pause_from)) + ' to ' + esc(day(A.pause_until)) + '.' : '') + '</p>' +
         '<p class="vebd-muted">' + (D.unlocked ? 'Your setup is paid in full, so every file in your Library downloads at full size.' : 'Full-size downloads of what we make open once your setup is paid in full. Your old website is always yours to download.') + '</p>' +
         (D.sample ? '<p><a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">The agreement</a> <a class="vebd-btn o sm" href="/business/sample/brand" target="_blank" rel="noopener">Their brand kit</a> <a class="vebd-btn o sm" href="/business/sample/site" target="_blank" rel="noopener">Their website</a></p>' :
@@ -159,7 +163,7 @@
       var admin = '';
       if (D.admin) {
         admin = '<section class="vebd-card"><h4>Their website archive</h4>' + (arc ? '<p>' + (arc.status === 'running' ? '<span class="vebd-pill wait">Running</span> Started ' + esc(day(arc.created_at)) + '. Refresh in a minute.' :
-          arc.status === 'done' ? '<span class="vebd-pill ok">Done</span> ' + esc(arc.pages) + ' pages, ' + esc(arc.assets) + ' files, ' + esc(size(arc.bytes)) + ', built with ' + esc(arc.platform) + ', ' + esc(day(arc.finished_at)) + '.' :
+          arc.status === 'done' ? '<span class="vebd-pill ok">Done</span> ' + esc(arc.pages) + ' pages, ' + esc(arc.assets) + ' files, ' + esc(size(arc.bytes)) + (arc.platform && arc.platform !== 'other' ? ', built with ' + esc(arc.platform) : '') + ', ' + esc(day(arc.finished_at)) + '.' :
           '<span class="vebd-pill">Failed</span> ' + esc(arc.note || '')) + '</p>' + (arc.note && arc.status === 'done' ? '<p class="vebd-muted">' + esc(arc.note) + '</p>' : '') : '<p class="vebd-muted">Not archived yet.</p>') +
           '<form class="vebd-form" id="vebd-arc"><label>Their website<input name="url" value="' + esc(A.website_url || '') + '" placeholder="https://"></label><div><button class="vebd-btn" type="submit">Archive it now</button></div></form><p class="vebd-msg" id="vebd-arc-msg" role="status"></p></section>';
       }
@@ -180,7 +184,7 @@
       var head = '<div class="vebd-bar"><p class="vebd-muted" style="margin:0">Every photo, video, logo file and graphic we make for you, at full size. Yours to keep, whatever happens.' +
         (locked ? ' Full-size downloads open once your setup is paid in full.' : '') + '</p>' + (F.length ? '<button type="button" class="vebd-btn" id="vebd-all">Download everything</button>' : '') + '</div><p class="vebd-msg" id="vebd-all-msg" role="status"></p>';
       var grid = shown.length ? '<div class="vebd-files">' + shown.map(function (f) {
-        return '<div class="vebd-file"><div class="th"' + (f.view ? ' style="background-image:url(\'' + esc(f.view) + '\')"' : '') + '>' + (f.view ? '' : esc(KIND_WORD[f.kind] || f.kind)) + '</div><div class="bd"><b>' + esc(f.title) + '</b>' +
+        return '<div class="vebd-file"><div class="th' + (f.kind === 'logo' ? ' logo' : '') + '"' + (f.view ? ' style="background-image:url(\'' + esc(f.view) + '\')"' : '') + '>' + (f.view ? '' : esc(KIND_WORD[f.kind] || f.kind)) + '</div><div class="bd"><b>' + esc(f.title) + '</b>' +
           '<span class="vebd-muted">' + esc(KIND_WORD[f.kind] || f.kind) + (f.bytes ? ' &middot; ' + esc(size(f.bytes)) : '') + (f.width ? ' &middot; ' + f.width + ' x ' + f.height : '') + ' &middot; ' + esc(day(f.created_at)) + '</span>' +
           (f.note ? '<span class="vebd-muted">' + esc(f.note) + '</span>' : '') + '<div class="row">' + (f.download ? '<a class="vebd-btn sm" href="' + esc(f.download) + '">Download</a>' : '<span class="vebd-pill">Full size after setup</span>') +
           (D.admin && !o.load ? '<button type="button" class="vebd-btn sm o" data-bdrm="' + f.id + '">Remove</button>' : '') + '</div></div></div>';
@@ -228,7 +232,8 @@
           return files.reduce(function (p, f) {
             return p.then(function () {
               return fetch(f.download).then(function (r) { if (!r.ok) throw 0; return r.blob(); }).then(function (b) {
-                var name = (decodeURIComponent((f.download.match(/[?&]download=([^&]+)/) || [])[1] || '') || slugify(f.title)), k = (KIND_WORD[f.kind] || f.kind).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                var ext = (f.download.split('?')[0].match(/\.[a-z0-9]{2,5}$/i) || [''])[0];
+                var name = (decodeURIComponent((f.download.match(/[?&]download=([^&]+)/) || [])[1] || '') || slugify(f.title) + ext), k = (KIND_WORD[f.kind] || f.kind).toLowerCase().replace(/[^a-z0-9]+/g, '-');
                 var key = k + '/' + name; if (used[key]) key = k + '/' + (++used[key]) + '-' + name; else used[key] = 1;
                 zip.file(key, b); n++; msg.textContent = 'Getting your files ready... ' + n + ' of ' + files.length;
               }).catch(function () { /* one file missing does not stop the rest */ });
