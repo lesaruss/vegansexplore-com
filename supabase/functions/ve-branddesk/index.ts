@@ -578,6 +578,7 @@ async function runArchive(arcId: string, startUrl: string, slug: string, account
     const take = (raw: string) => { const u = absOf(raw, finalUrl); if (u) { wantAsset(u.href); refs.push([raw, u.href]); } };
     for (const mm of html.matchAll(/<(?:img|source|video|audio|input)\b[^>]*?\b(?:src|poster|data-src)\s*=\s*["']([^"']+)["']/gi)) take(mm[1]);
     for (const mm of html.matchAll(/\b(?:srcset|data-srcset)\s*=\s*["']([^"']+)["']/gi)) mm[1].split(',').forEach((s) => { const raw = s.trim().split(/\s+/)[0]; if (raw) take(raw); });
+    for (const mm of html.matchAll(/<script\b[^>]*?\bsrc\s*=\s*["']([^"']+)["']/gi)) { const u = absOf(mm[1], finalUrl); if (u && !/googletagmanager|google-analytics|facebook\.net|hotjar|doubleclick/.test(u.hostname)) take(mm[1]); }
     for (const mm of html.matchAll(/<link\b[^>]*>/gi)) {
       const tag = mm[0]; if (!/rel\s*=\s*["'][^"']*(stylesheet|icon|apple-touch-icon|preload)[^"']*["']/i.test(tag)) continue;
       const h = tag.match(/href\s*=\s*["']([^"']+)["']/i); if (h) take(h[1]);
