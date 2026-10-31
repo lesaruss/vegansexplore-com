@@ -99,15 +99,20 @@
   btn.addEventListener('mousedown', function (e) { e.preventDefault(); });   // keep the field's focus and cursor
   btn.addEventListener('click', function () { if (rec) stop(); else start(); if (field) field.focus(); });
 
-  document.addEventListener('focusin', function (e) {
-    var el = e.target;
+  function attach(el) {
     if (el === btn) return;
     if (rec && el !== field) stop();
     if (!eligible(el)) { if (!rec) hide(); return; }
     field = el;
     if (!btn.parentNode) document.body.appendChild(btn);
     place();
-  });
+  }
+  document.addEventListener('focusin', function (e) { attach(e.target); });
+  // A field focused before this script loaded (a page that puts the cursor in its first field) gets no focusin, nor does a click
+  // into a field that already has focus, so both are picked up here.
+  document.addEventListener('click', function (e) { if (e.target !== field && e.target === document.activeElement) attach(e.target); });
+  function attachActive() { if (document.activeElement && document.activeElement !== document.body) attach(document.activeElement); }
+  if (document.body) attachActive(); else document.addEventListener('DOMContentLoaded', attachActive);
   document.addEventListener('focusout', function (e) {
     if (e.target !== field) return;
     setTimeout(function () { if (document.activeElement !== btn && document.activeElement !== field) hide(); }, 120);
