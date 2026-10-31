@@ -17,7 +17,7 @@ const price = (p) => parseFloat(String(p).replace(/[^\d.]/g, '')) || 0;
 
 async function lookup(key, body, fresh) {
   const hit = cache.get(key);
-  if (hit && !fresh && Date.now() - hit.at < 60000) return hit.d;
+  if (hit && !fresh && Date.now() - hit.at < 30000) return hit.d;
   let d;
   try {
     const r = await fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: AbortSignal.timeout(9000) });
@@ -111,7 +111,7 @@ module.exports = async (req, res) => {
   }
   if (d.redirect) return send(res, 308, '', { Location: d.redirect + path + u.search });
   const rel = path.replace(/^\/+|\/+$/g, '');
-  const cacheLive = d.mode === 'preview' ? noStore : { 'Cache-Control': 'public, max-age=0, s-maxage=60, stale-while-revalidate=600' };
+  const cacheLive = d.mode === 'preview' ? noStore : { 'Cache-Control': 'public, max-age=0, s-maxage=30, stale-while-revalidate=30' };
   if (rel === 'robots.txt') {
     return send(res, 200, d.mode === 'preview' ? '# BrandDesk preview\nUser-agent: *\nDisallow: /\n' : '# ' + d.name + ', managed by Vegans Explore BrandDesk\nUser-agent: *\nAllow: /\n\nSitemap: ' + d.origin + '/sitemap.xml\n',
       Object.assign({ 'Content-Type': 'text/plain; charset=utf-8' }, cacheLive));
