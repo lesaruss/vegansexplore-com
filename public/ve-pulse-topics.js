@@ -105,12 +105,15 @@
     }
     return out + '</div>';
   }
+  // Sean, 2026-10-31: the city is the tag, so the title is only the news; older "South Florida Pulse: ..." titles lose it here.
+  function placeName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'Local'; }
+  function cleanTitle(s) { return String(s || '').replace(/^[A-Za-z.,' ]{2,40} Pulse:\s*/, ''); }
   function card(t, community) {
     var n = t.reply_count || 0, sum = summary(t);
     return '<a class="vep-card" href="' + link(t, community) + '" data-frame-label="Daily Pulse">' +
       '<div class="vep-tags">' + (isToday(t) ? '<span class="vep-tag today">Today</span>' : '') +
-        '<span class="vep-tag' + (t.community === 'national' ? ' national">National' : '">Local') + '</span></div>' +
-      '<div class="vep-title">' + esc(t.title) + '</div>' +
+        '<span class="vep-tag' + (t.community === 'national' ? ' national">National' : '">' + esc(placeName(t.community))) + '</span></div>' +
+      '<div class="vep-title">' + esc(cleanTitle(t.title)) + '</div>' +
       '<div class="vep-intro">' + esc(t.body) + '</div>' +
       (sum ? '<div class="vep-sum">' + esc(sum) + '</div>' : '') +
       (t.question ? '<div class="vep-question">' + esc(t.question) + '</div>' : '') +

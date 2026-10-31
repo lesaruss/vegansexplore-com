@@ -458,6 +458,9 @@
     function since(iso) { return new Date(iso).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); }
     // '' is every chapter (All cities on the banner).
     function hubName(slug) { if (LR) { var tp = lrTopic(slug); return tp ? tp.label : 'every topic'; } if (!slug) return 'every city'; if (slug === 'national') return 'National'; var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : slug; }
+    // Sean, 2026-10-31: the city is a tag on the card, so a Daily Pulse title is only the news ("South Florida Pulse: ..."
+    // on older posts is dropped where it is shown).
+    function topicTitle(post) { return post.kind === 'topic' && !LR ? String(post.title || '').replace(/^[A-Za-z.,' ]{2,40} Pulse:\s*/, '') : post.title; }
     function avatar(p) {
       if (!p) return '<span class="avatar" style="background:#ddd">?</span>';
       if (p.avatar) return '<span class="avatar" style="background-image:url(\'' + esc(p.avatar) + '\')" aria-hidden="true"></span>';
@@ -468,7 +471,7 @@
     function tags(post) {
       if (post.kind === 'topic') {
         return '<span class="tag tag-topic">' + (LR ? 'Pulse' : 'Daily Pulse') + '</span>' + (isToday(post) ? '<span class="tag tag-today">Today</span>' : '') +
-          (post.community === 'national' ? '<span class="tag tag-national">National</span>' : !state.city ? '<span class="tag tag-city">' + esc(hubName(post.community)) + '</span>' : '') +
+          (post.community === 'national' ? '<span class="tag tag-national">National</span>' : (!LR || !state.city) ? '<span class="tag tag-city">' + esc(hubName(post.community)) + '</span>' : '') +
           (post.status === 'hidden' ? '<span class="tag tag-hidden">Hidden</span>' : '') + (post.status === 'draft' ? '<span class="tag tag-hidden">Draft</span>' : '');
       }
       var lane = laneOf(post), out;
@@ -612,7 +615,7 @@
     function topicCard(post) {
       return '<button type="button" class="post-card" data-id="' + post.id + '">' +
         '<div class="tags">' + tags(post) + '</div>' +
-        '<div class="post-title">' + esc(post.title) + '</div>' +
+        '<div class="post-title">' + esc(topicTitle(post)) + '</div>' +
         '<div class="post-body">' + esc(post.body) + '</div>' +
         (window.VEPulse && VEPulse.summary(post) ? '<div class="post-meta" style="margin-top:8px;color:var(--ve-orange-ink);font-weight:700">' + esc(VEPulse.summary(post)) + '</div>' : '') +
         (post.question ? '<div class="post-question">' + esc(post.question) + '</div>' : '') +
@@ -737,7 +740,7 @@
     function renderDetail(post, replies) {
       var p = post.poster || {};
       $('d-tags').innerHTML = tags(post);
-      $('d-title').textContent = post.title;
+      $('d-title').textContent = topicTitle(post);
       var topic = post.kind === 'topic', lane = laneOf(post), L = LANES[lane];
       $('d-when').textContent = topic
         ? (LR ? 'Pulse · ' : 'Daily Pulse · ') + ago(post.created_at) + ' · ' + (post.community === 'national' ? 'National' : hubName(post.community))
