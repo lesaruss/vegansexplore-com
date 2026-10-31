@@ -415,14 +415,18 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
-## Front of House: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
+## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
+
+**The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
+Front of House until then; the canon and playbook slugs keep `front-of-house`. One word, B and D capitals. Trademark and domain check
+before it goes on a public page (BrandDeck, a brand-management tool, is close).
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-front-of-house`; migration `20261031_front_of_house_canon.sql`).
 **Not built yet.** Sean: "they don't have a solid brand presence... You can't find a logo. Their website looks like it was made in 2014...
 I want to create a management package for vegan businesses that's accessible... I have had somebody literally say that to me." People
 judge whether food is safe by how a place looks online; businesses want marketing help, not more promotion. Restaurants are the way in.
 
-- **The offer** (name Front of House, V's default): **$1,500 setup** (at once or over 3 or 6 months; the rest owed on an early cancel): the
+- **The offer**: **$1,500 setup** (at once or over 3 or 6 months; the rest owed on an early cancel): the
   full audit, a logo and brand kit, Google Business Profile claimed and complete, the website on our template fed by their listing, their
   Directory page and dashboard, a starter shoot of up to 15 menu items, two weeks for what we control (Google's verification shows as
   waiting). **$500 a month**: the managed website (the template improves for every client), Google (hours, photos, posts, reviews), a
@@ -430,7 +434,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   with a capped allowance (worded "included the day it opens" until it is live). **Social +$500 a month** for two platforms; the shop's
   one-platform $400 stays for businesses that are not managed. 12 months, then month to month; they own their domain and content.
 - **The split**: $250 to the account's Community Manager (gig work, never an amount in public copy), $250 to Vegans Explore. 10 accounts
-  per Community Manager to start; a full one means hiring the next. A city opens to Front of House when it has a Community Manager.
+  per Community Manager to start; a full one means hiring the next. A city opens to BrandDesk when it has a Community Manager.
 - **The showroom**: Green Leaf Kitchen (`/business/sample`) gets its website on the real template, exactly what a client gets minus their
   brand; the template changes only through brand slots (fonts, colors, logo, voice, photo look), like LESARUSS.ai's variables. A
   make-it-yours switch shows it in two or three looks. `/business` gets a **Managed by us** module; the Restaurant Guide's audit links every
@@ -459,7 +463,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   months a year at $99 a month (V's default), the site and library stay, no management, the $99 to Vegans Explore.
 - **The door, the pitch and the reveal** (Sean, 2026-10-31; canon v3). The Restaurant Guide becomes **The Vegan Restaurant Guide**: what we
   can do for your Vegan restaurant, $11 makes them a member, a living manual on the Creator Guide's model (every tab what to click, each
-  item Live or Coming), with a **Front of House** demo tab and Launch a product (Coming). A client's **premium listing** wears their brand
+  item Live or Coming), with a **BrandDesk** demo tab and Launch a product (Coming). A client's **premium listing** wears their brand
   with a small Managed by Vegans Explore mark and never buys rank. **Prepared audits**: a quick audit on every food place, a presence-gap
   ranking, the full audit and a person's plan for the next 30 to contact, Sean's warm list first, worded "We looked at your business
   before we reached out", never dressed as an instant scan. The first page sets the tone (this is a lot; you don't have to carry it; the
@@ -495,9 +499,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   `ve_brand_kit_suggestions`, migration `20261031_ve_brand_kit_suggestions.sql`, RLS on, no policies). The other editors (logo, type,
   story, photos, info) say what they will do until built. Then the real store per listing, the frame, Launch (check, connect, build with previews,
   domain, SSL, sweep), and a second restaurant in another city.
-- **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). Front of House is the framework for LESARUSS.ai's business
-  services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named Front of House until a non-food
-  frame needs another name (Sean's call). The promise: a real person does every hard part and the owner only keeps the brand kit
+- **LESARUSS.ai business services** (LOCKED by Sean 2026-10-31, canon v6). BrandDesk is the framework for LESARUSS.ai's business
+  services too: the same prices on every brand, the $111 Diplomat included while they subscribe, named BrandDesk on every brand and for every kind of business. The promise: a real person does every hard part and the owner only keeps the brand kit
   current. Data across clients predicts what grows a business; every improvement reaches every member. **Photo nights** every two
   months after launch (a buffet-style influencer night, a few dishes shot in a set-aside area), included and part of the rotation; the
   restaurant provides the food, the starter shoot stays. An **idea library** of campaigns clients pick from, each with a blueprint the

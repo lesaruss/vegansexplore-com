@@ -1,4 +1,4 @@
-// ve-brand-kit: the Suggest button in a Front of House brand kit (canon canon-ve-front-of-house v5; Sean, 2026-10-31: "if they don't
+// ve-brand-kit: the Suggest button in a BrandDesk brand kit (canon canon-ve-front-of-house v5; Sean, 2026-10-31: "if they don't
 // know what to type for the description, they can click suggested button, and then our AI will come up with something").
 //
 // POST { action: 'suggest', kind: 'menu_item' | 'story' | 'voice', business: {name, short, city, cuisines, vegan}, voice?, item?, answers?, visitor? }

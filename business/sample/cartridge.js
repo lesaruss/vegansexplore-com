@@ -1,4 +1,4 @@
-/* Green Leaf Kitchen's Cartridge (Front of House, canon canon-ve-front-of-house v4; Sean, 2026-10-31: "a cartridge, just plug
+/* Green Leaf Kitchen's Cartridge (BrandDesk, canon canon-ve-front-of-house v4; Sean, 2026-10-31: "a cartridge, just plug
  * it into the template, that it knows the colors, it knows the logo, it knows everything").
  *
  * A Cartridge is everything that makes one business look and sound like itself, in one file. The frame (the website template)
