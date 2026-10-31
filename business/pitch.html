@@ -235,7 +235,7 @@
       // The other paths: one slide each, with its form.
       html += slide('ch-think', 'Let me think about it', formSlide('think', 'Let me think about it', 'Pick a day and we\'ll check back then. Nothing before.', IMG + 's-outside-dusk.webp'), ' data-path="think"');
       html += slide('ch-talk', 'Talk to someone', formSlide('talk', 'Talk to someone', 'A real person from our team reaches out within a day. Tell us the best way to reach you.', IMG + 's-team.webp'), ' data-path="talk"');
-      html += slide('ch-no', 'Not now', formSlide('no', 'Not now, thanks', 'Thank you for looking. If now is not the time to hand it off, you can still start on your own. Our Vegan Restaurant Survival Guide walks you through the same kind of check we ran for ' + name + ', the fixes in plain words, and how to get found by the Vegans near you. Tell us anything you want us to know.', null, guideCard()), ' data-path="no"');
+      html += slide('ch-no', 'Not now', formSlide('no', 'Not now, thanks', 'Thank you for looking. If now is not the time to hand it off, you can still start on your own. Our Vegan Restaurant Guide walks you through the same kind of check we ran for ' + name + ', the fixes in plain words, and how to get found by the Vegans near you. Tell us anything you want us to know.', null, guideCard()), ' data-path="no"');
       stage.innerHTML = html;
       drawSignup();
       var note = document.getElementById('ptNote');
@@ -246,11 +246,11 @@
       var sc = document.createElement('script'); sc.src = '/public/ve-guided.js'; document.body.appendChild(sc);
     }
     function scaleStill() { document.querySelectorAll('.pt-still').forEach(function (b) { if (!b.offsetWidth) return; b.querySelector('iframe').style.transform = 'scale(' + (b.offsetWidth / +b.getAttribute('data-w')) + ')'; }); }
-    // Not now: the Vegan Restaurant Survival Guide, so they can start on their own (Sean, 2026-10-31).
+    // Not now: the Vegan Restaurant Guide, so they can start on their own (Sean, 2026-10-31).
     function guideCard() {
       var href = '/guides/vegan-restaurant-survival-guide?from=pitch';
       return '<div class="pt-card pt-guide"><a href="' + href + '" target="_blank" rel="noopener"><img class="pt-hero" src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/banners/vegan-restaurant-survival-guide.jpg" alt="Liz, the Guide, holding a chalkboard that reads OPEN" loading="lazy"></a>' +
-        '<div class="pt-area" style="margin-top:12px">A Guide for restaurant owners</div><b>The Vegan Restaurant Survival Guide</b>' +
+        '<div class="pt-area" style="margin-top:12px">A Guide for restaurant owners</div><b>The Vegan Restaurant Guide</b>' +
         '<ul class="su-keys"><li>A free check of your Google listing, website and social</li><li>Every fix in plain words, in the order that matters for you</li><li>Our interviews with Vegan business owners</li><li>How to get featured on Vegans Explore</li></ul>' +
         '<p style="margin-top:12px"><a class="vg-btn" href="' + href + '" target="_blank" rel="noopener">Open the Guide</a></p>' +
         '<p class="pt-cap">$11 or 1,100 points, yours to keep, and the $11 makes you a member. The free check is open to everyone.</p></div>';

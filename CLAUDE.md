@@ -676,7 +676,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   four picked cards (only the picked one is green; `data-vg-path`). **I'm ready stays on the page**: its path is Your plan, The agreement (the
   full text opens in a window on the page) and Review and pay beside a mock-up of their home page (`#su-plan`, `#su-agree`, `#su-pay`); Pay
   records the choice, then `checkout` with `back` (`/business/pitch?c=<code>`), so Stripe returns to the pitch (`&status=done|cancelled|unpaid#su-pay`).
-  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`). **Not now offers the Vegan Restaurant Survival Guide** (Sean, 2026-10-31: "I don't get... your Vegans Explore page stays yours
+  Let me think about it, Talk to someone and Not now are their own slides with their forms (`#ch-think`, `#ch-talk`, `#ch-no`). **Not now offers the Vegan Restaurant Guide** (Sean, 2026-10-31: "I don't get... your Vegans Explore page stays yours
   free... maybe we're sharing the vegan restaurant guide with them"): its card (Liz's banner, what is in it, Open the Guide at
   `/guides/vegan-restaurant-survival-guide?from=pitch`, $11 or 1,100 points, the free check open to everyone) sits beside the form, so a
   business that says no can still start on its own (`guideCard` in `business/pitch.html`).
@@ -2974,6 +2974,11 @@ Guide (`guides/vegan-restaurant-survival-guide.html`, see The Restaurant Guide b
   free check in the outreach emails (an upgrade to the offer, not a change to the plan).
 
 ## The Restaurant Guide (rebuilt 2026-10-10 on the Dairy Guide playbook)
+
+**Its name is The Vegan Restaurant Guide** (Sean, 2026-10-31: "We'll change it to the vegan restaurant guide, because that should have
+been changed already"; canon `canon-ve-front-of-house` v3; migration `20261031_vegan_restaurant_guide_name.sql`): the page, its card, the
+Passport's business tab, the sample business, the pitch, `ve-cookbook`, the `ve_guides` title, its dashboard card and its house-banner
+link. It was the Vegan Restaurant Survival Guide; the slug `vegan-restaurant-survival-guide` and every link to it stay.
 
 `guides/vegan-restaurant-survival-guide.html` and `guide-scripts/vegan-restaurant-survival-guide.js` (the old 10-step page and
 its gate script are gone). Liz is the Guide, on the right of every tab, one lip-synced clip per tab for visitors (`CLIPS`,

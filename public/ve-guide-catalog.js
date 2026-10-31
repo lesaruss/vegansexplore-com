@@ -79,7 +79,7 @@
     { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: BANNERS + 'vegan-dairy-guide.jpg', href: '/guides/vegan-dairy-guide',
       desc: 'Everything you need to go dairy-free: the brands to buy, swaps for every kind of dairy, recipes and cookbooks, the research and our interviews, with Maya walking you through it.',
       chips: [{ text: 'Walked through by Maya' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'vegan-restaurant-survival-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Survival Guide', banner: BANNERS + 'vegan-restaurant-survival-guide.jpg', href: '/guides/vegan-restaurant-survival-guide',
+    { slug: 'vegan-restaurant-survival-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Guide', banner: BANNERS + 'vegan-restaurant-survival-guide.jpg', href: '/guides/vegan-restaurant-survival-guide',
       desc: 'What may be quietly hurting your restaurant, and how to fix it: a free check of your Google listing, website and social, the fixes in your order, our interviews with business owners, and how to get featured, with Liz walking you through it.',
       chips: [{ text: 'Walked through by Liz' }, { text: 'Free check' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'stadium-arena-guide', shelf: 'everyday', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/stadium-arena-guide.jpg', href: '/guides/stadium-arena-guide',
