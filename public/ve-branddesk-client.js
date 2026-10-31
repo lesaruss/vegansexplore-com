@@ -1,7 +1,7 @@
 /* ve-branddesk-client.js: a managed client's own space (BrandDesk, canon canon-ve-front-of-house; onboarding built 2026-10-31).
  * "They rent the service, they own the assets" (Sean, 2026-10-31): their Library, their asset sheet and how onboarding stands.
  *
- *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
+ *   VEBrandDesk.mount(el, { slug | account_id, view: 'start'|'library'|'sheet'|'reports'|'campaigns', report: id, go: function (view) {}, admin: bool, load?: fn -> Promise })
  *
  * Three views, one at a time:
  *   start    Getting started: the onboarding checklist (ve-branddesk steps), their plan, and where things are
@@ -10,6 +10,7 @@
  *            always theirs.
  *   sheet    the asset sheet: everything about the business in one place, from their Cartridge (ve_cartridges), with Download the
  *            menu (CSV) and Download the asset sheet (HTML)
+ *   campaigns  Your campaigns: the month's campaign from the rotation (ve_branddesk_campaigns), when, and how it went
  *   reports  Monthly reports: each month's check-in once it is sent (ve-branddesk checkin_get), one report per view
  *   VEBrandDesk.reportHtml(checkin, steps) draws a report; /business/checkin uses it for the preview.
  * admin: true (Depot > BrandDesk) adds ticking steps, Archive their website and adding files to the Library.
@@ -172,7 +173,7 @@
       }, function () { el.innerHTML = '<div class="vebd"><p class="vebd-muted">This did not load. Try again in a moment.</p></div>'; });
     }
     function sub() {
-      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['reports', 'Monthly reports']].map(function (v) {
+      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns'], ['reports', 'Monthly reports']].map(function (v) {
         return '<a href="#" data-bdv="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
     }
     function drawStart() {
@@ -230,6 +231,34 @@
       el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
     }
+    var CSTATUS = { planned: ['Planned', 'wait'], scheduled: ['Date set', ''], done: ['Done', 'ok'] };
+    function drawCampaigns() {
+      var R = D.campaigns || [], now = Date.now();
+      var row = function (c) {
+        var st = CSTATUS[c.status] || ['', ''], res = c.results || {}, bits = [];
+        if (res.came) bits.push(res.came + ' came'); if (res.posts) bits.push(res.posts + ' posts'); if (res.followers) bits.push(res.followers + ' new followers');
+        return '<li><span><b>' + esc(c.title) + '</b>, ' + esc(c.month_name) + '<br><small class="vebd-muted">' + (c.starts_at ? esc(new Date(c.starts_at).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) : 'Date to be set with you') +
+          (bits.length ? ' &middot; ' + esc(bits.join(', ')) : '') + '</small>' + (res.worked && c.status === 'done' ? '<br><small>' + esc(res.worked) + '</small>' : '') + '</span>' +
+          '<span style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="vebd-pill ' + st[1] + '">' + st[0] + '</span>' + (c.event_id ? '<a class="vebd-btn o sm" href="/events#event/' + esc(c.event_id) + '" target="_blank" rel="noopener">On the calendar</a>' : '') +
+          ((o.admin || D.admin) && !D.sample ? '<a class="vebd-btn o sm" href="/business/campaign?id=' + esc(c.id) + '">Open</a>' : '') + '</span></li>';
+      };
+      var next = R.filter(function (c) { return c.status !== 'done' && (!c.starts_at || +new Date(c.starts_at) > now - 864e5); }), past = R.filter(function (c) { return next.indexOf(c) < 0; });
+      var add = (D.admin && !D.sample && ['active', 'paused', 'canceling'].indexOf(D.account.status) >= 0) ? '<form class="vebd-form" id="vebd-cadd" style="margin-top:14px"><label>Add a campaign<select name="kind">' +
+        [['influencer_night', 'Influencer night'], ['dj_night', 'DJ night'], ['customer_appreciation', 'Customer appreciation'], ['giveaway', 'Giveaway'], ['scavenger_stop', 'Scavenger hunt stop'], ['community_night', 'Community night'], ['photo_night', 'Photo night']]
+          .map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></label><label>Month<input type="month" name="month" required></label>' +
+        '<button class="vebd-btn" type="submit">Add it</button></form><p class="vebd-msg" id="vebd-cadd-msg"></p>' : '';
+      frame('<section class="vebd-card"><h4>Your campaigns</h4><p class="vebd-muted">One campaign a month from our rotation (an influencer night, a DJ night, customer appreciation, a giveaway, a scavenger hunt stop or a community night), picked with your Community Manager at your check-in, and a photo night every two months. We plan it, put it on the Vegans Explore calendar and tell you how it went.</p>' +
+        (next.length ? '<h4 style="margin-top:14px">Coming up</h4><ul class="vebd-list">' + next.map(row).join('') + '</ul>' : '<p class="vebd-muted" style="margin:10px 0 0">Your next campaign shows here once you pick it at your monthly check-in.</p>') +
+        (past.length ? '<h4 style="margin-top:16px">Done</h4><ul class="vebd-list">' + past.map(row).join('') + '</ul>' : '') + add + '</section>');
+      var f = el.querySelector('#vebd-cadd');
+      if (f) f.addEventListener('submit', function (e) {
+        e.preventDefault(); var m = el.querySelector('#vebd-cadd-msg');
+        api({ action: 'campaign_create', account_id: D.account.id, kind: f.kind.value, month: f.month.value + '-01' }).then(function (d) {
+          if (d && d.ok) { location.href = '/business/campaign?id=' + d.id; return; }
+          m.className = 'vebd-msg bad'; m.textContent = (d && d.message) || 'That did not add.';
+        });
+      });
+    }
     function drawReports() {
       var R = D.reports || [];
       if (reportId) {
@@ -260,6 +289,7 @@
     function draw() {
       if (!D) return load();
       if (view === 'reports') return drawReports();
+      if (view === 'campaigns') return drawCampaigns();
       var body = view === 'library' ? drawLibrary() : view === 'sheet' ? drawSheet() : drawStart();
       el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
@@ -363,13 +393,20 @@
       return { ok: true, admin: false, sample: true, unlocked: true, steps: steps, files: files, archives: [],
         account: { id: 'sample', status: 'active', setup_plan: '3', social: true, activated_at: '2026-10-14' },
         listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C },
-        reports: [sampleMonth()] };
+        reports: [sampleMonth()], campaigns: sampleCampaigns() };
     });
   }
   // The sample business's report for last month, sent on the 6th of this one (made up, like Green Leaf Kitchen itself).
   function sampleMonth() {
     var n = new Date(), m = new Date(Date.UTC(n.getFullYear(), n.getMonth() - 1, 1, 12)), sent = new Date(Date.UTC(n.getFullYear(), n.getMonth(), Math.min(6, n.getDate()), 15));
     return { id: 'sample-report', month: m.toISOString().slice(0, 10), month_name: m.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }), status: 'sent', sent_at: sent.toISOString() };
+  }
+  function sampleCampaigns() {
+    var n = new Date(), mk = function (off, day, h) { return new Date(n.getFullYear(), n.getMonth() + off, day, h, 0); }, mn = function (d) { return { month: new Date(Date.UTC(d.getFullYear(), d.getMonth(), 1, 12)).toISOString().slice(0, 10), month_name: d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) }; };
+    var a = mk(1, 12, 19), b = mk(1, 20, 18), c = mk(-1, 16, 19);
+    return [Object.assign({ id: 's1', title: 'Customer appreciation', status: 'scheduled', starts_at: a.toISOString(), event_id: null, results: {} }, mn(a)),
+      Object.assign({ id: 's2', title: 'Photo night', status: 'planned', starts_at: null, event_id: null, results: {} }, mn(b)),
+      Object.assign({ id: 's3', title: 'Influencer night', status: 'done', starts_at: c.toISOString(), event_id: null, results: { came: 8, posts: 14, followers: 212, worked: 'The jackfruit tacos were in almost every post; two creators came back the next weekend.' } }, mn(c))];
   }
   function sampleReport() {
     var sm = sampleMonth();
