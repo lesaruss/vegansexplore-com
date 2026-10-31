@@ -2320,6 +2320,27 @@ continue to put those guides in front of people's faces. And if they already pur
   first.
 - Tracked like the house banners: views and clicks per Guide per listing.
 
+## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
+
+**Built, not launched.** The Guide the listing Guide tab names for Nutrition & Supplements, Physicians and Health Experts (they show the
+Dairy Guide until it launches). `guides/nutrition-guide.html` and `guide-scripts/nutrition-guide.js`, the Nonprofit Guide's shell
+(`noindex`, off the catalog), **Theo** on the right (the Seasoned Vegan mentor, who had no Guide; his lines are text drafts for Sean, no
+recordings). Tabs (`#/<tab>`): Overview; **Nutrients**, one per view (`#/nutrients/<id>`: B12, protein, iron, calcium, vitamin D, omega-3s,
+iodine, zinc), each with why it matters, How much by who, Where to get it, Supplements, Theo's tip, This week (kept in the browser,
+`nt_checks`), its sources and an episode; **B12 is the free example**; **Your plate** (Harvard's Healthy Eating Plate with the protein
+made Vegan, and the every-day checklist); **Supplements** (the Directory's Nutrition & Supplements brands, open; what to look for before
+you buy, members); **Experts** (People > Physicians and Health Experts, and Services > Health Professionals by chapter, open; a listing
+opens in the Guide); **Pulse** (`PULSE_PICKS`: 16 episodes with our physicians and health experts, matched to their feeds, played in
+place); My list (`ve-cookbook` kinds fix, episode, listing) and Get access. Every page carries the line that it is general information,
+not medical advice. **Every number is from the source named under it**, checked 2026-10-31 against the NIH Office of Dietary Supplements
+fact sheets, The Vegan Society, Harvard's Nutrition Source and the Academy of Nutrition and Dietetics' position paper (PCRM's Power Plate
+page is gone, so the plate is Harvard's; USP blocks automated checks, so it is named without a link). The other seven nutrients, the
+plate and the supplement checklist are `ve_guides.content_html` (`<script id="nt-data">`), loaded from the session, never in the repo; the
+page holds the intro, the titles and B12 (`#nt-public`). The `ve_guides` row `nutrition-guide` is published ($11 or 1,100 points, sort 8)
+so it sells and opens; Sean holds a comp copy (migration `20261031_nutrition_guide.sql`). **Launch** = Sean approves Theo's lines and the
+content, a banner (`public/guides/nutrition-guide.jpg`, Theo in the tee, the locked banner style), its card in `ve-guide-catalog.js`, the
+`nutrition-guide` row in `GUIDES` of `public/ve-guide-tab.js`, `noindex` off, the sitemap and og:image.
+
 ## Media (Sean, 2026-10-27)
 
 "Let's do media instead of shows... what we're showing on media is our featured media plus the top 12 listings voted by you

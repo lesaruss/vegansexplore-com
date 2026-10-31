@@ -35,13 +35,14 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide',
-  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide' };
+  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide', 'nutrition-guide': 'The Nutrition Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
 const DAY_MS = 24 * 60 * 60 * 1000;
 // The Restaurant Guide adds its fixes and promotions (migration 20261010_ve_audit_orders.sql). The Nonprofit Guide (2026-10-29) saves
-// its tips as kind fix, its episodes and Directory listings, and so does the Creator Guide (2026-10-29).
+// its tips as kind fix, its episodes and Directory listings, and so does the Creator Guide (2026-10-29), and the Nutrition Guide its
+// nutrients (2026-10-31).
 const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode', 'fix', 'promo'], SAVE_CAP = 500;
 const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo'];
 
