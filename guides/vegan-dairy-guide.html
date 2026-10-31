@@ -186,6 +186,14 @@
 
     /* The Pulse: research and our podcasts */
     .dg-pods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:14px;}
+    /* Pulse episodes are podcast rows, the row a person's page uses (/public/ve-episodes.js), two across like the Restaurant Guide's
+       (Sean, 2026-10-31: "just having the podcast clip that you can play... you just see the logo of the podcast"); one on a phone */
+    .dg-eps .vep-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .dg-eps .vep-acts .dg-vote,.dg-eps .vep-acts .dg-save{justify-content:center;}
+    .dg-eps-h{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin:18px 0 10px;}
+    .dg-eps-h:first-of-type{margin-top:4px;}
+    .dg-eps-sub{font-size:13px;color:var(--ink75);margin:-4px 0 12px;}
+    @media (max-width:760px){.dg-eps .vep-list{grid-template-columns:minmax(0,1fr);}}
     .dg-pod{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s;}
     .dg-pod:hover{border-color:var(--g2);}
     .dg-pod-img{aspect-ratio:16/9;background:#14301c center/cover no-repeat;position:relative;}
@@ -460,6 +468,7 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
+<script src="/public/ve-episodes.js"></script>
 <script src="/guide-scripts/vegan-dairy-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
