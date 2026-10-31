@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Prepared for You — Vegans Explore</title>
+  <meta name="description" content="A page we prepared for your business: what we found, your home page on our frame, your first two weeks and what it costs.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The BrandDesk pitch (canon canon-ve-front-of-house v1 "The pitch", v3 "The door, the pitch and the reveal"). One personal
+       page per business, prepared by our team and sent from Sean: what we found (their latest full audit, never dressed as an
+       instant scan), their home page on our frame as a still, the two weeks, the price, then I'm ready / Let me think about it /
+       Talk to someone, each landing in the Inbox (ve-branddesk pitch_view, pitch_choice). /business/pitch?c=<code>; ?c=sample is
+       Green Leaf Kitchen for Preview journeys; &preview=1 (or a super admin) never counts a view or saves a choice. */
+    body{margin:0;background:#0d130e;}
+    .vg-note{background:#14301a;color:#e9f7ea;font:600 13px/1.4 'Montserrat',sans-serif;padding:9px 40px;}
+    .vg-note strong{display:inline-block;margin-right:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;font-size:11px;color:#86efac;}
+    .pt-logo{width:100%;max-width:300px;aspect-ratio:1;object-fit:contain;background:#fff;border-radius:14px;padding:18px;box-sizing:border-box;box-shadow:0 18px 40px rgba(0,0,0,.4);}
+    .pt-letter{width:100%;max-width:300px;aspect-ratio:1;border-radius:14px;background:#1e3a24;display:flex;align-items:center;justify-content:center;font:900 120px/1 'Montserrat',sans-serif;color:#86efac;}
+    .pt-tone{margin-top:22px;padding:16px 18px;border-left:3px solid #22C55E;background:rgba(255,255,255,.06);border-radius:6px;font-size:15px;line-height:1.6;max-width:640px;}
+    .pt-big{font:900 clamp(64px,9vw,120px)/1 'Montserrat',sans-serif;color:#86efac;}
+    .pt-bars{display:grid;gap:14px;margin-top:18px;}
+    .pt-bar b{display:flex;justify-content:space-between;font-size:13px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;}
+    .pt-bar i{display:block;height:10px;border-radius:6px;background:rgba(255,255,255,.14);overflow:hidden;}
+    .pt-bar i span{display:block;height:100%;background:#22C55E;}
+    .pt-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px;}
+    .pt-list li{padding:12px 14px;background:rgba(255,255,255,.06);border-radius:8px;font-size:14.5px;line-height:1.45;}
+    .pt-list li small{display:block;opacity:.75;margin-top:3px;font-size:13px;}
+    .pt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px;margin-top:16px;}
+    .pt-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:14px 16px;}
+    .pt-card b{display:block;font-size:15px;margin-bottom:4px;}
+    .pt-card small{display:block;font-size:13px;line-height:1.5;opacity:.85;}
+    .pt-card .pt-area{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#86efac;margin-bottom:4px;}
+    .pt-when{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#86efac;margin-bottom:6px;}
+    .pt-still{position:relative;width:100%;aspect-ratio:16/10;border-radius:12px;overflow:hidden;background:#fff;box-shadow:0 18px 40px rgba(0,0,0,.45);}
+    .pt-still iframe{position:absolute;left:0;top:0;width:1440px;height:900px;border:0;transform-origin:0 0;pointer-events:none;}
+    .pt-still::after{content:"";position:absolute;inset:0;}
+    .pt-price{font:900 clamp(34px,4vw,52px)/1.05 'Montserrat',sans-serif;}
+    .pt-price small{font-size:16px;font-weight:700;opacity:.85;}
+    .pt-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:20px;}
+    @media (max-width:900px){.pt-choices{grid-template-columns:1fr;}}
+    .pt-choice{text-align:left;cursor:pointer;font:inherit;color:#fff;background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.2);border-radius:10px;padding:16px 18px;}
+    .pt-choice b{display:block;font-size:17px;margin-bottom:4px;}
+    .pt-choice small{font-size:13px;opacity:.85;}
+    .pt-choice.on,.pt-choice:hover{border-color:#22C55E;background:rgba(34,197,94,.12);}
+    .pt-choice.go{background:#22C55E;color:#03170a;border-color:#22C55E;}
+    .pt-form{margin-top:16px;display:grid;gap:10px;max-width:640px;}
+    .pt-form label{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;display:grid;gap:5px;}
+    .pt-form input,.pt-form textarea{font:inherit;font-size:15px;letter-spacing:0;text-transform:none;font-weight:500;padding:11px 12px;border-radius:6px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.35);color:#fff;}
+    .pt-form textarea{min-height:84px;}
+    .pt-msg{font-size:14px;font-weight:700;min-height:20px;color:#86efac;}
+    .pt-msg.err{color:#fca5a5;}
+    .pt-two{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:40px;align-items:center;}
+    @media (max-width:900px){.pt-two{grid-template-columns:1fr;gap:22px;}.vg-note{padding:9px 16px;}}
+    .pt-gate{max-width:560px;margin:60px auto;padding:30px;color:#fff;font-family:'Montserrat',sans-serif;text-align:center;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note" id="ptNote" hidden></div>
+  <main class="vg-stage" id="ptStage" aria-label="Prepared for your business">
+    <section class="vg-slide" id="cover" data-title="Prepared for you"><p class="vg-lede" style="padding-top:40px">Loading...</p></section>
+  </main>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/business/sample/cartridge.js"></script>
+  <script>
+  (function () {
+    var API = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
+    var Q = new URLSearchParams(location.search), CODE = (Q.get('c') || '').toLowerCase(), SAMPLE = CODE === 'sample', PREVIEW = SAMPLE || Q.get('preview') === '1';
+    var D = null, stage = document.getElementById('ptStage');
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function money(c) { return '$' + (c / 100).toLocaleString('en-US'); }
+    function api(body) {
+      var t = window.VEAuth && VEAuth.getToken && VEAuth.getToken(), h = { 'Content-Type': 'application/json' }; if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+    }
+    function sampleData() {
+      var C = window.VE_CARTRIDGE;
+      return { team: true, business: { name: C.business.name, slug: 'sample', city: 'Fort Lauderdale', logo: C.brand.logo.primary.src }, contact: { name: 'Alex Rivera', email: '' },
+        note: 'Alex, we met at the Sunday market in the spring and I still think about your jackfruit bowl.', look: 'fresh', look_name: 'Their brand',
+        summary: { looked_on: new Date(Date.now() - 6 * 864e5).toISOString(), presence: 58, areas: [{ name: 'Google', pct: 71 }, { name: 'Your website', pct: 52 }, { name: 'Being found in search', pct: 64 }, { name: 'Social', pct: 33 }],
+          fixes: [{ area: 'Google', label: 'Your Google photos show your food', found: 'Google has 4 photos, none of a dish.' }, { area: 'Your website', label: 'Your website loads fast on a phone', found: 'It took 7.9 seconds on a phone.' },
+            { area: 'Your website', label: 'Your menu is on your website as text', found: 'The menu is a photo of the printed menu.' }, { area: 'Social', label: 'You have posted on Instagram in the last month', found: 'Your last post was in June.' },
+            { area: 'Being found in search', label: 'Your name, address and phone match everywhere', found: 'Google and your website list different phone numbers.' }],
+          fix_count: 11, goods: ['Your Google Business Profile can be found', 'Your hours are on Google', 'People rate you well on Google'], good_count: 23, google: { rating: 4.7, reviews: 312 } },
+        plan: null, prices: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000 }, who: null, sample: true, managed: '/business/managed?preview=plan' };
+    }
+    var PLAN = [
+      { when: 'Day 1', title: 'A welcome call', text: 'We meet, you tell us what you want people to know, and we start your brand kit from what you already have.' },
+      { when: 'Days 1 to 3', title: 'Your Google profile', text: 'Claimed, hours, photos, categories and the details people search for. Google\'s own verification can take longer; that part is theirs.' },
+      { when: 'Days 2 to 5', title: 'Your logo and brand kit', text: 'A clean logo in every size, your colors, your type and your voice, written down so everything matches.' },
+      { when: 'Days 3 to 7', title: 'Your starter photo shoot', text: 'Up to 15 dishes and your space, shot to one standard, so every photo of your food looks like it belongs together.' },
+      { when: 'Days 5 to 10', title: 'Your new website', text: 'Built on our frame and fed by your Directory page: menu, hours, ordering and directions, ready for phones.' },
+      { when: 'Days 10 to 14', title: 'Launch', text: 'Your site goes live, your Vegans Explore page and dashboard are ready, and we pick your first month\'s campaign together.' }
+    ];
+
+    function slide(id, title, html) { return '<section class="vg-slide" id="' + id + '" data-title="' + esc(title) + '">' + html + '</section>'; }
+    function render() {
+      var B = D.business, S = D.summary, name = esc(B.name), first = (D.contact.name || '').split(' ')[0];
+      var logo = B.logo ? '<img class="pt-logo" src="' + esc(B.logo) + '" alt="' + name + '">' : '<div class="pt-letter">' + esc(B.name.charAt(0)) + '</div>';
+      var looked = S && S.looked_on ? new Date(S.looked_on).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) : '';
+      var site = SAMPLE ? '/business/sample/site?look=theirs' : '/business/site?pitch=' + encodeURIComponent(CODE);
+      var html = slide('cover', 'Prepared for you', '<div class="vg-split pt-two"><div><div class="vg-eyebrow">Prepared for ' + name + '</div>' +
+          '<h1 class="vg-h vg-xl">We looked at ' + name + ' before we reached out.</h1>' +
+          (D.note ? D.note.split(/\n\s*\n/).map(function (p) { return '<p class="vg-lede">' + esc(p) + '</p>'; }).join('') : '<p class="vg-lede">' + (first ? esc(first) + ', this' : 'This') + ' page is yours: what we found when we looked at how people find you online, what your home page could look like, and what your first two weeks with us would be.</p>') +
+          '<div class="pt-tone">Running a Vegan business is a lot. Google, your website, photos, social, the menu that changed last week. You don\'t have to carry all of it. A real person on our team does the hard parts, and you keep everything we make.</div>' +
+          '<p style="margin-top:22px"><button class="vg-btn" type="button" data-vg-next>See what we found</button></p></div><div>' + logo + '</div></div>');
+      if (S) {
+        html += slide('found', 'What we found', '<div class="vg-split pt-two"><div><div class="vg-eyebrow">What we found' + (looked ? ' · ' + esc(looked) : '') + '</div>' +
+          '<h2 class="vg-h">How easy ' + name + ' is to find, and how good it looks when people do</h2>' +
+          '<p class="vg-lede">We checked ' + (S.fix_count + S.good_count) + ' things people see before they ever walk in: Google, your website, search and social.</p>' +
+          '<div class="pt-bars">' + S.areas.map(function (a) { return '<div class="pt-bar"><b><span>' + esc(a.name) + '</span><span>' + a.pct + '%</span></b><i><span style="width:' + a.pct + '%"></span></i></div>'; }).join('') + '</div></div>' +
+          '<div><div class="pt-big">' + S.presence + '%</div><p class="vg-lede" style="margin-top:6px">of what a well-run presence has</p>' +
+          (S.goods.length ? '<div class="vg-eyebrow" style="margin-top:20px">Already working for you</div><ul class="pt-list">' + S.goods.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>' : '') +
+          (S.google && S.google.rating ? '<p class="vg-lede" style="margin-top:14px">' + esc(S.google.rating) + ' stars from ' + esc(S.google.reviews) + ' Google reviews. People who find you like you.</p>' : '') + '</div></div>');
+        html += slide('fixes', 'What is holding you back', '<div class="vg-eyebrow">What is holding you back</div><h2 class="vg-h">' + S.fix_count + ' things to fix. Here are the ones that matter most.</h2>' +
+          '<p class="vg-lede">None of this is a judgment. It is what slips when you are running the kitchen.</p>' +
+          '<div class="pt-grid">' + S.fixes.map(function (f) { return '<div class="pt-card"><div class="pt-area">' + esc(f.area) + '</div><b>' + esc(f.label) + '</b><small>' + esc(f.found) + '</small></div>'; }).join('') + '</div>');
+      }
+      html += slide('site', 'Your home page', '<div class="vg-split pt-two"><div><div class="vg-eyebrow">Your home page, on our frame</div>' +
+          '<div class="pt-still" id="ptStill"><iframe src="' + esc(site) + '" title="' + name + ' home page preview" tabindex="-1" aria-hidden="true" loading="lazy"></iframe></div></div>' +
+          '<div><h2 class="vg-h">This is ' + name + ', with what is on your Directory page today.</h2>' +
+          '<p class="vg-lede">' + (SAMPLE ? 'Your site, built on our frame from your brand kit.' : 'Shown in our ' + esc(D.look_name) + ' colors. After your brand kit and your photo shoot it wears your own colors, your type and photos of your food.') + '</p>' +
+          '<p class="vg-lede">Your menu, hours, ordering and directions, one tap away on a phone. It improves every time we improve the frame, for every business on it.</p>' +
+          '<p><a class="vg-btn vg-btn-ghost" href="/business/sample/site" target="_blank" rel="noopener">See a finished one</a></p></div></div>');
+      html += slide('plan', 'Your first two weeks', '<div class="vg-eyebrow">Your first two weeks</div><h2 class="vg-h">What happens after you say yes</h2>' +
+          '<div class="pt-grid">' + (D.plan || PLAN).map(function (p) { return '<div class="pt-card"><div class="pt-when">' + esc(p.when) + '</div><b>' + esc(p.title) + '</b><small>' + esc(p.text) + '</small></div>'; }).join('') + '</div>' +
+          '<p class="vg-lede" style="margin-top:16px">After that, every month: your website and Google kept current, a check-in with ' + (D.who ? esc(D.who) + ', your Community Manager' : 'your Community Manager') + ', a campaign, and your results live on your dashboard.</p>');
+      var P = D.prices;
+      html += slide('price', 'What it costs', '<div class="vg-split pt-two"><div><div class="vg-eyebrow">What it costs</div><h2 class="vg-h">A marketing team for ' + money(P.monthly) + ' a month</h2>' +
+          '<div class="pt-grid" style="grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr))"><div class="pt-card"><div class="pt-area">To start</div><div class="pt-price">' + money(P.setup) + '</div><small>Once, or ' + money(P.setup3) + ' a month for 3 months, or ' + money(P.setup6) + ' for 6.</small></div>' +
+          '<div class="pt-card"><div class="pt-area">Every month</div><div class="pt-price">' + money(P.monthly) + ' <small>a month</small></div><small>Your site, Google, a check-in, a campaign and your results.</small></div>' +
+          '<div class="pt-card"><div class="pt-area">If you want it</div><div class="pt-price">+' + money(P.social) + ' <small>a month</small></div><small>Social media on two platforms, run for you.</small></div></div>' +
+          '<p class="vg-lede" style="margin-top:14px">12 months, then month to month. You can pause up to 3 months a year.</p></div>' +
+          '<div><div class="vg-eyebrow">Yours to keep</div><ul class="pt-list"><li>Your domain, your Google profile and your social accounts, always in your name</li><li>Every photo, your logo in every format and your brand kit, to download any time</li><li>Your words, your menu and a copy of your old website</li><li>Your Vegans Explore page, free, whatever you decide</li></ul>' +
+          '<p class="vg-lede" style="margin-top:14px">If it ever stops being right for you, you leave with everything we made.</p></div></div>');
+      html += slide('choose', 'What would you like to do?', '<div class="vg-eyebrow">Your call</div><h2 class="vg-h">What would you like to do?</h2>' +
+          '<div class="pt-choices"><button class="pt-choice go" type="button" data-choice="ready"><b>I\'m ready</b><small>Pick your plan and sign up. It takes a few minutes.</small></button>' +
+          '<button class="pt-choice" type="button" data-choice="think"><b>Let me think about it</b><small>Pick a day and we\'ll check back then. Nothing before.</small></button>' +
+          '<button class="pt-choice" type="button" data-choice="talk"><b>Talk to someone</b><small>A real person from our team reaches out within a day.</small></button></div>' +
+          '<div id="ptForm"></div><p style="margin-top:14px"><button class="vg-btn vg-btn-ghost" type="button" data-choice="no" style="min-height:38px;font-size:11px">Not now, thanks</button></p>');
+      stage.innerHTML = html;
+      var note = document.getElementById('ptNote');
+      if (SAMPLE) { note.hidden = false; note.innerHTML = '<strong>Sample</strong>A pitch page for Green Leaf Kitchen, a made-up restaurant. Nothing is saved or sent.'; }
+      else if (D.team) { note.hidden = false; note.innerHTML = '<strong>Preview</strong>You are seeing ' + name + '\'s page as they will. Views and choices are not counted.'; }
+      document.title = 'Prepared for ' + B.name + ' — Vegans Explore';
+      scaleStill(); window.addEventListener('resize', scaleStill); document.addEventListener('vg:change', scaleStill);
+      var sc = document.createElement('script'); sc.src = '/public/ve-guided.js'; document.body.appendChild(sc);
+    }
+    function scaleStill() { var b = document.getElementById('ptStill'); if (!b || !b.offsetWidth) return; b.querySelector('iframe').style.transform = 'scale(' + (b.offsetWidth / 1440) + ')'; }
+
+    function form(choice) {
+      var f = document.getElementById('ptForm'), c = D.contact || {}, d = new Date(Date.now() + 14 * 864e5).toISOString().slice(0, 10);
+      document.querySelectorAll('.pt-choice').forEach(function (b) { b.classList.toggle('on', b.dataset.choice === choice && choice !== 'ready'); });
+      var who = '<label>Your name<input id="ptName" autocomplete="name" value="' + esc(c.name) + '"></label><label>Your email<input id="ptEmail" type="email" autocomplete="email" value="' + esc(c.email) + '"></label>';
+      f.innerHTML = '<div class="pt-form">' + (choice === 'think' ? '<label>When should we check back?<input id="ptDate" type="date" value="' + d + '" min="' + new Date().toISOString().slice(0, 10) + '"></label>' + who + '<label>Anything on your mind (optional)<textarea id="ptNote2" maxlength="1200"></textarea></label>'
+        : choice === 'talk' ? who + '<label>Phone (optional)<input id="ptPhone" type="tel" autocomplete="tel"></label><label>What would you like to talk about?<textarea id="ptNote2" maxlength="1200"></textarea></label>'
+        : who + '<label>Anything you want us to know (optional)<textarea id="ptNote2" maxlength="1200"></textarea></label>') +
+        '<p><button class="vg-btn" type="button" data-send="' + choice + '">' + (choice === 'think' ? 'Check back then' : choice === 'talk' ? 'Have someone reach out' : 'Send') + '</button></p><div class="pt-msg" id="ptMsg" role="status"></div></div>';
+    }
+    function send(choice) {
+      var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; }, m = document.getElementById('ptMsg');
+      var body = { action: 'pitch_choice', code: CODE, choice: choice, name: v('ptName'), email: v('ptEmail'), phone: v('ptPhone'), note: v('ptNote2'), follow_up_on: v('ptDate'), preview: PREVIEW };
+      if (choice === 'think' && !body.follow_up_on) { if (m) { m.className = 'pt-msg err'; m.textContent = 'Pick a day for us to check back.'; } return; }
+      if (choice === 'talk' && !body.email && !body.phone) { m.className = 'pt-msg err'; m.textContent = 'Leave an email or a phone so we can reach you.'; return; }
+      var done = function (r) {
+        if (choice === 'ready') { location.href = (r && r.next) || D.managed; return; }
+        m.className = 'pt-msg';
+        m.textContent = (PREVIEW ? 'Preview: nothing was saved. ' : '') + (choice === 'think' ? 'Thank you. We\'ll check back on ' + new Date(body.follow_up_on + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) + '.' : choice === 'talk' ? 'Thank you. Someone from our team will reach out within a day.' : 'Thank you for looking. Your Vegans Explore page stays yours, free.');
+        document.querySelectorAll('[data-send]').forEach(function (b) { b.disabled = true; });
+      };
+      if (SAMPLE) return done({ next: D.managed });
+      if (m) { m.className = 'pt-msg'; m.textContent = 'Sending...'; }
+      api(body).then(function (r) { if (r && r.ok) return done(r); if (m) { m.className = 'pt-msg err'; m.textContent = (r && r.message) || 'That did not go through. Try again in a minute.'; } },
+        function () { if (m) { m.className = 'pt-msg err'; m.textContent = 'That did not go through. Check your connection.'; } });
+    }
+    document.addEventListener('click', function (e) {
+      var c = e.target.closest('[data-choice]'), s = e.target.closest('[data-send]');
+      if (c) { var ch = c.dataset.choice; if (ch === 'ready') return send('ready'); if (ch === 'no') { form('no'); return; } form(ch); return; }
+      if (s) send(s.dataset.send);
+    });
+
+    function gate(t, line) { stage.outerHTML = '<div class="pt-gate"><h1 style="font-size:26px">' + esc(t) + '</h1><p>' + line + '</p></div>'; }
+    if (SAMPLE) { D = sampleData(); render(); return; }
+    if (!/^[a-z0-9]{8,20}$/.test(CODE)) return gate('This page was not found', 'Check the link in the email we sent you.');
+    api({ action: 'pitch_view', code: CODE, preview: PREVIEW }).then(function (d) {
+      if (!d || !d.ok) return gate('This page was not found', 'Check the link in the email we sent you, or write to contact@lesaruss.com.');
+      D = d; render();
+    }, function () { gate('This page did not load', 'Check your connection and try again.'); });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
