@@ -58,8 +58,23 @@
 //   templates { program }           a people list's three emails
 //   template_save { program, step, subject?, body?, status? }  edit them; status 'ready' lets them send
 // HQ calls with the admin token and as_member (the owner's member id, a super admin), honored only for people lists.
+// HQ Depot > Invitations (Sean, 2026-10-30, migration 20261031_hq_depot_invitations.sql): "The original core depot lives on
+// LESARUSS HQ... I should be able to change my environment and send to Vegans Explore people... we're sending individual
+// messages, inviting them to join the platform... if we don't get any response... we just move them into a list of cool off."
+// A people list now has an audience brand (who it invites into), a sender (email_brands), the domain of its tracked links,
+// and can run on its own once Sean approves it: tick plans today's send day (ve_outreach_autoplan: daily_new, doubling each
+// weekday while bounces stay low and nobody complains), moves anyone who did nothing after the last email into Cool off for
+// 90 days (ve_outreach_cool_off), and drafts each new person's opening from HQ > People (Claude, {opening} in the emails).
+//   candidates { brand, sender?, q?, fit?: suggested|any, limit?, offset? }  who can be invited into that brand (ve_invite_candidates)
+//   people     { list }                     everyone on a list, with their status, opening and Cool off
+//   report     { list }                     the list's numbers: by status, sends, opens, clicks, bounces, and each send day
+//   draft_openings { list?, contact_id?, limit? }  draft openings now (a contact_id drafts that one again)
+//   opening_save   { contact_id, opening }  Sean's own words for one person's opening (super admin)
+//   list_approve   { list, approve }        approve the list once (its emails must be Ready), or take the approval back (super admin)
+//   list_save      { list, daily_new?, daily_cap?, auto_send?, ramp?, link_url?, footer_reason? }  the list's settings (super admin)
 // verify_jwt is false on deploy; tokens are verified here the way ve-links does it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
+import Anthropic from 'npm:@anthropic-ai/sdk';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -175,8 +190,8 @@ async function lookup(website: string): Promise<{ email: string | null; source: 
 // ---- Sending ----
 const SITE = 'https://vegansexplore.com';
 const FN_BASE = `${SUPABASE_URL}/functions/v1`;
-const BRAND = 'lesaruss';            // Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com
-const PER_TICK = 6;                  // 6 every 10 minutes: a day of 30 goes out over about an hour, not in one burst
+const BRAND = 'lesaruss';            // Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com; a people list may name its own sender
+const PER_TICK = 12;                 // 12 every 10 minutes, so a day's send goes out over hours, not in one burst (warm-up caps it again)
 async function secretValue(key: string): Promise<string | null> {
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
   return (data?.value as string) ?? null;
@@ -213,9 +228,10 @@ function linkCode() {
   return 'bo-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => abc[b % abc.length]).join('');
 }
 type Contact = { id: string; listing_id: string | null; community_slug: string; email: string; contact_name: string | null; segment: string; step: number; link_code: string | null };
-type List = { community_slug: string; name: string; kind: 'city' | 'people'; program: string; link_url: string | null; footer_reason: string | null; brand: string };
+type List = { community_slug: string; name: string; kind: 'city' | 'people'; program: string; link_url: string | null; footer_reason: string | null; brand: string;
+  audience_brand: string | null; sender_brand: string; link_base: string };
 async function listOf(slug: string): Promise<List | null> {
-  const { data } = await db.from('ve_outreach_cities').select('community_slug,name,kind,program,link_url,footer_reason,brand').eq('community_slug', slug).maybeSingle();
+  const { data } = await db.from('ve_outreach_cities').select('community_slug,name,kind,program,link_url,footer_reason,brand,audience_brand,sender_brand,link_base').eq('community_slug', slug).maybeSingle();
   return (data as List) ?? null;
 }
 // The personal tracked link, made once and used in all three emails: a business's goes to its page, a person's to their
@@ -249,7 +265,9 @@ async function build(c: Contact, step: number, test = false) {
     if (!list || !m) throw new Error('could not render');
     const name = c.contact_name || c.email;
     const code = test || !m.page_url ? null : await ensureLink(c, name, String(m.page_url), list.program);
-    const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
+    // The tracked link lives on the brand's own domain (lesaruss.ai/go/<code> proxies vegansexplore.com/go).
+    const base = String(list.link_base || SITE).replace(/\/$/, '');
+    const body = code ? String(m.body).split(m.page_url).join(`${base}/go/${code}`) : String(m.body);
     return { subject: String(m.subject), html: toHtml(body, name, list.footer_reason), text: toText(body, name, list.footer_reason), name, code };
   }
   const { data: l } = await db.from('listings').select('name,slug').eq('id', c.listing_id).single();
@@ -258,33 +276,42 @@ async function build(c: Contact, step: number, test = false) {
   const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
   return { subject: String(m.subject), html: toHtml(body, l.name), text: toText(body, l.name), name: l.name, code };
 }
-async function tick() {
-  const synced = (await db.rpc('ve_outreach_sync')).data;
-  if (!sendingHours()) return { synced, sent: 0, note: 'outside sending hours (weekdays 9 AM to 5 PM Eastern)' };
-  const { data: brand } = await db.from('email_brands').select('from_email').eq('slug', BRAND).single();
+// Each sender's warm-up allowance for today, read once a tick (email_warmup_allowance on its sending domain).
+async function senderRoom(sender: string): Promise<number> {
+  const { data: brand } = await db.from('email_brands').select('from_email').eq('slug', sender).maybeSingle();
   const domain = String(brand?.from_email || '').split('@')[1] || '';
   const { data: w } = await db.rpc('email_warmup_allowance', { p_domain: domain });
   const warm = w?.[0];
-  let room = warm?.enabled ? Math.max(0, warm.allowance - warm.sent_today) : PER_TICK;
-  room = Math.min(room, PER_TICK);
-  if (room <= 0) return { synced, sent: 0, note: 'warm-up allowance used for today' };
-  const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 50 });
+  return Math.min(warm?.enabled ? Math.max(0, warm.allowance - warm.sent_today) : PER_TICK, PER_TICK);
+}
+async function tick() {
+  const synced = (await db.rpc('ve_outreach_sync')).data;
+  const cooled = (await db.rpc('ve_outreach_cool_off')).data;
+  const drafted = await draftOpenings({ limit: 8 });
+  const planned = (await db.rpc('ve_outreach_autoplan')).data;
+  if (!sendingHours()) return { synced, cooled, drafted, planned, sent: 0, note: 'outside sending hours (weekdays 9 AM to 5 PM Eastern)' };
+  const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 60 });
   const { data: today } = await db.rpc('ve_outreach_sent_today');
-  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program');
+  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program,sender_brand');
   const { data: tpl } = await db.from('ve_outreach_templates').select('program,step,day_offset').order('step');
   const programOf = new Map((cities || []).map((c) => [c.community_slug, c.program || 'business-outreach']));
+  const senderOf = new Map((cities || []).map((c) => [c.community_slug, c.sender_brand || BRAND]));
   const capLeft = new Map((cities || []).map((c) => [c.community_slug, c.daily_cap - Number((today || []).find((t: { community_slug: string }) => t.community_slug === c.community_slug)?.n || 0)]));
+  const rooms = new Map<string, number>();
   const out: unknown[] = [];
   for (const d of due || []) {
-    if (out.length >= room) break;
+    if (out.length >= PER_TICK) break;
     if ((capLeft.get(d.community_slug) ?? 0) <= 0) continue;
+    const sender = senderOf.get(d.community_slug) || BRAND;
+    if (!rooms.has(sender)) rooms.set(sender, await senderRoom(sender));
+    if ((rooms.get(sender) ?? 0) <= 0) continue;
     const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,segment,step,link_code,status').eq('id', d.contact_id).single();
     if (!c || c.step + 1 !== d.next_step || !['not_sent', 'in_sequence'].includes(c.status)) continue;
     const step = d.next_step as number;
     try {
       const m = await build(c as Contact, step);
       const first = (c.contact_name || '').trim().split(/\s+/)[0] || undefined;
-      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-${c.id}-${step}`, list_ref: `ve-outreach:${c.community_slug}`,
+      const res = await emailSend({ brand: sender, campaign_ref: `ve-outreach-${c.id}-${step}`, list_ref: `ve-outreach:${c.community_slug}`,
         subject: m.subject, html: m.html, text: m.text, recipients: [{ email: c.email, first_name: first, name: c.contact_name || undefined }] });
       const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
       if (result === 'sent' || result === 'already_sent') {
@@ -295,6 +322,7 @@ async function tick() {
           next_send_at: nextOff == null ? null : nextSendAt(nextOff - off) }).eq('id', c.id);
         await db.from('ve_outreach_events').insert({ contact_id: c.id, kind: 'sent', step, detail: { resend_id: res.results?.[0]?.id || null, link: m.code } });
         capLeft.set(c.community_slug, (capLeft.get(c.community_slug) ?? 1) - 1);
+        rooms.set(sender, (rooms.get(sender) ?? 1) - 1);
       } else if (result === 'suppressed') {
         await db.from('ve_outreach_contacts').update({ status: 'opted_out', stop_reason: 'on the do-not-email list' }).eq('id', c.id);
       } else if (result === 'invalid') {
@@ -310,7 +338,87 @@ async function tick() {
     }
   }
   if (out.length) await db.rpc('ve_outreach_sync');
-  return { synced, sent: out.filter((o) => (o as { result: string }).result === 'sent').length, results: out };
+  return { synced, cooled, drafted, planned, sent: out.filter((o) => (o as { result: string }).result === 'sent').length, results: out };
+}
+
+// ---- Personal openings (HQ Depot > Invitations) ----
+// Each person's opening is drafted from what HQ > People holds about them, in Sean's voice, and Sean can rewrite it in HQ.
+// Nothing is invented: with nothing to go on, the opening stays empty and the email reads fine without it.
+const MODEL = 'claude-opus-5-5';
+const BRAND_WORDS: Record<string, string> = {
+  'lesaruss-ai': 'LESARUSS.ai, where Sean learns AI out loud while building his own brands, as one of the first 111 Founding Diplomats',
+  'vegans-explore': 'Vegans Explore, a community for Vegans, city by city',
+  '111-day-theory': "the first cohort of Sean's 111 Day Theory program",
+};
+const OPENING_SYSTEM = `You write the personal opening of an invitation email from Sean A. Russell, founder of LESARUSS, to one person he knows. The sources say what he is inviting them to.
+
+Write in Sean's voice, first person, speaking to them as "you": warm, plain and specific, the way a friend writes, never salesy.
+- 1 to 3 short sentences, under 400 characters. It opens the email right after "Hi <first name>,", so no greeting and no sign-off.
+- Say how Sean knows them, or what they are working on, using only what the sources say. The HQ summary is background an assistant wrote from Sean's emails.
+- Never invent a fact, a date, a place, a feeling or a compliment the sources do not state. No superlatives. Never describe Sean's feelings or memories. If the sources are thin, write one simple, true sentence. If they say nothing about Sean and this person at all, return an empty opening.
+- Do not describe what they are invited to, the price, links or seats: the email says all of that next.
+- Never repeat anything private, sensitive or negative (money, health, conflicts, personal trouble).
+- No dashes of any kind, no exclamation marks, no emojis. Write Vegan with a capital V. American English.`;
+const OPENING_SCHEMA = { type: 'object', additionalProperties: false, required: ['opening', 'note'], properties: {
+  opening: { type: 'string', description: 'The opening, 1 to 3 sentences, or empty.' },
+  note: { type: 'string', description: 'One short line for Sean: what you used.' },
+} };
+type DraftTarget = { id: string; email: string; contact_name: string | null; person_id: string | null; community_slug: string };
+async function draftOne(c: DraftTarget, audience: string | null, key: string | null): Promise<{ opening: string; source: string; note?: string }> {
+  const cols = 'first_name, last_name, organization, title, city, region, relationship_summary, outreach_angle, brand_rationale, source, last_interaction_at, email_message_count';
+  let person: any = null;
+  if (c.person_id) ({ data: person } = await db.from('people').select(cols).eq('id', c.person_id).maybeSingle());
+  if (!person) ({ data: person } = await db.from('people').select(cols).ilike('email', c.email.replace(/[%_\\]/g, '\\$&')).is('merged_into', null).limit(1).maybeSingle());
+  if (!person?.relationship_summary && !person?.outreach_angle) return { opening: '', source: 'none', note: 'nothing in HQ > People to go on' };
+  const sources = {
+    name: c.contact_name, invited_to: BRAND_WORDS[audience || ''] || 'a LESARUSS community',
+    hq: { organization: person.organization, title: person.title, city: person.city || person.region, summary: person.relationship_summary,
+      angle: person.outreach_angle, why_this_brand: person.brand_rationale, emails_with_sean: person.email_message_count,
+      last_contact: person.last_interaction_at ? String(person.last_interaction_at).slice(0, 10) : null, known_from: person.source },
+  };
+  try {
+    const client = new Anthropic(key ? { apiKey: key } : {});
+    const msg: any = await client.beta.messages.create({
+      model: MODEL, max_tokens: 600, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      output_config: { effort: 'low', format: { type: 'json_schema', schema: OPENING_SCHEMA } },
+      system: OPENING_SYSTEM,
+      messages: [{ role: 'user', content: 'The sources, as JSON:\n' + JSON.stringify(sources) }],
+    } as any);
+    if (msg.stop_reason === 'refusal') return { opening: '', source: 'none', note: 'the writer declined' };
+    const out = JSON.parse((msg.content || []).find((x: any) => x.type === 'text')?.text || '{}');
+    const opening = String(out.opening || '').replace(/\s*[–—]\s*/g, ', ').replace(/\s+-\s+/g, ', ').replace(/!/g, '.')
+      .replace(/\bvegan/g, 'Vegan').replace(/[ \t]+/g, ' ').trim().slice(0, 600);
+    return { opening, source: opening ? 'drafted' : 'none', note: String(out.note || '').slice(0, 300) };
+  } catch (e) {
+    console.error('draft opening:', e);
+    return { opening: '', source: 'retry' };
+  }
+}
+// Draft the openings still missing: the people waiting on a list whose first email uses {opening}, oldest first.
+async function draftOpenings(o: { list?: string; contact_id?: string; limit?: number }) {
+  const { data: tpl } = await db.from('ve_outreach_templates').select('program').eq('step', 1).like('body', '%{opening}%');
+  const programs = (tpl || []).map((t) => t.program);
+  if (!programs.length) return { drafted: 0 };
+  const { data: lists } = await db.from('ve_outreach_cities').select('community_slug,audience_brand').eq('kind', 'people').in('program', programs);
+  const audienceOf = new Map((lists || []).map((l) => [l.community_slug, l.audience_brand]));
+  let q = db.from('ve_outreach_contacts').select('id,email,contact_name,person_id,community_slug').is('listing_id', null)
+    .in('community_slug', [...audienceOf.keys(), '-']);
+  if (o.contact_id) q = q.eq('id', o.contact_id);
+  else { q = q.eq('status', 'not_sent').or('opening_source.is.null,opening_source.eq.retry'); if (o.list) q = q.eq('community_slug', o.list); }
+  const { data: rows } = await q.order('created_at').limit(Math.min(Math.max(o.limit || 8, 1), 25));
+  if (!rows?.length) return { drafted: 0 };
+  const { data: k } = await db.from('lesaruss_secrets').select('value').eq('key', 'ANTHROPIC_API_KEY').maybeSingle();
+  const key = k?.value && k.value !== 'pending' ? String(k.value) : null;
+  let drafted = 0;
+  for (const c of rows as DraftTarget[]) {
+    const r = await draftOne(c, audienceOf.get(c.community_slug) || null, key);
+    // A writer error is tried once more on a later tick, then the person goes without an opening.
+    const { data: prev } = await db.from('ve_outreach_contacts').select('opening_source').eq('id', c.id).single();
+    const source = r.source === 'retry' && prev?.opening_source === 'retry' ? 'none' : r.source;
+    await db.from('ve_outreach_contacts').update({ opening: r.opening || null, opening_source: source, updated_at: new Date().toISOString() }).eq('id', c.id);
+    if (source === 'drafted') drafted++;
+  }
+  return { drafted, looked_at: rows.length };
 }
 
 // ---- Partner onboarding ----
@@ -380,7 +488,11 @@ async function targetList(action: string, body: Record<string, unknown>): Promis
     return data?.community_slug ?? null;
   }
   if (['city', 'plan', 'waiting'].includes(action)) return clean(body.city, 60) || null;
-  if (action === 'add_people') return clean(body.list, 60) || null;
+  if (['add_people', 'list_save', 'list_approve', 'draft_openings', 'people', 'report'].includes(action)) return clean(body.list, 60) || null;
+  if (action === 'opening_save' && isId(body.contact_id)) {
+    const { data } = await db.from('ve_outreach_contacts').select('community_slug').eq('id', body.contact_id).maybeSingle();
+    return data?.community_slug ?? null;
+  }
   if (action === 'template_save') {
     const { data } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'people').eq('program', clean(body.program, 60)).limit(1);
     return data?.[0]?.community_slug ?? null;
@@ -419,7 +531,7 @@ Deno.serve(async (req) => {
       }
     }
     if (!me) {
-      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits', 'add_people', 'templates', 'review_list', 'review_get'];
+      const OPS = ['overview', 'batch', 'waiting', 'preview', 'plan', 'find_emails', 'interested', 'test', 'partners', 'partner', 'listing_edits', 'add_people', 'templates', 'review_list', 'review_get', 'candidates', 'people', 'report', 'draft_openings'];
       const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       if (!(sec?.value && given === sec.value && OPS.includes(action))) return json({ error: 'admins_only' }, 403);
@@ -428,7 +540,7 @@ Deno.serve(async (req) => {
     if (action === 'overview') {
       // kind 'city' (the default, what the Vegans Explore Depot shows) or 'people' (HQ > Distributions).
       const people = body.kind === 'people';
-      const cityCols: string = people ? 'community_slug,name,enabled,daily_cap,committed_until,kind,program,link_url,footer_reason,brand' : 'community_slug,name,enabled,daily_cap,committed_until';
+      const cityCols: string = people ? 'community_slug,name,enabled,daily_cap,committed_until,kind,program,link_url,footer_reason,brand,audience_brand,sender_brand,link_base,auto_send,daily_new,ramp,cool_off_days,no_reply_days,approved_at' : 'community_slug,name,enabled,daily_cap,committed_until';
       const { data: cityRows } = await db.from('ve_outreach_cities').select(cityCols).eq('kind', people ? 'people' : 'city').order('name');
       const cities = (cityRows || []) as unknown as (List & { enabled: boolean; daily_cap: number; committed_until: string | null })[];
       const slugs = cities.map((c) => c.community_slug);
@@ -875,11 +987,13 @@ Deno.serve(async (req) => {
       if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
       const ppl = (Array.isArray(body.people) ? body.people : []).slice(0, 500);
       const emails = ppl.map((p: { email?: unknown }) => clean(p?.email, 200).toLowerCase()).filter(isEmail);
-      const [{ data: sup }, { data: have }] = await Promise.all([
-        emails.length ? db.from('email_suppressions').select('email').eq('active', true).in('email', emails) : Promise.resolve({ data: [] }),
+      // The one do-not-email list: brand and global unsubscribes, bounces and complaints, and People's own (email_is_suppressed).
+      const [{ data: sup }, { data: psup }, { data: have }] = await Promise.all([
+        emails.length ? db.from('email_suppressions').select('email').eq('active', true).in('scope', ['global', list.sender_brand || BRAND]).in('email', emails) : Promise.resolve({ data: [] }),
+        emails.length ? db.from('people_suppression').select('email').eq('active', true).in('email', emails) : Promise.resolve({ data: [] }),
         db.from('ve_outreach_contacts').select('email').eq('community_slug', list.community_slug).is('listing_id', null),
       ]);
-      const blocked = new Set((sup || []).map((r: { email: string }) => r.email.toLowerCase()));
+      const blocked = new Set([...(sup || []), ...(psup || [])].map((r: { email: string }) => r.email.toLowerCase()));
       const onList = new Set((have || []).map((r: { email: string }) => r.email.toLowerCase()));
       const out = { added: 0, already: 0, suppressed: 0, invalid: 0 };
       for (const p of ppl) {
@@ -893,6 +1007,88 @@ Deno.serve(async (req) => {
         onList.add(email); out.added++;
       }
       return json({ ok: true, ...out });
+    }
+
+    // ---- HQ Depot > Invitations ----
+    if (action === 'candidates') {
+      const brand = clean(body.brand, 60);
+      if (!brand) return json({ error: 'brand' }, 400);
+      const { data, error } = await db.rpc('ve_invite_candidates', { p_brand: brand, p_sender: clean(body.sender, 60) || BRAND,
+        p_q: clean(body.q, 120) || null, p_fit: body.fit === 'any' ? 'any' : 'suggested',
+        p_limit: Math.min(Math.max(Number(body.limit) || 50, 1), 200), p_offset: Math.max(Number(body.offset) || 0, 0) });
+      if (error) return json({ error: error.message }, 400);
+      return json({ ok: true, total: Number(data?.[0]?.total || 0), rows: data || [] });
+    }
+
+    if (action === 'people') {
+      const list = await listOf(clean(body.list, 60));
+      if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
+      const { data } = await db.from('ve_outreach_contacts')
+        .select('id,email,contact_name,person_id,status,step,batch_id,opening,opening_source,cool_off_until,last_sent_at,next_send_at,stop_reason,interested_at,joined_at,created_at')
+        .eq('community_slug', list.community_slug).order('created_at').limit(2000);
+      return json({ ok: true, rows: data || [] });
+    }
+
+    if (action === 'report') {
+      const list = await listOf(clean(body.list, 60));
+      if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
+      const [{ data: cs }, { data: sends }, { data: days }] = await Promise.all([
+        db.from('ve_outreach_contacts').select('status,batch_id').eq('community_slug', list.community_slug).limit(5000),
+        db.from('email_sends').select('status,opened_at,clicked_at,bounced_at,complained_at,created_at').eq('list_ref', `ve-outreach:${list.community_slug}`).limit(10000),
+        db.from('ve_outreach_batches').select('id,send_on,status').eq('community_slug', list.community_slug).neq('status', 'cancelled').order('send_on'),
+      ]);
+      const status: Record<string, number> = {};
+      const per: Record<string, number> = {};
+      for (const c of cs || []) { status[c.status] = (status[c.status] || 0) + 1; if (c.batch_id) per[c.batch_id] = (per[c.batch_id] || 0) + 1; }
+      const s = sends || [];
+      const email = { sent: s.filter((x) => !['queued', 'failed', 'skipped_suppressed'].includes(x.status)).length,
+        opened: s.filter((x) => x.opened_at).length, clicked: s.filter((x) => x.clicked_at).length,
+        bounced: s.filter((x) => x.bounced_at).length, complained: s.filter((x) => x.complained_at).length };
+      return json({ ok: true, status, email, days: (days || []).map((d) => ({ ...d, size: per[d.id] || 0 })) });
+    }
+
+    if (action === 'draft_openings') {
+      const r = await draftOpenings({ list: clean(body.list, 60) || undefined, contact_id: isId(body.contact_id) ? body.contact_id : undefined,
+        limit: Number(body.limit) || 10 });
+      return json({ ok: true, ...r });
+    }
+
+    if (action === 'opening_save') {
+      if (!me) return json({ error: 'admins_only' }, 403);
+      if (!isId(body.contact_id)) return json({ error: 'contact_id' }, 400);
+      const opening = String(body.opening ?? '').replace(/\u0000/g, '').replace(/\r\n/g, '\n').trim().slice(0, 900);
+      const { error } = await db.from('ve_outreach_contacts').update({ opening: opening || null, opening_source: 'sean', updated_at: new Date().toISOString() })
+        .eq('id', body.contact_id).is('listing_id', null);
+      return error ? json({ error: error.message }, 400) : json({ ok: true });
+    }
+
+    if (action === 'list_approve') {
+      if (!me) return json({ error: 'admins_only' }, 403);
+      const list = await listOf(clean(body.list, 60));
+      if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
+      if (body.approve) {
+        const { data: t } = await db.from('ve_outreach_templates').select('status').eq('program', list.program);
+        if (!t?.length || t.some((x) => x.status !== 'ready')) return json({ error: 'emails_not_ready' }, 400);
+      }
+      const { error } = await db.from('ve_outreach_cities').update(body.approve ? { approved_at: new Date().toISOString(), approved_by: me, updated_at: new Date().toISOString() }
+        : { approved_at: null, approved_by: null, updated_at: new Date().toISOString() }).eq('community_slug', list.community_slug);
+      return error ? json({ error: error.message }, 400) : json({ ok: true });
+    }
+
+    if (action === 'list_save') {
+      if (!me) return json({ error: 'admins_only' }, 403);
+      const list = await listOf(clean(body.list, 60));
+      if (!list || list.kind !== 'people') return json({ error: 'list' }, 400);
+      const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      const int = (v: unknown, lo: number, hi: number) => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? Math.min(Math.max(n, lo), hi) : null; };
+      if (body.daily_new !== undefined) { const n = int(body.daily_new, 1, 1000); if (n == null) return json({ error: 'daily_new' }, 400); patch.daily_new = n; }
+      if (body.daily_cap !== undefined) { const n = int(body.daily_cap, 1, 2000); if (n == null) return json({ error: 'daily_cap' }, 400); patch.daily_cap = n; }
+      if (typeof body.auto_send === 'boolean') patch.auto_send = body.auto_send;
+      if (typeof body.ramp === 'boolean') patch.ramp = body.ramp;
+      if (typeof body.link_url === 'string') { const v = clean(body.link_url, 300); if (!/^https:\/\//.test(v)) return json({ error: 'link_url' }, 400); patch.link_url = v; }
+      if (typeof body.footer_reason === 'string') { const v = clean(body.footer_reason, 200); if (!v) return json({ error: 'footer_reason' }, 400); patch.footer_reason = v; }
+      const { error } = await db.from('ve_outreach_cities').update(patch).eq('community_slug', list.community_slug);
+      return error ? json({ error: error.message }, 400) : json({ ok: true });
     }
 
     if (action === 'templates') {
