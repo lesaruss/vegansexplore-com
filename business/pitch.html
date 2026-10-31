@@ -115,7 +115,7 @@
           '<div class="pt-bars">' + S.areas.map(function (a) { return '<div class="pt-bar"><b><span>' + esc(a.name) + '</span><span>' + a.pct + '%</span></b><i><span style="width:' + a.pct + '%"></span></i></div>'; }).join('') + '</div></div>' +
           '<div><div class="pt-big">' + S.presence + '%</div><p class="vg-lede" style="margin-top:6px">of what a well-run presence has</p>' +
           (S.goods.length ? '<div class="vg-eyebrow" style="margin-top:20px">Already working for you</div><ul class="pt-list">' + S.goods.map(function (g) { return '<li>' + esc(g) + '</li>'; }).join('') + '</ul>' : '') +
-          (S.google && S.google.rating ? '<p class="vg-lede" style="margin-top:14px">' + esc(S.google.rating) + ' stars from ' + esc(S.google.reviews) + ' Google reviews. People who find you like you.</p>' : '') + '</div></div>');
+          (S.google && S.google.rating ? '<p class="vg-lede" style="margin-top:14px">' + esc(S.google.rating) + ' stars from ' + esc(Number(S.google.reviews || 0).toLocaleString('en-US')) + ' Google reviews. People who find you like you.</p>' : '') + '</div></div>');
         html += slide('fixes', 'What is holding you back', '<div class="vg-eyebrow">What is holding you back</div><h2 class="vg-h">' + S.fix_count + ' things to fix. Here are the ones that matter most.</h2>' +
           '<p class="vg-lede">None of this is a judgment. It is what slips when you are running the kitchen.</p>' +
           '<div class="pt-grid">' + S.fixes.map(function (f) { return '<div class="pt-card"><div class="pt-area">' + esc(f.area) + '</div><b>' + esc(f.label) + '</b><small>' + esc(f.found) + '</small></div>'; }).join('') + '</div>');

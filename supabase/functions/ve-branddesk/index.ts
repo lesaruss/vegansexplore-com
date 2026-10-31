@@ -849,14 +849,17 @@ async function pitchAdmin(b: any, m: any) {
       `There's no pressure either way. If it's not the right time, the page says so too.`,
       `Sean A. Russell<br>Vegans Explore`,
     ];
-    const html = `<div style="font:15px/1.6 -apple-system,Segoe UI,Arial,sans-serif;color:#111">${paras.map((x, i) => `<p style="margin:0 0 14px">${i === 3 || i === paras.length - 1 ? x : esc(x)}</p>`).join('')}</div>`;
-    const text = paras.map((x) => x.replace(/<a href="([^"]+)">([^<]+)<\/a>/, '$2: $1').replace(/<br>/g, '\n')).join('\n\n');
+    const why = `You are getting this because ${l.name} is listed in the Vegans Explore Directory`;
+    const linkIdx = paras.length - 3;
+    const html = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:600px">${paras.map((x, i) => `<p style="margin:0 0 16px">${i === linkIdx || i === paras.length - 1 ? x : esc(x)}</p>`).join('')}` +
+      `<p style="margin:28px 0 0;font-size:12px;line-height:1.5;color:#777">${esc(why)}. <a href="{{unsubscribe_url}}" style="color:#777">Don't email me again</a>.<br>{{postal_address}}</p></div>`;
+    const text = paras.map((x) => x.replace(/<a href="([^"]+)">([^<]+)<\/a>/, '$2: $1').replace(/<br>/g, '\n')).join('\n\n') + `\n\n--\n${why}.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
     const subject = (test ? '[Test] ' : '') + `We looked at ${l.name} before reaching out`;
     const res = await emailSend({ brand: 'lesaruss', campaign_ref: test ? `bd-pitch-test-${p.id}-${Date.now()}` : `bd-pitch-${p.id}`, list_ref: 'branddesk-pitch',
       subject, html, text, recipients: [{ email: to, first_name: first || undefined, name: p.contact_name || undefined }] });
     const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
-    if (test) return json({ ok: result === 'sent' || result === 'already_sent', result, to });
-    if (result !== 'sent' && result !== 'already_sent') return json({ error: 'send_failed', result, detail: res?.results?.[0]?.error || res?.error || null }, 502);
+    if (test) return json({ ok: result === 'sent' || result === 'already_sent', result, to, detail: res?.errors || res?.results?.[0]?.error || null });
+    if (result !== 'sent' && result !== 'already_sent') return json({ error: 'send_failed', result, detail: res?.results?.[0]?.error || res?.error || res?.errors || null }, 502);
     await allowListing(l.slug, m.id);
     const { data } = await db.from('ve_branddesk_pitches').update({ status: 'sent', sent_at: new Date().toISOString(), sent_by: m.id, updated_at: new Date().toISOString() }).eq('id', p.id).select('*').single();
     return json({ ok: true, result, pitch: data });
