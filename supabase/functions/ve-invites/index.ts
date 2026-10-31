@@ -237,6 +237,9 @@ async function emailFor(inv: Invite) {
   if (d) paras.push(`I'd like you at ${b(`our dinner in ${dinnerPlace(d)} on ${dinnerDate(d)}`)}: a small table, set by name. Your link holds your seat.`);
   if (inv.points_to === 'community_manager') paras.push(`I'd like you to lead our ${esc(city ?? '')} community as its ${b('Community Manager')}. Your link has the details.`.replace('our  ', 'our '));
   if (inv.points_to === 'ambassador') paras.push(ambassadorWhy(inv, b));
+  // A Creator-profile Ambassador is an official creator (Sean, 2026-10-31): the email points at the Official Creator Guide, which keeps
+  // the invitation (?c=) and ends on Open my invitation, and accepting opens the Creator Guide again.
+  if (inv.points_to === 'ambassador' && inv.profile === 'creator') paras.push(`See what being one of our ${b('official creators')} means, the work, how it pays and every city, in the <a href="${esc(`${SITE}/creators/welcome?c=${inv.code}`)}" style="color:#1f5f22;font-weight:700">Official Creator Guide</a>.`);
   if (inv.points_to === 'founding') {
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives.${inv.reason ? '' : ' You were one of the first people I thought of.'}`);
     if (!inv.comp) paras.push(`It's ${b('$11, one time')}, with ${b('1,100 points')} to start: vote for the places you love, get the Daily Pulse in your city, check in, and unlock the Guides. Your $11 keeps the community running.`);
@@ -424,7 +427,7 @@ Deno.serve(async (req: Request) => {
             tags: [{ name: 'kind', value: 'group_partner_yes' }] }),
         }).catch((e) => console.error('group yes email:', e));
       }
-      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? '/ambassadors/welcome' : inv.points_to === 'nonprofit' ? '/nonprofits/welcome' : inv.points_to === 'group' ? `/groups/welcome?c=${inv.code}` : inv.points_to === 'gift' && (out.org as any)?.slug ? `/directory/${(out.org as any).slug}` : '/dashboard') });
+      return json({ ok: true, result, pay: result === 'accepted', membership_status: after?.membership_status ?? member.membership_status, next: out.dinner?.url ?? (inv.points_to === 'community_manager' ? '/community-managers/onboarding' : inv.points_to === 'ambassador' ? (inv.profile === 'creator' ? '/creators/welcome' : '/ambassadors/welcome') : inv.points_to === 'nonprofit' ? '/nonprofits/welcome' : inv.points_to === 'group' ? `/groups/welcome?c=${inv.code}` : inv.points_to === 'gift' && (out.org as any)?.slug ? `/directory/${(out.org as any).slug}` : '/dashboard') });
     }
 
     // ---- Admin ----

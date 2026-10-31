@@ -1341,8 +1341,9 @@ if they choose this, this is what happens"; "turn into a marketing agency for th
   we're going (thirteen chapters, the Directory, our shows, brands and events as one buyer), The work (paid campaigns, collaborations,
   professional work Coming; hosting open now; events with the Dolphins showcase; the sample campaign), How it pays (this canon's terms),
   Every city, What you tell us (the door's four steps), Questions, Register (`?c=<code>` opens `/invite?c=<code>`; an Ambassador gets
-  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. Not yet: the Creator
-  profile's invitation email linking it.
+  their checklist; anyone else mails contact@lesaruss.com). In the Guides menu for Ambassadors and the team. **Comping a creator** (Sean, 2026-10-31): Depot > Ambassadors > Invite an
+  Ambassador with the profile **Creator**, the level and points: the membership is on us, the email links the Official Creator Guide
+  (`/creators/welcome?c=<code>`), and accepting on `/invite` says Welcome, official creator, and opens the Creator Guide.
 - **The Gig Board** (Sean, 2026-10-30: "the actual mechanism for them to find gigs... like Casting Networks or Backstage where they
   can go on daily and see what opportunities are available... whatever we create, I want become the way the bounties work as well...
   submit some proofs, some examples... audition... a certain requirement of followers... opportunities that are just for points...
