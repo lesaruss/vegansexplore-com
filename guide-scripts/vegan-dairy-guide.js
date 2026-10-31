@@ -1059,6 +1059,15 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Maya, your Guide');
+  // At 900 px and under Maya is a 110 px square, too small to read captions on, so they show in her bubble instead.
+  var smallMaya = window.matchMedia('(max-width:900px)');
+  function capMode() { [].forEach.call(vid.textTracks, function (t) { t.mode = smallMaya.matches ? 'hidden' : 'showing'; }); }
+  function onCue() {
+    if (!smallMaya.matches) return;
+    var c = this.activeCues && this.activeCues[0];
+    if (c) bubble.textContent = c.text.replace(/<[^>]*>/g, '');
+  }
+  if (smallMaya.addEventListener) smallMaya.addEventListener('change', function () { capMode(); drawMaya(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && priced() ? CLIPS.join_credit || null : CLIPS[k] || null; }
   function cueMaya(k) {
     var c = clip(k);
@@ -1068,7 +1077,7 @@
     if (c) {
       if (c.poster) vid.poster = c.poster; else vid.removeAttribute('poster');
       vid.src = c.webm && !vid.canPlayType('video/mp4') ? c.webm : c.video;
-      if (c.captions) { var tr = document.createElement('track'); tr.kind = 'captions'; tr.src = c.captions; tr.srclang = 'en'; tr.label = 'English'; tr.default = true; vid.appendChild(tr); }
+      if (c.captions) { var tr = document.createElement('track'); tr.kind = 'captions'; tr.src = c.captions; tr.srclang = 'en'; tr.label = 'English'; tr.default = true; vid.appendChild(tr); tr.track.addEventListener('cuechange', onCue); capMode(); }
       if (!vid.parentNode) mayaBox.appendChild(vid);
       vid.style.display = '';
     } else { vid.removeAttribute('src'); vid.load(); vid.style.display = 'none'; }

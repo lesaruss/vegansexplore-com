@@ -380,17 +380,30 @@
       .dg-joinbox .dg-jb-in a{margin-left:4px;}
       .dg-joinbox .dg-status{grid-column:1 / -1;}
       .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
-      /* Phones (Sean, 2026-10-10): Maya full width on top with her words under her, a Hide / Show switch so she never
-         takes over the screen, and Back / N of M / Next at the bottom of the content; Next goes back up to her. */
-      .dg-rail{order:-1;display:flex;flex-direction:column;gap:10px;}
-      .dg-maya{aspect-ratio:1/1;width:100%;}
-      .dg-rail .dg-tour{display:none;}
+      /* Tablets and phones (Sean, 2026-10-30, from the J9 proposal page: "V is in the top left-hand corner... sometimes
+         it's too much when they're on the page"): Maya is a 110 px rounded square in the top left corner, her words in a
+         bubble beside her with its tail pointing at her, play and Hide me under the bubble, and Back / N of M / Next at the
+         bottom of the content; Next goes back up to her. */
+      .dg-rail{order:-1;display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1fr);gap:10px 12px;align-items:start;}
+      .dg-maya{grid-column:1;grid-row:1 / span 2;width:110px;aspect-ratio:1/1;border:1px solid var(--gm);}
+      .dg-namebar,.dg-rail .dg-tour{display:none;}
+      .dg-bubble{grid-column:2 / -1;position:relative;font-size:14px;padding:12px 14px;}
+      .dg-bubble::before{content:'';position:absolute;top:18px;left:-7px;width:12px;height:12px;background:var(--gl);border-left:1px solid var(--gm);border-bottom:1px solid var(--gm);transform:rotate(45deg);}
+      .dg-play{grid-column:2;}
+      .dg-rail .dg-fold{grid-column:3;margin-top:0 !important;}
+      .dg-play[hidden]~.dg-fold{grid-column:2 / -1;}
       .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
       .dg-fold{display:inline-flex;}
       .dg-rail.dg-folded .dg-maya,.dg-rail.dg-folded .dg-bubble,.dg-rail.dg-folded .dg-play{display:none;}
       .dg-books{grid-template-columns:repeat(4,minmax(0,1fr));}
       .dg-facts2{grid-template-columns:minmax(0,1fr);}
       .dg-gated{max-height:none;}
+    }
+    /* Narrow phones: play and Hide me stack under the bubble so neither label wraps. */
+    @media (max-width:560px){
+      .dg-rail{grid-template-columns:110px minmax(0,1fr);}
+      .dg-maya{grid-row:1 / span 3;}
+      .dg-rail .dg-fold,.dg-play[hidden]~.dg-fold{grid-column:2;}
     }
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
   </style>
