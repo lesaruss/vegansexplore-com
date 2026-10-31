@@ -3582,6 +3582,30 @@ and a tee reference, both shapes for each Guide. Dani uses a manual wheelchair a
 a warm wave, head to waist, white background. Pascal (the Cultural Bridge) is in the map too, though
 not in the member Guide picker.
 
+## Guide voices: one place, the roster profile (Sean, 2026-10-31)
+
+"So that way there's never a question as to what we're using, because that's happened a few times where we had to pick new
+voices." Every Guide's ElevenLabs voice is kept on its **HQ roster profile**, in the Voice module (table `gfs_artist_bible`, module
+`voice`, `data.elevenlabs_voice_id`, with the voice's name, model, who approved it and when, and its `pronunciations`).
+`character_agents.elevenlabs_voice_id` copies it; change both together, and never pick a new voice without Sean. Before recording a
+line, read the voice from the profile, never from a page, a comment or memory. HQ's `voice-sample` applies the profile's
+`pronunciations` to every take (each Vegans Explore Guide: Vegan as Veegan). Say "profile", never "bible" (canon
+`canon-terminology`); the table name is the only place the old word stays. Migration `20261031_guide_voice_profiles.sql`.
+
+| Guide | Voice id | Approved |
+|---|---|---|
+| Liz | `IUMUPi350HfIhyzUBJB3` (Liz (Vegans Explore), Voice Design) | 2026-10-09 |
+| Maya | `sM8RysETdBj1LIqLd9tl` (Maya (Vegans Explore), Voice Design) | 2026-10-08 |
+| Dani | `b5RPB35vTODb3BEmR3Fc` (Voice Library) | 2026-10-30 |
+| Nori | `rr9oBze1kuNJYeAV7xos` (Voice Library) | 2026-10-30 |
+| River | `btaSeNTVh1pGx4pjFzub` (Voice Library) | 2026-10-30 |
+| Theo | `aFyw0oiXW7dzKF4o7woX` (Voice Library) | 2026-10-30 |
+| Kai | `cgSgspJ2msm6clMCkdW9` (Jessica, premade) | 2026-10-31 |
+| V | `Nhs7eitvQWFTQBsf0yiT` (Voice Library; replaced `wfEelgHGTfFOp1gtSiR9`) | 2026-10-09 |
+
+On 2026-10-31 V's Guide record still held her old voice and River's profile still called him the Creator Guide with his look from
+before the 2026-10-28 refresh; both were brought in line.
+
 ## Footer, Policies and Contact (Sean, 2026-10-26)
 
 The footer (`public/footer.js`) reads ABOUT (`/welcome`), JOIN US (`/passport`), POLICIES (`/policies`), CONTACT (`/contact`),
