@@ -4325,6 +4325,15 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
 
+## Time is Sean's: Eastern (Sean, 2026-11-01)
+
+"Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
+EST or EDT, minding the November and March clock changes). The build session's clock is UTC: check `TZ=America/New_York date` before
+saying anything is due, late or has passed. On 2026-11-01 Logan called the 7 AM Eastern episode slot missed at 5:38 AM Eastern.
+
+**The podcast's pre-roll is the network tag** (Sean, 2026-11-01): the default pre-roll on the Captivate show (the Vegans Explore
+Podcast) stays on for every episode.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
