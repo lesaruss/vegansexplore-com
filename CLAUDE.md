@@ -501,8 +501,8 @@ locked part refuses `kit_save` (409 `locked`); changing it is `kit_change_reques
 **mood board** (`kit_mood_save`: pictures in `media/brandkit/<slug>/` tagged style, type or color, their words; `kit_mood_read`: Claude
 proposes a style, six colors by role and one of the four pairings, saved as `mood.read`; never locked). `business/brand.html` sends Edit on a
 locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`components/branddesk/BrandKitRoom.tsx`, `/api/branddesk/kit`) shows
-the gate, the mood board, the parts, the requests and Launch; built on lesaruss-hq branch `claude/branddesk-social-deploy-7423db` (0dacf2f),
-not merged. The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
+the gate, the mood board, the parts, the requests and Launch; live on lesaruss-hq main dc947e5 (2026-11-01,
+Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
