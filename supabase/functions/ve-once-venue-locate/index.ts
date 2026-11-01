@@ -171,7 +171,7 @@ revoke all on function public.ve_venue_report_review(uuid, text, uuid, text, uui
 Deno.serve(async (req: Request) => {
   const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!)
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle()
-  const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
+  const tok = req.headers.get('x-admin-token') || (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
   if (!data?.value || tok !== data.value) return new Response('not found', { status: 404 })
   const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { max: 1, prepare: false })
   try { await sql.begin(async (tx) => { await tx.unsafe(SQL) }); return Response.json({ ok: true }) }
