@@ -346,13 +346,17 @@
     // ---- Your website (the website launch): preview, the owner's approval, their domain, the final check.
     var WEB = null;
     var WEV = { made: 'Started building it', look: 'Look set', sent: 'Sent to the owner for their OK', approved: 'Approved', changes: 'Changes asked', domain: 'Domain added',
-      domain_removed: 'Domain taken off', checked: 'Final check run', launched: 'Launched: live on their domain', paused: 'Taken down for now', resumed: 'Put back up', ended: 'Ended' };
+      domain_removed: 'Domain taken off', old_scan: 'Their old site read again', old_saved: 'Old addresses matched', checked: 'Final check run', launched: 'Launched: live on their domain', paused: 'Taken down for now', resumed: 'Put back up', ended: 'Ended' };
     function sampleWeb() {
       var at = function (d) { var x = new Date(); x.setDate(x.getDate() - d); return x.toISOString(); };
-      return { ok: true, sample: true, admin: false, owner: true, host: 'sites.example', listing: { name: (D.listing || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, kit: { status: 'locked' },
+      return { ok: true, sample: true, admin: false, owner: true, host: 'sites.example', listing: { name: (D.listing || {}).name || 'Green Leaf Kitchen', slug: 'sample' },
+        kit: { status: 'locked', updated_at: at(4), parts: [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']].map(function (p) { return { key: p[0], name: p[1], state: 'locked' }; }) },
         looks: { fresh: 'Fresh neighborhood', island: 'Island bright', night: 'Night lounge', street: 'Street heat' },
         pages: [{ path: '', name: 'Home' }, { path: 'menu', name: 'Menu' }, { path: 'order', name: 'Order' }, { path: 'about', name: 'About' }, { path: 'visit', name: 'Visit' }],
-        site: { id: 'sample', status: 'preview', status_word: 'Waiting for the owner', review: 'waiting', preview_url: '/business/sample/site', live_url: null, domain: null, published_version: 0, sent_at: at(1) },
+        site: { id: 'sample', status: 'preview', status_word: 'Waiting for the owner', review: 'waiting', preview_url: '/business/sample/site', live_url: null, domain: null, published_version: 0, sent_at: at(1),
+          old_scanned_at: at(3), old_note: '7 addresses on greenleafkitchen.com, from its sitemap and home page.', old_pages: [{ path: '/', title: 'Green Leaf Kitchen', to: '', how: 'same' },
+            { path: '/our-menu', title: 'Our Menu | Green Leaf Kitchen', to: 'menu', how: 'words' }, { path: '/brunch', title: 'Weekend Brunch', to: 'menu', how: 'words' }, { path: '/order-online', title: 'Order Online', to: 'order', how: 'words' },
+            { path: '/our-story', title: 'Our Story', to: 'about', how: 'words' }, { path: '/contact-us', title: 'Contact & Hours', to: 'visit', how: 'words' }, { path: '/?page_id=12', title: 'Gallery', to: '', how: 'home' }] },
         events: [{ kind: 'sent', by_name: 'Our team', at: at(1), note: 'Everything comes from your brand kit. Have a look on your phone too.' }, { kind: 'made', by_name: 'Our team', at: at(3) }] };
     }
     function drawWebsite() {
@@ -365,15 +369,27 @@
         return;
       }
       var W = WEB, S = W.site, A = !!W.admin, out = '';
+      // Step one is the brand kit: the website is drawn only from it, so where each part stands comes first.
+      var kitUrl = D.sample ? '/business/sample/brand' : '/business/brand?listing=' + encodeURIComponent((W.listing || D.listing || {}).slug || '');
+      var KST = { locked: ['ok', 'Locked'], in_progress: ['wait', 'In progress'], not_started: ['', 'Not started'] };
+      if (!W.kit) out += '<section class="vebd-card"><h4>1. ' + (A ? 'Their' : 'Your') + ' brand kit</h4><p>' + (A ? 'Everything on their website comes from their brand kit: logo, colors, type, voice, story, menu, photos, hours. Start it first; it fills itself from their Directory page.' : 'Everything on your website comes from your brand kit. We start it with you on your welcome call.') + '</p>' +
+        (A ? '<p><a class="vebd-btn" href="' + esc(kitUrl) + '" target="_blank" rel="noopener">Start their brand kit</a></p>' : '') + '</section>';
+      else {
+        var pl = W.kit.parts || [], lk = pl.filter(function (p) { return p.state === 'locked'; }).length;
+        out += '<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">1. ' + (A ? 'Their' : 'Your') + ' brand kit</h4><span class="vebd-pill ' + (pl.length && lk === pl.length ? 'ok' : 'wait') + '">' + lk + ' of ' + pl.length + ' locked</span></div>' +
+          '<p class="vebd-muted">' + (A ? 'The website is drawn from it, part by part. A part that is not locked yet shows what the kit holds today.' : 'Your website is drawn from it, part by part. Change something there and the preview follows; your live site changes only once you approve it.') + '</p>' +
+          '<p style="display:flex;flex-wrap:wrap;gap:6px">' + pl.map(function (p) { var k = KST[p.state] || KST.not_started; return '<span class="vebd-pill ' + k[0] + '">' + esc(p.name) + ': ' + k[1] + '</span>'; }).join('') + '</p>' +
+          '<p><a class="vebd-btn o" href="' + esc(kitUrl) + '" target="_blank" rel="noopener">Open ' + (A ? 'their' : 'your') + ' brand kit</a></p></section>';
+      }
       var pageLinks = function (base) { return (W.pages || []).map(function (p) { var u = /^https?:|^\//.test(base) ? base + (D.sample && p.path ? '#/' + p.path : p.path) : base; return '<a class="vebd-btn o sm" href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(p.name) + '</a>'; }).join(' '); };
       if (!S) {
-        out += '<section class="vebd-card"><h4>' + (A ? 'Their website' : 'Your website') + '</h4><p>' + (A ? 'Their website is built from their brand kit on our frame: their colors, type, logo, words, menu and photos. Start it once the brand kit has their basics; it shows on a private preview until they approve it.' :
+        out += '<section class="vebd-card"><h4>2. ' + (A ? 'Their website' : 'Your website') + '</h4><p>' + (A ? 'Their website is built from their brand kit on our frame: their colors, type, logo, words, menu and photos. Start it once the brand kit has their basics; it shows on a private preview until they approve it.' :
           'We are building your new website from your brand kit. When it is ready you get a private preview to look at, and it goes live on your domain only once you approve it.') + '</p>' +
-          (A ? (W.kit ? '<button type="button" class="vebd-btn" data-web="start">Build their website</button>' : '<p class="vebd-muted">Start their brand kit first (Their brand kit, above).</p>') : '') + '<p class="vebd-msg" data-webmsg role="status"></p></section>';
+          (A ? (W.kit ? '<button type="button" class="vebd-btn" data-web="start">Build their website</button>' : '<p class="vebd-muted">Start their brand kit first (step 1, above).</p>') : '') + '<p class="vebd-msg" data-webmsg role="status"></p></section>';
         return frame(out);
       }
       var pill = S.status === 'live' ? 'ok' : ['preview', 'changes', 'connecting'].indexOf(S.status) >= 0 ? 'wait' : '';
-      out += '<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">' + (A ? 'Their website' : 'Your website') + '</h4><span class="vebd-pill ' + pill + '">' + esc(S.status_word || S.status) + '</span></div>';
+      out += '<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">2. ' + (A ? 'Their website' : 'Your website') + '</h4><span class="vebd-pill ' + pill + '">' + esc(S.status_word || S.status) + '</span></div>';
       if (S.live_url && S.status === 'live') out += '<p><b>Live at <a href="' + esc(S.live_url) + '" target="_blank" rel="noopener">' + esc(S.domain) + '</a></b>' + (S.launched_at ? ' since ' + esc(day(S.launched_at)) : '') + '.</p><p>' + pageLinks(S.live_url) + '</p>';
       out += '<p class="vebd-muted" style="margin-top:6px">' + (S.published ? 'The private preview always shows the brand kit as it is now; ' + (A ? 'their' : 'your') + ' live site shows version ' + esc(S.published_version) + ', the one ' + (A ? 'they' : 'you') + ' approved' + (S.approved_name ? ' (' + esc(S.approved_name) + ', ' + esc(day(S.approved_at)) + ')' : '') + '.' :
         'This is a private preview: only ' + (A ? 'they and our team' : 'you and our team') + ' can see it, and search engines cannot.') + '</p>' +
@@ -405,6 +421,19 @@
           '<p style="margin-top:10px"><button type="button" class="vebd-btn o" data-web="domain_check">Check the domain</button> <button type="button" class="vebd-btn" data-web="check">Run the final check</button> <button type="button" class="vebd-btn o sm" data-web="domain_remove">Take the domain off</button></p>') +
           '<p class="vebd-msg" data-webmsg role="status"></p></section>';
       }
+      // Their old website's addresses: read before the domain moves, each sent on to its new page so the search traffic follows them.
+      var OP = S.old_pages || [], NEWP = (W.pages || []).map(function (p) { return [p.path, p.name]; }), pname = function (to) { var x = NEWP.filter(function (p) { return p[0] === (to || ''); })[0]; return x ? x[1] : 'Home'; };
+      var moved = OP.filter(function (p) { return p.how !== 'same' && p.path !== '/'; });
+      if (A || moved.length) out += '<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">' + (A ? 'Their old website\'s addresses' : 'Your old website\'s addresses') + '</h4>' + (S.old_scanned_at ? '<span class="vebd-pill ok">' + moved.length + ' sent on</span>' : '<span class="vebd-pill wait">Not read yet</span>') + '</div>' +
+        '<p class="vebd-muted">' + (A ? 'Before their domain moves to us we read their current site (its sitemap and home page) and send every old address to the matching new page with a permanent redirect, so links people saved and what Google already ranks keep working. Change any match; the final check tries them.' :
+          'Every address your old website had sends visitors to the matching page on your new one, so saved links and what Google already shows keep working.') + '</p>' +
+        (S.old_note ? '<p class="vebd-muted">' + esc(S.old_note) + (S.old_scanned_at ? ' Read ' + esc(day(S.old_scanned_at)) + '.' : '') + '</p>' : '') +
+        (moved.length ? '<form data-webold><table class="vebd-menu"><thead><tr><th>Old address</th><th>Its title</th><th>Goes to</th></tr></thead><tbody>' + moved.map(function (p, i) {
+          return '<tr><td style="overflow-wrap:anywhere">' + esc(p.path) + '</td><td><small class="vebd-muted">' + esc(p.title || '') + '</small></td><td>' + (A ? '<select name="to' + i + '" data-path="' + esc(p.path) + '">' + NEWP.map(function (n) { return '<option value="' + esc(n[0]) + '"' + ((p.to || '') === n[0] ? ' selected' : '') + '>' + esc(n[1]) + '</option>'; }).join('') + '</select>' : esc(pname(p.to))) +
+            (A && p.how === 'home' ? ' <small class="vebd-muted">nothing matched</small>' : '') + '</td></tr>'; }).join('') + '</tbody></table>' + (A ? '<div style="margin-top:10px"><button class="vebd-btn o" type="submit">Save the matches</button></div>' : '') + '</form>' : '') +
+        (A ? '<form class="vebd-form" data-webold-add style="margin-top:12px"><label>An old address the scan missed<input name="path" placeholder="/our-menu" maxlength="300"></label><label>Goes to<select name="to">' + NEWP.map(function (n) { return '<option value="' + esc(n[0]) + '">' + esc(n[1]) + '</option>'; }).join('') + '</select></label><div><button class="vebd-btn o" type="submit">Add it</button></div></form>' +
+          (S.status !== 'live' ? '<p style="margin-top:10px"><button type="button" class="vebd-btn o sm" data-web="old_scan">' + (S.old_scanned_at ? 'Read their old site again' : 'Read their old site now') + '</button></p>' : '') : '') +
+        '<p class="vebd-msg" data-webmsg role="status"></p></section>';
       if (S.checks && S.checks.length) out += '<section class="vebd-card"><h4>The final check</h4><p class="vebd-muted">' + esc(new Date(S.checked_at).toLocaleString()) + ': ' + S.checks.filter(function (c) { return c.ok; }).length + ' of ' + S.checks.length + ' passed.</p><ul class="vebd-list">' +
         S.checks.map(function (c) { return '<li><span><b>' + esc(c.what) + '</b><br><small class="vebd-muted">' + esc(c.note) + '</small></span><span class="vebd-pill ' + (c.ok ? 'ok' : 'wait') + '">' + (c.ok ? 'Passed' : 'Not yet') + '</span></li>'; }).join('') + '</ul></section>';
       if (A && ['approved', 'connecting', 'live', 'paused'].indexOf(S.status) >= 0) out += '<section class="vebd-card"><h4>Take it down</h4><p class="vebd-muted">Taking it down shows a plain page on their domain until it is put back. Ending it takes their domain off our hosting (their old site, the domain and everything in their Library stay theirs).</p><p>' +
@@ -431,7 +460,7 @@
           if (k === 'domain_remove' && !confirm('Take ' + WEB.site.domain + ' off our hosting? The site stops answering on it.')) return;
           b.disabled = true;
           var map = { start: { action: 'site_start' }, domain_check: { action: 'site_domain_check' }, check: { action: 'site_check' }, domain_remove: { action: 'site_domain_remove' },
-            pause: { action: 'site_status', status: 'paused' }, resume: { action: 'site_status', status: 'resume' }, end: { action: 'site_status', status: 'ended' } };
+            old_scan: { action: 'site_old_scan' }, pause: { action: 'site_status', status: 'paused' }, resume: { action: 'site_status', status: 'resume' }, end: { action: 'site_status', status: 'ended' } };
           call(map[k], k === 'check' ? function (d) { return d.launched ? 'Every check passed. It is live, and the owner has been emailed.' : 'Checked. See what is not there yet below.'; } : k === 'domain_check' ? 'Looked again.' : '');
         });
       });
@@ -441,6 +470,8 @@
         fc.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_decide', decision: 'changes', note: fc.elements.namedItem('note').value }, 'Sent. We will make the changes and send it again.'); }); }
       if ((f = el.querySelector('[data-weblook]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_look', look: e.target.elements.namedItem('look').value || null }, 'Saved. The preview wears it now.'); });
       if ((f = el.querySelector('[data-websend]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_send', note: e.target.elements.namedItem('note').value }, 'Sent. They have the preview link by email.'); });
+      if ((f = el.querySelector('[data-webold]'))) f.addEventListener('submit', function (e) { e.preventDefault(); var pages = []; e.target.querySelectorAll('select[data-path]').forEach(function (x) { pages.push({ path: x.dataset.path, to: x.value }); }); call({ action: 'site_old_save', pages: pages }, 'Saved. Their domain sends each one there.'); });
+      if ((f = el.querySelector('[data-webold-add]'))) f.addEventListener('submit', function (e) { e.preventDefault(); var E = e.target.elements; call({ action: 'site_old_save', add_path: E.namedItem('path').value, add_to: E.namedItem('to').value }, 'Added.'); });
       if ((f = el.querySelector('[data-webdom]'))) f.addEventListener('submit', function (e) { e.preventDefault(); call({ action: 'site_domain', domain: e.target.elements.namedItem('domain').value }, 'Added. Send them the records below.'); });
     }
     function draw() {

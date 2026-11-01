@@ -4,7 +4,8 @@
 //   <this project's own host>/p/<token>/...   the private preview (site_public {preview}: their brand kit as it is now), never indexed
 // Each page is drawn on the frame (frame.js, business/site.html copied in at build) with window.VE_SITE, and written for search on the
 // server: its title, description, canonical address, share picture, schema.org Restaurant with the menu, and a plain-text version of the
-// page inside #site for anything that does not run JavaScript. robots.txt and sitemap.xml per domain. Nothing here holds a secret.
+// page inside #site for anything that does not run JavaScript. robots.txt and sitemap.xml per domain. Their old website's addresses answer
+// with a permanent redirect to the matching new page (d.moved). Nothing here holds a secret.
 const FRAME = require('./frame.js');
 const FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-branddesk';
 const PAGES = { '': 'home', menu: 'menu', order: 'order', about: 'about', visit: 'visit' };
@@ -125,6 +126,13 @@ module.exports = async (req, res) => {
   if (rel === 'favicon.ico') {
     const logo = d.cartridge.brand && d.cartridge.brand.logo && d.cartridge.brand.logo.primary && d.cartridge.brand.logo.primary.src;
     return logo ? send(res, 302, '', Object.assign({ Location: logo }, cacheLive)) : send(res, 404, '', cacheLive);
+  }
+  // Their old website's addresses (read before the domain moved) go to the matching new page for good, so the search traffic they earned
+  // follows them (ve-branddesk site_old_scan; the team can change each match).
+  if (d.mode !== 'preview' && d.moved) {
+    let k = '/' + decodeURIComponent(rel).toLowerCase().replace(/\/index\.(html?|php)$/, '');
+    if (k === '/' && /[?&](page_id|p)=\d+/.test(u.search)) k = '/' + u.search.toLowerCase();
+    if (k !== '/' && Object.prototype.hasOwnProperty.call(d.moved, k)) return send(res, 301, '', Object.assign({ Location: d.base + d.moved[k] }, cacheLive));
   }
   if (!(rel in PAGES)) return send(res, 404, plainPage('Page not found', '<a href="' + esc(d.base) + '">Go to the home page of ' + esc(d.name) + '</a>'), cacheLive);
   return send(res, 200, render(d, PAGES[rel]), cacheLive);

@@ -771,6 +771,16 @@ Deno.serve(async (req) => {
   const who = await caller(req);
   const run = (id: string) => (body.wait && who.ops ? runAudit(id) : (EdgeRuntime as any).waitUntil(runAudit(id)));
 
+  // The business's own free check by its Directory address (business outreach's first email links /check/<slug>): their latest finished
+  // check-up or check from the last 45 days. Anyone; opening it shows the free view, as any shared check does.
+  if (action === 'latest') {
+    const slug = clean(body.listing_slug, 120);
+    const { data: l } = await db.from('listings').select('id, name').eq('slug', slug).eq('status', 'approved').maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const { data: a } = await db.from('ve_audits').select('id').eq('listing_id', l.id).eq('status', 'done').gte('created_at', new Date(Date.now() - 45 * DAY_MS).toISOString())
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    return a ? json({ id: a.id, name: l.name }) : json({ error: 'no_check', name: l.name }, 404);
+  }
   if (action === 'find') {
     const q = clean(body.q, 80).replace(/[%_,()]/g, ' ').trim();
     if (q.length < 2) return json({ listings: [] });

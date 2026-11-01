@@ -53,6 +53,7 @@
 //                                        preview token (the brand kit as it is now), with the base path and the origin
 //   site_get {account_id|slug}          the owner or a super admin: their website, its preview address, domain, checks and every step
 //   site_decide {account_id, decision: approve|changes, name, note}   the owner (a super admin only with a note saying how they agreed)
+//   site_old_scan / site_old_save {pages: [{path, to}], add_path, add_to}: their old website's addresses and the new page each goes to.
 //   site_start / site_look {look} / site_send {note} / site_domain {domain} / site_domain_check / site_domain_remove / site_check /
 //   site_status {status: paused|resume|ended}   super admin: make it, send it for their OK, connect and check their domain, launch
 //   sites_project {project, host}       super admin, once: the shared hosting project
@@ -1645,7 +1646,7 @@ Deno.serve(async (req) => {
       case 'social_sweep': case 'social_platforms': case 'social_chapters': case 'social_list': case 'social_get': case 'social_setup':
       case 'social_decide': case 'social_post_save': case 'social_send': case 'social_posted': case 'social_skip': return await social(req, b, m);
       case 'site_public': case 'site_get': case 'site_start': case 'site_look': case 'site_send': case 'site_decide': case 'site_domain': case 'site_domain_check':
-      case 'site_domain_remove': case 'site_check': case 'site_status': case 'sites_project': return await sites(req, b, m);
+      case 'site_domain_remove': case 'site_check': case 'site_status': case 'sites_project': case 'site_old_scan': case 'site_old_save': case 'site_old_probe': return await sites(req, b, m);
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }
@@ -1684,6 +1685,7 @@ const absUrl = (u: unknown) => { const s = String(u || ''); return s.startsWith(
 const filled = (v: unknown) => typeof v === 'string' ? !!v.trim() : Array.isArray(v) ? v.length > 0 : !!v;
 // The frame's Cartridge for a real site: their brand kit over what their Directory page holds (the same build as a pitch's still), every
 // picture a full https link (a client's domain cannot read paths on vegansexplore.com). A kit's colors count only with all six roles.
+const KIT_PARTS: [string, string][] = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
 async function siteCartridge(site: any, l: any, kit: any) {
   const base: any = await pitchCartridge(l, site.look && PITCH_LOOKS[site.look] ? site.look : 'fresh');
   delete base.pitch; base.meta = { frame: 'restaurant', site: true, built: new Date().toISOString() };
@@ -1752,13 +1754,85 @@ async function domainState(site: any, project: string) {
   out.ssl = p.status > 0; out.serving = p.status === 200 && /BrandDesk/.test(p.text); out.ssl_error = p.error;
   return out;
 }
+// ---- The old site's addresses (2026-11-01): read their current website before the domain moves, so every address it had (and the search
+// traffic it earned) sends visitors to the matching new page with a permanent redirect.
+const OLD_SKIP = /\.(jpe?g|png|gif|webp|svg|ico|css|js|json|xml|txt|woff2?|ttf|mp4|mov|zip)$/i;
+const OLD_RULES: [RegExp, string][] = [
+  [/order|delivery|deliver|pickup|pick-up|takeout|take-out|to-go|togo|cart|checkout|shop|store|gift-?card/, 'order'],
+  [/menu|food|drink|dish|brunch|lunch|dinner|breakfast|dessert|bakery|smoothie|juice|eat|catering|specials/, 'menu'],
+  [/contact|location|hours|visit|find-us|directions|map|reserv|book|parking|faq/, 'visit'],
+  [/about|story|our-|team|chef|mission|history|who-we|press|news|blog|career|jobs/, 'about'],
+];
+function oldKey(u: URL) {
+  let p = decodeURIComponent(u.pathname).toLowerCase().replace(/\/+$/, '').replace(/\/index\.(html?|php)$/, '') || '/';
+  if (p === '/' && /[?&](page_id|p)=\d+/.test(u.search)) p = '/' + u.search.toLowerCase();
+  return p;
+}
+function oldMatch(path: string, title: string): { to: string; how: string } {
+  const own = path.replace(/^\//, '');
+  if (path === '/' || SITE_PAGES.some(([p]) => p && own === p)) return { to: path === '/' ? '' : own, how: 'same' };
+  const words = (path + ' ' + title).toLowerCase().replace(/[_\s]+/g, '-');
+  for (const [re, to] of OLD_RULES) if (re.test(words)) return { to, how: 'words' };
+  return { to: '', how: 'home' };
+}
+async function oldFetch(url: string, ms = 9000) {
+  try {
+    const r = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(ms), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VegansExplore-BrandDesk/1.0; +https://vegansexplore.com/business)' } });
+    return { ok: r.ok, url: r.url || url, text: r.ok ? (await r.text()).slice(0, 2_000_000) : '' };
+  } catch { return { ok: false, url, text: '' }; }
+}
+async function oldScan(website: string) {
+  let start: URL;
+  try { start = new URL(/^https?:\/\//i.test(website) ? website : 'https://' + website); } catch { return { pages: [], note: 'Their website address could not be read.' }; }
+  const home = await oldFetch(start.href);
+  if (!home.ok) return { pages: [], note: `Their website (${start.host}) did not open for us. Scan it again, or add the old addresses by hand.` };
+  const base = new URL(home.url), host = base.host.replace(/^www\./, '');
+  const same = (u: URL) => u.host.replace(/^www\./, '') === host && /^https?:$/.test(u.protocol) && !OLD_SKIP.test(u.pathname);
+  const found = new Map<string, URL>();
+  const take = (raw: string, from: URL) => { try { const u = new URL(raw.replace(/&amp;/g, '&'), from); u.hash = ''; if (same(u) && found.size < 300) { const k = oldKey(u); if (!found.has(k)) found.set(k, u); } } catch { /* not a link */ } };
+  // Sitemaps first (they list every page), then the home page's links.
+  const maps = new Set([`${base.origin}/sitemap.xml`, `${base.origin}/sitemap_index.xml`, `${base.origin}/wp-sitemap.xml`]);
+  const rb = await oldFetch(`${base.origin}/robots.txt`, 6000);
+  (rb.text.match(/^sitemap:\s*(\S+)/gim) || []).forEach((l) => maps.add(l.replace(/^sitemap:\s*/i, '').trim()));
+  const seen = new Set<string>(); let fromMaps = 0;
+  for (const sm of Array.from(maps)) {
+    if (seen.size >= 8 || seen.has(sm)) continue; seen.add(sm);
+    const r = await oldFetch(sm, 8000); if (!r.ok || !/<(urlset|sitemapindex)/i.test(r.text)) continue;
+    const locs = Array.from(r.text.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/gi)).map((x) => x[1]);
+    if (/<sitemapindex/i.test(r.text)) locs.slice(0, 10).forEach((x) => maps.add(x));
+    else { const before = found.size; locs.forEach((x) => take(x, base)); fromMaps += found.size - before; }
+  }
+  Array.from(home.text.matchAll(/<a\b[^>]*\bhref\s*=\s*["']([^"'#]+)["']/gi)).forEach((x) => take(x[1], base));
+  // Each page's title, for the first 60 (the match reads the address and the title).
+  const list = Array.from(found.entries()).sort((a, b) => a[0].length - b[0].length || a[0].localeCompare(b[0]));
+  const titles = new Map<string, string>();
+  const homeTitle = (home.text.match(/<title[^>]*>([^<]{1,200})/i) || [])[1] || '';
+  titles.set('/', homeTitle.trim());
+  const first = list.filter(([k]) => k !== '/').slice(0, 60);
+  for (let i = 0; i < first.length; i += 8) await Promise.all(first.slice(i, i + 8).map(async ([k, u]) => {
+    const r = await oldFetch(u.href, 7000); const t = (r.text.match(/<title[^>]*>([^<]{1,200})/i) || [])[1]; if (t) titles.set(k, t.replace(/\s+/g, ' ').trim());
+  }));
+  if (!found.has('/')) list.unshift(['/', base]);
+  const pages = list.map(([k]) => { const title = (titles.get(k) || '').replace(/&amp;/g, '&').replace(/&#0?39;|&rsquo;/g, "'"); return { path: k, title, ...oldMatch(k, title) }; });
+  return { pages, note: `${pages.length} address${pages.length === 1 ? '' : 'es'} on ${host}${fromMaps ? ', from its sitemap and home page' : ', from its home page links (no sitemap)'}.`, host };
+}
+async function oldScanSite(s: any, l: any) {
+  const website = String(l?.website || '').trim();
+  if (!website) return await siteUpd(s.id, { old_site: null, old_pages: [], old_scanned_at: new Date().toISOString(), old_note: 'They have no website on their Directory page, so there are no old addresses to keep.' });
+  const r = await oldScan(website);
+  // A rescan keeps the team's own choices for addresses it finds again.
+  const mine = new Map(((s.old_pages || []) as any[]).filter((p) => p.how === 'team').map((p) => [p.path, p.to]));
+  const pages = r.pages.map((p: any) => mine.has(p.path) ? { ...p, to: mine.get(p.path), how: 'team' } : p);
+  return await siteUpd(s.id, { old_site: website, old_pages: pages, old_scanned_at: new Date().toISOString(), old_note: r.note });
+}
 const SITE_WORD: Record<string, string> = { building: 'Being built', preview: 'Waiting for the owner', changes: 'Changes asked', approved: 'Approved, no domain yet', connecting: 'Connecting their domain', live: 'Live', paused: 'Taken down for now', ended: 'Ended' };
 function siteShape(s: any, conf: { host: string }) {
   if (!s) return null;
   return { id: s.id, status: s.status, status_word: SITE_WORD[s.status], review: s.review, look: s.look, preview_url: `https://${conf.host}/p/${s.preview_token}/`,
     live_url: s.domain ? `https://${s.domain}/` : null, domain: s.domain, www: s.www, domain_state: s.domain_state, sent_at: s.sent_at, change_note: s.change_note, change_at: s.change_at,
     approved_at: s.approved_at, approved_name: s.approved_name, published_version: s.published_version, published: !!s.published, checks: s.checks, checked_at: s.checked_at,
-    launched_at: s.launched_at, created_at: s.created_at, updated_at: s.updated_at };
+    launched_at: s.launched_at, created_at: s.created_at, updated_at: s.updated_at,
+    old_site: s.old_site, old_pages: s.old_pages, old_scanned_at: s.old_scanned_at, old_note: s.old_note };
 }
 async function ownerOf(a: any) { return (await db.from('members').select('id, name, email').eq('id', a.member_id).maybeSingle()).data; }
 
@@ -1785,7 +1859,13 @@ async function sites(req: Request, b: any, m: any) {
     if (mode === 'preview') cart = await siteCartridge(s, l, (await db.from('ve_cartridges').select('data').eq('listing_id', s.listing_id).maybeSingle()).data?.data);
     return json({ ok: true, mode, redirect, name: cart.business?.name || l.name, slug: l.slug, cartridge: cart,
       base: mode === 'preview' ? `/p/${s.preview_token}/` : '/', origin: mode === 'preview' ? `https://${conf.host}` : `https://${s.domain}`,
-      dashboard: `${SITE}/directory/${l.slug}?tab=brand&pd=managed&bd=website`, version: s.published_version, test: !!a.test });
+      dashboard: `${SITE}/directory/${l.slug}?tab=brand&pd=managed&bd=website`, version: s.published_version, test: !!a.test,
+      moved: mode === 'live' ? Object.fromEntries(((s.old_pages || []) as any[]).filter((p) => p.how !== 'same' && p.path !== '/').map((p) => [p.path, p.to || ''])) : {} });
+  }
+  if (action === 'site_old_probe') {
+    // Super admin: read any website's addresses and their matches without saving (to look before a client signs, or to test the scan).
+    if (!m?.is_superadmin) return json({ error: 'admin_only' }, 403);
+    return json({ ok: true, ...(await oldScan(clean(b.url, 300))) });
   }
   if (action === 'sites_project') {
     if (!m?.is_superadmin) return json({ error: 'admin_only' }, 403);
@@ -1804,8 +1884,10 @@ async function sites(req: Request, b: any, m: any) {
   const out = async (extra: Record<string, unknown> = {}) => {
     s = await siteRow(a.id);
     const ev = s ? ((await db.from('ve_branddesk_site_events').select('kind, by_name, note, data, at').eq('site_id', s.id).order('at', { ascending: false }).limit(50)).data || []) : [];
-    const { data: kit } = await db.from('ve_cartridges').select('status, updated_at').eq('listing_id', a.listing_id).maybeSingle();
-    return json({ ok: true, admin, owner: isOwner, site: siteShape(s, conf), events: ev, kit: kit ? { status: kit.status, updated_at: kit.updated_at } : null,
+    const { data: kit } = await db.from('ve_cartridges').select('status, updated_at, approvals:data->meta->approvals').eq('listing_id', a.listing_id).maybeSingle();
+    // The brand kit's parts and where each stands (the website is drawn from it, so it is the first step on the Website view).
+    const parts = kit ? KIT_PARTS.map(([k, name]) => ({ key: k, name, state: ((kit as any).approvals || {})[k]?.state || 'not_started' })) : [];
+    return json({ ok: true, admin, owner: isOwner, site: siteShape(s, conf), events: ev, kit: kit ? { status: kit.status, updated_at: kit.updated_at, parts } : null,
       listing: l ? { name: l.name, slug: l.slug, website: l.website } : null, looks: Object.fromEntries(Object.entries(PITCH_LOOKS).map(([k, v]) => [k, v.name])), host: conf.host,
       pages: SITE_PAGES.map((p) => ({ path: p[0], name: p[1] })), account: { id: a.id, status: a.status, test: a.test }, ...extra });
   };
@@ -1841,12 +1923,33 @@ async function sites(req: Request, b: any, m: any) {
     const { data: made, error } = await db.from('ve_branddesk_sites').insert({ account_id: a.id, listing_id: a.listing_id, preview_token: siteToken(), created_by: m.id }).select('*').single();
     if (error) throw error;
     await siteEvent(made.id, 'made', m);
+    // Their old website's addresses, read now while it is still theirs (the final check needs them before the domain moves).
+    try { await oldScanSite(made, l); } catch (e) { console.error('old scan', e); }
     return await out();
   }
   if (!s) return json({ error: 'no_site' }, 409);
   if (action === 'site_look') {
     const look = b.look && PITCH_LOOKS[b.look] ? b.look : null;
     await siteUpd(s.id, { look }); await siteEvent(s.id, 'look', m, look ? PITCH_LOOKS[look].name : 'Their brand kit');
+    return await out();
+  }
+  if (action === 'site_old_scan') {
+    if (s.status === 'live' && s.old_scanned_at) return json({ error: 'already_live', message: 'Their domain already points at us, so their old site cannot be read again. Change the matches below instead.' }, 409);
+    await oldScanSite(s, l); await siteEvent(s.id, 'old_scan', m, null);
+    return await out();
+  }
+  if (action === 'site_old_save') {
+    const allowed = new Set(SITE_PAGES.map(([p]) => p));
+    const want = new Map<string, string>(); ((Array.isArray(b.pages) ? b.pages : []) as any[]).slice(0, 400).forEach((p) => { if (allowed.has(String(p?.to ?? ''))) want.set(String(p.path), String(p.to)); });
+    const pages = ((s.old_pages || []) as any[]).map((p) => want.has(p.path) && p.how !== 'same' && want.get(p.path) !== p.to ? { ...p, to: want.get(p.path), how: 'team' } : p);
+    // An address the team adds by hand (an old link they know of that the scan did not find).
+    const add = String(b.add_path || '').trim();
+    if (add) {
+      let k = ''; try { k = oldKey(new URL(add, 'https://x.example')); } catch { /* bad */ }
+      if (!k || k === '/' || k.length > 300) return json({ error: 'bad_path', message: 'Type the old address, like /our-menu.' }, 400);
+      if (!pages.some((p) => p.path === k)) pages.push({ path: k, title: '', to: allowed.has(String(b.add_to ?? '')) ? String(b.add_to) : '', how: 'team' });
+    }
+    await siteUpd(s.id, { old_pages: pages }); await siteEvent(s.id, 'old_saved', m, null);
     return await out();
   }
   if (action === 'site_send') {
@@ -1869,6 +1972,8 @@ async function sites(req: Request, b: any, m: any) {
     if (/(^|\.)(vegansexplore\.com|vercel\.app|lesaruss\.ai|lesaruss\.com)$/.test(d) && !(b.test_domain && a.test)) return json({ error: 'not_theirs' }, 400);
     const other = (await db.from('ve_branddesk_sites').select('id').eq('domain', d).neq('id', s.id).maybeSingle()).data; if (other) return json({ error: 'domain_used' }, 409);
     if (s.domain && s.domain !== d) return json({ error: 'remove_first', message: 'Take the old domain off first.' }, 409);
+    // Their old site is read before the domain moves to us, if it was never read (after the move it is gone).
+    if (!s.old_scanned_at) { try { s = await oldScanSite(s, l); } catch (e) { console.error('old scan', e); } }
     const www = isApex(d);
     const add = async (name: string, extra: Record<string, unknown> = {}) => {
       const r = await vercel('POST', `/v10/projects/${conf.project}/domains`, { name, ...extra });
@@ -1923,6 +2028,18 @@ async function sites(req: Request, b: any, m: any) {
       bad = bad.concat(rs.filter(Boolean) as string[]);
     }
     add('Every picture', '', !bad.length, list.length ? (bad.length ? `${bad.length} of ${list.length} did not load: ${bad.slice(0, 3).join(', ')}` : `All ${list.length} load`) : 'No pictures yet (the site uses their name and colors)');
+    // Their old addresses: read before the move, and each sends visitors on to its new page.
+    const moved = ((s.old_pages || []) as any[]).filter((p) => p.how !== 'same' && p.path !== '/');
+    if (!s.old_scanned_at) add('Their old addresses', '', false, 'Their old website was never read. Scan it from this page first.');
+    else if (!moved.length) add('Their old addresses', '', true, s.old_note || 'No old addresses to send on');
+    else {
+      const sample = moved.slice(0, 12), bad: string[] = [];
+      for (let i = 0; i < sample.length; i += 6) await Promise.all(sample.slice(i, i + 6).map(async (p) => {
+        const r = await probe(origin + p.path); const to = `${origin}/${p.to || ''}`;
+        if (!(r.status === 301 && String(r.location || '').replace(/\?.*$/, '') === to)) bad.push(`${p.path} (${r.status || r.error})`);
+      }));
+      add('Their old addresses', `${origin}${sample[0].path}`, !bad.length, bad.length ? `${bad.length} of ${sample.length} tried did not send visitors on: ${bad.slice(0, 3).join(', ')}` : `${moved.length} old address${moved.length === 1 ? '' : 'es'} send visitors to their new pages (${sample.length} tried)`);
+    }
     const allOk = checks.every((c) => c.ok), now = new Date().toISOString();
     const patch: Record<string, unknown> = { checks, checked_at: now, domain_state: { ...(s.domain_state || {}), ssl: checks[0].ok || s.domain_state?.ssl } };
     let launched = false;
