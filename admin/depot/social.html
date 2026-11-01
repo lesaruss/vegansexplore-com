@@ -495,9 +495,12 @@
     var KIND = { post: 'Post', carousel: 'Carousel', reel: 'Reel', story: 'Story', video: 'Video', episode: 'Episode', thread: 'Thread' };
     var NETS = ['instagram', 'facebook', 'tiktok', 'youtube', 'twitter', 'linkedin', 'threads', 'pinterest', 'bluesky'];
     var NETN = { twitter: 'X', linkedin: 'LinkedIn', threads: 'Threads', pinterest: 'Pinterest', bluesky: 'Bluesky' };
-    var FILT = { todo: 'Needs you', out: 'Going out', posted: 'Posted', all: 'All' };
+    var FILT = { todo: 'Needs you', out: 'Going out', posted: 'Posted', all: 'All', skipped: 'Skipped' };
     function netName(n) { return CH[n] && CH[n].name ? CH[n].name : (NETN[n] || n); }
     function inFilt(x, f) {
+      // Skipped slots stay out of sight (Sean, 2026-11-01: "I don't like to see things that we're not using"); only the Skipped chip shows them.
+      if (f === 'skipped') return x.status === 'skipped';
+      if (x.status === 'skipped') return false;
       if (f === 'all') return true;
       if (f === 'todo') return x.status === 'proposed' || x.status === 'changes' || x.status === 'failed' || x.status === 'manual' || x.status === 'held';
       if (f === 'out') return x.status === 'approved' || x.status === 'scheduled';
@@ -921,6 +924,7 @@
               '<p class="msg">Proposed by ' + esc(x.proposed_by || 'Logan') + (x.approved_at ? ' · approved ' + esc(when(x.approved_at)) : '') + (x.metricool_post_id ? ' · in Metricool' : '') + '</p>' +
               '<div class="acts">' + (canApprove ? '<button class="btn" type="button" id="approve">' + (bi.in_metricool || b.metricool_blog_id ? 'Approve and schedule' : 'Approve') + '</button>' : '') +
                 (canSkip ? '<button class="btn btn-warn" type="button" id="skip">Skip it</button>' : '') +
+                (ed && x.status === 'skipped' ? '<button class="btn btn-warn" type="button" id="del">Delete it</button>' : '') +
                 '<button class="btn btn-ghost" type="button" id="copy">Copy caption</button></div><p class="msg" id="smsg"></p></div>' +
             musicPanel(x, editable) +
             '<div class="panel"><h2>' + (editable ? 'Change it directly' : 'The post') + '</h2>' + slotForm(x, b, editable) +
@@ -934,7 +938,15 @@
           refreshBrands(); drawSlot(id); setTimeout(function () { say('smsg', okText); }, 500);
         };
         var ap = $('approve'); if (ap) ap.onclick = function () { ap.disabled = true; ap.textContent = 'Sending…'; api({ action: 'approve', id: id }).then(function (res) { after(res, res.status === 'scheduled' ? 'Scheduled in Metricool.' : res.status === 'manual' ? 'Approved. Some or all of it is posted by hand; see the note above.' : 'Approved.'); }); };
-        var sk = $('skip'); if (sk) sk.onclick = function () { if (!confirm('Skip this one? It comes out of Metricool if it was scheduled.')) return; api({ action: 'skip', id: id }).then(function (res) { after(res, 'Skipped.'); }); };
+        var sk = $('skip'); if (sk) sk.onclick = function () { if (!confirm('Skip this one? It comes out of Metricool if it was scheduled, and it leaves the Plan (the Skipped chip still shows it).')) return; api({ action: 'skip', id: id }).then(function (res) { after(res, 'Skipped. It is out of the Plan now; Delete it removes it for good.'); }); };
+        var dl = $('del'); if (dl) dl.onclick = function () {
+          if (!confirm('Delete this slot for good? Its notes and history go with it. This cannot be undone.')) return;
+          dl.disabled = true;
+          api({ action: 'delete', id: id }).then(function (res) {
+            if (res && res.error) { dl.disabled = false; say('smsg', res.error === 'not_skipped' ? 'Skip it first, then delete it.' : (res.detail || res.error), true); return; }
+            refreshBrands(); location.hash = '#days/' + x.brand_slug + '/up/all';
+          });
+        };
         $('copy').onclick = function () { var bt = this; (navigator.clipboard ? navigator.clipboard.writeText(x.caption || '') : Promise.reject()).then(function () { bt.textContent = 'Copied'; }, function () { bt.textContent = 'Copy failed'; }); };
         var sv = $('save'); if (sv) sv.onclick = function () {
           var f = readForm(); if (!f.slot_at) { say('fmsg', 'Pick a time.', true); return; }
