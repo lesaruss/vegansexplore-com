@@ -115,7 +115,7 @@ async function readGA(token: string, from: string, to: string, pf: string, pt: s
   const cur = [{ startDate: from, endDate: to }];
   const days = (Date.parse(to) - Date.parse(from)) / 864e5 + 1;
   const grain = days > 120 ? 'yearMonth' : 'date';
-  const [totals, trend, pages, pulse, channels, sources, geo, devices] = await Promise.all([
+  const [totals, trend, pages, pulse, channels, sources, geo, devices, dirAddr] = await Promise.all([
     run({ dateRanges: both, metrics: ['sessions', 'activeUsers', 'newUsers', 'screenPageViews', 'engagementRate', 'averageSessionDuration'].map((name) => ({ name })) }),
     run({ dateRanges: cur, dimensions: [{ name: grain }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'screenPageViews' }], orderBys: [{ dimension: { dimensionName: grain } }], limit: 400 }),
     run({ dateRanges: cur, dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }], metrics: ['screenPageViews', 'activeUsers', 'userEngagementDuration', 'engagementRate'].map((name) => ({ name })), orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 1000 }),
@@ -125,6 +125,10 @@ async function readGA(token: string, from: string, to: string, pf: string, pt: s
     run({ dateRanges: cur, dimensions: [{ name: 'sessionSource' }, { name: 'sessionMedium' }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'engagementRate' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 100 }),
     run({ dateRanges: both, dimensions: [{ name: 'country' }, { name: 'region' }, { name: 'city' }], metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'newUsers' }], limit: 5000 }),
     run({ dateRanges: cur, dimensions: [{ name: 'deviceCategory' }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }] }),
+    // The Directory's sections by their own address (Sean, 2026-11-01: "I want to have the unique URLs so that traffic is tracked"):
+    // pagePath drops the query, so every section read as /directory. Google counts each address change (its history events).
+    run({ dateRanges: cur, dimensions: [{ name: 'pagePathPlusQueryString' }], metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
+      dimensionFilter: { filter: { fieldName: 'pagePathPlusQueryString', stringFilter: { matchType: 'CONTAINS', value: 'tab=' } } }, limit: 5000 }),
   ]);
   // With two date ranges Google adds a dateRange dimension as the last one ('cur' or 'prev').
   const split = (rows: Row[]) => ({ cur: rows.filter((r) => r.d[r.d.length - 1] === 'cur'), prev: rows.filter((r) => r.d[r.d.length - 1] === 'prev') });
@@ -150,7 +154,27 @@ async function readGA(token: string, from: string, to: string, pf: string, pt: s
     geo_cur: g.cur.map((r) => ({ country: r.d[0], region: r.d[1], city: r.d[2], users: r.m[0], sessions: r.m[1], new_users: r.m[2] })),
     geo_prev: g.prev.map((r) => ({ country: r.d[0], region: r.d[1], city: r.d[2], users: r.m[0], sessions: r.m[1], new_users: r.m[2] })),
     devices: devices.map((r) => ({ device: r.d[0], sessions: r.m[0], users: r.m[1] })),
+    dir_sections: dirSections(dirAddr),
   };
+}
+
+// One row per place, section and sub-section: /directory?tab=food&sub=markets, /dashboard/directory?tab=..., and a city hub's
+// /communities/<slug>?tab=directory&dir=food&sub=markets (its Directory opens on Local Food). Visitors are summed across the
+// addresses that make up a row, so a person who reached it two ways counts twice.
+function dirSections(rows: Row[]) {
+  const out = new Map<string, { where: string; section: string; sub: string; views: number; users: number }>();
+  for (const r of rows) {
+    let u: URL; try { u = new URL(r.d[0], 'https://vegansexplore.com'); } catch { continue; }
+    const path = u.pathname.replace(/\/$/, ''), q = u.searchParams;
+    let where = '', section = '';
+    if (path === '/directory' || path === '/dashboard/directory') { where = path === '/directory' ? 'directory' : 'dashboard'; section = q.get('tab') || ''; }
+    else { const m = /^\/communities\/([a-z-]+)$/.exec(path); if (!m || q.get('tab') !== 'directory') continue; where = m[1]; section = q.get('dir') || 'food'; }
+    section = section.replace(/[^a-z]/g, ''); if (!section) continue;
+    const sub = (q.get('sub') || '').replace(/[^a-z0-9-]/g, '');
+    const k = where + '|' + section + '|' + sub, o = out.get(k) ?? { where, section, sub, views: 0, users: 0 };
+    o.views += r.m[0]; o.users += r.m[1]; out.set(k, o);
+  }
+  return [...out.values()].sort((a, b) => b.views - a.views);
 }
 
 // ---- Chapters: visitors by Google's place, joined to our own numbers ----

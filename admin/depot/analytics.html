@@ -340,6 +340,29 @@
     function change(cur, prev) { if (!prev) return cur ? '<span class="up">New</span>' : '-'; var d = Math.round((cur - prev) / prev * 100); return '<span class="' + (d >= 0 ? 'up' : 'down') + '">' + (d > 0 ? '+' : '') + d + '%</span>'; }
     function gaMissing() { return '<p class="empty">Google Analytics did not answer for this period, so traffic is missing here.</p>'; }
 
+    // The Directory's sections by their own address (Sean, 2026-11-01: "I want to have the unique URLs so that traffic is tracked"):
+    // Google's views of /directory?tab=<section>&sub=<sub-section>, the dashboard's, and each city hub's ?tab=directory&dir=&sub=.
+    var DIR_SECTION = { food: 'Local Food', products: 'Products', services: 'Services', media: 'Media', community: 'Community', people: 'People', vetting: 'Being vetted', review: 'Review' };
+    function subName(v) { return v ? v.split('-').map(function (w) { return w === 'and' ? '&' : w.charAt(0).toUpperCase() + w.slice(1); }).join(' ') : 'All'; }
+    function dirSectionsHtml(d) {
+      if (!d.ga) return '<h3>Sections</h3>' + gaMissing();
+      var rows = (d.ga.dir_sections || []).map(function (r) {
+        var place = r.where === 'directory' ? 'Directory' : r.where === 'dashboard' ? 'Dashboard' : (CHAPTER_NAME[r.where] || r.where) + ' hub';
+        var href = r.where === 'directory' ? '/directory?tab=' + r.section + (r.sub ? '&sub=' + r.sub : '')
+          : r.where === 'dashboard' ? '/dashboard/directory?tab=' + r.section + (r.sub ? '&sub=' + r.sub : '')
+          : '/communities/' + r.where + '?tab=directory&dir=' + r.section + (r.sub ? '&sub=' + r.sub : '');
+        return { name: (DIR_SECTION[r.section] || r.section) + ' · ' + subName(r.sub), place: place, href: href, views: r.views, users: r.users };
+      });
+      var maxV = rows.length ? Math.max.apply(null, rows.map(function (r) { return r.views; })) : 0;
+      return '<h3>Sections</h3><p class="intro">Each section and sub-section by its own address, on the Directory, the dashboard and each city hub. ' +
+        'Counted from November 1, 2026 for the city hubs (before that their sections had no address). A person who reached one two ways counts twice.</p>' +
+        table('dirsections', rows, [
+          { k: 'name', h: 'Section', cls: 't', label: false, w: function (r) { return '<a href="' + esc(r.href) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a><small>' + esc(r.place) + '</small>'; } },
+          { k: 'views', h: 'Views', n: 1, w: function (r) { return bar(r.views, maxV); } },
+          { k: 'users', h: 'Visitors', n: 1, w: function (r) { return fmt(r.users); } },
+        ], { noun: 'sections', sort: { k: 'views' }, empty: 'No section views in this period yet.', text: function (r) { return r.name + ' ' + r.place; } });
+    }
+
     // ---- Views ----
     var VIEWS = {
       pages: function (d) {
@@ -406,7 +429,8 @@
             { k: 'views', h: 'Views', n: 1, w: function (r) { return bar(r.views, maxV); } },
             { k: 'visitors', h: 'Visitors', n: 1, w: function (r) { return fmt(r.visitors); } },
             { k: 'actions', h: 'Actions', n: 1, w: function (r) { return fmt(r.actions); } },
-          ], { noun: 'listings', sort: { k: 'views' }, text: function (r) { return r.name + ' ' + r.category + ' ' + (CHAPTER_NAME[r.chapter] || ''); } });
+          ], { noun: 'listings', sort: { k: 'views' }, text: function (r) { return r.name + ' ' + r.category + ' ' + (CHAPTER_NAME[r.chapter] || ''); } })
+          + dirSectionsHtml(d);
       },
       sources: function (d) {
         var g = d.ga; if (!g) return gaMissing();

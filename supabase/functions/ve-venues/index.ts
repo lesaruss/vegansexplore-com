@@ -109,9 +109,18 @@ async function secret(key: string): Promise<string | null> {
 // from the sources.
 // What each report pays (with a photo, without; and for agreeing with the first), Sean's to change in ve_venue_report_points.
 async function reportPoints() {
-  const { data } = await db.from('ve_venue_report_points').select('kind, with_photo, no_photo, agree_with_photo, agree_no_photo, first_with_photo, first_no_photo').order('sort_order');
+  const { data } = await db.from('ve_venue_report_points').select('kind, with_photo, no_photo, agree_with_photo, agree_no_photo, first_with_photo, first_no_photo, std_with_photo, std_no_photo, std_agree_with_photo, std_agree_no_photo').order('sort_order');
   return data || [];
 }
+// Supermarket chains with an active Title or Partner sponsorship today (Sean, 2026-11-01; migration 20261101_supermarket_standard_points.sql).
+// Their stores pay the full points and the first-to-confirm bounty; every other store pays the standard amounts (std_*) and no bounty.
+// Stadiums and airports always pay in full. ve_venue_sponsored is the same rule in the database, used when a report is saved.
+async function sponsoredChains(): Promise<Set<string>> {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const { data } = await db.from('ve_supermarket_sponsors').select('chain_listing_id, starts_on, ends_on').in('tier', ['title', 'partner']).eq('status', 'active');
+  return new Set((data || []).filter((x) => x.chain_listing_id && (!x.starts_on || x.starts_on <= today) && (!x.ends_on || x.ends_on >= today)).map((x) => x.chain_listing_id));
+}
+const fullPay = (v: any, chains: Set<string>) => v.kind !== 'supermarket' || chains.has(v.chain_listing_id);
 async function bountyLimits() {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'venue_bounties').maybeSingle();
   return data?.value || { fresh_days: 35, daily_paid_cap: 40, daily_reports: 60 };
@@ -170,16 +179,17 @@ Deno.serve(async (req) => {
     const chainIds = [...new Set(vs.map((v) => v.chain_listing_id).filter(Boolean))];
     const chains: Record<string, any> = {};
     if (chainIds.length) { const { data: cs } = await db.from('listings').select('id, slug, name, logo_url').in('id', chainIds); for (const c of cs || []) chains[c.id] = c; }
+    const sponsored = await sponsoredChains();
     const counts: Record<string, { items: number; confirmed: number; last: string | null; bounties: number }> = {};
     const byId: Record<string, any> = {}; for (const v of vs || []) byId[v.id] = v;
     for (const it of its || []) {
       const c = counts[it.venue_id] ||= { items: 0, confirmed: 0, last: null, bounties: 0 };
       c.items++;
-      if (freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
+      if (fullPay(byId[it.venue_id], sponsored) && freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
-      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order,
+      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order, sponsored: fullPay(v, sponsored),
       ...(v.kind === 'supermarket' ? { lat: v.latitude, lng: v.longitude, address: v.address, chain: chains[v.chain_listing_id] ? { slug: chains[v.chain_listing_id].slug, name: chains[v.chain_listing_id].name, logo_url: chains[v.chain_listing_id].logo_url } : null } : {}),
       ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
       points: await reportPoints(), limits: await bountyLimits() });
@@ -189,7 +199,7 @@ Deno.serve(async (req) => {
   // venue of both Guides with items waiting for their first confirmation, and what they pay. No item names: those are the Guide's.
   if (action === 'bounties') {
     const hub = str(body.hub, 40);
-    const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
+    const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at, chain_listing_id').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
     const ids = vs.map((v) => v.id);
     const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
     const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
@@ -200,7 +210,9 @@ Deno.serve(async (req) => {
     // Each Guide's bounties are for its owners; everyone else gets the count and what it would pay, as a reason to get it.
     const ownsG: Record<string, boolean> = {};
     for (const g of live) ownsG[g] = admin || (!!viewer && !!(await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: g })).data);
-    const out = (vs || []).filter((v) => v.latitude != null && live.has(guideOfKind(v.kind))).map((v) => {
+    // A supermarket's bounties run only while its chain is sponsored; other stores update for the standard points, no bounty.
+    const sponsored = await sponsoredChains();
+    const out = (vs || []).filter((v) => v.latitude != null && live.has(guideOfKind(v.kind)) && fullPay(v, sponsored)).map((v) => {
       const mine = (its || []).filter((i) => i.venue_id === v.id);
       const open = mine.filter((i) => freshness(i, v) !== 'fresh').length;
       // A venue with nothing listed yet has one bounty: be the first to add what is there.
@@ -231,6 +243,7 @@ Deno.serve(async (req) => {
     const { data: v } = await db.from('ve_venues').select('*').eq('slug', slug).eq('status', 'live').maybeSingle();
     if (!v) return json({ error: 'not_found' }, 404);
     const open = owns || v.free_example;
+    const full = fullPay(v, await sponsoredChains());
     const [{ data: spots }, { data: items }] = await Promise.all([
       db.from('ve_venue_spots').select('id, name, where_text, zone, listing_id, note, sort_order, map_sections, map_level').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
       db.from('ve_venue_items').select('id, spot_id, name, description, vegan, sources, last_confirmed_at, confirmed_count, photo_url, photo_illustrative, sort_order')
@@ -258,7 +271,7 @@ Deno.serve(async (req) => {
     const venue = { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, teams: v.teams, address: v.address,
       maps: v.google_place_id ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name)}&query_place_id=${v.google_place_id}` : null,
       note: v.note, note_source_url: v.note_source_url, free: v.free_example, can_report: v.latitude != null, radius_m: v.radius_m,
-      season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url, lat: v.latitude, lng: v.longitude,
+      season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url, lat: v.latitude, lng: v.longitude, sponsored: full,
       chain: v.chain_listing_id ? (await db.from('listings').select('slug, name, logo_url').eq('id', v.chain_listing_id).maybeSingle()).data : null };
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
@@ -269,7 +282,7 @@ Deno.serve(async (req) => {
         listing: s.listing_id && listings[s.listing_id] ? { slug: listings[s.listing_id].slug, name: listings[s.listing_id].name, logo_url: listings[s.listing_id].logo_url } : null,
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
-          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v), bounty: freshness(i, v) !== 'fresh',
+          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v), bounty: full && freshness(i, v) !== 'fresh',
           photo_url: i.photo_url, photo_illustrative: i.photo_illustrative, saved: saved.includes('venue_item:' + i.id),
           comments: (comments[i.id] || []).slice(0, 5) })) : [],
       };
@@ -386,8 +399,8 @@ Deno.serve(async (req) => {
     others = (o || []).map((x: any) => ({ id: x.id, kind: x.kind, note: x.note, status: x.status, points: x.points, at: x.created_at, member: shortName(x.members?.name) }));
     const { data: paid } = await db.from('ve_venue_reports').select('id').eq('member_id', r.member_id).eq('local_day', r.local_day).gt('points', 0);
     return json({ report: { id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points, distance_m: r.distance_m, accuracy_m: r.accuracy_m,
-      at: r.created_at, local_day: r.local_day, review_note: r.review_note, first_report_id: r.first_report_id,
-      member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, paid_that_day: (paid || []).length,
+      at: r.created_at, local_day: r.local_day, review_note: r.review_note, first_report_id: r.first_report_id, sponsored: r.sponsored !== false,
+      member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, paid_that_day: (paid || []).length, paid_cap: Number((await bountyLimits()).daily_paid_cap) || 40,
       venue: r.ve_venues, item: r.ve_venue_items, spot: r.ve_venue_spots }, others, points: await reportPoints() });
   }
 
