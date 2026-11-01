@@ -3787,7 +3787,11 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   same day: "check and take them out"): the Supermarket Guide, the Dairy Guide's brands and recipe picks and a store's Vegan aisle leave
   out any brand whose `business_status` is CLOSED_PERMANENTLY (the product page still opens by link). That took out Om Sweet Home,
   Vlendedful, Parma! (eatparma.com no longer resolves) and NadaMoo! (nadamoo.com reads Opening Soon, no shop); Lavva, marked closed on
-  2026-10-25 with no note, was selling on lovvelavva.com and is open again (migration `20261101_lavva_open_again.sql`). Not yet: the
+  2026-10-25 with no note, was selling on lovvelavva.com and is open again (migration `20261101_lavva_open_again.sql`). **Every closed brand
+  checked the same day** (Sean: "check the other brands marked closed too"; migration `20261101_closed_brands_review.sql`): Calypso
+  Bites' store was live, so it is open again; Rhythm Superfoods' domain now serves an unrelated site, so it stays closed and its
+  website link was cleared; Sweet Earth Foods stays closed (Nestle's site refuses us, and VegNews finds it nowhere); Immaculate Vegan
+  (Sean) and NadaMoo! (Sean: "leave NadaMoo closed") stay closed. Not yet: the
   other Guides' recipe views.
 - **The Tracker** (Sean, 2026-11-01: "it should put it... as a pending item, so that way they can track it... show on their tracking list
   that it was approved and if they got any points for it... a history of it over time... maybe the tracker"; "show bounties as well...
