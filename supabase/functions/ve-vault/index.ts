@@ -163,8 +163,14 @@ Deno.serve(async (req) => {
     const test = /\[TEST\]/i.test(name);
     if (!test) await mail(TEAM, `Passport Challenge stop: ${l.name} for ${monthWords(month)}`,
       `<p><b>${esc(l.name)}</b> (${esc(l.address_city || '')}) applied to be a Passport Challenge stop in ${esc(monthWords(month))}, offering ${cfg.cards_per_slot} gift cards of $${cfg.card_cents / 100}.</p><p>Signed by ${esc(name)} (${esc(me.email || '')}).</p><p>Approve or decline in <a href="${SITE}/admin/depot/challenge-stops">Depot &gt; Passport Challenge stops</a> by the ${cfg.lock_day}th.</p>`, me.email || undefined);
-    if (!test && me.email) await mail(me.email, `You applied to be a Passport Challenge stop`,
-      `<p>Thank you. ${esc(l.name)} applied to be one of the five Passport Challenge stops in ${esc(monthWords(month))}.</p><p>Our team confirms the five by ${esc(new Date(deadlineFor(month, cfg.lock_day) + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric' }))}. If ${esc(l.name)} is picked, your membership opens, your page is yours, and your four $25 cards go into the Vault for our members on the 1st.</p><p>Vegans Explore team</p>`);
+    // Email D of the Passport Challenge offer (Earn your Passport part 5, 2026-11-01): what happens next, from the team.
+    const deadline = new Date(deadlineFor(month, cfg.lock_day) + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+    if (!test && me.email) await mail(me.email, `You applied to be a ${monthWords(month).split(' ')[0]} stop`,
+      `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a"><p>Hi ${esc(l.name)},</p>` +
+      `<p>We have your application for ${esc(monthWords(month).split(' ')[0])}. Here is what happens next:</p><ol style="padding-left:20px">` +
+      `<li>We choose the five stops by ${esc(deadline)} and email you either way.</li>` +
+      `<li>If you're chosen, your four cards go live in the Vault on the 1st, your page is yours, and your membership starts.</li>` +
+      `<li>Make sure your staff know the PIN you set. If someone leaves, reply to this email and we'll change it.</li></ol><p>Vegans Explore team</p></div>`, 'contact@lesaruss.com');
     return json({ ok: true, slot_id: ins.data.id, month, status: 'applied' });
   }
 

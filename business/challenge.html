@@ -182,7 +182,15 @@
       if (!slug) return finder();
       api({ action: 'offer', slug: slug }).then(function (d) { if (!d || !d.ok) { finder(); return; } O = d; draw(); }).catch(function () { document.getElementById('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; });
     }
-    function start() { if (!window.VEAuth) return setTimeout(start, 100); load(); }
+    // Stop these emails (the Passport Challenge offer's footer link, ve-nurture offer_stop).
+    function stop(code) {
+      document.getElementById('steps').innerHTML = '';
+      document.getElementById('view').innerHTML = '<div class="card" style="max-width:640px"><p class="sub">One moment...</p></div>';
+      fetch(SB + '/functions/v1/ve-nurture', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'offer_stop', code: code }) }).then(function (r) { return r.json(); }).then(function (d) {
+        document.getElementById('view').innerHTML = '<div class="card" style="max-width:640px"><h2>' + (d && d.ok ? 'Done. We will not email you about this again.' : 'That link did not work.') + '</h2><p class="sub">Questions? Write to contact@lesaruss.com.</p></div>';
+      });
+    }
+    function start() { if (qs.get('stop')) return stop(qs.get('stop')); if (!window.VEAuth) return setTimeout(start, 100); load(); }
     start();
   })();
   </script>
