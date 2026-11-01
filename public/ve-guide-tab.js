@@ -43,6 +43,10 @@
       banner: '/public/guides/nutrition-guide.jpg',
       line: 'What a Vegan plate needs, nutrient by nutrient, sourced, with Theo walking you through it.',
       items: ['B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc', 'How much, where to get it, and when to supplement', 'The physicians and health experts in our Directory', 'Our conversations with physicians on the podcast'], free: 'B12 free' },
+    'supermarket-guide': { tab: 'Supermarket Guide', title: 'The Supermarket Guide', guide: 'Pascal', paid: true, href: '/guides/supermarket-guide',
+      banner: '/public/guides/supermarket-guide.jpg?v=2', kicker: 'Find it in the store',
+      line: 'Every Vegan product in your supermarket, by what it is, and the aisle members found it in at your store, with Pascal walking you through it.',
+      items: ['Dairy-free, plant-based meat, meals, pantry and snacks, every product together', 'Narrow it by type, what it is made from, the brand and where it sits', 'The aisle at your store, mapped and kept current by members', 'Publix at Brickell Village free to everyone'] },
     'group-partner': { tab: 'Group Guide', title: 'The Group Partner Guide', guide: 'Dani', paid: false, href: '/groups/welcome',
       banner: '/groups/sample/img/brunch-1.jpg', bannerFallback: '/public/guides/welcome-guide.jpg?v=3',
       line: 'Host your group\'s community and events on Vegans Explore, and earn as it grows.',
@@ -60,6 +64,20 @@
     [['Activists', 'Nonprofits', 'Rescues', 'Sanctuaries'], 'nonprofit-guide'],
     [['Groups'], 'group-partner']
   ];
+  // The Supermarket Guide is the second card on a product brand's Guide tab (opening the category its products are in, filtered to
+  // the brand) and on a supermarket chain's (opening its stores) (Sean, 2026-11-01: "the supermarket guide should be referenced in
+  // its guide section. So everything kind of works back to each other"). Category keys are CATS in guide-scripts/supermarket-guide.js.
+  var SHELF_OF = [['dairy', 'dairy-free'], ['meat', 'protein'], ['tofu', 'protein'], ['seafood', 'protein'], ['egg', 'protein'], ['meals', 'meals'],
+    ['pantry', 'pantry'], ['protein', 'pantry'], ['snacks', 'snacks'], ['baked', 'snacks'], ['dips', 'snacks'], ['drinks', 'snacks']];
+  function shelfHref(l) {
+    var cats = [l.category].concat(l.extra_categories || []);
+    if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return '/guides/supermarket-guide#/stores';
+    if (cats.indexOf('Food Brands') < 0 && cats.indexOf('Nutrition & Supplements') < 0) return null;
+    var ks = l.product_kinds || [], c = null;
+    SHELF_OF.some(function (x) { if (ks.indexOf(x[0]) >= 0) { c = x[1]; return true; } return false; });
+    if (!c) c = cats.indexOf('Nutrition & Supplements') >= 0 ? 'pantry' : 'dairy-free';
+    return '/guides/supermarket-guide#/c/' + c + '?b=' + encodeURIComponent(l.slug || '');
+  }
   var RESTAURANT_CATS = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -73,7 +91,7 @@
     var slug = slugFor(l.category);
     if (!slug) (l.extra_categories || []).some(function (c) { return !!(slug = slugFor(c)); });
     slug = slug || 'welcome';
-    return { primary: slug, extra: RESTAURANT_CATS.indexOf(l.category) >= 0 ? 'vegan-restaurant-guide' : null };
+    return { primary: slug, extra: RESTAURANT_CATS.indexOf(l.category) >= 0 ? 'vegan-restaurant-guide' : null, shelf: shelfHref(l) };
   }
 
   // ---------- tracking (ve_promo_track, the same table as the house banners and the creator ad) ----------
@@ -136,8 +154,9 @@
     '@media(max-width:900px){.gt-card{grid-template-columns:1fr;gap:18px}}' +
     '@media(max-width:768px){.gt-pad{padding:24px 16px 32px}.gt-h{font-size:22px}}';
 
-  function card(slug, own, primary) {
+  function card(slug, own, primary, href) {
     var g = GUIDES[slug];
+    if (href) g = Object.assign({}, g, { href: href });
     var chips = own ? '<span class="gt-chip own">In your Guides</span>'
       : (g.paid ? '<span class="gt-chip">' + esc(PRICE) + '</span>' : '<span class="gt-chip">Free</span>') + (g.free && !own ? '<span class="gt-chip">' + esc(g.free) + '</span>' : '');
     var cta = own ? 'Open your Guide' : g.paid ? 'Open the Guide' : 'Start the ' + g.tab;
@@ -156,7 +175,8 @@
   }
 
   function draw(panel, l, slugs, owned, preview) {
-    panel.innerHTML = '<div class="gt-pad">' + slugs.map(function (s, i) { return card(s, !!owned[s], i === 0); }).join('') + '</div>';
+    var sh = pick(l).shelf;
+    panel.innerHTML = '<div class="gt-pad">' + slugs.map(function (s, i) { return card(s, !!owned[s], i === 0, s === 'supermarket-guide' ? sh : null); }).join('') + '</div>';
     if (preview) return;
     [].forEach.call(panel.querySelectorAll('[data-gt]'), function (c) {
       var s = c.getAttribute('data-gt');
@@ -172,6 +192,7 @@
     if (!document.getElementById('gt-css')) { var st = document.createElement('style'); st.id = 'gt-css'; st.textContent = CSS; document.head.appendChild(st); }
     var p = pick(l), slugs = [p.primary];
     if (p.extra && (opts.owner || opts.admin)) slugs.push(p.extra);
+    if (p.shelf && p.primary !== 'supermarket-guide') slugs.push('supermarket-guide');
     var g = GUIDES[p.primary];
     var btn = document.createElement('button');
     btn.className = 'tab-btn'; btn.type = 'button'; btn.setAttribute('data-tab', 'guide'); btn.setAttribute('role', 'tab'); btn.setAttribute('aria-selected', 'false');

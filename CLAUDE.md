@@ -3675,11 +3675,22 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   `ve_guides` row published ($11 or 1,100 points until a sponsor makes it free), indexed, its card in the Guide catalog after the
   Nutrition Guide (label Shopping, Brickell Village free), in the sitemap. Not yet: weekly specials, CPG spotlights in
   the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
-- **A section page narrows by type** (Sean, 2026-11-01): a search box and type chips with counts (`SEC_CHIPS` in
-  `guide-scripts/supermarket-guide.js`: cheese Shreds, Slices, Blocks, Cream cheese, Parmesan, Spreads, Feta; milk by what it is made
-  from, Oat, Almond, Soy, Coconut...; brand-only sections from their brands' `product_kinds`). A chip with no products, or with every
-  product, is not drawn (Blocks shows once a block cheese is in `ve_products`). Products to look for and Brands that make it each show
-  three rows of 94 px tiles and scroll inside (`.sg-pbox`).
+- **By what it is** (Sean, 2026-11-01: "put dairy, meat... when you click on that, we have all the products together... sort it by the
+  type... almond, oat... even banana... then you go into the brand"; migration `20261101_supermarket_categories.sql`). A store's spots are
+  six categories (Dairy-free, Plant-based meat and protein, Ready meals, Pantry, Snacks and sweets, Produce) and its items 22 types inside
+  them (Milk, Coffee creamer, Yogurt... Fruit), each the thing members map, its aisle at that store in the item's description
+  (`ve_supermarket_seed_store`; every store reseeded the same day, before any report existed). `CATS` and `TYPES` in
+  `guide-scripts/supermarket-guide.js` give each type where it usually sits (refrigerated, frozen, aisles and shelves, produce), its
+  picture and what fills it: the Guides' products by `product_type` (the Dairy Guide's, one table for both Guides) or Food Brands by
+  `product_kinds`. The store page has **By what it is** (six category tiles) and **By where it is** (`#/store/<slug>/where`, the types by
+  zone). A category (`#/store/<slug>/c/<key>`, tabs, a dropdown on phones) shows every product together with a search, Type chips (Cheese
+  adds Shreds, Slices, Blocks, Spreads, Parmesan, Feta), Made from (`BASES`, read from `made_from`; Banana appears once a banana product
+  exists), Brand and Where in the store, all in the address (`?t= &s= &m= &b= &w= &q=`); choices come from what the other filters leave.
+  Products and Brands each show three rows of 94 px tiles and scroll inside; each type's aisle line follows them (above them when one type
+  is picked). **Links back**: a product opens `/products/<slug>` and its brand; a Food Brand's Guide tab adds the Supermarket Guide card
+  opening its category filtered to the brand (`shelfHref` in `public/ve-guide-tab.js`), a chain's opens Stores; a product page's Where to
+  find it links to its type and brand (`shelfLink` in `public/ve-product-view.js`). `#/c/<key>?...` opens the shopper's last store
+  (`localStorage` `sg_store`), else Brickell Village. Today only Dairy-free has individual products; the rest show their brands.
 - **Smaller incentives without a sponsorship** (Sean, 2026-11-01: "go with your defaults"; migration
   `20261101_supermarket_standard_points.sql`). A store whose chain has an active Title or Partner sponsorship (`ve_venue_sponsored`,
   `sponsoredChains` in `ve-venues`) pays the full `ve_venue_report_points` and the first-to-confirm bounty; every other store pays the
