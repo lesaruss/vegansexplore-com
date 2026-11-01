@@ -531,9 +531,13 @@ Deno.serve(async (req) => {
     if (!ops) {
       const sub = token ? await verifyToken(token) : null;
       if (!sub) return json({ error: 'not_authenticated' }, 401);
-      const { data: me } = await db.from('members').select('is_superadmin, first_name, last_name').eq('id', sub).maybeSingle();
+      // members has one name column (no first_name / last_name): "Sean A. Russell" reads as "Sean R." on notes and history.
+      const { data: me, error: meErr } = await db.from('members').select('is_superadmin, name').eq('id', sub).maybeSingle();
+      if (meErr) console.error('ve-social members:', meErr.message);
       if (!me) return json({ error: 'not_authenticated' }, 401);
-      who.admin = !!me.is_superadmin; who.id = sub; who.name = [me.first_name, me.last_name ? String(me.last_name)[0] + '.' : ''].filter(Boolean).join(' ') || 'A team member';
+      const parts = String(me.name || '').trim().split(/\s+/).filter(Boolean);
+      who.admin = !!me.is_superadmin; who.id = sub;
+      who.name = parts.length ? parts[0] + (parts.length > 1 ? ' ' + parts[parts.length - 1][0] + '.' : '') : 'A team member';
     }
     if (body.action !== 'report') {
       const out = await studio(body, who);
