@@ -1845,7 +1845,10 @@ the member answers **What did you find?** (open and serving / closed or gone, `v
 and Depot > Bounties shows the answer with a **Listing** choice beside Approve and pay (the reviewer can change it from the photos). Approving
 runs `applyCheck` in `ve-bounties`: open puts the place back on the Directory (`ve_listing_set_state` live, 90 days off the nightly hold),
 closed takes it off as Removed, each with a note naming the visit and the day, once per submission (`check_applied_at`). A new "Is it still
-open?" job needs `check_listing_id` set. **Closed comes
+open?" job needs `check_listing_id` set. **Announced in each chapter's Daily Pulse** (Sean, 2026-11-01: "post the bounty in the Daily Pulse"): nine
+draft topics, one a chapter ("Is it still open? 50 points a stop in <city>", a See the places button to
+`/bounties?community=<city>&campaign=still-open-<city>`, the first reply set), status draft with no `auto_publish_at`, so they wait in the
+Pulse desk (Depot > Inbox) until published by hand and never go out on their own. **Closed comes
 off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
 don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
 hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
