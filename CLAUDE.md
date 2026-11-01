@@ -3625,7 +3625,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 ## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
-`20261101_supermarket_guide_canon.sql`). **Built and launched 2026-11-01** (below). Sean: "a doorway where the community will always know where to find these
+`20261101_supermarket_guide_canon.sql`). **Built 2026-11-01; prelaunch, members only** (below). Sean: "a doorway where the community will always know where to find these
 vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
 they're buying their spot in this massive campaign that starts in Q1."
 
@@ -3681,9 +3681,13 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
   `noindex`): the Guide with a live store, the three tiers, the Q1 2027 campaign, the 2027 story (as plans), Front Row Start, and Email our
-  team. **Launched 2026-11-01** (Sean: "launch the Supermarket Guide"; migration `20261101_supermarket_guide_launch.sql`): the
-  `ve_guides` row published ($11 or 1,100 points until a sponsor makes it free), indexed, its card in the Guide catalog after the
-  Nutrition Guide (label Shopping, Brickell Village free), in the sitemap. Not yet: weekly specials, CPG spotlights in
+  team. **Prelaunch, members only** (Sean, 2026-11-01, after a launch earlier the same day: "The Supermarket Guide is prelaunch. Only
+  members can see it... I'm really shopping into supermarkets to launch later on"; migration `20261101_supermarket_guide_prelaunch.sql`):
+  the `ve_guides` row unpublished (not sold, the page reads Coming soon), `noindex`, out of the sitemap, and its catalog card Coming soon
+  for signed-in members only; Brickell Village stays open by link for the pitch. **The plan**: every supermarket on as a sponsor before Q1
+  2027, so their stores are mapped across the country; at launch members flood the stores to catalog what is there and know it is there,
+  and a sponsorship unlocks specials pushed to the community, content creation, campaigns that reach further, our events and support for
+  nonprofits: the more they sponsor, the further we both go. Not yet: weekly specials, CPG spotlights in
   the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
 - **By what it is** (Sean, 2026-11-01: "put dairy, meat... when you click on that, we have all the products together... sort it by the
   type... almond, oat... even banana... then you go into the brand"; migration `20261101_supermarket_categories.sql`). A store's spots are
