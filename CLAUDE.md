@@ -1834,7 +1834,13 @@ vouch for it (its Google place, a street and hours, Google not saying closed); i
 the 87 held for a dead website or no socials were checked on Google (78 Place Details calls): 34 open with 50 or more reviews and one
 since May 2026 went back, 6 Google calls permanently closed were Removed (Sean: "remove any"), 2 temporarily closed and 36 with few or
 old reviews stay on hold; Google lists no website for most, so a website alone cannot vet them (its reviews field is its five most
-helpful, not the newest). Those 36 stay on hold for now (Sean: "keep those where they are... a bounty to give people things to do"). **Closed comes
+helpful, not the newest). Those 36 stay on hold for now (Sean: "keep those where they are... a bounty to give people things to do"). **They are a bounty** (Sean, 2026-11-01: "Make the 36 on hold a
+bounty"; migration `20261101_bounty_still_open.sql`): **Is it still open?**, one Bounties campaign a chapter (`still-open-<chapter>`, nine:
+Atlanta 7, South Florida, London and Philadelphia 5, New York 4, North Florida, Los Angeles and Virginia 3, Central Florida 1), one job a
+place ("Is <name> still open?", the address and a Google Maps link by its place, since a held listing's page does not open), in person:
+the outside today, and if open the menu, counter or receipt and the hours on the door; closed counts too. 50 points, one person each,
+until 2026-12-01 (Logan's defaults, Sean's to change). Approved in Depot > Bounties; the team then puts the place back or marks it closed
+in Directory review. **Closed comes
 off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
 don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
 hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
