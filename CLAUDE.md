@@ -3813,6 +3813,39 @@ the $11 Passport or a membership earned now; no free account that can take part,
   deadline; at most one a week otherwise; London consent box; paying ends the track. Reuse the outreach people-list engine.
 - **Build order (Logan)**: the check-in menu; the business sign-up, agreement, cards, PIN and Vault for the South Florida pilot; the Taster
   account and sampler; the challenges; the follow-ups and emails; the content gig; the business points rule.
+- **Built and live 2026-11-01, parts 1 and 2** (Sean: "Logan, build it"):
+  - **1. The check-in menu** (migration `20261101_checkin_actions.sql`, `ve-checkin` from commit 8ce1037, source sha256 matched). After I'm
+    here the listing opens **What are you doing here today?** (`openMenu` in `directory/listing.html`; the button reads Checked in · what
+    now? and reopens it): What I ordered and I bought something (a photo shrunk to 1600 px, uploaded only while the check-in is open, private
+    bucket `checkin-photos`), Post it (an Instagram or TikTok link), a shout-out (10 to 280 characters, a positive prompt) and the bounties
+    open at that place (`check_listing_id`, `visit_listing_id`, `partner_listing_id`). One of each per check-in, open for `window_hours` (3)
+    after I'm here; rows in `ve_checkin_actions` (RLS on, no policies). Nothing pays until the team approves it in **Depot > Check-ins**
+    (`/admin/depot/checkins`, Directory in the Go to menu): Approve pays `ve_site_settings` `checkin_actions` (meal 15, receipt 25, post 25,
+    shout-out 10) through `ve_points_grant` reason `checkin`, ref `checkin-action:<id>`; an approved shout-out shows on the listing under
+    **What members say**. `ve_checkin_save` now returns `checkin_id` and pays an owner nothing at their own place, and `act` refuses them.
+    `ve-checkin` actions `today`, `photo_start`, `act`, `review_list`, `review`.
+  - **2. Passport Challenge stops, the cards and the Vault** (migrations `20261101_passport_challenge_stops_vault.sql`,
+    `20261101_vault_owner_no_bid.sql`; edge function `ve-vault` from commit 3ea6ed1, sha256 matched). **`/business/challenge`**
+    (`business/challenge.html`, `?listing=<slug>`, else a search): The offer (slots left in the chapter for the month still open: next month
+    until the 10th, then the month after; the deadline; what they get), Your card (how it looks on a member's phone), The agreement (version
+    2026-11-01: the terms, full name, a 4 to 6 digit staff PIN, I agree; an account is made at the button with `VE_ACTIVATE_HANDLER`, so no $11
+    window), Sent. `ve_pc_slots` keeps the signature, IP, version and the PIN as sha256 of `<slot>:<pin>`; South Florida only
+    (`passport_challenge.pilot_chapters`); the team and the business are emailed (a name with [TEST] sends nothing). **Depot > Passport
+    Challenge stops** (`/admin/depot/challenge-stops`): by month and chapter, Pick them (up to five) or Not this month, each emailing the
+    business, and Settle the Vault now. Picking (`ve_pc_slot_approve`) admits the signer (`ve_member_admit`, Founding before 2027-01-01 by
+    `entry_paid_at`), makes them the listing's owner when nobody owns it (claim `verified`) and makes four `ve_vault_cards` that open on the
+    1st at midnight Eastern with a week's bidding. **`/vault`** (`vault/index.html`, public): cards by chapter, the top bid and time left,
+    Bid for members (`ve_vault_bid`: at least 100 points, above their own last bid, within their balance, never on their own place's cards),
+    Your cards (the code, Good until, and **Use this card**: staff type the PIN on the member's phone, used once), and the stops. Cron
+    `ve-vault-settle` (every 15 minutes, `ve_vault_settle`): opens cards on their day, gives a closed auction to the highest bid (earliest on a
+    tie) whose member is active, still has the points and has not won this month, takes the points then (`points_ledger` reason
+    `redemption`, ref `vault:<card>`), sets a code and an expiry 12 months out; no winner, another week. The Vegan Restaurant Guide's
+    Promotions has **Be a Passport Challenge stop** (Live, Get started opens `/business/challenge`). Proven 2026-11-01 on Love Life Cafe with
+    the Logan test account and Sean's (every guard, a pick, the claim, cards opened early, bids, a settle charging only the winner, a wrong and
+    a right PIN, a second use and a second win in a month refused, owner bidding refused, the pages in a browser), then every row removed and
+    Love Life Cafe put back unclaimed.
+  - **Still to build**: 3. the Taster account and the sampler, 4. the three challenges, 5. the two-day business follow-up and the
+    not-ready-yet emails, 6. the content gig, 7. the business points rule. The check-in for Tasters waits on 3.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
