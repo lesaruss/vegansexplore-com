@@ -2520,8 +2520,9 @@
     var mount = document.getElementById('dash-media-mount');
     if (!mount || dashMediaBanner || !window.VEMedia || !window.VECityBanner) return;
     var media = null;
-    dashMediaBanner = VECityBanner.mount('dash-media-hero', VEMedia.bannerOptions({ key: 'dash-media', param: false,
-      home: { label: 'Media home', href: '/dashboard/media', onClick: function () { dashMediaBanner.set(VEMedia.TYPES[0].key); } },
+    // The kind of media is in the address while the Media tab shows (Sean, 2026-11-01): /dashboard/media?type=books.
+    dashMediaBanner = VECityBanner.mount('dash-media-hero', VEMedia.bannerOptions({ key: 'dash-media', param: 'type', path: '/dashboard/media',
+      home: { label: 'Media home', href: '/dashboard/media', onClick: function () { if (location.search) history.pushState(history.state, '', '/dashboard/media'); dashMediaBanner.set(VEMedia.TYPES[0].key); } },
       onChange: function (type) { if (media) media.setType(type); } }));
     media = VEMedia.mount(mount, { type: dashMediaBanner.current(), onInteract: function () { dashMediaBanner.autoFold(); },
       onOpenListing: function (slug, name) { if (window.activateDashTab) window.activateDashTab('directory', { skipHistory: true }); openDashboardListing(slug, name); } });
@@ -2947,7 +2948,8 @@
       });
       dashEvBanner.setChoices([{ value: '', label: 'All events' }], '', function () {}, 'Kind of event');
       dashEvCal = VEEvents.mount(mount, {
-        key: 'dash-events', urlState: false, filterMenu: true, city: slug, onInteract: function () { dashEvBanner.autoFold(); },
+        // Its own address while the Events tab shows (Sean, 2026-11-01): /dashboard/events?cat=&when=past&event=<id>.
+        key: 'dash-events', url: '/dashboard/events', filterMenu: true, city: slug, onInteract: function () { dashEvBanner.autoFold(); },
         onState: function (s) {
           dashEvBanner.setChoices(s.kinds, s.cat, function (k) { dashEvBanner.autoFold(); dashEvCal.setCat(k); }, 'Kind of event');
           dashEvBanner.setLabel(s.catLabel + (s.location ? ' \u00b7 ' + s.location : ''));

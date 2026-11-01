@@ -18,7 +18,7 @@
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m Pascal. Pick your supermarket and I\'ll show you where the Vegan items are, aisle by aisle, the way our members mapped it.',
       sayMember: 'It\'s all yours. Pick your store, save what you need to your shopping list, and tell us where things are to earn points.' },
-    { k: 'stores', label: 'Stores', say: 'Find your store by city or by where you are. Each one lists its Vegan sections and the aisle members found them in. Brickell Village in Miami is open to everyone.',
+    { k: 'stores', label: 'Stores', say: 'Find your store by city or by where you are. Each one opens by what it is, dairy-free, plant-based meat, meals, pantry, snacks and produce, with every product together and the aisle members found it in. Brickell Village in Miami is open to everyone.',
       sayMember: 'Find your store, then tap Save on what you need. If an aisle is not mapped yet, you can be the first to tell us.' },
     { k: 'list', label: 'Shopping list', mine: 1, say: 'Everything you save lands here as a shopping list, by store and aisle, with a box to tick as you go.' },
     { k: 'produce', label: 'Produce', say: 'The produce section is where a Vegan basket starts. Here is what is worth buying and why.' },
@@ -209,31 +209,60 @@
     if (!owner() || !token()) return '';
     return '<button type="button" class="dg-save' + (on ? ' on' : '') + '" data-save="' + kind + '" data-key="' + esc(key) + '" aria-pressed="' + !!on + '">' + BOOKMARK + '<span>' + (on ? 'On my list' : 'Add to list') + '</span></button>';
   }
-  // Department icons and section photos (Sean, 2026-11-01: "icons... square rounded corners... thumbnails with photos of those items").
-  // Every store has the same template (ve_supermarket_seed_store), so pictures key off the name; a member's accepted photo wins.
-  var DEPT_ICON = {
-    'Refrigerated': '<path d="M6 3h12v18H6z"/><path d="M6 10h12M9 6v2M9 13v3"/>',
-    'Frozen': '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M9.5 4.5 12 6l2.5-1.5M9.5 19.5 12 18l2.5 1.5"/>',
-    'Pantry': '<path d="M7 7h10v14H7z"/><path d="M8 3h8v4H8zM7 12h10"/>',
-    'Snacks': '<path d="M6 3h12l-1 4 1 14H6l1-14z"/><path d="M9 11c1 1.5 5 1.5 6 0"/>'
+  // ---------- the store, by what it is (Sean, 2026-11-01) ----------
+  // "Put dairy, meat. And then when you click on that, we have all the products together... sort it by the type. Almond, oat,
+  // whatever, even banana... the type of dairy product, milk, butter, cream cheese, coffee creamer... then you go into the brand";
+  // and "refrigerated, frozen, aisles or shelves, and produce to show where things are in the store". A store's spots are six
+  // categories and its items the types inside them (ve_supermarket_seed_store, the same template at every store); a type is what
+  // members map, its aisle at this store in the item's description. CATS and TYPES below are keyed by those names.
+  var CATS = [
+    { k: 'dairy-free', name: 'Dairy-free', img: 'milk', icon: 'cart', kinds: ['dairy'], line: 'Milk, creamer, yogurt, butter, cheese and ice cream' },
+    { k: 'protein', name: 'Plant-based meat and protein', img: 'meat', icon: 'cart', kinds: ['meat', 'tofu', 'seafood', 'egg'], line: 'Burgers, chicken, sausage, tofu and tempeh' },
+    { k: 'meals', name: 'Ready meals', img: 'frozen-meals', icon: 'cart', kinds: ['meals'], line: 'Frozen and fresh meals, ready to heat' },
+    { k: 'pantry', name: 'Pantry', img: 'beans', icon: 'cart', kinds: ['pantry', 'protein'], line: 'Beans, lentils, nut butters and protein powder' },
+    { k: 'snacks', name: 'Snacks and sweets', img: 'snacks', icon: 'cart', kinds: ['snacks', 'baked', 'dips', 'drinks'], line: 'Chips, cookies, treats, hummus and dips' },
+    { k: 'produce', name: 'Produce', img: '', icon: 'leaf', kinds: [], line: 'Fruit, vegetables, greens and herbs' }
+  ];
+  // Each type: where it usually sits (cold, frozen, shelf, produce), its picture, and what fills it: the Guides' products by
+  // product_type (ve_products) or the Directory's Food Brands by what they make (listings.product_kinds).
+  var TYPES = {
+    'Milk': { zone: 'cold', img: 'milk', types: ['Milk'] }, 'Coffee creamer': { zone: 'cold', img: 'milk', types: ['Coffee Creamer'] },
+    'Yogurt': { zone: 'cold', img: 'yogurt', types: ['Yogurt'] }, 'Sour cream': { zone: 'cold', img: 'yogurt', types: ['Sour Cream'] },
+    'Butter': { zone: 'cold', img: 'butter', types: ['Butter'] },
+    'Cheese': { zone: 'cold', img: 'cheese', types: ['Shredded Cheese', 'Cheese Slices', 'Cheese Blocks', 'Cheese Spreads', 'Parmesan', 'Feta'] },
+    'Cream cheese': { zone: 'cold', img: 'cheese', types: ['Cream Cheese'] }, 'Ice cream': { zone: 'frozen', img: 'ice-cream', types: ['Ice Cream'] },
+    'Fresh plant-based meat': { zone: 'cold', img: 'meat', kinds: ['meat'] }, 'Frozen plant-based meat': { zone: 'frozen', img: 'frozen-meat', kinds: ['meat'] },
+    'Tofu and tempeh': { zone: 'cold', img: 'tofu', kinds: ['tofu'] },
+    'Frozen meals': { zone: 'frozen', img: 'frozen-meals', kinds: ['meals'] }, 'Refrigerated meals': { zone: 'cold', img: 'frozen-meals', kinds: ['meals'] },
+    'Beans and lentils': { zone: 'shelf', img: 'beans', kinds: ['pantry'] }, 'Nut butters': { zone: 'shelf', img: 'nut-butter', kinds: ['pantry'] },
+    'Protein powder': { zone: 'shelf', img: 'protein', kinds: ['protein'] },
+    'Chips and snacks': { zone: 'shelf', img: 'snacks', kinds: ['snacks'] }, 'Cookies and treats': { zone: 'shelf', img: 'cookies', kinds: ['baked'] },
+    'Hummus and dips': { zone: 'cold', img: 'dips', kinds: ['dips'] },
+    'Fruit': { zone: 'produce' }, 'Vegetables': { zone: 'produce' }, 'Leafy greens and herbs': { zone: 'produce' }
   };
-  function deptIcon(name) {
-    var d = DEPT_ICON[name] || '<circle cx="12" cy="12" r="8"/>';
-    return '<span class="sg-dicon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg></span>';
-  }
-  var SEC_IMG = { 'Plant-based milk': 'milk', 'Plant-based yogurt': 'yogurt', 'Vegan cheese': 'cheese', 'Vegan butter and spreads': 'butter',
-    'Tofu and tempeh': 'tofu', 'Fresh plant-based meat': 'meat', 'Hummus and dips': 'dips', 'Frozen plant-based meat': 'frozen-meat',
-    'Frozen Vegan meals': 'frozen-meals', 'Non-dairy ice cream': 'ice-cream', 'Beans and lentils': 'beans',
-    'Plant-based protein powder': 'protein', 'Nut butters': 'nut-butter', 'Vegan snacks and chips': 'snacks', 'Vegan cookies and treats': 'cookies' };
+  var ZONES = [['cold', 'Refrigerated'], ['frozen', 'Frozen'], ['shelf', 'Aisles and shelves'], ['produce', 'Produce']];
+  function zoneName(z) { for (var i = 0; i < ZONES.length; i++) if (ZONES[i][0] === z) return ZONES[i][1]; return ''; }
+  // Finer cheese kinds, and the plain words for a product_type.
+  var SUBTYPE = { 'Shredded Cheese': 'Shreds', 'Cheese Slices': 'Slices', 'Cheese Blocks': 'Blocks', 'Cheese Spreads': 'Spreads', 'Parmesan': 'Parmesan', 'Feta': 'Feta' };
+  // What a product is made from, read from ve_products.made_from. A base shows as a filter only once a product carries it, so a
+  // banana milk adds Banana by itself.
+  var BASES = [['Oat', /\boats?\b/i], ['Almond', /almond/i], ['Soy', /\bsoy/i], ['Coconut', /coconut/i], ['Cashew', /cashew/i], ['Macadamia', /macadamia/i],
+    ['Hazelnut', /hazelnut/i], ['Walnut', /walnut/i], ['Pistachio', /pistachio/i], ['Pili nut', /\bpili/i], ['Pea protein', /\bpea\b/i], ['Flax', /flax/i],
+    ['Hemp', /hemp/i], ['Rice', /\brice\b/i], ['Banana', /banana/i], ['Potato', /potato/i], ['Beans', /\bbeans?\b|chickpea|lupin/i],
+    ['Sunflower', /sunflower/i], ['Sesame', /sesame/i], ['Quinoa', /quinoa/i], ['Plant oils', /\boils?\b|olive|avocado/i], ['Tofu', /tofu/i]];
+  function basesOf(s) { return BASES.filter(function (b) { return b[1].test(s || ''); }).map(function (b) { return b[0]; }); }
+  function catOf(k) { for (var i = 0; i < CATS.length; i++) if (CATS[i].k === k) return CATS[i]; return null; }
+  function catByName(n) { for (var i = 0; i < CATS.length; i++) if (CATS[i].name === n) return CATS[i]; return null; }
+  function typeOfProduct(pt) { for (var n in TYPES) if ((TYPES[n].types || []).indexOf(pt) >= 0) return n; return null; }
+
   function secThumb(it) {
-    var k = SEC_IMG[it.name], src = it.photo_url || (k ? '/public/guides/supermarket/' + k + '.jpg' : '');
-    if (!src) return '<span class="sg-thumb sg-thumb-x" aria-hidden="true"></span>';
+    var t = TYPES[it.name], k = t && t.img, src = it.photo_url || (k ? '/public/guides/supermarket/' + k + '.jpg' : '');
+    if (!src) return '<span class="sg-thumb sg-thumb-x" aria-hidden="true"><span class="sg-thumb-i">' + ICON.leaf + '</span></span>';
     return '<span class="sg-thumb"><img src="' + esc(src) + '" alt="" width="64" height="64" loading="lazy" decoding="async"></span>';
   }
-  function itemRow(v, it) {
-    return '<div class="sa-item"><a class="sg-ilink" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '">' + secThumb(it) + '</a><div class="sa-item-b"><a class="sg-iname" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '"><b>' + esc(it.name) + '</b></a>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
-      '<div class="sa-vtags" style="margin:0 0 6px">' + freshTag(it) + '</div>' + (prodCount(it) ? '<a class="sg-see" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '">See ' + prodCount(it) + ' products to look for</a>' : '') + '</div>' +
-      '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) + '<a class="sa-mini" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>' + commentsHtml(it) + '</div>';
+  function catThumb(c) {
+    if (!c.img) return '<span class="sg-thumb sg-thumb-x" aria-hidden="true"><span class="sg-thumb-i">' + ICON[c.icon] + '</span></span>';
+    return '<span class="sg-thumb"><img src="/public/guides/supermarket/' + c.img + '.jpg" alt="" width="64" height="64" loading="lazy" decoding="async"></span>';
   }
   function commentsHtml(it) {
     var cs = it.comments || [];
@@ -243,25 +272,24 @@
         '<p>&ldquo;' + esc(c.note || '') + '&rdquo;<span>' + esc(c.member || 'A member') + ' &middot; ' + esc(fmtDate(c.at)) + '</span></p></div>';
     }).join('') + '</div>';
   }
-  function deptCard(v, s, open) {
-    var body = open ? (s.items.length ? s.items.map(function (it) { return itemRow(v, it); }).join('') : '<p class="dg-empty">Nothing listed here yet.</p>')
-      : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
-    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div class="sg-dh">' + deptIcon(s.name) + '<div><h3>' + esc(s.name) + '</h3>' + (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div></div></div>' + body + '</div>';
+  // One type at this store: where it usually is, the aisle members mapped (the item's description), and Update.
+  function aisleRow(v, it, catName, link) {
+    var t = TYPES[it.name] || {}, z = zoneName(t.zone);
+    return '<div class="sa-item sg-aisle">' + (link ? '<a class="sg-ilink" href="' + link + '">' + secThumb(it) + '</a>' : secThumb(it)) +
+      '<div class="sa-item-b">' + (link ? '<a class="sg-iname" href="' + link + '"><b>' + esc(it.name) + '</b></a>' : '<b>' + esc(it.name) + '</b>') +
+      '<p class="sg-zline">' + esc(z) + (catName ? ' &middot; ' + esc(catName) : '') + '</p>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
+      '<div class="sa-vtags" style="margin:0">' + freshTag(it) + '</div></div>' +
+      '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) + '<a class="sa-mini" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>' + commentsHtml(it) + '</div>';
   }
-  // Products to look for (Sean, 2026-11-01: "How do we see the actual products?"). A section is a place in the store; what fills it
-  // comes from what we already hold: the Guides' products (ve_products, the Dairy Guide's milks, cheeses, yogurts...) by product type,
-  // and the Directory's Food Brands by what they make (listings.product_kinds) where no Guide covers the section yet. A product the
-  // Guides place at this chain (ve_product_stores) is marked Seen at <chain>; the rest are what to look for, until members confirm.
-  var SEC_PRODUCTS = {
-    'Plant-based milk': { types: ['Milk', 'Coffee Creamer'] }, 'Plant-based yogurt': { types: ['Yogurt', 'Sour Cream'] },
-    'Vegan cheese': { types: ['Cheese Slices', 'Shredded Cheese', 'Cheese Spreads', 'Cream Cheese', 'Feta', 'Parmesan'] },
-    'Vegan butter and spreads': { types: ['Butter'] }, 'Non-dairy ice cream': { types: ['Ice Cream'] },
-    'Fresh plant-based meat': { kinds: ['meat'] }, 'Frozen plant-based meat': { kinds: ['meat', 'frozen'] },
-    'Frozen Vegan meals': { kinds: ['meals', 'frozen'] }, 'Vegan snacks and chips': { kinds: ['snacks'] },
-    'Vegan cookies and treats': { kinds: ['baked', 'snacks'] }, 'Plant-based protein powder': { kinds: ['protein'] },
-    'Beans and lentils': { kinds: ['pantry'] }, 'Nut butters': { kinds: ['pantry'] }, 'Tofu and tempeh': { kinds: ['tofu'] },
-    'Hummus and dips': { kinds: ['dips'] }
-  };
+
+  // The same, one line each, above a category's products: the type, where it usually sits, the aisle, Update.
+  var NOT_MAPPED = 'Aisle not mapped yet. Be the first to tell us where it is in this store.';
+  function aisleMini(v, it) {
+    var t = TYPES[it.name] || {}, mapped = it.description && it.description !== NOT_MAPPED;
+    return '<div class="sg-amini"><span class="sg-amini-b"><b>' + esc(it.name) + '</b><span>' + esc(zoneName(t.zone)) + ' &middot; ' +
+      (mapped ? esc(it.description) : 'Aisle not mapped yet') + (it.freshness === 'fresh' ? ' &middot; checked ' + esc(fmtDate(it.last_confirmed_at)) : '') + '</span></span>' +
+      (bountyTag(it) || '') + '<a class="sa-mini" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>';
+  }
   var PROD = null, PROD_WAIT = null, CHAIN_HAS = {};
   function rest(path) { return fetch(SB + '/rest/v1/' + path, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }); }
   function loadProducts() {
@@ -287,130 +315,187 @@
       return rest('ve_product_stores?select=product_id&removed_at=is.null&store_listing_id=eq.' + r[0].id);
     }).then(function (rows) { var m = {}; (rows || []).forEach(function (x) { m[x.product_id] = 1; }); CHAIN_HAS[chain.slug] = m; return m; });
   }
-  function forSection(name) {
-    var cfg = SEC_PRODUCTS[name] || {};
+  function pTitle(p) { var b = p.listings ? p.listings.name : ''; return p.name ? p.name : (b + ' ' + (p.product_type || '')).trim(); }
+
+  // Everything in a category as one list of rows, products and brands alike, each with the same facets: its store types, where it
+  // sits, what it is made from, its brand. The filters then work the same on both.
+  function catRows(cat, typeNames) {
     if (!PROD) return { products: [], brands: [] };
-    var products = cfg.types ? PROD.products.filter(function (p) { return cfg.types.indexOf(p.product_type) >= 0; }) : [];
-    var brands = cfg.kinds ? PROD.brands.filter(function (b) { return (b.product_kinds || []).some(function (k) { return cfg.kinds.indexOf(k) >= 0; }); }) : [];
+    var products = [], byBrand = {};
+    PROD.products.forEach(function (p) {
+      var tn = typeOfProduct(p.product_type);
+      if (!tn || typeNames.indexOf(tn) < 0) return;
+      var b = p.listings || {};
+      var row = { kind: 'p', p: p, title: pTitle(p), brand: b.slug, brandName: b.name || '', types: [tn], sub: SUBTYPE[p.product_type] || '', zones: [TYPES[tn].zone],
+        bases: basesOf(p.made_from), votes: b.vote_count || 0, text: [pTitle(p), b.name, p.product_type, p.made_from, tn].join(' ') };
+      products.push(row);
+      var bb = byBrand[b.slug] || (byBrand[b.slug] = { types: [], zones: [], bases: [] });
+      [['types', row.types], ['zones', row.zones], ['bases', row.bases]].forEach(function (f) { f[1].forEach(function (x) { if (bb[f[0]].indexOf(x) < 0) bb[f[0]].push(x); }); });
+    });
+    var brands = [];
+    PROD.brands.forEach(function (b) {
+      var own = byBrand[b.slug];
+      var kts = typeNames.filter(function (tn) { return (TYPES[tn].kinds || []).some(function (k) { return (b.product_kinds || []).indexOf(k) >= 0; }); });
+      var inCat = own || kts.length || (cat.kinds || []).some(function (k) { return (b.product_kinds || []).indexOf(k) >= 0; });
+      if (!inCat) return;
+      var types = own ? own.types : kts;
+      brands.push({ kind: 'b', b: b, title: b.name, brand: b.slug, brandName: b.name, types: types, sub: '', zones: own ? own.zones : types.map(function (t) { return TYPES[t].zone; }),
+        bases: own ? own.bases : [], votes: b.vote_count || 0, n: own ? products.filter(function (r) { return r.brand === b.slug; }).length : 0,
+        text: [b.name].concat(types, (b.product_kinds || [])).join(' ') });
+    });
     return { products: products, brands: brands };
   }
-  function prodCount(it) { var f = forSection(it.name); return f.products.length + f.brands.length; }
-  function pTitle(p) { var b = p.listings ? p.listings.name : ''; return p.name ? p.name : (b + ' ' + (p.product_type || '')).trim(); }
-  function prodTile(p, has, chainName) {
-    var b = p.listings || {}, pic = p.image_url || b.logo_url;
+  function prodTile(r, has, chainName) {
+    var p = r.p, b = p.listings || {}, pic = p.image_url || b.logo_url;
     return '<a class="sg-ptile" href="/products/' + esc(p.slug) + '"><span class="sg-thumb">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
-      '<span class="sg-pb"><b>' + esc(pTitle(p)) + '</b><em>' + esc(b.name || '') + (p.product_type ? ' &middot; ' + esc(p.product_type) : '') + '</em>' +
+      '<span class="sg-pb"><b>' + esc(r.title) + '</b><em>' + esc(b.name || '') + ' &middot; ' + esc(r.sub || r.types[0]) + (r.bases.length ? ' &middot; ' + esc(r.bases.join(', ')) : '') + '</em>' +
       (has ? '<span class="dg-tag sa-tag-fresh">Seen at ' + esc(chainName) + '</span>' : '') + '</span></a>';
   }
-  function brandTile(b) {
+  function brandTile(r) {
+    var b = r.b;
     return '<a class="sg-ptile" href="/directory/' + esc(b.slug) + '"><span class="sg-thumb">' + (b.logo_url ? '<img src="' + esc(b.logo_url) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
-      '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>Brand on Vegans Explore' + (b.vote_count ? ' &middot; ' + b.vote_count + ' votes' : '') + '</em></span></a>';
+      '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>' + (r.n ? r.n + (r.n === 1 ? ' product' : ' products') + ' here' : esc(r.types.join(', ') || 'Brand on Vegans Explore')) + (r.votes ? ' &middot; ' + r.votes + (r.votes === 1 ? ' vote' : ' votes') : '') + '</em></span></a>';
   }
-  // Types on a section page (Sean, 2026-11-01: "let people narrow the products by type"). Each chip is a test on a Guide product
-  // (product_type, made_from) or a brand (product_kinds); a chip with nothing behind it is not drawn, so a new product type or
-  // brand shows up by itself once it is in the data. Brand-only sections get their chips from what their brands make.
-  function mf(re) { return function (x) { return re.test(x.made_from || ''); }; }
-  function ty(t) { var a = [].concat(t); return function (x) { return a.indexOf(x.product_type) >= 0; }; }
-  var SEC_CHIPS = {
-    'Plant-based milk': [['Oat', mf(/oat/i)], ['Almond', mf(/almond/i)], ['Soy', mf(/soy/i)], ['Coconut', mf(/coconut/i)],
-      ['Cashew and other nuts', mf(/cashew|macadamia|hazelnut/i)], ['Pea protein', mf(/pea protein/i)], ['Flax', mf(/flax/i)], ['Creamers', ty('Coffee Creamer')]],
-    'Plant-based yogurt': [['Yogurt', ty('Yogurt')], ['Sour cream', ty('Sour Cream')], ['Coconut', mf(/coconut/i)], ['Almond', mf(/almond/i)], ['Cashew', mf(/cashew/i)], ['Oat', mf(/oat/i)]],
-    'Vegan cheese': [['Shreds', ty('Shredded Cheese')], ['Slices', ty('Cheese Slices')], ['Blocks', function (x) { return x.product_type === 'Cheese Blocks' || /block/i.test(x.name || ''); }],
-      ['Cream cheese', ty('Cream Cheese')], ['Parmesan', ty('Parmesan')], ['Spreads', ty('Cheese Spreads')], ['Feta', ty('Feta')]],
-    'Vegan butter and spreads': [['Oil blends', mf(/oil blend|olive|avocado/i)], ['Coconut', mf(/coconut/i)], ['Cashew', mf(/cashew/i)], ['Bean-based', mf(/bean/i)]],
-    'Non-dairy ice cream': [['Oat', mf(/oat/i)], ['Coconut', mf(/coconut/i)], ['Cashew', mf(/cashew/i)], ['Macadamia', mf(/macadamia/i)], ['Lupin', mf(/lupin/i)]]
-  };
-  var KIND_LABEL = { meat: 'Meat', frozen: 'Frozen', meals: 'Meals', snacks: 'Snacks', baked: 'Baked goods', pantry: 'Pantry', protein: 'Protein',
-    drinks: 'Drinks', dairy: 'Dairy-free', egg: 'Egg', seafood: 'Seafood', tofu: 'Tofu', dips: 'Dips' };
-  function chipsFor(name, f) {
-    var defs = SEC_CHIPS[name];
-    if (!defs) {
-      var ks = []; f.brands.forEach(function (b) { (b.product_kinds || []).forEach(function (k) { if (KIND_LABEL[k] && ks.indexOf(k) < 0) ks.push(k); }); });
-      defs = ks.map(function (k) { return [KIND_LABEL[k], function (x) { return (x.product_kinds || []).indexOf(k) >= 0; }]; });
-    }
-    var all = f.products.concat(f.brands);
-    // A chip with nothing behind it, or with everything (it narrows nothing), is left out.
-    var out = defs.map(function (d) { return { label: d[0], test: d[1], n: all.filter(d[1]).length }; }).filter(function (c) { return c.n > 0 && c.n < all.length; });
-    return out;
+
+  // The filters live in the address (#/store/<slug>/c/<category>?t=<type>&s=<cheese kind>&m=<made from>&b=<brand>&w=<where>&q=),
+  // so a link from a brand's page opens the category already on that brand.
+  function qs() { var h = location.hash || '', i = h.indexOf('?'), o = {}; if (i < 0) return o; h.slice(i + 1).split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) o[decodeURIComponent(p[0])] = decodeURIComponent((p[1] || '').replace(/\+/g, ' ')); }); return o; }
+  function setQs(o) {
+    var h = (location.hash || '').split('?')[0], q = Object.keys(o).filter(function (k) { return o[k]; }).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(o[k]); }).join('&');
+    try { history.replaceState(null, '', h + (q ? '?' + q : '')); } catch (e) {}
   }
-  var SEC_STATE = {};
-  function matchQ(q, parts) { if (!q) return true; var h = parts.join(' ').toLowerCase(); return q.toLowerCase().split(/\s+/).every(function (w) { return !w || h.indexOf(w) >= 0; }); }
-  function viewSection(slug, itemId) {
-    var d = VENUE[slug], v = d.venue, it = null, spot = null;
-    d.spots.forEach(function (s) { (s.items || []).forEach(function (x) { if (String(x.id) === String(itemId)) { it = x; spot = s; } }); });
-    if (!it) { location.hash = '#/store/' + slug; return; }
-    var chainName = v.chain ? v.chain.name : 'this store';
-    var top = '<div class="sg-sechead">' + secThumb(it).replace('sg-thumb"', 'sg-thumb sg-thumb-lg"') + '<div><div class="dg-k">' + esc(spot.name) + ' &middot; ' + esc(v.name) + '</div><h2 class="dg-h1">' + esc(it.name) + '</h2>' +
-      '<p class="dg-lede" style="margin:0 0 8px">' + esc(it.description || '') + '</p><div class="sa-vtags">' + freshTag(it) + '</div>' +
-      '<div class="dg-btns" style="margin-top:10px">' + saveBtn('venue_item', it.id, it.saved) + '<a class="dg-btn dg-ghost" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Tell us the aisle</a></div></div></div>';
-    main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '#/store/' + v.slug], [it.name, '']]) + top + '<div id="sgProducts"><div class="dg-loading">Loading products...</div></div>';
+  function catLink(slug, ck, t) { return '#/store/' + slug + '/c/' + ck + (t ? '?t=' + encodeURIComponent(t) : ''); }
+  function rememberStore(slug) { try { localStorage.setItem('sg_store', slug); } catch (e) {} }
+
+  function viewCategory(slug, ck) {
+    var d = VENUE[slug], v = d.venue, cat = catOf(ck);
+    var spot = cat && d.spots.filter(function (s) { return s.name === cat.name; })[0];
+    if (!cat || !spot) { location.hash = '#/store/' + slug; return; }
+    var chainName = v.chain ? v.chain.name : 'this store', items = spot.items || [], typeNames = items.map(function (i) { return i.name; });
+    var tabsHtml = '<div class="sg-cattabs" role="tablist" aria-label="Categories">' + CATS.map(function (c) {
+      return '<a role="tab" href="' + catLink(v.slug, c.k) + '" class="sg-cattab' + (c.k === ck ? ' on' : '') + '" aria-selected="' + (c.k === ck) + '">' + esc(c.name) + '</a>'; }).join('') + '</div>';
+    tabsHtml += '<label class="sa-city sg-catsel"><span class="sr-only">Category</span><select id="sgCatSel">' + CATS.map(function (c) {
+      return '<option value="' + c.k + '"' + (c.k === ck ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('') + '</select></label>';
+    var head1 = '<div class="sg-sechead">' + catThumb(cat).replace('sg-thumb', 'sg-thumb sg-thumb-lg') + '<div><div class="dg-k">' + esc(v.name) + '</div><h2 class="dg-h1">' + esc(cat.name) + '</h2>' +
+      '<p class="dg-lede" style="margin:0">' + esc(cat.line) + '. Every product together: narrow it by type, what it is made from, the brand and where it sits in the store.</p></div></div>';
+    main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '#/store/' + v.slug], [cat.name, '']]) + tabsHtml + head1 + '<div id="sgCat"><div class="dg-loading">Loading products...</div></div>';
+    var cs = document.getElementById('sgCatSel'); if (cs) cs.addEventListener('change', function () { location.hash = catLink(v.slug, cs.value); });
+    if (!d.open) { document.getElementById('sgCat').innerHTML = gated('<div class="dg-skel"><i></i><i style="width:70%"></i></div>', v.name + ' is in the full Guide', 'Every product, filtered your way, and the aisle members found it in at this store.'); return; }
     Promise.all([loadProducts(), chainHas(v.chain)]).then(function (x) {
-      var box = document.getElementById('sgProducts'); if (!box) return;
-      var has = x[1] || {}, f = forSection(it.name);
-      var prods = f.products.slice().sort(function (a, b) { return (has[b.id] ? 1 : 0) - (has[a.id] ? 1 : 0) || ((b.listings.vote_count || 0) - (a.listings.vote_count || 0)) || pTitle(a).localeCompare(pTitle(b)); });
-      var brands = f.brands.slice().sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); });
-      var seen = prods.filter(function (p) { return has[p.id]; }).length;
-      var html = '<h3 class="sg-ph">Products to look for</h3><p class="dg-lede" style="font-size:13px;margin:0 0 12px">' +
-        (seen ? seen + ' seen at ' + esc(chainName) + ' by our Guides; the rest are what to look for. ' : 'What to look for on this shelf. ') +
-        'Not every store carries every one: tell us what is on the shelf at ' + esc(v.name) + ' with Tell us the aisle.</p>';
-      if (!prods.length && !brands.length) {
-        box.innerHTML = html + '<p class="dg-empty">We have no products listed for this section yet. Seen one here? Tell us the aisle and add a photo, and it goes on this page once the team checks it.</p>';
-        return;
-      }
-      var chips = chipsFor(it.name, { products: prods, brands: brands });
-      var st = SEC_STATE[it.name] || (SEC_STATE[it.name] = { chip: '', q: '' });
-      if (st.chip && !chips.some(function (c) { return c.label === st.chip; })) st.chip = '';
-      html += '<div class="sg-pfilter"><label class="sg-psearch"><span class="sr-only">Search this section</span>' +
-        '<input type="search" id="sgPQ" placeholder="Search ' + esc(/^Vegan/.test(it.name) ? it.name : it.name.charAt(0).toLowerCase() + it.name.slice(1)) + '..." value="' + esc(st.q) + '" autocomplete="off"></label>' +
-        (chips.length ? '<div class="sg-chips" role="group" aria-label="Type">' + [{ label: '', n: prods.length + brands.length }].concat(chips).map(function (c) {
-          return '<button type="button" class="sg-chip' + (st.chip === c.label ? ' on' : '') + '" data-chip="' + esc(c.label) + '" aria-pressed="' + (st.chip === c.label) + '">' + esc(c.label || 'All') + ' <i>' + c.n + '</i></button>';
-        }).join('') + '</div>' : '') + '</div><div id="sgPLists"></div>';
-      box.innerHTML = html;
+      var box = document.getElementById('sgCat'); if (!box) return;
+      var has = x[1] || {}, R = catRows(cat, typeNames), all = R.products.concat(R.brands), st = qs();
+      var count = function (rows, f) { var m = {}; rows.forEach(function (r) { f(r).forEach(function (k) { if (k) m[k] = (m[k] || 0) + 1; }); }); return m; };
+      var counted = R.products.length ? R.products : R.brands, tc = count(counted, function (r) { return r.types; });
+      var types = typeNames.filter(function (t) { return tc[t]; });
+      var sel = function (id, label, opts, cur, allLabel) {
+        return '<label class="sa-city"><span>' + label + '</span><select id="' + id + '"><option value="">' + allLabel + '</option>' + opts.map(function (o) {
+          return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
+      };
       function draw() {
-        var c = chips.filter(function (x) { return x.label === st.chip; })[0];
-        var P = prods.filter(function (p) { return (!c || c.test(p)) && matchQ(st.q, [pTitle(p), p.product_type, p.made_from, p.listings && p.listings.name]); });
-        var B = brands.filter(function (b) { return (!c || c.test(b)) && matchQ(st.q, [b.name].concat((b.product_kinds || []).map(function (k) { return KIND_LABEL[k] || k; }))); });
-        var out = '';
-        if (prods.length) out += (brands.length ? '<h3 class="sg-ph sg-ph2">Products <i>' + P.length + '</i></h3>' : '') +
-          (P.length ? '<div class="sg-pgrid sg-pbox">' + P.map(function (p) { return prodTile(p, has[p.id], chainName); }).join('') + '</div>' : '<p class="dg-empty">No products match. Try another type or word.</p>');
-        if (brands.length) out += '<h3 class="sg-ph sg-ph2">Brands that make it <i>' + B.length + '</i></h3>' +
-          (B.length ? '<div class="sg-pgrid sg-pbox">' + B.map(brandTile).join('') + '</div>' : '<p class="dg-empty">No brands match. Try another type or word.</p>');
-        document.getElementById('sgPLists').innerHTML = out;
+        var t = st.t || '', s = st.s || '', m = st.m || '', b = st.b || '', w = st.w || '', q = st.q || '';
+        var ok = function (r, skip) {
+          return (skip === 't' || !t || r.types.indexOf(t) >= 0) && (skip === 's' || !s || r.sub === s || (r.kind === 'b' && !t)) &&
+            (skip === 'm' || !m || r.bases.indexOf(m) >= 0) && (skip === 'b' || !b || r.brand === b) && (skip === 'w' || !w || r.zones.indexOf(w) >= 0) &&
+            (!q || q.toLowerCase().split(/\s+/).every(function (word) { return !word || r.text.toLowerCase().indexOf(word) >= 0; }));
+        };
+        var P = R.products.filter(function (r) { return ok(r); }).sort(function (a, b2) { return (has[b2.p.id] ? 1 : 0) - (has[a.p.id] ? 1 : 0) || b2.votes - a.votes || a.title.localeCompare(b2.title); });
+        var B = R.brands.filter(function (r) { return ok(r, s ? 's' : '') && (!s || R.products.some(function (p) { return p.brand === r.brand && p.sub === s; })); })
+          .sort(function (a, b2) { return b2.n - a.n || b2.votes - a.votes || a.title.localeCompare(b2.title); });
+        // Facet choices come from what is left under the other filters, so a choice never leads to nothing.
+        var mc = count(all.filter(function (r) { return ok(r, 'm'); }), function (r) { return r.bases; });
+        var bc = {}; all.filter(function (r) { return ok(r, 'b'); }).forEach(function (r) { if (r.brand) bc[r.brand] = r.brandName; });
+        var wc = count(all.filter(function (r) { return ok(r, 'w'); }), function (r) { return r.zones; });
+        var subs = t === 'Cheese' ? count(R.products.filter(function (r) { return r.types[0] === 'Cheese' && ok(r, 's'); }), function (r) { return [r.sub]; }) : {};
+        var mOpts = BASES.map(function (x) { return x[0]; }).filter(function (k) { return mc[k] || k === m; }).map(function (k) { return [k, k + ' (' + (mc[k] || 0) + ')']; });
+        var bOpts = Object.keys(bc).map(function (k) { return [k, bc[k]]; }).sort(function (a, b2) { return a[1].localeCompare(b2[1]); });
+        if (b && !bc[b]) bOpts.unshift([b, b]);
+        var wOpts = ZONES.filter(function (z) { return wc[z[0]] || z[0] === w; }).map(function (z) { return [z[0], z[1]]; });
+        var chips = types.length > 1 ? '<div class="sg-chips" role="group" aria-label="Type">' + [['', 'All', counted.length]].concat(types.map(function (n) { return [n, n, tc[n]]; })).map(function (c) {
+          return '<button type="button" class="sg-chip' + (t === c[0] ? ' on' : '') + '" data-t="' + esc(c[0]) + '" aria-pressed="' + (t === c[0]) + '">' + esc(c[1]) + ' <i>' + c[2] + '</i></button>'; }).join('') + '</div>' : '';
+        var subChips = Object.keys(subs).length > 1 ? '<div class="sg-chips sg-subchips" role="group" aria-label="Kind of cheese">' +
+          [['', 'All cheese', 0]].concat(Object.keys(SUBTYPE).map(function (k) { return [SUBTYPE[k], SUBTYPE[k], subs[SUBTYPE[k]]]; }).filter(function (x) { return x[2]; })).map(function (c) {
+            return '<button type="button" class="sg-chip' + (s === c[0] ? ' on' : '') + '" data-s="' + esc(c[0]) + '" aria-pressed="' + (s === c[0]) + '">' + esc(c[1]) + (c[0] ? ' <i>' + c[2] + '</i>' : '') + '</button>'; }).join('') + '</div>' : '';
+        var selects = (mOpts.length ? sel('sgM', 'Made from', mOpts, m, 'Anything') : '') + (bOpts.length > 1 ? sel('sgB', 'Brand', bOpts, b, 'Every brand') : '') +
+          (wOpts.length > 1 || w ? sel('sgW', 'Where in the store', wOpts, w, 'Anywhere') : '');
+        var active = [t, s, m, b, w, q].some(Boolean);
+        // The aisle at this store for each type in view.
+        var aisleItems = items.filter(function (it) { return !t || it.name === t; });
+        var aisles = '<h3 class="sg-ph">Where it is at ' + esc(v.name) + '</h3><div class="sg-aminis">' + aisleItems.map(function (it) { return aisleMini(v, it); }).join('') + '</div>';
+        var lists = '';
+        if (R.products.length) lists += '<h3 class="sg-ph sg-ph2">Products <i>' + P.length + '</i></h3>' +
+          (P.length ? '<div class="sg-pgrid sg-pbox">' + P.map(function (r) { return prodTile(r, has[r.p.id], chainName); }).join('') + '</div>' : '<p class="dg-empty">No products match. Try another filter.</p>');
+        if (R.brands.length) lists += '<h3 class="sg-ph sg-ph2">Brands <i>' + B.length + '</i></h3>' +
+          (B.length ? '<div class="sg-pgrid sg-pbox">' + B.map(brandTile).join('') + '</div>' : '<p class="dg-empty">No brands match. Try another filter.</p>');
+        if (!R.products.length && !R.brands.length) lists += ck === 'produce'
+          ? '<h3 class="sg-ph">What to buy and why</h3><div class="sg-tips">' + PRODUCE.map(function (p) { return '<div class="sg-tip"><span class="sg-tip-i">' + ICON.leaf + '</span><div><b>' + esc(p[0]) + '</b><p>' + esc(p[1]) + '</p></div></div>'; }).join('') + '</div>'
+          : '<p class="dg-empty">We have no products listed here yet. Seen one in this store? Tap Update on its type above, add a photo, and it goes on this page once the team checks it.</p>';
+        var filters = all.length ? '<div class="sg-pfilter"><label class="sg-psearch"><span class="sr-only">Search ' + esc(cat.name) + '</span><input type="search" id="sgPQ" placeholder="Search ' + esc(cat.name === 'Dairy-free' ? 'dairy-free' : cat.name.charAt(0).toLowerCase() + cat.name.slice(1)) + '..." value="' + esc(q) + '" autocomplete="off"></label>' +
+          chips + subChips + (selects ? '<div class="sg-fsel">' + selects + '</div>' : '') + (active ? '<button type="button" class="sg-reset" id="sgReset">Clear filters</button>' : '') + '</div>' : '';
+        var focus = document.activeElement && document.activeElement.id === 'sgPQ', pos = focus ? document.activeElement.selectionStart : 0;
+        // One type picked: its aisle line sits right above its products; all types: the eight lines follow the products, so they stay in view.
+        box.innerHTML = filters + (t ? aisles : '') + '<div id="sgPLists">' + lists + '</div>' + (t ? '' : aisles);
+        if (focus) { var qi = document.getElementById('sgPQ'); qi.focus(); try { qi.setSelectionRange(pos, pos); } catch (e) {} }
+        bind();
+      }
+      function upd(k, val) { st[k] = val; if (k === 't') st.s = ''; setQs(st); draw(); }
+      function bind() {
+        box.querySelectorAll('[data-t]').forEach(function (el) { el.addEventListener('click', function () { upd('t', el.getAttribute('data-t')); }); });
+        box.querySelectorAll('[data-s]').forEach(function (el) { el.addEventListener('click', function () { upd('s', el.getAttribute('data-s')); }); });
+        [['sgM', 'm'], ['sgB', 'b'], ['sgW', 'w']].forEach(function (x) { var el = document.getElementById(x[0]); if (el) el.addEventListener('change', function () { upd(x[1], el.value); }); });
+        var qi = document.getElementById('sgPQ'); if (qi) qi.addEventListener('input', function () { clearTimeout(bind.t); bind.t = setTimeout(function () { upd('q', qi.value); }, 200); });
+        var rs = document.getElementById('sgReset'); if (rs) rs.addEventListener('click', function () { st = {}; setQs(st); draw(); });
       }
       draw();
-      box.querySelectorAll('.sg-chip').forEach(function (b) {
-        b.addEventListener('click', function () {
-          st.chip = b.getAttribute('data-chip');
-          box.querySelectorAll('.sg-chip').forEach(function (o) { var on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-pressed', String(on)); });
-          draw();
-        });
-      });
-      var q = document.getElementById('sgPQ');
-      q.addEventListener('input', function () { st.q = q.value; draw(); });
     });
   }
+
+  // The store page: the six categories (by what it is), or the same types laid out by where they sit (by where it is).
   function viewStore(slug, rest) {
-    var r = (rest || '').split('/');
+    var r = (rest || '').split('?')[0].split('/');
     if (r[0] === 'report') return viewReport(slug, r[1], r[2]);
     var d = VENUE[slug];
-    if (d && !d.error && r[0] === 's' && r[1]) return withRail(function () { viewSection(slug, r[1]); });
     if (!d) {
       main.innerHTML = crumb([['Stores', '#/stores'], ['...', '']]) + '<div class="dg-loading">Loading the store...</div>';
       api({ action: 'venue', slug: slug }).then(function (x) { VENUE[slug] = x; if (curView().indexOf('store/' + slug) === 0) route(); }).catch(function () { main.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
       return;
     }
     if (d.error) { main.innerHTML = crumb([['Stores', '#/stores']]) + '<p class="dg-empty">We could not find that store.</p>'; return; }
+    rememberStore(slug);
+    if (r[0] === 'c' && r[1]) { viewCategory(slug, r[1]); wrapRail(); return; }
+    if (r[0] === 's') { location.replace('#/store/' + slug); return; }
+    var byWhere = r[0] === 'where';
     var v = d.venue;
     var lede = ICON.pin + ' ' + esc(v.address || v.city || '');
     var meta = '<div class="sa-vhead">' + (v.maps ? '<a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Directions</a>' : '') +
       (v.chain ? '<a href="/directory/' + esc(v.chain.slug) + '">' + esc(v.chain.name) + ' on Vegans Explore</a>' : '') + '</div>';
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved).replace('Add to list', 'Save store').replace('On my list', 'Saved') +
       '<a class="dg-btn dg-ghost" href="#/store/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
-    var depts = '<div class="sg-depts">' + d.spots.map(function (s) { return deptCard(v, s, d.open); }).join('') + '</div>';
-    if (!PROD) loadProducts().then(function () { if (curView() === 'store/' + slug) route(); });
-    var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Stores move things around, so an aisle can change. Every section says when a member last checked it. Something not where it says? Tap Update and tell us.</p>';
-    main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : (v.chain ? v.chain.name : 'Supermarket'), esc(v.name), lede, acts) + meta +
-      (d.open ? depts + note : gated(depts, v.name + ' is in the full Guide', 'Every Vegan section in this store and the aisle members found it in.'));
+    var sw = '<div class="sg-switch" role="tablist" aria-label="How to see this store"><a role="tab" href="#/store/' + esc(v.slug) + '" class="' + (byWhere ? '' : 'on') + '" aria-selected="' + !byWhere + '">By what it is</a>' +
+      '<a role="tab" href="#/store/' + esc(v.slug) + '/where" class="' + (byWhere ? 'on' : '') + '" aria-selected="' + byWhere + '">By where it is</a></div>';
+    if (!PROD) loadProducts().then(function () { if (curView().split('?')[0] === 'store/' + slug) route(); });
+    var body;
+    if (!byWhere) {
+      body = '<div class="sg-cats">' + CATS.map(function (c) {
+        var sp = d.spots.filter(function (s) { return s.name === c.name; })[0];
+        var its = sp ? (sp.items || []) : [], mapped = its.filter(function (i) { return i.freshness === 'fresh'; }).length;
+        var R = PROD && d.open ? catRows(c, its.map(function (i) { return i.name; })) : null;
+        var cnt = R ? (R.products.length ? R.products.length + ' products' : '') + (R.brands.length ? (R.products.length ? ' &middot; ' : '') + R.brands.length + ' brands' : '') : '';
+        return '<a class="sg-cat" href="' + catLink(v.slug, c.k) + '">' + catThumb(c) + '<span class="sg-catb"><b>' + esc(c.name) + '</b><span>' + esc(c.line) + '</span>' +
+          '<em>' + (cnt ? cnt + ' &middot; ' : '') + (sp ? (d.open ? mapped + ' of ' + (sp.item_count || its.length) + ' aisles mapped' : (sp.item_count || 0) + ' types') : '') + '</em></span></a>';
+      }).join('') + '</div>';
+    } else {
+      var all = [];
+      d.spots.forEach(function (s) { (s.items || []).forEach(function (it) { all.push({ it: it, cat: catByName(s.name) }); }); });
+      body = d.open ? '<div class="sg-depts">' + ZONES.map(function (z) {
+        var here = all.filter(function (x) { return (TYPES[x.it.name] || {}).zone === z[0]; });
+        if (!here.length) return '';
+        return '<div class="sa-stand"><div class="sa-stand-h"><div class="sg-dh"><span class="sg-dicon">' + (z[0] === 'produce' ? ICON.leaf : z[0] === 'shelf' ? ICON.list : ICON.store) + '</span><div><h3>' + esc(z[1]) + '</h3></div></div></div>' +
+          here.map(function (x) { return aisleRow(v, x.it, x.cat ? x.cat.name : '', x.cat ? catLink(v.slug, x.cat.k, x.it.name) : ''); }).join('') + '</div>';
+      }).join('') + '</div>' : '';
+    }
+    var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Stores move things around, so an aisle can change. Every type says when a member last checked it. Something not where it says? Tap Update and tell us.</p>';
+    main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : (v.chain ? v.chain.name : 'Supermarket'), esc(v.name), lede, acts) + meta + sw +
+      (d.open || !byWhere ? body + (d.open ? note : '') : gated('<div class="dg-skel"><i></i><i style="width:70%"></i></div>', v.name + ' is in the full Guide', 'Every Vegan type in this store and the aisle members found it in.'));
     wrapRail();
   }
   // Three-fourths content, one-fourth our sponsors' space (Sean, 2026-11-01): the rail is ve-ad-rail.js, page /guides/supermarket-guide,
@@ -421,7 +506,6 @@
     main.innerHTML = '<div class="vear-layout"><div class="vear-main">' + inner + '</div><aside class="vear-rail" data-ad-page="/guides/supermarket-guide" aria-label="Sponsors"></aside></div>';
     try { window.VEAdRail.mountAll(main); } catch (e) {}
   }
-  function withRail(draw) { draw(); wrapRail(); var box = document.getElementById('sgProducts'); return box; }
 
 
   // ---------- Help keep it right ----------
@@ -447,7 +531,7 @@
     ];
     var pair = function (a, b) { return a == null ? '<span role="cell" class="sa-pnone">No bounty</span>' : '<span role="cell"><b>' + pts(a) + '</b> / <b>' + pts(b) + '</b></span>'; };
     main.innerHTML = head('Help keep it right', 'Members map the aisles', 'Stores move things around. When you are shopping, tell us which aisle a Vegan section is in, what is still there, and what is missing. A photo earns more, and every report is checked by the team before it pays. Stores of a supermarket that sponsors the Guide pay the most and carry the bounties; every other store earns the standard points.') +
-      '<div class="sa-ptable" role="table" aria-label="Points for each kind of report, with a photo and without"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader">Sponsored supermarkets<i>with a photo / without</i></span><span role="columnheader">Every other store<i>with a photo / without</i></span></div>' +
+      '<div class="sa-ptable" role="table" aria-label="Points for each kind of report, with a photo and without"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader"><span class="sa-long">Sponsored supermarkets</span><span class="sa-short">Sponsored</span><i>photo / none</i></span><span role="columnheader"><span class="sa-long">Every other store</span><span class="sa-short">Other stores</span><i>photo / none</i></span></div>' +
       rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span>' + pair(r[2], r[3]) + pair(r[4], r[5]) + '</div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open your store while you are there and tap <b>Update</b> on a section, or <b>Add something missing</b>.</li>' +
       '<li>Add a photo of the shelf or the aisle sign if you can. Your phone shares your location once, to show you are in the store.</li>' +
@@ -599,7 +683,7 @@
   function viewOverview() {
     var free = (STORES || []).filter(function (v) { return v.free; })[0];
     var n = (STORES || []).length, chs = chapters().length;
-    main.innerHTML = head('The Supermarket Guide', 'Every Vegan item in your store, aisle by aisle', 'Pick your supermarket and see where the plant-based milk, the Vegan cheese, the tofu and the rest are, the way our members mapped it in that store. ' + (ME.free ? 'Free right now, thanks to our sponsors.' : 'Free while a supermarket sponsors it.'),
+    main.innerHTML = head('The Supermarket Guide', 'Every Vegan item in your store, aisle by aisle', 'Pick your supermarket, then what you need: dairy-free, plant-based meat, ready meals, pantry, snacks or produce. Every product is together, narrowed by type, what it is made from, the brand and where it sits, with the aisle our members mapped in that store. ' + (ME.free ? 'Free right now, thanks to our sponsors.' : 'Free while a supermarket sponsors it.'),
       '<a class="dg-btn" href="#/stores">Find your store</a>') +
       '<div class="sg-ovgrid">' +
         '<a class="sg-ov" href="#/stores"><span class="sg-tip-i">' + ICON.store + '</span><b>' + (n ? n + ' stores' : 'Your stores') + (chs ? ' in ' + chs + (chs === 1 ? ' chapter' : ' chapters') : '') + '</b><p>Find yours by city or by where you are. More supermarkets join as they come on board.</p></a>' +
@@ -652,8 +736,11 @@
   // ---------- router ----------
   function curView() { return (location.hash || '').replace(/^#\/?/, ''); }
   function route() {
-    var parts = curView().split('/');
-    var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
+    // #/c/<category>?<filters> (a brand's Guide tab links here): your last store, else Brickell Village, on that category.
+    var cv = curView();
+    if (/^c\//.test(cv)) { var last = ''; try { last = localStorage.getItem('sg_store') || ''; } catch (e) {} location.replace('#/store/' + (last || FREE) + '/' + cv); return; }
+    var parts = cv.split('?')[0].split('/');
+    var view = parts[0] || 'overview', sub = cv.split('/').slice(1).join('/');
     var known = { overview: 1, stores: 1, store: 1, list: 1, produce: 1, report: 1, join: 1 };
     if (!known[view]) view = 'overview';
     if (view === 'list' && !(owner() && token())) view = 'overview';
@@ -753,6 +840,18 @@
       '.sg-pfilter{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}.sg-psearch input{width:100%;box-sizing:border-box;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;background:#fff}' +
       '.sg-chips{display:flex;flex-wrap:wrap;gap:8px}.sg-chip{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer}.sg-chip i{font-style:normal;font-weight:600;color:var(--ink75);margin-left:2px}' +
       '.sg-chip.on{background:var(--vb-go,#2D5C27);border-color:var(--vb-go,#2D5C27);color:#fff}.sg-chip.on i{color:#e8f5e9}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}' +
+      '.sg-cats{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px;margin:6px 0 14px}' +
+      '.sg-cat{display:flex;gap:14px;align-items:center;padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-cat:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
+      '.sg-cat .sg-thumb{width:84px;height:84px;border-radius:12px}.sg-catb{display:flex;flex-direction:column;gap:3px;min-width:0}.sg-catb b{font-size:16px;font-weight:900}.sg-catb span{font-size:13px;color:var(--ink75);line-height:1.35}.sg-catb em{font-style:normal;font-size:12px;font-weight:700;color:var(--vb-go-hover,#1f5f22)}' +
+      '.sg-thumb-x{display:flex!important;align-items:center;justify-content:center}.sg-thumb-i{color:var(--vb-go-hover,#1f5f22);display:flex}' +
+      '.sg-switch{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:4px 0 14px}.sg-switch a{padding:9px 16px;font-size:13px;font-weight:800;color:inherit;text-decoration:none;background:#fff}.sg-switch a.on{background:var(--vb-go,#2D5C27);color:#fff}' +
+      '.sg-cattabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}.sg-cattab{padding:8px 12px;border:1px solid var(--line);border-radius:6px;font-size:13px;font-weight:800;color:inherit;text-decoration:none;background:#fff}.sg-cattab.on{background:var(--vb-go,#2D5C27);border-color:var(--vb-go,#2D5C27);color:#fff}' +
+      '.sg-catsel{display:none!important;margin:0 0 14px!important}.sg-catsel select{width:100%}@media(max-width:768px){.sg-cattabs{display:none}.sg-catsel{display:flex!important}}' +
+      '.sg-aisles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:8px 12px}.sg-aisles .sg-aisle{border:1px solid var(--line);border-radius:12px;padding:10px;margin:0}.sg-zline{font-size:12px!important;font-weight:800;color:var(--vb-go-hover,#1f5f22)!important;margin:1px 0 2px!important}' +
+      '.sg-aminis{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:8px 12px}.sg-amini{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}.sg-amini-b{flex:1;min-width:0;display:flex;flex-direction:column}.sg-amini-b b{font-size:14px}.sg-amini-b span{font-size:12px;color:var(--ink75)}.sg-amini .dg-tag{flex:0 0 auto}' +
+      '@media(max-width:560px){.sg-sechead{flex-direction:row!important;gap:12px}.sg-sechead .sg-thumb-lg{width:72px!important;height:72px!important}.sg-sechead .dg-h1{font-size:24px}}' +
+      '.sg-fsel{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}.sg-fsel .sa-city{margin:0;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}.sg-fsel select{width:100%;min-width:0}' +
+      '.sg-subchips .sg-chip{font-size:12px;padding:5px 10px}.sg-reset{align-self:flex-start;font:inherit;font-size:12.5px;font-weight:800;color:var(--vb-go-hover,#1f5f22);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}' +
       '.sg-letter{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:20px;color:var(--vb-go-hover,#1f5f22);background:#e8f5e9}' +
       '.sg-dh{display:flex;align-items:center;gap:12px}.sg-dicon{flex:0 0 auto;width:44px;height:44px;border-radius:10px;background:#e8f5e9;color:var(--vb-go-hover,#1f5f22);display:flex;align-items:center;justify-content:center}' +
       '.sg-thumb{flex:0 0 auto;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#f1f4f1;display:block}.sg-thumb img{width:100%;height:100%;object-fit:cover;display:block}.sg-thumb-x{background:#eef3ee}' +

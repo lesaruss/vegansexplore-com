@@ -148,7 +148,8 @@
       '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
       '<div class="event-body">' +
         '<p class="event-type-badge">' + esc(e.category || 'Event') + '</p>' +
-        '<h3 class="event-name">' + esc(e.title) + '</h3>' +
+        // The name opens the event's own page, /events?event=<id> (Sean, 2026-11-01: unique addresses so traffic is tracked).
+        '<h3 class="event-name"><a href="/events?event=' + encodeURIComponent(e.id) + '" style="color:inherit;text-decoration:none">' + esc(e.title) + '</a></h3>' +
         '<div class="event-details" aria-label="Event details">' +
           '<span>' + esc(e.location_name || e.city) + (e.city ? ', ' + esc(e.city) : '') + '</span>' +
           '<span>' + esc(time) + '</span>' +
@@ -163,7 +164,7 @@
     var all = list._veEventsAll || [];
     var now = Date.now();
     var filtered = all.filter(function (e) {
-      var t = new Date(e.starts_at).getTime();
+      var t = new Date(e.ends_at || e.starts_at).getTime();
       return mode === 'past' ? t < now : t >= now;
     });
     filtered.sort(function (a, b) {
@@ -177,7 +178,7 @@
     list.innerHTML = filtered.map(eventCardHtml).join('');
   }
 
-  function renderEvents(listId, cityNames) {
+  function renderEvents(listId, hubSlug) {
     var list = document.getElementById(listId);
     if (!list) return;
     injectEventToggleStyleOnce();
@@ -186,10 +187,11 @@
       toggle = document.createElement('div');
       toggle.className = 'event-toggle-row';
       toggle.id = listId + '-toggle';
-      toggle.dataset.eventMode = 'upcoming';
+      // Upcoming / Past is in the address (?when=past), so back and a shared link land on it, and Google counts each.
+      toggle.dataset.eventMode = new URLSearchParams(location.search).get('when') === 'past' ? 'past' : 'upcoming';
       toggle.innerHTML =
-        '<button type="button" class="event-toggle-pill active" data-event-toggle="upcoming">Upcoming Events</button>' +
-        '<button type="button" class="event-toggle-pill" data-event-toggle="past">Past Events</button>';
+        '<button type="button" class="event-toggle-pill' + (toggle.dataset.eventMode === 'upcoming' ? ' active' : '') + '" data-event-toggle="upcoming">Upcoming Events</button>' +
+        '<button type="button" class="event-toggle-pill' + (toggle.dataset.eventMode === 'past' ? ' active' : '') + '" data-event-toggle="past">Past Events</button>';
       list.parentNode.insertBefore(toggle, list);
       toggle.querySelectorAll('[data-event-toggle]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -197,15 +199,41 @@
           toggle.querySelectorAll('[data-event-toggle]').forEach(function (b) { b.classList.remove('active'); });
           btn.classList.add('active');
           toggle.dataset.eventMode = btn.getAttribute('data-event-toggle');
+          var u = new URL(location.href);
+          if (toggle.dataset.eventMode === 'past') u.searchParams.set('when', 'past'); else u.searchParams.delete('when');
+          if (u.href !== location.href) history.pushState(history.state, '', u.pathname + u.search + u.hash);
           renderEventsList(list, toggle.dataset.eventMode);
         });
       });
+      window.addEventListener('popstate', function () {
+        var mode = new URLSearchParams(location.search).get('when') === 'past' ? 'past' : 'upcoming';
+        if (mode === toggle.dataset.eventMode) return;
+        toggle.dataset.eventMode = mode;
+        toggle.querySelectorAll('[data-event-toggle]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-event-toggle') === mode); });
+        renderEventsList(list, mode);
+      });
     }
-    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&order=starts_at.asc&limit=200', { headers: headers() })
-      .then(function (r) { return r.json(); })
-      .then(function (rows) {
-        var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });
-        list._veEventsAll = matches;
+    // The chapter's events by the calendar's own rule (Sean, 2026-11-01: "fix the hub events filter"). It read the 200 oldest
+    // events and matched exact city names, so once the calendar held more than 200 past events (the groups' history) nothing
+    // upcoming was left, and an event with no place (232 of them) showed on every hub. Now: the next 1,000 coming up (an event still
+    // running counts; 210 on 2026-11-01) and the last 1,000 that ended (667), each kept by VECityBanner.matches, the rule /events uses for a chapter: an
+    // online event with no city is in its host group's chapters, any other event with no place on no hub.
+    var hub = window.VECityBanner && hubSlug ? VECityBanner.hubBySlug(hubSlug) : null;
+    var base = SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,ends_at,location_name,city,state,category,event_type,ticket_url,rsvp_count,time_set,host:listings!events_host_listing_id_fkey(communities)' +
+      '&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&limit=1000';
+    var now = new Date().toISOString();
+    var get = function (q) { return fetch(base + q, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('events'); return r.json(); }); };
+    Promise.all([
+      get('&or=(starts_at.gte.' + now + ',ends_at.gte.' + now + ')&order=starts_at.asc'),
+      get('&starts_at=lt.' + now + '&or=(ends_at.is.null,ends_at.lt.' + now + ')&order=starts_at.desc')
+    ]).then(function (res) {
+        var seen = {}, rows = res[0].concat(res[1]).filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; });
+        list._veEventsAll = rows.filter(function (e) {
+          // An online event with no city is in its host group's chapters; any other event with no city is on no hub.
+          var online = e.event_type === 'virtual', hubs = e.host && e.host.communities;
+          if (!e.city && !(online && hubs && hubs.length)) return false;
+          return hub ? VECityBanner.matches(hub, { city: e.city, state: e.state, online: online, hubs: hubs }) : true;
+        });
         renderEventsList(list, toggle.dataset.eventMode || 'upcoming');
       }).catch(function () { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
   }

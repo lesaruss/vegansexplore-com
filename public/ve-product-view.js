@@ -117,6 +117,18 @@
       '/nutrients" target="_blank" rel="noopener">see the record</a>), as the brand reported it. Recipes change, so check the package.</p></div>';
   }
 
+  // Find it in the Supermarket Guide (Sean, 2026-11-01: "everything kind of works back to each other"): the category its type is
+  // in, filtered to this brand and type, at the shopper's last store (else Brickell Village). Keys follow TYPES and CATS in
+  // guide-scripts/supermarket-guide.js; the Guides' products are all dairy-free today.
+  var SHELF_TYPE = { 'Milk': 'Milk', 'Coffee Creamer': 'Coffee creamer', 'Yogurt': 'Yogurt', 'Sour Cream': 'Sour cream', 'Butter': 'Butter',
+    'Cream Cheese': 'Cream cheese', 'Ice Cream': 'Ice cream', 'Shredded Cheese': 'Cheese', 'Cheese Slices': 'Cheese', 'Cheese Blocks': 'Cheese',
+    'Cheese Spreads': 'Cheese', 'Parmesan': 'Cheese', 'Feta': 'Cheese' };
+  function shelfLink(p, b) {
+    var t = SHELF_TYPE[p.product_type];
+    if (!t || !b || !b.slug) return '';
+    return '<p class="pv-src"><a href="/guides/supermarket-guide#/c/dairy-free?t=' + encodeURIComponent(t) + '&b=' + encodeURIComponent(b.slug) +
+      '" style="font-weight:800;color:var(--vb-accent-ink,#1f5f22)">Find it in the Supermarket Guide</a>: the aisle at your store, and every ' + esc(t.toLowerCase()) + ' like it.</p>';
+  }
   function render(el, p, b, opts) {
     opts = opts || {};
     css();
@@ -141,7 +153,7 @@
     html += '<div class="pv-sec"><h3>Where to find it</h3>' + (st.length ? '<div class="pv-stores">' + st.map(function (s) {
       return '<a class="pv-store" href="/directory/' + encodeURIComponent(s.slug) + '?product=' + encodeURIComponent(p.id) + '" title="' + esc(s.name) + '\'s Vegan aisle">' + logo(s, 'pv-slogo') + '<b>' + esc(s.name) + '</b></a>';
     }).join('') + '</div><p class="pv-src">Each store opens its Vegan aisle on Vegans Explore. Stock changes by location, so check your store.</p>'
-      : '<p class="pv-text">We have not mapped a store for this one yet.</p>') + '</div>';
+      : '<p class="pv-text">We have not mapped a store for this one yet.</p>') + shelfLink(p, b) + '</div>';
     if (others.length) html += '<div class="pv-sec"><h3>More from ' + esc(b.name) + '</h3><div class="pv-more">' + others.map(function (o) {
       return '<a href="' + esc(opts.href ? opts.href(o.slug) : '/products/' + o.slug) + '" data-product="' + esc(o.slug) + '">' + esc(VEProducts.title(o, b.name)) + '</a>';
     }).join('') + '</div></div>';

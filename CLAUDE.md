@@ -621,7 +621,12 @@ judge whether food is safe by how a place looks online; businesses want marketin
   as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
   (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
   links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
-  `branddesk.allowed`). **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
+  `branddesk.allowed`). **My brand** (`#mine`, `#mine/<kit>`; Sean, 2026-11-01: "Go with the owner panel") is Sean's owner panel: his seanarussell.com
+  media kits (the `sar-kits` edge function, `list`) with Edit and Open the kit, and Edit opens the one kit editor, loaded from
+  `https://www.seanarussell.com/assets/js/sar-kit-editor.js` (`SARKitEditor.mount`, `backLabel` Back to my kits) so the kit page and the
+  Depot share one editor and one save (`sar-kits` `edit_get`, `kit_save`). It signs with the Depot session: `ve_token` is the same HMAC
+  session as seanarussell.com's `lr_token`, and `sar-kits` re-checks `members.is_superadmin` on every read and save. Not a BrandDesk
+  client account: no `ve_branddesk_accounts` row, no billing. **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
   the components visually without having to go through the whole process myself"): 25 steps from Managed by us to the Inbox, on the
   sample business; `/business/managed?preview=plan|agreement|pay|done|client|closed|signin` (a sample owner, nothing charged),
   `/business/sample/site?look=island|night`, and `?managed=preview` on any page with `ve-managed.js` (opens the request window, sends
@@ -1979,7 +1984,12 @@ forward move through them, on `/directory` and the dashboard's Directory tab (`/
 section, uses `?dir=` instead since 2026-11-01: `/communities/<slug>?tab=directory&dir=food&sub=markets`, `tabParam: 'dir'`, Sean:
 "In Communities when you use the Directory, it doesn't show the unique URLs... so that traffic is tracked"; leaving the hub's
 Directory drops `dir` and `sub`, and the city picker keeps them). **Traffic by section**: Google counts each address change, and
-Depot > Analytics > Directory lists **Sections** (`ve-analytics` `dir_sections`, read from `pagePathPlusQueryString`, since Top
+Depot > Analytics > Directory lists **Sections**, and **Events** and **Media** have their own tabs (Sean, 2026-11-01: "Do the same
+for Events and Media": an event's own page is `?event=<id>` on `/events` and `/dashboard/events`, an old `#event/<id>` link moves
+there, `#event/<id>/tickets` and the calendar's other `#` views stay; the kind and Upcoming / Past are history steps, the dashboard's
+Events tab keeps its address (`url` in `VEEvents.mount`), a hub's Events keeps `?when=past` and each event's name opens its page; the
+dashboard's Media keeps `?type=` through the banner's `path` option; `ve-analytics` `ev_sections`, `ev_pages` named from `events`,
+`media_types`), (`ve-analytics` `dir_sections`, read from `pagePathPlusQueryString`, since Top
 pages' `pagePath` drops the query) by place: the Directory, the dashboard and each city hub. **The city is not in the address**: the same link opens in whichever chapter the visitor picked (kept for
 the visit, `sessionStorage` `ve_dir_city`), and an old `?city=` link opens on that city before the address drops it. A listing's
 breadcrumb links back to its sub-section. **Submit listing** (the banner's green button, Sean 2026-10-27; one row on a phone) opens Join the
@@ -2850,6 +2860,16 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   open by `?tab=` (news, events, directory, opportunities, bounties, board, members, rewards) and the hub's Page tour walks them.
   The address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
   Community Partners is hidden but kept in the page; Chat was removed (it showed sample threads).
+- **The hub's Events** (`VEHubNews.renderEvents(listId, hubSlug)` in `hub-news.js`) keep an event by the calendar's own chapter
+  rule, `VECityBanner.matches` (Sean, 2026-11-01: "fix the hub events filter"): it had read the 200 oldest events and matched exact
+  city names, so once the calendar held more past events than that nothing upcoming was left (South Florida showed none), and the
+  232 events with no place showed on every hub. Now the next 1,000 coming up (an event still running counts) and the last 1,000,
+  none without a city. **An online event with no city** (`event_type` virtual) is in its host group's chapters (`listings.communities`
+  of `host_listing_id`, `all` for every chapter), on the hubs and on `/events` alike (`VECityBanner.matches` takes `online` and `hubs`).
+  The 232 events with no city were filled the same day from their own sources (migration `20261101_ve_event_place_fill.sql`, every
+  change logged with what it replaced): 99 got a city, 129 are online, 4 have no published place. Checked against the calendar's data
+  after: South Florida 6 upcoming and 20 past, Atlanta 62 and 142, New York 25 and 144, D.C. 4 and 41, London 13 and 104, Los Angeles
+  2 and 17, Philadelphia 30 and 44.
 - The Board and Bounties open inside the hub, under the community, in a frame
   (`/board?community=<slug>&hub=1`, `/bounties?...&hub=1`, which hide their own city picker). The
   framed page sizes the frame; `nav.js` treats a hub parent like the dashboard window.
@@ -3605,7 +3625,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 ## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
-`20261101_supermarket_guide_canon.sql`). **Built 2026-11-01, not launched** (below). Sean: "a doorway where the community will always know where to find these
+`20261101_supermarket_guide_canon.sql`). **Built and launched 2026-11-01** (below). Sean: "a doorway where the community will always know where to find these
 vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
 they're buying their spot in this massive campaign that starts in Q1."
 
@@ -3661,8 +3681,35 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
   `noindex`): the Guide with a live store, the three tiers, the Q1 2027 campaign, the 2027 story (as plans), Front Row Start, and Email our
-  team. Launch = the `ve_guides` row published, `noindex` off, the card out of Coming soon. Not yet: weekly specials, CPG spotlights in
+  team. **Launched 2026-11-01** (Sean: "launch the Supermarket Guide"; migration `20261101_supermarket_guide_launch.sql`): the
+  `ve_guides` row published ($11 or 1,100 points until a sponsor makes it free), indexed, its card in the Guide catalog after the
+  Nutrition Guide (label Shopping, Brickell Village free), in the sitemap. Not yet: weekly specials, CPG spotlights in
   the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
+- **By what it is** (Sean, 2026-11-01: "put dairy, meat... when you click on that, we have all the products together... sort it by the
+  type... almond, oat... even banana... then you go into the brand"; migration `20261101_supermarket_categories.sql`). A store's spots are
+  six categories (Dairy-free, Plant-based meat and protein, Ready meals, Pantry, Snacks and sweets, Produce) and its items 22 types inside
+  them (Milk, Coffee creamer, Yogurt... Fruit), each the thing members map, its aisle at that store in the item's description
+  (`ve_supermarket_seed_store`; every store reseeded the same day, before any report existed). `CATS` and `TYPES` in
+  `guide-scripts/supermarket-guide.js` give each type where it usually sits (refrigerated, frozen, aisles and shelves, produce), its
+  picture and what fills it: the Guides' products by `product_type` (the Dairy Guide's, one table for both Guides) or Food Brands by
+  `product_kinds`. The store page has **By what it is** (six category tiles) and **By where it is** (`#/store/<slug>/where`, the types by
+  zone). A category (`#/store/<slug>/c/<key>`, tabs, a dropdown on phones) shows every product together with a search, Type chips (Cheese
+  adds Shreds, Slices, Blocks, Spreads, Parmesan, Feta), Made from (`BASES`, read from `made_from`; Banana appears once a banana product
+  exists), Brand and Where in the store, all in the address (`?t= &s= &m= &b= &w= &q=`); choices come from what the other filters leave.
+  Products and Brands each show three rows of 94 px tiles and scroll inside; each type's aisle line follows them (above them when one type
+  is picked). **Links back**: a product opens `/products/<slug>` and its brand; a Food Brand's Guide tab adds the Supermarket Guide card
+  opening its category filtered to the brand (`shelfHref` in `public/ve-guide-tab.js`), a chain's opens Stores; a product page's Where to
+  find it links to its type and brand (`shelfLink` in `public/ve-product-view.js`). `#/c/<key>?...` opens the shopper's last store
+  (`localStorage` `sg_store`), else Brickell Village. Today only Dairy-free has individual products; the rest show their brands.
+- **Smaller incentives without a sponsorship** (Sean, 2026-11-01: "go with your defaults"; migration
+  `20261101_supermarket_standard_points.sql`). A store whose chain has an active Title or Partner sponsorship (`ve_venue_sponsored`,
+  `sponsoredChains` in `ve-venues`) pays the full `ve_venue_report_points` and the first-to-confirm bounty; every other store pays the
+  standard amounts (`std_*`: a correction or missing item 40 / 20, agreeing 10 / 5, Still here and comments 5 / 2) and has no bounty
+  (no Bounty tags, not on `/bounties`). A report keeps whether its store was sponsored when it was sent (`ve_venue_reports.sponsored`,
+  trigger `trg_ve_venue_report_sponsored`), so a sponsorship ending while it waits never lowers it. Stadiums and airports always pay in
+  full. The Guide's Help keep it right table shows both columns; Depot > Venues pays and labels the right amounts. Proven 2026-11-01 in a
+  rolled-back transaction (unsponsored correction 40, Still here 2 with no bounty; with a Publix Title sponsorship the first confirm 50
+  and the bounty).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

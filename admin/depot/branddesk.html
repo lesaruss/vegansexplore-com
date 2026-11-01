@@ -12,7 +12,11 @@
     /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
        one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
        website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
-       The rotation board (#rotation): every client's campaigns by month. Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel. */
+       The rotation board (#rotation): every client's campaigns by month. Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel.
+       My brand (#mine, #mine/<kit>): Sean's owner panel (Sean, 2026-11-01: "Go with the owner panel"). His seanarussell.com media kits from
+       the sar-kits edge function, each opening the one kit editor (www.seanarussell.com/assets/js/sar-kit-editor.js, loaded from there so
+       there is one editor). It signs with this Depot session: ve_token and the seanarussell.com lr_token are the same HMAC session, and
+       sar-kits re-checks members.is_superadmin on every read and save. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green-deep:#1f5f22;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--vb-accent:#1f5f22;}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -110,7 +114,7 @@
       function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function load() { return api({ action: 'list' }).then(function (d) { if (!d || !d.ok) throw new Error('load'); data = d; }); }
       function nav(on) {
-        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#rotation" class="' + (on === 'rotation' ? 'on' : '') + '">Rotation</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a></nav>' +
+        return '<div class="bar"><nav class="views"><a href="#list" class="' + (on === 'list' ? 'on' : '') + '">Clients</a><a href="#rotation" class="' + (on === 'rotation' ? 'on' : '') + '">Rotation</a><a href="#pitches" class="' + (on === 'pitches' ? 'on' : '') + '">Pitch list</a><a href="#open" class="' + (on === 'open' ? 'on' : '') + '">Who can sign up</a><a href="#mine" class="' + (on === 'mine' ? 'on' : '') + '">My brand</a></nav>' +
           '<a class="btn btn-ghost" href="/business/sample?tab=brand&pd=managed" target="_blank" rel="noopener">See the client view (sample)</a></div>';
       }
       function drawList() {
@@ -378,8 +382,48 @@
               }).join('') + '</tbody></table></div>';
           }).join('') : '<p class="empty">' + (filter === 'all' ? 'No campaigns yet. The first is planned when a client\'s check-in is sent.' : 'None here.') + '</p>');
       }
+      // My brand: Sean's seanarussell.com media kits and the kit editor.
+      var KITS_FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/sar-kits';
+      var SAR_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var EDITOR_JS = 'https://www.seanarussell.com/assets/js/sar-kit-editor.js';
+      var mineMsg = '';
+      function kits() {
+        return fetch(KITS_FN + '?action=list', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SAR_ANON, apikey: SAR_ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) }).then(function (r) { return r.json(); });
+      }
+      function drawMine() {
+        app.innerHTML = nav('mine') + '<p class="empty">Loading your kits...</p>';
+        kits().then(function (d) {
+          var K = (d && d.kits) || [];
+          app.innerHTML = nav('mine') + '<section class="card"><h2>Sean A. Russell: media kits</h2><p class="sub">Your kits on seanarussell.com. Edit one here or on the kit itself; it is the same editor and the same kit. ' +
+            (d && d.owner ? '' : '<b>Your session is not recognized as the owner, so editing will not save. Sign out and back in.</b>') + '</p>' +
+            (mineMsg ? '<p class="msg" role="status">' + esc(mineMsg) + '</p>' : '') +
+            '<div class="list">' + (K.length ? K.map(function (k) {
+              return '<div class="irow"><div><b>' + esc(k.name) + '</b><small>' + esc(k.role || '') + (k.lead ? ' &middot; ' + esc(k.lead.v) + ' ' + esc(k.lead.l) : '') + '</small></div>' +
+                '<span class="tag ' + (k.status === 'live' ? 'active' : 'paused') + '">' + (k.status === 'live' ? 'Live' : 'Draft') + '</span>' +
+                '<span style="display:flex;gap:6px;flex-wrap:wrap"><a class="btn btn-sm" href="#mine/' + esc(k.slug) + '">Edit</a><a class="btn btn-ghost btn-sm" href="https://www.seanarussell.com/kits/' + esc(k.slug) + '" target="_blank" rel="noopener">Open the kit</a></span></div>';
+            }).join('') : '<p class="empty">No kits came back. Refresh to try again.</p>') + '</div></section>';
+          mineMsg = '';
+        }).catch(function () { app.innerHTML = nav('mine') + '<p class="empty">Your kits did not load. Refresh to try again.</p>'; });
+      }
+      function drawKitEditor(slug) {
+        app.innerHTML = '<p class="crumb"><a href="#mine">My brand</a> &rsaquo; Edit kit</p><div id="kit-editor"></div>';
+        var go = function () {
+          SARKitEditor.mount($('kit-editor'), {
+            slug: slug, token: VEAuth.getToken(), backLabel: 'Back to my kits',
+            onSaved: function () { mineMsg = 'Saved. The kit on seanarussell.com is updated.'; location.hash = 'mine'; },
+            onCancel: function () { location.hash = 'mine'; },
+          });
+        };
+        if (window.SARKitEditor) return go();
+        var sc = document.createElement('script'); sc.src = EDITOR_JS; sc.onload = go;
+        sc.onerror = function () { $('kit-editor').innerHTML = '<p class="empty">The editor did not load from seanarussell.com. Refresh to try again.</p>'; };
+        document.head.appendChild(sc);
+      }
+
       function draw() {
         var r = location.hash.replace(/^#/, '') || 'list', m;
+        if (r === 'mine') return drawMine();
+        if ((m = r.match(/^mine\/([a-z0-9-]{1,60})$/))) return drawKitEditor(m[1]);
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
         if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
         if (r === 'open') return drawOpen();
