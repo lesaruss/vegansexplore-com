@@ -89,8 +89,14 @@ What works for us is the standard; every time we learn something, the standard a
    of it; wizards are rented on top. Front Row Start stays: the official start is January 1, 2027, and the time before it is bonus
    time, the early Partners' equity being the feedback that makes BrandDesk better by launch. **They pay now** (Sean, 2026-11-01:
    "I'm not going to wait to get paid until January"): the first $111 is charged at sign-up and buys the first period, which starts
-   January 1, 2027; every day from sign-up to then is bonus. **A period is 111 days**, not 90, so the first one runs to April 22, 2027
-   and they renew every 111 days after. This replaces Front Row Start's "no charge today" (a Stripe trial to January 1) in the live
+   January 1, 2027; every day from sign-up to then is bonus. **A period is 111 days**, not 90, so the first one runs January 1 to April 21,
+   2027, and every period after starts the day the last one ends. This replaces Front Row Start's "no charge today" (a Stripe trial to January 1) in the live
    checkout and every place that says it; Logan checks for anyone already on the trial and keeps their terms.
+   **The periods are shared and sacred**: everyone is on the same calendar (Period 1 January 1 to April 21, 2027; Period 2 April 22
+   to August 10; Period 3 August 11 to November 29; Period 4 November 30 to March 19, 2028; and on). Someone joining mid-period pays
+   a prorated share for the days left and renews with everyone at the next period's start (before January 1, 2027 the full $111, the
+   days before it bonus). **Promotion for the next period starts three-quarters through** (about day 84: March 25, July 14, November
+   2, 2027). Nothing runs as a cohort (no "we're on chapter 2"): anyone joining any day has everything, and past hot labs stay open
+   to review.
 8. A lapsed wizard rental: the wizard closes until renewed; finished work stays in their Library while they are a Partner. Leaving
    the plan gives 30 days to download everything.
