@@ -275,6 +275,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .tab-btn.tab-ext svg{vertical-align:1px;margin-left:2px}
 .tab-btn.tab-fam{text-decoration:none}
+.tab-btn .fam-chev{display:inline-block;margin-left:6px;vertical-align:1px;transition:transform .15s}
+.tab-btn[aria-expanded="true"] .fam-chev{transform:rotate(180deg)}
+.fam-menu{position:fixed;z-index:1200;min-width:240px;max-width:min(360px,calc(100vw - 32px));background:#fff;border:1px solid var(--ve-border);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.14);padding:6px;display:none}
+.fam-menu.open{display:block}
+.fam-menu a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;text-decoration:none;color:var(--ve-text);font:700 13.5px Montserrat,sans-serif;line-height:1.3}
+.fam-menu a:hover,.fam-menu a:focus-visible{background:var(--vb-soft,#EAF7EA);outline:none}
+.fam-menu a img,.fam-menu a .fam-ph{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#eef2ee}
+.fam-menu a[aria-current="page"]{color:var(--ve-green-dark)}
+.fam-menu a[aria-current="page"]::after{content:'';margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--ve-green)}
 /* Media and People pages on phones: the tab row is one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "Do the same
    drop-down treatment for media", after the Directory's sub-sections). mobileTabMenu builds it from the tabs and follows them. */
 .lt-sel{display:none}
@@ -1733,21 +1742,58 @@ function mobileTabMenu(){
   nav.insertBefore(sel, nav.firstChild);
   var tabs = [];
   function build(){
-    tabs = Array.prototype.filter.call(nav.children, function(t){
+    var els = Array.prototype.filter.call(nav.children, function(t){
       return t.classList.contains('tab-btn') && t.style.display !== 'none' && !t.hidden && !t.hasAttribute('data-sub'); });
-    var on = tabs.filter(function(t){ return t.classList.contains('active'); })[0] || tabs[0];
+    // A Podcasts or YouTube group (loadFamily) is one option per show here, named by the show.
+    tabs = [];
+    els.forEach(function(t){
+      var act = t.classList.contains('active');
+      if(t._fam) t._fam.forEach(function(f){ tabs.push({ el: t, href: f.current ? '' : f.href, label: f.label, on: act && f.current }); });
+      else tabs.push({ el: t, label: t.textContent.replace(/\(opens.*\)/i, '').trim(), on: act });
+    });
+    var on = tabs.filter(function(t){ return t.on; })[0] || tabs[0];
     sel.innerHTML = tabs.map(function(t, i){
-      return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.textContent.replace(/\(opens.*\)/i, '').trim()) + '</option>'; }).join('');
+      return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('');
     nav.classList.toggle('lt-has-sel', tabs.length > 1);
   }
   sel.addEventListener('change', function(){
-    var t = tabs[+sel.value]; if(t) t.click();
+    var t = tabs[+sel.value]; if(t){ if(t.href) location.href = t.href; else if(!t.el._fam) t.el.click(); }
     setTimeout(build, 0); // a link that opens a new tab leaves this page on the tab it was on
   });
   build();
   if(window.MutationObserver) new MutationObserver(function(ms){
     if(ms.some(function(m){ return !sel.contains(m.target); })) build();
   }).observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+}
+// A Podcasts or YouTube tab with an arrow (loadFamily): opens the shows by name, the one open marked. The list sits outside the tab
+// row, which scrolls sideways and would cut it off. On phones the tab dropdown lists each show instead (mobileTabMenu reads _fam).
+var FAM_MENU = null;
+function famMenu(btn, g, curId){
+  btn._fam = g.list.map(function(x){ return { label: x.name, href: '/directory/' + encodeURIComponent(x.slug), current: x.id === curId, logo: x.logo_url }; });
+  btn.insertAdjacentHTML('beforeend', '<svg class="fam-chev" width="10" height="7" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  btn.setAttribute('aria-haspopup', 'menu'); btn.setAttribute('aria-expanded', 'false');
+  function close(){
+    if(FAM_MENU){ FAM_MENU.classList.remove('open'); FAM_MENU._btn = null; }
+    document.querySelectorAll('.tab-btn[aria-expanded="true"]').forEach(function(b){ b.setAttribute('aria-expanded', 'false'); });
+  }
+  btn.addEventListener('click', function(e){
+    if(!FAM_MENU){
+      FAM_MENU = document.createElement('div'); FAM_MENU.className = 'fam-menu'; FAM_MENU.setAttribute('role', 'menu'); document.body.appendChild(FAM_MENU);
+      document.addEventListener('click', function(ev){ if(FAM_MENU._btn && !FAM_MENU.contains(ev.target) && !FAM_MENU._btn.contains(ev.target)) close(); });
+      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && FAM_MENU._btn){ var b = FAM_MENU._btn; close(); b.focus(); } });
+      window.addEventListener('resize', close); window.addEventListener('scroll', function(){ if(FAM_MENU._btn) close(); }, { passive: true });
+    }
+    if(FAM_MENU._btn === btn){ close(); return; }
+    close();
+    FAM_MENU.innerHTML = btn._fam.map(function(f){
+      return '<a role="menuitem" href="' + esc(f.href) + '"' + (f.current ? ' aria-current="page"' : '') + '>' +
+        (f.logo ? '<img src="' + esc(f.logo) + '" alt="" loading="lazy">' : '<span class="fam-ph"></span>') + '<span>' + esc(f.label) + '</span></a>'; }).join('');
+    var r = btn.getBoundingClientRect();
+    FAM_MENU.style.top = Math.round(r.bottom + 4) + 'px';
+    FAM_MENU.classList.add('open'); FAM_MENU._btn = btn; btn.setAttribute('aria-expanded', 'true');
+    FAM_MENU.style.left = Math.round(Math.max(16, Math.min(r.left, window.innerWidth - FAM_MENU.offsetWidth - 16))) + 'px';
+    var first = FAM_MENU.querySelector('a'); if(first && e.detail === 0) first.focus();
+  });
 }
 function loadFamily(l){
   var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
@@ -1773,11 +1819,27 @@ function loadFamily(l){
       var items = []; rows.forEach(function(x){ if(familyKind(x) !== 3 || !BOOKS) items.push(x); else if(items.indexOf(BOOKS) < 0) items.push(BOOKS); });
       var WORD = ['Overview', 'Podcast', 'YouTube', 'Book'];
       var count = {}; items.forEach(function(x){ if(x.books) return; var k = familyKind(x); count[k] = (count[k] || 0) + 1; });
-      function label(x){ if(x.books) return 'Books'; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
-      var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id; })[0];
+      // More than one show of a kind is one tab (Sean, 2026-11-01: "all under a title called Podcasts with a drop-down... when you go
+      // to Vegans Explore, you see that same drop down"): Podcasts or YouTube with an arrow, opening the shows by name (famMenu).
+      var GROUP = { 1: 'Podcasts', 2: 'YouTube' }, grouped = [];
+      items.forEach(function(x){
+        var k = x.books ? 3 : familyKind(x);
+        if(!GROUP[k] || count[k] < 2){ grouped.push(x); return; }
+        var g = grouped.filter(function(y){ return y.group === k; })[0];
+        if(!g){ g = { group: k, list: [] }; grouped.push(g); }
+        g.list.push(x);
+      });
+      items = grouped;
+      function label(x){ if(x.books) return 'Books'; if(x.group) return GROUP[x.group]; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
+      var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id || (x.group && x.list.some(function(y){ return y.id === l.id; })); })[0];
       var at = items.indexOf(mine);
       ov.textContent = label(mine);
+      if(mine && mine.group) famMenu(ov, mine, l.id);
       function link(x){
+        if(x.group){
+          var gb = document.createElement('button'); gb.type = 'button'; gb.className = 'tab-btn tab-fam'; gb.textContent = label(x);
+          famMenu(gb, x, l.id); return gb;
+        }
         var a = document.createElement('a'); a.className = 'tab-btn tab-fam'; a.textContent = label(x);
         if(x.books){ a.href = '/directory/' + encodeURIComponent(author.slug) + '?tab=books'; a.title = 'Books by ' + author.name; }
         else { a.href = '/directory/' + encodeURIComponent(x.slug); a.title = x.name; }
