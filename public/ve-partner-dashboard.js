@@ -42,7 +42,7 @@
   function kindOf(c) {
     if (['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
     if (['Documentaries & Films', 'Books'].indexOf(c) >= 0) return 'work';
-    if (['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(c) >= 0) return 'brand';
+    if (['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'].indexOf(c) >= 0) return 'brand';
     // Groups and organizations (Sean, 2026-10-29): no hours or menu, their own opportunities.
     if (['Groups', 'Nonprofits', 'Rescues', 'Sanctuaries', 'Events'].indexOf(c) >= 0) return 'org';
     return 'place';

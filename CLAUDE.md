@@ -1958,7 +1958,7 @@ listing counts in a region by its address or the chapters it serves (`data-hubs`
 since 2026-11-01 (Local Food and Products, below; from 2026-10-26 it was "All last", to bring Food Brands back to Food, and Food
 Brands and Nutrition & Supplements now live in Products). Food's list as it stood then: Restaurants, Bakeries & Cafes, **Food Trucks**, **Vendors** (apart since 2026-10-27, Sean: "you might be just looking for a food truck"), Food Brands, **Nutrition & Supplements** (new: supplement and
 nutrition brands, sold everywhere, so no location filter; Brand Partner like a Food Brand), Markets, Catering, Meal Prep.
-Products is Fitness and Athletics, Clothing and Fashion, Beauty and Personal Care, E-Commerce & Marketplaces; **Services** is Health and Wellness, **Health Professionals** (doctors, dentists, dietitians and nutritionists, chiropractors, therapists and counselors, other practices: `details.health_type`, a **Practice** filter, `HEALTH_TYPES` in `ve-region-directory.js`, `ve-listing-admin.js` (the editor's Kind of practice) and `ve-listing-media`, which saves it), Coaches and Consultants, **Animal Care** and Marketing & Growth, the catch-all for agency work (Sean, 2026-10-27: "we have too many things"; AI & Automation, Web & Development, Content Creation & Media, Branding & Creative Assets and Business Operations left the menu, their two Vegan businesses moved to Marketing & Growth, the supplement brands in Health and Wellness to Nutrition & Supplements, migration `20261027_services_trim.sql`; the SaaS tools still filed under the old names are the LESARUSS AI directory's and never show here); **Brands is
+Products is Food & Drink, Nutrition & Supplements, Clothing and Fashion, Beauty and Personal Care, Marketplaces (see Local Food and Products); **Services** is Health and Wellness, **Health Professionals** (doctors, dentists, dietitians and nutritionists, chiropractors, therapists and counselors, other practices: `details.health_type`, a **Practice** filter, `HEALTH_TYPES` in `ve-region-directory.js`, `ve-listing-admin.js` (the editor's Kind of practice) and `ve-listing-media`, which saves it), Coaches and Consultants, **Animal Care** and Marketing & Growth, the catch-all for agency work (Sean, 2026-10-27: "we have too many things"; AI & Automation, Web & Development, Content Creation & Media, Branding & Creative Assets and Business Operations left the menu, their two Vegan businesses moved to Marketing & Growth, the supplement brands in Health and Wellness to Nutrition & Supplements, migration `20261027_services_trim.sql`; the SaaS tools still filed under the old names are the LESARUSS AI directory's and never show here); **Brands is
 retired** (its three listings were re-filed the same day; an old `Brands` row still shows under Products > All). Change these
 together: `CAT_MAP` and `CAT_CONFIG` in `ve-region-directory.js`, `SECTIONS` in `ve-listing-admin.js`, `KINDS` in Directory
 review, `CATEGORIES` in `ve-claims`, `LISTING_CATEGORIES` in `ve-outreach`, `CATEGORIES` in `ve-discover`, `FOOD_CATS` in
@@ -2306,7 +2306,7 @@ see everything and then filter for what they want... the products are the produc
 - **Food becomes Local Food** and opens on All: what is here, in the picked location ("Local Food · South Florida"). National grocery
   chains stay under Markets (a store in the chapter is here). The location applies to every listing in it, no brand exceptions.
 - **Food Brands (shown as Food & Drink) and Nutrition & Supplements move to Products**: All, Food & Drink, Nutrition & Supplements,
-  Fitness & Athletics, Clothing & Fashion, Beauty & Personal Care, E-Commerce & Marketplaces. The stored category values do not change,
+  Clothing & Fashion, Beauty & Personal Care, Marketplaces (trimmed the same day, below). The stored category values do not change,
   only the section they sit under. Old `?tab=food&sub=food-brands` links land on Products.
 - **Every section opens on All**, replacing "first sub-section first, All last" (Directory filters, above), which existed only because
   of Food Brands.
@@ -2318,6 +2318,14 @@ see everything and then filter for what they want... the products are the produc
   · Nutrition & Supplements there, Restaurants in Local Food). `makeBrowseCard` / `makeClosedCard` take the section (`cfg.everywhere`).
   Local Food keeps the city; selling online, or only in some places, is said on the listing itself. The Type filter has no Online
   choice anywhere (All and Closed; Sean, 2026-11-01).
+- **Products trimmed** (Sean, 2026-11-01: "I moved most of what was in fitness and athletics... over to services. So we can remove
+  that category... change it to marketplaces... those listings would probably be better served on LESARUSS.ai. We're looking for more
+  vegan marketplaces"; migration `20261101_products_marketplaces.sql`). **Fitness and Athletics** left the menu (its one open row,
+  Switch4Good, on hold, became Nonprofits). **E-Commerce & Marketplaces** is now **Marketplaces**, for Vegan marketplaces only (V
+  Collective); the stored value on Vegans Explore is `Marketplaces`. Amazon, Etsy, Instacart, Fiverr and Lemon Squeezy carry
+  `lesaruss-ai-directory-candidate` (hidden here, kept for LESARUSS.ai, their category unchanged); Amazon's and Instacart's Vegan aisles
+  still open by link. Both old names stay in `CAT_MAP` and the functions' lists for older and LESARUSS.ai rows, never as a pill. The edge
+  lists (`ve-claims`, `ve-outreach`, `ve-discover`, `ve-listing-intake`) gained `Marketplaces`.
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
@@ -3605,7 +3613,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   with no address that names its chapters in those chapters only (only Vegan Squad and VegFest Productions were affected besides the
   chains). A chain with no store in any chapter (Jewel-Osco, Hannaford, QFC, H-E-B) is `['none']`: on All locations and its aisle, in no
   chapter; the listing editor shows no chip for it, so saving its Chapters there drops it. Amazon and Instacart sell online and moved to
-  Products > E-Commerce & Marketplaces, every chapter (their Vegan aisles key off the tag, not the category). Each change is a
+  Products > E-Commerce & Marketplaces, every chapter (their Vegan aisles key off the tag, not the category); the same day both went to
+  LESARUSS.ai only (Products trimmed, under Local Food and Products). Each change is a
   `ve_listing_edits` row. A new chain needs its footprint set when it is added, or it shows nowhere but All locations. Giant is Giant
   Food (D.C., Delaware, Maryland, Virginia); The GIANT Company in Pennsylvania is a sister chain, not counted.
 - **Supermarkets live under Markets only** (Sean, 2026-11-01: "I don't like seeing the supermarkets mixed in with the local because

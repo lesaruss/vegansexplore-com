@@ -36,7 +36,10 @@
     'Food Brands': 'products', 'Nutrition & Supplements': 'products',
     // Brands left the menu (Sean, 2026-10-26); an old 'Brands' row still shows under Products > All.
     'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
-    'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
+    // Marketplaces (Sean, 2026-11-01): Vegan marketplaces only (V Collective). It was E-Commerce & Marketplaces; Amazon, Etsy,
+    // Instacart, Fiverr and Lemon Squeezy went to LESARUSS.ai. Fitness and Athletics left the menu the same day (its businesses
+    // moved to Services). Both old names stay mapped for older rows.
+    'Marketplaces': 'products', 'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
     'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services',
     'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services',
     'AI & Automation': 'services', 'Business Operations': 'services',
@@ -64,7 +67,7 @@
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
       // Products opens on every location (sold anywhere); Sells at > Near me brings the location back for local shops.
-      subcats: ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'], everywhere: true },
+      subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'], everywhere: true },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
       subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth'] },
@@ -558,7 +561,7 @@
   var STATUS_WORDS = { show: ['On hiatus', 'Ended'], work: ['Unavailable for now', 'No longer available'], brand: ['Paused', 'Out of business'], place: ['Temporarily closed', 'Permanently closed'] };
   function statusWords(cat) {
     return STATUS_WORDS[['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(cat) >= 0 ? 'show' : ['Documentaries & Films', 'Books'].indexOf(cat) >= 0 ? 'work'
-      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(cat) >= 0 ? 'brand' : 'place'];
+      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'].indexOf(cat) >= 0 ? 'brand' : 'place'];
   }
 
   // Media says whether it is still going in place of how Vegan it is (Sean, 2026-10-27: a podcast's Active or On hiatus,

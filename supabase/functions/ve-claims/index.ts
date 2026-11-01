@@ -114,7 +114,7 @@ const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
 // Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
 const CATEGORIES = [
   'Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
-  'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces',
+  'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces', 'Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
   'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
@@ -1080,7 +1080,7 @@ Deno.serve(async (req) => {
       : ['Nonprofits', 'Rescues', 'Sanctuaries', 'Events'].includes(l.category) ? 'organization'
       : ['Podcasts', 'YouTube', 'News Outlets', 'Media'].includes(l.category) ? 'show'
       : ['Documentaries & Films', 'Books'].includes(l.category) ? 'work'
-      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Markets'].includes(l.category) ? 'brand'
+      : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces', 'Markets'].includes(l.category) ? 'brand'
       : ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'].includes(l.category) ? 'person'
       : 'service';
     const hours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();

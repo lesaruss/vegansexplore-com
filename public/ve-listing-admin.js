@@ -38,7 +38,7 @@
   // /public/ve-region-directory.js and CATEGORIES in supabase/functions/ve-claims.
   var SECTIONS = [
     ['Local Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep']],
-    ['Products', ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
+    ['Products', ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces']],
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
@@ -92,7 +92,7 @@
   // What kind of listing a sub-section is, and so which parts of the editor it needs. Keep the words in step with STATUS_WORDS in
   // /public/ve-region-directory.js and statusWords in /directory/listing.html.
   var MEDIA_SHOWS = ['Podcasts', 'YouTube', 'News Outlets', 'Media'], MEDIA_WORKS = ['Documentaries & Films', 'Books'];
-  var BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'];
+  var BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'];
   function kindOf(cat) { return (SECTIONS[5][1].indexOf(cat) >= 0) ? 'person' : MEDIA_SHOWS.indexOf(cat) >= 0 ? 'show' : MEDIA_WORKS.indexOf(cat) >= 0 ? 'work' : BRANDS.indexOf(cat) >= 0 ? 'brand' : 'place'; }
   var STATUS = {
     place: { title: 'Open or closed', opts: OPEN },

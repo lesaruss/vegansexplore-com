@@ -24,7 +24,7 @@ const FIELDS = 'slug,name,description,tagline,category,address_street,address_ci
 const PEOPLE = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
 const SHOWS = ['Podcasts', 'YouTube', 'News Outlets', 'Media'];
 const WORKS = ['Documentaries & Films', 'Books'];
-const BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'];
+const BRANDS = ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'];
 const ORGS = /Nonprofit|Rescue|Sanctuar|Advocacy|Organization|Groups|Events/i;
 
 let template = null;

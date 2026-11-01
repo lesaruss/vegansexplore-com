@@ -3167,7 +3167,7 @@ function listingKind(l){
   if(isPersonL(l)) return 'person';
   if(['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
   if(['Documentaries & Films', 'Books'].indexOf(c) >= 0) return 'work';
-  if(['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(c) >= 0) return 'brand';
+  if(['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'].indexOf(c) >= 0) return 'brand';
   return 'place';
 }
 function listingNoun(l){
@@ -3971,7 +3971,7 @@ function renderListing(l){
   // Vegans Who Lift: "I can confirm they've ended"). ve-podcast keeps a confirmed Ended until a newer episode comes out.
   var statusWords = ['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(l.category) >= 0 ? ['On hiatus', 'Ended']
     : ['Documentaries & Films', 'Books'].indexOf(l.category) >= 0 ? ['Unavailable for now', 'No longer available']
-    : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'].indexOf(l.category) >= 0 ? ['Paused', 'Out of business']
+    : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces'].indexOf(l.category) >= 0 ? ['Paused', 'Out of business']
     : ['Temporarily Closed', 'Permanently Closed'];
   var mediaKind = ['show', 'work'].indexOf(listingKind(l)) >= 0;
   var mediaStatus = l.business_status === 'CLOSED_PERMANENTLY' ? [statusWords[1], isSoFlo ? 'color:#ccc;border-color:#777' : 'color:#666;border-color:#999']
