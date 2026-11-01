@@ -2581,7 +2581,7 @@ Directory is their chapter's).
   `filterMenu: true`. The banner's dropdown is the kind of event (All events, then the kinds on the calendar; `onState` hands the
   page the kinds, `cal.setCat(kind)`, the kind stays in the address as `?cat=`), **Upcoming / Past** are the tab row (`.vev-tabs`),
   and **Filters** (`.vev-fbtn`, the count is Sort only) holds Location (Continent, Country, Chapter from the events on the calendar
-  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. The line under the title reads "Festivals · South
+  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. **Duplicate events** (Sean, 2026-11-01): Vegan Social Clubs (Atlanta) posts its weekly Wednesday meetup on Meetup twice; "Vegan and Friends" (Atlantucky Brewing) is the official one, and the 68 "The Vegan Social of Atlanta" copies on the same days were turned down (`rejection_reason` "Duplicate of ...", migration `20261101_atlanta_vsc_duplicates.sql`). `ve_event_intake` treats an event turned down as a duplicate as already listed that day, and refuses (`known_duplicate`) a title its host has had turned down as a duplicate three times or more, new dates included. To retire a recurring copy, turn three down with a reason starting "Duplicate of". The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
   `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
@@ -2734,6 +2734,11 @@ guys. So they get a little bit more prominence." `/media` (`media/index.html`; `
 forwards) are one component, `/public/ve-media.js` (`VEMedia.mount`, after `ve-region-directory.js`). It is what we put
 there, never something members add or follow (the Follow Shows tiles and modal are gone).
 
+- **Filters on the voted list** (Sean, 2026-11-01: "do the same pills on the media filters"): above the top 12, a name search, the live
+  filters as pills (tap one to turn it off and on, its x to take it away) and **Filters**: Podcasts by Status (Active, On hiatus, Ended),
+  Documentaries by Status (Available...), Books by Type of book, any number picked, choices shown only when a listing has them; Sort is
+  Most votes and A to Z, plus Newest and Oldest first for books and films. The 12 are the top 12 of what matches (`FACETS`, `SORTS`,
+  `drawTop` in `ve-media.js`); they reset when the kind changes. Our featured shows are never filtered.
 - **Not about a city** (Sean, same day: "no one's trying to make media just for one location"). The banner is the shared one
   (`VECityBanner` with `VEMedia.bannerOptions`: `choices` instead of cities, one picture) and reads **Vegan Media** over the kind
   of media; its picker is the kind (`TYPES`: Podcasts, Documentaries (`Documentaries & Films`), Books; `?type=` on `/media`), and
