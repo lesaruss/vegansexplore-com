@@ -59,7 +59,7 @@ drop trigger if exists trg_ve_supermarket_sponsors on public.ve_supermarket_spon
 create trigger trg_ve_supermarket_sponsors after insert or update or delete on public.ve_supermarket_sponsors
   for each statement execute function public.ve_supermarket_sponsors_changed();
 
--- The store template: every supermarket gets the same departments and Vegan sections, so a shopper sees the same layout in every
+-- The store template (six categories and their types since 2026-11-01, migration 20261101_supermarket_categories.sql): every supermarket gets the same layout, so a shopper sees the same layout in every
 -- store and members fill in where each section is in theirs. Idempotent per store.
 create or replace function public.ve_supermarket_seed_store(p_venue uuid) returns integer
 language plpgsql security definer set search_path = public as $$
@@ -67,10 +67,12 @@ declare d record; v_sec text; v_spot uuid; n integer := 0; i integer;
 begin
   if exists (select 1 from ve_venue_spots where venue_id = p_venue) then return 0; end if;
   for d in select * from (values
-      (1, 'Refrigerated', array['Plant-based milk','Plant-based yogurt','Vegan cheese','Vegan butter and spreads','Tofu and tempeh','Fresh plant-based meat','Hummus and dips']),
-      (2, 'Frozen', array['Frozen plant-based meat','Frozen Vegan meals','Non-dairy ice cream']),
-      (3, 'Pantry', array['Beans and lentils','Plant-based protein powder','Nut butters']),
-      (4, 'Snacks', array['Vegan snacks and chips','Vegan cookies and treats'])) as t(ord, dept, secs)
+      (1, 'Dairy-free', array['Milk','Coffee creamer','Yogurt','Sour cream','Butter','Cheese','Cream cheese','Ice cream']),
+      (2, 'Plant-based meat and protein', array['Fresh plant-based meat','Frozen plant-based meat','Tofu and tempeh']),
+      (3, 'Ready meals', array['Frozen meals','Refrigerated meals']),
+      (4, 'Pantry', array['Beans and lentils','Nut butters','Protein powder']),
+      (5, 'Snacks and sweets', array['Chips and snacks','Cookies and treats','Hummus and dips']),
+      (6, 'Produce', array['Fruit','Vegetables','Leafy greens and herbs'])) as t(ord, dept, secs)
   loop
     insert into ve_venue_spots (venue_id, name, where_text, sort_order, status)
     values (p_venue, d.dept, 'Aisles not mapped yet', d.ord, 'live') returning id into v_spot;
