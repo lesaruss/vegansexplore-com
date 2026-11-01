@@ -605,7 +605,7 @@ async function act(b: any, who: Who): Promise<any> {
       if (/ · [A-Z][a-z]{2} \d{1,2}$/.test(p.title) && clean(out.title, 80)) patch.title = `${K.label}: ${fix(out.title).slice(0, 80)}`;
       await db.from('ve_plan_pieces').update(touch(patch)).eq('id', p.id);
       await tick(p.id, 'draft', who);
-      await note(p.id, who, 'event', `Logan wrote draft ${v} for ${who.name}${clean(out.notes, 600) ? '. ' + fix(out.notes) : '.'}`, v);
+      await note(p.id, who, 'event', `Logan wrote draft ${v} (asked by ${who.name}).${clean(out.notes, 600) ? ' ' + fix(out.notes) : ''}`, v);
       return { ok: true, status: 'review', draft, draft_v: v, notes: fix(out.notes) };
     } catch (e) {
       if (e instanceof Anthropic.RateLimitError) return { error: 'busy' };
