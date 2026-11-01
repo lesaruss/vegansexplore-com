@@ -16,6 +16,11 @@
 
    A city hub: <aside class="vear-rail" data-ad-page="hub" data-ad-chapter="<hub slug>">, its tall slot.
 
+   Another brand's site (Sean, 2026-11-01, seanarussell.com's Watch: "a 3/4 where the body of the information is, and then
+   you have 1/4 for ads"): data-ad-brand (ad_placements.brand_slug, default vegans-explore), data-ad-slots ("<slot_id>:<tower|
+   landscape>:<300 x 600>", several joined by ;) for a page not in PAGES, and data-ad-cta / data-ad-cta-label for its own
+   Your ad here link. The creative helper loads from wherever this script came from.
+
    Usage:
      <div class="vear-layout"><div class="vear-main">...content...</div><aside class="vear-rail" data-ad-page="pulse"></aside></div>
      Rails fill themselves the first time they scroll into view; VEAdRail.mountAll() picks up rails added later.
@@ -73,8 +78,9 @@
   ].join('');
   var st = document.createElement('style'); st.id = 'vear-style'; st.textContent = css; document.head.appendChild(st);
   // HTML5 ad creatives render through the shared helper; load it if the page did not.
-  if (!window.VEAdCreative && !document.querySelector('script[src="/public/ve-ad-creative.js"]')) {
-    var hs = document.createElement('script'); hs.src = '/public/ve-ad-creative.js'; document.head.appendChild(hs);
+  var ORIGIN = ''; try { var me = document.currentScript && document.currentScript.src; if (me && new URL(me).origin !== location.origin) ORIGIN = new URL(me).origin; } catch (e) {}
+  if (!window.VEAdCreative && !document.querySelector('script[src$="/public/ve-ad-creative.js"]')) {
+    var hs = document.createElement('script'); hs.src = ORIGIN + '/public/ve-ad-creative.js'; document.head.appendChild(hs);
   }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -84,7 +90,11 @@
   function mount(rail) {
     if (!rail || rail.getAttribute('data-ad-ready')) return;
     var page = rail.getAttribute('data-ad-page');
-    var slots = PAGES[page];
+    var slots = PAGES[page], brand = rail.getAttribute('data-ad-brand') || 'vegans-explore';
+    var cta = rail.getAttribute('data-ad-cta') || CTA, ctaLabel = rail.getAttribute('data-ad-cta-label') || 'Advertise with Vegans Explore';
+    if (!slots && rail.getAttribute('data-ad-slots')) slots = rail.getAttribute('data-ad-slots').split(';').map(function (x) {
+      var p = x.split(':'); return { id: (p[0] || '').trim(), shape: (p[1] || 'tower').trim(), size: (p[2] || '').trim() };
+    }).filter(function (x) { return x.id; });
     if (page === 'chapter') { var ch = chapterPage(rail.getAttribute('data-ad-chapter') || ''); page = ch.slug; slots = ch.slots; }
     if (page === 'hub') { var hp = hubPage(rail.getAttribute('data-ad-chapter') || ''); if (!hp) return; page = hp.slug; slots = hp.slots; }
     if (!slots) return;
@@ -92,11 +102,11 @@
     rail.setAttribute('aria-label', 'Advertisement');
     // An empty slot invites an advertiser instead of showing a blank box.
     rail.innerHTML = '<div class="vear-label">Advertisement</div>' + slots.map(function (s) {
-      return '<div class="vear-slot ' + s.shape + '" data-slot="' + s.id + '"><a class="vear-ph" href="' + CTA + '"><strong>Your ad here</strong><span>' + s.size + ' &middot; Advertise with Vegans Explore</span></a></div>';
+      return '<div class="vear-slot ' + esc(s.shape) + '" data-slot="' + esc(s.id) + '"><a class="vear-ph" href="' + esc(cta) + '"><strong>Your ad here</strong><span>' + esc(s.size) + ' &middot; ' + esc(ctaLabel) + '</span></a></div>';
     }).join('') +
       // Under every ad, filled or not (Sean, 2026-10-27: "a little line that says your ad here"). It opens /business on Get found.
-      '<a class="vear-cta" href="' + CTA + '">Your ad here<span>Advertise with Vegans Explore</span></a>';
-    fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=' + encodeURIComponent(page), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+      '<a class="vear-cta" href="' + esc(cta) + '">Your ad here<span>' + esc(ctaLabel) + '</span></a>';
+    fetch(SUPABASE_URL + '/functions/v1/ad-resolve?brand_slug=' + encodeURIComponent(brand) + '&page_slug=' + encodeURIComponent(page), { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         (data && data.slots || []).forEach(function (ad) {
