@@ -25,6 +25,10 @@
 //                                                         ref checkin-action:<id>) or decline
 // 'listing' also returns the listing's approved shout-outs (first name and initial). Owners earn nothing at their own place.
 //
+// Earn your Passport, part 4 (2026-11-01): someone who is not a member yet but has Support Local running (ve-challenge) may
+// check in and use the check-in menu too. They earn no points for it (ve_checkin_save p_pay false; an approval pays only an
+// active member); the challenge's 1,100 points are the reward.
+//
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -111,12 +115,20 @@ Deno.serve(async (req) => {
     return json({ ok: true, show_checkins: p?.show_checkins !== false });
   }
 
+  // A challenger: not a member, with Support Local running.
+  const challenger = async () => {
+    if (m.membership_status === 'active') return false;
+    const { count } = await db.from('ve_challenges').select('id', { count: 'exact', head: true }).eq('member_id', memberId).eq('kind', 'support_local').eq('status', 'active');
+    return (count || 0) > 0;
+  };
+  const allowed = async () => m.membership_status === 'active' || await challenger();
+
   if (body.action === 'checkin') {
-    // Check-ins are a member benefit, like votes.
-    if (m.membership_status !== 'active') return json({ ok: false, why: 'members_only' }, 403);
+    // Check-ins are a member benefit, like votes, and open to a Support Local challenger (at no points).
+    if (!(await allowed())) return json({ ok: false, why: 'members_only' }, 403);
     if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
     const { data, error } = await db.rpc('ve_checkin_save', { p_member: memberId, p_listing: body.listing_id,
-      p_lat: num(body.lat), p_lng: num(body.lng), p_accuracy: num(body.accuracy) });
+      p_lat: num(body.lat), p_lng: num(body.lng), p_accuracy: num(body.accuracy), p_pay: m.membership_status === 'active' });
     if (error) return json({ error: error.message }, 500);
     return json(data);
   }
@@ -165,7 +177,7 @@ Deno.serve(async (req) => {
   }
 
   if (body.action === 'photo_start') {
-    if (m.membership_status !== 'active') return json({ ok: false, why: 'members_only' }, 403);
+    if (!(await allowed())) return json({ ok: false, why: 'members_only' }, 403);
     if (body.kind !== 'meal' && body.kind !== 'receipt') return json({ error: 'kind' }, 400);
     const c = await openCheckin(body.checkin_id);
     if (!c) return json({ ok: false, why: 'no_checkin' }, 404);
@@ -177,7 +189,7 @@ Deno.serve(async (req) => {
   }
 
   if (body.action === 'act') {
-    if (m.membership_status !== 'active') return json({ ok: false, why: 'members_only' }, 403);
+    if (!(await allowed())) return json({ ok: false, why: 'members_only' }, 403);
     const kind = String(body.kind || '');
     if (!KINDS.includes(kind)) return json({ error: 'kind' }, 400);
     const c = await openCheckin(body.checkin_id);
@@ -213,25 +225,26 @@ Deno.serve(async (req) => {
     if (!m.is_superadmin) return json({ error: 'forbidden' }, 403);
     if (body.action === 'review_list') {
       const status = ['pending', 'approved', 'declined'].includes(body.status) ? body.status : 'pending';
-      const { data: rows } = await db.from('ve_checkin_actions').select('id, kind, photo_path, post_url, body, status, points, review_note, created_at, members(name, email), listings(name, slug, address_city)')
+      const { data: rows } = await db.from('ve_checkin_actions').select('id, kind, photo_path, post_url, body, status, points, review_note, created_at, members(name, email, membership_status), listings(name, slug, address_city)')
         .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(100);
       const out = await Promise.all((rows || []).map(async (r: any) => {
         let photo = null;
         if (r.photo_path) { const { data } = await db.storage.from('checkin-photos').createSignedUrl(r.photo_path, 3600); photo = data?.signedUrl || null; }
         return { id: r.id, kind: r.kind, status: r.status, points: r.points, note: r.review_note, at: r.created_at, photo, post_url: r.post_url, body: r.body,
-          member: { name: r.members?.name || r.members?.email || 'Member' }, listing: { name: r.listings?.name, slug: r.listings?.slug, city: r.listings?.address_city } };
+          member: { name: r.members?.name || r.members?.email || 'Member' }, challenger: r.members?.membership_status !== 'active', listing: { name: r.listings?.name, slug: r.listings?.slug, city: r.listings?.address_city } };
       }));
       const { count } = await db.from('ve_checkin_actions').select('id', { count: 'exact', head: true }).eq('status', 'pending');
       return json({ ok: true, rows: out, pending: count || 0 });
     }
     if (!isId(body.id) || !['approve', 'decline'].includes(body.decision)) return json({ error: 'bad_request' }, 400);
-    const { data: a } = await db.from('ve_checkin_actions').select('id, kind, member_id, status').eq('id', body.id).maybeSingle();
+    const { data: a } = await db.from('ve_checkin_actions').select('id, kind, member_id, status, members(membership_status)').eq('id', body.id).maybeSingle();
     if (!a) return json({ error: 'not_found' }, 404);
     if (a.status !== 'pending') return json({ ok: false, why: 'already_reviewed' }, 409);
     const note = String(body.note || '').trim().slice(0, 300) || null;
     let pts = 0;
     if (body.decision === 'approve') {
-      pts = Number((await settings() as any)[a.kind]) || 0;
+      // A challenger's approval counts toward Support Local but pays nothing; members are paid.
+      pts = (a as any).members?.membership_status === 'active' ? (Number((await settings() as any)[a.kind]) || 0) : 0;
       if (pts > 0) {
         const { data: g, error } = await db.rpc('ve_points_grant', { p_member: a.member_id, p_amount: pts, p_reason: 'checkin', p_ref: 'checkin-action:' + a.id });
         if (error || g?.error) return json({ error: 'grant_failed' }, 500);
@@ -239,6 +252,11 @@ Deno.serve(async (req) => {
     }
     await db.from('ve_checkin_actions').update({ status: body.decision === 'approve' ? 'approved' : 'declined', points: pts, review_note: note,
       reviewed_by: memberId, reviewed_at: new Date().toISOString() }).eq('id', a.id);
+    // Support Local may be finished by this approval.
+    if (body.decision === 'approve') {
+      const { data: ch } = await db.from('ve_challenges').select('id').eq('member_id', a.member_id).eq('kind', 'support_local').eq('status', 'active').maybeSingle();
+      if (ch) await db.rpc('ve_challenge_settle', { p_id: ch.id });
+    }
     return json({ ok: true, points: pts });
   }
 

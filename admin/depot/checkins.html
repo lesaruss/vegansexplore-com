@@ -76,7 +76,7 @@
         if (!rows.length) { $('grid').innerHTML = '<p class="sub">' + (st === 'pending' ? 'Nothing waiting.' : 'None here.') + '</p>'; return; }
         $('grid').innerHTML = rows.map(function (r, i) {
           return '<div class="card">' + (r.photo ? '<img src="' + esc(r.photo) + '" alt="' + esc(KIND[r.kind]) + '" data-lb="' + i + '">' : '') + '<div class="body">' +
-            '<span class="kind">' + esc(KIND[r.kind] || r.kind) + '</span>' +
+            '<span class="kind">' + esc(KIND[r.kind] || r.kind) + (r.challenger ? ' &middot; Challenge, no points' : '') + '</span>' +
             '<h3><a href="/directory/' + esc(r.listing.slug) + '" target="_blank" rel="noopener">' + esc(r.listing.name) + '</a></h3>' +
             '<span class="meta">' + esc(r.member.name) + ' &middot; ' + esc(new Date(r.at).toLocaleString()) + (r.listing.city ? ' &middot; ' + esc(r.listing.city) : '') + '</span>' +
             (r.post_url ? '<a class="meta" href="' + esc(r.post_url) + '" target="_blank" rel="noopener">Open their post</a>' : '') +
