@@ -16,7 +16,8 @@
 //   { action: 'pick', what, q? }               events | animals | posts, for The Advocate's proofs
 //   { action: 'proof_start', task }            event | animals: a one-object signed upload into the private bucket challenge-proofs
 //   { action: 'proof', task, ... }             event {event_id, photo_path}; animals {listing_id, photo_path, lat?, lng?, accuracy?};
-//                                              share {post_id, url}; an optional note. Waits for the team.
+//                                              share {post_id | listing_id (a rescue or sanctuary page), url}; an optional note.
+//                                              Waits for the team.
 //   { action: 'set_password', password }       once a member, an account made at Start sets its password (8 or more characters)
 //   { action: 'admin_list', status? }          super admins: challenges by status (active | done | expired) with progress
 //   { action: 'proof_list', status? }          super admins: The Advocate's proofs (pending | approved | declined), signed photos
@@ -287,11 +288,16 @@ Deno.serve(async (req) => {
       return json({ ok: true, items: (data || []).map((l: any) => ({ id: l.id, title: l.name, slug: l.slug, where: [l.category, l.address_city].filter(Boolean).join(' · ') })) });
     }
     if (body.what === 'posts') {
+      // Fosters and Rescues posts first; a rescue's or sanctuary's own Directory page counts too (the boards are new).
       let r = db.from('ve_board_posts').select('id, title, kind, community_slug, created_at').in('kind', ['foster', 'rescue']).in('status', ['open', 'resolved'])
         .eq('pinned', false).order('created_at', { ascending: false }).limit(30);
       if (q) r = r.ilike('title', `%${likeEsc(q)}%`);
-      const { data } = await r;
-      return json({ ok: true, items: (data || []).map((p: any) => ({ id: p.id, title: p.title, where: (p.kind === 'foster' ? 'Fosters' : 'Rescues') + ' · ' + p.community_slug, url: `${SITE}/pulse/${p.kind === 'foster' ? 'fosters' : 'rescues'}?post=${p.id}` })) });
+      let l = db.from('listings').select('id, name, slug, category, address_city').eq('status', 'approved').in('category', ['Rescues', 'Sanctuaries']).order('name').limit(30);
+      if (q) l = l.ilike('name', `%${likeEsc(q)}%`);
+      else if (m.home_community) l = l.contains('communities', [m.home_community]);
+      const [{ data }, { data: ls }] = await Promise.all([r, l]);
+      return json({ ok: true, items: (data || []).map((p: any) => ({ id: p.id, kind: 'post', title: p.title, where: (p.kind === 'foster' ? 'Fosters' : 'Rescues') + ' board · ' + p.community_slug, url: `${SITE}/pulse/${p.kind === 'foster' ? 'fosters' : 'rescues'}?post=${p.id}` }))
+        .concat((ls || []).map((x: any) => ({ id: x.id, kind: 'listing', title: x.name, where: x.category + (x.address_city ? ' · ' + x.address_city : ''), url: `${SITE}/directory/${x.slug}` }))) });
     }
     return json({ error: 'what' }, 400);
   }
@@ -340,12 +346,19 @@ Deno.serve(async (req) => {
         row.accuracy_m = acc !== null ? Math.round(acc) : null;
       }
     } else {
-      if (!isId(body.post_id)) return json({ ok: false, why: 'post', message: 'Pick the Fosters or Rescues post you shared.' }, 400);
-      const { data: p } = await db.from('ve_board_posts').select('id, kind').eq('id', body.post_id).maybeSingle();
-      if (!p || !['foster', 'rescue'].includes(p.kind)) return json({ ok: false, why: 'post', message: 'Pick a post from the Fosters or Rescues board.' }, 400);
+      // A Fosters or Rescues post, or a rescue's or sanctuary's Directory page.
+      if (isId(body.post_id)) {
+        const { data: p } = await db.from('ve_board_posts').select('id, kind').eq('id', body.post_id).maybeSingle();
+        if (!p || !['foster', 'rescue'].includes(p.kind)) return json({ ok: false, why: 'post', message: 'Pick a post from the Fosters or Rescues board.' }, 400);
+        row.post_id = p.id;
+      } else if (isId(body.listing_id)) {
+        const { data: l } = await db.from('listings').select('id, category').eq('id', body.listing_id).eq('status', 'approved').maybeSingle();
+        if (!l || !['Rescues', 'Sanctuaries'].includes(l.category)) return json({ ok: false, why: 'post', message: 'Pick a rescue or sanctuary.' }, 400);
+        row.listing_id = l.id;
+      } else return json({ ok: false, why: 'post', message: 'Pick what you shared.' }, 400);
       const u = String(body.url || '').trim();
       if (!/^https:\/\/[^\s]+\.[^\s]+/i.test(u) || u.length > 500 || /vegansexplore\.com/i.test(u)) return json({ ok: false, why: 'url', message: 'Paste the link to where you shared it (your post or story).' }, 400);
-      row.post_id = p.id; row.url = u;
+      row.url = u;
     }
     const { data: prior } = await db.from('ve_challenge_proofs').select('id, status').eq('challenge_id', c.id).eq('task', task).in('status', ['pending', 'approved']);
     if ((prior || []).some((x: any) => x.status === 'approved')) return json({ ok: false, why: 'already_approved' }, 409);

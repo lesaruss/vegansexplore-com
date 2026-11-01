@@ -68,7 +68,7 @@
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-challenge';
       var $ = function (id) { return document.getElementById(id); };
       var KIND = { support_local: 'Support Local', connector: 'The Connector', advocate: 'The Advocate' };
-      var TASK = { event: 'A free event', animals: 'A sanctuary or rescue', share: 'Shared a Fosters or Rescues post' };
+      var TASK = { event: 'A free event', animals: 'A sanctuary or rescue', share: 'Shared a post' };
       var rows = [], counts = {}, waiting = 0;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }

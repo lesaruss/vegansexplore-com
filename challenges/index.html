@@ -81,7 +81,7 @@
     };
     var TASK = { event: ['A free event', 'Go to a free event on our calendar and send a photo from it. A guest pass checked in at the door counts on its own.'],
       animals: ['A sanctuary or rescue', 'Visit or volunteer at a sanctuary, rescue or animal nonprofit, and send a photo.'],
-      share: ['Share a post', 'Share a post from the Fosters or Rescues board, and send us the link to where you shared it.'] };
+      share: ['Share a post', 'Share a post from the Fosters or Rescues board, or a rescue or sanctuary from our Directory, and send us the link to where you shared it.'] };
     var STATE = { approved: ['Approved', 'done'], pending: ['Waiting for our team', 'wait'], declined: ['Not approved, send another', 'out'], open: ['To do', ''] };
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
@@ -293,7 +293,7 @@
     function drawTask(c, t) {
       var what = t === 'event' ? 'events' : t === 'animals' ? 'animals' : 'posts', chosen = null;
       app.innerHTML = crumbs('The Advocate') + '<p class="eyebrow">The Advocate</p><h1>' + TASK[t][0] + '</h1><p class="sub">' + TASK[t][1] + '</p>' +
-        '<div class="card" style="margin-top:18px;max-width:760px"><label for="q">' + (t === 'event' ? 'Which event?' : t === 'animals' ? 'Which sanctuary, rescue or nonprofit?' : 'Which post did you share?') + '</label><input type="search" id="q" placeholder="Search"><div id="pk" class="pick"></div>' +
+        '<div class="card" style="margin-top:18px;max-width:760px"><label for="q">' + (t === 'event' ? 'Which event?' : t === 'animals' ? 'Which sanctuary, rescue or nonprofit?' : 'What did you share?') + '</label><input type="search" id="q" placeholder="Search"><div id="pk" class="pick"></div>' +
         (t === 'share' ? '<label for="u">Link to where you shared it</label><input type="url" id="u" placeholder="https://www.instagram.com/stories/...">' : '<label for="ph">Photo</label><input type="file" id="ph" accept="image/*" capture="environment">') +
         '<label for="nt">Anything to add (optional)</label><textarea id="nt" maxlength="500"></textarea>' +
         '<div class="row"><a class="btn ghost" href="#c/advocate">Back</a><button class="btn" id="go">Send it</button><span class="msg" id="mm"></span></div></div>';
@@ -304,7 +304,7 @@
         var go = this, mm = document.getElementById('mm'); mm.className = 'msg err';
         if (!chosen) { mm.textContent = 'Pick one from the list.'; return; }
         var note = document.getElementById('nt').value, body = { action: 'proof', task: t, note: note };
-        if (t === 'event') body.event_id = chosen.id; else if (t === 'animals') body.listing_id = chosen.id; else body.post_id = chosen.id;
+        if (t === 'event') body.event_id = chosen.id; else if (t === 'animals' || chosen.kind === 'listing') body.listing_id = chosen.id; else body.post_id = chosen.id;
         go.disabled = true; mm.className = 'msg'; mm.textContent = 'Sending...';
         var p;
         if (t === 'share') { body.url = document.getElementById('u').value.trim(); p = call('ve-challenge', body); }
