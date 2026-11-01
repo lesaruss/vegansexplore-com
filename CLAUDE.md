@@ -1828,7 +1828,13 @@ is closed, the monthly check-up's closed or quiet flag, no socials, no hours, no
 open (a site that only blocks our scanner does not count). The strong ones (Google says permanently closed, the check-up flag, or
 no socials with no hours or no working website) are held every night by `ve_directory_auto_hold()` (cron
 `ve-directory-auto-hold`, 08:30 UTC), never a claimed or owned listing; one Sean puts back stays off the list for 90 days
-(`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`).
+(`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`). **Google vouches** (Sean, 2026-11-01: "fix the nightly check"; migration
+`20261101_directory_auto_hold_google_verified.sql`): No socials with No website or No hours holds a place only when Google does not
+vouch for it (its Google place, a street and hours, Google not saying closed); it still shows flagged in Directory review. The same day
+the 87 held for a dead website or no socials were checked on Google (78 Place Details calls): 34 open with 50 or more reviews and one
+since May 2026 went back, 6 Google calls permanently closed were Removed (Sean: "remove any"), 2 temporarily closed and 36 with few or
+old reviews stay on hold; Google lists no website for most, so a website alone cannot vet them (its reviews field is its five most
+helpful, not the newest).
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
 street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-outreach` `listing_fix` (only what changed, each a
@@ -3728,6 +3734,36 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   full. The Guide's Help keep it right table shows both columns; Depot > Venues pays and labels the right amounts. Proven 2026-11-01 in a
   rolled-back transaction (unsponsored correction 40, Still here 2 with no bounty; with a Publix Title sponsorship the first confirm 50
   and the bounty).
+- **Scan, macros, votes within the brand and picks in recipes** (Sean, 2026-11-01: "a tab where they can scan an item... it should
+  take them to its profile... each brand to have all of their products listed... see the nutrition value, which supermarkets carry it...
+  vote for it within the brand. So you're not going to see the rankings anywhere except when you click on the brand itself... If the
+  ingredient calls for coffee creamer... pick and choose which coffee creamer they want... save it"; then "Could we also list the macros
+  of the item?"; migrations `20261101_product_barcodes_macros.sql`, `20261101_recipe_ingredient_types.sql`; edge function `ve-products`).
+  **Barcodes**: `ve_product_barcodes` (GTIN padded to 14 digits, `ve_gtin`), one row per item, tied to its product line, with its Nutrition
+  Facts and macros; 1,044 filled 2026-11-01 from USDA FoodData Central's Branded Foods (every record of each brand, matched by kind,
+  nothing whose ingredients start with milk or cream or list whey, casein, lactose, egg or honey; "almond milk (water, almonds)" is fine;
+  `ve_usda_label` builds the label per serving with FDA rounding) and, for lines USDA lacks or holds only broken records for, Open Food
+  Facts (`ve_off_label`, CC BY-SA; no serving on record means the FDA reference amount: butter 1 Tbsp, cream cheese 2 Tbsp, cheese 30g,
+  grated parmesan 2 tsp). An item whose record is impossible (Natural Bliss Hazelnut, 4g protein a tablespoon) never stands for its line.
+  **Macros**: `ve_products.macros` `{serving, cal, protein, carbs, fat, fiber, sugar, sodium, item}` from the line's plain or original item
+  (81 of 86 lines; 3 before), shown by `/public/ve-macros.js` (`VEMacros.strip`, `line`, `per100`, `amount`): a strip on every product page
+  (`.pv-mac` in `ve-product-view.js`, the chosen version's own), protein and calories on the Supermarket Guide's tiles and the brand's
+  Products tab, and Sort products (Most protein, Most protein per calorie, Fewest calories, `o` in the address). **Scan** is a Supermarket
+  Guide tab (`#/scan`, `#/scan/<barcode>`, open to everyone): `/public/ve-scan.js` (the browser's BarcodeDetector, else ZXing 0.21.3 from
+  jsDelivr for iPhone, or type the number; nothing recorded); ours opens with the line's name, the item, macros, Open its page, Every <type>
+  like it and Carried at; anything else shows what Open Food Facts says (CC BY-SA, read live, its Vegan status, macros per serving or 100 g)
+  and **Add it** (`ve-products` `add`, members, 20 a day: a pending row the team approves to its product line in **Depot > Venues >
+  Barcodes**, `#barcodes`). **Votes within the brand**: `ve_product_votes`, one per member per product (`ve-products` `votes`, `vote`); a
+  brand's Products tab and Overview list its products most voted first with **#N at <brand>** and a Vote button, and nowhere else shows the
+  rank. **Picks in recipes**: `recipes.ingredient_types` (set by trigger from each line, `ve_ingredient_type`), so a Cookbook recipe line
+  that calls for milk, creamer, yogurt, butter or a cheese has **Pick your <type>** (the Dairy Guide's recipe view): a window of every
+  product of that type with its macros (sort by protein or calories), saved per member (`ve_recipe_picks`, `ve-products` `pick`, refused
+  for a product of another type), shown in their recipe with its picture, macros, its page and **Buy it online** (an Amazon search with our
+  tag), and the recipe adds up the picked products' macros at the amounts it calls for, per serving. `ve-products` also takes the ops token
+  with `as_member`. Proven 2026-11-01 as the Logan test account (vote counted once and taken back, a pick saved, a wrong type and an
+  untagged line refused, then cleared). Not yet: 5 lines with no public numbers on USDA or Open Food Facts (365 by Whole Foods coconut
+  yogurt and cheese slices, Om Sweet Home, Vlendedful, Panacheeza: "Macros not added yet" until the team adds them from the package or a
+  member scans one), and the other Guides' recipe views.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

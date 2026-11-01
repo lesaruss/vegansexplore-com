@@ -664,7 +664,10 @@
       '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You love this' : 'Vote') + '</span><b>' + (r.votes || 0) + '</b></button>' + saveBtn('recipe', r.slug) + '</div>' +
       (r.status === 'retesting' ? '<p class="dg-note" style="margin:10px 0 0">A few members said this one did not work for them, so we are making it again. It stays here while we do.</p>' : '') +
       (r.ingredients.length ? '<div class="dg-k" style="margin-top:16px">Shopping list</div><ul class="dg-shoplist">' + r.ingredients.map(function (i, n) {
-        return '<li><label><input type="checkbox" data-have="' + esc(r.id) + ':' + n + '"' + (have[n] ? ' checked' : '') + '><span>' + esc(i) + '</span></label>' + shopLink(i) + '</li>'; }).join('') + '</ul>' : '') +
+        var ty = (r.types || [])[n];
+        return '<li' + (ty ? ' class="dg-picks-li"' : '') + '><div class="dg-shoprow"><label><input type="checkbox" data-have="' + esc(r.id) + ':' + n + '"' + (have[n] ? ' checked' : '') + '><span>' + esc(i) + '</span></label>' +
+          (ty ? '<button type="button" class="dg-shop dg-pickbtn" data-pick="' + n + '">Pick your ' + esc(ty.toLowerCase()) + '</button>' : shopLink(i)) + '</div>' +
+          (ty ? '<div class="dg-picked" id="dgPicked' + n + '"></div>' : '') + '</li>'; }).join('') + '</ul><div id="dgPickTotals"></div>' : '') +
       '</div><figure class="dg-recipe-pic">' + thumb(r.photo, r.title) + (r.photo && r.photo_illustrative ? '<figcaption>Illustrative photo. Made it? Add yours below.</figcaption>' : '') + '</figure></div>' +
       '<div class="dg-k">' + (r.steps.length > 1 ? 'Steps' : 'How to make it') + '</div><ol class="dg-steps">' + r.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
       (r.tip ? '<div class="dg-note">Tip: ' + esc(r.tip) + '</div>' : '') +
@@ -675,7 +678,112 @@
         : reportOpen ? '<label for="dgRepNote"><b>What went wrong?</b> (optional)</label><textarea id="dgRepNote" rows="2" maxlength="600" placeholder="Too thin, split when heated, the timing was off..."></textarea><div class="dg-btns"><button type="button" class="dg-btn dg-ghost" data-report="' + esc(r.id) + '">Send it</button><button type="button" class="dg-link" data-report-cancel>Never mind</button></div><span class="dg-status" role="status"></span>'
         : '<button type="button" class="dg-link" data-report-open>Didn\'t work for me</button>') + '</div></div>';
     drawGallery(r.id);
+    drawPicks(r);
   }
+
+  // Your products in the recipe (Sean, 2026-11-01: "If the ingredient calls for coffee creamer... people will be able to pick and
+  // choose which coffee creamer they want... save it and they'll show that coffee creamer in their recipe... if they wanted to
+  // purchase it, it's right there"). A line the Cookbook tags with a product type (recipes.ingredient_types) gets Pick your <type>;
+  // the pick is saved for the member (ve-products pick) and shows with its picture, macros and where to buy it, and the recipe adds
+  // up the macros of the products picked, per serving.
+  var PICKS = {}, PICK_PRODUCTS = {};
+  function prodApi(body) {
+    var a = auth(), tok = a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null, h = { 'Content-Type': 'application/json', apikey: ANON_KEY };
+    if (tok) h.Authorization = 'Bearer ' + tok;
+    return fetch(SB + '/functions/v1/ve-products', { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (x) { return x.json(); });
+  }
+  function productsOfType(t) {
+    if (PICK_PRODUCTS[t]) return Promise.resolve(PICK_PRODUCTS[t]);
+    return fetch(SB + '/rest/v1/ve_products?select=id,slug,name,product_type,image_url,macros,made_from,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url)&product_type=eq.' + encodeURIComponent(t),
+      { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (x) { return x.ok ? x.json() : []; }).then(function (rows) {
+      rows = (rows || []).filter(function (p) { return p.listings && p.listings.status === 'approved'; })
+        .sort(function (a, b) { return a.listings.name.localeCompare(b.listings.name); });
+      PICK_PRODUCTS[t] = rows; return rows;
+    }).catch(function () { return []; });
+  }
+  function pName(p) { return p.name || (p.listings.name + ' ' + p.product_type); }
+  function buyUrl(p) { return 'https://www.amazon.com/s?k=' + encodeURIComponent(pName(p)) + '&tag=vegansexplore-20'; }
+  function drawPicks(r) {
+    var types = r.types || [];
+    if (!types.some(Boolean)) return;
+    var need = []; types.forEach(function (t) { if (t && need.indexOf(t) < 0) need.push(t); });
+    var mine = PICKS[r.id] ? Promise.resolve(PICKS[r.id]) : prodApi({ action: 'picks', recipe_id: r.id }).then(function (d) { PICKS[r.id] = (d && d.picks) || []; return PICKS[r.id]; }).catch(function () { return []; });
+    Promise.all([mine, Promise.all(need.map(productsOfType))]).then(function (x) {
+      var picks = x[0], byId = {};
+      need.forEach(function (t) { (PICK_PRODUCTS[t] || []).forEach(function (p) { byId[p.id] = p; }); });
+      var parts = [], counted = 0;
+      types.forEach(function (t, n) {
+        var box = document.getElementById('dgPicked' + n); if (!box || !t) return;
+        var pk = picks.filter(function (q) { return q.line === n; })[0], p = pk && byId[pk.product_id];
+        var btn = document.querySelector('[data-pick="' + n + '"]');
+        if (btn) btn.textContent = p ? 'Change' : 'Pick your ' + t.toLowerCase();
+        if (!p) { box.innerHTML = ''; return; }
+        var pic = p.image_url || p.listings.logo_url;
+        box.innerHTML = '<div class="dg-pickcard"><span class="dg-pickpic">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy">' : '') + '</span><div class="dg-pickb"><b>' + esc(pName(p)) + '</b>' +
+          (p.macros && window.VEMacros ? '<em>' + esc(VEMacros.line(p.macros)) + ' per ' + esc(p.macros.serving || 'serving') + '</em>' : '') +
+          '<span class="dg-pickacts"><a href="/directory/' + esc(p.listings.slug) + '?tab=products&product=' + esc(p.slug) + '" target="_top">Its page and where to find it</a>' +
+          '<a href="' + esc(buyUrl(p)) + '" target="_blank" rel="noopener sponsored">Buy it online</a></span></div></div>';
+        if (p.macros && p.macros.cal != null && window.VEMacros) {
+          var want = VEMacros.amount(r.ingredients[n]), per = VEMacros.amount(p.macros.serving);
+          parts.push(VEMacros.scale(p.macros, want && per ? want / per : 1)); counted++;
+        }
+      });
+      var tot = document.getElementById('dgPickTotals'); if (!tot) return;
+      if (!counted || !window.VEMacros) { tot.innerHTML = ''; return; }
+      var serves = parseInt(r.servings, 10) || 1, sum = VEMacros.sum(parts), each = VEMacros.scale(sum, 1 / serves);
+      Object.keys(each).forEach(function (k) { each[k] = Math.round(each[k] * 10) / 10; });
+      tot.innerHTML = VEMacros.strip(each, { title: 'Your picks, ' + (serves > 1 ? 'per serving (serves ' + serves + ')' : 'in the whole recipe'), compact: true }) +
+        '<p class="dg-picknote">Adds up only the products you picked, at the amount the recipe calls for (one serving where it gives no amount). Everything else in the recipe is not counted yet.</p>';
+    });
+  }
+  function openPicker(r, n) {
+    var t = (r.types || [])[n]; if (!t) return;
+    var a = auth();
+    if (!(a && a.isLoggedIn && a.isLoggedIn())) { if (a) a.showAuthModal('Sign in to pick your products and save them in your recipes.', function () { location.reload(); }, 'login'); return; }
+    var old = document.getElementById('dgPicker'); if (old) old.remove();
+    var el = document.createElement('div'); el.id = 'dgPicker'; el.className = 'dg-picker'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+    el.innerHTML = '<div class="dg-picker-card"><div class="dg-picker-top"><div><div class="dg-k">' + esc(r.ingredients[n]) + '</div><h3>Pick your ' + esc(t.toLowerCase()) + '</h3></div><button type="button" class="dg-picker-x" aria-label="Close">&times;</button></div>' +
+      '<label class="dg-picker-sort">Sort <select id="dgPickSort"><option value="">A to Z</option><option value="protein">Most protein</option><option value="cal">Fewest calories</option></select></label>' +
+      '<div class="dg-picker-list"><div class="dg-loading">Loading...</div></div></div>';
+    document.body.appendChild(el);
+    var close = function () { el.remove(); document.removeEventListener('keydown', onKey); };
+    var onKey = function (e) { if (e.key === 'Escape') close(); };
+    document.addEventListener('keydown', onKey);
+    el.addEventListener('click', function (e) { if (e.target === el || e.target.closest('.dg-picker-x')) close(); });
+    productsOfType(t).then(function (rows) {
+      var list = el.querySelector('.dg-picker-list'), cur = ((PICKS[r.id] || []).filter(function (q) { return q.line === n; })[0] || {}).product_id;
+      function draw() {
+        var o = el.querySelector('#dgPickSort').value, R = rows.slice();
+        if (o) R.sort(function (a, b) {
+          var x = a.macros && a.macros.cal != null ? (o === 'protein' ? -(a.macros.protein || 0) : a.macros.cal) : null, y = b.macros && b.macros.cal != null ? (o === 'protein' ? -(b.macros.protein || 0) : b.macros.cal) : null;
+          return x == null ? (y == null ? 0 : 1) : y == null ? -1 : x - y;
+        });
+        list.innerHTML = (R.length ? R.map(function (p) {
+          var pic = p.image_url || p.listings.logo_url;
+          return '<button type="button" class="dg-pickopt' + (p.id === cur ? ' on' : '') + '" data-pid="' + esc(p.id) + '"><span class="dg-pickpic">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy">' : '') + '</span>' +
+            '<span class="dg-pickb"><b>' + esc(pName(p)) + '</b><em>' + (p.macros && window.VEMacros ? esc(VEMacros.line(p.macros)) + ' per ' + esc(p.macros.serving || 'serving') : 'Macros not added yet') + '</em></span>' + (p.id === cur ? '<i>Your pick</i>' : '') + '</button>';
+        }).join('') : '<p class="dg-empty">No ' + esc(t.toLowerCase()) + ' in our Guides yet.</p>') + (cur ? '<button type="button" class="dg-link" data-pid="">Clear my pick</button>' : '');
+      }
+      draw();
+      el.querySelector('#dgPickSort').addEventListener('change', draw);
+      list.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-pid]'); if (!b) return;
+        var pid = b.getAttribute('data-pid') || null;
+        b.disabled = true;
+        prodApi({ action: 'pick', recipe_id: r.id, line: n, product_id: pid }).then(function (d) {
+          if (!d || !d.ok) { b.disabled = false; if (d && d.error === 'payment_required' && window.VEVotes && VEVotes.passportPrompt) { close(); VEVotes.passportPrompt(); } return; }
+          var pk = (PICKS[r.id] || []).filter(function (q) { return q.line !== n; });
+          if (pid) pk.push({ line: n, product_id: pid });
+          PICKS[r.id] = pk; close(); drawPicks(r);
+        }).catch(function () { b.disabled = false; });
+      });
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pick]'); if (!b) return;
+    var m = location.hash.match(/^#\/cookbook\/r\/([^/?]+)/); if (!m || !COOK) return;
+    var r = recipeBySlug(decodeURIComponent(m[1])); if (r) openPicker(r, +b.getAttribute('data-pick'));
+  });
   function drawGallery(rid) {
     var draw = function (d) {
       var el = document.getElementById('dgGallery'); if (!el) return;
