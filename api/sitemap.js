@@ -13,7 +13,7 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const SITE = 'https://vegansexplore.com';
 
 const PAGES = ['/', '/explore', '/passport', '/welcome', '/directory', '/events', '/pulse', '/media', '/guides', '/communities',
-  '/business', '/policies', '/contact'];
+  '/business', '/policies', '/contact', '/challenges', '/vault'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia',
   'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
 const GUIDES = ['taste', 'vegan-dairy-guide', 'vegan-restaurant-guide', 'stadium-arena-guide', 'airport-guide', 'nonprofit-guide', 'creator-guide', 'nutrition-guide'];
