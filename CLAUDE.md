@@ -1816,7 +1816,13 @@ is closed, the monthly check-up's closed or quiet flag, no socials, no hours, no
 open (a site that only blocks our scanner does not count). The strong ones (Google says permanently closed, the check-up flag, or
 no socials with no hours or no working website) are held every night by `ve_directory_auto_hold()` (cron
 `ve-directory-auto-hold`, 08:30 UTC), never a claimed or owned listing; one Sean puts back stays off the list for 90 days
-(`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`).
+(`details.review_ok_until`). Off the Directory also takes it off the email list (`trg_ve_outreach_listing_hidden`). **Google vouches** (Sean, 2026-11-01: "fix the nightly check"; migration
+`20261101_directory_auto_hold_google_verified.sql`): No socials with No website or No hours holds a place only when Google does not
+vouch for it (its Google place, a street and hours, Google not saying closed); it still shows flagged in Directory review. The same day
+the 87 held for a dead website or no socials were checked on Google (78 Place Details calls): 34 open with 50 or more reviews and one
+since May 2026 went back, 6 Google calls permanently closed were Removed (Sean: "remove any"), 2 temporarily closed and 36 with few or
+old reviews stay on hold; Google lists no website for most, so a website alone cannot vet them (its reviews field is its five most
+helpful, not the newest).
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
 street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-outreach` `listing_fix` (only what changed, each a
