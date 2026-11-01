@@ -514,6 +514,28 @@ take it down or end it; every step. All of it is `ve-branddesk`'s `site_*` actio
 runs. Our own brands' websites wait for a brand frame (the frame is a restaurant's). Checked against mocked answers in a browser at 1366 and
 390 px; no BrandDesk client existed yet (`list` returned none).
 
+**The plan engine** (2026-11-01, build order item 4; Sean: "go with your recommendation, next step"; migration
+`20261101_branddesk_plan_engine.sql`, edge function `ve-plan`; HQ BrandDesk > a brand > **Plan**, `components/branddesk/PlanRoom.tsx`,
+`/api/branddesk/plan`, `lib/brandPlan.ts`). A 3, 6 or 12 month plan (`ve_plans`: brand, start, Self-serve / Supported / Managed, the
+rhythm: how many of each kind a month) lays out dated pieces (`ve_plan_pieces`), and each piece rolls out its steps backwards from its
+due date (`ve_plan_steps`; `KINDS` in `ve-plan`, Logan's defaults: Social post 8 a month, steps from 7 days before; Reel 4, 14 days;
+Article 1, 21 days; Email 2, 7 days; Photo shoot every other month, 28 days, with Book the photographer and its request already
+written; Podcast episode, Event and Website update off by default). A piece whose steps would start before today moves later in its
+month, never two of a kind on one day. **Every piece moves the same way**: its questions (Questions to answer), then the draft (Ready to
+write: **Write it for me**, Claude Opus 5.5 in the brand's locked voice and story from its kit, only from the answers and the brief, or a
+person writes it and sends it), Waiting for the OK, Approved (a super admin, the owner of our brands; editors ask for changes with a
+note, which the next draft reads) or Changes asked, then **Stored**: a social piece goes onto the brand's Social plan as a slot waiting
+for approval there (`ve_social_slots` status `proposed`, batch `plan:<plan id>`, the time in Eastern), anything else with a link or a
+note. The answers, draft, OK and store steps tick themselves; the rest are ticked by hand. Every move and comment is a `ve_plan_notes`
+row. **The launch gate**: a plan is made only for a launched brand kit (`kit_not_launched`), so today only Vegans Explore can have one;
+Sean A. Russell's and GeekFon Society's kits are not started. Who: super admins, else the brand's `ve_social_people` role. The tab opens
+on Today (late, today, this week, waiting for the OK), then the plans; `?plan=new|<id>&piece=<id>` carry the view. Proven live
+2026-11-01 as Sean on a [TEST] Vegans Explore plan (the gate on GeekFon, 4 pieces and 20 steps made, answers, a draft in the brand's
+voice, an empty change note refused, changes asked and draft 2 shorter as asked, approve, store refused before the OK and onto the Social
+plan at 12:30 PM Eastern after it, a stored piece refused editing, a stranger refused), then removed through the one-time
+`ve-once-plan-proof` (now the 410 stub; the connector held the delete). Not yet: plans for client listings' kits, emailing the owner
+when a piece waits for them, and the plan's pieces on the Social plan's calendar before they are stored.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
