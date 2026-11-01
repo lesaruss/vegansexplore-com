@@ -3934,7 +3934,33 @@ the $11 Passport or a membership earned now; no free account that can take part,
     working; in a rolled-back transaction The Connector stayed open at 2 paid friends with 1 unpaid and finished at 3, all three gave Trailblazer
     and 3,633 lifetime points (Level 2), an expired challenge closed, and a paid member was refused. `/challenges` on desktop and an iPhone (no
     errors, no sideways scroll) and Depot > Challenges in the dashboard frame; then every row and test photo removed.
-  - **Still to build**: 5. the two-day business follow-up and the not-ready-yet emails, 6. the content gig, 7. the business points rule.
+  - **5. The business offer, its follow-up and the not-ready-yet emails** (built and live 2026-11-01, Sean: "Approved, go with your defaults
+    and build it"; migration `20261101_earn_your_passport_emails.sql`; edge function `ve-nurture` from commit 6cff6e0, sha256 matched;
+    `ve-vault` from 91c8c26). **Off until Sean turns each on** (`ve_site_settings` `nurture`: `offers_on`, `tasters_on`; the switches are on
+    the two Depot pages below). Every email is from VEGANS EXPLORE <hello@vegansexplore.com>, signed Vegans Explore team, replies to
+    contact@lesaruss.com, never Sean's name, with a one-click unsubscribe. **The business offer**: Depot > Passport Challenge stops > **Offers
+    we send** (`#offers[/<status>]`, `#offers/new`, `#offers/preview/<kind>[:<offer>]`): New offer (a listing, their email, a name) makes a
+    `ve_pc_offers` row and its own tracked link (`ve_links` `pc-<8>`, initiative `passport-challenge-offer`, to `/business/challenge?listing=`);
+    **Send it** sends email A ("Be a Passport Challenge stop in <month>") by hand, always. Two days later, on a weekday from 10 AM Eastern
+    and only with `offers_on`, the follow-up goes on its own: B "Your spot for <month> is still open" when the link was never clicked (bots
+    left out), C "What a stop really costs" when it was. An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
+    after the follow-up makes it **In the Inbox** (`routed`, a `pc_offer` row of `ve_inbox_items` for the chapter's Community Manager).
+    **Stop these emails** (`/business/challenge?stop=<code>`, `offer_stop`) stops it and adds an `email_suppressions` row. The apply
+    confirmation is now email D ("You applied to be a <month> stop", three next steps; `ve-vault`). **Taster emails**: Depot > Challenges >
+    **Taster emails** (`#emails`, `#emails/preview:<kind>[:<taster>]`): with `tasters_on`, from 10 AM Eastern, Day 3 (this week in their
+    city: events, new places, the Pulse topic; `ve_nurture_city_week`), Day 7 (an episode that fits why they came, `ve_nurture_story`), Day 14
+    (their suggested Guide), then the Daily Pulse every Thursday (`ve_nurture_pulse`, never two emails within six days), and on December 1,
+    18 and 30 the Founding deadline notes; one row per Taster and email in `ve_taster_emails`, claimed before sending. Paying, earning a
+    membership, a [TEST] name, a suppression or `?unsub=<key>` ends the track. Cron `ve-nurture` (every 15 minutes, `tick`, x-cron-secret).
+    Send me a test on every preview. Actions `tick`, `settings`, `offers`, `offer_create`, `offer_send`, `offer_cancel`, `offer_stop`
+    (public), `preview`, `test`, `tasters`. Logan's defaults, Sean's to change: the sender and signature, 10 AM, weekdays for businesses,
+    Thursdays, the December dates. **Proven live 2026-11-01** (outside sending hours, switches off): every preview, a bad email and a second
+    offer to the same business refused, the tick refused without its secret and the admin actions without a super admin; two [TEST] offers
+    sent (no email), a test application made one Applied and a backdated one went to the Inbox on the cron-secret tick (checked in a
+    rolled-back transaction, since test offers stay out of it); its stop link stopped it and wrote the suppression, a bad code 404; both Depot
+    views on desktop and iPhone, no errors; every test row removed. Not yet proven: a real follow-up and a real Taster email going out (the
+    first window after a switch is turned on).
+  - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
