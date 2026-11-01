@@ -215,6 +215,13 @@ and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come fro
 only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
 the script.
 
+**Shared with seanarussell.com** (Sean, 2026-11-01, Watch: "follow that same structure, even how the audio plays"): Sean's site
+loads `https://vegansexplore.com/public/ve-episodes.js` and `ve-ad-rail.js`. `VEEpisodes.mount(el, {listing, call})` takes
+`call(body)` returning another site's episodes in ve-podcast's shape (sar-media `episodes`/`episode`); with it Save, Show notes
+from the Pulse and Referenced books are left out. The rail takes `data-ad-brand`, `data-ad-slots` ("slot:tower:300 x 600") and
+`data-ad-cta`/`data-ad-cta-label` for a page outside `PAGES`, and loads `ve-ad-creative.js` from its own origin. Keep both
+scripts working when loaded from another origin.
+
 ### Ad creatives (Sean, 2026-10-04)
 
 An ad's `creative_url` is an image or an HTML5 ad (a `.html` file in `ads/<brand>/`). Every slot
