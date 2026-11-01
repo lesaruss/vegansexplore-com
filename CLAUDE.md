@@ -3530,6 +3530,14 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 - **The Passport is $11 one time** (the Founding Membership, `ve-entry-checkout`) and comes with **1,100 welcome points**
   (`ve-stripe-webhook` `entry_contribution`, `ve_points_grant(member, 1100, 'welcome', 'welcome')`, once per member). Other ways
   in (a Guide, a ticket) give membership and the purchase, no welcome points. No monthly Passport is offered.
+- **Founding Members close at midnight Eastern on January 1, 2027, and no more comps** (Sean, 2026-11-01: "I'm not going to comp
+  anybody... your chance of becoming a founding member expires at midnight on January 1st... that's a thing that sits on your profile";
+  migration `20261101_founding_member_deadline.sql`, playbook `ve-pricing-points-passport`). Anyone whose `entry_paid_at` is first set
+  before `ve_founding_deadline()` (`ve_site_settings` `founding_member`, 2027-01-01T05:00Z) gets `founding_member` (trigger
+  `trg_ve_founding_on_paid`; Guide accounts never); until that day only invitations set it, so paying members were unmarked (backfilled).
+  Comps already given stay. Not done yet (the playbook row lists it): the deadline in the site's words, Founding Member read from
+  `founding_member` on the member's own dashboard, "On us" out of the Depot's invitations, and Give points from the member card
+  (built on the branch, not deployed).
 - **Every Guide is $11 or 1,100 points**, yours to keep (`ve_guides.access_rule = 'points'`, `cost_lesars` 1100;
   `ve-guide-unlock` `checkout` for $11, `unlock` for points; `ve_guide_purchase_paid` admits the buyer). Free Guides (the Welcome
   Guide, the Partner Guide) stay open to everyone.
