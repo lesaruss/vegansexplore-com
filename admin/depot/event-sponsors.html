@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Event sponsors | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .list{display:flex;flex-direction:column;gap:8px;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 16px;text-decoration:none;color:inherit;}
+    .row:hover{border-color:var(--ve-green);}
+    .row b{font-size:15px;font-weight:800;}
+    .tag{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;}
+    .t-new{background:#fff4e2;color:#6b3f00;}.t-reviewing{background:#e8f0fe;color:#1a3d8a;}.t-approved{background:var(--ve-green-light);color:var(--ve-green-deep);}.t-declined,.t-removed{background:#eef0ee;color:#4a4f4a;}
+    .crumb{font-size:12.5px;font-weight:700;margin-bottom:10px;}.crumb a{color:var(--ve-green-deep);}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:18px 20px;margin-bottom:14px;}
+    .panel h2{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    table.ans{border-collapse:collapse;width:100%;font-size:14px;}
+    table.ans td{padding:6px 10px 6px 0;border-bottom:1px solid var(--ve-border);vertical-align:top;}
+    table.ans td:first-child{color:var(--ve-text-75);width:220px;font-weight:700;}
+    label.f{display:block;font-size:12.5px;font-weight:800;margin:10px 0 4px;}
+    .f-in,textarea.f-in,select.f-in{width:100%;font-family:inherit;font-size:14px;padding:9px 12px;border:1.5px solid var(--ve-border);border-radius:6px;}
+    select.f-in{appearance:none;-webkit-appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23525252' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;padding-right:44px;}
+    .two{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:10px;}
+    .aud{margin:8px 0 12px;}.aud p{font-size:14px;font-weight:700;margin-bottom:4px;}.aud audio{width:100%;max-width:520px;}
+    .warn{font-size:13px;font-weight:700;color:#8a5a00;background:#fff7e8;border-radius:8px;padding:8px 12px;margin:8px 0;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Event sponsors</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">From the Vegan Events Guide (2026-11-01; canon canon-ve-events-guide). <b>Applications</b>: hosts asking for a sponsorship, paid in marketing, never cash. We give a calendar and Daily Pulse feature, two posts and a story, a two-week chapter ad slot, someone covering it and a recap; they give a 10x10 booth, two comped meals or tickets, our logo, a stage mention and our QR cards. Vegan events qualify; plant-forward at a venue that is not Vegan only for a Group Partner; two a chapter a month. Approving can post the Represent Vegans Explore gig on the chapter's Gig Board. <b>Host stories</b>: six questions answered by voice; approving pays a member 100 points.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"><p class="sub">Loading...</p></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-events-guide';
+      var $ = function (id) { return document.getElementById(id); };
+      var V = $('view');
+      var ST_APPS = [['new', 'New'], ['reviewing', 'Reviewing'], ['approved', 'Approved'], ['declined', 'Declined'], ['', 'All']];
+      var ST_STORIES = [['new', 'New'], ['approved', 'Approved'], ['declined', 'Declined'], ['removed', 'Removed'], ['', 'All']];
+      var WORD = { new: 'New', reviewing: 'Reviewing', approved: 'Approved', declined: 'Declined', removed: 'Removed' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function tag(s) { return '<span class="tag t-' + esc(s) + '">' + esc(WORD[s] || s) + '</span>'; }
+      function day(d) { return d ? new Date(String(d).length === 10 ? d + 'T12:00:00' : d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function top(cur) {
+        return '<nav class="tabs"><a href="#apps/new" class="' + (cur === 'apps' ? 'on' : '') + '">Applications</a><a href="#stories/new" class="' + (cur === 'stories' ? 'on' : '') + '">Host stories</a><a href="/guides/vegan-events-guide#/work" target="_blank" rel="noopener">The Guide</a></nav>';
+      }
+      function route() {
+        var p = location.hash.replace(/^#/, '').split('/');
+        if (p[0] === 'app' && p[1]) return viewApp(p[1]);
+        if (p[0] === 'story' && p[1]) return viewStory(p[1]);
+        return viewList(p[0] === 'stories' ? 'stories' : 'apps', p[1] == null ? 'new' : p[1]);
+      }
+      function viewList(kind, status) {
+        V.innerHTML = top(kind) + '<p class="sub">Loading...</p>';
+        api({ action: 'admin_list', kind: kind, status: status }).then(function (d) {
+          if (!d || !d.ok) throw 0;
+          var sts = kind === 'apps' ? ST_APPS : ST_STORIES, c = d.counts || {};
+          V.innerHTML = top(kind) + '<nav class="tabs">' + sts.map(function (s) { return '<a href="#' + kind + '/' + s[0] + '" class="' + (s[0] === status ? 'on' : '') + '">' + s[1] + (s[0] && c[s[0]] ? ' (' + c[s[0]] + ')' : '') + '</a>'; }).join('') + '</nav>' +
+            (d.items.length ? '<div class="list">' + d.items.map(function (r) {
+              if (kind === 'apps') return '<a class="row" href="#app/' + r.id + '"><div><b>' + esc(r.event_name) + '</b><div class="meta">' + esc([day(r.event_date), r.city, (d.chapters || {})[r.chapter], r.host_name + (r.host_org ? ', ' + r.host_org : ''), (r.answers || {}).crowd ? r.answers.crowd + ' expected' : ''].filter(Boolean).join(' · ')) + '</div></div>' + tag(r.status) + '</a>';
+              return '<a class="row" href="#story/' + r.id + '"><div><b>' + esc(r.name) + (r.event_name ? ' &middot; ' + esc(r.event_name) : '') + '</b><div class="meta">' + esc([day(r.created_at), (d.chapters || {})[r.chapter], r.answered + ' answers', r.member_id ? 'Member' : 'Not signed in', r.published ? 'Plays in the Guide' : ''].filter(Boolean).join(' · ')) + '</div></div>' + tag(r.status) + '</a>';
+            }).join('') + '</div>' : '<p class="sub">None here.</p>');
+        }).catch(function () { V.innerHTML = top(kind) + '<p class="sub">That did not load. Refresh to try again.</p>'; });
+      }
+      function viewApp(id) {
+        V.innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_get', kind: 'apps', id: id }).then(function (d) {
+          if (!d || !d.ok) throw 0;
+          var a = d.item, ans = a.answers || {}, ch = d.chapters || {};
+          var flags = [];
+          if (ans.vegan && ans.vegan !== 'Yes') flags.push('They did not say everything served and sold is Vegan.');
+          if (ans.venue_vegan && ans.venue_vegan !== 'Yes') flags.push('The venue is not Vegan: this qualifies only if the host is a Group Partner.');
+          if (d.approved_this_month >= d.cap) flags.push(ch[a.chapter] + ' already has ' + d.approved_this_month + ' approved for that month (the cap is ' + d.cap + ').');
+          V.innerHTML = '<div class="crumb"><a href="#apps/new">Applications</a> &rsaquo; ' + esc(a.event_name) + '</div>' +
+            '<div class="panel"><h2>' + esc(a.event_name) + ' ' + tag(a.status) + '</h2>' + flags.map(function (f) { return '<p class="warn">' + esc(f) + '</p>'; }).join('') +
+            '<table class="ans">' + d.fields.filter(function (f) { return ans[f[0]]; }).map(function (f) {
+              var v = f[0] === 'chapter' ? ch[ans[f[0]]] : ans[f[0]];
+              return '<tr><td>' + esc(f[1]) + '</td><td>' + (f[0] === 'link' && /^https?:/.test(v) ? '<a href="' + esc(v) + '" target="_blank" rel="noopener">' + esc(v) + '</a>' : f[0] === 'host_email' ? '<a href="mailto:' + esc(v) + '">' + esc(v) + '</a>' : esc(v).replace(/\n/g, '<br>')) + '</td></tr>';
+            }).join('') + '<tr><td>Sent</td><td>' + esc(new Date(a.created_at).toLocaleString()) + '</td></tr></table></div>' +
+            '<div class="panel"><h2>Decide</h2><label class="f" for="st">Status</label><select class="f-in" id="st">' + ST_APPS.filter(function (s) { return s[0]; }).map(function (s) { return '<option value="' + s[0] + '"' + (s[0] === a.status ? ' selected' : '') + '>' + s[1] + '</option>'; }).join('') + '</select>' +
+            '<label class="f" for="nt">A note (emailed to them when you decline; added to the approval email)</label><textarea class="f-in" id="nt" rows="3">' + esc(a.decision_note || '') + '</textarea>' +
+            (d.gig ? '<p class="meta" style="margin-top:10px">The booth gig is posted: <a href="/admin/depot/bounties" target="_blank" rel="noopener">' + esc(d.gig.title) + '</a> (' + esc(d.gig.points) + ' points, ' + esc(d.gig.status) + ').</p>'
+              : '<label class="f"><input type="checkbox" id="gig" checked> Post the Represent Vegans Explore gig on the ' + esc(ch[a.chapter] || '') + ' Gig Board when I approve</label>' +
+                '<div class="two"><div><label class="f" for="gp">Points</label><input class="f-in" id="gp" type="number" min="1" value="' + d.gig_defaults.points + '"></div><div><label class="f" for="gs">People</label><input class="f-in" id="gs" type="number" min="1" max="6" value="' + d.gig_defaults.slots + '"></div></div>' +
+                '<label class="f" for="gk">The perk</label><input class="f-in" id="gk" value="Two comped meals or tickets from the host">') +
+            '<label class="f"><input type="checkbox" id="em" checked> Email them about it</label>' +
+            '<div class="acts"><button type="button" class="btn" id="save">Save</button><span class="msg" id="msg"></span></div></div>';
+          $('save').onclick = function () {
+            var st = $('st').value, b = $('save');
+            var body = { action: 'app_decide', id: a.id, status: st, note: $('nt').value, email: $('em').checked };
+            if (st === 'approved' && $('gig') && $('gig').checked) body.gig = { points: +$('gp').value, slots: +$('gs').value, perk: $('gk').value };
+            b.disabled = true; $('msg').textContent = 'Saving...';
+            api(body).then(function (r) { if (r && r.ok) { $('msg').textContent = 'Saved.'; setTimeout(function () { viewApp(a.id); }, 600); } else { b.disabled = false; $('msg').textContent = (r && r.message) || 'That did not save.'; } });
+          };
+        }).catch(function () { V.innerHTML = '<p class="sub">That did not load.</p>'; });
+      }
+      function viewStory(id) {
+        V.innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_get', kind: 'stories', id: id }).then(function (d) {
+          if (!d || !d.ok) throw 0;
+          var s = d.item;
+          V.innerHTML = '<div class="crumb"><a href="#stories/new">Host stories</a> &rsaquo; ' + esc(s.name) + '</div>' +
+            '<div class="panel"><h2>' + esc(s.name) + (s.event_name ? ' &middot; ' + esc(s.event_name) : '') + ' ' + tag(s.status) + '</h2>' +
+            '<p class="meta">' + esc([s.email, s.chapter, 'Sent ' + new Date(s.created_at).toLocaleString(), 'Release ticked ' + new Date(s.release_at).toLocaleString(), d.member ? 'Member: ' + [d.member.first_name, d.member.last_name].filter(Boolean).join(' ') : 'Not signed in, no points', s.points_paid_at ? d.points + ' points paid' : ''].filter(Boolean).join(' · ')) + '</p>' +
+            d.audio.map(function (x) { return '<div class="aud"><p>' + esc(x.question) + '</p><audio controls preload="none" src="' + esc(x.url) + '"></audio></div>'; }).join('') +
+            (d.note ? '<div class="quote">' + esc(d.note) + '</div>' : '') + '</div>' +
+            '<div class="panel"><h2>Decide</h2><label class="f" for="st">Status</label><select class="f-in" id="st">' + ST_STORIES.filter(function (x) { return x[0]; }).map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === s.status ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select>' +
+            '<label class="f"><input type="checkbox" id="pub"' + (s.published ? ' checked' : '') + '> When approved, play it in the Guide (Hosts)</label>' +
+            '<label class="f" for="nt">Team note</label><textarea class="f-in" id="nt" rows="2">' + esc(s.decision_note || '') + '</textarea>' +
+            '<p class="meta">Removed deletes the recordings for good (their right under the release).</p>' +
+            '<div class="acts"><button type="button" class="btn" id="save">Save</button><span class="msg" id="msg"></span></div></div>';
+          $('save').onclick = function () {
+            var st = $('st').value, b = $('save');
+            if (st === 'removed' && !confirm('Delete these recordings for good?')) return;
+            b.disabled = true; $('msg').textContent = 'Saving...';
+            api({ action: 'story_decide', id: s.id, status: st, publish: $('pub').checked, note: $('nt').value }).then(function (r) {
+              if (r && r.ok) { $('msg').textContent = r.paid ? 'Saved, and ' + d.points + ' points paid.' : 'Saved.'; setTimeout(function () { viewStory(s.id); }, 700); } else { b.disabled = false; $('msg').textContent = (r && r.message) || 'That did not save.'; }
+            });
+          };
+        }).catch(function () { V.innerHTML = '<p class="sub">That did not load.</p>'; });
+      }
+      window.addEventListener('hashchange', route);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to review event sponsors.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; route();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

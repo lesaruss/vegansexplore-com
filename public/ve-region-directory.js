@@ -49,6 +49,9 @@
     'Health Professionals': 'services', 'Animal Care': 'services',
     // Studios (Sean, 2026-10-29): production, podcast and photo studios a creator can book; claimed with the $11 Passport like any listing.
     'Studios': 'services',
+    // Event Venues (Sean, 2026-11-01, the Vegan Events Guide): rooms, breweries, galleries, permitted parks, community centers. A
+    // restaurant that hosts events keeps its own category and adds Event Venues under Also show it under.
+    'Event Venues': 'services',
     'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
     // Community is the animals first (Sean, 2026-10-27: "it being about nonprofits, it being about events, it being about rescues...
     // sanctuaries"). Community Partner was not a kind of listing; its rows were re-filed the same day.
@@ -70,7 +73,7 @@
       subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'], everywhere: true },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
-      subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth'] },
+      subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Event Venues', 'Marketing & Growth'] },
     { key: 'media', label: 'Media', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0014 0"></path><line x1="12" x2="12" y1="17" y2="22"></line></svg>',
       // Media (Other media) is hidden for now (Sean, 2026-10-27: "I don't know what media is"); its listings show nowhere until re-filed.

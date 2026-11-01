@@ -129,6 +129,8 @@
       desc: 'Real answers for going from Vegan-curious to confident: what to eat, what to expect and how to start, with Maya walking you through it.' },
     { slug: 'seasonedvegan', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/seasonedvegan.jpg', guide: 'Theo', icon: 'globe', interests: ['causes'], label: 'Seasoned Vegan Path', title: 'Seasoned Vegan Guide',
       desc: 'Deepen your impact: advocacy, mentoring and connecting with the global movement.' },
+    { slug: 'vegan-events-guide', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/vegan-events-guide.jpg', guide: 'River', icon: 'compass', interests: ['events', 'business'], label: 'Events', title: 'The Vegan Events Guide',
+      desc: 'Host a Vegan event people come back to: the plan, the money, venues and vendors from our Directory, the gear, the day itself and what to do when it rains. Built, opening soon.' },
     { slug: 'supermarket-guide', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/supermarket-guide.jpg?v=2', guide: 'Pascal', icon: 'sprout', interests: ['food', 'starting'], label: 'Shopping', title: 'The Supermarket Guide',
       desc: 'Every Vegan product in your supermarket, by what it is, and the aisle members found it in at your store. Prelaunch: it opens with our supermarket sponsors.' },
     { slug: 'vegan-on-a-budget', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/vegan-on-a-budget.jpg', guide: 'Nori', icon: 'sprout', interests: ['food', 'starting'], label: 'Budget', title: 'Vegan on a Budget',
