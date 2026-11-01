@@ -3765,6 +3765,18 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   Cheddar Slices and 365 Nondairy Almondmilk Yogurt from wholefoodsmarket.com (365's nondairy yogurt is almond milk, not coconut; the
   Dairy Guide entry was corrected) and Panacheeza from panacheeza.com (fat and carbs from its % Daily Value). Not yet: Om Sweet Home (no
   website found) and Vlendedful (vlendedful.com no longer resolves), possibly no longer trading; and the other Guides' recipe views.
+- **The Tracker** (Sean, 2026-11-01: "it should put it... as a pending item, so that way they can track it... show on their tracking list
+  that it was approved and if they got any points for it... a history of it over time... maybe the tracker"; "show bounties as well...
+  search by location"; migration `20261101_product_tracker.sql`). The Supermarket Guide's Help keep it right tab is now **Tracker**
+  (`#/tracker`, `#/report` forwards): **Your activity** (points earned, scans, products added and approved, aisle reports accepted; filter
+  Everything / Scans / Products you added / Aisle reports; every row by month with its date, status and points), **Open bounties**
+  (`#/tracker/bounties`: search, a chapter, Near me by distance; each venue opens in its Guide, a Guide they do not own shows locked;
+  `ve-venues` `bounties` returns each venue's `lat`/`lng`) and **How points work** (the old table). Every scan by a signed-in member is a
+  `ve_product_scans` row (once per barcode every 10 minutes); a product added from Scan shows Waiting for the team until Depot > Venues >
+  Barcodes approves it, which pays the adder **25 points** once (`ve_site_settings` `product_barcode_points`, reason `barcode_add`, ref
+  `barcode:<gtin>`, `ve_product_barcodes.points` and `paid_at`; Logan's default, Sean's to change). `ve-products` `tracker`. Supermarket
+  bounties exist only at sponsored chains, so today Open bounties shows the stadiums and airports. Proven 2026-11-01 as the Logan test
+  account (two scans logged, an add approved for 25 points and shown on the Tracker).
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
