@@ -3605,7 +3605,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 ## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
-`20261101_supermarket_guide_canon.sql`). **Built 2026-11-01, not launched** (below). Sean: "a doorway where the community will always know where to find these
+`20261101_supermarket_guide_canon.sql`). **Built and launched 2026-11-01** (below). Sean: "a doorway where the community will always know where to find these
 vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
 they're buying their spot in this massive campaign that starts in Q1."
 
@@ -3661,7 +3661,9 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
   `noindex`): the Guide with a live store, the three tiers, the Q1 2027 campaign, the 2027 story (as plans), Front Row Start, and Email our
-  team. Launch = the `ve_guides` row published, `noindex` off, the card out of Coming soon. Not yet: weekly specials, CPG spotlights in
+  team. **Launched 2026-11-01** (Sean: "launch the Supermarket Guide"; migration `20261101_supermarket_guide_launch.sql`): the
+  `ve_guides` row published ($11 or 1,100 points until a sponsor makes it free), indexed, its card in the Guide catalog after the
+  Nutrition Guide (label Shopping, Brickell Village free), in the sitemap. Not yet: weekly specials, CPG spotlights in
   the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
 - **A section page narrows by type** (Sean, 2026-11-01): a search box and type chips with counts (`SEC_CHIPS` in
   `guide-scripts/supermarket-guide.js`: cheese Shreds, Slices, Blocks, Cream cheese, Parmesan, Spreads, Feta; milk by what it is made
