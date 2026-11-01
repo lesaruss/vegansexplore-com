@@ -24,7 +24,8 @@
 // The business dashboard (Sean, 2026-10-24, Love Life Cafe as the prototype). Its owner or a super admin. The $11 Founding
 // Membership opens it (Sean, 2026-10-24: "that one $11 investment opens them up"); a live plan opens it too. An owner who is
 // not a member yet still edits the page and the menu, and is offered the membership.
-//   POST { action: 'owner_dashboard', listing_id, days? }  -> { listing, open, admin, checklist, cards, stats?, plan?, ads?, checkins?,
+//   POST { action: 'owner_dashboard', listing_id, days?, only? }  -> { listing, open, admin, checklist, cards, health, stats?, plan?, ads?, checkins?,
+//          (only: 'health' returns just the listing check, for the member dashboard's Your business block)
 //          spots?, audits?, orders?, guides?, opportunities?, interests? }
 //   POST { action: 'menu_list', listing_id }  /  { action: 'menu_save', listing_id, item }  /  { action: 'menu_delete', listing_id, id }
 //     the menu (ve_menu_items), each change a ve_listing_edits row (field menu_item) that the Depot can undo
@@ -141,14 +142,36 @@ function tierName(tier: string, category?: string | null): string {
   if (tier !== 'brand') return TIERS[tier]?.name || 'Passport';
   return BRAND_CATS.test(category || '') ? 'Brand Partner' : 'Vegans Explore Partner';
 }
-// Front Row Start (Sean, 2026-10-09; named after a panel): a business that joins the Partner plan before January 1, 2027 gets
-// the rest of 2026 on us. The card is saved today and the first quarter is charged on January 1, 2027 (noon Eastern;
-// Stripe needs a trial to end at least 48 hours out, so a last-minute signup is charged a day or two later), then every
-// quarter. Only the brand tier, only when the page asks for it (offer: 'front-row'), only before the deadline.
-const FRONT_ROW_END = Date.parse('2027-01-01T05:00:00Z');
-function frontRowTrialEnd(tier: string, offer: unknown): number {
-  if (tier !== 'brand' || offer !== 'front-row' || Date.now() >= FRONT_ROW_END) return 0;
-  return Math.floor(Math.max(Date.parse('2027-01-01T17:00:00Z'), Date.now() + 49 * 3600e3) / 1000);
+//   POST { action: 'partner_terms', at? }  public: the Partner plan's period, what joining costs today, the next renewal
+// The Partner plan's periods (LOCKED by Sean 2026-11-01, canon canon-branddesk-production-wing; replaces the 2026-10-09 Front
+// Row Start trial, which nobody had taken). A period is 111 days on one shared calendar from January 1, 2027 (Period 1 Jan 1 to
+// Apr 21, 2027; 2 Apr 22 to Aug 10; ...). The plan is $111 a period and everyone renews together at a period's start (noon Eastern).
+// What the first checkout charges at once (a one-time line), the recurring price starting at the next renewal (a trial until then):
+//   before January 1, 2027: $111 for Period 1, the days until then bonus (Front Row Start), renewing at Period 2;
+//   days 1 to 90 of a period: $1 for each day left in it (prorated: $111 over 111 days), renewing at the next period;
+//   days 91 to 111, the Preparation window: $111 for the next period, the days left spent preparing, renewing at the one after.
+const PERIOD_DAYS = 111, PREP_DAYS = 21, DAY = 864e5;
+const PERIOD1 = Date.parse('2027-01-01T05:00:00Z'); // midnight Eastern
+const periodStart = (n: number) => PERIOD1 + (n - 1) * PERIOD_DAYS * DAY;
+const fmtDay = (ms: number) => new Date(ms).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+function partnerTerms(now = Date.now()) {
+  const nowDay = Math.floor((now - PERIOD1) / DAY); // whole days since Period 1 began (negative before)
+  let n: number, kind: 'front_row' | 'prorated' | 'preparation', first: number, renewPeriod: number, daysLeft = 0;
+  if (nowDay < 0) { n = 1; kind = 'front_row'; first = 11100; renewPeriod = 2; }
+  else {
+    const cur = Math.floor(nowDay / PERIOD_DAYS) + 1, day = nowDay - (cur - 1) * PERIOD_DAYS + 1; // day 1..111 of period cur
+    daysLeft = PERIOD_DAYS - day + 1;
+    if (day <= PERIOD_DAYS - PREP_DAYS) { n = cur; kind = 'prorated'; first = daysLeft * 100; renewPeriod = cur + 1; }
+    else { n = cur + 1; kind = 'preparation'; first = 11100; renewPeriod = cur + 2; }
+  }
+  const renewAt = periodStart(renewPeriod) + 12 * 3600e3; // noon Eastern on the renewal day
+  return { period: n, kind, first_cents: first, days_left: daysLeft, period_start: fmtDay(periodStart(n)),
+    period_end: fmtDay(periodStart(n + 1) - DAY), renews_on: fmtDay(renewAt), trial_end: Math.floor(renewAt / 1000) };
+}
+function partnerFirstLabel(t: ReturnType<typeof partnerTerms>): string {
+  if (t.kind === 'prorated') return `Period ${t.period}, the ${t.days_left} days left (to ${t.period_end})`;
+  if (t.kind === 'preparation') return `Period ${t.period} (${t.period_start} to ${t.period_end}), preparation starts today`;
+  return `Period 1 (${t.period_start} to ${t.period_end}), Front Row Start: until then is bonus`;
 }
 // The city hubs, matching /public/ve-hubs.js (a listing is in a hub when its city and state fit).
 const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] }> = {
@@ -321,16 +344,16 @@ async function syncFromStripe(row: any): Promise<any> {
   return data || row;
 }
 // Create the Stripe subscription checkout for a ve_verified_memberships row.
-async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string, trialEnd = 0): Promise<{ url?: string; error?: string }> {
+async function verifiedCheckout(row: any, listing: any, member: any, back: string, claimId?: string): Promise<{ url?: string; error?: string }> {
   const t = { ...TIERS[row.tier], name: tierName(row.tier, listing.category) };
   const params = new URLSearchParams({
     mode: 'subscription',
     'line_items[0][price_data][currency]': 'usd',
-    'line_items[0][price_data][product_data][name]': (row.test ? '[TEST] ' : '') + `${t.name} (quarterly)${row.founding ? ', founding' : ''} - ${listing.name}`.slice(0, 120),
+    'line_items[0][price_data][product_data][name]': (row.test ? '[TEST] ' : '') + `${t.name} (${row.tier === 'brand' ? 'every 111 days' : 'quarterly'})${row.founding ? ', founding' : ''} - ${listing.name}`.slice(0, 120),
     // A founding spot pays the price it reserved at; everyone else pays today's tier price.
     'line_items[0][price_data][unit_amount]': String(row.founding && row.amount_cents ? row.amount_cents : t.cents),
-    'line_items[0][price_data][recurring][interval]': 'month',
-    'line_items[0][price_data][recurring][interval_count]': '3',
+    'line_items[0][price_data][recurring][interval]': row.tier === 'brand' ? 'day' : 'month',
+    'line_items[0][price_data][recurring][interval_count]': row.tier === 'brand' ? String(PERIOD_DAYS) : '3',
     'line_items[0][quantity]': '1',
     success_url: `${FN_URL}?verified_confirm={CHECKOUT_SESSION_ID}`,
     cancel_url: withParam(back, 'verified', 'cancelled'),
@@ -341,15 +364,23 @@ async function verifiedCheckout(row: any, listing: any, member: any, back: strin
   if (claimId) meta.claim_id = claimId;
   if (row.test) meta.test = 'true';
   if (row.founding) meta.founding = 'true';
-  if (trialEnd) meta.offer = 'front-row';
+  const terms = row.tier === 'brand' ? partnerTerms() : null;
+  if (terms) { meta.offer = terms.kind; meta.period = String(terms.period); }
   for (const [k, v] of Object.entries(meta)) { params.set(`metadata[${k}]`, v); params.set(`subscription_data[metadata][${k}]`, v); }
   // Founding: the card is saved now and the first quarter is charged on the first Challenge month.
   if (row.founding && row.bill_from) {
     const at = Math.floor(new Date(row.bill_from + 'T12:00:00Z').getTime() / 1000);
     if (at > Math.floor(Date.now() / 1000) + 3 * 86400) params.set('subscription_data[trial_end]', String(at));
   }
-  // Front Row Start: nothing today, the first quarter on January 1, 2027.
-  if (trialEnd) params.set('subscription_data[trial_end]', String(trialEnd));
+  // The Partner plan: what is due now as a one-time line, the 111-day price from the next shared renewal.
+  if (terms) {
+    params.set('line_items[1][price_data][currency]', 'usd');
+    params.set('line_items[1][price_data][product_data][name]', ((row.test ? '[TEST] ' : '') + `${t.name}: ${partnerFirstLabel(terms)}`).slice(0, 250));
+    params.set('line_items[1][price_data][unit_amount]', String(terms.first_cents));
+    params.set('line_items[1][quantity]', '1');
+    params.set('subscription_data[trial_end]', String(terms.trial_end));
+    params.set('custom_text[submit][message]', `Today: $${(terms.first_cents / 100).toFixed(0)} for ${partnerFirstLabel(terms)}. Then $111 every 111 days, from ${terms.renews_on}, with every Partner. Cancel any time.`.slice(0, 1000));
+  }
   const { ok, body: s } = await stripe(row.test, 'checkout/sessions', params);
   if (!ok) { console.error('stripe error', s); return { error: s.error?.message ?? 'stripe_error' }; }
   await db.from('ve_verified_memberships').update({ stripe_session_id: s.id, updated_at: new Date().toISOString() }).eq('id', row.id);
@@ -494,11 +525,12 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
   const t = { ...TIERS[row.tier], name: tierName(row.tier, listing?.category) }, renew = p.end ? new Date(p.end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : '';
   const price = ((row.founding && row.amount_cents ? row.amount_cents : t.cents) / 100).toFixed(0);
   const trial = sub.status === 'trialing', brand = row.tier === 'brand';
-  await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${price}/quarter${row.founding ? ' (founding)' : ''}`,
-    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) ${trial ? 'set up billing for' : 'bought'} <b>${t.name}</b> at $${price} a quarter${row.founding ? ', founding price' : ''}${renew ? `, ${trial ? 'first charge' : 'renewing'} ${esc(renew)}` : ''}.</p>` +
+  const paidNow = ((s.amount_total ?? 0) / 100).toFixed(0), per = brand ? 'period' : 'quarter';
+  await mail(`${row.test ? '[TEST] ' : ''}${t.name}: ${listing?.name || 'a listing'}, $${price}/${per}${row.founding ? ' (founding)' : ''}`,
+    `<p><b>${esc(listing?.name || '')}</b> (${esc(listing?.address_city || '')}) ${brand ? `joined <b>${t.name}</b>: paid $${paidNow} today (${esc(s.metadata?.offer === 'prorated' ? 'prorated, Period ' + (s.metadata?.period || '') : s.metadata?.offer === 'preparation' ? 'Preparation window for Period ' + (s.metadata?.period || '') : 'Front Row Start, Period 1')}), then $${price} every 111 days from ${esc(renew)}` : `${trial ? 'set up billing for' : 'bought'} <b>${t.name}</b> at $${price} a quarter${row.founding ? ', founding price' : ''}${renew ? `, ${trial ? 'first charge' : 'renewing'} ${esc(renew)}` : ''}`}.</p>` +
     `<p>${esc(row.contact_name || '')}<br>${esc(row.contact_email || '')}</p>` +
     (row.claim_id ? '<p>This came with a listing claim, which is waiting for your review.</p>' : '') +
-    (brand ? `<p>${trial ? 'Front Row Start: nothing charged today. ' : ''}Next: approve the claim in the Depot so their dashboard opens, and welcome them. <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`
+    (brand ? `<p>Next: approve the claim in the Depot so their dashboard opens, and welcome them. <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`
       : `<p>Next: schedule the visit and photo shoot. Track it in the Depot: <a href="https://vegansexplore.com/admin/depot/verified">vegansexplore.com/admin/depot/verified</a></p>`), row.contact_email || undefined);
   if (row.contact_email && RESEND_KEY) {
     try {
@@ -508,7 +540,7 @@ async function activateVerified(sessionId: string): Promise<{ row: any; listing:
           subject: `Welcome to ${t.name}`,
           html: brand ? `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
             `<p>We review every claim; once yours is approved, your Partner Dashboard opens on your page (sign in with this email). You get a front-row seat on our campaigns: we will send each one before it opens, so you can choose where you fit.</p>` +
-            `<p>${trial ? 'Front Row Start: the rest of 2026 is on us. Your first quarter is charged on ' + esc(renew) + ', then every three months' : 'Your membership renews every quarter' + (renew ? ' (next on ' + esc(renew) + ')' : '')}. To cancel, reply to this email.</p>` +
+            `<p>${s.metadata?.offer === 'front_row' ? 'Front Row Start: your $' + paidNow + ' covers Period 1, which starts January 1, 2027, and every day until then is on us.' : s.metadata?.offer === 'preparation' ? 'Your $' + paidNow + ' covers Period ' + esc(s.metadata?.period || '') + '; the days until it starts are your preparation, when we get your brand ready.' : 'Your $' + paidNow + ' covers the rest of this period.'} Then the plan is $${price} every 111 days, renewing with every Partner, next on ${esc(renew)}. To cancel, reply to this email.</p>` +
             `<p>The Vegans Explore team</p>`
           : `<p>Thank you for joining ${t.name}${listing?.name ? ' with ' + esc(listing.name) : ''}.</p>` +
             `<p>Next, someone from Vegans Explore will reach out to schedule an in-person visit and your photo shoot. The Verified badge goes on your listing once we have visited: Verified means we visited, and it can't be bought.</p>` +
@@ -580,6 +612,108 @@ async function confirm(sessionId: string): Promise<Response> {
   return Response.redirect(back, 302);
 }
 
+// ---- The listing check on the business dashboard (Sean, 2026-11-01, playbook ve-listing-check: "if we're already running these
+// scans... we're just capturing the results. So when somebody unlocks their claim, they get access to this information... with a
+// button: do you want us to fix these issues?"). Built from what we already hold: the listing itself, its ve_listing_health row (the
+// nightly website and Instagram check) and its latest monthly check-up in ve_audits. Free on claim. The check-up's flags carry what
+// we found and the fix; its score stays with the paid full audit ($49). Each check that is not passed names a `fix` id the dashboard
+// sends to Have us do it (VEManaged.open). A listing never checked gets its first website check started here, in the background.
+const HC_FIX: Record<string, string> = { google: 'Google profile', website: 'Website', https: 'Website security', menu: 'Menu online', instagram: 'Instagram', page: 'Directory page', visits: 'Member visits' };
+async function listingHealth(l: any, food: boolean, kind: string, menuCount: number, hasHours: boolean) {
+  const lid = l.id;
+  const [hQ, aQ, ciQ] = await Promise.all([
+    db.from('ve_listing_health').select('checked_at, web_status, web_detail, https_ok, ig_handle, ig_status, ig_last_post, verdict, reasons, support_at, support_why, support_done_at').eq('listing_id', lid).maybeSingle(),
+    db.from('ve_audits').select('id, created_at, finished_at, items, facts, closure_level, closure_signals').eq('listing_id', lid).eq('status', 'done').eq('source', 'checkup').order('created_at', { ascending: false }).limit(1).maybeSingle(),
+    db.from('ve_checkins').select('id', { count: 'exact', head: true }).eq('listing_id', lid).gte('created_at', new Date(Date.now() - 60 * 864e5).toISOString()),
+  ]);
+  const h: any = hQ.data, a: any = aQ.data;
+  const g: any = a?.facts?.google || null, ig: any = a?.facts?.instagram || null;
+  const date = (t: string) => new Date(t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' });
+  const ago = (t: string) => { const d = Math.round((Date.now() - Date.parse(t)) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d < 60 ? d + ' days ago' : Math.round(d / 30) + ' months ago'; };
+  const checks: any[] = [];
+  const add = (area: string, label: string, status: string, found: string, fix?: string, fixId?: string) => checks.push({ area, label, status, found, ...(status !== 'pass' && fix ? { fix } : {}), ...(status !== 'pass' && fixId ? { fix_id: fixId, fix_label: HC_FIX[fixId] } : {}) });
+  const walkIn = food || kind === 'service';
+
+  // 1. Google
+  if (walkIn) {
+    const st = String(g?.status || l.business_status || '');
+    if (/CLOSED/.test(st)) add('Google', 'Open on Google Maps', 'flag', st === 'CLOSED_TEMPORARILY' ? 'Google shows you as temporarily closed.' : 'Google shows you as closed for good.', 'In your Google Business Profile, set the business as open and check your hours.', 'google');
+    else if (st === 'OPERATIONAL') add('Google', 'Open on Google Maps', 'pass', 'Google lists you as open.');
+    else add('Google', 'Open on Google Maps', 'warn', l.google_place_id ? 'Google has your place; our monthly check-up reads it next.' : 'We have not matched you to a Google Maps listing yet.', 'Claim your Google Business Profile so people find you on the map.', 'google');
+    if (g) {
+      const miss: string[] = [];
+      if (!(g.hours || []).length) miss.push('no hours');
+      if (!g.phone) miss.push('no phone');
+      if (!g.website) miss.push('no website link');
+      if ((g.photos || 0) < 10) miss.push(`${g.photos || 0} photos`);
+      if ((g.reviews || 0) < 50) miss.push(`${g.reviews || 0} reviews`);
+      const have = `${g.photos || 0} photos, ${g.reviews || 0} reviews${g.rating ? ' (' + g.rating + ' stars)' : ''}`;
+      add('Google', 'Google profile complete', miss.length ? 'warn' : 'pass', miss.length ? 'Your Google profile has ' + miss.join(', ') + '.' : 'Phone, hours, website, ' + have + '.', 'Add your hours, phone and website, and at least 10 clear photos, to your Google profile.', 'google');
+    }
+  }
+  // 2. The website and its security
+  const site = String(l.website || '').trim();
+  if (!site) add('Website', 'Website opens', 'flag', 'There is no website on your listing.', 'Add your website on Your page, or let us build you one.', 'website');
+  else if (!h || !h.checked_at) add('Website', 'Website opens', 'warn', 'We are checking ' + site.replace(/^https?:\/\//, '').replace(/\/$/, '') + ' now. Open this page again in a minute.');
+  else {
+    const ws = h.web_status;
+    add('Website', 'Website opens', ws === 'ok' || ws === 'blocked' ? 'pass' : ws === 'down' ? 'flag' : ws === 'insecure' ? 'pass' : 'warn',
+      ws === 'blocked' ? 'It opens for visitors (it turns away automated checks, which is fine).' : ws === 'insecure' ? 'It opens, but not securely (see below).' : (h.web_detail || 'We could not read it this time; we try again tomorrow.') + '.',
+      'Renew the domain or fix the hosting, or tell us your new website on Your page.', 'website');
+    if (ws !== 'down' && ws !== 'unknown') add('Website', 'Secure (https)', h.https_ok === false || ws === 'insecure' ? 'flag' : 'pass',
+      h.https_ok === false || ws === 'insecure' ? (h.web_detail || 'No working security certificate') + '.' : 'A working security certificate; it opens with https.',
+      'Any website host can switch on a free security certificate (SSL). Browsers warn visitors away from a site without one.', 'https');
+  }
+  if (food) {
+    const has = menuCount > 0 || !!l.menu_crawl_url;
+    add('Website', 'Menu online', has ? 'pass' : 'flag', menuCount > 0 ? `${menuCount} menu items on your Directory page.` : has ? 'Your menu link is on your Directory page.' : 'We could not find your menu online.', 'Add your menu on this dashboard (Menu), or tell us where it is.', 'menu');
+  }
+  // 3. Instagram
+  const handle = h?.ig_handle || ig?.username || String(l.instagram || '').replace(/^.*instagram\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, '');
+  const lastIg = h?.ig_last_post || ig?.latest || null;
+  if (!handle) add('Instagram', 'Posting on Instagram', 'warn', 'There is no Instagram on your listing.', 'Add your Instagram on Your page. People check it to see you are open.', 'instagram');
+  else if (lastIg) {
+    const fresh = Date.parse(lastIg) > Date.now() - 180 * 864e5;
+    add('Instagram', 'Posting on Instagram', fresh ? 'pass' : 'flag', `@${handle} last posted ${ago(lastIg)}${ig?.last30 != null && fresh ? ', ' + ig.last30 + ' times in the last 30 days' : ''}.`, 'One post this week shows people you are open. We can post for you every week.', 'instagram');
+  } else if (h?.ig_status === 'none' || h?.ig_status === 'private') add('Instagram', 'Posting on Instagram', 'flag', h.ig_status === 'private' ? `@${handle} is private, so visitors cannot see it.` : `We could not find @${handle} on Instagram.`, 'Make the account public, or tell us your current handle on Your page.', 'instagram');
+  else add('Instagram', 'Posting on Instagram', 'pass', `@${handle} is on your listing${food ? '; our monthly check-up reads your posts' : ''}.`);
+  // 4. Your Directory page
+  const desc = String(l.description || '').length >= 80, photos = (l.gallery_urls || []).length > 0;
+  const pmiss = [!l.logo_url && 'no logo', !desc && 'a short description', !photos && 'no photos', walkIn && !hasHours && 'no hours'].filter(Boolean) as string[];
+  add('Your Directory page', walkIn ? 'Hours, photos and story' : 'Logo, photos and story', pmiss.length ? 'warn' : 'pass', pmiss.length ? 'Your page has ' + pmiss.join(', ') + '.' : 'Logo, photos' + (walkIn ? ', hours' : '') + ' and a full description.', 'Fill in Your page on this dashboard, or send us your logo and photos and we do it.', 'page');
+  if (walkIn) add('Your Directory page', 'Members are visiting', (ciQ.count || 0) > 0 ? 'pass' : 'warn', (ciQ.count || 0) > 0 ? `${ciQ.count} member check-ins in the last 60 days.` : 'No member check-ins in the last 60 days.', 'Put a "Check in on Vegans Explore" sign by the register; members earn points for every visit.', 'visits');
+
+  // The monthly check-up's flags: what we found and the fix, never the score (that is the paid full audit).
+  let checkup: any = null;
+  if (a && Array.isArray(a.items)) {
+    const bad = a.items.filter((i: any) => i.state === 'fix');
+    let crit: any[] = [];
+    if (bad.length) { const { data } = await db.from('ve_audit_criteria').select('key, area, label, how, weight, service').in('key', bad.map((i: any) => i.key)); crit = data || []; }
+    const AREA: Record<string, string> = { google: 'Google', seo: 'Search', web: 'Website', social: 'Social' };
+    const flags = bad.map((i: any) => { const c = crit.find((x) => x.key === i.key); return c ? { key: i.key, area: AREA[c.area] || c.area, label: c.label, found: i.found, fix: c.how, weight: c.weight, service: c.service || null } : null; })
+      .filter(Boolean).sort((x: any, y: any) => (y.weight || 0) - (x.weight || 0)).map(({ weight: _w, ...f }: any) => f);
+    checkup = { at: a.finished_at || a.created_at, checked: a.items.filter((i: any) => i.state === 'good' || i.state === 'fix').length, flags };
+  }
+
+  // A listing never checked: start its first website check in the background, so the next visit has it.
+  if (!h?.checked_at && site) {
+    const run = (async () => {
+      const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'CRON_SECRET').maybeSingle();
+      await fetch(`${SUPABASE_URL}/functions/v1/ve-listing-health`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-cron-secret': sec?.value || '' }, body: JSON.stringify({ action: 'one', slug: l.slug, save: true }) }).catch(() => null);
+    })();
+    try { (globalThis as any).EdgeRuntime?.waitUntil?.(run); } catch { /* the check runs tonight instead */ }
+  }
+
+  const flagged = checks.filter((c) => c.status === 'flag').length;
+  const support = !!(h?.support_at && !h?.support_done_at);
+  const next = flagged
+    ? 'Fix the flagged items yourself with the steps shown, or tap Have us do it and our team takes them on. Claimed pages are never taken off the Directory for this; we check again every month and you see it here the moment anything changes.'
+    : 'Nothing urgent. We check again every month, and you see it here the moment anything changes.';
+  const times = [h?.checked_at, a?.finished_at || a?.created_at].filter(Boolean).map((t: string) => Date.parse(t));
+  return { name: l.name, checked_at: times.length ? new Date(Math.max(...times)).toISOString() : null, state: 'live', next, checks, checkup, support,
+    checked_on: times.length ? date(new Date(Math.max(...times)).toISOString()) : null };
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -620,7 +754,12 @@ Deno.serve(async (req) => {
       hub = hubOf(l);
     }
     const f = await foundingState(hub);
-    return json({ hub, hub_name: hub ? HUBS[hub].name : null, founding: f, extra: await currentExtra(), tiers: TIERS });
+    return json({ hub, hub_name: hub ? HUBS[hub].name : null, founding: f, extra: await currentExtra(), tiers: TIERS, partner: partnerTerms() });
+  }
+  // Public: the Partner plan's terms today (the period, what joining costs now, the next shared renewal).
+  if (body.action === 'partner_terms') {
+    const at = body.at ? Date.parse(String(body.at)) : NaN; // a date to preview (testing the calendar), else now
+    return json({ ok: true, ...partnerTerms(Number.isFinite(at) ? at : Date.now()) });
   }
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
@@ -997,7 +1136,7 @@ Deno.serve(async (req) => {
     const back = backTo(body.return_url, 'https://vegansexplore.com/claim?add=1');
     if (partner) {
       const vrow = await verifiedRow(listing.id, member, 'brand', test, { name: contact_name, email: contact_email }, claimId);
-      const pr = await verifiedCheckout(vrow, { ...listing, category }, member, back, claimId, frontRowTrialEnd('brand', body.offer));
+      const pr = await verifiedCheckout(vrow, { ...listing, category }, member, back, claimId);
       return pr.url ? json({ url: pr.url, slug: listing.slug, test_mode: test }) : json({ error: pr.error }, 400);
     }
     const r = await contributionCheckout(claimId, listing, member, cents, back, test, 'contribution with application to be listed');
@@ -1008,7 +1147,7 @@ Deno.serve(async (req) => {
   if (['owner_dashboard', 'menu_list', 'menu_save', 'menu_delete', 'ad_request'].includes(body.action)) {
     const lid = String(body.listing_id || '');
     if (!/^[0-9a-f-]{36}$/.test(lid)) return json({ error: 'bad_listing' }, 400);
-    const { data: l } = await db.from('listings').select('id, name, slug, category, status, owner_member_id, claimed_by_member_id, claim_status, tagline, description, logo_url, gallery_urls, google_hours_json, address_city, address_state, details')
+    const { data: l } = await db.from('listings').select('id, name, slug, category, status, owner_member_id, claimed_by_member_id, claim_status, tagline, description, logo_url, gallery_urls, google_hours_json, address_city, address_state, details, website, instagram, business_status, google_place_id, menu_crawl_url')
       .eq('id', lid).maybeSingle();
     if (!l || l.status !== 'approved') return json({ error: 'not_found' }, 404);
     const owner = l.owner_member_id === memberId || l.claimed_by_member_id === memberId;
@@ -1097,7 +1236,11 @@ Deno.serve(async (req) => {
       ...(food ? [{ k: 'menu', done: (menu.count || 0) > 0 }, { k: 'audit', done: !!(audit.data || []).length }] : []),
     ];
     const hub = hubOf(l);
-    const base = { ok: true, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, kind: dashKind, hub, claim_status: l.claim_status },
+    // The listing check is free on claim (Sean, 2026-11-01, playbook ve-listing-check ANSWER): every owner gets it, member or not.
+    const health = await listingHealth(l, food, dashKind, menu.count || 0, !!hours);
+    // The member dashboard's Your business block reads only the listing check (Sean, 2026-11-01: an owner's business comes first).
+    if (body.only === 'health') return json({ ok: true, health, listing: { id: l.id, name: l.name, slug: l.slug, claim_status: l.claim_status }, owner });
+    const base = { ok: true, health, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, kind: dashKind, hub, claim_status: l.claim_status },
       open, owner, admin: !owner, member_active: memberActive, checklist, cards: (cardsQ.data || []).filter((c: any) => Date.parse(c.starts_at) <= Date.now() && (!c.ends_at || Date.parse(c.ends_at) > Date.now())
         && (!c.listing_kinds || c.listing_kinds.includes(dashKind))).map(({ listing_kinds: _k, ...c }: any) => c), menu_count: menu.count || 0 };
     if (!open) return json(base);
@@ -1209,7 +1352,7 @@ Deno.serve(async (req) => {
     }
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = await verifiedRow(id, member, tier, test, {});
-    const r = await verifiedCheckout(row, listing, member, back, undefined, frontRowTrialEnd(tier, body.offer));
+    const r = await verifiedCheckout(row, listing, member, back, undefined);
     return r.url ? json({ url: r.url, test_mode: test }) : json({ error: r.error }, 400);
   }
 
@@ -1273,7 +1416,7 @@ Deno.serve(async (req) => {
     if (tier) {
       // Claim and a Passport tier in one quarterly subscription checkout; the claim is confirmed when it is paid.
       const vrow = await verifiedRow(id, member, tier, test, { name: contact_name, email: contact_email }, claim.id);
-      const r = await verifiedCheckout(vrow, listing, member, back, claim.id, frontRowTrialEnd(tier, body.offer));
+      const r = await verifiedCheckout(vrow, listing, member, back, claim.id);
       if (!r.url) return json({ error: r.error }, 400);
       await db.from('ve_listing_claims').update({ stripe_session_id: null }).eq('id', claim.id);
       return json({ url: r.url, test_mode: test });

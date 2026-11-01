@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
     catch (e) { return json({ error: 'list_failed', message: (e as Error).message }, 500); }
     const ids = vs.map((v) => v.id);
     // Items through their venue (a list of hundreds of store ids would not fit in the request).
-    const its = ids.length ? await allRows(() => db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(kind, status)').eq('status', 'live')
+    const its = ids.length ? await allRows(() => db.from('ve_venue_items').select('venue_id, last_confirmed_at, gtin, ve_venues!inner(kind, status)').eq('status', 'live')
       .in('ve_venues.kind', GUIDES[GUIDE]).eq('ve_venues.status', 'live').order('id')) : [];
     const chainIds = [...new Set(vs.map((v) => v.chain_listing_id).filter(Boolean))];
     const chains: Record<string, any> = {};
@@ -185,7 +185,7 @@ Deno.serve(async (req) => {
     for (const it of its || []) {
       const c = counts[it.venue_id] ||= { items: 0, confirmed: 0, last: null, bounties: 0 };
       c.items++;
-      if (fullPay(byId[it.venue_id], sponsored) && freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
+      if (!it.gtin && fullPay(byId[it.venue_id], sponsored) && freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
@@ -201,7 +201,7 @@ Deno.serve(async (req) => {
     const hub = str(body.hub, 40);
     const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, longitude, sort_order, image_url, season_reset_at, chain_listing_id').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
     const ids = vs.map((v) => v.id);
-    const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
+    const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, gtin, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
     const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
     const first = P.confirm?.first_with_photo ?? P.confirm?.with_photo ?? 0, missing = P.missing?.with_photo ?? 0;
     // Only the Guides that are out (an unpublished Guide's venues wait for its launch), unless a super admin asks.
@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
     const sponsored = await sponsoredChains();
     const out = (vs || []).filter((v) => v.latitude != null && live.has(guideOfKind(v.kind)) && fullPay(v, sponsored)).map((v) => {
       const mine = (its || []).filter((i) => i.venue_id === v.id);
-      const open = mine.filter((i) => freshness(i, v) !== 'fresh').length;
+      const open = mine.filter((i) => !i.gtin && freshness(i, v) !== 'fresh').length;
       // A venue with nothing listed yet has one bounty: be the first to add what is there.
       const points = mine.length ? open * first : missing;
       return { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, image: v.image_url, free: v.free_example,
@@ -246,8 +246,8 @@ Deno.serve(async (req) => {
     const open = owns || v.free_example;
     const full = fullPay(v, await sponsoredChains());
     const [{ data: spots }, { data: items }] = await Promise.all([
-      db.from('ve_venue_spots').select('id, name, where_text, zone, listing_id, note, sort_order, map_sections, map_level').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
-      db.from('ve_venue_items').select('id, spot_id, name, description, vegan, sources, last_confirmed_at, confirmed_count, photo_url, photo_illustrative, sort_order')
+      db.from('ve_venue_spots').select('id, name, kind, where_text, zone, listing_id, note, sort_order, map_sections, map_level').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
+      db.from('ve_venue_items').select('id, spot_id, name, description, vegan, sources, last_confirmed_at, confirmed_count, photo_url, photo_illustrative, sort_order, gtin')
         .eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
     ]);
     const lids = [...new Set((spots || []).map((s) => s.listing_id).filter(Boolean))];
@@ -277,13 +277,13 @@ Deno.serve(async (req) => {
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
       return {
-        id: s.id, name: s.name, where: s.where_text, zone: s.zone, note: s.note,
+        id: s.id, name: s.name, kind: s.kind || 'food', where: s.where_text, zone: s.zone, note: s.note,
         // The map's pins and level only for an open venue, like its items.
         map_sections: open ? (s.map_sections || []) : [], map_level: open ? s.map_level : null,
         listing: s.listing_id && listings[s.listing_id] ? { slug: listings[s.listing_id].slug, name: listings[s.listing_id].name, logo_url: listings[s.listing_id].logo_url } : null,
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
-          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v), bounty: full && freshness(i, v) !== 'fresh',
+          last_confirmed_at: i.last_confirmed_at, confirmed_count: i.confirmed_count, freshness: freshness(i, v), bounty: !i.gtin && full && freshness(i, v) !== 'fresh', gtin: i.gtin || null,
           photo_url: i.photo_url, photo_illustrative: i.photo_illustrative, saved: saved.includes('venue_item:' + i.id),
           comments: (comments[i.id] || []).slice(0, 5) })) : [],
       };
@@ -305,12 +305,19 @@ Deno.serve(async (req) => {
 
   if (action === 'report') {
     const gate = needActive(); if (gate) return gate;
-    // A photo is optional (it pays more); when one is named, it must be theirs and uploaded.
-    const path = str(body.path, 200);
-    if (path) {
-      if (!path.startsWith(viewer!.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(path)) return json({ error: 'bad_photo' }, 400);
-      const { data: listed } = await db.storage.from(BUCKET).list(viewer!.id, { search: path.split('/')[1] });
-      if (!(listed || []).some((f) => f.name === path.split('/')[1])) return json({ error: 'bad_photo', message: 'The photo did not finish uploading. Try again.' }, 400);
+    // A photo is optional (it pays more); when one is named, it must be theirs and uploaded. Something missing and a scan can
+    // carry a second photo, the shop's or stand's sign (place_path), checked the same way.
+    const checkPhoto = async (p: string) => {
+      if (!p.startsWith(viewer!.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(p)) return 'bad';
+      const { data: listed } = await db.storage.from(BUCKET).list(viewer!.id, { search: p.split('/')[1] });
+      return (listed || []).some((f) => f.name === p.split('/')[1]) ? 'ok' : 'missing';
+    };
+    const path = str(body.path, 200), placePath = str(body.place_path, 200);
+    for (const p of [path, placePath]) {
+      if (!p) continue;
+      const r = await checkPhoto(p);
+      if (r === 'bad') return json({ error: 'bad_photo' }, 400);
+      if (r === 'missing') return json({ error: 'bad_photo', message: 'A photo did not finish uploading. Try again.' }, 400);
     }
     const { data: v } = await db.from('ve_venues').select('id, kind').eq('slug', str(body.venue, 80)).maybeSingle();
     if (!v) return json({ error: 'not_found' }, 404);
@@ -325,19 +332,37 @@ Deno.serve(async (req) => {
       p_member: viewer!.id, p_venue: v.id, p_spot: isId(body.spot) ? body.spot : null, p_item: isId(body.item) ? body.item : null,
       p_kind: str(body.kind, 20), p_note: str(body.note, 600), p_photo: path || null,
       p_lat: num(body.lat), p_lng: num(body.lng), p_accuracy: num(body.accuracy),
+      p_place_photo: placePath || null, p_gtin: str(body.gtin, 20) || null, p_item_name: str(body.item_name, 160) || null,
+      p_place_name: str(body.place_name, 120) || null, p_place_zone: ['landside', 'airside'].includes(body.place_zone) ? body.place_zone : null,
+      p_place_where: str(body.place_where, 160) || null,
     });
     if (error) return json({ error: 'report_failed', message: error.message }, 500);
     return json(data);
   }
 
+  // A scanned barcode at a shop: already logged there (offer Still here for its points), waiting for the team, or new.
+  if (action === 'scan_check') {
+    const code = String(body.gtin || '').replace(/\D/g, '');
+    if (code.length < 8 || code.length > 14) return json({ error: 'bad_code', message: 'That barcode did not read. Try again or type the number.' }, 400);
+    const gtin = code.padStart(14, '0');
+    const { data: v } = await db.from('ve_venues').select('id').eq('slug', str(body.venue, 80)).eq('status', 'live').maybeSingle();
+    if (!v) return json({ error: 'not_found' }, 404);
+    if (!isId(body.spot)) return json({ state: 'new', gtin });
+    const { data: it } = await db.from('ve_venue_items').select('id, name, last_confirmed_at').eq('spot_id', body.spot).eq('gtin', gtin).eq('status', 'live').maybeSingle();
+    if (it) return json({ state: 'logged', gtin, item: it });
+    const { data: pend } = await db.from('ve_venue_reports').select('id').eq('spot_id', body.spot).eq('gtin', gtin).eq('kind', 'scan').eq('status', 'pending').limit(1);
+    if ((pend || []).length) return json({ state: 'pending', gtin });
+    return json({ state: 'new', gtin });
+  }
+
   if (action === 'mine') {
     if (!viewer) return json({ error: 'not_authenticated' }, 401);
     const { data } = await db.from('ve_venue_reports')
-      .select('id, kind, note, status, points, created_at, reviewed_at, review_note, ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
+      .select('id, kind, note, status, points, created_at, reviewed_at, review_note, item_name, place_name, ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
       .eq('member_id', viewer.id).order('created_at', { ascending: false }).limit(100);
     return json({ reports: (data || []).map((r: any) => ({ id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points,
       at: r.created_at, reviewed_at: r.reviewed_at, review_note: r.review_note,
-      venue: r.ve_venues?.name, venue_slug: r.ve_venues?.slug, item: r.ve_venue_items?.name || null, spot: r.ve_venue_spots?.name || null })) });
+      venue: r.ve_venues?.name, venue_slug: r.ve_venues?.slug, item: r.ve_venue_items?.name || r.item_name || null, spot: r.ve_venue_spots?.name || r.place_name || null })) });
   }
 
   if (action === 'saves' || action === 'save') {
@@ -375,24 +400,25 @@ Deno.serve(async (req) => {
   if (action === 'queue') {
     const status = ['pending', 'accepted', 'agreed', 'declined'].includes(body.status) ? body.status : 'pending';
     const { data, error } = await db.from('ve_venue_reports')
-      .select('id, kind, note, status, points, distance_m, accuracy_m, created_at, reviewed_at, member_id, item_id, photo_path, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
+      .select('id, kind, note, status, points, distance_m, accuracy_m, created_at, reviewed_at, member_id, item_id, photo_path, place_photo_path, item_name, place_name, gtin, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
       .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(300);
     if (error) return json({ error: 'queue_failed', message: error.message }, 500);
     const { data: counts } = await db.from('ve_venue_reports').select('status');
     const tally: Record<string, number> = { pending: 0, accepted: 0, agreed: 0, declined: 0 };
     for (const c of counts || []) tally[c.status] = (tally[c.status] || 0) + 1;
     return json({ counts: tally, reports: (data || []).map((r: any) => ({ id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points,
-      distance_m: r.distance_m, accuracy_m: r.accuracy_m, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name), photo: !!r.photo_path,
+      distance_m: r.distance_m, accuracy_m: r.accuracy_m, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name), photo: !!r.photo_path, place_photo: !!r.place_photo_path, gtin: r.gtin, item_name: r.item_name, place_name: r.place_name,
       venue: r.ve_venues?.name, venue_slug: r.ve_venues?.slug, item: r.ve_venue_items?.name || null, spot: r.ve_venue_spots?.name || null })) });
   }
 
   if (action === 'report_get') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     const { data: r } = await db.from('ve_venue_reports')
-      .select('*, members(name, email), ve_venues(slug, name), ve_venue_items(id, name, description, vegan, last_confirmed_at), ve_venue_spots(id, name, where_text)')
+      .select('*, members(name, email), ve_venues(slug, name, kind), ve_venue_items(id, name, description, vegan, last_confirmed_at), ve_venue_spots(id, name, where_text)')
       .eq('id', body.id).maybeSingle();
     if (!r) return json({ error: 'not_found' }, 404);
     const { data: signed } = r.photo_path ? await db.storage.from(BUCKET).createSignedUrl(r.photo_path, 3600) : { data: null as any };
+    const { data: signed2 } = r.place_photo_path ? await db.storage.from(BUCKET).createSignedUrl(r.place_photo_path, 3600) : { data: null as any };
     let others: any[] = [];
     const q = db.from('ve_venue_reports').select('id, kind, note, status, points, created_at, members(name)').eq('venue_id', r.venue_id).neq('id', r.id)
       .order('created_at').limit(50);
@@ -401,7 +427,8 @@ Deno.serve(async (req) => {
     const { data: paid } = await db.from('ve_venue_reports').select('id').eq('member_id', r.member_id).eq('local_day', r.local_day).gt('points', 0);
     return json({ report: { id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points, distance_m: r.distance_m, accuracy_m: r.accuracy_m,
       at: r.created_at, local_day: r.local_day, review_note: r.review_note, first_report_id: r.first_report_id, sponsored: r.sponsored !== false,
-      member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, paid_that_day: (paid || []).length, paid_cap: Number((await bountyLimits()).daily_paid_cap) || 40,
+      member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, place_photo: signed2?.signedUrl || null, gtin: r.gtin, item_name: r.item_name,
+      place_name: r.place_name, place_zone: r.place_zone, place_where: r.place_where, paid_that_day: (paid || []).length, paid_cap: Number((await bountyLimits()).daily_paid_cap) || 40,
       venue: r.ve_venues, item: r.ve_venue_items, spot: r.ve_venue_spots }, others, points: await reportPoints() });
   }
 

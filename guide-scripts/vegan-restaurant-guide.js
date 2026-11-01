@@ -602,7 +602,7 @@
       ['Get listed', 'Every Vegan restaurant can be in the Directory, free. Members find you by city, search and category.', '/claim?add=1', 'Add your restaurant'],
       ['Claim your page', 'Make the page yours: your hours, menu, photos and links, changed whenever you like.', '/claim', 'Claim your page'],
       ['Get votes', 'Members vote for the places they love. The most voted rise to the top of your city.', '/directory', 'See the Directory'],
-      ['Become a Partner', 'The Partner Dashboard shows who finds you, and Partners get a front-row seat on our campaigns. Join before January 1, 2027 and the rest of 2026 is on us.', '/claim', 'See the Partner plan']
+      ['Become a Partner', 'The Partner Dashboard shows who finds you, and Partners get a front-row seat on our campaigns. Join now and every day until January 1, 2027 is on us.', '/claim', 'See the Partner plan']
     ];
     main.innerHTML = head('Get featured', member() ? 'Your Directory page' : 'How restaurants get found on Vegans Explore',
       member() ? 'Find your restaurant, claim it, and keep it fresh. Your Partner Dashboard shows who is finding you.' : 'The Directory is where members look for somewhere to eat. Here is how a restaurant gets on it, and to the top of it.') +

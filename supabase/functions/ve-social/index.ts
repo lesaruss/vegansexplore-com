@@ -2,6 +2,7 @@
 // click in it to see the caption, tags, links, and anything else... share analytics for all of our social feeds and make it so I
 // can sort between channels to see scheduled and past content").
 //   POST { action: 'report', from, to, refresh? }   super admin (the VE token) or ops (LESARUSS_ADMIN_TOKEN)
+//   Any action with the ops token and as_member (a member id) runs as that member: HQ's BrandDesk Social room.
 //   from/to: YYYY-MM-DD, Eastern days. The schedule always looks from today to 60 days ahead as well.
 //   -> { posts: [...], channels: {instagram|facebook|tiktok|youtube|podcast: {connected, followers, followers_start, series, error?}},
 //        fetched_at, errors }
@@ -560,7 +561,16 @@ Deno.serve(async (req) => {
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
     const ops = !!token && token === (await secret('LESARUSS_ADMIN_TOKEN'));
     const who: Who = { ops, admin: false, id: null, name: 'Logan' };
-    if (!ops) {
+    // HQ's BrandDesk calls with the admin token and as_member, the signed-in person's member id (Sean, 2026-11-01: BrandDesk is the
+    // Studio renamed, HQ's production wing). It then acts as that person: their name on approvals, notes and edits, their own role.
+    const asMember = ops && typeof body.as_member === 'string' && /^[0-9a-f-]{36}$/.test(body.as_member) ? body.as_member : null;
+    if (asMember) {
+      const { data: me } = await db.from('members').select('is_superadmin, name').eq('id', asMember).maybeSingle();
+      if (!me) return json({ error: 'not_authenticated' }, 401);
+      const parts = String(me.name || '').trim().split(/\s+/).filter(Boolean);
+      who.ops = false; who.admin = !!me.is_superadmin; who.id = asMember;
+      who.name = parts.length ? parts[0] + (parts.length > 1 ? ' ' + parts[parts.length - 1][0] + '.' : '') : 'A team member';
+    } else if (!ops) {
       const sub = token ? await verifyToken(token) : null;
       if (!sub) return json({ error: 'not_authenticated' }, 401);
       // members has one name column (no first_name / last_name): "Sean A. Russell" reads as "Sean R." on notes and history.

@@ -303,6 +303,9 @@ async function applyCheck(listingId: string, result: string, reviewer: string, s
   const { data, error } = await db.rpc('ve_listing_set_state', { p_listing: listingId, p_state: result === 'open' ? 'live' : 'removed', p_by: reviewer, p_note: note, p_reasons: null });
   if (error || !data?.ok) throw new Error(error?.message || data?.why || 'set_state_failed');
   await db.from('ve_bounty_submissions').update({ check_result: result, check_applied_at: nowIso() }).eq('id', subId);
+  // A place a member found open is flagged for support (Sean, 2026-11-01: "If they confirm they're open, they bump them up, and
+  // then we flag them for special support"): it went quiet online, so we run its audit and reach out.
+  if (result === 'open') { try { await db.rpc('ve_listing_support_flag', { p_listing: listingId, p_why: `A member visited on ${day} and found it open after it went quiet online: run its audit and reach out.` }); } catch (e) { console.error('support_flag', e); } }
   return { state: result === 'open' ? 'live' : 'removed' };
 }
 const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted, visit_at: s.visit_at || null, visit_distance_m: s.visit_distance_m ?? null, visit_comped: s.visit_comped ?? null, library_at: s.library_at || null, check_result: s.check_result || null, check_applied_at: s.check_applied_at || null } : null;

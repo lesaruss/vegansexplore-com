@@ -463,9 +463,11 @@
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
     // A listing that serves more than one chapter reads like a brand: where it works, not its headquarters' city (Sean,
     // 2026-10-27: Be An Animal Hero "still says Jupiter... we could treat it like a brand").
-    var reach = reachOf(l); if (reach) return esc(reach);
-    return esc(l.address_city || l.address_state || '');
+    var reach = reachOf(l); if (reach) return esc(reach) + sharedTag(l);
+    return esc(l.address_city || l.address_state || '') + sharedTag(l);
   }
+  // A Vegan menu run inside a restaurant that is not Vegan (Sean, 2026-11-01; details.shared_kitchen, read by its source, which is always set).
+  function sharedTag(l) { return l.shared_kitchen ? ' &middot; Shared kitchen' : ''; }
   // Every chapter, All of Florida (every chapter in a state that has more than one, VE_HUBS[].state), or the chapters by name.
   var STATE_NAMES = { FL: 'Florida', CA: 'California', NY: 'New York', GA: 'Georgia', PA: 'Pennsylvania', DC: 'D.C.', MD: 'Maryland', VA: 'Virginia', GB: 'the UK' };
   function reachOf(l) {
@@ -1360,7 +1362,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.approved&order=id&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.approved&order=id&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -1455,7 +1457,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l) && ownListing(l); })); })

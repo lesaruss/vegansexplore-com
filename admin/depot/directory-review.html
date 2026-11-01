@@ -211,10 +211,18 @@
       // The four lists, in the order Sean works them.
       // No menu link (Sean, 2026-10-27: menus are linked, not copied): open food places whose Menu tab has nowhere to go
       // (ve_menu_missing), the ones the link finder checked and found nothing first.
-      var TABS = [['held', 'On hold'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['menu', 'No menu link'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
+      var TABS = [['held', 'On hold'], ['support', 'Needs support'], ['flagged', 'Flagged, still live'], ['vetting', 'Being vetted'], ['menu', 'No menu link'], ['removed', 'Removed'], ['closed', 'Permanently closed']];
       var MENU_STAGE = { not_found: ['Not found', 'bad'], no_website: ['No website', 'off'], waiting: ['Not checked yet', 'wait'] };
       var data = null, filt = { q: '', city: '' };
-      function load() { return api({ action: 'review_list' }).then(function (d) { if (!d.ok) throw new Error(d.error || 'load'); data = d; }); }
+      // Needs support (Sean, 2026-11-01: "If they confirm they're open... we flag them for special support"): places the listing check
+      // (ve-listing-health) or a member's visit flagged: a website to fix, or a place back after going quiet. Run its audit, reach out, Done.
+      function health(body) { return fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-health', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function load() {
+        return Promise.all([api({ action: 'review_list' }), health({ action: 'support' }).catch(function () { return { support: [] }; })]).then(function (x) {
+          var d = x[0]; if (!d.ok) throw new Error(d.error || 'load'); data = d;
+          data.support = (x[1].support || []).map(function (r) { var l = r.listings || {}; return { id: r.listing_id, name: l.name, city: l.address_city, state: l.address_state, category: '', logo_url: null, support_why: r.support_why, support_at: r.support_at, slug: l.slug }; });
+        });
+      }
       function rowsOf(tab) {
         var rows = (data[tab] || []).map(function (r) { return r.listing_id ? { id: r.listing_id, name: r.name, city: r.city, state: r.state, category: r.category, logo_url: r.logo_url, flags: r.flags, strong: r.strong } : r; });
         // Flagged shows only the ones still live (the strong ones are held each night).
@@ -224,7 +232,8 @@
         });
       }
       function why(r, tab) {
-        if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
+        if (tab === 'held') { var rv = r.review || {}; return '<div class="flags">' + (rv.reasons || []).map(function (x) { return '<span class="tag wait">' + esc(x) + '</span>'; }).join('') + '</div><small>' + (rv.by === 'Listing check' ? 'Held by the listing check (website, then Instagram); a still-open bounty is up' : rv.auto ? 'Held by the nightly check' : 'Held by ' + esc(rv.by || '')) + ' &middot; ' + esc(pdate(rv.at)) + '</small>'; }
+        if (tab === 'support') return '<small>' + esc(r.support_why || '') + '</small><small>' + esc(pdate(r.support_at)) + '</small>';
         if (tab === 'menu') { var ms = MENU_STAGE[r.stage] || MENU_STAGE.waiting; return '<span class="tag ' + ms[1] + '">' + ms[0] + '</span><small>' + esc(r.stage === 'waiting' ? 'The link finder checks their site soon' : r.stage === 'no_website' ? 'Add their website or a menu link' : (r.note || 'No menu link on their site')) + '</small>'; }
         if (tab === 'vetting') return '<span class="tag wait">' + (r.voter_count || 0) + ' of ' + (data.min_voters || 10) + ' member votes</span><small>Members only until then, or until you vet it</small>';
         if (tab === 'flagged') return '<div class="flags">' + (r.flags || []).map(function (x) { return '<span class="tag ' + (r.strong ? 'wait' : 'off') + '">' + esc(x) + '</span>'; }).join('') + '</div>';
@@ -243,10 +252,13 @@
           '<div class="tools"><input type="search" id="dr-q" placeholder="Search a name, city or kind" value="' + esc(filt.q) + '" aria-label="Search">' +
           '<select id="dr-city" aria-label="City"><option value="">Every city</option>' + cities.map(function (c) { return '<option' + (c === filt.city ? ' selected' : '') + '>' + esc(c) + '</option>'; }).join('') + '</select></div>' +
           '<section class="card">' + (rows.length
-            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : tab === 'vetting' ? 'Votes' : tab === 'menu' ? 'Where it stands' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
-              rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></div><div>' + why(r, tab) + '</div><div><small>' + esc(r.category || '') + '</small></div><div class="act"><a class="btn btn-sm" href="#l/' + r.id + '/' + tab + '">Review</a></div></div>'; }).join('') + '</div>'
+            ? '<div class="list"><div class="item head"><div></div><div>Business</div><div>' + (tab === 'held' || tab === 'flagged' ? 'Red flags' : tab === 'vetting' ? 'Votes' : tab === 'menu' ? 'Where it stands' : tab === 'support' ? 'Why' : 'What happened') + '</div><div>Kind</div><div></div></div>' +
+              rows.map(function (r) { return '<div class="item">' + logo(r) + '<div><strong>' + esc(r.name) + '</strong><small>' + esc([r.city, r.state].filter(Boolean).join(', ')) + '</small></div><div>' + why(r, tab) + '</div><div><small>' + esc(r.category || '') + '</small></div><div class="act">' + (tab === 'support' ? '<button type="button" class="btn btn-sm btn-ghost" data-sdone="' + r.id + '">Done</button> <a class="btn btn-sm" href="/directory/' + esc(r.slug || '') + '" target="_blank" rel="noopener">Open</a>' : '<a class="btn btn-sm" href="#l/' + r.id + '/' + tab + '">Review</a>') + '</div></div>'; }).join('') + '</div>'
             : '<p class="empty">' + (tab === 'held' ? 'Nothing on hold.' : 'Nothing here.') + '</p>') + '</section>';
         Array.prototype.forEach.call(V().querySelectorAll('[data-tab]'), function (b) { b.addEventListener('click', function () { location.hash = '#' + b.dataset.tab; }); });
+        Array.prototype.forEach.call(V().querySelectorAll('[data-sdone]'), function (b) { b.addEventListener('click', function () {
+          b.disabled = true; health({ action: 'support_done', listing_id: b.dataset.sdone }).then(function () { data.support = data.support.filter(function (x) { return x.id !== b.dataset.sdone; }); viewHome('support'); });
+        }); });
         $('dr-q').addEventListener('input', function () { filt.q = this.value; var p = this.selectionStart; viewHome(tab); var i = $('dr-q'); i.focus(); i.setSelectionRange(p, p); });
         $('dr-city').addEventListener('change', function () { filt.city = this.value; viewHome(tab); });
       }

@@ -306,20 +306,37 @@
         plus: ['Everything in Passport Stop', 'The anchor stop one month of the quarter, with bonus Points for members', 'A Tour slot in the quarter wherever Tours run', 'A social campaign: three posts and a short reel', 'The featured spot in your section on the hub']
       };
       // Brand Partner (Sean, 2026-10-08): a product brand (Food Brands, Brands) is not a stop on the map, so it gets one
-      // plan, $111 a quarter, a seat at the table. ve-claims tier 'brand'.
+      // plan, $111 a period (111 days; was a quarter until 2026-11-01), a seat at the table. ve-claims tier 'brand'.
       PERKS.brand = ['Your featured brand page, kept up with your products, photos, videos and creator content', 'Your brand dashboard on your page: views, products opened, store aisles opened, videos played',
         'Front-row access to every campaign before it opens', 'Sponsorships a la carte through LESARUSS AI, or a call with our team for custom options', 'A look at each city as we open it'];
       // The Partner plan for every business (Sean, 2026-10-09: "I would rather give everybody the Oatly style offer... the
-      // way in"): tier 'brand' in ve-claims, $111 a quarter, called Brand Partner for a product brand and Partner for
+      // way in"): tier 'brand' in ve-claims, $111 a period (111 days), called Brand Partner for a product brand and Partner for
       // everyone else. The Passport Stop and Anchor plans show only when the link asks for them (the business page).
       PERKS.partner = ['Your page, your way: your details, photos and story', 'Your Partner Dashboard on your page: views, visitors and what people open',
         'Front-row access to every campaign before it opens: game days, the Plant-Based Showcase, community nights', 'Ads on our pages once the ad console opens', 'Liz, your Guide, and our team for anything'];
       function isBrand() { return !!L && /^(Food Brands|Nutrition & Supplements|Brands)$/.test(L.category || ''); }
       function pName() { return isBrand() ? 'Brand Partner' : 'Partner'; }
-      // Front Row Start (Sean, 2026-10-09): before January 1, 2027 the rest of 2026 is on us. The card is saved today and the
-      // first quarter is charged in January (ve-claims checks the date), for every business now, not only brands.
-      var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+      // The Partner plan's periods (LOCKED by Sean 2026-11-01, canon canon-branddesk-production-wing): $111 a period of 111 days,
+      // one shared calendar from January 1, 2027; everyone renews together. Joining pays now: before January 1 the full $111 for
+      // Period 1 (Front Row Start, the days until then bonus); days 1 to 90 of a period $1 a day left in it; days 91 to 111 (the
+      // Preparation window) $111 for the next period. Mirrors partnerTerms in ve-claims, which decides what is charged.
+      function partnerTerms() {
+        var D = 864e5, P1 = Date.parse('2027-01-01T05:00:00Z'), d = Math.floor((Date.now() - P1) / D), n, kind, first, renew, left = 0;
+        function start(k) { return P1 + (k - 1) * 111 * D; }
+        if (d < 0) { n = 1; kind = 'front_row'; first = 111; renew = 2; }
+        else { var cur = Math.floor(d / 111) + 1, day = d - (cur - 1) * 111 + 1; left = 111 - day + 1;
+          if (day <= 90) { n = cur; kind = 'prorated'; first = left; renew = cur + 1; } else { n = cur + 1; kind = 'preparation'; first = 111; renew = cur + 2; } }
+        function f(ms) { return new Date(ms).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }); }
+        return { period: n, kind: kind, first: first, left: left, start: f(start(n)), end: f(start(n + 1) - D), renews: f(start(renew) + 432e5) };
+      }
+      var PT = partnerTerms();
+      var FRONT_ROW = PT.kind === 'front_row';
       function frontRow() { return FRONT_ROW; }
+      function partnerNow() {
+        return PT.kind === 'front_row' ? 'Your $111 covers Period 1, which starts January 1, 2027, and every day until then is on us.'
+          : PT.kind === 'prorated' ? 'Your $' + PT.first + ' covers the ' + PT.left + ' days left in Period ' + PT.period + ' (to ' + PT.end + ').'
+          : 'Your $111 covers Period ' + PT.period + ' (' + PT.start + ' to ' + PT.end + '); the days until it starts are your preparation.';
+      }
       var TNAME = { verified: 'Passport Stop', plus: 'Passport Anchor', brand: 'Partner' }, OFFER = { founding: { open: false } };
       function founding() { return OFFER.founding && OFFER.founding.open; }
       var PASSPORT = /^(verified|plus)$/.test(qs.get('plan') || '');
@@ -337,8 +354,8 @@
       function partnerCard(name) {
         var guide = isBrand() ? 'Maya, your Guide, on your page' : 'Liz, your Guide, on your Partner Dashboard' + COMING;
         return planCard(name, 'brand', { lead: 'The full experience', title: (frontRow() ? 'Front Row Start: ' : '') + pName(),
-          price: frontRow() ? '$0 today' : '$111', sub: frontRow() ? 'then $111 a quarter from January 2027' : 'a quarter',
-          text: frontRow() ? 'Nothing is charged today. Your card is saved and first charged in January 2027, then every quarter. Cancel any time before.' : 'Billed every quarter. Cancel any time.',
+          price: '$' + PT.first + ' today', sub: 'then $111 every 111 days, from ' + PT.renews,
+          text: partnerNow() + ' Then $111 a period, renewing with every Partner on ' + PT.renews + '. Cancel any time.',
           ticks: ['Everything in the membership: your page, your dashboard and your numbers',
             'A front-row seat on every campaign before it opens: game days, the Plant-Based Showcase, community nights', guide,
             'Ads placed for you on our pages', 'A campaign manager who works with you', 'Founding Member of Vegans Explore'] }, true);
@@ -405,7 +422,7 @@
             : 'Nothing is charged: 1,100 points come off your balance when you claim it. We review every claim by hand.')
           : p === 'claim' ? 'You will finish on a secure Stripe page. We review every claim and application by hand.'
           : f ? 'No card needed today. Your claim is confirmed with your first payment, when your first Challenge month starts. We review every claim.'
-          : p === 'brand' && frontRow() ? 'Your card is saved on a secure Stripe page; nothing is charged until January 2027. To cancel, email hello@vegansexplore.com. We review every claim and application by hand.'
+          : p === 'brand' ? 'You pay $' + PT.first + ' today on a secure Stripe page, then $111 every 111 days from ' + PT.renews + ' (to cancel, email hello@vegansexplore.com). We review every claim and application by hand.'
           : 'Billed every quarter on a secure Stripe page (to cancel, email hello@vegansexplore.com). We review every claim and application by hand.';
       }
       function syncPlan() {
@@ -471,7 +488,7 @@
             return '<a href="/business/results?id=' + encodeURIComponent(s.id) + '">' + esc(fmtDate(s.period_start)) + ' to ' + esc(fmtDate(s.period_end)) + '</a>';
           }).join('') + '</div>';
         }
-        $('st-renew-note').innerHTML = (v && v.committed ? 'Your plan renews once a year (four quarters for three).' : 'Your plan renews every quarter.') + ' To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.';
+        $('st-renew-note').innerHTML = (v && v.committed ? 'Your plan renews once a year (four quarters for three).' : v && v.tier === 'brand' ? 'Your plan renews every 111 days, with every Partner.' : 'Your plan renews every quarter.') + ' To change or cancel it, email <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a>.';
         show(['biz-card', 'st-verified']);
       }
 
@@ -482,7 +499,9 @@
         find: { say: 'Let\'s find your business. Search for it here, and if it\'s already in the Directory, just pick it.', clip: C.j1 },
         claim: { say: 'That\'s the one? Great. Tell us a little about you, and check your details below.', clip: C.j2 },
         add: { say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.', clip: C.pt6 },
-        offer: { say: 'Join before January, and the rest of 2026 is on us. Nothing is charged today, and your seat is saved for our campaigns.', clip: C.j5 },
+        // New line 2026-11-01 (the plan now charges at sign-up): her voice over her still picture, no video (Sean: "picture and
+        // voice, no video"); recorded from text that says "A hundred and eleven dollars".
+        offer: { say: 'Join now, and every day until January is on us. $111 covers your first period, and your seat is saved for our campaigns.', clip: C.j5 ? { poster: C.j5.poster, audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/partner-tour/j-5-v2.mp3' } : null },
         lockin: { say: 'Eleven dollars locks it in, and makes you a Founding Member of Vegans Explore.', clip: C.j3 },
         done: { say: 'You\'re in! Now let\'s look at what\'s next: your dashboard, ads on our pages, and our campaigns.', clip: C.j4 }
       } }) : { say: function () {} };
@@ -738,15 +757,15 @@
           : 'Your contribution went through and you are a Founding Member. We review every claim by hand; once we confirm it is you, ' + (L ? L.name : 'your page') + ' is yours to run.') + ' Here is what comes next.';
         if (kind === 'claim-points') $('nx-p').textContent = '1,100 of your points went to claiming ' + (L ? L.name : 'your page') + '. We review every claim by hand; once we confirm it is you, it is yours to run. Here is what comes next.';
         if (kind === 'points') $('nx-p').textContent = 'Thank you' + (name ? ' for adding ' + name : '') + '. 1,100 of your points went to it. We review every application by hand and will write to you; once it is approved, your page goes live in the Directory. Here is what comes next.';
-        if (joined) $('nx-p').textContent = 'Thank you' + (name ? ' for adding ' + name : L ? ', ' + L.name : '') + '. You are a ' + pName() + '. Nothing is charged today: your plan starts in January 2027 at $111 a quarter, and you can cancel any time before. ' +
+        if (joined) $('nx-p').textContent = 'Thank you' + (name ? ' for adding ' + name : L ? ', ' + L.name : '') + '. You are a ' + pName() + '. ' + partnerNow() + ' Then $111 every 111 days, from ' + PT.renews + '; cancel any time. ' +
           (app ? 'We review every application by hand; once it is approved, your page goes live in the Directory with your Partner Dashboard.' : 'We review every claim by hand; once we confirm it is you, your Partner Dashboard opens on your page.') +
-          ' Between now and January, you hear about every campaign first.';
+          (FRONT_ROW ? ' Between now and January, you hear about every campaign first.' : ' You hear about every campaign first.');
         var cards = [];
         cards.push(app ? '<div class="nx"><small>Next</small><b>Your Partner Dashboard</b><span>Opens on your page once we approve it: your details, photos and story, and your numbers.</span></div>'
           : '<a class="nx" href="/directory/' + encodeURIComponent(slug) + '?tab=brand"><small>Next</small><b>Your Partner Dashboard</b><span>On your page. It opens as soon as we confirm it is you: your details, photos and story, and your numbers.</span></a>');
         if (joined) cards.push('<div class="nx"><small>Your front-row seat</small><b>Campaigns, before they open</b><span>We send you each one first, so you choose where you fit: sampling, coupons for our members, content before and after.</span></div>');
-        else cards.push(brand ? '<a class="nx" href="/directory/' + encodeURIComponent(slug) + '?tab=brand"><small>The full experience</small><b>Brand Partner</b><span>Your featured page, your dashboard and a front-row seat on our campaigns.' + (FRONT_ROW_OPEN ? ' Front Row Start: the rest of 2026 is on us.' : '') + ' Let Maya walk you through it.</span></a>'
-          : (app ? '<div class="nx"' : '<a class="nx" href="/claim?listing=' + encodeURIComponent(slug) + '&plan=brand"') + '><small>The full experience</small><b>Partner, with Front Row Start</b><span>Your Partner Dashboard and a front-row seat on our campaigns.' + (FRONT_ROW_OPEN ? ' Join before January and the rest of 2026 is on us.' : '') + (app ? ' Join from your page once it is approved.' : '') + '</span>' + (app ? '</div>' : '</a>'));
+        else cards.push(brand ? '<a class="nx" href="/directory/' + encodeURIComponent(slug) + '?tab=brand"><small>The full experience</small><b>Brand Partner</b><span>Your featured page, your dashboard and a front-row seat on our campaigns.' + (FRONT_ROW_OPEN ? ' Front Row Start: join now and every day until January is on us.' : '') + ' Let Maya walk you through it.</span></a>'
+          : (app ? '<div class="nx"' : '<a class="nx" href="/claim?listing=' + encodeURIComponent(slug) + '&plan=brand"') + '><small>The full experience</small><b>Partner, with Front Row Start</b><span>Your Partner Dashboard and a front-row seat on our campaigns.' + (FRONT_ROW_OPEN ? ' Join now and every day until January is on us.' : '') + (app ? ' Join from your page once it is approved.' : '') + '</span>' + (app ? '</div>' : '</a>'));
         cards.push('<div class="nx soon"><span class="tag">Coming</span><b>Ads on our pages</b><span>Pick spots across the Directory, our Guides and the Daily Pulse, and place your ads.</span></div>');
         cards.push('<div class="nx soon"><span class="tag">Coming</span><b>Campaigns and sponsorships</b><span>The Plant-Based Showcase on Miami Dolphins game day at Hard Rock Stadium, Sunday, November 29, 2026, and community nights from November.</span></div>');
         $('nx-grid').innerHTML = cards.join('');

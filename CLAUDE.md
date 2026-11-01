@@ -452,6 +452,47 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
+## BrandDesk, the production wing (LOCKED by Sean 2026-11-01, playbook `branddesk-production-wing`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-branddesk-production-wing`; migration
+`20261101_branddesk_production_wing_canon.sql`; the full write-up is `docs/proposals/depot-one-desk.md`). **Not built yet.** BrandDesk
+is the Studio at hq.lesaruss.ai/studio renamed and made the product, living in HQ (lesaruss/lesaruss-hq). It replaces the Studio, this
+site's Depot and Depot > BrandDesk; until each Depot page has a home there, it keeps working here. Brand kit first (approved means
+locked; a locked part changes only on a request with a reason, approved by the owner), then launch opens the modules, each a wizard
+(Website and Social first; Video, YouTube, Podcast, Book, Mobile app, Pitch deck as we use them; Product launch premium, waiting on
+distributor relationships). A marketing plan rolls out dated tasks; every piece is ask, draft, approve, store. Support per wizard:
+Self-serve, Supported, Managed (the $500 managed service below is Managed). **Pricing**: BrandDesk is a perk of the $111 Partner
+plan; wizards are rented by the month, period or year. **Periods**: 111 days, one shared calendar from January 1, 2027 (Period 1 Jan 1
+to Apr 21, 2027; 2 Apr 22 to Aug 10; 3 Aug 11 to Nov 29; 4 Nov 30 to Mar 19, 2028), always "period", never "quarter". Joining on days 1
+to 90 is prorated; days 91 to 111 are the Preparation window, full $111 for the next period, spent building the brand kit. **Front Row
+Start now charges $111 at sign-up** (the days before January 1 are bonus); anyone already on the old no-charge trial keeps those terms.
+Build order: the Partner checkout first, then renaming the Studio, the foundation, Social and Website, the plan engine, our own brands
+first.
+**The Partner checkout, built and live 2026-11-01** (Sean: "Logan, build it", then "deploy"; pages on `main` at 0b3320a, `ve-claims`
+version 44 from the same commit, source sha256 matched). `ve-claims`
+`partnerTerms()` is the shared calendar (`PERIOD_DAYS` 111, `PREP_DAYS` 21, Period 1 from 2027-01-01 Eastern) and the public action
+`partner_terms` (`at` previews a date); tier `brand` checks out as a one-time line for what is due now plus a $111 price every 111 days
+(`interval` day, `interval_count` 111) on a trial to the next shared renewal at noon Eastern; `metadata.offer` front_row | prorated |
+preparation and `metadata.period`. Checked 2026-11-01: today $111 renewing April 22, 2027; March 31, 2027 $22; April 1 to 21 the
+Preparation window, $111 for Period 2 renewing August 11. The `offer=front-row` URL param is informational now. `claim.html` mirrors the
+calendar (`partnerTerms`, `partnerNow`); the Partner wording on `/claim`, `/business`, the listing page and brand tour, the business
+dashboard, the Restaurant Guide, the sample business and Preview journeys, and `/policies#business` (The Partner plan) say it; business
+outreach's Day 4 email lost "No charge today" (migration `20261101_partner_periods_outreach_day4.sql`, applied; nothing had been sent).
+No Partner membership existed, so nobody holds the old no-charge trial. The three lines that said the old terms were lip-synced videos;
+they are now the Guide's voice over her still picture, no video (Sean, 2026-11-01: "picture and voice, no video"): Liz's offer on `/claim`
+(`liz/partner-tour/j-5-v2.mp3`; `VEGuideTour.narrator` plays a line's `{audio, poster}`), and Maya's last brand tour slide, shared by
+every brand (`brand-door/front-row-v2.mp3` before January 1, then `plain-last-first-v2.mp3` or `plain-last-v2.mp3`; `{audio, poster}`
+through `voiceAt`). Recorded with el-media tts in their profile voices, called from the database (pg_net) so the admin token never
+leaves it, each checked word for word with `stt`. `ve-claims` and the pages go out together. **Proven live 2026-11-01** in Stripe test mode with the
+internal QA account on Love Life Cafe (the one-time `ve-once-partner-proof`, now the 410 stub): the session charged $111 today (a one-time
+line for Period 1) with the $111 price every 111 days at $0 today on a trial to April 22, 2027, metadata `front_row` and period 1, its
+note on Stripe's page; then expired and the claim and membership rows removed.
+**The Studio is BrandDesk in HQ, live 2026-11-01** (Sean: "go", then "deploy"; lesaruss-hq commit 4ed90c1): the pages moved from
+`/studio` to `/branddesk` (`app/(shell)/branddesk`), with the nav, links, staff routes and labels; `/studio` and `/studio/*` redirect there
+(`next.config.ts`, not permanent); the `/api/studio` data routes are unchanged. Checked from the database (this session cannot reach
+hq.lesaruss.ai): the old addresses land on the new ones and `/branddesk` asks a signed-out visitor to sign in. Next: each brand's page as
+its home, starting with the Social plan.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
@@ -585,7 +626,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (initiative `branddesk`, `tier_label` the business, `note` what they want, tags `branddesk`, `from-<page>`, `fix-<id>`, `wants-<x>`),
   an email to the team (reply-to them) and a confirmation to them from Vegans Explore. The Inbox shows it as a **Managed marketing
   request** (migration `20261031_branddesk_requests_inbox.sql`; a business starting [TEST] stays out of the Inbox and sends no email).
-  Nothing is charged there.
+  Nothing is charged there. Since 2026-11-01 the business dashboard's listing check and check-up flags carry **Have us do it** on every
+  flagged item (`doItBtn` in `ve-partner-dashboard.js`, `from: 'fix'`, `fix` the check's id).
   **The contract and Stripe** (built 2026-10-31; Sean: "approve both", test mode first and the agreement as a draft for the lawyer;
   migration `20261031_branddesk_accounts.sql`, edge function `ve-branddesk`). **`/business/agreement`** (`business/agreement.html`,
   `noindex`) is the Managed Marketing Agreement, version `2026-10-31` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together, and
@@ -1847,15 +1889,60 @@ runs `applyCheck` in `ve-bounties`: open puts the place back on the Directory (`
 closed takes it off as Removed, each with a note naming the visit and the day, once per submission (`check_applied_at`). A new "Is it still
 open?" job needs `check_listing_id` set. **Announced in each chapter's Daily Pulse** (Sean, 2026-11-01: "post the bounty in the Daily Pulse"): nine
 draft topics, one a chapter ("Is it still open? 50 points a stop in <city>", a See the places button to
-`/bounties?community=<city>&campaign=still-open-<city>`, the first reply set), status draft with no `auto_publish_at`, so they wait in the
-Pulse desk (Depot > Inbox) until published by hand and never go out on their own. **Closed comes
+`/bounties?community=<city>&campaign=still-open-<city>`, the first reply set), made as drafts with no `auto_publish_at`. **Published
+2026-11-01** (Sean: "publish them all now"), all nine the way `ve-board` `topic_publish` does it (status open, `published_at`, `reply_count`
+1, the first reply posted under Sean's account), straight in SQL because `topic_desk` and `topic_publish` refuse the admin token's
+`as_member`. Each is first on its chapter's `/pulse` (checked through `ve-board` `list` and in a browser), and its See the places opens its
+campaign on `/bounties` in a new tab (members only; signed out it is the Bounties gate). Atlanta's text says 7 places; its campaign has 8
+since the listing check added Chi Chi Vegan Taco Shop. **Closed comes
 off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
 don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
 hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
 Google (Place Details, `businessStatus` only, job `closed-recheck`, within the background cap) every listing held or Removed because
 Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the Directory any Google shows open again, with a note
 (`ve_closed_rechecks` keeps each answer). The first run, 2026-11-01: all eight (Coco Lov and Seasoned Green temporarily, six permanently)
-still closed. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+still closed. **The listing check, in Sean's order** (Sean, 2026-11-01: "the first best indicator is Google Maps... If they pass that, they can move
+on to their website... if it doesn't have the right security, automatic flag... then it's Instagram... a grace of 6 months... a bounty... If they confirm they're
+open... we flag them for special support"; migration `20261101_listing_health.sql`, edge function `ve-listing-health`). 1. Google says closed: off (above).
+2. **The website**: every local place with a website (not grocery chains, not LESARUSS.ai) is read once a month (cron `ve-listing-health`, every 10 minutes 2:00 to
+3:50 AM Eastern, 25 a run): gone (the address no longer exists, nothing answers, 404, 410 or 5xx, a parked or for-sale page) or no working security (no https, a bad
+certificate) fails; a site that turns scanners away (401, 403, 406, 429, 503) passes, and a slow or refused answer is read again the next day, never held on one
+try. No website at all is Google's job. 3. **Instagram**, only for a failed website (Apify, many handles in one run): a post in the last 6 months passes, and the
+place goes to **Needs support** (its website needs fixing); otherwise it is **held** (On hold, `details.review.by` Listing check, the reasons) and a still-open
+bounty goes up in its chapter's campaign (`ve_listing_still_open_bounty`, made if missing, 50 points, 30 days). 4. Held places are read again every week and
+come back on their own when they pass; a member's visit settles it (`applyCheck` in `ve-bounties`), and a place found open goes to Needs support. A claimed or
+owned listing, or one put back by hand within 90 days, is never held, only flagged. Results in `ve_listing_health` (web and Instagram status, reasons, verdict,
+history, `support_at`/`support_why`/`support_done_at`). **Directory review > Needs support** lists them with Done and Open (`ve-listing-health` `support`,
+`support_done`); `one` (`slug`, `save: false` to only read) checks a single listing. Proven 2026-11-01: Chi Chi Vegan Taco Shop (dead domain, no Instagram post
+since January 2024) held with its Atlanta bounty; Happy Zoe Vegan Bakery (broken certificate, posting on Instagram) left on and flagged for support; Kroger and
+QFC (Akamai turns scanners away) no longer read as down. **The listing check on the dashboard** (Sean: "use that mechanism that we use for BCPS Marcom... one that has
+passed the audit and one that hasn't"): the business dashboard's Audit view opens with **Your listing check** (`healthCard`, `healthBlock` in
+`ve-partner-dashboard.js`): each check by area (Google, Website, Instagram, Your Directory page) as a pass mark, a flag or a Check, with what we found and the
+fix, the score, On the Directory or In review, and What happens next. The sample business shows two made-up places (`healthSamples` in
+`business/sample/listing-demo.js`): Green Leaf Kitchen passing everything and Corner Sprout Cafe in review (with a made-up check-up). **Live and free on claim since
+2026-11-01** (playbook `ve-listing-check`, the ANSWER row; Sean: "when somebody unlocks their claim, they get access to this information...
+with a button: do you want us to fix these issues?"): `ve-claims` `owner_dashboard` returns `health` to every owner, member or not, built
+by `listingHealth` from the listing itself, its `ve_listing_health` row and its latest monthly check-up (`ve_audits` source `checkup`):
+Google (open, profile complete; places people walk into only), Website (opens, https, menu online for food places), Instagram (last post),
+Your Directory page (logo, photos, story, hours; member check-ins). A listing never checked gets its first website check started in the
+background (`ve-listing-health` `one` with the cron secret; on the Vegans Explore Podcast it ran in 4 seconds). **Our monthly check-up**
+shows under it: each flagged check with what we found and the fix (`ve_audit_criteria.how`), most important first, never the score; **See
+your full score** (the $49 full audit and the $149 Secret Shopper) sits beside **Have us do all of it**. **Have us do it** is on every item
+that is not passed and every check-up flag (`doItBtn`), opening `VEManaged.open` (loaded on first tap) with `from: 'fix'` and the fix id, so
+it lands in the Inbox as a Managed marketing request; the sample toasts what would happen. The Audit view is no longer members only and
+shows for any listing with checks (non-food: the listing check and Have us do all of it). Home has the score strip (`healthStrip`).
+`only: 'health'` returns just the check (the member dashboard's Your business). Proven 2026-11-01 as Sean on the podcast he owns (its
+website, vegansexplore.com/vepodcast/, answered 404. Its official page is its own Vegans Explore listing (Sean, 2026-11-01: "Just because it's a directory listing doesn't mean it's
+not a profile"), so its website is `https://vegansexplore.com/directory/vegans-explore-podcast`; a listing whose website is its own page shows no
+Visit Website link, and the editor still gets the stored value, `l._website` in `directory/listing.html`) and as
+admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **Tomorrow's outreach is read first** (Sean, 2026-11-01: "we know we're
+going to be reaching out to 30 people a day. We can prioritize those people in the check, you know, the day before... So when that potential
+client clicks on it, they're seeing the information they should be seeing"; migration `20261101_listing_check_outreach_first.sql`):
+`ve_listing_health_due` puts first every business in a send day (`ve_outreach_batches` proposed or approved) for today or tomorrow in
+Eastern time that has not had its first email, and reads it again whenever its last check is more than two days old, monthly check due or
+not. The sweep runs 2:00 to 3:50 AM Eastern, before the sender starts at 9. A business the check holds comes off the email list on its own
+(`trg_ve_outreach_listing_hidden`). It reads the website and Instagram only, no Google calls. Proven 2026-11-01 in a rolled-back transaction
+(a contact on tomorrow's send day came first; checked a day earlier, not read again; its send day six days out, not read early). **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
 `once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
@@ -2159,6 +2246,19 @@ main listings (same website and same name, food places and animal organizations 
 each a `ve_listing_edits` row, field `parent_id`). Left unlinked on purpose: sister restaurants (Doomie's, Kitchen Mouse, Essential
 Vegan), Tofutti, Viva!, Whole Foods and Loving Hut's listing with no street. The Directory card does not read the main listing, so a
 location keeps its own `logo_url` (chainFill fills it).
+
+**Shared kitchens** (Sean, 2026-11-01: "some vegan restaurants... serve fully vegan food, but they're based out of a non-vegan
+restaurant... we should mention this on their profiles... it doesn't have to be this whole big production... as a service to the
+community"). A food place that runs its own Vegan menu inside a restaurant that is not Vegan carries `listings.details.shared_kitchen`
+`{host, host_slug, separate, source: owner|team|member, note, confirmed_at}`, set in the listing editor's **Shared kitchen** block (food
+places only, `vla-p-shared` in `ve-listing-admin.js`) and saved by `ve-listing-media` `save` `shared_kitchen` (a `ve_listing_edits` row;
+`null` clears it). The listing page shows a **Shared kitchen** badge in the header and, in the Overview, **A Vegan menu in a shared
+kitchen**: "<name> runs its own 100% Vegan menu inside <host>, a restaurant that is not Vegan", "Their food is prepared separately" only
+when ticked and told by the owner or our team, the optional line, who confirmed it and when, and Let us know (`sharedKitchenHtml` in
+`directory/listing.html`). The Directory card adds "· Shared kitchen" after the city (`sharedTag` in `ve-region-directory.js`). How
+Vegan stays the menu's. First two (2026-11-01, migration `20261101_shared_kitchen.sql`): Aisha's Plant-Based Eatery inside House of Mac,
+prepared separately (Sean), and Vegan Planet (Miami), host not named yet. Vegan Planet's website pointed at vegansexplore.com and was
+cleared the same day. Not yet: a question for owners on Your page, and a way for members to tell us.
 
 Duplicates (Sean, 2026-10-10: "merge the duplicates"): a listing is never deleted. A duplicate gets status `rejected` with
 `details.merged_into` (the listing that stays), `merged_at` and `status_before_merge`, and what pointed at it (outreach,
@@ -3626,6 +3726,42 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
   the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
   waiting, with Get the Guide) to everyone else. Every Guide's Get access lists Bounties.
+  **A Bounties tab, highest first** (Sean, 2026-11-01: "depending on which stadium they're in, they click the bounties, it should clearly
+  list what we want them to do... highest bounty to lowest bounty. So people could literally be Pokemon going to this world"). Both venue
+  Guides have **Bounties** after Venues / Airports (`#/bounties`): every venue with open bounties in the picked city, the most points
+  first, the top three marked #1 to #3 (owners; anyone else sees the points waiting and the free venue's jobs), and each venue's own list
+  (`#/venue/<slug>/bounties`, `#/airport/<slug>/bounties`, also **Bounties** on the venue page): its jobs grouped by what they pay, highest
+  first: Find a Vegan item we don't have (Something missing), Be first to confirm <item> (the bounty), then Check <item> is still there,
+  each with its stand number (the map's), where it is, what to photograph, the points with and without a photo, and **Do it** opening that
+  report form (which keeps the sign-in, Passport and Guide gates). Drawn by `/public/ve-venue-bounties.js` (`VEVenueBounties.board`,
+  `venue`, `jobs`) from what `ve-venues` `bounties` and `venue` already return, the amounts from `ve_venue_report_points`; no server
+  change. The Overview's Bounties card opens the tab. River's and Nori's lines on it are text drafts.
+  **Each job has its own page** (Sean, 2026-11-01: "when they click into it, it should have an image of where it is on the right hand side.
+  And it should show the accompanying map... something similar for what we did for the stadium for the airport... where they can find
+  directions"): `#/venue/<slug>/bounties/<item>` and `#/airport/<slug>/bounties/<item>` (a job's **Find it**). Left: the points, the job,
+  its stand number and where it is, what to photograph, **Do it** (the report form), **Something changed?** (the item's Update), and **Get
+  me there** from **Your section** or **Your gate** (the same one the venue page keeps, `seatKey`). Right: the item's photo, else the
+  venue's illustration, then the map with only that stand's pin and the walk to it (`VEVenueMap` / `VEAirportMap` `route` to that one
+  stand; at an airport it says when the spot is before security). A stand with no section or gate yet says to ask a worker and add it in
+  the report. `VEVenueBounties.job` and `wireJob`. Find a Vegan item we don't have has no one stand, so it opens its form directly. Not
+  GPS: inside a stadium or terminal a phone is off by several sections.
+  **Two photos for Something missing, and shops you scan** (Sean, 2026-11-01: "a slot for the item and a slot for the location... taking a
+  photo of the name of the store or restaurant"; "the convenience store places, like the gift shops... 10 points per item... 5 points for
+  confirming... it'll just let them know that this item has already been logged"; migration `20261101_venue_shops_scan.sql`, run through
+  the one-time `ve-once-venue-shops`, now the 410 stub). **Something missing** in both venue Guides asks for the item and the place's name
+  (and, at an airport, before or after security and the gate; at a stadium, the section) in their own fields (`ve_venue_reports.item_name`,
+  `place_name`, `place_zone`, `place_where`), with two photo slots, the item (`photo_path`) and the sign (`place_photo_path`); the note is
+  optional. It pays its with-photo points only with both photos (`ve_venue_report_review`; a supermarket is its own sign, so the
+  Supermarket Guide's one photo still counts). **Scan a Vegan item** (`#/airport/<slug>/report/scan`, `#/venue/<slug>/report/scan`, a
+  button on every venue page and a job on its Bounties): pick the shop (`ve_venue_spots.kind` `shop`, the airports' markets and newsstands
+  marked so) or a shop not in the Guide yet (its name, where, and a photo of its sign), scan the barcode (`VEScan`, then `ve-products`
+  `lookup`, then `ve-venues` `scan_check`). **New there**: Log it, kind `scan`, 10 points once the team accepts it, a photo of the item
+  required when the barcode is not one of our products; accepting adds the item to that shop as Vegan with its barcode
+  (`ve_venue_items.gtin`, one per shop) and makes the shop first when it is new. **Already logged**: it says so and offers **Still on the
+  shelf**, kind `shop_confirm`, 5 points once accepted (a shop item's Update menu offers it in place of Still here). **Waiting**: someone
+  scanned it there already. Shop items never pay the first-to-confirm bounty. Amounts are `ve_venue_report_points` rows `scan` and
+  `shop_confirm` (Sean's numbers); every report still waits for the team in Depot > Venues, which shows both photos, the barcode with its
+  Open Food Facts link and the new shop.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
@@ -3986,7 +4122,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   one item per view, `&item=<id|new>`), **Ads** (their campaigns: `ad_businesses.listing_id` -> `ad_sponsor_campaigns` ->
   `ad_campaigns` -> `ad_impressions`; each ad spot with its monthly views; Ask about this spot emails Sean and the account
   manager and logs `ve_initiative_interest` `ad-placement`), **Opportunities** (our campaigns, the same slugs as the brand
-  `OPPS`, and open roles), **Audit** (restaurants and food places; our monthly check-up reads as ours, never a score they bought),
+  `OPPS`, and open roles), **Audit** (free on claim since 2026-11-01: the listing check and our monthly check-up's flags, each with Have us
+do it; the full score is the paid audit; see The listing check, in Sean's order),
   **Guides**, **Your plan**. The $11 Founding Membership (or a live plan) opens it; an owner who is not a member edits the page
   and menu and is offered the $11. Server: `ve-claims` `owner_dashboard` (everything in one call), `menu_list` / `menu_save` /
   `menu_delete` (each a `ve_listing_edits` row, field `menu_item`, undone from the Depot by `ve-outreach`), `ad_request`.
@@ -3999,7 +4136,10 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   interest only until its terms are set), Your events on your page, the Nonprofit Guide, bounties and the Daily Pulse. Every listing counts what a
   visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
-  (migration `20261024_partner_dashboard.sql`). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
+  (migration `20261024_partner_dashboard.sql`). The headline tile reads **Taps and clicks** with what it is made of under it ("2 social links, 1 menu opened"; `actsBreak`), and
+  the BrandDesk monthly report says Taps and clicks on your page (Sean, 2026-11-01: the old label, "Calls, directions, orders and clicks",
+  read as phone calls on a listing whose taps were a menu and social links). A call is a tap on the phone number on our page, never a
+  connected call; on 2026-11-01 no listing had one yet, and one had a directions tap (Aisha's Plant-Based Eatery, 2026-10-27). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
   Sean, 2026-10-27: it "pushes the other buttons to the left"), the text button under Vote and Save on desktop. A listing's Photos, Video and Pulse tabs show only once they have something
   in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
 - **Menus are linked, not copied** (Sean, 2026-10-27, replacing the copying below: "how do we know if they're updated?... if
@@ -4205,6 +4345,11 @@ and Done). They share the database; LESARUSS.ai's own Depot is to be set up the 
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
 - Edge function `ve-dashboard` (`home`, `set_version`, `recent_votes`, `member_card`; verify_jwt off, the member token checked inside).
+- **Your business first** (Sean, 2026-11-01, playbook `ve-listing-check`: "the dashboard on that profile becomes their dashboard"): anyone who
+  owns a listing (any version) sees **Your business** at the top of the Dashboard tab, under the banner (`#dash-biz`, `renderBusinessFirst`):
+  each listing (up to four) with its logo, Yours or Waiting for our approval, its listing check score (`ve-claims` `owner_dashboard` with
+  `only: 'health'`), **Open your business dashboard** (`/directory/<slug>?tab=brand`) and **Your listing check** (`&pd=audit`). It replaced
+  the Business version's listing tiles in For you; a Business member with no listing still gets Is your business in the Directory?.
 - **Recent activity and the tools search** (Sean, 2026-10-30: "a log of user votes... an icon of the person that voted... a light box
   of who that person is... I don't have to go off this page"; "a little eyebrow... your tools, and then it has a search... put these in
   categories"). Super admins get **Recent activity** above Your tools: Recent Members, **Recent Votes**, Recent Leads, Events waiting and

@@ -6,7 +6,9 @@
 //
 // POST { action: 'save', listing_id, release_year?: '2018' | '', book_type?: cookbook|memoir|educational|health|lifestyle|children|'' }
 //      { action: 'save', listing_id, health_type: doctor|dentist|dietitian|chiropractor|therapist|other|'' }  (Health Professionals)
-//      -> { ok, release_year, book_type, health_type }
+//      { action: 'save', listing_id, shared_kitchen: { host, host_slug?, separate?: true|false|null, source: owner|team|member, note? } | null }
+//        (a food place: a fully Vegan menu run inside a kitchen that is not Vegan; Sean, 2026-11-01)
+//      -> { ok, release_year, book_type, health_type, shared_kitchen }
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -20,6 +22,12 @@ const BOOK_TYPES = ['cookbook', 'memoir', 'educational', 'health', 'lifestyle', 
 const WORKS = ['Books', 'Documentaries & Films'];
 // Keep in step with HEALTH_TYPES in /public/ve-region-directory.js and /public/ve-listing-admin.js.
 const HEALTH_TYPES = ['doctor', 'dentist', 'dietitian', 'chiropractor', 'therapist', 'other'];
+// A shared kitchen (Sean, 2026-11-01: "some vegan restaurants... serve fully vegan food, but they're based out of a non-vegan
+// restaurant... we should mention this on their profiles... as a service to the community"). Food places only; keep in step with
+// FOOD_PLACES in /public/ve-listing-admin.js and sharedKitchenHtml in /directory/listing.html.
+const FOOD_PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
+const SK_SOURCES = ['owner', 'team', 'member'];
+const plain = (v: unknown, n: number) => String(v ?? '').replace(/[<>]/g, '').trim().slice(0, n);
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -68,7 +76,8 @@ Deno.serve(async (req) => {
     const { data: l } = await db.from('listings').select('id, category, details').eq('id', body.listing_id).maybeSingle();
     if (!l) return json({ error: 'not_found' }, 404);
     const health = l.category === 'Health Professionals';
-    if (!WORKS.includes(l.category) && !health) return json({ error: 'not_a_work' }, 400);
+    const food = FOOD_PLACES.includes(l.category);
+    if (!WORKS.includes(l.category) && !health && !food) return json({ error: 'not_a_work' }, 400);
     const details = { ...(l.details || {}) } as Record<string, unknown>;
     const edits: { field: string; old_value: unknown; new_value: unknown }[] = [];
     if (body.health_type !== undefined && health) {
@@ -86,12 +95,28 @@ Deno.serve(async (req) => {
       if (t && !BOOK_TYPES.includes(t)) return json({ error: 'bad_book_type' }, 400);
       if ((details.book_type || '') !== t) { edits.push({ field: 'book_type', old_value: details.book_type ?? null, new_value: t || null }); if (t) details.book_type = t; else delete details.book_type; }
     }
+    if (body.shared_kitchen !== undefined && food) {
+      const sk = body.shared_kitchen;
+      let next: Record<string, unknown> | null = null;
+      if (sk && typeof sk === 'object') {
+        const source = SK_SOURCES.includes(String(sk.source)) ? String(sk.source) : 'team';
+        next = { host: plain(sk.host, 80) || null, host_slug: plain(sk.host_slug, 120).replace(/[^a-z0-9-]/gi, '').toLowerCase() || null,
+          separate: sk.separate === true ? true : sk.separate === false ? false : null, source, note: plain(sk.note, 280) || null };
+        const prev = (details.shared_kitchen || {}) as Record<string, unknown>;
+        const same = ['host', 'host_slug', 'separate', 'source', 'note'].every((k) => (prev[k] ?? null) === next![k]);
+        next.confirmed_at = same && prev.confirmed_at ? prev.confirmed_at : new Date().toISOString();
+        if (same && prev.confirmed_at) next = null; // nothing changed
+        else { edits.push({ field: 'shared_kitchen', old_value: details.shared_kitchen ?? null, new_value: next }); details.shared_kitchen = next; }
+      } else if (details.shared_kitchen) {
+        edits.push({ field: 'shared_kitchen', old_value: details.shared_kitchen, new_value: null }); delete details.shared_kitchen;
+      }
+    }
     if (edits.length) {
       const { error } = await db.from('listings').update({ details, updated_at: new Date().toISOString() }).eq('id', l.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       await db.from('ve_listing_edits').insert(edits.map((e) => ({ listing_id: l.id, member_id: admin.id, ...e, meta: { by: 'admin', where: 'listing_editor' } })));
     }
-    return json({ ok: true, release_year: details.release_year || null, book_type: details.book_type || null, health_type: details.health_type || null });
+    return json({ ok: true, release_year: details.release_year || null, book_type: details.book_type || null, health_type: details.health_type || null, shared_kitchen: details.shared_kitchen || null });
   }
 
   return json({ error: 'unknown_action' }, 400);
