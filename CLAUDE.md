@@ -2297,6 +2297,26 @@ Directory is their chapter's).
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
 
+## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-local-food-products`; migration
+`20261101_local_food_products_canon.sql`). **Not built yet.** Sean: "Why are we putting restaurants above everybody else? They should
+see everything and then filter for what they want... the products are the products you can purchase anywhere."
+
+- **Food becomes Local Food** and opens on All: what is here, in the picked location ("Local Food · South Florida"). National grocery
+  chains stay under Markets (a store in the chapter is here). The location applies to every listing in it, no brand exceptions.
+- **Food Brands (shown as Food & Drink) and Nutrition & Supplements move to Products**: All, Food & Drink, Nutrition & Supplements,
+  Fitness & Athletics, Clothing & Fashion, Beauty & Personal Care, E-Commerce & Marketplaces. The stored category values do not change,
+  only the section they sit under. Old `?tab=food&sub=food-brands` links land on Products.
+- **Every section opens on All**, replacing "first sub-section first, All last" (Directory filters, above), which existed only because
+  of Food Brands.
+- **Products opens on every location**; Sells at gains **Near me** (Anywhere, Near me, Markets & events, Online & stores) for local shops
+  with a storefront.
+- **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
+  brand that vends keeps Vendors (`vendsAt`).
+- Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
+  unchanged. Change the section lists together (see Directory filters); LESARUSS.ai shares the component, so check both sites.
+
 ## The Guide tab on every listing (LOCKED by Sean 2026-10-31, playbook `ve-listing-guide-tab`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-listing-guide-tab`; migration
