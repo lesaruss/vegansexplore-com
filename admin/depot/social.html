@@ -187,6 +187,20 @@
     .s-proposed{border-left-color:#2c3e66;}.s-changes{border-left-color:#F69820;}.s-approved,.s-scheduled{border-left-color:#3A9B3E;}
     .s-posted{border-left-color:#1f5f22;}.s-failed{border-left-color:#a0281a;}.s-manual{border-left-color:#b07a00;}.s-skipped{border-left-color:#ccc;opacity:.7;}
     .tag.proposed{background:#eef1f6;color:#2c3e66;}.tag.changes{background:#fff4e0;color:#7a4a00;}.tag.approved{background:#e8f5e9;color:#1f5f22;}
+    .tag.held{background:#efe8fb;color:#4a2c80;}
+    .songs{display:grid;gap:6px;max-height:340px;overflow:auto;margin-top:8px;}
+    .song{display:grid;grid-template-columns:44px 1fr auto;gap:10px;align-items:center;border:1px solid var(--ve-border);border-radius:8px;padding:6px 8px;background:#fff;}
+    .song img,.song .ph{width:44px;height:44px;border-radius:6px;object-fit:cover;background:#eef2ee;}
+    .song b{display:block;font-size:13.5px;line-height:1.25;}
+    .song span{font-size:12px;color:var(--ve-text-75);}
+    .song .b{display:flex;gap:6px;}
+    .song button{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1.5px solid rgba(0,0,0,.14);background:#fff;border-radius:6px;padding:6px 9px;cursor:pointer;}
+    .song button.pick{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .song.on{border-color:var(--ve-green-deep);box-shadow:0 0 0 1px var(--ve-green-deep) inset;}
+    .srow{display:flex;gap:8px;margin-top:8px;}
+    .srow input{flex:1;}
+    .music h3{font-size:13px;font-weight:800;margin:14px 0 2px;}
+    .music h3:first-of-type{margin-top:4px;}
     .tag.posted{background:#1f5f22;color:#fff;}.tag.manual{background:#fff1cc;color:#6b4a00;}.tag.skipped{background:#f1f1f1;color:#666;}
     .form{display:grid;gap:12px;}
     .form label{display:grid;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);}
@@ -477,7 +491,7 @@
     }
 
     // ---- The studio: brands, the week's plan, one slot, notes ----
-    var SS = { proposed: 'Waiting for approval', changes: 'Changes asked', approved: 'Approved', scheduled: 'Scheduled', posted: 'Posted', failed: 'Did not post', manual: 'Post by hand', skipped: 'Skipped' };
+    var SS = { proposed: 'Waiting for approval', changes: 'Changes asked', approved: 'Approved', scheduled: 'Scheduled', posted: 'Posted', failed: 'Did not post', manual: 'Post by hand', skipped: 'Skipped', held: 'Waiting for 9:16 media' };
     var KIND = { post: 'Post', carousel: 'Carousel', reel: 'Reel', story: 'Story', video: 'Video', episode: 'Episode', thread: 'Thread' };
     var NETS = ['instagram', 'facebook', 'tiktok', 'youtube', 'twitter', 'linkedin', 'threads', 'pinterest', 'bluesky'];
     var NETN = { twitter: 'X', linkedin: 'LinkedIn', threads: 'Threads', pinterest: 'Pinterest', bluesky: 'Bluesky' };
@@ -485,7 +499,7 @@
     function netName(n) { return CH[n] && CH[n].name ? CH[n].name : (NETN[n] || n); }
     function inFilt(x, f) {
       if (f === 'all') return true;
-      if (f === 'todo') return x.status === 'proposed' || x.status === 'changes' || x.status === 'failed' || x.status === 'manual';
+      if (f === 'todo') return x.status === 'proposed' || x.status === 'changes' || x.status === 'failed' || x.status === 'manual' || x.status === 'held';
       if (f === 'out') return x.status === 'approved' || x.status === 'scheduled';
       return x.status === 'posted';
     }
@@ -636,13 +650,19 @@
         '<label>First comment<textarea id="f_first"' + dis + '>' + esc(x.first_comment || '') + '</textarea></label>' +
         '<label>Links <small>One a line. Use our /go/ tracked links.</small><textarea id="f_links"' + dis + '>' + esc((x.links || []).join('\n')) + '</textarea></label>' +
         '<label>Pictures and videos <small>One link a line, in the order they show.</small><textarea id="f_assets"' + dis + '>' + esc((x.assets || []).map(function (a) { return a && a.url; }).filter(Boolean).join('\n')) + '</textarea></label>' +
+        (x.kind !== 'story' && x.kind !== 'thread' && (editable || x._story) ? '<label style="display:flex;gap:8px;align-items:center;letter-spacing:.04em"><input type="checkbox" id="f_story" style="width:auto"' + (x._story ? ' checked' : '') + dis + '> Also share as a story <small>A story slot ' + 15 + ' minutes after the post, on Instagram and Facebook. It waits until it has a 9:16 picture or video.</small></label>' : '') +
         '<label>By hand <small>Anything that cannot go through Metricool and who does it (music on TikTok, a collab tag, a story sticker).</small><textarea id="f_manual"' + dis + '>' + esc(x.manual_steps || '') + '</textarea></label>' +
         '</div>';
     }
     function readForm() {
       var at = $('f_at').value;
-      var assets = $('f_assets').value.split(/\n+/).map(function (u) { return u.trim(); }).filter(function (u) { return /^https:\/\//.test(u); }).map(function (u) { return { url: u, type: /\.(mp4|mov|webm)(\?|$)/i.test(u) ? 'video' : 'image' }; });
+      var assets = $('f_assets').value.split(/\n+/).map(function (u) { return u.trim(); }).filter(function (u) { return /^https:\/\//.test(u); }).map(function (u) {
+        var had = (curAssets || []).filter(function (a) { return a && a.url === u; })[0];
+        return had ? had : { url: u, type: /\.(mp4|mov|webm)(\?|$)/i.test(u) ? 'video' : 'image' };
+      });
+      var story = $('f_story');
       return {
+        also_story: story ? story.checked : undefined,
         slot_at: at ? eastIso(at) : null, kind: $('f_kind').value,
         channels: Array.prototype.map.call(app.querySelectorAll('.nets input:checked'), function (i) { return i.value; }),
         title: $('f_title').value.trim() || null, caption: $('f_caption').value, first_comment: $('f_first').value.trim() || null,
@@ -719,10 +739,10 @@
       var msg = function (t, bad) { var m = $('mMsg'); if (m) { m.className = 'msg' + (bad ? ' bad' : ''); m.textContent = t; } };
       var save = function (newPosted, done) {
         var rest = all.filter(function (a) { return !POSTED(a); });
-        api({ action: 'slot_save', id: id, fields: { assets: newPosted.concat(rest) } }).then(function (res) {
+        measureAll(newPosted).then(function (m) { return api({ action: 'slot_save', id: id, fields: { assets: m.concat(rest) } }); }).then(function (res) {
           if (res.error) { msg(res.error === 'already_posted' ? 'It has gone out already; it cannot change now.' : res.error, true); return; }
           refreshBrands(); drawSlot(id);
-          setTimeout(function () { var s2 = $('smsg'); if (s2) { s2.className = 'msg'; s2.textContent = done + (res.repushed ? (res.repushed.error ? ' Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : ' Sent to Metricool again.') : '') + ' Logan has a note saying what changed.'; } }, 500);
+          setTimeout(function () { var s2 = $('smsg'); if (s2) { s2.className = 'msg'; s2.textContent = done + (x.kind === 'story' && x.story_of ? ' A story with only 9:16 media moves to Waiting for approval.' : '') + (res.repushed ? (res.repushed.error ? ' Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : ' Sent to Metricool again.') : '') + ' Logan has a note saying what changed.'; } }, 500);
         });
       };
       var add = $('mAdd'); if (add) add.onclick = function () { target = -1; file.value = ''; file.click(); };
@@ -745,6 +765,94 @@
           });
         }).catch(function () { msg('The upload did not go through. Try again.', true); });
       };
+    }
+    // Width and height ride along on each picture and video, so a story knows when it has 9:16 media.
+    var curAssets = [];
+    function measure(a) {
+      return new Promise(function (res) {
+        if (!a || !a.url || (a.w && a.h) || a.type === 'cover' || a.type === 'storyboard') return res(a);
+        var done = function (w, h) { res(w && h ? Object.assign({}, a, { w: w, h: h }) : a); };
+        var t = setTimeout(function () { done(0, 0); }, 8000);
+        if (isVid(a)) { var v = document.createElement('video'); v.preload = 'metadata'; v.muted = true; v.onloadedmetadata = function () { clearTimeout(t); done(v.videoWidth, v.videoHeight); }; v.onerror = function () { clearTimeout(t); done(0, 0); }; v.src = a.url; }
+        else { var im = new Image(); im.onload = function () { clearTimeout(t); done(im.naturalWidth, im.naturalHeight); }; im.onerror = function () { clearTimeout(t); done(0, 0); }; im.src = a.url; }
+      });
+    }
+    function measureAll(list) { return Promise.all((list || []).map(measure)); }
+
+    // ---- Music: Instagram reels (Meta's library for outside apps) and TikTok's top 100 on photo posts ----
+    var VIDK = { reel: 1, video: 1, episode: 1 };
+    var MIXW = { both: 'Song and the video’s own sound', under: 'Song quieter, under the voice', song: 'Song only (mute the video)' };
+    var player = null, playing = null;
+    function playPreview(url, btn) {
+      if (!player) player = new Audio();
+      if (playing === url) { player.pause(); playing = null; if (btn) btn.textContent = 'Play'; return; }
+      Array.prototype.forEach.call(app.querySelectorAll('[data-play]'), function (b) { b.textContent = 'Play'; });
+      player.src = url; player.play().catch(function () {}); playing = url; if (btn) btn.textContent = 'Stop';
+      player.onended = function () { playing = null; if (btn) btn.textContent = 'Play'; };
+    }
+    function songRow(o, net, picked, editable) {
+      var art = net === 'instagram' ? o.coverArtworkUrl : o.thumbnailUrl, who = net === 'instagram' ? (o.displayArtist || (o.igUsername ? '@' + o.igUsername : '')) : o.author;
+      var pv = net === 'instagram' ? o.preview : o.previewUrl;
+      var secs = net === 'instagram' ? Math.round((o.durationMs || 0) / 1000) : o.duration;
+      return '<div class="song' + (picked ? ' on' : '') + '">' + (art ? '<img src="' + esc(art) + '" alt="" loading="lazy">' : '<span class="ph"></span>') +
+        '<div><b>' + esc(o.title || 'Untitled') + '</b><span>' + esc(who || '') + (secs ? ' · ' + Math.floor(secs / 60) + ':' + ('0' + secs % 60).slice(-2) : '') + (o.rank ? ' · #' + o.rank : '') + (o.audioType === 'original_sound' ? ' · Original sound' : '') + '</span></div>' +
+        '<span class="b">' + (pv ? '<button type="button" data-play="' + esc(pv) + '">Play</button>' : '') + (editable && !picked ? '<button type="button" class="pick" data-pick="' + net + '">Pick</button>' : '') + '</span></div>';
+    }
+    function musicPanel(x, editable) {
+      var ch = x.channels || [], snd = x.sound || {}, vid = !!VIDK[x.kind];
+      var ig = ch.indexOf('instagram') >= 0, tt = ch.indexOf('tiktok') >= 0;
+      if (x.kind === 'story' || x.kind === 'thread' || (!ig && !tt)) return '';
+      var h = '<div class="panel music"><h2>Music</h2>';
+      if (ig) {
+        h += '<h3>Instagram</h3>';
+        if (!vid) h += '<p class="msg">Instagram takes music on reels only, so this ' + esc((KIND[x.kind] || x.kind).toLowerCase()) + ' goes out without a song.</p>';
+        else {
+          h += snd.instagram ? songRow(snd.instagram, 'instagram', true, editable) + (editable ? '<div class="srow"><select id="igMix" aria-label="Mix">' + Object.keys(MIXW).map(function (k) { return '<option value="' + k + '"' + (k === (snd.instagram.mix || 'both') ? ' selected' : '') + '>' + MIXW[k] + '</option>'; }).join('') + '</select><button class="btn btn-ghost" type="button" id="igOff">Remove</button></div>' : '<p class="msg">' + esc(MIXW[snd.instagram.mix || 'both']) + '</p>')
+            : '<p class="msg">No song. Goes out with the video’s own sound.</p>';
+          if (editable) h += '<div class="srow"><input id="igQ" placeholder="Search Instagram’s library: a song, an artist, a mood"><button class="btn" type="button" id="igGo">Search</button></div><div class="songs" id="igList"></div>';
+        }
+      }
+      if (tt) {
+        h += '<h3>TikTok</h3>';
+        h += snd.tiktok ? songRow(snd.tiktok, 'tiktok', true, editable) + (vid ? '<div class="warn" style="margin-top:8px">TikTok takes music through Metricool on photo posts only, so TikTok is posted by hand: finish it in the TikTok app with this song.</div>' : '') + (editable ? '<div class="srow"><button class="btn btn-ghost" type="button" id="ttOff">Remove</button></div>' : '')
+          : '<p class="msg">' + (vid ? 'No song picked. Videos with music are finished in the TikTok app; pick one here and TikTok becomes Post by hand with it named.' : 'No song. Pick one of TikTok’s top 100.') + '</p>';
+        if (editable) h += '<div class="srow"><input id="ttQ" placeholder="Filter the top 100"><button class="btn" type="button" id="ttGo">Show the top 100</button></div><div class="songs" id="ttList"></div>';
+      }
+      h += '<h3>Not in the list?</h3>' + (editable ? '<div class="srow"><input id="handSong" placeholder="Song and artist, added in the app" value="' + esc(snd.by_hand ? snd.by_hand.song : '') + '"><button class="btn btn-ghost" type="button" id="handGo">Save</button></div><p class="msg" style="margin-top:6px">A song named here makes Instagram and TikTok Post by hand (unless one above is picked for them), with the song named on the slot.</p>'
+        : '<p class="msg">' + esc(snd.by_hand ? snd.by_hand.song : 'None') + '</p>');
+      return h + '<p class="msg" id="musicMsg"></p></div>';
+    }
+    function wireMusic(x, editable, id) {
+      Array.prototype.forEach.call(app.querySelectorAll('.music [data-play]'), function (b) { b.onclick = function () { playPreview(b.getAttribute('data-play'), b); }; });
+      if (!editable) return;
+      var snd = JSON.parse(JSON.stringify(x.sound || {}));
+      var msg = function (t, bad) { var m = $('musicMsg'); if (m) { m.className = 'msg' + (bad ? ' bad' : ''); m.textContent = t; } };
+      var save = function (next, text) {
+        msg('Saving…');
+        api({ action: 'slot_save', id: id, fields: { sound: next } }).then(function (res) {
+          if (res.error) { msg(res.error, true); return; }
+          if (player) player.pause(); playing = null;
+          drawSlot(id); setTimeout(function () { var s2 = $('smsg'); if (s2) { s2.className = 'msg'; s2.textContent = text + (res.repushed ? (res.repushed.error ? ' Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : ' Sent to Metricool again.') : ''); } }, 500);
+        });
+      };
+      var list = function (box, songs, net) {
+        box.innerHTML = songs.length ? songs.map(function (o, i) { return songRow(o, net, false, true).replace('data-pick="' + net + '"', 'data-pick="' + net + '" data-i="' + i + '"'); }).join('') : '<p class="msg">Nothing found.</p>';
+        Array.prototype.forEach.call(box.querySelectorAll('[data-play]'), function (b) { b.onclick = function () { playPreview(b.getAttribute('data-play'), b); }; });
+        Array.prototype.forEach.call(box.querySelectorAll('[data-pick]'), function (b) { b.onclick = function () {
+          var o = Object.assign({}, songs[+b.getAttribute('data-i')]); delete o.preview; delete o.rank; delete o.genres;
+          if (net === 'instagram') o.mix = 'both';
+          snd[net] = o; save(snd, 'Song picked: ' + (o.title || '') + '.');
+        }; });
+      };
+      var igGo = $('igGo'), igQ = $('igQ');
+      if (igGo) { var igSearch = function () { var box = $('igList'); box.innerHTML = '<p class="msg">Looking…</p>'; api({ action: 'sounds', brand: x.brand_slug, net: 'instagram', q: igQ.value.trim() }).then(function (r) { if (r.error) { box.innerHTML = '<p class="msg bad">' + esc(r.error === 'not_in_metricool' ? 'This brand is not in Metricool yet.' : r.error) + '</p>'; return; } list(box, (r.songs || []).concat(r.original || []), 'instagram'); }); }; igGo.onclick = igSearch; igQ.onkeydown = function (e) { if (e.key === 'Enter') igSearch(); }; }
+      var ttGo = $('ttGo'), ttQ = $('ttQ'), ttAll = null;
+      var ttShow = function () { var q = ttQ.value.trim().toLowerCase(); list($('ttList'), (ttAll || []).filter(function (o) { return !q || (o.title + ' ' + o.author + ' ' + (o.genres || []).join(' ')).toLowerCase().indexOf(q) >= 0; }), 'tiktok'); };
+      if (ttGo) { ttGo.onclick = function () { if (ttAll) return ttShow(); $('ttList').innerHTML = '<p class="msg">Looking…</p>'; api({ action: 'sounds', brand: x.brand_slug, net: 'tiktok' }).then(function (r) { if (r.error) { $('ttList').innerHTML = '<p class="msg bad">' + esc(r.error) + '</p>'; return; } ttAll = r.songs || []; ttShow(); }); }; ttQ.oninput = function () { if (ttAll) ttShow(); }; }
+      var mix = $('igMix'); if (mix) mix.onchange = function () { snd.instagram.mix = mix.value; save(snd, 'Mix saved.'); };
+      var igOff = $('igOff'); if (igOff) igOff.onclick = function () { delete snd.instagram; save(snd, 'Song taken off Instagram.'); };
+      var ttOff = $('ttOff'); if (ttOff) ttOff.onclick = function () { delete snd.tiktok; save(snd, 'Song taken off TikTok.'); };
+      var hg = $('handGo'); if (hg) hg.onclick = function () { var v = $('handSong').value.trim(); if (v) snd.by_hand = { song: v }; else delete snd.by_hand; save(snd, v ? 'Saved: ' + v + ' is added by hand.' : 'Taken off.'); };
     }
     function redrawMedia(x, editable, id) {
       var p = app.querySelector('.media.panel'); if (!p) return;
@@ -779,6 +887,7 @@
       api({ action: 'slot_get', id: id }).then(function (r) {
         if (r.error) { app.innerHTML = top('plan') + '<div class="err">' + esc(r.error === 'forbidden' ? 'You do not work on this brand.' : r.error === 'not_found' ? 'That slot is gone.' : r.error) + '</div>'; wireTop(); return; }
         var x = r.slot, b = r.brand || {}, ed = r.role === 'editor';
+        x._story = r.story; curAssets = x.assets || [];
         setBrand(x.brand_slug);
         var bi = brandOf(x.brand_slug) || b;
         var wk = monday(eastDay(new Date(x.slot_at)));
@@ -786,6 +895,8 @@
         var assets = (x.assets || []).filter(function (a) { return a && a.url; });
         var urls = x.post_urls || {}, m = x.metrics || {};
         var canApprove = ed && ['proposed', 'changes', 'failed', 'skipped'].indexOf(x.status) >= 0;
+        var storyLine = r.parent ? '<div class="warn" style="background:#efe8fb;color:#4a2c80">The story of <a href="#slot/' + r.parent.id + '">' + esc((r.parent.title || r.parent.caption || 'the post').slice(0, 60)) + '</a>, ' + esc(hm(r.parent.slot_at)) + '. ' + (x.status === 'held' ? 'It waits here until every picture or video on it is 9:16 (tall). Add one on the left, then approve it.' : 'Its time follows the post.') + '</div>'
+          : r.story ? '<p class="msg">Also shared as a story: <a href="#slot/' + r.story.id + '">' + esc(SS[r.story.status] || r.story.status) + ', ' + esc(hm(r.story.slot_at)) + '</a></p>' : '';
         var canBack = ed && ['proposed', 'approved', 'scheduled', 'failed', 'manual'].indexOf(x.status) >= 0;
         var canSkip = ed && ['posted', 'skipped'].indexOf(x.status) < 0;
         app.innerHTML = top('plan') +
@@ -806,19 +917,20 @@
           '</div><div>' +
             '<div class="panel"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span><b>' + esc(when(x.slot_at, true)) + '</b>' + nets(x.channels, 18) + '</div>' +
               (x.push_error ? '<div class="' + (x.status === 'failed' ? 'err' : 'warn') + '">' + esc(x.push_error) + '</div>' : '') +
-              (x.manual_steps ? '<div class="warn">By hand: ' + esc(x.manual_steps) + '</div>' : '') +
+              (x.manual_steps ? '<div class="warn">By hand: ' + esc(x.manual_steps) + '</div>' : '') + storyLine +
               '<p class="msg">Proposed by ' + esc(x.proposed_by || 'Logan') + (x.approved_at ? ' · approved ' + esc(when(x.approved_at)) : '') + (x.metricool_post_id ? ' · in Metricool' : '') + '</p>' +
               '<div class="acts">' + (canApprove ? '<button class="btn" type="button" id="approve">' + (bi.in_metricool || b.metricool_blog_id ? 'Approve and schedule' : 'Approve') + '</button>' : '') +
                 (canSkip ? '<button class="btn btn-warn" type="button" id="skip">Skip it</button>' : '') +
                 '<button class="btn btn-ghost" type="button" id="copy">Copy caption</button></div><p class="msg" id="smsg"></p></div>' +
+            musicPanel(x, editable) +
             '<div class="panel"><h2>' + (editable ? 'Change it directly' : 'The post') + '</h2>' + slotForm(x, b, editable) +
               (editable ? '<div class="acts"><button class="btn" type="button" id="save">Save changes</button>' + (x.status === 'scheduled' ? '<span class="msg" style="margin:6px 0 0">Saving sends the change to Metricool.</span>' : '') + '</div><p class="msg" id="fmsg"></p>' : '') + '</div>' +
             (r.edits.length ? '<div class="panel"><h2>History</h2><div class="hist">' + r.edits.map(function (e) { return '<div>' + esc(when(e.at)) + ' · ' + esc(e.by_name) + ' · ' + esc(e.field === 'status' ? 'set it to ' + (SS[e.new_value] || e.new_value) : e.field === 'pushed' ? 'sent it to Metricool' : e.field === 'created' ? 'made it' : 'changed the ' + e.field.replace('_', ' ')) + '</div>'; }).join('') + '</div></div>' : '') +
           '</div></div>';
-        wireTop(); wireCount(); wireMedia(x, editable, id);
+        wireTop(); wireCount(); wireMedia(x, editable, id); wireMusic(x, editable, id);
         var say = function (id2, t, bad) { var e = $(id2); if (e) { e.className = 'msg' + (bad ? ' bad' : ''); e.textContent = t; } };
         var after = function (res, okText) {
-          if (res && res.error) { say('smsg', res.error === 'time_passed' ? 'The time has passed. Pick a new time, save, then approve.' : (res.detail || res.error), true); return; }
+          if (res && res.error) { say('smsg', res.error === 'time_passed' ? 'The time has passed. Pick a new time, save, then approve.' : res.error === 'no_story_channel' ? 'Stories go to Instagram and Facebook; tick one of them first.' : (res.detail || res.error), true); return; }
           refreshBrands(); drawSlot(id); setTimeout(function () { say('smsg', okText); }, 500);
         };
         var ap = $('approve'); if (ap) ap.onclick = function () { ap.disabled = true; ap.textContent = 'Sending…'; api({ action: 'approve', id: id }).then(function (res) { after(res, res.status === 'scheduled' ? 'Scheduled in Metricool.' : res.status === 'manual' ? 'Approved. Some or all of it is posted by hand; see the note above.' : 'Approved.'); }); };
@@ -827,9 +939,9 @@
         var sv = $('save'); if (sv) sv.onclick = function () {
           var f = readForm(); if (!f.slot_at) { say('fmsg', 'Pick a time.', true); return; }
           sv.disabled = true; sv.textContent = 'Saving…';
-          api({ action: 'slot_save', id: id, fields: f }).then(function (res) {
-            if (res.error) { sv.disabled = false; sv.textContent = 'Save changes'; say('fmsg', res.error, true); return; }
-            drawSlot(id); setTimeout(function () { say('smsg', res.unchanged ? 'Nothing changed.' : res.repushed && res.repushed.error ? 'Saved, but Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : res.repushed ? 'Saved and sent to Metricool.' : 'Saved.', !!(res.repushed && res.repushed.error)); }, 500);
+          measureAll(f.assets).then(function (m) { f.assets = m; return api({ action: 'slot_save', id: id, fields: f }); }).then(function (res) {
+            if (res.error) { sv.disabled = false; sv.textContent = 'Save changes'; say('fmsg', res.error === 'no_story_channel' ? 'Stories go to Instagram and Facebook; tick one of them for the story.' : (res.detail || res.error), true); return; }
+            drawSlot(id); setTimeout(function () { say('smsg', res.unchanged ? 'Nothing changed.' : res.repushed && res.repushed.error ? 'Saved, but Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : res.repushed ? 'Saved and sent to Metricool.' : 'Saved.' + (res.story && res.story.created ? ' Its story slot is added, waiting for a 9:16 picture or video.' : res.story && res.story.status === 'skipped' ? ' Its story is skipped.' : ''), !!(res.repushed && res.repushed.error)); }, 500);
           });
         };
         $('noteSend').onclick = function () {
@@ -845,13 +957,13 @@
       setBrand(brand);
       var b = brandOf(st.brand);
       if (!me.admin || !b) { app.innerHTML = top('plan') + '<div class="empty">Only Logan and the super admins add slots.</div>'; wireTop(); return; }
-      var x = { slot_at: eastIso((day || eastDay(new Date())) + 'T12:00'), kind: 'post', channels: (b.channels || []).slice(), caption: '' };
+      var x = { slot_at: eastIso((day || eastDay(new Date())) + 'T12:00'), kind: 'post', channels: (b.channels || []).slice(), caption: '' }; curAssets = [];
       app.innerHTML = top('plan') + '<p class="crumb"><a href="#days/' + b.slug + '/up/all">' + esc(b.name) + '</a> <span>›</span> <span>New slot</span></p>' +
         '<div class="panel" style="max-width:none">' + slotForm(x, b, true) + '<div class="acts"><button class="btn" id="create" type="button">Save as Waiting for approval</button></div><p class="msg" id="fmsg"></p></div>';
       wireTop(); wireCount();
       $('create').onclick = function () {
         var f = readForm(); if (!f.slot_at) return;
-        api({ action: 'slot_save', brand: b.slug, fields: f }).then(function (res) { if (res.error) { $('fmsg').className = 'msg bad'; $('fmsg').textContent = res.error; return; } location.hash = '#slot/' + res.id; });
+        measureAll(f.assets).then(function (m) { f.assets = m; return api({ action: 'slot_save', brand: b.slug, fields: f }); }).then(function (res) { if (res.error) { $('fmsg').className = 'msg bad'; $('fmsg').textContent = res.error; return; } location.hash = '#slot/' + res.id; });
       };
     }
 
