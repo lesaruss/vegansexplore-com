@@ -85,6 +85,8 @@ What works for us is the standard; every time we learn something, the standard a
 4. Unlocking a locked part: requested with a reason, approved by the owner, on record.
 5. Product launch: Coming, with a waitlist, until the relationships exist.
 6. Operations (HR, finance, compliance) stays a separate wing of HQ.
-7. The membership is the $111 Diplomat (LESARUSS-wide), quarterly or monthly; Vegans Explore's $11 Passport stays the member door there.
-8. The current $111 a quarter Partner plan (Front Row Start) carries over: a Partner holds the membership plus their Directory page.
-9. A wizard rental is a month, a quarter or a year at that wizard's price; a lapsed rental keeps its work readable for 30 days.
+7. **The door is the $111 a quarter Partner plan** (Sean, 2026-11-01: "It's just another perk of the membership"). BrandDesk is a perk
+   of it; wizards are rented on top. Front Row Start stays: the official start is January 1, 2027, and the time before it is bonus
+   time, the early Partners' equity being the feedback that makes BrandDesk better by launch.
+8. A lapsed wizard rental: the wizard closes until renewed; finished work stays in their Library while they are a Partner. Leaving
+   the plan gives 30 days to download everything.
