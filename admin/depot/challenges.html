@@ -72,12 +72,12 @@
       var rows = [], counts = {}, waiting = 0;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
-      function view() { var h = location.hash.replace(/^#/, '').split('/'); var v = h[0] === 'challenges' ? 'challenges' : 'proofs'; var st = h[1] || (v === 'proofs' ? 'pending' : 'active'); return { v: v, st: st }; }
+      function view() { var h = location.hash.replace(/^#/, '').split('/'); var v = h[0] === 'challenges' ? 'challenges' : h[0] === 'emails' ? 'emails' : 'proofs'; var st = h[1] || (v === 'proofs' ? 'pending' : v === 'emails' ? '' : 'active'); return { v: v, st: st }; }
       function tabs() {
         var w = view();
         var T = [['proofs/pending', 'Proofs waiting (' + waiting + ')'], ['proofs/approved', 'Approved proofs'], ['proofs/declined', 'Not approved'],
-          ['challenges/active', 'Running' + (counts.active != null ? ' (' + counts.active + ')' : '')], ['challenges/done', 'Done' + (counts.done != null ? ' (' + counts.done + ')' : '')], ['challenges/expired', 'Time ran out' + (counts.expired != null ? ' (' + counts.expired + ')' : '')]];
-        $('tabs').innerHTML = T.map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === w.v + '/' + w.st ? 'on' : '') + '">' + t[1] + '</a>'; }).join('');
+          ['challenges/active', 'Running' + (counts.active != null ? ' (' + counts.active + ')' : '')], ['challenges/done', 'Done' + (counts.done != null ? ' (' + counts.done + ')' : '')], ['challenges/expired', 'Time ran out' + (counts.expired != null ? ' (' + counts.expired + ')' : '')], ['emails', 'Taster emails']];
+        $('tabs').innerHTML = T.map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === w.v + '/' + w.st || (t[0] === 'emails' && w.v === 'emails') ? 'on' : '') + '">' + t[1] + '</a>'; }).join('');
       }
       function drawProofs(st) {
         if (!rows.length) { $('grid').innerHTML = '<p class="sub">' + (st === 'pending' ? 'Nothing waiting.' : 'None here.') + '</p>'; return; }
@@ -110,8 +110,36 @@
             '<span class="meta">Started ' + esc(new Date(r.started_at).toLocaleDateString()) + (st === 'done' ? ', finished ' + esc(new Date(r.completed_at).toLocaleDateString()) : ', ends ' + esc(new Date(r.ends_at).toLocaleDateString())) + '</span>' + prog(r) + '</div></div>';
         }).join('');
       }
+      // ---------- Taster emails (Earn your Passport part 5, ve-nurture) ----------
+      var NFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nurture';
+      var KINDS = [['day-3', 'Day 3: this week in their city'], ['day-7', 'Day 7: a story for them'], ['day-14', 'Day 14: their Guide'], ['pulse', 'Thursdays: the Daily Pulse'], ['dec-1', 'December 1: Founding closes January 1'], ['dec-2', 'December 18: two weeks left'], ['dec-3', 'December 30: tomorrow is the last day']];
+      function napi(b) { return fetch(NFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+      function kindName(k) { if (/^pulse-/.test(k)) return 'Daily Pulse ' + k.slice(6); var f = KINDS.filter(function (x) { return x[0] === k; })[0]; return f ? f[1].split(':')[0] : k; }
+      function drawEmails(sub) {
+        if (sub && sub.indexOf('preview') === 0) {
+          var kind = sub.split(':')[1] || 'day-3', tid = sub.split(':')[2] || null;
+          $('grid').innerHTML = '<div style="grid-column:1/-1"><p class="meta"><a href="#emails">Taster emails</a> / ' + esc((KINDS.filter(function (x) { return x[0] === kind; })[0] || [0, kind])[1]) + (tid ? '' : ' (on a sample Taster, Sam in South Florida)') + '</p><p class="sub" id="psub">Loading...</p>' +
+            '<iframe id="pv" title="The email" style="width:100%;height:600px;border:1px solid var(--ve-border);border-radius:10px;background:#fff"></iframe><div class="acts"><button type="button" class="btn btn-ghost" id="ptest">Send me a test</button><span class="msg" id="pmsg"></span></div></div>';
+          napi({ action: 'preview', kind: kind, taster_id: tid }).then(function (d) { $('psub').innerHTML = '<b>Subject:</b> ' + esc(d.subject || ''); $('pv').srcdoc = d.html || ''; });
+          $('ptest').onclick = function () { this.disabled = true; napi({ action: 'test', kind: kind, taster_id: tid }).then(function (d) { $('pmsg').textContent = d && d.ok ? 'Sent to ' + d.to + '.' : 'That did not send.'; }); };
+          return;
+        }
+        napi({ action: 'tasters' }).then(function (d) {
+          if (!d || !d.ok) { $('grid').innerHTML = '<p class="sub">That did not load.</p>'; return; }
+          var on = d.settings.tasters_on;
+          $('grid').innerHTML = '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Not-ready-yet emails are ' + (on ? 'on' : 'off') + '</h3><span class="meta">From VEGANS EXPLORE, signed Vegans Explore team, from 10 AM Eastern. Paying, earning a membership or stopping our emails ends them.</span>' +
+            '<div class="acts"><button type="button" class="btn' + (on ? ' btn-ghost' : '') + '" id="tsw">' + (on ? 'Turn them off' : 'Turn them on') + '</button></div>' +
+            '<span class="meta">See each email: ' + KINDS.map(function (k) { return '<a href="#emails/preview:' + k[0] + '">' + esc(k[1].split(':')[0]) + '</a>'; }).join(' &middot; ') + '</span></div></div>' +
+            (d.rows.length ? d.rows.map(function (t) {
+              return '<div class="card"><div class="body"><span class="kind">' + esc(t.state) + '</span><h3>' + esc(t.name) + '</h3><span class="meta">' + esc(t.email) + ' &middot; ' + esc(t.chapter || '') + ' &middot; joined ' + esc(new Date(t.joined).toLocaleDateString()) + '</span>' +
+                '<span class="meta">' + (t.sent.length ? 'Sent: ' + t.sent.map(function (x) { return esc(kindName(x.kind)) + (x.error ? ' (did not send)' : ''); }).join(', ') : 'Only the welcome so far') + '</span></div></div>';
+            }).join('') : '<p class="sub">No Tasters yet.</p>');
+          $('tsw').onclick = function () { this.disabled = true; napi({ action: 'settings', tasters_on: !on }).then(function () { drawEmails(''); }); };
+        });
+      }
       function load() {
         var w = view(); tabs(); $('grid').innerHTML = '<p class="sub">Loading...</p>';
+        if (w.v === 'emails') { drawEmails(location.hash.replace(/^#emails\/?/, '')); return; }
         api({ action: 'admin_list', status: w.v === 'challenges' ? w.st : 'active' }).then(function (d) {
           counts = (d && d.counts) || {}; waiting = (d && d.proofs_waiting) || 0;
           if (w.v === 'challenges') { rows = (d && d.rows) || []; tabs(); drawChallenges(w.st); return; }
