@@ -12,8 +12,8 @@ insert into ve_listing_edits (listing_id, field, old_value, new_value, meta)
 select id, 'business_status', '"CLOSED_PERMANENTLY"'::jsonb, '"OPERATIONAL"'::jsonb, '{"by":"logan","why":"calypsobites.com live and selling, 2026-11-01"}'::jsonb
 from listings l where slug = 'calypso-bites' and not exists (select 1 from ve_listing_edits e where e.listing_id = l.id and e.field = 'business_status' and e.new_value = '"OPERATIONAL"'::jsonb);
 insert into ve_listing_edits (listing_id, field, old_value, new_value, meta)
-select id, 'website', to_jsonb(website), 'null'::jsonb, '{"by":"logan","why":"the domain now serves an unrelated site, 2026-11-01"}'::jsonb
+select id, 'website', to_jsonb(website), '""'::jsonb, '{"by":"logan","why":"the domain now serves an unrelated site, 2026-11-01"}'::jsonb
 from listings where slug = 'rhythm-superfoods' and website ilike '%rhythmsuperfoods.com%';
-update listings set website = null, updated_at = now(),
+update listings set website = '', updated_at = now(),
   details = coalesce(details, '{}'::jsonb) || jsonb_build_object('closed_note', 'Its website now serves an unrelated site (checked 2026-11-01)')
 where slug = 'rhythm-superfoods' and website ilike '%rhythmsuperfoods.com%';
