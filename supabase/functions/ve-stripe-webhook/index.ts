@@ -379,7 +379,179 @@ function buildAdaLevel2ReceiptEmail(opts: {
 </html>`
 }
 
+
+// ---- Money in (Sean, 2026-11-01: "Is there something that can be sent to me whenever we receive money?... branded and let me
+// know what was purchased and by whom"). One email to the team for every live payment this webhook receives, from every account,
+// before any product's own branch runs, so a new product is covered without a change here: a paid Checkout session, and a
+// subscription renewal invoice (the first invoice of a subscription is its Checkout session, so it is not counted twice).
+// ve_money_alerts keeps one row per payment (stripe_id unique), so a Stripe retry never sends twice. Test mode sends nothing.
+// A preview of any real session: POST ?money_preview=<cs_...> with Authorization: Bearer <LESARUSS_ADMIN_TOKEN>, sent with
+// [Preview] and no row.
+const MONEY_TO = 'contact@lesaruss.com'
+const MONEY_LABELS: Record<string, [string, string]> = {
+  entry_contribution: ['Vegans Explore', 'Vegans Explore Passport'],
+  passport_subscription: ['Vegans Explore', 'Vegans Explore Passport (monthly)'],
+  points_purchase: ['Vegans Explore', 'Points'],
+  partner_guide_purchase: ['Vegans Explore', 'Explore Season Partners Guide'],
+  ve_verified: ['Vegans Explore', 'VE Verified (yearly)'],
+  ve_guide_purchase: ['Vegans Explore', 'A Guide'],
+  ve_ticket: ['Vegans Explore', 'Event tickets'],
+  ve_tour_ticket: ['Vegans Explore', 'Tour tickets'],
+  ve_audit_purchase: ['Vegans Explore', 'Restaurant audit'],
+  ve_branddesk: ['Vegans Explore', 'BrandDesk managed marketing'],
+  ve_group_gift: ['Vegans Explore', 'A gifted membership'],
+  ve_service: ['Vegans Explore', 'A service'],
+  ve_credit_purchase: ['Vegans Explore', 'Guide credits'],
+  ve_claim: ['Vegans Explore', 'Listing claim'],
+  book_tripwire_purchase: ['Sean A. Russell', 'Book'],
+  ada_unlocked_guide_purchase: ['ADA Unlocked', 'ADA Unlocked course and Level 1 Audit'],
+  ada_unlocked_level2_deposit: ['ADA Unlocked', 'Level 2 Audit deposit'],
+  coach_os_digital_purchase: ['Meatless Muscle', 'Cookbook'],
+  coach_os_subscription: ['Coach OS', 'Coach OS subscription'],
+  problem_solver_deposit: ['LESARUSS', 'Problem Solver deposit'],
+  talentvangelist_audit: ['TalentVangelist', 'TalentVangelist Audit'],
+}
+function moneyAccount(verifiedWith: string | null): { name: string; slug: string; key: string | undefined } {
+  if (verifiedWith && verifiedWith === Deno.env.get('STRIPE_WEBHOOK_SECRET')) return { name: 'Vegans Explore', slug: 'vegans-explore', key: Deno.env.get('STRIPE_SECRET_KEY') }
+  if (verifiedWith && verifiedWith === Deno.env.get('MEATLESS_MUSCLE_STRIPE_WEBHOOK_SECRET')) return { name: 'Meatless Muscle', slug: 'meatless-muscle', key: undefined }
+  return { name: 'LESARUSS', slug: 'lesaruss', key: Deno.env.get('STRIPE_SECRET_KEY_LESARUSS') }
+}
+const moneyEsc = (v: unknown) => String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const moneyFmt = (cents: number, cur = 'usd') => (cur.toLowerCase() === 'usd' ? '$' : cur.toUpperCase() + ' ') + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const moneyEastern = (d: Date) => d.toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' Eastern'
+async function moneyLines(sessionId: string, key: string | undefined): Promise<string[]> {
+  const keys = [key, Deno.env.get('STRIPE_SECRET_KEY'), Deno.env.get('STRIPE_SECRET_KEY_LESARUSS')].filter(Boolean) as string[]
+  for (const k of [...new Set(keys)]) {
+    try {
+      const r = await fetch(`https://api.stripe.com/v1/checkout/sessions/${sessionId}/line_items?limit=10`, { headers: { Authorization: `Bearer ${k}` } })
+      if (!r.ok) continue
+      const o = await r.json()
+      return (o.data || []).map((li: any) => `${li.quantity && li.quantity > 1 ? li.quantity + ' x ' : ''}${li.description || li.price?.nickname || 'Item'} (${moneyFmt(li.amount_total ?? 0, li.currency || 'usd')})`)
+    } catch { /* next key */ }
+  }
+  return []
+}
+async function moneyMember(email: string | null) {
+  if (!email) return null
+  const { data } = await supabase.from('members').select('*').ilike('email', email).limit(1).maybeSingle()
+  return data as any
+}
+// Their first payment: not a renewal, and their account was paid for within the hour of this payment (or they have none yet).
+const moneyFirst = (o: any) => !o.renewal && (!o.member?.entry_paid_at || new Date(o.member.entry_paid_at).getTime() >= o.at.getTime() - 3600e3)
+async function moneyMonth(): Promise<{ cents: number; count: number }> {
+  const now = new Date()
+  const p = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit' }).format(now)
+  const { data } = await supabase.from('ve_money_alerts').select('amount_cents').gte('created_at', `${p}-01T04:00:00Z`)
+  return { cents: (data || []).reduce((t: number, r: any) => t + (r.amount_cents || 0), 0), count: (data || []).length }
+}
+function moneyEmail(o: { amount: number; currency: string; brand: string; product: string; lines: string[]; name: string; email: string;
+  member: any; first: boolean; at: Date; account: string; stripeUrl: string; ref: string; month: { cents: number; count: number }; renewal: boolean; preview: boolean }) {
+  const ve = o.brand === 'Vegans Explore'
+  const m = o.member
+  const who = m ? `${moneyEsc(o.name || m.name || m.username || '')}${m.username ? ` <span style="color:#6b7280">@${moneyEsc(m.username)}</span>` : ''}` : moneyEsc(o.name || 'Not given')
+  const memberLine = m
+    ? [m.founding_member ? 'Founding Member' : (m.membership_status === 'active' ? 'Member' : 'Account waiting for payment'), m.ve_role && !['member'].includes(m.ve_role) ? String(m.ve_role).replace(/_/g, ' ') : '', m.home_community ? 'Home: ' + String(m.home_community).replace(/-/g, ' ') : '', m.created_at ? 'Account since ' + new Date(m.created_at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''].filter(Boolean).join(' · ')
+    : 'No Vegans Explore account with this email'
+  const row = (k: string, v: string) => `<tr><td style="padding:10px 0;border-top:1px solid #eef0ec;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2D5C27;width:120px;vertical-align:top">${k}</td><td style="padding:10px 0;border-top:1px solid #eef0ec;font-size:15px;color:#1A1A1A;line-height:1.5">${v}</td></tr>`
+  const head = ve
+    ? `<td style="background:#0F1F14;padding:20px 28px"><img src="https://vegansexplore.com/public/ve-mark.png" width="34" height="34" alt="" style="vertical-align:middle;border-radius:6px"> <span style="color:#ffffff;font-size:17px;font-weight:900;letter-spacing:.08em;vertical-align:middle;margin-left:8px">VEGANS EXPLORE</span></td>`
+    : `<td style="background:#1A1A1A;padding:20px 28px"><span style="color:#ffffff;font-size:17px;font-weight:900;letter-spacing:.08em">${moneyEsc(o.brand.toUpperCase())}</span></td>`
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Money in</title></head>
+<body style="margin:0;padding:0;background:#f3f5f1;font-family:Montserrat,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:28px 14px"><tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e3e8e0">
+<tr>${head}</tr>
+<tr><td style="padding:30px 28px 8px">
+${o.preview ? '<p style="margin:0 0 14px;padding:8px 12px;background:#fff4e0;color:#6b4a00;border-radius:6px;font-size:13px;font-weight:700">Preview: a real payment from earlier, shown as the email will look. Nothing new came in.</p>' : ''}
+<p style="margin:0;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#3A9B3E">${o.renewal ? 'Renewal paid' : 'Money in'}</p>
+<p style="margin:6px 0 2px;font-size:44px;font-weight:900;color:#1A1A1A;line-height:1.05">${moneyFmt(o.amount, o.currency)}</p>
+<p style="margin:0 0 6px;font-size:17px;font-weight:700;color:#2D5C27">${moneyEsc(o.product)}</p>
+<p style="margin:0 0 18px;font-size:14px;color:#4b5563">from ${moneyEsc(o.name || o.email || 'someone')}${o.first ? ' · <b style="color:#F69820">their first payment</b>' : ''}</p>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+${row('What', o.lines.length ? o.lines.map(moneyEsc).join('<br>') : moneyEsc(o.product))}
+${row('Who', who)}
+${row('Email', o.email ? `<a href="mailto:${moneyEsc(o.email)}" style="color:#2D5C27">${moneyEsc(o.email)}</a>` : 'Not given')}
+${row('Member', moneyEsc(memberLine))}
+${row('When', moneyEsc(moneyEastern(o.at)))}
+${row('Paid to', moneyEsc(o.account) + ' Stripe' + (o.brand !== o.account ? ' · ' + moneyEsc(o.brand) : ''))}
+</table>
+<table cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 6px"><tr><td style="background:#2D5C27;border-radius:6px"><a href="${moneyEsc(o.stripeUrl)}" style="display:inline-block;padding:12px 20px;color:#ffffff;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none">See it in Stripe</a></td></tr></table>
+</td></tr>
+<tr><td style="padding:16px 28px;background:#E8F5E9;font-size:14px;color:#1A1A1A"><b>This month so far:</b> ${moneyFmt(o.month.cents)} from ${o.month.count} payment${o.month.count === 1 ? '' : 's'}</td></tr>
+<tr><td style="padding:14px 28px;font-size:11px;color:#9ca3af">Sent to the team for every payment we receive. Reference ${moneyEsc(o.ref)}.</td></tr>
+</table></td></tr></table></body></html>`
+}
+async function moneySend(subject: string, html: string): Promise<string | null> {
+  const r = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${Deno.env.get('RESEND_API_KEY')}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: [MONEY_TO], subject, html }),
+  })
+  return r.ok ? null : `resend ${r.status}: ${(await r.text()).slice(0, 200)}`
+}
+async function moneyFromSession(session: Stripe.Checkout.Session, acct: { name: string; slug: string; key: string | undefined }, preview: boolean) {
+  const type = String(session.metadata?.type || session.metadata?.kind || '')
+  const [brand0, label0] = MONEY_LABELS[type] || (type.startsWith('ve_') ? ['Vegans Explore', ''] : [acct.name, ''])
+  const lines = await moneyLines(session.id, acct.key)
+  const product = label0 || (lines[0] ? lines[0].replace(/ \([^)]*\)$/, '') : 'A payment')
+  const email = session.customer_details?.email || session.customer_email || ''
+  const member = await moneyMember(email)
+  const name = session.customer_details?.name || member?.name || ''
+  const pi = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as any)?.id
+  const stripeUrl = `https://dashboard.stripe.com/${session.livemode ? '' : 'test/'}${pi ? 'payments/' + pi : 'checkout/sessions/' + session.id}`
+  return { amount: session.amount_total || 0, currency: session.currency || 'usd', brand: brand0, product, lines, name, email, member, stripeUrl, ref: session.id, at: new Date((session.created || Date.now() / 1000) * 1000), account: acct.name, renewal: false, preview }
+}
+async function moneyAlert(event: Stripe.Event, verifiedWith: string | null) {
+  if (!event.livemode) return
+  const acct = moneyAccount(verifiedWith)
+  let o: any = null, stripeId = '', kind = 'checkout'
+  if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
+    const s = event.data.object as Stripe.Checkout.Session
+    if (s.payment_status !== 'paid' || !(s.amount_total && s.amount_total > 0)) return
+    stripeId = s.id
+    o = await moneyFromSession(s, acct, false)
+  } else if (event.type === 'invoice.payment_succeeded') {
+    const inv = event.data.object as Stripe.Invoice
+    if (!(inv.amount_paid > 0) || inv.billing_reason === 'subscription_create') return
+    stripeId = inv.id; kind = 'renewal'
+    const email = inv.customer_email || ''
+    const member = await moneyMember(email)
+    const line = (inv.lines?.data || []).map((l: any) => `${l.description || 'Subscription'} (${moneyFmt(l.amount ?? 0, inv.currency)})`)
+    o = { amount: inv.amount_paid, currency: inv.currency, brand: acct.name, product: line[0] ? line[0].replace(/ \([^)]*\)$/, '') : 'Subscription renewal', lines: line,
+      name: inv.customer_name || member?.name || '', email, member, ref: inv.id, at: new Date(((inv as any).status_transitions?.paid_at || inv.created) * 1000), account: acct.name, renewal: true, preview: false,
+      stripeUrl: `https://dashboard.stripe.com/invoices/${inv.id}` }
+  } else return
+  // One row per payment: a retried event finds it and stops here.
+  const { data: prior } = await supabase.from('ve_money_alerts').select('id').ilike('buyer_email', o.email || '-').limit(1)
+  const { data: row, error } = await supabase.from('ve_money_alerts').insert({ stripe_id: stripeId, kind, account: acct.slug, brand: o.brand, product: o.product,
+    amount_cents: o.amount, currency: o.currency, buyer_email: o.email || null, buyer_name: o.name || null, member_id: o.member?.id || null }).select('id').single()
+  if (error) { if (!/duplicate|unique/i.test(error.message)) console.error('money alert row:', error.message); return }
+  o.first = moneyFirst(o) && !(prior && prior.length)
+  o.month = await moneyMonth()
+  const err = await moneySend(`${moneyFmt(o.amount, o.currency)} in: ${o.product} from ${o.name || o.email || 'someone'}`, moneyEmail(o))
+  await supabase.from('ve_money_alerts').update(err ? { send_error: err } : { sent_at: new Date().toISOString() }).eq('id', row.id)
+  if (err) console.error('money alert send:', err)
+}
+
 Deno.serve(async (req: Request) => {
+  // A preview of the money-in email for a real session (see moneyAlert above).
+  const previewId = new URL(req.url).searchParams.get('money_preview')
+  if (previewId) {
+    const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '')
+    const { data: adm } = await supabase.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle()
+    if (!tok || tok !== adm?.value) return new Response('forbidden', { status: 403 })
+    for (const [k, acct] of [[Deno.env.get('STRIPE_SECRET_KEY'), 'Vegans Explore'], [Deno.env.get('STRIPE_SECRET_KEY_LESARUSS'), 'LESARUSS']] as const) {
+      if (!k) continue
+      const r = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(previewId)}`, { headers: { Authorization: `Bearer ${k}` } })
+      if (!r.ok) continue
+      const session = await r.json()
+      const o: any = await moneyFromSession(session, { name: acct, slug: acct === 'LESARUSS' ? 'lesaruss' : 'vegans-explore', key: k }, true)
+      o.first = moneyFirst(o); o.month = await moneyMonth()
+      const err = await moneySend(`[Preview] ${moneyFmt(o.amount, o.currency)} in: ${o.product} from ${o.name || o.email || 'someone'}`, moneyEmail(o))
+      return new Response(JSON.stringify({ sent: !err, error: err, product: o.product, lines: o.lines, amount: o.amount, name: o.name, email: o.email }), { headers: { 'Content-Type': 'application/json' } })
+    }
+    return new Response(JSON.stringify({ error: 'session_not_found' }), { status: 404, headers: { 'Content-Type': 'application/json' } })
+  }
   const sig = req.headers.get('stripe-signature')
   if (!sig) return new Response('Missing signature', { status: 400 })
 
@@ -403,6 +575,9 @@ Deno.serve(async (req: Request) => {
     console.error('Webhook signature error (tried all configured secrets):', lastErr?.message)
     return new Response(`Webhook error: ${lastErr?.message ?? 'invalid signature'}`, { status: 400 })
   }
+
+  // Money in: the team hears about every live payment before any product's branch runs (never blocks the branches).
+  try { await moneyAlert(event, verifiedWith) } catch (e) { console.error('money alert failed:', e) }
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session

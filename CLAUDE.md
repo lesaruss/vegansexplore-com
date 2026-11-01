@@ -5016,6 +5016,24 @@ shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **De
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
+## Money in: an email for every payment (Sean, 2026-11-01)
+
+"John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that
+can be sent to me whenever we receive money?... branded and let me know what was purchased and by whom." Every live payment the Stripe
+webhook (`ve-stripe-webhook`, every connected account: Vegans Explore, LESARUSS, Meatless Muscle) receives sends one email to
+contact@lesaruss.com from VEGANS EXPLORE <hello@vegansexplore.com>, before any product's own branch runs, so a new product is covered with
+no change: a paid Checkout session (`checkout.session.completed` or `async_payment_succeeded`, amount over $0) and a subscription renewal
+(`invoice.payment_succeeded` other than `subscription_create`, which is its Checkout session). Subject "$11.00 in: <product> from <name>";
+the email (`moneyEmail`): the brand's header (Vegans Explore's mark, else the brand's name), Money in or Renewal paid, the amount, the
+product (`MONEY_LABELS` by `metadata.type`, else the line item), their first payment when it is, What (Stripe's line items), Who (name and
+@username), Email, Member (Founding Member or Member, role, home chapter, account since), When (Eastern), Paid to (which Stripe account),
+**See it in Stripe**, and This month so far (Eastern month). `ve_money_alerts` (migration `20261101_ve_money_alerts.sql`, RLS on, no
+policies) keeps one row per payment (`stripe_id` unique), so a Stripe retry never sends twice; `sent_at` or `send_error`. Test mode sends
+nothing. A new product reads best with a `MONEY_LABELS` row. **Preview** any real session: POST
+`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). Payments before
+2026-11-01 7:40 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
+from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
