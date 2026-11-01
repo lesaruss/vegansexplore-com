@@ -4505,7 +4505,14 @@ its links and copies its numbers from Metricool's analytics (matched by link) on
 each did. Who: super admins edit every brand; anyone else by a `ve_social_people` row (editor or viewer), so a Community Manager or a
 client can work their brand. Sean A. Russell and GeekFon Society are brands with no Metricool brand yet: add each in Metricool, then set
 `metricool_blog_id` and `channels` on its row. Proven 2026-11-01 against the real Metricool: a [TEST] slot approved (scheduled), edited
-(re-pushed, the old copy gone), skipped (removed), then deleted.
+(re-pushed, the old copy gone), skipped (removed), then deleted. **All three brands are in Metricool** (2026-11-01): Vegans Explore 3707345, GeekFon Society
+7797245 (Instagram @geekfon, Facebook, YouTube, TikTok), Sean A. Russell 7797481 (Instagram @seanarussell82, Facebook, LinkedIn, YouTube,
+TikTok). A slot's assets are `{url, type}`: `image` and `video` go out; `cover` (the thumbnail on the Plan) and `storyboard` (frames for the
+team) never do, and a reel, video or episode with no `video` asset cannot be pushed (it goes back to Changes asked, "No video yet"). Media
+lives in `vegan-media/media/social/<batch>/` so Metricool can fetch it. **Relaunch week** (batch `relaunch-week`, from Station 2's lookbook,
+loaded 2026-11-01): the Find your Guide carousel, the Airport and Dairy stories (link stickers by hand), the episode 144 clip, and one Guide
+reel a day at 12:30 PM Eastern, Monday to Saturday (Thursday to Saturday are storyboards until their videos are made), each with Logan's
+proposed caption and Station 2's `ve-relaunch` tracked links.
 
 ## Image conventions
 
