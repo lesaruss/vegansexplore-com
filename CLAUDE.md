@@ -2904,13 +2904,20 @@ cached an hour). 278 of its 279 published `ve_pulse_content` rows are a podcast 
 (Chris Moore, SoFlo Vegans Ep 006, ranks first). Each page now wears the shared banner (`VECityBanner`, key `pulse`, folded: Daily Pulse
 over the show, the picker is our four shows and opens the show's Directory page, Pulse home; a non-episode article picks a chapter's
 Pulse), the title as the page's `h1` (the notes wrote it as an h2), and under the summary **the episode**: YouTube, or the show's own
-audio from its feed (`ve_pulse_episode(slug)`, migration `20261101_ve_pulse_episode.sql`, public: the show and its feed episode, matched
-by `ve_content_feed_episode`, else by the feed's episode number within 120 days sharing a title word; 272 of 278 play, from 223 before;
-only the Vegans Who Lift preview has nothing), Open on the show page (`/directory/<show>?ep=<guid>`) and Every episode; **On this episode**
+audio from its feed (`ve_pulse_episode(slug)`, public: the show and its feed episode; 277 of 278 play, from 223 before; only the Vegans
+Who Lift preview has nothing), Open on the show page (`/directory/<show>?ep=<guid>`) and Every episode; **On this episode**
 (`ve_person_credits`, the People profiles); and at the foot **More from <show>** (previous, next and the six nearest, each its own
 `/pulse/<slug>`). The rail is `ve-ad-rail.js` (`data-ad-page="pulse"`), so HTML5 ads play (it drew them as a broken `<img>`). Pictures go
 through Vercel's resizer (`i.ytimg.com` and `img.youtube.com` added to `images`). Schema.org `PodcastEpisode` in the page; the title
-reads "<title> — Vegans Explore".
+reads "<title> — Vegans Explore". **The way back** (Sean, the same day: "build the show page back-link too"): an episode's view on one of our four
+shows' pages (`/directory/<show>?ep=<guid>`, `public/ve-episodes.js` `notes`) adds **Show notes**, its `/pulse/<slug>`, after Play
+(`ve_pulse_for_episode(listing, guid)`); the feed's own link becomes On their site. **Both read one table**, `ve_pulse_episode_map`
+(migration `20261101_ve_pulse_episode_map.sql`, RLS on, no policies), kept by cron `ve-pulse-episode-map` (every 10 minutes,
+`ve_pulse_episode_refresh(60)`, the oldest first, a new article within 10 minutes): matching live took up to 0.9 s and timed out under
+load. The match (`ve_pulse_episode_compute`): `ve_content_feed_episode` (title, or date within 2 days), else the feed's episode number
+within 120 days sharing a title word (the renamed early SoFlo Vegans episodes); dropped when another article of the show is clearly
+closer to that feed title, and one feed episode belongs to one article (the loose date rule had given the wine fining article the
+Michelin episode and A Moment of Clarity the NYC Tour Day 01). On 2026-11-01: 266 matched, every one linking both ways.
 
 ## Community Board sections (Sean, 2026-10-10)
 

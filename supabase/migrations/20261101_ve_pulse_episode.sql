@@ -22,7 +22,15 @@ returns jsonb language sql stable security definer set search_path = public, ext
              where length(w) >= 4 and w not in ('vegan','vegans','podcast','with','from','that','this','your','plant','based','about')
                and lower(c.title) like '%' || w || '%')
          order by abs(extract(epoch from ((ep ->> 'date')::timestamptz - c.published_at))) limit 1),
-  m as (select guid from m0 union all select guid from m1 where not exists (select 1 from m0) limit 1),
+  -- A match is kept only when no other article of the same show is clearly closer to that feed title (the loose date rule had
+  -- given the wine fining article the Michelin episode and Aging Well the Evolution episode); then the episode-number match.
+  cand as (select guid, 0 pri from m0 union all select guid, 1 from m1),
+  ok as (select cand.guid, cand.pri from cand, c, s join ve_podcast_feeds f on f.listing_id = s.id,
+         lateral jsonb_array_elements(f.episodes) ep
+         where ep ->> 'guid' = cand.guid
+           and not exists (select 1 from ve_pulse_content o where o.status = 'published' and o.podcast_show = c.podcast_show and o.id <> c.id
+             and similarity(lower(o.title), lower(ep ->> 'title')) > similarity(lower(c.title), lower(ep ->> 'title')) + 0.15)),
+  m as (select guid from ok order by pri limit 1),
   e as (select ep from s join ve_podcast_feeds f on f.listing_id = s.id, m,
         lateral jsonb_array_elements(f.episodes) ep where ep ->> 'guid' = m.guid limit 1)
   select case when not exists (select 1 from s) then null else jsonb_build_object(
