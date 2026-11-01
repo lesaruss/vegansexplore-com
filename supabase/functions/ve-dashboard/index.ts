@@ -238,6 +238,26 @@ Deno.serve(async (req) => {
     return json({ ok: true, granted: amount, points: pts || null });
   }
 
+  // Find any member by name, username or email, to open their card (Sean, 2026-11-01). Super admins; up to 20, people with the
+  // closest match first (an exact email, then a name that starts with it). Guide accounts, quarantined and merged rows are left out.
+  if (body.action === 'member_search') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const q = String(body.q || '').replace(/[%_,()\\*]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80);
+    if (q.length < 2) return json({ ok: true, members: [] });
+    const like = `%${q}%`;
+    const { data, error } = await db.from('members').select('id, name, email, username, avatar_url, color, member_class, membership_status, founding_member, ve_role, created_at')
+      .or(`name.ilike.${like},email.ilike.${like},username.ilike.${like}`)
+      .not('member_class', 'in', '(agent,quarantined)').order('created_at', { ascending: false }).limit(60);
+    if (error) return json({ error: 'load_failed' }, 500);
+    const ql = q.toLowerCase();
+    const rank = (m: any) => (String(m.email || '').toLowerCase() === ql ? 0 : String(m.name || '').toLowerCase().startsWith(ql) ? 1
+      : String(m.email || '').toLowerCase().startsWith(ql) ? 2 : 3) + (m.membership_status === 'active' ? 0 : 0.5);
+    const rows = (data || []).sort((a: any, b: any) => rank(a) - rank(b)).slice(0, 20);
+    const pics = await pictures(rows.map((m: any) => m.id));
+    return json({ ok: true, members: rows.map((m: any) => ({ id: m.id, name: m.name || m.username || m.email, email: m.email, avatar_url: pics.get(m.id) || m.avatar_url || null,
+      color: m.color || null, status: m.membership_status, founding_member: !!m.founding_member, role: m.ve_role || null, joined: m.created_at })) });
+  }
+
   if (body.action === 'leaderboard') {
     const { data, error } = await db.rpc('ve_leaderboard', { p_cities: ['*'] });
     if (error) return json({ error: 'load_failed' }, 500);
