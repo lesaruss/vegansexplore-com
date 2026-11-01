@@ -185,7 +185,7 @@
   // the idea that they can save the listings... the members help keep it accurate... make them excited about getting into it"):
   // the promise, a working Get me there on the free venue, how to use it, built with members, bounties, newly added, and the way in.
   // The list of every venue with its city filter lives on its own tab.
-  var OV = {"lib": "VEVenueMap", "demo": "124", "freeName": "Hard Rock Stadium", "place": "venue", "listHash": "#/venues", "venueHash": "#/venue/", "kicker": "The Stadium & Arena Guide", "choose": "Choose your venue", "promise": "Vegan food at the game, section by section.", "lede": "Every stand with Vegan food at the stadiums and arenas in our cities, and where it is. Type the section on your ticket and see the closest one, with the walk.", "tryTitle": "You are in section 124 at Hard Rock Stadium", "tryLede": "Here is what Get me there shows you: the closest Vegan food, the walk and the minutes. Open it to see the map of the bowl.", "step1": ["Pick your venue", "Choose your stadium or arena, before the game or once you are in your seat."], "step2": ["Type your section", "Enter the section on your ticket and press Get me there for the closest Vegan food, with the walk."], "step3": "Tap Save on a venue or an item and it waits in My list, ready on game day.", "built": "We started with what we could find: venue and team pages, menus and news from the last two years. From here it is our members who keep it right and fill in what is missing, every game they go to.", "newTitle": "The latest venues in the Guide", "joinTitle": "Get every venue", "getThere": "Get me there from your seat"};
+  var OV = {"lib": "VEVenueMap", "demo": "120", "freeName": "Hard Rock Stadium", "place": "venue", "listHash": "#/venues", "venueHash": "#/venue/", "kicker": "The Stadium & Arena Guide", "choose": "Choose your venue", "promise": "Vegan food at the game, section by section.", "lede": "Every stand with Vegan food at the stadiums and arenas in our cities, and where it is. Type the section on your ticket and see the closest one, with the walk.", "tryTitle": "You are in section 120 at Hard Rock Stadium", "tryLede": "Here is what Get me there shows you: the closest Vegan food, the walk and the minutes. Open it to see the map of the bowl.", "step1": ["Pick your venue", "Choose your stadium or arena, before the game or once you are in your seat."], "step2": ["Type your section", "Enter the section on your ticket and press Get me there for the closest Vegan food, with the walk."], "step3": "Tap Save on a venue or an item and it waits in My list, ready on game day.", "built": "We started with what we could find: venue and team pages, menus and news from the last two years. From here it is our members who keep it right and fill in what is missing, every game they go to.", "newTitle": "The latest venues in the Guide", "joinTitle": "Get every venue", "getThere": "Get me there from your seat"};
   var OV_ICON = {
     pick: '<svg width="26" height="26" viewBox="0 0 24 24" ' + S + '><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>',
     go: '<svg width="26" height="26" viewBox="0 0 24 24" ' + S + '><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>',
@@ -511,8 +511,8 @@
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back]].concat(item ? [['Update', '#/venue/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         (kind === 'missing' ? '<label class="dg-field"><span>The Vegan item</span><input id="saItem" maxlength="160" placeholder="Beyond Burger, vegan nachos, a pretzel"></label>' +
-        '<label class="dg-field"><span>The place <i>(the restaurant, stand or shop name on the sign)</i></span><input id="saPlace" maxlength="120" placeholder="Bird &amp; Bone, the stand by section 124"></label>' +
-        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 124, or Gate 2"></label>' : '') +
+        '<label class="dg-field"><span>The place <i>(the restaurant, stand or shop name on the sign)</i></span><input id="saPlace" maxlength="120" placeholder="Bird &amp; Bone, the stand by section 120"></label>' +
+        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 120, or Gate 2"></label>' : '') +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
         (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +
         (kind === 'missing' ? photoSlot('item', 'A photo of the item', 'the food, the package or the menu board') + photoSlot('place', 'A photo of the sign', 'the name of the restaurant, stand or shop')
@@ -618,7 +618,7 @@
       (gate || ('<div class="dg-form">' +
         '<label class="dg-field"><span>Which shop or stand?</span><select id="saShop">' + opts + '</select></label>' +
         '<div id="saNewShop" hidden><label class="dg-field"><span>The shop or stand\'s name <i>(as on its sign)</i></span><input id="saPlace" maxlength="120" placeholder="The market by section 120"></label>' +
-        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 124"></label>' +
+        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 120"></label>' +
         photoSlot('place', 'A photo of the sign', 'the name on the sign, so the team can find it') + '</div>' +
         '<div class="dg-btns" style="margin:6px 0 14px"><button type="button" class="dg-btn" id="saScanGo">Scan the barcode</button></div>' +
         '<div id="saScanRes" aria-live="polite"></div>' +
@@ -680,7 +680,7 @@
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Where is it', '']]) +
       head('Bounty', 'Where is ' + esc(s.name) + '?', done ? 'This one is already on the map. Thank you!' : 'We know it is at ' + esc(v.name) + (s.where ? ' (' + esc(s.where) + ')' : '') + ', but not which section it is by, so it is not pinned on the map yet. Find it, tell us the section, and earn ' + pts(p.with_photo || 25) + ' points with a photo (' + pts(p.no_photo || 10) + ' without) once the team accepts it.') +
       (done ? '<div class="dg-btns"><a class="dg-btn" href="' + back + '">Back to ' + esc(v.name) + '</a></div>' : gate || ('<div class="dg-form"><p class="dg-sharenote"><span class="sa-pinno q">' + num + '</span> <b>' + esc(s.name) + '</b></p>' +
-        '<label class="dg-field"><span>Which section is it by? <i>(the number on the sign nearest the stand)</i></span><input id="saWhere" maxlength="40" placeholder="124" data-dictate="off"></label>' +
+        '<label class="dg-field"><span>Which section is it by? <i>(the number on the sign nearest the stand)</i></span><input id="saWhere" maxlength="40" placeholder="120" data-dictate="off"></label>' +
         photoSlot('item', 'A photo', 'the stand with the section sign in it, if you can, and it earns more') +
         '<label class="dg-field"><span>Anything else? <i>(optional: how to find it)</i></span><textarea id="saNote" rows="2" maxlength="600"></textarea></label>' +
         '<span class="dg-status" id="saStatus" role="status"></span>' +

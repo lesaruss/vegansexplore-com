@@ -175,7 +175,7 @@
       (it.description ? '<p class="vbz-jd">' + esc(it.description) + '</p>' : '') +
       '<p class="vbz-jd"><b>What to do:</b> ' + esc(j.what) + (j.low !== j.pts ? ' ' + n(j.low) + ' points without a photo.' : '') + '</p>' +
       '<div class="dg-btns" style="margin:10px 0 14px"><a class="dg-btn" href="' + esc(j.href) + '">Do it</a><a class="dg-btn dg-ghost" href="' + esc(o.base + v.slug + '/report/choose/' + it.id) + '">Something changed?</a></div>' +
-      (v.layout && o.lib ? '<form class="sa-seat" id="vbzSeat"><label for="vbzSeatIn">Your ' + unit + '</label><div><input id="vbzSeatIn" inputmode="text" autocomplete="off" maxlength="12" placeholder="' + (unit === 'gate' ? 'D7' : '124') + '" value="' + esc(seat) + '">' +
+      (v.layout && o.lib ? '<form class="sa-seat" id="vbzSeat"><label for="vbzSeatIn">Your ' + unit + '</label><div><input id="vbzSeatIn" inputmode="text" autocomplete="off" maxlength="12" placeholder="' + (unit === 'gate' ? 'D7' : '120') + '" value="' + esc(seat) + '">' +
         '<button class="dg-btn" type="submit">Get me there</button></div></form>' : '') + '</div>';
     var right = '<div class="sa-g-map">' + (pic ? '<figure class="vbz-pic"><img src="' + esc(pic.src) + '" alt="' + esc(pic.cap) + '" loading="lazy"><figcaption>' + esc(pic.cap) + '</figcaption></figure>' : '') +
       (v.layout && o.lib ? '<div class="sa-map-box" id="vbzMap"></div><div class="sa-map-foot"><span>' + esc(o.mapNote || 'Our own drawing, from the section numbers.') + '</span></div>' : '') +

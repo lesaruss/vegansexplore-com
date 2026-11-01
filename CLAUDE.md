@@ -3777,7 +3777,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
-  **Try it** (a working Get me there on the free venue from a set start, D7 at FLL, section 124 at Hard Rock), How to use it (pick,
+  **Try it** (a working Get me there on the free venue from a set start, D7 at FLL, section 120 at Hard Rock), How to use it (pick,
   type your gate or section, save), Built with you (we started with what we could find; members keep it right) beside the
   Bounties card (live points from `bounties`), Newly added (the four latest, `list` `added`), and Get every venue.
   Reworked the same day (Sean: "a little jumbled... have the image... to the right... six different airports... all the way across... if
