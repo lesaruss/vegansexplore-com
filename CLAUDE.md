@@ -3188,6 +3188,22 @@ Marchese and Dani Taylor (Muscles by Brussels Radio), Dotsie Bausch (Switch4Good
 Vegan Travel), Neal Barnard (The Exam Room); John Thomas and Brooke Sellers host Vegans Who Lift, one of ours, so theirs are under With
 Vegans Explore. A person with another name on other shows gets it in `details.person.aka`.
 
+## The homepage: launching January 1, 2027 (Sean, 2026-11-01)
+
+"Make it a little bit more apparent that we're officially launching January 1st, 2027... right now is the best opportunity for you to
+help steer the direction... locking yourself in as a founder... reviewed by our panel as a video on the homepage... a countdown clock to
+January 1st, 2027. But the call to action to become a founding member for $11." The hero (`index.html`, `.hero-wrap`) keeps the rotating
+city art and now holds: **Officially launching January 1, 2027**, "Help build the Vegan community's home base.", a line on building it
+city by city and how to help, a **countdown** to 2027-01-01T05:00Z (midnight Eastern, `DEADLINE` in the page), **Become a Founding
+Member · $11** (`/passport?from=home#/join`), Explore Now and the locked Founding line; beside it (above it on phones) the **video**.
+After the deadline the countdown and Founding line hide themselves and the button reads Get your Passport · $11.
+- **The video** (66 s, 1280 x 720): the script was written by Logan and revised by a five-person panel (first-time visitor, Vegan
+  restaurant owner, skeptical non-Vegan, brand marketer, clarity editor); Liz narrates (el-media tts, her voice, "Veegan"), checked word
+  for word with `stt`, over an ElevenLabs music bed, about -15 LUFS; title cards over the Guide banners and chapter art. File
+  `vegan-media/media/home/launch-v1.mp4` (voice `launch-liz-v1.mp3`, bed `launch-bed-v1.mp3`); captions `public/home/launch-v1.vtt`
+  (on by default), poster `public/home/launch-poster.jpg`. Nothing plays until Watch the video; playing pauses the city rotation and
+  sends GA `video_start` / `video_complete`. A new cut is `launch-v2.mp4` with its own VTT; a script change is recorded again.
+
 ## Communities are cards, and a chapter is its own page (Sean, 2026-11-01)
 
 "The community should be set up like they're in a directory listing... you can vote for them, you could save them. You see the little
