@@ -26,6 +26,17 @@
 //   A brand that is not a listing (Vegans Explore itself) has its kit by `brand` instead of `slug` (ve_brand_cartridges, super
 //   admins only): kit_get {brand}, kit_create {brand, name}, kit_save {brand, section, part, state}. A podcast listing's kit_create
 //   starts the podcast frame (cover, colors, type, voice, story, cast, sound) with its parent brand's colors and type.
+// The foundation (BrandDesk, canon canon-branddesk-production-wing, 2026-11-01), on either kind of kit (`brand` or `slug`):
+//   A locked part refuses kit_save (409 locked). Changing it takes kit_change_request {section, reason} (an editor, the owner or an
+//   admin; one open request a part), then kit_change_decide {id, approve, note} by the owner (a brand kit's owner is a super admin):
+//   approved puts the part back In progress (the kit back to building unless it launched), declined leaves it locked. Both on record
+//   in ve_kit_change_requests, and in ve_cartridge_edits.
+//   kit_launch: every part locked -> status launched, meta.launched {at, by}. The launch gate: no module opens before it.
+//   kit_mood_save {mood: {pins: [{src, note, says: [style|type|color]}], words}}: the mood board, an intake that is never locked.
+//   kit_mood_read: Claude looks at the pins and words and proposes a style, six colors by role and one of the four type pairings
+//   (saved as mood.read; the colors and type parts are still the owner's to choose and lock).
+//   kit_photo_url / kit_photo_done with kind 'mood' (and, on a brand kit, 'logo') upload a picture to media/brandkit/<slug>/.
+//   kit_get also returns `changes` (the latest 50 requests).
 // Ops: LESARUSS_ADMIN_TOKEN as the bearer with as_member acts as that member (testing, HQ).
 //
 // Managed by us (BrandDesk requests, anyone; 3 a day per email):
@@ -234,6 +245,152 @@ async function startPodcast(l: any) {
     cast: { host: null, correspondents: [] }, sound: { pieces: [] },
   };
 }
+// ---- The foundation: lock, change requests, launch, the mood board (2026-11-01).
+const PAIRINGS = ['Nunito and DM Sans', 'Fraunces and Work Sans', 'Archivo Black and Inter', 'Playfair Display and Lato'];
+const PAIR_FONTS: Record<string, [string, string]> = { 'Nunito and DM Sans': ['Nunito', 'DM Sans'], 'Fraunces and Work Sans': ['Fraunces', 'Work Sans'],
+  'Archivo Black and Inter': ['Archivo Black', 'Inter'], 'Playfair Display and Lato': ['Playfair Display', 'Lato'] };
+const ROLES = ['page', 'text', 'accent', 'soft', 'highlight', 'ink'];
+const MOOD_SCHEMA = { type: 'object', additionalProperties: false, required: ['style', 'words', 'palette', 'pairing', 'why_type', 'notes'], properties: {
+  style: { type: 'string' }, words: { type: 'array', items: { type: 'string' } },
+  palette: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['role', 'hex', 'name'], properties: {
+    role: { type: 'string', enum: ROLES }, hex: { type: 'string' }, name: { type: 'string' } } } },
+  pairing: { type: 'string', enum: PAIRINGS }, why_type: { type: 'string' }, notes: { type: 'string' } } };
+type Kit = { key: { brand_slug?: string; listing_id?: string }; name: string; data: any; status: string; role: string; m: any;
+  save: (data: any, status: string) => Promise<string | null> };
+const today = () => new Date().toISOString().slice(0, 10);
+const isLocked = (data: any, section: string) => data?.meta?.approvals?.[section]?.state === 'locked';
+async function changesOf(k: { brand_slug?: string; listing_id?: string }) {
+  let q2 = db.from('ve_kit_change_requests').select('id, section, reason, status, asked_by, asked_at, decided_at, decision_note');
+  q2 = k.brand_slug ? q2.eq('brand_slug', k.brand_slug) : q2.eq('listing_id', k.listing_id!);
+  const { data: rows } = await q2.order('asked_at', { ascending: false }).limit(50);
+  const ids = [...new Set((rows || []).map((r: any) => r.asked_by).filter(Boolean))];
+  const { data: ms } = ids.length ? await db.from('members').select('id, name').in('id', ids) : { data: [] as any[] };
+  const nm = new Map((ms || []).map((x: any) => [x.id, x.name]));
+  return (rows || []).map((r: any) => ({ ...r, asked_by_name: nm.get(r.asked_by) || '' }));
+}
+async function logEdit(k: Kit, section: string, state: string, before: any, after: any) {
+  await db.from('ve_cartridge_edits').insert({ ...k.key, member_id: k.m.id, section, state, before, after });
+}
+async function foundation(b: any, k: Kit): Promise<Response | null> {
+  const a = String(b.action || ''), data = k.data, parts = secs(data);
+  const canEdit = ['admin', 'owner', 'editor'].includes(k.role), canDecide = k.role === 'admin' || k.role === 'owner';
+  if (a === 'kit_changes') return json({ ok: true, changes: await changesOf(k.key) });
+  if (a === 'kit_change_request') {
+    if (!canEdit) return json({ error: 'forbidden' }, 403);
+    const section = String(b.section || ''), reason = clean(b.reason, 1000);
+    if (!parts.includes(section)) return json({ error: 'bad_section' }, 400);
+    if (!isLocked(data, section)) return json({ error: 'not_locked', message: 'This part is not locked. Change it directly.' }, 409);
+    if (reason.length < 10) return json({ error: 'reason_needed', message: 'Say why it needs to change (a sentence is enough).' }, 400);
+    const { data: row, error } = await db.from('ve_kit_change_requests').insert({ ...k.key, section, reason, asked_by: k.m.id }).select('id').single();
+    if (error) return json(error.code === '23505' ? { error: 'already_asked', message: 'There is already an open request for this part.' } : { error: 'save_failed', message: error.message }, error.code === '23505' ? 409 : 500);
+    await logEdit(k, section, 'change_requested', null, { request: row.id, reason });
+    return json({ ok: true, id: row.id, changes: await changesOf(k.key) });
+  }
+  if (a === 'kit_change_decide') {
+    if (!canDecide) return json({ error: 'owner_only' }, 403);
+    const id = String(b.id || ''), approve = b.approve === true, note = clean(b.note, 600);
+    let q = db.from('ve_kit_change_requests').select('id, section, reason, status').eq('id', id);
+    q = k.key.brand_slug ? q.eq('brand_slug', k.key.brand_slug) : q.eq('listing_id', k.key.listing_id!);
+    const { data: r } = await q.maybeSingle();
+    if (!r) return json({ error: 'not_found' }, 404);
+    if (r.status !== 'pending') return json({ error: 'decided' }, 409);
+    await db.from('ve_kit_change_requests').update({ status: approve ? 'approved' : 'declined', decided_by: k.m.id, decided_at: new Date().toISOString(), decision_note: note || null }).eq('id', id);
+    if (approve) {
+      data.meta.approvals[r.section] = { state: 'in_progress', by: clean(k.m.name, 60) || 'Team', at: today(), reopened: { request: id, reason: r.reason } };
+      data.meta.updated = today();
+      const status = k.status === 'locked' ? 'building' : k.status;
+      data.meta.status = status;
+      const err = await k.save(data, status);
+      if (err) return json({ error: 'save_failed', message: err }, 500);
+      k.status = status;
+    }
+    await logEdit(k, r.section, approve ? 'change_approved' : 'change_declined', null, { request: id, note });
+    return json({ ok: true, cartridge: data, status: k.status, changes: await changesOf(k.key) });
+  }
+  if (a === 'kit_launch') {
+    if (!canDecide) return json({ error: 'owner_only' }, 403);
+    if (k.status === 'launched') return json({ ok: true, cartridge: data, status: 'launched' });
+    const open = parts.filter((p) => !isLocked(data, p));
+    if (open.length) return json({ error: 'not_locked', message: 'Lock every part first.', open }, 409);
+    data.meta.launched = { at: new Date().toISOString(), by: clean(k.m.name, 60) || 'Team' };
+    data.meta.status = 'launched'; data.meta.updated = today();
+    const err = await k.save(data, 'launched');
+    if (err) return json({ error: 'save_failed', message: err }, 500);
+    await logEdit(k, 'kit', 'launched', null, data.meta.launched);
+    return json({ ok: true, cartridge: data, status: 'launched' });
+  }
+  if (a === 'kit_mood_save') {
+    if (!canEdit) return json({ error: 'forbidden' }, 403);
+    const pins = (Array.isArray(b.mood?.pins) ? b.mood.pins : []).slice(0, 24).map((p: any) => ({ src: String(p?.src || ''), note: clean(p?.note, 200),
+      says: list(p?.says, 3, 10).filter((x) => ['style', 'type', 'color'].includes(x)) })).filter((p: any) => p.src);
+    const mood = { pins, words: clean(b.mood?.words, 600), read: data.mood?.read || null };
+    if (!srcsOk(mood)) return json({ error: 'upload_first' }, 400);
+    const before = data.mood ?? null;
+    data.mood = mood; data.meta.updated = today();
+    const err = await k.save(data, k.status);
+    if (err) return json({ error: 'save_failed', message: err }, 500);
+    await logEdit(k, 'mood', 'saved', before, mood);
+    return json({ ok: true, cartridge: data, status: k.status });
+  }
+  if (a === 'kit_mood_read') {
+    if (!canEdit) return json({ error: 'forbidden' }, 403);
+    const pins = (data.mood?.pins || []).slice(0, 12);
+    if (pins.length < 3) return json({ error: 'more_pins', message: 'Add at least three pictures first.' }, 400);
+    const apiKey = await secret('ANTHROPIC_API_KEY');
+    if (!apiKey) return json({ error: 'no_model_key' }, 500);
+    const abs = (src: string) => src.startsWith('/') ? 'https://vegansexplore.com' + src : src;
+    const content: any[] = [{ type: 'text', text: `The brand: ${clean(data.business?.name, 80)} (${clean(data.business?.kind, 40)}). What they said they like: "${clean(data.mood?.words, 600)}".\n` +
+      'Below are the pictures on their mood board, each with what they said it shows them (style, type or color) and their note. Read what they have in common.\n' +
+      'Return: style (two plain sentences on the look they are drawn to), words (exactly three words for it), palette (six colors, one per role: page, text, accent, soft, highlight, ink; hex like #1A2B3C, a plain name each; text on page must be easy to read), ' +
+      'pairing (the one type pairing that fits best), why_type (one sentence), notes (one or two sentences: anything in the board that pulls in different directions, or nothing to flag). ' +
+      'Only what the pictures and their words show. Vegan with a capital V. No dashes.' }];
+    pins.forEach((p: any, i: number) => {
+      content.push({ type: 'text', text: `Picture ${i + 1}. Shows them: ${(p.says || []).join(', ') || 'not said'}. Note: ${p.note || 'none'}` });
+      content.push({ type: 'image', source: { type: 'url', url: abs(p.src) } });
+    });
+    try {
+      const client = new Anthropic({ apiKey });
+      const res: any = await client.beta.messages.create({ model: MODEL, max_tokens: 1500, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+        output_config: { effort: 'low', format: { type: 'json_schema', schema: MOOD_SCHEMA } },
+        system: 'You read mood boards for small businesses building a brand kit on Vegans Explore BrandDesk. ' + RULES, messages: [{ role: 'user', content }] } as any);
+      if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+      const out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
+      const fix = (s: string) => String(s).replace(/\s*[—–]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan');
+      const palette = ROLES.map((r) => (out.palette || []).find((c: any) => c.role === r)).filter(Boolean)
+        .map((c: any) => ({ role: c.role, hex: /^#[0-9a-f]{6}$/i.test(c.hex) ? c.hex.toUpperCase() : '#000000', name: clean(fix(c.name), 40) }));
+      const read = { style: fix(out.style), words: (out.words || []).slice(0, 3).map(fix), palette, pairing: out.pairing, fonts: PAIR_FONTS[out.pairing] || null,
+        why_type: fix(out.why_type), notes: fix(out.notes), at: new Date().toISOString(), pins: pins.length };
+      data.mood = { ...(data.mood || {}), read }; data.meta.updated = today();
+      const err = await k.save(data, k.status);
+      if (err) return json({ error: 'save_failed', message: err }, 500);
+      await logEdit(k, 'mood', 'read', null, read);
+      return json({ ok: true, read, cartridge: data, status: k.status });
+    } catch (e) {
+      if (e instanceof Anthropic.RateLimitError) return json({ error: 'busy' }, 503);
+      return json({ error: String((e as Error).message || e).slice(0, 200) }, 502);
+    }
+  }
+  return null;
+}
+async function uploadUrl(slug: string, kind: string, ct: unknown, bytes: unknown) {
+  const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[String(ct || '')];
+  if (!ext) return json({ error: 'file_type' }, 400);
+  const n = Number(bytes) || 0;
+  if (n <= 0 || n > 15728640) return json({ error: 'file_size' }, 400);
+  const path = `media/brandkit/${slug}/${kind}-${today()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
+  const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+  if (error || !up) return json({ error: 'upload_url_failed', message: error?.message }, 500);
+  return json({ ok: true, path, signed_url: up.signedUrl });
+}
+async function uploadDone(slug: string, pathIn: unknown) {
+  const path = String(pathIn || '');
+  if (!path.startsWith(`media/brandkit/${slug}/`) || path.includes('..')) return json({ error: 'bad_path' }, 400);
+  const { data: file, error } = await db.storage.from('vegan-media').download(path);
+  if (error || !file) return json({ error: 'not_uploaded' }, 409);
+  const size = imageSize(new Uint8Array(await file.arrayBuffer()));
+  if (!size) { await db.storage.from('vegan-media').remove([path]); return json({ error: 'not_a_picture' }, 422); }
+  return json({ ok: true, url: PUBLIC + path, width: size.w, height: size.h });
+}
 // A brand's own kit (ve_brand_cartridges), for super admins: kit_get, kit_create {name}, kit_save {section, part, state}.
 async function brandKit(b: any, memberId: string) {
   const slug = clean(b.brand, 60).toLowerCase();
@@ -246,7 +403,7 @@ async function brandKit(b: any, memberId: string) {
   if (b.action === 'kit_get') {
     const { data: kids } = await db.from('ve_cartridges').select('listing_id, listings(name, slug)').eq('data->meta->>parent', slug);
     return json({ ok: true, role: 'admin', listing, cartridge: cart?.data || null, status: cart?.status || null,
-      children: (kids || []).map((k: any) => ({ name: k.listings?.name, slug: k.listings?.slug })) });
+      children: (kids || []).map((k: any) => ({ name: k.listings?.name, slug: k.listings?.slug })), changes: cart ? await changesOf({ brand_slug: slug }) : [] });
   }
   if (b.action === 'kit_create') {
     if (cart) return json({ ok: true, role: 'admin', listing, cartridge: cart.data, status: cart.status });
@@ -267,6 +424,7 @@ async function brandKit(b: any, memberId: string) {
     if (!cart) return json({ error: 'no_kit' }, 404);
     const data = cart.data as any, section = String(b.section || ''), state = b.state === 'locked' ? 'locked' : 'in_progress';
     if (!secs(data).includes(section)) return json({ error: 'bad_section' }, 400);
+    if (isLocked(data, section)) return json({ error: 'locked', message: 'This part is locked. Ask for a change with a reason.' }, 409);
     const part = b.part;
     if (part == null || JSON.stringify(part).length > 300000) return json({ error: 'too_big' }, 413);
     if (!srcsOk(part)) return json({ error: 'upload_first' }, 400);
@@ -283,7 +441,14 @@ async function brandKit(b: any, memberId: string) {
     await db.from('ve_cartridge_edits').insert({ brand_slug: slug, member_id: memberId, section, state, before, after: getPart(data, section) ?? null });
     return json({ ok: true, cartridge: data, status });
   }
-  return json({ error: 'brand_kits_take_get_create_save' }, 400);
+  if (b.action === 'kit_photo_url') return ['mood', 'logo'].includes(b.kind) ? uploadUrl(slug, b.kind, b.content_type, b.bytes) : json({ error: 'bad_kind' }, 400);
+  if (b.action === 'kit_photo_done') return uploadDone(slug, b.path);
+  if (!cart) return json({ error: 'no_kit' }, 404);
+  const fk: Kit = { key: { brand_slug: slug }, name: cart.name, data: cart.data, status: cart.status, role: 'admin', m,
+    save: async (d, st) => (await db.from('ve_brand_cartridges').update({ data: d, status: st, updated_at: new Date().toISOString(), updated_by: memberId }).eq('brand_slug', slug)).error?.message || null };
+  const r = await foundation(b, fk);
+  if (r) return r;
+  return json({ error: 'unknown_action' }, 400);
 }
 async function kit(b: any, memberId: string) {
   if (b.brand) return brandKit(b, memberId);
@@ -305,7 +470,8 @@ async function kit(b: any, memberId: string) {
   };
   const listing = { id: l.id, name: l.name, slug: l.slug };
 
-  if (b.action === 'kit_get') return json({ ok: true, role, listing, cartridge: cart?.data || null, status: cart?.status || null, people: await people() });
+  if (b.action === 'kit_get') return json({ ok: true, role, listing, cartridge: cart?.data || null, status: cart?.status || null, people: await people(),
+    changes: cart && role !== 'photographer' ? await changesOf({ listing_id: l.id }) : undefined });
 
   if (b.action === 'kit_create') {
     if (role !== 'admin') return json({ error: 'admins_only' }, 403);
@@ -322,6 +488,8 @@ async function kit(b: any, memberId: string) {
     const section = String(b.section || ''), state = b.state === 'locked' ? 'locked' : 'in_progress';
     if (!secs(cart.data).includes(section)) return json({ error: 'bad_section' }, 400);
     if (role === 'photographer' && section !== 'photos' && section !== 'menu') return json({ error: 'photos_only' }, 403);
+    // A locked part changes only through an approved change request; a photographer's photo uploads never change its state.
+    if (role !== 'photographer' && isLocked(cart.data, section)) return json({ error: 'locked', message: 'This part is locked. Ask for a change with a reason.' }, 409);
     const part = b.part;
     if (part == null || JSON.stringify(part).length > 300000) return json({ error: 'too_big' }, 413);
     if (!srcsOk(part)) return json({ error: 'upload_first' }, 400);
@@ -345,6 +513,12 @@ async function kit(b: any, memberId: string) {
     return json({ ok: true, cartridge: data, status });
   }
 
+  if (cart && role !== 'photographer' && ['kit_changes', 'kit_change_request', 'kit_change_decide', 'kit_launch', 'kit_mood_save', 'kit_mood_read'].includes(b.action)) {
+    const fk: Kit = { key: { listing_id: l.id }, name: l.name, data: cart.data, status: cart.status, role, m,
+      save: async (d, st) => (await db.from('ve_cartridges').update({ data: d, status: st, updated_at: new Date().toISOString(), updated_by: memberId }).eq('listing_id', l.id)).error?.message || null };
+    const r = await foundation(b, fk);
+    if (r) return r;
+  }
   // The photographer's full-size original goes to the client's Library (they own it); the web copy goes on the kit as before.
   const libAccount = async () => {
     const { data } = await db.from('ve_branddesk_accounts').select('id').eq('listing_id', l.id).in('status', ['active', 'paused', 'canceling']).order('created_at', { ascending: false }).limit(1);
@@ -393,8 +567,8 @@ async function kit(b: any, memberId: string) {
 
   if (b.action === 'kit_photo_url') {
     if (!cart) return json({ error: 'no_kit' }, 404);
-    const kind = ['logo', 'menu', 'space'].includes(b.kind) ? b.kind : '';
-    if (!kind || (role === 'photographer' && kind === 'logo')) return json({ error: 'bad_kind' }, 400);
+    const kind = ['logo', 'menu', 'space', 'mood'].includes(b.kind) ? b.kind : '';
+    if (!kind || (role === 'photographer' && (kind === 'logo' || kind === 'mood'))) return json({ error: 'bad_kind' }, 400);
     const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[String(b.content_type || '')];
     if (!ext) return json({ error: 'file_type' }, 400);
     const bytes = Number(b.bytes) || 0;
