@@ -1379,7 +1379,9 @@ function loadGroupLive(l){
 }
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
-  var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
+  // Events it puts on (host_listing_id) and events held at it (venue_listing_id, Sean, 2026-11-01: where Vegans hold their events;
+  // ve_event_venues_sync links them by the event's place name). A place that only hosts others' events reads "Vegan events here".
+  var url = SUPABASE_URL + '/rest/v1/events?or=(host_listing_id.eq.' + l.id + ',venue_listing_id.eq.' + l.id + ')&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url,host_listing_id&order=starts_at.asc&limit=1000';
   // The sample group's events come from its demo file; each opens the sample's RSVP and ticket simulation (data-demo-ev).
   var demoEv = DEMO && DEMO.events;
   (demoEv ? Promise.resolve(DEMO.events.slice().sort(function(a, b){ return Date.parse(a.starts_at) - Date.parse(b.starts_at); }))
@@ -1409,7 +1411,9 @@ function loadHostedEvents(l){
     };
     box.hidden = false;
     box.className = 'section';
-    box.innerHTML = '<h2 class="section-title">Events</h2>' +
+    var heldOnly = !isGroup && !demoEv && rows.every(function(e){ return e.host_listing_id !== l.id; });
+    box.innerHTML = '<h2 class="section-title">' + (heldOnly ? 'Vegan events here' : 'Events') + '</h2>' +
+      (heldOnly ? '<p class="about-text he-note">Vegan events held at ' + esc(l.name) + ', from our calendar.</p>' : '') +
       '<div class="he-tabs" role="tablist"><button type="button" role="tab" data-he="up" aria-selected="true">Upcoming (' + up.length + ')</button>' +
       '<button type="button" role="tab" data-he="past" aria-selected="false">Past (' + past.length + ')</button></div><div class="he-pane"></div>';
     var show = function(k){

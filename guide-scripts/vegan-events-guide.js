@@ -10,7 +10,7 @@
  *   Kinds         eight kinds of events, one per view: what it costs, how big, what goes wrong, what helps (members)
  *   The plan      the countdown checklist from 12 weeks out to the day after, kept in the browser (ev_checks), Copy it and Print it
  *   Money         the budget lines and pricing (members), the break-even worksheet and our ticketing (open)
- *   Venue         Services > Event Venues in the Directory by chapter (open); what to ask a venue and the red flags (members)
+ *   Venue         Services > Event Venues and every place tagged ve-hosts-events, by chapter (open); what to ask a venue and the red flags (members)
  *   Vendors       Vendors, Food Trucks, Catering and brands that vend, by chapter (open); recruiting, the agreement, labels (members)
  *   Gear          the shop: every item a tracked /go/ link to Amazon with our tag (open)
  *   The word      the timeline and channels (members); Submit an event and Promote your event (open)
@@ -37,7 +37,9 @@
   function catUrl(cats, limit) {
     return SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&business_status=not.eq.CLOSED_PERMANENTLY&or=(category.in.(' + cats.map(encodeURIComponent).join(',') + '),extra_categories.ov.{' + cats.map(function (c) { return '"' + encodeURIComponent(c) + '"'; }).join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=' + (limit || 1000);
   }
-  var VENUES_URL = catUrl(['Event Venues']);
+  // Event Venues, and every listing where a Vegan event was held in the last year (tag ve-hosts-events, kept by ve_event_venues_sync;
+  // Sean, 2026-11-01: where Vegans already hold their events).
+  var VENUES_URL = catUrl(['Event Venues']).replace('&or=(', '&or=(tags.cs.%7Bve-hosts-events%7D,');
   var VENDORS_URL = catUrl(['Vendors', 'Food Trucks', 'Catering']);
   // LESARUSS.ai's own listings share the table; they never show here.
   var LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
@@ -451,7 +453,7 @@
     var know = member() && MEM.venue
       ? '<div class="ev-cols">' + box('What to ask before you sign', list(MEM.venue.ask)) + box('Red flags in a venue contract', list(MEM.venue.flags)) + '</div>'
       : gated('<div class="ev-cols">' + box('What to ask before you sign', skel('', 5)) + box('Red flags', skel('', 4)) + '</div>', 'What to ask a venue', 'The questions to take with you on a visit, and the red flags in a venue contract.');
-    main.innerHTML = head('Venue', 'Find the room, then ask the right questions', 'Event venues in our Directory, and the restaurants and spaces that host events. Members vote for the ones they love working with.') +
+    main.innerHTML = head('Venue', 'Find the room, then ask the right questions', 'Event venues in our Directory, and the restaurants and spaces where Vegan events were held this year. Members vote for the ones they love working with.') +
       dirList(VENUES, 'evVenues', '#/venue', 'evVenueCh', 'No venues listed in this chapter yet. Know one? Add it, and it helps every host after you.') +
       '<div class="dg-btns" style="margin:14px 0 22px"><a class="dg-btn dg-ghost" href="/directory?tab=services&sub=event-venues">See them in the Directory</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add a venue</a></div>' + know;
     wireCards('evVenues', '#/venue'); wirePick('evVenueCh', function () { viewVenue(''); });
