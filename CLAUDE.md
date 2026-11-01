@@ -3588,7 +3588,7 @@ they're buying their spot in this massive campaign that starts in Q1."
   partner | spotlight, status pending | active | ended, dates; RLS on, no policies) and its trigger run `ve_supermarket_guide_sync()`, which
   sets `ve_guides.access_rule` of `supermarket-guide` to `free` while a Title or Partner sponsorship is active, else `points`; `ve-venues`
   opens everything (reports too) when the rule is free. Stores came from Google Places: 248 Publix in South Florida (245) and Central
-  Florida (3) on 2026-11-01, the import cut short by Google's rate limit (`import_publix&hub=` in the once function, safe to run again).
+  Florida (3) on 2026-11-01, the import cut short by Google's rate limit (`import_publix&hub=` in `scripts/supabase-once/supermarket-import.ts`: deploy it as a one-time function with a fresh key, run Central and North Florida, then the 410 stub; safe to run again).
   The free example is Publix at Brickell Village (`publix-miami-cjalb8`). Page `guides/supermarket-guide.html` and
   `guide-scripts/supermarket-guide.js` (the Airport Guide's layout, `noindex`, Pascal on the right, his lines as text): Overview, **Stores**
   (supermarket, chapter and search, **Near me** by distance, 24 at a time), one store per view (`#/store/<slug>`: its departments and
