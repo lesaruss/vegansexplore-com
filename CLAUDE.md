@@ -4471,6 +4471,25 @@ the podcast (the show's dates are America/New_York). A post scheduled in Metrico
 though the 2026-10-31 notes said it was. Not yet: podcast downloads from Captivate, scheduling or editing from the page (it is read
 only; posts are scheduled in Metricool).
 
+**The studio** (Sean, 2026-11-01: "see what's slotted for the different brands... you propose things... the community manager goes
+in... make any adjustments... or leave a note that you will then take care of... you will use your connections to push it out... If
+something needs a manual thing... we know ahead of time... a calendar... track it to its metrics... between different brands...
+clients"; migration `20261101_ve_social_studio.sql`). The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
+client, its Metricool brand and connected channels), the week Monday to Sunday (`#plan/<brand>/<monday>/<todo|out|posted|all>`, Back /
+This week / Next week), one card a slot (`ve_social_slots`: time, channels, kind, title, caption, first comment, links, assets, By hand
+steps, status), **Approve the N waiting**, and **New slot** for super admins. A slot (`#slot/<id>`): its pictures, Approve and schedule,
+Skip it, **Change it directly** (every change a `ve_social_edits` row; a change to a scheduled slot is sent to Metricool again), and
+**Notes** (`ve_social_notes`: Leave a note for Logan, optionally holding it as Changes asked; Logan marks each done with what he did;
+**Notes for Logan** lists the open ones). Statuses: Waiting for approval, Changes asked, Approved, Scheduled, Posted, Did not post, Post
+by hand, Skipped. **Approving pushes it**: `ve-social` creates the Metricool post (autoPublish, the slot's time in Eastern, Reel or
+Story by kind); a brand not in Metricool, or a channel not connected for it, makes it **Post by hand** with the reason, known ahead of
+time; skipping deletes it from Metricool. Cron `ve-social-sync` (every 15 minutes, `sync`, admin token) marks what went out Posted with
+its links and copies its numbers from Metricool's analytics (matched by link) onto the slot, so a past week is the posted log with how
+each did. Who: super admins edit every brand; anyone else by a `ve_social_people` row (editor or viewer), so a Community Manager or a
+client can work their brand. Sean A. Russell and GeekFon Society are brands with no Metricool brand yet: add each in Metricool, then set
+`metricool_blog_id` and `channels` on its row. Proven 2026-11-01 against the real Metricool: a [TEST] slot approved (scheduled), edited
+(re-pushed, the old copy gone), skipped (removed), then deleted.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
