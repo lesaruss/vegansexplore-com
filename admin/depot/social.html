@@ -78,7 +78,7 @@
     .metric b{display:block;font-size:20px;font-weight:900;line-height:1.2;}
     .metric span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
     .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;margin-bottom:18px;}
-    @media (min-width:1280px){.cards{grid-template-columns:repeat(5,minmax(0,1fr));}}
+    @media (min-width:1280px){.cards{grid-template-columns:repeat(var(--n,5),minmax(0,1fr));}}
     .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;font:inherit;color:inherit;}
     .card.on{border-color:var(--ve-green-deep);box-shadow:0 0 0 2px var(--ve-green-deep) inset;}
     .card .hd{display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;}
@@ -90,6 +90,21 @@
     .card .row4 b{color:var(--ve-text);font-size:14px;}
     .card svg{width:100%;height:46px;display:block;}
     .card .off{font-size:13px;color:var(--ve-text-75);}
+    .card .fl{font-size:13px;font-weight:700;color:var(--ve-text-75);}
+    .card .fl b{color:var(--ve-text);font-size:15px;}
+    .card .tp{display:flex;gap:8px;align-items:center;font-size:12.5px;color:var(--ve-text-75);border-top:1px solid var(--ve-border);padding-top:10px;}
+    .card .tp img{width:40px;height:40px;border-radius:6px;object-fit:cover;flex:none;background:#eee;}
+    .card .tp span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .sum{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:12px;margin-bottom:14px;}
+    .sum .s{background:var(--ve-green-light);border-radius:12px;padding:14px 16px;}
+    .sum .s b{display:block;font-size:26px;font-weight:900;line-height:1.1;}
+    .sum .s span{font-size:12.5px;font-weight:700;color:var(--ve-text-75);}
+    .sum a.s{color:inherit;text-decoration:none;display:flex;gap:10px;align-items:center;grid-column:span 2;}
+    .sum a.s img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex:none;background:#fff;}
+    .sum a.s em{font-style:normal;font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    @media (max-width:600px){.sum a.s{grid-column:span 1;}}
+    .cust{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-4px 0 16px;}
+    .cust input[type=date]{width:190px!important;flex:none;font:inherit;padding:9px 10px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;}
     table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;}
     th,td{padding:9px 10px;border-bottom:1px solid var(--ve-border);text-align:right;white-space:nowrap;}
     th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left;}
@@ -228,14 +243,30 @@
     var STATUS = { scheduled: 'Scheduled', published: 'Published', draft: 'Draft', failed: 'Did not post' };
     var WHEN = { scheduled: 'Scheduled', past: 'Past', all: 'All' };
     var METRIC = { views: 'Views', reach: 'Reach', likes: 'Likes', comments: 'Comments', shares: 'Shares', saves: 'Saves', interactions: 'Interactions', engagement: 'Engagement %', follows: 'New follows', clicks: 'Clicks', link_clicks: 'Link clicks', video_views: 'Video views', watch_minutes: 'Watch minutes', avg_watch_s: 'Avg. watch (s)', skip_rate: 'Skip rate %', full_watch_rate: 'Watched to the end %' };
-    var PERIODS = { 7: 'Last 7 days', 30: 'Last 30 days', 90: 'Last 90 days', 180: 'Last 6 months', 365: 'Last year' };
+    // The period every Content and Analytics view reads (Sean, 2026-11-01: "the tiles... don't appear to be synced with the dropdown...
+    // a custom option"): rolling days, this year, a past year, or a custom range. Metricool holds posts back to 2023 and followers from 2025.
+    var PERIODS = (function () {
+      var o = { '7': 'Last 7 days', '30': 'Last 30 days', '90': 'Last 90 days', '180': 'Last 6 months', '365': 'Last 12 months', 'ytd': 'This year' };
+      for (var y = new Date().getFullYear() - 1; y >= 2023; y--) o['y' + y] = String(y);
+      o.custom = 'Custom dates';
+      return o;
+    })();
     var data = null, loading = null, dataBrand = null;
     var brands = [], me = { admin: false };
-    var st = { days: 90, q: '', sort: 'views', asc: false, brand: 'vegans-explore' };
-    try { var s = JSON.parse(sessionStorage.getItem('ve_social') || '{}'); if (PERIODS[s.days]) st.days = s.days; if (s.brand) st.brand = s.brand; } catch (e) {}
-    function keep() { try { sessionStorage.setItem('ve_social', JSON.stringify({ days: st.days, brand: st.brand })); } catch (e) {} }
+    var st = { period: '90', from: '', to: '', q: '', sort: 'views', asc: false, brand: 'vegans-explore' };
+    try { var s = JSON.parse(sessionStorage.getItem('ve_social') || '{}'); if (PERIODS[s.period]) st.period = s.period; else if (PERIODS[String(s.days)]) st.period = String(s.days); if (s.from) st.from = s.from; if (s.to) st.to = s.to; if (s.brand) st.brand = s.brand; } catch (e) {}
+    function keep() { try { sessionStorage.setItem('ve_social', JSON.stringify({ period: st.period, from: st.from, to: st.to, brand: st.brand })); } catch (e) {} }
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function range() {
+      var today = eastDay(new Date()), y = +today.slice(0, 4), k = st.period;
+      if (k === 'custom' && st.from && st.to) return { from: st.from, to: st.to, label: niceDay(st.from) + ' to ' + niceDay(st.to) };
+      if (k === 'ytd') return { from: y + '-01-01', to: today, label: 'this year' };
+      if (/^y\d{4}$/.test(k)) { var yy = k.slice(1); return { from: yy + '-01-01', to: yy + '-12-31', label: 'in ' + yy }; }
+      var n = +k || 90; if (k === 'custom') n = 90;
+      return { from: eastDay(new Date(Date.now() - (n - 1) * 86400000)), to: today, label: (PERIODS[String(n)] || 'Last 90 days').toLowerCase() };
+    }
+    function niceDay(d) { return new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); }
     function eastDay(d) { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); }
     function when(t, long) {
       if (!t) return 'No time set';
@@ -250,8 +281,7 @@
 
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
     function load(refresh) {
-      var to = eastDay(new Date());
-      var from = eastDay(new Date(Date.now() - (st.days - 1) * 86400000));
+      var rg = range(), from = rg.from, to = rg.to;
       var b = st.brand;
       loading = api({ action: 'report', brand: b, from: from, to: to, refresh: !!refresh }).then(function (r) { data = r; dataBrand = b; loading = null; return r; });
       return loading;
@@ -274,8 +304,28 @@
         (live && data && data.error ? '<p class="msg bad">' + esc(data.error === 'forbidden' ? 'You do not work on this brand.' : 'Could not read the channels: ' + data.error) + '</p>' : '');
     }
     function wireTop() { var b = $('refresh'); if (b) b.onclick = function () { data = null; load(true).then(route); route(); }; wireBrand(); }
-    function periodSel() { return '<select id="period" aria-label="Period for past content">' + Object.keys(PERIODS).map(function (k) { return '<option value="' + k + '"' + (+k === st.days ? ' selected' : '') + '>' + PERIODS[k] + '</option>'; }).join('') + '</select>'; }
-    function wirePeriod() { var p = $('period'); if (p) p.onchange = function () { st.days = +p.value; keep(); data = null; load().then(route); route(); }; }
+    function periodSel() {
+      var today = eastDay(new Date()), rg = range();
+      return '<select id="period" aria-label="Period">' + Object.keys(PERIODS).map(function (k) { return '<option value="' + k + '"' + (k === st.period ? ' selected' : '') + '>' + PERIODS[k] + '</option>'; }).join('') + '</select>';
+    }
+    function custRow() {
+      var today = eastDay(new Date()), rg = range();
+      return (st.period === 'custom' ? '<div class="cust"><b>Custom dates</b><input type="date" id="pFrom" aria-label="From" min="2023-01-01" max="' + today + '" value="' + esc(st.from || rg.from) + '"><span>to</span><input type="date" id="pTo" aria-label="To" min="2023-01-01" max="' + today + '" value="' + esc(st.to || rg.to) + '"><button class="btn" type="button" id="pGo">Show</button><span class="msg bad" id="pBad" style="margin:0"></span></div>' : '');
+    }
+    function reload() { keep(); data = null; load().then(route); route(); }
+    function wirePeriod() {
+      var p = $('period'); if (!p) return;
+      p.onchange = function () {
+        if (p.value === 'custom') { var rg = range(); st.period = 'custom'; if (!st.from || !st.to) { st.from = rg.from; st.to = rg.to; } keep(); route(); return; }
+        st.period = p.value; reload();
+      };
+      var go = $('pGo'); if (go) go.onclick = function () {
+        var f = $('pFrom').value, t = $('pTo').value, today = eastDay(new Date());
+        var bad = !f || !t ? 'Pick both dates.' : f > t ? 'The first date comes after the second.' : t > today ? 'The end date is in the future.' : '';
+        if (bad) { $('pBad').textContent = bad; return; }
+        st.from = f; st.to = t; reload();
+      };
+    }
 
     // ---- Content ----
     function drawContent(w, ch) {
@@ -296,7 +346,7 @@
       app.innerHTML = top('content') +
         '<div class="tools"><input class="q" id="q" type="search" placeholder="Search captions, hashtags, mentions" value="' + esc(st.q) + '" data-dictate="off">' +
         '<select id="when" aria-label="Scheduled or past">' + Object.keys(WHEN).map(function (k) { return '<option value="' + k + '"' + (k === w ? ' selected' : '') + '>' + WHEN[k] + '</option>'; }).join('') + '</select>' +
-        periodSel() + '<span></span></div>' +
+        periodSel() + '<span></span></div>' + custRow() +
         '<div class="tabs" style="margin-bottom:16px">' + chips + '</div>' +
         (list.length ? '<div class="grid">' + list.map(tile).join('') + '</div>' :
           '<div class="empty">' + (w === 'scheduled' ? 'Nothing scheduled' + (ch === 'all' ? '' : ' on ' + CH[ch].name) + ' yet. Posts scheduled in Metricool show here.' : 'Nothing here for this period.') + '</div>');
@@ -366,23 +416,43 @@
     }
     function sumBy(list, k) { var t = 0, any = false; list.forEach(function (p) { var v = (p.metrics || {})[k]; if (v != null) { t += Number(v); any = true; } }); return any ? t : null; }
     function avgBy(list, k) { var a = list.map(function (p) { return (p.metrics || {})[k]; }).filter(function (v) { return v != null; }); return a.length ? a.reduce(function (x, y) { return x + Number(y); }, 0) / a.length : null; }
+    function topOf(list) { var t = null; list.forEach(function (p) { var v = (p.metrics || {}).views; if (v != null && (!t || +v > +t.metrics.views)) t = p; }); return t; }
+    function postName(p) { return (p.extra && p.extra.title) || p.caption || 'No caption'; }
     function drawAnalytics(ch) {
-      var past = (data.posts || []).filter(function (p) { return p.status === 'published'; });
-      var cards = ORDER.map(function (c) {
+      var rg = range(), today = eastDay(new Date()), ended = rg.to < today;
+      var past = (data.posts || []).filter(function (p) { return p.status === 'published' && p.at && eastDay(new Date(p.at)) >= rg.from && eastDay(new Date(p.at)) <= rg.to; });
+      var chans = ORDER.filter(function (c) { return (data.channels || {})[c] && (c !== 'podcast' || st.brand === 'vegans-explore'); });
+      var gainOf = function (c) { var i = (data.channels || {})[c] || {}; return i.followers != null && i.followers_start != null && (i.series || []).length > 1 ? i.followers - i.followers_start : null; };
+      var cards = chans.map(function (c) {
         var info = (data.channels || {})[c] || {};
         var mine = past.filter(function (p) { return p.channel === c; });
-        var f = info.followers, f0 = info.followers_start, d = f != null && f0 != null ? f - f0 : null;
-        var chg = d == null ? '' : '<span class="chg ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'flat') + '">' + (d > 0 ? '+' : '') + fmt(d) + ' in the period</span>';
-        var label = c === 'youtube' ? 'subscribers' : c === 'podcast' ? 'episodes' : 'followers';
+        var d = gainOf(c), tp = topOf(mine), eng = avgBy(mine, 'engagement');
+        var label = c === 'youtube' ? 'subscribers' : 'followers';
+        var since = (info.series || []).length && info.series[0].day > rg.from ? ' since ' + niceDay(info.series[0].day) : '';
+        var fl = info.followers == null || !(info.series || []).length ? '<span class="fl">No ' + label + ' history for these dates yet</span>'
+          : '<span class="fl"><b>' + fmt(info.followers) + '</b> ' + label + (ended ? ' on ' + niceDay(rg.to) : ' now') + '</span>' +
+            (d == null ? '' : '<span class="chg ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'flat') + '">' + (d > 0 ? '+' : '') + fmt(d) + ' ' + label + since + '</span>');
         return '<button type="button" class="card' + (ch === c ? ' on' : '') + '" data-ch="' + c + '"><span class="hd">' + icon(c, 22) + esc(CH[c].name) + '</span>' +
           (info.error ? '<span class="off">' + esc(info.error) + '</span>' :
-            (c === 'podcast' ? '<span class="big">' + mine.length + '</span><span class="chg flat">episodes out in the period</span><span class="off">Downloads are on Captivate; they join this page next.</span>' :
-            '<span class="big">' + fmt(f) + '</span><span style="font-size:12px;font-weight:700;color:var(--ve-text-75)">' + label + '</span>' + chg + spark(info.series) +
-            '<span class="row4"><span><b>' + mine.length + '</b><br>posts</span><span><b>' + fmt(sumBy(mine, 'views')) + '</b><br>views</span>' +
-            '<span><b>' + fmt(sumBy(mine, 'reach')) + '</b><br>reach</span><span><b>' + fmt(avgBy(mine, 'engagement')) + (avgBy(mine, 'engagement') != null ? '%' : '') + '</b><br>avg. engagement</span></span>')) +
+            (c === 'podcast' ? '<span class="big">' + mine.length + '</span><span class="chg flat">episodes out ' + esc(rg.label) + '</span><span class="off">Downloads are on Captivate; they join this page next.</span>' :
+            '<span class="big">' + fmt(sumBy(mine, 'views') || 0) + '</span><span class="fl">views ' + esc(rg.label) + '</span>' + fl + spark(info.series) +
+            '<span class="row4"><span><b>' + mine.length + '</b><br>posts</span><span><b>' + fmt(sumBy(mine, 'reach')) + '</b><br>reach</span>' +
+            '<span><b>' + fmt(sumBy(mine, 'likes')) + '</b><br>likes</span><span><b>' + fmt(eng) + (eng != null ? '%' : '') + '</b><br>avg. engagement</span></span>' +
+            (tp ? '<span class="tp">' + (tp.media && tp.media[0] ? '<img src="' + esc(tp.media[0]) + '" alt="" loading="lazy">' : '') + '<span><b>Top post · ' + fmt(tp.metrics.views) + ' views</b><br>' + esc(postName(tp)) + '</span></span>' : ''))) +
           '</button>';
       }).join('');
-      var rows = past.filter(function (p) { return (ch === 'all' || p.channel === ch) && p.channel !== 'podcast'; });
+      var sel = past.filter(function (p) { return (ch === 'all' || p.channel === ch) && p.channel !== 'podcast'; });
+      var gains = (ch === 'all' ? chans : [ch]).map(gainOf).filter(function (v) { return v != null; });
+      var best = topOf(sel);
+      var summary = '<div class="sum">' +
+        '<div class="s"><b>' + fmt(sumBy(sel, 'views') || 0) + '</b><span>views</span></div>' +
+        '<div class="s"><b>' + sel.length + '</b><span>posts</span></div>' +
+        '<div class="s"><b>' + (gains.length ? (gains.reduce(function (a, b) { return a + b; }, 0) > 0 ? '+' : '') + fmt(gains.reduce(function (a, b) { return a + b; }, 0)) : '–') + '</b><span>followers gained</span></div>' +
+        '<div class="s"><b>' + fmt(sumBy(sel, 'likes')) + '</b><span>likes</span></div>' +
+        '<div class="s"><b>' + fmt(sumBy(sel, 'comments')) + '</b><span>comments</span></div>' +
+        (best ? '<a class="s" href="#post/' + encodeURIComponent(best.id) + '">' + (best.media && best.media[0] ? '<img src="' + esc(best.media[0]) + '" alt="" loading="lazy">' : '') + '<span><span>Top post · ' + esc(CH[best.channel] ? CH[best.channel].name : best.channel) + '</span><b>' + fmt(best.metrics.views) + ' views</b><em>' + esc(postName(best)) + '</em></span></a>' : '') +
+        '</div>';
+      var rows = sel.slice();
       var cols = ['views', 'reach', 'likes', 'comments', 'shares', 'engagement'];
       rows.sort(function (a, b) {
         var k = st.sort, va, vb;
@@ -392,8 +462,8 @@
       });
       var th = function (k, l) { return '<th data-k="' + k + '" class="' + (st.sort === k ? 'on' + (st.asc ? ' asc' : '') : '') + '">' + l + '</th>'; };
       app.innerHTML = top('analytics') +
-        '<div class="tools"><span class="q sub" style="margin:0">Followers, posts and how they did, ' + esc(PERIODS[st.days].toLowerCase()) + '. Pick a channel to see only its posts. X is not connected in Metricool yet.</span><span></span>' + periodSel() + '<a class="btn btn-ghost" href="#analytics/all">All channels</a></div>' +
-        '<div class="cards">' + cards + '</div>' +
+        '<div class="tools"><span class="q sub" style="margin:0">How ' + (ch === 'all' ? 'every channel' : CH[ch].name) + ' did ' + esc(rg.label) + (st.period === 'custom' ? '' : ' (' + esc(niceDay(rg.from)) + ' to ' + esc(niceDay(rg.to)) + ')') + '. Pick a channel to see only its numbers and posts. Posts go back to 2023; follower counts to 2025.</span><span></span>' + periodSel() + '<a class="btn btn-ghost" href="#analytics/all">All channels</a></div>' + custRow() +
+        summary + '<div class="cards" style="--n:' + chans.length + '">' + cards + '</div>' +
         '<h2>' + (ch === 'all' ? 'Every post' : CH[ch].name + ' posts') + ', best first</h2>' +
         (rows.length ? '<div class="tbl"><table><thead><tr><th>Post</th><th>Channel</th>' + th('at', 'Date') + cols.map(function (k) { return th(k, METRIC[k].replace(' %', '')); }).join('') + '</tr></thead><tbody>' +
           rows.map(function (p) { var m = p.metrics || {}; return '<tr><td><a href="#post/' + encodeURIComponent(p.id) + '"><span class="t">' + esc((p.extra && p.extra.title) || p.caption || 'No caption') + '</span></a></td><td>' + esc(CH[p.channel] ? CH[p.channel].name : p.channel) + '</td><td>' + esc(new Date(p.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: TZ })) + '</td>' +
