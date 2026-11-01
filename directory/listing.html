@@ -5083,6 +5083,9 @@ if(!slug || slug === 'listing'){
       // has not vetted yet (10 different voters, or a claim Sean approved) is for members only.
       Promise.all([window.VETrust ? VETrust.load() : Promise.resolve(null), withMain(l)]).then(function(res){ var T = res[0];
       if(T && !VETrust.visible(l, T)){ showMembersOnly(l, T); return; }
+      // A listing whose official page is this page (Sean, 2026-11-01: the Vegans Explore Podcast's official page is its Vegans Explore
+      // listing): the website is kept, but no Visit Website link reloads the page you are on. The editor still gets the stored value.
+      if(/^https?:\/\/(www\.)?vegansexplore\.com\/directory\/([^\/?#]+)\/?$/i.test(String(l.website || '').trim()) && RegExp.$2 === l.slug){ l._website = l.website; l.website = ''; }
       renderListing(l); fitHeroAvatar();
       // Superadmins get the quick editor (section, how Vegan, open or closed).
       if(window.VEListingAdmin && VEListingAdmin.isAdmin()){
@@ -5091,7 +5094,7 @@ if(!slug || slug === 'listing'){
           VEListingAdmin.css();
           var eb = document.createElement('button'); eb.type = 'button'; eb.className = 'vla-edit'; eb.textContent = 'Edit listing (admin)';
           eb.style.cssText = 'display:block;margin-top:10px';
-          eb.onclick = function(){ VEListingAdmin.edit(l, function(){ window.location.reload(); }); };
+          eb.onclick = function(){ VEListingAdmin.edit(l._website ? Object.assign({}, l, { website: l._website }) : l, function(){ window.location.reload(); }); };
           hr.appendChild(eb);
           var ib = document.createElement('button'); ib.type = 'button'; ib.className = 'vla-edit-ico';
           ib.setAttribute('aria-label', 'Edit listing (admin)'); ib.title = 'Edit listing (admin)';

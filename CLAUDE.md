@@ -1927,7 +1927,9 @@ that is not passed and every check-up flag (`doItBtn`), opening `VEManaged.open`
 it lands in the Inbox as a Managed marketing request; the sample toasts what would happen. The Audit view is no longer members only and
 shows for any listing with checks (non-food: the listing check and Have us do all of it). Home has the score strip (`healthStrip`).
 `only: 'health'` returns just the check (the member dashboard's Your business). Proven 2026-11-01 as Sean on the podcast he owns (its
-website, vegansexplore.com/vepodcast/, answered 404; Logan pointed it at the show's site, vegans-explore.captivate.fm, which passes) and as
+website, vegansexplore.com/vepodcast/, answered 404. Its official page is its own Vegans Explore listing (Sean, 2026-11-01: "Just because it's a directory listing doesn't mean it's
+not a profile"), so its website is `https://vegansexplore.com/directory/vegans-explore-podcast`; a listing whose website is its own page shows no
+Visit Website link, and the editor still gets the stored value, `l._website` in `directory/listing.html`) and as
 admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **Tomorrow's outreach is read first** (Sean, 2026-11-01: "we know we're
 going to be reaching out to 30 people a day. We can prioritize those people in the check, you know, the day before... So when that potential
 client clicks on it, they're seeing the information they should be seeing"; migration `20261101_listing_check_outreach_first.sql`):
