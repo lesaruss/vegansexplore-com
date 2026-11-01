@@ -487,6 +487,15 @@
   .dash-mc-vtxt b{font-size:13px;font-weight:700;color:var(--ve-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dash-mc-vtxt i{font-style:normal;font-size:11.5px;color:var(--ve-text-50);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dash-mc-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;}
+  .dash-mc-give{margin-top:18px;padding:14px;border:1px solid var(--ve-border,#e5e5e5);border-radius:8px;background:#fafaf7;}
+  .dash-mc-give .row{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .dash-mc-give input{font:inherit;font-size:14px;padding:9px 12px;border:1.5px solid #d6d6d0;border-radius:6px;min-width:0;}
+  .dash-mc-give input[type=number]{width:120px;}
+  .dash-mc-give input[type=text]{flex:1 1 200px;}
+  .dash-mc-give .picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .dash-mc-give .picks button{font:inherit;font-size:12px;font-weight:700;border-radius:6px;padding:6px 10px;cursor:pointer;border:1px solid #d6d6d0;background:#fff;}
+  .dash-mc-give .go{font:inherit;font-size:13px;font-weight:700;border-radius:6px;padding:9px 16px;cursor:pointer;border:0;background:var(--ve-green-dark);color:#fff;}
+  .dash-mc-give .msg{font-size:13px;margin-top:8px;color:#444;}
   .dash-mc-acts button{font:inherit;font-size:13px;font-weight:700;border-radius:6px;padding:9px 14px;cursor:pointer;border:1.5px solid var(--ve-green-dark);background:#fff;color:var(--ve-green-dark);}
   @media (max-width:480px){ .dash-mc-stats,.dash-mc-stats.four{grid-template-columns:repeat(2,minmax(0,1fr));} .dash-mc-box{padding:20px 16px;} }
   /* In-place console frame (Sean, 2026-09-22): a tool/page opens INSIDE the
@@ -3659,8 +3668,29 @@
         ((d.listings || []).length ? '<p class="dash-mc-h">Who saved their pages' + (c.saves_received ? ' (' + Number(c.saves_received).toLocaleString() + ')' : '') + '</p>' +
           (savedBy ? '<ul class="dash-mc-list dash-mc-voters">' + savedBy + '</ul>' : '<p class="dash-preview-empty">No one has saved their pages yet.</p>') : '') +
         '<p class="dash-mc-h">Their latest votes</p>' + (votes ? '<ul class="dash-mc-list">' + votes + '</ul>' : '<p class="dash-preview-empty">No votes yet.</p>') +
+        // Give points (Sean, 2026-11-01): spendable points to any member, for what they have given the community.
+        (!m.is_superadmin && m.member_class !== 'agent' ? '<div class="dash-mc-give"><p class="dash-mc-h" style="margin:0">Give points</p>' +
+          '<div class="picks">' + [111, 500, 1100, 2500, 5000].map(function (n) { return '<button type="button" data-mc-pick="' + n + '">' + n.toLocaleString() + '</button>'; }).join('') + '</div>' +
+          '<div class="row"><input type="number" min="1" max="100000" step="1" placeholder="Points" aria-label="Points to give" data-mc-amt>' +
+          '<input type="text" maxlength="200" placeholder="Why (for the record)" aria-label="Why you are giving them" data-mc-note>' +
+          '<button type="button" class="go" data-mc-give>Give</button></div><div class="msg" data-mc-msg role="status"></div>' +
+          ((d.gifts || []).length ? '<ul class="dash-mc-list" style="margin-top:10px">' + d.gifts.map(function (g) { return '<li><span>' + e(Number(g.amount).toLocaleString()) + ' points' + (g.note ? ' · ' + e(g.note) : '') + '</span><span>' + e(dpWhen(g.at)) + '</span></li>'; }).join('') + '</ul>' : '') +
+          '</div>' : '') +
         (m.email ? '<div class="dash-mc-acts"><button type="button" data-mc-copy>Copy email</button></div>' : '');
       box.querySelector('.dash-mc-x').focus();
+      var amtIn = box.querySelector('[data-mc-amt]'), giveBtn = box.querySelector('[data-mc-give]');
+      Array.prototype.forEach.call(box.querySelectorAll('[data-mc-pick]'), function (b) { b.addEventListener('click', function () { amtIn.value = b.getAttribute('data-mc-pick'); amtIn.focus(); }); });
+      if (giveBtn) giveBtn.addEventListener('click', function () {
+        var n = Math.floor(Number(amtIn.value)), msg = box.querySelector('[data-mc-msg]'), note = box.querySelector('[data-mc-note]').value;
+        if (!(n >= 1 && n <= 100000)) { msg.textContent = 'Pick an amount from 1 to 100,000.'; return; }
+        if (!confirm('Give ' + name + ' ' + n.toLocaleString() + ' points?')) return;
+        giveBtn.disabled = true; msg.textContent = 'Giving…';
+        dvCall({ action: 'give_points', member_id: m.id, amount: n, note: note }).then(function (r) {
+          giveBtn.disabled = false;
+          if (r && r.ok) { msg.textContent = 'Done. ' + name + ' now has ' + Number((r.points || {}).available_points || 0).toLocaleString() + ' points to spend.'; setTimeout(function () { memberCard(m.id); }, 1400); }
+          else msg.textContent = 'That did not go through' + (r && r.error ? ' (' + r.error + ')' : '') + '.';
+        });
+      });
       var cp = box.querySelector('[data-mc-copy]');
       if (cp) cp.addEventListener('click', function () { try { navigator.clipboard.writeText(m.email); cp.textContent = 'Copied'; } catch (err) {} });
       // A voter opens their own card in place of this one.
