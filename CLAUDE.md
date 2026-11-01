@@ -3934,7 +3934,7 @@ the $11 Passport or a membership earned now; no free account that can take part,
 ## The Vegan Events Guide (LOCKED by Sean 2026-11-01, playbook `ve-events-guide`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-events-guide`; migration `20261101_events_guide_canon.sql`).
-**Not built yet.** Sean: "tips on running a successful event... access to resources... where the directory falls into place... address the
+**Built 2026-11-01, not launched** (below). Sean: "tips on running a successful event... access to resources... where the directory falls into place... address the
 elephants in the room... walk people through a journey so that they work with us... apply for a sponsorship from us... what to do when it
 rains... interview event hosts... they record their voice... those voice recordings then become part of a podcast."
 
@@ -3962,6 +3962,30 @@ rains... interview event hosts... they record their voice... those voice recordi
   People credits and the content index.
 - **Build order**: the shell and the rain tab; the checklist and the gear shop; Event Venues; the sponsorship intake and bounty; the voice
   interviews.
+- **Built 2026-11-01** (Sean: "Logan, build the Events Guide"; migration `20261101_events_guide.sql`, applied through the one-time
+  `ve-once-events-guide`, now the 410 stub; edge function `ve-events-guide`). `guides/vegan-events-guide.html` and
+  `guide-scripts/vegan-events-guide.js` (the Nutrition Guide's shell, `noindex`, River on the right, his lines as text drafts, no recordings):
+  Overview, Kinds of events, The plan (the 12-week checklist, ticks in `localStorage` `ev_checks`, Copy it and Print it), Money (a break-even
+  calculator, `ev_calc`), Venue and Vendors and food (the Directory's card by chapter, `ev_chapter`), Gear (34 tracked Amazon searches,
+  `/go/ev-gear-*`, initiative `vegan-events-guide`), Getting the word out, Day of (the free example, rain, heat, no-shows, a vendor no-show,
+  power; `#ev-public`), After, The elephants in the room, Hosts who've done it (our host episodes, `PULSE_PICKS`, and the approved stories),
+  Work with us (the sponsorship and its 4-step application `#/work/apply/N`, `ev_apply`), My list and Get access. Everything but the free
+  parts is `ve_guides.content_html` (`<script id="ev-data">`), never in the repo. The `ve_guides` row `vegan-events-guide` is published ($11
+  or 1,100 points, sort 9) so it sells and opens; Sean holds a comp copy; every Group Partner lead owns it (backfill and trigger
+  `trg_ve_events_guide_for_lead` on `ve_group_partners`). Its catalog card is Coming soon, members only, banner
+  `public/guides/vegan-events-guide.jpg` (River with a clipboard at an evening outdoor Vegan market, Higgsfield, originals in
+  `vegan-media/media/communities/guide-banners/vegan-events-guide-a.png|-b.png`). **Sponsorship**: `ve-events-guide` `sponsor_apply` (anyone,
+  3 a day per email) into `ve_event_sponsor_applications`, emailed to the chapter's active Community Managers, else the team, confirmed to them,
+  in the Inbox (source `event_sponsorship`). **Depot > Event sponsors** (`/admin/depot/event-sponsors`, Directory in the Go to menu): the
+  applications (`#apps/<status>`, `#app/<id>`) with Approve (can post the Represent Vegans Explore gig: 150 points, one spot, `GIG_DEFAULTS`;
+  2 a chapter a month, `MONTH_CAP`) and Decline with a note they get; the stories (`#stories/<status>`, `#story/<id>`). **Host stories**:
+  `#/hosts/tell/1..3`, six questions (`STORY_QS`) recorded in the browser (MediaRecorder) or uploaded, into the private bucket
+  `event-host-stories` (25 MB, audio only) through `story_start` / `story_submit` (an HMAC upload key), saved in `ve_event_host_stories` with the
+  release; approving pays 100 points once (reason `host_story`), Removed deletes the audio; approved ones play on Hosts who've done it
+  (`stories`, signed links). Both new tables RLS on, no policies. **Services > Event Venues** is a sub-section everywhere the lists live
+  (`CAT_MAP`, `SECTIONS`, `KINDS`, `CATS`, and `ve-claims`, `ve-outreach`, `ve-discover`, `ve-listing-intake`, redeployed). It has no listings
+  yet; filling it per chapter is a Google search (ask Sean with the count and cost first). Not yet: the hosts-events flag on restaurants, the
+  Guide tab mapping (Event Venues and Community > Events), River's recordings, launch (noindex off, the sitemap, the catalog card live).
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
