@@ -130,6 +130,18 @@
     '.vpd-join .vpd-btn{background:#5ec47a;color:#0f1f10}' +
     '.vpd-empty{font-size:14px;color:rgba(26,26,26,.7);padding:6px 0 18px;margin:0}' +
     '.vpd-scroll{max-height:70vh;overflow:auto}.vpd-done{font-size:13px;font-weight:700;color:#1f7a2a;margin:0 0 20px}' +
+    '.vpd-hc{border:1px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;overflow:hidden;margin:0 0 18px}'+
+    '.vpd-hc-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.07)}'+
+    '.vpd-hc-top b{font-size:16px}.vpd-hc-top small{display:block;color:rgba(0,0,0,.6);font-size:12.5px;margin-top:2px}'+
+    '.vpd-hc-score{display:flex;align-items:center;gap:10px}.vpd-hc-score span{font-size:26px;font-weight:900}'+
+    '.vpd-hc-area{padding:6px 16px 2px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.55);background:#fafafa;border-top:1px solid rgba(0,0,0,.06)}'+
+    '.vpd-hc-row{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:11px 16px;border-top:1px solid rgba(0,0,0,.06)}'+
+    '.vpd-hc-ic{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff}'+
+    '.vpd-hc-ic.pass{background:var(--vb-go,#2D5C27)}.vpd-hc-ic.flag{background:#b42318}.vpd-hc-ic.warn{background:#b7791f}'+
+    '.vpd-hc-row b{font-size:14px}.vpd-hc-row p{margin:2px 0 0;font-size:13px;color:rgba(0,0,0,.68);line-height:1.45}'+
+    '.vpd-hc-next{padding:12px 16px;background:#fff8ec;border-top:1px solid rgba(0,0,0,.06);font-size:13.5px;line-height:1.5}'+
+    '.vpd-hc-sw{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.vpd-hc-sw button{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:#fff;cursor:pointer}'+
+    '.vpd-hc-sw button.on{background:var(--vb-go,#2D5C27);color:#fff;border-color:transparent}'+
     '@media(max-width:600px){.vpd-row{grid-template-columns:1fr auto}.vpd-row .vpd-tag{display:none}.vpd-tiles{grid-template-columns:1fr 1fr;gap:8px}.vpd-tiles b{font-size:22px}.vpd-tiles>div{padding:12px}}';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -433,6 +445,42 @@
     }
 
     // ---- Audit
+    // The listing check, laid out like BCPS Marcom's department audits (Sean, 2026-11-01: "use that mechanism that we use for BCPS
+    // Marcom for these listings... they can see in real time what we're looking at"). Every check we run on their listing, in the
+    // order we run them (Google, the website and its security, Instagram, then the rest of the audit), each a pass mark or a flag
+    // with what we found. D.health is one check; D.healthSamples (the sample business) switches between a place that passes and
+    // one that does not. The live version comes with the audit they buy.
+    var HC_SAMPLE = 0;
+    function healthCard(h) {
+      if (!h || !h.checks) return '';
+      var mark = { pass: '&#10003;', flag: '!', warn: '?' };
+      var passed = h.checks.filter(function (c) { return c.status === 'pass'; }).length;
+      var flags = h.checks.filter(function (c) { return c.status === 'flag'; }).length;
+      var area = '', rows = '';
+      h.checks.forEach(function (c) {
+        if (c.area !== area) { area = c.area; rows += '<div class="vpd-hc-area">' + esc(area) + '</div>'; }
+        rows += '<div class="vpd-hc-row"><span class="vpd-hc-ic ' + esc(c.status) + '" aria-label="' + (c.status === 'pass' ? 'Passed' : c.status === 'flag' ? 'Flagged' : 'Check this') + '">' + mark[c.status] + '</span>' +
+          '<div><b>' + esc(c.label) + '</b><p>' + esc(c.found) + (c.fix && c.status !== 'pass' ? ' <b style="font-size:13px">Fix:</b> ' + esc(c.fix) : '') + '</p></div>' +
+          '<span class="vpd-tag' + (c.status === 'pass' ? '' : c.status === 'flag' ? ' warn' : ' off') + '">' + (c.status === 'pass' ? 'Passed' : c.status === 'flag' ? 'Flagged' : 'Check') + '</span></div>';
+      });
+      var state = h.state === 'review'
+        ? '<span class="vpd-tag warn">In review</span>' : '<span class="vpd-tag">On the Directory</span>';
+      return '<div class="vpd-hc"><div class="vpd-hc-top"><div><b>Your listing check</b><small>' + esc(h.name || D.listing.name) + ' &middot; checked ' +
+        esc(new Date(h.checked_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; we check again every month</small></div>' +
+        '<div class="vpd-hc-score"><span>' + passed + '/' + h.checks.length + '</span>' + state + '</div></div>' + rows +
+        (h.next ? '<div class="vpd-hc-next"><b>What happens next.</b> ' + esc(h.next) + '</div>' : '') +
+        '</div>';
+    }
+    function healthBlock() {
+      var S = D.healthSamples;
+      if (S && S.length) {
+        var i = Math.min(HC_SAMPLE, S.length - 1);
+        return '<h4>Your listing check</h4><p style="margin:-4px 0 10px;color:rgba(0,0,0,.65);font-size:13.5px">What we look at on every listing, in the order we look. Two sample places: one that passes, one that does not.</p>' +
+          '<div class="vpd-hc-sw" role="tablist">' + S.map(function (x, k) { return '<button type="button" role="tab" aria-selected="' + (k === i) + '" class="' + (k === i ? 'on' : '') + '" data-vpd-hc="' + k + '">' + esc(x.tab) + '</button>'; }).join('') + '</div>' +
+          healthCard(S[i]);
+      }
+      return D.health ? '<h4>Your listing check</h4>' + healthCard(D.health) : '';
+    }
     function drawAudit() {
       var G = '/guides/vegan-restaurant-guide';
       var list = D.audits.length ? '<div class="vpd-list">' + D.audits.map(function (a) {
@@ -444,7 +492,7 @@
           '<span class="vpd-tag' + (done ? '' : ' warn') + '">' + (done ? 'Ready' : 'Running') + '</span>' +
           (done ? '<a class="vpd-btn sm o" href="' + G + '#/audit/r/' + esc(a.id) + '">Open</a>' : '<span></span>') + '</div>';
       }).join('') + '</div>' : '<p class="vpd-empty">No audits yet.</p>';
-      return '<div class="vpd-grid"><div class="vpd-card"><b>The free check</b><p>Ten things Google, your website and your Instagram tell a hungry visitor, with what to fix first.</p><a class="vpd-btn sm" href="' + G + '#/audit">Run the free check</a></div>' +
+      return healthBlock() + '<div class="vpd-grid"><div class="vpd-card"><b>The free check</b><p>Ten things Google, your website and your Instagram tell a hungry visitor, with what to fix first.</p><a class="vpd-btn sm" href="' + G + '#/audit">Run the free check</a></div>' +
         '<div class="vpd-card"><b>The full audit, $49</b><p>Every check, scored, with how to fix each one, and a re-check 90 days later.</p><a class="vpd-btn sm o" href="' + G + '#/audit">Get the full audit</a></div>' +
         '<div class="vpd-card"><b>Full audit and Secret Shopper, $149</b><p>The full audit plus a visit from our team as a normal guest, with a written report.</p><a class="vpd-btn sm o" href="' + G + '#/audit">Add the Secret Shopper</a></div></div>' +
         '<h4>Your audits</h4>' + list;
@@ -726,6 +774,7 @@
           VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; else b.disabled = false; }, function () { b.disabled = false; });
         });
       });
+      el.querySelectorAll('[data-vpd-hc]').forEach(function (b) { b.addEventListener('click', function () { HC_SAMPLE = Number(b.dataset.vpdHc) || 0; draw(); }); });
       el.querySelectorAll('[data-vpd-days]').forEach(function (b) { b.addEventListener('click', function () { days = Number(b.dataset.vpdDays); D = null; load(draw); }); });
       el.querySelectorAll('[data-vpd-sort]').forEach(function (h) {
         h.addEventListener('click', function () { var k = h.dataset.vpdSort; sortBy = sortBy[0] === k ? [k, -sortBy[1]] : [k, k === 'day' ? -1 : -1]; draw(); });

@@ -47,7 +47,7 @@ language sql stable security definer set search_path = public as $$
   where coalesce(l.website, '') <> ''
     and coalesce(l.business_status, '') not in ('CLOSED_PERMANENTLY')
     and (ve_audit_local_category(l.category) or l.category in ('Food Trucks', 'Vendors'))
-    and coalesce(l.address_city, '') <> '' and not ('lesaruss-ai-directory-candidate' = any(coalesce(l.tags, '{}')))
+    and coalesce(l.address_city, '') <> '' and not (coalesce(l.tags, '{}') && array['lesaruss-ai-directory-candidate', 've-grocery-store'])
     and (l.status = 'approved'
       or (l.status = 'pending' and h.held_at is not null and l.details->'review'->>'by' = 'Listing check'))
     and (h.next_check_at is null or h.next_check_at <= now())

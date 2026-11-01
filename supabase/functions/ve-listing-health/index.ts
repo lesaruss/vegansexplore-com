@@ -94,9 +94,14 @@ async function checkWebsite(raw: string): Promise<{ status: string; detail: stri
     const b = await fetchOnce('http://' + u.host + u.pathname + u.search);
     if (b.ok && new URL(b.url).protocol === 'http:') return { status: 'insecure', detail: 'It opens only without https (no security certificate)', https: false };
     if (b.ok) return { status: 'ok', detail: 'Opens securely', https: true };
-    return { status: 'down', detail: /dns|lookup|resolve|not known|getaddrinfo/i.test(a.err) ? 'The web address no longer exists' : `It did not open (${a.err || 'no answer'})`, https: null };
+    if (/dns|lookup|resolve|not known|getaddrinfo|name or service/i.test(a.err)) return { status: 'down', detail: 'The web address no longer exists', https: null };
+    if (/refused|reset|unreachable|no route/i.test(a.err)) return { status: 'down', detail: 'Nothing answers at that web address', https: null };
+    // A slow answer or a protocol error (big sites behind Akamai answer scanners with http2 stream errors) is not a dead site:
+    // it is read again tomorrow, never held on one try.
+    return { status: 'unknown', detail: a.err === 'timed out' ? 'It was too slow to answer this time' : 'It refused our check this time', https: null };
   }
-  return { status: 'down', detail: `It did not open (status ${a.status})`, https: true };
+  if ([404, 410].includes(a.status) || a.status >= 500) return { status: 'down', detail: `It did not open (status ${a.status})`, https: true };
+  return { status: 'unknown', detail: `It answered with status ${a.status}`, https: true };
 }
 
 // ---- Instagram (Apify's public profile scraper, many at once) ----
@@ -156,7 +161,7 @@ async function run(rows: Row[], save: boolean) {
     if (webFail && igStatus === 'quiet') reasons.push('No Instagram post in 6 months');
     if (webFail && (igStatus === 'none' || igStatus === 'private')) reasons.push('No active Instagram to check');
     // An Instagram that could not be read this time is not held on: it is read again next run.
-    const verdict = !webFail ? 'pass' : igStatus === 'active' ? 'pass' : igStatus === 'error' ? 'unknown' : 'review';
+    const verdict = w.status === 'unknown' ? 'unknown' : !webFail ? 'pass' : igStatus === 'active' ? 'pass' : igStatus === 'error' ? 'unknown' : 'review';
     const p: any = before.get(r.listing_id) || {};
     const rec: any = {
       listing_id: r.listing_id, checked_at: new Date().toISOString(), website: r.website, web_status: w.status, web_detail: w.detail, https_ok: w.https,
