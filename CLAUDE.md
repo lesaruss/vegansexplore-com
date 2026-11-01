@@ -2594,7 +2594,7 @@ Directory is their chapter's).
 - **Where it applies**: Food, Products, Services, Community, Being vetted (`LOC_SECTIONS`); not Media or People; not Food Brands or
   Nutrition & Supplements unless Sells at is Markets & events (`geoApplies`). Where it does not apply, the location filters nothing.
 - **Remembered across visits**: `/directory` keeps it in `localStorage` `ve_dir_loc` (a first visit takes the member's home chapter,
-  else every location); never in the address, and an old `?city=` link still opens on that chapter. The dashboard starts on its
+  else every location), and since 2026-11-01 writes it in the address too (Every view is a link, below): `?city=<chapter>`. The dashboard starts on its
   active city, and a chapter picked there becomes the active city (`switchActiveCity(slug, member, true)`), every location widening
   only the tab (`DASH_ALL.directory`).
 - **The ad rail follows it**: the chapter's two banners where the location applies and a chapter is picked, else the All cities pair.
@@ -2606,13 +2606,38 @@ Directory is their chapter's).
   and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. **Duplicate events** (Sean, 2026-11-01): Vegan Social Clubs (Atlanta) posts its weekly Wednesday meetup on Meetup twice; "Vegan and Friends" (Atlantucky Brewing) is the official one, and the 68 "The Vegan Social of Atlanta" copies on the same days were turned down (`rejection_reason` "Duplicate of ...", migration `20261101_atlanta_vsc_duplicates.sql`). `ve_event_intake` treats an event turned down as a duplicate as already listed that day, and refuses (`known_duplicate`) a title its host has had turned down as a duplicate three times or more, new dates included. To retire a recurring copy, turn three down with a reason starting "Duplicate of". The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
-  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
-  opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
+  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit) and in the address since 2026-11-01 (`?city=`, else
+  `?continent=` and `?country=`; `syncUrl`), so a shared link opens on the same place; an old `?where=` link opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
   member, 'events')`). LESARUSS.ai's Events and Funding (`VE_BRAND.calendar`) keep their own banner; the old toolbar (Where, Sort,
   Upcoming / Past, the kind pills) stays for any mount without `filterMenu`.
 - **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
+
+## Every view is a link, and Share on every page (Sean, 2026-11-01)
+
+"I saw somebody on Facebook asking about vegan spots in DC, and I wanted to grab the link when I wasn't logged in... it was just a
+generic directory link. So I missed out on that opportunity... I want to be able to copy any page that I see, any configuration that
+I see... a unique URL that I can share... a button somewhere on every page that you can copy... If it's not shareable, it's not gonna
+go anywhere... We need everybody to share it, even if they're not signed in."
+
+- **The Directory's address carries the whole view** (`writeState`, `restoreState`, `locFromUrl` in `ve-region-directory.js`, on any
+  page that passes `config.url`: `/directory` and the dashboard's Directory tab): the section and sub-section as before, the location
+  (`?city=<chapter>`, else `?continent=` and `?country=`), the search (`?q=`), the sort (`?sort=`), the shelf's types that are on
+  (`?kinds=dairy,meat`) and each filter set away from where it started, by its name (`?vegan=`, `?sells=`, `?cuisine=`, `?type=`,
+  `?chain=`, `?area=` for the chapter's city...; `VRD_FKEYS`, `selName`). Paused pills stay out. It is written in place as things
+  change (`replaceState`; a section change clears the old section's filters) and read once the listings are drawn, ahead of the
+  visitor's kept location. `/directory?tab=food&city=washington-dc` is Local Food in D.C. for anyone who opens it.
+- **Events** writes its location too (above, Directory navigation); its kinds, search, sort and Upcoming / Past already were.
+- **Share on every page** (`/public/ve-share.js`, `VEShare`): a Share button in `nav.js`'s bar, signed in or out, before Log In or
+  Apps (icon only at 1060 px and under), and in the dashboard's top bar. On a phone it opens the phone's own share sheet; elsewhere it
+  copies the link and says so. The link (`VEShare.url()`) is the page as anyone can open it: a dashboard address becomes its public
+  page (`/dashboard/directory?...` to `/directory?...`, `/dashboard/directory/<slug>` to `/directory/<slug>`, Events, Media, Guides,
+  the Daily Pulse and Communities the same; the dashboard itself, My Saves, the Depot and account pages share the home page), without
+  sign-in and tracking bits (`vl`, `t`, `view_as`, `utm_*`, `fbclid`...), and with a **signed-in member's own `?ref=<referral_code>`**,
+  so the visit counts on their link and anyone who joins from it is theirs (ve-auth.js keeps any page's `?ref=` for the visit). Any
+  element with `data-ve-share` shares the page. Each share is a Google Analytics `share` event. The phone bar was tightened so Share fits
+  at 320 px.
 
 ## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)
 

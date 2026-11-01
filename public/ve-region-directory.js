@@ -783,6 +783,7 @@
     locPaint(root);
     root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, null, true); countFilters(panel); });
     tellSection(root, LOCCFG);
+    writeState(null);
     if (LOCCFG.location.onChange) LOCCFG.location.onChange({ continent: LOC.continent, country: LOC.country, chapter: LOC.chapter }, locHub());
   }
 
@@ -933,6 +934,7 @@
 
     locPaint(root);
     root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); applyPanelFilters(panel, config, true); });
+    if (!root._vrdRestored) restoreState(root, config);
   }
 
   // The media section has no location filter on any of its pills, All included.
@@ -1176,10 +1178,82 @@
     return pills[0] || null;
   }
   function urlHere(config) { return config && config.url && location.pathname.replace(/\/$/, '') === config.url; }
+  // Every view is a link (Sean, 2026-11-01: "I want to be able to copy any page that I see, any configuration that I see... a
+  // unique URL that I can share... If it's not shareable, it's not gonna go anywhere"). On a page with config.url the address
+  // carries the location (?city=<chapter>, else ?continent= and ?country=), the search (?q=), the sort (?sort=), the shelf's
+  // types that are on (?kinds=dairy,meat) and each filter set away from where it started, by its name (?vegan=, ?sells=,
+  // ?cuisine=, ?area= for the chapter's city...). Paused pills stay out: the link shows what is on. Written in place
+  // (replaceState) as things change; a section change clears the old section's filters. Read once the listings are drawn.
+  var VRD_CFG = null, VRD_SKIP = { loc: 1, perpage: 1, subsel: 1, sort: 1, region: 1 };
+  var VRD_FKEYS = ['q', 'sort', 'kinds', 'vegan', 'sells', 'type', 'chain', 'cuisine', 'htype', 'mstat', 'spec', 'booktype', 'county', 'area'];
+  function selName(sel) {
+    for (var i = 0; i < sel.attributes.length; i++) {
+      var n = sel.attributes[i].name; if (n.indexOf('data-vrd-') !== 0) continue;
+      n = n.slice(9); if (VRD_SKIP[n]) return n === 'sort' ? 'sort' : '';
+      return n === 'city' ? 'area' : n;
+    }
+    return '';
+  }
+  function activePanel(root) {
+    var on = root && root.querySelector('.cat-tab.active');
+    return on ? root.querySelector('#board-' + on.getAttribute('data-vrd-tab')) : null;
+  }
+  function writeState(panel) {
+    var cfg = VRD_CFG; if (!cfg || !urlHere(cfg)) return;
+    var root = document.getElementById(cfg.mount); if (!root || root._vrdRestoring || !root._vrdRestored) return;
+    if (panel && panel !== activePanel(root)) return;
+    panel = panel || activePanel(root);
+    var q = new URLSearchParams(location.search);
+    VRD_FKEYS.concat(['city', 'continent', 'country']).forEach(function (k) { q.delete(k); });
+    if (LOCCFG) {
+      if (LOC.chapter) q.set('city', LOC.chapter);
+      else if (LOC.continent) { q.set('continent', LOC.continent); if (LOC.country) q.set('country', LOC.country); }
+    }
+    if (panel) {
+      var srch = panel.querySelector('[data-vrd-search]'); if (srch && srch.value.trim()) q.set('q', srch.value.trim());
+      var srt = panel.querySelector('[data-vrd-sort]'); if (srt && srt._vrdStart !== undefined && srt.value !== srt._vrdStart) q.set('sort', srt.value);
+      liveFilters(panel).forEach(function (sel) { var n = selName(sel); if (n && !sel._paused) q.set(n, sel.value); });
+      var kw = panel.querySelector('[data-vrd-kinds]'), kwrap = kw && kw.closest('.vrd-sub');
+      if (kw && !(kwrap && kwrap.hidden)) {
+        var on = Object.keys(panel._kinds || {}).filter(function (k) { return panel._kinds[k]; });
+        if (on.length) q.set('kinds', on.join(','));
+      }
+    }
+    var str = q.toString(), url = location.pathname + (str ? '?' + str : '') + location.hash;
+    if (url !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', url);
+  }
+  function locFromUrl() {
+    var q = new URLSearchParams(location.search);
+    if (q.get('city')) return q.get('city');
+    if (q.get('continent')) return { continent: q.get('continent'), country: q.get('country') || '' };
+    return null;
+  }
+  // The address's filters, put back on the section it opened (once, after the listings are drawn).
+  function restoreState(root, config) {
+    root._vrdRestored = true;
+    if (!urlHere(config)) return;
+    var panel = activePanel(root); if (!panel) return;
+    var q = new URLSearchParams(location.search), touched = false;
+    root._vrdRestoring = true;
+    try {
+      var srch = panel.querySelector('[data-vrd-search]'); if (srch && q.get('q')) { srch.value = q.get('q'); touched = true; }
+      panel.querySelectorAll('.vrd-filter-pop select').forEach(function (sel) {
+        var n = selName(sel); if (!n || !q.get(n)) return;
+        var v = q.get(n); if (Array.prototype.some.call(sel.options, function (o) { return o.value === v; })) { sel.value = v; touched = true; }
+      });
+      if (q.get('kinds')) {
+        panel._kinds = {}; q.get('kinds').split(',').filter(Boolean).forEach(function (k) { panel._kinds[k] = true; });
+        if (typeof paintKinds === 'function') paintKinds(panel); touched = true;
+      }
+    } finally { root._vrdRestoring = false; }
+    if (touched) { locPaint(root); applyPanelFilters(panel, config, true); countFilters(panel); }
+    writeState(panel);
+  }
   function tabKey(config) { return (config && config.tabParam) || 'tab'; }
   function pushSection(root, config, tab, sub) {
     if (!urlHere(config) || root._vrdRestoring) return;
     var q = new URLSearchParams(location.search);
+    VRD_FKEYS.forEach(function (k) { q.delete(k); });
     q.set(tabKey(config), tab);
     if (sub) q.set('sub', subSlug(subLabel(sub))); else q.delete('sub');
     var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
@@ -1246,6 +1320,7 @@
     var kw = panel.querySelector('[data-vrd-kinds]'), kwrap = kw && kw.closest('.vrd-sub');
     if (kw && !(kwrap && kwrap.hidden)) n += Object.keys(panel._kinds || {}).filter(function (k) { return panel._kinds[k]; }).length;
     badge.textContent = n; badge.hidden = !n;
+    writeState(panel);
   }
   function wireControls(root, state) {
     root.querySelectorAll('.vrd-filter-pop select').forEach(function (sel) { sel._vrdStart = sel.value; });
@@ -1551,9 +1626,15 @@
       injectStyleOnce();
       // config.location = {initial, onChange(loc, hub)}: the location is picked in the filter (canon-ve-directory-navigation).
       LOCCFG = config.location ? config : null;
-      if (LOCCFG) locFrom(config.location.initial);
+      if (config.url) VRD_CFG = config;
+      if (LOCCFG) locFrom((urlHere(config) && locFromUrl()) || config.location.initial);
       root.innerHTML = renderSkeleton(config);
       wireControls(root, config);
+      root._vrdRestored = false;
+      if (config.url && !root._vrdTyping) {
+        root._vrdTyping = true; var tt;
+        root.addEventListener('input', function (e) { if (e.target.matches && e.target.matches('[data-vrd-search]')) { clearTimeout(tt); tt = setTimeout(function () { writeState(e.target.closest('.board-panel')); }, 400); } });
+      }
       locPaint(root);
       root.querySelectorAll('.board-panel').forEach(function (panel) { syncSubFilters(panel); });
       fetchAll(root, config);
