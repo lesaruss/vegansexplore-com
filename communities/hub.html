@@ -716,7 +716,7 @@
       '<div class="event-details"><span>' + esc(e.place) + '</span><span>' + esc(e.when) + '</span></div></div>' +
       '<div class="event-cta-col"><a href="' + esc(e.href) + '" class="btn-rsvp">' + esc(e.cta) + '</a></div></div>';
   }).join('');
-  VEHubNews.renderEvents('hub-events-list', P.eventCities);
+  VEHubNews.renderEvents('hub-events-list', SLUG);
   VEHubCommunity.wireEventSubmit(SLUG);
 
   // ---- Directory: the same component and city rule as /directory (VE_HUBS match)

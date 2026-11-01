@@ -164,7 +164,7 @@
     var all = list._veEventsAll || [];
     var now = Date.now();
     var filtered = all.filter(function (e) {
-      var t = new Date(e.starts_at).getTime();
+      var t = new Date(e.ends_at || e.starts_at).getTime();
       return mode === 'past' ? t < now : t >= now;
     });
     filtered.sort(function (a, b) {
@@ -178,7 +178,7 @@
     list.innerHTML = filtered.map(eventCardHtml).join('');
   }
 
-  function renderEvents(listId, cityNames) {
+  function renderEvents(listId, hubSlug) {
     var list = document.getElementById(listId);
     if (!list) return;
     injectEventToggleStyleOnce();
@@ -213,11 +213,25 @@
         renderEventsList(list, mode);
       });
     }
-    fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&order=starts_at.asc&limit=200', { headers: headers() })
-      .then(function (r) { return r.json(); })
-      .then(function (rows) {
-        var matches = (rows || []).filter(function (e) { return !e.city || cityNames.indexOf(e.city) > -1; });
-        list._veEventsAll = matches;
+    // The chapter's events by the calendar's own rule (Sean, 2026-11-01: "fix the hub events filter"). It read the 200 oldest
+    // events and matched exact city names, so once the calendar held more than 200 past events (the groups' history) nothing
+    // upcoming was left, and an event with no place (232 of them) showed on every hub. Now: the next 1,000 coming up (an event still
+    // running counts; 210 on 2026-11-01) and the last 1,000 that ended (667), each kept by VECityBanner.matches, the rule /events uses for a chapter, so an
+    // event with no place is on no hub.
+    var hub = window.VECityBanner && hubSlug ? VECityBanner.hubBySlug(hubSlug) : null;
+    var base = SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,ends_at,location_name,city,state,category,ticket_url,rsvp_count,time_set' +
+      '&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&limit=1000';
+    var now = new Date().toISOString();
+    var get = function (q) { return fetch(base + q, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('events'); return r.json(); }); };
+    Promise.all([
+      get('&or=(starts_at.gte.' + now + ',ends_at.gte.' + now + ')&order=starts_at.asc'),
+      get('&starts_at=lt.' + now + '&or=(ends_at.is.null,ends_at.lt.' + now + ')&order=starts_at.desc')
+    ]).then(function (res) {
+        var seen = {}, rows = res[0].concat(res[1]).filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; });
+        list._veEventsAll = rows.filter(function (e) {
+          if (!e.city) return false;
+          return hub ? VECityBanner.matches(hub, { city: e.city, state: e.state }) : true;
+        });
         renderEventsList(list, toggle.dataset.eventMode || 'upcoming');
       }).catch(function () { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });
   }

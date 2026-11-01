@@ -2855,6 +2855,11 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   open by `?tab=` (news, events, directory, opportunities, bounties, board, members, rewards) and the hub's Page tour walks them.
   The address bar carries the section (`?tab=`). Newsletter is gone (the Daily Pulse does that job);
   Community Partners is hidden but kept in the page; Chat was removed (it showed sample threads).
+- **The hub's Events** (`VEHubNews.renderEvents(listId, hubSlug)` in `hub-news.js`) keep an event by the calendar's own chapter
+  rule, `VECityBanner.matches` (Sean, 2026-11-01: "fix the hub events filter"): it had read the 200 oldest events and matched exact
+  city names, so once the calendar held more past events than that nothing upcoming was left (South Florida showed none), and the
+  232 events with no place showed on every hub. Now the next 1,000 coming up (an event still running counts) and the last 1,000,
+  none without a city. Checked against the calendar's data: South Florida 6 upcoming and 15 past, Atlanta 29 and 65, New York 13 and 78.
 - The Board and Bounties open inside the hub, under the community, in a frame
   (`/board?community=<slug>&hub=1`, `/bounties?...&hub=1`, which hide their own city picker). The
   framed page sizes the frame; `nav.js` treats a hub parent like the dashboard window.
