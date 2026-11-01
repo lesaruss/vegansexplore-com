@@ -2312,6 +2312,11 @@ see everything and then filter for what they want... the products are the produc
   of Food Brands.
 - **Products opens on every location**; Sells at gains **Near me** (Anywhere, Near me, Markets & events, Online & stores) for local shops
   with a storefront.
+- **No place on a Products card** (Sean, 2026-11-01: "if they're in a product section... by default, we don't see the city, and we
+  don't need to see online... If it is sold in only certain places, that could be reflected inside of the profile"): in Products a card
+  has no city, Online or Every chapter line, and its label is the Products shelf it sits on (`shelfOf`; Mama Chea Cafe reads Food & Drink
+  · Nutrition & Supplements there, Restaurants in Local Food). `makeBrowseCard` / `makeClosedCard` take the section (`cfg.everywhere`).
+  Local Food keeps the city; selling online, or only in some places, is said on the listing itself.
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are

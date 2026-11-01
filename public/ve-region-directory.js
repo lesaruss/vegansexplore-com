@@ -591,8 +591,16 @@
     if (l.category === 'Books') return esc(bookLabel(l.book_type) || 'Book') + y + mediaTag(l);
     return esc({ 'Podcasts': 'Podcast', 'YouTube': 'YouTube channel', 'News Outlets': 'News outlet' }[l.category] || l.category || '') + mediaTag(l);
   }
-  function makeBrowseCard(l, idx, type) {
+  // Products is sold anywhere (Sean, 2026-11-01: "if they're in a product section... by default, we don't see the city, and we don't
+  // need to see online"): its cards drop the city / Online line, and the shelf they sit on here names them (Mama Chea Cafe reads Food &
+  // Drink there, not Restaurants). Where it sells is on its own page. Local Food keeps the city.
+  function shelfOf(l, cfg) {
+    var here = sectionsOf(l).filter(function (c) { return cfg.subcats.indexOf(c) >= 0; }).map(subLabel);
+    return here.length ? here.join(' \u00b7 ') : subLabel(l.category || '');
+  }
+  function makeBrowseCard(l, idx, type, cfg) {
     var votes = (l.vote_count || 0);
+    var anywhere = !!(cfg && cfg.everywhere);
     var subcat = sectionsOf(l).join('|');
     var temp = l.business_status === 'CLOSED_TEMPORARILY' && !isMedia(l) && !isPerson(l) ? ' <span class="vrd-temp">' + statusWords(l.category)[0] + '</span>' : '';
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
@@ -600,19 +608,19 @@
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       (isPerson(l) ? '<div class="rank-meta">' + personMeta(l) + '</div>'
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
-        : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-          '<div class="rank-subcat">' + esc(subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
+        : (anywhere ? (temp ? '<div class="rank-meta">' + temp + '</div>' : '') : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>') +
+          '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
 
-  function makeClosedCard(l, idx) {
+  function makeClosedCard(l, idx, cfg) {
     var votes = (l.vote_count || 0);
     var subcat = sectionsOf(l).join('|');
     return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="closed"' + extraAttrs(l) + ' style="opacity:.7">' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name" style="color:#555">' + esc(l.name) + '</div>' +
-      '<div class="rank-meta">' + cardMeta(l) + '</div>' +
+      (cfg && cfg.everywhere ? '' : '<div class="rank-meta">' + cardMeta(l) + '</div>') +
       '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">' + statusWords(l.category)[1] + '</span></div></div>' +
       '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span>' + adminBtn(l) + '</div>' +
       '</div>';
@@ -883,9 +891,9 @@
 
       var cards = all.map(function (l, idx) {
         var type = isOnline(l) ? 'online' : 'regular';
-        return makeBrowseCard(l, idx, type);
+        return makeBrowseCard(l, idx, type, cfg);
       }).join('');
-      var closedCards = closedTabs[tab].map(function (l, idx) { return makeClosedCard(l, idx); }).join('');
+      var closedCards = closedTabs[tab].map(function (l, idx) { return makeClosedCard(l, idx, cfg); }).join('');
 
       var grid = root.querySelector('#' + tab + '-grid');
       if (grid) grid.innerHTML = (cards + closedCards) || '<p class="vrd-empty vrd-empty-static">' + (tab === 'vetting' ? 'Nothing waiting to be vetted here.' : 'No listings yet in this category.') + '</p>';
