@@ -3573,6 +3573,12 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   Products > E-Commerce & Marketplaces, every chapter (their Vegan aisles key off the tag, not the category). Each change is a
   `ve_listing_edits` row. A new chain needs its footprint set when it is added, or it shows nowhere but All locations. Giant is Giant
   Food (D.C., Delaware, Maryland, Virginia); The GIANT Company in Pennsylvania is a sister chain, not counted.
+- **Supermarkets live under Markets only** (Sean, 2026-11-01: "I don't like seeing the supermarkets mixed in with the local because
+  they're not all vegan... pull them out of the all listing in Local and just have them on the Market Tab and have a toggle where
+  people can see Local Markets and Super Markets. But by default you see both together"). A section's All never shows a chain
+  (`data-chain` 1, tag `ve-grocery-store`; `applyPanelFilters` in `ve-region-directory.js`). Markets has a visible switch under the
+  search, **All markets · Local markets · Supermarkets** (`[data-vrd-mkt]`, All by default), which drives the Stores select
+  (`data-vrd-chain`, now hidden from the Filters dropdown); the same in every city hub's Directory.
 - The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
   voted brand first), 12 cards then Show all. Each card opens the product's page.
 - Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini

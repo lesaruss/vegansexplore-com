@@ -136,6 +136,11 @@
     // The button reads Filters with how many are set, wider, a clear gap after the search (Sean, 2026-10-30, canon
     // canon-ve-directory-navigation: "make it clear that that's the filter").
     + '.vrd-root .vrd-tools{position:relative;display:flex;align-items:center;gap:16px;margin-bottom:16px}'
+    + '.vrd-root .vrd-mkt{display:inline-flex;border:1px solid rgba(0,0,0,.18);border-radius:6px;overflow:hidden;margin:0 0 16px}.vrd-root .vrd-mkt[hidden]{display:none}'
+    + '.vrd-root .vrd-mkt button{font:700 12px Montserrat,sans-serif;padding:10px 16px;border:0;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-mkt button+button{border-left:1px solid rgba(0,0,0,.12)}'
+    + '.vrd-root .vrd-mkt button[aria-pressed="true"]{background:var(--vb-soft,#e8f5e9);color:var(--vb-accent-ink,#1f5f22)}'
+    + '@media(max-width:600px){.vrd-root .vrd-mkt{display:flex;width:100%}.vrd-root .vrd-mkt button{flex:1 1 0;padding:10px 6px}}'
     + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:0}'
     + '.vrd-root .vrd-tools .vrd-search-input{height:44px;border-radius:6px;padding:0 14px 0 34px;font-size:13px}'
     + '.vrd-root .vrd-filter-btn{position:relative;flex:0 0 auto;min-width:132px;height:44px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid #ddd;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:Montserrat,sans-serif;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}'
@@ -340,7 +345,7 @@
       '<select aria-label="Filter by kind of food" class="sort-select" data-vrd-cuisine="' + cat.key + '"><option value="">All</option>' +
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
       '<span class="vrd-sub" data-sub-for="chain" hidden><span class="geo-label">Stores</span>' +
-      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="1">National chains</option><option value="0">Local markets</option></select></span>' +
+      '<select aria-label="National chains or local markets" class="sort-select" data-vrd-chain="' + cat.key + '"><option value="">All</option><option value="0">Local markets</option><option value="1">Supermarkets</option></select></span>' +
       '<span class="vrd-sub" data-sub-for="htype" hidden><span class="geo-label">Practice</span>' +
       '<select aria-label="Filter by kind of practice" class="sort-select" data-vrd-htype="' + cat.key + '"><option value="">All</option>' +
       HEALTH_TYPES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
@@ -409,6 +414,11 @@
         '<div class="vrd-pop-foot"><button type="button" class="vrd-pop-btn" data-vrd-reset>Reset filters</button>' +
         '<button type="button" class="vrd-pop-btn vrd-pop-done" data-vrd-done>Done</button></div>' +
       '</div></div>' +
+      // Markets: Local markets / Supermarkets as a visible switch, both by default (Sean, 2026-11-01: "a toggle where people can see
+      // Local Markets and Super Markets. But by default you see both together"). It drives the Stores select (data-vrd-chain).
+      (cat.key === 'food' ? '<div class="vrd-mkt" data-vrd-mkt role="group" aria-label="Kind of market" hidden>' +
+        '<button type="button" data-mkt="" aria-pressed="true">All markets</button><button type="button" data-mkt="0" aria-pressed="false">Local markets</button>' +
+        '<button type="button" data-mkt="1" aria-pressed="false">Supermarkets</button></div>' : '') +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       // The pages in the middle, how many to show at the far right (Sean, 2026-10-26).
       '<div class="vrd-foot"><div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
@@ -912,9 +922,10 @@
     var bar = panel && panel.querySelector('.sort-bar'); if (!bar) return;
     var sf = subFiltersFor(panel, currentSubcat(panel));
     bar.querySelectorAll('.vrd-sub').forEach(function (w) {
-      var on = !!sf[w.dataset.subFor]; w.hidden = !on;
+      var on = !!sf[w.dataset.subFor]; w.hidden = !on || w.dataset.subFor === 'chain';
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
+    var mkt = panel.querySelector('[data-vrd-mkt]'); if (mkt) mkt.hidden = !sf.chain;
     // Newest and Oldest belong to books and films; anywhere else the sort goes back to Most Votes.
     var sortSel = bar.querySelector('[data-vrd-sort]');
     if (sortSel) {
@@ -954,6 +965,8 @@
     var specSel = bar ? bar.querySelector('[data-vrd-spec]') : null, spec = sf.spec && specSel ? specSel.value : '';
     var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
+    var mktSw = panel.querySelector('[data-vrd-mkt]');
+    if (mktSw) mktSw.querySelectorAll('[data-mkt]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mkt') === chain)); });
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
     var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
     if (sf.geo === false && !sellsHere(sells)) { city = ''; county = ''; region = ''; }
@@ -967,7 +980,9 @@
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
     var matched = [];
     cards.forEach(function (card) {
-      var subOk = (special === 'All') || (card.dataset.subcat || '').split('|').indexOf(special) > -1;
+      // A section's All is local places only: supermarkets (not Vegan businesses) show under Markets alone (Sean, 2026-11-01:
+      // "I don't like seeing the supermarkets mixed in with the local because they're not all vegan").
+      var subOk = (special === 'All') ? card.dataset.chain !== '1' : (card.dataset.subcat || '').split('|').indexOf(special) > -1;
       var veganOk = !vegan || card.dataset.vegan === vegan;
       var geoOk = true;
       if (city) { geoOk = card.dataset.city === city; }
@@ -1239,6 +1254,13 @@
           citySel.value = ''; citySel.style.display = sel.value ? '' : 'none';
         }
         applyPanelFilters(sel.closest('.board-panel'), state, true);
+      });
+    });
+    // The Markets switch sets the Stores select and runs its change, so the count, pages and filters follow.
+    root.querySelectorAll('[data-vrd-mkt] [data-mkt]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var sel = btn.closest('.board-panel').querySelector('[data-vrd-chain]'); if (!sel) return;
+        sel.value = btn.getAttribute('data-mkt'); sel.dispatchEvent(new Event('change'));
       });
     });
     root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat], [data-vrd-spec]').forEach(function (sel) {
