@@ -1,130 +1,77 @@
-# One Depot, built the BrandDesk way (proposal for Sean to lock)
+# BrandDesk: the production wing of HQ (concept for Sean to lock)
 
-Status: **draft, not built.** Concept session with V, 2026-11-01. Nothing here changes the site until Sean says "lock it".
+Status: **draft, not built.** Concept session with V, 2026-11-01. Replaces the earlier "one Depot, two doors" draft of the same day.
+Becomes the playbook `branddesk-production-wing` and a canon entry when Sean says "lock it".
 
-Sean: "I think we inadvertently created a new depot with the brand desk when it all should just be one thing. But I like what we
-came up with the brand desk because it makes it more of a visual wizard-like experience versus what we have now."
+## What it is
 
-## What we have today
+BrandDesk is the Studio at hq.lesaruss.ai/studio, renamed and turned into the product: our proprietary way of building and running a
+brand. It lives in HQ. Every brand is a record there: ours (Vegans Explore, Sean A. Russell, GeekFon Society), clients', and any brand
+set up on the fly, which is moved in after. It replaces the Studio, the Vegans Explore Depot, and Depot > BrandDesk.
 
-**The Depot**: 37 pages under `/admin/depot/`, 28 of them in the Go to menu (`TABS` in `public/depot-tabs.js`) plus 8 dashboard admin
-pages and 14 demos. They are grouped by the *thing they touch* (Directory, Content, People, Site), each page its own list with its own
-look. 9 pages are only reachable by address (Logos, Pulse, Pulse Cities, Passport Partners, Tours, Passport Challenge and its card and
-kit, Import narration).
+HQ becomes two wings: **BrandDesk, the production wing** (making things for brands) and **Operations** (people, finance, compliance).
 
-**BrandDesk**: one Depot page (`branddesk.html`) with Clients, one client (Getting started, Library, Asset sheet, Monthly reports, The
-starter shoot, Member visits), Pitch list, Rotation, Who can sign up and My brand; and the guided pages under `/business/` (brand kit,
-managed, pitch, check-in, campaign, shoot, site). It is a **per-brand** workspace: pick a client, then walk its parts.
+## How a brand moves through it
 
-**Social** (`social.html`) already has a brand picker and treats Vegans Explore, Sean A. Russell, GeekFon Society and clients alike.
+1. **The foundation, never rushed.** The brand kit first: from scratch with examples at every step (a mood board of things they like
+   tells us style, type and color), or their existing kit plugged in, with anything that could be stronger prompted to the client
+   (self-serve) or the Community Manager. **Approved means locked**: the kit is the record for everything made after it; changing a
+   locked part takes a real reason, requested with that reason, approved by the owner, kept on record.
+2. **Launch opens the modules.** Nothing else opens until the kit is locked and the brand launches. Then the brand sees its next steps
+   by what it bought and what we decided it needs.
+3. **The plan runs it.** A 3, 6 or 12 month marketing plan rolls out dated tasks backwards from each due date: what to do today, the
+   questions needed to write the article, the photographer to book by a date with the request already drafted.
+4. **Every piece moves the same way**: ask, draft, approve or comment, keep working until done, store it. The client answers questions
+   and approves; we reach out when something is unclear.
 
-### The overlap that caused "a second Depot"
+## Modules are wizards
 
-| Job | Lives in the Depot | Lives in BrandDesk |
-|---|---|---|
-| Brand kit | (none) | client kits; My brand (Sean's media kits); Vegans Explore's own kit at `/business/brand?brand=vegans-explore` |
-| Social for a brand | Social (per brand, clients included) | the social add-on, planned |
-| Campaigns | Brand campaigns (partner windows), Bounties | Rotation (one campaign a client a month), Member visits (are bounties) |
-| Reaching businesses | Business outreach (city send days) | Pitch list (sent through outreach's sender) |
-| Photos and files | Library (`/admin/depot`) | client Library (`branddesk-library`) |
-| Requests | Inbox | BrandDesk requests already land in the Inbox |
-| Who's allowed | Claims, Invites | Who can sign up |
+Each module is a best-in-class wizard, made the way we made the Guides, that already knows the business from its locked kit and its
+Library and asks only what it doesn't know. A module ships to clients only after we run it on our own brands.
 
-So BrandDesk is not really a new Depot. It is the **brand half** of the Depot that never had a home, built with a better pattern.
+- First: **Website**, **Social** (the Depot > Social plan, every scheduled and past post, everything posted goes through it).
+- As we use them ourselves: **Video**, **YouTube**, **Podcast**, **Book**, **Mobile app**, **Pitch deck** (our best pitch deck
+  template, filled from the brand's kit and assets), and more.
+- **Product launch** (premium, an incubator): every question a buyer will ask, then a review by one of our approved industry people
+  with honest feedback (pivot, or "let's set up a meeting"). Listed as Coming with a waitlist; it does not launch until we hold the
+  distributor and buyer relationships.
 
-## The idea in one line
+## Everything it makes, and what it did
 
-**One Depot with two doors: The House (running Vegans Explore the platform) and Brands (everything done for one brand, ours or a
-client's), every job a guided flow, with a Today screen in front of both.**
+- **Library**: every asset every module makes, stored where it belongs on its own.
+- **Analytics** inside BrandDesk, per brand: the results of what was done, next to the work.
+- **Reports**: everything cumulative, per brand and across brands.
 
-## The shape
+## Who does the work (by package; same screens for everyone)
 
-### 1. Today (the Depot's home, replaces the Go to menu as the front door)
-
-What Sean opens first. One screen, nothing to scroll on desktop:
-
-- **Waiting on you**: one card a job with its count, most urgent first (Inbox late, Claims, New places ready, Events waiting, Cookbook
-  photos, Venue reports, Barcodes, Notes for Logan, slots Waiting for approval, check-ins due). A card opens that job's guided flow.
-- **This week by brand**: a strip of brand tiles (logo, what's going out, what's waiting).
-- **Most used / recently used** (what The Depot panel on the dashboard already does).
-
-### 2. Brands (BrandDesk grows into this)
-
-A **brand picker** at the top, the same one Social has, reading one list: Vegans Explore, the Vegans Explore Podcast, Sean A. Russell,
-GeekFon Society, then clients (Green Leaf Kitchen as the sample). Every brand gets the same desk, its parts shown only when they apply:
-
-| Part | Today it is | Who sees it |
-|---|---|---|
-| Overview | BrandDesk client page (Getting started) | every brand |
-| Brand kit | `/business/brand` (Cartridge), My brand (Sean's kits) | every brand |
-| Social | Depot > Social, already per brand | every brand in Metricool |
-| Website | `business/site.html` (frame) | clients, later our own |
-| Library | client Library; the house Library for Vegans Explore | every brand |
-| Campaigns | Rotation for clients; Brand campaigns and Bounties for Vegans Explore | every brand |
-| Shoots and visits | starter shoot, Member visits | clients |
-| Monthly | check-ins and reports | clients |
-| Numbers | Social analytics; client month numbers; Analytics for Vegans Explore | every brand |
-| Account | plan, signature, billing, Pause, End | clients only |
-
-This answers "Social and BrandDesk clients as brands in one place": the brand row is `ve_social_brands` grown into the one brand list
-(it already has house and client), linked to `ve_branddesk_accounts`, `ve_cartridges` / `ve_brand_cartridges` and Metricool.
-
-### 3. The House (running the platform)
-
-Grouped by **the job**, not the table. Each job is a list, then one thing per view, then the next one (BrandDesk's rhythm):
-
-| Job | Pages it takes in |
+| Level | Support |
 |---|---|
-| **Answer** | Inbox, Claims, profile claims, Notes for Logan, Role applications, Submissions, Guest reviews |
-| **Review and approve** | Directory review (held, Being vetted, No menu link, Add a listing), Logos (both the old page and Directory review's), New places (from Business outreach), Events queue, Cookbook and Made it photos, Bounties review, Venue reports and Barcodes, Books, Content index review |
-| **Grow** (one pipeline board per pathway: the locked Pathways playbook) | Business outreach, Pitch list, Founding Members, Ambassadors, Nonprofit Partners, Group Partners, Invites, Dinner guests, Links, Creators |
-| **Publish** | the Pulse desk, Sources, Pulse Cities, Content index search, Venues editing |
-| **Watch** | Analytics (with Google costs, Guide tabs), Platform health, Community Insights, Leads, Members, Profiles |
-| **Set up** | Onboarding, Services, Dashboard checklist, Who can sign up, Preview journeys, Demos, Tours, Passport Challenge, Passport Partners, Import narration |
+| Self-serve | an agent for questions when stuck |
+| Supported | an agent drafts and pushes things through; the client approves |
+| Managed | a person (their Community Manager) works with the agent and our automated processes; the client approves |
 
-Vegans Explore is also a brand, so its *brand* work (its kit, its social, its campaigns) sits under Brands like everyone else's; The
-House is only the platform work no other brand has.
+The owner can invite their own people.
 
-### 4. The pattern every screen follows (taken from BrandDesk)
+## The Standard
 
-- A job opens as **a queue then one item per view**, with **Back / N of M / Next** to walk the queue (approve one, the next one opens).
-  This is the "wizard" feel: Sean clears a queue by pressing Next, not by hunting a list.
-- Breadcrumbs: Depot > Brands > Green Leaf Kitchen > Social > Tuesday's reel.
-- Status tags in plain words, one action button in the same place, the address carries the view (Interface defaults).
-- The brand picker sits in the banner (the shared `VECityBanner` pattern: the dropdown is the menu), so switching brand keeps the part
-  you are on.
-- Each part shows **Not started / In progress / Locked** where it fits (the brand kit's states), so a brand's desk reads as progress.
+What works for us is the standard; every time we learn something, the standard and its wizards update, and every brand gets it.
 
-## Migration path (every address keeps working)
+## Build order
 
-1. **Shell, no moves** (small): `/admin/depot` becomes Today; `depot-tabs.js` gains the two doors and the job groups (`TABS` regrouped,
-   labels unchanged); the current Library page moves to `/admin/depot/library` with a redirect from its old use. Every existing page
-   still opens at its address.
-2. **Brands door**: `/admin/depot/brands/<brand>/<part>` (a rewrite to one page, like `/communities/<slug>`). Social's views mount
-   inside as the Social part; BrandDesk's client views mount as Overview, Library, Monthly, Account; the brand kit opens in place.
-   Redirects: `/admin/depot/branddesk#a/<id>` to the client's brand desk, `#rotation` to Brands > Campaigns (all clients), `#mine` to
-   Sean A. Russell > Brand kit, `#pitches` to The House > Grow > Pitch list, `#open` to Set up > Who can sign up;
-   `/admin/depot/social#plan/<brand>` to Brands > that brand > Social. Hash redirects are done in the page (a small map in the old
-   file that forwards, kept for 90 days), since `vercel.json` cannot read a `#`.
-3. **The House jobs**, one at a time, each turned into a queue with Next: Answer first (Inbox + Claims + Notes for Logan), then Review
-   (Directory review, Logos merged into it, New places), then Grow (the Pathways board, which is already locked and replaces five
-   consoles' lists while their detail views stay).
-4. **Retire the duplicates**: the old Logos page (`/admin/depot/logos`) redirects to Review > Logos; the dashboard's Your tools and The
-   Depot panel read the same new list.
+1. Rename the Studio to BrandDesk in HQ (`/studio` redirects); each brand's page becomes its home.
+2. The foundation: the brand kit (`business/brand.html` and `ve-brand-kit` today) inside BrandDesk, with the mood board, the lock and
+   the launch gate.
+3. The first modules: Social (`ve-social`, Metricool) and Website (the frame, `business/site.html`).
+4. The plan engine.
+5. Run it on Sean A. Russell, GeekFon Society and Vegans Explore; then Green Leaf Kitchen as the demo; then the first client. Pitch
+   deck is the first new wizard.
+6. The Depot's pages keep working where they are until each has a home in BrandDesk; nothing is cut until a usage log shows it unused.
 
-Nothing is deleted: every old address redirects, every edge function stays (`ve-branddesk`, `ve-social`, `ve-outreach`...); this is a
-front end and navigation change. Data change: one column or table to make `ve_social_brands` the one brand list (link to listing,
-account, cartridge).
+## Decisions (V's default, taken unless Sean overrides)
 
-## Decisions for Sean (V's recommendation first; the default is taken if you don't override)
-
-1. **Name**: keep **The Depot** for the whole thing and **BrandDesk** for the client product we sell. Inside the Depot the door is
-   called **Brands**. (Default.)
-2. **Is Vegans Explore under Brands too?** Yes: its kit, social and campaigns live there like any brand's; only platform work is in The
-   House. (Default.)
-3. **Today replaces the Go to menu** as the first thing you see; Go to stays as a small search for jumping. (Default.)
-4. **Community Managers** get the same Depot narrowed to their brands and their chapter's jobs (their Inbox, their check-ins, their
-   clients), instead of separate pages. (Default; built after step 3.)
-5. **Build order**: shell and Today, then Brands, then The House job by job. (Default.)
-
-When this is locked it becomes the playbook `ve-one-depot` and a canon entry, and the CLAUDE.md Depot and BrandDesk sections point to it.
+1. BrandDesk is the Studio's new name, in HQ.
+2. Packages: Self-serve, Supported, Managed (Managed is the locked $500 a month; the others priced later).
+3. Launch gate with no exceptions, our own brands included.
+4. Unlocking a locked part: requested with a reason, approved by the owner, on record.
+5. Product launch: Coming, with a waitlist, until the relationships exist.
+6. Operations (HR, finance, compliance) stays a separate wing of HQ.
