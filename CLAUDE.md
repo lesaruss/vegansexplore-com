@@ -504,7 +504,7 @@ locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`compon
 the gate, the mood board, the parts, the requests and Launch; live on lesaruss-hq main dc947e5 (2026-11-01,
 Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default).
 **The Website module** (2026-11-01, Sean: "go with your recommendation", client listings first; lesaruss-hq branch
-`claude/branddesk-social-deploy-7423db` d8c7fdd, not on main yet): **BrandDesk > Websites** (`/branddesk/websites`, a button on the BrandDesk
+main 598dc6a, live 2026-11-01, Sean: "deploy"): **BrandDesk > Websites** (`/branddesk/websites`, a button on the BrandDesk
 wall; `components/branddesk/WebsiteRoom.tsx`, `/api/branddesk/website`, `lib/branddeskSites.ts`): every BrandDesk client
 (`ve-branddesk` `list`), then one client's wizard (`?account=<id>`): 1. their brand kit, its parts and state; **Build their website waits
 until the kit launches** (Logan's default: the gate is in HQ, the server's `site_start` and the Depot still build from an unlaunched kit),
