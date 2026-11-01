@@ -281,7 +281,36 @@ async function build(from: string, to: string, blogId?: number | null, withPodca
 // brand with no Metricool brand yet, makes the slot Manual with the reason, so it is known ahead of time. sync marks Metricool's
 // published posts Posted with their links and copies their numbers from the analytics (matched by link).
 type Who = { ops: boolean; admin: boolean; id: string | null; name: string };
-const EDITABLE = ['slot_at', 'channels', 'kind', 'title', 'caption', 'first_comment', 'links', 'assets', 'manual_steps', 'batch'];
+const EDITABLE = ['slot_at', 'channels', 'kind', 'title', 'caption', 'first_comment', 'links', 'assets', 'manual_steps', 'batch', 'sound'];
+// Music (Sean, 2026-11-01). Checked against Metricool's OpenAPI spec (app.metricool.com/api/swagger.json) the same day:
+//   Instagram: instagramData.audioConfiguration {audioId (required), title, audioType music|original_sound, durationMs, igUsername,
+//     displayArtist, coverArtworkUrl, audioVolume 0-100, videoVolume 0-100}, Reels only; songs from GET
+//     /v2/scheduler/catalogs/instagram/audio?searchQuery=&limit=&musicCursor= (Meta's library cleared for outside apps).
+//   TikTok: tiktokData.music {musicId, title, author, previewUrl, thumbnailUrl (all required), startMillis, endMillis, soundVolume,
+//     originalVolume}, photo posts and carousels only; songs from GET /v2/scheduler/catalogs/tiktok/trending-tracks (the top 100,
+//     commercialMusicId -> musicId). A TikTok video with a song, or a song named by hand, makes that channel Post by hand.
+const VIDEO_KINDS = ['reel', 'video', 'episode'];
+const MIX: Record<string, [number, number]> = { both: [100, 100], under: [25, 100], song: [100, 0] };
+const str = (v: unknown, n = 300) => (v == null || v === '' ? undefined : String(v).slice(0, n));
+function cleanSound(v: any): any {
+  if (!v || typeof v !== 'object') return null;
+  const out: any = {};
+  const ig = v.instagram;
+  if (ig && ig.audioId) out.instagram = { audioId: String(ig.audioId).slice(0, 60), title: str(ig.title), displayArtist: str(ig.displayArtist), audioType: ig.audioType === 'original_sound' ? 'original_sound' : 'music',
+    durationMs: Number(ig.durationMs) || undefined, igUsername: str(ig.igUsername, 80), coverArtworkUrl: str(ig.coverArtworkUrl, 1000), mix: MIX[ig.mix] ? ig.mix : 'both' };
+  const tt = v.tiktok;
+  if (tt && tt.musicId && tt.title && tt.author && tt.previewUrl && tt.thumbnailUrl) out.tiktok = { musicId: String(tt.musicId).slice(0, 60), title: str(tt.title), author: str(tt.author),
+    previewUrl: str(tt.previewUrl, 1000), thumbnailUrl: str(tt.thumbnailUrl, 1000), duration: Number(tt.duration) || undefined };
+  if (v.by_hand && String(v.by_hand.song || '').trim()) out.by_hand = { song: String(v.by_hand.song).trim().slice(0, 200) };
+  return Object.keys(out).length ? out : null;
+}
+const songName = (o: any) => o ? `${o.title || 'the song'}${o.displayArtist || o.author ? ' by ' + (o.displayArtist || o.author) : ''}` : '';
+// Stories: a story is tall media. 9:16 is 1.78; a little either way passes.
+const isTall = (a: any) => a && Number(a.w) > 0 && Number(a.h) / Number(a.w) >= 1.7 && Number(a.h) / Number(a.w) <= 1.86;
+const outMedia = (assets: any[]) => (assets || []).filter((a: any) => a && a.url && a.type !== 'cover' && a.type !== 'storyboard');
+const storyReady = (assets: any[]) => { const m = outMedia(assets); return m.length > 0 && m.every(isTall); };
+const STORY_NETS = ['instagram', 'facebook'];
+const STORY_AFTER_MIN = 15;
 const KINDS = ['post', 'carousel', 'reel', 'story', 'video', 'episode', 'thread'];
 const NETS = ['instagram', 'facebook', 'tiktok', 'youtube', 'twitter', 'linkedin', 'threads', 'pinterest', 'bluesky', 'gmb'];
 
@@ -316,10 +345,22 @@ function mcBody(s: any, nets: string[]) {
     text: s.caption, providers: nets.map((n) => ({ network: n })), autoPublish: true, draft: false, media,
     saveExternalMediaFiles: true, firstCommentText: s.first_comment || '',
   };
-  if (nets.includes('instagram')) body.instagramData = { autoPublish: true, type };
+  if (nets.includes('instagram')) {
+    body.instagramData = { autoPublish: true, type };
+    const ig = s.sound?.instagram;
+    if (ig?.audioId && type === 'REEL') {
+      const [audioVolume, videoVolume] = MIX[ig.mix] || MIX.both;
+      body.instagramData.audioConfiguration = { audioId: ig.audioId, title: ig.title, audioType: ig.audioType || 'music', durationMs: ig.durationMs,
+        igUsername: ig.igUsername, displayArtist: ig.displayArtist, coverArtworkUrl: ig.coverArtworkUrl, audioVolume, videoVolume };
+    }
+  }
   if (nets.includes('facebook')) body.facebookData = { type: type === 'REEL' ? 'REEL' : type };
   if (nets.includes('youtube')) body.youtubeData = { title: (s.title || s.caption || '').slice(0, 100), type: 'SHORT', privacy: 'public' };
-  if (nets.includes('tiktok')) body.tiktokData = { privacyOption: 'PUBLIC_TO_EVERYONE' };
+  if (nets.includes('tiktok')) {
+    body.tiktokData = { privacyOption: 'PUBLIC_TO_EVERYONE' };
+    const tt = s.sound?.tiktok;
+    if (tt?.musicId && type !== 'REEL') { body.tiktokData.music = { musicId: tt.musicId, title: tt.title, author: tt.author, previewUrl: tt.previewUrl, thumbnailUrl: tt.thumbnailUrl }; body.tiktokData.autoAddMusic = false; }
+  }
   return body;
 }
 async function logEdit(slot: string, who: Who, field: string, oldV: unknown, newV: unknown) {
@@ -332,11 +373,27 @@ async function push(id: string, who: Who) {
   const set = async (f: Record<string, unknown>) => { await db.from('ve_social_slots').update({ ...f, updated_at: new Date().toISOString() }).eq('id', id); };
   if (Date.parse(s.slot_at) < Date.now() + 2 * 60000) { await set({ status: 'failed', push_error: 'The time has passed. Pick a new time and approve it again.' }); return { error: 'time_passed' }; }
   if (!b?.metricool_blog_id) { await set({ status: 'manual', push_error: `${b?.name || s.brand_slug} is not in Metricool yet, so this one is posted by hand.` }); return { status: 'manual' }; }
+  if (s.status === 'held') return { error: 'held', detail: 'This story is waiting for its 9:16 picture or video.' };
   const nets = (s.channels || []).filter((n: string) => NETS.includes(n));
-  const auto = nets.filter((n: string) => (b.channels || []).includes(n));
-  const handNets = nets.filter((n: string) => !auto.includes(n));
-  if (!auto.length) { await set({ status: 'manual', push_error: `None of its channels (${nets.join(', ') || 'none'}) are connected in Metricool for ${b.name}.` }); return { status: 'manual' }; }
-  const isVideoKind = ['reel', 'video', 'episode'].includes(s.kind);
+  const isVideoKind = VIDEO_KINDS.includes(s.kind);
+  // Why a channel goes by hand, named ahead of time: not connected, or a song the API cannot carry.
+  const why: Record<string, string> = {};
+  for (const n of nets) if (!(b.channels || []).includes(n)) why[n] = 'not connected in Metricool';
+  const snd = s.sound || {};
+  if (nets.includes('tiktok') && !why.tiktok && snd.tiktok && isVideoKind) why.tiktok = `finish it in the TikTok app with ${songName(snd.tiktok)} (TikTok takes music through the API on photo posts only)`;
+  if (snd.by_hand?.song) for (const n of ['instagram', 'tiktok']) {
+    if (!nets.includes(n) || why[n]) continue;
+    if (n === 'instagram' && snd.instagram && isVideoKind) continue;
+    if (n === 'tiktok' && snd.tiktok && !isVideoKind) continue;
+    why[n] = `add ${snd.by_hand.song} in the ${n === 'instagram' ? 'Instagram' : 'TikTok'} app (it is not in the library Metricool can use)`;
+  }
+  const auto = nets.filter((n: string) => !why[n]);
+  const handNets = nets.filter((n: string) => !!why[n]);
+  const handText = handNets.map((n: string) => `${n}: ${why[n]}`).join('; ');
+  if (!auto.length) {
+    if (s.metricool_post_id) { try { await mcSend('DELETE', `/v2/scheduler/posts/${s.metricool_post_id}`, await mcCtx(b.metricool_blog_id)); } catch { /* gone */ } }
+    await set({ status: 'manual', metricool_post_id: null, push_error: `Post it by hand. ${handText}.` }); return { status: 'manual' };
+  }
   if (isVideoKind && !(s.assets || []).some((a: any) => a?.type === 'video' && a?.url)) { await set({ status: 'changes', push_error: 'No video yet. Add the finished video, then approve it again.' }); return { error: 'no_video' }; }
   if (!s.caption?.trim() && !(s.assets || []).length) { await set({ status: 'failed', push_error: 'Nothing to post: no caption and no picture or video.' }); return { error: 'empty' }; }
   const ctx = await mcCtx(b.metricool_blog_id);
@@ -345,7 +402,7 @@ async function push(id: string, who: Who) {
     const o = await mcSend('POST', '/v2/scheduler/posts', ctx, mcBody(s, auto));
     const mid = o?.data?.id;
     await set({ status: handNets.length ? 'manual' : 'scheduled', metricool_post_id: mid || null, metricool_state: o?.data?.providers || null, pushed_at: new Date().toISOString(),
-      push_error: handNets.length ? `Scheduled in Metricool for ${auto.join(', ')}. Post it by hand on ${handNets.join(', ')} (not connected in Metricool).` : null });
+      push_error: handNets.length ? `Scheduled in Metricool for ${auto.join(', ')}. Post it by hand on ${handText}.` : null });
     await logEdit(id, who, 'pushed', null, { metricool_post_id: mid, channels: auto });
     return { status: handNets.length ? 'manual' : 'scheduled', metricool_post_id: mid };
   } catch (e) {
@@ -400,6 +457,47 @@ async function sync() {
   return out;
 }
 
+// Also share as a story: a story slot STORY_AFTER_MIN minutes after the post, on its Instagram and Facebook, held until it has 9:16
+// media. Turning it off skips the story (and takes it out of Metricool if it was scheduled).
+async function alsoStory(post: any, on: boolean, who: Who, newAt?: string) {
+  const { data: kid } = await db.from('ve_social_slots').select('id,status,metricool_post_id').eq('story_of', post.id).neq('status', 'skipped').maybeSingle();
+  if (!on) {
+    if (!kid) return null;
+    if (kid.status === 'posted') return { error: 'story_posted' };
+    if (kid.metricool_post_id) {
+      const { data: b } = await db.from('ve_social_brands').select('metricool_blog_id').eq('slug', post.brand_slug).maybeSingle();
+      if (b?.metricool_blog_id) { try { await mcSend('DELETE', `/v2/scheduler/posts/${kid.metricool_post_id}`, await mcCtx(b.metricool_blog_id)); } catch { /* gone */ } }
+    }
+    await db.from('ve_social_slots').update({ status: 'skipped', metricool_post_id: null, updated_at: new Date().toISOString() }).eq('id', kid.id);
+    await logEdit(kid.id, who, 'status', kid.status, 'skipped');
+    return { story: kid.id, status: 'skipped' };
+  }
+  if (kid) return { story: kid.id, status: kid.status };
+  if (post.kind === 'story' || post.kind === 'thread') return { error: 'not_a_post' };
+  const nets = (post.channels || []).filter((n: string) => STORY_NETS.includes(n));
+  if (!nets.length) return { error: 'no_story_channel', detail: 'Stories go to Instagram and Facebook; this post is on neither.' };
+  const at = new Date(Date.parse(newAt || post.slot_at) + STORY_AFTER_MIN * 60000).toISOString();
+  const tall = outMedia(post.assets).filter(isTall);
+  const link = (post.links || [])[0];
+  const { data: ins, error } = await db.from('ve_social_slots').insert({
+    brand_slug: post.brand_slug, slot_at: at, channels: nets, kind: 'story', story_of: post.id, batch: post.batch,
+    title: `Story: ${(post.title || post.caption || 'the post').slice(0, 70)}`, caption: '', links: post.links || [],
+    assets: tall, status: tall.length ? 'proposed' : 'held', proposed_by: who.name,
+    manual_steps: link ? `Add the link sticker by hand: ${link}` : null,
+  }).select('id,status').single();
+  if (error) return { error: error.message };
+  await logEdit(ins.id, who, 'created', null, { story_of: post.id, slot_at: at });
+  return { story: ins.id, status: ins.status, created: true };
+}
+async function moveStory(postId: string, postAt: string, who: Who) {
+  const { data: kid } = await db.from('ve_social_slots').select('id,status,slot_at,metricool_post_id').eq('story_of', postId).not('status', 'in', '(skipped,posted)').maybeSingle();
+  if (!kid) return;
+  const at = new Date(Date.parse(postAt) + STORY_AFTER_MIN * 60000).toISOString();
+  await db.from('ve_social_slots').update({ slot_at: at, updated_at: new Date().toISOString() }).eq('id', kid.id);
+  await logEdit(kid.id, who, 'slot_at', kid.slot_at, at);
+  if (kid.status === 'scheduled' || (kid.status === 'manual' && kid.metricool_post_id)) await push(kid.id, who);
+}
+
 async function studio(body: any, who: Who) {
   const a = body.action;
   if (a === 'brands') {
@@ -414,7 +512,7 @@ async function studio(body: any, who: Who) {
   }
   if (a === 'slots') {
     if (!(await roleFor(who, body.brand))) return { error: 'forbidden' };
-    const { data } = await db.from('ve_social_slots').select('id,brand_slug,slot_at,channels,kind,title,caption,assets,status,batch,manual_steps,push_error,post_urls,metrics,posted_at')
+    const { data } = await db.from('ve_social_slots').select('id,brand_slug,slot_at,channels,kind,title,caption,assets,status,batch,manual_steps,push_error,post_urls,metrics,posted_at,story_of,sound')
       .eq('brand_slug', body.brand).gte('slot_at', body.from).lte('slot_at', body.to).order('slot_at');
     const ids = (data || []).map((s) => s.id);
     const { data: notes } = ids.length ? await db.from('ve_social_notes').select('slot_id,status').in('slot_id', ids) : { data: [] as any[] };
@@ -429,7 +527,9 @@ async function studio(body: any, who: Who) {
     const { data: notes } = await db.from('ve_social_notes').select('*').eq('slot_id', s.id).order('created_at');
     const { data: edits } = await db.from('ve_social_edits').select('by_name,field,old_value,new_value,at').eq('slot_id', s.id).order('at', { ascending: false }).limit(40);
     const { data: b } = await db.from('ve_social_brands').select('slug,name,channels,metricool_blog_id').eq('slug', s.brand_slug).maybeSingle();
-    return { slot: s, notes: notes || [], edits: edits || [], brand: b, role };
+    const { data: story } = await db.from('ve_social_slots').select('id,status,slot_at').eq('story_of', s.id).neq('status', 'skipped').order('created_at').limit(1).maybeSingle();
+    const { data: parent } = s.story_of ? await db.from('ve_social_slots').select('id,status,slot_at,title,caption,kind').eq('id', s.story_of).maybeSingle() : { data: null };
+    return { slot: s, notes: notes || [], edits: edits || [], brand: b, role, story: story || null, parent: parent || null };
   }
   if (a === 'slot_save') {
     const f = body.fields || {};
@@ -446,6 +546,8 @@ async function studio(body: any, who: Who) {
     if ('links' in clean) clean.links = (Array.isArray(clean.links) ? clean.links : []).map(String).filter((u: string) => /^https?:\/\//.test(u));
     if ('assets' in clean && !Array.isArray(clean.assets)) return { error: 'bad_assets' };
     if ('caption' in clean) clean.caption = String(clean.caption || '').slice(0, 5000);
+    if ('sound' in clean) clean.sound = cleanSound(clean.sound);
+    if ('assets' in clean) clean.assets = (clean.assets as any[]).map((a: any) => a && typeof a === 'object' ? { ...a, ...(Number(a.w) > 0 && Number(a.h) > 0 ? { w: Math.round(Number(a.w)), h: Math.round(Number(a.h)) } : {}) } : a);
     if (!s) {
       if (!clean.slot_at) return { error: 'bad_time' };
       const { data: b } = await db.from('ve_social_brands').select('slug').eq('slug', brand).maybeSingle();
@@ -453,13 +555,24 @@ async function studio(body: any, who: Who) {
       const { data: ins, error } = await db.from('ve_social_slots').insert({ ...clean, brand_slug: brand, status: f.status === 'approved' && (who.ops || who.admin) ? 'approved' : 'proposed', proposed_by: who.name }).select('id').single();
       if (error) return { error: error.message };
       await logEdit(ins.id, who, 'created', null, clean);
-      return { id: ins.id };
+      const story = f.also_story ? await alsoStory({ id: ins.id, ...clean, brand_slug: brand }, true, who) : null;
+      return { id: ins.id, story };
     }
     if (s.status === 'posted') return { error: 'already_posted' };
     const changed: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(clean)) if (JSON.stringify(s[k]) !== JSON.stringify(v)) { changed[k] = v; await logEdit(s.id, who, k, s[k], v); }
-    if (!Object.keys(changed).length) return { ok: true, unchanged: true };
+    for (const [k, v] of Object.entries(clean)) if (JSON.stringify(s[k] ?? null) !== JSON.stringify(v ?? null)) { changed[k] = v; await logEdit(s.id, who, k, s[k], v); }
+    const storyRes = 'also_story' in f ? await alsoStory(s, !!f.also_story, who, changed.slot_at as string | undefined) : null;
+    if (storyRes?.error) return storyRes;
+    if (!Object.keys(changed).length) return { ok: true, unchanged: !storyRes, story: storyRes };
     const upd: Record<string, unknown> = { ...changed, updated_at: new Date().toISOString() };
+    // A story waits (held) until all of its media is 9:16; once it is, it goes to Waiting for approval.
+    const kindNow = (changed.kind as string) || s.kind, assetsNow = (changed.assets as any[]) || s.assets || [];
+    if (kindNow === 'story' && s.story_of) {
+      if (s.status === 'held' && storyReady(assetsNow)) { upd.status = 'proposed'; await logEdit(s.id, who, 'status', 'held', 'proposed'); }
+      else if (s.status === 'proposed' && !storyReady(assetsNow)) { upd.status = 'held'; await logEdit(s.id, who, 'status', 'proposed', 'held'); }
+    }
+    // The post's story follows the post's time.
+    if (changed.slot_at && !(storyRes as any)?.created) await moveStory(s.id, String(changed.slot_at), who);
     await db.from('ve_social_slots').update(upd).eq('id', s.id);
     // A direct change by a person leaves Logan an open note saying what changed (Sean, 2026-11-01: "you should get a notation of
     // what change has been made so you know what's going on"). Logan's own changes (ops) do not.
@@ -474,13 +587,33 @@ async function studio(body: any, who: Who) {
           lines.push('Pictures and videos: ' + [gone.length ? 'took out ' + gone.join(', ') : '', added.length ? 'put in ' + added.join(', ') : ''].filter(Boolean).join('; ') || 'reordered');
         } else if (k === 'slot_at') lines.push('Time: ' + new Date(String(changed.slot_at)).toLocaleString('en-US', { timeZone: SHOW_TZ, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET');
         else if (k === 'caption') lines.push('Caption rewritten');
+        else if (k === 'sound') { const v: any = changed.sound || {}; lines.push('Music: ' + ([v.instagram ? 'Instagram ' + songName(v.instagram) : '', v.tiktok ? 'TikTok ' + songName(v.tiktok) : '', v.by_hand ? 'by hand ' + v.by_hand.song : ''].filter(Boolean).join('; ') || 'taken off')); }
         else lines.push(k.replace('_', ' ') + ' changed');
       }
       await db.from('ve_social_notes').insert({ slot_id: s.id, author_id: who.id, author_name: who.name, status: 'open', body: 'Changed directly. ' + lines.join('. ') + '.' });
     }
     // A change to something already in Metricool goes back out with the change.
     if (s.status === 'scheduled' || (s.status === 'manual' && s.metricool_post_id)) { const r = await push(s.id, who); return { ok: true, repushed: r }; }
-    return { ok: true };
+    return { ok: true, story: storyRes };
+  }
+  if (a === 'sounds') {
+    // The songs the studio can pick from, read live from Metricool for the brand.
+    if (!(await roleFor(who, body.brand))) return { error: 'forbidden' };
+    const { data: b } = await db.from('ve_social_brands').select('metricool_blog_id').eq('slug', body.brand).maybeSingle();
+    if (!b?.metricool_blog_id) return { error: 'not_in_metricool' };
+    const ctx = await mcCtx(b.metricool_blog_id);
+    if (body.net === 'instagram') {
+      const q = String(body.q || '').trim().slice(0, 80);
+      const o = await mcSend('GET', `/v2/scheduler/catalogs/instagram/audio?limit=20${q ? '&searchQuery=' + encodeURIComponent(q) : ''}${body.cursor ? '&musicCursor=' + encodeURIComponent(String(body.cursor)) : ''}`, ctx);
+      const d = o?.data || {};
+      const map = (x: any) => ({ audioId: x.audioId, title: x.title, displayArtist: x.displayArtist, audioType: x.audioType, durationMs: x.durationMs, igUsername: x.igUsername, coverArtworkUrl: x.coverArtworkUrl, preview: x.downloadUrl });
+      return { songs: (d.music || []).map(map), original: (d.originalSound || []).map(map), next: d.musicNextCursor || null };
+    }
+    if (body.net === 'tiktok') {
+      const o = await mcSend('GET', `/v2/scheduler/catalogs/tiktok/trending-tracks${body.genre ? '?genre=' + encodeURIComponent(String(body.genre)) : ''}`, ctx);
+      return { songs: (o?.data || []).map((x: any) => ({ musicId: x.commercialMusicId, title: x.commercialMusicName, author: x.artist, previewUrl: x.previewUrl, thumbnailUrl: x.thumbnailUrl, duration: x.duration, rank: Number(x.rankPosition) || null, genres: x.genres || [] })) };
+    }
+    return { error: 'bad_net' };
   }
   if (a === 'asset_upload') {
     // A signed upload link for a new picture or video on a slot; the page then saves the slot's assets with the new link.
@@ -527,7 +660,10 @@ async function studio(body: any, who: Who) {
       if (!s) { res.push({ id, error: 'not_found' }); continue; }
       if ((await roleFor(who, s.brand_slug)) !== 'editor') { res.push({ id, error: 'forbidden' }); continue; }
       if (s.status === 'posted') { res.push({ id, error: 'already_posted' }); continue; }
+      if (a === 'approve' && s.status === 'held') { res.push({ id, error: 'held', detail: 'This story is waiting for its 9:16 picture or video. Add it, then approve.' }); continue; }
       if (a === 'skip') {
+        const { data: kid } = await db.from('ve_social_slots').select('id,status').eq('story_of', id).in('status', ['held', 'proposed', 'changes']).maybeSingle();
+        if (kid) { await db.from('ve_social_slots').update({ status: 'skipped', updated_at: new Date().toISOString() }).eq('id', kid.id); await logEdit(kid.id, who, 'status', kid.status, 'skipped'); }
         const { data: full } = await db.from('ve_social_slots').select('metricool_post_id,brand_slug').eq('id', id).maybeSingle();
         if (full?.metricool_post_id) {
           const { data: b } = await db.from('ve_social_brands').select('metricool_blog_id').eq('slug', full.brand_slug).maybeSingle();
