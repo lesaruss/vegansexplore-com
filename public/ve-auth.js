@@ -11,6 +11,8 @@ var FN_URL=SUPABASE_URL+'/functions/v1/ve-auth';
 function refVisit(r){try{if(sessionStorage.getItem('ve_ref_seen')===r)return;sessionStorage.setItem('ve_ref_seen',r);var v=localStorage.getItem('ve_visitor');if(!v||!/^[A-Za-z0-9-]{8,64}$/.test(v)){v=(global.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2,12);localStorage.setItem('ve_visitor',v);}if(/bot|crawl|spider|preview|HeadlessChrome/i.test(navigator.userAgent||''))return;fetch(SUPABASE_URL+'/rest/v1/rpc/ve_referral_visit',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_ANON,Authorization:'Bearer '+SUPABASE_ANON},body:JSON.stringify({p_code:r,p_visitor:v,p_path:location.pathname}),keepalive:true}).catch(function(){});}catch(e){}}
 function joinCarry(k){try{return sessionStorage.getItem(k)||null;}catch(e){return null;}}
 var GOOGLE_ID='554053879127-o0vp4rrjp5qgeoq4fbje3qtbrvlupt59.apps.googleusercontent.com';
+// Founding Membership closes at midnight Eastern on January 1, 2027 (Sean, 2026-11-01).
+var VE_FOUNDING_OPEN=Date.now()<Date.parse('2027-01-01T05:00:00Z');
 function getToken(){try{return localStorage.getItem('ve_token')||null;}catch(e){return null;}}
 function getRealMember(){try{return JSON.parse(localStorage.getItem('ve_member')||'null');}catch(e){return null;}}
 function setSession(t,m){try{localStorage.setItem('ve_token',t);localStorage.setItem('ve_member',JSON.stringify(m));}catch(e){}}
@@ -203,7 +205,7 @@ el.id='ve-pledge-modal';el.setAttribute('role','dialog');el.setAttribute('aria-m
 el.innerHTML=
 '<div id="ve-pm-box">'+
 '<button id="ve-pm-close" aria-label="Close">x</button>'+
-'<h2 id="ve-pm-title">Become a Founding Member</h2>'+
+'<h2 id="ve-pm-title">'+(VE_FOUNDING_OPEN?'Become a Founding Member':'Get your Passport')+'</h2>'+
 '<p id="ve-pm-msg">$11, one time. Your Passport and the full community.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
 '<ul id="ve-pm-benefits" style="display:none;">'+
@@ -213,8 +215,8 @@ el.innerHTML=
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Guides for $11 or 1,100 points, plus merchandise and event tickets</span></li>'+
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>For businesses: advertising, sponsorships and marketing services, only for members</span></li>'+
 '</ul>'+
-'<button type="button" id="ve-pm-founding-btn">Founding Membership - $11 one time</button>'+
-'<p id="ve-pm-hint">One time. It never renews.</p>'+
+'<button type="button" id="ve-pm-founding-btn">'+(VE_FOUNDING_OPEN?'Founding Membership':'Passport')+' - $11 one time</button>'+
+'<p id="ve-pm-hint">One time. It never renews.'+(VE_FOUNDING_OPEN?' <b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.':'')+'</p>'+
 '<div id="ve-pm-passport">'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
 '<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+

@@ -131,7 +131,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Founding Members</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Hand-picked, one person at a time. Pick people you know, choose what to invite each one as (a Founding Member, an Ambassador, or their organization as a Nonprofit Partner), write to them in your words, and watch each one: read it, opened the link, said yes, joined, or turned it down. A Founding Member invitation is $11, one time, unless you make it on us.</p>
+    <p class="sub">Hand-picked, one person at a time. Pick people you know, choose what to invite each one as (a Founding Member, an Ambassador, or their organization as a Nonprofit Partner), write to them in your words, and watch each one: read it, opened the link, said yes, joined, or turned it down. Everyone joins with the $11, one time; no memberships are given away (Sean, 2026-11-01). Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -293,12 +293,12 @@
         if (!picked.length) { app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p><section class="card"><p class="empty">No one picked yet.</p><a class="btn" href="#pick">Pick people</a></section>'; return; }
         app.innerHTML = '<p class="crumb"><a href="#pick">Pick people</a> &rsaquo; Write to them</p>' +
           '<div class="why">Tell me a little about each person: how you know them, something good only you would know, why they would make a strong member. I write each one\'s opening in your voice from that and what HQ already knows. Nothing is sent: each one waits in Not sent yet for you to read, change and send.</div>' +
-          '<div class="pgrid" id="plist"></div><p class="hint" style="margin-top:10px">A Founding Member is invited at $11 unless you tick On us (free, with 1,100 points). An Ambassador\'s membership is always on us, with the points and level you set. A Nonprofit Partner invites their organization: it gets its own link and 20%, the points you set are the organization\'s, and their own Founding Membership is on us.</p>' +
+          '<div class="pgrid" id="plist"></div><p class="hint" style="margin-top:10px">A Founding Member joins with the $11, with 1,100 points; Founding Membership closes at midnight Eastern on January 1, 2027. An Ambassador who is not a member yet joins with the $11 too, and the points and level you set come when they do; a member becomes an Ambassador at once. A Nonprofit Partner invites their organization: it gets its own link and 20%, the points you set are the organization\'s, and their own Founding Membership is on us.</p>' +
           '<div class="picked"><b>' + picked.length + (picked.length === 1 ? ' person' : ' people') + '</b><span class="acts"><span class="msg" id="msg" role="status" style="color:#fff"></span><button type="button" class="btn" id="mk">Write ' + (picked.length === 1 ? 'the invitation' : 'their invitations') + '</button></span></div>';
         $('plist').innerHTML = picked.map(function (p, k) {
           var kn = p.known || {}, who = [kn.title, kn.organization].filter(Boolean).join(', '), kind = p.kind || 'founding';
           return '<section class="card pcard"><div class="bar" style="margin-bottom:8px"><div><h2 style="margin:0">' + esc(p.name) + '</h2><small class="hint">' + esc(p.email) + (who ? ' &middot; ' + esc(who) : '') + '</small></div>' +
-            '<span class="acts">' + (kind === 'founding' ? '<label class="comp"><input type="checkbox" data-comp="' + k + '"' + (p.comp ? ' checked' : '') + '>On us</label>' : '') + '<button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></span></div>' +
+            '<span class="acts">' + '<button type="button" class="btn btn-ghost btn-sm" data-rm="' + k + '">Remove</button></span></div>' +
             (kn.summary ? '<p class="known"><b>What HQ knows</b>' + esc(kn.summary) + (kn.messages ? ' <span class="hint">(' + n(kn.messages) + ' emails' + (kn.last ? ', last ' + esc(day(kn.last)) : '') + ')</span>' : '') + '</p>' : '<p class="known hint">HQ has no notes on them. What you say is all the opening will use.</p>') +
             '<div class="form">' +
               '<label>Invite as<select data-kind="' + k + '">' + ['founding', 'ambassador', 'nonprofit'].map(function (x) { return '<option value="' + x + '"' + (x === kind ? ' selected' : '') + '>' + (x === 'nonprofit' ? 'Their organization, as a Nonprofit Partner' : KIND_WORDS[x]) + '</option>'; }).join('') + '</select></label>' +
@@ -348,8 +348,8 @@
           // One create a kind: Founding Members, Ambassadors, Nonprofit Partners (each with its organization).
           var groups = ['founding', 'ambassador', 'nonprofit'].map(function (kind) {
             return { kind: kind, people: picked.filter(function (p) { return (p.kind || 'founding') === kind; }).map(function (p) {
-              return { name: p.name, email: p.email, person_id: p.person_id || null, comp: kind === 'founding' ? !!p.comp : true,
-                points: kind === 'founding' ? (p.comp ? 1100 : 0) : (p.points == null ? 1100 : p.points), level: kind === 'ambassador' ? (p.level || 1) : null,
+              return { name: p.name, email: p.email, person_id: p.person_id || null, comp: kind === 'nonprofit',
+                points: kind === 'founding' ? 0 : (p.points == null ? 1100 : p.points), level: kind === 'ambassador' ? (p.level || 1) : null,
                 listing_id: kind === 'nonprofit' && p.org ? p.org.id : null, pool: p.pool || 'other', context: String(p.context || '').trim() || null };
             }) };
           }).filter(function (g) { return g.people.length; });

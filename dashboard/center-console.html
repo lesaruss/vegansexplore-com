@@ -2594,7 +2594,7 @@
     // 11 bucks, so it should say Founding Member Passport").
     if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport'
       : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
-      : member.membership_status === 'active' ? 'Founding Member Passport' : 'Free';
+      : member.membership_status === 'active' ? (member.founding_member ? 'Founding Member Passport' : 'Passport') : 'Free';
     if (levelEl) levelEl.textContent = veLevelFor(member.total_points, member.level_override).toLocaleString();
     // Passport Challenge badges (playbook ve-verified-tours-hunt group C; "The Hunt" until
     // Sean renamed it 2026-09-27): one per monthly challenge completed.
@@ -4176,11 +4176,27 @@
       }).catch(function () { var el = document.getElementById('dash-biz-score-' + i); if (el) el.textContent = 'Open it to see your listing check'; });
     });
   }
+  // Founding Member on the member's own dashboard comes from members.founding_member (Sean, 2026-11-01), which ve-dashboard home
+  // returns; the deadline line shows to anyone not yet a member, until it passes.
+  var DASH_FOUNDING_OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+  function dashFoundingWords(member) {
+    if (member.membership_status === 'active') return member.founding_member ? 'Thank you for being a Founding Member.' : 'Thank you for being a member.';
+    return DASH_FOUNDING_OPEN ? 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : 'Get your Passport: $11, one time.';
+  }
+  function dashApplyFounding(member) {
+    var eb = document.getElementById('dash-eyebrow');
+    if (eb && !member.is_superadmin && member.ve_role !== 'community_manager' && member.ve_role !== 'ambassador') eb.textContent = member.membership_status === 'active' && member.founding_member ? 'Founding Member' : 'Member';
+    var ms = document.getElementById('dash-hero-membership');
+    if (ms && member.ve_tier !== 'passport' && member.membership_status === 'active' && member.membership_tier !== 'guest') ms.textContent = member.founding_member ? 'Founding Member Passport' : 'Passport';
+    var sub = document.getElementById('dash-welcome-sub');
+    if (sub && !member.is_superadmin && member.ve_role !== 'community_manager' && /Founding Member|Thank you for being a member|Get your Passport/.test(sub.textContent || '')) sub.textContent = dashFoundingWords(member);
+  }
   function renderVersion(member) {
     var list = document.getElementById('dash-action-list'); if (!list) return;
     dvCall({ action: 'home' }).then(function (d) {
       Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { t.remove(); });
       if (!d || !d.ok) return;
+      if (d.member_id === member.id && typeof d.founding_member === 'boolean') { member.founding_member = d.founding_member; dashApplyFounding(member); }
       DASH_VERSION = d.version;
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
       var TAG = { offer: 'Offer' }, out = '';
@@ -4808,7 +4824,7 @@
     var isStaff = member.ve_role === 'community_manager' || member.is_superadmin;
 
     document.getElementById('dash-welcome-name').textContent = 'Welcome back, ' + firstName;
-    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador' : (member.membership_status === 'active' ? 'Founding Member' : 'Member'));
+    document.getElementById('dash-eyebrow').textContent = member.is_superadmin ? 'Superadmin' : (member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador' : (member.membership_status === 'active' && member.founding_member ? 'Founding Member' : 'Member'));
 
     if (member.is_superadmin) {
       loadAndRenderSectioned(member, isStaff);
@@ -4846,7 +4862,7 @@
         document.getElementById('dash-welcome-sub').textContent = 'Could not load your city assignment right now.';
       });
     } else {
-      document.getElementById('dash-welcome-sub').textContent = member.membership_status === 'active' ? 'Thank you for being a Founding Member.' : 'Become a Founding Member any time: $11, one time.';
+      document.getElementById('dash-welcome-sub').textContent = dashFoundingWords(member);
     }
   }
 

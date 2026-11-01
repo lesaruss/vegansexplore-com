@@ -140,7 +140,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Ambassadors</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Invite only. Every Ambassador with who they have brought in, set their level and give them points, and invite the next one: write it in your words, send it from you or copy their link. An invitation works only for the email it was made for.</p>
+    <p class="sub">Invite only. Every Ambassador with who they have brought in, set their level and give them points, and invite the next one: write it in your words, send it from you or copy their link. An invitation works only for the email it was made for. No memberships are given away (Sean, 2026-11-01): someone who is not a member joins with the $11 and becomes an Ambassador when it is paid, with your points and level; a member becomes one at once.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -340,7 +340,7 @@
           '<div class="lbl">Level they start at' + levelSeg('f-level', 1) + '<span class="hint">They keep it, and still climb with points.</span></div>' +
           '<div class="lbl wide">Their profile' + profSeg('f-prof', '') + '</div>' +
           '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="chips">' +
-            [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, theirs when they accept.</span></label>' +
+            [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, on top of the Passport's 1,100: theirs when they become an Ambassador (when they accept, or when their $11 is paid).</span></label>' +
           noteField('f-reason', '') +
           '<div class="wide acts"><button type="submit" class="btn" id="mk">See the draft</button><span class="msg" id="msg" role="status"></span></div>' +
           '</form></section>';
@@ -354,7 +354,7 @@
           if (!name || !/^\S+@\S+\.\S+$/.test(email)) { msg.className = 'msg err'; msg.textContent = 'Add their name and email.'; return; }
           var points = Math.max(0, Math.min(100000, Math.round(Number($('f-points').value) || 0)));
           $('mk').disabled = true; msg.className = 'msg'; msg.textContent = 'Making the draft...';
-          api({ action: 'create', brand: 'vegans-explore', points_to: 'ambassador', points: points, level: segVal($('f-level')), profile: profVal($('f-prof')), reason: $('f-reason').value.trim() || null, people: [{ name: name, email: email, comp: true }] }).then(function (d) {
+          api({ action: 'create', brand: 'vegans-explore', points_to: 'ambassador', points: points, level: segVal($('f-level')), profile: profVal($('f-prof')), reason: $('f-reason').value.trim() || null, people: [{ name: name, email: email, comp: false }] }).then(function (d) {
             $('mk').disabled = false;
             if (!d || !d.ok) { msg.className = 'msg err'; msg.textContent = (d && d.message) || 'That did not go through.'; return; }
             if (!d.created.length) { msg.className = 'msg err'; msg.textContent = (d.skipped[0] && d.skipped[0].why) || 'It was not made.'; return; }

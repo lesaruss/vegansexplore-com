@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, name, email, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, name, email, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community, founding_member').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'set_version') {
@@ -142,7 +142,9 @@ Deno.serve(async (req) => {
         if (url && url.charAt(0) === '?') url = first ? `/directory/${encodeURIComponent(first.slug)}?tab=brand&${url.slice(1)}` : null;
         return { kind: c.kind, title: c.title, body: c.body, cta_label: c.cta_label, cta_url: url };
       });
-    return json({ ok: true, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
+    // founding_member (Sean, 2026-11-01): the dashboard says Founding Member only for those marked so (paid before January 1, 2027,
+    // or a comp given before 2026-11-01), never for every active member.
+    return json({ ok: true, member_id: memberId, founding_member: !!(member as any).founding_member, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
       listings: listings || [], cards, level: level || null,
       survey: { completed: !!member.mission_survey_completed_at, earned: prof?.earned ?? 0, total: prof?.total ?? 250, active: member.membership_status === 'active' } });
   }

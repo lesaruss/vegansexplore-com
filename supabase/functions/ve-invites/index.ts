@@ -197,6 +197,18 @@ function ambassadorWhy(inv: Invite, b: (t: string) => string) {
   }
 }
 
+// Comps are off unless ve_site_settings founding_member.comps is true (Sean, 2026-11-01).
+let compsCache: boolean | null = null;
+async function compsAllowed(): Promise<boolean> {
+  if (compsCache !== null) return compsCache;
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'founding_member').maybeSingle();
+  compsCache = (data as any)?.value?.comps === true;
+  return compsCache;
+}
+// The deadline line (Sean, 2026-11-01), only before it passes.
+const FOUNDING_DEADLINE = Date.parse('2027-01-01T05:00:00Z');
+const DEADLINE_LINE = 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.';
+
 async function giverOf(createdBy: string | null): Promise<string | null> {
   const m = /^member:([0-9a-f-]{36})$/.exec(String(createdBy || ''));
   if (!m) return null;
@@ -244,6 +256,9 @@ async function emailFor(inv: Invite) {
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives.${inv.reason ? '' : ' You were one of the first people I thought of.'}`);
     if (!inv.comp) paras.push(`It's ${b('$11, one time')}, with ${b('1,100 points')} to start: vote for the places you love, get the Daily Pulse in your city, check in, and unlock the Guides. Your $11 keeps the community running.`);
   }
+  // An Ambassador invitation without a comp (2026-11-01): the $11 is how they join, and Sean's points and level come when they do.
+  if (inv.points_to === 'ambassador' && !inv.comp) paras.push(`If you're not a member yet, you join with the ${b('$11, one time')}, with ${b('1,100 points')} to start${inv.points > 0 ? `, and ${b(`${Number(inv.points).toLocaleString('en-US')} more points`)} from me when you join as an Ambassador` : ''}${inv.level > 1 ? `, starting at ${b(`Level ${inv.level}`)}` : ''}. Already a member? Accepting makes you an Ambassador right away.`);
+  if ((inv.points_to === 'founding' || inv.points_to === 'ambassador') && Date.now() < FOUNDING_DEADLINE) paras.push(b(DEADLINE_LINE));
   // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account and
   // their membership is on us. Referral earnings paid to the organization, never a donation, never tax-deductible.
   if (inv.points_to === 'nonprofit') {
@@ -287,7 +302,7 @@ async function nudgeFor(inv: Invite) {
     : inv.points_to === 'group' ? `${org?.name ?? 'your group'} being one of our first Group Partners`
     : inv.points_to === 'ambassador' ? 'being one of our first Ambassadors' : 'being one of our first Founding Members';
   const said = inv.status === 'accepted'
-    ? `You said yes to being one of our first Founding Members, thank you. The last step is the $11, and your spot is still held for you.`
+    ? `You said yes to being one of our first ${inv.points_to === 'ambassador' ? 'Ambassadors' : 'Founding Members'}, thank you. The last step is the $11, and your spot is still held for you.${Date.now() < FOUNDING_DEADLINE ? ' ' + DEADLINE_LINE : ''}`
     : inv.status === 'opened' || inv.email_opened_at
       ? `I wanted to follow up on my note about ${about}. No pressure at all: your spot is held a little longer if you'd like it.`
       : `I sent you a note last week about ${about}, and I didn't want it to get lost in your inbox.`;
@@ -388,7 +403,7 @@ Deno.serve(async (req: Request) => {
       const expired = inv.status === 'expired' || (!['joined', 'accepted'].includes(inv.status) && inv.expires_at && new Date(inv.expires_at) < new Date());
       const d = inv.points_to === 'dinner' ? await dinnerOf(inv.dinner_slug) : null;
       const out = {
-        first_name: firstName(inv.name), brand: inv.brand, brand_name: BRANDS[inv.brand] ?? inv.brand, comp: inv.comp, points: inv.comp ? inv.points : 0, reason: inv.reason,
+        first_name: firstName(inv.name), brand: inv.brand, brand_name: BRANDS[inv.brand] ?? inv.brand, comp: inv.comp, points: inv.comp || inv.points_to === 'ambassador' ? inv.points : 0, reason: inv.reason,
         points_to: inv.points_to, city: inv.city_slug ? CITIES[inv.city_slug] ?? null : null,
         dinner: d ? { title: d.title, date: dinnerDate(d), place: dinnerPlace(d), url: await destinationFor(inv) } : null,
         status: inv.status === 'canceled' ? 'canceled' : inv.status === 'joined' ? 'joined' : inv.status === 'declined' ? 'declined' : inv.status === 'accepted' ? 'accepted' : expired ? 'expired' : 'open',
@@ -497,9 +512,14 @@ Deno.serve(async (req: Request) => {
         }
         // A Founding Member invitation is the $11 unless Sean makes this one person's on us (Sean, 2026-10-28). A Nonprofit Partner's
         // lead is always on us (Sean, 2026-10-29), and its points are the organization's.
-        const comp = pointsTo === 'nonprofit' || pointsTo === 'group' ? true : pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
-        // A Group Partner's organizer gets the Founding Membership's own 1,100 points at the claim, not the invitation's.
-        const points = comp && pointsTo !== 'group' ? pointsOf(p?.points ?? body.points) : 0;
+        // No more comps (Sean, 2026-11-01: "I'm not going to comp anybody"; ve_site_settings founding_member.comps false): a Founding
+        // Member, an Ambassador or a plain invitation is the $11. Partner leads stay on us (locked canon); a dinner seat and the
+        // Community Manager role keep their own choice for now.
+        const noComp = ['founding', 'ambassador', 'none'].includes(pointsTo) && !(await compsAllowed());
+        const comp = pointsTo === 'nonprofit' || pointsTo === 'group' ? true : noComp ? false : pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
+        // A Group Partner's organizer gets the Founding Membership's own 1,100 points at the claim, not the invitation's. An Ambassador's
+        // points are granted when they join, comp or not.
+        const points = (comp || pointsTo === 'ambassador') && pointsTo !== 'group' ? pointsOf(p?.points ?? body.points) : 0;
         const level = levelOf(p?.level ?? body.level);
         const profile = pointsTo === 'ambassador' ? profileOf(p?.profile ?? body.profile) : null;
 
@@ -566,13 +586,13 @@ Deno.serve(async (req: Request) => {
 
     if (action === 'update') {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-      const { data: inv } = await db.from('universe_invites').select('id, status, comp').eq('id', body.id).maybeSingle();
+      const { data: inv } = await db.from('universe_invites').select('id, status, comp, points_to').eq('id', body.id).maybeSingle();
       if (!inv) return json({ error: 'not_found' }, 404);
       if (!['ready', 'sent', 'opened', 'accepted'].includes(inv.status)) return json({ error: 'closed', message: 'This invitation can no longer be changed.' }, 409);
       const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if ('reason' in body) patch.reason = clip(body.reason, 2000);
       if ('context' in body) patch.context = clip(body.context, 2000);
-      if ('points' in body && inv.comp) patch.points = pointsOf(body.points);
+      if ('points' in body && (inv.comp || inv.points_to === 'ambassador')) patch.points = pointsOf(body.points);
       if ('level' in body) patch.level = levelOf(body.level);
       if ('profile' in body) patch.profile = profileOf(body.profile);
       if ('name' in body && clip(body.name, 120)) patch.name = clip(body.name, 120);
@@ -718,7 +738,7 @@ Deno.serve(async (req: Request) => {
 
     // A sample Ambassador email for Depot > Preview journeys > Ambassador: built by emailFor from an invitation that is never saved.
     if (action === 'sample') {
-      const inv: Invite = { name: 'Jordan Lee', email: 'jordan@example.com', brand: 'vegans-explore', points_to: 'ambassador', comp: true,
+      const inv: Invite = { name: 'Jordan Lee', email: 'jordan@example.com', brand: 'vegans-explore', points_to: 'ambassador', comp: false,
         points: pointsOf(body.points ?? 1100), level: levelOf(body.level ?? 2) ?? 2, profile: profileOf(body.profile), code: 'sample', link_code: null,
         reason: clip(body.reason, 2000) ?? 'Jordan, you have been showing up for this community since day one. You are exactly who I had in mind when I built this.',
         expires_at: new Date(Date.now() + DAYS * 86400000).toISOString() };
