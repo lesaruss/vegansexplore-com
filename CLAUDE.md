@@ -3188,6 +3188,31 @@ Marchese and Dani Taylor (Muscles by Brussels Radio), Dotsie Bausch (Switch4Good
 Vegan Travel), Neal Barnard (The Exam Room); John Thomas and Brooke Sellers host Vegans Who Lift, one of ours, so theirs are under With
 Vegans Explore. A person with another name on other shows gets it in `details.person.aka`.
 
+## Communities are cards, and a chapter is its own page (Sean, 2026-11-01)
+
+"The community should be set up like they're in a directory listing... you can vote for them, you could save them. You see the little
+icon on the left-hand side of the city... the landing page for the community is weak. It takes you to the pulse... When I click on
+community, it looked like it was put into a frame. I don't like that. And then when I go backwards, it sends me back to the directory."
+
+- **The cards**: `/communities` and the dashboard's Communities tab draw every chapter with `/public/ve-chapters.js`
+  (`VEChapters.mount(el, opts)`): the chapter's art as a rounded square on the left, its name, where it is, its places, events coming up
+  and members, the votes over **Votes**, and **Save**; a search and Sort by (Most votes, Most places, A to Z; `?q=` and `?sort=` on
+  `/communities`). The whole card opens `/communities/<slug>`. **Vote** is once every 24 hours per member (`ve_chapter_votes`, migration
+  `20261101_chapter_votes.sql`; `ve-votes` `chapter_vote`, `chapter_today`, and the public `chapter_stats` from `ve_chapter_stats()`).
+  **Save is joining the chapter** (`ve-auth` `join_community` / `leave_community`), so a saved chapter is one of the member's communities.
+  Signed out, Vote and Save open the Passport window (`VEVotes`). The old flip cards are gone.
+- **Never framed**: from the dashboard (a card, the Communities banner, or View community in any framed page, `VEOpenCommunity`) a
+  chapter opens as its own page in the same window (`openCommunity` in center-console, which still makes it the dashboard's city), so Back
+  returns to the dashboard and the hub's own Dashboard button is the way in. The dashboard's link catcher leaves `/communities/*` alone.
+- **The hub opens on Overview** (`?tab=` empty; `#tab-overview` in `communities/hub.html`, `renderOverview`): Welcome to Vegan <city>,
+  its own card (vote and save, `VEChapters.mount` with `only`, `bar: false`, `here: true`), four numbers (places, events coming up,
+  members, community votes; each opens its section or votes), Explore <city> (a tile into the Directory, Events, Daily Pulse, Community
+  Board, Bounties and Opportunities), and Most voted in <city> (the top six 100% Vegan places with votes, the Directory's card). The Daily
+  Pulse is `?tab=news`, second in In this community. Proven live 2026-11-01 on iPhone and desktop (signed out: cards, search, the
+  Passport window on Vote, a card into D.C., the Overview, a tile into Events and Back) and the vote path as the Logan test account
+  through the one-time `ve-once-chapter-proof`, now the 410 stub (a bad chapter refused, a vote counted, a second refused with its time,
+  the vote then removed). `ve-votes` deployed from commit 2f41877 (source sha256 matched).
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at

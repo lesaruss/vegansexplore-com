@@ -109,7 +109,7 @@
       if (!list.length) { grid.innerHTML = '<p class="vch-empty">No community matches that. Try a city or a state.</p>'; return; }
       grid.innerHTML = list.map(function (h) {
         var s = stats[h.slug] || {}, v = s.votes || 0, on = mine.indexOf(h.slug) >= 0, voted = !!next[h.slug];
-        var where = h.state === 'GB' ? 'United Kingdom' : (WHERE[h.state] || '') + (h.state === 'DC' ? '' : ', United States');
+        var where = h.state === 'GB' ? 'United Kingdom' : h.state === 'DC' ? 'United States' : (WHERE[h.state] || '') + ', United States';
         return '<div class="vch-card' + (opts.here ? ' here' : '') + '" role="listitem" data-slug="' + esc(h.slug) + '">' +
           '<span class="vch-av" style="background-image:url(\'' + esc((h.page && h.page.banner) || '') + '\')" aria-hidden="true"></span>' +
           '<span class="vch-info"><span class="vch-name"><a class="vch-link" href="/communities/' + esc(h.slug) + '">' + esc(h.name) + '</a>' + (on ? ' <span class="vch-mine">Saved</span>' : '') + '</span>' +
