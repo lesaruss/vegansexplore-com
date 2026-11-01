@@ -425,28 +425,33 @@
 
 
   // ---------- Help keep it right ----------
-  function ptsLine(kind, it) {
+  // What a report pays (Sean, 2026-11-01): the full amounts and the first-to-confirm bounty at a store whose chain is sponsored
+  // (venue.sponsored from ve-venues), the standard amounts (std_*) and no bounty everywhere else.
+  function ptsLine(kind, it, v) {
     var p = POINTS[kind]; if (!p) return '';
+    if (v && v.sponsored === false && p.std_with_photo != null) return pts(p.std_with_photo) + ' points with a photo, ' + pts(p.std_no_photo) + ' without';
     if (kind === 'confirm' && it && it.bounty && p.first_with_photo) return 'Bounty, be first: ' + pts(p.first_with_photo) + ' points with a photo, ' + pts(p.first_no_photo) + ' without';
     return pts(p.with_photo) + ' points with a photo, ' + pts(p.no_photo) + ' without';
   }
   function viewReportTab() {
     var signedIn = !!token();
     var P = function (k, f, d) { return POINTS[k] ? POINTS[k][f] : d; };
+    // Each row: the full amounts (stores of a sponsored chain), then the standard ones (every other store); null = no bounty there.
     var rows = [
-      ['Tell us the aisle', 'Where a section is in your store, the first accepted report', P('wrong', 'with_photo', 100), P('wrong', 'no_photo', 50)],
-      ['Something missing', 'A Vegan product or section not in the Guide for this store yet', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50)],
-      ['Agrees with the first', 'An aisle the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15)],
-      ['Still here, first to confirm', 'The bounty: the first member to confirm a section no one has checked in ' + (LIMITS.fresh_days || 35) + ' days', P('confirm', 'first_with_photo', 50), P('confirm', 'first_no_photo', 25)],
-      ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
-      ['Comment', 'A tip for other shoppers', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
+      ['Tell us the aisle', 'Where a section is in your store, the first accepted report', P('wrong', 'with_photo', 100), P('wrong', 'no_photo', 50), P('wrong', 'std_with_photo', 40), P('wrong', 'std_no_photo', 20)],
+      ['Something missing', 'A Vegan product or section not in the Guide for this store yet', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50), P('missing', 'std_with_photo', 40), P('missing', 'std_no_photo', 20)],
+      ['Agrees with the first', 'An aisle the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15), P('wrong', 'std_agree_with_photo', 10), P('wrong', 'std_agree_no_photo', 5)],
+      ['Still here, first to confirm', 'The bounty: the first member to confirm a section no one has checked in ' + (LIMITS.fresh_days || 35) + ' days', P('confirm', 'first_with_photo', 50), P('confirm', 'first_no_photo', 25), null, null],
+      ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5), P('confirm', 'std_with_photo', 5), P('confirm', 'std_no_photo', 2)],
+      ['Comment', 'A tip for other shoppers', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5), P('comment', 'std_with_photo', 5), P('comment', 'std_no_photo', 2)]
     ];
-    main.innerHTML = head('Help keep it right', 'Members map the aisles', 'Stores move things around. When you are shopping, tell us which aisle a Vegan section is in, what is still there, and what is missing. A photo earns more, and every report is checked by the team before it pays.') +
-      '<div class="sa-ptable" role="table" aria-label="Points for each kind of report"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader">With a photo</span><span role="columnheader">Without</span></div>' +
-      rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span><span role="cell"><b>' + pts(r[2]) + '</b> points</span><span role="cell"><b>' + pts(r[3]) + '</b> points</span></div>'; }).join('') + '</div>' +
+    var pair = function (a, b) { return a == null ? '<span role="cell" class="sa-pnone">No bounty</span>' : '<span role="cell"><b>' + pts(a) + '</b> / <b>' + pts(b) + '</b></span>'; };
+    main.innerHTML = head('Help keep it right', 'Members map the aisles', 'Stores move things around. When you are shopping, tell us which aisle a Vegan section is in, what is still there, and what is missing. A photo earns more, and every report is checked by the team before it pays. Stores of a supermarket that sponsors the Guide pay the most and carry the bounties; every other store earns the standard points.') +
+      '<div class="sa-ptable" role="table" aria-label="Points for each kind of report, with a photo and without"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader"><span class="sa-long">Sponsored supermarkets</span><span class="sa-short">Sponsored</span><i>photo / none</i></span><span role="columnheader"><span class="sa-long">Every other store</span><span class="sa-short">Other stores</span><i>photo / none</i></span></div>' +
+      rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span>' + pair(r[2], r[3]) + pair(r[4], r[5]) + '</div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open your store while you are there and tap <b>Update</b> on a section, or <b>Add something missing</b>.</li>' +
       '<li>Add a photo of the shelf or the aisle sign if you can. Your phone shares your location once, to show you are in the store.</li>' +
-      '<li>The team checks every one. Points land when it is accepted, up to ' + (LIMITS.daily_paid_cap || 40) + ' paid a day. Look for <b>Bounty</b>: the first to map a section earns the most.</li></ol>' +
+      '<li>The team checks every one. Points land when it is accepted, up to ' + (LIMITS.daily_paid_cap || 40) + ' paid a day. Look for <b>Bounty</b> at sponsored supermarkets: the first to confirm a section earns the most.</li></ol>' +
       '<div class="dg-btns" style="margin-bottom:18px"><a class="dg-btn" href="#/stores">Find your store</a></div>' +
       (signedIn ? '<h3 class="dg-k" style="margin:6px 0 10px">Your reports</h3><div id="saMine"><div class="dg-loading">Loading your reports...</div></div>' : '');
     if (signedIn) api({ action: 'mine' }).then(function (d) {
@@ -464,7 +469,7 @@
       head('Update', esc(item.it.name), esc(item.spot.name) + '. What would you like to tell us? Each one earns points once the team accepts it, more with a photo.') +
       '<div class="sa-choose">' + ['wrong', 'confirm', 'gone', 'comment'].map(function (k) {
         return '<a class="sa-choice" href="#/store/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '"><b>' + esc(REPORT[k][2]) + '</b><span>' + esc(REPORT[k][1]) + '</span>' +
-          (ptsLine(k, item.it) ? '<i>' + esc(ptsLine(k, item.it)) + '</i>' : '') + '</a>';
+          (ptsLine(k, item.it, v) ? '<i>' + esc(ptsLine(k, item.it, v)) + '</i>' : '') + '</a>';
       }).join('') + '</div><div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a></div>';
   }
   var PHOTO = null;
@@ -485,7 +490,7 @@
       return '<a class="dg-chip" aria-pressed="' + (k === kind) + '" href="#/store/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '">' + esc(REPORT[k][2]) + '</a>'; }).join('') + '</div>' : '';
     var noteLabel = kind === 'missing' ? 'What is missing? <i>The product or section, and the aisle it is in</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
       : kind === 'comment' ? 'Your comment <i>(a tip for other shoppers)</i>' : kind === 'gone' ? 'Anything to add? <i>(optional)</i>' : 'Which aisle is it in? <i>(the number on the sign, and anything that helps: left side, end cap, near the dairy)</i>';
-    var earn = ptsLine(kind, item && item.it);
+    var earn = ptsLine(kind, item && item.it, v);
     main.innerHTML = crumb([['Stores', '#/stores'], [v.name, back]].concat(item ? [['Update', '#/store/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][2]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
@@ -600,7 +605,7 @@
         '<a class="sg-ov" href="#/stores"><span class="sg-tip-i">' + ICON.store + '</span><b>' + (n ? n + ' stores' : 'Your stores') + (chs ? ' in ' + chs + (chs === 1 ? ' chapter' : ' chapters') : '') + '</b><p>Find yours by city or by where you are. More supermarkets join as they come on board.</p></a>' +
         '<a class="sg-ov" href="#/list"><span class="sg-tip-i">' + ICON.list + '</span><b>Your shopping list</b><p>Add what you need from your store; it waits for you by aisle, with boxes to tick.</p></a>' +
         '<a class="sg-ov" href="#/produce"><span class="sg-tip-i">' + ICON.leaf + '</span><b>The produce section</b><p>What to buy and why, where a Vegan basket starts.</p></a>' +
-        '<a class="sg-ov" href="#/report"><span class="sg-tip-i">' + ICON.camera + '</span><b>Mapped by members</b><p>Tell us the aisle with a photo from the store and earn points. The first to map a section earns the bounty.</p></a>' +
+        '<a class="sg-ov" href="#/report"><span class="sg-tip-i">' + ICON.camera + '</span><b>Mapped by members</b><p>Tell us the aisle with a photo from the store and earn points. At a sponsoring supermarket, the first to confirm a section earns the bounty.</p></a>' +
       '</div>' +
       '<div class="sa-stand" style="margin-top:16px"><div class="sa-stand-h"><div><h3>Coming with our sponsors</h3></div>' + tagHtml('Coming', 'sa-tag-new') + '</div>' +
         '<p class="dg-lede" style="margin:0">Weekly Vegan specials from the supermarkets that sponsor the Guide, Vegan products spotlighted with the aisle to find them in, and snack breakdowns.</p></div>' +
@@ -613,7 +618,7 @@
     var list = '<div class="dg-access"><ul>' +
       '<li><b>Every store:</b> the supermarkets in our chapters, each with its Vegan sections and the aisle members found them in.</li>' +
       '<li><b>Your shopping list:</b> add what you need and tick it off in the aisle.</li><li><b>The produce section:</b> what to buy and why.</li>' +
-      '<li><b>Bounties:</b> earn points for mapping aisles, and be first to map a section for the bounty.</li>' +
+      '<li><b>Bounties:</b> earn points for mapping aisles, and be first at a sponsoring supermarket for the bounty.</li>' +
       '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var box = m === 'soon' ? '<div class="dg-big">Soon</div><p>The full Guide opens soon. Publix at Brickell Village is open to everyone now.</p><a class="dg-btn" href="#/store/' + FREE + '">Open Brickell Village</a>'
