@@ -3986,6 +3986,22 @@ rains... interview event hosts... they record their voice... those voice recordi
   (`CAT_MAP`, `SECTIONS`, `KINDS`, `CATS`, and `ve-claims`, `ve-outreach`, `ve-discover`, `ve-listing-intake`, redeployed). It has no listings
   yet; filling it per chapter is a Google search (ask Sean with the count and cost first). Not yet: the hosts-events flag on restaurants, the
   Guide tab mapping (Event Venues and Community > Events), River's recordings, launch (noindex off, the sitemap, the catalog card live).
+- **Venues from where Vegan events were held** (Sean, 2026-11-01: "do a scan of the past events for the year in each of those cities and
+  look where they held the event... that's a good indicator of where vegans hold their events"; migration `20261101_event_venues_from_events.sql`,
+  applied through the one-time `ve-once-event-venues`, now the 410 stub). `events.venue_listing_id` is the listing an event was held at
+  (`host_listing_id` stays the group that put it on). `ve_event_venues_sync()` (cron `ve-event-venues-sync`, 08:47 UTC) links an approved event
+  whose place name is a listing's name (or starts with it, 8+ letters) in the same city, and keeps the tag **`ve-hosts-events`** (the
+  hosts-events flag) on every listing with an event held there in the last 400 days or coming up. The first run linked 74 events to 38 listings
+  (Pipoca Vegan, Market on South, DC Vegan, the Maryland sanctuaries...). A listing's Events section reads **Vegan events here** when it only
+  hosts others' events (`loadHostedEvents` in `directory/listing.html`), and the Guide's Venue tab lists Event Venues plus every tagged listing.
+  **The seed**: the 2026 calendar names 325 places across 605 events; neighborhoods (Partiful gives Philadelphia's events only an area), bare
+  addresses with fewer than 3 events, parks, stations, landmarks, homes, gyms, stores and places outside our chapters were left out, 95 kept in
+  `ve_event_venue_seed` (76 venues, 19 Vegan or vegetarian food places not yet listed). Their Google look-ups were refused on 2026-11-01 (the day's
+  500 text searches were already spent; nothing billed), so one-shot crons run them after the quota resets: `ve_event_venue_search()` at 3:10 AM
+  Eastern 2026-11-02 and `ve_event_venue_import()` at 3:25 (job `once:event-venues`): a venue becomes a live **Services > Event Venues** listing
+  (Not a Vegan business, Google's address, pin, phone, website, hours and summary, `crawl_source` `event-venue-search`, its events linked); a food
+  place waits quarantined in Business outreach > New places > Ready to list; one already listed only gets its events linked. Each seed row keeps its
+  `result` (listed, ready to list, already listed, no match, no answer).
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
