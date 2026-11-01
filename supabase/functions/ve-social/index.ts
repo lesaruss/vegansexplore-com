@@ -307,7 +307,8 @@ const easternLocal = (iso: string) => {
   return new Date(d.getTime() + off).toISOString().slice(0, 19);
 };
 function mcBody(s: any, nets: string[]) {
-  const media = (s.assets || []).map((a: any) => a?.url).filter((u: any) => typeof u === 'string' && /^https:\/\//.test(u));
+  // Covers and storyboard frames are for the team's eyes only; they never go out as the post's media.
+  const media = (s.assets || []).filter((a: any) => a && a.type !== 'cover' && a.type !== 'storyboard').map((a: any) => a.url).filter((u: any) => typeof u === 'string' && /^https:\/\//.test(u));
   const type = s.kind === 'story' ? 'STORY' : (s.kind === 'reel' || s.kind === 'video' || s.kind === 'episode') ? 'REEL' : 'POST';
   const body: any = {
     publicationDate: { dateTime: easternLocal(s.slot_at), timezone: SHOW_TZ },
@@ -334,6 +335,8 @@ async function push(id: string, who: Who) {
   const auto = nets.filter((n: string) => (b.channels || []).includes(n));
   const handNets = nets.filter((n: string) => !auto.includes(n));
   if (!auto.length) { await set({ status: 'manual', push_error: `None of its channels (${nets.join(', ') || 'none'}) are connected in Metricool for ${b.name}.` }); return { status: 'manual' }; }
+  const isVideoKind = ['reel', 'video', 'episode'].includes(s.kind);
+  if (isVideoKind && !(s.assets || []).some((a: any) => a?.type === 'video' && a?.url)) { await set({ status: 'changes', push_error: 'No video yet. Add the finished video, then approve it again.' }); return { error: 'no_video' }; }
   if (!s.caption?.trim() && !(s.assets || []).length) { await set({ status: 'failed', push_error: 'Nothing to post: no caption and no picture or video.' }); return { error: 'empty' }; }
   const ctx = await mcCtx(b.metricool_blog_id);
   if (s.metricool_post_id) { try { await mcSend('DELETE', `/v2/scheduler/posts/${s.metricool_post_id}`, ctx); } catch { /* already gone */ } }
