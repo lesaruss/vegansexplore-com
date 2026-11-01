@@ -2703,9 +2703,12 @@ function loadBrandSite(l){
     // brand_door.tour is the six-slide tour's clips (2026-10-09); brand_door.clips the nine-slide one it replaced.
     // A slide can also be her voice alone over its still picture ({audio, poster}; Sean, 2026-10-28: "we could still have the
     // voices, but the animation I don't think is necessary"), so a line can be re-recorded without a new lip-synced clip.
-    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && (x.video || x.audio); }) ? c : null; }
+    function fits(c){ return Array.isArray(c) && c.length === SLIDES.length && c.every(function(x){ return x && (x.video || x.audio || x.still); }) ? c : null; }
     var TOUR = PARTNER ? (Array.isArray(BD.start_tour) ? BD.start_tour.slice() : null) : Array.isArray(BD.tour) ? BD.tour.slice() : null;
     if(TOUR && !PARTNER && !FRONT_ROW && BD.tour_plain_last) TOUR[TOUR.length - 1] = BD.tour_plain_last;
+    // The offer slide's recordings say the old terms (nothing today, $111 a quarter), so since 2026-11-01 it shows as her still
+    // picture with the new words until a new line is recorded (Sean: "use images for them").
+    if(TOUR && !PARTNER && TOUR[TOUR.length - 1]) TOUR[TOUR.length - 1] = { poster: TOUR[TOUR.length - 1].poster, still: true };
     var CLIPS = fits(TOUR) || fits(BD.clips);
     var VIDEO = CLIPS ? CLIPS.map(function(c){ return c.video || null; }) : null;
     var VOICE = CLIPS && CLIPS.some(function(c){ return c.audio && !c.video; }) ? new Audio() : null;
@@ -2747,6 +2750,7 @@ function loadBrandSite(l){
       var v = voiceAt(DOOR.i);
       if(v){ player.pause(); if(VOICE.getAttribute('src') !== v) VOICE.src = v; VOICE.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); }); return; }
       var src = (VIDEO || AUDIO)[DOOR.i];
+      if(!src){ DOOR.playing = false; drawNarr(); return; } // a still slide: her picture and words, nothing to play
       if(player.getAttribute('src') !== src) player.src = src;
       player.play().then(function(){ DOOR.playing = true; drawNarr(); }).catch(function(){ DOOR.playing = false; drawNarr(); });
     }

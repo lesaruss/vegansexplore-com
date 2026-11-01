@@ -477,9 +477,10 @@ Preparation window, $111 for Period 2 renewing August 11. The `offer=front-row` 
 calendar (`partnerTerms`, `partnerNow`); the Partner wording on `/claim`, `/business`, the listing page and brand tour, the business
 dashboard, the Restaurant Guide, the sample business and Preview journeys, and `/policies#business` (The Partner plan) say it; business
 outreach's Day 4 email lost "No charge today" (migration `20261101_partner_periods_outreach_day4.sql`, applied; nothing had been sent).
-No Partner membership existed, so nobody holds the old no-charge trial. **Before deploying**: three recorded lines say the old terms and
-need new recordings Sean approves: Liz's `j5` on the claim offer (shown as a still with the new words until then), and Maya's last brand
-tour slide (`brand_door.tour`, before January) and `tour_plain_last` (after); then `ve-claims` and the pages go out together.
+No Partner membership existed, so nobody holds the old no-charge trial. The three recorded lines that said the old terms are lip-synced
+videos, so until they are re-recorded each shows as the Guide's still picture with the new words (Sean, 2026-11-01: "use images for
+them"): Liz's `j5` on the claim offer, and Maya's last brand tour slide before and after January (a `{poster, still: true}` slide; `fits`
+and `play` in `directory/listing.html` skip it). `ve-claims` and the pages go out together.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
