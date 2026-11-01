@@ -273,6 +273,9 @@
               <fieldset class="comped" id="comped-box" hidden><legend>Was your meal on the house?</legend>
                 <label><input type="radio" name="comped" value="no"><span>No, I paid for it</span></label>
                 <label><input type="radio" name="comped" value="yes"><span>Yes, it was on the house (or a perk). I will say so in anything I post.</span></label></fieldset>
+              <fieldset class="comped" id="check-box" hidden><legend>What did you find?</legend>
+                <label><input type="radio" name="check" value="open"><span>It is open and serving</span></label>
+                <label><input type="radio" name="check" value="closed"><span>It is closed or gone</span></label></fieldset>
               <label class="check" for="license"><input type="checkbox" id="license"><span id="license-words">This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.</span></label>
               <div style="margin-top:14px"><button type="button" class="btn btn-primary" id="submit">Submit for review</button></div>
               <p class="msg" id="msg" role="status" aria-live="polite"></p>
@@ -640,6 +643,9 @@
       renderVisit();
       $('comped-box').hidden = !visit;
       [].forEach.call(document.querySelectorAll('input[name=comped]'), function (r) { r.checked = visit && m.visit_comped != null && r.value === (m.visit_comped ? 'yes' : 'no'); });
+      // Is it still open? (2026-11-01): open or closed, which updates the listing once the team approves.
+      $('check-box').hidden = !b.check_listing_id;
+      [].forEach.call(document.querySelectorAll('input[name=check]'), function (r) { r.checked = !!b.check_listing_id && m.check_result === r.value; });
       $('license-words').textContent = visit ? 'These are my own photos, taken on this visit, and anyone in them said yes. Vegans Explore and the restaurant may use, edit and repost them, with credit to me.'
         : 'This is my own work, made at this event, and everyone featured said yes. Vegans Explore may use, edit and repost it, with credit to me.';
       var writeup = b.kind === 'writeup';
@@ -818,9 +824,15 @@
         if (!pick) { $('msg').className = 'msg'; $('msg').textContent = 'Tell us whether your meal was on the house.'; document.querySelector('input[name=comped]').focus(); return; }
         comped = pick.value === 'yes';
       }
+      var check;
+      if (state.current.check_listing_id) {
+        var found = document.querySelector('input[name=check]:checked');
+        if (!found) { $('msg').className = 'msg'; $('msg').textContent = 'Tell us whether it is open or closed.'; document.querySelector('input[name=check]').focus(); return; }
+        check = found.value;
+      }
       var links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
       $('submit').disabled = true; $('msg').className = 'msg ok'; $('msg').textContent = 'Sending it in...';
-      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, parts_done: partsDone, license: true, comped: comped }).then(function (d) {
+      call({ action: 'submit', bounty_id: state.current.id, links: links, note: $('note').value, parts_done: partsDone, license: true, comped: comped, check: check }).then(function (d) {
         $('submit').disabled = false;
         if (d.error) { $('msg').className = 'msg'; $('msg').textContent = d.message || 'That did not go through. Please try again.'; return; }
         open(state.current.id);

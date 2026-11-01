@@ -1839,8 +1839,13 @@ bounty"; migration `20261101_bounty_still_open.sql`): **Is it still open?**, one
 Atlanta 7, South Florida, London and Philadelphia 5, New York 4, North Florida, Los Angeles and Virginia 3, Central Florida 1), one job a
 place ("Is <name> still open?", the address and a Google Maps link by its place, since a held listing's page does not open), in person:
 the outside today, and if open the menu, counter or receipt and the hours on the door; closed counts too. 50 points, one person each,
-until 2026-12-01 (Logan's defaults, Sean's to change). Approved in Depot > Bounties; the team then puts the place back or marks it closed
-in Directory review. **Closed comes
+until 2026-12-01 (Logan's defaults, Sean's to change). **Approving updates the listing** (Sean, 2026-11-01: "make approving it update
+the listing automatically"; migration `20261101_bounty_still_open_apply.sql`): each job carries its listing (`ve_bounties.check_listing_id`),
+the member answers **What did you find?** (open and serving / closed or gone, `ve_bounty_submissions.check_result`) and must upload a photo,
+and Depot > Bounties shows the answer with a **Listing** choice beside Approve and pay (the reviewer can change it from the photos). Approving
+runs `applyCheck` in `ve-bounties`: open puts the place back on the Directory (`ve_listing_set_state` live, 90 days off the nightly hold),
+closed takes it off as Removed, each with a note naming the visit and the day, once per submission (`check_applied_at`). A new "Is it still
+open?" job needs `check_listing_id` set. **Closed comes
 off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
 don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
 hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
