@@ -2326,6 +2326,13 @@ see everything and then filter for what they want... the products are the produc
   `lesaruss-ai-directory-candidate` (hidden here, kept for LESARUSS.ai, their category unchanged); Amazon's and Instacart's Vegan aisles
   still open by link. Both old names stay in `CAT_MAP` and the functions' lists for older and LESARUSS.ai rows, never as a pill. The edge
   lists (`ve-claims`, `ve-outreach`, `ve-discover`, `ve-listing-intake`) gained `Marketplaces`.
+- **Filled 2026-11-01** (Sean: "add the Vegan marketplaces, then do Clothing and Beauty"; migrations
+  `20261101_nutrition_supplements_brands.sql`, `_2.sql`, `20261101_marketplaces_clothing_beauty.sql`): only brands whose whole line is
+  Vegan, checked by web search. Marketplaces: V Collective, Vegan America, Vegan Essentials, Alternative Stores, Vegancuts. Clothing adds
+  NAE, Vegetarian Shoes, Save The Duck, Angela Roi, Doshi, Plant Faced Clothing. Beauty adds e.l.f., Milk Makeup, KVD Beauty, Youth To
+  The People, Acure, Lime Crime, Jecca Blac. Left out on purpose: PlantX, The Vegan Kind and Will's Vegan Store (closed or unknown),
+  Hourglass, INIKA, Versed and OSEA (not confirmed fully Vegan). Immaculate Vegan and Noize are marked Permanently closed; Immaculate
+  Vegan is out of business (PitchBook), Noize shows 2026 sales.
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
