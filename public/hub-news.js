@@ -216,10 +216,10 @@
     // The chapter's events by the calendar's own rule (Sean, 2026-11-01: "fix the hub events filter"). It read the 200 oldest
     // events and matched exact city names, so once the calendar held more than 200 past events (the groups' history) nothing
     // upcoming was left, and an event with no place (232 of them) showed on every hub. Now: the next 1,000 coming up (an event still
-    // running counts; 210 on 2026-11-01) and the last 1,000 that ended (667), each kept by VECityBanner.matches, the rule /events uses for a chapter, so an
-    // event with no place is on no hub.
+    // running counts; 210 on 2026-11-01) and the last 1,000 that ended (667), each kept by VECityBanner.matches, the rule /events uses for a chapter: an
+    // online event with no city is in its host group's chapters, any other event with no place on no hub.
     var hub = window.VECityBanner && hubSlug ? VECityBanner.hubBySlug(hubSlug) : null;
-    var base = SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,ends_at,location_name,city,state,category,ticket_url,rsvp_count,time_set' +
+    var base = SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,ends_at,location_name,city,state,category,event_type,ticket_url,rsvp_count,time_set,host:listings!events_host_listing_id_fkey(communities)' +
       '&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&limit=1000';
     var now = new Date().toISOString();
     var get = function (q) { return fetch(base + q, { headers: headers() }).then(function (r) { if (!r.ok) throw new Error('events'); return r.json(); }); };
@@ -229,8 +229,10 @@
     ]).then(function (res) {
         var seen = {}, rows = res[0].concat(res[1]).filter(function (e) { if (seen[e.id]) return false; seen[e.id] = 1; return true; });
         list._veEventsAll = rows.filter(function (e) {
-          if (!e.city) return false;
-          return hub ? VECityBanner.matches(hub, { city: e.city, state: e.state }) : true;
+          // An online event with no city is in its host group's chapters; any other event with no city is on no hub.
+          var online = e.event_type === 'virtual', hubs = e.host && e.host.communities;
+          if (!e.city && !(online && hubs && hubs.length)) return false;
+          return hub ? VECityBanner.matches(hub, { city: e.city, state: e.state, online: online, hubs: hubs }) : true;
         });
         renderEventsList(list, toggle.dataset.eventMode || 'upcoming');
       }).catch(function () { list.innerHTML = '<p class="hub-dir-empty">Couldn\'t load events right now.</p>'; });

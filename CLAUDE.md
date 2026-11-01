@@ -2859,7 +2859,12 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   rule, `VECityBanner.matches` (Sean, 2026-11-01: "fix the hub events filter"): it had read the 200 oldest events and matched exact
   city names, so once the calendar held more past events than that nothing upcoming was left (South Florida showed none), and the
   232 events with no place showed on every hub. Now the next 1,000 coming up (an event still running counts) and the last 1,000,
-  none without a city. Checked against the calendar's data: South Florida 6 upcoming and 15 past, Atlanta 29 and 65, New York 13 and 78.
+  none without a city. **An online event with no city** (`event_type` virtual) is in its host group's chapters (`listings.communities`
+  of `host_listing_id`, `all` for every chapter), on the hubs and on `/events` alike (`VECityBanner.matches` takes `online` and `hubs`).
+  The 232 events with no city were filled the same day from their own sources (migration `20261101_ve_event_place_fill.sql`, every
+  change logged with what it replaced): 99 got a city, 129 are online, 4 have no published place. Checked against the calendar's data
+  after: South Florida 6 upcoming and 20 past, Atlanta 62 and 142, New York 25 and 144, D.C. 4 and 41, London 13 and 104, Los Angeles
+  2 and 17, Philadelphia 30 and 44.
 - The Board and Bounties open inside the hub, under the community, in a frame
   (`/board?community=<slug>&hub=1`, `/bounties?...&hub=1`, which hide their own city picker). The
   framed page sizes the frame; `nav.js` treats a hub parent like the dashboard window.

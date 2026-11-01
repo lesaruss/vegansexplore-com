@@ -449,7 +449,7 @@
     }
     function inCity(e) {
       if (!st.city || !window.VECityBanner) return true;
-      return VECityBanner.matches(VECityBanner.hubBySlug(st.city), { city: e.city, state: e.state });
+      return VECityBanner.matches(VECityBanner.hubBySlug(st.city), { city: e.city, state: e.state, online: e.event_type === 'virtual', hubs: e.host && e.host.communities });
     }
     function filtered(skipCat) {
       var now = Date.now(), words = st.q.toLowerCase().split(/\s+/).filter(Boolean);
@@ -678,7 +678,7 @@
     }
 
     function load() {
-      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set,listing_kind,funding&status=eq.approved&tenant_id=eq.' + tenant + '&listing_kind=eq.' + st.kind + '&order=starts_at.asc&limit=2000', {
+      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set,listing_kind,funding,host:listings!events_host_listing_id_fkey(communities)&status=eq.approved&tenant_id=eq.' + tenant + '&listing_kind=eq.' + st.kind + '&order=starts_at.asc&limit=2000', {
         headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
       }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
         all = (rows || []).filter(function (e) { return e.starts_at; });

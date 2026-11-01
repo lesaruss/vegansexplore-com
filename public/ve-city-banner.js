@@ -108,9 +108,12 @@
   function hubBySlug(slug) { return hubs().filter(function (h) { return h.slug === slug; })[0] || null; }
 
   // Is a place (an event's or a listing's city and state) in this hub? Its Directory rule, or one of its event cities.
+  // place: {city, state, online, hubs}. An online event with no city is in the chapters its host serves (hubs: the host listing's
+  // communities, 'all' for every chapter; Sean 2026-11-01, filling in the events with no city).
   function matches(hub, place) {
     if (!hub) return true;
     var city = place.city || '', state = (place.state || '').toUpperCase();
+    if (!city && place.online && place.hubs && place.hubs.length) return place.hubs.indexOf(hub.slug) > -1 || place.hubs.indexOf('all') > -1;
     if (hub.page && hub.page.eventCities && hub.page.eventCities.indexOf(city) > -1) return true;
     var m = hub.match || {};
     if (!m.cities && !m.states) return false;
