@@ -2676,10 +2676,10 @@ name with their logos, the one you are on marked (`famMenu` and `.fam-menu` in `
 tab row so it is not cut off); on a show's page that tab is the active one. One show of a kind keeps its single Podcast or YouTube tab.
 On phones the tab dropdown lists each show by name (`mobileTabMenu` reads the tab's `_fam`). First on Sean's page: Vegans Explore,
 Pre-Vegans and SoFlo Vegans Podcasts.
-**The tab row is a dropdown on every listing, at every width** (Sean, 2026-11-01: "Sometimes it runs long and I don't like how that
-looks... a drop down and have those listed"; phones-only for media and People since 2026-10-31): with two tabs or more the tabs are one
-dropdown (`mobileTabMenu` and `.lt-sel` in `directory/listing.html`; 360 px wide on desktop, full width at 768 px and under), each option
-clicking its tab or family link, and it follows the tabs as they appear (the Guide tab, Partner Dashboard, a family's shows by name).
+**On phones the tab row is a dropdown on every listing** (Sean, 2026-11-01: "Keep the tab buttons on desktop, dropdown only on
+mobile"; media and People only since 2026-10-31): at 768 px and under, with two tabs or more, the tabs are one full-width dropdown
+(`mobileTabMenu` and `.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as
+they appear (the Guide tab, Partner Dashboard, a family's shows by name). Desktop keeps the tab buttons.
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
