@@ -2898,6 +2898,20 @@ otherwise with `business_only`); any member posts Looking for work. The composer
 tab frames this page on the member's active city (`#dash-pulse-host`, loaded the first time the tab shows, sized by
 `ve-frame-height`); a city hub frames it with `?community=<slug>&hub=1` and hides the banner.
 
+**The Pulse's article pages are episode pages** (Sean, 2026-11-01: "The banner on this page is broken... we have a lot of articles
+setup this way... we need to fix the formatting and how people find them"). `/pulse/<slug>` is `api/pulse-article.js` (server-rendered,
+cached an hour). 278 of its 279 published `ve_pulse_content` rows are a podcast episode's show notes, and Google sends people to them
+(Chris Moore, SoFlo Vegans Ep 006, ranks first). Each page now wears the shared banner (`VECityBanner`, key `pulse`, folded: Daily Pulse
+over the show, the picker is our four shows and opens the show's Directory page, Pulse home; a non-episode article picks a chapter's
+Pulse), the title as the page's `h1` (the notes wrote it as an h2), and under the summary **the episode**: YouTube, or the show's own
+audio from its feed (`ve_pulse_episode(slug)`, migration `20261101_ve_pulse_episode.sql`, public: the show and its feed episode, matched
+by `ve_content_feed_episode`, else by the feed's episode number within 120 days sharing a title word; 272 of 278 play, from 223 before;
+only the Vegans Who Lift preview has nothing), Open on the show page (`/directory/<show>?ep=<guid>`) and Every episode; **On this episode**
+(`ve_person_credits`, the People profiles); and at the foot **More from <show>** (previous, next and the six nearest, each its own
+`/pulse/<slug>`). The rail is `ve-ad-rail.js` (`data-ad-page="pulse"`), so HTML5 ads play (it drew them as a broken `<img>`). Pictures go
+through Vercel's resizer (`i.ytimg.com` and `img.youtube.com` added to `images`). Schema.org `PodcastEpisode` in the page; the title
+reads "<title> — Vegans Explore".
+
 ## Community Board sections (Sean, 2026-10-10)
 
 "In each city, let's set the sections... a jobs board... a classified... a Fosters Board, and then a

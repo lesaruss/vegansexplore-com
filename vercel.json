@@ -23,7 +23,9 @@
       {"protocol": "https", "hostname": "^mcdn\\.podbean\\.com$"},
       {"protocol": "https", "hostname": "^img\\.transistorcdn\\.com$"},
       {"protocol": "https", "hostname": "^assets\\.podomatic\\.net$"},
-      {"protocol": "https", "hostname": "^is1-ssl\\.mzstatic\\.com$"}
+      {"protocol": "https", "hostname": "^is1-ssl\\.mzstatic\\.com$"},
+      {"protocol": "https", "hostname": "^i\\.ytimg\\.com$"},
+      {"protocol": "https", "hostname": "^img\\.youtube\\.com$"}
     ],
     "minimumCacheTTL": 2678400,
     "formats": ["image/webp"],
