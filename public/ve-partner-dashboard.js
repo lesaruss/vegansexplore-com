@@ -55,7 +55,9 @@
     brand: [['website', 'Website visits'], ['social', 'Social links'], ['order', 'Orders'], ['photos', 'Photos opened']],
     org: [['website', 'Website visits'], ['social', 'Social links'], ['photos', 'Photos opened']]
   };
-  var ACTS_WORDS = { show: 'Plays and clicks', work: 'Clicks', brand: 'Clicks and orders', org: 'Clicks', place: 'Calls, directions, orders and clicks' };
+  var ACTS_WORDS = { show: 'Plays and clicks', work: 'Clicks', brand: 'Clicks and orders', org: 'Clicks', place: 'Taps and clicks' };
+  // The tile's number is every tap together, so it always says what it is made of (Sean, 2026-11-01, after reading "2 calls and
+  // directions" on a listing whose 2 were a menu open and a social link): actsBreak lists the kinds with their counts.
   // What a group or an organization can take part in, all Coming. community-groups is the group program Sean described on
   // 2026-10-29 (a group's home on Vegans Explore); its terms are not set, so the card says what it is, never a rate.
   var ORG_OPPS = [
@@ -245,6 +247,12 @@
         '<button type="button" class="vpd-btn" data-vpd-join>Become a Founding Member, $11</button></div>';
     }
 
+    // What the taps-and-clicks number is made of, e.g. "2 social links, 1 menu opened".
+    function actsBreak(T) {
+      var parts = ACTS_K.filter(function (a) { return (T[a[0]] || 0) > 0; }).map(function (a) { return n(T[a[0]]) + ' ' + a[1].toLowerCase(); });
+      return parts.length ? '<small style="display:block;font-size:12px;color:rgba(0,0,0,.6);margin-top:2px">' + esc(parts.join(', ')) + '</small>' : '';
+    }
+
     // ---- Home
     function drawHome() {
       var out = !D.open ? joinBox() : '';
@@ -252,7 +260,7 @@
         var s = D.stats, T = s.totals || {}, P = s.previous || {}, acts = ACTS_K.reduce(function (a, k) { return a + (T[k[0]] || 0); }, 0);
         out += '<div class="vpd-tiles"><div><b>' + n(T.view) + '</b><span>Page views, last ' + D.days + ' days</span>' + change(T.view || 0, P.views) + '</div>' +
           '<div><b>' + n(s.visitors) + '</b><span>Visitors</span>' + change(s.visitors || 0, P.visitors) + '</div>' +
-          '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + change(acts, P.actions) + '</div>' +
+          '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + actsBreak(T) + change(acts, P.actions) + '</div>' +
           (D.group ? '' : '<div><b>' + n(D.ads.reduce(function (a, x) { return a + x.impressions; }, 0)) + '</b><span>Ad impressions</span><em>' + (D.ads.length ? D.ads.length + ' campaign' + (D.ads.length > 1 ? 's' : '') : 'No ads yet') + '</em></div>') + '</div>' +
           '<a href="?tab=brand&pd=insights" data-vpd="insights" class="vpd-btn o sm">See every number</a>';
       }
@@ -292,12 +300,12 @@
       var via = s.via || {};
       return '<div class="vpd-range" role="group" aria-label="Range">' + [[7, '7 days'], [30, '30 days'], [90, '90 days'], [365, 'A year']].map(function (r) { return '<button type="button" data-vpd-days="' + r[0] + '" class="' + (r[0] === D.days ? 'on' : '') + '">' + r[1] + '</button>'; }).join('') + '</div>' +
         '<div class="vpd-tiles"><div><b>' + n(T.view) + '</b><span>Page views</span>' + change(T.view || 0, P.views) + '</div><div><b>' + n(s.visitors) + '</b><span>Visitors</span>' + change(s.visitors || 0, P.visitors) + '</div>' +
-        '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + change(acts, P.actions) + '</div></div>' +
+        '<div><b>' + n(acts) + '</b><span>' + ACT_WORDS + '</span>' + actsBreak(T) + change(acts, P.actions) + '</div></div>' +
         '<div class="vpd-chart" role="img" aria-label="Page views by day">' + all.map(function (d) { return '<i style="height:' + Math.round(d.views / max * 100) + '%" title="' + esc(day(d.day)) + ': ' + d.views + ' views"></i>'; }).join('') + '</div>' +
         '<div class="vpd-chart-x"><span>' + esc(day(all[0].day)) + '</span><span>' + esc(day(all[all.length - 1].day)) + '</span></div>' +
         '<h4>What people did</h4><div class="vpd-rows">' + ACTS_K.map(function (a) { return '<div><span>' + a[1] + '</span><b>' + n(T[a[0]]) + '</b></div>'; }).join('') + '</div>' +
         '<h4>Where they came from</h4><div class="vpd-rows">' + Object.keys(VIA).map(function (k) { return '<div><span>' + VIA[k] + '</span><b>' + n(via[k]) + '</b></div>'; }).join('') + '</div>' +
-        '<h4>Day by day</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr>' + th('day', 'Day') + th('views', 'Views', 1) + th('visitors', 'Visitors', 1) + th('actions', KIND === 'place' ? 'Calls and clicks' : ACT_WORDS, 1) + '</tr></thead><tbody>' +
+        '<h4>Day by day</h4><div class="vpd-table-wrap"><table class="vpd-table"><thead><tr>' + th('day', 'Day') + th('views', 'Views', 1) + th('visitors', 'Visitors', 1) + th('actions', ACT_WORDS, 1) + '</tr></thead><tbody>' +
         rows.map(function (d) { return '<tr><td>' + esc(new Date(d.day + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })) + '</td><td class="n">' + n(d.views) + '</td><td class="n">' + n(d.visitors) + '</td><td class="n">' + n(d.actions) + '</td></tr>'; }).join('') +
         '</tbody></table></div><p class="vpd-empty" style="padding-top:10px">' + (s.since ? 'Counting since ' + esc(new Date(s.since).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '. ' : '') +
         'Each visitor counts once every 30 minutes; automated browsers are not counted.</p>';

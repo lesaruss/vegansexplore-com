@@ -4092,7 +4092,10 @@ do it; the full score is the paid audit; see The listing check, in Sean's order)
   interest only until its terms are set), Your events on your page, the Nonprofit Guide, bounties and the Daily Pulse. Every listing counts what a
   visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
-  (migration `20261024_partner_dashboard.sql`). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
+  (migration `20261024_partner_dashboard.sql`). The headline tile reads **Taps and clicks** with what it is made of under it ("2 social links, 1 menu opened"; `actsBreak`), and
+  the BrandDesk monthly report says Taps and clicks on your page (Sean, 2026-11-01: the old label, "Calls, directions, orders and clicks",
+  read as phone calls on a listing whose taps were a menu and social links). A call is a tap on the phone number on our page, never a
+  connected call; on 2026-11-01 no listing had one yet, and one had a directions tap (Aisha's Plant-Based Eatery, 2026-10-27). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
   Sean, 2026-10-27: it "pushes the other buttons to the left"), the text button under Vote and Save on desktop. A listing's Photos, Video and Pulse tabs show only once they have something
   in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
 - **Menus are linked, not copied** (Sean, 2026-10-27, replacing the copying below: "how do we know if they're updated?... if

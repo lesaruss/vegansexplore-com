@@ -144,7 +144,7 @@
     var ch = function (a, b) { a = +a || 0; b = +b || 0; if (!b) return a ? '<i class="up">New this month</i>' : '<i>&nbsp;</i>'; var d = Math.round((a - b) / b * 100); return '<i class="' + (d >= 0 ? 'up' : 'dn') + '">' + (d >= 0 ? '+' : '') + d + '% on last month</i>'; };
     var tile = function (n, b, label) { return '<div class="vebd-num"><b>' + (+n || 0).toLocaleString() + '</b><span>' + esc(label) + '</span><br>' + ch(n, b) + '</div>'; };
     var acts = Object.keys(N.actions || {}).reduce(function (t, k) { return t + (+N.actions[k] || 0); }, 0), actsB = Object.keys(B.actions || {}).reduce(function (t, k) { return t + (+B.actions[k] || 0); }, 0);
-    var nums = '<div class="vebd-nums">' + tile(N.views, B.views, 'Views of your page') + tile(N.visitors, B.visitors, 'People who saw it') + tile(acts, actsB, 'Calls, directions, orders and clicks') +
+    var nums = '<div class="vebd-nums">' + tile(N.views, B.views, 'Views of your page') + tile(N.visitors, B.visitors, 'People who saw it') + tile(acts, actsB, 'Taps and clicks on your page') +
       tile(N.checkins, B.checkins, 'Member check-ins') + tile(N.visits, B.visits, 'Member visits with photos') + tile(N.files, B.files, 'New files in your Library') + '</div>';
     var actRows = Object.keys(N.actions || {}).map(function (k) { return [ACT_WORD[k] || k, (+N.actions[k]).toLocaleString()]; });
     var kv = function (rows) { return '<dl class="vebd-kv">' + rows.filter(function (x) { return x[1]; }).map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>'; };
