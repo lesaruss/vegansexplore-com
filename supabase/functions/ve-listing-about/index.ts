@@ -18,6 +18,16 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
+
+// Google spend meter (Sean, 2026-11-01; migration 20261101_google_spend_meter.sql): every Places request is counted per job per day,
+// and a job checks the day's room before it starts (background jobs get their share; what a person starts keeps the rest).
+async function gCount(kind: 'search' | 'details', job: string) { try { await db.rpc('ve_google_count', { p_kind: kind, p_job: job, p_n: 1 }); } catch { /* counting never blocks */ } }
+async function gRoom(kind: 'search' | 'details', background: boolean): Promise<number> {
+  const { data, error } = await db.rpc('ve_google_room', { p_kind: kind, p_background: background });
+  return error ? 0 : Number(data ?? 0);
+}
+const GOOGLE_LIMIT = { error: 'google_limit', message: 'Our daily Google allowance is used up. It resets at midnight Pacific.' };
+
 const MODEL = 'claude-opus-5-5';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
 const cors = {
@@ -99,6 +109,7 @@ async function googlePlace(placeId: string) {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key || !placeId) return null;
   try {
+    await gCount('details', 've-listing-about');
     const r = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
       headers: {
         'X-Goog-Api-Key': key,
@@ -195,10 +206,13 @@ Deno.serve(async (req) => {
     let id = String(body.listing_id || '');
     if (!id && body.slug) { const { data } = await db.from('listings').select('id').eq('slug', String(body.slug)).eq('status', 'approved').maybeSingle(); id = data?.id || ''; }
     if (!id) return json({ error: 'not_found' }, 404);
+    if ((await gRoom('details', false)) < 1) return json(GOOGLE_LIMIT, 429);
     return json(await runOne(id, body.save !== false));
   }
   if (body.action === 'sweep') {
-    const limit = Math.min(Math.max(+body.limit || 6, 1), 12);
+    // Each listing asks Google for one place's details: the batch fits the day's room, or waits for tomorrow.
+    const limit = Math.min(Math.min(Math.max(+body.limit || 6, 1), 12), await gRoom('details', true));
+    if (limit < 1) return json({ ok: true, skipped: 'google_limit' });
     const { data: due } = await db.rpc('ve_listing_about_due', { p_limit: limit });
     const ids = ((due || []) as any[]).map((r) => r.listing_id);
     // Mark them first so the Background writer and a second run leave them alone.

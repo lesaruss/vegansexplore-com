@@ -3635,7 +3635,11 @@ they're buying their spot in this massive campaign that starts in Q1."
   partner | spotlight, status pending | active | ended, dates; RLS on, no policies) and its trigger run `ve_supermarket_guide_sync()`, which
   sets `ve_guides.access_rule` of `supermarket-guide` to `free` while a Title or Partner sponsorship is active, else `points`; `ve-venues`
   opens everything (reports too) when the rule is free. Stores came from Google Places: 248 Publix in South Florida (245) and Central
-  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida waits on the next day's quota.
+  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida waits on the next day's quota. **Publix is the example, nothing more** (Sean, 2026-11-01: "Let's just do Publix as an example and do the rest once a supermarket sponsors. Part of the sponsorship will cover the crawl"; canon v2): Publix in South, North and Central Florida only, to show supermarkets what the Guide looks like; no other chain and no more Publix areas are imported until a sponsorship pays for the crawl. Publix is the first sponsor we approach. **The preview, and stores stay** (Sean, 2026-11-01; canon v3): Publix in a few Florida chapters is the free preview, the way each Guide
+features one item free, so every chain sees how it will look. A chain that sponsors keeps its stores in the Guide after the sponsorship ends;
+the sponsorship pays for adding its stores (the crawl) and for the bounties we run on them (specials hunts, in-store content, aisle mapping, bigger
+rewards). Without a sponsorship updates are organic and earn smaller incentives (not built yet: supermarket report points by sponsorship). The pitch
+page says it: slides The preview and With a sponsor (`business/supermarkets.html`).
   The free example is Publix at Brickell Village (`publix-miami-cjalb8`). Page `guides/supermarket-guide.html` and
   `guide-scripts/supermarket-guide.js` (the Airport Guide's layout, `noindex`, Pascal on the right, his lines as text): Overview, **Stores**
   (supermarket, chapter and search, **Near me** by distance, 24 at a time), one store per view (`#/store/<slug>`: its departments and
@@ -4384,6 +4388,25 @@ run twice), give it a fresh random key kept only in the session scratchpad, depl
 off, run each step with `curl -X POST .../functions/v1/ve-once-<task>?step=<name> -H "x-run-key: <key>"`, check the result
 with a plain SELECT (reads and deploys never prompt), then redeploy it as the 410 stub. The SQL still goes in a migration
 file in the repo. A step runs in one transaction, so a failed step changes nothing.
+
+## Google costs: ask before a big scan (Sean, 2026-11-01)
+
+"I wasn't fully aware of all of this." Google Places bills the Google Cloud account's card monthly past its free monthly amount (Text
+Search about $32 per 1,000 past about 5,000 a month; Place Details and PageSpeed have their own). The project's cap is 500 text searches a
+day, shared by every job (the backlog check every 2 minutes, the nightly essentials pass, the audits, Add a listing, imports). **Before any
+scan of more than about 200 Google calls, give Sean the call count and the estimated cost, and wait for his go.** Schedule big imports right
+after the midnight-Pacific reset and split them across nights rather than raising the cap. Sean sees the bill in Google Cloud > Billing >
+Reports (filter Places API); a budget alert lives in Billing > Budgets & alerts.
+**The meter and caps** (Sean, 2026-11-01: "we need to be monitoring this carefully and setting caps"; migration
+`20261101_google_spend_meter.sql`): every Places request from `ve-discover`, `ve-listing-about`, `ve-restaurant-audit` and `ve-venues` is
+counted in `ve_google_usage` (day, search | details, job; `ve_google_count`), and each job checks `ve_google_room` before it starts: a
+background job (backlog check, essentials, About writer, check-ups) runs only a batch that fits its share of the day's cap and otherwise waits
+for tomorrow (so nothing is marked not found for lack of an answer), and what a person starts (Add a listing, the free and full audit, Find on
+Google) gets `google_limit` only when the whole cap is used. Caps, the background share, list prices, free monthly amounts and the monthly
+budget are `ve_site_settings` `google_budget` (Logan's defaults: 40 searches and 40 place details a day, background 60%, $15 a month).
+**Depot > Analytics > Google costs** (`#google`, `ve-analytics` returns `ve_google_report`) shows today against the caps, the month's
+requests and estimated cost against the budget, and every day by job. A one-time scan Sean approves runs outside the daily cap but counts
+toward the month (`once:<task>`). Other Google services we use (YouTube, Books, Analytics, sign-in, PageSpeed) are free and not metered.
 
 ## pg_net stalls (2026-10-28)
 
