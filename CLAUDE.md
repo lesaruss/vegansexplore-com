@@ -3897,6 +3897,16 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   founding seat, now opens the Passport Guide instead of its own open contribution (Sean, 2026-10-25), members give more from the
   dashboard's Contribute, and the nav's announcement (`ve_nav_announcements`) reads "Your Passport: $11 one time, with 1,100 welcome
   points" and links to `/passport`.
+- **The Passport is the Founding Member flow, four pages** (Sean, 2026-11-01: "bring this down to 4 total pages... Our focus is become a
+  founding member before January 1st"; copy revised by the panel, approved by Sean before it went live): **Why now** (the cast; 13 chapters,
+  $11 one time with 1,100 welcome points, the countdown, three step tiles with topic pictures, `TOPIC`), **What you can do** (Theo: vote,
+  earn points with check-ins and bounties, give points, your first Guide covered by the welcome points, join your city, share your link),
+  **Why join now** (Dani: shape it, Founding Member for good, keep your city growing, the locked line), **Get your Passport** (Liz).
+  `FOUNDING` in `passport.html`. **Become a Founding Member · $11** sits under the Guide's words on every page (`#dgCta`), the Guide sits in
+  the corner on phones (`ve-guide-corner.js`, `#dgRail`), and the header's $11 box is hidden on phones. A members-only prompt
+  (`?from=vote|save|checkin|give|board|tickets`) lands on Why now with its note, never the checkout; old tab links land on the page that holds
+  them (`OLD`). The nine-tab ensemble is the **Welcome Guide** at `/passport?guide=welcome` (`WELCOME`; the catalog card opens it).
+  `/business` is unchanged. After the deadline the pages drop the countdown and the Founding words.
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
