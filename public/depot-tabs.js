@@ -46,6 +46,7 @@
     { group: 'Directory', href: '/admin/depot/events', label: 'Events' },
     { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
     { group: 'Directory', href: '/admin/depot/venues', label: 'Venues' },
+    { group: 'Directory', href: '/admin/depot/checkins', label: 'Check-ins' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/social', label: 'Social' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },

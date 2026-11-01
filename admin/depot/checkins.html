@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Check-ins | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Check-ins</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">What members send after they check in at a place (Sean, 2026-11-01): a photo of what they ordered, a receipt, a link to their post, or a shout-out. Nothing pays until you approve it here. Approving pays its points; an approved shout-out shows on the listing under What members say. Owners earn nothing at their own place.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <nav class="tabs" id="tabs" aria-label="Filter by status"></nav>
+      <div class="grid" id="grid"><p class="sub">Loading...</p></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-checkin';
+      var $ = function (id) { return document.getElementById(id); };
+      var KIND = { meal: 'What I ordered', receipt: 'I bought something', post: 'Post it', shoutout: 'Shout-out' };
+      var rows = [], pending = 0;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function status() { var h = location.hash.replace(/^#/, ''); return ['pending', 'approved', 'declined'].indexOf(h) >= 0 ? h : 'pending'; }
+      function draw() {
+        var st = status();
+        $('tabs').innerHTML = [['pending', 'Waiting (' + pending + ')'], ['approved', 'Approved'], ['declined', 'Not approved']].map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === st ? 'on' : '') + '">' + t[1] + '</a>'; }).join('');
+        if (!rows.length) { $('grid').innerHTML = '<p class="sub">' + (st === 'pending' ? 'Nothing waiting.' : 'None here.') + '</p>'; return; }
+        $('grid').innerHTML = rows.map(function (r, i) {
+          return '<div class="card">' + (r.photo ? '<img src="' + esc(r.photo) + '" alt="' + esc(KIND[r.kind]) + '" data-lb="' + i + '">' : '') + '<div class="body">' +
+            '<span class="kind">' + esc(KIND[r.kind] || r.kind) + '</span>' +
+            '<h3><a href="/directory/' + esc(r.listing.slug) + '" target="_blank" rel="noopener">' + esc(r.listing.name) + '</a></h3>' +
+            '<span class="meta">' + esc(r.member.name) + ' &middot; ' + esc(new Date(r.at).toLocaleString()) + (r.listing.city ? ' &middot; ' + esc(r.listing.city) : '') + '</span>' +
+            (r.post_url ? '<a class="meta" href="' + esc(r.post_url) + '" target="_blank" rel="noopener">Open their post</a>' : '') +
+            (r.body ? '<div class="quote">' + esc(r.body) + '</div>' : '') +
+            (r.status === 'approved' ? '<span class="meta">Approved, +' + esc(r.points) + ' points</span>' : '') + (r.note ? '<span class="meta">Note: ' + esc(r.note) + '</span>' : '') +
+            (r.status === 'pending' ? '<div class="acts"><button type="button" class="btn" data-ok="' + i + '">Approve</button><button type="button" class="btn btn-ghost" data-no="' + i + '">Not approved</button><span class="msg" id="m' + i + '"></span></div>' : '') +
+            '</div></div>';
+        }).join('');
+      }
+      function load() { $('grid').innerHTML = '<p class="sub">Loading...</p>'; api({ action: 'review_list', status: status() }).then(function (d) { rows = (d && d.rows) || []; pending = (d && d.pending) || 0; draw(); }).catch(function () { $('grid').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; }); }
+      $('grid').addEventListener('click', function (e) {
+        var lb = e.target.closest('[data-lb]');
+        if (lb) { var o = document.createElement('div'); o.className = 'lb'; o.innerHTML = '<img alt="" src="' + esc(rows[+lb.getAttribute('data-lb')].photo) + '">'; o.onclick = function () { o.remove(); }; document.body.appendChild(o); return; }
+        var b = e.target.closest('[data-ok],[data-no]'); if (!b) return;
+        var ok = b.hasAttribute('data-ok'), i = +b.getAttribute(ok ? 'data-ok' : 'data-no'), note = '';
+        if (!ok) { note = prompt('Why not? (optional, for the record)') ; if (note === null) return; }
+        b.disabled = true;
+        api({ action: 'review', id: rows[i].id, decision: ok ? 'approve' : 'decline', note: note }).then(function (d) {
+          if (d && d.ok) load(); else { b.disabled = false; $('m' + i).textContent = 'That did not go through.'; }
+        });
+      });
+      window.addEventListener('hashchange', load);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to review check-ins.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
