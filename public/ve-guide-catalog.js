@@ -126,6 +126,8 @@
       desc: 'Real answers for going from Vegan-curious to confident: what to eat, what to expect and how to start, with Maya walking you through it.' },
     { slug: 'seasonedvegan', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/seasonedvegan.jpg', guide: 'Theo', icon: 'globe', interests: ['causes'], label: 'Seasoned Vegan Path', title: 'Seasoned Vegan Guide',
       desc: 'Deepen your impact: advocacy, mentoring and connecting with the global movement.' },
+    { slug: 'supermarket-guide', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/supermarket-guide.jpg', guide: 'Pascal', icon: 'sprout', interests: ['food', 'starting'], label: 'Shopping', title: 'The Supermarket Guide',
+      desc: 'Every Vegan item in your supermarket, aisle by aisle, mapped by members. Free while a supermarket sponsors it.' },
     { slug: 'vegan-on-a-budget', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/vegan-on-a-budget.jpg', guide: 'Nori', icon: 'sprout', interests: ['food', 'starting'], label: 'Budget', title: 'Vegan on a Budget',
       desc: 'Eating Vegan for less: the staples that stretch, cheap meals that fill you up, and where the deals are in your city.' },
     { slug: 'meal-prep', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/meal-prep.jpg', guide: 'Pascal', icon: 'burger', interests: ['food', 'health'], label: 'Food', title: 'The Meal Prep Guide',

@@ -2234,12 +2234,54 @@ function renderSidebar(l){
 function isGroceryStore(l){ return (l.tags||[]).indexOf('ve-grocery-store') >= 0; }
 // Department, category, search and sort (Sean, 2026-10-08: "whatever categories are available, a drop down,
 // and then it just shows you those items"), most voted first, 12 at a time. Each card opens the product page.
+// Find a store near you (the Supermarket Guide, 2026-11-01): a chain's stores are ve_venues rows of kind supermarket under its listing,
+// read through ve-venues `stores`. The tab shows only when we hold its stores; each opens that store in the Supermarket Guide.
+function loadStores(l){
+  fetch(SUPABASE_URL + '/functions/v1/ve-venues', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY },
+    body: JSON.stringify({ action: 'stores', guide: 'supermarket-guide', chain: l.slug }) })
+  .then(function(r){ return r.json(); }).catch(function(){ return {}; }).then(function(d){
+    var stores = (d && d.stores) || [], btn = document.querySelector('.tab-btn[data-tab="stores"]'), panel = document.getElementById('tab-stores');
+    if(!btn || !panel) return;
+    if(!stores.length){ btn.remove(); panel.remove(); return; }
+    btn.hidden = false;
+    var S = { q: '', here: null, shown: 24 };
+    function km(a, b){ var R = 6371, t = Math.PI / 180, x = (b.lat - a.lat) * t, y = (b.lng - a.lng) * t;
+      var h = Math.sin(x/2) * Math.sin(x/2) + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(y/2) * Math.sin(y/2); return 2 * R * Math.asin(Math.sqrt(h)); }
+    panel.innerHTML = '<div class="aisle"><p class="aisle-lede">' + stores.length + ' ' + esc(l.name) + ' ' + (stores.length === 1 ? 'store' : 'stores') + ' in our chapters. Open one to see where its Vegan sections are, the way our members mapped it, in the Supermarket Guide.</p>' +
+      '<div class="aisle-tools"><input type="search" id="storeQ" placeholder="City, street or ZIP" aria-label="Search stores"><button type="button" class="aisle-more" id="storeNear" style="margin:0">Near me</button><span class="aisle-count" id="storeCount"></span></div>' +
+      '<div class="aisle-grid" id="storeGrid"></div><button type="button" class="aisle-more" id="storeMore" hidden></button></div>';
+    function draw(){
+      var q = S.q.trim().toLowerCase();
+      var list = stores.filter(function(s){ return !q || ((s.name || '') + ' ' + (s.address || '') + ' ' + (s.city || '')).toLowerCase().indexOf(q) >= 0; });
+      if(S.here) list = list.map(function(s){ s._km = (s.lat != null && s.lng != null) ? km(S.here, s) : 1e9; return s; }).sort(function(a, b){ return a._km - b._km; });
+      document.getElementById('storeCount').textContent = list.length + (list.length === 1 ? ' store' : ' stores');
+      document.getElementById('storeGrid').innerHTML = list.slice(0, S.shown).map(function(s){
+        var mi = S.here && s._km < 1e8 ? (s._km * 0.621371).toFixed(1) + ' mi · ' : '';
+        return '<a class="aisle-card" href="/guides/supermarket-guide#/store/' + encodeURIComponent(s.slug) + '"><div class="aisle-main"><div class="aisle-type">' + esc(mi + (s.city || '')) + '</div>' +
+          '<div class="aisle-name">' + esc(s.name) + '</div><div class="aisle-sub">' + esc(s.address || '') + '</div>' +
+          '<div class="aisle-foot"><span class="aisle-votes">' + (s.free || d.free ? 'Open to everyone' : 'In the Supermarket Guide') + '</span></div></div></a>';
+      }).join('') || '<p class="aisle-lede">No store matches that.</p>';
+      var more = document.getElementById('storeMore'); more.hidden = list.length <= S.shown; more.textContent = 'Show more (' + (list.length - S.shown) + ' more)';
+    }
+    document.getElementById('storeQ').addEventListener('input', function(e){ S.q = e.target.value; S.shown = 24; draw(); });
+    document.getElementById('storeMore').addEventListener('click', function(){ S.shown += 24; draw(); });
+    document.getElementById('storeNear').addEventListener('click', function(){
+      var b = this; if(!navigator.geolocation){ b.textContent = 'Location not available'; return; }
+      b.disabled = true; b.textContent = 'Finding you...';
+      navigator.geolocation.getCurrentPosition(function(p){ S.here = { lat: p.coords.latitude, lng: p.coords.longitude }; b.disabled = false; b.textContent = 'Nearest first'; draw(); },
+        function(){ b.disabled = false; b.textContent = 'Near me'; }, { timeout: 15000, maximumAge: 300000 });
+    });
+    draw();
+    if(storesTabWanted()) showListingTab('stores');
+  });
+}
+function storesTabWanted(){ try { return new URLSearchParams(location.search).get('tab') === 'stores'; } catch(e){ return false; } }
 function loadAisle(l){
   var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,slug,product_type,name,made_from,note,guides,department,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,color,initials,vote_count,logo_url))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
     var panel = document.getElementById('tab-aisle'); if(!panel) return;
     rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved'; });
-    if(!rows.length){ panel.innerHTML = '<div class="aisle"><p class="aisle-lede">Our Guides have not found products at ' + esc(l.name) + ' yet. They show up here as soon as a Guide lists one.</p></div>'; showListingTab('aisle'); return; }
+    if(!rows.length){ panel.innerHTML = '<div class="aisle"><p class="aisle-lede">Our Guides have not found products at ' + esc(l.name) + ' yet. They show up here as soon as a Guide lists one.</p></div>'; if(!storesTabWanted()) showListingTab('aisle'); return; }
     var want = ''; try { want = new URLSearchParams(location.search).get('product') || ''; } catch(e){}
     function count(key, val){ return rows.filter(function(r){ return (r.ve_products[key] || '') === val; }).length; }
     function uniq(key, within){ var o = []; rows.forEach(function(r){ var p = r.ve_products, v = p[key] || ''; if(v && o.indexOf(v) < 0 && (!within || p.department === within)) o.push(v); }); return o.sort(); }
@@ -2286,7 +2328,7 @@ function loadAisle(l){
     document.getElementById('aisleMore').addEventListener('click', function(){ S.all = true; draw(); });
     // A card opens the product's page on Vegans Explore (Sean, 2026-10-08: keep people in our environment).
     draw();
-    showListingTab('aisle');
+    if(!storesTabWanted()) showListingTab('aisle');
     var hit = want && document.getElementById('product-' + want);
     if(hit) setTimeout(function(){ hit.scrollIntoView({ block: 'center' }); }, 150);
   });
@@ -4120,6 +4162,7 @@ function renderListing(l){
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
+          (isGroceryStore(l) ? '<button class="tab-btn" data-tab="stores" role="tab" aria-selected="false" hidden>Find a store</button>' : '')+
           (l._brandSite ? '<button class="tab-btn" data-tab="products" role="tab" aria-selected="false">Products</button>' : '')+
           // Partner Dashboard (Sean, 2026-10-09) on every listing: locked for visitors (claim it, or apply to be listed),
           // the business's home once it is theirs. A brand partner's sub views sit under it (the sub-menu, .pd-subnav).
@@ -4143,6 +4186,7 @@ function renderListing(l){
         '</div>'+
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
+        (isGroceryStore(l) ? '<div class="tab-panel" id="tab-stores" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading stores...</div></div></div>' : '')+
         (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
           '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' +
           ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<div class="tab-panel" id="tab-' + t + '" role="tabpanel"><div class="bsite-pad" id="bp-' + t + '"></div></div>'; }).join('')
@@ -4951,7 +4995,7 @@ if(!slug || slug === 'listing'){
       veTrack(l, 'view');
       trackActions(l);
       ownerVerifiedCard(l);
-      if(isGroceryStore(l)) loadAisle(l); else if(l._brandSite) loadBrandSite(l);
+      if(isGroceryStore(l)){ loadAisle(l); loadStores(l); } else if(l._brandSite) loadBrandSite(l);
       if(l.category === 'Documentaries & Films' && !DEMO){ loadFilmPeople(l); loadFilmPods(l); }
       if(isYouTubeL(l) && !DEMO) loadYouTube(l);
       if(l.category === 'News Outlets' && !DEMO) loadNewsStories(l);

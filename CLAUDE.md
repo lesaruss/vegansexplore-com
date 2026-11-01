@@ -3562,7 +3562,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 ## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
-`20261101_supermarket_guide_canon.sql`). **Not built yet.** Sean: "a doorway where the community will always know where to find these
+`20261101_supermarket_guide_canon.sql`). **Built 2026-11-01, not launched** (below). Sean: "a doorway where the community will always know where to find these
 vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
 they're buying their spot in this massive campaign that starts in Q1."
 
@@ -3587,6 +3587,26 @@ they're buying their spot in this massive campaign that starts in Q1."
   the growing Directory, the content creator network and a campaign every quarter. Stated as plans; real numbers reported (221 real
   visitors in October 2026); every sponsored spot labeled Sponsored.
 - **First**: Publix for Title Sponsor (five of our chapters, Florida first), then Whole Foods and Sprouts as Supermarket Partners.
+- **Built 2026-11-01, not launched** (Sean: "hand it to Logan, build it"; migration `20261101_supermarket_guide.sql`, run through the
+  one-time `ve-once-supermarket`). It runs on the venue Guides' engine, `ve-venues` (`GUIDES` `supermarket-guide`: kind `supermarket`): a
+  store is a `ve_venues` row of kind `supermarket` with `chain_listing_id` (its chain's one listing), its departments are spots
+  (Refrigerated, Frozen, Pantry, Snacks) and its 15 Vegan sections items, each "Aisle not mapped yet" until a member maps it with the same
+  reports, photo and in-store location check, review, points and first-to-confirm bounties as the venue Guides
+  (`ve_supermarket_seed_store(venue)` gives a new store the template). **Free while sponsored**: `ve_supermarket_sponsors` (tier title |
+  partner | spotlight, status pending | active | ended, dates; RLS on, no policies) and its trigger run `ve_supermarket_guide_sync()`, which
+  sets `ve_guides.access_rule` of `supermarket-guide` to `free` while a Title or Partner sponsorship is active, else `points`; `ve-venues`
+  opens everything (reports too) when the rule is free. Stores came from Google Places: 248 Publix in South Florida (245) and Central
+  Florida (3) on 2026-11-01, the import cut short by Google's rate limit (`import_publix&hub=` in `scripts/supabase-once/supermarket-import.ts`: deploy it as a one-time function with a fresh key, run Central and North Florida, then the 410 stub; safe to run again).
+  The free example is Publix at Brickell Village (`publix-miami-cjalb8`). Page `guides/supermarket-guide.html` and
+  `guide-scripts/supermarket-guide.js` (the Airport Guide's layout, `noindex`, Pascal on the right, his lines as text): Overview, **Stores**
+  (supermarket, chapter and search, **Near me** by distance, 24 at a time), one store per view (`#/store/<slug>`: its departments and
+  sections, Update, Add to my list), **My list** (members; ticks in `localStorage` `sg_ticks`), **Produce**, Help keep it right and Get
+  access. **Find a store** on every grocery chain's listing (`loadStores` in `directory/listing.html`, `ve-venues` `stores`, `?tab=stores`),
+  shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
+  `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
+  `noindex`): the Guide with a live store, the three tiers, the Q1 2027 campaign, the 2027 story (as plans), Front Row Start, and Email our
+  team. Launch = the `ve_guides` row published, `noindex` off, the card out of Coming soon. Not yet: weekly specials, CPG spotlights in
+  the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 

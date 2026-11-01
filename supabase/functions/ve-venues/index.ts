@@ -3,6 +3,11 @@
 // 'airport-guide', the Stadium Guide when left out): list shows that Guide's kinds of venue, and owning, My list and the free
 // example go by that Guide. A venue's own Guide follows from its kind (airport, or stadium and arena).
 // A venue mapped to the Vegan food inside it, kept accurate by members who report from inside for points.
+// The Supermarket Guide (Sean, 2026-11-01; canon canon-ve-supermarket-guide, migration 20261101_supermarket_guide.sql) runs here too:
+// a store is a venue of kind 'supermarket' tied to its chain's listing (chain_listing_id), its departments are spots and its Vegan
+// sections items, "Aisle not mapped yet" until members map them. It is free to everyone while a supermarket sponsors it
+// (ve_guides.access_rule 'free', set by ve_supermarket_guide_sync from ve_supermarket_sponsors), and open as owned then.
+//   { action: 'stores', chain }                a chain's stores for Find a store near you (anyone): name, address, city, chapter, pin
 //
 // Anyone:
 //   { action: 'list' }                         every live venue: name, kind, city, teams, counts, which one is free; and the viewer
@@ -36,8 +41,18 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
-const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'] };
-const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : 'stadium-arena-guide');
+const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'], 'supermarket-guide': ['supermarket'] };
+const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : k === 'supermarket' ? 'supermarket-guide' : 'stadium-arena-guide');
+// Every row of a query, a thousand at a time (a chain has hundreds of stores, each with its sections).
+async function allRows(q: () => any): Promise<any[]> {
+  const out: any[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await q().range(from, from + 999);
+    if (error) throw error;
+    out.push(...(data || []));
+    if (!data || data.length < 1000) return out;
+  }
+}
 const BUCKET = 'venue-reports';
 const SAVE_CAP = 500;
 
@@ -126,15 +141,25 @@ Deno.serve(async (req) => {
   }
   let owns = admin;
   if (!owns && viewer) { const { data } = await db.rpc('ve_owns_guide', { p_member: viewer.id, p_guide: GUIDE }); owns = !!data; }
-  const me = viewer ? { signed_in: true, active: viewer.active, owns, admin, guide: GUIDE } : { signed_in: false, active: false, owns: admin, admin, guide: GUIDE };
+  // A Guide that is free right now (the Supermarket Guide while a sponsor is active) is open to everyone, as if owned.
+  const { data: gRow } = await db.from('ve_guides').select('access_rule, published').eq('slug', GUIDE).maybeSingle();
+  const freeNow = !!gRow && gRow.access_rule === 'free' && gRow.published;
+  if (freeNow) owns = true;
+  const me = viewer ? { signed_in: true, active: viewer.active, owns, admin, guide: GUIDE, free: freeNow } : { signed_in: false, active: false, owns: admin || freeNow, admin, guide: GUIDE, free: freeNow };
 
   // ---------- anyone ----------
   if (action === 'list') {
-    const { data: vs, error } = await db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, sort_order, image_url, season_reset_at, created_at')
-      .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order');
-    if (error) return json({ error: 'list_failed', message: error.message }, 500);
-    const ids = (vs || []).map((v) => v.id);
-    const { data: its } = ids.length ? await db.from('ve_venue_items').select('venue_id, last_confirmed_at').in('venue_id', ids).eq('status', 'live') : { data: [] as any[] };
+    let vs: any[] = [];
+    try { vs = await allRows(() => db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, longitude, address, chain_listing_id, sort_order, image_url, season_reset_at, created_at')
+      .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order').order('id')); }
+    catch (e) { return json({ error: 'list_failed', message: (e as Error).message }, 500); }
+    const ids = vs.map((v) => v.id);
+    // Items through their venue (a list of hundreds of store ids would not fit in the request).
+    const its = ids.length ? await allRows(() => db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(kind, status)').eq('status', 'live')
+      .in('ve_venues.kind', GUIDES[GUIDE]).eq('ve_venues.status', 'live').order('id')) : [];
+    const chainIds = [...new Set(vs.map((v) => v.chain_listing_id).filter(Boolean))];
+    const chains: Record<string, any> = {};
+    if (chainIds.length) { const { data: cs } = await db.from('listings').select('id, slug, name, logo_url').in('id', chainIds); for (const c of cs || []) chains[c.id] = c; }
     const counts: Record<string, { items: number; confirmed: number; last: string | null; bounties: number }> = {};
     const byId: Record<string, any> = {}; for (const v of vs || []) byId[v.id] = v;
     for (const it of its || []) {
@@ -144,7 +169,9 @@ Deno.serve(async (req) => {
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
-      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order, ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
+      teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order,
+      ...(v.kind === 'supermarket' ? { lat: v.latitude, lng: v.longitude, address: v.address, chain: chains[v.chain_listing_id] ? { slug: chains[v.chain_listing_id].slug, name: chains[v.chain_listing_id].name, logo_url: chains[v.chain_listing_id].logo_url } : null } : {}),
+      ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
       points: await reportPoints(), limits: await bountyLimits() });
   }
 
@@ -152,11 +179,9 @@ Deno.serve(async (req) => {
   // venue of both Guides with items waiting for their first confirmation, and what they pay. No item names: those are the Guide's.
   if (action === 'bounties') {
     const hub = str(body.hub, 40);
-    let q = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at').eq('status', 'live');
-    if (hub && hub !== 'all') q = q.eq('hub', hub);
-    const { data: vs } = await q.order('sort_order');
-    const ids = (vs || []).map((v) => v.id);
-    const { data: its } = ids.length ? await db.from('ve_venue_items').select('venue_id, last_confirmed_at').in('venue_id', ids).eq('status', 'live') : { data: [] as any[] };
+    const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
+    const ids = vs.map((v) => v.id);
+    const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
     const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
     const first = P.confirm?.first_with_photo ?? P.confirm?.with_photo ?? 0, missing = P.missing?.with_photo ?? 0;
     // Only the Guides that are out (an unpublished Guide's venues wait for its launch), unless a super admin asks.
@@ -179,6 +204,16 @@ Deno.serve(async (req) => {
     }).filter((x) => x.venues);
     const mine = out.filter((v) => ownsG[v.guide]);
     return json({ venues: mine, locked, total: mine.reduce((n, v) => n + v.points, 0), points: await reportPoints(), limits: await bountyLimits() });
+  }
+
+  // Find a store near you (the chain's listing page): every live store of a chain, its pin and chapter. Anyone.
+  if (action === 'stores') {
+    const { data: ch } = await db.from('listings').select('id, slug, name').eq('slug', str(body.chain, 120)).eq('status', 'approved').maybeSingle();
+    if (!ch) return json({ stores: [] });
+    const rows = await allRows(() => db.from('ve_venues').select('slug, name, address, city, state, hub, latitude, longitude, free_example')
+      .eq('chain_listing_id', ch.id).eq('status', 'live').order('city').order('id'));
+    return json({ chain: { slug: ch.slug, name: ch.name }, guide: GUIDE, free: freeNow, stores: rows.map((v) => ({ slug: v.slug, name: v.name, address: v.address, city: v.city,
+      state: v.state, hub: v.hub, lat: v.latitude, lng: v.longitude, free: v.free_example })) });
   }
 
   if (action === 'venue') {
@@ -213,7 +248,8 @@ Deno.serve(async (req) => {
     const venue = { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, teams: v.teams, address: v.address,
       maps: v.google_place_id ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name)}&query_place_id=${v.google_place_id}` : null,
       note: v.note, note_source_url: v.note_source_url, free: v.free_example, can_report: v.latitude != null, radius_m: v.radius_m,
-      season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url };
+      season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url, lat: v.latitude, lng: v.longitude,
+      chain: v.chain_listing_id ? (await db.from('listings').select('slug, name, logo_url').eq('id', v.chain_listing_id).maybeSingle()).data : null };
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
       return {
@@ -256,8 +292,10 @@ Deno.serve(async (req) => {
     if (!v) return json({ error: 'not_found' }, 404);
     // Bounties unlock with the Guide (Sean, 2026-10-29): only its owners (and super admins) report, the free venue included.
     if (!admin) {
-      const { data: has } = await db.rpc('ve_owns_guide', { p_member: viewer!.id, p_guide: guideOfKind(v.kind) });
-      if (!has) return json({ error: 'guide_required', message: 'Bounties unlock with the Guide.' }, 403);
+      const g = guideOfKind(v.kind);
+      const { data: gr } = await db.from('ve_guides').select('access_rule, published').eq('slug', g).maybeSingle();
+      const { data: has } = await db.rpc('ve_owns_guide', { p_member: viewer!.id, p_guide: g });
+      if (!has && !(gr && gr.access_rule === 'free' && gr.published)) return json({ error: 'guide_required', message: 'Bounties unlock with the Guide.' }, 403);
     }
     const { data, error } = await db.rpc('ve_venue_report_save', {
       p_member: viewer!.id, p_venue: v.id, p_spot: isId(body.spot) ? body.spot : null, p_item: isId(body.item) ? body.item : null,
@@ -355,7 +393,7 @@ Deno.serve(async (req) => {
     const v = body.venue || {};
     const row: Record<string, unknown> = {};
     for (const k of ['name', 'city', 'state', 'hub', 'note', 'note_source_url', 'address', 'image_url']) if (k in v) row[k] = str(v[k], 400) || null;
-    if ('kind' in v) { if (!['stadium', 'arena', 'airport'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
+    if ('kind' in v) { if (!['stadium', 'arena', 'airport', 'supermarket'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
     if ('teams' in v) row.teams = (Array.isArray(v.teams) ? v.teams : String(v.teams || '').split(',')).map((t: any) => str(t, 80)).filter(Boolean).slice(0, 12);
     if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 5000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }
     if ('status' in v) row.status = v.status === 'hidden' ? 'hidden' : 'live';
