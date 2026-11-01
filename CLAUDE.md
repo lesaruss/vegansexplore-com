@@ -2530,6 +2530,13 @@ sometimes there's multiple people on the podcast"): a listing can also belong to
 person keeps their own family (their books and channel stay theirs); a shared show is its own family plus each host's, so it shows on
 every host's page, and its own page lists only its people and itself. First: the Vegans Who Lift Podcast (`vegans-who-lift`, with
 `brooke-sellers` and `john-thomas`; migration `20261030_brooke_john_shared_podcast.sql`). Neither bio names the other (Sean, same day).
+**More than one show is one tab** (Sean, 2026-11-01: "I don't like having all three of the podcasts brought out on the tabs... all
+under a title called Podcasts with a drop-down... when you go to Vegans Explore, you see that same drop down"): when a family holds two
+or more Podcasts (or two or more YouTube channels), they are one **Podcasts** (**YouTube**) tab with an arrow, which opens the shows by
+name with their logos, the one you are on marked (`famMenu` and `.fam-menu` in `directory/listing.html`, the list drawn outside the
+tab row so it is not cut off); on a show's page that tab is the active one. One show of a kind keeps its single Podcast or YouTube tab.
+On phones the tab dropdown lists each show by name (`mobileTabMenu` reads the tab's `_fam`). First on Sean's page: Vegans Explore,
+Pre-Vegans and SoFlo Vegans Podcasts.
 **On phones the tab row is a dropdown** (Sean, 2026-10-31: "Do the same drop-down treatment for media"): on a media listing
 (show or work) or a People page with two tabs or more, at 768 px and under the tabs are one full-width dropdown (`mobileTabMenu` and
 `.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as they appear.
