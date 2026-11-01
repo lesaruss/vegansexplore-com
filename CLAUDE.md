@@ -1932,7 +1932,9 @@ that is not passed and every check-up flag (`doItBtn`), opening `VEManaged.open`
 it lands in the Inbox as a Managed marketing request; the sample toasts what would happen. The Audit view is no longer members only and
 shows for any listing with checks (non-food: the listing check and Have us do all of it). Home has the score strip (`healthStrip`).
 `only: 'health'` returns just the check (the member dashboard's Your business). Proven 2026-11-01 as Sean on the podcast he owns (its
-website, vegansexplore.com/vepodcast/, answered 404; Logan pointed it at the show's site, vegans-explore.captivate.fm, which passes) and as
+website, vegansexplore.com/vepodcast/, answered 404. Its official page is its own Vegans Explore listing (Sean, 2026-11-01: "Just because it's a directory listing doesn't mean it's
+not a profile"), so its website is `https://vegansexplore.com/directory/vegans-explore-podcast`; a listing whose website is its own page shows no
+Visit Website link, and the editor still gets the stored value, `l._website` in `directory/listing.html`) and as
 admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **Tomorrow's outreach is read first** (Sean, 2026-11-01: "we know we're
 going to be reaching out to 30 people a day. We can prioritize those people in the check, you know, the day before... So when that potential
 client clicks on it, they're seeing the information they should be seeing"; migration `20261101_listing_check_outreach_first.sql`):
@@ -3711,6 +3713,25 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
   the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
   waiting, with Get the Guide) to everyone else. Every Guide's Get access lists Bounties.
+  **A Bounties tab, highest first** (Sean, 2026-11-01: "depending on which stadium they're in, they click the bounties, it should clearly
+  list what we want them to do... highest bounty to lowest bounty. So people could literally be Pokemon going to this world"). Both venue
+  Guides have **Bounties** after Venues / Airports (`#/bounties`): every venue with open bounties in the picked city, the most points
+  first, the top three marked #1 to #3 (owners; anyone else sees the points waiting and the free venue's jobs), and each venue's own list
+  (`#/venue/<slug>/bounties`, `#/airport/<slug>/bounties`, also **Bounties** on the venue page): its jobs grouped by what they pay, highest
+  first: Find a Vegan item we don't have (Something missing), Be first to confirm <item> (the bounty), then Check <item> is still there,
+  each with its stand number (the map's), where it is, what to photograph, the points with and without a photo, and **Do it** opening that
+  report form (which keeps the sign-in, Passport and Guide gates). Drawn by `/public/ve-venue-bounties.js` (`VEVenueBounties.board`,
+  `venue`, `jobs`) from what `ve-venues` `bounties` and `venue` already return, the amounts from `ve_venue_report_points`; no server
+  change. The Overview's Bounties card opens the tab. River's and Nori's lines on it are text drafts.
+  **Each job has its own page** (Sean, 2026-11-01: "when they click into it, it should have an image of where it is on the right hand side.
+  And it should show the accompanying map... something similar for what we did for the stadium for the airport... where they can find
+  directions"): `#/venue/<slug>/bounties/<item>` and `#/airport/<slug>/bounties/<item>` (a job's **Find it**). Left: the points, the job,
+  its stand number and where it is, what to photograph, **Do it** (the report form), **Something changed?** (the item's Update), and **Get
+  me there** from **Your section** or **Your gate** (the same one the venue page keeps, `seatKey`). Right: the item's photo, else the
+  venue's illustration, then the map with only that stand's pin and the walk to it (`VEVenueMap` / `VEAirportMap` `route` to that one
+  stand; at an airport it says when the spot is before security). A stand with no section or gate yet says to ask a worker and add it in
+  the report. `VEVenueBounties.job` and `wireJob`. Find a Vegan item we don't have has no one stand, so it opens its form directly. Not
+  GPS: inside a stadium or terminal a phone is off by several sections.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
@@ -4085,7 +4106,10 @@ do it; the full score is the paid audit; see The listing check, in Sean's order)
   interest only until its terms are set), Your events on your page, the Nonprofit Guide, bounties and the Daily Pulse. Every listing counts what a
   visitor does next (`trackActions` in `directory/listing.html`: call, directions, website, order, social, menu, photos;
   `ve_listing_track`), and `ve_listing_stats` returns each day's views, visitors and actions plus the period before
-  (migration `20261024_partner_dashboard.sql`). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
+  (migration `20261024_partner_dashboard.sql`). The headline tile reads **Taps and clicks** with what it is made of under it ("2 social links, 1 menu opened"; `actsBreak`), and
+  the BrandDesk monthly report says Taps and clicks on your page (Sean, 2026-11-01: the old label, "Calls, directions, orders and clicks",
+  read as phone calls on a listing whose taps were a menu and social links). A call is a tap on the phone number on our page, never a
+  connected call; on 2026-11-01 no listing had one yet, and one had a directions tap (Aisha's Plant-Based Eatery, 2026-10-27). A super admin's **Edit listing** on a listing page is a green pencil on the name's row on phones (`.vla-edit-ico`, `has-vla`;
   Sean, 2026-10-27: it "pushes the other buttons to the left"), the text button under Vote and Save on desktop. A listing's Photos, Video and Pulse tabs show only once they have something
   in them (Sean, 2026-10-24: "I'm not a big fan of the coming soon sections").
 - **Menus are linked, not copied** (Sean, 2026-10-27, replacing the copying below: "how do we know if they're updated?... if
