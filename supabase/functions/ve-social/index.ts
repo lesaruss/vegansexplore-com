@@ -460,9 +460,41 @@ async function studio(body: any, who: Who) {
     if (!Object.keys(changed).length) return { ok: true, unchanged: true };
     const upd: Record<string, unknown> = { ...changed, updated_at: new Date().toISOString() };
     await db.from('ve_social_slots').update(upd).eq('id', s.id);
+    // A direct change by a person leaves Logan an open note saying what changed (Sean, 2026-11-01: "you should get a notation of
+    // what change has been made so you know what's going on"). Logan's own changes (ops) do not.
+    if (!who.ops) {
+      const fileOf = (u: string) => String(u || '').split('?')[0].split('/').pop() || u;
+      const lines: string[] = [];
+      for (const k of Object.keys(changed)) {
+        if (k === 'assets') {
+          const was = ((s.assets || []) as any[]).filter((x) => x && x.type !== 'cover' && x.type !== 'storyboard').map((x) => x.url);
+          const now = ((changed.assets || []) as any[]).filter((x) => x && x.type !== 'cover' && x.type !== 'storyboard').map((x) => x.url);
+          const gone = was.filter((u) => !now.includes(u)).map(fileOf), added = now.filter((u) => !was.includes(u)).map(fileOf);
+          lines.push('Pictures and videos: ' + [gone.length ? 'took out ' + gone.join(', ') : '', added.length ? 'put in ' + added.join(', ') : ''].filter(Boolean).join('; ') || 'reordered');
+        } else if (k === 'slot_at') lines.push('Time: ' + new Date(String(changed.slot_at)).toLocaleString('en-US', { timeZone: SHOW_TZ, weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET');
+        else if (k === 'caption') lines.push('Caption rewritten');
+        else lines.push(k.replace('_', ' ') + ' changed');
+      }
+      await db.from('ve_social_notes').insert({ slot_id: s.id, author_id: who.id, author_name: who.name, status: 'open', body: 'Changed directly. ' + lines.join('. ') + '.' });
+    }
     // A change to something already in Metricool goes back out with the change.
     if (s.status === 'scheduled' || (s.status === 'manual' && s.metricool_post_id)) { const r = await push(s.id, who); return { ok: true, repushed: r }; }
     return { ok: true };
+  }
+  if (a === 'asset_upload') {
+    // A signed upload link for a new picture or video on a slot; the page then saves the slot's assets with the new link.
+    const { data: s } = await db.from('ve_social_slots').select('id,brand_slug,status').eq('id', body.id).maybeSingle();
+    if (!s) return { error: 'not_found' };
+    if ((await roleFor(who, s.brand_slug)) !== 'editor') return { error: 'forbidden' };
+    if (s.status === 'posted') return { error: 'already_posted' };
+    const type = String(body.type || '');
+    if (!/^(image\/(jpeg|png|webp|gif)|video\/(mp4|quicktime|webm))$/.test(type)) return { error: 'bad_type' };
+    if (Number(body.size) > 300 * 1024 * 1024) return { error: 'too_big' };
+    const safe = String(body.name || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(-60) || 'file';
+    const path = `media/social/${s.brand_slug}/${s.id}/${Date.now()}-${safe}`;
+    const { data, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path, { upsert: true });
+    if (error) return { error: error.message };
+    return { upload_url: data.signedUrl, url: `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`, kind: type.startsWith('video') ? 'video' : 'image' };
   }
   if (a === 'note_add') {
     const { data: s } = await db.from('ve_social_slots').select('id,brand_slug').eq('id', body.id).maybeSingle();

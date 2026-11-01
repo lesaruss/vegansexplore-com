@@ -4503,7 +4503,11 @@ only; posts are scheduled in Metricool).
 **The studio** (Sean, 2026-11-01: "see what's slotted for the different brands... you propose things... the community manager goes
 in... make any adjustments... or leave a note that you will then take care of... you will use your connections to push it out... If
 something needs a manual thing... we know ahead of time... a calendar... track it to its metrics... between different brands...
-clients"; migration `20261101_ve_social_studio.sql`). The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
+clients"; migration `20261101_ve_social_studio.sql`). **By day is the Plan's default** (Sean, 2026-11-01: "the date is the first row and the posts are below it and all in one row... slide...
+select the date... a little bit bigger... I prefer that than the calendar"): `#days/<brand>/<up|past>/<filter>` lists each date with posts
+(Coming up, the next 90 days; Past, the last 90, newest first), the date on top and its posts in one row that slides sideways
+(`drawDays`, `.dayrow`, `.strip`); **Pick a date** or a date's heading opens that one date bigger (`#day/<brand>/<date>/<filter>`, Day
+before / Day after, Every day back); **Calendar view** is the week grid below, kept as an option. The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
 client, its Metricool brand and connected channels), the week Monday to Sunday (`#plan/<brand>/<monday>/<todo|out|posted|all>`, Back /
 This week / Next week), one card a slot (`ve_social_slots`: time, channels, kind, title, caption, first comment, links, assets, By hand
 steps, status), **Approve the N waiting**, and **New slot** for super admins. A slot (`#slot/<id>`): its pictures, Approve and schedule,
@@ -4524,7 +4528,16 @@ team) never do, and a reel, video or episode with no `video` asset cannot be pus
 lives in `vegan-media/media/social/<batch>/` so Metricool can fetch it. **Relaunch week** (batch `relaunch-week`, from Station 2's lookbook,
 loaded 2026-11-01): the Find your Guide carousel, the Airport and Dairy stories (link stickers by hand), the episode 144 clip, and one Guide
 reel a day at 12:30 PM Eastern, Monday to Saturday (Thursday to Saturday are storyboards until their videos are made), each with Logan's
-proposed caption and Station 2's `ve-relaunch` tracked links.
+proposed caption and Station 2's `ve-relaunch` tracked links. **A slot shows its media as it will go out** (Sean, 2026-11-01: "I would like to see the actual asset in that
+preview window... a light box and play for me... replace the item... you should get a notation of what change has been made"): the slot's
+left panel is the preview in the post's shape (`mediaPanel`: stories, reels and episodes in a 9:16 frame, posts and carousels at their
+own shape, a carousel with arrows and N of M), a warning when a wide picture would sit with bars on a story or reel, What goes out (each
+file with **Replace** and **Remove**, and **Add a picture or video**), the cover (on the Plan only) and the storyboard (not posted). Any of
+them opens full size in a **lightbox** (`lightbox`: videos play, arrows and the arrow keys move, Escape closes). A file goes up through
+`ve-social` `asset_upload` (an editor of the brand; JPEG, PNG, WebP, GIF, MP4, MOV or WebM up to 300 MB; a signed upload into
+`vegan-media/media/social/<brand>/<slot>/`), then the slot saves its assets (logged, and sent to Metricool again when it was scheduled).
+**A direct change by a person leaves Logan an open note** saying what changed (pictures and videos taken out and put in by file name, the
+new time, Caption rewritten), in Notes for Logan; Logan's own changes leave none.
 
 ## Image conventions
 
