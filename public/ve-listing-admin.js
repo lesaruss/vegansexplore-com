@@ -439,6 +439,7 @@
     syncChapters();
     // ---- Logo: saves on its own, right away.
     var logoChanged = false;
+    function picWord() { return kindOf($('#vla-sub').value) === 'person' ? 'photo' : 'logo'; }
     function drawLogo(msg, bad) {
       var box = $('#vla-logo'), u = l.logo_url || '';
       if (u) { box.style.backgroundImage = 'url("' + u.replace(/"/g, '%22') + '")'; box.style.backgroundColor = '#fff'; box.textContent = ''; box.setAttribute('aria-label', 'Current logo'); }
@@ -456,7 +457,7 @@
       drawLogo(label);
       return p().then(function (saved) {
         l.logo_url = saved.logo_url; target.logo_url = saved.logo_url; if ('logo_alt_text' in saved) target.logo_alt_text = saved.logo_alt_text; logoChanged = true;
-        drawLogo(saved.logo_url ? 'Saved. The logo is live now.' : 'Removed. The initials show now.');
+        drawLogo(saved.logo_url ? 'Saved. The ' + picWord() + ' is live now.' : 'Removed. The initials show now.');
       }, function (e) {
         drawLogo(e && e.message === 'not_an_image' ? 'That file is not a picture.' : e && e.message === 'fetch_failed' ? 'Their website would not hand over the logo. Make it in the editor instead.' : e && / /.test(e.message || '') ? e.message : 'That did not save. Try again.', true);
       }).then(function () { btns.forEach(function (b) { b.disabled = false; }); });
@@ -465,18 +466,20 @@
     function closeEditor() { var p = $('#vla-ledit'); p.hidden = true; p.innerHTML = ''; wrap.querySelector('.box').classList.remove('vla-wide'); $('#vla-up').disabled = false; }
     $('#vla-up').onclick = function () {
       var panel = $('#vla-ledit'); if (!panel.hidden) return;
-      $('#vla-up').disabled = true; drawLogo('Opening the logo editor...');
+      $('#vla-up').disabled = true; drawLogo('Opening the ' + picWord() + ' editor...');
       logoEditor().then(function (LE) {
+        // A person's picture is their photo, and Google searches "<name> Vegan" (Sean, 2026-11-01).
+        var pic = kindOf($('#vla-sub').value) === 'person' ? 'photo' : 'logo';
         var name = String(l.name || ''), ig = String(l.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
         var look = [];
         if (l.website) look.push(['Their website', /^https?:/i.test(l.website) ? l.website : 'https://' + l.website]);
         if (ig) look.push(['Instagram', 'https://www.instagram.com/' + ig + '/']);
         if (l.facebook) look.push(['Facebook', l.facebook]);
-        look.push(['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(name + ' logo')]);
+        look.push(['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(pic === 'photo' ? name + ' Vegan' : name + ' logo')]);
         panel.innerHTML = '<div class="ledit-look">' + look.map(function (x) { return '<a href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + '</a>'; }).join('') + '</div>' +
-          '<p class="ledit-hint">' + (l.logo_url ? 'The logo as it is now is loaded below. Adjust it, or' : 'Find their logo, then') +
+          '<p class="ledit-hint">' + (l.logo_url ? 'The ' + pic + ' as it is now is loaded below. Adjust it, or' : 'Find their ' + pic + ', then') +
           ' right-click it and Copy image and paste here (Ctrl+V or Cmd+V), drag it in from the other tab, paste its link, or drop a file.</p>' +
-          '<div id="vla-le"></div><div class="ledit-acts"><button type="button" class="cancel" id="vla-le-x">Cancel</button><button type="button" class="save" id="vla-le-save" disabled>Save logo</button></div>';
+          '<div id="vla-le"></div><div class="ledit-acts"><button type="button" class="cancel" id="vla-le-x">Cancel</button><button type="button" class="save" id="vla-le-save" disabled>Save ' + pic + '</button></div>';
         panel.hidden = false; wrap.querySelector('.box').classList.add('vla-wide'); drawLogo();
         var save = $('#vla-le-save');
         var ed = LE.mount($('#vla-le'), { fetchUrl: function (url) { return disc({ action: 'logo_fetch', url: url }); }, onChange: function (on) { save.disabled = !on; } });
@@ -484,13 +487,13 @@
         $('#vla-le-x').onclick = closeEditor;
         save.onclick = function () {
           save.disabled = true;
-          logoWork('Saving the logo...', function () {
+          logoWork('Saving the ' + pic + '...', function () {
             return ed.toBlob().then(uploadSquare).then(function (path) { return disc({ action: 'logo_set', listing_id: l.id, path: path }); })
               .then(function (d) { if (!d.ok) throw new Error(d.message || d.error || 'save'); closeEditor(); return { logo_url: d.logo_url }; });
           }).then(function () { if (!$('#vla-ledit').hidden) save.disabled = false; });
         };
         panel.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-      }, function () { $('#vla-up').disabled = false; drawLogo('The logo editor did not load. Try again.', true); });
+      }, function () { $('#vla-up').disabled = false; drawLogo('The ' + picWord() + ' editor did not load. Try again.', true); });
     };
     $('#vla-copy').onclick = function () {
       logoWork('Copying the logo from their website...', function () {

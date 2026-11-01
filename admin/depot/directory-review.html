@@ -918,6 +918,8 @@
           });
         });
       }
+      // The Directory's People sections (PEOPLE_CATS in public/ve-region-directory.js).
+      var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
       function viewLogo(id, fromSuggestion) {
         if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id, fromSuggestion); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
         var redo = fromSuggestion === 'redo';
@@ -930,21 +932,24 @@
         var back = tab === 'find' ? '#logos' : '#logos/' + tab;
         crumbs([['Directory review', '#'], ['Logos', back], [r.name]]);
         var ig = String(r.instagram || '').replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/\/.*$/, '');
+        // A person's picture is their photo, and Google searches "<name> Vegan" (Sean, 2026-11-01: "it puts logo after their name in
+        // the search and I have to edit each time... search that person's name and then use Vegan after").
+        var person = PEOPLE_CATS.indexOf(r.category) >= 0, pic = person ? 'photo' : 'logo';
         var look = [
           r.website && ['Their website', /^https?:/i.test(r.website) ? r.website : 'https://' + r.website],
           ig && ['Instagram', 'https://www.instagram.com/' + ig + '/'],
           r.facebook && ['Facebook', /^https?:/i.test(r.facebook) ? r.facebook : 'https://www.facebook.com/' + r.facebook],
-          ['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(r.name + ' ' + (r.city || '') + ' logo')],
+          ['Google Images', 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(person ? r.name + ' Vegan' : r.name + ' ' + (r.city || '') + ' logo')],
         ].filter(Boolean);
         var seen = (r.suggest && r.suggest.candidates) || [];
         V().innerHTML = '<section class="card"><div class="home-head"><div><h2 style="margin:0 0 2px">' + esc(r.name) + '</h2><p class="hint" style="margin:0">' + esc([r.category, [r.city, r.state].filter(Boolean).join(', ')].filter(Boolean).join(' · ')) + (tab === 'find' && i >= 0 ? ' &middot; ' + (i + 1) + ' of ' + rows.length : '') + '</p></div>' +
             '<div class="row-btns"><a class="btn btn-ghost btn-sm" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Open its page</a></div></div>' +
-          '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">Find their logo</p>' +
+          '<p class="vle-lbl" style="font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin:14px 0 6px">Find their ' + pic + '</p>' +
           '<div class="row-btns">' + look.map(function (x) { return '<a class="btn btn-ghost btn-sm" href="' + esc(x[1]) + '" target="_blank" rel="noopener">' + esc(x[0]) + '</a>'; }).join('') +
             (r.set_aside ? '<button type="button" class="btn btn-ghost btn-sm" id="lg-aside">Load the one we set aside</button>' : '') + '</div>' +
           (seen.length ? '<p class="hint" style="margin:8px 0 4px">' + (isSuggested(r) ? 'The sweep picked: ' + esc(r.suggest.source || '') + '. ' : r.suggest && r.suggest.why ? 'The sweep: ' + esc(r.suggest.why) + ' ' : '') + 'Pictures it looked at:</p><div class="row-btns">' +
             seen.map(function (c, k) { return '<button type="button" class="btn btn-ghost btn-sm" data-seen="' + k + '">' + esc(c.from) + (c.w ? ' (' + c.w + ' x ' + c.h + ')' : '') + '</button>'; }).join('') + '</div>' : '') +
-          '<p class="hint" style="margin:6px 0 14px">On their page, right-click the logo and Copy image, then paste it here (Ctrl+V or Cmd+V). You can also drag it in from the other tab, or save it and drop the file.</p>' +
+          '<p class="hint" style="margin:6px 0 14px">On their page, right-click the ' + pic + ' and Copy image, then paste it here (Ctrl+V or Cmd+V). You can also drag it in from the other tab, or save it and drop the file.</p>' +
           '<div id="lg-editor"></div>' +
           '<p class="msg" id="lg-msg" role="status"></p>' +
           '<div class="step-bar lg-bar"><a class="btn btn-ghost" href="' + back + '">Back to the list</a>' +
@@ -954,7 +959,7 @@
         var ed = VELogoEditor.mount($('lg-editor'), { fetchUrl: logoFetch, onChange: function (on) { save.disabled = !on; },
           background: fromSuggestion && isSuggested(r) ? r.suggest.background : '', trim: !!(fromSuggestion && isSuggested(r)) });
         if (fromSuggestion && isSuggested(r)) ed.load(r.suggest.url);
-        if (redo) { ed.load(r.logo_url); msg.textContent = 'This is the logo as it is now. Change it and save, or go back.'; }
+        if (redo) { ed.load(r.logo_url); msg.textContent = 'This is the ' + pic + ' as it is now. Change it and save, or go back.'; }
         if ($('lg-aside')) $('lg-aside').addEventListener('click', function () { ed.load(r.set_aside); });
         Array.prototype.forEach.call(V().querySelectorAll('[data-seen]'), function (b) { b.addEventListener('click', function () { ed.load(seen[+b.dataset.seen].url); }); });
         function gone(okText, url) {
@@ -972,7 +977,7 @@
           var made = '';
           ed.toBlob().then(function (blob) { made = URL.createObjectURL(blob); return uploadSquare(blob); }).then(function (path) { return disc({ action: 'logo_set', listing_id: r.id, path: path, from_suggestion: !!fromSuggestion }); }).then(function (d) {
             if (!d.ok) throw new Error(d.message || d.error || 'That did not save.');
-            lg.done++; gone(r.name + ' has its logo.', d.logo_url || made);
+            lg.done++; gone(r.name + ' has its ' + pic + '.', d.logo_url || made);
           }).catch(function (e) { save.disabled = false; msg.className = 'msg err'; msg.textContent = e.message; });
         });
         if ($('lg-skip')) $('lg-skip').addEventListener('click', function () {
