@@ -272,6 +272,16 @@
   .ve-ficon b{font-size:15px;font-weight:900;}
   .dash-preview-icon.ve-ficon{width:38px;height:38px;margin-bottom:10px;}
   .dv-tile .dv-tag{display:inline-block;margin-left:6px;vertical-align:1px;}
+  /* Your business, first on the Dashboard tab for an owner (2026-11-01). */
+  #dash-biz{margin:18px 0 22px;}
+  .dash-biz-card{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
+  .dash-biz-logo{width:52px;height:52px;flex:0 0 52px;border-radius:8px;background:#f3f3f3 center/cover no-repeat;}
+  .dash-biz-letter{display:grid;place-items:center;font-weight:900;font-size:22px;color:var(--ve-green-dark,#1f5f22);background:var(--ve-green-light,#e8f5e9);}
+  .dash-biz-body{flex:1 1 220px;min-width:0;}.dash-biz-body b{display:block;font-size:16px;}.dash-biz-body small{display:block;margin-top:3px;font-size:13px;color:rgba(0,0,0,.62);}
+  .dash-biz-acts{display:flex;gap:8px;flex-wrap:wrap;}
+  .dash-biz-btn{display:inline-block;background:var(--ve-green-dark,#2D5C27);color:#fff;border-radius:6px;padding:10px 14px;font-weight:800;font-size:13px;text-decoration:none;}
+  .dash-biz-btn.o{background:#fff;color:var(--ve-green-dark,#2D5C27);border:1.5px solid var(--ve-green-dark,#2D5C27);padding:8.5px 12.5px;}
+  @media (max-width:600px){.dash-biz-acts{width:100%;}.dash-biz-btn{flex:1;text-align:center;}}
   .dash-foryou-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:12px;min-height:32px;}
   .dash-foryou-head .dash-section-title{margin:0;}
   .dash-foryou-head select{appearance:none;-webkit-appearance:none;font:inherit;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ve-text);border:1px solid var(--ve-border);border-radius:6px;padding:6px 44px 6px 10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;cursor:pointer;}
@@ -915,6 +925,10 @@
            want them to have similar headers... when you expand it to see something there, even if we still use just the city that's
            selected"). mountTabBanners: the dashboard's city picker, and, open, a row of this tab's own numbers. -->
       <section id="dash-home-hero" class="dash-hero-banner"></section>
+      <!-- Your business first (Sean, 2026-11-01, playbook ve-listing-check: "the dashboard on that profile becomes their dashboard"):
+           an owner opening /dashboard sees each listing they own on top, with its listing check score and the way into its business
+           dashboard. Filled by renderBusinessFirst() from ve-dashboard home and ve-claims owner_dashboard (only: 'health'). -->
+      <div id="dash-biz" style="display:none;"></div>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
            tools. Superadmins see the 5 most recent Members, Event Submissions,
@@ -4050,6 +4064,31 @@
       '<div class="dash-tour-prompt-body"><div class="dash-tour-prompt-title">' + dvEsc(c.title) + (tag ? ' <span class="dv-tag">' + dvEsc(tag) + '</span>' : '') + '</div>' +
       '<div class="dash-tour-prompt-desc">' + dvEsc(c.body) + '</div></div><div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div></a>';
   }
+  // Your business, first on the Dashboard tab for anyone who owns a listing: its listing check (free on claim) and the way in.
+  function renderBusinessFirst(listings) {
+    var box = document.getElementById('dash-biz'); if (!box) return;
+    if (!listings.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+    var href = function (l, pd) { return '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' + (pd ? '&pd=' + pd : ''); };
+    box.innerHTML = '<div class="dash-biz-head"><p class="dash-section-title">Your business</p></div>' + listings.slice(0, 4).map(function (l, i) {
+      var pic = l.logo_url ? '<span class="dash-biz-logo" style="background-image:url(\'' + dvEsc(l.logo_url) + '\')"></span>' : '<span class="dash-biz-logo dash-biz-letter">' + dvEsc(String(l.name || '?').charAt(0)) + '</span>';
+      return '<div class="dash-biz-card">' + pic + '<div class="dash-biz-body"><b>' + dvEsc(l.name) + '</b>' +
+        '<small>' + (l.claim_status === 'verified' ? 'Yours' : 'Waiting for our approval') + ' &middot; <span id="dash-biz-score-' + i + '">Reading your listing check...</span></small></div>' +
+        '<div class="dash-biz-acts"><a class="dash-biz-btn" href="' + href(l) + '">Open your business dashboard</a>' +
+        '<a class="dash-biz-btn o" id="dash-biz-check-' + i + '" href="' + href(l, 'audit') + '">Your listing check</a></div></div>';
+    }).join('');
+    box.style.display = '';
+    listings.slice(0, 4).forEach(function (l, i) {
+      if (!l.id) return;
+      fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+        body: JSON.stringify({ action: 'owner_dashboard', listing_id: l.id, only: 'health' }) }).then(function (r) { return r.json(); }).then(function (d) {
+        var el = document.getElementById('dash-biz-score-' + i); if (!el) return;
+        var h = d && d.health; if (!h || !h.checks || !h.checks.length) { el.textContent = 'Your listing check runs this month'; return; }
+        var passed = h.checks.filter(function (c) { return c.status === 'pass'; }).length, fl = h.checks.filter(function (c) { return c.status === 'flag'; }).length;
+        var more = h.checkup && h.checkup.flags ? h.checkup.flags.length : 0;
+        el.textContent = 'Listing check: ' + passed + ' of ' + h.checks.length + ' passed' + (fl ? ', ' + fl + ' flagged' : '') + (more ? ', ' + more + ' from our monthly check-up' : '');
+      }).catch(function () { var el = document.getElementById('dash-biz-score-' + i); if (el) el.textContent = 'Open it to see your listing check'; });
+    });
+  }
   function renderVersion(member) {
     var list = document.getElementById('dash-action-list'); if (!list) return;
     dvCall({ action: 'home' }).then(function (d) {
@@ -4063,10 +4102,9 @@
       if (sv.active && !sv.completed && left > 0) out += dvTile({ title: sv.earned ? 'Keep building your profile' : 'Build your profile', cta_url: '/dashboard/survey',
         body: sv.earned ? 'You have ' + sv.earned + ' of ' + (sv.total || 250) + ' points. Answer a few more about yourself, in any order.' : 'Questions about you, answered in any order. Every answer goes on your profile and earns points: 250 in all.' },
         FICON('list'), '+' + left + ' points').replace('class="dash-tour-prompt dv-tile"', 'class="dash-tour-prompt dv-tile" data-survey');
-      // Business: each listing they own opens its business dashboard (/directory/<slug>?tab=brand), else Join the Directory.
-      if (d.version === 'business') out += d.listings.length ? d.listings.map(function (l) {
-          return dvTile({ title: l.name, body: 'Your numbers, your page and menu, ads, campaigns and the audit.', cta_url: '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' }, FICON('store'), l.claim_status === 'verified' ? 'Yours' : 'Waiting for approval');
-        }).join('') : dvTile({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_url: '/claim' }, FICON('store'));
+      // Business: the listings they own are on top in Your business (renderBusinessFirst); without one, Join the Directory.
+      renderBusinessFirst(d.listings || []);
+      if (d.version === 'business' && !(d.listings || []).length) out += dvTile({ title: 'Is your business in the Directory?', body: 'Find it and claim it, or add it. Your business dashboard opens on your page.', cta_url: '/claim' }, FICON('store'));
       // Just starting: the steps in order, numbered; everyone else gets an icon.
       out += wiz.map(function (c, i) { return dvTile(c, d.version === 'pre_vegan' ? '<b>' + (i + 1) + '</b>' : FICON(dvIcon(c)), TAG[c.kind]); }).join('');
       out += news.map(function (c) { return dvTile(c, FICON(dvIcon(c)), TAG[c.kind]); }).join('');

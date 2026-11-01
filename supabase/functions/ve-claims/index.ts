@@ -24,7 +24,8 @@
 // The business dashboard (Sean, 2026-10-24, Love Life Cafe as the prototype). Its owner or a super admin. The $11 Founding
 // Membership opens it (Sean, 2026-10-24: "that one $11 investment opens them up"); a live plan opens it too. An owner who is
 // not a member yet still edits the page and the menu, and is offered the membership.
-//   POST { action: 'owner_dashboard', listing_id, days? }  -> { listing, open, admin, checklist, cards, health, stats?, plan?, ads?, checkins?,
+//   POST { action: 'owner_dashboard', listing_id, days?, only? }  -> { listing, open, admin, checklist, cards, health, stats?, plan?, ads?, checkins?,
+//          (only: 'health' returns just the listing check, for the member dashboard's Your business block)
 //          spots?, audits?, orders?, guides?, opportunities?, interests? }
 //   POST { action: 'menu_list', listing_id }  /  { action: 'menu_save', listing_id, item }  /  { action: 'menu_delete', listing_id, id }
 //     the menu (ve_menu_items), each change a ve_listing_edits row (field menu_item) that the Depot can undo
@@ -1201,6 +1202,8 @@ Deno.serve(async (req) => {
     const hub = hubOf(l);
     // The listing check is free on claim (Sean, 2026-11-01, playbook ve-listing-check ANSWER): every owner gets it, member or not.
     const health = await listingHealth(l, food, dashKind, menu.count || 0, !!hours);
+    // The member dashboard's Your business block reads only the listing check (Sean, 2026-11-01: an owner's business comes first).
+    if (body.only === 'health') return json({ ok: true, health, listing: { id: l.id, name: l.name, slug: l.slug, claim_status: l.claim_status }, owner });
     const base = { ok: true, health, listing: { id: l.id, name: l.name, slug: l.slug, category: l.category, food, kind: dashKind, hub, claim_status: l.claim_status },
       open, owner, admin: !owner, member_active: memberActive, checklist, cards: (cardsQ.data || []).filter((c: any) => Date.parse(c.starts_at) <= Date.now() && (!c.ends_at || Date.parse(c.ends_at) > Date.now())
         && (!c.listing_kinds || c.listing_kinds.includes(dashKind))).map(({ listing_kinds: _k, ...c }: any) => c), menu_count: menu.count || 0 };

@@ -162,7 +162,8 @@
       var a = body && body.action;
       if (a === 'owner_dashboard') { var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), checkins: checkins() })); }
       if (a === 'menu_list') return Promise.resolve({ ok: true, items: MENU });
-      toast('Sample dashboard: nothing is saved here. On your own page this goes live right away.');
+      // A button with its own words (data-vpd-demo, Have us do it) says what would happen; anything else would have saved.
+      toast(a === 'demo_only' && body.note ? 'Sample dashboard: ' + body.note : 'Sample dashboard: nothing is saved here. On your own page this goes live right away.');
       return Promise.resolve({ ok: true });
     }
   };

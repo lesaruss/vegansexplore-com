@@ -498,7 +498,8 @@
     }
     // Home: one line with the score, opening the board.
     function healthStrip() {
-      var h = D.health; if (!h || !h.checks || !h.checks.length) return '';
+      // The sample business shows the sample that needs work, so the strip reads as an owner's would.
+      var S = D.healthSamples, h = S && S.length ? S[S.length - 1] : D.health; if (!h || !h.checks || !h.checks.length) return '';
       var passed = h.checks.filter(function (c) { return c.status === 'pass'; }).length, fl = h.checks.filter(function (c) { return c.status === 'flag'; }).length;
       var more = h.checkup && h.checkup.flags ? h.checkup.flags.length : 0;
       return '<div class="vpd-hc-strip"><div><b>Your listing check: ' + passed + ' of ' + h.checks.length + ' passed</b><small>' +
