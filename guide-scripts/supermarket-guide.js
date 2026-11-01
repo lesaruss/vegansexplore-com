@@ -735,7 +735,9 @@
     var last = ''; try { last = localStorage.getItem('sg_store') || ''; } catch (e) {}
     var shelf = cat ? '#/store/' + (last || FREE) + '/c/' + cat.k + '?t=' + encodeURIComponent(tn) + '&b=' + encodeURIComponent(b.slug || '') : '';
     var pending = d.status === 'pending';
-    main.innerHTML = scanHead(code, d.image_url || p.image_url, d.name, '<p class="dg-lede" style="margin:0">' + esc(b.name || '') + ' &middot; ' + esc(p.product_type || '') +
+    // The line's name as the title ("Oatly Milk"); the barcode's own item ("Original") under it.
+    var lineName = p.name || ((b.name || '') + ' ' + (p.product_type || '')).trim();
+    main.innerHTML = scanHead(code, d.image_url || p.image_url, lineName, '<p class="dg-lede" style="margin:0">' + (d.name && d.name !== lineName ? esc(d.name) + ' &middot; ' : '') + esc(b.name || '') +
       (pending ? ' &middot; <span class="dg-tag sa-tag-ask">Waiting for the team</span>' : '') + '</p>') +
       (window.VEMacros ? VEMacros.strip(d.macros) || '<p class="sg-small">Macros for this one are not added yet.</p>' : '') +
       '<div class="sg-scanacts"><a class="dg-btn" href="' + esc(page) + '">Open its page</a>' + (shelf ? '<a class="dg-btn dg-ghost" href="' + esc(shelf) + '">Every ' + esc(tn.toLowerCase()) + ' like it</a>' : '') + '</div>' +

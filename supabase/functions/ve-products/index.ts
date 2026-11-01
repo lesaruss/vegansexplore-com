@@ -17,6 +17,7 @@
 // POST { action: 'barcode_review', gtin, op: approve|reject, product_id? }  super admin -> { ok }
 //
 // Authorization: Bearer <ve_token> (the VE app token, checked the way ve-cookbook checks it).
+// Ops: Bearer <LESARUSS_ADMIN_TOKEN> with as_member acts as that member.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -52,9 +53,14 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 type Viewer = { id: string; active: boolean; admin: boolean } | null;
-async function loadViewer(req: Request): Promise<Viewer> {
+async function loadViewer(req: Request, body: any): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const id = token ? await verifyToken(token) : null;
+  let id = token ? await verifyToken(token) : null;
+  // Ops: the admin token acting as a member (as ve-bounties does), for the team's checks.
+  if (!id && token && /^[0-9a-f-]{36}$/.test(String(body?.as_member || ''))) {
+    const { data: adm } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+    if (adm?.value && token === adm.value) id = String(body.as_member);
+  }
   if (!id) return null;
   const { data: m } = await db.from('members').select('id, membership_status, is_superadmin').eq('id', id).maybeSingle();
   if (!m) return null;
@@ -82,7 +88,8 @@ async function offLookup(code: string) {
     const g = (k: string) => { const v = n[k + (perServ ? '_serving' : '_100g')]; return v == null || v === '' ? undefined : Math.round(Number(v) * 10) / 10; };
     const tags: string[] = p.ingredients_analysis_tags || [], labels: string[] = p.labels_tags || [];
     const vegan = labels.some((t) => /en:vegan/.test(t)) || tags.includes('en:vegan') ? 'yes' : tags.includes('en:non-vegan') ? 'no' : tags.includes('en:maybe-vegan') ? 'maybe' : 'unknown';
-    const sodium = g('sodium');
+    // Sodium comes in grams: read it before rounding.
+    const sRaw = n['sodium' + (perServ ? '_serving' : '_100g')], sodium = sRaw == null || sRaw === '' ? undefined : Number(sRaw);
     return {
       name: p.product_name_en || p.product_name || '', brand: String(p.brands || '').split(',')[0].trim(),
       image: p.image_front_url || p.image_front_small_url || null,
@@ -115,7 +122,7 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const action = String(body.action || '');
-  const viewer = await loadViewer(req);
+  const viewer = await loadViewer(req, body);
   const needMember = () => !viewer ? json({ error: 'not_authenticated', message: 'Sign in first.' }, 401)
     : !viewer.active ? json({ error: 'payment_required', message: 'This is for Passport holders: $11, one time.' }, 402) : null;
 
