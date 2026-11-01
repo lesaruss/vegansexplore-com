@@ -5,7 +5,7 @@
 -- products are 100% vegan"), Vega (vegan certified), Deva (Vegan Society registered), Vivo Life (Vegan Society certified),
 -- Sunwarrior, KOS, Ora Organic (Certified Vegan), Nuzest, Future Kind, Truvani, PlantFusion, Vedge Nutrition, Ritual,
 -- Amazing Grass. Left out: Naturelo (some products only vegetarian), Momentous, Naked, Onnit, Transparent Labs, XWERKS
--- (they sell whey). Online brands: location Online, every chapter. Logos come from the logo sweep (Directory review > Logos).
+-- (they sell whey). Online brands: location Online (they read Online on the card and show in every chapter). Logos come from the logo sweep (Directory review > Logos).
 -- Garden of Life sells fish oil and bovine and fish collagen, so it is Vegan options, not 100% Vegan, and its description
 -- no longer calls it a Vegan brand.
 
@@ -50,7 +50,7 @@ with b(slug, name, specialty, website, instagram, tagline, description, kinds) a
 insert into public.listings (name, slug, category, specialty, description, tagline, location, website, instagram, status, vegan_status,
   communities, product_kinds, crawl_source, tenant_id, initials, details)
 select b.name, b.slug, 'Nutrition & Supplements', b.specialty, b.description, b.tagline, 'Online', b.website, b.instagram, 'approved', 'fully_vegan',
-  array['all'], b.kinds, 'admin', '00000000-0000-4000-a000-000000000002', upper(left(b.name, 1)),
+  '{}'::text[], b.kinds, 'admin', '00000000-0000-4000-a000-000000000002', upper(left(b.name, 1)),
   jsonb_build_object('added_by_hand', true, 'admin_notes', jsonb_build_array(jsonb_build_object('at', now(), 'by', 'Logan', 'kind', 'note',
     'text', 'Added 2026-11-01 to Nutrition & Supplements: a whole-Vegan supplement brand, checked by web search.')))
 from b
@@ -60,7 +60,7 @@ where not exists (select 1 from public.listings l where l.slug = b.slug and l.st
 update public.listings set name = 'PlantFusion', category = 'Nutrition & Supplements', specialty = 'Plant-based protein and supplements',
   description = 'New Jersey brand, founded in 2009: Complete Plant Protein, organic proteins, meal replacements, plant-based collagen builders and vitamins. Every powder is Vegan and allergen free.',
   tagline = 'Plant-based protein, allergen free', location = 'Online', website = 'https://plantfusion.com', status = 'approved',
-  vegan_status = 'fully_vegan', communities = array['all'], product_kinds = array['protein'], crawl_source = coalesce(crawl_source, 'admin'),
+  vegan_status = 'fully_vegan', communities = '{}', product_kinds = array['protein'], crawl_source = coalesce(crawl_source, 'admin'),
   tenant_id = '00000000-0000-4000-a000-000000000002', initials = 'P',
   details = coalesce(details, '{}'::jsonb) || jsonb_build_object('added_by_hand', true, 'admin_notes', jsonb_build_array(jsonb_build_object('at', now(), 'by', 'Logan', 'kind', 'note',
     'text', 'Listed 2026-11-01 from the import (it was quarantined): a whole-Vegan supplement brand, checked by web search.')))
@@ -69,7 +69,7 @@ where slug = 'plant-fusion' and status = 'quarantined';
 update public.listings set name = 'Vedge Nutrition', category = 'Nutrition & Supplements', specialty = 'Plant-based sports nutrition',
   description = 'Plant-based performance supplements: organic plant protein, Vegan collagen and Creatine+, creatine monohydrate with a mushroom blend and electrolytes. Certified Vegan and organic ingredients, third-party tested.',
   tagline = 'Plant-based performance', location = 'Online', website = 'https://vedgenutrition.com', status = 'approved',
-  vegan_status = 'fully_vegan', communities = array['all'], product_kinds = array['protein'], crawl_source = coalesce(crawl_source, 'admin'),
+  vegan_status = 'fully_vegan', communities = '{}', product_kinds = array['protein'], crawl_source = coalesce(crawl_source, 'admin'),
   tenant_id = '00000000-0000-4000-a000-000000000002', initials = 'V',
   details = coalesce(details, '{}'::jsonb) || jsonb_build_object('added_by_hand', true, 'admin_notes', jsonb_build_array(jsonb_build_object('at', now(), 'by', 'Logan', 'kind', 'note',
     'text', 'Listed 2026-11-01 from the import (it was quarantined): a whole-Vegan supplement brand, checked by web search.')))
