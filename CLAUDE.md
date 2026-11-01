@@ -502,7 +502,17 @@ locked part refuses `kit_save` (409 `locked`); changing it is `kit_change_reques
 proposes a style, six colors by role and one of the four pairings, saved as `mood.read`; never locked). `business/brand.html` sends Edit on a
 locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`components/branddesk/BrandKitRoom.tsx`, `/api/branddesk/kit`) shows
 the gate, the mood board, the parts, the requests and Launch; live on lesaruss-hq main dc947e5 (2026-11-01,
-Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
+Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default).
+**The Website module** (2026-11-01, Sean: "go with your recommendation", client listings first; lesaruss-hq branch
+`claude/branddesk-social-deploy-7423db` d8c7fdd, not on main yet): **BrandDesk > Websites** (`/branddesk/websites`, a button on the BrandDesk
+wall; `components/branddesk/WebsiteRoom.tsx`, `/api/branddesk/website`, `lib/branddeskSites.ts`): every BrandDesk client
+(`ve-branddesk` `list`), then one client's wizard (`?account=<id>`): 1. their brand kit, its parts and state; **Build their website waits
+until the kit launches** (Logan's default: the gate is in HQ, the server's `site_start` and the Depot still build from an unlaunched kit),
+with **Launch their brand kit** once every part is locked (`ve-brand-kit` `kit_launch` with the listing's slug); 2. their website (build,
+look, send for the owner's OK, record an OK given another way); 3. their old addresses; 4. their domain and its records; 5. the final check;
+take it down or end it; every step. All of it is `ve-branddesk`'s `site_*` actions as the signed-in person's members row, the same the Depot
+runs. Our own brands' websites wait for a brand frame (the frame is a restaurant's). Checked against mocked answers in a browser at 1366 and
+390 px; no BrandDesk client existed yet (`list` returned none).
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
