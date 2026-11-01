@@ -4944,6 +4944,31 @@ them opens full size in a **lightbox** (`lightbox`: videos play, arrows and the 
 `vegan-media/media/social/<brand>/<slot>/`), then the slot saves its assets (logged, and sent to Metricool again when it was scheduled).
 **Plan cards show the whole picture** (Sean, 2026-11-01: "I would like to see the full item in the preview... It looks off to me"): every card's picture is a 4:5 frame; a reel, story, episode or video shows its cover whole on dark (`.th.v`, `contain`), and a post or carousel fills the frame from the top. **The period drives every tile** (Sean, 2026-11-01: "the tiles... don't appear to be synced with the dropdown... a custom option... how far back"): Last 7, 30, 90 days, 6 or 12 months, This year, each past year from 2023, or **Custom dates** (from and to, its own row; `range`, `periodSel`, `custRow` in `admin/depot/social.html`, kept for the visit in `sessionStorage` `ve_social`). Analytics opens with a summary strip for the period (views, posts, followers gained, likes, comments, the top post linked to its view), then one card per channel the brand has, led by its views in the period, its followers at the period's end and the change, posts, reach, likes, engagement and its top post. Metricool holds posts back to 2023 (Instagram and YouTube for Sean A. Russell) and follower counts from 2025; a card says when there is no follower history for the dates. **Notes can be spoken** (Sean, 2026-11-01: "Make it so I can leave a voice dictation on the post"): the note box has **Speak** (`wireSpeak` in `admin/depot/social.html`), the browser's own speech recognition writing at the cursor until Stop or silence, nothing recorded by us; no button where the browser has none (Firefox). The box is `data-dictate="off"` so `ve-dictate.js`'s floating mic does not double it. **A direct change by a person leaves Logan an open note** saying what changed (pictures and videos taken out and put in by file name, the
 new time, Caption rewritten), in Notes for Logan; Logan's own changes leave none.
+**Music** (Sean, 2026-11-01: "Instagram: Reels only, from Meta's library for outside apps. TikTok: the top 100 trending songs on photo and
+carousel posts; videos with music get finished in the TikTok app"; migration `20261101_ve_social_sound_story.sql`). Checked against
+Metricool's own OpenAPI spec (`app.metricool.com/api/swagger.json`, read through pg_net since the build session cannot reach it): Instagram
+takes `instagramData.audioConfiguration` (`audioId` required, title, `audioType` music | original_sound, `audioVolume` and `videoVolume` 0 to
+100) on Reels only, songs from `GET /v2/scheduler/catalogs/instagram/audio?searchQuery=`; TikTok takes `tiktokData.music` (`musicId`, title,
+author, previewUrl, thumbnailUrl, and in practice `soundVolume`, refused without it though the spec does not mark it) on photo posts only,
+songs from `GET /v2/scheduler/catalogs/tiktok/trending-tracks` (the top 100, `commercialMusicId`). A slot keeps its pick in
+`ve_social_slots.sound` `{instagram?, tiktok?, by_hand?: {song}}`; the slot's **Music** panel (`musicPanel`, `wireMusic`) searches Instagram's
+library (with Play to hear it and a mix: song and the video's own sound 100/100, song quieter under the voice 25/100, song only 100/0) on a
+reel, video or episode, shows TikTok's top 100 (filter, Play, Pick) whenever TikTok is ticked, and takes **Not in the list?** (a song named
+by hand). `ve-social` `sounds` {brand, net: instagram | tiktok, q?} reads the catalogs live. **What goes by hand, named ahead of time**: a
+TikTok video with a song (TikTok is then Post by hand, "finish it in the TikTok app with <song>"), and a song named by hand (Instagram and
+TikTok by hand unless a picked song covers them); the rest still schedules in Metricool. Instagram photo posts and stories get no song.
+Proven 2026-11-01 against the real Metricool with [TEST] slots in December: a reel scheduled with its Instagram song at 25/100 and TikTok marked
+by hand with the song named; a TikTok photo post scheduled with its song; then skipped (gone from Metricool) and the rows removed.
+**Stories and Also share as a story** (same migration). A story slot goes to Metricool as type STORY; on 2026-11-01 a test story (today's
+Find your Guide cover on a 9:16 frame) was scheduled on Vegans Explore's Instagram and Metricool held it as `instagramData.type` STORY.
+A post's form has **Also share as a story** (any kind but story and thread): it adds a story slot 15 minutes after the post
+(`STORY_AFTER_MIN`), on the post's Instagram and Facebook, with `story_of` the post, its links and a By hand link sticker step, and status
+**held** (Waiting for 9:16 media) unless the post already has 9:16 media. Each picture and video carries its `w` and `h` (the page measures
+them before saving, `measure`, `measureAll`); once every picture or video on a held story is 9:16 (height over width 1.70 to 1.86) it moves
+to Waiting for approval, and back to held if a wide one goes on. A held story cannot be approved or pushed. The story follows the post's
+time when the post moves, is skipped with it, and unticking the option skips it (out of Metricool if scheduled). `slot_get` returns the
+post's `story` and the story's `parent`, linked on each slot. Proven 2026-11-01 with [TEST] slots (made held, moved to Waiting for approval
+by a 1080 x 1920 picture, followed the post's move, skipped with it).
 
 ## Image conventions
 
