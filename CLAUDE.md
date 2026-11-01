@@ -621,7 +621,12 @@ judge whether food is safe by how a place looks online; businesses want marketin
   as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
   (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
   links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
-  `branddesk.allowed`). **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
+  `branddesk.allowed`). **My brand** (`#mine`, `#mine/<kit>`; Sean, 2026-11-01: "Go with the owner panel") is Sean's owner panel: his seanarussell.com
+  media kits (the `sar-kits` edge function, `list`) with Edit and Open the kit, and Edit opens the one kit editor, loaded from
+  `https://www.seanarussell.com/assets/js/sar-kit-editor.js` (`SARKitEditor.mount`, `backLabel` Back to my kits) so the kit page and the
+  Depot share one editor and one save (`sar-kits` `edit_get`, `kit_save`). It signs with the Depot session: `ve_token` is the same HMAC
+  session as seanarussell.com's `lr_token`, and `sar-kits` re-checks `members.is_superadmin` on every read and save. Not a BrandDesk
+  client account: no `ve_branddesk_accounts` row, no billing. **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
   the components visually without having to go through the whole process myself"): 25 steps from Managed by us to the Inbox, on the
   sample business; `/business/managed?preview=plan|agreement|pay|done|client|closed|signin` (a sample owner, nothing charged),
   `/business/sample/site?look=island|night`, and `?managed=preview` on any page with `ve-managed.js` (opens the request window, sends
