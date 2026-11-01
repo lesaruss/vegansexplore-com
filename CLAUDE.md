@@ -452,6 +452,38 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
+## BrandDesk, the production wing (LOCKED by Sean 2026-11-01, playbook `branddesk-production-wing`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-branddesk-production-wing`; migration
+`20261101_branddesk_production_wing_canon.sql`; the full write-up is `docs/proposals/depot-one-desk.md`). **Not built yet.** BrandDesk
+is the Studio at hq.lesaruss.ai/studio renamed and made the product, living in HQ (lesaruss/lesaruss-hq). It replaces the Studio, this
+site's Depot and Depot > BrandDesk; until each Depot page has a home there, it keeps working here. Brand kit first (approved means
+locked; a locked part changes only on a request with a reason, approved by the owner), then launch opens the modules, each a wizard
+(Website and Social first; Video, YouTube, Podcast, Book, Mobile app, Pitch deck as we use them; Product launch premium, waiting on
+distributor relationships). A marketing plan rolls out dated tasks; every piece is ask, draft, approve, store. Support per wizard:
+Self-serve, Supported, Managed (the $500 managed service below is Managed). **Pricing**: BrandDesk is a perk of the $111 Partner
+plan; wizards are rented by the month, period or year. **Periods**: 111 days, one shared calendar from January 1, 2027 (Period 1 Jan 1
+to Apr 21, 2027; 2 Apr 22 to Aug 10; 3 Aug 11 to Nov 29; 4 Nov 30 to Mar 19, 2028), always "period", never "quarter". Joining on days 1
+to 90 is prorated; days 91 to 111 are the Preparation window, full $111 for the next period, spent building the brand kit. **Front Row
+Start now charges $111 at sign-up** (the days before January 1 are bonus); anyone already on the old no-charge trial keeps those terms.
+Build order: the Partner checkout first, then renaming the Studio, the foundation, Social and Website, the plan engine, our own brands
+first.
+**The Partner checkout, built 2026-11-01 on branch `claude/festive-cori-cvqs2o`, not deployed** (Sean: "Logan, build it"). `ve-claims`
+`partnerTerms()` is the shared calendar (`PERIOD_DAYS` 111, `PREP_DAYS` 21, Period 1 from 2027-01-01 Eastern) and the public action
+`partner_terms` (`at` previews a date); tier `brand` checks out as a one-time line for what is due now plus a $111 price every 111 days
+(`interval` day, `interval_count` 111) on a trial to the next shared renewal at noon Eastern; `metadata.offer` front_row | prorated |
+preparation and `metadata.period`. Checked 2026-11-01: today $111 renewing April 22, 2027; March 31, 2027 $22; April 1 to 21 the
+Preparation window, $111 for Period 2 renewing August 11. The `offer=front-row` URL param is informational now. `claim.html` mirrors the
+calendar (`partnerTerms`, `partnerNow`); the Partner wording on `/claim`, `/business`, the listing page and brand tour, the business
+dashboard, the Restaurant Guide, the sample business and Preview journeys, and `/policies#business` (The Partner plan) say it; business
+outreach's Day 4 email lost "No charge today" (migration `20261101_partner_periods_outreach_day4.sql`, applied; nothing had been sent).
+No Partner membership existed, so nobody holds the old no-charge trial. The three lines that said the old terms were lip-synced videos;
+they are now the Guide's voice over her still picture, no video (Sean, 2026-11-01: "picture and voice, no video"): Liz's offer on `/claim`
+(`liz/partner-tour/j-5-v2.mp3`; `VEGuideTour.narrator` plays a line's `{audio, poster}`), and Maya's last brand tour slide, shared by
+every brand (`brand-door/front-row-v2.mp3` before January 1, then `plain-last-first-v2.mp3` or `plain-last-v2.mp3`; `{audio, poster}`
+through `voiceAt`). Recorded with el-media tts in their profile voices, called from the database (pg_net) so the admin token never
+leaves it, each checked word for word with `stt`. `ve-claims` and the pages go out together.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called

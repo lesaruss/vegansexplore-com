@@ -181,22 +181,28 @@
     var box = el.firstChild, vid = document.createElement('video');
     vid.className = 'vgt-vid'; vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
     box.querySelector('.vgt-vslot').appendChild(vid);
+    // A line can be her voice over a still picture ({audio, poster}; Sean, 2026-11-01: "picture and voice, no video").
+    var aud = new Audio(); aud.preload = 'none';
     function line() { return o.lines[S.key] || {}; }
+    function cur() { return (line().clip || {}).audio ? aud : vid; }
     function draw() {
       box.querySelector('.vgt-bubble').textContent = line().say || '';
       var p = box.querySelector('.vgt-play'); p.classList.toggle('go', !S.started); p.setAttribute('aria-pressed', String(S.playing));
-      p.innerHTML = !S.started ? '&#9654; Hear from ' + esc(guide) : S.playing ? 'Pause ' + esc(guide) : '&#9654; Watch ' + esc(guide);
+      p.innerHTML = !S.started ? '&#9654; Hear from ' + esc(guide) : S.playing ? 'Pause ' + esc(guide) : '&#9654; ' + ((line().clip || {}).audio ? 'Hear ' : 'Watch ') + esc(guide);
     }
-    function play() { if (!vid.getAttribute('src')) return; vid.play().then(function () { S.playing = true; draw(); }).catch(function () { S.playing = false; draw(); }); }
-    function stop() { vid.pause(); S.playing = false; draw(); }
+    function play() { var m = cur(); if (!m.getAttribute('src')) return; m.play().then(function () { S.playing = true; draw(); }).catch(function () { S.playing = false; draw(); }); }
+    function stop() { vid.pause(); aud.pause(); S.playing = false; draw(); }
     function toggle() { if (!S.started) { S.started = true; S.paused = false; play(); return draw(); } if (S.playing) { S.paused = true; stop(); } else { S.paused = false; play(); } }
     vid.addEventListener('ended', function () { S.playing = false; draw(); });
+    aud.addEventListener('ended', function () { S.playing = false; draw(); });
     vid.addEventListener('click', toggle);
     box.querySelector('.vgt-play').addEventListener('click', toggle);
     function say(key) {
       if (!o.lines[key] || key === S.key) return;
       S.key = key; var c = line().clip || {};
-      vid.pause(); S.playing = false; vid.poster = c.poster || ''; vid.src = c.video || '';
+      vid.pause(); aud.pause(); S.playing = false; vid.poster = c.poster || '';
+      if (c.video) vid.src = c.video; else vid.removeAttribute('src');
+      if (c.audio) aud.src = c.audio; else aud.removeAttribute('src');
       vid.classList.remove('vgt-shift', 'alt'); void vid.offsetWidth; vid.classList.add('vgt-shift');
       draw(); if (S.started && !S.paused) play();
     }
