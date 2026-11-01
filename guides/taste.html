@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Taste of Vegans Explore — Vegans Explore</title>
+  <meta name="description" content="A piece of every Vegans Explore Guide, walked through by the whole cast. Free: just your name and email.">
+  <link rel="canonical" href="https://vegansexplore.com/guides/taste">
+  <meta property="og:title" content="A Taste of Vegans Explore">
+  <meta property="og:description" content="A piece of every Vegans Explore Guide, walked through by the whole cast. Free with your name and email.">
+  <meta property="og:image" content="https://vegansexplore.com/public/guides/welcome-guide.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--g:#2d7d31;--gd:#1f5f22;--gl:#eaf7ea;--ink:#1a1a1a;--mute:rgba(26,26,26,.72);--line:rgba(0,0,0,.1)}
+    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--ink);line-height:1.6}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px}
+    #gate{max-width:none;margin:0;padding:0 0 72px}
+    .hero{position:relative;min-height:340px;display:flex;align-items:flex-end;background:#0d130e url('/public/guides/welcome-ensemble.jpg') center/cover no-repeat;color:#fff}
+    .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.92) 0%,rgba(0,0,0,.78) 45%,rgba(0,0,0,.25) 80%,transparent)}
+    .hero .in{position:relative;padding:40px 40px 34px;max-width:760px}
+    @media(max-width:700px){.hero::before{background:rgba(0,0,0,.62)}.hero .in{padding:28px 16px 24px}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#9fe0a6}
+    .hero h1{font-size:clamp(28px,4vw,46px);font-weight:900;line-height:1.08;margin:8px 0 10px}
+    .hero p{font-size:15.5px;color:rgba(255,255,255,.88)}
+    .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;padding:28px 40px 0;align-items:start}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr;padding:22px 16px 0}}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px}
+    .card h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin:0 0 12px}
+    ul.ticks{list-style:none;display:flex;flex-direction:column;gap:9px}
+    ul.ticks li{padding-left:28px;position:relative;font-size:14.5px}
+    ul.ticks li::before{content:"";position:absolute;left:0;top:4px;width:18px;height:18px;border-radius:50%;background:var(--g) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.4l3 3 6-6.4' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+    .steps{display:flex;gap:8px;margin:0 0 14px}
+    .steps span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:6px 11px;border-radius:6px;border:1px solid var(--line);color:var(--mute)}
+    .steps span.on{background:var(--gd);color:#fff;border-color:var(--gd)}
+    label{display:block;font-size:13px;font-weight:800;margin:14px 0 6px}
+    input[type=text],input[type=email]{width:100%;font:inherit;font-size:15px;padding:12px 14px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff}
+    select{width:100%;appearance:none;-webkit-appearance:none;font:inherit;font-size:15px;padding:12px 44px 12px 14px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center}
+    .agree{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin-top:14px;font-weight:600}
+    .agree input{width:20px;height:20px;margin-top:2px;accent-color:var(--gd)}
+    .fine{font-size:12.5px;color:var(--mute);margin-top:12px}
+    .nav{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+    .nav .n{font-size:12.5px;font-weight:700;color:var(--mute)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 20px;border-radius:6px;font:inherit;font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--gd);color:#fff;text-decoration:none}
+    .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid #ccd3cc}
+    .btn:disabled{opacity:.55;cursor:wait}
+    .msg{font-size:13.5px;font-weight:700;color:#8a1c12;margin-top:10px;min-height:20px}
+    .done{padding:40px;font-size:16px}
+    /* The sampler slides */
+    .tz-art{width:min(380px,100%);aspect-ratio:1;border-radius:18px;background:#1b2a1d center/cover no-repeat;box-shadow:0 18px 44px rgba(0,0,0,.4);justify-self:center}
+    .tz-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14.5px;line-height:1.55}
+    .tz-box b{color:#9fe0a6}
+    .tz-rest{font-size:12.5px;color:rgba(255,255,255,.72);margin-top:12px}
+    .tz-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div id="gate">
+    <section class="hero"><div class="in"><p class="eyebrow">Free with your name and email</p><h1>A Taste of Vegans Explore</h1><p>A piece of every one of our Guides, walked through by the whole cast: Maya, Theo, Liz, River, Nori, Kai, Dani and Pascal. See what Vegans Explore is before you decide anything.</p></div></section>
+    <div class="wrap">
+      <div class="card"><h2>What's inside</h2><ul class="ticks">
+        <li>A Vegan swap from the Dairy Guide and the B12 page from the Nutrition Guide.</li>
+        <li>A whole stadium and a whole airport, mapped for Vegan food.</li>
+        <li>The free restaurant check and the first tips for creators and nonprofits.</li>
+        <li>The animals: the rescues and sanctuaries near you, and the Fosters board.</li>
+        <li>Your city: its Directory, Daily Pulse and events.</li>
+      </ul><p class="fine">You will not be a member and nothing is charged. You are on our list, and we will send you a few notes about what is happening in your city.</p></div>
+      <div class="card" id="form"></div>
+    </div>
+  </div>
+  <main class="vg-stage" id="stage" data-bg="/public/guides/welcome-ensemble.jpg" aria-label="A Taste of Vegans Explore" hidden></main>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/footer.js"></script>
+  </div>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-taster';
+    var qs = new URLSearchParams(location.search);
+    var F = { name: '', email: '', why: '', chapter: '', journey: '', consent: false };
+    try { F = Object.assign(F, JSON.parse(sessionStorage.getItem('tz_form') || '{}')); } catch (e) {}
+    function keep() { try { sessionStorage.setItem('tz_form', JSON.stringify(F)); } catch (e) {} }
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(b) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+    function getTok() { try { return localStorage.getItem('ve_taster'); } catch (e) { return null; } }
+    function setTok(t) { try { localStorage.setItem('ve_taster', t); } catch (e) {} }
+    var WHY = [['food', 'Finding Vegan food and places'], ['going', 'Going Vegan, or eating more Vegan'], ['vegan', 'I am Vegan and want my community'], ['animals', 'Helping animals'], ['business', 'I run a business'], ['creator', 'I create content']];
+    var JOURNEY = [['curious', 'Curious'], ['flexitarian', 'Eating less meat'], ['vegetarian', 'Vegetarian'], ['new', 'Vegan, less than a year'], ['years', 'Vegan for years']];
+    function chapters() { return (window.VE_HUBS || []).map(function (h) { return [h.slug, h.name || h.title || h.slug]; }).concat([['elsewhere', 'Somewhere else']]); }
+    function opts(list, v) { return '<option value="">Pick one</option>' + list.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join(''); }
+    function step() { return qs.get('step') === '2' ? 2 : 1; }
+    function go(n) { qs.set('step', String(n)); history.pushState(null, '', location.pathname + '?' + qs.toString()); drawForm(); }
+    window.addEventListener('popstate', function () { qs = new URLSearchParams(location.search); if (!document.getElementById('gate').hidden) drawForm(); });
+    function drawForm() {
+      var s = step(), el = document.getElementById('form');
+      el.innerHTML = '<h2>Get your taste</h2><div class="steps"><span class="' + (s === 1 ? 'on' : '') + '">You</span><span class="' + (s === 2 ? 'on' : '') + '">Three questions</span></div>' +
+        (s === 1 ? '<label for="tz-name">Your name</label><input type="text" id="tz-name" autocomplete="name" value="' + esc(F.name) + '"><label for="tz-email">Your email</label><input type="email" id="tz-email" autocomplete="email" value="' + esc(F.email) + '">'
+          : '<label for="tz-why">What brings you here?</label><select id="tz-why">' + opts(WHY, F.why) + '</select><label for="tz-ch">Your city</label><select id="tz-ch">' + opts(chapters(), F.chapter) + '</select><label for="tz-j">Where are you on your Vegan journey?</label><select id="tz-j">' + opts(JOURNEY, F.journey) + '</select>' +
+            '<div id="tz-consent"></div>') +
+        '<div class="nav">' + (s === 2 ? '<button type="button" class="btn ghost" id="back">Back</button>' : '<span></span>') + '<span class="n">Step ' + s + ' of 2</span><button type="button" class="btn" id="next">' + (s === 1 ? 'Next' : 'Open my taste') + '</button></div><p class="msg" id="msg" role="status"></p>';
+      var consent = function () {
+        var box = document.getElementById('tz-consent'); if (!box) return;
+        var ch = document.getElementById('tz-ch').value;
+        box.innerHTML = ch === 'london' ? '<label class="agree"><input type="checkbox" id="tz-ok"' + (F.consent ? ' checked' : '') + '> <span>Yes, send me emails from Vegans Explore. I can stop them any time.</span></label>'
+          : '<p class="fine">You will get our emails: your taste, then a few notes about your city. Every one has a link to stop them.</p>';
+      };
+      if (s === 2) { consent(); document.getElementById('tz-ch').addEventListener('change', consent); document.getElementById('back').addEventListener('click', function () { go(1); }); }
+      document.getElementById('next').addEventListener('click', function () {
+        var m = document.getElementById('msg'); m.textContent = '';
+        if (s === 1) {
+          F.name = document.getElementById('tz-name').value.trim(); F.email = document.getElementById('tz-email').value.trim(); keep();
+          if (F.name.length < 2) { m.textContent = 'Tell us your name.'; return; }
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(F.email)) { m.textContent = 'That email does not look right.'; return; }
+          return go(2);
+        }
+        F.why = document.getElementById('tz-why').value; F.chapter = document.getElementById('tz-ch').value; F.journey = document.getElementById('tz-j').value;
+        var ok = document.getElementById('tz-ok'); F.consent = ok ? ok.checked : false; keep();
+        if (!F.why || !F.chapter || !F.journey) { m.textContent = 'Answer the three questions.'; return; }
+        if (F.chapter === 'london' && !F.consent) { m.textContent = 'Tick the box to get our emails.'; return; }
+        var b = this; b.disabled = true;
+        api({ action: 'join', name: F.name, email: F.email, why: F.why, chapter: F.chapter, journey: F.journey, consent: F.consent, source: qs.get('from') || document.referrer.slice(0, 60) }).then(function (r) {
+          b.disabled = false;
+          if (r && r.ok) { setTok(r.token); try { sessionStorage.removeItem('tz_form'); } catch (e) {} return sampler(r.taster); }
+          if (r && r.member) { m.innerHTML = esc(r.message) + ' <a href="/login?next=%2Fguides%2Ftaste">Sign in</a>'; return; }
+          m.textContent = (r && r.message) || 'That did not go through. Try again.';
+        }).catch(function () { b.disabled = false; m.textContent = 'Could not connect. Try again.'; });
+      });
+    }
+    // ---------- The sampler ----------
+    var GUIDE_NAME = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'nutrition-guide': 'The Nutrition Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide', 'stadium-arena-guide': 'The Stadium & Arena Guide', 'airport-guide': 'The Airport Guide', 'creator-guide': 'The Creator Guide', 'nonprofit-guide': 'The Nonprofit Guide' };
+    function art(g) { return window.VEGuideArt ? VEGuideArt(g, 'square') : ''; }
+    function slide(id, title, g, eyebrow, h, body, links) {
+      return '<section class="vg-slide" id="' + id + '" data-title="' + esc(title) + '"><div class="vg-split"><div class="vg-glass"><p class="vg-eyebrow">' + esc(eyebrow) + '</p><h2 class="vg-h">' + h + '</h2>' + body +
+        (links ? '<div class="tz-links">' + links + '</div>' : '') + (g !== 'all' && id !== 'you' && id !== 'city' ? '<p class="tz-rest">The rest of this Guide comes with your Passport.</p>' : '') + '</div>' +
+        '<div class="tz-art" role="img" aria-label="' + esc(eyebrow) + '" style="background-image:url(\'' + esc(g === 'all' ? '/public/guides/welcome-ensemble.jpg' : art(g)) + '\')"></div></div></section>';
+    }
+    function sampler(t) {
+      document.getElementById('gate').hidden = true;
+      var stage = document.getElementById('stage'), first = esc(t.first_name || 'there'), ch = t.chapter && t.chapter !== 'elsewhere' ? t.chapter : '';
+      var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === ch; })[0], city = hub ? (hub.name || hub.title) : '';
+      var sg = t.suggested_guide || 'vegan-dairy-guide';
+      var link = function (href, label, ghost) { return '<a class="vg-btn' + (ghost ? ' vg-btn-ghost' : '') + '" href="' + href + '">' + label + '</a>'; };
+      stage.innerHTML =
+        slide('cover', 'Hi', 'all', 'A Taste of Vegans Explore', 'Hi ' + first + ', here is your taste', '<p class="vg-lede">Vegans Explore is the Vegan world, city by city: places to eat and shop, the people, the events, the Daily Pulse, and Guides that bring it together. Here is a piece of every Guide, from the Guide who leads it. Come back any time from the link in your email.</p>', '<button type="button" class="vg-btn" data-vg-next>Start</button>') +
+        slide('dairy', 'Dairy', 'maya', 'Maya · The Vegan Dairy Guide', 'Every swap for dairy', '<p class="vg-lede">Milk, butter, cheese, cream: what to use instead, the brands members vote up, and a Cookbook. Your taste is the Buttermilk swap, open to try.</p>', link('/guides/vegan-dairy-guide#/swaps', 'Try the swap')) +
+        slide('nutrition', 'Nutrition', 'theo', 'Theo · The Nutrition Guide', 'Vitamin B12, the one to know', '<div class="tz-box"><b>Why:</b> B12 keeps your nerves and blood cells healthy, and plants do not make it reliably.<br><b>How much:</b> 2.4 mcg a day for adults.<br><b>Where:</b> foods with B12 added, or a supplement. Seaweed look-alikes do not count.</div><p class="tz-rest" style="margin-top:0">General information from the NIH and The Vegan Society, not medical advice.</p>', link('/guides/nutrition-guide#/nutrients/b12', 'Read the B12 page')) +
+        slide('restaurant', 'Restaurants', 'liz', 'Liz · The Vegan Restaurant Guide', 'A free check of any Vegan restaurant', '<p class="vg-lede">Pick a business and Liz checks its Google listing, website, search and social, then lists what to fix right away. Free for everyone.</p>', link('/guides/vegan-restaurant-guide#/audit', 'Run the free check')) +
+        slide('stadium', 'Stadiums', 'river', 'River · The Stadium & Arena Guide', 'A whole stadium, mapped', '<p class="vg-lede">Every stand with Vegan food at Hard Rock Stadium, by section, with Get me there from your seat. Members keep it right on game day.</p>', link('/guides/stadium-arena-guide#/venue/hard-rock-stadium', 'Open Hard Rock Stadium')) +
+        slide('airport', 'Airports', 'nori', 'Nori · The Airport Guide', 'Vegan food, gate by gate', '<p class="vg-lede">Fort Lauderdale airport, mapped: type your gate and see the closest Vegan food you can reach without going through security again.</p>', link('/guides/airport-guide#/airport/fll', 'Open Fort Lauderdale')) +
+        slide('creator', 'Creators', 'kai', 'Kai · The Creator Guide', 'From hobby to professional', '<p class="vg-lede">Ten moves for Vegan creators, each with a real creator doing it and three things to start this week. Your taste is tip 1: purpose and niche.</p>', link('/guides/creator-guide#/tips/purpose', 'Read tip 1')) +
+        slide('animals', 'The animals', 'dani', 'Dani · For the animals', 'The rescues, sanctuaries and people helping', '<p class="vg-lede">Find the rescues and sanctuaries near you, see who needs a foster, and if you run a nonprofit, start with tip 1 of the Nonprofit Guide: telling your story.</p>', link('/directory?tab=community', 'Rescues and sanctuaries') + link('/pulse/fosters', 'The Fosters board', true) + link('/guides/nonprofit-guide#/tips/story', 'Nonprofit tip 1', true)) +
+        slide('city', 'Your city', 'pascal', 'Pascal · Your city', city ? esc(city) + ', on Vegans Explore' : 'Your city, on Vegans Explore', '<p class="vg-lede">The places to eat and shop, the Daily Pulse every morning, and the events coming up' + (city ? ' in ' + esc(city) : '') + '. Anyone can look around; members vote, post and check in.</p>', link(ch ? '/communities/' + ch : '/communities', city ? 'Open ' + esc(city) : 'Find your city') + link('/pulse' + (ch ? '?city=' + ch : ''), 'The Daily Pulse', true) + link('/events', 'Events', true)) +
+        slide('you', 'For you', 'all', 'Picked for you', 'Where to go next, ' + first, '<div class="tz-box"><b>Your Guide:</b> ' + esc(GUIDE_NAME[sg] || 'The Vegan Dairy Guide') + ', from what you told us. $11 or 1,100 points, yours to keep.</div><div class="tz-box"><b>Earn your Passport:</b> three challenges, coming soon. Support local places, bring friends in, or help the animals, and your membership is earned, not paid.</div><div class="tz-box"><b>Or join now:</b> the Passport is $11, one time, with 1,100 points. ' + (new Date() < new Date('2027-01-01T05:00:00Z') ? 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : '') + '</div>', link('/passport?from=taste', 'Get your Passport') + link('/guides/' + sg, 'See ' + esc(GUIDE_NAME[sg] || 'the Guide'), true));
+      stage.hidden = false;
+      var s = document.createElement('script'); s.src = '/public/ve-guided.js'; document.body.appendChild(s);
+      scrollTo(0, 0);
+    }
+    function start() {
+      if (!window.VEAuth || !window.VEGuideArt) return setTimeout(start, 100);
+      var unsub = qs.get('unsub');
+      if (unsub) { api({ action: 'unsubscribe', token: unsub }).then(function (r) { document.getElementById('form').innerHTML = '<h2>Done</h2><p>' + (r && r.ok ? 'We will not email you again. Your taste still opens from this page any time.' : 'That link did not work. Reply to any of our emails and we will stop them.') + '</p>'; }); return; }
+      var t = qs.get('t');
+      if (t) { setTok(t); qs.delete('t'); history.replaceState(null, '', location.pathname + (qs.toString() ? '?' + qs.toString() : '')); api({ action: 'confirm', token: t }); }
+      if (VEAuth.isLoggedIn()) { var m = VEAuth.getMember() || {}; return sampler({ first_name: String(m.name || '').split(' ')[0], chapter: m.home_community || '', suggested_guide: 'vegan-dairy-guide' }); }
+      var tok = getTok();
+      if (tok) return api({ action: 'me', token: tok }).then(function (r) { if (r && r.ok) sampler(r.taster); else drawForm(); }).catch(drawForm);
+      drawForm();
+    }
+    start();
+  })();
+  </script>
+</body>
+</html>
