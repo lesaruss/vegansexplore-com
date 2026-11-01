@@ -76,6 +76,11 @@
   // with KINDS in /public/ve-region-directory.js.
   var KINDS = [['dairy', 'Dairy alternatives'], ['meat', 'Meat alternatives'], ['egg', 'Egg alternatives'], ['seafood', 'Seafood alternatives'],
     ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals'], ['meals', 'Meal Prep & Delivery']];
+  // Each Products shelf's own types (Sean, 2026-11-01), the same keys as KIND_GROUPS in /public/ve-region-directory.js.
+  var KIND_SETS = [['Food Brands', 'What they make', KINDS],
+    ['Nutrition & Supplements', 'What kind of nutrition', [['protein', 'Protein'], ['vitamins', 'Vitamins & minerals'], ['meal_replace', 'Meal replacements'], ['greens', 'Greens & superfoods'], ['sports', 'Sports & performance']]],
+    ['Clothing and Fashion', 'What kind of clothing', [['shoes', 'Shoes'], ['streetwear', 'Streetwear & casual'], ['outerwear', 'Outerwear'], ['formal', 'Suits & formal'], ['bags', 'Bags & accessories']]],
+    ['Beauty and Personal Care', 'What kind of beauty', [['makeup', 'Makeup'], ['skincare', 'Skincare'], ['haircare', 'Hair care'], ['fragrance', 'Fragrance'], ['bodycare', 'Body & bath']]]];
   // What kind of food a place serves (listings.cuisines, Sean 2026-10-25: "just because it's vegan doesn't tell the whole
   // story. Some are Caribbean, some are Ethiopian, Italian"), one or more. Global mix is the place that is not one thing.
   // Keep in step with CUISINES in /public/ve-region-directory.js and the check in 20261025_restaurant_essentials.sql.
@@ -221,7 +226,7 @@
       '<label class="h">Also show it under</label><div class="chips" id="vla-extra"></div>' +
       '<div class="note" id="vla-vends-note" hidden>Sells at markets, festivals or events too? Tick Vendors: it stays in its brand section, shows with the vendors, and its card reads Markets &amp; events.</div>' +
       '<div id="vla-cuis-wrap"><label class="h">What kind of food (up to four)</label><div class="chips">' + CUISINES.map(function (k) { return chip('checkbox', 'vla-cuis', k[0], k[1], (l.cuisines || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
-      '<div id="vla-kinds-wrap"><label class="h">What they make</label><div class="chips">' + KINDS.map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>' +
+      '<div id="vla-kinds-wrap">' + KIND_SETS.map(function (set) { return '<div data-kset="' + esc(set[0]) + '"><label class="h">' + set[1] + '</label><div class="chips">' + set[2].map(function (k) { return chip('checkbox', 'vla-kind', k[0], k[1], (l.product_kinds || []).indexOf(k[0]) >= 0); }).join('') + '</div></div>'; }).join('') + '</div>' +
 
       '<div class="note" id="vla-first" hidden>Pick the main section and sub-section first. The rest of the listing follows from what it is.</div>' +
       '<div id="vla-rest">' +
@@ -344,7 +349,9 @@
         .every(function (c) { return FOOD_PLACES.indexOf(c) < 0; });
       syncVet();
       $('#vla-vends-note').hidden = ['Food Brands', 'Nutrition & Supplements'].indexOf(cur) < 0;
-      $('#vla-kinds-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })).indexOf('Food Brands') < 0;
+      var ticked = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; })), anyKind = false;
+      wrap.querySelectorAll('[data-kset]').forEach(function (b) { var on = ticked.indexOf(b.getAttribute('data-kset')) >= 0; b.hidden = !on; anyKind = anyKind || on; });
+      $('#vla-kinds-wrap').hidden = !anyKind;
       // The rest follows from what it is (Sean, 2026-10-27): nothing until a section is picked; media serves every chapter and has no
       // address, locations or How Vegan; a brand has no locations.
       var picked = !!($('input[name=vla-sec]:checked') || {}).value, kind = kindOf(cur), person = kind === 'person', media = kind === 'show' || kind === 'work' || person;
@@ -381,6 +388,9 @@
     wrap.querySelectorAll('input[name=vla-sec]').forEach(function (r) { r.addEventListener('change', function () { drawSubs(null); }); });
     $('#vla-sub').addEventListener('change', syncSub);
     $('#vla-extra').addEventListener('change', syncSub);
+    // A type two shelves share (Protein) is one tick: both boxes follow.
+    $('#vla-kinds-wrap').addEventListener('change', function (e) { var t = e.target; if (t.name !== 'vla-kind') return;
+      wrap.querySelectorAll('input[name=vla-kind][value="' + t.value + '"]').forEach(function (i) { i.checked = t.checked; }); });
     drawSubs(l.category);
     // People: credits, adding an episode or an event, and the bio from their interviews.
     function drawCredits() {
@@ -606,7 +616,8 @@
       // The home chapter comes from the address, so only the extra ones are saved.
       if (kind === 'show' || kind === 'work' || kind === 'person') body.communities = ['all'];
       else if (!$('#vla-p-ch').hidden) body.communities = $('#vla-all').checked ? ['all'] : Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-ch]:checked'), function (i) { return !i.disabled; }).map(function (i) { return i.value; });
-      if (!$('#vla-kinds-wrap').hidden) body.product_kinds = vals('vla-kind');
+      if (!$('#vla-kinds-wrap').hidden) body.product_kinds = Array.prototype.filter.call(wrap.querySelectorAll('input[name=vla-kind]:checked'), function (i) { return !i.closest('[hidden]'); })
+        .map(function (i) { return i.value; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
       if (!$('#vla-cuis-wrap').hidden) body.cuisines = vals('vla-cuis');
       if (!$('#vla-vet-wrap').hidden) body.vetted = $('#vla-vet').checked;
       var ps = $('#vla-parent').value.trim();

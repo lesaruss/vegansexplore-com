@@ -2620,10 +2620,23 @@ see everything and then filter for what they want... the products are the produc
   Vegan is out of business (PitchBook), Noize shows 2026 sales.
 - **Meal Prep & Delivery** (Sean, 2026-11-01: "Products < Food & Drink < Meal Prep & Delivery"; migration `20261101_meal_prep_delivery.sql`):
   a product kind, `meals`, under Food & Drink (`KINDS` in `ve-region-directory.js` and `ve-listing-admin.js`, `KINDS` in `ve-claims`, the
-  `listings_product_kinds_known` check), shown on Food & Drink as a visible switch under the search, **All food & drink · Meal Prep &
-  Delivery** (`[data-vrd-meals]`, the Markets switch's pattern, driving the Makes select). The five Local Food Meal Prep listings were national
+  `listings_product_kinds_known` check), picked in Food & Drink's Makes filter (the switch under the search went 2026-11-01, below). The five Local Food Meal Prep listings were national
   shippers with stand-in Los Angeles addresses and moved here (Purple Carrot, Sakara Life, Splendid Spoon; Mosaic Foods and Trifecta Nutrition
   as Vegan options), with Daily Harvest added. Local Food > Meal Prep is for local meal preppers. Noize was marked open again the same day.
+- **Live filters are pills, and every Products shelf has its types** (Sean, 2026-11-01: "if I were to choose... egg alternatives, I would
+  expect where it says meal prep delivery to say egg alternatives... Put it in that little pill, and if you hit X on it, it clears the
+  filter... the search bar just shrinks"; "I don't want 1,000 categories"; migration `20261101_products_shelf_types.sql`). Every filter set
+  away from where it started shows as a pill between the search and Filters, each with an x that clears it (`paintChips`, `liveFilters`,
+  `[data-vrd-chips]` in `ve-region-directory.js`; sort is not a filter, the location keeps its own tag); the search shrinks to make room
+  (at least 160 px), and on phones the pills take their own row. The Meal Prep and Markets switches are gone (Clear all left Meal Prep &
+  Delivery showing). The Makes filter follows the shelf (`KIND_GROUPS`, `SUB_FILTERS` `kind`): Food & Drink **Makes** (as before);
+  Nutrition & Supplements **Type**: Protein, Vitamins & minerals, Meal replacements, Greens & superfoods, Sports & performance; Clothing and
+  Fashion: Shoes, Streetwear & casual, Outerwear, Suits & formal, Bags & accessories; Beauty and Personal Care: Makeup, Skincare, Hair care,
+  Fragrance, Body & bath. A type shows only when at least one listing on the shelf has it (Suits & formal waits for its first). All are
+  `listings.product_kinds` (keys `vitamins`, `meal_replace`, `greens`, `sports`, `shoes`, `streetwear`, `outerwear`, `formal`, `bags`,
+  `makeup`, `skincare`, `haircare`, `fragrance`, `bodycare`; `protein` is shared with Food & Drink), set in the listing editor per shelf
+  ticked (`KIND_SETS` in `ve-listing-admin.js`) and saved by `ve-claims` `admin_listing`. Every listing on the three shelves was tagged from
+  its own description the same day, each a `ve_listing_edits` row. Logan's lists, Sean's to change.
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
@@ -4259,8 +4272,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   they're not all vegan... pull them out of the all listing in Local and just have them on the Market Tab and have a toggle where
   people can see Local Markets and Super Markets. But by default you see both together"). A section's All never shows a chain
   (`data-chain` 1, tag `ve-grocery-store`; `applyPanelFilters` in `ve-region-directory.js`). Markets has a visible switch under the
-  search, **All markets · Local markets · Supermarkets** (`[data-vrd-mkt]`, All by default), which drives the Stores select
-  (`data-vrd-chain`, now hidden from the Filters dropdown); the same in every city hub's Directory.
+  search, **All markets · Local markets · Supermarkets**; since 2026-11-01 it is the **Markets** filter in Filters (`data-vrd-chain`,
+  All by default), shown as a pill when set (below); the same in every city hub's Directory.
 - The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
   voted brand first), 12 cards then Show all. Each card opens the product's page.
 - Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
