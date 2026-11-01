@@ -126,7 +126,7 @@
       '<h2>How you want to pay the $1,500 setup</h2><div class="grid">' + opts.map(function (o) {
         return '<label class="opt' + (C.setup === o[0] ? ' on' : '') + '"><input type="radio" name="setup" value="' + o[0] + '"' + (C.setup === o[0] ? ' checked' : '') + '><b>' + o[1] + '</b><p>' + o[2] + '</p><strong>' + o[3] + '</strong></label>';
       }).join('') + '</div>' +
-      '<h2>Add social media?</h2><div class="grid"><label class="opt' + (C.social ? ' on' : '') + '"><input type="checkbox" name="social"' + (C.social ? ' checked' : '') + '><b>Social media, two platforms</b><p>We plan, make and post on two platforms you pick.</p><strong>+' + $(A.social) + ' a month</strong></label></div>' +
+      (P.social_open === false ? '' : '<h2>Add social media?</h2><div class="grid"><label class="opt' + (C.social ? ' on' : '') + '"><input type="checkbox" name="social"' + (C.social ? ' checked' : '') + '><b>Social media, two platforms</b><p>We plan, make and post on two platforms you pick.</p><strong>+' + $(A.social) + ' a month</strong></label></div>') +
       '<h2>What you pay</h2>' + summary() + navRow(1, 'Next');
   }
   function viewAgree() {
@@ -157,7 +157,7 @@
 
   function draw() {
     if (!SLUG) { app.innerHTML = head('Open this page from the link we sent you, or tell us about your business and we will reach out.') + talk(); return; }
-    if (!P) { app.innerHTML = '<p>Loading...</p>'; call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.error) { app.innerHTML = head('We could not find that business.') + talk(); return; } P = d; draw(); }); return; }
+    if (!P) { app.innerHTML = '<p>Loading...</p>'; call({ action: 'plan', slug: SLUG }).then(function (d) { if (d.error) { app.innerHTML = head('We could not find that business.') + talk(); return; } P = d; if (d.social_open === false) C.social = false; draw(); }); return; }
     var status = q.get('status');
     if (PV === 'done') { app.innerHTML = head('Welcome aboard! We sent the details to your email. Someone from our team reaches out within a day to book your welcome call.') + viewMine(P.account).replace(/^[\s\S]*?<div class="box">/, '<div class="box">'); return; }
     if (status === 'done' && !P.account) {

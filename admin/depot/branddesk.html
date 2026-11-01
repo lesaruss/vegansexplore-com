@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     /* Depot > BrandDesk (managed marketing, canon canon-ve-front-of-house; built 2026-10-31). One thing per view: the clients (#list),
-       one client (#a/<id>, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
+       one client (#a/<id>, #a/<id>/website, #a/<id>/library, #a/<id>/sheet): their account and signature, onboarding (tick the team's steps, archive their
        website), their Library (upload, remove) and asset sheet, the same screens they see on their dashboard (/public/ve-branddesk-client.js).
        The rotation board (#rotation): every client's campaigns by month. Who can check out (#open): ve_site_settings branddesk.allowed. Data: ve-branddesk list, client, step, archive, file_*, allow, cancel.
        My brand (#mine, #mine/<kit>): Sean's owner panel (Sean, 2026-11-01: "Go with the owner panel"). His seanarussell.com media kits from
@@ -63,13 +63,14 @@
     .appl:first-child{border-top:0;}
     .appl p{font-size:13.5px;margin:4px 0;overflow-wrap:anywhere;}
     .appl .acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
-    .prow{display:grid;grid-template-columns:44px minmax(0,1.6fr) 90px 110px minmax(0,1.4fr) 120px auto;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--ve-border);font-size:13.5px;}
+    .prow{display:grid;grid-template-columns:44px minmax(0,1.6fr) 90px 130px minmax(0,1.4fr) 130px 76px;gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--ve-border);font-size:13.5px;}
     .prow:first-child{border-top:0;}.prow.head{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-text-75);background:#f7f8f6;position:sticky;top:0;z-index:1;}
     .prow b{display:block;font-size:14px;}.prow small{display:block;color:var(--ve-text-75);font-size:12.5px;}
     .rank{font-weight:900;font-size:16px;color:var(--ve-green-deep);}
     .pct{font-weight:900;font-size:15px;}
     .warm{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#fff4e0;color:#8a5200;padding:2px 6px;border-radius:4px;margin-left:6px;vertical-align:middle;}
-    @media (max-width:900px){.prow{grid-template-columns:36px minmax(0,1fr) auto;}.prow .hide-m{display:none;}}
+    .signs{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;}.sign{font-size:10.5px;font-weight:800;background:#e3f3e5;color:#1E5F2A;padding:2px 6px;border-radius:4px;}
+    @media (max-width:900px){.prow{grid-template-columns:36px minmax(0,1fr) 76px;}.prow .hide-m{display:none;}}
     .tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px;}
     .tools input,.tools select{font:inherit;font-size:14px;padding:9px 12px;min-height:42px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;}
     .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23333' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;}
@@ -101,6 +102,7 @@
   </div>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-branddesk-client.js"></script>
   <script>
     (function () {
@@ -132,9 +134,17 @@
           '<div class="list" style="margin-bottom:12px">' + (S.allowed.length ? S.allowed.map(function (s) {
             return '<div class="irow"><div><b>' + esc(s) + '</b><small><a href="/business/managed?listing=' + esc(s) + '" target="_blank" rel="noopener">vegansexplore.com/business/managed?listing=' + esc(s) + '</a></small></div><span></span><button type="button" class="btn btn-ghost btn-sm" data-close="' + esc(s) + '">Close it</button></div>';
           }).join('') : '<p class="empty">No business is open yet.</p>') + '</div>' +
-          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>';
+          '<form class="form" id="op"><label>Their Directory address (the part after /directory/)<input id="op-slug" placeholder="sobe-vegan"></label><button class="btn" type="submit">Open checkout for them</button></form><p class="msg" id="op-msg" role="status"></p></section>' +
+          '<section class="card"><h2>Where social is open</h2><p class="sub">The social add-on (+$500 a month, two platforms) shows at checkout only in the chapters ticked here, once we have the talent there. Super admins can always add it.</p>' +
+          '<div class="picks" id="sc">' + (window.VE_HUBS || []).map(function (h) { return '<label><input type="checkbox" value="' + esc(h.slug) + '"' + ((S.social_chapters || []).indexOf(h.slug) >= 0 ? ' checked' : '') + '> ' + esc(h.name) + '</label>'; }).join('') + '</div>' +
+          '<button class="btn" type="button" id="sc-save">Save</button><p class="msg" id="sc-msg" role="status"></p></section>';
         var set = function (slug, on) { var m = $('op-msg'); m.className = 'msg'; m.textContent = 'Saving...';
           api({ action: 'allow', slug: slug, on: on }).then(function (d) { if (d && d.ok) { data.settings.allowed = d.allowed; drawOpen(); return; } m.className = 'msg err'; m.textContent = d && d.error === 'not_found' ? 'No listing at that address.' : 'That did not save.'; }); };
+        $('sc-save').addEventListener('click', function () {
+          var m = $('sc-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+          var ch = Array.prototype.map.call(document.querySelectorAll('#sc input:checked'), function (c) { return c.value; });
+          api({ action: 'social_chapters', chapters: ch }).then(function (d) { if (d && d.ok) { data.settings.social_chapters = d.social_chapters; m.textContent = 'Saved.'; return; } m.className = 'msg err'; m.textContent = 'That did not save.'; });
+        });
         $('op').addEventListener('submit', function (e) { e.preventDefault(); var v = $('op-slug').value.trim().replace(/^.*\/directory\//, '').replace(/[?#].*$/, ''); if (v) set(v, true); });
         app.querySelectorAll('[data-close]').forEach(function (b) { b.addEventListener('click', function () { set(b.dataset.close, false); }); });
       }
@@ -153,8 +163,10 @@
           '<a class="btn btn-ghost btn-sm" href="/directory/' + esc(slug) + '?tab=brand&pd=managed" target="_blank" rel="noopener">What they see</a>' +
           (['active', 'paused'].indexOf(a.status) >= 0 ? '<button type="button" class="btn btn-bad btn-sm" id="cx">End it (they gave notice)</button>' : '') + '</p><p class="msg" id="cx-msg" role="status"></p></section>' +
           '<section class="card" id="shoot"><h2>The starter shoot</h2><p class="empty" style="padding:0">Loading...</p></section>' +
+          (a.social ? '<section class="card" id="social"><h2>Social</h2><p class="empty" style="padding:0">Loading...</p></section>' : '') +
           '<section class="card" id="visits"><h2>Member visits</h2><p class="empty" style="padding:0">Loading...</p></section><div id="bd"></div>';
         if (slug) { drawShoot(slug); drawVisits(slug); }
+        if (a.social) drawSocialSetup(a.id);
         VEBrandDesk.mount($('bd'), { account_id: id, view: view || 'start', go: function (v) { history.replaceState(null, '', '#a/' + id + (v === 'start' ? '' : '/' + v)); } });
         var cx = $('cx');
         if (cx) cx.addEventListener('click', function () {
@@ -172,6 +184,37 @@
       var SWORD = { applied: 'Applied', shortlisted: 'Shortlisted', audition: 'Trial requested', claimed: 'Booked', not_selected: 'Not selected' };
       function money(c) { return '$' + (c / 100).toLocaleString('en-US'); }
       function dateIn(days) { var d = new Date(Date.now() + days * 864e5); return d.toISOString().slice(0, 10); }
+      // The social add-on: their two platforms (one off Meta), handles, the social manager, posts a month, and whether it is running.
+      function drawSocialSetup(id) {
+        var box = $('social'); if (!box) return;
+        api({ action: 'social_get', account_id: id }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = '<h2>Social</h2><p class="empty" style="padding:0">' + esc((d && d.message) || 'This did not load.') + '</p>'; return; }
+          var S = d.setup || {}, P = d.platforms || {}, names = { setup: 'Setting up', active: 'Running', paused: 'Paused' };
+          box.innerHTML = '<div class="bar"><h2 style="margin:0">Social</h2><span class="tag ' + (S.status === 'active' ? 'active' : S.status === 'paused' ? 'paused' : 'checkout') + '">' + esc(names[S.status] || S.status) + '</span></div>' +
+            '<p class="sub" style="margin:0 0 12px">Two platforms, one of them off Meta (TikTok or YouTube), so customers who stay off Meta still find them. ' + esc(d.month_name) + ': ' + esc(d.counts.planned) + ' planned, ' + esc(d.counts.posted) + ' posted.</p>' +
+            '<form class="form" id="so-form" style="flex-direction:column;align-items:stretch">' +
+            '<div style="display:flex;gap:16px;flex-wrap:wrap">' + Object.keys(P).map(function (k) {
+              return '<label style="flex:0 0 auto;min-width:0;flex-direction:row;align-items:center;gap:8px;font-size:13px"><input type="checkbox" name="pl" value="' + k + '"' + ((S.platforms || []).indexOf(k) >= 0 ? ' checked' : '') + ' style="min-height:0;width:18px;height:18px">' + esc(P[k].name) + (P[k].meta ? ' (Meta)' : '') + '</label>'; }).join('') + '</div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap">' + Object.keys(P).map(function (k) {
+              return '<label data-h="' + k + '"' + ((S.platforms || []).indexOf(k) >= 0 ? '' : ' hidden') + '>' + esc(P[k].name) + ' handle<input name="h-' + k + '" value="' + esc((S.handles || {})[k] || '') + '" placeholder="@their-handle"></label>'; }).join('') + '</div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap"><label>Social manager (the email they sign in with)<input name="mgr" type="email" value="' + esc(S.manager_email || '') + '" placeholder="name@example.com"></label>' +
+            '<label style="max-width:180px">Posts a month<input name="per" type="number" min="1" max="60" value="' + esc(S.per_month || 12) + '"></label>' +
+            '<label style="max-width:220px">Status<select name="st">' + ['setup', 'active', 'paused'].map(function (k) { return '<option value="' + k + '"' + (S.status === k ? ' selected' : '') + '>' + names[k] + '</option>'; }).join('') + '</select></label></div>' +
+            '<label>Team note<textarea name="note" maxlength="2000">' + esc(S.note || '') + '</textarea></label>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="submit">Save</button><a class="btn btn-ghost" href="/business/social?account=' + esc(id) + '" target="_blank" rel="noopener">Open the social planner</a></div></form><p class="msg" id="so-msg" role="status"></p>';
+          var f = $('so-form');
+          f.querySelectorAll('[name=pl]').forEach(function (c) { c.addEventListener('change', function () { f.querySelector('[data-h="' + c.value + '"]').hidden = !c.checked; }); });
+          f.addEventListener('submit', function (e) {
+            e.preventDefault(); var m = $('so-msg'); m.className = 'msg'; m.textContent = 'Saving...';
+            var plats = Array.prototype.map.call(f.querySelectorAll('[name=pl]:checked'), function (c) { return c.value; }), handles = {};
+            plats.forEach(function (k) { handles[k] = f['h-' + k].value; });
+            api({ action: 'social_setup', account_id: id, platforms: plats, handles: handles, manager_email: f.mgr.value, per_month: Number(f.per.value), status: f.st.value, note: f.note.value }).then(function (r) {
+              if (r && r.ok) { drawSocialSetup(id); return; }
+              m.className = 'msg err'; m.textContent = (r && r.message) || 'That did not save.';
+            });
+          });
+        });
+      }
       function drawShoot(slug) {
         var box = $('shoot'); if (!box) return;
         bapi({ action: 'shoot_get', slug: slug }).then(function (d) {
@@ -291,6 +334,9 @@
       try { pf = Object.assign(pf, JSON.parse(sessionStorage.getItem('ve_bd_pitch_filter') || '{}')); } catch (e) {}
       function pstatus(r) { return r.choice ? CHOICE[r.choice] : r.pitch_status ? PST[r.pitch_status] : 'Not prepared'; }
       function ptag(r) { return r.choice === 'ready' ? 'active' : r.choice ? 'paused' : r.pitch_status === 'sent' || r.pitch_status === 'viewed' ? 'checkout' : r.pitch_status ? '' : 'ended'; }
+      // The handshake (canon v8): a pitch goes only to a business that showed a sign, or to the warm list. Each sign, newest first.
+      var SIGN = { clicked: 'Clicked their link', claimed: 'Claimed their page', checked: 'Ran the free check', opened: 'Opened their free check', guide: 'Bought the Guide', asked: 'Asked us to do it', talked: 'Talked on their pitch' };
+      function signChips(r) { var s = r.signs || []; return s.length ? '<span class="signs">' + s.map(function (x) { return '<span class="sign" title="' + esc(day(x.at)) + '">' + esc(SIGN[x.kind] || x.kind) + '</span>'; }).join('') + '</span>' : ''; }
       function drawPitches() {
         if (!rank) { app.innerHTML = nav('pitches') + '<p class="empty">Ranking every business with a check-up...</p>'; return api({ action: 'ranking' }).then(function (d) { rank = (d && d.rows) || []; drawPitches(); }); }
         var chs = {}; rank.forEach(function (r) { if (r.chapter) chs[r.chapter] = (chs[r.chapter] || 0) + 1; });
@@ -299,18 +345,19 @@
           if (pf.show === 'warm' && !r.warm) return false; if (pf.show === 'new' && r.pitch_id) return false;
           if (pf.show === 'sent' && !(r.pitch_status === 'sent' || r.pitch_status === 'viewed')) return false; if (pf.show === 'chose' && !r.choice) return false;
           if (pf.show === 'email' && !r.contact_email) return false;
+          if (pf.show === 'signs' && !(r.signs || []).length) return false; if (pf.show === 'ready' && !(r.warm || (r.signs || []).length)) return false;
           return !q || (r.name + ' ' + (r.city || '')).toLowerCase().indexOf(q) > -1;
         });
         app.innerHTML = nav('pitches') +
-          '<p class="sub">Every food place with a monthly check-up, most to gain first: how far their online presence is from a full score, weighed by how real and loved they are (Google rating and reviews, how Vegan, our members\' votes). Warm ones you mark come first. Open one to prepare its page and send it from you.</p>' +
+          '<p class="sub">A handshake before the ask: send a pitch only to a business that showed a sign (Ready for a pitch) or to your warm list. Every food place with a monthly check-up, most to gain first: how far their online presence is from a full score, weighed by how real and loved they are (Google rating and reviews, how Vegan, our members\' votes). Warm ones you mark come first. Open one to prepare its page and send it from you.</p>' +
           '<div class="tools"><input id="pq" type="search" placeholder="Search a business or city" value="' + esc(pf.q) + '">' +
           '<select id="pch"><option value="">Every chapter (' + rank.length + ')</option>' + Object.keys(chs).sort(function (a, b) { return chs[b] - chs[a]; }).map(function (c) { return '<option value="' + c + '"' + (c === pf.ch ? ' selected' : '') + '>' + esc(CHAPTERS[c] || c) + ' (' + chs[c] + ')</option>'; }).join('') + '</select>' +
-          '<select id="pshow">' + [['all', 'Everyone'], ['warm', 'Warm list'], ['new', 'Not prepared yet'], ['email', 'We have their email'], ['sent', 'Sent, no answer'], ['chose', 'Answered']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === pf.show ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
+          '<select id="pshow">' + [['all', 'Everyone'], ['ready', 'Ready for a pitch (a sign or warm)'], ['signs', 'Showed a sign'], ['warm', 'Warm list'], ['new', 'Not prepared yet'], ['email', 'We have their email'], ['sent', 'Sent, no answer'], ['chose', 'Answered']].map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === pf.show ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>' +
           '<div class="list" style="max-height:72vh"><div class="prow head"><span>#</span><span>Business</span><span class="hide-m">Presence</span><span class="hide-m">Google</span><span class="hide-m">Their biggest gap</span><span class="hide-m">Pitch</span><span></span></div>' +
           (rows.length ? rows.map(function (r) {
-            return '<div class="prow"><span class="rank">' + (rank.indexOf(r) + 1) + '</span><span><b>' + esc(r.name) + (r.warm ? '<span class="warm">Warm</span>' : '') + '</b><small>' + esc([r.city, CHAPTERS[r.chapter]].filter(Boolean).join(' · ')) + ' · gap ' + r.gap_score + (r.contact_email ? '' : ' · no email yet') + '</small></span>' +
+            return '<div class="prow"><span class="rank">' + (rank.indexOf(r) + 1) + '</span><span><b>' + esc(r.name) + (r.warm ? '<span class="warm">Warm</span>' : '') + '</b><small>' + esc([r.city, CHAPTERS[r.chapter]].filter(Boolean).join(' · ')) + ' · gap ' + r.gap_score + (r.contact_email ? '' : ' · no email yet') + '</small>' + signChips(r) + '</span>' +
               '<span class="pct hide-m">' + r.presence + '%</span><span class="hide-m">' + (r.rating ? esc(r.rating) + ' · ' + r.reviews + ' reviews' : 'No rating') + '</span>' +
-              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
+              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).found || (r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
               '<span class="hide-m"><span class="tag ' + ptag(r) + '">' + esc(pstatus(r)) + '</span></span><a class="btn btn-ghost btn-sm" href="#pitch/' + esc(r.slug) + '">Open</a></div>';
           }).join('') : '<p class="empty">Nothing matches.</p>') + '</div>';
         var save = function () { try { sessionStorage.setItem('ve_bd_pitch_filter', JSON.stringify(pf)); } catch (e) {} };
@@ -337,6 +384,7 @@
             '<label>Their email<input id="p-email" type="email" value="' + esc(P ? P.contact_email : R.contact_email || '') + '" placeholder="Where the email goes"></label>' +
             '<label>Their home page shown in<select id="p-look">' + Object.keys(d.looks).map(function (k) { return '<option value="' + k + '"' + ((P ? P.look : 'fresh') === k ? ' selected' : '') + '>' + esc(d.looks[k]) + '</option>'; }).join('') + '</select></label>' +
             '<label style="flex-basis:100%;min-width:0">Your opening, in your words (it opens the email and their page)<textarea id="p-note" maxlength="1500" placeholder="Something only you would know: where you met, what you love there.">' + esc(P ? P.note : '') + '</textarea></label>' +
+            '<p style="flex-basis:100%;margin:0"><b>Signs:</b> ' + (R && (R.signs || []).length ? signChips(R) : 'None yet. The pitch sends only after a sign, or if you tick them as warm.') + '</p>' +
             '<label style="flex-direction:row;align-items:center;gap:8px;flex-basis:100%"><input type="checkbox" id="p-warm"' + (P && P.warm ? ' checked' : '') + ' style="min-height:0"> On my warm list (first in the ranking)</label></div>' +
             '<p style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" type="button" id="p-save">' + (P ? 'Save' : 'Prepare their page') + '</button>' +
             (P ? '<a class="btn btn-ghost" href="/business/pitch?c=' + esc(P.code) + '&preview=1" target="_blank" rel="noopener">See their page</a><button class="btn btn-ghost" type="button" id="p-copy">Copy the link</button>' +
@@ -425,7 +473,7 @@
         if (r === 'mine') return drawMine();
         if ((m = r.match(/^mine\/([a-z0-9-]{1,60})$/))) return drawKitEditor(m[1]);
         if (!data) { app.innerHTML = '<p class="empty">Loading...</p>'; return load().then(draw, function () { app.innerHTML = '<p class="empty">This did not load. Refresh to try again.</p>'; }); }
-        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(library|sheet))?$/))) return drawOne(m[1], m[2]);
+        if ((m = r.match(/^a\/([0-9a-f-]{36})(?:\/(website|library|sheet|campaigns|reports|social))?$/))) return drawOne(m[1], m[2]);
         if (r === 'open') return drawOpen();
         if (r === 'pitches') return drawPitches();
         if ((m = r.match(/^rotation(?:\/([a-z]+))?$/))) return drawRotation(m[1]);
