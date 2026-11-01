@@ -1858,8 +1858,8 @@ Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the 
 still closed. **The listing check, in Sean's order** (Sean, 2026-11-01: "the first best indicator is Google Maps... If they pass that, they can move
 on to their website... if it doesn't have the right security, automatic flag... then it's Instagram... a grace of 6 months... a bounty... If they confirm they're
 open... we flag them for special support"; migration `20261101_listing_health.sql`, edge function `ve-listing-health`). 1. Google says closed: off (above).
-2. **The website**: every local place with a website (not grocery chains, not LESARUSS.ai) is read once a month (cron `ve-listing-health`, every 10 minutes 3 to
-5 AM Eastern, 25 a run): gone (the address no longer exists, nothing answers, 404, 410 or 5xx, a parked or for-sale page) or no working security (no https, a bad
+2. **The website**: every local place with a website (not grocery chains, not LESARUSS.ai) is read once a month (cron `ve-listing-health`, every 10 minutes 2:00 to
+3:50 AM Eastern, 25 a run): gone (the address no longer exists, nothing answers, 404, 410 or 5xx, a parked or for-sale page) or no working security (no https, a bad
 certificate) fails; a site that turns scanners away (401, 403, 406, 429, 503) passes, and a slow or refused answer is read again the next day, never held on one
 try. No website at all is Google's job. 3. **Instagram**, only for a failed website (Apify, many handles in one run): a post in the last 6 months passes, and the
 place goes to **Needs support** (its website needs fixing); otherwise it is **held** (On hold, `details.review.by` Listing check, the reasons) and a still-open

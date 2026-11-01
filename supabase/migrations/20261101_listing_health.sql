@@ -102,7 +102,7 @@ revoke all on function public.ve_listing_health_due(int) from public, anon, auth
 revoke all on function public.ve_listing_still_open_bounty(uuid) from public, anon, authenticated;
 revoke all on function public.ve_listing_support_flag(uuid, text) from public, anon, authenticated;
 
--- Every 10 minutes from 3 to 5 AM Eastern (07:00 to 08:50 UTC in winter), 25 places a run: about 300 a night.
+-- Every 10 minutes from 2:00 to 3:50 AM Eastern (07:00 to 08:50 UTC, standard time), 25 places a run: about 300 a night.
 select cron.schedule('ve-listing-health', '*/10 7-8 * * *', $c$
   select net.http_post(url := 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-listing-health',
     body := '{"action":"sweep","limit":25}'::jsonb,
