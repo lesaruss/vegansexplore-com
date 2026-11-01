@@ -1,6 +1,6 @@
 # BrandDesk: the production wing of HQ (concept for Sean to lock)
 
-Status: **draft, not built.** Concept session with V, 2026-11-01. Replaces the earlier "one Depot, two doors" draft of the same day.
+Status: **LOCKED by Sean 2026-11-01 ("lock it"), not built.** Canon `canon-branddesk-production-wing`, playbook `branddesk-production-wing`. Joining and the Preparation window are in the canon. Concept session with V, 2026-11-01. Replaces the earlier "one Depot, two doors" draft of the same day.
 Becomes the playbook `branddesk-production-wing` and a canon entry when Sean says "lock it".
 
 ## What it is

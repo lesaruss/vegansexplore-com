@@ -452,6 +452,23 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
+## BrandDesk, the production wing (LOCKED by Sean 2026-11-01, playbook `branddesk-production-wing`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-branddesk-production-wing`; migration
+`20261101_branddesk_production_wing_canon.sql`; the full write-up is `docs/proposals/depot-one-desk.md`). **Not built yet.** BrandDesk
+is the Studio at hq.lesaruss.ai/studio renamed and made the product, living in HQ (lesaruss/lesaruss-hq). It replaces the Studio, this
+site's Depot and Depot > BrandDesk; until each Depot page has a home there, it keeps working here. Brand kit first (approved means
+locked; a locked part changes only on a request with a reason, approved by the owner), then launch opens the modules, each a wizard
+(Website and Social first; Video, YouTube, Podcast, Book, Mobile app, Pitch deck as we use them; Product launch premium, waiting on
+distributor relationships). A marketing plan rolls out dated tasks; every piece is ask, draft, approve, store. Support per wizard:
+Self-serve, Supported, Managed (the $500 managed service below is Managed). **Pricing**: BrandDesk is a perk of the $111 Partner
+plan; wizards are rented by the month, period or year. **Periods**: 111 days, one shared calendar from January 1, 2027 (Period 1 Jan 1
+to Apr 21, 2027; 2 Apr 22 to Aug 10; 3 Aug 11 to Nov 29; 4 Nov 30 to Mar 19, 2028), always "period", never "quarter". Joining on days 1
+to 90 is prorated; days 91 to 111 are the Preparation window, full $111 for the next period, spent building the brand kit. **Front Row
+Start now charges $111 at sign-up** (the days before January 1 are bonus); anyone already on the old no-charge trial keeps those terms.
+Build order: the Partner checkout first, then renaming the Studio, the foundation, Social and Website, the plan engine, our own brands
+first.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
