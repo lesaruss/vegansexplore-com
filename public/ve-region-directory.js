@@ -422,6 +422,11 @@
       (cat.key === 'food' ? '<div class="vrd-mkt" data-vrd-mkt role="group" aria-label="Kind of market" hidden>' +
         '<button type="button" data-mkt="" aria-pressed="true">All markets</button><button type="button" data-mkt="0" aria-pressed="false">Local markets</button>' +
         '<button type="button" data-mkt="1" aria-pressed="false">Supermarkets</button></div>' : '') +
+      // Food & Drink: Meal Prep & Delivery as a visible switch (Sean, 2026-11-01: "Products < Food & Drink < Meal Prep & Delivery").
+      // It drives the Makes select (data-vrd-kind), the way the Markets switch drives Stores.
+      (cat.key === 'products' ? '<div class="vrd-mkt" data-vrd-meals role="group" aria-label="Kind of food and drink" hidden>' +
+        '<button type="button" data-meal="" aria-pressed="true">All food &amp; drink</button>' +
+        '<button type="button" data-meal="meals" aria-pressed="false">Meal Prep &amp; Delivery</button></div>' : '') +
       '<div class="rank-grid" id="' + cat.key + '-grid"></div>' +
       // The pages in the middle, how many to show at the far right (Sean, 2026-10-26).
       '<div class="vrd-foot"><div class="vrd-pagination" id="' + cat.key + '-pagination"></div>' +
@@ -644,7 +649,9 @@
   // everywhere, so they filter by what they make, not where; Markets by national chain or local store. Anything not
   // listed keeps the usual location filter. KINDS is listings.product_kinds; keep in step with ve-listing-admin.js.
   var KINDS = [['dairy', 'Dairy alternatives'], ['meat', 'Meat alternatives'], ['egg', 'Egg alternatives'], ['seafood', 'Seafood alternatives'],
-    ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals']];
+    ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals'],
+    // Meal Prep & Delivery (Sean, 2026-11-01: "Products < Food & Drink < Meal Prep & Delivery"): meals made and shipped anywhere.
+    ['meals', 'Meal Prep & Delivery']];
   // What kind of food a place serves (listings.cuisines, Sean 2026-10-25); keep in step with ve-listing-admin.js.
   var CUISINES = [['american', 'American & comfort food'], ['soul', 'Soul food'], ['caribbean', 'Caribbean'], ['latin', 'Latin American'],
     ['mexican', 'Mexican'], ['cuban', 'Cuban'], ['italian', 'Italian & pizza'], ['mediterranean', 'Mediterranean'], ['middle_eastern', 'Middle Eastern'],
@@ -937,6 +944,7 @@
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
     var mkt = panel.querySelector('[data-vrd-mkt]'); if (mkt) mkt.hidden = !sf.chain;
+    var meals = panel.querySelector('[data-vrd-meals]'); if (meals) meals.hidden = !sf.kind;
     // Newest and Oldest belong to books and films; anywhere else the sort goes back to Most Votes.
     var sortSel = bar.querySelector('[data-vrd-sort]');
     if (sortSel) {
@@ -978,6 +986,8 @@
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
     var mktSw = panel.querySelector('[data-vrd-mkt]');
     if (mktSw) mktSw.querySelectorAll('[data-mkt]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mkt') === chain)); });
+    var mealSw = panel.querySelector('[data-vrd-meals]');
+    if (mealSw) mealSw.querySelectorAll('[data-meal]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-meal') === kind)); });
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
     var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
     if (sf.geo === false && !sellsHere(sells)) { city = ''; county = ''; region = ''; }
@@ -1272,6 +1282,12 @@
       btn.addEventListener('click', function () {
         var sel = btn.closest('.board-panel').querySelector('[data-vrd-chain]'); if (!sel) return;
         sel.value = btn.getAttribute('data-mkt'); sel.dispatchEvent(new Event('change'));
+      });
+    });
+    root.querySelectorAll('[data-vrd-meals] [data-meal]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var sel = btn.closest('.board-panel').querySelector('[data-vrd-kind]'); if (!sel) return;
+        sel.value = btn.getAttribute('data-meal'); sel.dispatchEvent(new Event('change'));
       });
     });
     root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat], [data-vrd-spec]').forEach(function (sel) {

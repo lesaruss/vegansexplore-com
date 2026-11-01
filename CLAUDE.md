@@ -2333,6 +2333,12 @@ see everything and then filter for what they want... the products are the produc
   The People, Acure, Lime Crime, Jecca Blac. Left out on purpose: PlantX, The Vegan Kind and Will's Vegan Store (closed or unknown),
   Hourglass, INIKA, Versed and OSEA (not confirmed fully Vegan). Immaculate Vegan and Noize are marked Permanently closed; Immaculate
   Vegan is out of business (PitchBook), Noize shows 2026 sales.
+- **Meal Prep & Delivery** (Sean, 2026-11-01: "Products < Food & Drink < Meal Prep & Delivery"; migration `20261101_meal_prep_delivery.sql`):
+  a product kind, `meals`, under Food & Drink (`KINDS` in `ve-region-directory.js` and `ve-listing-admin.js`, `KINDS` in `ve-claims`, the
+  `listings_product_kinds_known` check), shown on Food & Drink as a visible switch under the search, **All food & drink · Meal Prep &
+  Delivery** (`[data-vrd-meals]`, the Markets switch's pattern, driving the Makes select). The five Local Food Meal Prep listings were national
+  shippers with stand-in Los Angeles addresses and moved here (Purple Carrot, Sakara Life, Splendid Spoon; Mosaic Foods and Trifecta Nutrition
+  as Vegan options), with Daily Harvest added. Local Food > Meal Prep is for local meal preppers. Noize was marked open again the same day.
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are

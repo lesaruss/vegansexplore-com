@@ -75,7 +75,7 @@
   // What a food brand makes (listings.product_kinds, Sean 2026-10-24): the Directory's Food Brands filter. Keep in step
   // with KINDS in /public/ve-region-directory.js.
   var KINDS = [['dairy', 'Dairy alternatives'], ['meat', 'Meat alternatives'], ['egg', 'Egg alternatives'], ['seafood', 'Seafood alternatives'],
-    ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals']];
+    ['snacks', 'Snacks and sweets'], ['drinks', 'Drinks'], ['protein', 'Protein and supplements'], ['pantry', 'Pantry and sauces'], ['baked', 'Bread and baked goods'], ['frozen', 'Frozen meals'], ['meals', 'Meal Prep & Delivery']];
   // What kind of food a place serves (listings.cuisines, Sean 2026-10-25: "just because it's vegan doesn't tell the whole
   // story. Some are Caribbean, some are Ethiopian, Italian"), one or more. Global mix is the place that is not one thing.
   // Keep in step with CUISINES in /public/ve-region-directory.js and the check in 20261025_restaurant_essentials.sql.

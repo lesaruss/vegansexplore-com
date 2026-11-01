@@ -1372,7 +1372,7 @@ Deno.serve(async (req) => {
     if (body.business_status !== undefined) { if (!BUSINESS.includes(String(body.business_status))) return json({ error: 'bad_business_status' }, 400); patch.business_status = String(body.business_status); }
     if (body.name !== undefined) { const n = plain(body.name, 160); if (!n) return json({ error: 'bad_name' }, 400); patch.name = n; }
     if (body.product_kinds !== undefined) {
-      const KINDS = ['dairy', 'meat', 'egg', 'seafood', 'snacks', 'drinks', 'protein', 'pantry', 'baked', 'frozen'];
+      const KINDS = ['dairy', 'meat', 'egg', 'seafood', 'snacks', 'drinks', 'protein', 'pantry', 'baked', 'frozen', 'meals'];
       patch.product_kinds = [...new Set((Array.isArray(body.product_kinds) ? body.product_kinds : []).map(String))].filter((k) => KINDS.includes(k));
     }
     // Vetted by us (Sean, 2026-10-25: "I can overrule that, especially if I know the reputation of it"): a Vegan-friendly
