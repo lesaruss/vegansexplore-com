@@ -248,7 +248,14 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   is a colored tag in plain words (Live, Waiting for approval, Not live yet), never an action word.
 - Full width (above). Cards four across, most urgent first. Short lists cap and scroll inside the box.
   Summaries clamp to two rows. Queues filter, sort and search. New is a button to its own view.
-- Member features live in the universal frame (the dashboard window): `/dashboard/<feature>` opens
+- **No window and no bottom bar** (Sean, 2026-11-01: "I don't like having everything wrapped together... no more universal frame,
+  no more universal selector, just that apps button"). The dashboard is a plain page under a sticky top nav (no backdrop, title bar
+  or traffic lights; the page scrolls), a listing opened from it is its own `/directory/<slug>` page on every screen, and HQ's
+  `universal-bar.js` draws no bottom row, only the **Apps** launcher: Vegans Explore, GeekFon Society and Sean A. Russell, the same
+  three everywhere (`LAUNCHER` there). Apps is in the dashboard's bar and, signed in, in `nav.js` on every page (it loads HQ's file
+  on the first tap). The city hubs' section headers carry an **In this community** dropdown of the hub's sections (one-fourth,
+  beside the title and line; `placePick` in `communities/hub.html`).
+- Member features live in the dashboard: `/dashboard/<feature>` opens
   the page under "Dashboard / Feature". Opened on its own while signed in, the page moves into the
   dashboard; signed out, it shows a sign-in gate and none of the content, and the server refuses the
   data. Example: `/bounties` -> `/dashboard/bounties` (`openBounties` in center-console).

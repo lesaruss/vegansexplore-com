@@ -146,6 +146,14 @@
     '.ve-nav-member{display:flex;align-items:center;gap:8px;cursor:pointer;position:relative;background:none;border:none;padding:4px;margin:0;border-radius:6px;font:inherit;}',
     '.ve-nav-member:focus-visible{outline:3px solid #22C55E;outline-offset:2px;}',
     '.ve-nav-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;font-family:"Montserrat",sans-serif;letter-spacing:0.04em;}',
+    // Apps (Sean, 2026-11-01: "if you are logged in any of our platforms, you get that button"): the LESARUSS brands launcher,
+    // the same panel as the dashboard's and HQ's Apps (served by HQ's universal-bar.js). Signed in only; an icon on phones.
+    '.ve-nav-apps{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 13px;margin-right:4px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.12);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;cursor:pointer;flex-shrink:0;}',
+    '.ve-nav-apps:hover,.ve-nav-apps[aria-expanded="true"]{border-color:#2d7d31;}',
+    '.ve-nav-apps:focus-visible{outline:3px solid #22C55E;outline-offset:2px;}',
+    '.ve-nav-apps svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}',
+    '#lr-dock-mount .lr-dock{display:none !important;}',
+    '@media(max-width:1060px){.ve-nav-apps{width:38px;padding:0;justify-content:center;font-size:0;gap:0;}}',
     '.ve-nav-lesars{background:#F0FDF4;border:1px solid #BBF7D0;color:#0F5C2B;font-size:10px;font-weight:800;letter-spacing:0.08em;padding:4px 8px;border-radius:20px;white-space:nowrap;}',
     '@media(max-width:480px){.ve-nav-inner{padding:0 16px;}}',
     // Signed out (Sean, 2026-10-27: "the same style of navigation that we're using on the logged in version"): the dashboard's
@@ -247,6 +255,9 @@
     var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador'
       : (member.membership_status === 'active' ? 'Founding Member' : 'Member');
     desktopRight =
+      '<button type="button" class="ve-nav-apps" id="ve-nav-apps" aria-haspopup="menu" aria-expanded="false" aria-label="Apps: go to a LESARUSS brand">' +
+        '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Apps' +
+      '</button>' +
       '<button type="button" class="ve-nav-member" id="ve-nav-member-chip" aria-label="Your account, ' + swEsc(member.name || '') + '">' +
         '<span class="ve-nav-avatar" style="' + avatarStyle + '">' + avatarSrc + '</span>' +
         '<span class="ve-nav-lesars">' + tierBadge + '</span>' +
@@ -322,6 +333,35 @@
       document.head.appendChild(am);
     }
   }
+
+  // Apps opens the LESARUSS brands launcher. HQ's universal-bar.js draws it (since 2026-11-01 it draws no bottom bar, only this
+  // panel): loaded on the first tap, mounted once, then toggled from the button, which it drops under.
+  (function () {
+    var apps = document.getElementById('ve-nav-apps');
+    if (!apps) return;
+    var mounted = false, loading = false;
+    function toggle() { window.dispatchEvent(new CustomEvent('lr:toggle-waffle', { detail: { anchor: apps } })); }
+    function mount() {
+      if (mounted || !window.LRUniversalBar) return false;
+      var el = document.createElement('div'); el.id = 'lr-dock-mount';
+      document.body.appendChild(el);
+      window.LRUniversalBar.mount({ mount: el, current: 'vegans-explore', accent: '#16A34A',
+        getToken: function () { try { return window.VEAuth ? VEAuth.getToken() : localStorage.getItem('ve_token'); } catch (e) { return null; } } });
+      mounted = true; return true;
+    }
+    window.addEventListener('lr:launcher-state', function (ev) { apps.setAttribute('aria-expanded', ev.detail && ev.detail.open ? 'true' : 'false'); });
+    apps.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (mounted || mount()) { toggle(); return; }
+      if (loading) return;
+      loading = true;
+      var sc = document.createElement('script');
+      sc.src = 'https://hq.lesaruss.ai/shell/universal-bar.js';
+      sc.onload = function () { loading = false; if (mount()) toggle(); };
+      sc.onerror = function () { loading = false; };
+      document.head.appendChild(sc);
+    });
+  })();
 
   // The hamburger opens and closes the menu panel; Escape or a tap outside closes it.
   (function () {

@@ -287,6 +287,23 @@
     /* The billboard sits beside most sections; Members, Bounties and the Board take the full width. */
     .hub-content-sidebar { padding: 48px 40px 0 0; position: sticky; top: calc(var(--ve-nav-h, 0px) - 32px); } /* the ad stays in view, 16px under the menu */
     .hub-content-grid.hub-wide { grid-template-columns: 1fr; }
+    /* The community's sections (Sean, 2026-11-01: "when you click any of the communities... All you see is the daily pulse... people
+       might not think that the community's full... where it says the daily pulse with the description... 3/4 and then 1/4 could be a
+       drop down to show the other sections"). Every section's header is its title and line on the left (three-fourths) and a dropdown
+       of the community's sections on the right (one-fourth); stacked on phones, the dropdown first. */
+    .section-hdr.has-pick { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,1fr); align-items: end; gap: 10px 24px; }
+    .section-hdr.has-pick .section-action { grid-column: 1; }
+    .hub-sec-pick { display: flex; flex-direction: column; gap: 6px; min-width: 0; grid-column: 2; grid-row: 1; }
+    .hub-sec-pick label { font-size: 10px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hub-sec-pick select { width: 100%; min-height: 46px; padding: 0 46px 0 14px; border: 1.5px solid var(--ve-border); border-radius: 6px; font: inherit; font-size: 14px; font-weight: 800; color: var(--ve-text); cursor: pointer; -webkit-appearance: none; -moz-appearance: none; appearance: none;
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px; }
+    .hub-sec-pick select:focus-visible { outline: 3px solid var(--ve-green); outline-offset: 2px; }
+    .hub-sec-pick select::-ms-expand { display: none; }
+    .hub-frame-hdr { margin-bottom: 20px; }
+    @media (max-width: 700px) {
+      .section-hdr.has-pick { grid-template-columns: 1fr; }
+      .hub-sec-pick { grid-column: 1; grid-row: 1; }
+    }
     .hub-content-grid.hub-wide .hub-content-sidebar { display: none; }
     /* Opportunities: every open role, two across beside the billboard. */
     #tab-opportunities .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -418,10 +435,16 @@
   </section>
 
   <!-- BOUNTIES: the city's campaigns, opened here -->
-  <section class="hub-section" id="tab-bounties" aria-label="Bounties"><div data-frame="bounties"></div></section>
+  <section class="hub-section" id="tab-bounties" aria-labelledby="hub-bounties-title">
+    <div class="section-hdr hub-frame-hdr"><div><h2 class="section-title" id="hub-bounties-title">Bounties</h2>
+      <p class="section-sub" data-hub-text="Campaigns and jobs in {name} that earn you points."></p></div></div>
+    <div data-frame="bounties"></div></section>
 
   <!-- BOARD: the city's Community Board, opened here under the community -->
-  <section class="hub-section" id="tab-board" aria-label="Community Board"><div data-frame="board"></div></section>
+  <section class="hub-section" id="tab-board" aria-labelledby="hub-board-title">
+    <div class="section-hdr hub-frame-hdr"><div><h2 class="section-title" id="hub-board-title">Community Board</h2>
+      <p class="section-sub" data-hub-text="Jobs, classifieds, fosters, rescues and the conversations in {name}."></p></div></div>
+    <div data-frame="board"></div></section>
 
   <!-- PARTNERS: hidden for now (Sean, 2026-10-05); kept so it can come back. Not in the menu. -->
   <section class="hub-section" id="tab-partners" aria-labelledby="hub-partners-title">
@@ -589,6 +612,27 @@
   ];
   function tabById(id) { return TABS.filter(function (t) { return t.id === id; })[0]; }
 
+  // The sections dropdown (Sean, 2026-11-01): one select, moved into the open section's header, so the Daily Pulse (and every other
+  // section) shows what else the community holds. Members and Rewards say they are for members when signed out.
+  var secPick = document.createElement('div');
+  secPick.className = 'hub-sec-pick';
+  secPick.innerHTML = '<label for="hub-sec-select">In this community</label><select id="hub-sec-select">' +
+    TABS.map(function (t) { return '<option value="' + t.id + '">' + esc(t.label) + (t.locked && !signedIn ? ' (members)' : '') + '</option>'; }).join('') +
+    '</select>';
+  var secSelect = secPick.querySelector('select');
+  secSelect.addEventListener('change', function () {
+    switchTab(secSelect.value);
+    var sec = document.getElementById('tab-' + secSelect.value);
+    if (sec && sec.getBoundingClientRect().top < 0) sec.scrollIntoView({ block: 'start' });
+  });
+  function placePick(id) {
+    var hdr = document.querySelector('#tab-' + id + ' .section-hdr');
+    secSelect.value = id;
+    if (!hdr) { if (secPick.parentNode) secPick.parentNode.removeChild(secPick); return; }
+    hdr.classList.add('has-pick');
+    hdr.appendChild(secPick);
+  }
+
   // The address bar carries the section (?tab=), so back and shared links land on it.
   function switchTab(id, opts) {
     opts = opts || {};
@@ -597,6 +641,7 @@
     if (!opts.initial && window.hubBanner) window.hubBanner.autoFold();
     document.querySelectorAll('.hub-section').forEach(function (s) { s.classList.toggle('active', s.id === 'tab-' + id); });
     document.getElementById('hub-content-grid').classList.toggle('hub-wide', !!t.wide);
+    placePick(id);
     if (t.frame) openFrame(t);
     if (!opts.noPush) {
       var u = new URL(location.href);

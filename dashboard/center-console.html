@@ -4,8 +4,8 @@
   <script src="/analytics.js"></script>
 <meta charset="UTF-8">
 <script>
-// A listing opened in the dashboard on a phone is its own page (see openDashboardListing): go there before the dashboard loads.
-(function(){try{var m=location.pathname.match(/^\/dashboard\/directory\/([a-z0-9][a-z0-9_-]*)\/?$/i);if(m&&window.matchMedia('(max-width:760px)').matches)location.replace('/directory/'+m[1]+location.search+location.hash);}catch(e){}})();
+// A listing opened from the dashboard is its own page, on every screen since 2026-11-01 (see openDashboardListing): go there before the dashboard loads.
+(function(){try{var m=location.pathname.match(/^\/dashboard\/directory\/([a-z0-9][a-z0-9_-]*)\/?$/i);if(m)location.replace('/directory/'+m[1]+location.search+location.hash);}catch(e){}})();
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Title and description corrected 2026-09-09: this page became the official
@@ -36,7 +36,7 @@
      as the new LESARUSS HQ"): the nav moved from a fixed bar above the window
      to the window's second row, under the title bar, exactly as HQ's did the
      same day. Solid and in flow now; position:relative anchors its menus. */
-  .ve-topnav{position:relative;z-index:20;flex-shrink:0;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:#fff;border-bottom:1px solid var(--ve-border);}
+  .ve-topnav{position:sticky;top:0;z-index:40;flex-shrink:0;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:#fff;border-bottom:1px solid var(--ve-border);}
   .ve-topnav-left{display:flex;align-items:center;gap:22px;min-width:0;flex-shrink:0;}
   .ve-topnav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
   /* The dashboard tab strip lives in the top nav (2026-09-20, Sean: "the
@@ -71,7 +71,11 @@
      fixed desktop-style shell -- the outer page never scrolls, the console
      is a bounded app window sized like a normal window with its own
      internal scroll, and the backdrop carries a LESARUSS Universe dock. --- */
-  @media (min-width:761px){ html,body{overflow:hidden;} }
+  /* 2026-11-01 (Sean: "I don't know how I feel about the wrap anymore... I don't like having everything wrapped together... There's
+     no more universal frame"). The window is gone on every screen: no backdrop, no title bar, no traffic lights; the dashboard is a
+     plain page under a sticky top nav, the way a listing page is, and the page itself scrolls. The class names stay so the code that
+     reads .console-frame main keeps working. */
+  .console-backdrop{display:none !important;}
   .console-backdrop{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#eaf7ea 0%,#f7fbf5 40%,#fff3e0 100%);overflow:hidden;}
   .console-backdrop::before,.console-backdrop::after{content:'';position:absolute;border-radius:50%;filter:blur(70px);opacity:0.32;}
   .console-backdrop::before{width:520px;height:520px;background:var(--ve-green);top:-160px;left:-140px;}
@@ -79,7 +83,8 @@
   /* Pulled up to 14px from the top with the nav inside it (2026-09-27), the
      same geometry as HQ's .hq-window: centred with auto margins rather than a
      transform, full height less room for the universal bar below. */
-  .console-frame{position:fixed;top:14px;left:0;right:0;margin:0 auto;z-index:1;width:min(96vw,1560px);height:calc(100vh - 104px);min-height:320px;display:flex;flex-direction:column;background:#fff;border-radius:20px;box-shadow:0 30px 90px rgba(0,0,0,0.22),0 2px 8px rgba(0,0,0,0.06);overflow:hidden;}
+  .console-frame{position:static;display:block;width:auto;max-width:100%;margin:0;background:#fff;}
+  body{background:#fff;}
   .console-titlebar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ve-border);background:#fafafa;flex-shrink:0;}
   .console-titlebar-dots{display:flex;gap:6px;flex-shrink:0;}
   /* The traffic lights are buttons (2026-09-27), the same behaviour as HQ's:
@@ -106,7 +111,7 @@
   }
   .console-titlebar-label{flex:1;text-align:center;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-text-50);}
   .console-titlebar-spacer{width:53px;flex-shrink:0;}
-  .console-frame main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .console-frame main{flex:none;min-height:0;overflow:visible;}
 
   /* LESARUSS Universe dock.
      2026-09-20: the bar's markup, CSS and behaviour moved to a shared
@@ -117,6 +122,9 @@
      hand-copied hex that had already drifted from the registry. The one
      rule kept below is this site's own: the Guide portrait inside the
      shared .lr-dock-icon box. */
+  /* The bottom bar is retired (Sean, 2026-11-01: "lose the universal selector at the bottom"); HQ's file no longer draws it, and this
+     keeps it off even from an older copy. The mount stays for the Apps launcher. */
+  #lr-dock-mount .lr-dock{display:none !important;}
   .lr-dock-ask-icon{background-color:#fff;background-size:cover;background-repeat:no-repeat;background-position:center top;background-origin:content-box;padding-top:5%;}
   /* Belt and braces on the floating widget (2026-09-10, Group I). The JS
      below detaches .gw-launch from the DOM outright, which is the actual fix;
@@ -800,7 +808,7 @@
 <script>window.VE_DEPOT_LIST_ONLY = true;</script>
 <script src="/public/depot-tabs.js"></script>
 
-<div class="console-backdrop"></div>
+
 
 <!-- HQ-style top nav (2026-09-20). Matches LESARUSS HQ's shell: wordmark left,
      brand-waffle Apps button and the member avatar right. The avatar is the
@@ -832,15 +840,6 @@
 <div id="lr-dock-mount"></div>
 
 <div class="console-frame" id="console-frame">
-  <div class="console-titlebar">
-    <div class="console-titlebar-dots">
-      <a class="console-light console-light-close" id="console-light-close" href="https://lesaruss.com/projects" aria-label="Close, see all LESARUSS brands" title="See all LESARUSS brands"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 3l4 4M7 3l-4 4"/></svg></a>
-      <button type="button" class="console-light console-light-min" id="console-light-min" aria-label="Exit full screen" aria-disabled="true" title="Already in the window"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M2.5 5h5"/></svg></button>
-      <button type="button" class="console-light console-light-max" id="console-light-max" aria-label="Full screen" aria-disabled="false" title="Full screen"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M3 6.5V3h3.5M7 3.5V7H3.5"/></svg></button>
-    </div>
-    <div class="console-titlebar-label">Vegans Explore &mdash; Dashboard</div>
-    <div class="console-titlebar-spacer"></div>
-  </div>
   <header class="ve-topnav" role="banner">
   <div class="ve-topnav-left">
     <a class="ve-wordmark" id="ve-logo-home" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home"><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>
@@ -2978,7 +2977,9 @@
     // click the menu"). Framed, the listing was a fixed 1800 px box that took every swipe, so the menu above it could not be reached,
     // and the phone held two whole apps at once (the dashboard and the listing page), so Safari threw the frame out of memory and
     // reloaded it. A link or the back button that lands here replaces the address, so back never bounces forward again.
-    if (window.matchMedia && window.matchMedia('(max-width:760px)').matches) {
+    // Since 2026-11-01 every screen does (Sean: "when I'm in a directory and I click an item and I open it from its link... It
+    // doesn't show it wrapped. I like that view better"). The framed path below stays, unused, in case it is wanted back.
+    if (true) {
       var own = '/directory/' + encodeURIComponent(slug);
       if (noPush) location.replace(own); else location.assign(own);
       return;
@@ -3368,9 +3369,9 @@
     var on = !!(m && f && f.offsetParent && !f.classList.contains('ve-sized') && window.innerWidth > 760);
     if (m) m.classList.toggle('frame-fit', on);
     if (!on) { if (f && !f.classList.contains('ve-sized')) f.style.height = ''; return; }
-    var pb = parseFloat(getComputedStyle(m).paddingBottom) || 0;
-    var top = f.getBoundingClientRect().top - m.getBoundingClientRect().top + m.scrollTop;
-    var h = Math.floor(m.clientHeight - pb - top - (f.offsetHeight - f.clientHeight));
+    // The page scrolls now (no window since 2026-11-01): the frame is one screen tall under the sticky nav, 24px short of the foot.
+    var nav = document.querySelector('.ve-topnav');
+    var h = Math.floor(window.innerHeight - (nav ? nav.offsetHeight : 0) - 24 - (f.offsetHeight - f.clientHeight));
     f.style.height = Math.max(440, h) + 'px';
   }
   window.fitConsoleFrame = fitConsoleFrame;
@@ -4954,6 +4955,13 @@
   // publishes (event, or window cache if it already fired). The Apps button
   // opens the same brand waffle the bottom bar's plus opens.
   (function initTopNav() {
+    // The page scrolls under a sticky nav now (2026-11-01): tell sticky things (the ad rail) how tall it is, as nav.js does.
+    (function navHeight() {
+      var nav = document.querySelector('.ve-topnav');
+      function set() { if (nav) document.documentElement.style.setProperty('--ve-nav-h', nav.offsetHeight + 'px'); }
+      set(); window.addEventListener('resize', set);
+      if (window.ResizeObserver && nav) new ResizeObserver(set).observe(nav);
+    })();
     var avatar = document.getElementById('ve-topnav-avatar');
     var apps = document.getElementById('ve-apps-btn');
 
