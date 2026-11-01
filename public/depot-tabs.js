@@ -47,6 +47,7 @@
     { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
     { group: 'Directory', href: '/admin/depot/venues', label: 'Venues' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
+    { group: 'Content', href: '/admin/depot/social', label: 'Social' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },

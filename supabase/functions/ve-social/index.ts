@@ -23,6 +23,7 @@ const MC = 'https://app.metricool.com/api';
 const CAPTIVATE = 'https://api.captivate.fm';
 const SHOW_ID = '5f0184ac-771d-41be-9db2-49f08fc0b880';
 const SHOW_TZ = 'America/New_York';
+const SHOW_ART = 'https://artwork.captivate.fm/7a6dedbb-e4ae-45df-b0a8-26d416116c39/cover-b-v1.jpg'; // cover B, an episode with no art of its own
 const TTL_MS = 30 * 60 * 1000;
 
 const cors = {
@@ -196,7 +197,7 @@ async function captivate(): Promise<any[]> {
     return post({
       id: `cap-${e.id}`, channel: 'podcast', kind: 'episode',
       status: st === 'published' ? 'published' : st === 'scheduled' ? 'scheduled' : st === 'draft' ? 'draft' : st || 'draft',
-      at: zoned(raw, SHOW_TZ), caption: [e.title, notes].filter(Boolean).join('\n\n'), media: [e.episode_art || null],
+      at: zoned(raw, SHOW_TZ), caption: [e.title, notes].filter(Boolean).join('\n\n'), media: [e.episode_art || SHOW_ART],
       url: st === 'published' ? 'https://vegans-explore.captivate.fm/' : null, source: 'captivate',
       extra: { title: e.title, episode_number: e.itunes_episode ?? e.episode_number ?? null, media_id: e.media_id, audio: e.media_url || null },
       links: linksOf(e.shownotes || ''),

@@ -4334,6 +4334,27 @@ saying anything is due, late or has passed. On 2026-11-01 Logan called the 7 AM 
 **The podcast's pre-roll is the network tag** (Sean, 2026-11-01): the default pre-roll on the Captivate show (the Vegans Explore
 Podcast) stays on for every episode.
 
+## Depot > Social (Sean, 2026-11-01)
+
+"A social media page in the VE Depot where I can see a grid of scheduled content and click in it to see the caption, tags, links,
+and anything else... share analytics for all of our social feeds and make it so I can sort between channels to see scheduled and past
+content." **Depot > Social** (`/admin/depot/social`, Content in the Go to menu; super admins), one thing per view: **Content**
+(`#content/<scheduled|past|all>/<channel>`: channel chips with counts, Scheduled / Past / All, the period, search over captions,
+hashtags and mentions; a grid four across, what goes out next first, then the newest past; each tile the picture, the channel, the
+status (Scheduled, Published, Draft, Did not post), the time in Eastern, the caption in two rows and, once out, views, likes and
+comments), **one post** (`#post/<id>`: the picture or episode audio, when it goes or went out, hashtags, who is tagged, every link
+(a `/go/` link marked Tracked), the first comment, the network's settings, how it did, the full caption, Copy caption, Open on the
+channel) and **Analytics** (`#analytics/<channel>`: a card a channel with followers, the change in the period and a line of it, posts,
+views, reach and average engagement; pick one to see only its posts; every post in a table sorted by any column). Server: edge
+function `ve-social` (`report` with Eastern `from` / `to`; super admin or the admin token; cached 30 minutes in `ve_analytics_cache`,
+Refresh now skips it). It reads **Metricool** (`analytics_connections` `metricool`, blog 3707345: `/v2/scheduler/posts` for what is
+scheduled, `/v2/analytics/posts|reels/instagram`, `/v2/analytics/posts/facebook|tiktok`, `/stats/youtube/videos`, and followers from
+`/v2/analytics/timelines` with `subject=account`; Metricool gives times in Europe/Madrid, turned into UTC there) and **Captivate** for
+the podcast (the show's dates are America/New_York). A post scheduled in Metricool that went out shows once, with the numbers. Checked
+2026-11-01: Instagram 3,762 followers, TikTok 3,038, YouTube 584, Facebook 371. **X is not connected in Metricool** (its API says so),
+though the 2026-10-31 notes said it was. Not yet: podcast downloads from Captivate, scheduling or editing from the page (it is read
+only; posts are scheduled in Metricool).
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
