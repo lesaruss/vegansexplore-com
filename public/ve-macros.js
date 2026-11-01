@@ -66,7 +66,7 @@
     var t = String(text || '').replace(/[½¼¾⅓⅔]/g, function (c) { return { '½': ' 1/2', '¼': ' 1/4', '¾': ' 3/4', '⅓': ' 1/3', '⅔': ' 2/3' }[c]; });
     var br = t.match(/\((\d*\.?\d+)\s*(g|ml)\)/i);
     if (br) return +br[1];
-    var re = /(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.?\d+|\ba\b|\ban\b|\bone\b)\s*(fl\.? ?oz|cups?|c\b|tablespoons?|tbsp|tbs|teaspoons?|tsp|ounces?|oz|ml|grams?|g\b|liters?|litres?|l\b|kg|pounds?|lb|slices?)/i;
+    var re = /(\d+\s+\d+\/\d+|\d+\/\d+|\d*\.?\d+|\ba\b|\ban\b|\bone\b)[\s-]*(fl\.? ?oz|cups?|c\b|tablespoons?|tbsp|tbs|teaspoons?|tsp|ounces?|oz|ml|grams?|g\b|liters?|litres?|l\b|kg|pounds?|lb|slices?)/i;
     var m = t.match(re);
     if (!m) return null;
     var q = qty(m[1]); var u = m[2].toLowerCase().replace(/\./g, '').replace(/\s+/g, ' ');

@@ -733,7 +733,7 @@
       var serves = parseInt(r.servings, 10) || 1, sum = VEMacros.sum(parts), each = VEMacros.scale(sum, 1 / serves);
       Object.keys(each).forEach(function (k) { each[k] = Math.round(each[k] * 10) / 10; });
       tot.innerHTML = VEMacros.strip(each, { title: 'Your picks, ' + (serves > 1 ? 'per serving (serves ' + serves + ')' : 'in the whole recipe'), compact: true }) +
-        '<p class="dg-picknote">Adds up only the products you picked, at the amount the recipe calls for. Everything else in the recipe is not counted yet.</p>';
+        '<p class="dg-picknote">Adds up only the products you picked, at the amount the recipe calls for (one serving where it gives no amount). Everything else in the recipe is not counted yet.</p>';
     });
   }
   function openPicker(r, n) {

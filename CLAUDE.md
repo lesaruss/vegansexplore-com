@@ -3714,6 +3714,32 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   full. The Guide's Help keep it right table shows both columns; Depot > Venues pays and labels the right amounts. Proven 2026-11-01 in a
   rolled-back transaction (unsponsored correction 40, Still here 2 with no bounty; with a Publix Title sponsorship the first confirm 50
   and the bounty).
+- **Scan, macros, votes within the brand and picks in recipes** (Sean, 2026-11-01: "a tab where they can scan an item... it should
+  take them to its profile... each brand to have all of their products listed... see the nutrition value, which supermarkets carry it...
+  vote for it within the brand. So you're not going to see the rankings anywhere except when you click on the brand itself... If the
+  ingredient calls for coffee creamer... pick and choose which coffee creamer they want... save it"; then "Could we also list the macros
+  of the item?"; migrations `20261101_product_barcodes_macros.sql`, `20261101_recipe_ingredient_types.sql`; edge function `ve-products`).
+  **Barcodes**: `ve_product_barcodes` (GTIN padded to 14 digits, `ve_gtin`), one row per item, tied to its product line, with its Nutrition
+  Facts and macros; 870 filled 2026-11-01 from USDA FoodData Central's Branded Foods (every record of each brand, matched by kind, nothing
+  with milk, cream, whey, casein, egg or honey; `ve_usda_label` builds the label per serving with FDA rounding), 68 of the 86 lines.
+  **Macros**: `ve_products.macros` `{serving, cal, protein, carbs, fat, fiber, sugar, sodium, item}` from the line's plain or original item
+  (66 lines; 3 before), shown by `/public/ve-macros.js` (`VEMacros.strip`, `line`, `per100`, `amount`): a strip on every product page
+  (`.pv-mac` in `ve-product-view.js`, the chosen version's own), protein and calories on the Supermarket Guide's tiles and the brand's
+  Products tab, and Sort products (Most protein, Most protein per calorie, Fewest calories, `o` in the address). **Scan** is a Supermarket
+  Guide tab (`#/scan`, `#/scan/<barcode>`, open to everyone): `/public/ve-scan.js` (the browser's BarcodeDetector, else ZXing 0.21.3 from
+  jsDelivr for iPhone, or type the number; nothing recorded); ours opens with the line's name, the item, macros, Open its page, Every <type>
+  like it and Carried at; anything else shows what Open Food Facts says (CC BY-SA, read live, its Vegan status, macros per serving or 100 g)
+  and **Add it** (`ve-products` `add`, members, 20 a day: a pending row the team approves to its product line in **Depot > Venues >
+  Barcodes**, `#barcodes`). **Votes within the brand**: `ve_product_votes`, one per member per product (`ve-products` `votes`, `vote`); a
+  brand's Products tab and Overview list its products most voted first with **#N at <brand>** and a Vote button, and nowhere else shows the
+  rank. **Picks in recipes**: `recipes.ingredient_types` (set by trigger from each line, `ve_ingredient_type`), so a Cookbook recipe line
+  that calls for milk, creamer, yogurt, butter or a cheese has **Pick your <type>** (the Dairy Guide's recipe view): a window of every
+  product of that type with its macros (sort by protein or calories), saved per member (`ve_recipe_picks`, `ve-products` `pick`, refused
+  for a product of another type), shown in their recipe with its picture, macros, its page and **Buy it online** (an Amazon search with our
+  tag), and the recipe adds up the picked products' macros at the amounts it calls for, per serving. `ve-products` also takes the ops token
+  with `as_member`. Proven 2026-11-01 as the Logan test account (vote counted once and taken back, a pick saved, a wrong type and an
+  untagged line refused, then cleared). Not yet: 18 lines with no USDA match (365, Ben & Jerry's, Siggi's and others) and the other
+  Guides' recipe views.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
