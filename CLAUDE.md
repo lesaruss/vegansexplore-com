@@ -492,6 +492,17 @@ note on Stripe's page; then expired and the claim and membership rows removed.
 (`next.config.ts`, not permanent); the `/api/studio` data routes are unchanged. Checked from the database (this session cannot reach
 hq.lesaruss.ai): the old addresses land on the new ones and `/branddesk` asks a signed-out visitor to sign in. Next: each brand's page as
 its home, starting with the Social plan.
+**The Social room is live in HQ** (2026-11-01, lesaruss-hq main 674727a): BrandDesk > a brand > Social, through `/api/branddesk/social`
+(ve-social with `as_member`). Any of Sean's HQ owner accounts (`lib/ownerAccess.ts`) acts as his super admin members row
+(`memberIdForEmail` in `lib/social.ts`); `vegan@lesaruss.com` is V's account, not Sean's.
+**The foundation** (2026-11-01; migration `20261101_brand_kit_foundation.sql`, `ve-brand-kit` version 8 from 66abd7c): on every kit a
+locked part refuses `kit_save` (409 `locked`); changing it is `kit_change_request` {section, reason} then `kit_change_decide` by the owner
+(`ve_kit_change_requests`; approved reopens the part); `kit_launch` only with every part locked (status `launched`, the launch gate); the
+**mood board** (`kit_mood_save`: pictures in `media/brandkit/<slug>/` tagged style, type or color, their words; `kit_mood_read`: Claude
+proposes a style, six colors by role and one of the four pairings, saved as `mood.read`; never locked). `business/brand.html` sends Edit on a
+locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`components/branddesk/BrandKitRoom.tsx`, `/api/branddesk/kit`) shows
+the gate, the mood board, the parts, the requests and Launch; built on lesaruss-hq branch `claude/branddesk-social-deploy-7423db` (0dacf2f),
+not merged. The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
