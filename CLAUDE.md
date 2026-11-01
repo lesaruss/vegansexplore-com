@@ -468,7 +468,8 @@ to 90 is prorated; days 91 to 111 are the Preparation window, full $111 for the 
 Start now charges $111 at sign-up** (the days before January 1 are bonus); anyone already on the old no-charge trial keeps those terms.
 Build order: the Partner checkout first, then renaming the Studio, the foundation, Social and Website, the plan engine, our own brands
 first.
-**The Partner checkout, built 2026-11-01 on branch `claude/festive-cori-cvqs2o`, not deployed** (Sean: "Logan, build it"). `ve-claims`
+**The Partner checkout, built and live 2026-11-01** (Sean: "Logan, build it", then "deploy"; pages on `main` at 0b3320a, `ve-claims`
+version 44 from the same commit, source sha256 matched). `ve-claims`
 `partnerTerms()` is the shared calendar (`PERIOD_DAYS` 111, `PREP_DAYS` 21, Period 1 from 2027-01-01 Eastern) and the public action
 `partner_terms` (`at` previews a date); tier `brand` checks out as a one-time line for what is due now plus a $111 price every 111 days
 (`interval` day, `interval_count` 111) on a trial to the next shared renewal at noon Eastern; `metadata.offer` front_row | prorated |
@@ -482,7 +483,10 @@ they are now the Guide's voice over her still picture, no video (Sean, 2026-11-0
 (`liz/partner-tour/j-5-v2.mp3`; `VEGuideTour.narrator` plays a line's `{audio, poster}`), and Maya's last brand tour slide, shared by
 every brand (`brand-door/front-row-v2.mp3` before January 1, then `plain-last-first-v2.mp3` or `plain-last-v2.mp3`; `{audio, poster}`
 through `voiceAt`). Recorded with el-media tts in their profile voices, called from the database (pg_net) so the admin token never
-leaves it, each checked word for word with `stt`. `ve-claims` and the pages go out together.
+leaves it, each checked word for word with `stt`. `ve-claims` and the pages go out together. **Proven live 2026-11-01** in Stripe test mode with the
+internal QA account on Love Life Cafe (the one-time `ve-once-partner-proof`, now the 410 stub): the session charged $111 today (a one-time
+line for Period 1) with the $111 price every 111 days at $0 today on a trial to April 22, 2027, metadata `front_row` and period 1, its
+note on Stripe's page; then expired and the claim and membership rows removed.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
