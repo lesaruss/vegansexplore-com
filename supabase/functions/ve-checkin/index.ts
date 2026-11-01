@@ -102,8 +102,14 @@ Deno.serve(async (req) => {
     return json({ ok: true, ...(data || {}), mine_today, shoutouts, ...(people ? { people, more } : {}) });
   }
 
-  if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: m } = await db.from('members').select('id, membership_status, is_superadmin').eq('id', memberId).maybeSingle();
+  // Ops (Bearer LESARUSS_ADMIN_TOKEN) may review the check-in menu like a super admin (2026-11-01).
+  const ops = !memberId && !!token && await (async () => {
+    const env = Deno.env.get('LESARUSS_ADMIN_TOKEN') || (await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle()).data?.value;
+    return !!env && env.length === token.length && env === token;
+  })();
+  if (ops && (body.action === 'review_list' || body.action === 'review')) {} else if (!memberId) return json({ error: 'not_authenticated' }, 401);
+  const { data: m0 } = memberId ? await db.from('members').select('id, membership_status, is_superadmin').eq('id', memberId).maybeSingle() : { data: null };
+  const m: any = m0 || (ops ? { id: null, membership_status: 'active', is_superadmin: true } : null);
   if (!m) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'privacy') {
@@ -218,7 +224,7 @@ Deno.serve(async (req) => {
     if (ex && ex.status !== 'pending') return json({ ok: false, why: 'already_sent' }, 409);
     const { error } = ex ? await db.from('ve_checkin_actions').update(row).eq('id', ex.id) : await db.from('ve_checkin_actions').insert(row);
     if (error) return json({ error: 'save_failed' }, 500);
-    return json({ ok: true, status: 'pending', points: (c.st as any)[kind] });
+    return json({ ok: true, status: 'pending', points: m.membership_status === 'active' ? (c.st as any)[kind] : 0 });
   }
 
   if (body.action === 'review_list' || body.action === 'review') {
