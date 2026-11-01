@@ -1,3 +1,15 @@
-// One-time function, done. Its steps (the product fills, the Tracker's tables, the Tracker test's cleanup and Lavva reopened) ran on
-// 2026-11-01; the SQL lives in the migrations. Kept as a stub that answers 410.
-Deno.serve(() => new Response('gone', { status: 410 }))
+// One-time: the closed-brands review (migration 20261101_closed_brands_review.sql). Only the run key's SHA-256 is here. Redeployed as the 410 stub once run.
+import postgres from 'npm:postgres@3.4.4'
+const KEY_SHA256 = "3f6dca6b07049ba01b3c1b4c7b1552965cc390e246e2114c7c8553f817b6c658"
+const STEPS: Record<string, string> = { "review": "-- The brands marked Permanently closed, checked 2026-11-01 (Sean: \"check the other brands marked closed too\"), each against its own\n-- website read through pg_net, and a search:\n--   Calypso Bites: calypsobites.com is a live store (prices, Add to cart) -> open again.\n--   Rhythm Superfoods: rhythmsuperfoods.com now serves an unrelated streaming site; no news since 2017 -> stays closed, the dead\n--     website link is cleared so the listing never sends anyone there.\n--   Sweet Earth Foods: sweetearthfoods.com refuses (403); VegNews reports the brand is nowhere to be found under Nestle -> stays closed.\n--   Immaculate Vegan (closed by Sean 2026-10-25), NadaMoo!, Parma!, Om Sweet Home, Vlendedful (Sean, 2026-11-01) stay closed.\nupdate listings set business_status = 'OPERATIONAL', updated_at = now(),\n  details = coalesce(details, '{}'::jsonb) || jsonb_build_object('reopened_at', now(), 'reopened_why', 'Its store calypsobites.com was live on 2026-11-01')\nwhere slug = 'calypso-bites' and business_status = 'CLOSED_PERMANENTLY';\ninsert into ve_listing_edits (listing_id, field, old_value, new_value, meta)\nselect id, 'business_status', '\"CLOSED_PERMANENTLY\"'::jsonb, '\"OPERATIONAL\"'::jsonb, '{\"by\":\"logan\",\"why\":\"calypsobites.com live and selling, 2026-11-01\"}'::jsonb\nfrom listings l where slug = 'calypso-bites' and not exists (select 1 from ve_listing_edits e where e.listing_id = l.id and e.field = 'business_status' and e.new_value = '\"OPERATIONAL\"'::jsonb);\ninsert into ve_listing_edits (listing_id, field, old_value, new_value, meta)\nselect id, 'website', to_jsonb(website), 'null'::jsonb, '{\"by\":\"logan\",\"why\":\"the domain now serves an unrelated site, 2026-11-01\"}'::jsonb\nfrom listings where slug = 'rhythm-superfoods' and website ilike '%rhythmsuperfoods.com%';\nupdate listings set website = null, updated_at = now(),\n  details = coalesce(details, '{}'::jsonb) || jsonb_build_object('closed_note', 'Its website now serves an unrelated site (checked 2026-11-01)')\nwhere slug = 'rhythm-superfoods' and website ilike '%rhythmsuperfoods.com%';\n" }
+Deno.serve(async (req: Request) => {
+  const given = new TextEncoder().encode(req.headers.get('x-run-key') || '')
+  const hex = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', given))).map((b) => b.toString(16).padStart(2, '0')).join('')
+  if (hex !== KEY_SHA256) return new Response('not found', { status: 404 })
+  const step = new URL(req.url).searchParams.get('step') || ''
+  if (!STEPS[step]) return Response.json({ error: 'unknown_step' }, { status: 400 })
+  const sql = postgres(Deno.env.get('SUPABASE_DB_URL')!, { max: 1, prepare: false })
+  try { await sql.begin(async (tx) => { await tx.unsafe(STEPS[step]) }); return Response.json({ step, ok: true }) }
+  catch (e) { return Response.json({ step, error: String(e) }, { status: 500 }) }
+  finally { await sql.end() }
+})
