@@ -3052,7 +3052,12 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   **Who leads which Guide** (Sean, 2026-11-01: "keep Maya as the guide for Pre-Vegans"): Liz Restaurant, Entrepreneur, Ambassador,
   Dating; Maya Dairy, Pre-Vegan, Baking; River Stadium & Arena, Community Manager, Eating Out, Athlete; Nori Airport, Budget, Abroad;
   Dani Nonprofit, Group Partner, Nonprofit Partner, Kids and Family; Theo Nutrition, Seasoned Vegan, Holidays, Pets; Kai Creator, Official
-  Creator, Beauty and Fashion; Pascal Meat Alternatives, Meal Prep. The eleven added as Coming soon on 2026-11-01 (members only, like the
+  Creator, Beauty and Fashion; Pascal Meat Alternatives, Meal Prep.
+  **Only clothes from our store** (Sean, 2026-11-01: "we don't put any clothing that's not in the store", the GeekFon Society rule):
+  a Guide in a banner or scene wears the Vegans Explore Tee (black, the green suitcase mark over VEGANS EXPLORE on the chest, as on the
+  Nutrition banner) or another item in the store; an apron may go over it. Pascal's Supermarket, Meal Prep and Meat Alternatives banners
+  were redone that day (his cream shirt and a made-up green tee were off brand). The model garbles the small EXPLORE: check the print
+  close up, and when it is wrong paste the real mark from `nutrition-guide.jpg` rather than generating again. The eleven added as Coming soon on 2026-11-01 (members only, like the
   rest; their Notify me sign-ups tell us which to build first): Vegan on a Budget, Meal Prep, Eating Out Without Stress, Vegan Kids and
   Family, Vegan Athlete, Vegan Baking, Vegan Holidays, Vegan Pets, Vegan Beauty and Fashion, Vegan Dating, Vegan Abroad.
 - **The Welcome Guide is the whole cast** (Sean, 2026-11-01: "an ensemble Guide. It can introduce all of the Guides throughout"). Its
