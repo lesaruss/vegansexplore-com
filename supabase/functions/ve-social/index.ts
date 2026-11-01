@@ -205,7 +205,7 @@ async function captivate(): Promise<any[]> {
   });
 }
 
-async function build(from: string, to: string) {
+async function build(from: string, to: string, blogId?: number | null, withPodcast = true) {
   const errors: string[] = [];
   const channels: Record<string, any> = {
     instagram: { connected: true }, facebook: { connected: true }, tiktok: { connected: true }, youtube: { connected: true }, podcast: { connected: true },
@@ -213,7 +213,7 @@ async function build(from: string, to: string) {
   let posts: any[] = [];
   const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'metricool').maybeSingle();
   const key = await secret(conn?.config?.api_key_secret || 'VE_METRICOOL_API_KEY');
-  const ctx = { key: key || '', q: `userId=${conn?.config?.user_id}&blogId=${conn?.config?.blog_id}` };
+  const ctx = { key: key || '', q: `userId=${conn?.config?.user_id}&blogId=${blogId || conn?.config?.blog_id}` };
   const today = new Date(Date.now() + tzOffsetMs(Date.now(), SHOW_TZ)).toISOString().slice(0, 10);
   const ahead = new Date(Date.now() + 60 * 86400000).toISOString().slice(0, 10);
   const sFrom = from < today ? from : today;
@@ -228,7 +228,7 @@ async function build(from: string, to: string) {
     key ? safe('facebook', () => mc(`/v2/analytics/posts/facebook?${mcRange(from, to)}`, ctx)) : null,
     key ? safe('tiktok', () => mc(`/v2/analytics/posts/tiktok?${mcRange(from, to)}`, ctx)) : null,
     key ? safe('youtube', () => mc(`/stats/youtube/videos?start=${from.replace(/-/g, '')}&end=${to.replace(/-/g, '')}`, ctx)) : null,
-    safe('podcast', () => captivate()),
+    withPodcast ? safe('podcast', () => captivate()) : Promise.resolve([] as any[]),
     key ? safe('instagram followers', () => followers('instagram', from, to, ctx)) : null,
     key ? safe('facebook followers', () => followers('facebook', from, to, ctx)) : null,
     key ? safe('tiktok followers', () => followers('tiktok', from, to, ctx)) : null,
@@ -262,9 +262,259 @@ async function build(from: string, to: string) {
   const fol: Record<string, any> = { instagram: fIg, facebook: fFb, tiktok: fTt, youtube: fYt };
   for (const [ch, f] of Object.entries(fol)) if (f) Object.assign(channels[ch], f);
   if (key && errors.some((e) => /metricool 401|metricool 403/.test(e))) for (const ch of ['instagram', 'facebook', 'tiktok', 'youtube']) channels[ch].error = 'Metricool refused the key';
-  if (!cap) channels.podcast.error = 'Captivate did not answer';
+  if (!cap && withPodcast) channels.podcast.error = 'Captivate did not answer';
+  if (!withPodcast) delete channels.podcast;
   channels.x = { connected: false, note: 'Not connected in Metricool' };
   return { posts, channels, errors, from, to };
+}
+
+
+// ---- The studio (Sean, 2026-11-01: "see what's slotted for the different brands... you propose things... the community manager goes
+// in... They make any adjustments... or leave a note that you will then take care of... you will use your connections to push it out...
+// If something needs a manual thing... we know ahead of time... a log... a calendar... track it to its metrics... between different
+// brands... clients"). Tables ve_social_brands, ve_social_slots, ve_social_notes, ve_social_edits, ve_social_people (migration
+// 20261101_ve_social_studio.sql). Who: ops (the admin token, written as Logan), super admins, and a brand's people (editor or viewer).
+//   brands, slots {brand, from, to}, slot_get {id}, slot_save {id?, brand?, fields}, note_add {id, body}, note_done {note_id, reply?},
+//   notes_open {brand?}, approve {id}, send_back {id, body}, skip {id}, push {id} (ops), sync (ops or cron), report {from, to, brand?}
+// Approving pushes the slot to the brand's Metricool scheduler (autoPublish). A channel the brand has not connected in Metricool, or a
+// brand with no Metricool brand yet, makes the slot Manual with the reason, so it is known ahead of time. sync marks Metricool's
+// published posts Posted with their links and copies their numbers from the analytics (matched by link).
+type Who = { ops: boolean; admin: boolean; id: string | null; name: string };
+const EDITABLE = ['slot_at', 'channels', 'kind', 'title', 'caption', 'first_comment', 'links', 'assets', 'manual_steps', 'batch'];
+const KINDS = ['post', 'carousel', 'reel', 'story', 'video', 'episode', 'thread'];
+const NETS = ['instagram', 'facebook', 'tiktok', 'youtube', 'twitter', 'linkedin', 'threads', 'pinterest', 'bluesky', 'gmb'];
+
+async function roleFor(who: Who, brand: string): Promise<'editor' | 'viewer' | null> {
+  if (who.ops || who.admin) return 'editor';
+  if (!who.id) return null;
+  const { data } = await db.from('ve_social_people').select('role').eq('brand_slug', brand).eq('member_id', who.id).maybeSingle();
+  return (data?.role as any) || null;
+}
+async function mcCtx(blog: number) {
+  const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'metricool').maybeSingle();
+  const key = await secret(conn?.config?.api_key_secret || 'VE_METRICOOL_API_KEY');
+  if (!key) throw new Error('metricool: no key');
+  return { key, q: `userId=${conn?.config?.user_id}&blogId=${blog}` };
+}
+async function mcSend(method: string, path: string, ctx: { key: string; q: string }, body?: unknown) {
+  const r = await fetch(`${MC}${path}${path.includes('?') ? '&' : '?'}${ctx.q}`, { method, headers: { 'X-Mc-Auth': ctx.key, Accept: 'application/json', 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+  const t = await r.text(); let o: any = null; try { o = JSON.parse(t); } catch { /* text */ }
+  if (!r.ok) throw new Error(`metricool ${r.status}: ${t.slice(0, 200)}`);
+  return o;
+}
+const easternLocal = (iso: string) => {
+  const d = new Date(iso); const off = tzOffsetMs(d.getTime(), SHOW_TZ);
+  return new Date(d.getTime() + off).toISOString().slice(0, 19);
+};
+function mcBody(s: any, nets: string[]) {
+  const media = (s.assets || []).map((a: any) => a?.url).filter((u: any) => typeof u === 'string' && /^https:\/\//.test(u));
+  const type = s.kind === 'story' ? 'STORY' : (s.kind === 'reel' || s.kind === 'video' || s.kind === 'episode') ? 'REEL' : 'POST';
+  const body: any = {
+    publicationDate: { dateTime: easternLocal(s.slot_at), timezone: SHOW_TZ },
+    text: s.caption, providers: nets.map((n) => ({ network: n })), autoPublish: true, draft: false, media,
+    saveExternalMediaFiles: true, firstCommentText: s.first_comment || '',
+  };
+  if (nets.includes('instagram')) body.instagramData = { autoPublish: true, type };
+  if (nets.includes('facebook')) body.facebookData = { type: type === 'REEL' ? 'REEL' : type };
+  if (nets.includes('youtube')) body.youtubeData = { title: (s.title || s.caption || '').slice(0, 100), type: 'SHORT', privacy: 'public' };
+  if (nets.includes('tiktok')) body.tiktokData = { privacyOption: 'PUBLIC_TO_EVERYONE' };
+  return body;
+}
+async function logEdit(slot: string, who: Who, field: string, oldV: unknown, newV: unknown) {
+  await db.from('ve_social_edits').insert({ slot_id: slot, by_name: who.name, by_id: who.id, field, old_value: oldV ?? null, new_value: newV ?? null });
+}
+async function push(id: string, who: Who) {
+  const { data: s } = await db.from('ve_social_slots').select('*').eq('id', id).maybeSingle();
+  if (!s) return { error: 'not_found' };
+  const { data: b } = await db.from('ve_social_brands').select('*').eq('slug', s.brand_slug).maybeSingle();
+  const set = async (f: Record<string, unknown>) => { await db.from('ve_social_slots').update({ ...f, updated_at: new Date().toISOString() }).eq('id', id); };
+  if (Date.parse(s.slot_at) < Date.now() + 2 * 60000) { await set({ status: 'failed', push_error: 'The time has passed. Pick a new time and approve it again.' }); return { error: 'time_passed' }; }
+  if (!b?.metricool_blog_id) { await set({ status: 'manual', push_error: `${b?.name || s.brand_slug} is not in Metricool yet, so this one is posted by hand.` }); return { status: 'manual' }; }
+  const nets = (s.channels || []).filter((n: string) => NETS.includes(n));
+  const auto = nets.filter((n: string) => (b.channels || []).includes(n));
+  const handNets = nets.filter((n: string) => !auto.includes(n));
+  if (!auto.length) { await set({ status: 'manual', push_error: `None of its channels (${nets.join(', ') || 'none'}) are connected in Metricool for ${b.name}.` }); return { status: 'manual' }; }
+  if (!s.caption?.trim() && !(s.assets || []).length) { await set({ status: 'failed', push_error: 'Nothing to post: no caption and no picture or video.' }); return { error: 'empty' }; }
+  const ctx = await mcCtx(b.metricool_blog_id);
+  if (s.metricool_post_id) { try { await mcSend('DELETE', `/v2/scheduler/posts/${s.metricool_post_id}`, ctx); } catch { /* already gone */ } }
+  try {
+    const o = await mcSend('POST', '/v2/scheduler/posts', ctx, mcBody(s, auto));
+    const mid = o?.data?.id;
+    await set({ status: handNets.length ? 'manual' : 'scheduled', metricool_post_id: mid || null, metricool_state: o?.data?.providers || null, pushed_at: new Date().toISOString(),
+      push_error: handNets.length ? `Scheduled in Metricool for ${auto.join(', ')}. Post it by hand on ${handNets.join(', ')} (not connected in Metricool).` : null });
+    await logEdit(id, who, 'pushed', null, { metricool_post_id: mid, channels: auto });
+    return { status: handNets.length ? 'manual' : 'scheduled', metricool_post_id: mid };
+  } catch (e) {
+    await set({ status: 'failed', push_error: String((e as Error).message || e).slice(0, 400) });
+    return { error: 'push_failed', detail: String((e as Error).message || e) };
+  }
+}
+const normUrl = (u: string) => String(u || '').split('?')[0].replace(/\/$/, '');
+async function sync() {
+  const { data: slots } = await db.from('ve_social_slots').select('*').in('status', ['scheduled', 'manual', 'posted']).not('metricool_post_id', 'is', null)
+    .gte('slot_at', new Date(Date.now() - 30 * 86400000).toISOString()).lte('slot_at', new Date(Date.now() + 86400000).toISOString());
+  const out = { checked: 0, posted: 0, failed: 0, metrics: 0 };
+  const byBrand: Record<string, any[]> = {};
+  for (const s of slots || []) (byBrand[s.brand_slug] ||= []).push(s);
+  for (const [brand, list] of Object.entries(byBrand)) {
+    const { data: b } = await db.from('ve_social_brands').select('*').eq('slug', brand).maybeSingle();
+    if (!b?.metricool_blog_id) continue;
+    const ctx = await mcCtx(b.metricool_blog_id);
+    const times = list.map((s) => Date.parse(s.slot_at));
+    const from = new Date(Math.min(...times) - 86400000), to = new Date(Math.max(...times) + 86400000);
+    const sched = await mcSend('GET', `/v2/scheduler/posts?start=${easternLocal(from.toISOString())}&end=${easternLocal(to.toISOString())}&timezone=America%2FNew_York`, ctx).catch(() => null);
+    const byId = new Map(((sched?.data) || []).map((p: any) => [String(p.id), p]));
+    let analytics: any = null;
+    for (const s of list) {
+      out.checked++;
+      const p: any = byId.get(String(s.metricool_post_id));
+      const f: Record<string, unknown> = { updated_at: new Date().toISOString() };
+      if (p) {
+        f.metricool_state = p.providers || null;
+        const provs = (p.providers || []) as any[];
+        const urls: Record<string, string> = { ...(s.post_urls || {}) };
+        for (const pr of provs) if (pr.publicUrl) urls[String(pr.network).toLowerCase()] = pr.publicUrl;
+        f.post_urls = urls;
+        const done = provs.length && provs.every((pr) => /PUBLISH|SUCCESS/i.test(String(pr.status)));
+        const bad = provs.filter((pr) => /ERROR|FAIL|REJECT/i.test(String(pr.status)));
+        if (bad.length) { f.status = 'failed'; f.push_error = bad.map((pr) => `${pr.network}: ${pr.detailedStatus || pr.status}`).join('; '); out.failed++; }
+        else if (done && s.status !== 'posted') { f.status = s.status === 'manual' ? 'manual' : 'posted'; f.posted_at = s.posted_at || new Date().toISOString(); out.posted++; }
+      }
+      if ((s.status === 'posted' || f.status === 'posted') && Object.keys((f.post_urls || s.post_urls) as any || {}).length) {
+        if (!analytics) {
+          const day = (d: Date) => new Date(d.getTime() + tzOffsetMs(d.getTime(), SHOW_TZ)).toISOString().slice(0, 10);
+          analytics = await build(day(new Date(Date.now() - 32 * 86400000)), day(new Date()), b.metricool_blog_id, false).catch(() => null);
+        }
+        const urls = Object.values((f.post_urls || s.post_urls) as Record<string, string>).map(normUrl);
+        const m: Record<string, unknown> = {};
+        for (const p2 of (analytics?.posts || [])) if (p2.url && urls.includes(normUrl(p2.url))) m[p2.channel] = p2.metrics;
+        if (Object.keys(m).length) { f.metrics = m; f.metrics_at = new Date().toISOString(); out.metrics++; }
+      }
+      await db.from('ve_social_slots').update(f).eq('id', s.id);
+    }
+  }
+  return out;
+}
+
+async function studio(body: any, who: Who) {
+  const a = body.action;
+  if (a === 'brands') {
+    let q = db.from('ve_social_brands').select('slug,name,kind,metricool_blog_id,channels,note,active').eq('active', true).order('kind').order('name');
+    const { data } = await q;
+    const list = [];
+    for (const b of data || []) { const r = await roleFor(who, b.slug); if (r) list.push({ ...b, role: r, in_metricool: !!b.metricool_blog_id }); }
+    const { data: open } = await db.from('ve_social_notes').select('id, slot_id, ve_social_slots!inner(brand_slug)').eq('status', 'open');
+    const counts: Record<string, number> = {};
+    for (const n of (open as any[]) || []) { const s = n.ve_social_slots?.brand_slug; if (s) counts[s] = (counts[s] || 0) + 1; }
+    return { brands: list.map((b) => ({ ...b, open_notes: counts[b.slug] || 0 })), me: { name: who.name, admin: who.admin || who.ops } };
+  }
+  if (a === 'slots') {
+    if (!(await roleFor(who, body.brand))) return { error: 'forbidden' };
+    const { data } = await db.from('ve_social_slots').select('id,brand_slug,slot_at,channels,kind,title,caption,assets,status,batch,manual_steps,push_error,post_urls,metrics,posted_at')
+      .eq('brand_slug', body.brand).gte('slot_at', body.from).lte('slot_at', body.to).order('slot_at');
+    const ids = (data || []).map((s) => s.id);
+    const { data: notes } = ids.length ? await db.from('ve_social_notes').select('slot_id,status').in('slot_id', ids) : { data: [] as any[] };
+    const nc: Record<string, number> = {};
+    for (const n of notes || []) if (n.status === 'open') nc[n.slot_id] = (nc[n.slot_id] || 0) + 1;
+    return { slots: (data || []).map((s) => ({ ...s, thumb: (s.assets || []).find((x: any) => x?.thumb || x?.url)?.thumb || (s.assets || []).find((x: any) => x?.type !== 'video')?.url || null, open_notes: nc[s.id] || 0, assets: undefined })) };
+  }
+  if (a === 'slot_get') {
+    const { data: s } = await db.from('ve_social_slots').select('*').eq('id', body.id).maybeSingle();
+    if (!s) return { error: 'not_found' };
+    const role = await roleFor(who, s.brand_slug); if (!role) return { error: 'forbidden' };
+    const { data: notes } = await db.from('ve_social_notes').select('*').eq('slot_id', s.id).order('created_at');
+    const { data: edits } = await db.from('ve_social_edits').select('by_name,field,old_value,new_value,at').eq('slot_id', s.id).order('at', { ascending: false }).limit(40);
+    const { data: b } = await db.from('ve_social_brands').select('slug,name,channels,metricool_blog_id').eq('slug', s.brand_slug).maybeSingle();
+    return { slot: s, notes: notes || [], edits: edits || [], brand: b, role };
+  }
+  if (a === 'slot_save') {
+    const f = body.fields || {};
+    let s: any = null;
+    if (body.id) { const r = await db.from('ve_social_slots').select('*').eq('id', body.id).maybeSingle(); s = r.data; if (!s) return { error: 'not_found' }; }
+    const brand = s?.brand_slug || body.brand;
+    if ((await roleFor(who, brand)) !== 'editor') return { error: 'forbidden' };
+    if (!s && !(who.ops || who.admin)) return { error: 'forbidden' };
+    const clean: Record<string, unknown> = {};
+    for (const k of EDITABLE) if (k in f) clean[k] = f[k];
+    if ('slot_at' in clean && isNaN(Date.parse(String(clean.slot_at)))) return { error: 'bad_time' };
+    if ('kind' in clean && !KINDS.includes(String(clean.kind))) return { error: 'bad_kind' };
+    if ('channels' in clean) clean.channels = (Array.isArray(clean.channels) ? clean.channels : []).map(String).filter((n: string) => NETS.includes(n));
+    if ('links' in clean) clean.links = (Array.isArray(clean.links) ? clean.links : []).map(String).filter((u: string) => /^https?:\/\//.test(u));
+    if ('assets' in clean && !Array.isArray(clean.assets)) return { error: 'bad_assets' };
+    if ('caption' in clean) clean.caption = String(clean.caption || '').slice(0, 5000);
+    if (!s) {
+      if (!clean.slot_at) return { error: 'bad_time' };
+      const { data: b } = await db.from('ve_social_brands').select('slug').eq('slug', brand).maybeSingle();
+      if (!b) return { error: 'no_brand' };
+      const { data: ins, error } = await db.from('ve_social_slots').insert({ ...clean, brand_slug: brand, status: f.status === 'approved' && (who.ops || who.admin) ? 'approved' : 'proposed', proposed_by: who.name }).select('id').single();
+      if (error) return { error: error.message };
+      await logEdit(ins.id, who, 'created', null, clean);
+      return { id: ins.id };
+    }
+    if (s.status === 'posted') return { error: 'already_posted' };
+    const changed: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(clean)) if (JSON.stringify(s[k]) !== JSON.stringify(v)) { changed[k] = v; await logEdit(s.id, who, k, s[k], v); }
+    if (!Object.keys(changed).length) return { ok: true, unchanged: true };
+    const upd: Record<string, unknown> = { ...changed, updated_at: new Date().toISOString() };
+    await db.from('ve_social_slots').update(upd).eq('id', s.id);
+    // A change to something already in Metricool goes back out with the change.
+    if (s.status === 'scheduled' || (s.status === 'manual' && s.metricool_post_id)) { const r = await push(s.id, who); return { ok: true, repushed: r }; }
+    return { ok: true };
+  }
+  if (a === 'note_add') {
+    const { data: s } = await db.from('ve_social_slots').select('id,brand_slug').eq('id', body.id).maybeSingle();
+    if (!s) return { error: 'not_found' };
+    if (!(await roleFor(who, s.brand_slug))) return { error: 'forbidden' };
+    const text = String(body.body || '').trim().slice(0, 3000);
+    if (!text) return { error: 'empty' };
+    const { data: n } = await db.from('ve_social_notes').insert({ slot_id: s.id, author_id: who.id, author_name: who.name, body: text, status: who.ops ? 'done' : 'open' }).select('*').single();
+    if (body.send_back) await db.from('ve_social_slots').update({ status: 'changes', updated_at: new Date().toISOString() }).eq('id', s.id).in('status', ['proposed', 'approved', 'failed']);
+    return { note: n };
+  }
+  if (a === 'note_done') {
+    if (!(who.ops || who.admin)) return { error: 'forbidden' };
+    const { data: n } = await db.from('ve_social_notes').update({ status: 'done', reply: body.reply ? String(body.reply).slice(0, 3000) : null, done_by: who.name, done_at: new Date().toISOString() }).eq('id', body.note_id).select('*').maybeSingle();
+    return n ? { note: n } : { error: 'not_found' };
+  }
+  if (a === 'notes_open') {
+    if (!(who.ops || who.admin)) return { error: 'forbidden' };
+    let q = db.from('ve_social_notes').select('id,slot_id,author_name,body,created_at,ve_social_slots!inner(brand_slug,slot_at,title,caption,status)').eq('status', 'open').order('created_at');
+    if (body.brand) q = q.eq('ve_social_slots.brand_slug', body.brand);
+    const { data } = await q;
+    return { notes: data || [] };
+  }
+  if (a === 'approve' || a === 'skip' || a === 'send_back') {
+    const ids: string[] = Array.isArray(body.ids) ? body.ids : [body.id];
+    const res: any[] = [];
+    for (const id of ids) {
+      const { data: s } = await db.from('ve_social_slots').select('id,brand_slug,status').eq('id', id).maybeSingle();
+      if (!s) { res.push({ id, error: 'not_found' }); continue; }
+      if ((await roleFor(who, s.brand_slug)) !== 'editor') { res.push({ id, error: 'forbidden' }); continue; }
+      if (s.status === 'posted') { res.push({ id, error: 'already_posted' }); continue; }
+      if (a === 'skip') {
+        const { data: full } = await db.from('ve_social_slots').select('metricool_post_id,brand_slug').eq('id', id).maybeSingle();
+        if (full?.metricool_post_id) {
+          const { data: b } = await db.from('ve_social_brands').select('metricool_blog_id').eq('slug', full.brand_slug).maybeSingle();
+          if (b?.metricool_blog_id) { try { await mcSend('DELETE', `/v2/scheduler/posts/${full.metricool_post_id}`, await mcCtx(b.metricool_blog_id)); } catch { /* gone */ } }
+        }
+        await db.from('ve_social_slots').update({ status: 'skipped', metricool_post_id: null, updated_at: new Date().toISOString() }).eq('id', id);
+        await logEdit(id, who, 'status', s.status, 'skipped'); res.push({ id, status: 'skipped' }); continue;
+      }
+      if (a === 'send_back') {
+        const text = String(body.body || '').trim();
+        if (text) await db.from('ve_social_notes').insert({ slot_id: id, author_id: who.id, author_name: who.name, body: text.slice(0, 3000) });
+        await db.from('ve_social_slots').update({ status: 'changes', updated_at: new Date().toISOString() }).eq('id', id);
+        await logEdit(id, who, 'status', s.status, 'changes'); res.push({ id, status: 'changes' }); continue;
+      }
+      await db.from('ve_social_slots').update({ status: 'approved', approved_by: who.id, approved_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', id);
+      await logEdit(id, who, 'status', s.status, 'approved');
+      res.push({ id, ...(await push(id, who)) });
+    }
+    return Array.isArray(body.ids) ? { results: res } : res[0];
+  }
+  if (a === 'push') { if (!who.ops) return { error: 'forbidden' }; return await push(body.id, who); }
+  if (a === 'sync') { if (!who.ops) return { error: 'forbidden' }; return await sync(); }
+  return { error: 'unknown_action' };
 }
 
 Deno.serve(async (req) => {
@@ -274,19 +524,33 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
     const ops = !!token && token === (await secret('LESARUSS_ADMIN_TOKEN'));
+    const who: Who = { ops, admin: false, id: null, name: 'Logan' };
     if (!ops) {
       const sub = token ? await verifyToken(token) : null;
       if (!sub) return json({ error: 'not_authenticated' }, 401);
-      const { data: me } = await db.from('members').select('is_superadmin').eq('id', sub).maybeSingle();
-      if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
+      const { data: me } = await db.from('members').select('is_superadmin, first_name, last_name').eq('id', sub).maybeSingle();
+      if (!me) return json({ error: 'not_authenticated' }, 401);
+      who.admin = !!me.is_superadmin; who.id = sub; who.name = [me.first_name, me.last_name ? String(me.last_name)[0] + '.' : ''].filter(Boolean).join(' ') || 'A team member';
     }
-    if (body.action !== 'report') return json({ error: 'unknown_action' }, 400);
+    if (body.action !== 'report') {
+      const out = await studio(body, who);
+      return json(out, out && (out as any).error === 'forbidden' ? 403 : 200);
+    }
+    if (!(ops || who.admin)) {
+      if (!body.brand || !(await roleFor(who, body.brand))) return json({ error: 'forbidden' }, 403);
+    }
     const { from, to } = body;
     if (!isDay(from) || !isDay(to) || from > to) return json({ error: 'bad_dates' }, 400);
-    const key = `social:${from}:${to}`;
+    let blog: number | null = null, withPodcast = true, bslug = body.brand || 'vegans-explore';
+    if (bslug !== 'vegans-explore') {
+      const { data: b } = await db.from('ve_social_brands').select('metricool_blog_id').eq('slug', bslug).maybeSingle();
+      if (!b?.metricool_blog_id) return json({ posts: [], channels: {}, errors: [], from, to, not_connected: true, fetched_at: new Date().toISOString() });
+      blog = b.metricool_blog_id; withPodcast = false;
+    }
+    const key = `social:${bslug}:${from}:${to}`;
     const { data: hit } = await db.from('ve_analytics_cache').select('data, fetched_at').eq('key', key).maybeSingle();
     if (hit && !body.refresh && Date.now() - Date.parse(hit.fetched_at) < TTL_MS) return json({ ...hit.data, fetched_at: hit.fetched_at, cached: true });
-    const out = await build(from, to);
+    const out = await build(from, to, blog, withPodcast);
     const fetched_at = new Date().toISOString();
     if (out.errors.length < 4) await db.from('ve_analytics_cache').upsert({ key, data: out, fetched_at });
     return json({ ...out, fetched_at });
