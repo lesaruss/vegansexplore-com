@@ -307,7 +307,7 @@
   function viewVenue(slug, rest) {
     var r = (rest || '').split('/');
     if (r[0] === 'report') return viewReport(slug, r[1], r[2]);
-    if (r[0] === 'bounties') return viewVenueBounties(slug);
+    if (r[0] === 'bounties') return viewVenueBounties(slug, r[1]);
     var d = VENUE[slug];
     if (!d) {
       main.innerHTML = crumb([['Airports', '#/airports'], ['...', '']]) + '<div class="dg-loading">Loading the airport...</div>';
@@ -579,7 +579,8 @@
   // every airport with open bounties, the most points first; a airport's own (#/airport/<slug>/bounties) lists its jobs, highest
   // pay first. Drawn by /public/ve-venue-bounties.js from what ve-venues already returns.
   var BOUNTIES = null;
-  function bOpts() { return { base: '#/airport/', owner: owner(), points: POINTS, limits: LIMITS, place: 'airport', where: 'gate', join: '#/join' }; }
+  function bOpts() { return { lib: window.VEAirportMap, unit: 'gate', seatKey: seatKey, pinLevel: true, mapNote: 'Our own drawing, from the gate numbers. Phone GPS is not accurate inside a terminal.',
+    base: '#/airport/', owner: owner(), points: POINTS, limits: LIMITS, place: 'airport', where: 'gate', join: '#/join' }; }
   function viewBounties() {
     var intro = owner() ? 'Every airport with jobs open, the most points first. Pick one, go, and do what it asks with a photo. Points land once the team accepts it.'
       : 'This is what we want done at every airport, the most points first. Bounties unlock with the Guide.';
@@ -597,9 +598,16 @@
     main.innerHTML = head('Bounties', 'Where the points are', intro) + (owner() ? cityPicker() : '') + body;
     VEVenueBounties.css(); wireCity();
   }
-  function viewVenueBounties(slug) {
+  function viewVenueBounties(slug, itemId) {
     var d = VENUE[slug];
     if (!d) { viewVenue(slug); return; }
+    if (itemId && d.venue && d.open && window.VEVenueBounties) {
+      // One job: what to do, the photo, the map with only its stand, and the walk from your gate.
+      var h = null; (d.spots || []).forEach(function (s) { (s.items || []).forEach(function (it) { if (it.id === itemId) h = it; }); });
+      main.innerHTML = crumb([['Bounties', '#/bounties'], [d.venue.name, '#/airport/' + d.venue.slug + '/bounties'], [h ? h.name : 'Job', '']]) + VEVenueBounties.job(d, itemId, bOpts());
+      VEVenueBounties.wireJob(d, itemId, bOpts());
+      return;
+    }
     if (d.error) { main.innerHTML = crumb([['Bounties', '#/bounties']]) + '<p class="dg-empty">We could not find that airport.</p>'; return; }
     var v = d.venue;
     var top = '<div class="dg-btns"><a class="dg-btn dg-ghost" href="#/airport/' + esc(v.slug) + '">Open the map</a></div>';

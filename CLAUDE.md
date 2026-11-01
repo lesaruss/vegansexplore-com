@@ -3718,6 +3718,15 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   report form (which keeps the sign-in, Passport and Guide gates). Drawn by `/public/ve-venue-bounties.js` (`VEVenueBounties.board`,
   `venue`, `jobs`) from what `ve-venues` `bounties` and `venue` already return, the amounts from `ve_venue_report_points`; no server
   change. The Overview's Bounties card opens the tab. River's and Nori's lines on it are text drafts.
+  **Each job has its own page** (Sean, 2026-11-01: "when they click into it, it should have an image of where it is on the right hand side.
+  And it should show the accompanying map... something similar for what we did for the stadium for the airport... where they can find
+  directions"): `#/venue/<slug>/bounties/<item>` and `#/airport/<slug>/bounties/<item>` (a job's **Find it**). Left: the points, the job,
+  its stand number and where it is, what to photograph, **Do it** (the report form), **Something changed?** (the item's Update), and **Get
+  me there** from **Your section** or **Your gate** (the same one the venue page keeps, `seatKey`). Right: the item's photo, else the
+  venue's illustration, then the map with only that stand's pin and the walk to it (`VEVenueMap` / `VEAirportMap` `route` to that one
+  stand; at an airport it says when the spot is before security). A stand with no section or gate yet says to ask a worker and add it in
+  the report. `VEVenueBounties.job` and `wireJob`. Find a Vegan item we don't have has no one stand, so it opens its form directly. Not
+  GPS: inside a stadium or terminal a phone is off by several sections.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
