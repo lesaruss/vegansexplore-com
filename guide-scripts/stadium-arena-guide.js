@@ -57,7 +57,9 @@
     wrong: ['Update', 'The name, the price, where it is, or whether it is Vegan.', 'Something changed'],
     gone: ['Update', 'This stand or item is not there anymore.', 'Not there anymore'],
     comment: ['Comment', 'Tell other fans what you thought of it. A photo makes it even better.', 'Comment'],
-    missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet.', 'Something missing']
+    missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet. A photo of the item and one of the sign earn the most.', 'Something missing'],
+    scan: ['Scan a Vegan item', 'A packaged Vegan snack or drink: scan its barcode.', 'Scanned item'],
+    shop_confirm: ['Still on the shelf', 'It is still sold here.', 'Still on the shelf']
   };
   var STATUS = { pending: ['Waiting for the team', 'wait'], accepted: ['Accepted', 'live'], agreed: ['Accepted', 'live'], declined: ['Not accepted', 'off'] };
 
@@ -300,8 +302,12 @@
   function ptsLine(kind, it) {
     var p = POINTS[kind]; if (!p) return '';
     if (kind === 'confirm' && it && it.bounty && p.first_with_photo) return 'Bounty, be first: ' + pts(p.first_with_photo) + ' points with a photo, ' + pts(p.first_no_photo) + ' without';
+    if (p.with_photo === p.no_photo) return pts(p.with_photo) + ' points';
+    if (kind === 'missing') return pts(p.with_photo) + ' points with both photos, ' + pts(p.no_photo) + ' without';
     return pts(p.with_photo) + ' points with a photo, ' + pts(p.no_photo) + ' without';
   }
+  // A shop item (one scanned by its barcode) is checked with Still on the shelf; it has no bounty.
+  function itemKinds(it) { return it && it.gtin ? ['shop_confirm', 'gone', 'comment'] : ['confirm', 'wrong', 'gone', 'comment']; }
   function standCard(v, s, open) {
     var zone = s.zone === 'suites' ? tagHtml('Suites only', 'sa-tag-ask') : s.zone === 'club' ? tagHtml('Club level', 'sa-tag-ask') : '';
     var dir = s.listing ? ' &middot; <a href="/directory/' + esc(s.listing.slug) + '" style="color:var(--g);font-weight:800;font-size:13px">Their Directory page</a>' : '';
@@ -330,7 +336,7 @@
     var lede = esc(KIND[v.kind] || '') + ' &middot; ' + esc(v.city || '') + (v.state ? ', ' + esc(v.state) : '') + ' &middot; ' + esc((v.teams || []).join(', '));
     var meta = '<div class="sa-vhead">' + (v.maps ? '<a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Map</a>' : '') +
       (v.note ? '<span>' + esc(v.note) + (v.note_source_url ? ' <a href="' + esc(v.note_source_url) + '" target="_blank" rel="noopener">Source</a>' : '') + '</span>' : '') + '</div>';
-    var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn" href="#/venue/' + esc(v.slug) + '/bounties">Bounties</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
+    var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn" href="#/venue/' + esc(v.slug) + '/bounties">Bounties</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/scan">Scan a Vegan item</a></div>';
     var pins = 0;
     d.spots.forEach(function (s, i) { s.num = d.open ? i + 1 : 0; s.pin = d.open && v.layout && (s.map_sections || []).length ? s.num : 0; if (s.pin) pins++; });
     var stands = d.spots.length ? d.spots.map(function (s) { return standCard(v, s, d.open); }).join('')
@@ -402,10 +408,12 @@
     var P = function (k, f, d) { return POINTS[k] ? POINTS[k][f] : d; };
     var rows = [
       ['Update', 'Something changed or is gone, the first accepted report', P('wrong', 'with_photo', 100), P('wrong', 'no_photo', 50)],
-      ['Something missing', 'A Vegan item or stand that is not in the Guide yet', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50)],
+      ['Something missing', 'A Vegan item or stand that is not in the Guide yet. With a photo means both: the item and the sign', P('missing', 'with_photo', 100), P('missing', 'no_photo', 50)],
       ['Agrees with the first', 'An update the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15)],
       ['Still here, first to confirm', 'The bounty: the first member to confirm an item no one has checked in ' + (LIMITS.fresh_days || 35) + ' days', P('confirm', 'first_with_photo', 50), P('confirm', 'first_no_photo', 25)],
       ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
+      ['Scan a Vegan item', 'A packaged Vegan snack or drink in a shop, new to that shop (one time)', P('scan', 'with_photo', 10), P('scan', 'no_photo', 10)],
+      ['Still on the shelf', 'A scanned item that is already logged in that shop', P('shop_confirm', 'with_photo', 5), P('shop_confirm', 'no_photo', 5)],
       ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
     ];
     main.innerHTML = head('Help keep it right', 'Members keep this Guide right', 'Menus at the game change all season. When you are at a venue, tell us what is still there, what changed and what you thought. A photo earns more. Bounties are part of the Guide: once it is yours, every report you send from inside earns points.') +
@@ -431,7 +439,7 @@
   function viewChoose(v, item, back) {
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Update', '']]) +
       head('Update', esc(item.it.name), esc(item.spot.name) + (item.spot.where ? ', ' + esc(item.spot.where) : '') + '. What would you like to tell us? Each one earns points once the team accepts it, more with a photo.') +
-      '<div class="sa-choose">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
+      '<div class="sa-choose">' + itemKinds(item.it).map(function (k) {
         return '<a class="sa-choice" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '"><b>' + esc(REPORT[k][2]) + '</b><span>' + esc(REPORT[k][1]) + '</span>' +
           (ptsLine(k, item.it) ? '<i>' + esc(ptsLine(k, item.it)) + '</i>' : '') + '</a>';
       }).join('') + '</div>' +
@@ -439,7 +447,28 @@
   }
 
   // The report form: one view, the photo, a note, and Send (which asks for the location once).
-  var PHOTO = null;
+  // Photos for the report: 'item' (the food, package or menu) and 'place' (the sign). Each shrunk in the browser.
+  var PHOTOS = {};
+  function photoSlot(key, label, hint) {
+    return '<div class="dg-field"><span>' + label + ' <i>(' + hint + ')</i></span><div class="sa-photo"><label class="dg-btn dg-ghost" style="cursor:pointer">Take or choose a photo' +
+      '<input type="file" data-photo="' + key + '" accept="image/*" capture="environment" hidden></label><span id="saPrev-' + key + '"></span></div></div>';
+  }
+  function bindPhotos() {
+    [].forEach.call(document.querySelectorAll('[data-photo]'), function (inp) {
+      inp.addEventListener('change', function () {
+        var f = inp.files && inp.files[0], k = inp.getAttribute('data-photo'); if (!f) return;
+        shrink(f).then(function (b) { PHOTOS[k] = b; document.getElementById('saPrev-' + k).innerHTML = '<img alt="Your photo" src="' + URL.createObjectURL(b) + '">'; })
+          .catch(function () { setStatus('That photo could not be read. Try another one.'); });
+      });
+    });
+  }
+  function uploadPhoto(b) {
+    if (!b) return Promise.resolve(null);
+    return api({ action: 'report_start' }).then(function (s) {
+      if (!s || !s.upload_url) throw s || {};
+      return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: b }).then(function (r) { if (!r.ok) throw {}; return s.path; });
+    });
+  }
   function viewReport(slug, kind, itemId) {
     var d = VENUE[slug];
     if (!d) { viewVenue(slug); return; }
@@ -447,6 +476,7 @@
     d.spots.forEach(function (s) { (s.items || []).forEach(function (it) { if (it.id === itemId) item = { it: it, spot: s }; }); });
     var back = '#/venue/' + v.slug;
     if (kind === 'choose' && item) return viewChoose(v, item, back);
+    if (kind === 'scan') return viewScan(slug, itemId);
     if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
@@ -454,26 +484,26 @@
       : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + ', ' + esc(item.spot.where || '') + '</p>' : '';
-    var kinds = item ? '<div class="sa-kinds">' + ['confirm', 'wrong', 'gone', 'comment'].map(function (k) {
+    if (item && item.it.gtin && (kind === 'confirm' || kind === 'wrong')) kind = 'shop_confirm';
+    if (!item && kind !== 'missing') kind = 'missing';
+    var kinds = item ? '<div class="sa-kinds">' + itemKinds(item.it).map(function (k) {
       return '<a class="dg-chip" aria-pressed="' + (k === kind) + '" href="#/venue/' + esc(v.slug) + '/report/' + k + '/' + item.it.id + '">' + esc(REPORT[k][2]) + '</a>'; }).join('') + '</div>' : '';
-    var noteLabel = kind === 'missing' ? 'What is missing? <i>The item, the stand and where it is (section or gate)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
+    var noteLabel = kind === 'missing' ? 'Anything else? <i>(optional: the price, the hours, what is in it)</i>' : kind === 'shop_confirm' ? 'Anything to add? <i>(optional)</i>' : kind === 'confirm' ? 'Anything to add? <i>(optional)</i>'
       : kind === 'comment' ? 'Your comment <i>(what you thought, a tip for other fans)</i>' : kind === 'gone' ? 'Anything to add? <i>(optional)</i>' : 'What needs to be updated?';
     var earn = ptsLine(kind, item && item.it);
     main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back]].concat(item ? [['Update', '#/venue/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][0]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
+        (kind === 'missing' ? '<label class="dg-field"><span>The Vegan item</span><input id="saItem" maxlength="160" placeholder="Beyond Burger, vegan nachos, a pretzel"></label>' +
+        '<label class="dg-field"><span>The place <i>(the restaurant, stand or shop name on the sign)</i></span><input id="saPlace" maxlength="120" placeholder="Bird &amp; Bone, the stand by section 124"></label>' +
+        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 124, or Gate 2"></label>' : '') +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
         (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +
-        '<div class="dg-field"><span>A photo <i>(optional: the menu board or the food, and it earns more)</i></span><div class="sa-photo"><label class="dg-btn dg-ghost" style="cursor:pointer">Take or choose a photo<input type="file" id="saPhoto" accept="image/*" capture="environment" hidden></label><span id="saPrev"></span></div></div>' +
+        (kind === 'missing' ? photoSlot('item', 'A photo of the item', 'the food, the package or the menu board') + photoSlot('place', 'A photo of the sign', 'the name of the restaurant, stand or shop')
+          : photoSlot('item', 'A photo', 'optional: the menu board, the shelf or the food, and it earns more')) +
         '<span class="dg-status" id="saStatus" role="status"></span>' +
         '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a><button type="button" class="dg-btn" id="saSend">Send report</button></div>' +
         '<p class="dg-lede" style="font-size:12.5px;margin-top:12px">Sending asks for your location once, to check you are inside ' + esc(v.name) + '. We keep where you were, rounded, with the report. The team checks every one; a comment they accept shows on the item with your first name and photo.</p></div>'));
-    PHOTO = null;
-    var inp = document.getElementById('saPhoto');
-    if (inp) inp.addEventListener('change', function () {
-      var f = inp.files && inp.files[0]; if (!f) return;
-      shrink(f).then(function (b) { PHOTO = b; document.getElementById('saPrev').innerHTML = '<img alt="Your photo" src="' + URL.createObjectURL(b) + '">'; })
-        .catch(function () { setStatus('That photo could not be read. Try another one.'); });
-    });
+    PHOTOS = {}; bindPhotos();
     var send = document.getElementById('saSend');
     if (send) send.addEventListener('click', function () { sendReport(v, kind, item); });
   }
@@ -501,11 +531,20 @@
     guide_required: function () { return 'Bounties unlock with the Guide. Get it under Get access.'; },
     daily_limit: function () { return 'That is the most reports for one day. Thank you, and come back next game.'; },
     note_required: function () { return 'Add a few words first.'; },
+    name_required: function () { return 'Tell us what the item is.'; },
+    shop_required: function () { return 'Pick the shop, or tell us its name.'; },
+    bad_code: function () { return 'That barcode did not read. Scan again or type the number.'; },
+    already_logged: function () { return 'This item is already logged at this shop. Tap Still on the shelf on it instead.'; },
+    already_pending: function () { return 'Someone already logged this item here. It is waiting for the team.'; },
+    not_a_shop_item: function () { return 'This one is checked with Still here.'; },
     bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
   };
   function sendReport(v, kind, item) {
     var note = (document.getElementById('saNote') || {}).value || '';
-    if (kind === 'missing' && note.trim().length < 3) { setStatus('Tell us what is missing: the item, the stand and where it is.'); return; }
+    var val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
+    var extra = kind === 'missing' ? { item_name: val('saItem'), place_name: val('saPlace'), place_zone: val('saZone') || undefined, place_where: val('saWhere') } : {};
+    if (kind === 'missing' && extra.item_name.length < 2) { setStatus('Tell us the Vegan item first.'); return; }
+    if (kind === 'missing' && extra.place_name.length < 2) { setStatus('Tell us the name of the place on its sign.'); return; }
     if (kind === 'wrong' && note.trim().length < 3) { setStatus('Tell us what needs to be updated.'); return; }
     if (kind === 'comment' && note.trim().length < 3) { setStatus('Write your comment first.'); return; }
     if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
@@ -514,22 +553,125 @@
     navigator.geolocation.getCurrentPosition(function (pos) {
       btn.textContent = 'Sending...';
       // The photo is optional: upload it first when there is one.
-      var send = function (path) {
-        return api({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
-          note: note, path: path || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+      var send = function (path, placePath) {
+        return api(Object.assign({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
+          note: note, path: path || undefined, place_path: placePath || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }, extra));
       };
-      (PHOTO ? api({ action: 'report_start' }).then(function (s) {
-        if (!s || !s.upload_url) throw s || {};
-        return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: PHOTO }).then(function (r) {
-          if (!r.ok) throw {};
-          return send(s.path);
-        });
-      }) : send(null)).then(function (d) {
+      uploadPhoto(PHOTOS.item).then(function (p1) { return uploadPhoto(PHOTOS.place).then(function (p2) { return send(p1, p2); }); }).then(function (d) {
         if (d && d.ok) {
           main.innerHTML = crumb([['Venues', '#/venues'], [v.name, '#/venue/' + v.slug], ['Sent', '']]) +
             '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks every report. ' + (d.bounty ? 'You are first on this one: when the team accepts it, it pays the bounty. ' : '') + 'Points land when yours is accepted, and you can follow it under Help keep it right.</p>' +
             '<div class="dg-btns"><a class="dg-btn" href="#/venue/' + esc(v.slug) + '">Back to ' + esc(v.name) + '</a><a class="dg-btn dg-ghost" href="#/report">Your reports</a></div></div>';
           return;
+        }
+        var f = d && WHY[d.why]; fail(f ? f(d, v) : (d && d.message) || 'That did not go through. Try again in a minute.');
+      }).catch(function (e) { fail((e && e.message) || 'That did not go through. Try again in a minute.'); });
+    }, function () { fail(WHY.no_position()); }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 });
+  }
+
+  // Scan a Vegan item (Sean, 2026-11-01: convenience stores and gift shops; "10 points per item... 5 points for confirming... it'll
+  // just let them know that this item has already been logged"). Pick the shop (or add one with its sign), scan the barcode; a
+  // new item is logged for the team to accept (10 points, once), one already there offers Still on the shelf (5 points).
+  function papi(body) {
+    var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = token();
+    if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(SB + '/functions/v1/ve-products', { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  function reportGate(v) {
+    if (!v.can_report) return '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
+    return !token() ? '<div class="dg-door"><p>Sign in to scan. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
+      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every item you scan earns points.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
+  }
+  var SCAN = null;
+  function viewScan(slug, spotId) {
+    var d = VENUE[slug]; if (!d) { viewVenue(slug); return; }
+    var v = d.venue, back = '#/venue/' + v.slug;
+    var spots = d.spots.slice().sort(function (a, b) { return (a.kind === 'shop' ? 0 : 1) - (b.kind === 'shop' ? 0 : 1); });
+    var gate = reportGate(v);
+    var P = POINTS.scan || {}, C = POINTS.shop_confirm || {};
+    SCAN = { spot: spotId && spots.some(function (s) { return s.id === spotId; }) ? spotId : '' };
+    var opts = '<option value="">Pick the shop or stand</option>' + spots.map(function (s) {
+      return '<option value="' + esc(s.id) + '"' + (s.id === SCAN.spot ? ' selected' : '') + '>' + esc(s.name) + (s.where ? ' (' + esc(s.where) + ')' : '') + (s.kind === 'shop' ? ' · shop' : '') + '</option>';
+    }).join('') + '<option value="new">A shop or stand not in the Guide yet</option>';
+    main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Scan', '']]) +
+      head('Scan', 'Scan a Vegan item', 'Packaged Vegan snacks and drinks count: chips, bars, jerky, drinks, candy. Scan the barcode in the shop or stand. A new item earns ' + pts(P.with_photo || 10) + ' points once the team accepts it; one already logged here earns ' + pts(C.with_photo || 5) + ' for confirming it is still on the shelf.') +
+      (gate || ('<div class="dg-form">' +
+        '<label class="dg-field"><span>Which shop or stand?</span><select id="saShop">' + opts + '</select></label>' +
+        '<div id="saNewShop" hidden><label class="dg-field"><span>The shop or stand\'s name <i>(as on its sign)</i></span><input id="saPlace" maxlength="120" placeholder="The market by section 120"></label>' +
+        '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 124"></label>' +
+        photoSlot('place', 'A photo of the sign', 'the name on the sign, so the team can find it') + '</div>' +
+        '<div class="dg-btns" style="margin:6px 0 14px"><button type="button" class="dg-btn" id="saScanGo">Scan the barcode</button></div>' +
+        '<div id="saScanRes" aria-live="polite"></div>' +
+        '<span class="dg-status" id="saStatus" role="status"></span>' +
+        '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a></div>' +
+        '<p class="dg-lede" style="font-size:12.5px;margin-top:12px">Only Vegan items, please: check the package. Logging asks for your location once, to check you are at ' + esc(v.name) + '. Nothing is recorded when you scan; the picture never leaves your phone.</p></div>'));
+    if (gate) return;
+    PHOTOS = {}; bindPhotos();
+    var sel = document.getElementById('saShop'), nb = document.getElementById('saNewShop');
+    var sync = function () { SCAN.spot = sel.value === 'new' ? '' : sel.value; nb.hidden = sel.value !== 'new'; document.getElementById('saScanRes').innerHTML = ''; };
+    sel.addEventListener('change', sync); sync();
+    document.getElementById('saScanGo').addEventListener('click', function () {
+      if (!sel.value) { setStatus('Pick the shop or stand first.'); return; }
+      if (sel.value === 'new' && ((document.getElementById('saPlace') || {}).value || '').trim().length < 2) { setStatus('Tell us the shop or stand\'s name first.'); return; }
+      setStatus('');
+      if (!window.VEScan) { setStatus('The scanner did not load. Refresh to try again.'); return; }
+      VEScan.open({ title: 'Scan a Vegan item', onCode: function (c) { scanResult(v, d, c); } });
+    });
+  }
+  function scanResult(v, d, code) {
+    var box = document.getElementById('saScanRes'); if (!box) return;
+    box.innerHTML = '<div class="dg-loading">Looking it up...</div>';
+    Promise.all([papi({ action: 'lookup', code: code }).catch(function () { return {}; }), api({ action: 'scan_check', venue: v.slug, spot: SCAN.spot || undefined, gtin: code })]).then(function (x) {
+      var look = x[0] || {}, chk = x[1] || {};
+      if (chk.error) { box.innerHTML = '<p class="sa-dir-miss">' + esc(chk.message || 'That barcode did not read. Try again.') + '</p>'; return; }
+      var o = look.off || null, ours = look.found && look.product;
+      var name = ours ? (look.product.name || look.name) : o ? [o.brand, o.name].filter(Boolean).join(' ') : '';
+      var pic = ours ? (look.image_url || look.product.image_url) : o && o.image;
+      var headHtml = '<div class="sa-scanhit">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy">' : '') + '<div><div class="dg-k">Barcode ' + esc(code.replace(/^0+(?=\d{12})/, '')) + '</div><b>' + esc(name || 'An item we do not know yet') + '</b></div></div>';
+      var spot = d.spots.filter(function (s) { return s.id === SCAN.spot; })[0];
+      if (chk.state === 'logged') {
+        box.innerHTML = headHtml + '<div class="dg-door"><p><b>Already logged</b> at ' + esc(spot ? spot.name : 'this shop') + ': ' + esc(chk.item.name) + '. Still on the shelf? Confirm it for ' + pts((POINTS.shop_confirm || {}).with_photo || 5) + ' points.</p>' +
+          '<div class="dg-btns"><a class="dg-btn" href="#/venue/' + esc(v.slug) + '/report/shop_confirm/' + esc(chk.item.id) + '">Still on the shelf</a><button type="button" class="dg-btn dg-ghost" data-rescan>Scan another</button></div></div>';
+      } else if (chk.state === 'pending') {
+        box.innerHTML = headHtml + '<div class="dg-door"><p><b>Already logged.</b> Someone scanned this one here and it is waiting for the team. Thank you!</p><div class="dg-btns"><button type="button" class="dg-btn" data-rescan>Scan another</button></div></div>';
+      } else {
+        var warn = o && o.vegan === 'no' ? '<p class="sa-dir-miss">Open Food Facts lists something non-Vegan in this one. Check the package; if it is Vegan, a photo of the ingredients helps the team.</p>' : '';
+        var needPhoto = !ours;
+        box.innerHTML = headHtml + warn +
+          '<label class="dg-field"><span>What is it?</span><input id="saItem" maxlength="160" value="' + esc(name) + '" placeholder="The brand and product, as on the package"></label>' +
+          photoSlot('item', 'A photo of the item', needPhoto ? 'the front of the package, or the ingredients' : 'optional') +
+          '<p class="sa-earn">' + pts((POINTS.scan || {}).with_photo || 10) + ' points once the team accepts it, one time per item in each shop.</p>' +
+          '<div class="dg-btns"><button type="button" class="dg-btn" id="saLog">Log it</button><button type="button" class="dg-btn dg-ghost" data-rescan>Scan another</button></div>';
+        bindPhotos();
+        document.getElementById('saLog').addEventListener('click', function () { sendScan(v, code, needPhoto); });
+      }
+      [].forEach.call(box.querySelectorAll('[data-rescan]'), function (b) { b.addEventListener('click', function () { box.innerHTML = ''; VEScan.open({ title: 'Scan a Vegan item', onCode: function (c) { scanResult(v, d, c); } }); }); });
+    }).catch(function () { box.innerHTML = '<p class="sa-dir-miss">That did not load. Try again.</p>'; });
+  }
+  function sendScan(v, code, needPhoto) {
+    var val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
+    var itemName = val('saItem');
+    if (itemName.length < 2) { setStatus('Tell us what the item is.'); return; }
+    if (needPhoto && !PHOTOS.item) { setStatus('Add a photo of the item: we do not know this barcode yet.'); return; }
+    if (!SCAN.spot && !PHOTOS.place) { setStatus('Add a photo of the shop\'s sign so the team can find it.'); return; }
+    if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
+    var btn = document.getElementById('saLog'); btn.disabled = true; btn.textContent = 'Finding you...';
+    var fail = function (msg) { btn.disabled = false; btn.textContent = 'Log it'; setStatus(msg); };
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      btn.textContent = 'Sending...';
+      uploadPhoto(PHOTOS.item).then(function (p1) { return uploadPhoto(SCAN.spot ? null : PHOTOS.place).then(function (p2) {
+        return api({ action: 'report', venue: v.slug, kind: 'scan', spot: SCAN.spot || undefined, gtin: code, item_name: itemName,
+          place_name: SCAN.spot ? undefined : val('saPlace'), place_zone: SCAN.spot ? undefined : (val('saZone') || undefined), place_where: SCAN.spot ? undefined : val('saWhere'),
+          path: p1 || undefined, place_path: p2 || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+      }); }).then(function (d) {
+        if (d && d.ok) {
+          var box = document.getElementById('saScanRes');
+          box.innerHTML = '<div class="dg-done" style="padding:14px 0"><div class="dg-k">Logged</div><p class="dg-lede">Thank you! The team checks it, and ' + pts((POINTS.scan || {}).with_photo || 10) + ' points land when it is accepted. Follow it under Help keep it right.</p>' +
+            '<div class="dg-btns"><button type="button" class="dg-btn" id="saAgain">Scan another</button></div></div>';
+          PHOTOS = { place: PHOTOS.place };
+          document.getElementById('saAgain').addEventListener('click', function () { box.innerHTML = ''; VEScan.open({ title: 'Scan a Vegan item', onCode: function (c) { scanResult(v, VENUE[v.slug], c); } }); });
+          setStatus(''); return;
         }
         var f = d && WHY[d.why]; fail(f ? f(d, v) : (d && d.message) || 'That did not go through. Try again in a minute.');
       }).catch(function (e) { fail((e && e.message) || 'That did not go through. Try again in a minute.'); });

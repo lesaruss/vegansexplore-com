@@ -3732,6 +3732,23 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   stand; at an airport it says when the spot is before security). A stand with no section or gate yet says to ask a worker and add it in
   the report. `VEVenueBounties.job` and `wireJob`. Find a Vegan item we don't have has no one stand, so it opens its form directly. Not
   GPS: inside a stadium or terminal a phone is off by several sections.
+  **Two photos for Something missing, and shops you scan** (Sean, 2026-11-01: "a slot for the item and a slot for the location... taking a
+  photo of the name of the store or restaurant"; "the convenience store places, like the gift shops... 10 points per item... 5 points for
+  confirming... it'll just let them know that this item has already been logged"; migration `20261101_venue_shops_scan.sql`, run through
+  the one-time `ve-once-venue-shops`, now the 410 stub). **Something missing** in both venue Guides asks for the item and the place's name
+  (and, at an airport, before or after security and the gate; at a stadium, the section) in their own fields (`ve_venue_reports.item_name`,
+  `place_name`, `place_zone`, `place_where`), with two photo slots, the item (`photo_path`) and the sign (`place_photo_path`); the note is
+  optional. It pays its with-photo points only with both photos (`ve_venue_report_review`; a supermarket is its own sign, so the
+  Supermarket Guide's one photo still counts). **Scan a Vegan item** (`#/airport/<slug>/report/scan`, `#/venue/<slug>/report/scan`, a
+  button on every venue page and a job on its Bounties): pick the shop (`ve_venue_spots.kind` `shop`, the airports' markets and newsstands
+  marked so) or a shop not in the Guide yet (its name, where, and a photo of its sign), scan the barcode (`VEScan`, then `ve-products`
+  `lookup`, then `ve-venues` `scan_check`). **New there**: Log it, kind `scan`, 10 points once the team accepts it, a photo of the item
+  required when the barcode is not one of our products; accepting adds the item to that shop as Vegan with its barcode
+  (`ve_venue_items.gtin`, one per shop) and makes the shop first when it is new. **Already logged**: it says so and offers **Still on the
+  shelf**, kind `shop_confirm`, 5 points once accepted (a shop item's Update menu offers it in place of Still here). **Waiting**: someone
+  scanned it there already. Shop items never pay the first-to-confirm bounty. Amounts are `ve_venue_report_points` rows `scan` and
+  `shop_confirm` (Sean's numbers); every report still waits for the team in Depot > Venues, which shows both photos, the barcode with its
+  Open Food Facts link and the new shop.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,

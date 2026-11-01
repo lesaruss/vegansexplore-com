@@ -481,6 +481,8 @@
     .sa-steps li{font-size:14px;line-height:1.6;color:var(--ink75);margin-bottom:6px;}
     .sa-photo{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
     .sa-photo img{width:96px;height:96px;object-fit:cover;border-radius:10px;border:1px solid var(--line);}
+    .sa-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media (max-width:560px){.sa-two{grid-template-columns:1fr}}
+    .sa-scanhit{display:flex;gap:12px;align-items:center;margin:4px 0 12px}.sa-scanhit img{width:64px;height:64px;object-fit:contain;border-radius:6px;border:1px solid var(--line);background:#fff}.sa-scanhit b{font-size:16px}
     .sa-kinds{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px;}
     /* The map and Get me there (public/ve-venue-map.js draws it) */
     .sa-vgrid2{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"form" "map" "dirs" "stands";gap:12px;}
@@ -589,6 +591,7 @@
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-airport-map.js"></script>
 <script src="/public/ve-venue-bounties.js"></script>
+<script src="/public/ve-scan.js"></script>
 <script src="/guide-scripts/airport-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
