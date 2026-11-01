@@ -82,7 +82,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Venues</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">The Stadium &amp; Arena Guide. Members check what is still there from inside a venue, with a photo. Nothing pays until you decide. Still here pays the bounty (50 with a photo) to the first member to confirm an item no one has checked in 35 days, then 10; the first accepted correction pays 100, a later one that agrees 25; at most 40 paid to a member a day. Review confirmations oldest first: a newer one waits for the one sent before it.</p>
+    <p class="sub">The Stadium &amp; Arena Guide. Members check what is still there from inside a venue, with a photo. Nothing pays until you decide. Still here pays the bounty (50 with a photo) to the first member to confirm an item no one has checked in 35 days, then 10; the first accepted correction pays 100, a later one that agrees 25; at most 40 paid to a member a day. Review confirmations oldest first: a newer one waits for the one sent before it. In the Supermarket Guide only stores of a sponsored supermarket pay these amounts and the bounty; every other store pays the standard points (40 / 20 for a correction, 10 / 5 to agree, 5 / 2 for Still here and comments) and no bounty.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -137,7 +137,11 @@
         var firsts = r.kind === 'comment' || r.kind === 'confirm' ? [] : (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm' && o.kind !== 'comment'; });
         // What it pays comes from ve_venue_report_points: more with a photo (Sean, 2026-10-29).
         var pr = (d.points || []).filter(function (p) { return p.kind === r.kind; })[0] || {}, photo = !!r.photo;
-        var pays = photo ? pr.with_photo : pr.no_photo, agreePays = photo ? pr.agree_with_photo : pr.agree_no_photo, capped = r.paid_that_day >= 5;
+        // A supermarket report from a store whose chain had no sponsorship when it was sent pays the standard amounts (std_*), no bounty
+        // (Sean, 2026-11-01; ve_venue_reports.sponsored).
+        var std = r.sponsored === false && pr.std_with_photo != null;
+        var pays = std ? (photo ? pr.std_with_photo : pr.std_no_photo) : (photo ? pr.with_photo : pr.no_photo),
+          agreePays = std ? (photo ? pr.std_agree_with_photo : pr.std_agree_no_photo) : (photo ? pr.agree_with_photo : pr.agree_no_photo), cap = r.paid_cap || 40, capped = r.paid_that_day >= cap;
         app.innerHTML = '<nav class="crumb"><a href="#list/' + r.status + '">Reports</a><span>/</span><span>' + esc(KIND[r.kind]) + '</span></nav>' +
           '<div class="two"><div class="panel">' + (r.photo ? '<img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo with this one, so it pays the lower points.</p>') + '</div>' +
           '<div><div class="panel"><h2>' + esc(KIND[r.kind]) + ' <span class="tag ' + r.status + '">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span></h2><dl class="kv">' +
@@ -146,8 +150,9 @@
             (it ? '<dt>Item</dt><dd><a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">' + esc(it.name) + '</a><br><span class="m">' + esc(VEGAN[it.vegan] || '') + (it.last_confirmed_at ? ' · last checked ' + esc(when(it.last_confirmed_at)) : ' · never checked by a member') + '</span></dd>' : '') +
             '<dt>From</dt><dd>' + esc(r.member.name || '') + '<br><span class="m">' + esc(r.member.email || '') + '</span></dd>' +
             '<dt>Sent</dt><dd>' + esc(when(r.at)) + '</dd>' +
+            (std ? '<dt>Points</dt><dd>Standard points: the store\'s supermarket was not sponsored when this was sent (no bounty)</dd>' : '') +
             '<dt>Where</dt><dd>' + esc(distLine(r)) + '</dd>' +
-            '<dt>Paid that day</dt><dd>' + r.paid_that_day + ' of 5' + (capped && r.status === 'pending' ? ' <span class="tag far">accepting pays nothing</span>' : '') + '</dd></dl>' +
+            '<dt>Paid that day</dt><dd>' + r.paid_that_day + ' of ' + cap + (capped && r.status === 'pending' ? ' <span class="tag far">accepting pays nothing</span>' : '') + '</dd></dl>' +
             (r.note ? '<p class="note" style="margin-top:12px">' + esc(r.note) + '</p>' : '') +
             (r.review_note ? '<p class="m" style="margin-top:10px">Your note: ' + esc(r.review_note) + '</p>' : '') + '</div>' +
           (r.status === 'pending' ? '<div class="panel"><h2>Decide</h2>' +
