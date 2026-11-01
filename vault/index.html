@@ -137,7 +137,7 @@
           b.disabled = false;
           if (r && r.ok) { m.textContent = r.leading ? 'You are leading at ' + Number(r.yours).toLocaleString() + ' points.' : 'Bid placed. Someone is higher at ' + Number(r.top).toLocaleString() + '.'; setTimeout(load, 900); return; }
           m.className = 'msg err';
-          m.textContent = r && r.error === 'not_enough_points' ? 'You have ' + Number(r.balance).toLocaleString() + ' points to spend.' : r && r.error === 'min_bid' ? 'The lowest bid is ' + r.min + ' points.' : r && r.error === 'raise_it' ? 'Bid more than your last bid (' + r.yours + ').' : r && r.error === 'not_open' ? 'Bidding on this card has closed.' : 'That did not go through.';
+          m.textContent = r && r.error === 'not_enough_points' ? 'You have ' + Number(r.balance).toLocaleString() + ' points to spend.' : r && r.error === 'min_bid' ? 'The lowest bid is ' + r.min + ' points.' : r && r.error === 'raise_it' ? 'Bid more than your last bid (' + r.yours + ').' : r && r.error === 'own_place' ? 'These are your own place\'s cards.' : r && r.error === 'not_open' ? 'Bidding on this card has closed.' : 'That did not go through.';
         });
         return;
       }
