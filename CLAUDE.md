@@ -4364,6 +4364,15 @@ off, run each step with `curl -X POST .../functions/v1/ve-once-<task>?step=<name
 with a plain SELECT (reads and deploys never prompt), then redeploy it as the 410 stub. The SQL still goes in a migration
 file in the repo. A step runs in one transaction, so a failed step changes nothing.
 
+## Google costs: ask before a big scan (Sean, 2026-11-01)
+
+"I wasn't fully aware of all of this." Google Places bills the Google Cloud account's card monthly past its free monthly amount (Text
+Search about $32 per 1,000 past about 5,000 a month; Place Details and PageSpeed have their own). The project's cap is 500 text searches a
+day, shared by every job (the backlog check every 2 minutes, the nightly essentials pass, the audits, Add a listing, imports). **Before any
+scan of more than about 200 Google calls, give Sean the call count and the estimated cost, and wait for his go.** Schedule big imports right
+after the midnight-Pacific reset and split them across nights rather than raising the cap. Sean sees the bill in Google Cloud > Billing >
+Reports (filter Places API); a budget alert lives in Billing > Budgets & alerts.
+
 ## pg_net stalls (2026-10-28)
 
 Every cron that calls an edge function, and `ve-function-deploy` called from SQL, goes through pg_net's one worker. On 2026-10-28
