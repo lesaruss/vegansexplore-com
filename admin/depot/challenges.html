@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Challenges | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .bar{height:7px;border-radius:6px;background:#e4ebe4;overflow:hidden}.bar i{display:block;height:100%;background:var(--ve-green)}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-deep)}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Challenges</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Earn your Passport (Sean, 2026-11-01): Support Local, The Connector and The Advocate, 30 days each, 1,100 points each. The first one finished makes them a member. Approve The Advocate's proofs here; Support Local's check-in menu is approved in <a href="/admin/depot/checkins">Check-ins</a> (marked Challenge, no points), and The Connector counts friends who pay to join through their link on its own. A challenge finishes the moment it is met (and every 15 minutes).</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <nav class="tabs" id="tabs" aria-label="Views"></nav>
+      <div class="grid" id="grid"><p class="sub">Loading...</p></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-challenge';
+      var $ = function (id) { return document.getElementById(id); };
+      var KIND = { support_local: 'Support Local', connector: 'The Connector', advocate: 'The Advocate' };
+      var TASK = { event: 'A free event', animals: 'A sanctuary or rescue', share: 'Shared a Fosters or Rescues post' };
+      var rows = [], counts = {}, waiting = 0;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function view() { var h = location.hash.replace(/^#/, '').split('/'); var v = h[0] === 'challenges' ? 'challenges' : 'proofs'; var st = h[1] || (v === 'proofs' ? 'pending' : 'active'); return { v: v, st: st }; }
+      function tabs() {
+        var w = view();
+        var T = [['proofs/pending', 'Proofs waiting (' + waiting + ')'], ['proofs/approved', 'Approved proofs'], ['proofs/declined', 'Not approved'],
+          ['challenges/active', 'Running' + (counts.active != null ? ' (' + counts.active + ')' : '')], ['challenges/done', 'Done' + (counts.done != null ? ' (' + counts.done + ')' : '')], ['challenges/expired', 'Time ran out' + (counts.expired != null ? ' (' + counts.expired + ')' : '')]];
+        $('tabs').innerHTML = T.map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === w.v + '/' + w.st ? 'on' : '') + '">' + t[1] + '</a>'; }).join('');
+      }
+      function drawProofs(st) {
+        if (!rows.length) { $('grid').innerHTML = '<p class="sub">' + (st === 'pending' ? 'Nothing waiting.' : 'None here.') + '</p>'; return; }
+        $('grid').innerHTML = rows.map(function (r, i) {
+          var what = r.event ? '<a href="/events?event=' + esc(r.event.id) + '" target="_blank" rel="noopener">' + esc(r.event.title) + '</a> <span class="meta">' + esc(new Date(r.event.starts_at).toLocaleDateString()) + (r.event.city ? ', ' + esc(r.event.city) : '') + '</span>'
+            : r.listing ? '<a href="/directory/' + esc(r.listing.slug) + '" target="_blank" rel="noopener">' + esc(r.listing.name) + '</a> <span class="meta">' + esc(r.listing.category) + '</span>'
+            : r.post ? esc(r.post.title) + ' <span class="meta">' + esc(r.post.kind === 'foster' ? 'Fosters' : 'Rescues') + ', ' + esc(r.post.community) + '</span>' : '';
+          return '<div class="card">' + (r.photo ? '<img src="' + esc(r.photo) + '" alt="Proof photo" data-lb="' + i + '">' : '') + '<div class="body">' +
+            '<span class="kind">The Advocate &middot; ' + esc(TASK[r.task]) + '</span><h3>' + what + '</h3>' +
+            '<span class="meta">' + esc(r.member.name) + ' &middot; ' + esc(new Date(r.at).toLocaleString()) + '</span>' +
+            (r.distance_m != null ? '<span class="meta">Their phone was ' + esc(r.distance_m) + ' m from it' + (r.accuracy_m != null ? ' (within ' + esc(r.accuracy_m) + ' m)' : '') + '</span>' : (r.task === 'animals' ? '<span class="meta">No location shared</span>' : '')) +
+            (r.url ? '<a class="meta" href="' + esc(r.url) + '" target="_blank" rel="noopener">Open where they shared it</a>' : '') +
+            (r.note ? '<div class="quote">' + esc(r.note) + '</div>' : '') + (r.review_note ? '<span class="meta">Note: ' + esc(r.review_note) + '</span>' : '') +
+            (r.status === 'pending' ? '<div class="acts"><button type="button" class="btn" data-ok="' + i + '">Approve</button><button type="button" class="btn btn-ghost" data-no="' + i + '">Not approved</button><span class="msg" id="m' + i + '"></span></div>' : '') +
+            '</div></div>';
+        }).join('');
+      }
+      function prog(r) {
+        var p = r.progress || {}, w = p.need ? Math.min(100, Math.round(100 * p.have / p.need)) : 0, bits = '';
+        if (r.kind === 'support_local') bits = (p.items || []).map(function (x) { return esc(x.name) + ' (' + esc(x.state === 'approved' ? 'counts' : x.state === 'pending' ? 'waiting' : 'nothing sent') + ')'; }).join(', ') + (p.receipt ? ' &middot; receipt approved' : ' &middot; no receipt yet');
+        if (r.kind === 'connector') bits = (p.items || []).map(function (x) { return esc(x.name); }).join(', ') + (p.pending ? ' &middot; ' + p.pending + ' signed up, not paid' : '');
+        if (r.kind === 'advocate') bits = Object.keys(TASK).map(function (t) { return esc(TASK[t]) + ': ' + esc((p.tasks || {})[t] || 'open'); }).join(' &middot; ');
+        return '<div class="bar"><i style="width:' + w + '%"></i></div><span class="meta">' + (p.have || 0) + ' of ' + (p.need || 0) + (bits ? ' &middot; ' + bits : '') + '</span>';
+      }
+      function drawChallenges(st) {
+        if (!rows.length) { $('grid').innerHTML = '<p class="sub">None here.</p>'; return; }
+        $('grid').innerHTML = rows.map(function (r) {
+          return '<div class="card"><div class="body"><span class="kind">' + esc(KIND[r.kind]) + (r.restarts ? ' &middot; restarted' : '') + '</span><h3>' + esc(r.member.name || r.member.email) + '</h3>' +
+            '<span class="meta">' + esc(r.member.email) + ' &middot; ' + (r.member.active ? 'Member' : 'Not a member yet') + (r.made_member ? ' (earned)' : '') + '</span>' +
+            '<span class="meta">Started ' + esc(new Date(r.started_at).toLocaleDateString()) + (st === 'done' ? ', finished ' + esc(new Date(r.completed_at).toLocaleDateString()) : ', ends ' + esc(new Date(r.ends_at).toLocaleDateString())) + '</span>' + prog(r) + '</div></div>';
+        }).join('');
+      }
+      function load() {
+        var w = view(); tabs(); $('grid').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_list', status: w.v === 'challenges' ? w.st : 'active' }).then(function (d) {
+          counts = (d && d.counts) || {}; waiting = (d && d.proofs_waiting) || 0;
+          if (w.v === 'challenges') { rows = (d && d.rows) || []; tabs(); drawChallenges(w.st); return; }
+          return api({ action: 'proof_list', status: w.st }).then(function (p) { rows = (p && p.rows) || []; tabs(); drawProofs(w.st); });
+        }).catch(function () { $('grid').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; });
+      }
+      $('grid').addEventListener('click', function (e) {
+        var lb = e.target.closest('[data-lb]');
+        if (lb) { var o = document.createElement('div'); o.className = 'lb'; o.innerHTML = '<img alt="" src="' + esc(rows[+lb.getAttribute('data-lb')].photo) + '">'; o.onclick = function () { o.remove(); }; document.body.appendChild(o); return; }
+        var b = e.target.closest('[data-ok],[data-no]'); if (!b) return;
+        var ok = b.hasAttribute('data-ok'), i = +b.getAttribute(ok ? 'data-ok' : 'data-no'), note = '';
+        if (!ok) { note = prompt('Why not? They will see this so they can send another.'); if (note === null) return; }
+        b.disabled = true;
+        api({ action: 'proof_review', id: rows[i].id, decision: ok ? 'approve' : 'decline', note: note }).then(function (d) {
+          if (d && d.ok) load(); else { b.disabled = false; $('m' + i).textContent = 'That did not go through.'; }
+        });
+      });
+      window.addEventListener('hashchange', load);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to review challenges.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
