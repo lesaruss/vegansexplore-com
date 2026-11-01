@@ -481,9 +481,9 @@
           if (dd === 'violation' && !confirm('Mark this as a violation? It declines the work and pauses the member\'s bounties until someone clears the strike.')) return;
           Array.prototype.forEach.call(card.querySelectorAll('button'), function (b) { b.disabled = true; });
           msg.className = 'msg'; msg.textContent = dd === 'approve' ? 'Paying the points...' : 'Saving...';
-          api({ action: 'review', id: card.getAttribute('data-id'), decision: dd, note: note, coaching: f('coaching'), points: dd === 'approve' ? points : undefined }).then(function (r) {
+          api({ action: 'review', id: card.getAttribute('data-id'), decision: dd, note: note, coaching: f('coaching'), points: dd === 'approve' ? points : undefined, check: dd === 'approve' && f('check') ? f('check') : undefined }).then(function (r) {
             if (r.error) { msg.className = 'msg err'; msg.textContent = r.message || 'That did not go through.'; Array.prototype.forEach.call(card.querySelectorAll('button'), function (b) { b.disabled = false; }); return; }
-            msg.textContent = dd === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' : 'Done. The member has been emailed.';
+            msg.textContent = dd === 'approve' ? 'Approved. ' + (r.points || '') + ' points paid.' + (r.listing ? (r.listing.state === 'live' ? ' The listing is back on the Directory.' : ' The listing is off the Directory (Removed).') : '') : 'Done. The member has been emailed.';
             setTimeout(function () { loadAll().then(function () { viewReview(cid); }); }, 900);
           });
         });
@@ -497,6 +497,9 @@
         // A visit (BrandDesk): where the phone was at I'm here, and whether the meal was on the house (FTC).
         if (s.visit_at || s.visit_comped != null) parts += '<p class="meta" style="margin-top:6px"><b>Visit:</b> ' + (s.visit_at ? 'I\'m here ' + esc(day(s.visit_at)) + (s.visit_distance_m != null ? ', ' + s.visit_distance_m + ' m from the pin' : '') : 'no I\'m here') +
           (s.visit_comped == null ? '' : s.visit_comped ? ' &middot; <b>meal on the house</b> (they must say so when they post)' : ' &middot; paid for their meal') + (s.library_at ? ' &middot; photos in the client\'s Library' : '') + '</p>';
+        // Is it still open? What the member found; approving updates the listing (open back on the Directory, closed Removed).
+        if (b.check) parts += '<p class="meta" style="margin-top:6px"><b>They found it:</b> ' + (s.check_result === 'open' ? 'open' : s.check_result === 'closed' ? 'closed' : 'not said') +
+          (s.check_applied_at ? ' &middot; listing updated ' + esc(day(s.check_applied_at)) : '') + '</p>';
         return '<div class="sub-card" data-id="' + s.id + '" data-points="' + (b.points || 0) + '">' +
           '<span class="pill p-' + s.status + '">' + esc(LABEL[s.status] || s.status) + '</span>' +
           (s.overdue ? '<span class="pill p-rejected">Waiting ' + s.waited_days + ' days</span>' : '') +
@@ -515,6 +518,9 @@
             '<div class="acts"><input type="text" data-f="note" maxlength="2000" placeholder="Note to the member (needed for changes or fewer points)" aria-label="Note to the member"></div>' +
             '<div class="acts"><input type="text" data-f="coaching" maxlength="2000" placeholder="Coaching for next time (optional)" aria-label="Coaching for next time"></div>' +
             '<div class="acts"><label class="meta" style="display:flex;align-items:center;gap:8px">Points <input type="number" data-f="points" min="1" max="' + (b.points || 0) + '" value="' + (b.points || 0) + '" style="flex:0 0 110px" aria-label="Points to pay"></label>' +
+            (b.check ? '<label class="meta" style="display:flex;align-items:center;gap:8px">Listing <select data-f="check" aria-label="Open or closed" style="flex:0 0 220px">' +
+              '<option value="open"' + (s.check_result === 'closed' ? '' : ' selected') + '>Open: back on the Directory</option>' +
+              '<option value="closed"' + (s.check_result === 'closed' ? ' selected' : '') + '>Closed: take it off</option></select></label>' : '') +
             '<button type="button" class="btn" data-d="approve">Approve and pay</button>' +
             '<button type="button" class="btn btn-ghost" data-d="changes"' + (s.revisions >= 2 ? ' disabled title="Both rounds of changes are used"' : '') + '>Ask for changes</button>' +
             '<button type="button" class="btn btn-no" data-d="reject">Decline</button>' +

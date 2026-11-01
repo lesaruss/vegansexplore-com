@@ -1,3 +1,3 @@
-// One-time fills of product labels (migrations 20261101_product_barcodes_fill_2.sql, 20261101_product_off_fill.sql,
-// 20261101_product_off_fill_2.sql, 20261101_product_brand_site_labels.sql). Run 2026-11-01; now the 410 stub.
-Deno.serve(() => new Response(JSON.stringify({ error: 'gone' }), { status: 410, headers: { 'Content-Type': 'application/json' } }));
+// One-time function, done. Its steps (the product fills, the Tracker's tables and the Tracker test's cleanup) ran on 2026-11-01;
+// the SQL lives in the migrations. Kept as a stub that answers 410.
+Deno.serve(() => new Response('gone', { status: 410 }))

@@ -174,7 +174,7 @@ async function reviewCities(v: Viewer): Promise<string[]> {
   return COMMUNITIES.includes(hub) ? [hub] : [];
 }
 
-const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by, shoot_listing_id, visit_listing_id, repeat_weekly';
+const BOUNTY_COLS = 'id, community_slug, event_id, event_title, kind, title, brief, deliverable, example_url, points, max_awards, due_at, status, sort, slots, event_starts_at, event_ends_at, claims_close_at, campaign_id, parts, cash_cents, reserved_until, gig_kind, apply_mode, perk, partner_name, partner_listing_id, req_min_followers, req_platforms, req_level, remote, asks, audition_prompt, apply_by, shoot_listing_id, visit_listing_id, repeat_weekly, check_listing_id';
 const CAMPAIGN_COLS = 'id, slug, community_slug, kind, title, story, cover_url, campaign_id, event_id, place_name, address, starts_at, ends_at, claims_close_at, due_at, host_listing_id, host_member_id, host_extras, creator_cap, status, proposed_by, decided_by, decided_at, decision_note, featured_applied_at, created_at';
 // The date a campaign card sorts by: claims closing while they are open, then the work deadline.
 // A campaign with neither sorts after every dated one.
@@ -293,7 +293,19 @@ async function heldForViewer(ids: string[], viewer: Viewer): Promise<Set<string>
   return new Set((data || []).filter((r) => String(r.reserved_email).toLowerCase() === me).map((r) => r.id));
 }
 const payText = (b: any) => [b.cash_cents ? `$${(b.cash_cents / 100).toLocaleString('en-US')}` : '', b.perk || '', b.points ? `${b.points.toLocaleString()} points` : ''].filter(Boolean).join(' + ');
-const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted, visit_at: s.visit_at || null, visit_distance_m: s.visit_distance_m ?? null, visit_comped: s.visit_comped ?? null, library_at: s.library_at || null } : null;
+// Is it still open? (Sean, 2026-11-01: "make approving it update the listing automatically"): open puts the place back on the
+// Directory (90 days off the nightly hold), closed takes it off as Removed. Once per submission (check_applied_at).
+async function applyCheck(listingId: string, result: string, reviewer: string, subId: string, at: string | null, who: string) {
+  const day = new Date(at || Date.now()).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' });
+  const note = result === 'open'
+    ? `A member (${who}) visited on ${day} and found it open; approved in Depot > Bounties (Is it still open?).`
+    : `A member (${who}) visited on ${day} and found it closed; approved in Depot > Bounties (Is it still open?).`;
+  const { data, error } = await db.rpc('ve_listing_set_state', { p_listing: listingId, p_state: result === 'open' ? 'live' : 'removed', p_by: reviewer, p_note: note, p_reasons: null });
+  if (error || !data?.ok) throw new Error(error?.message || data?.why || 'set_state_failed');
+  await db.from('ve_bounty_submissions').update({ check_result: result, check_applied_at: nowIso() }).eq('id', subId);
+  return { state: result === 'open' ? 'live' : 'removed' };
+}
+const shapeMine = (s: any) => s ? { id: s.id, status: s.status, parts_done: s.parts_done || [], note: s.note, links: s.links, files: (s.files || []).map((f: any) => ({ path: f.path, name: f.name, size: f.size, type: f.type })), review_note: s.review_note, coaching_note: s.coaching_note, points_awarded: s.points_awarded, submitted_at: s.submitted_at, claimed_at: s.claimed_at, revisions: s.revisions, changes_due_at: s.changes_due_at, auto_submitted: s.auto_submitted, visit_at: s.visit_at || null, visit_distance_m: s.visit_distance_m ?? null, visit_comped: s.visit_comped ?? null, library_at: s.library_at || null, check_result: s.check_result || null, check_applied_at: s.check_applied_at || null } : null;
 async function takenCounts(ids: string[]) {
   const out: Record<string, number> = {};
   if (!ids.length) return out;
@@ -731,6 +743,11 @@ Deno.serve(async (req) => {
         if (typeof body.comped !== 'boolean') return json({ error: 'comped', message: 'Tell us whether your meal was on the house.' }, 400);
         if (note.length < 10) return json({ error: 'note', message: 'Add a line on what you had and what stood out.' }, 400);
         visitPatch = { visit_comped: body.comped };
+      } else if (b.check_listing_id) {
+        // Is it still open? (2026-11-01): what they found, and a photo from the visit.
+        if (!['open', 'closed'].includes(body.check)) return json({ error: 'check', message: 'Tell us whether it is open or closed.' }, 400);
+        if (!files.some((f) => /^image\//.test(f.type || ''))) return json({ error: 'photos', message: 'Upload a photo of the outside, taken today.' }, 400);
+        visitPatch = { check_result: body.check };
       } else if (!files.length && !links.length && note.length < 200) return json({ error: 'empty', message: 'Add your files, a link, or your write-up before you submit.' }, 400);
       // A bundle pays only when every part is done (Sean, 2026-10-04).
       const parts: string[] = b.parts || [];
@@ -977,7 +994,7 @@ Deno.serve(async (req) => {
         }
         const waited = s.submitted_at ? Math.floor((Date.now() - ms(s.submitted_at)) / DAY) : 0;
         const b = byBounty[s.bounty_id] || null;
-        out.push({ ...shapeMine(s), files, overdue: s.status === 'submitted' && waited >= REVIEW_SLA_DAYS, waited_days: waited, bounty: b ? { id: b.id, title: b.title, points: b.points, kind: b.kind, parts: b.parts || [] } : null, member: who[s.member_id] ? { name: who[s.member_id].name, email: who[s.member_id].email } : null, history: history(s.member_id, s.id) });
+        out.push({ ...shapeMine(s), files, overdue: s.status === 'submitted' && waited >= REVIEW_SLA_DAYS, waited_days: waited, bounty: b ? { id: b.id, title: b.title, points: b.points, kind: b.kind, parts: b.parts || [], check: !!b.check_listing_id } : null, member: who[s.member_id] ? { name: who[s.member_id].name, email: who[s.member_id].email } : null, history: history(s.member_id, s.id) });
       }
       // Events: spots, who holds them, the Q&A, and the controls to edit, move or cancel.
       const events: Record<string, any> = {};
@@ -999,9 +1016,9 @@ Deno.serve(async (req) => {
 
     case 'review': {
       if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-      const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, revisions, parts_done, files, library_at').eq('id', body.id).maybeSingle();
+      const { data: s } = await db.from('ve_bounty_submissions').select('id, bounty_id, member_id, status, revisions, parts_done, files, library_at, check_result, check_applied_at, submitted_at').eq('id', body.id).maybeSingle();
       if (!s) return json({ error: 'not_found' }, 404);
-      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id, cash_cents, gig_kind, visit_listing_id').eq('id', s.bounty_id).maybeSingle();
+      const { data: b } = await db.from('ve_bounties').select('id, community_slug, title, points, parts, campaign_id, cash_cents, gig_kind, visit_listing_id, check_listing_id').eq('id', s.bounty_id).maybeSingle();
       if (!b || !(await reviewCities(viewer)).includes(b.community_slug)) return json({ error: 'forbidden' }, 403);
       if (!['submitted', 'changes'].includes(s.status)) return json({ error: 'not_reviewable', message: 'This one is not waiting on a review.' }, 409);
       const note = clean(body.note, 2000) || null;
@@ -1015,6 +1032,9 @@ Deno.serve(async (req) => {
         const points = body.points == null || body.points === '' ? b.points : Math.round(Number(body.points));
         if (!(points >= 1 && points <= b.points)) return json({ error: 'bad_points', message: `Points must be between 1 and ${b.points}.` }, 400);
         if (points < b.points && !note) return json({ error: 'note', message: 'Say why it is paying fewer points.' }, 400);
+        // Is it still open? The reviewer may change what the member said, from the photos.
+        const check = b.check_listing_id ? (['open', 'closed'].includes(body.check) ? body.check : s.check_result) : null;
+        if (b.check_listing_id && !check) return json({ error: 'check', message: 'Pick Open or Closed before approving.' }, 400);
         const { data: paid, error } = await db.rpc('ve_bounty_pay', { p_submission: s.id, p_reviewer: viewer!.id, p_points: points });
         if (error) return json({ error: 'pay_failed', message: error.message }, 500);
         if (paid?.error) return json({ error: paid.error, message: paid.error === 'cap_reached' ? 'This bounty has paid out all its spots.' : 'Could not pay it.' }, 409);
@@ -1023,11 +1043,15 @@ Deno.serve(async (req) => {
           const { data: camp } = await db.from('ve_bounty_campaigns').select(CAMPAIGN_COLS).eq('id', b.campaign_id).maybeSingle();
           try { await applyHost(camp, s); } catch (e) { console.error('applyHost', e); }
         }
+        let listing: any = null;
+        if (paid?.awarded && b.check_listing_id && !s.check_applied_at) {
+          try { listing = await applyCheck(b.check_listing_id, check!, viewer!.id, s.id, s.submitted_at, c.first); } catch (e) { console.error('applyCheck', e); }
+        }
         let library = 0;
         if (paid?.awarded && b.gig_kind === 'visit') { try { library = await visitToLibrary(b, { ...s, reviewed_by: viewer!.id }, c.first); } catch (e) { console.error('visitToLibrary', e); } }
         if (paid?.awarded) await sendEmail(c.email, `You earned ${points.toLocaleString()} points: ${b.title}`,
           P(`Hi ${esc(c.first)},`) + P(`Your work for <b>${esc(b.title)}</b> is approved, and <b>${points.toLocaleString()} points</b> are in your account${points < b.points ? ` (of ${b.points.toLocaleString()})` : ''}.${b.cash_cents ? ` The $${(b.cash_cents / 100).toLocaleString('en-US')} comes from Sean directly.` : ''} Thank you for showing up for your city.`) + (note ? P(esc(note)) : '') + coachHtml + P(`<a href="${link}">See your bounties</a>`));
-        return json({ ok: true, ...paid, library });
+        return json({ ok: true, ...paid, library, listing });
       }
       if (decision === 'changes') {
         if (!note) return json({ error: 'note', message: 'Say what needs to change.' }, 400);

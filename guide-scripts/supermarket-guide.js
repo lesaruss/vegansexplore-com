@@ -5,7 +5,7 @@
  * items, each "Aisle not mapped yet" until a member maps it (a photo, a location check inside the store, the team accepts, the first
  * to confirm earns the bounty). Free to everyone while a supermarket sponsors it (ve_guides.access_rule 'free'); else $11 or 1,100
  * points. Pascal is the Guide on the right; his lines are text until they are approved and recorded.
- * The address bar carries the view: #/stores, #/store/<slug>, #/store/<slug>/report/choose/<item>, #/list, #/produce, #/report.
+ * The address bar carries the view: #/stores, #/store/<slug>, #/store/<slug>/report/choose/<item>, #/scan, #/list, #/produce, #/tracker.
  */
 (function () {
   var SLUG = 'supermarket-guide', FREE = 'publix-miami-cjalb8';
@@ -24,7 +24,7 @@
       sayMember: 'Scan anything on the shelf. If we know it, you get its macros and its page. If we do not, add it and earn your place on the map.' },
     { k: 'list', label: 'Shopping list', mine: 1, say: 'Everything you save lands here as a shopping list, by store and aisle, with a box to tick as you go.' },
     { k: 'produce', label: 'Produce', say: 'The produce section is where a Vegan basket starts. Here is what is worth buying and why.' },
-    { k: 'report', label: 'Help keep it right', say: 'Members map the aisles. Snap a photo in the store, tell us where something is, and earn points when the team accepts it.',
+    { k: 'tracker', label: 'Tracker', say: 'This is your Tracker: every scan, every product you added and every aisle you told us about, with the points it earned. And the bounties open near you.',
       sayMember: 'In the store? Tell us the aisle, confirm what is still there, or add what is missing. The first to map a section earns the bounty.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Supermarket Guide is free while a supermarket sponsors it. Otherwise it is eleven dollars, or 1,100 points, and yours to keep.' }
   ];
@@ -536,8 +536,18 @@
     if (kind === 'confirm' && it && it.bounty && p.first_with_photo) return 'Bounty, be first: ' + pts(p.first_with_photo) + ' points with a photo, ' + pts(p.first_no_photo) + ' without';
     return pts(p.with_photo) + ' points with a photo, ' + pts(p.no_photo) + ' without';
   }
-  function viewReportTab() {
-    var signedIn = !!token();
+  // ---------- The Tracker (Sean, 2026-11-01: "where you track the things you're scanning... a history of it over time, the date that it
+  // scanned... your contribution over time... how many points you've gathered... maybe the tracker"; then "show bounties as well,
+  // available bounties. They could search by location"). Three views (#/tracker, #/tracker/bounties, #/tracker/points): your activity
+  // (every scan, every product you added with Waiting for the team / Approved and its points, every aisle report, by date, with totals),
+  // the open bounties by chapter, search or Near me, and how points work. It was Help keep it right (#/report still lands here).
+  var BARCODE_POINTS = 25, TRACK = null, BOUNTIES = null, BOUNTY_HERE = null;
+  var GUIDE_NAME = { 'supermarket-guide': 'Supermarket Guide', 'stadium-arena-guide': 'Stadium & Arena Guide', 'airport-guide': 'Airport Guide' };
+  function bountyHref(v) {
+    return v.guide === 'supermarket-guide' ? '#/store/' + encodeURIComponent(v.slug) : v.guide === 'airport-guide' ? '/guides/airport-guide#/airport/' + encodeURIComponent(v.slug)
+      : '/guides/stadium-arena-guide#/venue/' + encodeURIComponent(v.slug);
+  }
+  function pointsHtml() {
     var P = function (k, f, d) { return POINTS[k] ? POINTS[k][f] : d; };
     // Each row: the full amounts (stores of a sponsored chain), then the standard ones (every other store); null = no bounty there.
     var rows = [
@@ -549,23 +559,106 @@
       ['Comment', 'A tip for other shoppers', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5), P('comment', 'std_with_photo', 5), P('comment', 'std_no_photo', 2)]
     ];
     var pair = function (a, b) { return a == null ? '<span role="cell" class="sa-pnone">No bounty</span>' : '<span role="cell"><b>' + pts(a) + '</b> / <b>' + pts(b) + '</b></span>'; };
-    main.innerHTML = head('Help keep it right', 'Members map the aisles', 'Stores move things around. When you are shopping, tell us which aisle a Vegan section is in, what is still there, and what is missing. A photo earns more, and every report is checked by the team before it pays. Stores of a supermarket that sponsors the Guide pay the most and carry the bounties; every other store earns the standard points.') +
+    return '<p class="dg-lede">Stores move things around. When you are shopping, tell us which aisle a Vegan section is in, what is still there, and what is missing. A photo earns more, and every report is checked by the team before it pays. Stores of a supermarket that sponsors the Guide pay the most and carry the bounties; every other store earns the standard points. A product you add from Scan pays ' + pts(BARCODE_POINTS) + ' points once the team approves it.</p>' +
       '<div class="sa-ptable" role="table" aria-label="Points for each kind of report, with a photo and without"><div class="sa-ptr sa-pth" role="row"><span role="columnheader">What you send</span><span role="columnheader"><span class="sa-long">Sponsored supermarkets</span><span class="sa-short">Sponsored</span><i>photo / none</i></span><span role="columnheader"><span class="sa-long">Every other store</span><span class="sa-short">Other stores</span><i>photo / none</i></span></div>' +
       rows.map(function (r) { return '<div class="sa-ptr" role="row"><span role="cell"><b>' + esc(r[0]) + '</b><i>' + esc(r[1]) + '</i></span>' + pair(r[2], r[3]) + pair(r[4], r[5]) + '</div>'; }).join('') + '</div>' +
       '<ol class="sa-steps"><li>Open your store while you are there and tap <b>Update</b> on a section, or <b>Add something missing</b>.</li>' +
       '<li>Add a photo of the shelf or the aisle sign if you can. Your phone shares your location once, to show you are in the store.</li>' +
       '<li>The team checks every one. Points land when it is accepted, up to ' + (LIMITS.daily_paid_cap || 40) + ' paid a day. Look for <b>Bounty</b> at sponsored supermarkets: the first to confirm a section earns the most.</li></ol>' +
-      '<div class="dg-btns" style="margin-bottom:18px"><a class="dg-btn" href="#/stores">Find your store</a></div>' +
-      (signedIn ? '<h3 class="dg-k" style="margin:6px 0 10px">Your reports</h3><div id="saMine"><div class="dg-loading">Loading your reports...</div></div>' : '');
-    if (signedIn) api({ action: 'mine' }).then(function (d) {
-      var el = document.getElementById('saMine'); if (!el) return;
-      var list = ((d && d.reports) || []).filter(function (r) { return /supermarket|publix/i.test(r.venue_slug || '') || true; });
-      el.innerHTML = list.length ? '<div class="dg-rows">' + list.map(function (r) {
+      '<div class="dg-btns" style="margin-bottom:18px"><a class="dg-btn" href="#/stores">Find your store</a></div>';
+  }
+  function trackTabs(cur) {
+    return '<div class="sg-cattabs" role="tablist" aria-label="Tracker">' + [['', 'Your activity'], ['bounties', 'Open bounties'], ['points', 'How points work']].map(function (t) {
+      return '<a role="tab" class="sg-cattab' + (t[0] === cur ? ' on' : '') + '" aria-selected="' + (t[0] === cur) + '" href="#/tracker' + (t[0] ? '/' + t[0] : '') + '">' + t[1] + '</a>'; }).join('') + '</div>';
+  }
+  function viewTracker(sub) {
+    sub = sub === 'bounties' || sub === 'points' ? sub : '';
+    main.innerHTML = crumb([['Tracker', '']]) + head('Tracker', 'Your contribution', 'Everything you have done to help your community map its stores: what you scanned, the products you added and where they stand, your aisle reports, and the points they earned. Then the bounties open near you.') +
+      trackTabs(sub) + '<div id="sgTrack"></div>';
+    var box = document.getElementById('sgTrack');
+    if (sub === 'points') { box.innerHTML = pointsHtml(); return; }
+    if (sub === 'bounties') return drawBounties(box);
+    if (!token()) { box.innerHTML = '<p class="dg-empty">Sign in to see your scans, the products you added and your reports, with the points each one earned.</p><p><button type="button" class="dg-btn" data-signin>Sign in</button></p>'; return; }
+    box.innerHTML = '<div class="dg-loading">Loading your activity...</div>';
+    Promise.all([papi({ action: 'tracker' }), api({ action: 'mine' })]).then(function (x) {
+      var t = x[0] || {}, reps = (x[1] && x[1].reports) || [], rows = [];
+      (t.scans || []).forEach(function (s) {
+        rows.push({ kind: 'scan', at: s.at, title: 'Scanned ' + (s.product ? s.product.name : s.name || 'barcode ' + s.gtin.replace(/^0+(?=\d{12})/, '')),
+          line: s.found ? (s.product && s.product.brand ? s.product.brand + ' · in the Guide' : 'In the Guide') : 'Not in the Guide yet', href: '#/scan/' + s.gtin, tag: null, points: 0 });
+      });
+      (t.added || []).forEach(function (a) {
+        var st = a.status === 'live' ? ['Approved', 'live'] : a.status === 'rejected' ? ['Not accepted', 'off'] : ['Waiting for the team', 'wait'];
+        rows.push({ kind: 'add', at: a.at, title: 'Added ' + (a.product ? a.product.name : a.name), line: a.status === 'live' && a.reviewed_at ? 'Approved ' + fmtDate(a.reviewed_at) + (a.product && a.product.brand ? ' · ' + a.product.brand : '') : 'Sent from Scan',
+          href: '#/scan/' + a.gtin, tag: st, points: a.points || 0 });
+      });
+      reps.forEach(function (r) {
         var st = STATUS[r.status] || STATUS.pending;
-        return '<div class="dg-row" style="grid-template-columns:minmax(0,1fr) auto"><div class="dg-row-main"><b>' + esc((REPORT[r.kind] || [r.kind])[0]) + ': ' + esc(r.item || r.spot || r.note || '') + '</b><span>' + esc(r.venue || '') + ' &middot; ' + esc(fmtDate(r.at)) +
-          (r.points ? ' &middot; ' + r.points + ' points' : '') + (r.review_note ? ' &middot; ' + esc(r.review_note) : '') + '</span></div>' + tagHtml(st[0], 'dg-tag-' + st[1]) + '</div>';
-      }).join('') + '</div>' : '<p class="dg-empty">No reports yet. Your first one is waiting on your next shop.</p>';
+        rows.push({ kind: 'report', at: r.at, title: (REPORT[r.kind] || [r.kind])[0] + ': ' + (r.item || r.spot || r.note || ''), line: (r.venue || '') + (r.review_note ? ' · ' + r.review_note : ''),
+          href: r.venue_slug ? '#/store/' + r.venue_slug : '', tag: st, points: r.points || 0 });
+      });
+      rows.sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+      var repPts = reps.reduce(function (n, r) { return n + (r.points || 0); }, 0), addPts = (t.totals && t.totals.points) || 0;
+      var tiles = [[pts(repPts + addPts), 'Points earned here'], [pts((t.totals && t.totals.scans) || 0), 'Scans'],
+        [pts((t.totals && t.totals.added) || 0) + '<i> · ' + pts((t.totals && t.totals.approved) || 0) + ' approved</i>', 'Products you added'],
+        [pts(reps.length) + '<i> · ' + pts(reps.filter(function (r) { return r.status === 'accepted' || r.status === 'agreed'; }).length) + ' accepted</i>', 'Aisle reports']];
+      var filt = 'all';
+      function draw() {
+        var R = rows.filter(function (r) { return filt === 'all' || r.kind === filt; }), month = '', html = '';
+        R.forEach(function (r) {
+          var m = ''; try { m = new Date(r.at).toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'America/New_York' }); } catch (e) {}
+          if (m !== month) { month = m; html += '<h3 class="sg-tmonth">' + esc(m) + '</h3>'; }
+          var d = ''; try { d = new Date(r.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' }); } catch (e) {}
+          var icon = r.kind === 'scan' ? ICON.camera : r.kind === 'add' ? ICON.cart : ICON.pin.replace(/13/g, '22');
+          html += '<' + (r.href ? 'a href="' + esc(r.href) + '"' : 'div') + ' class="sg-trow"><span class="sg-tdate">' + esc(d) + '</span><span class="sg-ticon">' + icon + '</span>' +
+            '<span class="sg-tmain"><b>' + esc(r.title) + '</b><em>' + esc(r.line) + '</em></span>' +
+            '<span class="sg-tend">' + (r.tag ? tagHtml(r.tag[0], 'dg-tag-' + r.tag[1]) : '') + (r.points ? '<span class="sg-tpts">+' + pts(r.points) + '</span>' : '') + '</span></' + (r.href ? 'a' : 'div') + '>';
+        });
+        box.querySelector('#sgTList').innerHTML = html || '<p class="dg-empty">' + (rows.length ? 'Nothing of that kind yet.' : 'Nothing yet. Scan a product on the shelf or tell us an aisle next time you shop, and it starts here.') + '</p>';
+        [].forEach.call(box.querySelectorAll('[data-tf]'), function (b) { b.classList.toggle('on', b.getAttribute('data-tf') === filt); b.setAttribute('aria-pressed', String(b.getAttribute('data-tf') === filt)); });
+      }
+      var n = function (k) { return rows.filter(function (r) { return r.kind === k; }).length; };
+      box.innerHTML = '<div class="sg-ttiles">' + tiles.map(function (x) { return '<div class="sg-ttile"><b>' + x[0] + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
+        '<div class="sg-chips" role="group" aria-label="Show">' + [['all', 'Everything', rows.length], ['scan', 'Scans', n('scan')], ['add', 'Products you added', n('add')], ['report', 'Aisle reports', n('report')]].map(function (c) {
+          return '<button type="button" class="sg-chip" data-tf="' + c[0] + '">' + c[1] + ' <i>' + c[2] + '</i></button>'; }).join('') + '</div>' +
+        '<div id="sgTList"></div><div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/scan">Scan a product</a><a class="dg-btn dg-ghost" href="#/tracker/bounties">See open bounties</a></div>';
+      box.addEventListener('click', function (e) { var b = e.target.closest('[data-tf]'); if (b) { filt = b.getAttribute('data-tf'); draw(); } });
+      draw();
+    }).catch(function () { box.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
+  }
+  function km(a, b) { var r = Math.PI / 180, x = (b.lng - a.lng) * r * Math.cos((a.lat + b.lat) / 2 * r), y = (b.lat - a.lat) * r; return Math.sqrt(x * x + y * y) * 6371; }
+  function drawBounties(box) {
+    var hub = ''; try { hub = sessionStorage.getItem('sg_bounty_hub') || ''; } catch (e) {}
+    var hubs = (window.VE_HUBS || []).map(function (h) { return [h.slug, h.name]; });
+    box.innerHTML = '<p class="dg-lede" style="margin-top:0">A bounty pays the first member to confirm what is on a shelf, a stand or a gate that no one has checked lately. Find the ones near you, go, and send the update from that place.</p>' +
+      '<div class="sg-pfilter"><label class="sg-psearch"><span class="sr-only">Search bounties</span><input type="search" id="sgBQ" placeholder="Search a store, stadium, airport or city..." autocomplete="off"></label>' +
+      '<div class="sg-fsel"><label class="sa-city"><span>Where</span><select id="sgBHub"><option value="">Every chapter</option>' + hubs.map(function (h) { return '<option value="' + esc(h[0]) + '"' + (h[0] === hub ? ' selected' : '') + '>' + esc(h[1]) + '</option>'; }).join('') + '</select></label>' +
+      '<button type="button" class="dg-btn dg-ghost" id="sgBNear" style="align-self:flex-end">Near me</button></div></div><div id="sgBList"><div class="dg-loading">Loading bounties...</div></div>';
+    var q = '';
+    function draw() {
+      var el = document.getElementById('sgBList'); if (!el || !BOUNTIES) return;
+      var V = (BOUNTIES.venues || []).filter(function (v) { return (!hub || v.hub === hub) && (!q || (v.name + ' ' + (v.city || '') + ' ' + (v.state || '')).toLowerCase().indexOf(q.toLowerCase()) >= 0); });
+      if (BOUNTY_HERE) { V.forEach(function (v) { v._km = v.lat != null ? km(BOUNTY_HERE, { lat: v.lat, lng: v.lng }) : 1e9; }); V.sort(function (a, b) { return a._km - b._km; }); }
+      var locked = (BOUNTIES.locked || []).map(function (l) { return '<div class="sg-addit" style="margin-top:12px"><b>' + pts(l.points) + ' points at ' + l.venues + (l.venues === 1 ? ' place' : ' places') + '</b><p class="sg-small" style="margin:4px 0 8px">Bounties at these unlock with the ' + esc(GUIDE_NAME[l.guide] || 'Guide') + '.</p>' +
+        '<a class="dg-btn dg-ghost" href="/guides/' + esc(l.guide) + '">See the ' + esc(GUIDE_NAME[l.guide] || 'Guide') + '</a></div>'; }).join('');
+      el.innerHTML = (V.length ? '<div class="sg-carried">' + V.slice(0, 60).map(function (v) {
+        return '<a class="sg-ptile" style="height:auto" href="' + esc(bountyHref(v)) + '"><span class="sg-thumb">' + (v.image ? '<img src="' + esc(v.image) + '" alt="" loading="lazy">' : '<i class="sg-letter">' + esc(v.name.charAt(0)) + '</i>') + '</span>' +
+          '<span class="sg-pb"><b>' + esc(v.name) + '</b><em>' + esc([v.city, v.state].filter(Boolean).join(', ')) + (v._km != null && v._km < 1e8 ? ' · ' + (v._km < 10 ? v._km.toFixed(1) : Math.round(v._km)) + ' km' : '') + '</em>' +
+          '<span class="sg-pmeta"><span class="sg-mac">' + (v.empty ? 'Be first to map it' : v.open + ' open') + ' · up to ' + pts(v.points) + ' points</span></span><em>' + esc(GUIDE_NAME[v.guide] || '') + '</em></span></a>';
+      }).join('') + '</div>' : '<p class="dg-empty">' + ((BOUNTIES.venues || []).length ? 'No bounties match. Try another chapter or search.' : 'No bounties open for you right now. Supermarket bounties run at stores of a chain that sponsors the Guide; the stadium and airport Guides carry their own.') + '</p>') + locked;
+    }
+    function load() {
+      BOUNTIES = null; var el = document.getElementById('sgBList'); if (el) el.innerHTML = '<div class="dg-loading">Loading bounties...</div>';
+      api({ action: 'bounties', hub: 'all' }).then(function (d) { BOUNTIES = d || {}; draw(); }).catch(function () { var e2 = document.getElementById('sgBList'); if (e2) e2.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
+    }
+    document.getElementById('sgBQ').addEventListener('input', function (e) { q = e.target.value.trim(); draw(); });
+    document.getElementById('sgBHub').addEventListener('change', function (e) { hub = e.target.value; try { sessionStorage.setItem('sg_bounty_hub', hub); } catch (er) {} draw(); });
+    document.getElementById('sgBNear').addEventListener('click', function () {
+      if (!navigator.geolocation) return;
+      var b = this; b.disabled = true; b.textContent = 'Finding you...';
+      navigator.geolocation.getCurrentPosition(function (p) { BOUNTY_HERE = { lat: p.coords.latitude, lng: p.coords.longitude }; hub = ''; document.getElementById('sgBHub').value = ''; b.disabled = false; b.textContent = 'Near me'; draw(); },
+        function () { b.disabled = false; b.textContent = 'Near me'; }, { enableHighAccuracy: false, timeout: 10000 });
     });
+    if (BOUNTIES) draw(); else load();
   }
   function viewChoose(v, item, back) {
     main.innerHTML = crumb([['Stores', '#/stores'], [v.name, back], ['Update', '']]) +
@@ -656,7 +749,7 @@
         if (d && d.ok) {
           main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '#/store/' + v.slug], ['Sent', '']]) +
             '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks every report. ' + (d.bounty ? 'You are first on this one: when the team accepts it, it pays the bounty. ' : '') + 'Points land when yours is accepted, and you can follow it under Help keep it right.</p>' +
-            '<div class="dg-btns"><a class="dg-btn" href="#/store/' + esc(v.slug) + '">Back to the store</a><a class="dg-btn dg-ghost" href="#/report">Your reports</a></div></div>';
+            '<div class="dg-btns"><a class="dg-btn" href="#/store/' + esc(v.slug) + '">Back to the store</a><a class="dg-btn dg-ghost" href="#/tracker">Your tracker</a></div></div>';
           return;
         }
         var f = d && WHY[d.why]; fail(f ? f(d, v) : (d && d.message) || 'That did not go through. Try again in a minute.');
@@ -738,7 +831,7 @@
     // The line's name as the title ("Oatly Milk"); the barcode's own item ("Original") under it.
     var lineName = p.name || ((b.name || '') + ' ' + (p.product_type || '')).trim();
     main.innerHTML = scanHead(code, d.image_url || p.image_url, lineName, '<p class="dg-lede" style="margin:0">' + (d.name && d.name !== lineName ? esc(d.name) + ' &middot; ' : '') + esc(b.name || '') +
-      (pending ? ' &middot; <span class="dg-tag sa-tag-ask">Waiting for the team</span>' : '') + '</p>') +
+      (pending ? ' &middot; <a href="#/tracker" class="dg-tag sa-tag-ask" style="text-decoration:none">Waiting for the team</a>' : '') + '</p>') +
       (window.VEMacros ? VEMacros.strip(d.macros) || '<p class="sg-small">Macros for this one are not added yet.</p>' : '') +
       '<div class="sg-scanacts"><a class="dg-btn" href="' + esc(page) + '">Open its page</a>' + (shelf ? '<a class="dg-btn dg-ghost" href="' + esc(shelf) + '">Every ' + esc(tn.toLowerCase()) + ' like it</a>' : '') + '</div>' +
       '<h3 class="sg-ph">Carried at</h3><div id="sgCarried"><div class="dg-loading">Loading...</div></div>' +
@@ -773,7 +866,7 @@
       add.disabled = true; add.textContent = 'Sending...';
       papi({ action: 'add', code: code, note: (document.getElementById('sgAddNote') || {}).value || '' }).then(function (x) {
         var m = document.getElementById('sgAddMsg');
-        if (x && x.ok) { add.textContent = 'Sent'; m.textContent = x.already === 'live' ? 'It is already in the Guide.' : 'Thank you. The team checks it and adds it to the Guide.'; delete SCANS[code]; }
+        if (x && x.ok) { add.textContent = 'Sent'; m.innerHTML = x.already === 'live' ? 'It is already in the Guide.' : x.already === 'pending' ? 'It is already on <a href="#/tracker">your Tracker</a>, waiting for the team.' : 'Thank you. It is on <a href="#/tracker">your Tracker</a> as Waiting for the team, and it pays ' + BARCODE_POINTS + ' points once they approve it.'; delete SCANS[code]; }
         else { add.disabled = false; add.textContent = 'Add it'; m.textContent = (x && x.message) || 'That did not send. Try again.'; }
       }).catch(function () { add.disabled = false; add.textContent = 'Add it'; });
     });
@@ -795,7 +888,7 @@
         '<a class="sg-ov" href="#/stores"><span class="sg-tip-i">' + ICON.store + '</span><b>' + (n ? n + ' stores' : 'Your stores') + (chs ? ' in ' + chs + (chs === 1 ? ' chapter' : ' chapters') : '') + '</b><p>Find yours by city or by where you are. More supermarkets join as they come on board.</p></a>' +
         '<a class="sg-ov" href="#/list"><span class="sg-tip-i">' + ICON.list + '</span><b>Your shopping list</b><p>Add what you need from your store; it waits for you by aisle, with boxes to tick.</p></a>' +
         '<a class="sg-ov" href="#/produce"><span class="sg-tip-i">' + ICON.leaf + '</span><b>The produce section</b><p>What to buy and why, where a Vegan basket starts.</p></a>' +
-        '<a class="sg-ov" href="#/report"><span class="sg-tip-i">' + ICON.camera + '</span><b>Mapped by members</b><p>Tell us the aisle with a photo from the store and earn points. At a sponsoring supermarket, the first to confirm a section earns the bounty.</p></a>' +
+        '<a class="sg-ov" href="#/tracker"><span class="sg-tip-i">' + ICON.camera + '</span><b>Mapped by members</b><p>Tell us the aisle with a photo from the store and earn points. At a sponsoring supermarket, the first to confirm a section earns the bounty.</p></a>' +
       '</div>' +
       '<div class="sa-stand" style="margin-top:16px"><div class="sa-stand-h"><div><h3>Coming with our sponsors</h3></div>' + tagHtml('Coming', 'sa-tag-new') + '</div>' +
         '<p class="dg-lede" style="margin:0">Weekly Vegan specials from the supermarkets that sponsor the Guide, Vegan products spotlighted with the aisle to find them in, and snack breakdowns.</p></div>' +
@@ -847,7 +940,8 @@
     if (/^c\//.test(cv)) { var last = ''; try { last = localStorage.getItem('sg_store') || ''; } catch (e) {} location.replace('#/store/' + (last || FREE) + '/' + cv); return; }
     var parts = cv.split('?')[0].split('/');
     var view = parts[0] || 'overview', sub = cv.split('/').slice(1).join('/');
-    var known = { overview: 1, stores: 1, store: 1, scan: 1, list: 1, produce: 1, report: 1, join: 1 };
+    if (view === 'report') { location.replace('#/tracker'); return; }
+    var known = { overview: 1, stores: 1, store: 1, scan: 1, list: 1, produce: 1, tracker: 1, join: 1 };
     if (!known[view]) view = 'overview';
     if (view === 'list' && !(owner() && token())) view = 'overview';
     document.body.classList.toggle('dg-member', owner());
@@ -860,7 +954,8 @@
     drawMenu(key);
     if (view === 'store') { var s = sub.split('/'); viewStore(s[0], s.slice(1).join('/')); }
     else if (view === 'scan') viewScan(sub.split('?')[0]);
-    else ({ overview: viewOverview, stores: viewStores, list: viewList, produce: viewProduce, report: viewReportTab, join: viewJoin })[view]();
+    else if (view === 'tracker') viewTracker(sub.split('?')[0]);
+    else ({ overview: viewOverview, stores: viewStores, list: viewList, produce: viewProduce, join: viewJoin })[view]();
     curTab = key;
     drawGuide();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
@@ -941,6 +1036,14 @@
       '.sg-ilink{flex:0 0 auto;display:block}.sg-iname{color:inherit;text-decoration:none}.sg-iname:hover b{text-decoration:underline}.sg-see{display:inline-block;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);text-decoration:none;margin-top:2px}.sg-see:hover{text-decoration:underline}' +
       '.sg-sechead{display:flex;gap:18px;align-items:flex-start;margin:4px 0 18px}.sg-thumb-lg{width:132px!important;height:132px!important;border-radius:14px!important}@media(max-width:560px){.sg-sechead{flex-direction:column}}' +
       '.sg-ph{font-size:15px;font-weight:900;margin:18px 0 6px}.sg-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px}' +
+      '.sg-ttiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:4px 0 16px}.sg-ttile{border:1px solid var(--line);border-radius:8px;padding:12px 14px;background:#fff}.sg-ttile b{display:block;font-size:24px;font-weight:900;line-height:1.1}.sg-ttile b i{font-style:normal;font-size:12px;font-weight:700;color:var(--ink75)}.sg-ttile span{display:block;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink75);margin-top:4px}' +
+      '@media(max-width:760px){.sg-ttiles{grid-template-columns:repeat(2,minmax(0,1fr))}}' +
+      '.sg-tmonth{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink75);margin:18px 0 8px}' +
+      '.sg-trow{display:grid;grid-template-columns:54px 36px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;color:inherit;text-decoration:none;margin-bottom:8px}a.sg-trow:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
+      '.sg-tdate{font-size:12px;font-weight:800;color:var(--ink75)}.sg-ticon{width:36px;height:36px;border-radius:6px;background:var(--vb-soft,#E8F5E9);color:var(--vb-accent-ink,#1f5f22);display:flex;align-items:center;justify-content:center}.sg-ticon svg{width:20px;height:20px}' +
+      '.sg-tmain{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-tmain b{font-size:14px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sg-tmain em{font-style:normal;font-size:12px;color:var(--ink75);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+      '.sg-tend{display:flex;align-items:center;gap:8px;justify-content:flex-end}.sg-tpts{font-size:13px;font-weight:900;color:var(--vb-accent-ink,#1f5f22);white-space:nowrap}' +
+      '@media(max-width:560px){.sg-trow{grid-template-columns:44px minmax(0,1fr) auto}.sg-ticon{display:none}.sg-tend{flex-direction:column;align-items:flex-end;gap:4px}}' +
       '.sg-scanhead{display:flex;gap:16px;align-items:center;margin:6px 0 4px}.sg-scanhead .sg-thumb-lg img{object-fit:contain;background:#fff}.sg-scanacts{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px}' +
       '.sg-carried{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}.sg-small{font-size:12.5px;line-height:1.55;color:var(--ink75);margin:8px 0}.sg-small a{color:var(--vb-accent-ink,#1f5f22);font-weight:700}' +
       '.sg-addit{border:1px solid var(--line);border-radius:8px;padding:16px;margin:20px 0 8px;background:#fafbfa}.sg-addit input{padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;font:inherit;font-size:15px;box-sizing:border-box}' +

@@ -13,6 +13,8 @@
 // POST { action: 'vote', product_id, on } active member -> { ok, count }
 // POST { action: 'picks', recipe_id }    member -> { picks: [{line, product_id, gtin}] }
 // POST { action: 'pick', recipe_id, line, product_id|null, gtin? }  active member -> { ok }   the line must call for that product's type
+// POST { action: 'tracker' }            member -> { scans, added, totals }   their scans and the products they added, newest first;
+//   the Supermarket Guide's Tracker joins them with their aisle reports (ve-venues mine). Migration 20261101_product_tracker.sql.
 // POST { action: 'barcode_queue' }       super admin -> { rows }
 // POST { action: 'barcode_review', gtin, op: approve|reject, product_id? }  super admin -> { ok }
 //
@@ -130,10 +132,21 @@ Deno.serve(async (req) => {
     const code = gtin(body.code);
     if (!code) return json({ error: 'bad_code', message: 'That does not look like a barcode.' }, 400);
     const { data } = await db.rpc('ve_barcode_lookup', { p_code: code });
-    if (data && data.found) return json(data);
-    const off = await offLookup(code);
-    const brand = off?.brand ? await brandFor(off.brand) : null;
-    return json({ found: false, gtin: code, off, brand });
+    let out: any;
+    if (data && data.found) out = data;
+    else {
+      const off = await offLookup(code);
+      const brand = off?.brand ? await brandFor(off.brand) : null;
+      out = { found: false, gtin: code, off, brand };
+    }
+    // The member's Tracker keeps every scan (the same barcode once every 10 minutes).
+    if (viewer) {
+      const { count } = await db.from('ve_product_scans').select('id', { count: 'exact', head: true }).eq('member_id', viewer.id).eq('gtin', code)
+        .gte('created_at', new Date(Date.now() - 10 * 60 * 1000).toISOString());
+      if (!count) await db.from('ve_product_scans').insert({ member_id: viewer.id, gtin: code, found: !!(data && data.found && data.status === 'live'),
+        product_id: data?.product?.id || null, name: clean(out.found ? out.name : out.off?.name, 200) || null });
+    }
+    return json(out);
   }
 
   if (action === 'add') {
@@ -210,6 +223,21 @@ Deno.serve(async (req) => {
     return json({ ok: true });
   }
 
+  if (action === 'tracker') {
+    if (!viewer) return json({ error: 'not_authenticated' }, 401);
+    const [sc, ad] = await Promise.all([
+      db.from('ve_product_scans').select('gtin, found, name, created_at, product_id, ve_products(slug, name, product_type, listings:brand_listing_id(slug, name))')
+        .eq('member_id', viewer.id).order('created_at', { ascending: false }).limit(300),
+      db.from('ve_product_barcodes').select('gtin, name, status, points, created_at, reviewed_at, paid_at, product_id, ve_products(slug, name, product_type, listings:brand_listing_id(slug, name))')
+        .eq('added_by', viewer.id).order('created_at', { ascending: false }).limit(300),
+    ]);
+    const prod = (p: any) => p ? { slug: p.slug, name: p.name || ((p.listings?.name || '') + ' ' + (p.product_type || '')).trim(), brand: p.listings?.name || null, brand_slug: p.listings?.slug || null } : null;
+    const scans = (sc.data || []).map((r: any) => ({ gtin: r.gtin, found: r.found, name: r.name, at: r.created_at, product: prod(r.ve_products) }));
+    const added = (ad.data || []).map((r: any) => ({ gtin: r.gtin, name: r.name, status: r.status, points: r.points || 0, at: r.created_at, reviewed_at: r.reviewed_at, product: prod(r.ve_products) }));
+    return json({ scans, added, totals: { scans: scans.length, added: added.length, approved: added.filter((a) => a.status === 'live').length,
+      points: added.reduce((n, a) => n + (a.points || 0), 0) } });
+  }
+
   if (action === 'barcode_queue' || action === 'barcode_review') {
     if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
     if (action === 'barcode_queue') {
@@ -230,7 +258,21 @@ Deno.serve(async (req) => {
     }
     const { error } = await db.from('ve_product_barcodes').update(patch).eq('gtin', code);
     if (error) return json({ error: 'save_failed' }, 500);
-    return json({ ok: true });
+    // An approved product pays the member who added it, once (ref barcode:<gtin>); it shows on their Tracker.
+    let paid = 0;
+    if (body.op === 'approve') {
+      const { data: row } = await db.from('ve_product_barcodes').select('added_by, paid_at').eq('gtin', code).maybeSingle();
+      if (row?.added_by && !row.paid_at) {
+        const { data: st } = await db.from('ve_site_settings').select('value').eq('key', 'product_barcode_points').maybeSingle();
+        const amount = Math.max(0, Math.min(1000, Number(st?.value?.approved ?? 25)));
+        if (amount) {
+          const { error: gErr } = await db.rpc('ve_points_grant', { p_member: row.added_by, p_amount: amount, p_reason: 'barcode_add', p_ref: 'barcode:' + code });
+          if (!gErr) { paid = amount; await db.from('ve_product_barcodes').update({ points: amount, paid_at: new Date().toISOString() }).eq('gtin', code); }
+          else console.error('barcode points failed', gErr);
+        }
+      }
+    }
+    return json({ ok: true, points: paid });
   }
 
   return json({ error: 'unknown_action' }, 400);
