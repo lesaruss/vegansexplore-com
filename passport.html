@@ -131,6 +131,24 @@
     }
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
   </style>
+  <style>
+    /* Founding Member flow (Sean, 2026-11-01): a Get your Passport link under the Guide's words on every page, the countdown,
+       and topic pictures on the overview's tiles in place of the Guides. */
+    .dg-cta{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 14px;border-radius:6px;background:#F69820;color:#fff;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;text-align:center;}
+    .dg-cta:hover{background:#d4800f;}
+    .dg-cta[hidden]{display:none;}
+    .dg-cd{margin:4px 0 18px;}
+    .dg-cd-l{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ink55);margin-bottom:8px;}
+    .dg-cd-r{display:flex;gap:8px;max-width:420px;}
+    .dg-cd-c{flex:1 1 0;text-align:center;background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:9px 4px 7px;}
+    .dg-cd-c b{display:block;font-size:26px;font-weight:900;line-height:1;color:#123d18;font-variant-numeric:tabular-nums;}
+    .dg-cd-c span{display:block;margin-top:5px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink55);}
+    .dg-tile .dg-ic.dg-topic{flex-basis:84px;width:84px;height:56px;border-radius:10px;background-position:center;}
+    .dg-shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 0;}
+    .dg-shot img{display:block;width:100%;height:auto;}
+    @media (max-width:900px){#dgRail>.dg-cta{grid-column:2 / -1;}html.pg-founding .dg-joinbox{display:none !important;}}
+  </style>
+  <script src="/public/ve-guide-corner.js"></script>
 </head>
 <body>
 <div class="page-frame">
@@ -155,10 +173,11 @@
 <div class="dg-app">
   <main class="dg-main" id="dgMain" aria-live="polite"></main>
   <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
-  <aside class="dg-rail" aria-label="Your Guide">
+  <aside class="dg-rail" id="dgRail" aria-label="Your Guide">
     <div class="dg-guide" id="dgGuide" role="img"></div>
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
+    <button type="button" class="dg-cta" id="dgCta" data-join hidden>Become a Founding Member, $11</button>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -200,6 +219,18 @@
     { k: 'managed', label: 'Managed by us', g: 'dani', say: 'Running a restaurant is a lot. If you would rather we handled your website, Google, photos and brand, this is how that works.' },
     { k: 'start', label: 'Get started', g: 'liz', say: 'Eleven dollars, one time. Your 1,100 welcome points cover your page. Come join us!' }
   ];
+  // The Passport is the Founding Member flow (Sean, 2026-11-01: "bring this down to 4 total pages, overview, 2 supporting pages,
+  // and then the checkout... Our focus is become a founding member before January 1st"); copy by the panel. The nine-tab
+  // ensemble tour is the Welcome Guide at /passport?guide=welcome.
+  var WELCOME = !BIZ && new URLSearchParams(location.search).get('guide') === 'welcome';
+  var FOUNDING = !BIZ && !WELCOME;
+  if (FOUNDING) document.documentElement.classList.add('pg-founding');
+  if (FOUNDING) TABS = [
+    { k: 'overview', label: 'Why now', g: 'all', say: 'We launch January 1, 2027. Join before then and you\'re a Founding Member for good.' },
+    { k: 'can', label: 'What you can do', g: 'theo', say: 'Browsing is free. Your Passport is how you take part.' },
+    { k: 'now', label: 'Why join now', g: 'dani', say: 'Right now, while we\'re still building, you can help steer where this goes.' },
+    { k: 'join', label: 'Get your Passport', g: 'liz', say: 'Eleven dollars, one time. Come help us build it.' }
+  ];
   var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
   var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
   var tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
@@ -221,7 +252,7 @@
   function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
   function joinBtns() {
     if (isMember()) return '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
-    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>Get your Passport, $11</button>' +
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + (typeof FOUNDING !== 'undefined' && FOUNDING && Date.now() < Date.parse('2027-01-01T05:00:00Z') ? 'Become a Founding Member &middot; $11' : 'Get your Passport, $11') + '</button>' +
       (me() ? '' : '<a href="#" data-signin style="font-size:13px;font-weight:800;color:var(--g)">Already a member? Sign in</a>') + '</div>';
   }
 
@@ -420,8 +451,71 @@
     join: '$11 one time, with 1,100 welcome points.'
   };
 
+  // The four Founding Member pages (FOUNDING).
+  var LOCKED = '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.</p>';
+  var OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+  var TOPIC = { can: '/public/guides/thumb-directory.jpg', now: '/public/guides/thumb-community.jpg', join: '/public/guides/thumb-passport.jpg' };
+  function gateNote() {
+    var w = fromVote ? ['Voting is for members.', 'vote every day for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
+      fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your 1,100 welcome points to the places you love'] :
+      fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
+    if (!w || isMember()) return '';
+    return '<p class="dg-note"><b>' + w[0] + '</b> Get your Passport, $11 one time, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + '</p>';
+  }
+  if (FOUNDING) VIEWS = {
+    overview: function () {
+      var steps = [['can', '1. What you can do', 'Vote, check in, give points and get your first Guide.'], ['now', '2. Why join now', 'Help steer it while it is still being built.'], ['join', '3. Get your Passport', '$11, one time. It never renews.']];
+      var tiles = steps.map(function (x) { return '<a class="dg-tile" href="' + href(x[0]) + '"><div class="dg-ic dg-topic" style="background-image:url(\'' + TOPIC[x[0]] + '\')"></div><div><b>' + x[1] + '</b><span>' + x[2] + '</span></div></a>'; }).join('');
+      var cd = OPEN ? '<div class="dg-cd" id="pgCd" role="timer"><div class="dg-cd-l">Founding Membership closes in</div><div class="dg-cd-r">' +
+        ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div class="dg-cd-c"><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>' : '';
+      return gateNote() + head('Vegans Explore Passport', OPEN ? 'Be a Founding Member of Vegans Explore' : 'Your Passport to Vegans Explore',
+        'We\'re building the Vegan community\'s home base, city by city, in 13 chapters from South Florida to London. ' + (OPEN ? 'It officially launches January 1, 2027.' : '') +
+        '</p><p class="dg-lede">Your Passport is <b>$11, one time</b>, and comes with <b>1,100 welcome points</b>.') + cd + '<div class="dg-tiles">' + tiles + '</div>';
+    },
+    can: function () {
+      return gateNote() + head('What you can do', 'Browsing is free. Taking part takes a Passport.') + '<div class="dg-grid">' +
+        card('Vote', 'Rank the Vegan places and brands you love, once a day each.') +
+        card('Check in', 'Earn 10 points at the places you visit.') +
+        card('Give points', 'Back the places, nonprofits, rescues and sanctuaries you care about.') +
+        card('Get your first Guide', 'Your 1,100 welcome points cover it.') +
+        card('Join your city', 'Post on the Daily Pulse and its boards, and RSVP to events.') +
+        card('Share your link', 'Earn 111 points when a friend joins.') + '</div>' + joinBtns();
+    },
+    now: function () {
+      return gateNote() + head('Why join now', 'Help us build it before it launches') + '<div class="dg-grid">' +
+        card('Shape it', 'Tell us what\'s missing, what works and how we can support you. We have the tools. We just need you.') +
+        card('Founding Member for good', 'It stays on your profile. After January 1 the Passport is still $11, but nobody new becomes a Founding Member.') +
+        card('Keep your city growing', 'Your $11 pays for Community Managers, events and the apps, city by city. It\'s a contribution, not a donation.') +
+        '</div>' + (OPEN ? '<div style="margin-top:16px">' + LOCKED + '</div>' : '') + joinBtns();
+    },
+    join: function () {
+      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
+      var box = isMember()
+        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status
+        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button>' +
+          '<p style="margin-top:10px;font-size:13px">Your Welcome Guide shows you everything once you join.</p>' + status;
+      return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><ul>' +
+        (OPEN ? '<li><b>Founding Member</b> on your profile for good</li>' : '') +
+        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Vote, save, check in</b> and give points</li>' +
+        '<li><b>Your city\'s Daily Pulse</b>, boards and events</li><li><b>Never renews</b></li></ul>' +
+        '<div class="dg-pricebox">' + box + '</div></div>';
+    }
+  };
+  // Old links: the nine tabs land on the page that now holds them.
+  var OLD = { places: 'can', community: 'can', guides: 'can', points: 'can', bring: 'can', business: 'can', supports: 'now' };
+  // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the checkout (Sean, 2026-11-01).
+  if (FOUNDING && /^#\/join/.test(location.hash) && (fromVote || fromSave || fromCheckin || fromGive || fromBoard || fromTickets)) history.replaceState(null, '', location.pathname + location.search + '#/overview');
+  function tickCd() {
+    var el = document.getElementById('pgCd'); if (!el) return;
+    var ms = Date.parse('2027-01-01T05:00:00Z') - Date.now(); if (ms <= 0) { el.hidden = true; return; }
+    var sec = Math.floor(ms / 1000), v = [Math.floor(sec / 86400), Math.floor(sec % 86400 / 3600), Math.floor(sec % 3600 / 60), sec % 60];
+    el.querySelectorAll('[data-cd]').forEach(function (b) { var n = +b.getAttribute('data-cd'); b.textContent = n ? String(v[n]).padStart(2, '0') : v[n]; });
+  }
+  setInterval(tickCd, 1000);
+
   function draw() {
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
+    if (FOUNDING && OLD[k]) k = OLD[k];
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
     main.innerHTML = VIEWS[cur]();
@@ -434,6 +528,10 @@
     if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
     nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
     bubble.textContent = t.say;
+    var cta = document.getElementById('dgCta');
+    var jbb = document.querySelector('#pgJoinbox [data-join]'); if (jbb && FOUNDING) jbb.innerHTML = OPEN ? 'Become a Founding Member' : 'Get your Passport';
+    if (cta) { cta.hidden = !FOUNDING || isMember() || cur === 'join'; cta.innerHTML = OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11'; }
+    tickCd();
     var nav = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
     tourEl.innerHTML = tourM.innerHTML = nav;
