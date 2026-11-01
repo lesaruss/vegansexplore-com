@@ -3845,8 +3845,28 @@ the $11 Passport or a membership earned now; no free account that can take part,
     the Logan test account and Sean's (every guard, a pick, the claim, cards opened early, bids, a settle charging only the winner, a wrong and
     a right PIN, a second use and a second win in a month refused, owner bidding refused, the pages in a browser), then every row removed and
     Love Life Cafe put back unclaimed.
-  - **Still to build**: 3. the Taster account and the sampler, 4. the three challenges, 5. the two-day business follow-up and the
-    not-ready-yet emails, 6. the content gig, 7. the business points rule. The check-in for Tasters waits on 3.
+  - **3. The Taster account and A Taste of Vegans Explore** (built and live 2026-11-01, Sean: "go ahead with part 3"; migration
+    `20261101_taster_accounts.sql`, edge function `ve-taster` from commit 58447de, sha256 matched). **A Taster is not a `members` row**: an
+    unpaid members row would make ve-auth refuse their real sign-up later ("An account with that email already exists"), so a Taster is a
+    `ve_tasters` row (email, name, the three answers, `suggested_guide`, `consent_basis` notice or checkbox, `confirmed_at` when they open the
+    emailed link, `unsubscribed_at`; RLS on, no policies), and trigger `trg_ve_taster_link` links it (`member_id`, `converted_at`) the moment
+    the same email becomes an active member. Their **Taster key** is a 400-day HMAC token signed with a different secret (bytes 32 to 64 of
+    the service key), kept in `localStorage` `ve_taster`, so no member function ever takes it for a member session. **`/guides/taste`**
+    (`guides/taste.html`, indexed, in the sitemap, a Free card first in the Guide catalog after the Welcome Guide): the sign-up in two steps
+    (`?step=`: name and email; what brings you, your city, your Vegan journey; London asks for the unticked box, everywhere else a plain line
+    says they will get our emails), then the sampler in the guided view, ten slides: the cast's hello, Maya's Buttermilk swap, Theo's B12,
+    Liz's free restaurant check, River's Hard Rock Stadium, Nori's Fort Lauderdale airport, Kai's creator tip 1, Dani's animals (rescues and
+    sanctuaries, the Fosters board, the Nonprofit Guide's tip 1), Pascal's city (their chapter's hub, Pulse and events), and Picked for you
+    (the suggested Guide, Earn your Passport coming, the $11 with the Founding deadline line). Each Guide slide ends "The rest of this Guide
+    comes with your Passport." A returning Taster or a signed-in member goes straight to the sampler. Day 0's email (from Vegans Explore,
+    reply to contact@lesaruss.com, `List-Unsubscribe`) carries `/guides/taste?t=<key>`, which signs them in on any device and confirms the
+    email; `?unsub=<key>` stops our emails. An email that belongs to a member is told to sign in; joining again within a minute is refused;
+    a name with [TEST] sends no email. `ve-taster` actions `join`, `me`, `confirm`, `unsubscribe`, `admin_list` (super admins). Proven
+    2026-11-01 (every guard, a forged key, a member key in its place and the Taster key at `ve-dashboard` all refused, the link on conversion
+    in a rolled-back transaction, the page on desktop and phone), then the test rows removed.
+  - **Still to build**: 4. the three challenges (a Taster's challenge check-ins need an account they can sign in with; part 4 makes it when
+    they press Start, after the emailed link has confirmed the email), 5. the two-day business follow-up and the not-ready-yet emails, 6. the
+    content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
