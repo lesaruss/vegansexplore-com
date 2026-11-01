@@ -1834,7 +1834,15 @@ vouch for it (its Google place, a street and hours, Google not saying closed); i
 the 87 held for a dead website or no socials were checked on Google (78 Place Details calls): 34 open with 50 or more reviews and one
 since May 2026 went back, 6 Google calls permanently closed were Removed (Sean: "remove any"), 2 temporarily closed and 36 with few or
 old reviews stay on hold; Google lists no website for most, so a website alone cannot vet them (its reviews field is its five most
-helpful, not the newest).
+helpful, not the newest). Those 36 stay on hold for now (Sean: "keep those where they are... a bounty to give people things to do"). **Closed comes
+off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
+don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
+hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
+Google (Place Details, `businessStatus` only, job `closed-recheck`, within the background cap) every listing held or Removed because
+Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the Directory any Google shows open again, with a note
+(`ve_closed_rechecks` keeps each answer). The first run, 2026-11-01: all eight (Coco Lov and Seasoned Green temporarily, six permanently)
+still closed. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+`once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
 street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-outreach` `listing_fix` (only what changed, each a
