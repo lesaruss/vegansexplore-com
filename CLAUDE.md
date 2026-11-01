@@ -1976,7 +1976,11 @@ our food directory, I couldn't... when I'm going back, it's taking me to the mai
 (`/directory?tab=food&sub=markets`, `bakeries-and-cafes`; the first sub-section leaves `sub` out), pushed on every click so back and
 forward move through them, on `/directory` and the dashboard's Directory tab (`/dashboard/directory?tab=...`; `url` in
 `VERegionDirectory.init`, `pushSection` and `applySection` in `ve-region-directory.js`; a city hub, whose `?tab=` is its own
-section, leaves it off). **The city is not in the address**: the same link opens in whichever chapter the visitor picked (kept for
+section, uses `?dir=` instead since 2026-11-01: `/communities/<slug>?tab=directory&dir=food&sub=markets`, `tabParam: 'dir'`, Sean:
+"In Communities when you use the Directory, it doesn't show the unique URLs... so that traffic is tracked"; leaving the hub's
+Directory drops `dir` and `sub`, and the city picker keeps them). **Traffic by section**: Google counts each address change, and
+Depot > Analytics > Directory lists **Sections** (`ve-analytics` `dir_sections`, read from `pagePathPlusQueryString`, since Top
+pages' `pagePath` drops the query) by place: the Directory, the dashboard and each city hub. **The city is not in the address**: the same link opens in whichever chapter the visitor picked (kept for
 the visit, `sessionStorage` `ve_dir_city`), and an old `?city=` link opens on that city before the address drops it. A listing's
 breadcrumb links back to its sub-section. **Submit listing** (the banner's green button, Sean 2026-10-27; one row on a phone) opens Join the
 Directory's Add it (`/claim?add=1`): $11 or 1,100 points a listing (Guide pricing, below).
