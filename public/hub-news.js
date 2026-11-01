@@ -148,7 +148,8 @@
       '<div class="event-date-col" aria-hidden="true"><span class="event-day">' + day + '</span><span class="event-mon">' + esc(mon) + '</span></div>' +
       '<div class="event-body">' +
         '<p class="event-type-badge">' + esc(e.category || 'Event') + '</p>' +
-        '<h3 class="event-name">' + esc(e.title) + '</h3>' +
+        // The name opens the event's own page, /events?event=<id> (Sean, 2026-11-01: unique addresses so traffic is tracked).
+        '<h3 class="event-name"><a href="/events?event=' + encodeURIComponent(e.id) + '" style="color:inherit;text-decoration:none">' + esc(e.title) + '</a></h3>' +
         '<div class="event-details" aria-label="Event details">' +
           '<span>' + esc(e.location_name || e.city) + (e.city ? ', ' + esc(e.city) : '') + '</span>' +
           '<span>' + esc(time) + '</span>' +
@@ -186,10 +187,11 @@
       toggle = document.createElement('div');
       toggle.className = 'event-toggle-row';
       toggle.id = listId + '-toggle';
-      toggle.dataset.eventMode = 'upcoming';
+      // Upcoming / Past is in the address (?when=past), so back and a shared link land on it, and Google counts each.
+      toggle.dataset.eventMode = new URLSearchParams(location.search).get('when') === 'past' ? 'past' : 'upcoming';
       toggle.innerHTML =
-        '<button type="button" class="event-toggle-pill active" data-event-toggle="upcoming">Upcoming Events</button>' +
-        '<button type="button" class="event-toggle-pill" data-event-toggle="past">Past Events</button>';
+        '<button type="button" class="event-toggle-pill' + (toggle.dataset.eventMode === 'upcoming' ? ' active' : '') + '" data-event-toggle="upcoming">Upcoming Events</button>' +
+        '<button type="button" class="event-toggle-pill' + (toggle.dataset.eventMode === 'past' ? ' active' : '') + '" data-event-toggle="past">Past Events</button>';
       list.parentNode.insertBefore(toggle, list);
       toggle.querySelectorAll('[data-event-toggle]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -197,8 +199,18 @@
           toggle.querySelectorAll('[data-event-toggle]').forEach(function (b) { b.classList.remove('active'); });
           btn.classList.add('active');
           toggle.dataset.eventMode = btn.getAttribute('data-event-toggle');
+          var u = new URL(location.href);
+          if (toggle.dataset.eventMode === 'past') u.searchParams.set('when', 'past'); else u.searchParams.delete('when');
+          if (u.href !== location.href) history.pushState(history.state, '', u.pathname + u.search + u.hash);
           renderEventsList(list, toggle.dataset.eventMode);
         });
+      });
+      window.addEventListener('popstate', function () {
+        var mode = new URLSearchParams(location.search).get('when') === 'past' ? 'past' : 'upcoming';
+        if (mode === toggle.dataset.eventMode) return;
+        toggle.dataset.eventMode = mode;
+        toggle.querySelectorAll('[data-event-toggle]').forEach(function (b) { b.classList.toggle('active', b.getAttribute('data-event-toggle') === mode); });
+        renderEventsList(list, mode);
       });
     }
     fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,starts_at,location_name,city,category,ticket_url,rsvp_count,time_set&status=eq.approved&tenant_id=eq.00000000-0000-4000-a000-000000000002&listing_kind=eq.event&order=starts_at.asc&limit=200', { headers: headers() })

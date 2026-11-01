@@ -163,6 +163,9 @@
     var link = el.querySelector('[data-vcb-link]'), toggle = el.querySelector('.vcb-toggle');
     var mobile = window.matchMedia('(max-width: 900px)');
     var param = opts.param === false ? null : (opts.param || 'city'), storeKey = 've_banner_hero';
+    // opts.path: the address belongs to that path only (a dashboard tab, Sean 2026-11-01: /dashboard/media?type=books), so another
+    // tab's address never moves this banner.
+    function here() { return !opts.path || location.pathname.replace(/\/$/, '') === opts.path; }
     // label: what the line under the title says in place of the city (the Directory's section, Sean 2026-10-27); setLabel.
     var current = '', chosen = null, label = '';
 
@@ -202,7 +205,7 @@
       if (host) { e.preventDefault(); host.VEOpenCommunity(current || ''); return; }
       if (window.top !== window) { e.preventDefault(); try { window.top.location.href = link.href; } catch (x) { window.open(link.href, '_top'); } }
     });
-    function fromUrl() { return param ? new URLSearchParams(location.search).get(param) || '' : current; }
+    function fromUrl() { return param && here() ? new URLSearchParams(location.search).get(param) || '' : current; }
 
     // setChoices(list, value, pick): the picker lists something other than the cities for a while (the Directory's Media section
     // lists its kinds, Sean 2026-10-29), and a pick goes to pick(value), not to the page's onChange. setChoices(null) puts the
@@ -214,14 +217,14 @@
     }
     select.addEventListener('change', function () {
       if (swapped) { swapped.pick(select.value); return; }
-      if (!param) { show(select.value); return; }
+      if (!param || !here()) { show(select.value); return; }
       var q = new URLSearchParams(location.search);
       if (select.value) q.set(param, select.value); else q.delete(param);
       var s = q.toString();
       history.pushState({ city: select.value }, '', location.pathname + (s ? '?' + s : '') + location.hash);
       show(select.value);
     });
-    window.addEventListener('popstate', function () { if (param && fromUrl() !== current) show(fromUrl()); });
+    window.addEventListener('popstate', function () { if (param && here() && fromUrl() !== current) show(fromUrl()); });
     if (mobile.addEventListener) mobile.addEventListener('change', paint);
 
     // Expanded on landing; autoFold() folds it on the first click into the page, unless the visitor chose with the button.
@@ -322,7 +325,7 @@
       },
       matches: matches
     };
-    show((param && new URLSearchParams(location.search).get(param)) || opts.initial || '');
+    show((param && here() && new URLSearchParams(location.search).get(param)) || opts.initial || '');
     return api;
   }
 

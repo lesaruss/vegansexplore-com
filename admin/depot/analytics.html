@@ -187,7 +187,7 @@
     function dur(s) { s = Math.round(Number(s) || 0); var m = Math.floor(s / 60); return m ? m + 'm ' + (s % 60) + 's' : s + 's'; }
     function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('ve_an_' + k) || 'null'); localStorage.setItem('ve_an_' + k, JSON.stringify(v)); } catch (e) { return null; } }
 
-    var TABS = [['pages', 'Top pages'], ['communities', 'Communities'], ['pulse', 'Daily Pulse'], ['directory', 'Directory'],
+    var TABS = [['pages', 'Top pages'], ['communities', 'Communities'], ['pulse', 'Daily Pulse'], ['directory', 'Directory'], ['events', 'Events'], ['media', 'Media'],
       ['sources', 'Traffic sources'], ['places', 'Places'], ['campaigns', 'Campaigns'], ['ads', 'Ads'], ['guidetabs', 'Guide tabs'], ['members', 'Members'], ['google', 'Google costs']];
     var CHAPTER_NAME = {};
     var state = { range: '30', from: '', to: '', bots: true, tab: 'pages', data: null, q: {}, page: {}, size: {}, sort: {} };
@@ -363,8 +363,55 @@
         ], { noun: 'sections', sort: { k: 'views' }, empty: 'No section views in this period yet.', text: function (r) { return r.name + ' ' + r.place; } });
     }
 
+    // Events and Media by address (Sean, 2026-11-01: "Do the same for Events and Media"). The plain /events and /media pages are
+    // in Top pages; these count the addresses a visitor reaches by picking a kind, Past, or opening an event.
+    var MEDIA_TYPE = { podcasts: 'Podcasts', documentaries: 'Documentaries', books: 'Books' };
+    function evPlace(w) { return w === 'events' ? 'Events page' : w === 'dashboard' ? 'Dashboard' : (CHAPTER_NAME[w] || w) + ' hub'; }
+    function catName(c) { return c ? c.charAt(0).toUpperCase() + c.slice(1).replace(/[-_]/g, ' ') : 'All events'; }
+
     // ---- Views ----
     var VIEWS = {
+      events: function (d) {
+        var g = d.ga; if (!g) return gaMissing();
+        var secs = (g.ev_sections || []).map(function (r) {
+          var href = r.where === 'events' || r.where === 'dashboard'
+            ? (r.where === 'events' ? '/events' : '/dashboard/events') + '?' + [r.cat ? 'cat=' + r.cat : '', r.when === 'past' ? 'when=past' : ''].filter(Boolean).join('&')
+            : '/communities/' + r.where + '?tab=events' + (r.when === 'past' ? '&when=past' : '');
+          return { name: catName(r.cat) + ' · ' + (r.when === 'past' ? 'Past' : 'Upcoming'), place: evPlace(r.where), href: href, views: r.views, users: r.users };
+        });
+        var pages = (g.ev_pages || []).map(function (r) {
+          return { name: r.title || 'An event no longer on the calendar', when: r.starts_at ? nice(r.starts_at.slice(0, 10)) : '', city: r.city || '', cat: r.category || '', href: '/events?event=' + r.id, views: r.views, users: r.users };
+        });
+        var maxS = secs.length ? Math.max.apply(null, secs.map(function (r) { return r.views; })) : 0;
+        var maxP = pages.length ? Math.max.apply(null, pages.map(function (r) { return r.views; })) : 0;
+        return '<p class="intro">Each event page by its own address (/events?event=..., counted from November 1, 2026; before that every event read as /events), ' +
+          'then the calendar by kind and Upcoming or Past. The plain /events page is in Top pages.</p><h3>Event pages</h3>' +
+          table('evpages', pages, [
+            { k: 'name', h: 'Event', cls: 't', label: false, w: function (r) { return '<a href="' + esc(r.href) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a><small>' + esc([r.when, r.city, r.cat].filter(Boolean).join(' · ')) + '</small>'; } },
+            { k: 'views', h: 'Views', n: 1, w: function (r) { return bar(r.views, maxP); } },
+            { k: 'users', h: 'Visitors', n: 1, w: function (r) { return fmt(r.users); } },
+          ], { noun: 'events', sort: { k: 'views' }, empty: 'No event pages viewed in this period yet.', text: function (r) { return r.name + ' ' + r.city + ' ' + r.cat; } }) +
+          '<h3>The calendar</h3>' +
+          table('evsections', secs, [
+            { k: 'name', h: 'Kind', cls: 't', label: false, w: function (r) { return '<a href="' + esc(r.href) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a><small>' + esc(r.place) + '</small>'; } },
+            { k: 'views', h: 'Views', n: 1, w: function (r) { return bar(r.views, maxS); } },
+            { k: 'users', h: 'Visitors', n: 1, w: function (r) { return fmt(r.users); } },
+          ], { noun: 'kinds', sort: { k: 'views' }, empty: 'No kinds or Past picked in this period yet.', text: function (r) { return r.name + ' ' + r.place; } });
+      },
+      media: function (d) {
+        var g = d.ga; if (!g) return gaMissing();
+        var rows = (g.media_types || []).map(function (r) {
+          return { name: MEDIA_TYPE[r.type] || r.type, place: r.where === 'media' ? 'Media page' : 'Dashboard', href: (r.where === 'media' ? '/media' : '/dashboard/media') + '?type=' + r.type, views: r.views, users: r.users };
+        });
+        var maxV = rows.length ? Math.max.apply(null, rows.map(function (r) { return r.views; })) : 0;
+        return '<p class="intro">Media by kind, by its own address (?type=; the dashboard\'s counted from November 1, 2026). The plain /media page is in Top pages; ' +
+          'a show, film or book opens its Directory page, which the Directory tab ranks.</p>' +
+          table('mediatypes', rows, [
+            { k: 'name', h: 'Kind', cls: 't', label: false, w: function (r) { return '<a href="' + esc(r.href) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a><small>' + esc(r.place) + '</small>'; } },
+            { k: 'views', h: 'Views', n: 1, w: function (r) { return bar(r.views, maxV); } },
+            { k: 'users', h: 'Visitors', n: 1, w: function (r) { return fmt(r.users); } },
+          ], { noun: 'kinds', sort: { k: 'views' }, empty: 'No kinds picked in this period yet.', text: function (r) { return r.name + ' ' + r.place; } });
+      },
       pages: function (d) {
         var g = d.ga; if (!g) return gaMissing();
         var rows = g.pages || [], max = rows.length ? rows[0].views : 0;

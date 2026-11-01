@@ -650,6 +650,7 @@
       if (id === 'news') u.searchParams.delete('tab'); else u.searchParams.set('tab', id);
       // The Directory's own section (?dir= and ?sub=) belongs to the Directory section only.
       if (id !== 'directory') { u.searchParams.delete('dir'); u.searchParams.delete('sub'); }
+      if (id !== 'events') u.searchParams.delete('when');
       if (u.href !== location.href) history[opts.initial ? 'replaceState' : 'pushState']({ tab: id }, '', u.pathname + u.search + u.hash);
     }
   }

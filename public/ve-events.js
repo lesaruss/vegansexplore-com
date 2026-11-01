@@ -383,7 +383,10 @@
     var el = typeof target === 'string' ? document.getElementById(target) : target;
     el.classList.add('vev');
     var qs = new URLSearchParams(location.search);
-    var useUrl = opts.urlState !== false;
+    // opts.url: the path the address belongs to (the dashboard's /dashboard/events, Sean 2026-11-01: "do the same for Events"), so
+    // the dashboard keeps the kind, Upcoming / Past and the open event in its address only while its Events tab is showing.
+    function urlOn() { return opts.url ? location.pathname.replace(/\/$/, '') === opts.url : opts.urlState !== false; }
+    var useUrl = urlOn();
     var st = {
       city: opts.city || '', q: useUrl ? qs.get('q') || '' : '', where: useUrl ? qs.get('where') || '' : '',
       cat: useUrl ? qs.get('cat') || '' : '', when: useUrl && qs.get('when') === 'past' ? 'past' : 'upcoming',
@@ -418,15 +421,31 @@
       }
     }
 
-    function syncUrl() {
-      if (!useUrl) return;
+    // push: a new step in the history (the kind, Upcoming / Past), so back moves through them and Google counts each one; typing
+    // and sorting replace the address in place.
+    function syncUrl(push) {
+      if (!urlOn()) return;
       var q = new URLSearchParams(location.search);
       ['q', 'where', 'cat'].forEach(function (k) { if (st[k]) q.set(k, st[k]); else q.delete(k); });
       if (menu) q.delete('where');
       if (st.when === 'past') q.set('when', 'past'); else q.delete('when');
       if (st.sort === 'city') q.set('sort', 'city'); else q.delete('sort');
-      var s = q.toString();
-      history.replaceState(history.state, '', location.pathname + (s ? '?' + s : '') + location.hash);
+      var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
+      if (url === location.pathname + location.search + location.hash) return;
+      if (push) history.pushState(history.state, '', url); else history.replaceState(history.state, '', url);
+    }
+    // An event's own view has its own address, ?event=<id> (Sean, 2026-11-01: unique addresses "so that traffic is tracked"; Google's
+    // reports drop everything after a #, so every event read as /events). An old #event/<id> link moves to it; the members-only
+    // tickets (#event/<id>/tickets, stored in events.ticket_url) and the other views (#submit, #mine, #guests...) keep their #.
+    function qEvent() { var v = new URLSearchParams(location.search).get('event') || ''; return /^[0-9a-f-]{36}$/i.test(v) ? v : ''; }
+    function withoutEvent() { var q = new URLSearchParams(location.search); q.delete('event'); var s = q.toString(); return location.pathname + (s ? '?' + s : ''); }
+    function goEvent(id) {
+      var q = new URLSearchParams(location.search); q.set('event', id);
+      var url = location.pathname + '?' + q.toString();
+      if (url !== location.pathname + location.search + location.hash) history.pushState(history.state, '', url);
+      route();
+      var top = el.getBoundingClientRect().top, nav = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 70;
+      if (top < nav) window.scrollTo({ top: window.pageYOffset + top - nav - 12 });
     }
     function inCity(e) {
       if (!st.city || !window.VECityBanner) return true;
@@ -562,7 +581,7 @@
         b.addEventListener('click', function () {
           st.when = b.getAttribute('data-when'); st.shown = 40;
           el.querySelectorAll('[data-when]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          syncUrl(); drawRows();
+          syncUrl(true); drawRows();
         });
       });
       paintLoc();
@@ -593,12 +612,12 @@
         b.addEventListener('click', function () {
           st.when = b.getAttribute('data-when'); st.shown = 40;
           el.querySelectorAll('[data-when]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
-          syncUrl(); drawRows();
+          syncUrl(true); drawRows();
         });
       });
       el.querySelector('[data-v="pills"]').addEventListener('click', function (ev) {
         var b = ev.target.closest('[data-cat]'); if (!b) return;
-        st.cat = b.getAttribute('data-cat'); st.shown = 40; syncUrl(); drawRows();
+        st.cat = b.getAttribute('data-cat'); st.shown = 40; syncUrl(true); drawRows();
       });
       drawRows();
     }
@@ -675,7 +694,7 @@
       type: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13 7l4 4"/></svg>'
     };
     function go(hash) {
-      if (location.hash !== hash) history.pushState(history.state, '', location.pathname + location.search + hash);
+      if (withoutEvent() + hash !== location.pathname + location.search + location.hash) history.pushState(history.state, '', withoutEvent() + hash);
       route();
       // A new step starts at its top, under the sticky menu, when the page was scrolled past it.
       var top = el.getBoundingClientRect().top, nav = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--ve-nav-h'), 10) || 70;
@@ -1095,6 +1114,7 @@
     // both coming back to #event/<id>/tickets, which takes a member straight on to the tickets (Sean, 2026-10-28).
     function membersOnly(o) {
       if (location.hash.indexOf('/tickets') < 0 && /^#event\/[0-9a-f-]{36}$/i.test(location.hash)) history.replaceState(null, '', location.pathname + location.search + location.hash + '/tickets');
+      else if (!location.hash && qEvent()) history.replaceState(null, '', withoutEvent() + '#event/' + qEvent() + '/tickets');
       var show = function () { if (window.VEVotes && VEVotes.memberPrompt) VEVotes.memberPrompt('tickets', o); else location.href = '/passport?from=tickets&back=' + encodeURIComponent(location.pathname + location.search + location.hash); };
       if (window.VEVotes) { show(); return; }
       var sc = document.createElement('script'); sc.src = '/public/ve-votes.js'; sc.onload = show; sc.onerror = show; document.head.appendChild(sc);
@@ -1286,6 +1306,9 @@
 
     function route() {
       if (brandCal) { drawList(); if (opts.onView) opts.onView('list'); return; }
+      var h0 = /^#event\/([0-9a-f-]{36})$/i.exec(location.hash || '');
+      if (h0) { var q0 = new URLSearchParams(location.search); q0.set('event', h0[1]); history.replaceState(history.state, '', location.pathname + '?' + q0.toString()); }
+      if (!location.hash && qEvent()) { drawEvent(qEvent(), null, false); if (opts.onView) opts.onView('event'); return; }
       var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})(\/tickets)?$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
       if (em) { drawEvent(em[1], null, !!em[2]); if (opts.onView) opts.onView('event'); return; }
       if (gm) { drawGuests(gm[1]); if (opts.onView) opts.onView('guests'); return; }
@@ -1294,27 +1317,38 @@
       if (pm) { drawPromote(pm[1], !!pm[2]); if (opts.onView) opts.onView('promote'); return; }
       if (m) { var s = +m[1]; if (s > 1 && !draft) { go('#submit/1'); return; } drawSubmit(s); if (opts.onView) opts.onView('submit'); }
       else if (/^#mine/.test(h)) { drawMine(h === '#mine/sent'); if (opts.onView) opts.onView('mine'); }
-      else { drawList(); if (opts.onView) opts.onView('list'); }
+      else {
+        // Back or forward to another kind or Upcoming / Past: read them from the address again.
+        if (urlOn() && !brandCal) { var qx = new URLSearchParams(location.search); st.cat = qx.get('cat') || ''; st.when = qx.get('when') === 'past' ? 'past' : 'upcoming'; }
+        drawList(); if (opts.onView) opts.onView('list');
+      }
     }
+    // An event's name (#event/<id>) opens its view at ?event=<id>.
+    el.addEventListener('click', function (ev) {
+      var a = ev.target.closest('a[href^="#event/"]'); if (!a || ev.metaKey || ev.ctrlKey || ev.shiftKey) return;
+      var m = /^#event\/([0-9a-f-]{36})$/i.exec(a.getAttribute('href')); if (!m) return;
+      ev.preventDefault(); goEvent(m[1]);
+    });
     // The first click into the calendar folds the page's banner, as on the Directory.
     el.addEventListener('click', function (ev) { if (opts.onInteract && ev.target.closest('button, select, input')) opts.onInteract(); });
     window.addEventListener('popstate', route);
     window.addEventListener('hashchange', route);
 
     route();
-    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) { drawList(); } });
+    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash) && !qEvent()) { drawList(); } });
 
     return {
       setCity: function (slug) {
         if (menu) { if (slug) locSetCity(slug); else setLevel('continent', ''); paintLoc(); } else st.city = slug || '';
-        st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) drawRows();
+        st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash) && !qEvent()) drawRows();
       },
       // The menu layout: the banner's kind of event, and where the filter's location stands.
-      setCat: function (k) { st.cat = k || ''; st.shown = 40; syncUrl(); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash)) go(''); else drawRows(); },
+      setCat: function (k) { st.cat = k || ''; st.shown = 40; syncUrl(true); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash) || qEvent()) go(''); else drawRows(); },
       location: function () { return locNow(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
       home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
+      event: function (id) { goEvent(id); },
       reload: function () { return load().then(drawRows); },
       // Events or Funding (LESARUSS.ai's banner picker): another list from the same engine.
       setKind: function (k) {

@@ -125,10 +125,12 @@ async function readGA(token: string, from: string, to: string, pf: string, pt: s
     run({ dateRanges: cur, dimensions: [{ name: 'sessionSource' }, { name: 'sessionMedium' }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }, { name: 'engagementRate' }], orderBys: [{ metric: { metricName: 'sessions' }, desc: true }], limit: 100 }),
     run({ dateRanges: both, dimensions: [{ name: 'country' }, { name: 'region' }, { name: 'city' }], metrics: [{ name: 'activeUsers' }, { name: 'sessions' }, { name: 'newUsers' }], limit: 5000 }),
     run({ dateRanges: cur, dimensions: [{ name: 'deviceCategory' }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }] }),
-    // The Directory's sections by their own address (Sean, 2026-11-01: "I want to have the unique URLs so that traffic is tracked"):
-    // pagePath drops the query, so every section read as /directory. Google counts each address change (its history events).
+    // The Directory's sections, Events and Media by their own address (Sean, 2026-11-01: "I want to have the unique URLs so that
+    // traffic is tracked"; "Do the same for Events and Media"): pagePath drops the query, so every section read as /directory,
+    // every event as /events. Google counts each address change (its history events).
     run({ dateRanges: cur, dimensions: [{ name: 'pagePathPlusQueryString' }], metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }],
-      dimensionFilter: { filter: { fieldName: 'pagePathPlusQueryString', stringFilter: { matchType: 'CONTAINS', value: 'tab=' } } }, limit: 5000 }),
+      dimensionFilter: { orGroup: { expressions: ['tab=', 'type=', 'event=', 'cat=', 'when='].map((value) =>
+        ({ filter: { fieldName: 'pagePathPlusQueryString', stringFilter: { matchType: 'CONTAINS', value } } })) } }, limit: 10000 }),
   ]);
   // With two date ranges Google adds a dateRange dimension as the last one ('cur' or 'prev').
   const split = (rows: Row[]) => ({ cur: rows.filter((r) => r.d[r.d.length - 1] === 'cur'), prev: rows.filter((r) => r.d[r.d.length - 1] === 'prev') });
@@ -155,6 +157,7 @@ async function readGA(token: string, from: string, to: string, pf: string, pt: s
     geo_prev: g.prev.map((r) => ({ country: r.d[0], region: r.d[1], city: r.d[2], users: r.m[0], sessions: r.m[1], new_users: r.m[2] })),
     devices: devices.map((r) => ({ device: r.d[0], sessions: r.m[0], users: r.m[1] })),
     dir_sections: dirSections(dirAddr),
+    ...eventsMedia(dirAddr),
   };
 }
 
@@ -175,6 +178,36 @@ function dirSections(rows: Row[]) {
     o.views += r.m[0]; o.users += r.m[1]; out.set(k, o);
   }
   return [...out.values()].sort((a, b) => b.views - a.views);
+}
+
+// Events and Media by address. ev_sections: /events and /dashboard/events by kind (?cat=) and Upcoming / Past (?when=past), and a
+// city hub's ?tab=events&when=; ev_pages: each event's own page (?event=<id>, on /events or the dashboard), named when the
+// response is built; media_types: /media and /dashboard/media by kind (?type=, Podcasts when none).
+function eventsMedia(rows: Row[]) {
+  const sec = new Map<string, { where: string; cat: string; when: string; views: number; users: number }>();
+  const pages = new Map<string, { id: string; views: number; users: number }>();
+  const media = new Map<string, { where: string; type: string; views: number; users: number }>();
+  for (const r of rows) {
+    let u: URL; try { u = new URL(r.d[0], 'https://vegansexplore.com'); } catch { continue; }
+    const path = u.pathname.replace(/\/$/, ''), q = u.searchParams;
+    const ev = (q.get('event') || '').toLowerCase();
+    if ((path === '/events' || path === '/dashboard/events') && /^[0-9a-f-]{36}$/.test(ev)) {
+      const o = pages.get(ev) ?? { id: ev, views: 0, users: 0 }; o.views += r.m[0]; o.users += r.m[1]; pages.set(ev, o); continue;
+    }
+    let where = '', cat = '';
+    if (path === '/events' || path === '/dashboard/events') { where = path === '/events' ? 'events' : 'dashboard'; cat = (q.get('cat') || '').replace(/[^a-z0-9_-]/gi, ''); }
+    else if (/^\/communities\/[a-z-]+$/.test(path) && q.get('tab') === 'events') where = path.slice(13);
+    else if (path === '/media' || path === '/dashboard/media') {
+      const where2 = path === '/media' ? 'media' : 'dashboard', type = (q.get('type') || '').replace(/[^a-z-]/g, '') || 'podcasts';
+      const k = where2 + '|' + type, o = media.get(k) ?? { where: where2, type, views: 0, users: 0 };
+      o.views += r.m[0]; o.users += r.m[1]; media.set(k, o); continue;
+    } else continue;
+    const when = q.get('when') === 'past' ? 'past' : 'upcoming';
+    const k = where + '|' + cat + '|' + when, o = sec.get(k) ?? { where, cat, when, views: 0, users: 0 };
+    o.views += r.m[0]; o.users += r.m[1]; sec.set(k, o);
+  }
+  const by = (a: { views: number }, b: { views: number }) => b.views - a.views;
+  return { ev_sections: [...sec.values()].sort(by), ev_pages: [...pages.values()].sort(by), media_types: [...media.values()].sort(by) };
 }
 
 // ---- Chapters: visitors by Google's place, joined to our own numbers ----
@@ -266,6 +299,13 @@ Deno.serve(async (req) => {
 
     const out = { ...(ga ?? {}) };
     delete out.geo_cur; delete out.geo_prev; delete out.pulse_posts;
+    // Each event page by its name, date and city (the 300 most viewed).
+    const evPages = ((ga?.ev_pages ?? []) as { id: string; views: number; users: number }[]).slice(0, 300);
+    if (evPages.length) {
+      const { data: evs } = await db.from('events').select('id, title, starts_at, city, category').in('id', evPages.map((p) => p.id));
+      const byId = new Map((evs ?? []).map((e: any) => [String(e.id), e]));
+      out.ev_pages = evPages.map((p) => { const e: any = byId.get(p.id); return { ...p, title: e?.title ?? null, starts_at: e?.starts_at ?? null, city: e?.city ?? null, category: e?.category ?? null }; });
+    }
     const countries: Record<string, number> = {};
     for (const r of ga?.geo_cur ?? []) countries[r.country] = (countries[r.country] ?? 0) + r.users;
     out.countries = Object.entries(countries).map(([country, users]) => ({ country, users })).sort((a, b) => b.users - a.users).slice(0, 50);
