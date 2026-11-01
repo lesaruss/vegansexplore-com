@@ -117,7 +117,7 @@ const NET: Record<string, string> = { instagram: 'instagram', facebook: 'faceboo
 function schedStatus(s: string, draft: boolean): string {
   const v = String(s || '').toUpperCase();
   if (draft) return 'draft';
-  if (/PUBLISH|SUCCESS|DONE/.test(v)) return 'published';
+  if (/PUBLISHED|SUCCESS|DONE/.test(v)) return 'published'; // PUBLISHING is still on its way (seen 2026-11-01)
   if (/ERROR|FAIL|REJECT/.test(v)) return 'failed';
   return 'scheduled';
 }
@@ -437,7 +437,7 @@ async function sync() {
         const urls: Record<string, string> = { ...(s.post_urls || {}) };
         for (const pr of provs) if (pr.publicUrl) urls[String(pr.network).toLowerCase()] = pr.publicUrl;
         f.post_urls = urls;
-        const done = provs.length && provs.every((pr) => /PUBLISH|SUCCESS/i.test(String(pr.status)));
+        const done = provs.length && provs.every((pr) => /PUBLISHED|SUCCESS/i.test(String(pr.status))); // not PUBLISHING
         const bad = provs.filter((pr) => /ERROR|FAIL|REJECT/i.test(String(pr.status)));
         if (bad.length) { f.status = 'failed'; f.push_error = bad.map((pr) => `${pr.network}: ${pr.detailedStatus || pr.status}`).join('; '); out.failed++; }
         else if (done && s.status !== 'posted') { f.status = s.status === 'manual' ? 'manual' : 'posted'; f.posted_at = s.posted_at || new Date().toISOString(); out.posted++; }
