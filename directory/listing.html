@@ -1229,7 +1229,7 @@ function sharedKitchenHtml(l){
     '<div style="border:1px solid var(--vb-line,#c8e6c9);background:var(--ve-green-light,#f1f8f1);border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--ve-text-75,#333)">'+
     '<p style="margin:0">'+esc(l.name)+' runs '+menu+' inside '+host+'.'+(sk.separate === true && sk.source !== 'member' ? ' Their food is prepared separately.' : '')+'</p>'+
     (sk.note ? '<p style="margin:6px 0 0">'+esc(sk.note)+'</p>' : '')+
-    '<p style="margin:8px 0 0;font-size:12px;color:var(--ve-text-50,#777)">'+who+when+'. Something changed? <a href="/contact">Let us know</a>.</p></div></div>';
+    '<p style="margin:8px 0 0;font-size:12px;color:var(--ve-text-50,#777)">'+who+when+'. Something changed? <a href="/contact" style="color:var(--vb-go,#2d7d31)">Let us know</a>.</p></div></div>';
 }
 function isDining(l){
   if(!l.address_city && !l.address_state) return false;

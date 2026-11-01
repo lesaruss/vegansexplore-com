@@ -2247,6 +2247,19 @@ each a `ve_listing_edits` row, field `parent_id`). Left unlinked on purpose: sis
 Vegan), Tofutti, Viva!, Whole Foods and Loving Hut's listing with no street. The Directory card does not read the main listing, so a
 location keeps its own `logo_url` (chainFill fills it).
 
+**Shared kitchens** (Sean, 2026-11-01: "some vegan restaurants... serve fully vegan food, but they're based out of a non-vegan
+restaurant... we should mention this on their profiles... it doesn't have to be this whole big production... as a service to the
+community"). A food place that runs its own Vegan menu inside a restaurant that is not Vegan carries `listings.details.shared_kitchen`
+`{host, host_slug, separate, source: owner|team|member, note, confirmed_at}`, set in the listing editor's **Shared kitchen** block (food
+places only, `vla-p-shared` in `ve-listing-admin.js`) and saved by `ve-listing-media` `save` `shared_kitchen` (a `ve_listing_edits` row;
+`null` clears it). The listing page shows a **Shared kitchen** badge in the header and, in the Overview, **A Vegan menu in a shared
+kitchen**: "<name> runs its own 100% Vegan menu inside <host>, a restaurant that is not Vegan", "Their food is prepared separately" only
+when ticked and told by the owner or our team, the optional line, who confirmed it and when, and Let us know (`sharedKitchenHtml` in
+`directory/listing.html`). The Directory card adds "· Shared kitchen" after the city (`sharedTag` in `ve-region-directory.js`). How
+Vegan stays the menu's. First two (2026-11-01, migration `20261101_shared_kitchen.sql`): Aisha's Plant-Based Eatery inside House of Mac,
+prepared separately (Sean), and Vegan Planet (Miami), host not named yet. Vegan Planet's website pointed at vegansexplore.com and was
+cleared the same day. Not yet: a question for owners on Your page, and a way for members to tell us.
+
 Duplicates (Sean, 2026-10-10: "merge the duplicates"): a listing is never deleted. A duplicate gets status `rejected` with
 `details.merged_into` (the listing that stays), `merged_at` and `status_before_merge`, and what pointed at it (outreach,
 votes, saves) moves to the listing that stays; a second queued outreach for the same business is `skipped`. 168 were
