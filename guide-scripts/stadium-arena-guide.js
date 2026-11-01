@@ -38,6 +38,8 @@
       sayMember: 'It\'s all yours. Save the stands for game day, and if something changed, tell us and earn points.' },
     { k: 'venues', label: 'Venues', say: 'Pick a venue to see every stand with Vegan food, where it is, and when a member last checked it. Hard Rock Stadium is free.',
       sayMember: 'Open a venue before you go. Every item shows where it is and when a member last checked it.' },
+    { k: 'bounties', label: 'Bounties', say: "Bounties are points for jobs at the game. Pick a stadium and you'll see what we want done there, biggest first.",
+      sayMember: 'Heading to a game? Open Bounties, pick your stadium, and work the list from the top. The biggest jobs pay the most.' },
     { k: 'report', label: 'Help keep it right', say: 'Members keep this Guide right from their seats. Snap a photo inside the venue, tell us what changed, and earn points.',
       sayMember: 'At the game? Confirm what\'s still there, or tell us what changed, with a photo. Accepted reports earn points.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you save lands here: the venues you go to and the items you want to find.' },
@@ -204,7 +206,7 @@
       '<section class="ov-sec ov-built"><div><div class="dg-k">Built with you</div><h3 class="ov-h">Members keep it right</h3><p>' + OV.built + '</p>' +
         '<ul class="ov-list"><li><b>Still here:</b> it is still sold, as written.</li><li><b>Something changed:</b> a new price, a new name, or it is gone.</li><li><b>Something missing:</b> a Vegan item or a spot that is not in the Guide yet.</li></ul>' +
         '<p class="ov-small">Every item says where it came from and when a member last checked it, so you know what is fresh.</p></div>' +
-        '<a class="ov-bounty" href="' + (own ? '#/report' : '#/join') + '"><span class="ov-bk">Bounties</span><b>Be first to confirm an item and earn the bounty</b><span id="ovBounty">' + (own ? 'Every report you send from inside earns points, and the first to confirm an item earns the most.' : 'Bounties unlock with the Guide. Every report you send from inside earns points, and the first to confirm an item earns the most.') + '</span><i>' + (own ? 'How it works' : 'Get the Guide') + '</i></a></section>' +
+        '<a class="ov-bounty" href="#/bounties"><span class="ov-bk">Bounties</span><b>Be first to confirm an item and earn the bounty</b><span id="ovBounty">' + (own ? 'Every report you send from inside earns points, and the first to confirm an item earns the most.' : 'Bounties unlock with the Guide. Every report you send from inside earns points, and the first to confirm an item earns the most.') + '</span><i>See the bounties</i></a></section>' +
       '<section class="ov-sec"><div class="dg-k">Newly added</div><h3 class="ov-h">' + esc(OV.newTitle) + '</h3>' + newest + '<p class="ov-small"><a href="' + OV.listHash + '">See every ' + esc(OV.place) + ', by city</a></p></section>';
     tryIt();
     bountyLine(own);
@@ -316,10 +318,11 @@
   function viewVenue(slug, rest) {
     var r = (rest || '').split('/');
     if (r[0] === 'report') return viewReport(slug, r[1], r[2]);
+    if (r[0] === 'bounties') return viewVenueBounties(slug);
     var d = VENUE[slug];
     if (!d) {
       main.innerHTML = crumb([['Venues', '#/venues'], ['...', '']]) + '<div class="dg-loading">Loading the venue...</div>';
-      api({ action: 'venue', slug: slug }).then(function (x) { VENUE[slug] = x; if (curView() === 'venue/' + slug) route(); }).catch(function () { main.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
+      api({ action: 'venue', slug: slug }).then(function (x) { VENUE[slug] = x; if (curView().indexOf('venue/' + slug) === 0) route(); }).catch(function () { main.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
       return;
     }
     if (d.error) { main.innerHTML = crumb([['Venues', '#/venues']]) + '<p class="dg-empty">We could not find that venue.</p>'; return; }
@@ -327,7 +330,7 @@
     var lede = esc(KIND[v.kind] || '') + ' &middot; ' + esc(v.city || '') + (v.state ? ', ' + esc(v.state) : '') + ' &middot; ' + esc((v.teams || []).join(', '));
     var meta = '<div class="sa-vhead">' + (v.maps ? '<a href="' + esc(v.maps) + '" target="_blank" rel="noopener">Map</a>' : '') +
       (v.note ? '<span>' + esc(v.note) + (v.note_source_url ? ' <a href="' + esc(v.note_source_url) + '" target="_blank" rel="noopener">Source</a>' : '') + '</span>' : '') + '</div>';
-    var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
+    var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn" href="#/venue/' + esc(v.slug) + '/bounties">Bounties</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
     var pins = 0;
     d.spots.forEach(function (s, i) { s.num = d.open ? i + 1 : 0; s.pin = d.open && v.layout && (s.map_sections || []).length ? s.num : 0; if (s.pin) pins++; });
     var stands = d.spots.length ? d.spots.map(function (s) { return standCard(v, s, d.open); }).join('')
@@ -585,12 +588,48 @@
       '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
 
+  // ---------- bounties ----------
+  // Sean, 2026-11-01: "depending on which stadium they're in, they click the bounties, it should clearly list what we want them to
+  // do... highest bounty to lowest bounty. So people could literally be Pokemon going to this world." The board (#/bounties) lists
+  // every venue with open bounties, the most points first; a venue's own (#/venue/<slug>/bounties) lists its jobs, highest
+  // pay first. Drawn by /public/ve-venue-bounties.js from what ve-venues already returns.
+  var BOUNTIES = null;
+  function bOpts() { return { base: '#/venue/', owner: owner(), points: POINTS, limits: LIMITS, place: 'venue', where: 'section', join: '#/join' }; }
+  function viewBounties() {
+    var intro = owner() ? 'Every venue with jobs open, the most points first. Pick one, go, and do what it asks with a photo. Points land once the team accepts it.'
+      : 'This is what we want done at every venue, the most points first. Bounties unlock with the Guide.';
+    if (!BOUNTIES || !window.VEVenueBounties) {
+      main.innerHTML = head('Bounties', 'Where the points are', intro) + '<div class="dg-loading">Loading the bounties...</div>';
+      if (!BOUNTIES) api({ action: 'bounties', hub: 'all' }).then(function (d) { BOUNTIES = d || {}; if (curView().indexOf('bounties') === 0) route(); }).catch(function () { BOUNTIES = {}; route(); });
+      return;
+    }
+    var mine = (BOUNTIES.venues || []).filter(function (v) { return v.guide === SLUG && inCity(v); });
+    var lock = (BOUNTIES.locked || []).filter(function (g) { return g.guide === SLUG; })[0];
+    var total = mine.reduce(function (n, v) { return n + (v.points || 0); }, 0);
+    var body = owner() ? (total ? '<p class="dg-lede" style="margin-top:0"><b>' + pts(total) + ' points</b> of bounties are open here, plus ' + pts((POINTS.missing || {}).with_photo || 0) + ' more for every new item you find.</p>' : '') + VEVenueBounties.board(mine, bOpts())
+      : '<div class="vbz-note"><span><b>' + (lock && lock.points ? pts(lock.points) + ' points of bounties are waiting at ' + lock.venues + ' ' + (lock.venues === 1 ? 'venue' : 'venues') + '.' : 'Bounties unlock with the Guide.') +
+        '</b> Get the Guide and every job pays. See what we want at Hard Rock Stadium, free to look at.</span><span class="dg-btns" style="margin:0"><a class="dg-btn" href="#/join">Get the Guide</a><a class="dg-btn dg-ghost" href="#/venue/' + FREE + '/bounties">Jobs at Hard Rock Stadium</a></span></div>';
+    main.innerHTML = head('Bounties', 'Where the points are', intro) + (owner() ? cityPicker() : '') + body;
+    VEVenueBounties.css(); wireCity();
+  }
+  function viewVenueBounties(slug) {
+    var d = VENUE[slug];
+    if (!d) { viewVenue(slug); return; }
+    if (d.error) { main.innerHTML = crumb([['Bounties', '#/bounties']]) + '<p class="dg-empty">We could not find that venue.</p>'; return; }
+    var v = d.venue;
+    var top = '<div class="dg-btns"><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '">Open the map</a></div>';
+    main.innerHTML = crumb([['Bounties', '#/bounties'], [v.name, '#/venue/' + v.slug], ['Bounties', '']]) +
+      head('Bounties', 'Jobs at ' + esc(v.name), 'Highest pay first. Go there, do the job and send a photo from inside. The numbers on the left match the stands on the map.', top) +
+      (!window.VEVenueBounties ? '' : d.open ? VEVenueBounties.venue(d, bOpts())
+        : gated('<div class="dg-skel"><i></i><i style="width:70%"></i></div><div class="dg-skel"><i></i><i style="width:60%"></i></div>', 'The jobs at ' + v.name + ' are in the full Guide', 'Every job here, what it pays, and where to find it.'));
+  }
+
   // ---------- router ----------
   function curView() { return (location.hash || '').replace(/^#\/?/, ''); }
   function route() {
     var parts = curView().split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
-    var known = { overview: 1, venues: 1, venue: 1, report: 1, mylist: 1, join: 1 };
+    var known = { overview: 1, venues: 1, venue: 1, bounties: 1, report: 1, mylist: 1, join: 1 };
     if (!known[view]) view = 'overview';
     if (view === 'mylist' && !owner()) view = 'overview';
     document.body.classList.toggle('dg-member', owner());
@@ -601,10 +640,10 @@
       var auto = ''; try { auto = sessionStorage.getItem('sa_river_auto') || ''; } catch (e) {}
       if (!auto) { try { sessionStorage.setItem('sa_river_auto', '1'); } catch (e) {} setFold(true); }
     }
-    var key = view === 'venue' ? 'venues' : view === 'join' && owner() ? 'overview' : view;
+    var key = view === 'venue' && sub.split('/')[1] === 'bounties' ? 'bounties' : view === 'venue' ? 'venues' : view === 'join' && owner() ? 'overview' : view;
     drawMenu(key);
     if (view === 'venue') { var s = sub.split('/'); viewVenue(s[0], s.slice(1).join('/')); }
-    else ({ overview: viewOverview, venues: function () { viewVenues(sub); }, report: viewReportTab, mylist: viewMyList, join: viewJoin })[view]();
+    else ({ overview: viewOverview, venues: function () { viewVenues(sub); }, bounties: viewBounties, report: viewReportTab, mylist: viewMyList, join: viewJoin })[view]();
     curTab = key;
     drawRiver();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);

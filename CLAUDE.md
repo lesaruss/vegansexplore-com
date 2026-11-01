@@ -3706,6 +3706,16 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   only a Guide's owners (and super admins) send reports, the free venue included (`ve-venues` `report` answers `guide_required`);
   the Bounty tags show to owners only, and `bounties` lists a Guide's venues to its owners and only `locked` (venues and points
   waiting, with Get the Guide) to everyone else. Every Guide's Get access lists Bounties.
+  **A Bounties tab, highest first** (Sean, 2026-11-01: "depending on which stadium they're in, they click the bounties, it should clearly
+  list what we want them to do... highest bounty to lowest bounty. So people could literally be Pokemon going to this world"). Both venue
+  Guides have **Bounties** after Venues / Airports (`#/bounties`): every venue with open bounties in the picked city, the most points
+  first, the top three marked #1 to #3 (owners; anyone else sees the points waiting and the free venue's jobs), and each venue's own list
+  (`#/venue/<slug>/bounties`, `#/airport/<slug>/bounties`, also **Bounties** on the venue page): its jobs grouped by what they pay, highest
+  first: Find a Vegan item we don't have (Something missing), Be first to confirm <item> (the bounty), then Check <item> is still there,
+  each with its stand number (the map's), where it is, what to photograph, the points with and without a photo, and **Do it** opening that
+  report form (which keeps the sign-in, Passport and Guide gates). Drawn by `/public/ve-venue-bounties.js` (`VEVenueBounties.board`,
+  `venue`, `jobs`) from what `ve-venues` `bounties` and `venue` already return, the amounts from `ve_venue_report_points`; no server
+  change. The Overview's Bounties card opens the tab. River's and Nori's lines on it are text drafts.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
