@@ -359,7 +359,8 @@ function mcBody(s: any, nets: string[]) {
   if (nets.includes('tiktok')) {
     body.tiktokData = { privacyOption: 'PUBLIC_TO_EVERYONE' };
     const tt = s.sound?.tiktok;
-    if (tt?.musicId && type !== 'REEL') { body.tiktokData.music = { musicId: tt.musicId, title: tt.title, author: tt.author, previewUrl: tt.previewUrl, thumbnailUrl: tt.thumbnailUrl }; body.tiktokData.autoAddMusic = false; }
+    if (tt?.musicId && type !== 'REEL') { // soundVolume is required in practice (Metricool 400 on 2026-11-01 without it, though the spec does not mark it).
+      body.tiktokData.music = { musicId: tt.musicId, title: tt.title, author: tt.author, previewUrl: tt.previewUrl, thumbnailUrl: tt.thumbnailUrl, soundVolume: 100, originalVolume: 0, startMillis: 0, ...(tt.duration ? { endMillis: Math.min(Number(tt.duration), 60) * 1000 } : {}) }; body.tiktokData.autoAddMusic = false; }
   }
   return body;
 }
