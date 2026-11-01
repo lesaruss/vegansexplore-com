@@ -1761,7 +1761,7 @@ const OLD_RULES: [RegExp, string][] = [
   [/order|delivery|deliver|pickup|pick-up|takeout|take-out|to-go|togo|cart|checkout|shop|store|gift-?card/, 'order'],
   [/menu|food|drink|dish|brunch|lunch|dinner|breakfast|dessert|bakery|smoothie|juice|eat|catering|specials/, 'menu'],
   [/contact|location|hours|visit|find-us|directions|map|reserv|book|parking|faq/, 'visit'],
-  [/about|story|our-|team|chef|mission|history|who-we|press|news|blog|career|jobs/, 'about'],
+  [/about|story|values|team|chef|founder|mission|history|who-we|press|news|blog|career|jobs/, 'about'],
 ];
 function oldKey(u: URL) {
   let p = decodeURIComponent(u.pathname).toLowerCase().replace(/\/+$/, '').replace(/\/index\.(html?|php)$/, '') || '/';
@@ -1771,8 +1771,12 @@ function oldKey(u: URL) {
 function oldMatch(path: string, title: string): { to: string; how: string } {
   const own = path.replace(/^\//, '');
   if (path === '/' || SITE_PAGES.some(([p]) => p && own === p)) return { to: path === '/' ? '' : own, how: 'same' };
-  const words = (path + ' ' + title).toLowerCase().replace(/[_\s]+/g, '-');
-  for (const [re, to] of OLD_RULES) if (re.test(words)) return { to, how: 'words' };
+  // The address first; then only the title's own part (before | or -), since every title on a site repeats the same words ("Vegan Food
+  // Menu | ..."), and in the title an about word wins ("Our Values: Whole Foods" is about them, not the menu).
+  const slug = path.toLowerCase().replace(/[_\s]+/g, '-');
+  for (const [re, to] of OLD_RULES) if (re.test(slug)) return { to, how: 'words' };
+  const head = title.split(/\s[|\u2013\u2014-]\s|:/)[0].toLowerCase().replace(/[_\s]+/g, '-');
+  for (const [re, to] of [OLD_RULES[3], OLD_RULES[2], OLD_RULES[0], OLD_RULES[1]]) if (re.test(head)) return { to, how: 'words' };
   return { to: '', how: 'home' };
 }
 async function oldFetch(url: string, ms = 9000) {
