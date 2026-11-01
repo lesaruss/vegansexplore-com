@@ -64,3 +64,14 @@ with t(slug, kinds) as (values ('chia-ballz', array['snacks']), ('flex-bites', a
   select l.id, 'product_kinds', to_jsonb(l.product_kinds), to_jsonb(t.kinds), '{"by":"Logan"}'::jsonb
   from public.listings l join t on t.slug = l.slug where l.status = 'approved' and coalesce(l.product_kinds, '{}') = '{}' returning listing_id)
 update public.listings l set product_kinds = t.kinds from t where l.slug = t.slug and l.status = 'approved' and coalesce(l.product_kinds, '{}') = '{}';
+
+-- Impossible Foods, on Sean's word the same day ("Put in Impossible and leave a note in their listing that says that so people are aware"):
+-- listed from the import, with the 2017 rat testing of its heme said in the public description.
+update public.listings l set name = 'Impossible Foods', category = 'Food Brands', specialty = 'Plant-based meat',
+  description = 'Plant-based burgers, sausage, ground, nuggets and chicken, made without animal ingredients. Worth knowing: to get its key ingredient, heme (soy leghemoglobin), cleared by the FDA, the company tested it on rats in 2017, which is why some Vegans choose not to buy it.',
+  tagline = 'Plant-based meat, with a note on testing', website = 'https://impossiblefoods.com', location = 'Online', status = 'approved',
+  vegan_status = 'fully_vegan', communities = '{}', product_kinds = array['meat','frozen'], crawl_source = coalesce(l.crawl_source, 'admin'),
+  tenant_id = '00000000-0000-4000-a000-000000000002', initials = 'I',
+  details = coalesce(l.details, '{}'::jsonb) || jsonb_build_object('added_by_hand', true, 'admin_notes', coalesce(l.details->'admin_notes', '[]'::jsonb) ||
+    jsonb_build_array(jsonb_build_object('at', now(), 'by', 'Logan', 'kind', 'note', 'text', 'Listed 2026-11-01 on Sean''s word, from the import (it was quarantined), with the animal testing of its heme said in its description so members know.')))
+where l.slug = 'impossible' and l.status = 'quarantined';
