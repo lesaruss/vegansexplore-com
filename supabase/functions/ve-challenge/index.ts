@@ -33,6 +33,8 @@ const VE_TENANT_ID = '00000000-0000-4000-a000-000000000002';
 const SITE = 'https://vegansexplore.com';
 const KINDS = ['support_local', 'connector', 'advocate'];
 const TASKS = ['event', 'animals', 'share'];
+// The places Support Local counts: food places with How Vegan set (the same list as ve_challenge_progress).
+const FOOD = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Trucks & Vendors', 'Catering', 'Meal Prep', 'Markets'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type' };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json' } });
@@ -258,7 +260,7 @@ Deno.serve(async (req) => {
     if (lat === null || lng === null || Math.abs(lat) > 90 || Math.abs(lng) > 180) return json({ error: 'position' }, 400);
     const dLat = 0.0045, dLng = 0.0045 / Math.max(0.2, Math.cos(lat * Math.PI / 180));
     const { data } = await db.from('listings').select('id, name, slug, category, vegan_status, latitude, longitude, address_city, logo_url')
-      .eq('status', 'approved').not('vegan_status', 'is', null).neq('business_status', 'CLOSED_PERMANENTLY')
+      .eq('status', 'approved').not('vegan_status', 'is', null).in('category', FOOD).or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY')
       .gte('latitude', lat - dLat).lte('latitude', lat + dLat).gte('longitude', lng - dLng).lte('longitude', lng + dLng).limit(200);
     const R = 6371000, rad = (x: number) => x * Math.PI / 180;
     const out = (data || []).map((l: any) => {

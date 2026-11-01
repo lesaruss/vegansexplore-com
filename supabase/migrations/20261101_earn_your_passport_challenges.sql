@@ -8,7 +8,8 @@
 --   * Who: anyone who is not a paying member: a Taster (their account is made at Start), an account that never paid, and a member
 --     whose membership came from a challenge (to finish the other two). A member who paid the $11 does not take them.
 --   * A restart is one more 30 days from the day it is pressed, after the first 30 run out; what was already approved is kept.
---   * Support Local counts a place with How Vegan set (100% Vegan, Vegan, Vegan options, Vegan friendly). A check-in counts once
+--   * Support Local counts a food place (Restaurants, Bakeries & Cafes, Food Trucks, Vendors, Catering, Meal Prep, Markets) with
+--     How Vegan set (100% Vegan, Vegan, Vegan options, Vegan friendly). A check-in counts once
 --     the team approves at least one thing from its check-in menu (Depot > Check-ins), and at least one approved receipt overall.
 --     In a month when their chapter has Passport Challenge stops live, only that month's stops count.
 --   * The Connector counts friends who signed up with their link and paid to join during the challenge; a friend who earned their
@@ -114,6 +115,7 @@ begin
         exists (select 1 from ve_checkin_actions a where a.checkin_id = k.id and a.kind = 'receipt' and a.status = 'approved') rcpt
       from ve_checkins k join listings l on l.id = k.listing_id
       where k.member_id = c.member_id and k.created_at between c.started_at and c.ends_at and l.vegan_status is not null
+        and l.category in ('Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Trucks & Vendors', 'Catering', 'Meal Prep', 'Markets')
         and (not exists (select 1 from ve_pc_slots p where p.chapter = v_chapter and p.status = 'approved' and p.month = date_trunc('month', k.local_day)::date)
              or exists (select 1 from ve_pc_slots p where p.chapter = v_chapter and p.status = 'approved' and p.month = date_trunc('month', k.local_day)::date and p.listing_id = k.listing_id))
     ), per as (
