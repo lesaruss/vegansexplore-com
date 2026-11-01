@@ -1834,7 +1834,21 @@ vouch for it (its Google place, a street and hours, Google not saying closed); i
 the 87 held for a dead website or no socials were checked on Google (78 Place Details calls): 34 open with 50 or more reviews and one
 since May 2026 went back, 6 Google calls permanently closed were Removed (Sean: "remove any"), 2 temporarily closed and 36 with few or
 old reviews stay on hold; Google lists no website for most, so a website alone cannot vet them (its reviews field is its five most
-helpful, not the newest).
+helpful, not the newest). Those 36 stay on hold for now (Sean: "keep those where they are... a bounty to give people things to do"). **They are a bounty** (Sean, 2026-11-01: "Make the 36 on hold a
+bounty"; migration `20261101_bounty_still_open.sql`): **Is it still open?**, one Bounties campaign a chapter (`still-open-<chapter>`, nine:
+Atlanta 7, South Florida, London and Philadelphia 5, New York 4, North Florida, Los Angeles and Virginia 3, Central Florida 1), one job a
+place ("Is <name> still open?", the address and a Google Maps link by its place, since a held listing's page does not open), in person:
+the outside today, and if open the menu, counter or receipt and the hours on the door; closed counts too. 50 points, one person each,
+until 2026-12-01 (Logan's defaults, Sean's to change). Approved in Depot > Bounties; the team then puts the place back or marks it closed
+in Directory review. **Closed comes
+off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
+don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
+hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
+Google (Place Details, `businessStatus` only, job `closed-recheck`, within the background cap) every listing held or Removed because
+Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the Directory any Google shows open again, with a note
+(`ve_closed_rechecks` keeps each answer). The first run, 2026-11-01: all eight (Coco Lov and Seasoned Green temporarily, six permanently)
+still closed. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+`once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
 street, ZIP, menu link, each day's hours; missing ones marked), saved by `ve-outreach` `listing_fix` (only what changed, each a
@@ -4468,6 +4482,25 @@ the podcast (the show's dates are America/New_York). A post scheduled in Metrico
 2026-11-01: Instagram 3,762 followers, TikTok 3,038, YouTube 584, Facebook 371. **X is not connected in Metricool** (its API says so),
 though the 2026-10-31 notes said it was. Not yet: podcast downloads from Captivate, scheduling or editing from the page (it is read
 only; posts are scheduled in Metricool).
+
+**The studio** (Sean, 2026-11-01: "see what's slotted for the different brands... you propose things... the community manager goes
+in... make any adjustments... or leave a note that you will then take care of... you will use your connections to push it out... If
+something needs a manual thing... we know ahead of time... a calendar... track it to its metrics... between different brands...
+clients"; migration `20261101_ve_social_studio.sql`). The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
+client, its Metricool brand and connected channels), the week Monday to Sunday (`#plan/<brand>/<monday>/<todo|out|posted|all>`, Back /
+This week / Next week), one card a slot (`ve_social_slots`: time, channels, kind, title, caption, first comment, links, assets, By hand
+steps, status), **Approve the N waiting**, and **New slot** for super admins. A slot (`#slot/<id>`): its pictures, Approve and schedule,
+Skip it, **Change it directly** (every change a `ve_social_edits` row; a change to a scheduled slot is sent to Metricool again), and
+**Notes** (`ve_social_notes`: Leave a note for Logan, optionally holding it as Changes asked; Logan marks each done with what he did;
+**Notes for Logan** lists the open ones). Statuses: Waiting for approval, Changes asked, Approved, Scheduled, Posted, Did not post, Post
+by hand, Skipped. **Approving pushes it**: `ve-social` creates the Metricool post (autoPublish, the slot's time in Eastern, Reel or
+Story by kind); a brand not in Metricool, or a channel not connected for it, makes it **Post by hand** with the reason, known ahead of
+time; skipping deletes it from Metricool. Cron `ve-social-sync` (every 15 minutes, `sync`, admin token) marks what went out Posted with
+its links and copies its numbers from Metricool's analytics (matched by link) onto the slot, so a past week is the posted log with how
+each did. Who: super admins edit every brand; anyone else by a `ve_social_people` row (editor or viewer), so a Community Manager or a
+client can work their brand. Sean A. Russell and GeekFon Society are brands with no Metricool brand yet: add each in Metricool, then set
+`metricool_blog_id` and `channels` on its row. Proven 2026-11-01 against the real Metricool: a [TEST] slot approved (scheduled), edited
+(re-pushed, the old copy gone), skipped (removed), then deleted.
 
 ## Image conventions
 

@@ -99,6 +99,52 @@
     .tbl{overflow-x:auto;border:1px solid var(--ve-border);border-radius:12px;max-height:640px;overflow-y:auto;}
     .empty{background:#fff;border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:28px;text-align:center;color:var(--ve-text-75);font-weight:700;}
     .gate{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px;font-weight:700;}
+    /* The studio (Plan, one slot, Notes): what is slotted for each brand, week by week. */
+    .bsel{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 14px;}
+    .bsel select{width:auto;min-width:240px;}
+    .bsel .note{font-size:12.5px;font-weight:700;color:var(--ve-text-75);}
+    .wkbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .wkbar .lbl{font-size:16px;font-weight:900;}
+    .wkbar .grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:10px;align-items:start;}
+    .day{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:10px;min-height:140px;display:flex;flex-direction:column;gap:8px;}
+    .day.today{border-color:var(--ve-green-deep);box-shadow:0 0 0 1px var(--ve-green-deep) inset;}
+    .day h3{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .day .none{font-size:12px;color:rgba(26,26,26,.5);font-weight:700;}
+    @media (max-width:1100px){.week{grid-template-columns:1fr;}.day{min-height:0;}.day.empty-day{display:none;}}
+    .slot{display:flex;flex-direction:column;gap:6px;border:1px solid var(--ve-border);border-left:4px solid #bbb;border-radius:8px;padding:8px;text-decoration:none;color:inherit;background:#fff;}
+    .slot:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
+    .slot .th{aspect-ratio:1/1;border-radius:6px;background:#eef2ee center/cover no-repeat;}
+    .slot .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;font-weight:800;color:var(--ve-green-deep);}
+    .slot .row img{width:14px;height:14px;}
+    .slot .cap{font-size:12.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .slot .tag{white-space:normal;}
+    .slot .nb{background:#fff4e0;color:#7a4a00;border-radius:6px;padding:1px 7px;font-size:11px;}
+    .s-proposed{border-left-color:#2c3e66;}.s-changes{border-left-color:#F69820;}.s-approved,.s-scheduled{border-left-color:#3A9B3E;}
+    .s-posted{border-left-color:#1f5f22;}.s-failed{border-left-color:#a0281a;}.s-manual{border-left-color:#b07a00;}.s-skipped{border-left-color:#ccc;opacity:.7;}
+    .tag.proposed{background:#eef1f6;color:#2c3e66;}.tag.changes{background:#fff4e0;color:#7a4a00;}.tag.approved{background:#e8f5e9;color:#1f5f22;}
+    .tag.posted{background:#1f5f22;color:#fff;}.tag.manual{background:#fff1cc;color:#6b4a00;}.tag.skipped{background:#f1f1f1;color:#666;}
+    .form{display:grid;gap:12px;}
+    .form label{display:grid;gap:5px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .form label small{font-size:12px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    textarea{font:inherit;font-size:14px;font-weight:500;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;width:100%;min-height:90px;resize:vertical;line-height:1.5;}
+    textarea.big{min-height:220px;}
+    .f2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    @media (max-width:600px){.f2{grid-template-columns:1fr;}}
+    .nets{display:flex;flex-wrap:wrap;gap:6px;}
+    .nets label{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;font-size:12px;letter-spacing:.04em;cursor:pointer;color:var(--ve-text);}
+    .nets input{width:auto;}
+    .nets label.off{opacity:.6;}
+    .acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .btn-warn{background:#fff;color:#8a1c12;border:1px solid rgba(138,28,18,.4);}
+    .notes{display:grid;gap:10px;margin-bottom:12px;}
+    .nt{background:#f7f8f7;border-radius:10px;padding:10px 12px;font-size:13.5px;}
+    .nt .who{font-size:11.5px;font-weight:800;color:var(--ve-green-deep);margin-bottom:3px;}
+    .nt .rep{margin-top:6px;padding-top:6px;border-top:1px solid var(--ve-border);font-size:13px;}
+    .nt.open{background:#fff8ec;}
+    .hist{font-size:12.5px;color:var(--ve-text-75);display:grid;gap:4px;max-height:240px;overflow:auto;}
+    .err{background:#fbeeec;color:#8a1c12;border-radius:8px;padding:10px 12px;font-size:13.5px;font-weight:700;margin:0 0 10px;}
+    .warn{background:#fff4e0;color:#6b4a00;border-radius:8px;padding:10px 12px;font-size:13.5px;font-weight:700;margin:0 0 10px;}
   </style>
 </head>
 <body>
@@ -110,7 +156,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Social</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">What is scheduled and what has gone out on Instagram, Facebook, TikTok, YouTube and the podcast, and how each channel is doing. Every time is Eastern. Posts are scheduled in Metricool; the podcast in Captivate.</p>
+    <p class="sub">Every brand's social plan, week by week. Logan fills the slots; you change one directly or leave a note, then approve it and it goes out through Metricool. Anything that has to be posted by hand says so ahead of time. Content and Analytics show what is live and how it did. Every time is Eastern.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -136,10 +182,11 @@
     var WHEN = { scheduled: 'Scheduled', past: 'Past', all: 'All' };
     var METRIC = { views: 'Views', reach: 'Reach', likes: 'Likes', comments: 'Comments', shares: 'Shares', saves: 'Saves', interactions: 'Interactions', engagement: 'Engagement %', follows: 'New follows', clicks: 'Clicks', link_clicks: 'Link clicks', video_views: 'Video views', watch_minutes: 'Watch minutes', avg_watch_s: 'Avg. watch (s)', skip_rate: 'Skip rate %', full_watch_rate: 'Watched to the end %' };
     var PERIODS = { 7: 'Last 7 days', 30: 'Last 30 days', 90: 'Last 90 days', 180: 'Last 6 months', 365: 'Last year' };
-    var data = null, loading = null;
-    var st = { days: 90, q: '', sort: 'views', asc: false };
-    try { var s = JSON.parse(sessionStorage.getItem('ve_social') || '{}'); if (PERIODS[s.days]) st.days = s.days; } catch (e) {}
-    function keep() { try { sessionStorage.setItem('ve_social', JSON.stringify({ days: st.days })); } catch (e) {} }
+    var data = null, loading = null, dataBrand = null;
+    var brands = [], me = { admin: false };
+    var st = { days: 90, q: '', sort: 'views', asc: false, brand: 'vegans-explore' };
+    try { var s = JSON.parse(sessionStorage.getItem('ve_social') || '{}'); if (PERIODS[s.days]) st.days = s.days; if (s.brand) st.brand = s.brand; } catch (e) {}
+    function keep() { try { sessionStorage.setItem('ve_social', JSON.stringify({ days: st.days, brand: st.brand })); } catch (e) {} }
 
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function eastDay(d) { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); }
@@ -158,22 +205,28 @@
     function load(refresh) {
       var to = eastDay(new Date());
       var from = eastDay(new Date(Date.now() - (st.days - 1) * 86400000));
-      loading = api({ action: 'report', from: from, to: to, refresh: !!refresh }).then(function (r) { data = r; loading = null; return r; });
+      var b = st.brand;
+      loading = api({ action: 'report', brand: b, from: from, to: to, refresh: !!refresh }).then(function (r) { data = r; dataBrand = b; loading = null; return r; });
       return loading;
     }
     function ready(fn) {
-      if (data && !loading) return fn();
+      if (data && !loading && dataBrand === st.brand) return fn();
+      if (dataBrand !== st.brand && !loading) data = null;
       app.innerHTML = '<p class="msg">Reading Metricool and Captivate…</p>';
       (loading || load()).then(fn);
     }
     function top(on) {
       var a = data && data.fetched_at ? 'Updated ' + new Date(data.fetched_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ }) + ' ET' : '';
-      return '<div class="bar"><div class="tabs"><a href="#content/scheduled/all" class="' + (on === 'content' ? 'on' : '') + '">Content</a><a href="#analytics/all" class="' + (on === 'analytics' ? 'on' : '') + '">Analytics</a></div>' +
-        '<div style="display:flex;gap:10px;align-items:center"><span class="msg" style="margin:0">' + esc(a) + '</span><button class="btn btn-ghost" id="refresh" type="button">Refresh now</button></div></div>' +
-        (data && data.errors && data.errors.length ? '<p class="msg bad">Some channels did not answer: ' + esc(data.errors.join('; ')) + '</p>' : '') +
-        (data && data.error ? '<p class="msg bad">' + esc(data.error === 'forbidden' ? 'This page is for super admins.' : 'Could not read the channels: ' + data.error) + '</p>' : '');
+      var live = on === 'content' || on === 'analytics';
+      var nOpen = brands.reduce(function (t, b) { return t + (b.open_notes || 0); }, 0);
+      return brandPicker() + '<div class="bar"><div class="tabs"><a href="#plan/' + st.brand + '" class="' + (on === 'plan' ? 'on' : '') + '">Plan</a>' +
+        (me.admin ? '<a href="#notes" class="' + (on === 'notes' ? 'on' : '') + '">Notes for Logan' + (nOpen ? ' <span class="n">' + nOpen + '</span>' : '') + '</a>' : '') +
+        '<a href="#content/scheduled/all" class="' + (on === 'content' ? 'on' : '') + '">Content</a><a href="#analytics/all" class="' + (on === 'analytics' ? 'on' : '') + '">Analytics</a></div>' +
+        (live ? '<div style="display:flex;gap:10px;align-items:center"><span class="msg" style="margin:0">' + esc(a) + '</span><button class="btn btn-ghost" id="refresh" type="button">Refresh now</button></div>' : '') + '</div>' +
+        (live && data && data.errors && data.errors.length ? '<p class="msg bad">Some channels did not answer: ' + esc(data.errors.join('; ')) + '</p>' : '') +
+        (live && data && data.error ? '<p class="msg bad">' + esc(data.error === 'forbidden' ? 'You do not work on this brand.' : 'Could not read the channels: ' + data.error) + '</p>' : '');
     }
-    function wireTop() { var b = $('refresh'); if (b) b.onclick = function () { data = null; load(true).then(route); route(); }; }
+    function wireTop() { var b = $('refresh'); if (b) b.onclick = function () { data = null; load(true).then(route); route(); }; wireBrand(); }
     function periodSel() { return '<select id="period" aria-label="Period for past content">' + Object.keys(PERIODS).map(function (k) { return '<option value="' + k + '"' + (+k === st.days ? ' selected' : '') + '>' + PERIODS[k] + '</option>'; }).join('') + '</select>'; }
     function wirePeriod() { var p = $('period'); if (p) p.onchange = function () { st.days = +p.value; keep(); data = null; load().then(route); route(); }; }
 
@@ -304,10 +357,224 @@
       Array.prototype.forEach.call(app.querySelectorAll('th[data-k]'), function (h) { h.onclick = function () { var k = h.getAttribute('data-k'); if (st.sort === k) st.asc = !st.asc; else { st.sort = k; st.asc = false; } drawAnalytics(ch); }; });
     }
 
+    // ---- The studio: brands, the week's plan, one slot, notes ----
+    var SS = { proposed: 'Waiting for approval', changes: 'Changes asked', approved: 'Approved', scheduled: 'Scheduled', posted: 'Posted', failed: 'Did not post', manual: 'Post by hand', skipped: 'Skipped' };
+    var KIND = { post: 'Post', carousel: 'Carousel', reel: 'Reel', story: 'Story', video: 'Video', episode: 'Episode', thread: 'Thread' };
+    var NETS = ['instagram', 'facebook', 'tiktok', 'youtube', 'twitter', 'linkedin', 'threads', 'pinterest', 'bluesky'];
+    var NETN = { twitter: 'X', linkedin: 'LinkedIn', threads: 'Threads', pinterest: 'Pinterest', bluesky: 'Bluesky' };
+    var FILT = { todo: 'Needs you', out: 'Going out', posted: 'Posted', all: 'All' };
+    function netName(n) { return CH[n] && CH[n].name ? CH[n].name : (NETN[n] || n); }
+    function inFilt(x, f) {
+      if (f === 'all') return true;
+      if (f === 'todo') return x.status === 'proposed' || x.status === 'changes' || x.status === 'failed' || x.status === 'manual';
+      if (f === 'out') return x.status === 'approved' || x.status === 'scheduled';
+      return x.status === 'posted';
+    }
+    function brandOf(slug) { return brands.filter(function (b) { return b.slug === slug; })[0]; }
+    function setBrand(slug) { if (brandOf(slug) && st.brand !== slug) { st.brand = slug; keep(); data = null; } }
+    function brandPicker() {
+      if (!brands.length) return '';
+      var b = brandOf(st.brand) || brands[0];
+      return '<div class="bsel"><select id="brand" aria-label="Brand">' + brands.map(function (x) { return '<option value="' + x.slug + '"' + (x.slug === b.slug ? ' selected' : '') + '>' + esc(x.name) + (x.kind === 'client' ? ' (client)' : '') + '</option>'; }).join('') + '</select>' +
+        '<span class="note">' + (b.in_metricool ? 'Goes out through Metricool on ' + (b.channels || []).map(netName).join(', ') + '.' : 'Not in Metricool yet: its posts are marked Post by hand until the brand is added there.') + '</span></div>';
+    }
+    function wireBrand() { var x = $('brand'); if (x) x.onchange = function () { setBrand(x.value); var h = location.hash; var nh = /^#analytics/.test(h) ? '#analytics/all' : /^#(content|post)/.test(h) ? '#content/scheduled/all' : '#plan/' + x.value; if (nh === h) route(); else location.hash = nh; }; }
+    function partsOf(t) { var p = {}; new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(t)).forEach(function (x) { p[x.type] = x.value; }); return p; }
+    function offAt(t) { var p = partsOf(t); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t; }
+    function eastIso(local) { var g = Date.parse(local.length === 10 ? local + 'T00:00:00Z' : local + ':00Z'); var t = g - offAt(g); t = g - offAt(t); return new Date(t).toISOString(); }
+    function eastLocal(iso) { var p = partsOf(Date.parse(iso)); return p.year + '-' + p.month + '-' + p.day + 'T' + p.hour + ':' + p.minute; }
+    function addDays(day, n) { var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+    function monday(day) { var d = new Date(day + 'T12:00:00Z'); return addDays(day, -((d.getUTCDay() + 6) % 7)); }
+    function dayLabel(day, long) { return new Date(day + 'T12:00:00Z').toLocaleDateString('en-US', long ? { weekday: 'long', month: 'long', day: 'numeric' } : { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+    function hm(iso) { return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ }); }
+    function nets(list, size) { return (list || []).map(function (n) { return CH[n] && CH[n].icon ? '<img src="' + CH[n].icon + '" alt="' + esc(netName(n)) + '" title="' + esc(netName(n)) + '" width="' + size + '" height="' + size + '">' : '<span>' + esc(netName(n)) + '</span>'; }).join(''); }
+    function isEditor() { var b = brandOf(st.brand); return !!(b && b.role === 'editor'); }
+    function refreshBrands() { return api({ action: 'brands' }).then(function (r) { if (r && r.brands) { brands = r.brands; me = r.me || me; } return r; }); }
+
+    function drawPlan(brand, wk, f) {
+      setBrand(brand);
+      var b = brandOf(st.brand);
+      if (!b) { app.innerHTML = top('plan') + '<div class="empty">You do not work on that brand.</div>'; wireTop(); return; }
+      var today = eastDay(new Date());
+      wk = wk ? monday(wk) : monday(today);
+      f = FILT[f] ? f : 'all';
+      app.innerHTML = top('plan') + '<p class="msg">Reading ' + esc(b.name) + '’s plan…</p>'; wireTop();
+      api({ action: 'slots', brand: b.slug, from: eastIso(wk), to: eastIso(addDays(wk, 7)) }).then(function (r) {
+        if (r.error) { app.innerHTML = top('plan') + '<div class="err">Could not read the plan: ' + esc(r.error) + '</div>'; wireTop(); return; }
+        var slots = r.slots || [];
+        var waiting = slots.filter(function (x) { return x.status === 'proposed'; });
+        var base = '#plan/' + b.slug + '/';
+        var chips = Object.keys(FILT).map(function (k) { var n = slots.filter(function (x) { return inFilt(x, k); }).length; return '<a class="chip' + (k === f ? ' on' : '') + '" href="' + base + wk + '/' + k + '">' + FILT[k] + ' <span class="n">' + n + '</span></a>'; }).join('');
+        var days = [0, 1, 2, 3, 4, 5, 6].map(function (i) {
+          var d = addDays(wk, i);
+          var mine = slots.filter(function (x) { return eastDay(new Date(x.slot_at)) === d && inFilt(x, f); });
+          return '<section class="day' + (d === today ? ' today' : '') + (mine.length ? '' : ' empty-day') + '"><h3>' + esc(dayLabel(d)) + (d === today ? ' · Today' : '') + '</h3>' +
+            (mine.length ? mine.map(slotCard).join('') : '<span class="none">Nothing slotted</span>') + '</section>';
+        }).join('');
+        app.innerHTML = top('plan') +
+          '<div class="wkbar"><span class="lbl">Week of ' + esc(dayLabel(wk, true)) + '</span><div class="grp">' +
+            '<a class="btn btn-ghost" href="' + base + addDays(wk, -7) + '/' + f + '">Back a week</a>' +
+            (wk !== monday(today) ? '<a class="btn btn-ghost" href="' + base + monday(today) + '/' + f + '">This week</a>' : '') +
+            '<a class="btn btn-ghost" href="' + base + addDays(wk, 7) + '/' + f + '">Next week</a>' +
+            (isEditor() && waiting.length ? '<button class="btn" id="approveAll" type="button">Approve the ' + waiting.length + ' waiting</button>' : '') +
+            (me.admin ? '<a class="btn" href="#new/' + b.slug + '/' + (wk < today ? today : wk) + '">New slot</a>' : '') +
+          '</div></div>' +
+          '<div class="tabs" style="margin-bottom:14px">' + chips + '</div><p class="msg" id="pmsg"></p>' +
+          (slots.length ? '<div class="week">' + days + '</div>' : '<div class="empty">Nothing is slotted for ' + esc(b.name) + ' this week yet. Logan fills the slots; anything he proposes shows here as Waiting for approval.</div>');
+        wireTop();
+        var aa = $('approveAll');
+        if (aa) aa.onclick = function () {
+          if (!confirm('Approve all ' + waiting.length + ' waiting posts for ' + b.name + '? Each one is scheduled in Metricool right away' + (b.in_metricool ? '' : ' (this brand is not in Metricool yet, so they become Post by hand)') + '.')) return;
+          aa.disabled = true; aa.textContent = 'Approving…';
+          api({ action: 'approve', ids: waiting.map(function (x) { return x.id; }) }).then(function (res) {
+            var bad = (res.results || []).filter(function (x) { return x.error; });
+            route();
+            if (bad.length) setTimeout(function () { var m = $('pmsg'); if (m) { m.className = 'msg bad'; m.textContent = bad.length + ' did not go through: ' + bad.map(function (x) { return x.detail || x.error; }).join('; '); } }, 600);
+          });
+        };
+      });
+    }
+    function slotCard(x) {
+      var m = x.metrics || {}, v = 0, any = false;
+      Object.keys(m).forEach(function (k) { if (m[k] && m[k].views != null) { v += +m[k].views; any = true; } });
+      return '<a class="slot s-' + esc(x.status) + '" href="#slot/' + x.id + '">' +
+        (x.thumb ? '<div class="th" style="background-image:url(\'' + esc(x.thumb) + '\')"></div>' : '') +
+        '<span class="row">' + esc(hm(x.slot_at)) + ' · ' + esc(KIND[x.kind] || x.kind) + ' ' + nets(x.channels, 14) + '</span>' +
+        '<span class="cap">' + esc(x.title || x.caption || 'No caption yet') + '</span>' +
+        '<span class="row"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span>' + (x.open_notes ? '<span class="nb">' + x.open_notes + ' note' + (x.open_notes > 1 ? 's' : '') + '</span>' : '') + (any ? '<span>' + fmt(v) + ' views</span>' : '') + '</span></a>';
+    }
+
+    function slotForm(x, b, editable) {
+      var all = NETS.filter(function (n) { return (b.channels || []).indexOf(n) >= 0 || (x.channels || []).indexOf(n) >= 0; });
+      NETS.forEach(function (n) { if (all.indexOf(n) < 0) all.push(n); });
+      var dis = editable ? '' : ' disabled';
+      return '<div class="form">' +
+        '<div class="f2"><label>When (Eastern)<input type="datetime-local" id="f_at" value="' + esc(x.slot_at ? eastLocal(x.slot_at) : '') + '"' + dis + '></label>' +
+        '<label>Kind<select id="f_kind"' + dis + '>' + Object.keys(KIND).map(function (k) { return '<option value="' + k + '"' + (k === (x.kind || 'post') ? ' selected' : '') + '>' + KIND[k] + '</option>'; }).join('') + '</select></label></div>' +
+        '<label>Channels <small>Grey ones are not connected in Metricool for this brand, so they would be posted by hand.</small><span class="nets">' + all.map(function (n) {
+          var on = (x.channels || []).indexOf(n) >= 0, conn = (b.channels || []).indexOf(n) >= 0;
+          return '<label class="' + (conn ? '' : 'off') + '"><input type="checkbox" value="' + n + '"' + (on ? ' checked' : '') + dis + '>' + (CH[n] && CH[n].icon ? '<img src="' + CH[n].icon + '" alt="" width="14" height="14">' : '') + esc(netName(n)) + '</label>'; }).join('') + '</span></label>' +
+        '<label>Title <small>For YouTube and our own planning.</small><input id="f_title" value="' + esc(x.title || '') + '"' + dis + '></label>' +
+        '<label>Caption <small id="f_count"></small><textarea class="big" id="f_caption"' + dis + '>' + esc(x.caption || '') + '</textarea></label>' +
+        '<label>First comment<textarea id="f_first"' + dis + '>' + esc(x.first_comment || '') + '</textarea></label>' +
+        '<label>Links <small>One a line. Use our /go/ tracked links.</small><textarea id="f_links"' + dis + '>' + esc((x.links || []).join('\n')) + '</textarea></label>' +
+        '<label>Pictures and videos <small>One link a line, in the order they show.</small><textarea id="f_assets"' + dis + '>' + esc((x.assets || []).map(function (a) { return a && a.url; }).filter(Boolean).join('\n')) + '</textarea></label>' +
+        '<label>By hand <small>Anything that cannot go through Metricool and who does it (music on TikTok, a collab tag, a story sticker).</small><textarea id="f_manual"' + dis + '>' + esc(x.manual_steps || '') + '</textarea></label>' +
+        '</div>';
+    }
+    function readForm() {
+      var at = $('f_at').value;
+      var assets = $('f_assets').value.split(/\n+/).map(function (u) { return u.trim(); }).filter(function (u) { return /^https:\/\//.test(u); }).map(function (u) { return { url: u, type: /\.(mp4|mov|webm)(\?|$)/i.test(u) ? 'video' : 'image' }; });
+      return {
+        slot_at: at ? eastIso(at) : null, kind: $('f_kind').value,
+        channels: Array.prototype.map.call(app.querySelectorAll('.nets input:checked'), function (i) { return i.value; }),
+        title: $('f_title').value.trim() || null, caption: $('f_caption').value, first_comment: $('f_first').value.trim() || null,
+        links: $('f_links').value.split(/\n+/).map(function (u) { return u.trim(); }).filter(Boolean), assets: assets, manual_steps: $('f_manual').value.trim() || null
+      };
+    }
+    function wireCount() { var c = $('f_caption'), n = $('f_count'); if (!c || !n) return; var f = function () { n.textContent = c.value.length + ' characters' + (c.value.length > 2200 ? ' (Instagram stops at 2,200)' : ''); }; c.oninput = f; f(); }
+
+    function drawSlot(id) {
+      app.innerHTML = top('plan') + '<p class="msg">Reading the slot…</p>'; wireTop();
+      api({ action: 'slot_get', id: id }).then(function (r) {
+        if (r.error) { app.innerHTML = top('plan') + '<div class="err">' + esc(r.error === 'forbidden' ? 'You do not work on this brand.' : r.error === 'not_found' ? 'That slot is gone.' : r.error) + '</div>'; wireTop(); return; }
+        var x = r.slot, b = r.brand || {}, ed = r.role === 'editor';
+        setBrand(x.brand_slug);
+        var bi = brandOf(x.brand_slug) || b;
+        var wk = monday(eastDay(new Date(x.slot_at)));
+        var editable = ed && x.status !== 'posted';
+        var assets = (x.assets || []).filter(function (a) { return a && a.url; });
+        var urls = x.post_urls || {}, m = x.metrics || {};
+        var canApprove = ed && ['proposed', 'changes', 'failed', 'skipped'].indexOf(x.status) >= 0;
+        var canBack = ed && ['proposed', 'approved', 'scheduled', 'failed', 'manual'].indexOf(x.status) >= 0;
+        var canSkip = ed && ['posted', 'skipped'].indexOf(x.status) < 0;
+        app.innerHTML = top('plan') +
+          '<p class="crumb"><a href="#plan/' + x.brand_slug + '/' + wk + '">' + esc(bi.name || x.brand_slug) + '</a> <span>›</span> <a href="#plan/' + x.brand_slug + '/' + wk + '">Week of ' + esc(dayLabel(wk)) + '</a> <span>›</span> <span>' + esc((x.title || x.caption || 'Slot').slice(0, 60)) + '</span></p>' +
+          '<div class="two"><div>' +
+            '<div class="media panel">' + (assets.length ? assets.map(function (a, i) { return a.type === 'video' ? '<video controls preload="metadata" src="' + esc(a.url) + '"' + (i ? ' style="margin-top:8px"' : '') + '></video>' : '<img src="' + esc(a.url) + '" alt=""' + (i ? ' style="margin-top:8px"' : '') + '>'; }).join('') : '<div class="empty">No picture or video yet.</div>') + '</div>' +
+            (Object.keys(urls).length ? '<div class="panel"><h2>Where it went out</h2>' + Object.keys(urls).map(function (n) { return '<div><a href="' + esc(urls[n]) + '" target="_blank" rel="noopener">' + esc(netName(n)) + '</a></div>'; }).join('') + '</div>' : '') +
+            (Object.keys(m).length ? '<div class="panel"><h2>How it did</h2>' + Object.keys(m).map(function (n) { var mm = m[n] || {}; var ks = Object.keys(METRIC).filter(function (k) { return mm[k] != null; }); return '<p style="font-weight:800;margin:6px 0">' + esc(netName(n)) + '</p><div class="metrics">' + ks.map(function (k) { return '<div class="metric"><b>' + fmt(mm[k]) + '</b><span>' + METRIC[k] + '</span></div>'; }).join('') + '</div>'; }).join('') +
+              '<p class="msg" style="margin-top:8px">Updated ' + esc(x.metrics_at ? when(x.metrics_at) : '') + '. The numbers refresh every 15 minutes.</p></div>' : (x.status === 'posted' ? '<div class="panel"><h2>How it did</h2><p class="msg">The numbers arrive within the hour after it goes out.</p></div>' : '')) +
+            '<div class="panel"><h2>Notes</h2><div class="notes">' + (r.notes.length ? r.notes.map(function (n) {
+              return '<div class="nt' + (n.status === 'open' ? ' open' : '') + '"><div class="who">' + esc(n.author_name) + ' · ' + esc(when(n.created_at)) + (n.status === 'open' ? ' · Waiting on Logan' : ' · Done') + '</div><div style="white-space:pre-wrap">' + esc(n.body) + '</div>' +
+                (n.reply ? '<div class="rep"><b>' + esc(n.done_by || 'Logan') + ':</b> ' + esc(n.reply) + '</div>' : '') +
+                (me.admin && n.status === 'open' ? '<div class="acts"><input placeholder="What you did (optional)" data-reply="' + n.id + '"><button class="btn btn-ghost" type="button" data-done="' + n.id + '">Mark done</button></div>' : '') + '</div>';
+            }).join('') : '<p class="msg">No notes yet.</p>') + '</div>' +
+            '<label class="form"><span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep)">Leave a note for Logan</span><textarea id="note" placeholder="What should change? Logan makes it and replies here."></textarea></label>' +
+            (canBack ? '<label style="display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;margin-top:8px"><input type="checkbox" id="noteBack" style="width:auto"' + (x.status === 'proposed' ? ' checked' : '') + '> Hold it until the change is made (Changes asked)</label>' : '') +
+            '<div class="acts"><button class="btn" type="button" id="noteSend">Send note</button></div></div>' +
+          '</div><div>' +
+            '<div class="panel"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span><b>' + esc(when(x.slot_at, true)) + '</b>' + nets(x.channels, 18) + '</div>' +
+              (x.push_error ? '<div class="' + (x.status === 'failed' ? 'err' : 'warn') + '">' + esc(x.push_error) + '</div>' : '') +
+              (x.manual_steps ? '<div class="warn">By hand: ' + esc(x.manual_steps) + '</div>' : '') +
+              '<p class="msg">Proposed by ' + esc(x.proposed_by || 'Logan') + (x.approved_at ? ' · approved ' + esc(when(x.approved_at)) : '') + (x.metricool_post_id ? ' · in Metricool' : '') + '</p>' +
+              '<div class="acts">' + (canApprove ? '<button class="btn" type="button" id="approve">' + (bi.in_metricool || b.metricool_blog_id ? 'Approve and schedule' : 'Approve') + '</button>' : '') +
+                (canSkip ? '<button class="btn btn-warn" type="button" id="skip">Skip it</button>' : '') +
+                '<button class="btn btn-ghost" type="button" id="copy">Copy caption</button></div><p class="msg" id="smsg"></p></div>' +
+            '<div class="panel"><h2>' + (editable ? 'Change it directly' : 'The post') + '</h2>' + slotForm(x, b, editable) +
+              (editable ? '<div class="acts"><button class="btn" type="button" id="save">Save changes</button>' + (x.status === 'scheduled' ? '<span class="msg" style="margin:6px 0 0">Saving sends the change to Metricool.</span>' : '') + '</div><p class="msg" id="fmsg"></p>' : '') + '</div>' +
+            (r.edits.length ? '<div class="panel"><h2>History</h2><div class="hist">' + r.edits.map(function (e) { return '<div>' + esc(when(e.at)) + ' · ' + esc(e.by_name) + ' · ' + esc(e.field === 'status' ? 'set it to ' + (SS[e.new_value] || e.new_value) : e.field === 'pushed' ? 'sent it to Metricool' : e.field === 'created' ? 'made it' : 'changed the ' + e.field.replace('_', ' ')) + '</div>'; }).join('') + '</div></div>' : '') +
+          '</div></div>';
+        wireTop(); wireCount();
+        var say = function (id2, t, bad) { var e = $(id2); if (e) { e.className = 'msg' + (bad ? ' bad' : ''); e.textContent = t; } };
+        var after = function (res, okText) {
+          if (res && res.error) { say('smsg', res.error === 'time_passed' ? 'The time has passed. Pick a new time, save, then approve.' : (res.detail || res.error), true); return; }
+          refreshBrands(); drawSlot(id); setTimeout(function () { say('smsg', okText); }, 500);
+        };
+        var ap = $('approve'); if (ap) ap.onclick = function () { ap.disabled = true; ap.textContent = 'Sending…'; api({ action: 'approve', id: id }).then(function (res) { after(res, res.status === 'scheduled' ? 'Scheduled in Metricool.' : res.status === 'manual' ? 'Approved. Some or all of it is posted by hand; see the note above.' : 'Approved.'); }); };
+        var sk = $('skip'); if (sk) sk.onclick = function () { if (!confirm('Skip this one? It comes out of Metricool if it was scheduled.')) return; api({ action: 'skip', id: id }).then(function (res) { after(res, 'Skipped.'); }); };
+        $('copy').onclick = function () { var bt = this; (navigator.clipboard ? navigator.clipboard.writeText(x.caption || '') : Promise.reject()).then(function () { bt.textContent = 'Copied'; }, function () { bt.textContent = 'Copy failed'; }); };
+        var sv = $('save'); if (sv) sv.onclick = function () {
+          var f = readForm(); if (!f.slot_at) { say('fmsg', 'Pick a time.', true); return; }
+          sv.disabled = true; sv.textContent = 'Saving…';
+          api({ action: 'slot_save', id: id, fields: f }).then(function (res) {
+            if (res.error) { sv.disabled = false; sv.textContent = 'Save changes'; say('fmsg', res.error, true); return; }
+            drawSlot(id); setTimeout(function () { say('smsg', res.unchanged ? 'Nothing changed.' : res.repushed && res.repushed.error ? 'Saved, but Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : res.repushed ? 'Saved and sent to Metricool.' : 'Saved.', !!(res.repushed && res.repushed.error)); }, 500);
+          });
+        };
+        $('noteSend').onclick = function () {
+          var t = $('note').value.trim(); if (!t) return; var bt = this; bt.disabled = true;
+          api({ action: 'note_add', id: id, body: t, send_back: !!($('noteBack') && $('noteBack').checked) }).then(function (res) { if (res.error) { bt.disabled = false; return; } refreshBrands(); drawSlot(id); });
+        };
+        Array.prototype.forEach.call(app.querySelectorAll('[data-done]'), function (bt) { bt.onclick = function () { var nid = bt.getAttribute('data-done'); var rp = app.querySelector('[data-reply="' + nid + '"]'); api({ action: 'note_done', note_id: nid, reply: rp ? rp.value.trim() : '' }).then(function () { refreshBrands(); drawSlot(id); }); }; });
+      });
+    }
+
+    function drawNew(brand, day) {
+      setBrand(brand);
+      var b = brandOf(st.brand);
+      if (!me.admin || !b) { app.innerHTML = top('plan') + '<div class="empty">Only Logan and the super admins add slots.</div>'; wireTop(); return; }
+      var x = { slot_at: eastIso((day || eastDay(new Date())) + 'T12:00'), kind: 'post', channels: (b.channels || []).slice(), caption: '' };
+      app.innerHTML = top('plan') + '<p class="crumb"><a href="#plan/' + b.slug + '">' + esc(b.name) + '</a> <span>›</span> <span>New slot</span></p>' +
+        '<div class="panel" style="max-width:none">' + slotForm(x, b, true) + '<div class="acts"><button class="btn" id="create" type="button">Save as Waiting for approval</button></div><p class="msg" id="fmsg"></p></div>';
+      wireTop(); wireCount();
+      $('create').onclick = function () {
+        var f = readForm(); if (!f.slot_at) return;
+        api({ action: 'slot_save', brand: b.slug, fields: f }).then(function (res) { if (res.error) { $('fmsg').className = 'msg bad'; $('fmsg').textContent = res.error; return; } location.hash = '#slot/' + res.id; });
+      };
+    }
+
+    function drawNotes() {
+      if (!me.admin) { location.hash = '#plan/' + st.brand; return; }
+      app.innerHTML = top('notes') + '<p class="msg">Reading the notes…</p>'; wireTop();
+      api({ action: 'notes_open' }).then(function (r) {
+        var list = r.notes || [];
+        app.innerHTML = top('notes') + '<p class="sub">Notes the team left on slots, oldest first. Logan works through these: makes the change on the slot, then marks the note done with what he did.</p>' +
+          (list.length ? '<div class="grid">' + list.map(function (n) { var x = n.ve_social_slots || {}; var b = brandOf(x.brand_slug) || {}; return '<a class="tile" href="#slot/' + n.slot_id + '"><div class="body"><span class="when">' + esc(b.name || x.brand_slug) + ' · ' + esc(when(x.slot_at)) + '</span><span class="cap" style="font-weight:800">' + esc(x.title || x.caption || 'Slot') + '</span><span style="font-size:13px;white-space:pre-wrap">' + esc(n.body) + '</span><span class="nums"><span>' + esc(n.author_name) + ' · ' + esc(when(n.created_at)) + '</span><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span></span></div></a>'; }).join('') + '</div>' : '<div class="empty">No open notes.</div>');
+        wireTop();
+      });
+    }
+
     function route() {
-      var h = location.hash || '#content/scheduled/all', m;
-      ready(function () {
+      var h = location.hash || '#plan/' + st.brand, m;
+      if ((m = /^#plan\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?(?:\/([a-z]+))?$/.exec(h))) drawPlan(m[1], m[2], m[3]);
+      else if (h === '#plan') drawPlan(st.brand);
+      else if ((m = /^#slot\/([0-9a-f-]{36})$/.exec(h))) drawSlot(m[1]);
+      else if ((m = /^#new\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?$/.exec(h))) drawNew(m[1], m[2]);
+      else if (h === '#notes') drawNotes();
+      else ready(function () {
         if (data && data.error && !data.posts) { app.innerHTML = top('content'); wireTop(); return; }
+        if (data && data.not_connected) { app.innerHTML = top(/^#analytics/.test(h) ? 'analytics' : 'content') + '<div class="empty">' + esc((brandOf(st.brand) || {}).name || 'This brand') + ' is not in Metricool yet, so there is nothing live to show. Add the brand in Metricool and Logan connects it.</div>'; wireTop(); return; }
         if ((m = /^#post\/(.+)$/.exec(h))) drawPost(decodeURIComponent(m[1]));
         else if ((m = /^#analytics\/([a-z]+)$/.exec(h))) drawAnalytics(CH[m[1]] ? m[1] : 'all');
         else { m = /^#content\/(scheduled|past|all)\/([a-z]+)$/.exec(h) || [0, 'scheduled', 'all']; drawContent(m[1], CH[m[2]] ? m[2] : 'all'); }
@@ -316,11 +583,14 @@
     }
     function start() {
       if (!window.VEAuth) return setTimeout(start, 200);
-      var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
-      if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
-      app.hidden = false;
-      window.addEventListener('hashchange', route);
-      route();
+      if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').textContent = 'Sign in to see the social plan.'; return; }
+      refreshBrands().then(function (r) {
+        if (!brands.length) { $('gate').hidden = false; $('gate').textContent = r && r.error === 'not_authenticated' ? 'Sign in to see the social plan.' : 'You are not on any brand’s social team yet. Ask Sean to add you.'; return; }
+        if (!brandOf(st.brand)) st.brand = brands[0].slug;
+        app.hidden = false;
+        window.addEventListener('hashchange', route);
+        route();
+      });
     }
     start();
   })();
