@@ -316,14 +316,17 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .fam-menu a img,.fam-menu a .fam-ph{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#eef2ee}
 .fam-menu a[aria-current="page"]{color:var(--ve-green-dark)}
 .fam-menu a[aria-current="page"]::after{content:'';margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--ve-green)}
-/* Media and People pages on phones: the tab row is one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "Do the same
-   drop-down treatment for media", after the Directory's sub-sections). mobileTabMenu builds it from the tabs and follows them. */
+/* Every listing's tabs are one dropdown at every width (Sean, 2026-11-01: "Sometimes it runs long and I don't like how that looks...
+   a drop down and have those listed"; phones-only for media and People since 2026-10-31). mobileTabMenu builds it from the tabs
+   and follows them; with one tab the row shows as before. */
 .lt-sel{display:none}
+.listing-tabs.lt-has-sel{display:block;padding:14px 40px;overflow:visible}
+.listing-tabs.lt-has-sel>.tab-btn{display:none!important}
+.listing-tabs.lt-has-sel .lt-sel{display:block;width:100%;max-width:360px;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font:800 13px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
+.listing-tabs.lt-has-sel .lt-sel:focus{outline:none;border-color:var(--ve-green)}
 @media(max-width:768px){
-  .listing-tabs.lt-has-sel{display:block;padding:12px 16px;overflow:visible}
-  .listing-tabs.lt-has-sel>.tab-btn{display:none!important}
-  .listing-tabs.lt-has-sel .lt-sel{display:block;width:100%;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font:800 13px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
-  .listing-tabs.lt-has-sel .lt-sel:focus{outline:none;border-color:var(--ve-green)}
+  .listing-tabs.lt-has-sel{padding:12px 16px}
+  .listing-tabs.lt-has-sel .lt-sel{max-width:none}
 }
 .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}
 .bk-card{display:flex;flex-direction:column;gap:6px;text-align:left;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ve-text)}
@@ -5243,7 +5246,7 @@ if(!slug || slug === 'listing'){
       if(l.category === 'News Outlets' && !DEMO) loadNewsStories(l);
       if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
-      if(listingKind(l) === 'show' || listingKind(l) === 'work' || isPersonL(l)) mobileTabMenu();
+      mobileTabMenu();
       if(isPersonL(l)){ loadPerson(l); ppPromo(l); }
       else if(!l._brandSite) loadPartnerHome(l);
       // Always fetch menu items — show tab for any listing that has them
