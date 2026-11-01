@@ -212,10 +212,30 @@ Deno.serve(async (req) => {
       const x: any = V.get(v.member_id) || {}, l: any = P.get(v.listing_id) || {};
       return { at: v.at, member: { id: v.member_id, name: x.name || x.email || 'Member', avatar_url: x.avatar_url || null, color: x.color || null }, page: l.name || null, episode: v.episode };
     });
+    const { data: gifts } = await db.from('points_ledger').select('created_at, delta, ref_id').eq('member_id', id).eq('reason', 'admin_adjust').like('ref_id', 'founder:%').order('created_at', { ascending: false }).limit(10);
     return json({ ok: true, member: m, level: level || null, points: pts || null,
+      gifts: (gifts || []).map((g: any) => ({ at: g.created_at, amount: g.delta, note: String(g.ref_id || '').split(':').slice(2).join(':') })),
       counts: { votes: votesN.count || 0, votes_received: recv.count || 0, saves_received: (lsN.count || 0) + (epsN.count || 0), checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
       recent_votes: (recent || []).filter((r: any) => !isLr(r.listings)).slice(0, 8).map((r: any) => ({ at: r.created_at, name: r.listings?.name || null, slug: r.listings?.slug || null })),
       listings: (owned || []).map((l: any) => ({ name: l.name, slug: l.slug, owner: l.owner_member_id === id })), voted_by: votedBy, saved_by: savedBy });
+  }
+
+  // Give points to any member, from the member card (Sean, 2026-11-01: "If I wanted to give somebody points as the founder...").
+  // Spendable points through ve_points_grant (both balances, lifetime too), reason admin_adjust, ref founder:<uuid>:<note>.
+  if (body.action === 'give_points') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const id = String(body.member_id || '');
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: 'bad_member' }, 400);
+    const amount = Math.floor(Number(body.amount));
+    if (!Number.isFinite(amount) || amount < 1 || amount > 100000) return json({ error: 'bad_amount' }, 400);
+    const note = String(body.note || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+    const { data: t } = await db.from('members').select('id, is_superadmin, member_class').eq('id', id).maybeSingle();
+    if (!t) return json({ error: 'not_found' }, 404);
+    if (t.is_superadmin || t.member_class === 'agent') return json({ error: 'not_for_this_account' }, 400);
+    const { data, error } = await db.rpc('ve_points_grant', { p_member: id, p_amount: amount, p_reason: 'admin_adjust', p_ref: `founder:${crypto.randomUUID()}:${note}` });
+    if (error || data?.error) return json({ error: data?.error || 'grant_failed' }, 500);
+    const { data: pts } = await db.from('member_points').select('total_points, available_points').eq('member_id', id).limit(1).maybeSingle();
+    return json({ ok: true, granted: amount, points: pts || null });
   }
 
   if (body.action === 'leaderboard') {
