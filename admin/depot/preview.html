@@ -219,7 +219,7 @@
       // up and register"). From the invitation to their first day, for the profile picked above ({p} in a step's address). The Guide's
       // tabs open as your own account in that profile (?profile=, super admins only), so the points and link shown are yours.
       var GT = [['overview', 'Overview', 'Why they were picked, in their profile\u2019s words.'], ['why', 'Why it matters', 'The reasons, in their profile\u2019s order.'],
-        ['account', 'Your membership', 'On us: their points and level.'], ['role', 'Your role', 'What an Ambassador does.'], ['city', 'Your city', 'Their home chapter.'],
+        ['account', 'Your membership', 'Their membership, points and level.'], ['role', 'Your role', 'What an Ambassador does.'], ['city', 'Your city', 'Their home chapter.'],
         ['link', 'Your link', 'How it counts, and what it earns from Level 2.'], ['who', 'Who to invite', ''], ['share', 'What to share', 'Ready-made messages; their profile\u2019s comes first.'],
         ['questions', 'Answering questions', ''], ['progress', 'Your progress', 'Who joined through them.']];
       JOURNEYS.amb = {
@@ -227,7 +227,7 @@
         profile: true,
         steps: [
           { t: 'You invite them', d: 'Depot > Ambassadors > Invite an Ambassador: their name and email, level, points, profile and your note. Nothing sends until you press Send.', u: '/admin/depot/ambassadors#new', k: 'live' },
-          { t: 'The email they get', d: 'From you: your note, the Ambassador ask in their profile\u2019s words, what is on us, and Accept and get started. Shown with a sample person.', u: '/admin/depot/ambassadors#sample/{p}', k: 'pv' },
+          { t: 'The email they get', d: 'From you: your note, the Ambassador ask in their profile\u2019s words, the $11 and your points, the Founding Member deadline, and Accept and get started. Shown with a sample person.', u: '/admin/depot/ambassadors#sample/{p}', k: 'pv' },
           { t: 'Their invitation page', d: 'What Accept and get started opens: your note, their gift and level, and that it is for their email only.', u: '/invite?preview=open&profile={p}', k: 'pv' },
           { t: 'Making their account', d: 'Email or Continue with Google, with the email you invited. No checkout: the invitation covers it. It makes a real account, so it cannot be previewed.', k: 'na' },
           { t: 'If they use another email', d: 'The invitation works for their email only; the page says so and signs the other account out.', u: '/invite?preview=wrong&profile={p}', k: 'pv' },

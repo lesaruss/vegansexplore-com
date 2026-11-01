@@ -3535,9 +3535,33 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   migration `20261101_founding_member_deadline.sql`, playbook `ve-pricing-points-passport`). Anyone whose `entry_paid_at` is first set
   before `ve_founding_deadline()` (`ve_site_settings` `founding_member`, 2027-01-01T05:00Z) gets `founding_member` (trigger
   `trg_ve_founding_on_paid`; Guide accounts never); until that day only invitations set it, so paying members were unmarked (backfilled).
-  Comps already given stay. Not done yet (the playbook row lists it): the deadline in the site's words, Founding Member read from
-  `founding_member` on the member's own dashboard, "On us" out of the Depot's invitations, and Give points from the member card
-  (built on the branch, not deployed).
+  Comps already given stay. **Built and live the same day** (migration `20261101_founding_words_no_comps.sql`; `ve-dashboard` v17 and
+  `ve-invites` from commit 297fd8b, source sha256 matched):
+  - **Give points** on the dashboard's member card (super admins): quick picks 111, 500, 1,100, 2,500, 5,000, an amount and why, a
+    confirm, the last 10 gifts listed (`ve-dashboard` `give_points`: 1 to 100,000, `ve_points_grant` reason `admin_adjust`, ref
+    `founder:<uuid>:<note>`, refused for super admins and Guide accounts; `member_card` `gifts`).
+  - **Find a member** (Recent activity, first line, super admins): name, username or email, up to 20, an exact email first, Guide and
+    quarantined accounts left out (`ve-dashboard` `member_search`); a pick opens their card. `wireFindMember` in center-console.
+  - **The line**, "Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your
+    profile for good.", on the Passport Guide (Overview and Get your Passport, `FOUNDING_LINE`), the $11 window (`VE_FOUNDING_OPEN` in
+    `ve-auth.js`; after the deadline its title and button read Passport), `/policies#membership` (Founding Members), the Guides' facts
+    and the saved answer When can I become a Founding Member? (What is a Founding Member? reworded; the two answers about a membership
+    on us retired), the nav announcement, the dashboard welcome for non-members, the Founding Member and Ambassador invitation emails,
+    their follow-ups and `/invite`, and Depot > Founding Members. Every one of them drops the line by itself after the deadline.
+  - **The member's own dashboard reads `founding_member`**: the eyebrow says Founding Member, the plan Founding Member Passport and the
+    welcome "Thank you for being a Founding Member." only when it is set; any other active member reads Member, Passport and "Thank you
+    for being a member." (`ve-dashboard` `home` returns `founding_member` and `member_id`; `dashApplyFounding`).
+  - **No comps in the Depot**: On us is gone from Invites (its plain kind is now An invitation to join, at $11), Founding Members and
+    Ambassadors, and `ve-invites` `create` makes every founding, ambassador and plain invitation `comp` false while `founding_member.comps`
+    is false (`compsAllowed`). Nonprofit and Group Partner leads keep the membership their locked canon gives; dinner seats and the
+    Community Manager role keep their own choice for now (Sean's call).
+  - **An Ambassador invitation without a comp** (Logan's default, Sean's to change): someone who has not paid says yes (`accepted`), pays
+    the $11 on `/invite`, and on payment (`ve_founding_invite_paid`, through `universe_invite_claim`) becomes an Ambassador with the
+    level, profile and the points Sean set (reason `admin_adjust`, ref `invite:<id>`, on top of the Passport's 1,100); a member who
+    already paid becomes one at once. Founding Member comes only from paying before the deadline, never from an invitation. Proven
+    2026-11-01 in a rolled-back transaction.
+  - Still to do: Dani's recorded line on the Ambassador Guide's Your membership tab says the membership is on us (true for the comps
+    already given, not for a paid Ambassador): new words and a new recording need Sean.
 - **Every Guide is $11 or 1,100 points**, yours to keep (`ve_guides.access_rule = 'points'`, `cost_lesars` 1100;
   `ve-guide-unlock` `checkout` for $11, `unlock` for points; `ve_guide_purchase_paid` admits the buyer). Free Guides (the Welcome
   Guide, the Partner Guide) stay open to everyone.
