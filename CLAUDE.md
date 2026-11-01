@@ -3563,6 +3563,16 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   page at that store (`buy_url`), the store's search (`details.store.search_url`, used only when
   `search_checked` is `results` or `loads`; most chains block automated checks and say `blocked` until
   someone confirms the search in a browser), then the store's website.
+- **A chain shows only in the chapters where it has stores** (Sean, 2026-11-01: "we have Atlanta and there's like 20 different markets
+  listed. Are these all in Atlanta?"; migration `20261101_market_chain_footprints.sql`). A chain has no address, so it used to read as
+  online and show in every chapter. Its `communities` is now its footprint, checked on Google Places (486 searches, the chain's own store
+  in the chapter's metro; namesakes, offices and warehouses left out), and `everywhere()` in `ve-region-directory.js` keeps any listing
+  with no address that names its chapters in those chapters only (only Vegan Squad and VegFest Productions were affected besides the
+  chains). A chain with no store in any chapter (Jewel-Osco, Hannaford, QFC, H-E-B) is `['none']`: on All locations and its aisle, in no
+  chapter; the listing editor shows no chip for it, so saving its Chapters there drops it. Amazon and Instacart sell online and moved to
+  Products > E-Commerce & Marketplaces, every chapter (their Vegan aisles key off the tag, not the category). Each change is a
+  `ve_listing_edits` row. A new chain needs its footprint set when it is added, or it shows nowhere but All locations. Giant is Giant
+  Food (D.C., Delaware, Maryland, Virginia); The GIANT Company in Pennsylvania is a sister chain, not counted.
 - The Vegan aisle is one category at a time: department and category dropdowns, search, Sort by (most
   voted brand first), 12 cards then Show all. Each card opens the product's page.
 - Brand pages (Sean, 2026-10-08: "so we don't have like a thousand different pages let's just make it a little mini
