@@ -19,6 +19,7 @@
     :focus-visible{outline:3px solid #F69820;outline-offset:2px}
     main{max-width:none;margin:0;padding:36px 40px 80px}
     @media(max-width:700px){main{padding:24px 16px 64px}}
+    main a:not(.btn){color:var(--gd)}
     .crumbs{font-size:12.5px;font-weight:700;margin-bottom:10px}
     .crumbs a{color:var(--gd)}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gd)}
@@ -77,7 +78,7 @@
     var KINDS = {
       support_local: { title: 'Support Local', line: 'Check in at 3 Vegan places, do one thing from the check-in menu at each, and send a receipt at least once.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>' },
       connector: { title: 'The Connector', line: 'Bring 3 people in: they join with the $11 Passport through your own link.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c.3-2.3 1.7-4 4-4 1.7 0 3 1 3 3"/></svg>' },
-      advocate: { title: 'The Advocate', line: 'Go to a free event, visit or volunteer at a sanctuary or rescue, and share a Fosters or Rescues post.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>' }
+      advocate: { title: 'The Advocate', line: 'Go to a free event, visit or volunteer at a sanctuary or rescue, and share a rescue\'s post or page.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>' }
     };
     var TASK = { event: ['A free event', 'Go to a free event on our calendar and send a photo from it. A guest pass checked in at the door counts on its own.'],
       animals: ['A sanctuary or rescue', 'Visit or volunteer at a sanctuary, rescue or animal nonprofit, and send a photo.'],
@@ -222,12 +223,18 @@
     }
     function where() { return new Promise(function (ok, bad) { if (!navigator.geolocation) return bad({ why: 'no_geo' }); navigator.geolocation.getCurrentPosition(function (p) { ok(p.coords); }, function () { bad({ why: 'no_geo' }); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }); }); }
 
-    function drawLocal(c, live, sub) {
-      var p = c.progress || {}, ST = { approved: ['Counts', 'done'], pending: ['Waiting for our team', 'wait'], needs_menu: ['Send something from the menu', 'out'] };
+    function placesCard(p) {
+      var ST = { approved: ['Counts', 'done'], pending: ['Waiting for our team', 'wait'], needs_menu: ['Send something from the menu', 'out'] };
       var list = (p.items || []).length ? p.items.map(function (x) { var s = ST[x.state] || ST.needs_menu; return '<div class="item"><span><a href="/directory/' + esc(x.slug) + '">' + esc(x.name) + '</a>' + (x.receipt ? ' <small class="meta">· receipt</small>' : '') + '</span><span class="tag ' + s[1] + '">' + s[0] + '</span></div>'; }).join('') : '<p class="meta">No check-ins yet.</p>';
+      return '<h3>Your places</h3>' + list + '<p class="meta">' + (p.receipt ? 'Receipt: approved.' : 'Still needed: one receipt (I bought something) at any of them.') + '</p>';
+    }
+    // After a check-in or a send, the list on the right catches up.
+    function refreshPlaces() { call('ve-challenge', { action: 'state' }).then(function (d) { if (!d || !d.ok) return; S = d; var c = find('support_local'), el = document.getElementById('mine'); if (c && el) el.innerHTML = placesCard(c.progress || {}); }); }
+    function drawLocal(c, live, sub) {
+      var p = c.progress || {};
       app.innerHTML = head('support_local', c) + '<div class="two" style="margin-top:20px"><div class="card" id="ci"><h3>Check in where you are</h3>' +
         (live ? '<p class="meta">At a Vegan place now? We use your phone\'s location to find it (within 150 m). Then tell us what you are doing there.</p>' + (p.stops_month ? '<p class="meta"><b>This month only the Passport Challenge stops in your city count.</b></p>' : '') + '<div class="row"><button class="btn" id="near">Find places near me</button><span class="msg" id="nm"></span></div><div id="places"></div>' : '<p class="meta">This challenge is not running.</p>') +
-        '</div><div class="card"><h3>Your places</h3>' + list + '<p class="meta">' + (p.receipt ? 'Receipt: approved.' : 'Still needed: one receipt (I bought something) at any of them.') + '</p></div></div>';
+        '</div><div class="card" id="mine">' + placesCard(p) + '</div></div>';
       wire();
       var nb = document.getElementById('near'); if (!nb) return;
       nb.onclick = function () {
@@ -246,7 +253,7 @@
       var box = document.getElementById('places'), WHY = { too_far: 'You look too far away. Step outside or closer and try again.', not_precise: 'Your location is not precise enough yet. Try again in a moment.', already_today: 'already', members_only: 'Start Support Local first.' };
       box.innerHTML = '<p class="meta">Checking you in at ' + esc(place.name) + '...</p>';
       call('ve-checkin', { action: 'checkin', listing_id: place.id, lat: pos.latitude, lng: pos.longitude, accuracy: pos.accuracy }).then(function (d) {
-        if (d && (d.ok || d.why === 'already_today')) return call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t) { menu(place, t); });
+        if (d && (d.ok || d.why === 'already_today')) return call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t) { menu(place, t); refreshPlaces(); });
         box.innerHTML = '<p class="msg err">' + esc((d && WHY[d.why]) || 'That check-in did not go through.') + '</p>';
       });
     }
@@ -273,7 +280,7 @@
               p = shrink(el.files[0]).then(function (blob) { return call('ve-checkin', { action: 'photo_start', checkin_id: t.checkin.id, kind: k }).then(function (s) { if (!s || !s.upload_url) throw s; return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: blob }).then(function (r) { if (!r.ok) throw {}; return send({ photo_path: s.path }); }); }); });
             } else p = send(k === 'post' ? { post_url: el.value.trim() } : { body: el.value.trim() });
             p.then(function (d) {
-              if (d && d.ok) { call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t2) { menu(place, t2); }); return; }
+              if (d && d.ok) { call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t2) { menu(place, t2); refreshPlaces(); }); return; }
               go.disabled = false; mm.className = 'msg err'; mm.textContent = ({ post_link: 'That needs to be an Instagram or TikTok link.', shoutout_length: 'Write 10 to 280 characters.', closed: 'This check-in has closed.' })[d && d.why] || 'That did not go through.';
             }, function () { go.disabled = false; mm.className = 'msg err'; mm.textContent = 'That did not upload. Try again.'; });
           };
