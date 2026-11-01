@@ -329,8 +329,8 @@
     var veganHtml = '<span class="sb-f"><span class="geo-label">Vegan</span>' +
       '<select aria-label="Filter by how Vegan" class="sort-select" data-vrd-vegan="' + cat.key + '">' +
       '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Vegan options</option></select></span>';
+    // No Online choice (Sean, 2026-11-01): a card never says Online, and where a business sells is on its own page.
     var typeOptions = '<option value="">All</option>' +
-      '<option value="online">Online</option>' +
       '<option value="closed">Closed</option>';
     if (BRAND.vegan === false) veganHtml = '';
     var typeHtml = veganHtml + '<span class="sb-f"><span class="geo-label">Type</span>' +

@@ -2316,7 +2316,8 @@ see everything and then filter for what they want... the products are the produc
   don't need to see online... If it is sold in only certain places, that could be reflected inside of the profile"): in Products a card
   has no city, Online or Every chapter line, and its label is the Products shelf it sits on (`shelfOf`; Mama Chea Cafe reads Food & Drink
   · Nutrition & Supplements there, Restaurants in Local Food). `makeBrowseCard` / `makeClosedCard` take the section (`cfg.everywhere`).
-  Local Food keeps the city; selling online, or only in some places, is said on the listing itself.
+  Local Food keeps the city; selling online, or only in some places, is said on the listing itself. The Type filter has no Online
+  choice anywhere (All and Closed; Sean, 2026-11-01).
 - **Both shelves**: a local business with a product line keeps its local main category and adds Food Brands under Also show it under; a
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
