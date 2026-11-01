@@ -168,7 +168,19 @@
     '.vev-tabs button[aria-pressed="true"]{color:#1a1a1a;border-bottom-color:var(--vb-accent,#5EC47A);}',
     '.vev-tabs button:hover:not([aria-pressed="true"]){color:#333;border-bottom-color:#ccc;}',
     '.vev-bar{position:relative;display:flex;align-items:center;gap:16px;margin-bottom:14px;}',
-    '.vev-bar .vev-search{flex:1 1 auto;min-width:0;}',
+    '.vev-bar .vev-search{flex:1 1 auto;min-width:160px;}',
+    // Live filters as pills (Sean, 2026-11-01, the Directory's rule on Events): tap a pill to turn it off and on, its x to take it away.
+    '.vev-chips{flex:0 1 auto;display:flex;gap:8px;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:none;}',
+    '.vev-chips:empty{display:none;}.vev-chips::-webkit-scrollbar{display:none;}',
+    '.vev-chip{flex:0 0 auto;display:inline-flex;align-items:center;height:32px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;}',
+    '.vev-chip button{font-family:inherit;font-size:inherit;font-weight:inherit;color:inherit;background:transparent;border:0;cursor:pointer;height:100%;}',
+    '.vev-chip .lbl{padding:0 6px 0 12px;}.vev-chip .x{padding:0 10px 0 4px;font-size:15px;line-height:1;}',
+    '.vev-chip:hover{border-color:var(--vb-accent-ink,#2d7a4f);}',
+    '.vev-chip.off{background:#f4f4f4;border-color:#e0e0e0;color:#888;}.vev-chip.off .lbl{text-decoration:line-through;}',
+    '.vev-kindbox{display:flex;flex-wrap:wrap;gap:8px;}',
+    '.vev-kindbox button{font-family:inherit;font-size:12px;font-weight:700;height:34px;padding:0 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,.14);background:#fff;color:#333;cursor:pointer;}',
+    '.vev-kindbox button[aria-pressed="true"]{background:var(--vb-go,#2d7d31);border-color:var(--vb-go,#2d7d31);color:#fff;}',
+    '.vev-psec[hidden]{display:none;}',
     '.vev-fbtn{flex:0 0 auto;min-width:132px;height:46px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;}',
     '.vev-fbtn:hover,.vev-fbtn[aria-expanded="true"]{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f);}',
     '.vev-fbtn[aria-expanded="true"]{background:var(--vb-soft,#f0faf4);}',
@@ -187,7 +199,7 @@
     '.vev-pf select{width:100%;min-width:0;height:40px;padding:0 44px 0 12px;font-size:12px;}',
     '.vev-pf select:disabled{background-color:#f4f4f4;color:#999;cursor:not-allowed;border-color:#e6e6e6;}',
     '.vev-pfoot{display:flex;justify-content:flex-end;gap:10px;padding:12px 20px;border-top:1px solid #eee;background:#fafafa;}',
-    '@media(max-width:600px){.vev-bar{flex-wrap:wrap;gap:10px}.vev-bar .vev-search{flex:1 1 100%;order:-1}.vev-fbtn{flex:1 1 auto}.vev-pgrid{grid-template-columns:minmax(0,1fr);gap:12px}.vev-psec{padding:16px}.vev-pfoot{padding:12px 16px}.vev-pfoot .vev-btn{flex:1 1 0}}',
+    '@media(max-width:600px){.vev-bar{flex-wrap:wrap;gap:10px}.vev-bar .vev-search{flex:1 1 100%;order:-1}.vev-chips{flex:1 1 100%;flex-wrap:wrap;overflow:visible}.vev-fbtn{flex:1 1 auto}.vev-pgrid{grid-template-columns:minmax(0,1fr);gap:12px}.vev-psec{padding:16px}.vev-pfoot{padding:12px 16px}.vev-pfoot .vev-btn{flex:1 1 0}}',
     // The dashboard's event row (center-console .event-row), one look everywhere.
     '.vev-row{display:flex;align-items:stretch;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;overflow:hidden;margin-bottom:10px;background:#fff;transition:border-color .15s,box-shadow .15s;}',
     '.vev-row:hover{border-color:var(--vb-go,#2d7d31);box-shadow:0 3px 14px rgba(0,0,0,.06);}',
@@ -423,6 +435,11 @@
 
     // push: a new step in the history (the kind, Upcoming / Past), so back moves through them and Google counts each one; typing
     // and sorting replace the address in place.
+    // Kinds picked in Filters (menu mode): st.cat holds them comma separated (the address's ?cat=), st.off the ones paused by a tap.
+    st.off = {};
+    function picked() { return String(st.cat || '').split(',').filter(Boolean); }
+    function onKinds() { return picked().filter(function (k) { return !st.off[k]; }); }
+    function setPicked(list) { st.cat = list.join(','); Object.keys(st.off).forEach(function (k) { if (list.indexOf(k) < 0) delete st.off[k]; }); }
     function syncUrl(push) {
       if (!urlOn()) return;
       var q = new URLSearchParams(location.search);
@@ -462,7 +479,8 @@
         if (st.where) {
           if (st.where.indexOf('c:') === 0 ? continentOf(e) !== st.where.slice(2) : norm(e.country) !== st.where) return false;
         }
-        if (!skipCat && st.cat && (e.category || 'other') !== st.cat) return false;
+        if (!skipCat && menu) { var on = onKinds(); if (on.length && on.indexOf(e.category || 'other') < 0) return false; }
+        else if (!skipCat && st.cat && (e.category || 'other') !== st.cat) return false;
         if (words.length) {
           var f = e.funding || {};
           var hay = [e.title, e.description, e.location_name, e.city, e.state, countryName(e.country), catLabel(e.category), f.offered_by, f.amount, f.eligibility].join(' ').toLowerCase();
@@ -531,7 +549,7 @@
       var tag = el.querySelector('[data-v="ltag"]'), n = locName();
       if (tag) { tag.hidden = !n; tag.querySelector('[data-v="lname"]').textContent = n; tag.setAttribute('aria-label', 'Showing ' + n + '. Show every location'); }
       var cnt = el.querySelector('.vev-fcount');
-      if (cnt) { var k = st.sort !== 'date' ? 1 : 0; cnt.textContent = k; cnt.hidden = !k; }
+      if (cnt) { var k = (st.sort !== 'date' ? 1 : 0) + onKinds().length; cnt.textContent = k; cnt.hidden = !k; }
     }
     function locChanged() {
       paintLoc(); st.shown = 40; drawRows();
@@ -552,6 +570,7 @@
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
             '<input type="search" data-v="q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
           '<button type="button" class="vev-ltag" data-v="ltag" hidden title="Show every location">' + pin + '<span data-v="lname"></span><span class="x" aria-hidden="true">&times;</span></button>' +
+          '<div class="vev-chips" data-v="chips" role="group" aria-label="Filters on"></div>' +
           '<button type="button" class="vev-fbtn" data-v="fbtn" aria-expanded="false" aria-controls="' + popId + '" title="Location and sort">' +
             '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
             '<span>Filters</span><span class="vev-fcount" hidden></span></button>' +
@@ -559,6 +578,7 @@
             '<div class="vev-psec"><div class="vev-ph">Location</div><div class="vev-pgrid">' +
               [['continent', 'Continent'], ['country', 'Country'], ['chapter', 'Chapter']].map(function (x) { return '<label class="vev-pf"><span>' + x[1] + '</span><select data-loc="' + x[0] + '" aria-label="' + x[1] + '"></select></label>'; }).join('') +
             '</div></div>' +
+            '<div class="vev-psec" data-v="kindsec" hidden><div class="vev-ph">Kind of event</div><div class="vev-kindbox" data-v="kinds" role="group" aria-label="Kind of event"></div></div>' +
             '<div class="vev-psec"><div class="vev-ph">Sort</div><div class="vev-pgrid"><label class="vev-pf"><span>Sort by</span><select data-v="sort" aria-label="Sort by"><option value="date">Soonest</option><option value="city">City, A to Z</option></select></label></div></div>' +
             '<div class="vev-pfoot"><button type="button" class="vev-btn ghost" data-v="reset">Reset filters</button><button type="button" class="vev-btn green" data-v="done">Done</button></div>' +
           '</div>' +
@@ -571,7 +591,19 @@
       fbtn.addEventListener('click', function () { var open = pop.hidden; pop.hidden = !open; fbtn.setAttribute('aria-expanded', open ? 'true' : 'false'); if (open) { var f = pop.querySelector('select:not(:disabled)'); if (f) f.focus(); } });
       pop.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { close(); fbtn.focus(); } });
       el.querySelector('[data-v="done"]').addEventListener('click', function () { close(); fbtn.focus(); });
-      el.querySelector('[data-v="reset"]').addEventListener('click', function () { st.sort = 'date'; sortSel.value = 'date'; syncUrl(); paintLoc(); drawRows(); });
+      el.querySelector('[data-v="reset"]').addEventListener('click', function () { st.sort = 'date'; sortSel.value = 'date'; setPicked([]); st.off = {}; syncUrl(); paintLoc(); drawRows(); });
+      var kindsChanged = function () { st.shown = 40; syncUrl(true); paintLoc(); drawRows(); };
+      el.querySelector('[data-v="kinds"]').addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-kind]'); if (!b) return;
+        var k = b.getAttribute('data-kind'), list = picked(), i = list.indexOf(k);
+        if (i < 0) list.push(k); else list.splice(i, 1);
+        delete st.off[k]; setPicked(list); kindsChanged();
+      });
+      el.querySelector('[data-v="chips"]').addEventListener('click', function (ev) {
+        var x = ev.target.closest('[data-chipx]'), t = ev.target.closest('[data-chip]');
+        if (x) { var k = x.getAttribute('data-chipx'); setPicked(picked().filter(function (v) { return v !== k; })); delete st.off[k]; kindsChanged(); }
+        else if (t) { var k2 = t.getAttribute('data-chip'); if (st.off[k2]) delete st.off[k2]; else st.off[k2] = true; st.shown = 40; paintLoc(); drawRows(); }
+      });
       sortSel.addEventListener('change', function () { st.sort = sortSel.value; syncUrl(); paintLoc(); drawRows(); });
       el.querySelectorAll('[data-loc]').forEach(function (sel) { sel.addEventListener('change', function () { setLevel(sel.getAttribute('data-loc'), sel.value); locChanged(); }); });
       el.querySelector('[data-v="ltag"]').addEventListener('click', function () { setLevel('continent', ''); locChanged(); });
@@ -622,13 +654,31 @@
       drawRows();
     }
 
+    function paintKinds(keys) {
+      var box = el.querySelector('[data-v="kinds"]'), sec = el.querySelector('[data-v="kindsec"]'), chips = el.querySelector('[data-v="chips"]');
+      var pk = picked();
+      if (box) {
+        sec.hidden = !keys.length;
+        box.innerHTML = keys.map(function (k) { return '<button type="button" data-kind="' + esc(k) + '" aria-pressed="' + (pk.indexOf(k) >= 0) + '">' + esc(catLabel(k)) + '</button>'; }).join('');
+      }
+      if (chips) chips.innerHTML = pk.map(function (k) {
+        var off = !!st.off[k], l = esc(catLabel(k));
+        return '<span class="vev-chip' + (off ? ' off' : '') + '"><button type="button" class="lbl" data-chip="' + esc(k) + '" aria-pressed="' + !off + '" title="' + (off ? 'Turn ' + l + ' back on' : 'Turn ' + l + ' off for now') + '">' + l + '</button>' +
+          '<button type="button" class="x" data-chipx="' + esc(k) + '" aria-label="Remove ' + l + '">&times;</button></span>';
+      }).join('');
+      var cnt = el.querySelector('.vev-fcount');
+      if (cnt) { var n = (st.sort !== 'date' ? 1 : 0) + onKinds().length; cnt.textContent = n; cnt.hidden = !n; }
+    }
     function drawRows() {
       if (!all) return;
       var pills = el.querySelector('[data-v="pills"]'), cats = {};
       filtered(true).forEach(function (e) { cats[e.category || 'other'] = 1; });
       var keys = Object.keys(cats).sort(function (a, b) { return catLabel(a).localeCompare(catLabel(b)); });
-      if (st.cat && keys.indexOf(st.cat) < 0) keys.push(st.cat);
-      if (menu && opts.onState) opts.onState({ cat: st.cat, catLabel: st.cat ? catLabel(st.cat) : 'All events', location: locName(), chapter: st.city,
+      if (menu) picked().forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
+      else if (st.cat && keys.indexOf(st.cat) < 0) keys.push(st.cat);
+      if (menu) paintKinds(keys);
+      var onK = menu ? onKinds() : [];
+      if (menu && opts.onState) opts.onState({ cat: onK.length === 1 ? onK[0] : '', catLabel: !onK.length ? 'All events' : onK.length === 1 ? catLabel(onK[0]) : onK.length + ' kinds', location: locName(), chapter: st.city,
         kinds: [{ value: '', label: 'All events' }].concat(keys.map(function (k) { return { value: k, label: catLabel(k) }; })) });
       if (pills) pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">' + (fund() ? 'All funding' : 'All kinds') + '</button>'].concat(keys.map(function (k) {
         return '<button type="button" class="vev-pill" data-cat="' + esc(k) + '" aria-pressed="' + (st.cat === k) + '">' + esc(catLabel(k)) + '</button>';
@@ -669,7 +719,7 @@
           if (k === 'submit') go('#submit/1');
           else if (k === 'more') { st.shown += 40; drawRows(); }
           else {
-            st.q = ''; st.cat = ''; st.where = ''; syncUrl();
+            st.q = ''; st.cat = ''; st.off = {}; st.where = ''; syncUrl();
             if (menu && locName()) { setLevel('continent', ''); if (opts.onLocation) opts.onLocation(locNow(), null); }
             drawList();
           }
@@ -1343,11 +1393,11 @@
         st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash) && !qEvent()) drawRows();
       },
       // The menu layout: the banner's kind of event, and where the filter's location stands.
-      setCat: function (k) { st.cat = k || ''; st.shown = 40; syncUrl(true); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash) || qEvent()) go(''); else drawRows(); },
+      setCat: function (k) { st.cat = k || ''; st.off = {}; st.shown = 40; syncUrl(true); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash) || qEvent()) go(''); else drawRows(); },
       location: function () { return locNow(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.
-      home: function () { st.q = ''; st.where = ''; st.cat = ''; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
+      home: function () { st.q = ''; st.where = ''; st.cat = ''; st.off = {}; st.when = 'upcoming'; st.sort = 'date'; st.shown = 40; syncUrl(); go(''); },
       event: function (id) { goEvent(id); },
       reload: function () { return load().then(drawRows); },
       // Events or Funding (LESARUSS.ai's banner picker): another list from the same engine.

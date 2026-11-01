@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earn your Passport — Vegans Explore</title>
+  <meta name="description" content="Three challenges, 30 days each: support local Vegan places, bring friends in, or stand up for the animals, and earn your Vegans Explore Passport instead of paying for it.">
+  <link rel="canonical" href="https://vegansexplore.com/challenges">
+  <meta property="og:title" content="Earn your Passport — Vegans Explore">
+  <meta property="og:description" content="Support local, bring friends in, or stand up for the animals. Finish one challenge and your membership is earned.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--g:#2d7d31;--gd:#1f5f22;--gl:#eaf7ea;--ink:#1a1a1a;--mute:rgba(26,26,26,.72);--line:rgba(0,0,0,.1)}
+    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--ink);line-height:1.6}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px}
+    main{max-width:none;margin:0;padding:36px 40px 80px}
+    @media(max-width:700px){main{padding:24px 16px 64px}}
+    main a:not(.btn){color:var(--gd)}
+    .crumbs{font-size:12.5px;font-weight:700;margin-bottom:10px}
+    .crumbs a{color:var(--gd)}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gd)}
+    h1{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1.1;margin:6px 0 10px}
+    h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin:26px 0 12px}
+    h3{font-size:18px;font-weight:900;line-height:1.25}
+    .sub{font-size:15.5px;color:var(--mute);max-width:860px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:10px}
+    .card .ico{width:46px;height:46px;border-radius:10px;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center}
+    .card ul{padding-left:18px;font-size:14px;color:var(--mute)}
+    .meta{font-size:13px;color:var(--mute)}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--gd);align-self:flex-start}
+    .tag.wait{background:#fff4e2;color:#6b3f00}.tag.out{background:#fbeeec;color:#8a1c12}.tag.done{background:var(--gd);color:#fff}
+    .bar{height:8px;border-radius:6px;background:#e4ebe4;overflow:hidden}.bar i{display:block;height:100%;background:var(--g)}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 16px;border-radius:6px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--gd);color:#fff;text-decoration:none}
+    .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid #ccd3cc}
+    .btn:disabled{opacity:.55;cursor:wait}
+    .msg{font-size:13px;font-weight:700;color:var(--gd);min-height:18px}.msg.err{color:#8a1c12}
+    .banner{background:linear-gradient(135deg,#1f5f22,#2d7d31 60%,#3A9B3E);color:#fff;border-radius:14px;padding:20px 22px;margin:18px 0 6px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .banner .meta{color:rgba(255,255,255,.88)}.banner .btn{background:#fff;color:var(--gd)}
+    .two{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start}
+    @media(max-width:900px){.two{grid-template-columns:1fr}}
+    .item{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--line);font-size:14.5px}
+    .item:first-child{border-top:0}
+    label{display:block;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+    input[type=text],input[type=url],input[type=password],input[type=search],textarea{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff}
+    textarea{min-height:90px}
+    .pick{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;margin-top:8px;background:#fff}
+    .pick button{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:10px 12px;border:0;border-top:1px solid var(--line);background:#fff;cursor:pointer}
+    .pick button:first-child{border-top:0}.pick button.on{background:var(--gl);font-weight:800}
+    .pick small{display:block;color:var(--mute);font-size:12px}
+    .link{font-family:ui-monospace,Menlo,monospace;font-size:15px;background:var(--gl);border-radius:8px;padding:10px 12px;word-break:break-all}
+    .badge{display:inline-flex;gap:8px;align-items:center;background:#fff4e2;color:#6b3f00;font-weight:900;font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:6px 10px;border-radius:6px}
+    .empty{font-size:14.5px;color:var(--mute);background:#fff;border:1px dashed var(--line);border-radius:12px;padding:18px}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main id="app" aria-live="polite"><p class="sub">Loading...</p></main>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/footer.js"></script>
+  </div>
+  <script>
+  // Earn your Passport (Sean, 2026-11-01, canon canon-ve-earn-your-passport): the three challenges. Talks to ve-challenge with the
+  // challenger's own session (localStorage ve_challenge_token, made at Start from the Taster key), never the site's sign-in, so the
+  // rest of the site still treats a challenger as signed out until they are a member.
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/';
+    var app = document.getElementById('app');
+    var S = null, busy = false;
+    var KINDS = {
+      support_local: { title: 'Support Local', line: 'Check in at 3 Vegan places, do one thing from the check-in menu at each, and send a receipt at least once.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>' },
+      connector: { title: 'The Connector', line: 'Bring 3 people in: they join with the $11 Passport through your own link.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="10" r="2.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M14 20c.3-2.3 1.7-4 4-4 1.7 0 3 1 3 3"/></svg>' },
+      advocate: { title: 'The Advocate', line: 'Go to a free event, visit or volunteer at a sanctuary or rescue, and share a rescue\'s post or page.', ico: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>' }
+    };
+    var TASK = { event: ['A free event', 'Go to a free event on our calendar and send a photo from it. A guest pass checked in at the door counts on its own.'],
+      animals: ['A sanctuary or rescue', 'Visit or volunteer at a sanctuary, rescue or animal nonprofit, and send a photo.'],
+      share: ['Share a post', 'Share a post from the Fosters or Rescues board, or a rescue or sanctuary from our Directory, and send us the link to where you shared it.'] };
+    var STATE = { approved: ['Approved', 'done'], pending: ['Waiting for our team', 'wait'], declined: ['Not approved, send another', 'out'], open: ['To do', ''] };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) { return null; } }
+    function memberTok() { return ls('ve_challenge_token') || (window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : null); }
+    function call(fn, b) {
+      var h = { 'Content-Type': 'application/json' }, t = memberTok();
+      if (t) h.Authorization = 'Bearer ' + t;
+      if (fn === 've-challenge' && ls('ve_taster')) b.taster = ls('ve_taster');
+      return fetch(FN + fn, { method: 'POST', headers: h, body: JSON.stringify(b) }).then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.token) ls('ve_challenge_token', d.token);
+        return d;
+      });
+    }
+    function route() { var h = location.hash.replace(/^#\/?/, ''); return h.split('/'); }
+    function days(c) { var d = Math.ceil((Date.parse(c.ends_at) - Date.now()) / 864e5); return d > 1 ? d + ' days left' : d === 1 ? '1 day left' : 'Ends today'; }
+    function find(kind) { return (S && S.challenges || []).filter(function (c) { return c.kind === kind; })[0]; }
+    function pct(p) { return p && p.need ? Math.min(100, Math.round(100 * p.have / p.need)) : 0; }
+    function crumbs(t) { return '<p class="crumbs"><a href="#">Earn your Passport</a>' + (t ? ' / ' + esc(t) : '') + '</p>'; }
+
+    function load() {
+      var q = new URLSearchParams(location.search), t = q.get('t');
+      var first = Promise.resolve();
+      if (t) { ls('ve_taster', t); first = fetch(FN + 've-taster', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'confirm', token: t }) }).catch(function () {}); history.replaceState(null, '', location.pathname + location.hash); }
+      return first.then(function () {
+        if (!memberTok() && !ls('ve_taster')) { S = { none: true }; return; }
+        return call('ve-challenge', { action: 'state' }).then(function (d) {
+          if (d && d.why === 'sign_in') { ls('ve_challenge_token', null); S = { signin: d }; return; }
+          if (d && d.error === 'not_authenticated' || d && d.error === 'bad_token') { ls('ve_challenge_token', null); S = { none: true }; return; }
+          S = d || { none: true };
+        });
+      }).then(draw, function () { app.innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; });
+    }
+
+    function draw() {
+      var r = route();
+      if (S && S.ok && r[0] === 'c' && KINDS[r[1]] && find(r[1])) return drawOne(r[1], r[2]);
+      drawHome();
+    }
+
+    function intro() {
+      return '<p class="eyebrow">Earn your Passport</p><h1>Do something for the community, and your membership is earned</h1>' +
+        '<p class="sub">Three challenges, 30 days each. Finish one and your Vegans Explore Passport is yours, the same membership as the $11 one. Finish all three and you are a member with 2,200 points to spend and the Trailblazer badge on your profile. Everything is checked by our team before it counts.</p>';
+    }
+    function cards(startable) {
+      return '<div class="grid" style="margin-top:18px">' + Object.keys(KINDS).map(function (k) {
+        var K = KINDS[k], c = S && S.challenges ? find(k) : null, p = c && c.progress, tag = '', act = '';
+        if (!c) { tag = '<span class="tag">1,100 points</span>'; act = startable ? '<button class="btn" data-start="' + k + '">Start</button>' : ''; }
+        else if (c.status === 'done') { tag = '<span class="tag done">Done</span>'; act = '<a class="btn ghost" href="#c/' + k + '">See it</a>'; }
+        else if (c.status === 'expired') { tag = '<span class="tag out">Time ran out</span>'; act = (c.can_restart ? '<button class="btn" data-restart="' + k + '">Restart, 30 more days</button>' : '') + '<a class="btn ghost" href="#c/' + k + '">See it</a>'; }
+        else { tag = '<span class="tag wait">Running · ' + esc(days(c)) + '</span>'; act = '<a class="btn" href="#c/' + k + '">Keep going</a>'; }
+        return '<div class="card"><div class="ico">' + K.ico + '</div><h3>' + esc(K.title) + '</h3>' + tag + '<p class="meta">' + esc(K.line) + '</p>' +
+          (p ? '<div class="bar" aria-label="' + p.have + ' of ' + p.need + '"><i style="width:' + pct(p) + '%"></i></div><p class="meta">' + p.have + ' of ' + p.need + ' approved</p>' : '') +
+          '<div class="row">' + act + '</div></div>';
+      }).join('') + '</div>';
+    }
+
+    function drawHome() {
+      if (!S || S.none) {
+        app.innerHTML = intro() + cards(false) + '<div class="banner"><div><b>Start with your Taste</b><p class="meta">Give us your name and email for A Taste of Vegans Explore. Open the link we email you, then come back here and press Start.</p></div><a class="btn" href="/guides/taste?from=challenges">Get your Taste</a></div>' +
+          '<p class="meta" style="margin-top:10px">Already started? Open the link in your Taste email on this phone or computer. Rather pay? <a href="/passport?from=challenges">The Passport is $11, one time</a>.</p>';
+        return;
+      }
+      if (S.signin) {
+        app.innerHTML = intro() + '<div class="banner"><div><b>Your account is ready</b><p class="meta">' + esc(S.signin.message || '') + '</p></div><a class="btn" href="/login?next=/challenges">Sign in</a></div>';
+        return;
+      }
+      if (S.ok && S.account === false) {
+        var conf = S.taster && S.taster.confirmed;
+        app.innerHTML = intro() + (conf ? cards(true) : cards(false) + '<div class="banner"><div><b>One step first</b><p class="meta">Open the link we emailed you, ' + esc(S.taster ? S.taster.name.split(' ')[0] : '') + ', so we know the email is yours. Then come back and press Start.</p></div></div>');
+        wire(); return;
+      }
+      var top = '';
+      if (S.active && S.challenges.some(function (c) { return c.made_member; })) {
+        top = '<div class="banner"><div><b>Your Passport is earned' + (S.founding ? ', Founding Member' : '') + '</b><p class="meta">You are a Vegans Explore member. Finish the others for 1,100 points each' + (S.trailblazer ? '' : ' and the Trailblazer badge') + '.</p></div>' + (S.trailblazer ? '<span class="badge">Trailblazer</span>' : '<a class="btn" href="/dashboard">Open your dashboard</a>') + '</div>';
+        if (S.needs_password) top += '<div class="card" style="margin-top:12px"><h3>Set your password</h3><p class="meta">So you can sign in anywhere with ' + esc(S.member.email) + '. Or use Continue with Google with the same email.</p><label for="pw">Password (8 or more characters)</label><input type="password" id="pw" autocomplete="new-password"><div class="row"><button class="btn" id="pwgo">Save password</button><span class="msg" id="pwm"></span></div></div>';
+      } else if (S.active && !S.can_take) {
+        top = '<div class="banner"><div><b>You are already a member</b><p class="meta">The challenges are how people earn their way in. Your Passport is open, and your points and level grow the usual ways.</p></div><a class="btn" href="/dashboard">Your dashboard</a></div>';
+      } else {
+        top = '<p class="meta" style="margin-top:6px">Signed in as ' + esc(S.member.name) + ' (' + esc(S.member.email) + '). Pick one, two or all three. Each runs 30 days from Start and can restart once.</p>';
+      }
+      app.innerHTML = intro() + top + cards(S.can_take);
+      wire();
+    }
+
+    function wire() {
+      app.querySelectorAll('[data-start],[data-restart]').forEach(function (b) {
+        b.onclick = function () {
+          if (busy) return; busy = true; b.disabled = true;
+          var k = b.getAttribute('data-start') || b.getAttribute('data-restart');
+          call('ve-challenge', { action: b.hasAttribute('data-start') ? 'start' : 'restart', kind: k }).then(function (d) {
+            busy = false;
+            if (d && d.ok) { S = d; location.hash = 'c/' + k; draw(); return; }
+            b.disabled = false; alert((d && d.message) || 'That did not go through. Try again.');
+          }, function () { busy = false; b.disabled = false; });
+        };
+      });
+      var pw = document.getElementById('pwgo');
+      if (pw) pw.onclick = function () {
+        pw.disabled = true;
+        call('ve-challenge', { action: 'set_password', password: document.getElementById('pw').value }).then(function (d) {
+          if (d && d.ok) { if (window.VEAuth && VEAuth.setSession) VEAuth.setSession(d.token, d.member); load(); return; }
+          pw.disabled = false; var m = document.getElementById('pwm'); m.className = 'msg err'; m.textContent = (d && d.message) || 'That did not save.';
+        });
+      };
+    }
+
+    // ---------- One challenge ----------
+    function head(k, c) {
+      var p = c.progress || {}, st = c.status === 'done' ? '<span class="tag done">Done, +1,100 points</span>' : c.status === 'expired' ? '<span class="tag out">Time ran out</span>' : '<span class="tag wait">' + esc(days(c)) + '</span>';
+      return crumbs(KINDS[k].title) + '<p class="eyebrow">Challenge</p><h1>' + esc(KINDS[k].title) + '</h1>' + st +
+        '<p class="sub" style="margin-top:8px">' + esc(KINDS[k].line) + '</p>' +
+        '<div style="max-width:520px;margin-top:12px"><div class="bar"><i style="width:' + pct(p) + '%"></i></div><p class="meta">' + (p.have || 0) + ' of ' + (p.need || 0) + ' approved</p></div>' +
+        (c.status === 'expired' && c.can_restart ? '<div class="row" style="margin-top:10px"><button class="btn" data-restart="' + k + '">Restart, 30 more days</button></div>' : '');
+    }
+    function drawOne(k, sub) {
+      var c = find(k), live = c.status === 'active';
+      if (k === 'connector') return drawConnector(c);
+      if (k === 'support_local') return drawLocal(c, live, sub);
+      return drawAdvocate(c, live, sub);
+    }
+
+    function drawConnector(c) {
+      var p = c.progress || {};
+      app.innerHTML = head('connector', c) + '<div class="two" style="margin-top:20px"><div class="card"><h3>Your link</h3><p class="meta">Send it to people one by one. When someone joins with the $11 Passport through it, they count.</p><div class="link" id="lk">' + esc(S.link || '') + '</div><div class="row"><button class="btn" id="cp">Copy link</button><span class="msg" id="cpm"></span></div></div>' +
+        '<div class="card"><h3>Who joined</h3>' + ((p.items || []).length ? p.items.map(function (f) { return '<div class="item"><span>' + esc(f.name) + '</span><span class="tag done">Joined</span></div>'; }).join('') : '<p class="meta">Nobody yet.</p>') +
+        (p.pending ? '<p class="meta">' + p.pending + ' signed up with your link and have not paid yet.</p>' : '') + '</div></div>';
+      document.getElementById('cp').onclick = function () { try { navigator.clipboard.writeText(S.link); document.getElementById('cpm').textContent = 'Copied'; } catch (e) {} };
+      wire();
+    }
+
+    function shrink(file) {
+      return new Promise(function (ok, bad) {
+        var img = new Image(), u = URL.createObjectURL(file);
+        img.onload = function () { var k = Math.min(1, 1600 / Math.max(img.width, img.height)), cv = document.createElement('canvas'); cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k); cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height); URL.revokeObjectURL(u); cv.toBlob(function (b) { b ? ok(b) : bad(); }, 'image/jpeg', 0.85); };
+        img.onerror = function () { URL.revokeObjectURL(u); bad(); };
+        img.src = u;
+      });
+    }
+    function where() { return new Promise(function (ok, bad) { if (!navigator.geolocation) return bad({ why: 'no_geo' }); navigator.geolocation.getCurrentPosition(function (p) { ok(p.coords); }, function () { bad({ why: 'no_geo' }); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }); }); }
+
+    function placesCard(p) {
+      var ST = { approved: ['Counts', 'done'], pending: ['Waiting for our team', 'wait'], needs_menu: ['Send something from the menu', 'out'] };
+      var list = (p.items || []).length ? p.items.map(function (x) { var s = ST[x.state] || ST.needs_menu; return '<div class="item"><span><a href="/directory/' + esc(x.slug) + '">' + esc(x.name) + '</a>' + (x.receipt ? ' <small class="meta">· receipt</small>' : '') + '</span><span class="tag ' + s[1] + '">' + s[0] + '</span></div>'; }).join('') : '<p class="meta">No check-ins yet.</p>';
+      return '<h3>Your places</h3>' + list + '<p class="meta">' + (p.receipt ? 'Receipt: approved.' : 'Still needed: one receipt (I bought something) at any of them.') + '</p>';
+    }
+    // After a check-in or a send, the list on the right catches up.
+    function refreshPlaces() { call('ve-challenge', { action: 'state' }).then(function (d) { if (!d || !d.ok) return; S = d; var c = find('support_local'), el = document.getElementById('mine'); if (c && el) el.innerHTML = placesCard(c.progress || {}); }); }
+    function drawLocal(c, live, sub) {
+      var p = c.progress || {};
+      app.innerHTML = head('support_local', c) + '<div class="two" style="margin-top:20px"><div class="card" id="ci"><h3>Check in where you are</h3>' +
+        (live ? '<p class="meta">At a Vegan place now? We use your phone\'s location to find it (within 150 m). Then tell us what you are doing there.</p>' + (p.stops_month ? '<p class="meta"><b>This month only the Passport Challenge stops in your city count.</b></p>' : '') + '<div class="row"><button class="btn" id="near">Find places near me</button><span class="msg" id="nm"></span></div><div id="places"></div>' : '<p class="meta">This challenge is not running.</p>') +
+        '</div><div class="card" id="mine">' + placesCard(p) + '</div></div>';
+      wire();
+      var nb = document.getElementById('near'); if (!nb) return;
+      nb.onclick = function () {
+        var m = document.getElementById('nm'); m.className = 'msg'; m.textContent = 'Finding you...'; nb.disabled = true;
+        where().then(function (pos) {
+          return call('ve-challenge', { action: 'nearby', lat: pos.latitude, lng: pos.longitude }).then(function (d) {
+            nb.disabled = false; m.textContent = '';
+            var ps = (d && d.places) || [];
+            document.getElementById('places').innerHTML = ps.length ? '<div class="pick">' + ps.map(function (l, i) { return '<button data-pl="' + i + '">' + esc(l.name) + '<small>' + esc(l.distance_m) + ' m away' + (l.city ? ' · ' + esc(l.city) : '') + '</small></button>'; }).join('') + '</div>' : '<p class="meta">No Vegan place in the Directory within 400 m of you.</p>';
+            document.querySelectorAll('[data-pl]').forEach(function (b) { b.onclick = function () { checkIn(ps[+b.getAttribute('data-pl')], pos); }; });
+          });
+        }, function () { nb.disabled = false; m.className = 'msg err'; m.textContent = 'Turn on location for this site to check in.'; });
+      };
+    }
+    function checkIn(place, pos) {
+      var box = document.getElementById('places'), WHY = { too_far: 'You look too far away. Step outside or closer and try again.', not_precise: 'Your location is not precise enough yet. Try again in a moment.', already_today: 'already', members_only: 'Start Support Local first.' };
+      box.innerHTML = '<p class="meta">Checking you in at ' + esc(place.name) + '...</p>';
+      call('ve-checkin', { action: 'checkin', listing_id: place.id, lat: pos.latitude, lng: pos.longitude, accuracy: pos.accuracy }).then(function (d) {
+        if (d && (d.ok || d.why === 'already_today')) return call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t) { menu(place, t); refreshPlaces(); });
+        box.innerHTML = '<p class="msg err">' + esc((d && WHY[d.why]) || 'That check-in did not go through.') + '</p>';
+      });
+    }
+    function menu(place, t) {
+      var box = document.getElementById('places');
+      if (!t || !t.checkin) { box.innerHTML = '<p class="msg err">That check-in did not go through.</p>'; return; }
+      if (t.own_place) { box.innerHTML = '<p class="meta">This is your own place, so it does not count.</p>'; return; }
+      var sent = {}; (t.sent || []).forEach(function (s) { sent[s.kind] = s.status; });
+      var OPT = [['meal', 'What I ordered', 'A photo of your food'], ['receipt', 'I bought something', 'A photo of your receipt, card number covered'], ['post', 'Post it', 'The link to your Instagram or TikTok post tagging them and @vegansexplore'], ['shoutout', 'A shout-out', 'One good thing about this place']];
+      box.innerHTML = '<p class="meta" style="margin-top:10px"><b>Checked in at ' + esc(place.name) + '.</b> What are you doing here today? Send one or more within ' + esc(t.window_hours) + ' hours.</p>' + OPT.map(function (o) {
+        return '<div class="item"><span><b>' + o[1] + '</b><br><small class="meta">' + o[2] + '</small></span>' + (sent[o[0]] ? '<span class="tag wait">Sent</span>' : '<button class="btn ghost" data-k="' + o[0] + '">Send</button>') + '</div>';
+      }).join('') + '<div id="mform"></div>';
+      box.querySelectorAll('[data-k]').forEach(function (b) {
+        b.onclick = function () {
+          var k = b.getAttribute('data-k'), f = document.getElementById('mform');
+          f.innerHTML = (k === 'meal' || k === 'receipt' ? '<label for="mf">Photo</label><input type="file" id="mf" accept="image/*" capture="environment">' : k === 'post' ? '<label for="mf">Link to your post</label><input type="url" id="mf" placeholder="https://www.instagram.com/p/...">' : '<label for="mf">Your shout-out</label><textarea id="mf" maxlength="280" placeholder="The jackfruit tacos are worth the drive."></textarea>') +
+            '<div class="row"><button class="btn" id="mgo">Send it</button><span class="msg" id="mm"></span></div>';
+          document.getElementById('mgo').onclick = function () {
+            var go = this, mm = document.getElementById('mm'), el = document.getElementById('mf'); go.disabled = true; mm.className = 'msg'; mm.textContent = 'Sending...';
+            var send = function (extra) { return call('ve-checkin', Object.assign({ action: 'act', checkin_id: t.checkin.id, kind: k }, extra)); };
+            var p;
+            if (k === 'meal' || k === 'receipt') {
+              if (!el.files || !el.files[0]) { go.disabled = false; mm.className = 'msg err'; mm.textContent = 'Add a photo.'; return; }
+              p = shrink(el.files[0]).then(function (blob) { return call('ve-checkin', { action: 'photo_start', checkin_id: t.checkin.id, kind: k }).then(function (s) { if (!s || !s.upload_url) throw s; return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: blob }).then(function (r) { if (!r.ok) throw {}; return send({ photo_path: s.path }); }); }); });
+            } else p = send(k === 'post' ? { post_url: el.value.trim() } : { body: el.value.trim() });
+            p.then(function (d) {
+              if (d && d.ok) { call('ve-checkin', { action: 'today', listing_id: place.id }).then(function (t2) { menu(place, t2); refreshPlaces(); }); return; }
+              go.disabled = false; mm.className = 'msg err'; mm.textContent = ({ post_link: 'That needs to be an Instagram or TikTok link.', shoutout_length: 'Write 10 to 280 characters.', closed: 'This check-in has closed.' })[d && d.why] || 'That did not go through.';
+            }, function () { go.disabled = false; mm.className = 'msg err'; mm.textContent = 'That did not upload. Try again.'; });
+          };
+        };
+      });
+    }
+
+    function drawAdvocate(c, live, sub) {
+      var tasks = (c.progress && c.progress.tasks) || {};
+      if (sub && TASK[sub] && live && tasks[sub] !== 'approved' && tasks[sub] !== 'pending') return drawTask(c, sub);
+      app.innerHTML = head('advocate', c) + '<div class="grid" style="margin-top:20px">' + Object.keys(TASK).map(function (t) {
+        var s = STATE[tasks[t]] || STATE.open, can = live && (tasks[t] === 'open' || tasks[t] === 'declined');
+        return '<div class="card"><h3>' + TASK[t][0] + '</h3>' + (s[1] || tasks[t] !== 'open' ? '<span class="tag ' + s[1] + '">' + s[0] + '</span>' : '') + '<p class="meta">' + TASK[t][1] + '</p><div class="row">' + (can ? '<a class="btn" href="#c/advocate/' + t + '">Send proof</a>' : '') + '</div></div>';
+      }).join('') + '</div><p class="meta" style="margin-top:12px">Find events on <a href="/events">our calendar</a>, sanctuaries and rescues in the <a href="/directory?tab=community">Directory</a>, and posts on the <a href="/pulse/fosters">Fosters</a> and <a href="/pulse/rescues">Rescues</a> boards.</p>';
+      wire();
+    }
+    function drawTask(c, t) {
+      var what = t === 'event' ? 'events' : t === 'animals' ? 'animals' : 'posts', chosen = null;
+      app.innerHTML = crumbs('The Advocate') + '<p class="eyebrow">The Advocate</p><h1>' + TASK[t][0] + '</h1><p class="sub">' + TASK[t][1] + '</p>' +
+        '<div class="card" style="margin-top:18px;max-width:760px"><label for="q">' + (t === 'event' ? 'Which event?' : t === 'animals' ? 'Which sanctuary, rescue or nonprofit?' : 'What did you share?') + '</label><input type="search" id="q" placeholder="Search"><div id="pk" class="pick"></div>' +
+        (t === 'share' ? '<label for="u">Link to where you shared it</label><input type="url" id="u" placeholder="https://www.instagram.com/stories/...">' : '<label for="ph">Photo</label><input type="file" id="ph" accept="image/*" capture="environment">') +
+        '<label for="nt">Anything to add (optional)</label><textarea id="nt" maxlength="500"></textarea>' +
+        '<div class="row"><a class="btn ghost" href="#c/advocate">Back</a><button class="btn" id="go">Send it</button><span class="msg" id="mm"></span></div></div>';
+      var q = document.getElementById('q'), pk = document.getElementById('pk'), items = [], timer;
+      function search() { call('ve-challenge', { action: 'pick', what: what, q: q.value }).then(function (d) { items = (d && d.items) || []; pk.innerHTML = items.length ? items.map(function (x, i) { return '<button data-i="' + i + '" class="' + (chosen && chosen.id === x.id ? 'on' : '') + '">' + esc(x.title) + '<small>' + esc(x.where || '') + (x.starts_at ? ' · ' + new Date(x.starts_at).toLocaleDateString() : '') + '</small></button>'; }).join('') : '<p class="meta" style="padding:10px">Nothing found.</p>'; pk.querySelectorAll('[data-i]').forEach(function (b) { b.onclick = function () { chosen = items[+b.getAttribute('data-i')]; search(); }; }); }); }
+      q.oninput = function () { clearTimeout(timer); timer = setTimeout(search, 250); }; search();
+      document.getElementById('go').onclick = function () {
+        var go = this, mm = document.getElementById('mm'); mm.className = 'msg err';
+        if (!chosen) { mm.textContent = 'Pick one from the list.'; return; }
+        var note = document.getElementById('nt').value, body = { action: 'proof', task: t, note: note };
+        if (t === 'event') body.event_id = chosen.id; else if (t === 'animals' || chosen.kind === 'listing') body.listing_id = chosen.id; else body.post_id = chosen.id;
+        go.disabled = true; mm.className = 'msg'; mm.textContent = 'Sending...';
+        var p;
+        if (t === 'share') { body.url = document.getElementById('u').value.trim(); p = call('ve-challenge', body); }
+        else {
+          var f = document.getElementById('ph');
+          if (!f.files || !f.files[0]) { go.disabled = false; mm.className = 'msg err'; mm.textContent = 'Add a photo.'; return; }
+          var pos = t === 'animals' ? where().catch(function () { return null; }) : Promise.resolve(null);
+          p = Promise.all([shrink(f.files[0]), pos]).then(function (a) {
+            if (a[1]) { body.lat = a[1].latitude; body.lng = a[1].longitude; body.accuracy = a[1].accuracy; }
+            return call('ve-challenge', { action: 'proof_start', task: t }).then(function (s) { if (!s || !s.upload_url) throw s; return fetch(s.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: a[0] }).then(function (r) { if (!r.ok) throw {}; body.photo_path = s.path; return call('ve-challenge', body); }); });
+          });
+        }
+        p.then(function (d) { if (d && d.ok) { S = d; location.hash = 'c/advocate'; draw(); return; } go.disabled = false; mm.className = 'msg err'; mm.textContent = (d && d.message) || 'That did not go through.'; }, function () { go.disabled = false; mm.className = 'msg err'; mm.textContent = 'That did not upload. Try again.'; });
+      };
+    }
+
+    window.addEventListener('hashchange', function () { if (S) { draw(); window.scrollTo(0, 0); } });
+    load();
+  })();
+  </script>
+</body>
+</html>

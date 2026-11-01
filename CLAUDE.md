@@ -502,7 +502,17 @@ locked part refuses `kit_save` (409 `locked`); changing it is `kit_change_reques
 proposes a style, six colors by role and one of the four pairings, saved as `mood.read`; never locked). `business/brand.html` sends Edit on a
 locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`components/branddesk/BrandKitRoom.tsx`, `/api/branddesk/kit`) shows
 the gate, the mood board, the parts, the requests and Launch; live on lesaruss-hq main dc947e5 (2026-11-01,
-Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
+Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default).
+**The Website module** (2026-11-01, Sean: "go with your recommendation", client listings first; lesaruss-hq branch
+main 598dc6a, live 2026-11-01, Sean: "deploy"): **BrandDesk > Websites** (`/branddesk/websites`, a button on the BrandDesk
+wall; `components/branddesk/WebsiteRoom.tsx`, `/api/branddesk/website`, `lib/branddeskSites.ts`): every BrandDesk client
+(`ve-branddesk` `list`), then one client's wizard (`?account=<id>`): 1. their brand kit, its parts and state; **Build their website waits
+until the kit launches** (Logan's default: the gate is in HQ, the server's `site_start` and the Depot still build from an unlaunched kit),
+with **Launch their brand kit** once every part is locked (`ve-brand-kit` `kit_launch` with the listing's slug); 2. their website (build,
+look, send for the owner's OK, record an OK given another way); 3. their old addresses; 4. their domain and its records; 5. the final check;
+take it down or end it; every step. All of it is `ve-branddesk`'s `site_*` actions as the signed-in person's members row, the same the Depot
+runs. Our own brands' websites wait for a brand frame (the frame is a restaurant's). Checked against mocked answers in a browser at 1366 and
+390 px; no BrandDesk client existed yet (`list` returned none).
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
@@ -957,7 +967,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   are `ve_cartridge_edits` rows with `brand_slug`), opened at `/business/brand?brand=<slug>`. **Vegans Explore's own kit**
   (`?brand=vegans-explore`): the logo files (`/public/logo-ve-landscape-v1.svg`, `-inverted.svg`, `ve-logo-mark.svg`), the logo's colors
   (forest #2D5C27 on light, bright #3A9B3E on dark and buttons, mint #E8F5E9, orange #F69820, ink #1A1A1A, night #0F1F14; Sean,
-  2026-10-31: "the green is the same as our logo") and Montserrat, locked; its voice and story are drafts for Sean. **A listing's kit can
+  2026-10-31: "the green is the same as our logo") and Montserrat, locked; its voice and story were locked and the kit launched on 2026-11-01 (Sean: "approved"), so a change is a request with a reason. **A listing's kit can
   name a parent** (`data.meta.parent`): a podcast listing's `kit_create` starts the podcast frame with the parent's colors, pairs and type.
   **The Vegans Explore Podcast's kit** (`?listing=vegans-explore-podcast`, parent `vegans-explore`): cover B locked (the night city with a
   broadcast tower, no characters, the title set in Montserrat; `vegan-media/media/podcast/brand/`), the description locked, the cast (Sean
@@ -2571,7 +2581,7 @@ Directory is their chapter's).
   `filterMenu: true`. The banner's dropdown is the kind of event (All events, then the kinds on the calendar; `onState` hands the
   page the kinds, `cal.setCat(kind)`, the kind stays in the address as `?cat=`), **Upcoming / Past** are the tab row (`.vev-tabs`),
   and **Filters** (`.vev-fbtn`, the count is Sort only) holds Location (Continent, Country, Chapter from the events on the calendar
-  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. The line under the title reads "Festivals · South
+  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
   `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
@@ -3793,7 +3803,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 ## Earn your Passport (LOCKED by Sean 2026-11-01, playbook `ve-pricing-points-passport`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-earn-your-passport`; migration
-`20261101_earn_your_passport_canon.sql`). **Not built yet.** Sean: "people can earn their membership... not for what they did in the past,
+`20261101_earn_your_passport_canon.sql`). **Parts 1 to 4 are built and live (below); 5 to 7 are not.** Sean: "people can earn their membership... not for what they did in the past,
 but for what you're doing right now"; "I actually would prefer people to do that than pay the $11." Browsing stays free, taking part stays
 the $11 Passport or a membership earned now; no free account that can take part, and comps stay ended (the Depot cannot give memberships).
 
@@ -3833,7 +3843,7 @@ the $11 Passport or a membership earned now; no free account that can take part,
   deadline; at most one a week otherwise; London consent box; paying ends the track. Reuse the outreach people-list engine.
 - **Build order (Logan)**: the check-in menu; the business sign-up, agreement, cards, PIN and Vault for the South Florida pilot; the Taster
   account and sampler; the challenges; the follow-ups and emails; the content gig; the business points rule.
-- **Built and live 2026-11-01, parts 1 and 2** (Sean: "Logan, build it"):
+- **Built and live 2026-11-01, parts 1 to 4** (parts 3 and 4 below them) (Sean: "Logan, build it"):
   - **1. The check-in menu** (migration `20261101_checkin_actions.sql`, `ve-checkin` from commit 8ce1037, source sha256 matched). After I'm
     here the listing opens **What are you doing here today?** (`openMenu` in `directory/listing.html`; the button reads Checked in · what
     now? and reopens it): What I ordered and I bought something (a photo shrunk to 1600 px, uploaded only while the check-in is open, private
@@ -3883,9 +3893,43 @@ the $11 Passport or a membership earned now; no free account that can take part,
     a name with [TEST] sends no email. `ve-taster` actions `join`, `me`, `confirm`, `unsubscribe`, `admin_list` (super admins). Proven
     2026-11-01 (every guard, a forged key, a member key in its place and the Taster key at `ve-dashboard` all refused, the link on conversion
     in a rolled-back transaction, the page on desktop and phone), then the test rows removed.
-  - **Still to build**: 4. the three challenges (a Taster's challenge check-ins need an account they can sign in with; part 4 makes it when
-    they press Start, after the emailed link has confirmed the email), 5. the two-day business follow-up and the not-ready-yet emails, 6. the
-    content gig, 7. the business points rule.
+  - **4. The three challenges** (built and live 2026-11-01, Sean: "continue Earn your Passport"; migration
+    `20261101_earn_your_passport_challenges.sql`, applied through the one-time `ve-once-challenges`, now the 410 stub; edge function `ve-challenge`
+    and `ve-checkin` from commit 9825760, sha256 matched). **`/challenges`** (`challenges/index.html`, indexed, in the sitemap; the Taste's Picked
+    for you links it): Support Local, The Connector and The Advocate as three cards, Start, 30 days each, one restart (`#c/<kind>`, `#c/advocate/<task>`).
+    **Start makes the account**: a Taster whose email is confirmed (their Taster key, `localStorage` `ve_taster`; `/challenges?t=<key>` confirms like
+    the Taste link) gets a `members` row waiting on its Passport (`pending_payment`, no password, `email_verified`, their chapter as home;
+    `ve_tasters.account_id`) and a session the page keeps apart from the site's sign-in (`localStorage` `ve_challenge_token`), so the rest of the site
+    still treats them as signed out. The Taster key opens that account again on another device only while it is not a member and has no password;
+    after that they sign in (once a member, **Set your password** on the page, `set_password`, or Continue with Google). An unpaid account signs in
+    with its own token; a member who paid the $11 is told the challenges are not for them (`ve_challenger_ok`; a member through a challenge can do the
+    other two). **Support Local** (on the page: Find places near me, the food places with How Vegan set within 400 m, check in through `ve-checkin`,
+    then the check-in menu right there): 3 food places (Restaurants, Bakeries & Cafes, Food Trucks, Vendors, Catering, Meal Prep, Markets), each with at
+    least one menu item approved in Depot > Check-ins, and one approved receipt; in a month when their chapter has Passport Challenge stops, only
+    those stops count. A challenger's check-ins and menu items pay 0 points (`ve_checkin_save` `p_pay`; an approval pays only an active member); the
+    Depot marks them Challenge, no points. **The Connector**: 3 friends who signed up with their `/r/<code>` link and paid during the 30 days (a friend
+    who earned their membership does not count). **The Advocate**: a free event from our calendar with a photo (a guest pass checked in at the door
+    counts on its own), a sanctuary, rescue or animal nonprofit with a photo (the phone's distance kept when shared), and a share of a Fosters or
+    Rescues post or a rescue or sanctuary page (the link to where they shared it); proofs in the private bucket `challenge-proofs`. **Settling**
+    (`ve_challenge_progress`, `ve_challenge_settle`; on every read, on each approval and by cron `ve-challenge-sweep` every 15 minutes): met, the
+    challenge is done and pays 1,100 (`points_ledger` reason `challenge`, ref `challenge:<id>`); the first one finished by someone not yet a member
+    spends those points on the Passport (`challenge_passport`, so lifetime points keep them) and `ve_member_admit` makes them a member (Founding
+    before the deadline, the Taster linked); each one after adds 1,100 to spend; all three set `members.trailblazer_at` (the Trailblazer badge, on
+    the page). Out of time, it is Time ran out; Restart gives 30 more days once, approved work kept. **Depot > Challenges** (`/admin/depot/challenges`,
+    People in the Go to menu): Proofs waiting / Approved / Not approved (Approve, Not approved with a note they see) and Running / Done / Time ran out
+    with each one's progress. `ve-challenge` actions `state`, `start`, `restart`, `nearby`, `pick`, `proof_start`, `proof`, `set_password`,
+    `admin_list`, `proof_list`, `proof_review` (super admins or the ops token); `ve-checkin` `review_list` and `review` take the ops token too.
+    Amounts and days in `ve_site_settings` `challenges`. Logan's defaults, Sean's to change: who may take them, food places only, the restart keeping
+    approved work, the share counting a rescue's page (the Fosters and Rescues boards had no posts yet), and no check-in points for challengers.
+    **Proven live 2026-11-01** with [TEST] Tasters: Start refused before the email was confirmed and a forged key refused; the account made at Start;
+    a check-in 11.7 km away refused, three at 0 points, a bad post link refused, a receipt photo uploaded, the menu approved through `ve-checkin` with
+    the ops token, and Support Local finished on the last approval (member, Founding, 1,100 lifetime and 0 to spend, Taster linked); the Taster key
+    then refused (sign in); The Advocate with a photo missing and a vegansexplore.com link refused, a share declined, sent again and approved, done
+    for +1,100; a running challenge refused a restart, an expired one restarted once and refused a second; the password set and `ve-auth` login
+    working; in a rolled-back transaction The Connector stayed open at 2 paid friends with 1 unpaid and finished at 3, all three gave Trailblazer
+    and 3,633 lifetime points (Level 2), an expired challenge closed, and a paid member was refused. `/challenges` on desktop and an iPhone (no
+    errors, no sideways scroll) and Depot > Challenges in the dashboard frame; then every row and test photo removed.
+  - **Still to build**: 5. the two-day business follow-up and the not-ready-yet emails, 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
@@ -5030,7 +5074,14 @@ product (`MONEY_LABELS` by `metadata.type`, else the line item), their first pay
 **See it in Stripe**, and This month so far (Eastern month). `ve_money_alerts` (migration `20261101_ve_money_alerts.sql`, RLS on, no
 policies) keeps one row per payment (`stripe_id` unique), so a Stripe retry never sends twice; `sent_at` or `send_error`. Test mode sends
 nothing. A new product reads best with a `MONEY_LABELS` row. **Preview** any real session: POST
-`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). Payments before
+`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). **Labels by what it is** (2026-11-01, v63 from commit 46ab777, source sha256 matched): `moneyLabel` names the one type that covers several
+products from the session itself: `ve_verified` is the Partner plan ($111 every 111 days, with its offer and period) or Passport Stop or Anchor by
+`metadata.tier` (it was "VE Verified (yearly)" for all of them); `entry_contribution` is a listing claim when it carries `claim_id`, a contribution
+when the buyer was a member over an hour before, else the Passport. HQ's LESARUSS-account kinds have labels (`lr_passport`, `listing_claim`,
+`guide_order`, `business_membership`, `campaign_pledge`), and a renewal is labeled from its subscription's metadata
+(`parent.subscription_details`, else `subscription_details`) instead of the raw invoice line. **This month** counts from midnight Eastern on the
+1st, read from the zone (04:00Z under EDT, 05:00Z under EST; it was always 04:00Z, which would have put Nov 30 11 PM in December). Untyped
+sessions (payment links such as the LIVE Donation) read well from their own line item and need no label. Payments before
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
 
