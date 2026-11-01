@@ -1927,7 +1927,15 @@ that is not passed and every check-up flag (`doItBtn`), opening `VEManaged.open`
 it lands in the Inbox as a Managed marketing request; the sample toasts what would happen. The Audit view is no longer members only and
 shows for any listing with checks (non-food: the listing check and Have us do all of it). Home has the score strip (`healthStrip`).
 `only: 'health'` returns just the check (the member dashboard's Your business). Proven 2026-11-01 as Sean on the podcast he owns (its
-website, vegansexplore.com/vepodcast/, answers 404) and as admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+website, vegansexplore.com/vepodcast/, answered 404; Logan pointed it at the show's site, vegans-explore.captivate.fm, which passes) and as
+admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **Tomorrow's outreach is read first** (Sean, 2026-11-01: "we know we're
+going to be reaching out to 30 people a day. We can prioritize those people in the check, you know, the day before... So when that potential
+client clicks on it, they're seeing the information they should be seeing"; migration `20261101_listing_check_outreach_first.sql`):
+`ve_listing_health_due` puts first every business in a send day (`ve_outreach_batches` proposed or approved) for today or tomorrow in
+Eastern time that has not had its first email, and reads it again whenever its last check is more than two days old, monthly check due or
+not. The sweep runs 2:00 to 3:50 AM Eastern, before the sender starts at 9. A business the check holds comes off the email list on its own
+(`trg_ve_outreach_listing_hidden`). It reads the website and Instagram only, no Google calls. Proven 2026-11-01 in a rolled-back transaction
+(a contact on tomorrow's send day came first; checked a day earlier, not read again; its send day six days out, not read early). **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
 `once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
