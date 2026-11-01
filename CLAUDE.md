@@ -2300,7 +2300,7 @@ Directory is their chapter's).
 ## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-local-food-products`; migration
-`20261101_local_food_products_canon.sql`). **Not built yet.** Sean: "Why are we putting restaurants above everybody else? They should
+`20261101_local_food_products_canon.sql`). **Built 2026-11-01** (Sean: "Logan, build Local Food"). Sean: "Why are we putting restaurants above everybody else? They should
 see everything and then filter for what they want... the products are the products you can purchase anywhere."
 
 - **Food becomes Local Food** and opens on All: what is here, in the picked location ("Local Food · South Florida"). National grocery
@@ -2316,6 +2316,17 @@ see everything and then filter for what they want... the products are the produc
   brand that vends keeps Vendors (`vendsAt`).
 - Products wears the All cities ad pair (the national sponsor space), Local Food the chapter's. The Guide tab map and vetting are
   unchanged. Change the section lists together (see Directory filters); LESARUSS.ai shares the component, so check both sites.
+- **How it is built** (`public/ve-region-directory.js`): `CAT_MAP` files Food Brands and Nutrition & Supplements under `products`;
+  Food's label is Local Food (its key and `?tab=food` unchanged); every pill row starts with All (the old `allFirst` flag is gone);
+  `SUB_LABELS` / `subLabel` show Food Brands as Food & Drink on the pills, the phone dropdown, the search, the card and the address
+  (`?tab=products&sub=food-and-drink`); a section with `everywhere: true` (Products) has no location until Sells at is **Near me**
+  (`near`: listings with an address in the location, never online or every-chapter ones) or Markets & events (`sellsHere`);
+  `applySection` sends an old `?tab=food&sub=food-brands` or `nutrition-and-supplements` link to Products. Also changed: `SECTIONS` in
+  `ve-listing-admin.js`, `KINDS` in Directory review, the banners' `allTitle` on `/directory` and the dashboard, the listing breadcrumb
+  (Products > Food & Drink) and the Nutrition Guide's Directory link. Flat category lists in the edge functions and `claim.html` needed
+  no change. Checked in a browser: Local Food opens on All and follows the location (South Florida only), Products shows every brand
+  whatever the location, Near me narrows Products to South Florida shops with the banner reading Products · South Florida, the old link
+  lands on Food & Drink, a city hub shows Local Food | Products, no script errors.
 
 ## The Guide tab on every listing (LOCKED by Sean 2026-10-31, playbook `ve-listing-guide-tab`)
 

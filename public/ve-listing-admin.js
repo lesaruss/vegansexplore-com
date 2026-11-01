@@ -37,8 +37,8 @@
   // Main sections and their sub-sections. Keep in step with CAT_MAP / CAT_CONFIG in
   // /public/ve-region-directory.js and CATEGORIES in supabase/functions/ve-claims.
   var SECTIONS = [
-    ['Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep']],
-    ['Products', ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
+    ['Local Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep']],
+    ['Products', ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces']],
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],

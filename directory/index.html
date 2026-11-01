@@ -89,7 +89,7 @@
     // The banner's dropdown is the Directory's menu and the location is picked in the filter (LOCKED by Sean 2026-10-30, canon
     // canon-ve-directory-navigation: "what should be in this drop down is the actual directory main navigation... the first
     // thing in the filter would be choosing the city"). Every listing loads once; the filter's Continent > Country > Chapter
-    // narrows the cards, the line under the title reads "Food · South Florida", and the chapter's art and ads follow it.
+    // narrows the cards, the line under the title reads "Local Food · South Florida", and the chapter's art and ads follow it.
     // The location is kept across visits (localStorage ve_dir_loc), never in the address: a shared link opens in the
     // visitor's own location. First visit: a member's home chapter, else every location.
     var LOC_KEY = 've_dir_loc', loc0 = null;
@@ -103,7 +103,7 @@
       q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash);
     }
     var banner = VECityBanner.mount('dir-hero', {
-      key: 'dir', title: 'Vegan Directory', allTitle: 'Food', param: false, pickLabel: 'Section',
+      key: 'dir', title: 'Vegan Directory', allTitle: 'Local Food', param: false, pickLabel: 'Section',
       sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
       // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
       home: { label: 'Directory home', href: '/directory' },

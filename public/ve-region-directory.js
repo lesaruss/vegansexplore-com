@@ -30,9 +30,10 @@
     // vendor sells at markets, pop-ups and events. The old 'Food Trucks & Vendors' rows were re-filed the same day.
     'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks': 'food', 'Vendors': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food',
     'Catering': 'food', 'Meal Prep': 'food',
-    // Food Brands are back under Food (Sean, 2026-10-26): sections open on their first sub-section, not All, so Food opens
-    // on Restaurants and the national brands no longer mix with the local places. Nutrition & Supplements follows them.
-    'Food Brands': 'food', 'Nutrition & Supplements': 'food',
+    // Local Food and Products (Sean, 2026-11-01, canon canon-ve-local-food-products): Food is what is here, Products what you
+    // can buy anywhere. Food Brands (shown as Food & Drink) and Nutrition & Supplements live in Products; the stored categories
+    // did not change.
+    'Food Brands': 'products', 'Nutrition & Supplements': 'products',
     // Brands left the menu (Sean, 2026-10-26); an old 'Brands' row still shows under Products > All.
     'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products',
     'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
@@ -57,12 +58,13 @@
   };
 
   var CAT_CONFIG = [
-    { key: 'food', label: 'Food', hasVF: true,
+    { key: 'food', label: 'Local Food', hasVF: true,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2"></path><path d="M7 2v20"></path><path d="M21 15V2"></path><path d="M18 2v4"></path><path d="M21 8a3 3 0 01-3 3 3 3 0 01-3-3"></path></svg>',
-      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep'] },
+      subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep'] },
     { key: 'products', label: 'Products', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path><line x1="3" x2="21" y1="6" y2="6"></line><path d="M16 10a4 4 0 01-8 0"></path></svg>',
-      subcats: ['Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'] },
+      // Products opens on every location (sold anywhere); Sells at > Near me brings the location back for local shops.
+      subcats: ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces'], everywhere: true },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
       subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth'] },
@@ -72,13 +74,12 @@
       subcats: ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books'] },
     { key: 'community', label: 'Community', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
-      // All first here, the one exception (Sean, 2026-10-27: "I don't mind people seeing all of the community listings in one slot").
       // Groups (Sean, 2026-10-29): social clubs and meetup groups; a group's page lists the events it hosts (events.host_listing_id).
-      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'], allFirst: true },
-    // People, All first like Community. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
+      subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'] },
+    // People. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
     { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
-      subcats: ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'], allFirst: true },
+      subcats: ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'] },
     // Being vetted (Sean, 2026-10-25): Vegan-friendly and Vegan-options food places the community has not vetted yet
     // (/public/ve-trust.js). Members only; each one moves to Food once 10 different members vote for it.
     { key: 'vetting', label: 'Being vetted', hasVF: false, membersOnly: true,
@@ -354,7 +355,7 @@
       '<span class="vrd-sub" data-sub-for="mstat" hidden><span class="geo-label">Status</span>' +
       '<select aria-label="Filter by status" class="sort-select" data-vrd-mstat="' + cat.key + '"><option value="">All</option><option value="active">Active</option><option value="hiatus">On hiatus</option><option value="ended">Ended</option></select></span>' +
       '<span class="vrd-sub" data-sub-for="sells" hidden><span class="geo-label">Sells at</span>' +
-      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Anywhere</option><option value="1">Markets &amp; events</option><option value="0">Online &amp; stores</option></select></span>';
+      '<select aria-label="Where they sell" class="sort-select" data-vrd-sells="' + cat.key + '"><option value="">Anywhere</option><option value="near">Near me</option><option value="1">Markets &amp; events</option><option value="0">Online &amp; stores</option></select></span>';
     return '<div class="sort-bar">' + sortHtml + '<span class="vrd-geo">' + geoHtml + '</span>' + subHtml + typeHtml + '</div>';
   }
 
@@ -366,11 +367,10 @@
   function skeletonForCat(cat, config) {
     // A framed tool (Review): the page loads the first time the tab opens.
     if (cat.frame) return '<div class="board-panel" id="board-' + cat.key + '"><div class="vrd-frame-wrap" data-vrd-frame="' + esc(cat.frame) + '"></div></div>';
-    // A section opens on its first sub-section; All comes last (Sean, 2026-10-26), except where allFirst says otherwise.
-    var allBtn = '<button class="subcat-pill' + (cat.allFirst || !cat.subcats.length ? ' sc-active' : '') + '" data-vrd-subcat="All">All</button>';
-    var subcatBtns = (cat.allFirst ? allBtn : '') + cat.subcats.map(function (s, i) { return '<button class="subcat-pill' + (i || cat.allFirst ? '' : ' sc-active') + '" data-vrd-subcat="' + esc(s) + '">' + esc(s) + '</button>'; }).join('') +
-      (cat.allFirst ? '' : allBtn);
-    var first = cat.allFirst || !cat.subcats.length ? cat.label : cat.subcats[0];
+    // Every section opens on All (Sean, 2026-11-01, canon canon-ve-local-food-products), replacing All last.
+    var allBtn = '<button class="subcat-pill sc-active" data-vrd-subcat="All">All</button>';
+    var subcatBtns = allBtn + cat.subcats.map(function (s) { return '<button class="subcat-pill" data-vrd-subcat="' + esc(s) + '">' + esc(subLabel(s)) + '</button>'; }).join('');
+    var first = cat.label;
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
       '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(first) + '&hellip;" aria-label="Search ' + esc(first) + '">' +
@@ -394,7 +394,7 @@
     // With the sections in the page's banner (config.sectionMenu), the sub-sections are the tab row under it, not in the filter.
     var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns +
       '<select class="vrd-subsel" data-vrd-subsel aria-label="' + esc(cat.label) + '">' +
-      (cat.allFirst ? ['All'] : []).concat(cat.subcats, cat.allFirst ? [] : ['All']).map(function (s, i) { return '<option value="' + esc(s) + '"' + (i ? '' : ' selected') + '>' + esc(s) + '</option>'; }).join('') +
+      ['All'].concat(cat.subcats).map(function (s, i) { return '<option value="' + esc(s) + '"' + (i ? '' : ' selected') + '>' + esc(subLabel(s)) + '</option>'; }).join('') +
       '</select></div>' : '';
     var subInPop = cat.subcats.length && !subTabs;
     return '<div class="board-panel' + (cat.key === 'food' ? ' active' : '') + '" id="board-' + cat.key + '">' +
@@ -465,6 +465,9 @@
   }
 
   // Every section a listing is in: its main category plus any the admin editor added.
+  // How a sub-section reads where it differs from its stored category (Food Brands reads Food & Drink in Products).
+  var SUB_LABELS = { 'Food Brands': 'Food & Drink' };
+  function subLabel(v) { return SUB_LABELS[v] || v; }
   function sectionsOf(l) {
     var out = [l.category || ''];
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
@@ -474,7 +477,7 @@
   // festivals... a tool for promoters who are looking to find vendors"): a Food Brand or Nutrition & Supplements listing that
   // is also under Vendors (extra_categories). It stays in its brand section and shows with the vendors too.
   var BRAND_SUBS = ['Food Brands', 'Nutrition & Supplements'];
-  function vendsAt(l) { return BRAND_SUBS.indexOf(l.category) >= 0 && sectionsOf(l).indexOf('Vendors') >= 0; }
+  function vendsAt(l) { return (BRAND_SUBS.indexOf(l.category) >= 0 || VE_CAT_MAP[l.category] === 'products') && sectionsOf(l).indexOf('Vendors') >= 0; }
   function vendsTag(l) { return vendsAt(l) ? ' <span class="vrd-vends" title="Also sells at markets, festivals and events">Markets &amp; events</span>' : ''; }
   // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
@@ -588,7 +591,7 @@
       (isPerson(l) ? '<div class="rank-meta">' + personMeta(l) + '</div>'
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>' +
-          '<div class="rank-subcat">' + esc(l.category || '') + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
+          '<div class="rank-subcat">' + esc(subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
@@ -637,7 +640,7 @@
   function healthLabel(k) { var m = HEALTH_TYPES.filter(function (x) { return x[0] === k; })[0]; return m ? m[1] : ''; }
   // Books sort by what kind of book, never by region (Sean, 2026-10-27); every media sub-section drops the location filter.
   var SUB_FILTERS = { 'Books': { geo: false, booktype: true, years: true }, 'Podcasts': { geo: false, mstat: true }, 'YouTube': { geo: false, mstat: true },
-    'News Outlets': { geo: false, mstat: true }, 'Documentaries & Films': { geo: false, years: true }, 'Food Brands': { geo: false, kind: true, sells: true }, 'Nutrition & Supplements': { geo: false, sells: true }, 'Markets': { chain: true }, 'Health Professionals': { htype: true }, 'Restaurants': { cuisine: true },
+    'News Outlets': { geo: false, mstat: true }, 'Documentaries & Films': { geo: false, years: true }, 'Food Brands': { kind: true }, 'Markets': { chain: true }, 'Health Professionals': { htype: true }, 'Restaurants': { cuisine: true },
     'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true },
     'Activists': { geo: false }, 'Content Creators': { geo: false }, 'Athletes': { geo: false }, 'Physicians': { geo: false, spec: true },
     'Health Experts': { geo: false }, 'Chefs': { geo: false }, 'Founders': { geo: false } };
@@ -694,10 +697,11 @@
     return locHubs().filter(function (h) { return h.continent === LOC.continent && (!LOC.country || h.country === LOC.country); }).map(function (h) { return h.slug; });
   }
   function locName() { var h = locHub(); return h ? h.name : LOC.country || LOC.continent || ''; }
+  function sellsHere(v) { return v === '1' || v === 'near'; }
   function geoApplies(panel) {
     if (!panel) return false;
     var sf = subFiltersFor(panel, currentSubcat(panel)), sells = panel.querySelector('[data-vrd-sells]');
-    return !(sf.geo === false && !(sf.sells && sells && sells.value === '1'));
+    return !(sf.geo === false && !(sf.sells && sells && sellsHere(sells.value)));
   }
   function locApplies(panel) { return !!LOCCFG && !!panel && LOC_SECTIONS.indexOf(panel.id.replace(/^board-/, '')) >= 0 && geoApplies(panel); }
   // The tag by the search and the Location section show only where location applies.
@@ -886,7 +890,11 @@
   // The media section has no location filter on any of its pills, All included.
   function subFiltersFor(panel, sub) {
     var sf = SUB_FILTERS[sub] || {};
-    return panel && (panel.id === 'board-media' || panel.id === 'board-people') && sf.geo !== false ? Object.assign({ geo: false }, sf) : sf;
+    if (panel && (panel.id === 'board-media' || panel.id === 'board-people') && sf.geo !== false) return Object.assign({ geo: false }, sf);
+    // Products is sold anywhere: no location until Sells at asks for Near me or Markets & events (canon-ve-local-food-products).
+    var c = panel && CAT_CONFIG.filter(function (x) { return 'board-' + x.key === panel.id; })[0];
+    if (c && c.everywhere) return Object.assign({ geo: false, sells: true }, sf);
+    return sf;
   }
   function currentSubcat(panel) {
     var active = panel.querySelector('.subcat-pill.sc-active');
@@ -911,7 +919,7 @@
     }
     // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
     var sells = bar.querySelector('[data-vrd-sells]');
-    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = (sf.geo === false && !(sf.sells && sells && sells.value === '1')) || (!!LOCCFG && !LOC.chapter);
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = (sf.geo === false && !(sf.sells && sells && sellsHere(sells.value))) || (!!LOCCFG && !LOC.chapter);
     if (LOCCFG) locShow(panel);
   }
 
@@ -944,7 +952,7 @@
     var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
     var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
     var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
-    if (sf.geo === false && sells !== '1') { city = ''; county = ''; region = ''; }
+    if (sf.geo === false && !sellsHere(sells)) { city = ''; county = ''; region = ''; }
     // Location mode: the chapters the location covers, wherever it applies (locApplies).
     var hubSet = null;
     if (LOCCFG) { region = ''; if (locApplies(panel)) hubSet = locSet(); }
@@ -969,7 +977,9 @@
       if (spec && card.dataset.spec !== spec) geoOk = false;
       if (chain && card.dataset.chain !== chain) geoOk = false;
       if (cuisine && (card.dataset.cuisines || '').split('|').indexOf(cuisine) < 0) geoOk = false;
-      if (sells && card.dataset.vends !== sells) geoOk = false;
+      // Near me: a shop with an address in the location, not one sold everywhere (online, or serving every chapter).
+      if (sells === 'near') { if ((card.dataset.hubs || '*') === '*') geoOk = false; }
+      else if (sells && card.dataset.vends !== sells) geoOk = false;
       var typeOk = type ? (card.dataset.listingType === type) : (card.dataset.listingType !== 'closed');
       var searchOk = !searchTerm ||
         (card.dataset.name || '').toLowerCase().indexOf(searchTerm) > -1 ||
@@ -1060,13 +1070,19 @@
     if (!urlHere(config) || root._vrdRestoring) return;
     var q = new URLSearchParams(location.search);
     q.set('tab', tab);
-    if (sub) q.set('sub', subSlug(sub)); else q.delete('sub');
+    if (sub) q.set('sub', subSlug(subLabel(sub))); else q.delete('sub');
     var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
     if (url !== location.pathname + location.search + location.hash) history.pushState({ vrdTab: tab, vrdSub: sub || '' }, '', url);
   }
   // Opens the section and sub-section the address names (the first section and its first pill when it names none).
   function applySection(root, config) {
     var q = new URLSearchParams(location.search), tab = (q.get('tab') || '').replace(/[^a-z]/g, ''), sub = q.get('sub') || '';
+    // An old link to a sub-section that moved (?tab=food&sub=food-brands, before Local Food) opens it where it lives now.
+    if (tab && sub) {
+      var home = CAT_CONFIG.filter(function (c) { return c.subcats.some(function (v) { return subSlug(v) === subSlug(sub) || subSlug(subLabel(v)) === subSlug(sub); }); })[0];
+      var here = CAT_CONFIG.filter(function (c) { return c.key === tab; })[0];
+      if (home && here && home.key !== tab && !here.subcats.some(function (v) { return subSlug(v) === subSlug(sub); })) tab = home.key;
+    }
     var btn = (tab && root.querySelector('[data-vrd-tab="' + tab + '"]')) || (urlHere(config) ? root.querySelector('[data-vrd-tab]') : null);
     if (!btn) return;
     root._vrdRestoring = true;
@@ -1074,7 +1090,7 @@
       if (!btn.classList.contains('active') || tab) btn.click();
       var panel = root.querySelector('#board-' + btn.getAttribute('data-vrd-tab'));
       var pill = sub && panel ? Array.prototype.filter.call(panel.querySelectorAll('[data-vrd-subcat]'), function (b) {
-        var v = b.getAttribute('data-vrd-subcat'); return v === sub || subSlug(v) === subSlug(sub);
+        var v = b.getAttribute('data-vrd-subcat'); return v === sub || subSlug(v) === subSlug(sub) || subSlug(subLabel(v)) === subSlug(sub);
       })[0] : defaultPill(panel);
       if (pill && !pill.classList.contains('sc-active')) pill.click();
     } finally { root._vrdRestoring = false; }
@@ -1173,7 +1189,7 @@
         applyPanelFilters(panel, state, true);
         countFilters(panel);
         var q = panel.querySelector('[data-vrd-search]'), sub = btn.getAttribute('data-vrd-subcat');
-        if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : sub; q.placeholder = 'Search ' + lbl + '\u2026'; q.setAttribute('aria-label', 'Search ' + lbl); }
+        if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : subLabel(sub); q.placeholder = 'Search ' + lbl + '\u2026'; q.setAttribute('aria-label', 'Search ' + lbl); }
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
         if (panel.classList.contains('active')) tellSection(root, state);
       });

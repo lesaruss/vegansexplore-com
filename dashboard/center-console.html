@@ -2918,7 +2918,7 @@
   var DASH_ALL = { events: false, directory: false }, dashEvBanner = null, dashEvCal = null, dashDirBanner = null;
   // The Directory tab's banner is the Directory's menu, the same as /directory (LOCKED by Sean 2026-10-30, canon
   // canon-ve-directory-navigation): its picker lists the sections, the line under the title names the section and its location
-  // ("Food · South Florida"), and the chapter's art and ads follow the location picked in the filter.
+  // ("Local Food · South Florida"), and the chapter's art and ads follow the location picked in the filter.
   function dashDirSection(k, label, subs) {
     var L = (subs && subs.location) || {}, chapter = L.applies ? L.chapter || '' : '';
     if (window.VEAdRail) VEAdRail.chapter(document.getElementById('dash-dir-ad-rail'), chapter);
@@ -4294,7 +4294,7 @@
     if (window.VECityBanner) {
       if (!dashDirBanner) {
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {
-          key: 'dash-dir', param: false, title: 'Vegan Directory', allTitle: 'Food', pickLabel: 'Section',
+          key: 'dash-dir', param: false, title: 'Vegan Directory', allTitle: 'Local Food', pickLabel: 'Section',
           sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
           // Directory home: the Directory as the menu opens it, its first section, in the location picked (Sean, 2026-10-27).
           home: { label: 'Directory home', href: '/dashboard/directory', onClick: function () {

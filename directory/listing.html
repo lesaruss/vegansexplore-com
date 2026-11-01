@@ -3935,9 +3935,11 @@ function renderListing(l){
   var person = isPersonL(l);
   var community = VB || ['show', 'work', 'person'].indexOf(listingKind(l)) >= 0 ? null : getCommunityForListing(l);
   var catType = getCategoryType(l.category);
-  var dirLabel = person ? 'People' : catType === 'food' ? 'Food' : catType === 'media' ? 'Media' : 'Directory';
-  // Food Brands and Nutrition & Supplements are back under Food in the Directory (Sean, 2026-10-26).
+  var dirLabel = person ? 'People' : catType === 'food' ? 'Local Food' : catType === 'media' ? 'Media' : 'Directory';
   var dirTab = person ? 'people' : catType;
+  // Food Brands (Food & Drink) and Nutrition & Supplements live in Products (Sean, 2026-11-01, canon-ve-local-food-products).
+  var subName = l.category === 'Food Brands' ? 'Food & Drink' : String(l.category || '');
+  if(/^(Food Brands|Nutrition & Supplements)$/.test(l.category || '')){ dirLabel = 'Products'; dirTab = 'products'; }
   var bsec = VB && VB.sectionOf ? VB.sectionOf(l.category) : null;
   if(bsec){ dirLabel = bsec.label; dirTab = bsec.key; }
 
@@ -3948,7 +3950,7 @@ function renderListing(l){
   // Breadcrumb
   var breadcrumb = community
     ? '<div class="listing-breadcrumb"><a href="/communities">Communities</a> / <a href="/communities/'+community.slug+'">'+esc(community.name)+'</a> / <a href="/communities/'+community.slug+'?tab=directory">Directory</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>'
-    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'&amp;sub='+encodeURIComponent(String(l.category||'').toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''))+'">'+esc(dirLabel)+'</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>';
+    : '<div class="listing-breadcrumb"><a href="/directory">Directory</a> / <a href="/directory?tab='+dirTab+'&amp;sub='+encodeURIComponent(subName.toLowerCase().replace(/&/g,'and').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,''))+'">'+esc(dirLabel)+'</a><span class="crumb-here"> / '+esc(l.name)+'</span></div>';
 
   // Avatar
   var av = l.logo_url

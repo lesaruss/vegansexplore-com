@@ -370,7 +370,7 @@
       look +
       '<h3 class="dg-k" style="margin:22px 0 8px">Brands in our Directory</h3><p class="dg-lede" style="margin-bottom:10px">Members vote for the ones they trust. A listing here is not a recommendation for your health.</p>' +
       (SUPP ? (SUPP.length ? cards(SUPP, 'ntSupp') : '<p class="dg-empty">None listed yet.</p>') : '<div class="dg-loading">Loading...</div>') +
-      '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="/directory?tab=food&sub=nutrition-and-supplements">See them in the Directory</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add a brand</a></div>' + note();
+      '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="/directory?tab=products&sub=nutrition-and-supplements">See them in the Directory</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add a brand</a></div>' + note();
     wireCards('ntSupp', '#/supplements');
   }
 
