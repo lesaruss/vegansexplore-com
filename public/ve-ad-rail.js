@@ -29,7 +29,9 @@
   var CTA = '/business#/found'; // the business page (Sean, 2026-10-27)
   var PAGES = {
     pulse: [{ id: 'skyscraper', shape: 'tower', size: '300 x 600' }],
-    '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }]
+    '/events': [{ id: 've-events-skyscraper', shape: 'tower', size: '300 x 600' }],
+    // The Supermarket Guide's store pages (Sean, 2026-11-01): reserved for its sponsors; a Guide, then Humble Cabbage, until sold.
+    '/guides/supermarket-guide': [{ id: 've-supermarket-guide-1', shape: 'landscape', size: '300 x 250' }, { id: 've-supermarket-guide-2', shape: 'landscape', size: '300 x 250' }]
   };
   // A city hub's rail: its tall slot (page /communities/<slug>). Its two short slots run on the chapter rail (Directory, Media).
   function hubPage(slug) {

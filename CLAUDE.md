@@ -3618,7 +3618,16 @@ they're buying their spot in this massive campaign that starts in Q1."
   The free example is Publix at Brickell Village (`publix-miami-cjalb8`). Page `guides/supermarket-guide.html` and
   `guide-scripts/supermarket-guide.js` (the Airport Guide's layout, `noindex`, Pascal on the right, his lines as text): Overview, **Stores**
   (supermarket, chapter and search, **Near me** by distance, 24 at a time), one store per view (`#/store/<slug>`: its departments and
-  sections, Update, Add to my list; each department wears a flat line icon in a rounded square, `DEPT_ICON`, and each section a square photo, `SEC_IMG`, `public/guides/supermarket/<key>.jpg`, illustrative product shots made in Higgsfield 2026-11-01 with no labels, one surface and light, replaced by a member's accepted photo, `photo_url`; Sean: "icons... square rounded corners... thumbnails with photos of those items"), **My list** (members; ticks in `localStorage` `sg_ticks`), **Produce**, Help keep it right and Get
+  sections, Update, Add to my list; each department wears a flat line icon in a rounded square, `DEPT_ICON`, and each section a square photo, `SEC_IMG`, `public/guides/supermarket/<key>.jpg`, illustrative product shots made in Higgsfield 2026-11-01 with no labels, one surface and light, replaced by a member's accepted photo, `photo_url`; Sean: "icons... square rounded corners... thumbnails with photos of those items"). **The store page is three-fourths and one-fourth** (Sean, 2026-11-01: "3/4 with two section next to each other and then for
+  the 1/4... advertising reserved for our sponsors... Humble Cabbage and a complimentary Guide"): the departments two across (one under
+  1100 px) beside the ad rail (`ve-ad-rail.js` page `/guides/supermarket-guide`, slots `ve-supermarket-guide-1`, the Dairy Guide's house
+  campaign, and `-2`, Humble Cabbage's still image; migration `20261101_supermarket_guide_ad_rail.sql`; a sponsor takes a slot by linking
+  its campaign). **Each section has its own page** (`#/store/<slug>/s/<item>`; Sean: "How do we see the actual products?"): its photo,
+  the aisle as members found it, Tell us the aisle, and **Products to look for**: the Guides' products by type (`SEC_PRODUCTS`: milk,
+  yogurt, cheese, butter, ice cream from the Dairy Guide's `ve_products`), marked **Seen at <chain>** when the Guides place them at that
+  chain (`ve_product_stores`) and listed first, then **Brands that make it**, the Directory's Food Brands by `product_kinds` (meat,
+  meals, frozen, snacks, baked, pantry). A section with neither says so and asks members to add it. Each section row says See N products
+  to look for, **My list** (members; ticks in `localStorage` `sg_ticks`), **Produce**, Help keep it right and Get
   access. **Find a store** on every grocery chain's listing (`loadStores` in `directory/listing.html`, `ve-venues` `stores`, `?tab=stores`),
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,

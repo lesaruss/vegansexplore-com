@@ -231,8 +231,8 @@
     return '<span class="sg-thumb"><img src="' + esc(src) + '" alt="" width="64" height="64" loading="lazy" decoding="async"></span>';
   }
   function itemRow(v, it) {
-    return '<div class="sa-item">' + secThumb(it) + '<div class="sa-item-b"><b>' + esc(it.name) + '</b>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
-      '<div class="sa-vtags" style="margin:0 0 6px">' + freshTag(it) + '</div></div>' +
+    return '<div class="sa-item"><a class="sg-ilink" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '">' + secThumb(it) + '</a><div class="sa-item-b"><a class="sg-iname" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '"><b>' + esc(it.name) + '</b></a>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
+      '<div class="sa-vtags" style="margin:0 0 6px">' + freshTag(it) + '</div>' + (prodCount(it) ? '<a class="sg-see" href="#/store/' + esc(v.slug) + '/s/' + esc(it.id) + '">See ' + prodCount(it) + ' products to look for</a>' : '') + '</div>' +
       '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) + '<a class="sa-mini" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>' + commentsHtml(it) + '</div>';
   }
   function commentsHtml(it) {
@@ -248,10 +248,93 @@
       : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
     return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div class="sg-dh">' + deptIcon(s.name) + '<div><h3>' + esc(s.name) + '</h3>' + (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div></div></div>' + body + '</div>';
   }
+  // Products to look for (Sean, 2026-11-01: "How do we see the actual products?"). A section is a place in the store; what fills it
+  // comes from what we already hold: the Guides' products (ve_products, the Dairy Guide's milks, cheeses, yogurts...) by product type,
+  // and the Directory's Food Brands by what they make (listings.product_kinds) where no Guide covers the section yet. A product the
+  // Guides place at this chain (ve_product_stores) is marked Seen at <chain>; the rest are what to look for, until members confirm.
+  var SEC_PRODUCTS = {
+    'Plant-based milk': { types: ['Milk', 'Coffee Creamer'] }, 'Plant-based yogurt': { types: ['Yogurt', 'Sour Cream'] },
+    'Vegan cheese': { types: ['Cheese Slices', 'Shredded Cheese', 'Cheese Spreads', 'Cream Cheese', 'Feta', 'Parmesan'] },
+    'Vegan butter and spreads': { types: ['Butter'] }, 'Non-dairy ice cream': { types: ['Ice Cream'] },
+    'Fresh plant-based meat': { kinds: ['meat'] }, 'Frozen plant-based meat': { kinds: ['meat', 'frozen'] },
+    'Frozen Vegan meals': { kinds: ['meals', 'frozen'] }, 'Vegan snacks and chips': { kinds: ['snacks'] },
+    'Vegan cookies and treats': { kinds: ['baked', 'snacks'] }, 'Plant-based protein powder': { kinds: ['protein'] },
+    'Beans and lentils': { kinds: ['pantry'] }, 'Nut butters': { kinds: ['pantry'] }, 'Tofu and tempeh': { kinds: ['tofu'] },
+    'Hummus and dips': { kinds: ['dips'] }
+  };
+  var PROD = null, PROD_WAIT = null, CHAIN_HAS = {};
+  function rest(path) { return fetch(SB + '/rest/v1/' + path, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }); }
+  function loadProducts() {
+    if (PROD) return Promise.resolve(PROD);
+    if (PROD_WAIT) return PROD_WAIT;
+    PROD_WAIT = Promise.all([
+      rest('ve_products?select=id,slug,name,product_type,made_from,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url,vote_count)&limit=1000'),
+      rest('listings?select=id,slug,name,logo_url,vote_count,product_kinds,tags&status=eq.approved&category=eq.Food%20Brands&limit=500')
+    ]).then(function (x) {
+      PROD = {
+        products: (x[0] || []).filter(function (p) { return p.listings && p.listings.status === 'approved'; }),
+        brands: (x[1] || []).filter(function (b) { return (b.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0 && (b.product_kinds || []).length; })
+      };
+      return PROD;
+    });
+    return PROD_WAIT;
+  }
+  function chainHas(chain) {
+    if (!chain || !chain.slug) return Promise.resolve({});
+    if (CHAIN_HAS[chain.slug]) return Promise.resolve(CHAIN_HAS[chain.slug]);
+    return rest('listings?select=id&slug=eq.' + encodeURIComponent(chain.slug) + '&status=eq.approved&limit=1').then(function (r) {
+      if (!r[0]) return {};
+      return rest('ve_product_stores?select=product_id&removed_at=is.null&store_listing_id=eq.' + r[0].id);
+    }).then(function (rows) { var m = {}; (rows || []).forEach(function (x) { m[x.product_id] = 1; }); CHAIN_HAS[chain.slug] = m; return m; });
+  }
+  function forSection(name) {
+    var cfg = SEC_PRODUCTS[name] || {};
+    if (!PROD) return { products: [], brands: [] };
+    var products = cfg.types ? PROD.products.filter(function (p) { return cfg.types.indexOf(p.product_type) >= 0; }) : [];
+    var brands = cfg.kinds ? PROD.brands.filter(function (b) { return (b.product_kinds || []).some(function (k) { return cfg.kinds.indexOf(k) >= 0; }); }) : [];
+    return { products: products, brands: brands };
+  }
+  function prodCount(it) { var f = forSection(it.name); return f.products.length + f.brands.length; }
+  function pTitle(p) { var b = p.listings ? p.listings.name : ''; return p.name ? p.name : (b + ' ' + (p.product_type || '')).trim(); }
+  function prodTile(p, has, chainName) {
+    var b = p.listings || {}, pic = p.image_url || b.logo_url;
+    return '<a class="sg-ptile" href="/products/' + esc(p.slug) + '"><span class="sg-thumb">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
+      '<span class="sg-pb"><b>' + esc(pTitle(p)) + '</b><em>' + esc(b.name || '') + (p.product_type ? ' &middot; ' + esc(p.product_type) : '') + '</em>' +
+      (has ? '<span class="dg-tag sa-tag-fresh">Seen at ' + esc(chainName) + '</span>' : '') + '</span></a>';
+  }
+  function brandTile(b) {
+    return '<a class="sg-ptile" href="/directory/' + esc(b.slug) + '"><span class="sg-thumb">' + (b.logo_url ? '<img src="' + esc(b.logo_url) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
+      '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>Brand on Vegans Explore' + (b.vote_count ? ' &middot; ' + b.vote_count + ' votes' : '') + '</em></span></a>';
+  }
+  function viewSection(slug, itemId) {
+    var d = VENUE[slug], v = d.venue, it = null, spot = null;
+    d.spots.forEach(function (s) { (s.items || []).forEach(function (x) { if (String(x.id) === String(itemId)) { it = x; spot = s; } }); });
+    if (!it) { location.hash = '#/store/' + slug; return; }
+    var chainName = v.chain ? v.chain.name : 'this store';
+    var top = '<div class="sg-sechead">' + secThumb(it).replace('sg-thumb"', 'sg-thumb sg-thumb-lg"') + '<div><div class="dg-k">' + esc(spot.name) + ' &middot; ' + esc(v.name) + '</div><h2 class="dg-h1">' + esc(it.name) + '</h2>' +
+      '<p class="dg-lede" style="margin:0 0 8px">' + esc(it.description || '') + '</p><div class="sa-vtags">' + freshTag(it) + '</div>' +
+      '<div class="dg-btns" style="margin-top:10px">' + saveBtn('venue_item', it.id, it.saved) + '<a class="dg-btn dg-ghost" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Tell us the aisle</a></div></div></div>';
+    main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '#/store/' + v.slug], [it.name, '']]) + top + '<div id="sgProducts"><div class="dg-loading">Loading products...</div></div>';
+    Promise.all([loadProducts(), chainHas(v.chain)]).then(function (x) {
+      var box = document.getElementById('sgProducts'); if (!box) return;
+      var has = x[1] || {}, f = forSection(it.name);
+      var prods = f.products.slice().sort(function (a, b) { return (has[b.id] ? 1 : 0) - (has[a.id] ? 1 : 0) || ((b.listings.vote_count || 0) - (a.listings.vote_count || 0)) || pTitle(a).localeCompare(pTitle(b)); });
+      var brands = f.brands.slice().sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); });
+      var seen = prods.filter(function (p) { return has[p.id]; }).length;
+      var html = '<h3 class="sg-ph">Products to look for</h3><p class="dg-lede" style="font-size:13px;margin:0 0 12px">' +
+        (seen ? seen + ' seen at ' + esc(chainName) + ' by our Guides; the rest are what to look for. ' : 'What to look for on this shelf. ') +
+        'Not every store carries every one: tell us what is on the shelf at ' + esc(v.name) + ' with Tell us the aisle.</p>';
+      if (prods.length) html += '<div class="sg-pgrid">' + prods.map(function (p) { return prodTile(p, has[p.id], chainName); }).join('') + '</div>';
+      if (brands.length) html += (prods.length ? '<h3 class="sg-ph">Brands that make it</h3>' : '') + '<div class="sg-pgrid">' + brands.map(brandTile).join('') + '</div>';
+      if (!prods.length && !brands.length) html += '<p class="dg-empty">We have no products listed for this section yet. Seen one here? Tell us the aisle and add a photo, and it goes on this page once the team checks it.</p>';
+      box.innerHTML = html;
+    });
+  }
   function viewStore(slug, rest) {
     var r = (rest || '').split('/');
     if (r[0] === 'report') return viewReport(slug, r[1], r[2]);
     var d = VENUE[slug];
+    if (d && !d.error && r[0] === 's' && r[1]) return withRail(function () { viewSection(slug, r[1]); });
     if (!d) {
       main.innerHTML = crumb([['Stores', '#/stores'], ['...', '']]) + '<div class="dg-loading">Loading the store...</div>';
       api({ action: 'venue', slug: slug }).then(function (x) { VENUE[slug] = x; if (curView().indexOf('store/' + slug) === 0) route(); }).catch(function () { main.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
@@ -264,11 +347,23 @@
       (v.chain ? '<a href="/directory/' + esc(v.chain.slug) + '">' + esc(v.chain.name) + ' on Vegans Explore</a>' : '') + '</div>';
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved).replace('Add to list', 'Save store').replace('On my list', 'Saved') +
       '<a class="dg-btn dg-ghost" href="#/store/' + esc(v.slug) + '/report/missing">Add something missing</a></div>';
-    var depts = d.spots.map(function (s) { return deptCard(v, s, d.open); }).join('');
+    var depts = '<div class="sg-depts">' + d.spots.map(function (s) { return deptCard(v, s, d.open); }).join('') + '</div>';
+    if (!PROD) loadProducts().then(function () { if (curView() === 'store/' + slug) route(); });
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Stores move things around, so an aisle can change. Every section says when a member last checked it. Something not where it says? Tap Update and tell us.</p>';
     main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : (v.chain ? v.chain.name : 'Supermarket'), esc(v.name), lede, acts) + meta +
       (d.open ? depts + note : gated(depts, v.name + ' is in the full Guide', 'Every Vegan section in this store and the aisle members found it in.'));
+    wrapRail();
   }
+  // Three-fourths content, one-fourth our sponsors' space (Sean, 2026-11-01): the rail is ve-ad-rail.js, page /guides/supermarket-guide,
+  // a Guide in slot 1 and Humble Cabbage's still image in slot 2 until a supermarket or brand sponsor takes them.
+  function wrapRail() {
+    if (!window.VEAdRail) return;
+    var inner = main.innerHTML;
+    main.innerHTML = '<div class="vear-layout"><div class="vear-main">' + inner + '</div><aside class="vear-rail" data-ad-page="/guides/supermarket-guide" aria-label="Sponsors"></aside></div>';
+    try { window.VEAdRail.mountAll(main); } catch (e) {}
+  }
+  function withRail(draw) { draw(); wrapRail(); var box = document.getElementById('sgProducts'); return box; }
+
 
   // ---------- Help keep it right ----------
   function ptsLine(kind, it) {
@@ -584,7 +679,14 @@
     document.documentElement.classList.add('dg-fit');
     if (window.VEGuideArt) { var art = VEGuideArt('pascal', 'square'); if (art) guideBox.style.backgroundImage = "url('" + art + "')"; }
     var css = document.createElement('style');
-    css.textContent = '.sg-dh{display:flex;align-items:center;gap:12px}.sg-dicon{flex:0 0 auto;width:44px;height:44px;border-radius:10px;background:#e8f5e9;color:var(--vb-go-hover,#1f5f22);display:flex;align-items:center;justify-content:center}' +
+    css.textContent = '.sg-depts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}.sg-depts .sa-stand{margin:0}@media(max-width:1100px){.sg-depts{grid-template-columns:1fr}}' +
+      '.sg-ilink{flex:0 0 auto;display:block}.sg-iname{color:inherit;text-decoration:none}.sg-iname:hover b{text-decoration:underline}.sg-see{display:inline-block;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);text-decoration:none;margin-top:2px}.sg-see:hover{text-decoration:underline}' +
+      '.sg-sechead{display:flex;gap:18px;align-items:flex-start;margin:4px 0 18px}.sg-thumb-lg{width:132px!important;height:132px!important;border-radius:14px!important}@media(max-width:560px){.sg-sechead{flex-direction:column}}' +
+      '.sg-ph{font-size:15px;font-weight:900;margin:18px 0 6px}.sg-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px}' +
+      '.sg-ptile{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-ptile:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
+      '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75)}' +
+      '.sg-letter{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:20px;color:var(--vb-go-hover,#1f5f22);background:#e8f5e9}' +
+      '.sg-dh{display:flex;align-items:center;gap:12px}.sg-dicon{flex:0 0 auto;width:44px;height:44px;border-radius:10px;background:#e8f5e9;color:var(--vb-go-hover,#1f5f22);display:flex;align-items:center;justify-content:center}' +
       '.sg-thumb{flex:0 0 auto;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#f1f4f1;display:block}.sg-thumb img{width:100%;height:100%;object-fit:cover;display:block}.sg-thumb-x{background:#eef3ee}' +
       '@media(max-width:480px){.sg-thumb{width:56px;height:56px}}' +
       '.sg-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin:0 0 10px}' +
