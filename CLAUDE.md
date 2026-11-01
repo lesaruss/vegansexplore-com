@@ -2581,7 +2581,7 @@ Directory is their chapter's).
   `filterMenu: true`. The banner's dropdown is the kind of event (All events, then the kinds on the calendar; `onState` hands the
   page the kinds, `cal.setCat(kind)`, the kind stays in the address as `?cat=`), **Upcoming / Past** are the tab row (`.vev-tabs`),
   and **Filters** (`.vev-fbtn`, the count is Sort only) holds Location (Continent, Country, Chapter from the events on the calendar
-  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. The line under the title reads "Festivals · South
+  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
   `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
