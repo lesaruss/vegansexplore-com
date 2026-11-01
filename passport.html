@@ -146,7 +146,10 @@
     .dg-tile .dg-ic.dg-topic{flex-basis:84px;width:84px;height:56px;border-radius:10px;background-position:center;}
     .dg-shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 0;}
     .dg-shot img{display:block;width:100%;height:auto;}
-    @media (max-width:900px){#dgRail>.dg-cta{grid-column:2 / -1;}html.pg-founding .dg-joinbox{display:none !important;}}
+    .dg-taste{display:block;text-align:center;font-size:12.5px;font-weight:800;color:var(--g);text-decoration:underline;text-underline-offset:3px;}
+    .dg-taste[hidden]{display:none;}
+    .dg-taste-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:42px;margin-top:10px;border:1.5px solid var(--g);border-radius:6px;color:var(--g);background:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
+    @media (max-width:900px){#dgRail>.dg-cta,#dgRail>.dg-taste{grid-column:2 / -1;}html.pg-founding .dg-joinbox{display:none !important;}}
   </style>
   <script src="/public/ve-guide-corner.js"></script>
 </head>
@@ -178,6 +181,7 @@
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
     <button type="button" class="dg-cta" id="dgCta" data-join hidden>Become a Founding Member, $11</button>
+    <a class="dg-taste" id="dgTaste" href="/guides/taste?from=passport" hidden>Not ready? Try a free taste first</a>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -493,6 +497,7 @@
       var box = isMember()
         ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status
         : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button>' +
+          '<a class="dg-taste-btn" href="/guides/taste?from=passport">Not ready? Try a free taste first</a>' +
           '<p style="margin-top:10px;font-size:13px">Your Welcome Guide shows you everything once you join.</p>' + status;
       return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><ul>' +
         (OPEN ? '<li><b>Founding Member</b> on your profile for good</li>' : '') +
@@ -529,6 +534,7 @@
     nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
     bubble.textContent = t.say;
     var cta = document.getElementById('dgCta');
+    var tst = document.getElementById('dgTaste'); if (tst) tst.hidden = !FOUNDING || isMember() || cur === 'join';
     var jbb = document.querySelector('#pgJoinbox [data-join]'); if (jbb && FOUNDING) jbb.innerHTML = OPEN ? 'Become a Founding Member' : 'Get your Passport';
     if (cta) { cta.hidden = !FOUNDING || isMember() || cur === 'join'; cta.innerHTML = OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11'; }
     tickCd();
