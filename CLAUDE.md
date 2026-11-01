@@ -2636,7 +2636,15 @@ go anywhere... We need everybody to share it, even if they're not signed in."
   the Daily Pulse and Communities the same; the dashboard itself, My Saves, the Depot and account pages share the home page), without
   sign-in and tracking bits (`vl`, `t`, `view_as`, `utm_*`, `fbclid`...), and with a **signed-in member's own `?ref=<referral_code>`**,
   so the visit counts on their link and anyone who joins from it is theirs (ve-auth.js keeps any page's `?ref=` for the visit). Any
-  element with `data-ve-share` shares the page. Each share is a Google Analytics `share` event. The phone bar was tightened so Share fits
+  element with `data-ve-share` shares the page. Each share is a Google Analytics `share` event.
+- **Media and framed pages too** (Sean, 2026-11-01: "Everything needs to be able to use that button you just created"): Media's voted
+  list writes its name search, sort and filters on (`?q= &sort= &f=status:active,...`) and the episode search (`?search=`) into the
+  address and reads them on the first load (`readUrl`, `writeUrl` in `ve-media.js`; `opts.url: false` turns it off). In the dashboard,
+  Share sends **the page in the frame** when one is open (a Guide or tool opened with `openConsoleFrame`, or the Daily Pulse tab:
+  `framed()` in `ve-share.js`), so a Guide's tab or the Pulse's chapter and board tab go out as their own public address. Member-only
+  pages (`/guide`, `/levels`, `/survey`, `/secret-shopper`) share the home page, and `hub`, `embed` and `preview` are dropped.
+  City hubs (`?tab=`, `?dir=`), listings (`?tab=`, `?ep=`, `?book=`), Guides (`#/...`) and the Pulse (`/pulse/<tab>?city=`) already
+  kept their view in the address. A new view keeps its state in the address the same way, or Share cannot send it. The phone bar was tightened so Share fits
   at 320 px.
 
 ## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)

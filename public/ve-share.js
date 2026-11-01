@@ -17,19 +17,33 @@
   var DASH = [[/^\/dashboard\/directory\/([^/]+)\/?$/, '/directory/$1'], [/^\/dashboard\/directory\/?$/, '/directory'],
     [/^\/dashboard\/events\/?$/, '/events'], [/^\/dashboard\/media\/?$/, '/media'], [/^\/dashboard\/guides\/?$/, '/guides'],
     [/^\/dashboard\/pulse\/?$/, '/pulse'], [/^\/dashboard\/communities\/?$/, '/communities'],
-    [/^\/(dashboard|admin|account)(\/.*)?$/, '/']];
-  var DROP = ['vl', 't', 'view_as', 'unsub', 'token', 'fbclid', 'gclid', 'paid', 'status', 'session_id', 'welcome', 'stripe'];
+    [/^\/(dashboard|admin|account|secret-shopper|survey|levels|guide)(\/.*)?$/, '/']];
+  var DROP = ['vl', 't', 'view_as', 'unsub', 'token', 'fbclid', 'gclid', 'paid', 'status', 'session_id', 'welcome', 'stripe', 'hub', 'embed', 'preview'];
+
+  // The dashboard shows some pages in a frame (a Guide, the Daily Pulse, Bounties). Share sends the page in the frame, as its own
+  // address carries it (the Pulse's chapter and tab, a Guide's tab), not the dashboard's.
+  function framed() {
+    try {
+      var f = document.querySelector('#dash-content.detail-open #dash-console-host iframe') ||
+        Array.prototype.filter.call(document.querySelectorAll('#dash-pulse-host iframe'), function (x) { return x.offsetParent; })[0];
+      if (!f || !f.contentWindow) return null;
+      var l = f.contentWindow.location;
+      if (l.origin !== location.origin || !l.pathname || l.pathname === 'blank') return null;
+      return f;
+    } catch (e) { return null; }
+  }
 
   function member() {
     try { var m = window.VEAuth && VEAuth.getMember && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? VEAuth.getMember() : null; return m || null; }
     catch (e) { return null; }
   }
   function url() {
-    var path = location.pathname, hash = location.hash, keep = true;
+    var fr = framed(), at = fr ? fr.contentWindow.location : location;
+    var path = at.pathname, hash = at.hash, keep = true;
     for (var i = 0; i < DASH.length; i++) {
       if (DASH[i][0].test(path)) { var to = path.replace(DASH[i][0], DASH[i][1]); keep = to !== '/'; path = to; break; }
     }
-    var q = new URLSearchParams(keep ? location.search : '');
+    var q = new URLSearchParams(keep ? at.search : '');
     DROP.forEach(function (k) { q.delete(k); });
     Array.from(q.keys()).forEach(function (k) { if (/^utm_/.test(k)) q.delete(k); });
     if (!keep) hash = '';
@@ -39,7 +53,9 @@
     return location.origin + path + (s ? '?' + s : '') + (hash && hash !== '#' ? hash : '');
   }
   function title() {
-    var t = (document.title || '').replace(/\s*[—|-]\s*Vegans Explore\s*$/, '').trim();
+    var fr = framed(), d = document;
+    try { if (fr) d = fr.contentDocument || document; } catch (e) {}
+    var t = ((d && d.title) || document.title || '').replace(/\s*[—|-]\s*Vegans Explore\s*$/, '').trim();
     return t ? t + ' on Vegans Explore' : 'Vegans Explore';
   }
 
