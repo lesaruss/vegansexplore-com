@@ -92,6 +92,7 @@
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
+    { k: 'challenge-stop', t: 'Be a Passport Challenge stop', live: 1, href: '/business/challenge', what: 'Five Vegan businesses a month in each chapter are the stops on our Passport Challenge: members come to check in, show what they ordered and win your gift cards in the Vault. You give four $25 gift cards. If you are not a member yet, your cards give you full membership, and your claim is included.', why: 'About $30 in food for a month of promotion to every member, and new customers who come back to use the cards. Starting in South Florida.' },
     { k: 'directory-page', t: 'Your Directory page', live: 1, href: '#/featured', what: 'A page on Vegans Explore that members find by city, search and votes, with your menu, hours, photos and links.', why: 'Free to be listed. Claim it to keep it current and see who finds you.' },
     { k: 'pulse-sponsor', t: 'A sponsored Daily Pulse story', live: 1, what: 'Your news written up and shared in your city\'s Daily Pulse, the topic members read every morning.', why: 'Sponsors give us the pictures; we write it and put it in front of your city.' },
     { k: 'bounties', t: 'Creator bounties', live: 1, what: 'Members and local creators make posts, reels and reviews about you, and earn points for it.', why: 'Real people showing your food, on their own accounts.' },

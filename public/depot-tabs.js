@@ -47,6 +47,7 @@
     { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
     { group: 'Directory', href: '/admin/depot/venues', label: 'Venues' },
     { group: 'Directory', href: '/admin/depot/checkins', label: 'Check-ins' },
+    { group: 'Directory', href: '/admin/depot/challenge-stops', label: 'Passport Challenge stops' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/social', label: 'Social' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },

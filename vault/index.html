@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Vault — Vegans Explore</title>
+  <meta name="description" content="Gift cards from Vegan businesses in every chapter. Members bid their points on them every week in the Vegans Explore Vault.">
+  <link rel="canonical" href="https://vegansexplore.com/vault">
+  <meta property="og:title" content="The Vault — Vegans Explore">
+  <meta property="og:description" content="Gift cards from Vegan businesses near you. Members bid points on them every week.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--g:#2d7d31;--gd:#1f5f22;--gl:#eaf7ea;--ink:#1a1a1a;--mute:rgba(26,26,26,.72);--line:rgba(0,0,0,.1)}
+    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--ink);line-height:1.6}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px}
+    main{max-width:none;margin:0;padding:36px 40px 80px}
+    @media(max-width:700px){main{padding:24px 16px 64px}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gd)}
+    h1{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1.1;margin:6px 0 10px}
+    h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin:28px 0 12px}
+    .sub{font-size:15.5px;color:var(--mute);max-width:860px}
+    .bar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:18px 0 6px}
+    select{appearance:none;-webkit-appearance:none;font:inherit;font-size:14px;font-weight:700;padding:11px 44px 11px 14px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px}
+    .top{display:flex;gap:12px;align-items:center}
+    .logo{width:52px;height:52px;border-radius:10px;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;overflow:hidden;flex:0 0 auto}
+    .logo img{width:100%;height:100%;object-fit:cover}
+    .top b{display:block;font-size:15px;line-height:1.3}
+    .top b a{color:inherit}
+    .top span{font-size:12.5px;color:var(--mute)}
+    .amt{font-size:34px;font-weight:900;line-height:1;color:var(--gd)}
+    .meta{font-size:13px;color:var(--mute)}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--gd)}
+    .tag.soon{background:#fff4e2;color:#6b3f00}
+    .tag.lead{background:var(--gd);color:#fff}
+    .tag.out{background:#fbeeec;color:#8a1c12}
+    .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:auto}
+    input[type=number],input[type=tel]{width:120px;font:inherit;font-size:15px;padding:10px 12px;border:1.5px solid #ccd3cc;border-radius:6px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 16px;border-radius:6px;font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--gd);color:#fff;text-decoration:none}
+    .btn.ghost{background:#fff;color:var(--ink);border:1.5px solid #ccd3cc}
+    .btn:disabled{opacity:.55;cursor:wait}
+    .msg{font-size:12.5px;font-weight:700;color:var(--gd);min-height:18px}
+    .msg.err{color:#8a1c12}
+    .gift{border-radius:16px;padding:18px;color:#fff;background:linear-gradient(135deg,#1f5f22,#2d7d31 60%,#3A9B3E)}
+    .gift .amt{color:#fff;font-size:40px;margin:12px 0 4px}
+    .gift .code{font-family:ui-monospace,Menlo,monospace;font-size:20px;letter-spacing:.18em;background:rgba(255,255,255,.16);border-radius:8px;padding:8px 12px;display:inline-block;margin-top:8px}
+    .gift .meta{color:rgba(255,255,255,.88)}
+    .gift.used{background:#6b6f6b}
+    .join{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:16px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .empty{font-size:14.5px;color:var(--mute);background:#fff;border:1px dashed var(--line);border-radius:12px;padding:18px}
+    [hidden]{display:none!important}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main>
+    <p class="eyebrow">Passport Challenge</p>
+    <h1>The Vault</h1>
+    <p class="sub">Gift cards from Vegan businesses in every chapter, put in by this month's Passport Challenge stops. Members bid their points on them. Each card's bidding runs a week: the highest bid wins, and only the winner's points are spent. One win per member a month.</p>
+    <div class="bar"><label for="ch" class="meta" style="font-weight:800">Chapter</label><select id="ch" aria-label="Chapter"><option value="">Every chapter</option></select></div>
+    <div id="joinbox"></div>
+    <section id="minebox" hidden><h2>Your cards</h2><div class="grid" id="mine"></div></section>
+    <h2>Up for bidding</h2>
+    <div class="grid" id="cards"><p class="sub">Loading...</p></div>
+    <h2>This month's stops</h2>
+    <div class="grid" id="stops"></div>
+    <p class="meta" style="margin-top:22px">Own a Vegan business? <a href="/business/challenge">Be a Passport Challenge stop</a>: five slots a month in each chapter.</p>
+  </main>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-vault';
+    var D = null, M = null, CH = '';
+    try { CH = localStorage.getItem('ve_vault_ch') || ''; } catch (e) {}
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function tok() { return window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? VEAuth.getToken() : null; }
+    function api(b) { var h = { 'Content-Type': 'application/json' }, t = tok(); if (t) h.Authorization = 'Bearer ' + t; return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+    function chName(s) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === s; })[0]; return h ? (h.name || h.title || s) : s; }
+    function left(t) { var ms = new Date(t) - Date.now(); if (ms <= 0) return 'closing now'; var d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5); return d ? d + 'd ' + h + 'h left' : h ? h + 'h left' : Math.max(1, Math.floor(ms / 6e4)) + 'm left'; }
+    function logo(l) { return '<div class="logo">' + (l.logo_url ? '<img alt="" src="' + esc(l.logo_url) + '" loading="lazy">' : esc((l.name || 'V').charAt(0))) + '</div>'; }
+    function drawCards() {
+      var rows = (D.cards || []).filter(function (c) { return !CH || c.chapter === CH; });
+      document.getElementById('cards').innerHTML = rows.length ? rows.map(function (c) {
+        var open = c.status === 'available', minNext = Math.max(D.min_bid, (c.top || 0) + 10);
+        var state = !open ? '<span class="tag soon">Opens ' + esc(new Date(c.opens_at).toLocaleDateString([], { month: 'short', day: 'numeric' })) + '</span>'
+          : c.mine ? (c.mine >= c.top ? '<span class="tag lead">You are leading</span>' : '<span class="tag out">You were outbid</span>') : '<span class="tag">' + esc(left(c.ends_at)) + '</span>';
+        return '<div class="card"><div class="top">' + logo(c.listing) + '<div><b><a href="/directory/' + esc(c.listing.slug) + '">' + esc(c.listing.name) + '</a></b><span>' + esc(c.listing.city || chName(c.chapter)) + '</span></div></div>' +
+          '<div class="amt">$' + (c.value_cents / 100) + '</div><div>' + state + '</div>' +
+          '<div class="meta">' + (c.bids ? 'Top bid ' + Number(c.top).toLocaleString() + ' points, ' + c.bids + (c.bids === 1 ? ' bid' : ' bids') : open ? 'No bids yet. Starts at ' + D.min_bid + ' points.' : 'Bidding opens on the 1st.') + (c.mine ? ' &middot; Yours: ' + Number(c.mine).toLocaleString() : '') + '</div>' +
+          (open ? (D.member ? '<div class="row"><input type="number" min="' + minNext + '" step="10" value="' + minNext + '" aria-label="Your bid in points" data-amt="' + c.id + '"><button type="button" class="btn" data-bid="' + c.id + '">Bid</button></div><p class="msg" id="m-' + c.id + '" role="status"></p>'
+            : '<div class="row"><a class="btn ghost" href="/passport?from=vault&back=%2Fvault">Members bid points</a></div>') : '') + '</div>';
+      }).join('') : '<p class="empty">' + (CH ? 'No cards in ' + esc(chName(CH)) + ' right now.' : 'No cards up for bidding right now.') + ' New stops and their cards go up on the 1st of every month.</p>';
+      var st = (D.stops || []).filter(function (s) { return !CH || s.chapter === CH; });
+      document.getElementById('stops').innerHTML = st.length ? st.map(function (s) {
+        return '<div class="card"><div class="top">' + logo(s) + '<div><b><a href="/directory/' + esc(s.slug) + '">' + esc(s.name) + '</a></b><span>' + esc(s.city || chName(s.chapter)) + ' &middot; ' + esc(new Date(s.month + 'T12:00:00Z').toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' })) + '</span></div></div><p class="meta">Check in here, show what you ordered and win their cards in the Vault.</p></div>';
+      }).join('') : '<p class="empty">The first Passport Challenge stops are being picked now, starting in South Florida.</p>';
+    }
+    function drawMine() {
+      if (!M) return;
+      var box = document.getElementById('minebox'), cards = M.cards || [];
+      box.hidden = !cards.length;
+      document.getElementById('mine').innerHTML = cards.map(function (c) {
+        var used = c.status === 'redeemed', gone = c.status === 'expired';
+        return '<div class="card"><div class="gift' + (used || gone ? ' used' : '') + '"><div class="top" style="color:#fff">' + logo(c.listing || {}) + '<div><b>' + esc((c.listing || {}).name) + '</b><span style="color:rgba(255,255,255,.85)">' + esc((c.listing || {}).address_city || '') + '</span></div></div>' +
+          '<div class="amt">$' + (c.value_cents / 100) + '</div><div class="meta">' + esc(c.holder) + ' &middot; ' + (used ? 'Used ' + esc(new Date(c.redeemed_at).toLocaleDateString()) : gone ? 'Expired' : 'Good until ' + esc(new Date(c.expires_at).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' }))) + '</div>' +
+          (used || gone ? '' : '<div class="code">' + esc(String(c.code || '').replace(/(.{4})/, '$1 ')) + '</div>') + '</div>' +
+          (used || gone ? '' : '<p class="meta">At the counter, hand your phone to the staff. They type their PIN here to use it. One card per visit, no cash back.</p><div class="row"><input type="tel" inputmode="numeric" maxlength="6" placeholder="Staff PIN" aria-label="Staff PIN" data-pin="' + c.id + '" data-dictate="off"><button type="button" class="btn" data-redeem="' + c.id + '">Use this card</button></div><p class="msg" id="r-' + c.id + '" role="status"></p>') + '</div>';
+      }).join('');
+    }
+    function chapters() {
+      var set = {}; (D.cards || []).concat(D.stops || []).forEach(function (x) { set[x.chapter] = 1; });
+      var sel = document.getElementById('ch');
+      sel.innerHTML = '<option value="">Every chapter</option>' + Object.keys(set).sort().map(function (s) { return '<option value="' + esc(s) + '"' + (s === CH ? ' selected' : '') + '>' + esc(chName(s)) + '</option>'; }).join('');
+      if (CH && !set[CH]) { CH = ''; sel.value = ''; }
+    }
+    function load() {
+      api({ action: 'vault' }).then(function (d) {
+        D = d || { cards: [], stops: [] }; chapters(); drawCards();
+        document.getElementById('joinbox').innerHTML = D.member ? '' : '<div class="join"><div><b>Bidding is for members.</b><div class="meta">Join with the $11 Passport and its 1,100 points, then bid on any card here.</div></div><a class="btn" href="/passport?from=vault&back=%2Fvault">Explore the Passport</a></div>';
+      }).catch(function () { document.getElementById('cards').innerHTML = '<p class="empty">The Vault did not load. Refresh to try again.</p>'; });
+      if (tok()) api({ action: 'mine' }).then(function (m) { M = m && m.ok ? m : null; drawMine(); });
+    }
+    document.getElementById('ch').addEventListener('change', function (e) { CH = e.target.value; try { localStorage.setItem('ve_vault_ch', CH); } catch (x) {} drawCards(); });
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-bid]');
+      if (b) {
+        var id = b.getAttribute('data-bid'), amt = Math.floor(Number(document.querySelector('[data-amt="' + id + '"]').value)), m = document.getElementById('m-' + id);
+        b.disabled = true; m.className = 'msg'; m.textContent = 'Placing your bid...';
+        api({ action: 'bid', card_id: id, points: amt }).then(function (r) {
+          b.disabled = false;
+          if (r && r.ok) { m.textContent = r.leading ? 'You are leading at ' + Number(r.yours).toLocaleString() + ' points.' : 'Bid placed. Someone is higher at ' + Number(r.top).toLocaleString() + '.'; setTimeout(load, 900); return; }
+          m.className = 'msg err';
+          m.textContent = r && r.error === 'not_enough_points' ? 'You have ' + Number(r.balance).toLocaleString() + ' points to spend.' : r && r.error === 'min_bid' ? 'The lowest bid is ' + r.min + ' points.' : r && r.error === 'raise_it' ? 'Bid more than your last bid (' + r.yours + ').' : r && r.error === 'not_open' ? 'Bidding on this card has closed.' : 'That did not go through.';
+        });
+        return;
+      }
+      var rb = e.target.closest('[data-redeem]');
+      if (rb) {
+        var cid = rb.getAttribute('data-redeem'), pin = document.querySelector('[data-pin="' + cid + '"]').value.trim(), rm = document.getElementById('r-' + cid);
+        rb.disabled = true; rm.className = 'msg'; rm.textContent = 'Checking...';
+        api({ action: 'redeem', card_id: cid, pin: pin }).then(function (r) {
+          rb.disabled = false;
+          if (r && r.ok) { rm.textContent = 'Used. Enjoy your meal.'; setTimeout(load, 1200); return; }
+          rm.className = 'msg err';
+          rm.textContent = r && r.why === 'wrong_pin' ? 'That PIN is not right. Ask the staff to try again.' : r && r.why === 'used' ? 'This card was already used.' : r && r.why === 'expired' ? 'This card has expired.' : 'That did not go through.';
+        });
+      }
+    });
+    function start() { if (!window.VEAuth) return setTimeout(start, 100); load(); }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
