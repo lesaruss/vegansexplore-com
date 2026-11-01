@@ -142,9 +142,16 @@
     // The live filters as pills by the search, each with an x that clears it (Sean, 2026-11-01: "Put it in that little pill, and if
     // you hit X on it, it clears the filter... the search bar just shrinks"). They replaced the Markets and Meal Prep switches.
     + '.vrd-root .vrd-chips{display:flex;gap:8px;flex:0 1 auto;min-width:0;overflow:hidden}.vrd-root .vrd-chips:empty{display:none}'
-    + '.vrd-root .vrd-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;max-width:220px}'
-    + '.vrd-root .vrd-chip span:first-child{overflow:hidden;text-overflow:ellipsis}'
-    + '.vrd-root .vrd-chip:hover{border-color:var(--vb-accent-ink,#2d7a4f)}.vrd-root .vrd-chip .vrd-x{font-size:15px;line-height:1}'
+    + '.vrd-root .vrd-chip{flex:0 0 auto;display:inline-flex;align-items:stretch;height:32px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;white-space:nowrap;max-width:240px;overflow:hidden}'
+    + '.vrd-root .vrd-chip button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0 6px 0 12px;overflow:hidden;text-overflow:ellipsis}'
+    + '.vrd-root .vrd-chip button.vrd-x{padding:0 10px 0 4px;font-size:15px;line-height:1}'
+    + '.vrd-root .vrd-chip:hover{border-color:var(--vb-accent-ink,#2d7a4f)}'
+    // Turned off: still there, not filtering, until it is turned back on or its x takes it away.
+    + '.vrd-root .vrd-chip.off{background:#fff;border-color:#d6d6d6;color:#888}.vrd-root .vrd-chip.off button:first-child{text-decoration:line-through}'
+    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-kindsub{grid-column:1/-1}'
+    + '.vrd-root .vrd-kindbox{display:flex;flex-wrap:wrap;gap:8px}'
+    + '.vrd-root .vrd-kindbox button{font-family:Montserrat,sans-serif;font-size:12px;font-weight:700;padding:8px 12px;border-radius:6px;border:1.5px solid #ddd;background:#fff;color:#1a1a1a;cursor:pointer}'
+    + '.vrd-root .vrd-kindbox button[aria-pressed=true]{background:var(--vb-soft,#f0faf4);border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f)}'
     + '@media(max-width:600px){.vrd-root .vrd-chips{flex:1 1 100%;flex-wrap:wrap;overflow:visible}}'
     + '.vrd-root .vrd-tools .vrd-search-wrap{position:relative;flex:1 1 auto;min-width:160px}'
     + '.vrd-root .vrd-tools .vrd-search-input{height:44px;border-radius:6px;padding:0 14px 0 34px;font-size:13px}'
@@ -343,9 +350,10 @@
     // Media is everywhere and none of it is a place (Sean, 2026-10-27): no Area, How Vegan or Online / Closed for it.
     if (cat.key === 'media' || cat.key === 'people') typeHtml = '';
     // A sub-section's own filters (SUB_FILTERS), shown while its pill is picked.
-    var subHtml = '<span class="vrd-sub" data-sub-for="kind" hidden><span class="geo-label" data-vrd-kind-label>Makes</span>' +
-      '<select aria-label="Filter by what they make" class="sort-select" data-vrd-kind="' + cat.key + '"><option value="">All</option>' +
-      KINDS.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
+    // The shelf's types pick more than one (Sean, 2026-11-01: "I can add multiple of them and see a filtering of different categories
+    // together"): a listing shows if it has any type picked. syncSubFilters fills the buttons.
+    var subHtml = '<span class="vrd-sub vrd-kindsub" data-sub-for="kind" hidden><span class="geo-label" data-vrd-kind-label>Makes</span>' +
+      '<div class="vrd-kindbox" data-vrd-kinds="' + cat.key + '" role="group" aria-label="Filter by type"></div></span>' +
       '<span class="vrd-sub" data-sub-for="cuisine" hidden><span class="geo-label">Food</span>' +
       '<select aria-label="Filter by kind of food" class="sort-select" data-vrd-cuisine="' + cat.key + '"><option value="">All</option>' +
       CUISINES.map(function (k) { return '<option value="' + k[0] + '">' + k[1] + '</option>'; }).join('') + '</select></span>' +
@@ -741,7 +749,7 @@
   function geoApplies(panel) {
     if (!panel) return false;
     var sf = subFiltersFor(panel, currentSubcat(panel)), sells = panel.querySelector('[data-vrd-sells]');
-    return !(sf.geo === false && !(sf.sells && sells && sellsHere(sells.value)));
+    return !(sf.geo === false && !(sf.sells && sells && sellsHere(fv(sells))));
   }
   function locApplies(panel) { return !!LOCCFG && !!panel && LOC_SECTIONS.indexOf(panel.id.replace(/^board-/, '')) >= 0 && geoApplies(panel); }
   // The tag by the search and the Location section show only where location applies.
@@ -952,18 +960,7 @@
       if (!on) { var s = w.querySelector('select'); if (s) s.value = ''; }
     });
     // The shelf's own types, only those it has listings for; none, and the filter hides.
-    var kindSel = bar.querySelector('[data-vrd-kind]');
-    if (kindSel && sf.kind) {
-      var g = KIND_GROUPS[sf.kind] || KIND_GROUPS.food, sub = currentSubcat(panel), have = {};
-      panel.querySelectorAll('.rank-card').forEach(function (c) {
-        if ((c.dataset.subcat || '').split('|').indexOf(sub) > -1) (c.dataset.kinds || '').split('|').forEach(function (k) { if (k) have[k] = 1; });
-      });
-      var opts = g.kinds.filter(function (k) { return have[k[0]]; }), keep = kindSel.value;
-      kindSel.innerHTML = '<option value="">All</option>' + opts.map(function (k) { return '<option value="' + k[0] + '">' + esc(k[1]) + '</option>'; }).join('');
-      kindSel.value = opts.some(function (k) { return k[0] === keep; }) ? keep : '';
-      var kl = bar.querySelector('[data-vrd-kind-label]'); if (kl) kl.textContent = g.label;
-      var kw = kindSel.closest('.vrd-sub'); if (kw) kw.hidden = !opts.length;
-    }
+    paintKinds(panel);
     // Newest and Oldest belong to books and films; anywhere else the sort goes back to Most Votes.
     var sortSel = bar.querySelector('[data-vrd-sort]');
     if (sortSel) {
@@ -972,9 +969,37 @@
     }
     // Brands sell everywhere, so no location filter, until a promoter looks for the ones at markets and events.
     var sells = bar.querySelector('[data-vrd-sells]');
-    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = (sf.geo === false && !(sf.sells && sells && sellsHere(sells.value))) || (!!LOCCFG && !LOC.chapter);
+    var geo = bar.querySelector('.vrd-geo'); if (geo) geo.hidden = (sf.geo === false && !(sf.sells && sells && sellsHere(fv(sells)))) || (!!LOCCFG && !LOC.chapter);
     if (LOCCFG) locShow(panel);
   }
+
+  // The shelf's types, only those it has listings for; a type picked stays picked (on, or turned off from its pill) while the shelf
+  // still has it. panel._kinds is {key: true on | false off}, in the order picked.
+  function kindsHere(panel) {
+    var sf = subFiltersFor(panel, currentSubcat(panel)); if (!sf.kind) return null;
+    var g = KIND_GROUPS[sf.kind] || KIND_GROUPS.food, sub = currentSubcat(panel), have = {};
+    panel.querySelectorAll('.rank-card').forEach(function (c) {
+      if ((c.dataset.subcat || '').split('|').indexOf(sub) > -1) (c.dataset.kinds || '').split('|').forEach(function (k) { if (k) have[k] = 1; });
+    });
+    return { label: g.label, kinds: g.kinds.filter(function (k) { return have[k[0]]; }) };
+  }
+  function paintKinds(panel) {
+    var box = panel.querySelector('[data-vrd-kinds]'); if (!box) return;
+    var kh = kindsHere(panel), cur = panel._kinds || {}, next = {};
+    if (kh) kh.kinds.forEach(function (k) { if (k[0] in cur) next[k[0]] = cur[k[0]]; });
+    // Keep the order they were picked in.
+    var ordered = {}; Object.keys(cur).forEach(function (k) { if (k in next) ordered[k] = next[k]; });
+    panel._kinds = ordered;
+    box.innerHTML = kh ? kh.kinds.map(function (k) { return '<button type="button" data-kind="' + k[0] + '" aria-pressed="' + (k[0] in ordered) + '">' + esc(k[1]) + '</button>'; }).join('') : '';
+    var kl = panel.querySelector('[data-vrd-kind-label]'); if (kl && kh) kl.textContent = kh.label;
+    var kw = box.closest('.vrd-sub'); if (kw) kw.hidden = !(kh && kh.kinds.length);
+  }
+  function kindLabel(panel, k) {
+    var sf = subFiltersFor(panel, currentSubcat(panel)), g = KIND_GROUPS[sf.kind] || KIND_GROUPS.food;
+    var m = g.kinds.filter(function (x) { return x[0] === k; })[0]; return m ? m[1] : k;
+  }
+  // A filter's value unless its pill is turned off.
+  function fv(sel) { return sel && !sel._paused ? sel.value : ''; }
 
   function applyPanelFilters(panel, state, resetPage) {
     var special = currentSubcat(panel);
@@ -986,25 +1011,25 @@
     var citySel = bar ? bar.querySelector('[data-vrd-city]') : null;
     var typeSel = bar ? bar.querySelector('[data-vrd-type]') : null;
     var perpageSel = panel.querySelector('[data-vrd-perpage]');
-    var county = countySel ? countySel.value : '';
-    var city = citySel ? citySel.value : '';
-    var type = typeSel ? typeSel.value : '';
+    var county = fv(countySel);
+    var city = fv(citySel);
+    var type = fv(typeSel);
     var veganSel = bar ? bar.querySelector('[data-vrd-vegan]') : null;
-    var vegan = veganSel ? veganSel.value : '';
+    var vegan = fv(veganSel);
     var perpage = perpageSel ? (parseInt(perpageSel.value, 10) || 24) : 24;
     var countyMap = {};
     if (countySel) { try { countyMap = JSON.parse(countySel.dataset.cities || '{}'); } catch (e) {} }
-    var regionSel = bar ? bar.querySelector('[data-vrd-region]') : null, region = regionSel ? regionSel.value : '';
+    var regionSel = bar ? bar.querySelector('[data-vrd-region]') : null, region = fv(regionSel);
     // The picked sub-section's own filters; the others are hidden and cleared (syncSubFilters).
     var sf = subFiltersFor(panel, special);
-    var booktypeSel = bar ? bar.querySelector('[data-vrd-booktype]') : null, booktype = sf.booktype && booktypeSel ? booktypeSel.value : '';
-    var htypeSel = bar ? bar.querySelector('[data-vrd-htype]') : null, htype = sf.htype && htypeSel ? htypeSel.value : '';
-    var mstatSel = bar ? bar.querySelector('[data-vrd-mstat]') : null, mstat = sf.mstat && mstatSel ? mstatSel.value : '';
-    var specSel = bar ? bar.querySelector('[data-vrd-spec]') : null, spec = sf.spec && specSel ? specSel.value : '';
-    var kindSel = bar ? bar.querySelector('[data-vrd-kind]') : null, kind = sf.kind && kindSel ? kindSel.value : '';
-    var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain && chainSel ? chainSel.value : '';
-    var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine && cuisineSel ? cuisineSel.value : '';
-    var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells && sellsSel ? sellsSel.value : '';
+    var booktypeSel = bar ? bar.querySelector('[data-vrd-booktype]') : null, booktype = sf.booktype ? fv(booktypeSel) : '';
+    var htypeSel = bar ? bar.querySelector('[data-vrd-htype]') : null, htype = sf.htype ? fv(htypeSel) : '';
+    var mstatSel = bar ? bar.querySelector('[data-vrd-mstat]') : null, mstat = sf.mstat ? fv(mstatSel) : '';
+    var specSel = bar ? bar.querySelector('[data-vrd-spec]') : null, spec = sf.spec ? fv(specSel) : '';
+    var onKinds = sf.kind ? Object.keys(panel._kinds || {}).filter(function (k) { return panel._kinds[k]; }) : [];
+    var chainSel = bar ? bar.querySelector('[data-vrd-chain]') : null, chain = sf.chain ? fv(chainSel) : '';
+    var cuisineSel = bar ? bar.querySelector('[data-vrd-cuisine]') : null, cuisine = sf.cuisine ? fv(cuisineSel) : '';
+    var sellsSel = bar ? bar.querySelector('[data-vrd-sells]') : null, sells = sf.sells ? fv(sellsSel) : '';
     if (sf.geo === false && !sellsHere(sells)) { city = ''; county = ''; region = ''; }
     // Location mode: the chapters the location covers, wherever it applies (locApplies).
     var hubSet = null;
@@ -1025,7 +1050,7 @@
       else if (county && countyMap[county]) { geoOk = countyMap[county].indexOf(card.dataset.city) > -1; }
       if (geoOk && region) { var hs = card.dataset.hubs || ''; geoOk = hs === '*' || hs.split('|').indexOf(region) > -1; }
       if (geoOk && hubSet) { var hl = card.dataset.hubs || ''; geoOk = hl === '*' || hl.split('|').some(function (x) { return hubSet.indexOf(x) > -1; }); }
-      if (kind && (card.dataset.kinds || '').split('|').indexOf(kind) < 0) geoOk = false;
+      if (onKinds.length && !(card.dataset.kinds || '').split('|').some(function (k) { return onKinds.indexOf(k) > -1; })) geoOk = false;
       if (booktype && card.dataset.booktype !== booktype) geoOk = false;
       if (htype && card.dataset.htype !== htype) geoOk = false;
       if (mstat && card.dataset.mstat !== mstat) geoOk = false;
@@ -1080,18 +1105,25 @@
       if (sel.style.display === 'none' || sel.disabled) return false;
       for (var el = sel.parentNode; el && el !== pop; el = el.parentNode) if (el.hidden) return false;
       var start = sel._vrdStart !== undefined ? sel._vrdStart : '';
+      if (sel.value === start) sel._paused = false;
       return sel.value !== start && sel.selectedIndex >= 0;
     });
   }
+  // One row of pills (Sean, 2026-11-01: "If you select them green, they're all on. If you select one off, it unsorts. And then when
+  // you're done, you just click the X's"): tap a pill to turn it off and on, its x to take it away. The shelf's types come first.
   function paintChips(panel) {
     var box = panel.querySelector('[data-vrd-chips]'); if (!box) return;
-    var live = liveFilters(panel);
-    box.innerHTML = live.map(function (sel, i) {
-      var t = sel.options[sel.selectedIndex].text;
-      return '<button type="button" class="vrd-chip" data-vrd-chip="' + i + '" title="Clear this filter" aria-label="' + esc(t) + '. Clear this filter"><span>' + esc(t) + '</span><span class="vrd-x" aria-hidden="true">&times;</span></button>';
+    var items = [];
+    var sf = subFiltersFor(panel, currentSubcat(panel));
+    if (sf.kind) Object.keys(panel._kinds || {}).forEach(function (k) { items.push({ kind: k, label: kindLabel(panel, k), on: panel._kinds[k] }); });
+    liveFilters(panel).forEach(function (sel) { items.push({ sel: sel, label: sel.options[sel.selectedIndex].text, on: !sel._paused }); });
+    box.innerHTML = items.map(function (it, i) {
+      return '<span class="vrd-chip' + (it.on ? '' : ' off') + '"><button type="button" data-vrd-chip="' + i + '" aria-pressed="' + it.on + '" title="' + (it.on ? 'Turn this filter off' : 'Turn this filter back on') + '">' + esc(it.label) + '</button>' +
+        '<button type="button" class="vrd-x" data-vrd-chipx="' + i + '" aria-label="Remove ' + esc(it.label) + '">&times;</button></span>';
     }).join('');
-    box._vrdLive = live;
+    box._vrdItems = items;
   }
+
 
   function renderVrdPagination(panel, catKey, page, totalPages) {
     var el = panel.querySelector('#' + catKey + '-pagination');
@@ -1209,8 +1241,10 @@
       if (sel.hasAttribute('data-vrd-loc')) return;
       var wrap = sel.closest('.vrd-sub'); if (wrap && wrap.hidden) return;
       if (sel.style.display === 'none' || sel.hidden) return;
-      if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart) n++;
+      if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart && !sel._paused) n++;
     });
+    var kw = panel.querySelector('[data-vrd-kinds]'), kwrap = kw && kw.closest('.vrd-sub');
+    if (kw && !(kwrap && kwrap.hidden)) n += Object.keys(panel._kinds || {}).filter(function (k) { return panel._kinds[k]; }).length;
     badge.textContent = n; badge.hidden = !n;
   }
   function wireControls(root, state) {
@@ -1227,8 +1261,10 @@
       // Reset puts every filter back where it started (the sub-section stays); each change runs the page's own filtering.
       var reset = pop.querySelector('[data-vrd-reset]'); if (reset) reset.addEventListener('click', function () {
         pop.querySelectorAll('.sort-bar select').forEach(function (sel) {
+          sel._paused = false;
           if (sel._vrdStart !== undefined && sel.value !== sel._vrdStart) { sel.value = sel._vrdStart; sel.dispatchEvent(new Event('change', { bubbles: true })); }
         });
+        var panel = btn.closest('.board-panel'); panel._kinds = {}; paintKinds(panel); applyPanelFilters(panel, state, true);
         countFilters(btn.closest('.board-panel'));
       });
       pop.addEventListener('keydown', function (e) { if (e.key === 'Escape') { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
@@ -1316,16 +1352,29 @@
         applyPanelFilters(sel.closest('.board-panel'), state, true);
       });
     });
-    // A pill's x puts its filter back where it started and runs that filter's own change.
+    // A pill: tap to turn it off and on; its x takes it away (a type unpicked, a filter back where it started).
     root.querySelectorAll('[data-vrd-chips]').forEach(function (box) {
       box.addEventListener('click', function (e) {
-        var b = e.target.closest('[data-vrd-chip]'); if (!b || !box._vrdLive) return;
-        var sel = box._vrdLive[+b.getAttribute('data-vrd-chip')]; if (!sel) return;
-        sel.value = sel._vrdStart !== undefined ? sel._vrdStart : ''; sel.dispatchEvent(new Event('change', { bubbles: true }));
-        var panel = box.closest('.board-panel'); applyPanelFilters(panel, state, true); countFilters(panel);
+        var t = e.target.closest('[data-vrd-chip], [data-vrd-chipx]'); if (!t || !box._vrdItems) return;
+        var x = t.hasAttribute('data-vrd-chipx'), it = box._vrdItems[+(t.getAttribute(x ? 'data-vrd-chipx' : 'data-vrd-chip'))]; if (!it) return;
+        var panel = box.closest('.board-panel');
+        if (it.kind) { if (x) delete panel._kinds[it.kind]; else panel._kinds[it.kind] = !panel._kinds[it.kind]; paintKinds(panel); }
+        else if (x) { it.sel._paused = false; it.sel.value = it.sel._vrdStart !== undefined ? it.sel._vrdStart : ''; it.sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        else { it.sel._paused = !it.sel._paused; if (it.sel.hasAttribute('data-vrd-sells')) syncSubFilters(panel); }
+        applyPanelFilters(panel, state, true); countFilters(panel);
+        var again = box.querySelector('[' + (x ? 'data-vrd-chip' : 'data-vrd-chip') + '="' + box._vrdItems.indexOf(it) + '"]'); if (again && !x) again.focus();
       });
     });
-    root.querySelectorAll('[data-vrd-kind], [data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat], [data-vrd-spec]').forEach(function (sel) {
+    // The shelf's types in Filters: tap to pick or unpick, more than one at a time.
+    root.querySelectorAll('[data-vrd-kinds]').forEach(function (kb) {
+      kb.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-kind]'); if (!b) return;
+        var panel = kb.closest('.board-panel'), k = b.getAttribute('data-kind'); panel._kinds = panel._kinds || {};
+        if (k in panel._kinds) delete panel._kinds[k]; else panel._kinds[k] = true;
+        paintKinds(panel); applyPanelFilters(panel, state, true); countFilters(panel);
+      });
+    });
+    root.querySelectorAll('[data-vrd-chain], [data-vrd-cuisine], [data-vrd-sells], [data-vrd-booktype], [data-vrd-htype], [data-vrd-mstat], [data-vrd-spec]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var panel = sel.closest('.board-panel');
         if (sel.hasAttribute('data-vrd-sells')) { syncSubFilters(panel); if (panel.classList.contains('active')) tellSection(root, state); }

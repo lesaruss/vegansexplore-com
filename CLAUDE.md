@@ -2627,7 +2627,13 @@ see everything and then filter for what they want... the products are the produc
   expect where it says meal prep delivery to say egg alternatives... Put it in that little pill, and if you hit X on it, it clears the
   filter... the search bar just shrinks"; "I don't want 1,000 categories"; migration `20261101_products_shelf_types.sql`). Every filter set
   away from where it started shows as a pill between the search and Filters, each with an x that clears it (`paintChips`, `liveFilters`,
-  `[data-vrd-chips]` in `ve-region-directory.js`; sort is not a filter, the location keeps its own tag); the search shrinks to make room
+  `[data-vrd-chips]` in `ve-region-directory.js`; sort is not a filter, the location keeps its own tag). **Tap a pill to turn it off and on**
+  (grey and struck through while off, not filtering; `sel._paused`, `fv`), its x to take it away (Sean, the same day: "If you select them
+  green, they're all on. If you select one off, it unsorts... when you're done, you just click the X's"). **A shelf's types pick more than
+  one** (Sean: "I can add multiple of them and see a filtering of different categories together"): Filters shows them as buttons
+  (`[data-vrd-kinds]`), a listing shows if it has any type picked and on, and each picked type is its own pill (`panel._kinds`
+  {key: on}). The Markets choice (Local markets / Supermarkets) is a pill like any filter (Sean: "You can keep what you did with the
+  markets"). The rule: a filter is a pill; a switch under the search is only for a view a section always has (none today); the search shrinks to make room
   (at least 160 px), and on phones the pills take their own row. The Meal Prep and Markets switches are gone (Clear all left Meal Prep &
   Delivery showing). The Makes filter follows the shelf (`KIND_GROUPS`, `SUB_FILTERS` `kind`): Food & Drink **Makes** (as before);
   Nutrition & Supplements **Type**: Protein, Vitamins & minerals, Meal replacements, Greens & superfoods, Sports & performance; Clothing and
