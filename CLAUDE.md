@@ -957,7 +957,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   are `ve_cartridge_edits` rows with `brand_slug`), opened at `/business/brand?brand=<slug>`. **Vegans Explore's own kit**
   (`?brand=vegans-explore`): the logo files (`/public/logo-ve-landscape-v1.svg`, `-inverted.svg`, `ve-logo-mark.svg`), the logo's colors
   (forest #2D5C27 on light, bright #3A9B3E on dark and buttons, mint #E8F5E9, orange #F69820, ink #1A1A1A, night #0F1F14; Sean,
-  2026-10-31: "the green is the same as our logo") and Montserrat, locked; its voice and story are drafts for Sean. **A listing's kit can
+  2026-10-31: "the green is the same as our logo") and Montserrat, locked; its voice and story were locked and the kit launched on 2026-11-01 (Sean: "approved"), so a change is a request with a reason. **A listing's kit can
   name a parent** (`data.meta.parent`): a podcast listing's `kit_create` starts the podcast frame with the parent's colors, pairs and type.
   **The Vegans Explore Podcast's kit** (`?listing=vegans-explore-podcast`, parent `vegans-explore`): cover B locked (the night city with a
   broadcast tower, no characters, the title set in Montserrat; `vegan-media/media/podcast/brand/`), the description locked, the cast (Sean
