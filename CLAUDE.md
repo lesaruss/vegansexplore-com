@@ -4528,7 +4528,16 @@ team) never do, and a reel, video or episode with no `video` asset cannot be pus
 lives in `vegan-media/media/social/<batch>/` so Metricool can fetch it. **Relaunch week** (batch `relaunch-week`, from Station 2's lookbook,
 loaded 2026-11-01): the Find your Guide carousel, the Airport and Dairy stories (link stickers by hand), the episode 144 clip, and one Guide
 reel a day at 12:30 PM Eastern, Monday to Saturday (Thursday to Saturday are storyboards until their videos are made), each with Logan's
-proposed caption and Station 2's `ve-relaunch` tracked links.
+proposed caption and Station 2's `ve-relaunch` tracked links. **A slot shows its media as it will go out** (Sean, 2026-11-01: "I would like to see the actual asset in that
+preview window... a light box and play for me... replace the item... you should get a notation of what change has been made"): the slot's
+left panel is the preview in the post's shape (`mediaPanel`: stories, reels and episodes in a 9:16 frame, posts and carousels at their
+own shape, a carousel with arrows and N of M), a warning when a wide picture would sit with bars on a story or reel, What goes out (each
+file with **Replace** and **Remove**, and **Add a picture or video**), the cover (on the Plan only) and the storyboard (not posted). Any of
+them opens full size in a **lightbox** (`lightbox`: videos play, arrows and the arrow keys move, Escape closes). A file goes up through
+`ve-social` `asset_upload` (an editor of the brand; JPEG, PNG, WebP, GIF, MP4, MOV or WebM up to 300 MB; a signed upload into
+`vegan-media/media/social/<brand>/<slot>/`), then the slot saves its assets (logged, and sent to Metricool again when it was scheduled).
+**A direct change by a person leaves Logan an open note** saying what changed (pictures and videos taken out and put in by file name, the
+new time, Caption rewritten), in Notes for Logan; Logan's own changes leave none.
 
 ## Image conventions
 
