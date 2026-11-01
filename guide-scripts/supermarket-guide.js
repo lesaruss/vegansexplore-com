@@ -209,8 +209,29 @@
     if (!owner() || !token()) return '';
     return '<button type="button" class="dg-save' + (on ? ' on' : '') + '" data-save="' + kind + '" data-key="' + esc(key) + '" aria-pressed="' + !!on + '">' + BOOKMARK + '<span>' + (on ? 'On my list' : 'Add to list') + '</span></button>';
   }
+  // Department icons and section photos (Sean, 2026-11-01: "icons... square rounded corners... thumbnails with photos of those items").
+  // Every store has the same template (ve_supermarket_seed_store), so pictures key off the name; a member's accepted photo wins.
+  var DEPT_ICON = {
+    'Refrigerated': '<path d="M6 3h12v18H6z"/><path d="M6 10h12M9 6v2M9 13v3"/>',
+    'Frozen': '<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9"/><path d="M9.5 4.5 12 6l2.5-1.5M9.5 19.5 12 18l2.5 1.5"/>',
+    'Pantry': '<path d="M7 7h10v14H7z"/><path d="M8 3h8v4H8zM7 12h10"/>',
+    'Snacks': '<path d="M6 3h12l-1 4 1 14H6l1-14z"/><path d="M9 11c1 1.5 5 1.5 6 0"/>'
+  };
+  function deptIcon(name) {
+    var d = DEPT_ICON[name] || '<circle cx="12" cy="12" r="8"/>';
+    return '<span class="sg-dicon" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' + d + '</svg></span>';
+  }
+  var SEC_IMG = { 'Plant-based milk': 'milk', 'Plant-based yogurt': 'yogurt', 'Vegan cheese': 'cheese', 'Vegan butter and spreads': 'butter',
+    'Tofu and tempeh': 'tofu', 'Fresh plant-based meat': 'meat', 'Hummus and dips': 'dips', 'Frozen plant-based meat': 'frozen-meat',
+    'Frozen Vegan meals': 'frozen-meals', 'Non-dairy ice cream': 'ice-cream', 'Beans and lentils': 'beans',
+    'Plant-based protein powder': 'protein', 'Nut butters': 'nut-butter', 'Vegan snacks and chips': 'snacks', 'Vegan cookies and treats': 'cookies' };
+  function secThumb(it) {
+    var k = SEC_IMG[it.name], src = it.photo_url || (k ? '/public/guides/supermarket/' + k + '.jpg' : '');
+    if (!src) return '<span class="sg-thumb sg-thumb-x" aria-hidden="true"></span>';
+    return '<span class="sg-thumb"><img src="' + esc(src) + '" alt="" width="64" height="64" loading="lazy" decoding="async"></span>';
+  }
   function itemRow(v, it) {
-    return '<div class="sa-item"><div class="sa-item-b"><b>' + esc(it.name) + '</b>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
+    return '<div class="sa-item">' + secThumb(it) + '<div class="sa-item-b"><b>' + esc(it.name) + '</b>' + (it.description ? '<p>' + esc(it.description) + '</p>' : '') +
       '<div class="sa-vtags" style="margin:0 0 6px">' + freshTag(it) + '</div></div>' +
       '<div class="sa-acts">' + saveBtn('venue_item', it.id, it.saved) + '<a class="sa-mini" href="#/store/' + esc(v.slug) + '/report/choose/' + it.id + '">Update</a></div>' + commentsHtml(it) + '</div>';
   }
@@ -225,7 +246,7 @@
   function deptCard(v, s, open) {
     var body = open ? (s.items.length ? s.items.map(function (it) { return itemRow(v, it); }).join('') : '<p class="dg-empty">Nothing listed here yet.</p>')
       : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
-    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + esc(s.name) + '</h3>' + (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div></div>' + body + '</div>';
+    return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div class="sg-dh">' + deptIcon(s.name) + '<div><h3>' + esc(s.name) + '</h3>' + (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div></div></div>' + body + '</div>';
   }
   function viewStore(slug, rest) {
     var r = (rest || '').split('/');
@@ -563,7 +584,10 @@
     document.documentElement.classList.add('dg-fit');
     if (window.VEGuideArt) { var art = VEGuideArt('pascal', 'square'); if (art) guideBox.style.backgroundImage = "url('" + art + "')"; }
     var css = document.createElement('style');
-    css.textContent = '.sg-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin:0 0 10px}' +
+    css.textContent = '.sg-dh{display:flex;align-items:center;gap:12px}.sg-dicon{flex:0 0 auto;width:44px;height:44px;border-radius:10px;background:#e8f5e9;color:var(--vb-go-hover,#1f5f22);display:flex;align-items:center;justify-content:center}' +
+      '.sg-thumb{flex:0 0 auto;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#f1f4f1;display:block}.sg-thumb img{width:100%;height:100%;object-fit:cover;display:block}.sg-thumb-x{background:#eef3ee}' +
+      '@media(max-width:480px){.sg-thumb{width:56px;height:56px}}' +
+      '.sg-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin:0 0 10px}' +
       '.sg-tools .sa-city{margin:0;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}.sg-tools .sa-city select{min-width:0;width:100%}.sg-q input{width:100%;height:42px;border:1px solid rgba(0,0,0,.18);border-radius:6px;padding:0 12px;font:500 14px Montserrat,sans-serif}' +
       '.sg-count{font-size:13px;color:rgba(26,26,26,.66);margin:6px 0 10px}' +
       '.sg-stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:10px}' +

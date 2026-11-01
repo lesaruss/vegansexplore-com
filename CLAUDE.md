@@ -3618,7 +3618,7 @@ they're buying their spot in this massive campaign that starts in Q1."
   The free example is Publix at Brickell Village (`publix-miami-cjalb8`). Page `guides/supermarket-guide.html` and
   `guide-scripts/supermarket-guide.js` (the Airport Guide's layout, `noindex`, Pascal on the right, his lines as text): Overview, **Stores**
   (supermarket, chapter and search, **Near me** by distance, 24 at a time), one store per view (`#/store/<slug>`: its departments and
-  sections, Update, Add to my list), **My list** (members; ticks in `localStorage` `sg_ticks`), **Produce**, Help keep it right and Get
+  sections, Update, Add to my list; each department wears a flat line icon in a rounded square, `DEPT_ICON`, and each section a square photo, `SEC_IMG`, `public/guides/supermarket/<key>.jpg`, illustrative product shots made in Higgsfield 2026-11-01 with no labels, one surface and light, replaced by a member's accepted photo, `photo_url`; Sean: "icons... square rounded corners... thumbnails with photos of those items"), **My list** (members; ticks in `localStorage` `sg_ticks`), **Produce**, Help keep it right and Get
   access. **Find a store** on every grocery chain's listing (`loadStores` in `directory/listing.html`, `ve-venues` `stores`, `?tab=stores`),
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
