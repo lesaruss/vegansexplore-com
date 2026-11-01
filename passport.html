@@ -464,7 +464,7 @@
   }
   if (FOUNDING) VIEWS = {
     overview: function () {
-      var steps = [['can', '1. What you can do', 'Vote, check in, give points and get your first Guide.'], ['now', '2. Why join now', 'Help steer it while it is still being built.'], ['join', '3. Get your Passport', '$11, one time. It never renews.']];
+      var steps = [['can', '1. What you can do', 'Vote, earn points on bounties, give points and get your first Guide.'], ['now', '2. Why join now', 'Help steer it while it is still being built.'], ['join', '3. Get your Passport', '$11, one time. It never renews.']];
       var tiles = steps.map(function (x) { return '<a class="dg-tile" href="' + href(x[0]) + '"><div class="dg-ic dg-topic" style="background-image:url(\'' + TOPIC[x[0]] + '\')"></div><div><b>' + x[1] + '</b><span>' + x[2] + '</span></div></a>'; }).join('');
       var cd = OPEN ? '<div class="dg-cd" id="pgCd" role="timer"><div class="dg-cd-l">Founding Membership closes in</div><div class="dg-cd-r">' +
         ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div class="dg-cd-c"><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>' : '';
@@ -475,7 +475,7 @@
     can: function () {
       return gateNote() + head('What you can do', 'Browsing is free. Taking part takes a Passport.') + '<div class="dg-grid">' +
         card('Vote', 'Rank the Vegan places and brands you love, once a day each.') +
-        card('Check in', 'Earn 10 points at the places you visit.') +
+        card('Earn points', 'Check in at the places you visit and take on bounties: small jobs that help your community, like confirming a place is still open or a Vegan item at the stadium.') +
         card('Give points', 'Back the places, nonprofits, rescues and sanctuaries you care about.') +
         card('Get your first Guide', 'Your 1,100 welcome points cover it.') +
         card('Join your city', 'Post on the Daily Pulse and its boards, and RSVP to events.') +
@@ -496,7 +496,7 @@
           '<p style="margin-top:10px;font-size:13px">Your Welcome Guide shows you everything once you join.</p>' + status;
       return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><ul>' +
         (OPEN ? '<li><b>Founding Member</b> on your profile for good</li>' : '') +
-        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Vote, save, check in</b> and give points</li>' +
+        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Vote, save, check in</b>, take on bounties and give points</li>' +
         '<li><b>Your city\'s Daily Pulse</b>, boards and events</li><li><b>Never renews</b></li></ul>' +
         '<div class="dg-pricebox">' + box + '</div></div>';
     }
