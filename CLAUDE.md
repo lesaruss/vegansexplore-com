@@ -4960,7 +4960,9 @@ TikTok by hand unless a picked song covers them); the rest still schedules in Me
 Proven 2026-11-01 against the real Metricool with [TEST] slots in December: a reel scheduled with its Instagram song at 25/100 and TikTok marked
 by hand with the song named; a TikTok photo post scheduled with its song; then skipped (gone from Metricool) and the rows removed.
 **Stories and Also share as a story** (same migration). A story slot goes to Metricool as type STORY; on 2026-11-01 a test story (today's
-Find your Guide cover on a 9:16 frame) was scheduled on Vegans Explore's Instagram and Metricool held it as `instagramData.type` STORY.
+Find your Guide cover on a 9:16 frame) was scheduled on Vegans Explore's Instagram, Metricool held it as `instagramData.type` STORY, and it
+published at 2:03 PM Eastern as an Instagram story (`instagram.com/stories/vegansexplore/...`). The same check found `sync` reading Metricool's
+PUBLISHING as posted; only PUBLISHED or SUCCESS counts now.
 A post's form has **Also share as a story** (any kind but story and thread): it adds a story slot 15 minutes after the post
 (`STORY_AFTER_MIN`), on the post's Instagram and Facebook, with `story_of` the post, its links and a By hand link sticker step, and status
 **held** (Waiting for 9:16 media) unless the post already has 9:16 media. Each picture and video carries its `w` and `h` (the page measures
