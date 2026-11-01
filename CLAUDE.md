@@ -2250,7 +2250,7 @@ Upcoming / Past, kinds of event; `/events` keeps `?city= ?q= ?where= ?cat= ?sort
   look and feel for both"; `param: false`, `initial`): a city picked there is the dashboard's active city, All
   cities widens only that tab (`DASH_ALL` in center-console). The banner is the dashboard's city picker: the city pill and
   Contribute left the welcome row (Sean, 2026-10-26), the welcome row (with View As) shows only on the Dashboard tab, and every
-  banner, on the dashboard or a public page, sits 24px under the menu (`.vcb` margin in `ve-city-banner.js`).
+  banner, on the dashboard or a public page, sits flush under the menu at every width (Sean, 2026-11-01: "I want that banner with the background image to be flushed with the top navigation at all times"; it had a 24px gap above 900 px and none below, so it seemed to come and go: `.vcb` has no top margin in `ve-city-banner.js`, and the dashboard's `main` has no top padding on a tab with a banner).
 
 ## Directory navigation (LOCKED by Sean 2026-10-30, playbook `ve-directory-navigation`)
 

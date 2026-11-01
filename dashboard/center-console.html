@@ -229,7 +229,7 @@
      banner's picker chooses the city, View As stays on the Dashboard tab), so the city banner sits 24px under the
      menu, the same gap as on /directory, /events and /communities (public/ve-city-banner.js). */
   body[data-dash-tab]:not([data-dash-tab="profile"]) .dash-welcome{display:none !important;}
-  body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:24px;}
+  body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:0;}
   .dash-hero-banner.vcb{margin-top:0;}
 
   .dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px;}
@@ -766,7 +766,7 @@
   .dash-bstat span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.82);}
   /* The Dashboard tab's banner says welcome, so the old welcome row steps aside. */
   body.dash-has-banner .dash-welcome{display:none !important;}
-  body.dash-has-banner main{padding-top:24px;}
+  body.dash-has-banner main{padding-top:0;}
   /* Phones: every tab's banner flush under the bar (Sean, 2026-10-27). After the rules above, so it wins. */
   @media (max-width:760px){ body.dash-has-banner main, body[data-dash-tab] main, body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:0;} }
   @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }

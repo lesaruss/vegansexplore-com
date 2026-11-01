@@ -41,7 +41,7 @@
 
   var css = [
     // A 24px gap under the menu on every page that wears it (Sean, 2026-10-26); the dashboard's inset banner sets its own.
-    '.vcb{margin-top:24px;position:relative;min-height:440px;display:flex;align-items:center;background:#0d0d0d center / cover no-repeat;transition:background-image .4s;font-family:Montserrat,sans-serif;}',
+    '.vcb{margin-top:0;position:relative;min-height:440px;display:flex;align-items:center;background:#0d0d0d center / cover no-repeat;transition:background-image .4s;font-family:Montserrat,sans-serif;}',
     // Hero legibility pattern (LOCKED 2026-05-18), Option A on desktop.
     '.vcb::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.99) 0%,rgba(0,0,0,.95) 28%,rgba(0,0,0,.72) 52%,rgba(0,0,0,.28) 68%,transparent 84%);}',
     '.vcb::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 32%);}',
