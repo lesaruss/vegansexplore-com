@@ -5074,7 +5074,14 @@ product (`MONEY_LABELS` by `metadata.type`, else the line item), their first pay
 **See it in Stripe**, and This month so far (Eastern month). `ve_money_alerts` (migration `20261101_ve_money_alerts.sql`, RLS on, no
 policies) keeps one row per payment (`stripe_id` unique), so a Stripe retry never sends twice; `sent_at` or `send_error`. Test mode sends
 nothing. A new product reads best with a `MONEY_LABELS` row. **Preview** any real session: POST
-`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). Payments before
+`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). **Labels by what it is** (2026-11-01, v63 from commit 46ab777, source sha256 matched): `moneyLabel` names the one type that covers several
+products from the session itself: `ve_verified` is the Partner plan ($111 every 111 days, with its offer and period) or Passport Stop or Anchor by
+`metadata.tier` (it was "VE Verified (yearly)" for all of them); `entry_contribution` is a listing claim when it carries `claim_id`, a contribution
+when the buyer was a member over an hour before, else the Passport. HQ's LESARUSS-account kinds have labels (`lr_passport`, `listing_claim`,
+`guide_order`, `business_membership`, `campaign_pledge`), and a renewal is labeled from its subscription's metadata
+(`parent.subscription_details`, else `subscription_details`) instead of the raw invoice line. **This month** counts from midnight Eastern on the
+1st, read from the zone (04:00Z under EDT, 05:00Z under EST; it was always 04:00Z, which would have put Nov 30 11 PM in December). Untyped
+sessions (payment links such as the LIVE Donation) read well from their own line item and need no label. Payments before
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
 
