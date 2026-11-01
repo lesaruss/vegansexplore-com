@@ -74,7 +74,12 @@
     if (sc[0]) out.push({ pts: sc[0], low: sc[1], order: -0.5, title: 'Scan Vegan items in a shop',
       what: 'Packaged Vegan snacks and drinks in a ' + (o.place === 'airport' ? 'newsstand, market or gift shop' : 'shop or market stand') + ': scan the barcode. Each new item counts once per shop.',
       href: base + 'scan' });
+    var lp = pay(P, 'locate'), unit = o.unit || 'section';
     (d.spots || []).forEach(function (s, si) {
+      // A stand we cannot place on the map yet: find which section or gate it is by (Sean, 2026-11-01).
+      if (lp[0] && !(s.map_sections || []).length) out.push({ pts: lp[0], low: lp[1], order: si * 1000 - 1, where: { num: si + 1, stand: s.name, at: s.where || '' }, lost: true,
+        title: 'Find where ' + s.name + ' is', what: 'It is not pinned on the map yet. Tell us the ' + unit + ' it is by, with a photo of the stand and the ' + unit + ' sign.',
+        href: base + 'locate/' + s.id });
       (s.items || []).forEach(function (it, ii) {
         var where = { num: si + 1, stand: s.name, at: s.where || '' };
         if (it.gtin) {
@@ -174,7 +179,8 @@
         '<button class="dg-btn" type="submit">Get me there</button></div></form>' : '') + '</div>';
     var right = '<div class="sa-g-map">' + (pic ? '<figure class="vbz-pic"><img src="' + esc(pic.src) + '" alt="' + esc(pic.cap) + '" loading="lazy"><figcaption>' + esc(pic.cap) + '</figcaption></figure>' : '') +
       (v.layout && o.lib ? '<div class="sa-map-box" id="vbzMap"></div><div class="sa-map-foot"><span>' + esc(o.mapNote || 'Our own drawing, from the section numbers.') + '</span></div>' : '') +
-      (st.pinned ? '' : '<p class="sa-dir-hint">' + esc(st.name) + (st.level ? ' is on the ' + esc(levelName(v, st.level, o)) + ', but we do not know its ' + unit + ' yet' : ' is not on the map yet') + '. Ask a worker there, and add the ' + unit + ' in your report: it helps the next person.</p>') + '</div>';
+      ((h.s.map_sections || []).length ? '' : '<p class="sa-dir-hint">' + esc(st.name) + (st.level ? ' is on the ' + esc(levelName(v, st.level, o)) + ', but we do not know its ' + unit + ' yet' : ' is not pinned on the map yet') + '. Ask a worker there, then <a href="' + esc(o.base + v.slug + '/report/locate/' + h.s.id) + '">tell us the ' + unit + '</a>' +
+        (pay(o.points || {}, 'locate')[0] ? ' for ' + n(pay(o.points || {}, 'locate')[0]) + ' more points' : '') + '.</p>') + '</div>';
     return '<section class="sa-vgrid2 vbz-jgrid">' + left + right + '<div class="sa-g-dirs" id="vbzDirs" aria-live="polite"></div></section>';
   }
   function levelName(v, lv, o) {
@@ -185,10 +191,10 @@
     var v = d.venue, h = findJob(d, itemId), M = o.lib, box = document.getElementById('vbzMap');
     if (!h || !M || !box || !v.layout) return;
     if (M.css) M.css();
-    var st = standOf(h, o), pins = st.pinned ? [st] : [];
+    var st = standOf(h, o), pins = [st];
     var form = document.getElementById('vbzSeat'), inp = document.getElementById('vbzSeatIn'), dirs = document.getElementById('vbzDirs'), unit = o.unit || 'section';
     var paint = function () {
-      var seat = inp ? inp.value.trim() : '', you = seat ? M.find(v.layout, seat) : null, r = you && pins.length ? M.route(v.layout, you, pins) : null;
+      var seat = inp ? inp.value.trim() : '', you = seat ? M.find(v.layout, seat) : null, r = you ? M.route(v.layout, you, pins) : null;
       box.innerHTML = M.svg(v.layout, pins, { you: you, route: r, title: 'Map of ' + v.name + ' with ' + st.name });
       var html = '';
       if (seat && !you) html = '<p class="sa-dir-miss">We could not find ' + unit + ' ' + esc(seat) + ' at ' + esc(v.name) + '. Check the number on your ' + (unit === 'gate' ? 'boarding pass' : 'ticket') + '.</p>';
@@ -197,7 +203,7 @@
         html = '<ol class="sa-dirs"><li><span class="sa-dir-go" style="cursor:default"><span class="sa-pinno">' + st.n + '</span><span><b>' + esc(st.name) + '</b> <span class="sa-dir-meta">' +
           (x.rescreen ? 'through security again' : (x.section ? unit + ' ' + esc(x.section) + ' &middot; ' : '') + 'about ' + x.minutes + ' min') + '</span></span></span><p>' + x.steps.map(esc).join(' ') + '</p></li></ol>';
         if (you.exact === false) html = '<p class="sa-dir-miss">' + (unit === 'gate' ? 'Gate' : 'Section') + ' ' + esc(seat) + ' is not on our map yet, so this starts from the nearest one we have.</p>' + html;
-      } else if (you && !pins.length) html = '<p class="sa-dir-hint">You are marked on the map. This stand is not pinned yet, so ask a worker where it is.</p>';
+      } else if (you && !st.pinned) html = '<p class="sa-dir-hint">You are marked on the map. This stand is not pinned yet (its dashed pin is under the map), so ask a worker where it is.</p>';
       else if (!seat) html = '<p class="sa-dir-hint">Type the ' + unit + ' on your ' + (unit === 'gate' ? 'boarding pass' : 'ticket') + ' and press Get me there for the walk to ' + esc(st.name) + '.</p>';
       dirs.innerHTML = html;
     };

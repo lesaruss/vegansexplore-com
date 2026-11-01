@@ -176,6 +176,9 @@ Deno.serve(async (req) => {
     // Items through their venue (a list of hundreds of store ids would not fit in the request).
     const its = ids.length ? await allRows(() => db.from('ve_venue_items').select('venue_id, last_confirmed_at, gtin, ve_venues!inner(kind, status)').eq('status', 'live')
       .in('ve_venues.kind', GUIDES[GUIDE]).eq('ve_venues.status', 'live').order('id')) : [];
+    // Stands we cannot place on the map yet (no section or gate) are a bounty each: Where is it (kind locate).
+    const lostSpots = ids.length && GUIDE !== 'supermarket-guide' ? await allRows(() => db.from('ve_venue_spots').select('venue_id, map_sections, ve_venues!inner(kind, status)').eq('status', 'live')
+      .in('ve_venues.kind', GUIDES[GUIDE].filter((k) => k !== 'supermarket')).eq('ve_venues.status', 'live').order('id')) : [];
     const chainIds = [...new Set(vs.map((v) => v.chain_listing_id).filter(Boolean))];
     const chains: Record<string, any> = {};
     if (chainIds.length) { const { data: cs } = await db.from('listings').select('id, slug, name, logo_url').in('id', chainIds); for (const c of cs || []) chains[c.id] = c; }
@@ -187,6 +190,11 @@ Deno.serve(async (req) => {
       c.items++;
       if (!it.gtin && fullPay(byId[it.venue_id], sponsored) && freshness(it, byId[it.venue_id]) !== 'fresh') c.bounties++;
       if (it.last_confirmed_at) { c.confirmed++; if (!c.last || it.last_confirmed_at > c.last) c.last = it.last_confirmed_at; }
+    }
+    for (const sp of lostSpots || []) {
+      if ((sp.map_sections || []).length) continue;
+      const c = counts[sp.venue_id] ||= { items: 0, confirmed: 0, last: null, bounties: 0 };
+      c.bounties++;
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
       teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order, sponsored: fullPay(v, sponsored),
@@ -202,8 +210,9 @@ Deno.serve(async (req) => {
     const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, longitude, sort_order, image_url, season_reset_at, chain_listing_id').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
     const ids = vs.map((v) => v.id);
     const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, gtin, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
+    const sps = ids.length ? await allRows(() => { let q4 = db.from('ve_venue_spots').select('venue_id, map_sections, ve_venues!inner(hub, status, kind)').eq('status', 'live').eq('ve_venues.status', 'live').neq('ve_venues.kind', 'supermarket'); if (hub && hub !== 'all') q4 = q4.eq('ve_venues.hub', hub); return q4.order('id'); }) : [];
     const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
-    const first = P.confirm?.first_with_photo ?? P.confirm?.with_photo ?? 0, missing = P.missing?.with_photo ?? 0;
+    const first = P.confirm?.first_with_photo ?? P.confirm?.with_photo ?? 0, missing = P.missing?.with_photo ?? 0, locate = P.locate?.with_photo ?? 0;
     // Only the Guides that are out (an unpublished Guide's venues wait for its launch), unless a super admin asks.
     const { data: gs } = await db.from('ve_guides').select('slug, published').in('slug', Object.keys(GUIDES));
     const live = new Set((gs || []).filter((g) => g.published || admin).map((g) => g.slug));
@@ -216,9 +225,11 @@ Deno.serve(async (req) => {
       const mine = (its || []).filter((i) => i.venue_id === v.id);
       const open = mine.filter((i) => !i.gtin && freshness(i, v) !== 'fresh').length;
       // A venue with nothing listed yet has one bounty: be the first to add what is there.
-      const points = mine.length ? open * first : missing;
+      // Each stand we cannot place on the map is one more: find where it is.
+      const lost = (sps || []).filter((sp) => sp.venue_id === v.id && !(sp.map_sections || []).length).length;
+      const points = (mine.length ? open * first : missing) + lost * locate;
       return { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, image: v.image_url, free: v.free_example,
-        guide: guideOfKind(v.kind), items: mine.length, open: mine.length ? open : 1, empty: !mine.length, points,
+        guide: guideOfKind(v.kind), items: mine.length, open: (mine.length ? open : 1) + lost, lost, empty: !mine.length, points,
         lat: v.latitude, lng: v.longitude };
     }).filter((v) => v.open > 0).sort((a, b) => b.points - a.points);
     const locked = [...live].filter((g) => !ownsG[g]).map((g) => {

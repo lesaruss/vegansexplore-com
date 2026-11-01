@@ -59,6 +59,7 @@
     comment: ['Comment', 'Tell other fans what you thought of it. A photo makes it even better.', 'Comment'],
     missing: ['Add something missing', 'A Vegan item or a stand that is not in the Guide yet. A photo of the item and one of the sign earn the most.', 'Something missing'],
     scan: ['Scan a Vegan item', 'A packaged Vegan snack or drink: scan its barcode.', 'Scanned item'],
+    locate: ['Where is it', 'The section a stand is by, so we can pin it on the map.', 'Where it is'],
     shop_confirm: ['Still on the shelf', 'It is still sold here.', 'Still on the shelf']
   };
   var STATUS = { pending: ['Waiting for the team', 'wait'], accepted: ['Accepted', 'live'], agreed: ['Accepted', 'live'], declined: ['Not accepted', 'off'] };
@@ -308,6 +309,18 @@
   }
   // A shop item (one scanned by its barcode) is checked with Still on the shelf; it has no bounty.
   function itemKinds(it) { return it && it.gtin ? ['shop_confirm', 'gone', 'comment'] : ['confirm', 'wrong', 'gone', 'comment']; }
+  // A stand we cannot place yet: its tag on the card, and the list under the directions, each a Where is it bounty.
+  function lostPts() { var p = POINTS.locate; return p ? p.with_photo : 25; }
+  function lostTag(v, s) {
+    return '<a class="dg-tag sa-tag-ask" style="text-decoration:none" href="#/venue/' + esc(v.slug) + '/report/locate/' + esc(s.id) + '">Where is it? ' + pts(lostPts()) + ' points</a>';
+  }
+  function lostList(v, d, how) {
+    var lost = d.spots.filter(function (s) { return s.pin && s.lost; });
+    if (!lost.length) return '';
+    return '<div class="sa-lost"><b>Not pinned yet. Help us find them:</b><ol class="sa-dirs">' + lost.map(function (s) {
+      return '<li><a class="sa-dir-go" href="#/venue/' + esc(v.slug) + '/report/locate/' + esc(s.id) + '"><span class="sa-pinno q">' + s.num + '</span><span><b>' + esc(s.name) + '</b> <span class="sa-dir-meta">' +
+        esc(how(s)) + ' &middot; tell us the section for ' + pts(lostPts()) + ' points</span></span></a></li>'; }).join('') + '</ol></div>';
+  }
   function standCard(v, s, open) {
     var zone = s.zone === 'suites' ? tagHtml('Suites only', 'sa-tag-ask') : s.zone === 'club' ? tagHtml('Club level', 'sa-tag-ask') : '';
     var dir = s.listing ? ' &middot; <a href="/directory/' + esc(s.listing.slug) + '" style="color:var(--g);font-weight:800;font-size:13px">Their Directory page</a>' : '';
@@ -315,9 +328,9 @@
       : Array.apply(null, Array(s.item_count || 1)).map(function () { return '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>'; }).join('');
     // Every stand has its number (Sean, 2026-10-29: "there are no numbers next to the other locations"). A stand with known
     // sections is pinned on the map under that number, once per spot it sells from; one we only know the level of says so.
-    var num = s.num ? '<span class="sa-pinno' + (s.pin ? '' : ' off') + '" aria-label="' + (s.pin ? 'Pin ' + s.pin + ' on the map' : 'Stand ' + s.num + ', not on the map yet') + '">' + s.num + '</span>' : '';
+    var num = s.num ? '<span class="sa-pinno' + (s.lost ? ' q' : '') + '" aria-label="' + (s.pin ? 'Pin ' + s.pin + ' on the map' : 'Stand ' + s.num + ', not on the map yet') + '">' + s.num + '</span>' : '';
     var spots = (s.map_sections || []).length;
-    var onMap = !open || !v.layout ? '' : s.pin ? (spots > 1 ? tagHtml(spots + ' spots on the map', 'sa-tag-new') : '') : s.zone === 'suites' ? '' : tagHtml('Not on the map yet', 'sa-tag-stale');
+    var onMap = !open || !v.layout ? '' : s.lost ? lostTag(v, s) : spots > 1 ? tagHtml(spots + ' spots on the map', 'sa-tag-new') : '';
     return '<div class="sa-stand" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.where || '') + '</span>' + dir +
       (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div><span class="sa-vtags" style="margin:0">' + zone + onMap + '</span></div>' + body + '</div>';
   }
@@ -338,7 +351,9 @@
       (v.note ? '<span>' + esc(v.note) + (v.note_source_url ? ' <a href="' + esc(v.note_source_url) + '" target="_blank" rel="noopener">Source</a>' : '') + '</span>' : '') + '</div>';
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn" href="#/venue/' + esc(v.slug) + '/bounties">Bounties</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a><a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/scan">Scan a Vegan item</a></div>';
     var pins = 0;
-    d.spots.forEach(function (s, i) { s.num = d.open ? i + 1 : 0; s.pin = d.open && v.layout && (s.map_sections || []).length ? s.num : 0; if (s.pin) pins++; });
+    // Every stand gets its own numbered pin (Sean, 2026-11-01: "place them on the map... let them know that we're looking for them");
+    // one with no section yet sits in the dashed row under the bowl and is a Where is it bounty.
+    d.spots.forEach(function (s, i) { s.num = d.open ? i + 1 : 0; s.pin = d.open && v.layout ? s.num : 0; s.lost = !(s.map_sections || []).length; if (s.pin) pins++; });
     var stands = d.spots.length ? d.spots.map(function (s) { return standCard(v, s, d.open); }).join('')
       : '<div class="dg-chef-empty"><div><h3>Nothing Vegan is listed here yet</h3><p>Be the first: tell us what you find at ' + esc(v.name) + ', with a photo from inside, and earn points when the team accepts it.</p></div><a class="dg-btn" href="#/venue/' + esc(v.slug) + '/report/missing">Add what you find</a></div>';
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Menus change, so ask at the stand when it matters. Every item says where it came from and when a member last checked it.</p>';
@@ -368,7 +383,7 @@
     var box = document.getElementById('saMapBox'); if (!box) return;
     var form = document.getElementById('saSeat'), inp = document.getElementById('saSeatIn'), dirs = document.getElementById('saDirs');
     var stands = mapStands(d);
-    var levelOnly = d.spots.filter(function (s) { return !s.pin && s.map_level && s.zone !== 'suites'; });
+    var levelOnly = d.spots.filter(function (s) { return s.lost && s.map_level && s.zone !== 'suites'; });
     var levelName = function (lv) { var L = VEVenueMap.levels(v.layout), i = VEVenueMap.levelOf(v.layout, lv); return i >= 0 ? L[i].name : lv + ' level'; };
     var paint = function () {
       var seat = inp.value.trim(), you = seat ? VEVenueMap.find(v.layout, seat) : null, r = you ? VEVenueMap.route(v.layout, you, stands) : null;
@@ -383,7 +398,7 @@
         }).join('') + '</ol>';
         if (!you.exact && you.exact !== undefined) html = '<p class="sa-dir-miss">Section ' + esc(seat) + ' is not on our map yet, so this starts from the nearest one we have.</p>' + html;
       } else html = '<p class="sa-dir-hint">Type the section on your ticket and press Get me there.</p>';
-      if (levelOnly.length) html += '<p class="sa-dir-hint">' + levelOnly.map(function (s) { return '<b>' + esc(s.name) + '</b> is on the ' + esc(levelName(s.map_level)) + '; we do not know the section yet, so ask a stadium worker there.'; }).join(' ') + '</p>';
+      html += lostList(v, d, function (s) { return s.map_level ? 'on the ' + levelName(s.map_level) + ', section not known yet' : 'section not known yet'; });
       dirs.innerHTML = html;
     };
     form.addEventListener('submit', function (e) { e.preventDefault(); try { localStorage.setItem(seatKey(v.slug), inp.value.trim()); } catch (er) {} paint(); });
@@ -412,6 +427,7 @@
       ['Agrees with the first', 'An update the team already accepted from someone else', P('wrong', 'agree_with_photo', 25), P('wrong', 'agree_no_photo', 15)],
       ['Still here, first to confirm', 'The bounty: the first member to confirm an item no one has checked in ' + (LIMITS.fresh_days || 35) + ' days', P('confirm', 'first_with_photo', 50), P('confirm', 'first_no_photo', 25)],
       ['Still here', 'After someone has confirmed it', P('confirm', 'with_photo', 10), P('confirm', 'no_photo', 5)],
+      ['Where is it', 'Tell us the section of a stand not pinned on the map yet', P('locate', 'with_photo', 25), P('locate', 'no_photo', 10)],
       ['Scan a Vegan item', 'A packaged Vegan snack or drink in a shop, new to that shop (one time)', P('scan', 'with_photo', 10), P('scan', 'no_photo', 10)],
       ['Still on the shelf', 'A scanned item that is already logged in that shop', P('shop_confirm', 'with_photo', 5), P('shop_confirm', 'no_photo', 5)],
       ['Comment', 'What you thought, a tip for other fans', P('comment', 'with_photo', 10), P('comment', 'no_photo', 5)]
@@ -477,6 +493,7 @@
     var back = '#/venue/' + v.slug;
     if (kind === 'choose' && item) return viewChoose(v, item, back);
     if (kind === 'scan') return viewScan(slug, itemId);
+    if (kind === 'locate') return viewLocate(slug, itemId);
     if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
@@ -532,6 +549,8 @@
     daily_limit: function () { return 'That is the most reports for one day. Thank you, and come back next game.'; },
     note_required: function () { return 'Add a few words first.'; },
     name_required: function () { return 'Tell us what the item is.'; },
+    where_required: function () { return 'Tell us the section first.'; },
+    spot_required: function () { return 'Pick the stand first.'; },
     shop_required: function () { return 'Pick the shop, or tell us its name.'; },
     bad_code: function () { return 'That barcode did not read. Scan again or type the number.'; },
     already_logged: function () { return 'This item is already logged at this shop. Tap Still on the shelf on it instead.'; },
@@ -649,6 +668,51 @@
       [].forEach.call(box.querySelectorAll('[data-rescan]'), function (b) { b.addEventListener('click', function () { box.innerHTML = ''; VEScan.open({ title: 'Scan a Vegan item', onCode: function (c) { scanResult(v, d, c); } }); }); });
     }).catch(function () { box.innerHTML = '<p class="sa-dir-miss">That did not load. Try again.</p>'; });
   }
+  // Where is it (Sean, 2026-11-01): a stand we cannot place on the map yet. A member at the venue tells us the section it is by, ideally
+  // with a photo of the stand and the section sign; accepting pins it there.
+  function viewLocate(slug, spotId) {
+    var d = VENUE[slug]; if (!d) { viewVenue(slug); return; }
+    var v = d.venue, back = '#/venue/' + v.slug, s = null, num = 0;
+    d.spots.forEach(function (x, i) { if (x.id === spotId) { s = x; num = i + 1; } });
+    if (!s) { main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back]]) + '<p class="dg-empty">That stand is not here any more.</p>'; return; }
+    var gate = reportGate(v), p = POINTS.locate || {};
+    var done = (s.map_sections || []).length;
+    main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Where is it', '']]) +
+      head('Bounty', 'Where is ' + esc(s.name) + '?', done ? 'This one is already on the map. Thank you!' : 'We know it is at ' + esc(v.name) + (s.where ? ' (' + esc(s.where) + ')' : '') + ', but not which section it is by, so it is not pinned on the map yet. Find it, tell us the section, and earn ' + pts(p.with_photo || 25) + ' points with a photo (' + pts(p.no_photo || 10) + ' without) once the team accepts it.') +
+      (done ? '<div class="dg-btns"><a class="dg-btn" href="' + back + '">Back to ' + esc(v.name) + '</a></div>' : gate || ('<div class="dg-form"><p class="dg-sharenote"><span class="sa-pinno q">' + num + '</span> <b>' + esc(s.name) + '</b></p>' +
+        '<label class="dg-field"><span>Which section is it by? <i>(the number on the sign nearest the stand)</i></span><input id="saWhere" maxlength="40" placeholder="124" data-dictate="off"></label>' +
+        photoSlot('item', 'A photo', 'the stand with the section sign in it, if you can, and it earns more') +
+        '<label class="dg-field"><span>Anything else? <i>(optional: how to find it)</i></span><textarea id="saNote" rows="2" maxlength="600"></textarea></label>' +
+        '<span class="dg-status" id="saStatus" role="status"></span>' +
+        '<div class="dg-formnav"><a class="dg-tnav" href="' + back + '">Back</a><button type="button" class="dg-btn" id="saSend">Send it</button></div>' +
+        '<p class="dg-lede" style="font-size:12.5px;margin-top:12px">Sending asks for your location once, to check you are at ' + esc(v.name) + '. The team checks it before it goes on the map.</p></div>'));
+    if (done || gate) return;
+    PHOTOS = {}; bindPhotos();
+    document.getElementById('saSend').addEventListener('click', function () {
+      var val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
+      var where = val('saWhere');
+      if (!where) { setStatus('Tell us the section first.'); return; }
+      if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
+      var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = 'Finding you...';
+      var fail = function (msg) { btn.disabled = false; btn.textContent = 'Send it'; setStatus(msg); };
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        btn.textContent = 'Sending...';
+        uploadPhoto(PHOTOS.item).then(function (p1) {
+          return api({ action: 'report', venue: v.slug, kind: 'locate', spot: s.id, place_where: where, place_zone: val('saZone') || undefined,
+            note: val('saNote'), path: p1 || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+        }).then(function (r) {
+          if (r && r.ok) {
+            main.innerHTML = crumb([['Venues', '#/venues'], [v.name, back], ['Sent', '']]) +
+              '<div class="dg-done"><div class="dg-k">Sent</div><h2 class="dg-h1">Thank you!</h2><p class="dg-lede">The team checks it, then pins ' + esc(s.name) + ' at section ' + esc(where) + ' on the map. Your points land when it is accepted.</p>' +
+              '<div class="dg-btns"><a class="dg-btn" href="' + back + '">Back to ' + esc(v.name) + '</a><a class="dg-btn dg-ghost" href="' + back + '/bounties">More bounties here</a></div></div>';
+            return;
+          }
+          var f = r && WHY[r.why]; fail(f ? f(r, v) : (r && r.message) || 'That did not go through. Try again in a minute.');
+        }).catch(function (e) { fail((e && e.message) || 'That did not go through. Try again in a minute.'); });
+      }, function () { fail(WHY.no_position()); }, { enableHighAccuracy: true, timeout: 20000, maximumAge: 60000 });
+    });
+  }
+
   function sendScan(v, code, needPhoto) {
     var val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
     var itemName = val('saItem');

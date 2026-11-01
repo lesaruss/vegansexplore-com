@@ -129,8 +129,8 @@
     return { from: from, routes: out };
   }
 
-  function pinSvg(x, y, n, on) {
-    return '<g class="vvm-pin' + (on ? ' on' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(1.35)">' +
+  function pinSvg(x, y, n, on, q) {
+    return '<g class="vvm-pin' + (on ? ' on' : '') + (q ? ' q' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ') scale(1.35)">' +
       '<path d="M0 0 C-4 -9 -15 -16 -15 -27 A15 15 0 1 1 15 -27 C15 -16 4 -9 0 0Z"/><text x="0" y="-22" text-anchor="middle">' + n + '</text></g>';
   }
   function fieldSvg(kind) {
@@ -177,9 +177,13 @@
       for (var i = 0; i <= steps; i++) pts.push(onRing(a + best.dd * i / steps, lv.d1 + 3));
       body += '<polyline class="vvm-route" points="' + pts.map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ') + '"/>';
     }
-    var seen = {};
+    var seen = {}, loose = [];
     (pins || []).forEach(function (p) {
-      (p.sections || []).forEach(function (raw) {
+      // A stand we cannot place yet (no section, or one not on our drawing) still gets its own numbered pin, in the row under
+      // the bowl, so every stand on the page is on the map under its own number (Sean, 2026-11-01: "place them on the map").
+      var placed = (p.sections || []).filter(function (raw) { return !!find(layout, raw); });
+      if (!placed.length) { loose.push(p); return; }
+      placed.forEach(function (raw) {
         var s = find(layout, raw); if (!s) return;
         // Two stands at one section stand side by side.
         var k = s.level + ':' + s.key, nth = seen[k] = (seen[k] || 0) + 1;
@@ -188,8 +192,14 @@
     });
     if (you) body += '<g class="vvm-you" transform="translate(' + you.x.toFixed(1) + ' ' + you.y.toFixed(1) + ')"><circle r="15"/><text y="5" text-anchor="middle">YOU</text></g>';
     // The frame fits the outermost ring (a fourth or fifth level used to run off the edge), with room above for a pin.
-    var dOut = (L.length ? L[L.length - 1].d1 : 200) + 8, vx = CX - FW - dOut, vy = CY - FH - dOut - 44;
-    return '<svg class="vvm" viewBox="' + vx + ' ' + vy + ' ' + 2 * (FW + dOut) + ' ' + (2 * (FH + dOut) + 52) + '" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
+    var dOut = (L.length ? L[L.length - 1].d1 : 200) + 8, vx = CX - FW - dOut, vy = CY - FH - dOut - 44, vh = 2 * (FH + dOut) + 52;
+    if (loose.length) {
+      var ty = vy + vh + 6;
+      body += '<text class="vvm-loose" x="' + (vx + 14) + '" y="' + (ty + 14) + '">' + esc(opts.looseLabel || 'Not pinned yet. Find where they are for a bounty:') + '</text>';
+      loose.forEach(function (p, i) { body += pinSvg(vx + 40 + i * 46, ty + 74, p.n, false, true); });
+      vh += 92;
+    }
+    return '<svg class="vvm" viewBox="' + vx + ' ' + vy + ' ' + 2 * (FW + dOut) + ' ' + vh + '" role="img" aria-label="' + esc(opts.title || 'Venue map') + '">' + body + '</svg>';
   }
 
   var CSS = '.vvm{display:block;width:100%;height:auto;font-family:Montserrat,sans-serif;}' +
@@ -201,7 +211,7 @@
     '.vvm-mark{fill:none;stroke:rgba(255,255,255,.7);stroke-width:2;}.vvm-dirt{fill:#c9a36a;stroke:rgba(255,255,255,.7);stroke-width:2;}' +
     '.vvm-route{fill:none;stroke:#F69820;stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:2 12;}' +
     '.vvm-pin{cursor:pointer;}.vvm-pin path{fill:#fff;stroke:#1a1a1a;stroke-width:2.5;}.vvm-pin text{font-size:15px;font-weight:900;fill:#1a1a1a;}' +
-    '.vvm-pin.on path{fill:#F69820;}' +
+    '.vvm-pin.on path{fill:#F69820;}.vvm-pin.q path{stroke-dasharray:4 3;fill:#fff7ec;stroke:#b25e00;}.vvm-loose{font-size:17px;font-weight:800;fill:#3d3d3d;}' +
     '.vvm-you circle{fill:#1a1a1a;stroke:#fff;stroke-width:3;}.vvm-you text{fill:#fff;font-size:9.5px;font-weight:900;letter-spacing:.04em;}';
   function css() { if (document.getElementById('vvm-css')) return; var st = document.createElement('style'); st.id = 'vvm-css'; st.textContent = CSS; document.head.appendChild(st); }
 

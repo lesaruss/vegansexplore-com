@@ -129,8 +129,8 @@
   }
   function gateX(c, j) { var n = c.gates.length; if (!n) return (LX + RX) / 2; return n <= 1 ? (LX + RX) / 2 : LX + 18 + (RX - LX - 36) * j / (n - 1); }
 
-  function pinSvg(x, y, n, on) {
-    return '<g class="vam-pin' + (on ? ' on' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' +
+  function pinSvg(x, y, n, on, q) {
+    return '<g class="vam-pin' + (on ? ' on' : '') + (q ? ' q' : '') + '" data-pin="' + n + '" transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')">' +
       '<path d="M0 0 C-4 -8 -13 -13 -13 -23 A13 13 0 1 1 13 -23 C13 -13 4 -8 0 0Z"/><text x="0" y="-18" text-anchor="middle">' + n + '</text></g>';
   }
 
@@ -161,17 +161,19 @@
     }
     var seen = {}, landN = {};
     (pins || []).forEach(function (p) {
+      // A spot with no gate yet sits mid-concourse (or on its terminal's strip) with a dashed pin: about there, gate wanted.
+      var q = !(p.sections || []).length;
       if (p.zone === 'landside') {
         var tid = p.level || (layout.terminals && layout.terminals[0] && String(layout.terminals[0].id));
         if (G.strips[tid] == null) return;
         var k2 = landN[tid] = (landN[tid] || 0) + 1;
-        body += pinSvg(LX + 30 + (k2 - 1) * 34, G.strips[tid] + 20, p.n, best && best.stand.n === p.n);
+        body += pinSvg(LX + 30 + (k2 - 1) * 34, G.strips[tid] + 20, p.n, best && best.stand.n === p.n, q);
         return;
       }
       spots(layout, p).forEach(function (t) {
         var key = t.level + ':' + t.key, nth = seen[key] = (seen[key] || 0) + 1;
         body += pinSvg(gateX(C[t.level], t.index) + (nth - 1) * 26, G.rows[t.level] + 36, p.n,
-          best && best.stand.n === p.n && best.target.level === t.level && best.target.key === t.key);
+          best && best.stand.n === p.n && best.target.level === t.level && best.target.key === t.key, q || t.mid);
       });
     });
     if (you) body += '<g class="vam-you" transform="translate(' + gateX(C[you.level], you.index).toFixed(1) + ' ' + (G.rows[you.level] + 46) + ')"><circle r="13"/><text y="4" text-anchor="middle">YOU</text></g>';
@@ -185,7 +187,7 @@
     '.vam-tick{stroke:rgba(255,255,255,.75);stroke-width:1.5;}.vam-gate{font-size:11px;font-weight:700;fill:#3d3d3d;}' +
     '.vam-route{stroke:#F69820;stroke-width:7;stroke-linecap:round;stroke-dasharray:2 11;}' +
     '.vam-pin{cursor:pointer;}.vam-pin path{fill:#fff;stroke:#1a1a1a;stroke-width:2.5;}.vam-pin text{font-size:13px;font-weight:900;fill:#1a1a1a;}' +
-    '.vam-pin.on path{fill:#F69820;}' +
+    '.vam-pin.on path{fill:#F69820;}.vam-pin.q path{stroke-dasharray:4 3;fill:#fff7ec;stroke:#b25e00;}' +
     '.vam-you circle{fill:#F69820;stroke:#fff;stroke-width:3;}.vam-you text{font-size:9px;font-weight:900;fill:#fff;}';
   function css() { if (document.getElementById('vam-css')) return; var st = document.createElement('style'); st.id = 'vam-css'; st.textContent = CSS; document.head.appendChild(st); }
 

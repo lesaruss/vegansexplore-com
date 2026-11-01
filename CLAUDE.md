@@ -3762,6 +3762,18 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   scanned it there already. Shop items never pay the first-to-confirm bounty. Amounts are `ve_venue_report_points` rows `scan` and
   `shop_confirm` (Sean's numbers); every report still waits for the team in Depot > Venues, which shows both photos, the barcode with its
   Open Food Facts link and the new shop.
+  **Every stand on the map, and Where is it** (Sean, 2026-11-01: "place them on the map and then let them know that we're looking for
+  them, so that way we can have it as a bounty"; "all the locations had one... only one of the listings has a number and the rest don't";
+  migration `20261101_venue_locate_bounty.sql`, run through the one-time `ve-once-venue-locate`, now the 410 stub). Most stands had no
+  section or gate, so only one stand per venue had a pin and Get me there only ever named it (Hard Rock: stand 1 pinned, 2 to 4 not). Now
+  every stand in an open venue has its own numbered pin: a stadium stand with no section sits, dashed, in a row under the bowl
+  (`loose` in `VEVenueMap.svg`); an airport spot with no gate sits dashed mid-concourse (`q` in `VEAirportMap`). Its card says **Where is
+  it? N points** and the directions list it under **Not pinned yet. Help us find them** (`lostTag`, `lostList` in both Guide scripts),
+  and it is a job on the venue's Bounties (**Find where <stand> is**). The form (`#/venue|airport/<slug>/report/locate/<spot>`,
+  `viewLocate`) asks the section (stadium) or the gate and before or after security (airport), a photo of the stand and its sign, kind
+  `locate` (25 points with a photo, 10 without, a `ve_venue_report_points` row; one waiting per stand, one a day per member per stand).
+  Accepting it in Depot > Venues pins the stand there (`map_sections`, only while it is still unpinned). `ve-venues` `bounties` and
+  `list` count each unpinned stand as one more bounty.
   **The Overview** (Sean, 2026-10-29: "lay out a little bit more of what this is... the four most recent... stress the idea that
   they can save the listings... the members help keep it accurate... make them excited about getting into it"): both venue Guides
   open on the same layout (`viewOverview`, its words in `OV` in each script): the promise and Get the Guide or Choose your venue,
