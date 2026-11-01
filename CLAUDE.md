@@ -3963,38 +3963,6 @@ rains... interview event hosts... they record their voice... those voice recordi
 - **Build order**: the shell and the rain tab; the checklist and the gear shop; Event Venues; the sponsorship intake and bounty; the voice
   interviews.
 
-## The Vegan Events Guide (LOCKED by Sean 2026-11-01, playbook `ve-events-guide`)
-
-Concept session with V, locked by Sean: "lock it" (canon `canon-ve-events-guide`; migration `20261101_events_guide_canon.sql`).
-**Not built yet.** Sean: "tips on running a successful event... access to resources... where the directory falls into place... address the
-elephants in the room... walk people through a journey so that they work with us... apply for a sponsorship from us... what to do when it
-rains... interview event hosts... they record their voice... those voice recordings then become part of a podcast."
-
-- **The Guide**, for anyone hosting a Vegan event (potlucks, social clubs, festival promoters, pop-ups, a restaurant's community night, a
-  fundraiser), on the Dairy Guide pattern, **River** narrating (Dani keeps the Group Partner Guide), $11 or 1,100 points, included for Group
-  Partner leads. Free example: **What to do when it rains** (and heat, no-shows, a vendor who does not show, losing power). It is the top of the
-  organizer funnel: Submit an event, Promote your event, Group Partners (tickets at 5%, guest pass, door list), the sponsorship, then the Group
-  Partner Guide. Never "Survival Guide" in its title.
-- **Tabs**: Overview, Kinds of events, The plan (a 12-week countdown checklist, saved and exportable), Money, Venue, Vendors and food, Gear (the
-  shop: every item a tracked `/go/` Amazon link with our tag; partner printers and booth makers later), Getting the word out, Day of, After,
-  **The elephants in the room** (no-shows on free RSVPs, the same 40 people, vendors losing money, venues that are not Vegan, sponsors that are
-  not Vegan, date clashes, activism vs a good time, insurance and permits, burnout, accessibility), Hosts who've done it, Work with us, My list,
-  Get access.
-- **Directory**: a new **Services > Event Venues** sub-section and a hosts-events flag on restaurants (change every section list together, see
-  Directory filters); the Guide points to Vendors, Food Trucks, Catering, brands that vend, Groups, Nonprofits, Studios, Content Creators, People.
-- **Event sponsorship, paid in marketing, never cash**. We give: calendar and chapter Daily Pulse feature, 2 posts and a story, a 2-week chapter
-  ad slot, a creator or member covering it, a recap. They give: a 10x10 booth, two comped meals or tickets, our logo, a stage mention, our QR
-  cards. A **Represent Vegans Explore** gig on the chapter's Gig Board staffs the booth (points plus the meal, approved like a visit bounty: 3
-  photos and a recap). Vegan events qualify; plant-forward events at venues that are not Vegan only for Group Partners; 2 a chapter a month. A
-  paginated application to the Inbox, routed to the chapter's Community Manager.
-- **Why us** leads with what is true today (13 chapters, 1,000+ listings, the calendar, the Daily Pulse, 5% ticketing, the guest pass); the 2027
-  plan is labeled as the plan; no reach we cannot show.
-- **Host interviews**: Tell us your story, 6 questions answered by voice in the browser, a release (audio on our shows and site, name credited,
-  taken down on request), 100 points once approved. They become clips in the Guide, a **Host Notes** segment on the Vegans Explore Podcast,
-  People credits and the content index.
-- **Build order**: the shell and the rain tab; the checklist and the gear shop; Event Venues; the sponsorship intake and bounty; the voice
-  interviews.
-
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
