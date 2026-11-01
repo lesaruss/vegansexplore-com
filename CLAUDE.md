@@ -5031,7 +5031,7 @@ product (`MONEY_LABELS` by `metadata.type`, else the line item), their first pay
 policies) keeps one row per payment (`stripe_id` unique), so a Stripe retry never sends twice; `sent_at` or `send_error`. Test mode sends
 nothing. A new product reads best with a `MONEY_LABELS` row. **Preview** any real session: POST
 `ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). Payments before
-2026-11-01 7:40 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
+2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
 
 ## Image conventions
