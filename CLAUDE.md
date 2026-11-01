@@ -3783,7 +3783,11 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   untagged line refused, then cleared). Three came from the brands' own pages (20261101_product_brand_site_labels.sql): 365 Non-Dairy
   Cheddar Slices and 365 Nondairy Almondmilk Yogurt from wholefoodsmarket.com (365's nondairy yogurt is almond milk, not coconut; the
   Dairy Guide entry was corrected) and Panacheeza from panacheeza.com (fat and carbs from its % Daily Value). Om Sweet Home (no website found)
-  and Vlendedful (vlendedful.com no longer resolves) have no label; both listings are Permanently closed (Sean, 2026-11-01). Not yet: the
+  and Vlendedful (vlendedful.com no longer resolves) have no label; both listings are Permanently closed (Sean, 2026-11-01). **A closed brand's products leave the Guides** (Sean, the
+  same day: "check and take them out"): the Supermarket Guide, the Dairy Guide's brands and recipe picks and a store's Vegan aisle leave
+  out any brand whose `business_status` is CLOSED_PERMANENTLY (the product page still opens by link). That took out Om Sweet Home,
+  Vlendedful, Parma! (eatparma.com no longer resolves) and NadaMoo! (nadamoo.com reads Opening Soon, no shop); Lavva, marked closed on
+  2026-10-25 with no note, was selling on lovvelavva.com and is open again (migration `20261101_lavva_open_again.sql`). Not yet: the
   other Guides' recipe views.
 - **The Tracker** (Sean, 2026-11-01: "it should put it... as a pending item, so that way they can track it... show on their tracking list
   that it was approved and if they got any points for it... a history of it over time... maybe the tracker"; "show bounties as well...
