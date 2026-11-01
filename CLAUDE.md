@@ -477,10 +477,12 @@ Preparation window, $111 for Period 2 renewing August 11. The `offer=front-row` 
 calendar (`partnerTerms`, `partnerNow`); the Partner wording on `/claim`, `/business`, the listing page and brand tour, the business
 dashboard, the Restaurant Guide, the sample business and Preview journeys, and `/policies#business` (The Partner plan) say it; business
 outreach's Day 4 email lost "No charge today" (migration `20261101_partner_periods_outreach_day4.sql`, applied; nothing had been sent).
-No Partner membership existed, so nobody holds the old no-charge trial. The three recorded lines that said the old terms are lip-synced
-videos, so until they are re-recorded each shows as the Guide's still picture with the new words (Sean, 2026-11-01: "use images for
-them"): Liz's `j5` on the claim offer, and Maya's last brand tour slide before and after January (a `{poster, still: true}` slide; `fits`
-and `play` in `directory/listing.html` skip it). `ve-claims` and the pages go out together.
+No Partner membership existed, so nobody holds the old no-charge trial. The three lines that said the old terms were lip-synced videos;
+they are now the Guide's voice over her still picture, no video (Sean, 2026-11-01: "picture and voice, no video"): Liz's offer on `/claim`
+(`liz/partner-tour/j-5-v2.mp3`; `VEGuideTour.narrator` plays a line's `{audio, poster}`), and Maya's last brand tour slide, shared by
+every brand (`brand-door/front-row-v2.mp3` before January 1, then `plain-last-first-v2.mp3` or `plain-last-v2.mp3`; `{audio, poster}`
+through `voiceAt`). Recorded with el-media tts in their profile voices, called from the database (pg_net) so the admin token never
+leaves it, each checked word for word with `stt`. `ve-claims` and the pages go out together.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 

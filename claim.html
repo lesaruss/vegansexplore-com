@@ -499,9 +499,9 @@
         find: { say: 'Let\'s find your business. Search for it here, and if it\'s already in the Directory, just pick it.', clip: C.j1 },
         claim: { say: 'That\'s the one? Great. Tell us a little about you, and check your details below.', clip: C.j2 },
         add: { say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.', clip: C.pt6 },
-        // New line 2026-11-01 (the plan now charges at sign-up); her old recording said "nothing is charged today", so she shows
-        // as a still until this line is recorded and approved (liz/partner-tour/j-5-v2.mp3).
-        offer: { say: 'Join now, and every day until January is on us. $111 covers your first period, and your seat is saved for our campaigns.', clip: C.j5 ? { poster: C.j5.poster } : null },
+        // New line 2026-11-01 (the plan now charges at sign-up): her voice over her still picture, no video (Sean: "picture and
+        // voice, no video"); recorded from text that says "A hundred and eleven dollars".
+        offer: { say: 'Join now, and every day until January is on us. $111 covers your first period, and your seat is saved for our campaigns.', clip: C.j5 ? { poster: C.j5.poster, audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/partner-tour/j-5-v2.mp3' } : null },
         lockin: { say: 'Eleven dollars locks it in, and makes you a Founding Member of Vegans Explore.', clip: C.j3 },
         done: { say: 'You\'re in! Now let\'s look at what\'s next: your dashboard, ads on our pages, and our campaigns.', clip: C.j4 }
       } }) : { say: function () {} };
