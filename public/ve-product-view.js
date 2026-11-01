@@ -129,6 +129,12 @@
     return '<p class="pv-src"><a href="/guides/supermarket-guide#/c/dairy-free?t=' + encodeURIComponent(t) + '&b=' + encodeURIComponent(b.slug) +
       '" style="font-weight:800;color:var(--vb-accent-ink,#1f5f22)">Find it in the Supermarket Guide</a>: the aisle at your store, and every ' + esc(t.toLowerCase()) + ' like it.</p>';
   }
+  // Macros from a Nutrition Facts object (the same reading as ve_nf_macros in the database).
+  function nfMacros(nf) {
+    if (!nf || nf.cal == null) return null;
+    var g = function (k) { var r = (nf.rows || []).filter(function (x) { return x[0] === k; })[0]; if (!r) return undefined; var n = parseFloat(String(r[1]).replace(/[^0-9.]/g, '')); return isFinite(n) ? n : undefined; };
+    return { serving: nf.serving, cal: nf.cal, protein: g('Protein'), carbs: g('Total Carbohydrate'), fat: g('Total Fat'), fiber: g('Dietary Fiber'), sugar: g('Total Sugars'), sodium: g('Sodium') };
+  }
   function render(el, p, b, opts) {
     opts = opts || {};
     css();
@@ -142,7 +148,7 @@
       (vars.length > 1 ? '<div class="pv-vars" role="group" aria-label="Versions">' + vars.map(function (v, i) {
         return '<button type="button" class="pv-var" data-var="' + i + '" title="' + esc(v.name) + '" aria-label="' + esc(v.name) + '" style="background-image:url(\'' + esc(v.image || '') + '\')"></button>';
       }).join('') + '</div><div class="pv-varnote">Pick a version to see its details and nutrition.</div>' : '') + '</div>' +
-      '<div class="pv-info"><div class="pv-vname"></div><div class="pv-desc"></div><div class="pv-ingr"></div>' +
+      '<div class="pv-info"><div class="pv-vname"></div><div class="pv-mac"></div><div class="pv-desc"></div><div class="pv-ingr"></div>' +
       (p.note ? '<div class="pv-note">' + esc(p.note) + '</div>' : '') +
       (Array.isArray(p.certifications) && p.certifications.length ? '<div class="pv-certs">' + p.certifications.map(function (c) {
         return '<span class="pv-cert"><img src="' + esc(c.url) + '" alt="" loading="lazy">' + esc(c.name) + '</span>';
@@ -171,6 +177,9 @@
         : (p.made_from ? esc(name) + ' is made from ' + esc(lc(p.made_from)) + '.' : '');
       el.querySelector('.pv-ingr').innerHTML = v.ingredients ? '<b>Ingredients:</b> ' + esc(v.ingredients) : '';
       var nf = v.nutrition || (i === 0 ? p.nutrition : null);
+      // Macros per serving at the top (Sean, 2026-11-01: "list the macros of the item... a lot to people who are working out").
+      var mac = v.macros || (v.nutrition ? nfMacros(v.nutrition) : null) || (i === 0 ? p.macros || nfMacros(p.nutrition) : null);
+      el.querySelector('.pv-mac').innerHTML = mac && window.VEMacros ? VEMacros.strip(mac) : '';
       var nfHtml = nf ? VEProducts.label(nf) + '<p class="pv-src">' + esc(nf.product || '') + (nf.per_container ? '. ' + esc(nf.per_container) : '') + '. ' +
         (v.nutrition && v.source ? 'From <a href="' + esc(v.source) + '" target="_blank" rel="noopener">' + esc(b.name) + '\'s product page</a>' : esc(p.nutrition_source || '')) +
         '. Recipes change, so check the package.</p>' : '<p class="pv-src">Nutrition Facts for this one are not added yet.</p>';
@@ -189,5 +198,5 @@
     };
   }
 
-  window.VEProductView = { css: css, render: render, stores: stores, logo: logo };
+  window.VEProductView = { css: css, render: render, stores: stores, logo: logo, nfMacros: nfMacros };
 })();

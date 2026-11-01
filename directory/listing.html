@@ -275,6 +275,15 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .tab-btn.tab-ext svg{vertical-align:1px;margin-left:2px}
 .tab-btn.tab-fam{text-decoration:none}
+.tab-btn .fam-chev{display:inline-block;margin-left:6px;vertical-align:1px;transition:transform .15s}
+.tab-btn[aria-expanded="true"] .fam-chev{transform:rotate(180deg)}
+.fam-menu{position:fixed;z-index:1200;min-width:240px;max-width:min(360px,calc(100vw - 32px));background:#fff;border:1px solid var(--ve-border);border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.14);padding:6px;display:none}
+.fam-menu.open{display:block}
+.fam-menu a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:6px;text-decoration:none;color:var(--ve-text);font:700 13.5px Montserrat,sans-serif;line-height:1.3}
+.fam-menu a:hover,.fam-menu a:focus-visible{background:var(--vb-soft,#EAF7EA);outline:none}
+.fam-menu a img,.fam-menu a .fam-ph{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#eef2ee}
+.fam-menu a[aria-current="page"]{color:var(--ve-green-dark)}
+.fam-menu a[aria-current="page"]::after{content:'';margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--ve-green)}
 /* Media and People pages on phones: the tab row is one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "Do the same
    drop-down treatment for media", after the Directory's sub-sections). mobileTabMenu builds it from the tabs and follows them. */
 .lt-sel{display:none}
@@ -687,6 +696,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bp-head h3{margin:0}
 .bp-head span{font-size:12px;font-weight:700;color:var(--ve-text-50)}
 .bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
+.bp-item{display:flex;align-items:stretch;gap:0;border:1px solid var(--ve-border);border-radius:12px;background:#fff;overflow:hidden}
+.bp-item:hover{border-color:var(--vb-accent,#5EC47A)}
+.bp-item .bp-card{flex:1;min-width:0;border:0;border-radius:0}
+.bp-vote{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-left:1px solid var(--ve-border);background:#fff;cursor:pointer;font:inherit;color:var(--ve-text-75)}
+.bp-vote b{font-size:18px;font-weight:900;color:#1a1a1a}.bp-vote span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.bp-vote:hover{background:var(--vb-soft,#E8F5E9)}.bp-vote.on{background:var(--vb-soft,#E8F5E9);color:var(--vb-accent-ink,#1f5f22)}
+.bp-rank{color:var(--vb-accent-ink,#1f5f22)}
+.bp-mac{font-size:12px;font-weight:800;color:var(--vb-accent-ink,#1f5f22);margin-top:3px}
 .bp-card{display:flex;gap:12px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:12px;text-decoration:none;color:inherit;background:#fff}
 .bp-card:hover{border-color:var(--vb-accent,#5EC47A)}
 .bp-pic{flex:0 0 64px;height:64px;border-radius:10px;border:1px solid var(--ve-border);background:#fff center/80% no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
@@ -1101,6 +1118,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-products.js"></script>
 <script src="/public/ve-guide-tour.js"></script>
+<script src="/public/ve-macros.js"></script>
 <script src="/public/ve-product-view.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-trust.js"></script>
@@ -1724,21 +1742,58 @@ function mobileTabMenu(){
   nav.insertBefore(sel, nav.firstChild);
   var tabs = [];
   function build(){
-    tabs = Array.prototype.filter.call(nav.children, function(t){
+    var els = Array.prototype.filter.call(nav.children, function(t){
       return t.classList.contains('tab-btn') && t.style.display !== 'none' && !t.hidden && !t.hasAttribute('data-sub'); });
-    var on = tabs.filter(function(t){ return t.classList.contains('active'); })[0] || tabs[0];
+    // A Podcasts or YouTube group (loadFamily) is one option per show here, named by the show.
+    tabs = [];
+    els.forEach(function(t){
+      var act = t.classList.contains('active');
+      if(t._fam) t._fam.forEach(function(f){ tabs.push({ el: t, href: f.current ? '' : f.href, label: f.label, on: act && f.current }); });
+      else tabs.push({ el: t, label: t.textContent.replace(/\(opens.*\)/i, '').trim(), on: act });
+    });
+    var on = tabs.filter(function(t){ return t.on; })[0] || tabs[0];
     sel.innerHTML = tabs.map(function(t, i){
-      return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.textContent.replace(/\(opens.*\)/i, '').trim()) + '</option>'; }).join('');
+      return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('');
     nav.classList.toggle('lt-has-sel', tabs.length > 1);
   }
   sel.addEventListener('change', function(){
-    var t = tabs[+sel.value]; if(t) t.click();
+    var t = tabs[+sel.value]; if(t){ if(t.href) location.href = t.href; else if(!t.el._fam) t.el.click(); }
     setTimeout(build, 0); // a link that opens a new tab leaves this page on the tab it was on
   });
   build();
   if(window.MutationObserver) new MutationObserver(function(ms){
     if(ms.some(function(m){ return !sel.contains(m.target); })) build();
   }).observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+}
+// A Podcasts or YouTube tab with an arrow (loadFamily): opens the shows by name, the one open marked. The list sits outside the tab
+// row, which scrolls sideways and would cut it off. On phones the tab dropdown lists each show instead (mobileTabMenu reads _fam).
+var FAM_MENU = null;
+function famMenu(btn, g, curId){
+  btn._fam = g.list.map(function(x){ return { label: x.name, href: '/directory/' + encodeURIComponent(x.slug), current: x.id === curId, logo: x.logo_url }; });
+  btn.insertAdjacentHTML('beforeend', '<svg class="fam-chev" width="10" height="7" viewBox="0 0 12 8" aria-hidden="true"><path d="M1 1.5l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+  btn.setAttribute('aria-haspopup', 'menu'); btn.setAttribute('aria-expanded', 'false');
+  function close(){
+    if(FAM_MENU){ FAM_MENU.classList.remove('open'); FAM_MENU._btn = null; }
+    document.querySelectorAll('.tab-btn[aria-expanded="true"]').forEach(function(b){ b.setAttribute('aria-expanded', 'false'); });
+  }
+  btn.addEventListener('click', function(e){
+    if(!FAM_MENU){
+      FAM_MENU = document.createElement('div'); FAM_MENU.className = 'fam-menu'; FAM_MENU.setAttribute('role', 'menu'); document.body.appendChild(FAM_MENU);
+      document.addEventListener('click', function(ev){ if(FAM_MENU._btn && !FAM_MENU.contains(ev.target) && !FAM_MENU._btn.contains(ev.target)) close(); });
+      document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape' && FAM_MENU._btn){ var b = FAM_MENU._btn; close(); b.focus(); } });
+      window.addEventListener('resize', close); window.addEventListener('scroll', function(){ if(FAM_MENU._btn) close(); }, { passive: true });
+    }
+    if(FAM_MENU._btn === btn){ close(); return; }
+    close();
+    FAM_MENU.innerHTML = btn._fam.map(function(f){
+      return '<a role="menuitem" href="' + esc(f.href) + '"' + (f.current ? ' aria-current="page"' : '') + '>' +
+        (f.logo ? '<img src="' + esc(f.logo) + '" alt="" loading="lazy">' : '<span class="fam-ph"></span>') + '<span>' + esc(f.label) + '</span></a>'; }).join('');
+    var r = btn.getBoundingClientRect();
+    FAM_MENU.style.top = Math.round(r.bottom + 4) + 'px';
+    FAM_MENU.classList.add('open'); FAM_MENU._btn = btn; btn.setAttribute('aria-expanded', 'true');
+    FAM_MENU.style.left = Math.round(Math.max(16, Math.min(r.left, window.innerWidth - FAM_MENU.offsetWidth - 16))) + 'px';
+    var first = FAM_MENU.querySelector('a'); if(first && e.detail === 0) first.focus();
+  });
 }
 function loadFamily(l){
   var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
@@ -1764,11 +1819,27 @@ function loadFamily(l){
       var items = []; rows.forEach(function(x){ if(familyKind(x) !== 3 || !BOOKS) items.push(x); else if(items.indexOf(BOOKS) < 0) items.push(BOOKS); });
       var WORD = ['Overview', 'Podcast', 'YouTube', 'Book'];
       var count = {}; items.forEach(function(x){ if(x.books) return; var k = familyKind(x); count[k] = (count[k] || 0) + 1; });
-      function label(x){ if(x.books) return 'Books'; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
-      var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id; })[0];
+      // More than one show of a kind is one tab (Sean, 2026-11-01: "all under a title called Podcasts with a drop-down... when you go
+      // to Vegans Explore, you see that same drop down"): Podcasts or YouTube with an arrow, opening the shows by name (famMenu).
+      var GROUP = { 1: 'Podcasts', 2: 'YouTube' }, grouped = [];
+      items.forEach(function(x){
+        var k = x.books ? 3 : familyKind(x);
+        if(!GROUP[k] || count[k] < 2){ grouped.push(x); return; }
+        var g = grouped.filter(function(y){ return y.group === k; })[0];
+        if(!g){ g = { group: k, list: [] }; grouped.push(g); }
+        g.list.push(x);
+      });
+      items = grouped;
+      function label(x){ if(x.books) return 'Books'; if(x.group) return GROUP[x.group]; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
+      var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id || (x.group && x.list.some(function(y){ return y.id === l.id; })); })[0];
       var at = items.indexOf(mine);
       ov.textContent = label(mine);
+      if(mine && mine.group) famMenu(ov, mine, l.id);
       function link(x){
+        if(x.group){
+          var gb = document.createElement('button'); gb.type = 'button'; gb.className = 'tab-btn tab-fam'; gb.textContent = label(x);
+          famMenu(gb, x, l.id); return gb;
+        }
         var a = document.createElement('a'); a.className = 'tab-btn tab-fam'; a.textContent = label(x);
         if(x.books){ a.href = '/directory/' + encodeURIComponent(author.slug) + '?tab=books'; a.title = 'Books by ' + author.name; }
         else { a.href = '/directory/' + encodeURIComponent(x.slug); a.title = x.name; }
@@ -2361,26 +2432,42 @@ function isProductBrand(l){
   var d = l.details || {};
   return !isGroceryStore(l) && !!window.VEProducts && !!window.VEProductView && (VEProducts.SOURCES || []).some(function(k){ return Array.isArray(d[k]) && d[k].length; });
 }
-var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,image_url,image_credit,fdc,gallery,certifications,brand_says,brand_url,variants,' +
+var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,macros,image_url,image_credit,fdc,gallery,certifications,brand_says,brand_url,variants,' +
   've_product_stores(removed_at,listings(slug,name,status,logo_url,color,initials))';
 function loadBrandSite(l){
   var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=' + BSITE_SELECT + '&order=product_type';
   var pane = document.getElementById('bsite-products'), side = document.getElementById('bsite-nf');
   var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
-  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l)]).then(function(res){
+  // Votes within the brand (Sean, 2026-11-01: "people to be able to vote for it within the brand. So you're not going to see the
+  // rankings anywhere except when you click on the brand itself"): ve-products votes, one per member per product.
+  function pvApi(body){
+    var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null;
+    if(t) h.Authorization = 'Bearer ' + t;
+    return fetch(SUPABASE_URL + '/functions/v1/ve-products', { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function(r){ return r.json(); });
+  }
+  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l),
+    pvApi({ action: 'votes', brand: l.id }).catch(function(){ return null; })]).then(function(res){
     var rows = Array.isArray(res[0]) ? res[0] : [], PS = res[1] || { partner: false };
+    var PV = (res[2] && res[2].counts) ? res[2] : { counts: {}, mine: [] };
+    function pvCount(p){ return PV.counts[p.id] || 0; }
+    function sortRows(){ rows.sort(function(a, b){ return pvCount(b) - pvCount(a) || String(a.product_type).localeCompare(String(b.product_type)); }); }
+    sortRows();
+    function rankOf(p){ if(!pvCount(p)) return 0; var r = 1; rows.forEach(function(o){ if(pvCount(o) > pvCount(p)) r++; }); return r; }
     var BY = {}; rows.forEach(function(p){ BY[p.slug] = p; });
     var d = l.details || {};
     function title(p){ return VEProducts.title(p, l.name); }
     function href(slug){ return '/directory/' + encodeURIComponent(l.slug) + '?tab=products&product=' + encodeURIComponent(slug); }
     function card(p){
       var pic = p.image_url || l.logo_url, n = Array.isArray(p.variants) ? p.variants.length : 0;
-      return '<a class="bp-card" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || 'var(--vb-go-hover,#1f5f22)')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
-        '<div class="bp-main"><div class="bp-type">' + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
-        '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div></div></a>';
+      var rk = rankOf(p), c = pvCount(p), on = PV.mine.indexOf(p.id) >= 0;
+      return '<div class="bp-item"><a class="bp-card" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || 'var(--vb-go-hover,#1f5f22)')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
+        '<div class="bp-main"><div class="bp-type">' + (rk ? '<span class="bp-rank">#' + rk + ' at ' + esc(l.name) + '</span> · ' : '') + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
+        '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div>' +
+        (p.macros && window.VEMacros ? '<div class="bp-mac">' + esc(VEMacros.line(p.macros)) + '</div>' : '') + '</div></a>' +
+        '<button type="button" class="bp-vote' + (on ? ' on' : '') + '" data-pvote="' + esc(p.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Take back your vote for ' : 'Vote for ') + esc(title(p)) + '"><b>' + c + '</b><span>' + (on ? 'Voted' : 'Vote') + '</span></button></div>';
     }
-    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides'; }
+    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides' + (rows.some(pvCount) ? ', most voted first' : ''); }
 
     // ---- Overview: about the brand, its products, where to find them
     var stores = {};
@@ -2787,6 +2874,21 @@ function loadBrandSite(l){
         if(tab === 'products' && new URLSearchParams(location.search).get('product')){ go(''); return; }
         if(tab !== 'products') sideOff(); else route();
         syncRail();
+        return;
+      }
+      if((el = e.target.closest('[data-pvote]'))){
+        e.preventDefault();
+        if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
+        var pid = el.getAttribute('data-pvote'), on = el.getAttribute('aria-pressed') !== 'true';
+        el.disabled = true;
+        pvApi({ action: 'vote', product_id: pid, on: on }).then(function(x){
+          el.disabled = false;
+          if(!x || !x.ok){ if(x && x.error === 'payment_required' && window.VEVotes) VEVotes.passportPrompt(); return; }
+          PV.counts[pid] = x.count; PV.mine = PV.mine.filter(function(i){ return i !== pid; }); if(x.on) PV.mine.push(pid);
+          sortRows();
+          var bo = document.querySelector('.bsite-overview .bp-grid'); if(bo) bo.innerHTML = rows.slice(0, 6).map(card).join('');
+          if(pane && !new URLSearchParams(location.search).get('product')) showList();
+        }).catch(function(){ el.disabled = false; });
         return;
       }
       if((el = e.target.closest('a.pv-store[href^="/directory/"]'))) veTrack(l, 'store', el.getAttribute('href').split('?')[0].split('/').pop());

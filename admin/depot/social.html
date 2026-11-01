@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Social | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Social (Sean, 2026-11-01: "a grid of scheduled content and click in it to see the caption, tags, links, and anything
+       else... analytics for all of our social feeds... sort between channels to see scheduled and past content"). One thing per view:
+       Content (#content/<scheduled|past|all>/<channel>): a grid, most urgent first (the next scheduled at the top, then the newest
+       past), each tile the picture, the channel, the status in plain words, the time in Eastern and the caption clamped to two rows;
+       one post (#post/<id>): everything we know about it; Analytics (#analytics/<channel>): followers and their change, posts,
+       views, reach, interactions and engagement for the period, per channel, then the posts ranked by any column.
+       Server: ve-social (Metricool's schedule and analytics, Captivate for the podcast). Times are Eastern, always. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    a{color:var(--ve-green-deep);}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .crumb a{font-weight:800;text-decoration:none;}
+    .tabs{display:flex;flex-wrap:wrap;gap:8px;}
+    .tabs a,.chip{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-family:inherit;}
+    .tabs a.on,.chip.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .chip img{width:16px;height:16px;}
+    .chip.on img{filter:brightness(0) invert(1);}
+    .chip .n{font-size:11px;opacity:.75;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .tools{display:grid;grid-template-columns:minmax(0,1fr) 200px 200px auto;gap:10px;align-items:center;margin:0 0 14px;}
+    @media (max-width:860px){.tools{grid-template-columns:1fr 1fr;}.tools .q{grid-column:1/-1;}}
+    input,select{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;white-space:nowrap;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-text-75);min-height:22px;margin:0 0 10px;}
+    .msg.bad{color:#8a1c12;}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;}
+    @media (min-width:1280px){.grid{grid-template-columns:repeat(4,minmax(0,1fr));}}
+    .tile{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:box-shadow .15s;}
+    .tile:hover{box-shadow:0 6px 18px rgba(0,0,0,0.08);}
+    .tile .pic{aspect-ratio:1/1;background:#eef2ee center/cover no-repeat;position:relative;}
+    .tile .pic.none{display:flex;align-items:center;justify-content:center;color:var(--ve-green-deep);font-weight:900;font-size:13px;letter-spacing:.1em;text-transform:uppercase;}
+    .tile .net{position:absolute;top:10px;left:10px;width:30px;height:30px;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.18);}
+    .tile .net img{width:18px;height:18px;}
+    .tile .net b{font-size:9px;font-weight:900;}
+    .tile .st{position:absolute;top:10px;right:10px;}
+    .tile .body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .tile .when{font-size:12px;font-weight:800;color:var(--ve-green-deep);}
+    .tile .cap{font-size:13.5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.9em;}
+    .tile .nums{font-size:12px;color:var(--ve-text-75);font-weight:700;display:flex;gap:12px;flex-wrap:wrap;margin-top:auto;}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;display:inline-block;background:#f1f1f1;color:#444;}
+    .tag.scheduled{background:#fff4e0;color:#7a4a00;}.tag.published{background:#e8f5e9;color:#1f5f22;}.tag.draft{background:#eef1f6;color:#2c3e66;}.tag.failed{background:#fbeeec;color:#8a1c12;}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:20px;align-items:start;}
+    @media (max-width:900px){.two{grid-template-columns:1fr;}}
+    .media img,.media video{width:100%;border-radius:10px;display:block;background:#eef2ee;}
+    .media .more{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+    .media .more img{aspect-ratio:1/1;object-fit:cover;}
+    .caption{white-space:pre-wrap;font-size:14.5px;line-height:1.6;}
+    .kv{display:grid;grid-template-columns:150px minmax(0,1fr);gap:8px 14px;font-size:13.5px;}
+    .kv dt{font-weight:800;color:var(--ve-green-deep);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-top:2px;}
+    .kv dd{word-break:break-word;}
+    .pills{display:flex;flex-wrap:wrap;gap:6px;}
+    .pill{font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-deep);text-decoration:none;}
+    .metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;}
+    .metric{background:#f7f8f7;border-radius:10px;padding:10px 12px;}
+    .metric b{display:block;font-size:20px;font-weight:900;line-height:1.2;}
+    .metric span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:14px;margin-bottom:18px;}
+    @media (min-width:1280px){.cards{grid-template-columns:repeat(5,minmax(0,1fr));}}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;font:inherit;color:inherit;}
+    .card.on{border-color:var(--ve-green-deep);box-shadow:0 0 0 2px var(--ve-green-deep) inset;}
+    .card .hd{display:flex;align-items:center;gap:10px;font-weight:900;font-size:15px;}
+    .card .hd img{width:22px;height:22px;}
+    .card .big{font-size:28px;font-weight:900;line-height:1;}
+    .card .chg{font-size:12.5px;font-weight:800;}
+    .up{color:#1f7a2a;}.down{color:#a0281a;}.flat{color:#666;}
+    .card .row4{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 12px;font-size:12.5px;color:var(--ve-text-75);}
+    .card .row4 b{color:var(--ve-text);font-size:14px;}
+    .card svg{width:100%;height:46px;display:block;}
+    .card .off{font-size:13px;color:var(--ve-text-75);}
+    table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;}
+    th,td{padding:9px 10px;border-bottom:1px solid var(--ve-border);text-align:right;white-space:nowrap;}
+    th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left;}
+    th{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);cursor:pointer;user-select:none;}
+    th.on::after{content:' ▾';}th.on.asc::after{content:' ▴';}
+    td .t{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:520px;text-align:left;}
+    td a{text-decoration:none;font-weight:700;}
+    .tbl{overflow-x:auto;border:1px solid var(--ve-border);border-radius:12px;max-height:640px;overflow-y:auto;}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:28px;text-align:center;color:var(--ve-text-75);font-weight:700;}
+    .gate{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px;font-weight:700;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Social</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">What is scheduled and what has gone out on Instagram, Facebook, TikTok, YouTube and the podcast, and how each channel is doing. Every time is Eastern. Posts are scheduled in Metricool; the podcast in Captivate.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-social';
+    var TZ = 'America/New_York';
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('app');
+    var CH = {
+      all: { name: 'All channels' },
+      instagram: { name: 'Instagram', icon: '/public/icons/platforms/instagram.svg' },
+      facebook: { name: 'Facebook', icon: '/public/icons/platforms/facebook.svg' },
+      tiktok: { name: 'TikTok', icon: '/public/icons/platforms/tiktok.svg' },
+      youtube: { name: 'YouTube', icon: '/public/icons/platforms/youtube.svg' },
+      podcast: { name: 'Podcast', icon: '/public/icons/platforms/apple-podcasts.svg' },
+      x: { name: 'X' }
+    };
+    var ORDER = ['instagram', 'facebook', 'tiktok', 'youtube', 'podcast'];
+    var STATUS = { scheduled: 'Scheduled', published: 'Published', draft: 'Draft', failed: 'Did not post' };
+    var WHEN = { scheduled: 'Scheduled', past: 'Past', all: 'All' };
+    var METRIC = { views: 'Views', reach: 'Reach', likes: 'Likes', comments: 'Comments', shares: 'Shares', saves: 'Saves', interactions: 'Interactions', engagement: 'Engagement %', follows: 'New follows', clicks: 'Clicks', link_clicks: 'Link clicks', video_views: 'Video views', watch_minutes: 'Watch minutes', avg_watch_s: 'Avg. watch (s)', skip_rate: 'Skip rate %', full_watch_rate: 'Watched to the end %' };
+    var PERIODS = { 7: 'Last 7 days', 30: 'Last 30 days', 90: 'Last 90 days', 180: 'Last 6 months', 365: 'Last year' };
+    var data = null, loading = null;
+    var st = { days: 90, q: '', sort: 'views', asc: false };
+    try { var s = JSON.parse(sessionStorage.getItem('ve_social') || '{}'); if (PERIODS[s.days]) st.days = s.days; } catch (e) {}
+    function keep() { try { sessionStorage.setItem('ve_social', JSON.stringify({ days: st.days })); } catch (e) {} }
+
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function eastDay(d) { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); }
+    function when(t, long) {
+      if (!t) return 'No time set';
+      var o = long ? { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ, timeZoneName: 'short' }
+                   : { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ };
+      return new Date(t).toLocaleString('en-US', o) + (long ? '' : ' ET');
+    }
+    function fmt(n) { if (n == null) return '–'; var v = Number(n); if (Math.abs(v) >= 10000) return (v / 1000).toFixed(v >= 100000 ? 0 : 1) + 'K'; return Math.round(v * 10) / 10 === Math.round(v) ? Math.round(v).toLocaleString() : (Math.round(v * 10) / 10).toLocaleString(); }
+    function icon(ch, size) { var c = CH[ch] || {}; return c.icon ? '<img src="' + c.icon + '" alt="" width="' + (size || 18) + '" height="' + (size || 18) + '">' : '<b>' + esc((c.name || ch).slice(0, 2)) + '</b>'; }
+    function isPast(p) { return p.status === 'published' || p.status === 'failed'; }
+    function img(u, w) { if (!u) return ''; if (/^https?:\/\//.test(u) && !/supabase\.co|vegansexplore\.com/.test(u)) return u; return u; }
+
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
+    function load(refresh) {
+      var to = eastDay(new Date());
+      var from = eastDay(new Date(Date.now() - (st.days - 1) * 86400000));
+      loading = api({ action: 'report', from: from, to: to, refresh: !!refresh }).then(function (r) { data = r; loading = null; return r; });
+      return loading;
+    }
+    function ready(fn) {
+      if (data && !loading) return fn();
+      app.innerHTML = '<p class="msg">Reading Metricool and Captivate…</p>';
+      (loading || load()).then(fn);
+    }
+    function top(on) {
+      var a = data && data.fetched_at ? 'Updated ' + new Date(data.fetched_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ }) + ' ET' : '';
+      return '<div class="bar"><div class="tabs"><a href="#content/scheduled/all" class="' + (on === 'content' ? 'on' : '') + '">Content</a><a href="#analytics/all" class="' + (on === 'analytics' ? 'on' : '') + '">Analytics</a></div>' +
+        '<div style="display:flex;gap:10px;align-items:center"><span class="msg" style="margin:0">' + esc(a) + '</span><button class="btn btn-ghost" id="refresh" type="button">Refresh now</button></div></div>' +
+        (data && data.errors && data.errors.length ? '<p class="msg bad">Some channels did not answer: ' + esc(data.errors.join('; ')) + '</p>' : '') +
+        (data && data.error ? '<p class="msg bad">' + esc(data.error === 'forbidden' ? 'This page is for super admins.' : 'Could not read the channels: ' + data.error) + '</p>' : '');
+    }
+    function wireTop() { var b = $('refresh'); if (b) b.onclick = function () { data = null; load(true).then(route); route(); }; }
+    function periodSel() { return '<select id="period" aria-label="Period for past content">' + Object.keys(PERIODS).map(function (k) { return '<option value="' + k + '"' + (+k === st.days ? ' selected' : '') + '>' + PERIODS[k] + '</option>'; }).join('') + '</select>'; }
+    function wirePeriod() { var p = $('period'); if (p) p.onchange = function () { st.days = +p.value; keep(); data = null; load().then(route); route(); }; }
+
+    // ---- Content ----
+    function drawContent(w, ch) {
+      var posts = (data.posts || []);
+      var count = function (c) { return posts.filter(function (p) { return (c === 'all' || p.channel === c) && (w === 'all' || (w === 'past') === isPast(p)); }).length; };
+      var list = posts.filter(function (p) {
+        if (ch !== 'all' && p.channel !== ch) return false;
+        if (w === 'scheduled' && isPast(p)) return false;
+        if (w === 'past' && !isPast(p)) return false;
+        if (st.q) { var hay = (p.caption + ' ' + (p.hashtags || []).join(' ') + ' ' + (p.mentions || []).join(' ')).toLowerCase(); if (hay.indexOf(st.q.toLowerCase()) < 0) return false; }
+        return true;
+      });
+      // Most urgent first: what goes out next, then the newest past.
+      var up = list.filter(function (p) { return !isPast(p); }).sort(function (a, b) { return String(a.at || '9').localeCompare(String(b.at || '9')); });
+      var past = list.filter(isPast).sort(function (a, b) { return String(b.at || '').localeCompare(String(a.at || '')); });
+      list = up.concat(past);
+      var chips = ['all'].concat(ORDER).map(function (c) { return '<a class="chip' + (c === ch ? ' on' : '') + '" href="#content/' + w + '/' + c + '">' + (c === 'all' ? '' : icon(c, 16)) + esc(CH[c].name) + ' <span class="n">' + count(c) + '</span></a>'; }).join('');
+      app.innerHTML = top('content') +
+        '<div class="tools"><input class="q" id="q" type="search" placeholder="Search captions, hashtags, mentions" value="' + esc(st.q) + '" data-dictate="off">' +
+        '<select id="when" aria-label="Scheduled or past">' + Object.keys(WHEN).map(function (k) { return '<option value="' + k + '"' + (k === w ? ' selected' : '') + '>' + WHEN[k] + '</option>'; }).join('') + '</select>' +
+        periodSel() + '<span></span></div>' +
+        '<div class="tabs" style="margin-bottom:16px">' + chips + '</div>' +
+        (list.length ? '<div class="grid">' + list.map(tile).join('') + '</div>' :
+          '<div class="empty">' + (w === 'scheduled' ? 'Nothing scheduled' + (ch === 'all' ? '' : ' on ' + CH[ch].name) + ' yet. Posts scheduled in Metricool show here.' : 'Nothing here for this period.') + '</div>');
+      wireTop(); wirePeriod();
+      $('when').onchange = function () { location.hash = '#content/' + this.value + '/' + ch; };
+      var q = $('q'), t; q.oninput = function () { clearTimeout(t); t = setTimeout(function () { st.q = q.value.trim(); drawContent(w, ch); var n = $('q'); n.focus(); n.setSelectionRange(n.value.length, n.value.length); }, 250); };
+    }
+    function tile(p) {
+      var m = p.metrics || {};
+      var nums = isPast(p) ? [['views', 'views'], ['likes', 'likes'], ['comments', 'comments']].filter(function (k) { return m[k[0]] != null; }).map(function (k) { return '<span>' + fmt(m[k[0]]) + ' ' + k[1] + '</span>'; }).join('') : '';
+      var title = p.extra && p.extra.title ? p.extra.title : p.caption;
+      var pic = p.thumb ? '<div class="pic" style="background-image:url(\'' + esc(img(p.thumb)) + '\')">' : '<div class="pic none">' + esc(CH[p.channel] ? CH[p.channel].name : p.channel);
+      return '<a class="tile" href="#post/' + encodeURIComponent(p.id) + '">' + pic +
+        '<span class="net" title="' + esc(CH[p.channel] ? CH[p.channel].name : p.channel) + '">' + icon(p.channel) + '</span>' +
+        '<span class="st tag ' + esc(p.status) + '">' + esc(STATUS[p.status] || p.status) + '</span></div>' +
+        '<div class="body"><span class="when">' + esc(when(p.at)) + '</span><span class="cap">' + esc(title || 'No caption') + '</span>' +
+        (nums ? '<span class="nums">' + nums + '</span>' : '') + '</div></a>';
+    }
+
+    // ---- One post ----
+    function drawPost(id) {
+      var p = (data.posts || []).filter(function (x) { return x.id === id; })[0];
+      if (!p) { app.innerHTML = top('content') + '<div class="empty">That post is not in this period. <a href="#content/all/all">Back to the content</a></div>'; wireTop(); return; }
+      var back = '#content/' + (isPast(p) ? 'past' : 'scheduled') + '/' + p.channel;
+      var media = (p.media || []).filter(Boolean);
+      var audio = p.extra && p.extra.audio;
+      var m = p.metrics || {};
+      var mk = Object.keys(METRIC).filter(function (k) { return m[k] != null; });
+      var settings = p.extra && p.extra.settings ? Object.keys(p.extra.settings).filter(function (k) { var v = p.extra.settings[k]; return v != null && v !== '' && typeof v !== 'object'; }).map(function (k) { return '<span class="pill">' + esc(k) + ': ' + esc(p.extra.settings[k]) + '</span>'; }).join('') : '';
+      var caption = p.channel === 'podcast' || p.channel === 'youtube' ? p.caption.replace(/^[^\n]*\n\n/, '') : p.caption;
+      var title = p.extra && p.extra.title;
+      app.innerHTML = top('content') +
+        '<p class="crumb"><a href="' + back + '">Social</a> <span>›</span> <a href="' + back + '">' + esc(CH[p.channel] ? CH[p.channel].name : p.channel) + '</a> <span>›</span> <span>' + esc((title || p.caption || 'Post').slice(0, 60)) + '</span></p>' +
+        '<div class="two"><div class="media">' +
+          (media.length ? '<img src="' + esc(img(media[0])) + '" alt="">' + (media.length > 1 ? '<div class="more">' + media.slice(1).map(function (u) { return '<img src="' + esc(img(u)) + '" alt="">'; }).join('') + '</div>' : '') : '<div class="empty">No picture on this one.</div>') +
+          (audio ? '<audio controls preload="none" src="' + esc(audio) + '" style="width:100%;margin-top:10px"></audio>' : '') +
+        '</div><div>' +
+          '<div class="panel"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px">' + icon(p.channel, 22) + '<b>' + esc(CH[p.channel] ? CH[p.channel].name : p.channel) + '</b><span class="tag ' + esc(p.status) + '">' + esc(STATUS[p.status] || p.status) + '</span><span class="tag">' + esc(p.kind) + '</span></div>' +
+            (title ? '<h2 style="text-transform:none;letter-spacing:0;font-size:18px;color:var(--ve-text)">' + esc(title) + '</h2>' : '') +
+            '<dl class="kv">' +
+              '<dt>' + (isPast(p) ? 'Went out' : 'Goes out') + '</dt><dd>' + esc(when(p.at, true)) + '</dd>' +
+              (p.hashtags && p.hashtags.length ? '<dt>Hashtags</dt><dd class="pills">' + p.hashtags.map(function (h) { return '<span class="pill">' + esc(h) + '</span>'; }).join('') + '</dd>' : '<dt>Hashtags</dt><dd>None</dd>') +
+              (p.mentions && p.mentions.length ? '<dt>Tagged</dt><dd class="pills">' + p.mentions.map(function (h) { return '<span class="pill">' + esc(h) + '</span>'; }).join('') + '</dd>' : '<dt>Tagged</dt><dd>No one</dd>') +
+              '<dt>Links</dt><dd>' + (p.links && p.links.length ? p.links.map(function (u) { return '<div><a href="' + esc(u) + '" target="_blank" rel="noopener">' + esc(u) + '</a>' + (/vegansexplore\.com\/go\//.test(u) ? ' <span class="tag published">Tracked</span>' : '') + '</div>'; }).join('') : 'None') + '</dd>' +
+              (p.first_comment ? '<dt>First comment</dt><dd style="white-space:pre-wrap">' + esc(p.first_comment) + '</dd>' : '') +
+              (p.extra && p.extra.episode_number ? '<dt>Episode</dt><dd>' + esc(p.extra.episode_number) + '</dd>' : '') +
+              (settings ? '<dt>Settings</dt><dd class="pills">' + settings + '</dd>' : '') +
+              (p.extra && p.extra.detail ? '<dt>Note</dt><dd>' + esc(p.extra.detail) + '</dd>' : '') +
+              '<dt>From</dt><dd>' + (p.source === 'captivate' ? 'Captivate' : 'Metricool') + '</dd>' +
+            '</dl>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">' + (p.url ? '<a class="btn" href="' + esc(p.url) + '" target="_blank" rel="noopener">Open on ' + esc(CH[p.channel] ? CH[p.channel].name : 'the channel') + '</a>' : '') +
+              '<button class="btn btn-ghost" type="button" id="copy">Copy caption</button></div>' +
+          '</div>' +
+          (mk.length ? '<div class="panel"><h2>How it did</h2><div class="metrics">' + mk.map(function (k) { return '<div class="metric"><b>' + fmt(m[k]) + '</b><span>' + METRIC[k] + '</span></div>'; }).join('') + '</div></div>' : (isPast(p) ? '' : '<div class="panel"><h2>How it did</h2><p class="sub" style="margin:0">Numbers show here once it is out.</p></div>')) +
+          '<div class="panel"><h2>Caption</h2><div class="caption">' + esc(caption || 'No caption') + '</div></div>' +
+        '</div></div>';
+      wireTop();
+      $('copy').onclick = function () { var b = this; (navigator.clipboard ? navigator.clipboard.writeText(p.caption) : Promise.reject()).then(function () { b.textContent = 'Copied'; }, function () { b.textContent = 'Copy failed'; }); };
+    }
+
+    // ---- Analytics ----
+    function spark(series) {
+      if (!series || series.length < 2) return '';
+      var v = series.map(function (s) { return s.value; }), lo = Math.min.apply(null, v), hi = Math.max.apply(null, v), r = hi - lo || 1;
+      var pts = v.map(function (x, i) { return (i / (v.length - 1) * 100).toFixed(2) + ',' + (40 - (x - lo) / r * 36).toFixed(2); }).join(' ');
+      return '<svg viewBox="0 0 100 42" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + pts + '" fill="none" stroke="#2D5C27" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>';
+    }
+    function sumBy(list, k) { var t = 0, any = false; list.forEach(function (p) { var v = (p.metrics || {})[k]; if (v != null) { t += Number(v); any = true; } }); return any ? t : null; }
+    function avgBy(list, k) { var a = list.map(function (p) { return (p.metrics || {})[k]; }).filter(function (v) { return v != null; }); return a.length ? a.reduce(function (x, y) { return x + Number(y); }, 0) / a.length : null; }
+    function drawAnalytics(ch) {
+      var past = (data.posts || []).filter(function (p) { return p.status === 'published'; });
+      var cards = ORDER.map(function (c) {
+        var info = (data.channels || {})[c] || {};
+        var mine = past.filter(function (p) { return p.channel === c; });
+        var f = info.followers, f0 = info.followers_start, d = f != null && f0 != null ? f - f0 : null;
+        var chg = d == null ? '' : '<span class="chg ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'flat') + '">' + (d > 0 ? '+' : '') + fmt(d) + ' in the period</span>';
+        var label = c === 'youtube' ? 'subscribers' : c === 'podcast' ? 'episodes' : 'followers';
+        return '<button type="button" class="card' + (ch === c ? ' on' : '') + '" data-ch="' + c + '"><span class="hd">' + icon(c, 22) + esc(CH[c].name) + '</span>' +
+          (info.error ? '<span class="off">' + esc(info.error) + '</span>' :
+            (c === 'podcast' ? '<span class="big">' + mine.length + '</span><span class="chg flat">episodes out in the period</span><span class="off">Downloads are on Captivate; they join this page next.</span>' :
+            '<span class="big">' + fmt(f) + '</span><span style="font-size:12px;font-weight:700;color:var(--ve-text-75)">' + label + '</span>' + chg + spark(info.series) +
+            '<span class="row4"><span><b>' + mine.length + '</b><br>posts</span><span><b>' + fmt(sumBy(mine, 'views')) + '</b><br>views</span>' +
+            '<span><b>' + fmt(sumBy(mine, 'reach')) + '</b><br>reach</span><span><b>' + fmt(avgBy(mine, 'engagement')) + (avgBy(mine, 'engagement') != null ? '%' : '') + '</b><br>avg. engagement</span></span>')) +
+          '</button>';
+      }).join('');
+      var rows = past.filter(function (p) { return (ch === 'all' || p.channel === ch) && p.channel !== 'podcast'; });
+      var cols = ['views', 'reach', 'likes', 'comments', 'shares', 'engagement'];
+      rows.sort(function (a, b) {
+        var k = st.sort, va, vb;
+        if (k === 'at') { va = a.at || ''; vb = b.at || ''; return st.asc ? va.localeCompare(vb) : vb.localeCompare(va); }
+        va = (a.metrics || {})[k]; vb = (b.metrics || {})[k]; va = va == null ? -1 : +va; vb = vb == null ? -1 : +vb;
+        return st.asc ? va - vb : vb - va;
+      });
+      var th = function (k, l) { return '<th data-k="' + k + '" class="' + (st.sort === k ? 'on' + (st.asc ? ' asc' : '') : '') + '">' + l + '</th>'; };
+      app.innerHTML = top('analytics') +
+        '<div class="tools"><span class="q sub" style="margin:0">Followers, posts and how they did, ' + esc(PERIODS[st.days].toLowerCase()) + '. Pick a channel to see only its posts. X is not connected in Metricool yet.</span><span></span>' + periodSel() + '<a class="btn btn-ghost" href="#analytics/all">All channels</a></div>' +
+        '<div class="cards">' + cards + '</div>' +
+        '<h2>' + (ch === 'all' ? 'Every post' : CH[ch].name + ' posts') + ', best first</h2>' +
+        (rows.length ? '<div class="tbl"><table><thead><tr><th>Post</th><th>Channel</th>' + th('at', 'Date') + cols.map(function (k) { return th(k, METRIC[k].replace(' %', '')); }).join('') + '</tr></thead><tbody>' +
+          rows.map(function (p) { var m = p.metrics || {}; return '<tr><td><a href="#post/' + encodeURIComponent(p.id) + '"><span class="t">' + esc((p.extra && p.extra.title) || p.caption || 'No caption') + '</span></a></td><td>' + esc(CH[p.channel] ? CH[p.channel].name : p.channel) + '</td><td>' + esc(new Date(p.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: TZ })) + '</td>' +
+            cols.map(function (k) { return '<td>' + fmt(m[k]) + (k === 'engagement' && m[k] != null ? '%' : '') + '</td>'; }).join('') + '</tr>'; }).join('') +
+          '</tbody></table></div>' : '<div class="empty">No posts went out in this period.</div>');
+      wireTop(); wirePeriod();
+      Array.prototype.forEach.call(app.querySelectorAll('.card'), function (b) { b.onclick = function () { var c = b.getAttribute('data-ch'); location.hash = '#analytics/' + (ch === c ? 'all' : c); }; });
+      Array.prototype.forEach.call(app.querySelectorAll('th[data-k]'), function (h) { h.onclick = function () { var k = h.getAttribute('data-k'); if (st.sort === k) st.asc = !st.asc; else { st.sort = k; st.asc = false; } drawAnalytics(ch); }; });
+    }
+
+    function route() {
+      var h = location.hash || '#content/scheduled/all', m;
+      ready(function () {
+        if (data && data.error && !data.posts) { app.innerHTML = top('content'); wireTop(); return; }
+        if ((m = /^#post\/(.+)$/.exec(h))) drawPost(decodeURIComponent(m[1]));
+        else if ((m = /^#analytics\/([a-z]+)$/.exec(h))) drawAnalytics(CH[m[1]] ? m[1] : 'all');
+        else { m = /^#content\/(scheduled|past|all)\/([a-z]+)$/.exec(h) || [0, 'scheduled', 'all']; drawContent(m[1], CH[m[2]] ? m[2] : 'all'); }
+      });
+      try { window.scrollTo(0, 0); } catch (e) {}
+    }
+    function start() {
+      if (!window.VEAuth) return setTimeout(start, 200);
+      var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+      if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

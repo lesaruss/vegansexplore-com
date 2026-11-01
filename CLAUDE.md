@@ -215,6 +215,13 @@ and add `<aside class="vear-rail" data-ad-page="pulse|/events">`. Slots come fro
 only once it is on screen. A new page needs its slots added to `ad_placements` and to `PAGES` in
 the script.
 
+**Shared with seanarussell.com** (Sean, 2026-11-01, Watch: "follow that same structure, even how the audio plays"): Sean's site
+loads `https://vegansexplore.com/public/ve-episodes.js` and `ve-ad-rail.js`. `VEEpisodes.mount(el, {listing, call})` takes
+`call(body)` returning another site's episodes in ve-podcast's shape (sar-media `episodes`/`episode`); with it Save, Show notes
+from the Pulse and Referenced books are left out. The rail takes `data-ad-brand`, `data-ad-slots` ("slot:tower:300 x 600") and
+`data-ad-cta`/`data-ad-cta-label` for a page outside `PAGES`, and loads `ve-ad-creative.js` from its own origin. Keep both
+scripts working when loaded from another origin.
+
 ### Ad creatives (Sean, 2026-10-04)
 
 An ad's `creative_url` is an image or an HTML5 ad (a `.html` file in `ads/<brand>/`). Every slot
@@ -621,7 +628,12 @@ judge whether food is safe by how a place looks online; businesses want marketin
   as HTML). The sample business shows Green Leaf Kitchen's (`VEBrandDesk.sampleData`, its 34 photos and logos). **Depot > BrandDesk**
   (`/admin/depot/branddesk`, Directory in the Go to menu): Clients (`#list`), one client (`#a/<id>[/library|sheet]`: the signature, plan,
   links, End it, then the same three views with Mark done, Archive it now and Add to their Library) and **Who can sign up** (`#open`,
-  `branddesk.allowed`). **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
+  `branddesk.allowed`). **My brand** (`#mine`, `#mine/<kit>`; Sean, 2026-11-01: "Go with the owner panel") is Sean's owner panel: his seanarussell.com
+  media kits (the `sar-kits` edge function, `list`) with Edit and Open the kit, and Edit opens the one kit editor, loaded from
+  `https://www.seanarussell.com/assets/js/sar-kit-editor.js` (`SARKitEditor.mount`, `backLabel` Back to my kits) so the kit page and the
+  Depot share one editor and one save (`sar-kits` `edit_get`, `kit_save`). It signs with the Depot session: `ve_token` is the same HMAC
+  session as seanarussell.com's `lr_token`, and `sar-kits` re-checks `members.is_superadmin` on every read and save. Not a BrandDesk
+  client account: no `ve_branddesk_accounts` row, no billing. **Preview journeys > BrandDesk** (`JOURNEYS.branddesk` in `admin/depot/preview.html`, Sean 2026-10-31: "see all
   the components visually without having to go through the whole process myself"): 25 steps from Managed by us to the Inbox, on the
   sample business; `/business/managed?preview=plan|agreement|pay|done|client|closed|signin` (a sample owner, nothing charged),
   `/business/sample/site?look=island|night`, and `?managed=preview` on any page with `ve-managed.js` (opens the request window, sends
@@ -2524,6 +2536,13 @@ sometimes there's multiple people on the podcast"): a listing can also belong to
 person keeps their own family (their books and channel stay theirs); a shared show is its own family plus each host's, so it shows on
 every host's page, and its own page lists only its people and itself. First: the Vegans Who Lift Podcast (`vegans-who-lift`, with
 `brooke-sellers` and `john-thomas`; migration `20261030_brooke_john_shared_podcast.sql`). Neither bio names the other (Sean, same day).
+**More than one show is one tab** (Sean, 2026-11-01: "I don't like having all three of the podcasts brought out on the tabs... all
+under a title called Podcasts with a drop-down... when you go to Vegans Explore, you see that same drop down"): when a family holds two
+or more Podcasts (or two or more YouTube channels), they are one **Podcasts** (**YouTube**) tab with an arrow, which opens the shows by
+name with their logos, the one you are on marked (`famMenu` and `.fam-menu` in `directory/listing.html`, the list drawn outside the
+tab row so it is not cut off); on a show's page that tab is the active one. One show of a kind keeps its single Podcast or YouTube tab.
+On phones the tab dropdown lists each show by name (`mobileTabMenu` reads the tab's `_fam`). First on Sean's page: Vegans Explore,
+Pre-Vegans and SoFlo Vegans Podcasts.
 **On phones the tab row is a dropdown** (Sean, 2026-10-31: "Do the same drop-down treatment for media"): on a media listing
 (show or work) or a People page with two tabs or more, at 768 px and under the tabs are one full-width dropdown (`mobileTabMenu` and
 `.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as they appear.
@@ -3626,7 +3645,7 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
 ## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
-`20261101_supermarket_guide_canon.sql`). **Built and launched 2026-11-01** (below). Sean: "a doorway where the community will always know where to find these
+`20261101_supermarket_guide_canon.sql`). **Built 2026-11-01; prelaunch, members only** (below). Sean: "a doorway where the community will always know where to find these
 vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
 they're buying their spot in this massive campaign that starts in Q1."
 
@@ -3682,9 +3701,13 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   shown only when we hold its stores, each opening the store in the Guide. Its catalog card is Coming soon (members, Pascal, banner
   `public/guides/supermarket-guide.jpg`). **The pitch** is `/business/supermarkets` (`business/supermarkets.html`, guided view,
   `noindex`): the Guide with a live store, the three tiers, the Q1 2027 campaign, the 2027 story (as plans), Front Row Start, and Email our
-  team. **Launched 2026-11-01** (Sean: "launch the Supermarket Guide"; migration `20261101_supermarket_guide_launch.sql`): the
-  `ve_guides` row published ($11 or 1,100 points until a sponsor makes it free), indexed, its card in the Guide catalog after the
-  Nutrition Guide (label Shopping, Brickell Village free), in the sitemap. Not yet: weekly specials, CPG spotlights in
+  team. **Prelaunch, members only** (Sean, 2026-11-01, after a launch earlier the same day: "The Supermarket Guide is prelaunch. Only
+  members can see it... I'm really shopping into supermarkets to launch later on"; migration `20261101_supermarket_guide_prelaunch.sql`):
+  the `ve_guides` row unpublished (not sold, the page reads Coming soon), `noindex`, out of the sitemap, and its catalog card Coming soon
+  for signed-in members only; Brickell Village stays open by link for the pitch. **The plan**: every supermarket on as a sponsor before Q1
+  2027, so their stores are mapped across the country; at launch members flood the stores to catalog what is there and know it is there,
+  and a sponsorship unlocks specials pushed to the community, content creation, campaigns that reach further, our events and support for
+  nonprofits: the more they sponsor, the further we both go. Not yet: weekly specials, CPG spotlights in
   the lists, sponsor checkout (sponsors are added by hand), other chains' stores.
 - **By what it is** (Sean, 2026-11-01: "put dairy, meat... when you click on that, we have all the products together... sort it by the
   type... almond, oat... even banana... then you go into the brand"; migration `20261101_supermarket_categories.sql`). A store's spots are
@@ -3711,6 +3734,32 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   full. The Guide's Help keep it right table shows both columns; Depot > Venues pays and labels the right amounts. Proven 2026-11-01 in a
   rolled-back transaction (unsponsored correction 40, Still here 2 with no bounty; with a Publix Title sponsorship the first confirm 50
   and the bounty).
+- **Scan, macros, votes within the brand and picks in recipes** (Sean, 2026-11-01: "a tab where they can scan an item... it should
+  take them to its profile... each brand to have all of their products listed... see the nutrition value, which supermarkets carry it...
+  vote for it within the brand. So you're not going to see the rankings anywhere except when you click on the brand itself... If the
+  ingredient calls for coffee creamer... pick and choose which coffee creamer they want... save it"; then "Could we also list the macros
+  of the item?"; migrations `20261101_product_barcodes_macros.sql`, `20261101_recipe_ingredient_types.sql`; edge function `ve-products`).
+  **Barcodes**: `ve_product_barcodes` (GTIN padded to 14 digits, `ve_gtin`), one row per item, tied to its product line, with its Nutrition
+  Facts and macros; 870 filled 2026-11-01 from USDA FoodData Central's Branded Foods (every record of each brand, matched by kind, nothing
+  with milk, cream, whey, casein, egg or honey; `ve_usda_label` builds the label per serving with FDA rounding), 68 of the 86 lines.
+  **Macros**: `ve_products.macros` `{serving, cal, protein, carbs, fat, fiber, sugar, sodium, item}` from the line's plain or original item
+  (66 lines; 3 before), shown by `/public/ve-macros.js` (`VEMacros.strip`, `line`, `per100`, `amount`): a strip on every product page
+  (`.pv-mac` in `ve-product-view.js`, the chosen version's own), protein and calories on the Supermarket Guide's tiles and the brand's
+  Products tab, and Sort products (Most protein, Most protein per calorie, Fewest calories, `o` in the address). **Scan** is a Supermarket
+  Guide tab (`#/scan`, `#/scan/<barcode>`, open to everyone): `/public/ve-scan.js` (the browser's BarcodeDetector, else ZXing 0.21.3 from
+  jsDelivr for iPhone, or type the number; nothing recorded); ours opens with the line's name, the item, macros, Open its page, Every <type>
+  like it and Carried at; anything else shows what Open Food Facts says (CC BY-SA, read live, its Vegan status, macros per serving or 100 g)
+  and **Add it** (`ve-products` `add`, members, 20 a day: a pending row the team approves to its product line in **Depot > Venues >
+  Barcodes**, `#barcodes`). **Votes within the brand**: `ve_product_votes`, one per member per product (`ve-products` `votes`, `vote`); a
+  brand's Products tab and Overview list its products most voted first with **#N at <brand>** and a Vote button, and nowhere else shows the
+  rank. **Picks in recipes**: `recipes.ingredient_types` (set by trigger from each line, `ve_ingredient_type`), so a Cookbook recipe line
+  that calls for milk, creamer, yogurt, butter or a cheese has **Pick your <type>** (the Dairy Guide's recipe view): a window of every
+  product of that type with its macros (sort by protein or calories), saved per member (`ve_recipe_picks`, `ve-products` `pick`, refused
+  for a product of another type), shown in their recipe with its picture, macros, its page and **Buy it online** (an Amazon search with our
+  tag), and the recipe adds up the picked products' macros at the amounts it calls for, per serving. `ve-products` also takes the ops token
+  with `as_member`. Proven 2026-11-01 as the Logan test account (vote counted once and taken back, a pick saved, a wrong type and an
+  untagged line refused, then cleared). Not yet: 18 lines with no USDA match (365, Ben & Jerry's, Siggi's and others) and the other
+  Guides' recipe views.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
@@ -4372,6 +4421,36 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
   never sizes its frame) and the phone held the dashboard and the listing page at once, so Safari dropped the frame and reloaded it.
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
+
+## Time is Sean's: Eastern (Sean, 2026-11-01)
+
+"Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
+EST or EDT, minding the November and March clock changes). The build session's clock is UTC: check `TZ=America/New_York date` before
+saying anything is due, late or has passed. On 2026-11-01 Logan called the 7 AM Eastern episode slot missed at 5:38 AM Eastern.
+
+**The podcast's pre-roll is the network tag** (Sean, 2026-11-01): the default pre-roll on the Captivate show (the Vegans Explore
+Podcast) stays on for every episode.
+
+## Depot > Social (Sean, 2026-11-01)
+
+"A social media page in the VE Depot where I can see a grid of scheduled content and click in it to see the caption, tags, links,
+and anything else... share analytics for all of our social feeds and make it so I can sort between channels to see scheduled and past
+content." **Depot > Social** (`/admin/depot/social`, Content in the Go to menu; super admins), one thing per view: **Content**
+(`#content/<scheduled|past|all>/<channel>`: channel chips with counts, Scheduled / Past / All, the period, search over captions,
+hashtags and mentions; a grid four across, what goes out next first, then the newest past; each tile the picture, the channel, the
+status (Scheduled, Published, Draft, Did not post), the time in Eastern, the caption in two rows and, once out, views, likes and
+comments), **one post** (`#post/<id>`: the picture or episode audio, when it goes or went out, hashtags, who is tagged, every link
+(a `/go/` link marked Tracked), the first comment, the network's settings, how it did, the full caption, Copy caption, Open on the
+channel) and **Analytics** (`#analytics/<channel>`: a card a channel with followers, the change in the period and a line of it, posts,
+views, reach and average engagement; pick one to see only its posts; every post in a table sorted by any column). Server: edge
+function `ve-social` (`report` with Eastern `from` / `to`; super admin or the admin token; cached 30 minutes in `ve_analytics_cache`,
+Refresh now skips it). It reads **Metricool** (`analytics_connections` `metricool`, blog 3707345: `/v2/scheduler/posts` for what is
+scheduled, `/v2/analytics/posts|reels/instagram`, `/v2/analytics/posts/facebook|tiktok`, `/stats/youtube/videos`, and followers from
+`/v2/analytics/timelines` with `subject=account`; Metricool gives times in Europe/Madrid, turned into UTC there) and **Captivate** for
+the podcast (the show's dates are America/New_York). A post scheduled in Metricool that went out shows once, with the numbers. Checked
+2026-11-01: Instagram 3,762 followers, TikTok 3,038, YouTube 584, Facebook 371. **X is not connected in Metricool** (its API says so),
+though the 2026-10-31 notes said it was. Not yet: podcast downloads from Captivate, scheduling or editing from the page (it is read
+only; posts are scheduled in Metricool).
 
 ## Image conventions
 

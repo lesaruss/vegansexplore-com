@@ -5,6 +5,9 @@
  *
  *   VEEpisodes.mount(el, { listing: {id, slug, name, logo_url}, onReady(total) })   the list (search, 20 a page, ?epage=),
  *       and one episode on its own view (?ep=<guid> in the address bar, Episodes / title to go back)
+ *       opts.call(body) -> Promise: another site's episodes (seanarussell.com's own shows, Sean 2026-11-01: "follow that same
+ *       structure, even how the audio plays"); it answers { action: 'episodes' | 'episode' } in ve-podcast's shape. With it,
+ *       saves, show notes and referenced books are left out (they belong to Vegans Explore's listings).
  *   VEEpisodes.play(ep, show, o)     plays in the player bar at the foot of the window (one at a time, keeps playing across tabs);
  *                                    o.start plays from that second (a person's moment)
  *   VEEpisodes.save(listingId, guid) toggles a member's save; the Passport window for anyone else
@@ -172,7 +175,8 @@
   function mount(el, opts) {
     css();
     var PER = 20, page = Math.max(1, parseInt(new URLSearchParams(location.search).get('epage'), 10) || 1);
-    var L = opts.listing, show = { id: L.id, name: L.name, image: L.logo_url || '' }, saved = [], eps = [], total = 0, q = '', seq = 0;
+    var L = opts.listing, show = { id: opts.call ? '' : L.id, name: L.name, image: L.logo_url || '' }, saved = [], eps = [], total = 0, q = '', seq = 0;
+    var ask = opts.call || call, ours = !opts.call;
     el.innerHTML = '<div class="vep-dock"></div><div class="vep"></div>'; var root = el.lastChild;
     function epParam() { return new URLSearchParams(location.search).get('ep') || ''; }
     function setEp(guid, push) {
@@ -220,7 +224,7 @@
     }
     function load(offset) {
       var my = ++seq;
-      return call({ action: 'episodes', listing_id: L.id, q: q, offset: offset, limit: 20 }).then(function (d) {
+      return ask({ action: 'episodes', listing_id: L.id, q: q, offset: offset, limit: 20 }).then(function (d) {
         if (my !== seq) return d;
         if (!d || !d.ok) { root.innerHTML = '<div class="vep-empty">The episodes did not load. Try again in a moment.</div>'; return d; }
         if (d.show && d.show.image) show.image = d.show.image;
@@ -245,7 +249,7 @@
     function openOne(guid, push) {
       setEp(guid, push);
       root.innerHTML = '<div class="vep-empty">Loading the episode...</div>';
-      call({ action: 'episode', listing_id: L.id, guid: guid }).then(function (d) {
+      ask({ action: 'episode', listing_id: L.id, guid: guid }).then(function (d) {
         var ep = d && d.episode;
         if (!ep) { root.innerHTML = '<div class="vep-crumb"><button type="button">Episodes</button></div><div class="vep-empty">That episode is no longer in the show\'s feed.</div>'; root.querySelector('.vep-crumb button').onclick = back; return; }
         cache[ep.guid] = ep; if (d.show && d.show.image) show.image = d.show.image;
@@ -254,14 +258,13 @@
           '<article class="vep-one">' + img(ep.image || show.image || '', 480) + '<div>' +
           '<h2>' + esc(ep.title) + '</h2><div class="vep-meta">' + esc([ep.season ? 'Season ' + ep.season : '', ep.episode ? 'Episode ' + ep.episode : '', when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
           '<div class="vep-acts"><button type="button" class="vep-btn go" data-vep-play="' + esc(keyOf(ep, show)) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' +
-            '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + !!d.saved + '">' + (d.saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' +
+            (ours ? '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + !!d.saved + '">' + (d.saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' : '') +
             (ep.link ? '<a class="vep-btn" data-vep-ext href="' + esc(ep.link) + '" target="_blank" rel="noopener">Show notes</a>' : '') + '</div>' +
           '<div class="vep-full">' + esc(ep.summary) + '</div></div></article>';
         root.querySelector('.vep-crumb button').onclick = back;
         wire(root);
         toTop();
-        books(ep.guid);
-        notes(ep.guid);
+        if (ours) { books(ep.guid); notes(ep.guid); }
       });
     }
     // The way back to the Pulse (Sean, 2026-11-01: "build the show page back-link too"): one of our shows' episodes links to its
@@ -308,7 +311,7 @@
 
     var first = epParam();
     // The first page tells the page whether there is anything to show (no empty tab).
-    return call({ action: 'episodes', listing_id: L.id, offset: (page - 1) * PER, limit: PER }).then(function (d) {
+    return ask({ action: 'episodes', listing_id: L.id, offset: (page - 1) * PER, limit: PER }).then(function (d) {
       if (d && d.ok) {
         if (d.show && d.show.image) show.image = d.show.image;
         saved = d.saved || []; eps = d.episodes || []; total = d.total || 0; eps.forEach(function (e) { cache[e.guid] = e; });
