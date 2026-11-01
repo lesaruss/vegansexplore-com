@@ -34,7 +34,7 @@
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   // The Directory's own fields, so every card is the Directory card (VERegionDirectory.card).
   var LISTING_FIELDS = (window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status') + ',initials,website,details';
-  var BRANDS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Food%20Brands&tags=cs.%7Bvegan-dairy-guide%7D';
+  var BRANDS_URL = SB + '/rest/v1/listings?select=' + LISTING_FIELDS + '&status=eq.approved&category=eq.Food%20Brands&tags=cs.%7Bvegan-dairy-guide%7D&or=(business_status.is.null,business_status.neq.CLOSED_PERMANENTLY)';
   // Stores (Sean, 2026-10-08): every product in the Guide is mapped to the grocery stores that carry it, and each store
   // is a Directory listing with a Vegan aisle. A store named in the Guide links to that aisle with the product picked out.
   var PRODUCTS_URL = SB + '/rest/v1/ve_products?select=id,slug,brand_listing_id,product_type,name&guides=cs.%7Bvegan-dairy-guide%7D';
@@ -694,9 +694,9 @@
   }
   function productsOfType(t) {
     if (PICK_PRODUCTS[t]) return Promise.resolve(PICK_PRODUCTS[t]);
-    return fetch(SB + '/rest/v1/ve_products?select=id,slug,name,product_type,image_url,macros,made_from,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url)&product_type=eq.' + encodeURIComponent(t),
+    return fetch(SB + '/rest/v1/ve_products?select=id,slug,name,product_type,image_url,macros,made_from,listings!ve_products_brand_listing_id_fkey(slug,name,status,business_status,logo_url)&product_type=eq.' + encodeURIComponent(t),
       { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (x) { return x.ok ? x.json() : []; }).then(function (rows) {
-      rows = (rows || []).filter(function (p) { return p.listings && p.listings.status === 'approved'; })
+      rows = (rows || []).filter(function (p) { return p.listings && p.listings.status === 'approved' && p.listings.business_status !== 'CLOSED_PERMANENTLY'; })
         .sort(function (a, b) { return a.listings.name.localeCompare(b.listings.name); });
       PICK_PRODUCTS[t] = rows; return rows;
     }).catch(function () { return []; });

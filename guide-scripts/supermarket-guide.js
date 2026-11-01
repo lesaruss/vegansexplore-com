@@ -303,11 +303,11 @@
     if (PROD) return Promise.resolve(PROD);
     if (PROD_WAIT) return PROD_WAIT;
     PROD_WAIT = Promise.all([
-      rest('ve_products?select=id,slug,name,product_type,made_from,image_url,macros,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url,vote_count)&limit=1000'),
-      rest('listings?select=id,slug,name,logo_url,vote_count,product_kinds,tags&status=eq.approved&category=eq.Food%20Brands&limit=500')
+      rest('ve_products?select=id,slug,name,product_type,made_from,image_url,macros,listings!ve_products_brand_listing_id_fkey(slug,name,status,business_status,logo_url,vote_count)&limit=1000'),
+      rest('listings?select=id,slug,name,logo_url,vote_count,product_kinds,tags&status=eq.approved&category=eq.Food%20Brands&or=(business_status.is.null,business_status.neq.CLOSED_PERMANENTLY)&limit=500')
     ]).then(function (x) {
       PROD = {
-        products: (x[0] || []).filter(function (p) { return p.listings && p.listings.status === 'approved'; }),
+        products: (x[0] || []).filter(function (p) { return p.listings && p.listings.status === 'approved' && p.listings.business_status !== 'CLOSED_PERMANENTLY'; }),
         brands: (x[1] || []).filter(function (b) { return (b.tags || []).indexOf('lesaruss-ai-directory-candidate') < 0 && (b.product_kinds || []).length; })
       };
       return PROD;
