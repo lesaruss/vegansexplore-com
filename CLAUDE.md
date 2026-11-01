@@ -3633,6 +3633,50 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
 
+## Earn your Passport (LOCKED by Sean 2026-11-01, playbook `ve-pricing-points-passport`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-earn-your-passport`; migration
+`20261101_earn_your_passport_canon.sql`). **Not built yet.** Sean: "people can earn their membership... not for what they did in the past,
+but for what you're doing right now"; "I actually would prefer people to do that than pay the $11." Browsing stays free, taking part stays
+the $11 Passport or a membership earned now; no free account that can take part, and comps stay ended (the Depot cannot give memberships).
+
+- **The Taster account**: a name and email make it. It opens only the sampler Guide, their challenges, check-ins while a challenge runs and
+  their own link; the rest of the site as signed out (no votes, posts, saves or points to spend). Finishing a challenge or paying the $11
+  turns the same account into a membership. A Taster is "on the list", never a member.
+- **The sampler, A Taste of Vegans Explore**: every Guide's free piece (B12, the Buttermilk swap, Hard Rock Stadium, FLL, tip 1, the free
+  restaurant check) and what Vegans Explore is, the whole cast narrating, the For the animals side included; each page ends with "the rest
+  of this Guide comes with your Passport". Three sign-up questions (what brings you, your city, your Vegan journey) pick the suggested Guide
+  and chapter news. The Welcome Guide stays public.
+- **Three challenges** (pick 1 to 3, Start, 30 days, one restart; every task proven like a bounty and approved): **Support Local** (3
+  check-ins at Vegan places, one action each, I bought something at least once; in a stops month, 3 of the month's stops), **The Connector**
+  (3 people join with the $11 through your link), **The Advocate** (a free event on the guest pass, a sanctuary or rescue visit or
+  volunteering, a Fosters or Rescues share). Each is worth 1,100 points: one challenge pays the Passport; all three are a membership, 2,200
+  points on top and Level 2 by lifetime points. A profile badge (working name Trailblazer).
+- **The new check-in, for everyone**: after I'm here, What are you doing here today?: What I ordered (a photo, upload only while checked in),
+  I bought something (a receipt, card number covered), Post it (an Instagram or TikTok link tagging the place and @vegansexplore), a
+  shout-out (a positive prompt, read by a person first), and the bounties open there. Photos also reach the restaurant. Owners and staff earn
+  nothing at their own place. Starting points (Sean's to change): check-in 10, meal photo 15, receipt 25, post 25, shout-out 10, capped per
+  place per day.
+- **Monthly Passport Challenge stops**: up to five featured businesses per chapter a month plus one free community stop (a sanctuary, rescue
+  or nonprofit event). Slots open about six weeks ahead, locked by the 10th of the month before, no back-to-back when there is a waitlist,
+  live on the 1st; the first check-in of the month pays the most. Pilot South Florida.
+- **The business offer**: four $25 digital gift cards for a slot, a Promotion in the Vegan Restaurant Guide and on `/business` (five slots,
+  the deadline, the ask, why, their card as it will look). It gives membership (Founding before January 1, 2027, paid in value) and covers
+  the claim. The form is the agreement: promotional, $25 off, one per visit, no cash back, expiring 12 months after won, removed if the
+  business closes, Florida law (the lawyer reads it once before the pilot). A two-day follow-up on the business's tracked link (not opened,
+  opened not chosen, chosen), from the team, leftovers to the Inbox.
+- **Cards and the Vault**: the card lives in the member's dashboard (logo, $25, their name, a code, expiry); staff redeem by typing the
+  restaurant's short PIN on the member's phone, one use, the PIN changed when staff leave; owners see counts only. **The Vault is un-tabled**
+  (it was tabled 2026-10-31 in BrandDesk): members bid points for a week, one win a month, only the winner pays; a public Vault page shows
+  every prize by city, bidding for members; unwon cards stay up until won or expired.
+- **The content gig** a month ahead per stop: a 15 to 30 second vertical owner clip and someone eating, cut into a reel, from an example page.
+- **Points rule change**: a business may spend the points it has received on our services (Partner plan, BrandDesk, the shop, a Diplomat
+  membership) at 1 cent a point, up to half the price, never cashed out ($25 off is 2,500 points). Replaces "a boost, never money".
+- **Not-ready-yet emails** for Tasters: Day 0, 3, 7, 14, then the weekly Daily Pulse for their chapter; three December notes on the Founding
+  deadline; at most one a week otherwise; London consent box; paying ends the track. Reuse the outreach people-list engine.
+- **Build order (Logan)**: the check-in menu; the business sign-up, agreement, cards, PIN and Vault for the South Florida pilot; the Taster
+  account and sampler; the challenges; the follow-ups and emails; the content gig; the business points rule.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
