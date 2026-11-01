@@ -487,6 +487,11 @@ leaves it, each checked word for word with `stt`. `ve-claims` and the pages go o
 internal QA account on Love Life Cafe (the one-time `ve-once-partner-proof`, now the 410 stub): the session charged $111 today (a one-time
 line for Period 1) with the $111 price every 111 days at $0 today on a trial to April 22, 2027, metadata `front_row` and period 1, its
 note on Stripe's page; then expired and the claim and membership rows removed.
+**The Studio is BrandDesk in HQ, live 2026-11-01** (Sean: "go", then "deploy"; lesaruss-hq commit 4ed90c1): the pages moved from
+`/studio` to `/branddesk` (`app/(shell)/branddesk`), with the nav, links, staff routes and labels; `/studio` and `/studio/*` redirect there
+(`next.config.ts`, not permanent); the `/api/studio` data routes are unchanged. Checked from the database (this session cannot reach
+hq.lesaruss.ai): the old addresses land on the new ones and `/branddesk` asks a signed-out visitor to sign in. Next: each brand's page as
+its home, starting with the Social plan.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
