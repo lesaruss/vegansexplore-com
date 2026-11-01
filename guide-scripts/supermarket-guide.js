@@ -306,6 +306,35 @@
     return '<a class="sg-ptile" href="/directory/' + esc(b.slug) + '"><span class="sg-thumb">' + (b.logo_url ? '<img src="' + esc(b.logo_url) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
       '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>Brand on Vegans Explore' + (b.vote_count ? ' &middot; ' + b.vote_count + ' votes' : '') + '</em></span></a>';
   }
+  // Types on a section page (Sean, 2026-11-01: "let people narrow the products by type"). Each chip is a test on a Guide product
+  // (product_type, made_from) or a brand (product_kinds); a chip with nothing behind it is not drawn, so a new product type or
+  // brand shows up by itself once it is in the data. Brand-only sections get their chips from what their brands make.
+  function mf(re) { return function (x) { return re.test(x.made_from || ''); }; }
+  function ty(t) { var a = [].concat(t); return function (x) { return a.indexOf(x.product_type) >= 0; }; }
+  var SEC_CHIPS = {
+    'Plant-based milk': [['Oat', mf(/oat/i)], ['Almond', mf(/almond/i)], ['Soy', mf(/soy/i)], ['Coconut', mf(/coconut/i)],
+      ['Cashew and other nuts', mf(/cashew|macadamia|hazelnut/i)], ['Pea protein', mf(/pea protein/i)], ['Flax', mf(/flax/i)], ['Creamers', ty('Coffee Creamer')]],
+    'Plant-based yogurt': [['Yogurt', ty('Yogurt')], ['Sour cream', ty('Sour Cream')], ['Coconut', mf(/coconut/i)], ['Almond', mf(/almond/i)], ['Cashew', mf(/cashew/i)], ['Oat', mf(/oat/i)]],
+    'Vegan cheese': [['Shreds', ty('Shredded Cheese')], ['Slices', ty('Cheese Slices')], ['Blocks', function (x) { return x.product_type === 'Cheese Blocks' || /block/i.test(x.name || ''); }],
+      ['Cream cheese', ty('Cream Cheese')], ['Parmesan', ty('Parmesan')], ['Spreads', ty('Cheese Spreads')], ['Feta', ty('Feta')]],
+    'Vegan butter and spreads': [['Oil blends', mf(/oil blend|olive|avocado/i)], ['Coconut', mf(/coconut/i)], ['Cashew', mf(/cashew/i)], ['Bean-based', mf(/bean/i)]],
+    'Non-dairy ice cream': [['Oat', mf(/oat/i)], ['Coconut', mf(/coconut/i)], ['Cashew', mf(/cashew/i)], ['Macadamia', mf(/macadamia/i)], ['Lupin', mf(/lupin/i)]]
+  };
+  var KIND_LABEL = { meat: 'Meat', frozen: 'Frozen', meals: 'Meals', snacks: 'Snacks', baked: 'Baked goods', pantry: 'Pantry', protein: 'Protein',
+    drinks: 'Drinks', dairy: 'Dairy-free', egg: 'Egg', seafood: 'Seafood', tofu: 'Tofu', dips: 'Dips' };
+  function chipsFor(name, f) {
+    var defs = SEC_CHIPS[name];
+    if (!defs) {
+      var ks = []; f.brands.forEach(function (b) { (b.product_kinds || []).forEach(function (k) { if (KIND_LABEL[k] && ks.indexOf(k) < 0) ks.push(k); }); });
+      defs = ks.map(function (k) { return [KIND_LABEL[k], function (x) { return (x.product_kinds || []).indexOf(k) >= 0; }]; });
+    }
+    var all = f.products.concat(f.brands);
+    // A chip with nothing behind it, or with everything (it narrows nothing), is left out.
+    var out = defs.map(function (d) { return { label: d[0], test: d[1], n: all.filter(d[1]).length }; }).filter(function (c) { return c.n > 0 && c.n < all.length; });
+    return out;
+  }
+  var SEC_STATE = {};
+  function matchQ(q, parts) { if (!q) return true; var h = parts.join(' ').toLowerCase(); return q.toLowerCase().split(/\s+/).every(function (w) { return !w || h.indexOf(w) >= 0; }); }
   function viewSection(slug, itemId) {
     var d = VENUE[slug], v = d.venue, it = null, spot = null;
     d.spots.forEach(function (s) { (s.items || []).forEach(function (x) { if (String(x.id) === String(itemId)) { it = x; spot = s; } }); });
@@ -324,10 +353,40 @@
       var html = '<h3 class="sg-ph">Products to look for</h3><p class="dg-lede" style="font-size:13px;margin:0 0 12px">' +
         (seen ? seen + ' seen at ' + esc(chainName) + ' by our Guides; the rest are what to look for. ' : 'What to look for on this shelf. ') +
         'Not every store carries every one: tell us what is on the shelf at ' + esc(v.name) + ' with Tell us the aisle.</p>';
-      if (prods.length) html += '<div class="sg-pgrid">' + prods.map(function (p) { return prodTile(p, has[p.id], chainName); }).join('') + '</div>';
-      if (brands.length) html += (prods.length ? '<h3 class="sg-ph">Brands that make it</h3>' : '') + '<div class="sg-pgrid">' + brands.map(brandTile).join('') + '</div>';
-      if (!prods.length && !brands.length) html += '<p class="dg-empty">We have no products listed for this section yet. Seen one here? Tell us the aisle and add a photo, and it goes on this page once the team checks it.</p>';
+      if (!prods.length && !brands.length) {
+        box.innerHTML = html + '<p class="dg-empty">We have no products listed for this section yet. Seen one here? Tell us the aisle and add a photo, and it goes on this page once the team checks it.</p>';
+        return;
+      }
+      var chips = chipsFor(it.name, { products: prods, brands: brands });
+      var st = SEC_STATE[it.name] || (SEC_STATE[it.name] = { chip: '', q: '' });
+      if (st.chip && !chips.some(function (c) { return c.label === st.chip; })) st.chip = '';
+      html += '<div class="sg-pfilter"><label class="sg-psearch"><span class="sr-only">Search this section</span>' +
+        '<input type="search" id="sgPQ" placeholder="Search ' + esc(/^Vegan/.test(it.name) ? it.name : it.name.charAt(0).toLowerCase() + it.name.slice(1)) + '..." value="' + esc(st.q) + '" autocomplete="off"></label>' +
+        (chips.length ? '<div class="sg-chips" role="group" aria-label="Type">' + [{ label: '', n: prods.length + brands.length }].concat(chips).map(function (c) {
+          return '<button type="button" class="sg-chip' + (st.chip === c.label ? ' on' : '') + '" data-chip="' + esc(c.label) + '" aria-pressed="' + (st.chip === c.label) + '">' + esc(c.label || 'All') + ' <i>' + c.n + '</i></button>';
+        }).join('') + '</div>' : '') + '</div><div id="sgPLists"></div>';
       box.innerHTML = html;
+      function draw() {
+        var c = chips.filter(function (x) { return x.label === st.chip; })[0];
+        var P = prods.filter(function (p) { return (!c || c.test(p)) && matchQ(st.q, [pTitle(p), p.product_type, p.made_from, p.listings && p.listings.name]); });
+        var B = brands.filter(function (b) { return (!c || c.test(b)) && matchQ(st.q, [b.name].concat((b.product_kinds || []).map(function (k) { return KIND_LABEL[k] || k; }))); });
+        var out = '';
+        if (prods.length) out += (brands.length ? '<h3 class="sg-ph sg-ph2">Products <i>' + P.length + '</i></h3>' : '') +
+          (P.length ? '<div class="sg-pgrid sg-pbox">' + P.map(function (p) { return prodTile(p, has[p.id], chainName); }).join('') + '</div>' : '<p class="dg-empty">No products match. Try another type or word.</p>');
+        if (brands.length) out += '<h3 class="sg-ph sg-ph2">Brands that make it <i>' + B.length + '</i></h3>' +
+          (B.length ? '<div class="sg-pgrid sg-pbox">' + B.map(brandTile).join('') + '</div>' : '<p class="dg-empty">No brands match. Try another type or word.</p>');
+        document.getElementById('sgPLists').innerHTML = out;
+      }
+      draw();
+      box.querySelectorAll('.sg-chip').forEach(function (b) {
+        b.addEventListener('click', function () {
+          st.chip = b.getAttribute('data-chip');
+          box.querySelectorAll('.sg-chip').forEach(function (o) { var on = o === b; o.classList.toggle('on', on); o.setAttribute('aria-pressed', String(on)); });
+          draw();
+        });
+      });
+      var q = document.getElementById('sgPQ');
+      q.addEventListener('input', function () { st.q = q.value; draw(); });
     });
   }
   function viewStore(slug, rest) {
@@ -683,8 +742,12 @@
       '.sg-ilink{flex:0 0 auto;display:block}.sg-iname{color:inherit;text-decoration:none}.sg-iname:hover b{text-decoration:underline}.sg-see{display:inline-block;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);text-decoration:none;margin-top:2px}.sg-see:hover{text-decoration:underline}' +
       '.sg-sechead{display:flex;gap:18px;align-items:flex-start;margin:4px 0 18px}.sg-thumb-lg{width:132px!important;height:132px!important;border-radius:14px!important}@media(max-width:560px){.sg-sechead{flex-direction:column}}' +
       '.sg-ph{font-size:15px;font-weight:900;margin:18px 0 6px}.sg-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px}' +
-      '.sg-ptile{display:flex;gap:12px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-ptile:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
-      '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75)}' +
+      '.sg-ptile{display:flex;gap:12px;align-items:center;padding:10px;height:94px;box-sizing:border-box;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-ptile:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
+      '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-pb .dg-tag{align-self:flex-start}' +
+      '.sg-pbox{max-height:304px;overflow-y:auto;overscroll-behavior:contain;padding:1px 6px 1px 1px;align-content:start}.sg-ph2 i{font-style:normal;font-weight:700;font-size:12px;color:var(--ink75);margin-left:4px}' +
+      '.sg-pfilter{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}.sg-psearch input{width:100%;box-sizing:border-box;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;background:#fff}' +
+      '.sg-chips{display:flex;flex-wrap:wrap;gap:8px}.sg-chip{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer}.sg-chip i{font-style:normal;font-weight:600;color:var(--ink75);margin-left:2px}' +
+      '.sg-chip.on{background:var(--vb-go,#2D5C27);border-color:var(--vb-go,#2D5C27);color:#fff}.sg-chip.on i{color:#e8f5e9}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}' +
       '.sg-letter{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-style:normal;font-weight:900;font-size:20px;color:var(--vb-go-hover,#1f5f22);background:#e8f5e9}' +
       '.sg-dh{display:flex;align-items:center;gap:12px}.sg-dicon{flex:0 0 auto;width:44px;height:44px;border-radius:10px;background:#e8f5e9;color:var(--vb-go-hover,#1f5f22);display:flex;align-items:center;justify-content:center}' +
       '.sg-thumb{flex:0 0 auto;width:64px;height:64px;border-radius:10px;overflow:hidden;background:#f1f4f1;display:block}.sg-thumb img{width:100%;height:100%;object-fit:cover;display:block}.sg-thumb-x{background:#eef3ee}' +
