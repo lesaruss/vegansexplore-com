@@ -3545,6 +3545,35 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   job, 150 points, one person, seven parts (EWR Terminal B, LAX, JFK Terminal 5, LGA Terminal C, Heathrow, Yankee Stadium, UBS Arena):
   each an official map dated 2024 or later with its link, checked against the official site in Depot > Bounties before paying.
 
+## The Supermarket Guide and its sponsorship (LOCKED by Sean 2026-11-01, playbook `ve-supermarket-guide`)
+
+Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-supermarket-guide`; migration
+`20261101_supermarket_guide_canon.sql`). **Not built yet.** Sean: "a doorway where the community will always know where to find these
+vegan items on the shelves... We get a sponsor, the guide is free, as long as the sponsorship is active... this is a CPG play as well...
+they're buying their spot in this massive campaign that starts in Q1."
+
+- **The Guide** (the Dairy Guide's pattern): pick your store and find its Vegan items aisle by aisle; custom shopping lists; the produce
+  section (what to buy and why); snack breakdowns; CPG products spotlighted with where to find them; each sponsor's weekly Vegan specials
+  (also in the Daily Pulse). **Free while at least one supermarket sponsorship is active**, else $11 or 1,100 points.
+- **Stores and the locator**: each chain keeps its one Directory listing (Grocery stores and Vegan aisles, below); each store is a row under
+  it (address, pin, chapter), never its own listing; the chain's page gets **Find a store near you**, and its chapters
+  (`listings.communities`) come from its real store addresses. Each store carries its own aisle map, started from what the store gives us.
+- **Members index the shelves** the way the venue Guides do: confirm or update an item with a photo and an in-store location check, points
+  only once approved, first to confirm earns the bounty, later ones a little less.
+- **Sponsorship, quarterly from Q1 2027**: **Title Sponsor** $7,500 (one at a time; "brought to you by" on the Guide, every ad, festival
+  card and booth and the Daily Pulse; their stores first; their Partner package included; first right to renew); **Supermarket Partner**
+  $1,500 a chain ($750 for 3 chapters or fewer: store locator, member-indexed aisle maps, weekly specials in their chapters, ads on their
+  store pages, a monthly report); **Product Spotlight** $500 a CPG product line (in the Guide and its shopping lists, where to find it in
+  partner stores, one ad rail spot; stacks on the $111 Brand Partner plan); ad slots on the Guide's pages included, sold alone later.
+  **Front Row Start**: sign before January 1, 2027, the rest of 2026 is promotion at no charge, first charge in January; the first three
+  Supermarket Partners keep their price through 2027.
+- **What they buy is the campaign and the 2027 story** (Sean: "it's an opportunity to let them know what we are gearing up to do in
+  2027... Simply by appearing on our website they will be able to benefit from all of our promotion"): the Q1 2027 campaign (paid ads,
+  festivals and local events with QR cards, social, the Daily Pulse) plus 2027: new markets, a growing social presence, event partnerships,
+  the growing Directory, the content creator network and a campaign every quarter. Stated as plans; real numbers reported (221 real
+  visitors in October 2026); every sponsored spot labeled Sponsored.
+- **First**: Publix for Title Sponsor (five of our chapters, Florida first), then Whole Foods and Sprouts as Supermarket Partners.
+
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
 "As we're bringing different products into these guides, it should automatically map to a supermarket
