@@ -128,7 +128,7 @@ Deno.serve(async (req) => {
   if (body.action === 'home') {
     const [{ data: auto }, { data: listings }, { data: level }, { data: prof }] = await Promise.all([
       db.rpc('ve_dashboard_version', { p_member: memberId }),
-      db.from('listings').select('name, slug, claim_status').eq('status', 'approved').or(`owner_member_id.eq.${memberId},claimed_by_member_id.eq.${memberId}`).order('name').limit(20),
+      db.from('listings').select('id, name, slug, claim_status, logo_url, category').eq('status', 'approved').or(`owner_member_id.eq.${memberId},claimed_by_member_id.eq.${memberId}`).order('name').limit(20),
       db.rpc('ve_member_level', { p_member: memberId }),
       db.rpc('ve_profile_state', { p_member: memberId }),
     ]);

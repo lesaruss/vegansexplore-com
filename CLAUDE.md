@@ -617,7 +617,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (initiative `branddesk`, `tier_label` the business, `note` what they want, tags `branddesk`, `from-<page>`, `fix-<id>`, `wants-<x>`),
   an email to the team (reply-to them) and a confirmation to them from Vegans Explore. The Inbox shows it as a **Managed marketing
   request** (migration `20261031_branddesk_requests_inbox.sql`; a business starting [TEST] stays out of the Inbox and sends no email).
-  Nothing is charged there.
+  Nothing is charged there. Since 2026-11-01 the business dashboard's listing check and check-up flags carry **Have us do it** on every
+  flagged item (`doItBtn` in `ve-partner-dashboard.js`, `from: 'fix'`, `fix` the check's id).
   **The contract and Stripe** (built 2026-10-31; Sean: "approve both", test mode first and the agreement as a draft for the lawyer;
   migration `20261031_branddesk_accounts.sql`, edge function `ve-branddesk`). **`/business/agreement`** (`business/agreement.html`,
   `noindex`) is the Managed Marketing Agreement, version `2026-10-31` (`AGREEMENT_VERSION` in `ve-branddesk`; change both together, and
@@ -1879,15 +1880,50 @@ runs `applyCheck` in `ve-bounties`: open puts the place back on the Directory (`
 closed takes it off as Removed, each with a note naming the visit and the day, once per submission (`check_applied_at`). A new "Is it still
 open?" job needs `check_listing_id` set. **Announced in each chapter's Daily Pulse** (Sean, 2026-11-01: "post the bounty in the Daily Pulse"): nine
 draft topics, one a chapter ("Is it still open? 50 points a stop in <city>", a See the places button to
-`/bounties?community=<city>&campaign=still-open-<city>`, the first reply set), status draft with no `auto_publish_at`, so they wait in the
-Pulse desk (Depot > Inbox) until published by hand and never go out on their own. **Closed comes
+`/bounties?community=<city>&campaign=still-open-<city>`, the first reply set), made as drafts with no `auto_publish_at`. **Published
+2026-11-01** (Sean: "publish them all now"), all nine the way `ve-board` `topic_publish` does it (status open, `published_at`, `reply_count`
+1, the first reply posted under Sean's account), straight in SQL because `topic_desk` and `topic_publish` refuse the admin token's
+`as_member`. Each is first on its chapter's `/pulse` (checked through `ve-board` `list` and in a browser), and its See the places opens its
+campaign on `/bounties` in a new tab (members only; signed out it is the Bounties gate). Atlanta's text says 7 places; its campaign has 8
+since the listing check added Chi Chi Vegan Taco Shop. **Closed comes
 off, open comes back, without asking** (Sean, 2026-11-01: "anything temporarily closed or permanently closed, let's leave it off... You
 don't even have to ask me... if... the status changes, then we can put it back"; migration `20261101_closed_off_open_back.sql`): the nightly
 hold also takes off a place Google says is temporarily closed, and every Monday at 9:17 AM Eastern `ve_closed_recheck_send` looks up on
 Google (Place Details, `businessStatus` only, job `closed-recheck`, within the background cap) every listing held or Removed because
 Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the Directory any Google shows open again, with a note
 (`ve_closed_rechecks` keeps each answer). The first run, 2026-11-01: all eight (Coco Lov and Seasoned Green temporarily, six permanently)
-still closed. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+still closed. **The listing check, in Sean's order** (Sean, 2026-11-01: "the first best indicator is Google Maps... If they pass that, they can move
+on to their website... if it doesn't have the right security, automatic flag... then it's Instagram... a grace of 6 months... a bounty... If they confirm they're
+open... we flag them for special support"; migration `20261101_listing_health.sql`, edge function `ve-listing-health`). 1. Google says closed: off (above).
+2. **The website**: every local place with a website (not grocery chains, not LESARUSS.ai) is read once a month (cron `ve-listing-health`, every 10 minutes 2:00 to
+3:50 AM Eastern, 25 a run): gone (the address no longer exists, nothing answers, 404, 410 or 5xx, a parked or for-sale page) or no working security (no https, a bad
+certificate) fails; a site that turns scanners away (401, 403, 406, 429, 503) passes, and a slow or refused answer is read again the next day, never held on one
+try. No website at all is Google's job. 3. **Instagram**, only for a failed website (Apify, many handles in one run): a post in the last 6 months passes, and the
+place goes to **Needs support** (its website needs fixing); otherwise it is **held** (On hold, `details.review.by` Listing check, the reasons) and a still-open
+bounty goes up in its chapter's campaign (`ve_listing_still_open_bounty`, made if missing, 50 points, 30 days). 4. Held places are read again every week and
+come back on their own when they pass; a member's visit settles it (`applyCheck` in `ve-bounties`), and a place found open goes to Needs support. A claimed or
+owned listing, or one put back by hand within 90 days, is never held, only flagged. Results in `ve_listing_health` (web and Instagram status, reasons, verdict,
+history, `support_at`/`support_why`/`support_done_at`). **Directory review > Needs support** lists them with Done and Open (`ve-listing-health` `support`,
+`support_done`); `one` (`slug`, `save: false` to only read) checks a single listing. Proven 2026-11-01: Chi Chi Vegan Taco Shop (dead domain, no Instagram post
+since January 2024) held with its Atlanta bounty; Happy Zoe Vegan Bakery (broken certificate, posting on Instagram) left on and flagged for support; Kroger and
+QFC (Akamai turns scanners away) no longer read as down. **The listing check on the dashboard** (Sean: "use that mechanism that we use for BCPS Marcom... one that has
+passed the audit and one that hasn't"): the business dashboard's Audit view opens with **Your listing check** (`healthCard`, `healthBlock` in
+`ve-partner-dashboard.js`): each check by area (Google, Website, Instagram, Your Directory page) as a pass mark, a flag or a Check, with what we found and the
+fix, the score, On the Directory or In review, and What happens next. The sample business shows two made-up places (`healthSamples` in
+`business/sample/listing-demo.js`): Green Leaf Kitchen passing everything and Corner Sprout Cafe in review (with a made-up check-up). **Live and free on claim since
+2026-11-01** (playbook `ve-listing-check`, the ANSWER row; Sean: "when somebody unlocks their claim, they get access to this information...
+with a button: do you want us to fix these issues?"): `ve-claims` `owner_dashboard` returns `health` to every owner, member or not, built
+by `listingHealth` from the listing itself, its `ve_listing_health` row and its latest monthly check-up (`ve_audits` source `checkup`):
+Google (open, profile complete; places people walk into only), Website (opens, https, menu online for food places), Instagram (last post),
+Your Directory page (logo, photos, story, hours; member check-ins). A listing never checked gets its first website check started in the
+background (`ve-listing-health` `one` with the cron secret; on the Vegans Explore Podcast it ran in 4 seconds). **Our monthly check-up**
+shows under it: each flagged check with what we found and the fix (`ve_audit_criteria.how`), most important first, never the score; **See
+your full score** (the $49 full audit and the $149 Secret Shopper) sits beside **Have us do all of it**. **Have us do it** is on every item
+that is not passed and every check-up flag (`doItBtn`), opening `VEManaged.open` (loaded on first tap) with `from: 'fix'` and the fix id, so
+it lands in the Inbox as a Managed marketing request; the sample toasts what would happen. The Audit view is no longer members only and
+shows for any listing with checks (non-food: the listing check and Have us do all of it). Home has the score strip (`healthStrip`).
+`only: 'health'` returns just the check (the member dashboard's Your business). Proven 2026-11-01 as Sean on the podcast he owns (its
+website, vegansexplore.com/vepodcast/, answers 404) and as admin on Happy Zoe Vegan Bakery (8 checks and 5 check-up flags). **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
 `once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,
@@ -4018,7 +4054,8 @@ listing (category Markets, tag `ve-grocery-store`, "Grocery store" on its card) 
   one item per view, `&item=<id|new>`), **Ads** (their campaigns: `ad_businesses.listing_id` -> `ad_sponsor_campaigns` ->
   `ad_campaigns` -> `ad_impressions`; each ad spot with its monthly views; Ask about this spot emails Sean and the account
   manager and logs `ve_initiative_interest` `ad-placement`), **Opportunities** (our campaigns, the same slugs as the brand
-  `OPPS`, and open roles), **Audit** (restaurants and food places; our monthly check-up reads as ours, never a score they bought),
+  `OPPS`, and open roles), **Audit** (free on claim since 2026-11-01: the listing check and our monthly check-up's flags, each with Have us
+do it; the full score is the paid audit; see The listing check, in Sean's order),
   **Guides**, **Your plan**. The $11 Founding Membership (or a live plan) opens it; an owner who is not a member edits the page
   and menu and is offered the $11. Server: `ve-claims` `owner_dashboard` (everything in one call), `menu_list` / `menu_save` /
   `menu_delete` (each a `ve_listing_edits` row, field `menu_item`, undone from the Depot by `ve-outreach`), `ad_request`.
@@ -4237,6 +4274,11 @@ and Done). They share the database; LESARUSS.ai's own Depot is to be set up the 
   `ve_dashboard_cards` rows by `audience` (business, pre_vegan, coach, member, all): change what a version shows with a row,
   no code. A business card's link that starts with `?` opens on their first listing's dashboard.
 - Edge function `ve-dashboard` (`home`, `set_version`, `recent_votes`, `member_card`; verify_jwt off, the member token checked inside).
+- **Your business first** (Sean, 2026-11-01, playbook `ve-listing-check`: "the dashboard on that profile becomes their dashboard"): anyone who
+  owns a listing (any version) sees **Your business** at the top of the Dashboard tab, under the banner (`#dash-biz`, `renderBusinessFirst`):
+  each listing (up to four) with its logo, Yours or Waiting for our approval, its listing check score (`ve-claims` `owner_dashboard` with
+  `only: 'health'`), **Open your business dashboard** (`/directory/<slug>?tab=brand`) and **Your listing check** (`&pd=audit`). It replaced
+  the Business version's listing tiles in For you; a Business member with no listing still gets Is your business in the Directory?.
 - **Recent activity and the tools search** (Sean, 2026-10-30: "a log of user votes... an icon of the person that voted... a light box
   of who that person is... I don't have to go off this page"; "a little eyebrow... your tools, and then it has a search... put these in
   categories"). Super admins get **Recent activity** above Your tools: Recent Members, **Recent Votes**, Recent Leads, Events waiting and

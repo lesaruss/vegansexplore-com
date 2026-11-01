@@ -82,6 +82,40 @@
       { page_slug: '/events', page_name: 'Events', views: 6100, slots: 1 }
     ],
     audits: [], orders: [],
+    // The listing check, shown two ways on the sample (Sean, 2026-11-01: "one that has passed the audit and one that hasn't"):
+    // Green Leaf Kitchen passes everything; Corner Sprout Cafe is made up too, a place that has gone quiet online.
+    healthSamples: [
+      { tab: 'Green Leaf Kitchen: passes', name: 'Green Leaf Kitchen', checked_at: new Date(Date.now() - 3 * 864e5).toISOString(), state: 'live',
+        next: 'Nothing to fix. We check again next month, and you see it here the moment anything changes.',
+        checks: [
+          { area: 'Google', label: 'Open on Google Maps', status: 'pass', found: 'Google lists it as open, with hours for every day.' },
+          { area: 'Google', label: 'Google profile complete', status: 'pass', found: 'Phone, hours, website, 42 photos and 318 reviews (4.8 stars).' },
+          { area: 'Website', label: 'Website opens', status: 'pass', found: 'greenleafkitchen.com opened in 1.2 seconds.' },
+          { area: 'Website', label: 'Secure (https)', status: 'pass', found: 'A working security certificate; every page opens with https.' },
+          { area: 'Website', label: 'Menu online', status: 'pass', found: 'A menu page with prices, linked from the home page.' },
+          { area: 'Instagram', label: 'Posting on Instagram', status: 'pass', found: '@greenleafkitchen posted 2 days ago, 11 times in the last 30 days.' },
+          { area: 'Your Directory page', label: 'Hours, photos and story', status: 'pass', found: 'Logo, four photos, hours and a full description.' },
+          { area: 'Your Directory page', label: 'Members are visiting', status: 'pass', found: '23 member check-ins in the last 30 days.' }
+        ] },
+      { tab: 'Corner Sprout Cafe: needs work', name: 'Corner Sprout Cafe (made up)', checked_at: new Date(Date.now() - 1 * 864e5).toISOString(), state: 'review',
+        next: 'It is in review, off the public Directory for now. A member visit is posted to see if it is still open. Fix the website or post on Instagram and it comes back on its own at the next weekly check; if the visit finds it open, it comes back right away and our team reaches out to help.',
+        checks: [
+          { area: 'Google', label: 'Open on Google Maps', status: 'pass', found: 'Google still lists it as open.' },
+          { area: 'Google', label: 'Google profile complete', status: 'warn', found: 'No hours on Google and 4 photos; the newest review is 14 months old.', fix: 'Add your hours and a few new photos to your Google profile.' },
+          { area: 'Website', label: 'Website opens', status: 'flag', found: 'cornersproutcafe.com is parked: the domain is for sale.', fix: 'Renew the domain, or tell us your new website.' },
+          { area: 'Website', label: 'Secure (https)', status: 'flag', found: 'No working security certificate.', fix: 'Any website host can switch on a free certificate.' },
+          { area: 'Website', label: 'Menu online', status: 'flag', found: 'No menu we could find.', fix: 'Add your menu on your dashboard or link it.' },
+          { area: 'Instagram', label: 'Posting on Instagram', status: 'flag', found: '@cornersproutcafe last posted 8 months ago.', fix: 'One post this week shows people you are open.' },
+          { area: 'Your Directory page', label: 'Hours, photos and story', status: 'warn', found: 'No hours and one photo.', fix: 'Fill in Your page on this dashboard.' },
+          { area: 'Your Directory page', label: 'Members are visiting', status: 'warn', found: 'No member check-ins in the last 60 days.', fix: 'Put a "Check in on Vegans Explore" sign by the register.' }
+        ],
+        // The monthly check-up's flags (what we found and the fix; the score stays with the paid full audit).
+        checkup: { at: new Date(Date.now() - 6 * 864e5).toISOString(), checked: 34, flags: [
+          { key: 'g_vegan', area: 'Google', label: 'Google knows you are Vegan', found: 'Nothing on your Google profile says Vegan.', fix: 'Put "Vegan" in your business description and your category, and turn on the Vegan options attribute.' },
+          { key: 'g_photos', area: 'Google', label: 'Your Google profile has plenty of photos', found: 'Your Google profile has 4 photos.', fix: 'Add at least 10 clear photos: the outside, the inside, your best dishes and your team.' },
+          { key: 'x_ig_recent', area: 'Social', label: 'You posted on Instagram in the last 14 days', found: 'Your last post was 8 months ago.', fix: 'Post at least once a week: a dish, a special, your team.' }
+        ] } }
+    ],
     guides: [
       { slug: 'vegan-restaurant-guide', title: 'The Vegan Restaurant Guide', description: 'Your Google listing, website and social, checked and fixed in order, with Liz.', access_rule: 'points', owned: true },
       { slug: 'vegan-dairy-guide', title: 'The Vegan Dairy Guide', description: 'The brands, swaps and recipes members use to leave dairy behind, with Maya.', access_rule: 'points', owned: false }
@@ -128,7 +162,8 @@
       var a = body && body.action;
       if (a === 'owner_dashboard') { var days = Math.min(365, Math.max(1, Number(body.days) || 30)); return Promise.resolve(Object.assign({}, D, { days: days, stats: stats(days), checkins: checkins() })); }
       if (a === 'menu_list') return Promise.resolve({ ok: true, items: MENU });
-      toast('Sample dashboard: nothing is saved here. On your own page this goes live right away.');
+      // A button with its own words (data-vpd-demo, Have us do it) says what would happen; anything else would have saved.
+      toast(a === 'demo_only' && body.note ? 'Sample dashboard: ' + body.note : 'Sample dashboard: nothing is saved here. On your own page this goes live right away.');
       return Promise.resolve({ ok: true });
     }
   };
