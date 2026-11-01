@@ -485,7 +485,18 @@ judge whether food is safe by how a place looks online; businesses want marketin
   check in the Vegan Restaurant Guide (`#/audit/r/<id>`, the free view for anyone); `ve_outreach_render` (the old one kept as
   `ve_outreach_render_base`, called first) fills `{free_check}`, now after the guide line in the Day 0 template. No price. A business with no recent
   check-up gets the email as it was: with the check taken back out, all 234 business emails rendered byte for byte as before; 33 of 78 first
-  emails carry one. An upgrade to the offer, so it may go in during a city's 15-day commitment. **Signs** (migration `20261031_handshake_signs.sql`):
+  emails carry one. An upgrade to the offer, so it may go in during a city's 15-day commitment. **Made accurate 2026-11-01** (Sean, reviewing
+  the walkthrough: "we need to 100% make sure that these things that we're saying are true... That kills our credibility"; "nothing's theirs to
+  keep. They can claim it if they're a member"; "what dashboard? They haven't signed up with us"; migration `20261101_handshake_email_accuracy.sql`).
+  Rootz Soul Cafe's email had said "Google has no hours" (Google marks it closed for now) and "we could not find the Instagram" (our reader
+  missed it). `ve_outreach_free_check` now uses only a check-up from the **last 7 days**, never for a business our check-up or Google marks
+  closed, and only the five checks that read a fact straight from Google or their own home page (hours on Google, the Google rating, phone
+  speed by Google's own test, the page title, the search description; never Instagram, "no Google profile", photo counts or "the website did
+  not open"); the lines are dated ("We also ran our free restaurant check on Pho Boca on October 25"), and the link is
+  **`vegansexplore.com/check/<slug>`** (a redirect in `vercel.json` to the Guide's `?check=`, which asks `ve-restaurant-audit` `latest` for
+  their latest check and opens it). `ve_audit_sweep_due` checks first every business on a send day in the next 10 days whose check-up is more
+  than 5 days old. Day 0 lost "yours to keep" and the Partner Dashboard / Liz line: the listing, the dated check, then "The first step is
+  claiming your listing". On 2026-11-01, 7 first emails carried a check. **Signs** (migration `20261031_handshake_signs.sql`):
   `ve_branddesk_signs()`, per listing, each sign with its latest time: clicked (their outreach link or a reply), claimed, checked (ran the free
   check), opened (opened their free check, the email's link), guide (the Vegan Restaurant Guide bought by the owner or the email we write to),
   asked (Have us do it / Talk to our team, by slug or email), talked (I'm ready, Let me think about it or Talk to someone on a pitch page).
@@ -852,6 +863,20 @@ judge whether food is safe by how a place looks online; businesses want marketin
   every row removed, `ve-once-bd-sites` back to the 410 stub. `ve-branddesk` v19 (commit 434f81a), the hosting project's production build from
   4e0e6d1 (it builds from `main` on its own; the proof's builds were sent from the branch). Not built yet: the point-of-sale cart on a live site, a
   branded preview address, purging Vercel's cache on a takedown, and the client's own Google Search Console.
+  **The brand kit is step 1 and their old addresses keep their traffic** (Sean, 2026-11-01: "What about that wizard, the actual brand deck... I
+  don't see that part there"; "run a scan of their domains on their previous site... so they don't lose that traffic"; migration
+  `20261101_branddesk_old_site_map.sql`). Your website opens with **1. Their brand kit** (each part Locked, In progress or Not started, from
+  `data.meta.approvals`; `site_get` `kit.parts`; Open the brand kit), then **2. Their website**. **Their old website's addresses**: at Build their
+  website (and at Add their domain if never done) `ve-branddesk` reads their current site (`oldScan`: sitemap.xml, sitemap_index.xml,
+  wp-sitemap.xml and the ones robots.txt names, then the home page's links; up to 300 addresses, titles for 60) into
+  `ve_branddesk_sites.old_pages` [{path, title, to, how}], each matched to home, menu, order, about or visit by its address, then the title's
+  own part (`OLD_RULES`, `oldMatch`; how `same`, `words`, `home` when nothing matched, `team`). The Depot changes any match or adds an address
+  the scan missed (`site_old_save`), Read their old site again (`site_old_scan`, refused once live: the old site is gone); `site_old_probe {url}`
+  (super admin) reads any site without saving. `site_public` sends live sites `moved`, and `branddesk-sites/server.js` answers each old address
+  (and WordPress `/?page_id=`) with a **301** to its new page. The final check adds **Their old addresses** (never read fails it; up to 12 tried
+  for the 301). The owner sees the list read-only. Proven 2026-11-01: Love Life Cafe's site read 15 addresses from its sitemap (/drinks,
+  /catering, /menu/kids-menu to Menu, /values to About, /accessibility to Home); sobev.com did not open (said so); the server's 301s tested
+  against the real handler. `ve-branddesk` v20 and v21 (commits 6f14409, 4e950aa, source sha256 matched).
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
