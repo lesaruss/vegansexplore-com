@@ -138,7 +138,7 @@
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
     '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,description,tiktok,youtube,person:details->person';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen,description,tiktok,youtube,person:details->person';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -302,6 +302,17 @@
       '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-hold">Hold for review</button><button type="button" class="cancel" id="vla-remove" style="color:#8a1c12;border-color:#8a1c12">Remove from the Directory</button>' +
         '<a class="cancel" href="/admin/depot/directory-review#l/' + encodeURIComponent(l.id) + '/flagged" target="_blank" rel="noopener" style="text-decoration:none">Open in Directory review</a></div>' +
 
+      // A shared kitchen (Sean, 2026-11-01): a fully Vegan menu run inside a restaurant that is not Vegan. Saved by ve-listing-media;
+      // the listing page and the Directory card say it (sharedKitchenHtml in directory/listing.html).
+      (function () { var sk = l.shared_kitchen || {}, on = !!l.shared_kitchen;
+        return '<div id="vla-p-shared" hidden><h3>Shared kitchen</h3>' +
+          '<label class="check"><input type="checkbox" id="vla-sk-on"' + (on ? ' checked' : '') + '> Runs its own Vegan menu inside a restaurant that is not Vegan</label>' +
+          '<div id="vla-sk-wrap"' + (on ? '' : ' hidden') + '><div class="row2"><div><label class="h" for="vla-sk-host">The restaurant it is inside</label><input type="text" id="vla-sk-host" maxlength="80" placeholder="House of Mac" value="' + esc(sk.host || '') + '"></div>' +
+          '<div><label class="h" for="vla-sk-slug">Its Directory address (optional)</label><input type="text" id="vla-sk-slug" placeholder="house-of-mac" value="' + esc(sk.host_slug || '') + '"></div></div>' +
+          '<label class="check"><input type="checkbox" id="vla-sk-sep"' + (sk.separate === true ? ' checked' : '') + '> They prepare it separately (confirmed)</label>' +
+          '<label class="h" for="vla-sk-src">Who told us</label><select id="vla-sk-src">' + [['team', 'Our team'], ['owner', 'The owner'], ['member', 'A member']].map(function (o) { return '<option value="' + o[0] + '"' + ((sk.source || 'team') === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
+          '<label class="h" for="vla-sk-note">A line for visitors (optional)</label><input type="text" id="vla-sk-note" maxlength="280" placeholder="Their own menu and their own prep area" value="' + esc(sk.note || '') + '">' +
+          '<div class="note">Shows on their page and their Directory card. Only tick separate preparation when the owner or our team has confirmed it.</div></div></div>'; })() +
       '<div id="vla-glance"><h3>At a Glance <span style="font-weight:700;letter-spacing:0;text-transform:none;color:#666">(restaurants and cafes)</span></h3>' +
       '<label class="h" for="vla-atm">Atmosphere</label><select id="vla-atm">' + ATMOS.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === (l.atmosphere || '') ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>' +
       glance + '</div>' +
@@ -327,6 +338,8 @@
       var dining = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; }))
         .some(function (c) { return DINING.indexOf(c) >= 0; });
       $('#vla-glance').hidden = !dining;
+      $('#vla-p-shared').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; }))
+        .every(function (c) { return FOOD_PLACES.indexOf(c) < 0; });
       $('#vla-cuis-wrap').hidden = [cur].concat(Array.prototype.map.call(wrap.querySelectorAll('input[name=vla-extra]:checked'), function (i) { return i.value; }))
         .every(function (c) { return FOOD_PLACES.indexOf(c) < 0; });
       syncVet();
@@ -517,6 +530,7 @@
 
     function syncOnline() { $('#vla-addr').hidden = $('#vla-online').checked; }
     $('#vla-online').addEventListener('change', syncOnline); syncOnline();
+    $('#vla-sk-on').addEventListener('change', function () { $('#vla-sk-wrap').hidden = !$('#vla-sk-on').checked; });
 
     // A logo already saved on its own: tell the page when the editor closes, so it redraws.
     function close(saved) { wrap.remove(); document.removeEventListener('keydown', onKey); if (!saved && logoChanged && onSaved) onSaved({ logo_url: l.logo_url }); }
@@ -621,7 +635,19 @@
               .then(function (r) { return r.json(); }).then(function (x) {
                 if (!x || !x.ok) throw new Error(x && x.error === 'bad_year' ? 'the year should be four digits.' : 'try again.');
                 l.release_year = target.release_year = x.release_year; l.book_type = target.book_type = x.book_type; l.health_type = target.health_type = x.health_type;
-              }) : Promise.resolve()).then(savePerson).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but ' + e.message); });
+              }) : Promise.resolve()).then(saveShared).then(savePerson).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but ' + e.message); });
+          // The shared kitchen, through ve-listing-media; only when it changed.
+          function saveShared() {
+            if ($('#vla-p-shared').hidden) return;
+            var on = $('#vla-sk-on').checked, was = l.shared_kitchen || null;
+            var next = on ? { host: $('#vla-sk-host').value.trim(), host_slug: $('#vla-sk-slug').value.trim(), separate: $('#vla-sk-sep').checked ? true : null,
+              source: $('#vla-sk-src').value, note: $('#vla-sk-note').value.trim() } : null;
+            if (!on && !was) return;
+            if (on && was && ['host', 'host_slug', 'source', 'note'].every(function (k) { return (was[k] || '') === (next[k] || ''); }) && (was.separate === true) === (next.separate === true)) return;
+            return fetch(MEDIA_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+              body: JSON.stringify({ action: 'save', listing_id: l.id, shared_kitchen: next }) })
+              .then(function (r) { return r.json(); }).then(function (x) { if (!x || !x.ok) throw new Error('the shared kitchen did not: try again.'); l.shared_kitchen = target.shared_kitchen = x.shared_kitchen; });
+          }
           // A person's profile, links and socials go to ve-people.
           function savePerson() {
             if (kindOf($('#vla-sub').value) !== 'person') return;

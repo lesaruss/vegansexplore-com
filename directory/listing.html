@@ -1214,6 +1214,23 @@ var FOOD_CATS = ['Restaurants','Bakeries & Cafes','Food Trucks','Vendors','Marke
 var MEDIA_CATS = ['Podcasts','YouTube','News Outlets','Documentaries & Films','Books','Media'];
 // At a Glance (atmosphere, seating, amenities, accessibility, ownership) is for places you sit down in.
 var DINING_CATS = ['Restaurants','Bakeries & Cafes'];
+// A shared kitchen (Sean, 2026-11-01: "some vegan restaurants... serve fully vegan food, but they're based out of a non-vegan
+// restaurant... we should mention this on their profiles somewhere... as a service to the community"; Aisha's inside House of Mac).
+// listings.details.shared_kitchen {host, host_slug, separate, source, note, confirmed_at}, set in the listing editor (ve-listing-media).
+// Separate preparation is said only when the owner or our team confirmed it.
+function sharedKitchenOf(l){ var sk = l && l.details && l.details.shared_kitchen; return sk && typeof sk === 'object' ? sk : null; }
+function sharedKitchenHtml(l){
+  var sk = sharedKitchenOf(l); if(!sk) return '';
+  var host = sk.host ? (sk.host_slug ? '<a href="/directory/'+encodeURIComponent(sk.host_slug)+'">'+esc(sk.host)+'</a>' : esc(sk.host)) + ', a restaurant that is not Vegan' : 'a restaurant that is not Vegan';
+  var menu = l.vegan_status === 'fully_vegan' ? 'its own 100% Vegan menu' : 'its own Vegan menu';
+  var who = { owner: 'Confirmed by the owner', team: 'Confirmed by our team', member: 'Told to us by a member' }[sk.source] || 'Confirmed by our team';
+  var when = sk.confirmed_at ? ', ' + new Date(sk.confirmed_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '';
+  return '<div class="section"><h2 class="section-title">A Vegan menu in a shared kitchen</h2>'+
+    '<div style="border:1px solid var(--vb-line,#c8e6c9);background:var(--ve-green-light,#f1f8f1);border-radius:8px;padding:14px 16px;font-size:14px;line-height:1.6;color:var(--ve-text-75,#333)">'+
+    '<p style="margin:0">'+esc(l.name)+' runs '+menu+' inside '+host+'.'+(sk.separate === true && sk.source !== 'member' ? ' Their food is prepared separately.' : '')+'</p>'+
+    (sk.note ? '<p style="margin:6px 0 0">'+esc(sk.note)+'</p>' : '')+
+    '<p style="margin:8px 0 0;font-size:12px;color:var(--ve-text-50,#777)">'+who+when+'. Something changed? <a href="/contact">Let us know</a>.</p></div></div>';
+}
 function isDining(l){
   if(!l.address_city && !l.address_state) return false;
   return [l.category].concat(l.extra_categories || []).some(function(c){ return DINING_CATS.indexOf(c) !== -1; });
@@ -4186,6 +4203,7 @@ function renderListing(l){
   if(person){
     overviewContent = renderPersonOverview(l) + (overviewPhotoHtml ? '<div class="section"><h2 class="section-title">Photos</h2>' + overviewPhotoHtml + '</div>' : '');
   } else if(catType === 'food'){
+    overviewContent += sharedKitchenHtml(l);
     if(isDining(l)) overviewContent += renderAtAGlance(l);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
@@ -4246,6 +4264,7 @@ function renderListing(l){
             // Media shows whether it is still going (Active or On hiatus; Sean, 2026-10-27), not how Vegan it is.
             (mediaKind && mediaStatus ? '<span class="badge-subcat" style="'+mediaStatus[1]+'">'+mediaStatus[0]+'</span>' : '')+
             (!VB && !mediaKind && !person && l.vegan_status ? '<span class="badge-subcat" style="'+(l.vegan_status==='vegan_friendly'?(isSoFlo?'color:#ccc;border-color:#555':'color:#777;border-color:#999'):(isSoFlo?'color:var(--vb-accent-hi,#7fe0a0);border-color:var(--vb-accent-hi,#7fe0a0)':'color:var(--vb-accent,#5EC47A);border-color:var(--vb-accent,#5EC47A)'))+'">'+esc(l.vegan_status.replace(/_/g,' '))+'</span>' : '')+
+            (sharedKitchenOf(l) ? '<span class="badge-subcat" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'" title="A Vegan menu in a shared kitchen">Shared kitchen</span>' : '')+
             cuisineLabels(l).map(function(c){ return '<span class="badge-subcat badge-cuisine" style="'+(isSoFlo?'color:#e8e8e8;border-color:#666':'color:#555;border-color:#aaa')+'">'+esc(c)+'</span>'; }).join('')+
             verifiedBadge+
             // A Nonprofit Partner (Sean, 2026-10-29; listings.tags ve-nonprofit-partner while the partnership is active).
