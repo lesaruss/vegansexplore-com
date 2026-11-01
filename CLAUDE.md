@@ -3782,8 +3782,9 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   with `as_member`. Proven 2026-11-01 as the Logan test account (vote counted once and taken back, a pick saved, a wrong type and an
   untagged line refused, then cleared). Three came from the brands' own pages (20261101_product_brand_site_labels.sql): 365 Non-Dairy
   Cheddar Slices and 365 Nondairy Almondmilk Yogurt from wholefoodsmarket.com (365's nondairy yogurt is almond milk, not coconut; the
-  Dairy Guide entry was corrected) and Panacheeza from panacheeza.com (fat and carbs from its % Daily Value). Not yet: Om Sweet Home (no
-  website found) and Vlendedful (vlendedful.com no longer resolves), possibly no longer trading; and the other Guides' recipe views.
+  Dairy Guide entry was corrected) and Panacheeza from panacheeza.com (fat and carbs from its % Daily Value). Om Sweet Home (no website found)
+  and Vlendedful (vlendedful.com no longer resolves) have no label; both listings are Permanently closed (Sean, 2026-11-01). Not yet: the
+  other Guides' recipe views.
 - **The Tracker** (Sean, 2026-11-01: "it should put it... as a pending item, so that way they can track it... show on their tracking list
   that it was approved and if they got any points for it... a history of it over time... maybe the tracker"; "show bounties as well...
   search by location"; migration `20261101_product_tracker.sql`). The Supermarket Guide's Help keep it right tab is now **Tracker**
