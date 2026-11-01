@@ -644,7 +644,7 @@ async function listingHealth(l: any, food: boolean, kind: string, menuCount: num
     const fresh = Date.parse(lastIg) > Date.now() - 180 * 864e5;
     add('Instagram', 'Posting on Instagram', fresh ? 'pass' : 'flag', `@${handle} last posted ${ago(lastIg)}${ig?.last30 != null && fresh ? ', ' + ig.last30 + ' times in the last 30 days' : ''}.`, 'One post this week shows people you are open. We can post for you every week.', 'instagram');
   } else if (h?.ig_status === 'none' || h?.ig_status === 'private') add('Instagram', 'Posting on Instagram', 'flag', h.ig_status === 'private' ? `@${handle} is private, so visitors cannot see it.` : `We could not find @${handle} on Instagram.`, 'Make the account public, or tell us your current handle on Your page.', 'instagram');
-  else add('Instagram', 'Posting on Instagram', 'pass', `@${handle} is on your listing. We read your posts in the monthly check-up.`);
+  else add('Instagram', 'Posting on Instagram', 'pass', `@${handle} is on your listing${food ? '; our monthly check-up reads your posts' : ''}.`);
   // 4. Your Directory page
   const desc = String(l.description || '').length >= 80, photos = (l.gallery_urls || []).length > 0;
   const pmiss = [!l.logo_url && 'no logo', !desc && 'a short description', !photos && 'no photos', walkIn && !hasHours && 'no hours'].filter(Boolean) as string[];
@@ -678,7 +678,7 @@ async function listingHealth(l: any, food: boolean, kind: string, menuCount: num
     ? 'Fix the flagged items yourself with the steps shown, or tap Have us do it and our team takes them on. Claimed pages are never taken off the Directory for this; we check again every month and you see it here the moment anything changes.'
     : 'Nothing urgent. We check again every month, and you see it here the moment anything changes.';
   const times = [h?.checked_at, a?.finished_at || a?.created_at].filter(Boolean).map((t: string) => Date.parse(t));
-  return { name: l.name, checked_at: times.length ? new Date(Math.max(...times)).toISOString() : new Date().toISOString(), state: 'live', next, checks, checkup, support,
+  return { name: l.name, checked_at: times.length ? new Date(Math.max(...times)).toISOString() : null, state: 'live', next, checks, checkup, support,
     checked_on: times.length ? date(new Date(Math.max(...times)).toISOString()) : null };
 }
 

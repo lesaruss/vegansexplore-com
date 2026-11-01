@@ -470,8 +470,8 @@
       });
       var state = h.state === 'review'
         ? '<span class="vpd-tag warn">In review</span>' : '<span class="vpd-tag">On the Directory</span>';
-      return '<div class="vpd-hc"><div class="vpd-hc-top"><div><b>Your listing check</b><small>' + esc(h.name || D.listing.name) + ' &middot; checked ' +
-        esc(new Date(h.checked_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; we check again every month</small></div>' +
+      return '<div class="vpd-hc"><div class="vpd-hc-top"><div><b>Your listing check</b><small>' + esc(h.name || D.listing.name) + ' &middot; ' + (h.checked_at ? 'checked ' +
+        esc(new Date(h.checked_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; we check again every month' : 'your first check is running now') + '</small></div>' +
         '<div class="vpd-hc-score"><span class="vpd-hc-num">' + passed + '/' + h.checks.length + '</span>' + state + '</div></div>' + rows +
         (h.next ? '<div class="vpd-hc-next"><b>What happens next.</b> ' + esc(h.next) + '</div>' : '') +
         '</div>' + checkupCard(h.checkup);
