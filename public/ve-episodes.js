@@ -12,6 +12,9 @@
  */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-podcast';
+  // Our four shows have show notes on the Pulse (/pulse/<slug>, api/pulse-article.js); an episode's view links there.
+  var OUR_SHOWS = ['vegans-explore-podcast', 'soflo-vegans-podcast', 'vegans-who-lift-podcast', 'pre-vegans-podcast'];
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function token() { try { return (window.VEAuth && VEAuth.getToken()) || localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
   function call(body) {
@@ -39,7 +42,7 @@
     '.vep-sum{font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}' +
     '.vep-acts{display:flex;flex-direction:column;gap:6px}' +
     '.vep-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;font:inherit;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:6px;padding:8px 12px;min-height:36px;cursor:pointer;border:1px solid rgba(0,0,0,.22);background:#fff;color:#1f5f22;white-space:nowrap}' +
-    '.vep-btn.go{background:#1f5f22;border-color:#1f5f22;color:#fff}.vep-btn[aria-pressed=true]{background:#EAF7EA;border-color:#2d7d31}' +
+    'a.vep-btn{text-decoration:none;color:inherit}.vep-btn.go{background:#1f5f22;border-color:#1f5f22;color:#fff}.vep-btn[aria-pressed=true]{background:#EAF7EA;border-color:#2d7d31}' +
     '.vep-pages{display:flex;justify-content:center;flex-wrap:wrap;gap:6px;margin-top:18px}.vep-pages button{min-width:38px;min-height:38px;padding:0 10px;font:inherit;font-size:13px;font-weight:800;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;color:#1a1a1a;cursor:pointer}' +
     '.vep-pages button[aria-current=page]{background:#1f5f22;border-color:#1f5f22;color:#fff}.vep-pages .gap{align-self:center;padding:0 4px;color:rgba(26,26,26,.6)}' +
     '.vep-empty{font-size:13.5px;color:rgba(26,26,26,.7);padding:20px 0}' +
@@ -252,13 +255,32 @@
           '<h2>' + esc(ep.title) + '</h2><div class="vep-meta">' + esc([ep.season ? 'Season ' + ep.season : '', ep.episode ? 'Episode ' + ep.episode : '', when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
           '<div class="vep-acts"><button type="button" class="vep-btn go" data-vep-play="' + esc(keyOf(ep, show)) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' +
             '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + !!d.saved + '">' + (d.saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' +
-            (ep.link ? '<a class="vep-btn" href="' + esc(ep.link) + '" target="_blank" rel="noopener">Show notes</a>' : '') + '</div>' +
+            (ep.link ? '<a class="vep-btn" data-vep-ext href="' + esc(ep.link) + '" target="_blank" rel="noopener">Show notes</a>' : '') + '</div>' +
           '<div class="vep-full">' + esc(ep.summary) + '</div></div></article>';
         root.querySelector('.vep-crumb button').onclick = back;
         wire(root);
         toTop();
         books(ep.guid);
+        notes(ep.guid);
       });
+    }
+    // The way back to the Pulse (Sean, 2026-11-01: "build the show page back-link too"): one of our shows' episodes links to its
+    // show notes on Vegans Explore, who was on and what they talked about (ve_pulse_for_episode, the same match as the Pulse page's
+    // player uses), first among the buttons; the show's own site, when the feed names one, becomes On their site.
+    function notes(guid) {
+      if (OUR_SHOWS.indexOf(L.slug) < 0) return;
+      fetch(FN.replace('/functions/v1/ve-podcast', '/rest/v1/rpc/ve_pulse_for_episode'), { method: 'POST',
+        headers: { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ p_listing: L.id, p_guid: guid }) }).then(function (r) { return r.ok ? r.json() : null; }).then(function (slug) {
+        if (!slug || typeof slug !== 'string' || epParam() !== guid) return;
+        var acts = root.querySelector('.vep-one .vep-acts'); if (!acts || acts.querySelector('[data-vep-notes]')) return;
+        var ext = acts.querySelector('[data-vep-ext]'); if (ext) ext.textContent = 'On their site';
+        var a = document.createElement('a'); a.className = 'vep-btn'; a.setAttribute('data-vep-notes', '');
+        a.href = '/pulse/' + encodeURIComponent(slug); a.textContent = 'Show notes';
+        // In the dashboard's frame the article opens in the whole window, as the Pulse's own pages do.
+        if (window.top !== window.self) a.target = '_top';
+        var play = acts.querySelector('[data-vep-play]'); acts.insertBefore(a, play ? play.nextSibling : acts.firstChild);
+      }).catch(function () {});
     }
     // Referenced books (Sean, 2026-10-29): the books named in this episode, read from its transcript (ve-books). One that is in the
     // Directory opens its page; any other opens Amazon through our tracked link.

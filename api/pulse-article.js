@@ -110,14 +110,18 @@ module.exports = async (req, res) => {
       const headers = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
       const r = preview
         ? await fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_preview', { method: 'POST', headers: headers, body: JSON.stringify({ p_token: previewToken }) })
-        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,category,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url,cover_credit,cover_license,updated_note,updated_note_at&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
+        : await fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=id,slug,title,category,podcast_show,episode_number,youtube_id,video_url,audio_url,author,origin,published_at,summary,body,thumbnail_url,cover_credit,cover_license,updated_note,updated_note_at&slug=eq.' + encodeURIComponent(slug) + '&status=eq.published&limit=1', { headers: headers });
       const rows = await r.json();
       if (Array.isArray(rows) && rows[0] && (!preview || rows[0].slug === slug)) {
         const row = rows[0];
         if (preview) previewStatus = row.status || 'draft';
         post = {
+          id: row.id,
           slug: row.slug,
           category: row.category,
+          show: row.podcast_show || '',
+          epNum: row.episode_number || null,
+          publishedAt: row.published_at || null,
           headline: row.title,
           excerpt: row.summary || '',
           img: row.thumbnail_url,
@@ -151,6 +155,39 @@ module.exports = async (req, res) => {
   }
 
   const pageUrl = 'https://vegansexplore.com/pulse/' + post.slug;
+
+  // A podcast episode (Sean, 2026-11-01: "The banner on this page is broken... we have a lot of articles setup this way... we
+  // need to fix the formatting and how people find them"). 278 of the 279 Pulse articles are an episode's show notes. Around
+  // the notes: the episode itself (YouTube, or the show's own audio from its feed through ve_pulse_episode, so the 55 with no
+  // video play too), the show's page, the people on it (ve_person_credits, their People profiles) and the show's other
+  // episodes, so no episode page is a dead end.
+  let epData = null, people = [], siblings = [];
+  if (post.show && post.id) {
+    const h = { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+    const get = function (p) { return p.then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); };
+    const got = await Promise.all([
+      get(fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_episode', { method: 'POST', headers: h, body: JSON.stringify({ p_slug: post.slug }) })),
+      get(fetch(SUPABASE_URL + '/rest/v1/ve_person_credits?select=role,listings(slug,name,category,logo_url,status)&content_id=eq.' + encodeURIComponent(post.id), { headers: h })),
+      get(fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,episode_number,published_at,thumbnail_url&status=eq.published&podcast_show=eq.' + encodeURIComponent(post.show) + '&order=published_at.asc&limit=500', { headers: h }))
+    ]);
+    epData = got[0] && got[0].show ? got[0] : null;
+    const seen = {};
+    people = (Array.isArray(got[1]) ? got[1] : []).filter(function (c) {
+      const l = c.listings; if (!l || l.status !== 'approved' || seen[l.slug]) return false; seen[l.slug] = 1; return true;
+    }).sort(function (a, b) { return (a.role === 'Host') - (b.role === 'Host'); });
+    siblings = Array.isArray(got[2]) ? got[2] : [];
+  }
+  const showSlug = epData ? epData.show.slug : '';
+  const feedEp = epData && epData.episode && epData.episode.audio ? epData.episode : null;
+  const shortTitle = function (t) { return String(t || '').replace(/\s*\|\s*(Ep|Episode)\b[^|]*\|[^|]*$/i, '').replace(/\s*\|\s*[^|]*Podcast\s*$/i, '').trim(); };
+  // Pictures from other hosts at full size (Apple's are 3000 px) go through Vercel's resizer (images in vercel.json), the
+  // original as the fallback (the rule of 2026-10-31, as in public/ve-episodes.js).
+  const pic = function (url, w, attrs) {
+    if (!url) return '';
+    const src = /^https:\/\//.test(url) ? '/_vercel/image?url=' + encodeURIComponent(url) + '&w=' + w + '&q=75' : url;
+    return '<img src="' + esc(src) + '" data-src="' + esc(url) + '" alt="" loading="lazy" decoding="async" onerror="if(this.src!==this.dataset.src){this.src=this.dataset.src}else{this.onerror=null}"' + (attrs || '') + '>';
+  };
+  const fmtDate = function (d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : ''; };
   // Depot pieces (Sean, 2026-09-29): the Background writer ends every piece with
   // "First reported by <Source>: <url>". That line becomes the source's name as a link, in a
   // smaller line under the article, and any other bare link in the text becomes clickable.
@@ -171,7 +208,7 @@ module.exports = async (req, res) => {
 
   const title = post.headline;
   const description = (post.excerpt || '').slice(0, 200);
-  const image = post.img || 'https://vegansexplore.com/public/pulse-ve-banner.jpg';
+  const image = post.img || (epData && epData.show.logo) || 'https://vegansexplore.com/public/pulse-ve-banner.jpg';
   const caption = 'Read this on VEGANS EXPLORE Pulse: ' + title;
 
   // Above the article: a YouTube player, our own video or audio from the Depot, or the
@@ -193,16 +230,75 @@ module.exports = async (req, res) => {
     // Updated (Sean, 2026-09-29): what changed after the subject replied, the way newsrooms mark it.
     + (post.updatedNote ? '<p class="article-updated">Updated' + (post.updatedAt ? ' ' + esc(new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' })) : '') + ': ' + esc(post.updatedNote) + '</p>' : '');
 
+  let epHtml = '', moreHtml = '';
+  if (epData) {
+    const show = epData.show;
+    const showUrl = '/directory/' + encodeURIComponent(show.slug);
+    const epUrl = feedEp ? showUrl + '?ep=' + encodeURIComponent(feedEp.guid) : showUrl;
+    const art = (feedEp && feedEp.image) || show.logo || '';
+    const mins = feedEp && feedEp.duration ? Math.round(feedEp.duration / 60) + ' min' : '';
+    const meta = [post.epNum ? 'Episode ' + post.epNum : '', fmtDate(post.publishedAt), mins].filter(Boolean).join(' &middot; ');
+    epHtml = '<div class="ep-card">'
+      + (art ? pic(art, 256, ' class="ep-art" width="96" height="96"') : '')
+      + '<div class="ep-body"><a class="ep-show" href="' + showUrl + '">' + esc(show.name) + '</a>'
+      + '<div class="ep-meta">' + meta + '</div>'
+      + (!post.youtubeId && feedEp ? '<audio controls preload="none" src="' + esc(feedEp.audio) + '" aria-label="Listen: ' + esc(title) + '"></audio>' : '')
+      + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (post.youtubeId || !feedEp ? 'Listen on the show page' : 'Open on the show page') + '</a>'
+      + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>';
+    if (people.length) epHtml += '<h3 class="article-section-head">On this episode</h3><div class="ep-people">' + people.map(function (c) {
+      const l = c.listings;
+      const face = l.logo_url ? pic(l.logo_url, 128, ' width="56" height="56"') : '<span class="ep-letter">' + esc((l.name || '?').charAt(0)) + '</span>';
+      return '<a class="ep-person" href="/directory/' + encodeURIComponent(l.slug) + '">' + face + '<span><strong>' + esc(l.name) + '</strong><small>' + esc(c.role || '') + '</small></span></a>';
+    }).join('') + '</div>';
+    // The show's other episodes: the one before and after, then those nearest it.
+    const i = siblings.findIndex(function (x) { return x.slug === post.slug; });
+    if (siblings.length > 1) {
+      const prev = i > 0 ? siblings[i - 1] : null, next = i >= 0 && i < siblings.length - 1 ? siblings[i + 1] : null;
+      const near = siblings.map(function (x, k) { return { x: x, d: Math.abs(k - i) }; })
+        .filter(function (o) { return o.x.slug !== post.slug && (!prev || o.x.slug !== prev.slug) && (!next || o.x.slug !== next.slug); })
+        .sort(function (a, b) { return a.d - b.d; }).slice(0, 6).map(function (o) { return o.x; })
+        .sort(function (a, b) { return String(b.published_at).localeCompare(String(a.published_at)); });
+      const row = function (x, label) {
+        const thumb = x.thumbnail_url || show.logo || '';
+        return '<a class="ep-row" href="/pulse/' + encodeURIComponent(x.slug) + '">'
+          + (thumb ? pic(thumb, 256, ' width="72" height="72"') : '')
+          + '<span>' + (label ? '<small class="ep-row-label">' + label + '</small>' : '')
+          + '<strong>' + esc(shortTitle(x.title)) + '</strong>'
+          + '<small>' + [x.episode_number ? 'Episode ' + x.episode_number : '', fmtDate(x.published_at)].filter(Boolean).join(' &middot; ') + '</small></span></a>';
+      };
+      moreHtml = '<section class="ep-more" aria-label="More from ' + esc(show.name) + '"><div class="share-label">More from ' + esc(show.name) + '</div>'
+        + ((prev || next) ? '<div class="ep-pn">' + (prev ? row(prev, 'Previous episode') : '<span></span>') + (next ? row(next, 'Next episode') : '<span></span>') + '</div>' : '')
+        + (near.length ? '<div class="ep-list">' + near.map(function (x) { return row(x, ''); }).join('') + '</div>' : '')
+        + '<a class="ep-btn" href="' + showUrl + '">See every episode of ' + esc(show.name) + '</a></section>';
+    }
+  }
+  // The title is the page's one h1 (the show notes wrote it as an h2, so the page had none).
+  let bodyHtml = post.body;
+  if (!post.fromDepot) bodyHtml = bodyHtml.replace(/<h2 class="article-h1">([\s\S]*?)<\/h2>/, '<h1 class="article-h1">$1</h1>');
+  // For an episode, the player and the show sit under the title and its summary, not above the title.
+  let articleHtml = embedHtml + bodyHtml;
+  if (epData) {
+    const m = bodyHtml.match(/<p class="article-lede">[\s\S]*?<\/p>/);
+    articleHtml = m ? bodyHtml.slice(0, m.index + m[0].length) + embedHtml + epHtml + bodyHtml.slice(m.index + m[0].length) : embedHtml + epHtml + bodyHtml;
+  }
+  const ld = epData ? {
+    '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: shortTitle(title), url: pageUrl, description: post.excerpt || undefined,
+    datePublished: post.publishedAt || undefined, episodeNumber: post.epNum || undefined, image: (post.img || epData.show.logo) || undefined,
+    partOfSeries: { '@type': 'PodcastSeries', name: epData.show.name, url: 'https://vegansexplore.com/directory/' + epData.show.slug },
+    associatedMedia: feedEp ? { '@type': 'MediaObject', contentUrl: feedEp.audio } : (post.youtubeId ? { '@type': 'VideoObject', name: shortTitle(title), embedUrl: 'https://www.youtube.com/embed/' + post.youtubeId, thumbnailUrl: post.img || undefined, uploadDate: post.publishedAt || undefined } : undefined),
+    actor: people.filter(function (c) { return c.role !== 'Host'; }).map(function (c) { return { '@type': 'Person', name: c.listings.name, url: 'https://vegansexplore.com/directory/' + c.listings.slug }; })
+  } : null;
+
   const html = '<!DOCTYPE html>'
     + '<html lang="en"><head>'
     + '<meta charset="UTF-8">'
     + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-    + '<title>' + esc(title) + ' - VEGANS EXPLORE Pulse</title>'
+    + '<title>' + esc(title) + ' — Vegans Explore</title>'
     + '<meta name="description" content="' + esc(description) + '">'
     + (preview ? '<meta name="robots" content="noindex, nofollow">' : '')
     + '<link rel="canonical" href="' + pageUrl + '">'
     + '<meta property="og:type" content="article">'
-    + '<meta property="og:site_name" content="VEGANS EXPLORE">'
+    + '<meta property="og:site_name" content="Vegans Explore">'
     + '<meta property="og:title" content="' + esc(title) + '">'
     + '<meta property="og:description" content="' + esc(description) + '">'
     + '<meta property="og:image" content="' + esc(image) + '">'
@@ -211,55 +307,47 @@ module.exports = async (req, res) => {
     + '<meta name="twitter:title" content="' + esc(title) + '">'
     + '<meta name="twitter:description" content="' + esc(description) + '">'
     + '<meta name="twitter:image" content="' + esc(image) + '">'
+    + (ld ? '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>' : '')
     + '<link rel="preconnect" href="https://fonts.googleapis.com">'
     + '<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">'
     + '<style>'
     + '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}'
     + ':root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-mid:#b8ddb9;--ve-green-light:#e8f5e9;--ve-orange:#F69820;--ve-orange-dark:#d4800f;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.50);--ve-text-30:rgba(26,26,26,0.30);}'
     + 'body{background:#f5f5f5;color:var(--ve-text);font-family:"Montserrat",sans-serif;-webkit-font-smoothing:antialiased;}'
-    + '.pulse-hero{position:relative;min-height:460px;overflow:hidden;background-image:url(\'/public/pulse-ve-banner.jpg\');background-size:cover;background-position:center;display:flex;align-items:flex-end;transition:max-height 0.32s ease,min-height 0.32s ease,opacity 0.25s ease;}'
-    + '.pulse-hero.hero-collapsed{min-height:0;max-height:0;opacity:0;}'
-    + '.pulse-hero::before{content:\'\';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,0.96) 0%,rgba(0,0,0,0.72) 58%,rgba(0,0,0,0.28) 78%,transparent 94%);z-index:1;}'
-    + '.pulse-hero::after{content:\'\';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.32) 0%,transparent 28%);z-index:1;}'
-    + '.pulse-hero .hero-inner{position:relative;z-index:2;padding:72px 56px 56px;}'
-    + '.pulse-hero .hero-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.32em;text-transform:uppercase;color:var(--ve-green);margin-bottom:18px;display:flex;align-items:center;gap:10px;}'
-    + '.pulse-hero .hero-eyebrow::before{content:\'\';width:20px;height:2px;background:var(--ve-green);flex-shrink:0;}'
-    + '.pulse-hero h1{font-size:clamp(36px,5.5vw,68px);font-weight:900;line-height:0.98;letter-spacing:-0.03em;text-transform:uppercase;color:#fff;margin-bottom:18px;}'
-    + '.pulse-hero h1 em{color:var(--ve-green);font-style:normal;}'
-    + '.pulse-hero .hero-sub{font-size:15px;font-weight:400;line-height:1.65;color:rgba(255,255,255,0.65);max-width:560px;margin-bottom:28px;}'
-    + '.pulse-hero .hero-ctas{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}'
-    + '.pulse-hero .btn-hero-primary{background:var(--ve-orange);color:#fff;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:14px 30px;border-radius:4px;text-decoration:none;transition:background 0.15s;display:inline-block;border:none;cursor:pointer;font-family:inherit;}'
-    + '.pulse-hero .btn-hero-primary:hover{background:var(--ve-orange-dark);}'
-    + '@media (max-width:640px){.pulse-hero{min-height:420px;background-image:url(\'/public/pulse-ve-banner-mobile.jpg\');background-position:center center;}.pulse-hero::before{background:rgba(0,0,0,0.32);}.pulse-hero::after{display:none;}.pulse-hero .hero-inner{background:rgba(0,0,0,0.58);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:8px;margin:0 24px 32px;padding:32px 28px;max-width:calc(100% - 48px);border:1px solid rgba(255,255,255,0.09);}}'
     + '.btn-join{display:inline-block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;padding:13px 28px;border-radius:4px;text-decoration:none;background:var(--ve-green);color:#fff;transition:background 0.15s;border:none;cursor:pointer;}'
     + '.btn-join:hover{background:var(--ve-green-dark);}'
-    + '.member-bar{background:#1a1a1a;padding:14px 56px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}'
-    + '.member-bar-actions{display:flex;align-items:center;gap:14px;}'
-    + '.member-bar-toggle{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 8px;flex-shrink:0;background:none;border:1px solid rgba(255,255,255,0.25);border-radius:20px;color:rgba(255,255,255,0.85);cursor:pointer;transition:border-color 0.15s,color 0.15s;}'
-    + '.member-bar-toggle:hover{border-color:rgba(255,255,255,0.5);color:#fff;}'
-    + '.member-bar-toggle:focus-visible{outline:2px solid var(--ve-green);outline-offset:2px;}'
-    + '.mb-toggle-caret{flex-shrink:0;transition:transform 0.2s ease;}'
-    + '.member-bar.mb-collapsed .mb-toggle-caret{transform:rotate(180deg);}'
-    + '.mb-toggle-label{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap;}'
-    + '.member-bar-left{display:flex;align-items:center;gap:16px;}'
-    + '.mb-breadcrumb{display:flex;align-items:center;gap:8px;}'
-    + '.mb-breadcrumb a,.mb-breadcrumb-link{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.6);text-decoration:none;transition:color 0.15s;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;}'
-    + '.mb-breadcrumb a:hover,.mb-breadcrumb-link:hover{color:rgba(255,255,255,0.85);}'
-    + '.mb-breadcrumb span{font-size:11px;color:rgba(255,255,255,0.25);}'
-    + '.mb-breadcrumb .current{color:rgba(255,255,255,0.85);}'
-    + '@media (max-width:640px){.member-bar{padding:14px 24px;flex-direction:column;align-items:flex-start;}}'
     + '.pulse-list-wrap{padding:28px 40px 64px;}'
-    + '.pulse-content-row{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;max-width:1180px;margin:0 auto;}'
-    + '.pulse-main{flex:1;min-width:0;max-width:760px;}'
-    + '.ad-rail{width:300px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:16px;position:sticky;top:24px;}'
-    + '.ad-rail-label{position:absolute;left:0;right:0;bottom:100%;margin-bottom:6px;font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-30);text-align:center;}'
-    + '.ad-slot{position:relative;border-radius:8px;overflow:hidden;background:#fff;border:1px solid var(--ve-border);width:100%;max-width:300px;flex-shrink:0;}'
-    + '.ad-slot-tower{aspect-ratio:1/2;} .ad-slot-landscape{aspect-ratio:6/5;}'
-    + '.ad-cta{display:block;text-align:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#2d7d31;text-decoration:none;}.ad-cta span{display:block;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;color:rgba(26,26,26,0.68);margin-top:2px;}.ad-cta:hover{text-decoration:underline;}'
-    + '.ad-slot a{display:block;width:100%;height:100%;} .ad-slot img{width:100%;height:100%;object-fit:cover;display:block;}'
-    + '.ad-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:var(--ve-green-light);color:var(--ve-green-dark);}'
-    + '.ad-placeholder svg{width:26px;height:26px;opacity:0.6;} .ad-ph-text{font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;opacity:0.7;} .ad-ph-dim{font-size:10px;font-weight:600;color:var(--ve-text-30);}'
-    + '@media (max-width:960px){.pulse-content-row{flex-direction:column;}.ad-rail-label{position:static;width:100%;margin:0;}.ad-rail{position:static;top:auto;width:100%;flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:center;margin-top:12px;padding-top:20px;border-top:1px solid var(--ve-border);}.ad-slot{width:100%;max-width:100%;}.ad-cta{width:100%;}}'
+    // Full width (LOCKED 2026-10-04): three-fourths the article, one-fourth the ad rail (public/ve-ad-rail.js); the article's
+    // text keeps its own reading width inside its column.
+    + '.article{max-width:860px;}'
+    // The episode (Sean, 2026-11-01): the show, the player and the way to the show's page, the people on it, the other episodes.
+    + '.ep-card{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:16px;margin:0 0 24px;}'
+    + '.ep-art{width:96px;height:96px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--ve-green-light);}'
+    + '.ep-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}'
+    + '.ep-show{font-size:15px;font-weight:800;color:var(--ve-text);text-decoration:none;}.ep-show:hover{color:var(--ve-green-dark);}'
+    + '.ep-meta{font-size:12px;font-weight:600;color:var(--ve-text-50);}'
+    + '.ep-body audio{width:100%;height:40px;}'
+    + '.ep-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px;}'
+    + '.ep-btn{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ve-text);background:#fff;border:1.5px solid var(--ve-border);border-radius:6px;padding:10px 16px;}'
+    + '.ep-btn:hover{border-color:var(--ve-text);}'
+    + '.ep-btn-go{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}.ep-btn-go:hover{background:#1f5f22;border-color:#1f5f22;}'
+    + '.ep-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin:0 0 24px;}'
+    + '.ep-person{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:10px;text-decoration:none;color:var(--ve-text);}'
+    + '.ep-person:hover{border-color:var(--ve-green);}'
+    + '.ep-person img,.ep-letter{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;}'
+    + '.ep-letter{display:flex;align-items:center;justify-content:center;background:var(--ve-green-light);color:var(--ve-green-dark);font-size:22px;font-weight:900;}'
+    + '.ep-person span{display:flex;flex-direction:column;min-width:0;}.ep-person strong{font-size:13px;font-weight:800;}.ep-person small{font-size:11px;font-weight:600;color:var(--ve-text-50);}'
+    + '.ep-more{margin-top:36px;padding-top:28px;border-top:1px solid var(--ve-border);}'
+    + '.ep-pn{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}'
+    + '.ep-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:10px;margin-bottom:16px;}'
+    + '.ep-row{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:10px;text-decoration:none;color:var(--ve-text);min-width:0;}'
+    + '.ep-row:hover{border-color:var(--ve-green);}'
+    + '.ep-row img{width:72px;height:72px;border-radius:8px;object-fit:cover;flex-shrink:0;}'
+    + '.ep-row span{display:flex;flex-direction:column;gap:3px;min-width:0;}'
+    + '.ep-row strong{font-size:13px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}'
+    + '.ep-row small{font-size:11px;font-weight:600;color:var(--ve-text-50);}'
+    + '.ep-row .ep-row-label{font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ve-green-dark);}'
+    + '@media (max-width:640px){.ep-card{flex-direction:column;}.ep-art{width:72px;height:72px;}.ep-pn{grid-template-columns:1fr;}}'
     + '@media (max-width:640px){.pulse-list-wrap{padding:16px 16px 48px;}}'
     + '.panel-breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:28px;flex-wrap:wrap;}'
     + '.panel-trail-btn{background:none;border:none;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-dark);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:3px;}'
@@ -320,27 +408,13 @@ module.exports = async (req, res) => {
     + '</style></head><body>'
     + '<script src="/public/nav.js"></script>'
     + (preview ? '<div role="note" style="position:sticky;top:0;z-index:50;background:#F69820;color:#1a1a1a;font:800 12px/1.4 Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;padding:9px 12px;">Preview' + (previewStatus === 'published' ? ' of a published piece' : ': not published yet') + '</div>' : '')
-    + '<section class="pulse-hero hero-collapsed" id="pulse-hero-section" aria-labelledby="pulse-hero-h1">'
-    + '<div class="hero-inner">'
-    + '<p class="hero-eyebrow">Vegans Explore</p>'
-    + '<h1 id="pulse-hero-h1">The Daily<br><em>Pulse.</em></h1>'
-    + '<p class="hero-sub">Daily news, opinion pieces, and stories from across the VEGANS EXPLORE ecosystem. New content, every day.</p>'
-    + '<div class="hero-ctas"><a href="/pulse" class="btn-hero-primary">Browse the Pulse</a></div>'
-    + '</div>'
-    + '</section>'
-    + '<div class="member-bar mb-collapsed" id="pulse-member-bar" role="complementary" aria-label="Pulse banner control">'
-    + '<div class="member-bar-left">'
-    + '<button type="button" class="member-bar-toggle" id="pulse-bar-toggle" aria-expanded="false" aria-controls="pulse-hero-section">'
-    + '<svg class="mb-toggle-caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>'
-    + '<span class="mb-toggle-label" id="pulse-bar-toggle-label">Expand</span>'
-    + '</button>'
-    + '<nav class="mb-breadcrumb" id="pulse-bar-breadcrumb" aria-label="Breadcrumb"><a href="/pulse">Pulse</a><span aria-hidden="true">/</span><span class="current" aria-current="page">' + esc(post.category || '') + '</span></nav>'
-    + '</div>'
-    + '<div class="member-bar-actions"><a href="/passport" class="btn-join" id="pulse-bar-get-passport" style="font-size:10px;padding:9px 18px;">Get Passport</a></div>'
-    + '</div>'
-    + '<div class="pulse-list-wrap"><div class="pulse-content-row">'
-    + '<div class="pulse-main">'
-    + '<div class="article">' + embedHtml + post.body + sourceHtml
+    // The shared banner (public/ve-city-banner.js), the same one as /pulse, the Directory and Events (Sean, 2026-11-01: the old
+    // black bar and hero were retired on 2026-10-26 everywhere but here). An episode's banner picks among our shows (the pick opens
+    // that show's page, with every episode); any other article's picks a chapter's Daily Pulse. It starts folded.
+    + '<section id="pulse-hero"></section>'
+    + '<div class="pulse-list-wrap"><div class="vear-layout">'
+    + '<div class="vear-main">'
+    + '<div class="article">' + articleHtml + sourceHtml
     // Anyone can ask for a change or a removal (Sean, 2026-09-29).
     + (post.fromDepot ? '<p class="article-change">Something wrong, or want this taken down? <a href="mailto:hello@vegansexplore.com?subject=' + encodeURIComponent('Change request: ' + post.headline) + '">Email us</a> and we will fix it.</p>' : '')
     + '<div class="share-bar">'
@@ -360,16 +434,30 @@ module.exports = async (req, res) => {
     + '<div id="pulseCommentComposerMount"></div>'
     + '<div id="pulseCommentsList" class="pulse-comments-list"><div class="pulse-comments-empty">Loading comments...</div></div>'
     + '</div>'
+    + moreHtml
     + '</div></div>'
-    + '<aside class="ad-rail" id="veAdRail" aria-label="Advertisement">'
-    + '<div class="ad-rail-label">Advertisement</div>'
-    + '<div class="ad-slot ad-slot-tower" id="adSlotSkyscraper"><div class="ad-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><div class="ad-ph-text">Advertisement</div><div class="ad-ph-dim">300 x 600</div></div></div>'
-    // One ad per page, the tall one (Sean, 2026-10-27), and Your ad here under it, as in public/ve-ad-rail.js.
-    + '<a class="ad-cta" href="/partners">Your ad here<span>Advertise with Vegans Explore</span></a>'
-    + '</aside>'
+    // One ad per page, the tall one (Sean, 2026-10-27), drawn by public/ve-ad-rail.js through ve-ad-creative.js, so an HTML5 ad
+    // plays in its frame (it was drawn as an <img> here, a broken picture), with Your ad here under it.
+    + '<aside class="vear-rail" data-ad-page="pulse"></aside>'
     + '</div></div>'
     + '<script src="/public/footer.js"></script>'
+    + '<script src="/public/ve-hubs.js"></script>'
+    + '<script src="/public/ve-city-banner.js"></script>'
+    + '<script src="/public/ve-ad-creative.js"></script>'
+    + '<script src="/public/ve-ad-rail.js"></script>'
     + '<script>(function(){'
+    + 'var SHOW=' + JSON.stringify(showSlug) + ';'
+    + "var SHOWS=[{value:'vegans-explore-podcast',label:'Vegans Explore Podcast'},{value:'soflo-vegans-podcast',label:'SoFlo Vegans Podcast'},{value:'vegans-who-lift-podcast',label:'Vegans Who Lift Podcast'},{value:'pre-vegans-podcast',label:'Pre-Vegans Podcast'}];"
+    + "if(window.VECityBanner&&document.getElementById('pulse-hero')){var ready=false,b;"
+    + "if(SHOW){b=VECityBanner.mount('pulse-hero',{key:'pulse',title:'Daily Pulse',pickLabel:'Show',param:false,art:'/public/pulse-ve-banner.jpg',choices:SHOWS,initial:SHOW,"
+    + "sub:'Show notes for every episode of our shows: who was on, what they talked about, and the episode to play.',"
+    + "home:{label:'Pulse home',href:'/pulse'},link:function(v){return {href:'/directory/'+v,label:'Every episode'};},"
+    + "onChange:function(v){if(ready&&v!==SHOW)location.href='/directory/'+encodeURIComponent(v);}});}"
+    + "else{b=VECityBanner.mount('pulse-hero',{key:'pulse',title:'Daily Pulse',allTitle:'Every City',allLabel:'All cities',param:false,"
+    + "sub:'Every chapter\\'s community board: today\\'s briefing and its conversation, jobs, classifieds, fosters and rescues.',"
+    + "home:{label:'Pulse home',href:'/pulse'},onChange:function(slug){if(ready)location.href='/pulse'+(slug?'?city='+encodeURIComponent(slug):'');}});}"
+    + "ready=true;document.body.classList.add('has-banner');if(b&&b.autoFold)b.autoFold();}"
+
     + 'var pageUrl=' + JSON.stringify(pageUrl) + ';'
     + 'var title=' + JSON.stringify(title) + ';'
     + 'var caption=' + JSON.stringify(caption) + ';'
@@ -386,9 +474,6 @@ module.exports = async (req, res) => {
     + "var PULSE_SUPABASE_URL=" + JSON.stringify(SUPABASE_URL) + ";"
     + "var PULSE_ANON_KEY=" + JSON.stringify(SUPABASE_ANON_KEY) + ";"
     + "function pEsc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}"
-    + "var VE_AD_SLOT_ELS={'skyscraper':'adSlotSkyscraper'};"
-    + "function renderAdSlot(elId,ad){var el=document.getElementById(elId);if(!el||!ad||!ad.image_url)return;el.innerHTML='<a href=\"'+pEsc(ad.link_url||'#')+'\" target=\"_blank\" rel=\"noopener noreferrer sponsored\"><img src=\"'+pEsc(ad.image_url)+'\" alt=\"Advertisement\"></a>';}"
-    + "fetch(PULSE_SUPABASE_URL+'/functions/v1/ad-resolve?brand_slug=vegans-explore&page_slug=pulse',{headers:{apikey:PULSE_ANON_KEY,Authorization:'Bearer '+PULSE_ANON_KEY}}).then(function(r){return r.json();}).then(function(data){var slots=data&&data.slots;if(!slots||!slots.length)return;slots.forEach(function(s){var elId=VE_AD_SLOT_ELS[s.slot_id];if(elId)renderAdSlot(elId,s);});}).catch(function(){});"
     + "var pulseSlug=" + JSON.stringify(post.slug) + ";"
     + "function pulseAvatarHtml(m){m=m||{};if(m.avatar_url)return '<img class=\"pulse-comment-avatar\" src=\"'+pEsc(m.avatar_url)+'\" alt=\"\">';var initials=m.initials||'VE';var color=m.color||'#22C55E';return '<div class=\"pulse-comment-avatar pulse-comment-avatar-fallback\" style=\"background:'+pEsc(color)+';\">'+pEsc(initials)+'</div>';}"
     + "function pulseTimeAgo(iso){var diff=Date.now()-new Date(iso).getTime();var mins=Math.floor(diff/60000);if(mins<1)return 'just now';if(mins<60)return mins+'m ago';var hrs=Math.floor(mins/60);if(hrs<24)return hrs+'h ago';var days=Math.floor(hrs/24);if(days<30)return days+'d ago';return new Date(iso).toLocaleDateString();}"
@@ -397,12 +482,8 @@ module.exports = async (req, res) => {
     + "function waitForVEAuth(cb,attempts){attempts=attempts||0;if(window.VEAuth){cb();return;}if(!document.querySelector('script[src*=\"ve-auth\"]')){var s=document.createElement('script');s.src='/public/ve-auth.js';document.head.appendChild(s);}if(attempts>60){cb();return;}setTimeout(function(){waitForVEAuth(cb,attempts+1);},100);}"
     + "function renderPulseComposer(slug){var mount=document.getElementById('pulseCommentComposerMount');if(!mount)return;waitForVEAuth(function(){if(window.VEAuth&&VEAuth.isLoggedIn()){mount.innerHTML='<div class=\"pulse-comment-composer\"><textarea id=\"pulseCommentInput\" rows=\"3\" placeholder=\"Join the discussion...\" maxlength=\"2000\"></textarea><div><button class=\"pulse-comment-submit\" id=\"pulseCommentSubmit\" type=\"button\">Post Comment</button></div><div class=\"pulse-comment-error\" id=\"pulseCommentError\" style=\"display:none;\"></div></div>';document.getElementById('pulseCommentSubmit').addEventListener('click',function(){submitPulseComment(slug);});}else{mount.innerHTML='<div class=\"pulse-comment-gate\"><button class=\"pulse-comment-signin-btn\" id=\"pulseCommentSignIn\" type=\"button\">Sign in with your Passport to join the discussion</button></div>';document.getElementById('pulseCommentSignIn').addEventListener('click',function(){if(window.VEAuth){VEAuth.requirePassport(function(){renderPulseComposer(slug);},'Sign in to comment on this article.');}});}});}"
     + "function submitPulseComment(slug){var input=document.getElementById('pulseCommentInput');var errEl=document.getElementById('pulseCommentError');var btn=document.getElementById('pulseCommentSubmit');if(!input)return;var content=input.value.trim();if(errEl)errEl.style.display='none';if(!content)return;if(btn){btn.disabled=true;btn.textContent='Posting...';}fetch('/api/pulse-comments?slug='+enc(slug),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:content,token:VEAuth.getToken()})}).then(function(r){return r.json().then(function(d){return {ok:r.ok,d:d};});}).then(function(res){if(btn){btn.disabled=false;btn.textContent='Post Comment';}if(!res.ok){if(errEl){errEl.textContent=(res.d&&res.d.error)||'Something went wrong.';errEl.style.display='block';}return;}input.value='';loadPulseComments(slug);}).catch(function(){if(btn){btn.disabled=false;btn.textContent='Post Comment';}if(errEl){errEl.textContent='Something went wrong. Please try again.';errEl.style.display='block';}});}"
-    + "function togglePulseBar(){var bar=document.getElementById('pulse-member-bar');var btn=document.getElementById('pulse-bar-toggle');var label=document.getElementById('pulse-bar-toggle-label');var hero=document.getElementById('pulse-hero-section');if(!bar)return;var collapsed=!bar.classList.contains('mb-collapsed');bar.classList.toggle('mb-collapsed',collapsed);if(hero)hero.classList.toggle('hero-collapsed',collapsed);if(btn)btn.setAttribute('aria-expanded',String(!collapsed));if(label)label.textContent=collapsed?'Expand':'Collapse';}"
-    + "var _pulseBarToggleBtn=document.getElementById('pulse-bar-toggle');if(_pulseBarToggleBtn)_pulseBarToggleBtn.addEventListener('click',togglePulseBar);"
-    + "function updatePulseBarPassportButton(){waitForVEAuth(function(){var el=document.getElementById('pulse-bar-get-passport');if(!el)return;el.style.display=(window.VEAuth&&VEAuth.isLoggedIn())?'none':'';});}"
     + "renderPulseComposer(pulseSlug);"
     + "loadPulseComments(pulseSlug);"
-    + "updatePulseBarPassportButton();"
     + '})();</script>'
     + '</body></html>';
 
