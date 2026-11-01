@@ -3803,7 +3803,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
 ## Earn your Passport (LOCKED by Sean 2026-11-01, playbook `ve-pricing-points-passport`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-earn-your-passport`; migration
-`20261101_earn_your_passport_canon.sql`). **Not built yet.** Sean: "people can earn their membership... not for what they did in the past,
+`20261101_earn_your_passport_canon.sql`). **Parts 1 to 4 are built and live (below); 5 to 7 are not.** Sean: "people can earn their membership... not for what they did in the past,
 but for what you're doing right now"; "I actually would prefer people to do that than pay the $11." Browsing stays free, taking part stays
 the $11 Passport or a membership earned now; no free account that can take part, and comps stay ended (the Depot cannot give memberships).
 
@@ -3843,7 +3843,7 @@ the $11 Passport or a membership earned now; no free account that can take part,
   deadline; at most one a week otherwise; London consent box; paying ends the track. Reuse the outreach people-list engine.
 - **Build order (Logan)**: the check-in menu; the business sign-up, agreement, cards, PIN and Vault for the South Florida pilot; the Taster
   account and sampler; the challenges; the follow-ups and emails; the content gig; the business points rule.
-- **Built and live 2026-11-01, parts 1 and 2** (Sean: "Logan, build it"):
+- **Built and live 2026-11-01, parts 1 to 4** (parts 3 and 4 below them) (Sean: "Logan, build it"):
   - **1. The check-in menu** (migration `20261101_checkin_actions.sql`, `ve-checkin` from commit 8ce1037, source sha256 matched). After I'm
     here the listing opens **What are you doing here today?** (`openMenu` in `directory/listing.html`; the button reads Checked in · what
     now? and reopens it): What I ordered and I bought something (a photo shrunk to 1600 px, uploaded only while the check-in is open, private
@@ -3893,9 +3893,43 @@ the $11 Passport or a membership earned now; no free account that can take part,
     a name with [TEST] sends no email. `ve-taster` actions `join`, `me`, `confirm`, `unsubscribe`, `admin_list` (super admins). Proven
     2026-11-01 (every guard, a forged key, a member key in its place and the Taster key at `ve-dashboard` all refused, the link on conversion
     in a rolled-back transaction, the page on desktop and phone), then the test rows removed.
-  - **Still to build**: 4. the three challenges (a Taster's challenge check-ins need an account they can sign in with; part 4 makes it when
-    they press Start, after the emailed link has confirmed the email), 5. the two-day business follow-up and the not-ready-yet emails, 6. the
-    content gig, 7. the business points rule.
+  - **4. The three challenges** (built and live 2026-11-01, Sean: "continue Earn your Passport"; migration
+    `20261101_earn_your_passport_challenges.sql`, applied through the one-time `ve-once-challenges`, now the 410 stub; edge function `ve-challenge`
+    and `ve-checkin` from commit 9825760, sha256 matched). **`/challenges`** (`challenges/index.html`, indexed, in the sitemap; the Taste's Picked
+    for you links it): Support Local, The Connector and The Advocate as three cards, Start, 30 days each, one restart (`#c/<kind>`, `#c/advocate/<task>`).
+    **Start makes the account**: a Taster whose email is confirmed (their Taster key, `localStorage` `ve_taster`; `/challenges?t=<key>` confirms like
+    the Taste link) gets a `members` row waiting on its Passport (`pending_payment`, no password, `email_verified`, their chapter as home;
+    `ve_tasters.account_id`) and a session the page keeps apart from the site's sign-in (`localStorage` `ve_challenge_token`), so the rest of the site
+    still treats them as signed out. The Taster key opens that account again on another device only while it is not a member and has no password;
+    after that they sign in (once a member, **Set your password** on the page, `set_password`, or Continue with Google). An unpaid account signs in
+    with its own token; a member who paid the $11 is told the challenges are not for them (`ve_challenger_ok`; a member through a challenge can do the
+    other two). **Support Local** (on the page: Find places near me, the food places with How Vegan set within 400 m, check in through `ve-checkin`,
+    then the check-in menu right there): 3 food places (Restaurants, Bakeries & Cafes, Food Trucks, Vendors, Catering, Meal Prep, Markets), each with at
+    least one menu item approved in Depot > Check-ins, and one approved receipt; in a month when their chapter has Passport Challenge stops, only
+    those stops count. A challenger's check-ins and menu items pay 0 points (`ve_checkin_save` `p_pay`; an approval pays only an active member); the
+    Depot marks them Challenge, no points. **The Connector**: 3 friends who signed up with their `/r/<code>` link and paid during the 30 days (a friend
+    who earned their membership does not count). **The Advocate**: a free event from our calendar with a photo (a guest pass checked in at the door
+    counts on its own), a sanctuary, rescue or animal nonprofit with a photo (the phone's distance kept when shared), and a share of a Fosters or
+    Rescues post or a rescue or sanctuary page (the link to where they shared it); proofs in the private bucket `challenge-proofs`. **Settling**
+    (`ve_challenge_progress`, `ve_challenge_settle`; on every read, on each approval and by cron `ve-challenge-sweep` every 15 minutes): met, the
+    challenge is done and pays 1,100 (`points_ledger` reason `challenge`, ref `challenge:<id>`); the first one finished by someone not yet a member
+    spends those points on the Passport (`challenge_passport`, so lifetime points keep them) and `ve_member_admit` makes them a member (Founding
+    before the deadline, the Taster linked); each one after adds 1,100 to spend; all three set `members.trailblazer_at` (the Trailblazer badge, on
+    the page). Out of time, it is Time ran out; Restart gives 30 more days once, approved work kept. **Depot > Challenges** (`/admin/depot/challenges`,
+    People in the Go to menu): Proofs waiting / Approved / Not approved (Approve, Not approved with a note they see) and Running / Done / Time ran out
+    with each one's progress. `ve-challenge` actions `state`, `start`, `restart`, `nearby`, `pick`, `proof_start`, `proof`, `set_password`,
+    `admin_list`, `proof_list`, `proof_review` (super admins or the ops token); `ve-checkin` `review_list` and `review` take the ops token too.
+    Amounts and days in `ve_site_settings` `challenges`. Logan's defaults, Sean's to change: who may take them, food places only, the restart keeping
+    approved work, the share counting a rescue's page (the Fosters and Rescues boards had no posts yet), and no check-in points for challengers.
+    **Proven live 2026-11-01** with [TEST] Tasters: Start refused before the email was confirmed and a forged key refused; the account made at Start;
+    a check-in 11.7 km away refused, three at 0 points, a bad post link refused, a receipt photo uploaded, the menu approved through `ve-checkin` with
+    the ops token, and Support Local finished on the last approval (member, Founding, 1,100 lifetime and 0 to spend, Taster linked); the Taster key
+    then refused (sign in); The Advocate with a photo missing and a vegansexplore.com link refused, a share declined, sent again and approved, done
+    for +1,100; a running challenge refused a restart, an expired one restarted once and refused a second; the password set and `ve-auth` login
+    working; in a rolled-back transaction The Connector stayed open at 2 paid friends with 1 unpaid and finished at 3, all three gave Trailblazer
+    and 3,633 lifetime points (Level 2), an expired challenge closed, and a paid member was refused. `/challenges` on desktop and an iPhone (no
+    errors, no sideways scroll) and Depot > Challenges in the dashboard frame; then every row and test photo removed.
+  - **Still to build**: 5. the two-day business follow-up and the not-ready-yet emails, 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
