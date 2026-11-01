@@ -1622,8 +1622,9 @@
     var row = document.getElementById('dash-guides-row');
     if (!row || !window.VEGuideCatalog) return;
     var gm = window.VEAuth && VEAuth.getMember && VEAuth.getMember();
-    var draw = function (shelf) {
-      VEGuideCatalog.render(row, { viewer: gm, member: true, shelf: shelf, source: 'dashboard-guides-tab', open: function (g) { openConsoleFrame(g.href, g.title); } });
+    var draw = function (interest) {
+      VEGuideCatalog.render(row, { viewer: gm, member: true, interest: interest, source: 'dashboard-guides-tab', open: function (g) { openConsoleFrame(g.href, g.title); },
+        onInterest: function (v) { if (dashGuidesBanner) dashGuidesBanner.setQuiet(v); } });
     };
     // The Guides tab's banner is /guides' banner (Sean, 2026-10-30: "the same heading as the non-logged in version"): its dropdown is
     // the Guides menu (VEGuideCatalog.bannerOptions), not the cities; open, it keeps the tab's numbers (setTabStats 'guides').
@@ -1631,7 +1632,7 @@
       dashGuidesBanner = VECityBanner.mount('dash-guides-hero', VEGuideCatalog.bannerOptions(gm, {
         member: true, key: 'dash-guides', param: false, meta: '<div class="dash-bmeta" id="dash-guides-meta"></div>',
         home: { label: 'Guides home', href: '/dashboard/guides', onClick: function () { dashGuidesBanner.set('all'); } },
-        onChange: function (shelf) { draw(shelf); }
+        onChange: function (interest) { draw(interest); }
       }));
       var gpts = gm && typeof gm.points === 'number' ? gm.points : 0, gn = Math.floor(gpts / 1100);
       if (gm && gm.is_superadmin) setTabStats('guides', [['&infin;', 'Your points'], ['Every', 'Guide open to you'], ['$11', 'Or 1,100 points a Guide']]);

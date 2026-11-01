@@ -454,8 +454,8 @@
     function drawGuides() {
       var seen = {}, list = D.guides.filter(function (g) { if (seen[g.title]) return false; seen[g.title] = 1; return true; });
       return '<div class="vpd-grid">' + list.map(function (g) {
-        // Every Guide's banner (LOCKED 2026-10-10) lives under media/guides/banners/<slug>.jpg.
-        var pic = g.cover_url || SB + '/storage/v1/object/public/vegan-media/media/guides/banners/' + g.slug + '.jpg';
+        // Every live Guide's banner is /public/guides/<slug>.jpg (the scene banners, 2026-11-01).
+        var pic = g.cover_url || '/public/guides/' + g.slug + '.jpg?v=3';
         return '<div class="vpd-card"><div style="aspect-ratio:16/10;border-radius:8px;background:#f3f3f3 center/cover no-repeat;background-image:url(\'' + esc(pic) + '\')"></div>' +
           '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
           '<a class="vpd-btn sm' + (g.owned ? '' : ' o') + '" href="/guides/' + esc(g.slug) + '">' + (g.owned ? 'Open it' : 'See it') + '</a></div>';

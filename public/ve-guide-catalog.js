@@ -1,7 +1,7 @@
 /* ve-guide-catalog.js: the Guide cards, one list for /guides and the dashboard's Guides tab (Sean, 2026-10-26: the
    dashboard should mimic "what we currently have on the main guides page"). Change a Guide here and both pages follow.
 
-   Live Guides wear their banner (800 x 500, the Guide on white; see Guide banners in CLAUDE.md). Guides still being
+   Live Guides wear their banner (8:5, the Guide in a scene, public/guides/<slug>.jpg; see Guide banners in CLAUDE.md). Guides still being
    made wear a flat line icon (Sean: "use flat images, flat icons for those") and show to signed-in members only, with
    Notify me; signed out, /guides shows only the live ones. The Welcome Guide is the Passport Guide (/passport), free.
 
@@ -45,19 +45,19 @@
   // The Partner Guides: the onboarding Guides for the people we bring in by invitation. Each opens as its own page (`full`), never
   // inside the dashboard's frame. The Ambassador Guide (Sean, 2026-10-28: "Only available to them") shows to Ambassadors and the team.
   var PARTNERS = [
-    { slug: 'official-creator', shelf: 'partners', see: ['ambassador'], full: true, icon: 'camera2', badge: 'Creators', label: 'For professional creators', tag: 'New', title: 'The Official Creator Guide',
+    { slug: 'official-creator', shelf: 'partners', see: ['ambassador'], full: true, icon: 'camera2', interests: ['partners', 'creators'], badge: 'Creators', label: 'For professional creators', tag: 'New', title: 'The Official Creator Guide',
       href: '/creators/welcome', desc: 'For creators who do this for a living: being one of our official creators, the campaigns, collaborations and hosting we bring you, how campaigns pay, and registering.',
       chips: [{ text: 'By invitation' }, { text: 'On us', cls: 'free' }], cta: 'Open the Guide' },
-    { slug: 'ambassador', shelf: 'partners', see: ['ambassador'], full: true, icon: 'megaphone', badge: 'Ambassador', label: 'For Ambassadors', title: 'The Ambassador Guide',
+    { slug: 'ambassador', shelf: 'partners', see: ['ambassador'], full: true, icon: 'megaphone', interests: ['partners'], badge: 'Ambassador', label: 'For Ambassadors', title: 'The Ambassador Guide',
       href: '/ambassadors/welcome', desc: 'Why it matters, the opportunity, telling the stories, paid work, your link and what it earns, what to share and who joined through you.',
       chips: [{ text: 'By invitation' }, { text: 'On us', cls: 'free' }], cta: 'Open the Guide' },
-    { slug: 'community-manager', shelf: 'partners', see: ['community_manager'], full: true, icon: 'compass', badge: 'Community Manager', label: 'For Community Managers', title: 'Community Manager Onboarding',
+    { slug: 'community-manager', shelf: 'partners', see: ['community_manager'], full: true, icon: 'compass', interests: ['partners'], badge: 'Community Manager', label: 'For Community Managers', title: 'Community Manager Onboarding',
       href: '/community-managers/onboarding', desc: 'Running a chapter: your city, its members, its events and businesses, and the work that comes with it, step by step.',
       chips: [{ text: 'Gig work' }], cta: 'Open the Guide' },
-    { slug: 'group-partner', shelf: 'partners', see: 'team', full: true, icon: 'users', badge: 'Group Partner', label: 'For group organizers', title: 'The Group Partner Guide',
+    { slug: 'group-partner', shelf: 'partners', see: 'team', full: true, icon: 'users', interests: ['partners', 'events'], badge: 'Group Partner', label: 'For group organizers', title: 'The Group Partner Guide',
       href: '/groups/welcome', desc: 'For the people who run Vegan social clubs and meetups: hosting your group here, your share from 20% to 50%, the guest pass and the sample club.',
       chips: [{ text: 'Sent with the invitation' }], cta: 'Open the Guide' },
-    { slug: 'nonprofit-partner', shelf: 'partners', see: 'team', full: true, icon: 'heart', badge: 'Nonprofit Partner', label: 'For Nonprofit Partners', title: 'The Nonprofit Partner Guide',
+    { slug: 'nonprofit-partner', shelf: 'partners', see: 'team', full: true, icon: 'heart', interests: ['partners', 'causes'], badge: 'Nonprofit Partner', label: 'For Nonprofit Partners', title: 'The Nonprofit Partner Guide',
       href: '/nonprofits/welcome', desc: 'For the lead of a Nonprofit Partner: your organization\'s link, its kit, its numbers, where the money goes and its points.',
       chips: [{ text: 'Partner leads' }], cta: 'Open the Guide' }
   ];
@@ -70,40 +70,60 @@
   ];
   var ROLE_WORDS = { ambassador: 'Ambassadors', community_manager: 'Community Managers' };
 
+  // One catalog, sorted by interest (Sean, 2026-11-01: "a pretty deep catalog that may feel overwhelming at first, but when they
+  // know they can sort through their interests, they'll see them"). Every Guide carries one or more `interests`; the chips over the
+  // grid pick any number of them, and the banner's dropdown picks one. A new interest is a row here; an interest no visible Guide
+  // carries does not show. A new Guide only needs its `interests`.
+  var INTERESTS = [
+    { value: 'all', label: 'All Guides' },
+    { value: 'starting', label: 'Getting started' },
+    { value: 'food', label: 'Food and cooking' },
+    { value: 'health', label: 'Health and nutrition' },
+    { value: 'eating-out', label: 'Eating out' },
+    { value: 'travel', label: 'Travel' },
+    { value: 'events', label: 'Game day and events' },
+    { value: 'causes', label: 'Animals and causes' },
+    { value: 'business', label: 'Business' },
+    { value: 'creators', label: 'Creating content' },
+    { value: 'partners', label: 'Partner Guides' }
+  ];
+  // Old ?shelf= links land on the matching interest.
+  var SHELF_TO_INTEREST = { everyday: 'all', work: 'business', partners: 'partners', soon: 'all' };
+
   // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, the Stadium & Arena Guide
   // (launched 2026-10-29), the Airport Guide and the Nonprofit Guide (both launched 2026-10-29), then what is coming.
   var GUIDES = [
-    { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg', href: '/passport',
+    { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg', interests: ['starting'], href: '/passport',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
       chips: [{ text: 'Free', cls: 'free' }], cta: 'Start the Welcome Guide' },
-    { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: BANNERS + 'vegan-dairy-guide.jpg', href: '/guides/vegan-dairy-guide',
+    { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: '/public/guides/vegan-dairy-guide.jpg?v=3', interests: ['food', 'starting'], href: '/guides/vegan-dairy-guide',
       desc: 'Everything you need to go dairy-free: the brands to buy, swaps for every kind of dairy, recipes and cookbooks, the research and our interviews, with Maya walking you through it.',
       chips: [{ text: 'Walked through by Maya' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'vegan-restaurant-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Guide', banner: BANNERS + 'vegan-restaurant-guide.jpg', href: '/guides/vegan-restaurant-guide',
+    { slug: 'vegan-restaurant-guide', shelf: 'work', label: 'Business', tag: 'New', title: 'The Vegan Restaurant Guide', banner: '/public/guides/vegan-restaurant-guide.jpg?v=3', interests: ['business', 'eating-out'], href: '/guides/vegan-restaurant-guide',
       desc: 'What may be quietly hurting your restaurant, and how to fix it: a free check of your Google listing, website and social, the fixes in your order, our interviews with business owners, and how to get featured, with Liz walking you through it.',
       chips: [{ text: 'Walked through by Liz' }, { text: 'Free check' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'stadium-arena-guide', shelf: 'everyday', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/stadium-arena-guide.jpg', href: '/guides/stadium-arena-guide',
+    { slug: 'stadium-arena-guide', shelf: 'everyday', label: 'Game Day', tag: 'New', title: 'The Stadium & Arena Guide', banner: '/public/guides/stadium-arena-guide.jpg?v=3', interests: ['events', 'eating-out'], href: '/guides/stadium-arena-guide',
       desc: 'Where to eat Vegan at the game: every stand and what it serves, a map of the bowl that takes you from your seat to the food, and fans keeping it right, with River walking you through it. Hard Rock Stadium is free.',
       chips: [{ text: 'Walked through by River' }, { text: 'Hard Rock Stadium free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'airport-guide', shelf: 'everyday', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/airport-guide.jpg', href: '/guides/airport-guide',
+    { slug: 'airport-guide', shelf: 'everyday', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/airport-guide.jpg?v=3', interests: ['travel', 'eating-out'], href: '/guides/airport-guide',
       desc: 'Vegan food at the airport, gate by gate: every spot before or after security, a map of the terminal that takes you from your gate to the food without screening again, and travelers keeping it right, with Nori walking you through it. Fort Lauderdale is free.',
       chips: [{ text: 'Walked through by Nori' }, { text: 'Fort Lauderdale free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg', href: '/guides/nonprofit-guide',
+    { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg?v=3', interests: ['causes', 'business'], href: '/guides/nonprofit-guide',
       desc: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going: ten ways to fundraise and stay relevant, our nonprofit series and interviews, the Directory, businesses near you that fit a tie-in, and how to get found, with Dani walking you through it.',
       chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'nutrition-guide', shelf: 'everyday', label: 'Nutrition', tag: 'New', title: 'The Nutrition Guide', banner: '/public/guides/nutrition-guide.jpg', href: '/guides/nutrition-guide',
+    { slug: 'nutrition-guide', shelf: 'everyday', label: 'Nutrition', tag: 'New', title: 'The Nutrition Guide', banner: '/public/guides/nutrition-guide.jpg', interests: ['health', 'food', 'starting'], href: '/guides/nutrition-guide',
       desc: 'What a Vegan plate needs, nutrient by nutrient: B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc, how much, where to get it and when to supplement, sourced, with our physicians on the podcast and Theo walking you through it. B12 is free.',
       chips: [{ text: 'Walked through by Theo' }, { text: 'B12 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/creator-guide.jpg?v=2', href: '/guides/creator-guide',
+    { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/creator-guide.jpg?v=3', interests: ['creators', 'business'], href: '/guides/creator-guide',
       desc: 'For Vegan creators going from hobby to professional: ten moves, each with a real creator doing it and three action items, the creators and channels in our Directory, our creator conversations, and your next step as an Ambassador, with Kai walking you through it.',
       chips: [{ text: 'Walked through by Kai' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
-    { slug: 'vegan-meat-alternatives', shelf: 'soon', see: 'members', soon: true, icon: 'burger', label: 'Food', title: 'The Vegan Meat Alternatives Guide',
+    { slug: 'vegan-meat-alternatives', shelf: 'soon', see: 'members', soon: true, icon: 'burger', interests: ['food', 'starting'], label: 'Food', title: 'The Vegan Meat Alternatives Guide',
       desc: 'Burgers, chicken, sausage, deli slices and more made from plants: the brands to buy, how to cook them and where to find them.' },
-    { slug: 'entrepreneur', shelf: 'soon', see: 'members', soon: true, icon: 'briefcase', label: 'Entrepreneur Path', title: 'Entrepreneur Guide',
+    { slug: 'entrepreneur', shelf: 'soon', see: 'members', soon: true, icon: 'briefcase', interests: ['business'], label: 'Entrepreneur Path', title: 'Entrepreneur Guide',
       desc: 'Getting your Vegan business listed, claimed and growing on the platform, step by step.' },
-    { slug: 'prevegan', shelf: 'soon', see: 'members', soon: true, icon: 'sprout', label: 'Pre-Vegan Path', title: 'Pre-Vegan Guide',
+    { slug: 'prevegan', shelf: 'soon', see: 'members', soon: true, icon: 'sprout', interests: ['starting', 'health'], label: 'Pre-Vegan Path', title: 'Pre-Vegan Guide',
       desc: 'Real answers for going from Vegan-curious to confident: what to eat, what to expect and how to start.' },
-    { slug: 'seasonedvegan', shelf: 'soon', see: 'members', soon: true, icon: 'globe', label: 'Seasoned Vegan Path', title: 'Seasoned Vegan Guide',
+    { slug: 'seasonedvegan', shelf: 'soon', see: 'members', soon: true, icon: 'globe', interests: ['causes'], label: 'Seasoned Vegan Path', title: 'Seasoned Vegan Guide',
       desc: 'Deepen your impact: advocacy, mentoring and connecting with the global movement.' }
   ];
 
@@ -123,7 +143,24 @@
     '.gc-shelf-h b{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#1f5f22;}' +
     '.gc-shelf-h span{font-size:13px;color:rgba(26,26,26,.68);}' +
     '.gc-empty{grid-column:1/-1;font-size:14px;color:rgba(26,26,26,.68);padding:24px 0;}' +
-    '.gc-waitlist-success{display:none;font-size:11px;font-weight:700;color:#1f5f22;text-align:center;}';
+    '.gc-waitlist-success{display:none;font-size:11px;font-weight:700;color:#1f5f22;text-align:center;}' +
+    // The interest bar over the grid: the chips (any number), then search and Ready now / Coming soon. 6px corners (canon rule 13).
+    '.gc-tools{display:flex;flex-direction:column;gap:12px;margin:0 0 18px;}' +
+    '.gc-ints{display:flex;flex-wrap:wrap;gap:8px;}' +
+    '.gc-int{font:700 13px/1 Montserrat,sans-serif;padding:10px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.14);background:#fff;color:#1a1a1a;cursor:pointer;}' +
+    '.gc-int:hover{border-color:#1f5f22;}' +
+    '.gc-int[aria-pressed="true"]{background:#1f5f22;border-color:#1f5f22;color:#fff;}' +
+    '.gc-int i{font-style:normal;font-weight:600;opacity:.7;margin-left:6px;}' +
+    '.gc-row2{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}' +
+    '.gc-search{flex:1 1 260px;min-width:0;font:500 14px Montserrat,sans-serif;padding:11px 14px;border:1px solid rgba(0,0,0,.18);border-radius:6px;}' +
+    '.gc-seg{display:inline-flex;border:1px solid rgba(0,0,0,.18);border-radius:6px;overflow:hidden;}' +
+    '.gc-seg button{font:700 12px Montserrat,sans-serif;padding:11px 14px;border:0;background:#fff;color:#1a1a1a;cursor:pointer;}' +
+    '.gc-seg button+button{border-left:1px solid rgba(0,0,0,.12);}' +
+    '.gc-seg button[aria-pressed="true"]{background:#e8f5e9;color:#1f5f22;}' +
+    '.gc-count{font-size:13px;color:rgba(26,26,26,.68);}' +
+    // On phones the banner's picker (Your interest) is the menu; the chips would stack six rows deep (the Directory's phone rule).
+    '@media (max-width:768px){.gc-ints{display:none;}}' +
+    '.gc-count button{font:inherit;color:#1f5f22;font-weight:700;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}';
 
   function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function icon(name) {
@@ -192,12 +229,78 @@
     var list = visible({ viewer: viewer, member: opts && opts.member });
     return SHELVES.filter(function (s) { return s.value === 'all' || list.some(function (g) { return g.shelf === s.value; }); });
   }
+  // The interests this viewer can pick: only ones a Guide they can see carries.
+  function interests(viewer, opts) {
+    var list = visible({ viewer: viewer, member: opts && opts.member });
+    return INTERESTS.filter(function (i) { return i.value === 'all' || list.some(function (g) { return (g.interests || []).indexOf(i.value) >= 0; }); });
+  }
   function bannerOptions(viewer, extra) {
-    var o = { key: 'guides', title: 'Vegan Guides', pickLabel: 'Guides menu', art: '/communities/new-york/banner.jpg',
+    var q = new URLSearchParams(location.search), old = q.get('shelf');
+    var o = { key: 'guides', title: 'Vegan Guides', pickLabel: 'Your interest', art: '/communities/new-york/banner.jpg',
       sub: 'Step-by-step Guides walked through by our Guides. Every Guide is $11 or 1,100 points, and yours to keep.',
-      choices: shelves(viewer, extra), param: 'shelf', home: { label: 'Guides home', href: '/guides' } };
+      choices: interests(viewer, extra), param: 'interest', initial: old ? SHELF_TO_INTEREST[old] || 'all' : '',
+      home: { label: 'Guides home', href: '/guides' } };
     for (var k in extra || {}) if (k !== 'member') o[k] = extra[k];
     return o;
+  }
+
+  // The catalog: one grid, everything together, ready Guides first and the ones being made after. The bar over it filters by any
+  // number of interests, words and Ready now / Coming soon. opts.interest is the banner's single pick (it resets the chips);
+  // opts.onInterest(value) tells the page when the chips come down to one interest (or none, 'all'), so the banner can follow.
+  function drawCatalog(el, opts) {
+    var all = visible(opts), st = el._gc || (el._gc = { picked: [], q: '', when: 'all' });
+    if (opts.interest !== undefined) st.picked = opts.interest && opts.interest !== 'all' ? [opts.interest] : [];
+    if (opts.shelf === 'soon') st.when = 'soon';
+    var ints = INTERESTS.filter(function (i) { return i.value !== 'all' && all.some(function (g) { return (g.interests || []).indexOf(i.value) >= 0; }); });
+    var tools = el.previousElementSibling && el.previousElementSibling.classList.contains('gc-tools') ? el.previousElementSibling : null;
+    if (!tools) {
+      tools = document.createElement('div'); tools.className = 'gc-tools';
+      tools.innerHTML = '<div class="gc-ints" role="group" aria-label="Pick your interests"></div>' +
+        '<div class="gc-row2"><input type="search" class="gc-search" placeholder="Search the Guides" aria-label="Search the Guides">' +
+        '<div class="gc-seg" role="group" aria-label="Show"><button type="button" data-when="all">All</button><button type="button" data-when="ready">Ready now</button><button type="button" data-when="soon">Coming soon</button></div>' +
+        '</div><div class="gc-count" aria-live="polite"></div>';
+      el.parentNode.insertBefore(tools, el);
+      tools.querySelector('.gc-search').addEventListener('input', function (e) { st.q = e.target.value; st.paint(); });
+      tools.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.hasAttribute('data-int')) {
+          var v = b.getAttribute('data-int');
+          if (v === 'all') st.picked = [];
+          else { var i = st.picked.indexOf(v); if (i >= 0) st.picked.splice(i, 1); else st.picked.push(v); }
+          if (st.opts.onInterest && st.picked.length <= 1) st.opts.onInterest(st.picked[0] || 'all');
+        } else if (b.hasAttribute('data-when')) st.when = b.getAttribute('data-when');
+        else if (b.hasAttribute('data-clear')) { st.picked = []; st.q = ''; st.when = 'all'; tools.querySelector('.gc-search').value = ''; if (st.opts.onInterest) st.opts.onInterest('all'); }
+        else return;
+        st.paint();
+      });
+    }
+    function matches(g) {
+      if (st.picked.length && !st.picked.some(function (p) { return (g.interests || []).indexOf(p) >= 0; })) return false;
+      if (st.when === 'ready' && g.soon) return false;
+      if (st.when === 'soon' && !g.soon) return false;
+      var words = st.q.toLowerCase().split(/\s+/).filter(Boolean);
+      var hay = [g.title, g.label, g.desc].concat((g.interests || []).map(function (v) { var i = INTERESTS.filter(function (x) { return x.value === v; })[0]; return i ? i.label : v; })).join(' ').toLowerCase();
+      return words.every(function (w) { return hay.indexOf(w) >= 0; });
+    }
+    function paint() {
+      tools.querySelector('.gc-ints').innerHTML = '<button type="button" class="gc-int" data-int="all" aria-pressed="' + (!st.picked.length) + '">All</button>' +
+        ints.map(function (i) {
+          var n = all.filter(function (g) { return (g.interests || []).indexOf(i.value) >= 0; }).length;
+          return '<button type="button" class="gc-int" data-int="' + esc(i.value) + '" aria-pressed="' + (st.picked.indexOf(i.value) >= 0) + '">' + esc(i.label) + '<i>' + n + '</i></button>';
+        }).join('');
+      // Ready now / Coming soon only when this viewer can see a Guide being made (members and the team).
+      var anySoon = all.some(function (g) { return g.soon; });
+      tools.querySelector('.gc-seg').style.display = anySoon ? '' : 'none';
+      if (!anySoon) st.when = 'all';
+      Array.prototype.forEach.call(tools.querySelectorAll('[data-when]'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-when') === st.when)); });
+      var on = all.filter(matches).sort(function (a, b) { return (a.soon ? 1 : 0) - (b.soon ? 1 : 0); });
+      var filtered = st.picked.length || st.q || st.when !== 'all';
+      tools.querySelector('.gc-count').innerHTML = (on.length === 1 ? '1 Guide' : on.length + ' Guides') + (filtered ? ' · <button type="button" data-clear>Show every Guide</button>' : '');
+      el.innerHTML = on.length ? on.map(card).join('') : '<p class="gc-empty">No Guide matches yet. New ones open all the time.</p>';
+      wire(el, all, opts);
+    }
+    st.paint = paint; st.opts = opts;
+    paint();
   }
 
   function render(el, opts) {
@@ -206,6 +309,7 @@
     if (!document.getElementById('ve-guide-catalog-css')) {
       var st = document.createElement('style'); st.id = 've-guide-catalog-css'; st.textContent = CSS; document.head.appendChild(st);
     }
+    if (!opts.guides) { drawCatalog(el, opts); return; }
     var all = visible(opts), SH = opts.shelves || SHELVES;
     var shelf = opts.shelf && opts.shelf !== 'all' ? opts.shelf : '';
     var html = '';
@@ -222,6 +326,11 @@
       });
     }
     el.innerHTML = html;
+    wire(el, all, opts);
+  }
+
+  // Each card's buttons: open (the dashboard opens a Guide in its window), Notify me and the waitlist.
+  function wire(el, all, opts) {
     Array.prototype.forEach.call(el.querySelectorAll('.gc-card'), function (c) {
       var g = all.filter(function (x) { return x.slug === c.getAttribute('data-slug'); })[0];
       if (opts.open && !g.full) Array.prototype.forEach.call(c.querySelectorAll('[data-gc-open]'), function (a) {
@@ -258,5 +367,5 @@
     });
   }
 
-  window.VEGuideCatalog = { GUIDES: GUIDES, PARTNERS: PARTNERS, SHELVES: SHELVES, render: render, shelves: shelves, bannerOptions: bannerOptions, communityGuides: communityGuides };
+  window.VEGuideCatalog = { GUIDES: GUIDES, PARTNERS: PARTNERS, SHELVES: SHELVES, INTERESTS: INTERESTS, render: render, shelves: shelves, interests: interests, bannerOptions: bannerOptions, communityGuides: communityGuides };
 })();

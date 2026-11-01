@@ -2982,12 +2982,19 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   (`#/mylist/swaps|recipes|brands|cookbooks|episodes|shared`), newest first, in the same tiles. Recipes you shared is the same
   list as Cookbook > My recipes (`drawMine`). Data: `ve_guide_saves` (migration `20261010_ve_guide_saves.sql`), through
   `ve-cookbook` `saves` / `save` (500 per member per Guide). Chefs, when they come, get the same tile with a square of their face.
-- **Guide banners** (LOCKED by Sean 2026-10-10 on the Dairy Guide: "lock it, go with B"). Every Guide's card on `/guides`
-  opens with a banner (`.gc-banner`, linking into the Guide): 800 x 500, rounded corners, a plain white background, the
-  Guide alone, centered, waist up, in the Vegans Explore tee (black or cream; Maya wears black), smiling and holding what the
-  Guide is about (Maya: a glass of oat milk and a carton reading only OAT), every finger in frame, no other words. Made in
-  Higgsfield (nano_banana_pro, 16:9, cropped to 16:10) from the Guide's current art, stored as
-  `vegan-media/media/guides/banners/<guide-slug>.jpg`. The other Guides follow this look, each with its own Guide.
+- **Guide banners: the Guide in a scene** (Sean, 2026-11-01: "The images for the guides are old... they're still using the old
+  black white background images"; this replaces the white-background look locked 2026-10-10). Every Guide's card on `/guides`
+  opens with a banner (`.gc-banner`, linking into the Guide): 8:5, rounded corners, the Guide **inside a scene that is the Guide's
+  subject**, mid shot, doing the thing (Maya making almond milk in a sunny kitchen, Liz at a table with a restaurant owner and a
+  tablet, River cheering in the stands with a plant-based hot dog, Nori picking a VEGAN snack box at an airport shop, Dani in her
+  wheelchair petting a rescued cow at a sanctuary, the creator filming a plate on a phone tripod, Theo in a kitchen with a Vegan plate
+  and a plain supplement bottle), every finger in frame, no words or logos but the Vegans Explore tee and a word the scene needs
+  (VEGAN on a box). Made in Higgsfield (nano_banana_2, 16:9, from the Guide's current art), center-cropped to 8:5 and saved at 1200 x
+  750, JPEG quality 82, as `public/guides/<guide-slug>.jpg` (the six of 2026-10-31 came across through `ve-off-lookup` `save` into
+  `vegan-media/media/communities/guide-banners/<slug>.png`, the originals). One file per Guide, used everywhere: the catalog, the
+  listing Guide tab, the house banners (`VEPromo` `GUIDE_ADS`), the HTML5 ad card's first scene (`ads/guides/guide.html`), the pitch
+  page, the business dashboard and the Guide page's `og:image`. A new banner bumps `?v=` on those references. The old white ones stay in
+  `vegan-media/media/guides/banners/` for outside links only. Still on white: the Welcome Guide (Dani waving).
 - **The Guide list is one file** (Sean, 2026-10-26: the dashboard should mimic "what we currently have on the main guides
   page"): `/public/ve-guide-catalog.js` (`VEGuideCatalog.render(el, {member, source, open})`) draws the cards on `/guides` and
   the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Dani's
@@ -3005,9 +3012,17 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
 - **The Guides menu and who sees what** (Sean, 2026-10-30: "the same heading as the non-logged in version... we're getting enough
   guides now where we can create a menu... even the onboarding guides... some that I want the community to see, and then there's some
   that I just want the team to see"). `/guides` and the dashboard's Guides tab wear the same banner, **Vegan Guides**, whose dropdown is
-  the Guides menu (`VEGuideCatalog.bannerOptions`, `?shelf=` on `/guides`): All Guides (each shelf under its heading), Everyday Guides,
-  For your work, **Partner Guides** (the onboarding Guides: the Official Creator Guide, the Ambassador Guide, Community Manager
-  Onboarding, the Group Partner Guide, the Nonprofit Partner Guide; each opens as its own page) and Coming soon. Each Guide's `see` in
+  the Guides menu (`VEGuideCatalog.bannerOptions`). **Since 2026-11-01 it is one catalog sorted by interest** (Sean: "a pretty deep
+  catalog that may feel overwhelming at first, but when they know they can sort through their interests, they'll see them... This is
+  basically the way people are going to become members"): every Guide in one grid, ready ones first and Coming soon after, with an
+  interest bar over it (`INTERESTS` and each Guide's `interests` in `ve-guide-catalog.js`: Getting started, Food and cooking, Health and
+  nutrition, Eating out, Travel, Game day and events, Animals and causes, Business, Creating content, Partner Guides; an interest no
+  visible Guide carries does not show). The chips pick any number of interests (with counts), then search and All / Ready now / Coming
+  soon (shown only to a viewer who can see a Guide being made); the banner's dropdown (Your interest, `?interest=`) picks one and the
+  chips follow it, and an old `?shelf=` link lands on its interest. On phones (768 px and under) the chips hide and the banner's picker is
+  the menu. A new Guide needs only its `interests`. The shelves stay for another brand's list (`render` with `guides`, LESARUSS.ai).
+  **Partner Guides** are the onboarding Guides (the Official Creator Guide, the Ambassador Guide, Community Manager Onboarding, the Group
+  Partner Guide, the Nonprofit Partner Guide; each opens as its own page). Each Guide's `see` in
   `ve-guide-catalog.js` says who finds it in the menu: `all`, `members`, a list of `ve_role` values, or `team`; super admins see every
   Guide, the restricted ones marked with who else does. A menu is not a lock: a Guide page guards itself where it must.
 - Guide pages carry ad slots businesses can buy from the ad console, which shows each slot's traffic

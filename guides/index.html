@@ -213,8 +213,7 @@
     @media (max-width: 600px) { .gc-grid { grid-template-columns: 1fr; } }
     .gc-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s, transform 0.15s; }
     .gc-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
-    /* Guide banners (Sean, 2026-10-10, locked on the Dairy Guide): 800 x 500, the Guide in the Vegans Explore tee on white,
-       holding what their Guide is about, across the top of the card with rounded corners. */
+    /* Guide banners (Sean, 2026-11-01): 8:5, the Guide in a scene that is the Guide's subject, across the top of the card. */
     .gc-banner { display: block; aspect-ratio: 8 / 5; border-radius: 10px; overflow: hidden; background: #f4f6f4; margin-bottom: 4px; }
     .gc-banner img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s; }
     .gc-card:hover .gc-banner img { transform: scale(1.02); }
@@ -312,7 +311,7 @@
        page to lead with the Guide Catalog. The character path-picker (Maya, etc.) comes
        back once the Creator/Nonprofit/Pre-Vegan/Seasoned Vegan guides are actually built. -->
   <!-- The Guides banner (Sean, 2026-10-30: "the same heading as" the dashboard's Guides tab): the shared city banner with the Guides
-       menu as its dropdown (VEGuideCatalog.bannerOptions, ?shelf= in the address bar), the same on /guides and /dashboard/guides. -->
+       menu as its dropdown (VEGuideCatalog.bannerOptions: the interests, ?interest= in the address bar; old ?shelf= links still land), the same on /guides and /dashboard/guides. -->
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-city-banner.js"></script>
   <script src="/public/ve-guide-catalog.js"></script>
@@ -330,10 +329,12 @@
         var member = !!(window.VEAuth && VEAuth.isLoggedIn());
         var m = member && VEAuth.getMember ? VEAuth.getMember() : null;
         document.body.classList.add(member ? 'gc-member' : 'gc-guest');
-        function draw(shelf) {
-          VEGuideCatalog.render(document.getElementById('gc-grid'), { viewer: m, member: member, shelf: shelf, source: 'guides-live-catalog' });
+        // One catalog sorted by interest (Sean, 2026-11-01): the banner picks one interest, the chips over the grid any number.
+        function draw(interest) {
+          VEGuideCatalog.render(document.getElementById('gc-grid'), { viewer: m, member: member, interest: interest, source: 'guides-live-catalog',
+            onInterest: function (v) { if (banner) banner.setQuiet(v); } });
         }
-        if (!banner) banner = VECityBanner.mount('gc-banner', VEGuideCatalog.bannerOptions(m, { member: member, onChange: function (shelf) { draw(shelf); } }));
+        if (!banner) banner = VECityBanner.mount('gc-banner', VEGuideCatalog.bannerOptions(m, { member: member, onChange: function (interest) { draw(interest); } }));
         else draw(banner.current());
         document.getElementById('gc-note').textContent = member
           ? 'New Guides open as they are finished. Tap Notify me on any of them to hear the day it opens.'
