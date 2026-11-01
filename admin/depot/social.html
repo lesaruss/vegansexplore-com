@@ -42,6 +42,7 @@
     select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;}
     .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;white-space:nowrap;}
     .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn.rec{background:#B3261E;color:#fff;border-color:#B3261E;}
     .msg{font-size:13.5px;font-weight:700;color:var(--ve-text-75);min-height:22px;margin:0 0 10px;}
     .msg.bad{color:#8a1c12;}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;}
@@ -677,6 +678,29 @@
       var p = app.querySelector('.media.panel'); if (!p) return;
       var t = document.createElement('div'); t.innerHTML = mediaPanel(x, editable); p.replaceWith(t.firstChild); wireMedia(x, editable, id);
     }
+    // Speak a note: the browser's own speech recognition writes at the cursor until Stop or silence. Nothing is recorded by us.
+    var speakRec = null;
+    function wireSpeak(btn, ta, msg) {
+      if (!btn || !ta) return;
+      var SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return;
+      btn.onclick = function () {
+        if (speakRec) { speakRec.stop(); return; }
+        var rec = new SR(); rec.lang = 'en-US'; rec.continuous = true; rec.interimResults = true;
+        var pos = ta.selectionStart != null ? ta.selectionStart : ta.value.length;
+        var before = ta.value.slice(0, pos), after = ta.value.slice(pos), done = '';
+        if (before && !/\s$/.test(before)) before += ' ';
+        rec.onresult = function (e) {
+          var interim = '';
+          for (var i = e.resultIndex; i < e.results.length; i++) { var t = e.results[i][0].transcript; if (e.results[i].isFinal) done += t; else interim += t; }
+          ta.value = before + done + interim + after;
+        };
+        rec.onerror = function (e) { if (msg) { msg.className = 'msg bad'; msg.textContent = e.error === 'not-allowed' ? 'The browser blocked the microphone. Allow it for this site and try again.' : 'Speech stopped: ' + e.error; } };
+        rec.onend = function () { speakRec = null; btn.textContent = 'Speak'; btn.classList.remove('rec'); ta.value = before + done + after; ta.focus(); if (msg && msg.className.indexOf('bad') < 0) msg.textContent = done ? 'Got it. Read it over, then Send note.' : ''; };
+        speakRec = rec; btn.textContent = 'Stop'; btn.classList.add('rec');
+        if (msg) { msg.className = 'msg'; msg.textContent = 'Listening… press Stop when you are done.'; }
+        try { rec.start(); } catch (err) { speakRec = null; btn.textContent = 'Speak'; }
+      };
+    }
     function drawSlot(id) {
       if (mSlot !== id) { mIdx = 0; mSlot = id; }
       app.innerHTML = top('plan') + '<p class="msg">Reading the slot…</p>'; wireTop();
@@ -704,9 +728,9 @@
                 (n.reply ? '<div class="rep"><b>' + esc(n.done_by || 'Logan') + ':</b> ' + esc(n.reply) + '</div>' : '') +
                 (me.admin && n.status === 'open' ? '<div class="acts"><input placeholder="What you did (optional)" data-reply="' + n.id + '"><button class="btn btn-ghost" type="button" data-done="' + n.id + '">Mark done</button></div>' : '') + '</div>';
             }).join('') : '<p class="msg">No notes yet.</p>') + '</div>' +
-            '<label class="form"><span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep)">Leave a note for Logan</span><textarea id="note" placeholder="What should change? Logan makes it and replies here."></textarea></label>' +
+            '<label class="form"><span style="font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep)">Leave a note for Logan</span><textarea id="note" data-dictate="off" placeholder="What should change? Type it, or press Speak and say it. Logan makes it and replies here."></textarea></label>' +
             (canBack ? '<label style="display:flex;gap:8px;align-items:center;font-size:13px;font-weight:700;margin-top:8px"><input type="checkbox" id="noteBack" style="width:auto"' + (x.status === 'proposed' ? ' checked' : '') + '> Hold it until the change is made (Changes asked)</label>' : '') +
-            '<div class="acts"><button class="btn" type="button" id="noteSend">Send note</button></div></div>' +
+            '<div class="acts"><button class="btn" type="button" id="noteSend">Send note</button>' + ((window.SpeechRecognition || window.webkitSpeechRecognition) ? '<button class="btn btn-ghost" type="button" id="noteSpeak">Speak</button>' : '') + '</div><p class="msg" id="speakMsg"></p></div>' +
           '</div><div>' +
             '<div class="panel"><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span><b>' + esc(when(x.slot_at, true)) + '</b>' + nets(x.channels, 18) + '</div>' +
               (x.push_error ? '<div class="' + (x.status === 'failed' ? 'err' : 'warn') + '">' + esc(x.push_error) + '</div>' : '') +
@@ -740,6 +764,7 @@
           var t = $('note').value.trim(); if (!t) return; var bt = this; bt.disabled = true;
           api({ action: 'note_add', id: id, body: t, send_back: !!($('noteBack') && $('noteBack').checked) }).then(function (res) { if (res.error) { bt.disabled = false; return; } refreshBrands(); drawSlot(id); });
         };
+        wireSpeak($('noteSpeak'), $('note'), $('speakMsg'));
         Array.prototype.forEach.call(app.querySelectorAll('[data-done]'), function (bt) { bt.onclick = function () { var nid = bt.getAttribute('data-done'); var rp = app.querySelector('[data-reply="' + nid + '"]'); api({ action: 'note_done', note_id: nid, reply: rp ? rp.value.trim() : '' }).then(function () { refreshBrands(); drawSlot(id); }); }; });
       });
     }

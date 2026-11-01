@@ -4536,7 +4536,7 @@ file with **Replace** and **Remove**, and **Add a picture or video**), the cover
 them opens full size in a **lightbox** (`lightbox`: videos play, arrows and the arrow keys move, Escape closes). A file goes up through
 `ve-social` `asset_upload` (an editor of the brand; JPEG, PNG, WebP, GIF, MP4, MOV or WebM up to 300 MB; a signed upload into
 `vegan-media/media/social/<brand>/<slot>/`), then the slot saves its assets (logged, and sent to Metricool again when it was scheduled).
-**A direct change by a person leaves Logan an open note** saying what changed (pictures and videos taken out and put in by file name, the
+**Notes can be spoken** (Sean, 2026-11-01: "Make it so I can leave a voice dictation on the post"): the note box has **Speak** (`wireSpeak` in `admin/depot/social.html`), the browser's own speech recognition writing at the cursor until Stop or silence, nothing recorded by us; no button where the browser has none (Firefox). The box is `data-dictate="off"` so `ve-dictate.js`'s floating mic does not double it. **A direct change by a person leaves Logan an open note** saying what changed (pictures and videos taken out and put in by file name, the
 new time, Caption rewritten), in Notes for Logan; Logan's own changes leave none.
 
 ## Image conventions
