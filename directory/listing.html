@@ -2348,10 +2348,10 @@ function loadStores(l){
 }
 function storesTabWanted(){ try { return new URLSearchParams(location.search).get('tab') === 'stores'; } catch(e){ return false; } }
 function loadAisle(l){
-  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,slug,product_type,name,made_from,note,guides,department,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,color,initials,vote_count,logo_url))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
+  var url = SUPABASE_URL + '/rest/v1/ve_product_stores?select=product_id,buy_url,affiliate_link_code,ve_products(id,slug,product_type,name,made_from,note,guides,department,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,business_status,color,initials,vote_count,logo_url))&store_listing_id=eq.' + encodeURIComponent(l.id) + '&removed_at=is.null';
   fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }).then(function(rows){
     var panel = document.getElementById('tab-aisle'); if(!panel) return;
-    rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved'; });
+    rows = (Array.isArray(rows) ? rows : []).filter(function(r){ var p = r.ve_products; return p && p.guides && p.guides.length && p.listings && p.listings.status === 'approved' && p.listings.business_status !== 'CLOSED_PERMANENTLY'; });
     if(!rows.length){ panel.innerHTML = '<div class="aisle"><p class="aisle-lede">Our Guides have not found products at ' + esc(l.name) + ' yet. They show up here as soon as a Guide lists one.</p></div>'; if(!storesTabWanted()) showListingTab('aisle'); return; }
     var want = ''; try { want = new URLSearchParams(location.search).get('product') || ''; } catch(e){}
     function count(key, val){ return rows.filter(function(r){ return (r.ve_products[key] || '') === val; }).length; }
