@@ -14,6 +14,12 @@
 //   (Sean, 2026-10-25, playbook ve-pricing-points-passport); lifetime points, and so the level, never go down
 //   |  402 payment_required  |  400 not_enough_points { balance }
 // POST { action: 'points', listing_id }  no sign-in needed  -> { points, members }  what the community gave a listing
+// POST { action: 'chapter_stats' }        no sign-in needed  -> { chapters: [{chapter, votes, voters, members, places, events}] }
+// POST { action: 'chapter_vote', chapter } Authorization   -> { ok, votes, next_vote_at } | 409 already_voted | 402
+// POST { action: 'chapter_today' }        Authorization     -> { next: { chapter: next_vote_at } }
+//   Communities as cards (Sean, 2026-11-01: "set up like they're in a directory listing... vote for them... save them"); a chapter
+//   vote is once every 24 hours per member like a listing's (ve_chapter_votes, migration 20261101_chapter_votes.sql). Saving a
+//   chapter is joining it (ve-auth join_community).
 //
 // next_vote_at is an ISO time; the browser shows it in the visitor's own time zone. A vote is
 // a row in listing_daily_votes; its unique (member, listing, vote_date) index stays as a
@@ -60,6 +66,8 @@ async function verifyToken(token: string): Promise<{ sub: string; brand: string 
 }
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
 const DAY_MS = 24 * 60 * 60 * 1000;
+const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland',
+  'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
 const nextAt = (createdAt: string) => new Date(new Date(createdAt).getTime() + DAY_MS).toISOString();
 
 Deno.serve(async (req) => {
@@ -76,10 +84,39 @@ Deno.serve(async (req) => {
     return json(data);
   }
 
+  if (body.action === 'chapter_stats') {
+    const { data, error } = await db.rpc('ve_chapter_stats');
+    if (error) return json({ error: 'stats_failed' }, 500);
+    return json({ chapters: data || [] });
+  }
+
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const who = token ? await verifyToken(token) : null;
   if (!who) return json({ error: 'not_authenticated' }, 401);
   const memberId = who.sub, lesaruss = who.brand === 'lesaruss-ai';
+
+  if (body.action === 'chapter_today') {
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { data } = await db.from('ve_chapter_votes').select('chapter, created_at').eq('member_id', memberId).gt('created_at', since);
+    const next: Record<string, string> = {};
+    for (const r of data || []) next[r.chapter] = nextAt(r.created_at);
+    return json({ next });
+  }
+
+  if (body.action === 'chapter_vote') {
+    if (lesaruss) return json({ error: 'not_available' }, 403);
+    const ch = String(body.chapter || '');
+    if (!CHAPTERS.includes(ch)) return json({ error: 'bad_chapter' }, 400);
+    const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+    if (!member || member.membership_status !== 'active') return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the communities you love every day.' }, 402);
+    const { data: last } = await db.from('ve_chapter_votes').select('created_at').eq('member_id', memberId).eq('chapter', ch)
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+    const { data: row, error } = await db.from('ve_chapter_votes').insert({ member_id: memberId, chapter: ch, vote_date: todayEastern() }).select('created_at').single();
+    if (error) return json({ error: error.code === '23505' ? 'already_voted' : 'vote_failed' }, error.code === '23505' ? 409 : 500);
+    const { count } = await db.from('ve_chapter_votes').select('id', { count: 'exact', head: true }).eq('chapter', ch);
+    return json({ ok: true, votes: count ?? null, next_vote_at: nextAt(row.created_at) });
+  }
 
   if (body.action === 'contribute') {
     if (lesaruss) return json({ error: 'not_available' }, 403);

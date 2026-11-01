@@ -829,6 +829,7 @@
 <script src="/public/hub-news.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-chapters.js"></script>
 <script src="/public/ve-events.js"></script>
 <script src="/public/ve-media.js"></script>
 <script src="/public/ve-episodes.js"></script>
@@ -1161,7 +1162,7 @@
     <div id="dash-community-section" style="display:none;margin-bottom:28px;" data-tab-key="communities" data-tab-order="6" data-tab-label="Communities">
       <!-- The same banner as /communities (Sean, 2026-10-27): picking a chapter opens it, like tapping its card. -->
       <section id="dash-com-hero" class="dash-hero-banner"></section>
-      <div class="dash-community-row" id="dash-community-row"></div>
+      <div id="dash-community-row"></div>
     </div>
 
     <!-- Media (Sean, 2026-10-27: "let's do media instead of shows"): the same component as /media (public/ve-media.js), our
@@ -1686,13 +1687,14 @@
   // Directory, Leaderboard, Events, Campaigns, Daily Pulse) and opens its landing page. Joined ones come
   // first and carry a Leave link; the rest carry a Join link.
   // Opening a chapter, from its card or the banner: it becomes the dashboard's city and its landing page opens in the window.
+  // A chapter opens as its own page, never framed in the dashboard (Sean, 2026-11-01: "it puts it into a frame. I don't like that...
+  // when I go backwards, it sends me back to the directory"). It still becomes the dashboard's city, and Back comes back here.
   function openCommunity(slug, member) {
-    switchActiveCity(slug, member);
-    renderCommunitySection(currentMember);
-    if (window.openConsoleFrame) window.openConsoleFrame('/communities/' + slug, VE_CITY_NAMES[slug]); else location.href = '/communities/' + slug;
+    try { switchActiveCity(slug, member); } catch (e) {}
+    location.href = '/communities/' + slug;
   }
   // The city banner's View community (/public/ve-city-banner.js), on any tab or inside a framed page such as the Daily Pulse:
-  // a chapter opens here like its card does, All cities opens the Communities tab, the same as the menu.
+  // a chapter opens like its card does, All cities opens the Communities tab, the same as the menu.
   window.VEOpenCommunity = function (slug) {
     if (slug && VE_CITY_NAMES[slug]) openCommunity(slug, currentMember);
     else if (window.activateDashTab) { window.activateDashTab('communities'); window.scrollTo(0, 0); }
@@ -1713,51 +1715,24 @@
     });
   }
 
+  // The Communities tab is the same cards as /communities (/public/ve-chapters.js, Sean 2026-11-01): vote, save (joining the
+  // chapter, so it stays in step with the member's communities) and open the chapter as its own page.
+  var dashChapters = null;
   function renderCommunitySection(member) {
     currentMember = member;
     renderCommunityBanner(member);
-    var section = document.getElementById('dash-community-section');
     var row = document.getElementById('dash-community-row');
-    if (!section || !row) return;
-    row.innerHTML = '';
-    var joined = (member.communities && member.communities.length ? member.communities : (member.home_community ? [member.home_community] : []));
-    var viewing = getActiveCity(member);
-    var slugs = Object.keys(VE_CITY_NAMES);
-    slugs.sort(function (x, y) { return (joined.indexOf(x) < 0) - (joined.indexOf(y) < 0); });
-
-    slugs.forEach(function(slug) {
-      var isJoined = joined.indexOf(slug) >= 0;
-      var wrap = document.createElement('div');
-      wrap.className = 'dash-community-tile';
-      var tile = document.createElement('a');
-      tile.className = 'dash-tile' + (slug === viewing ? ' is-viewing' : '');
-      tile.href = '/communities/' + slug;
-      tile.innerHTML =
-        '<div class="dash-thumb" style="background-image:url(\'' + VE_CITY_BANNER[slug] + '\');"></div>' +
-        '<div class="dash-tile-body">' +
-          '<div class="dash-tile-title">' + VE_CITY_NAMES[slug] +
-            (isJoined ? ' <span class="dash-tag live">Joined</span>' : '') +
-            (slug === viewing ? ' <span class="dash-tag">Viewing</span>' : '') + '</div>' +
-        '</div>';
-      // Picking a community brings it up on the dashboard and opens its landing page in the
-      // window (Sean, 2026-10-04: "somebody might think it's broken if it doesn't take them to
-      // that community").
-      tile.addEventListener('click', function (e) {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
-        e.preventDefault();
-        openCommunity(slug, member);
-      });
-      wrap.appendChild(tile);
-
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = isJoined ? 'dash-community-change' : 'dash-community-join';
-      btn.textContent = isJoined ? 'Leave community' : 'Join community';
-      btn.addEventListener('click', function(e) { e.preventDefault(); toggleCommunity(slug, isJoined); });
-      wrap.appendChild(btn);
-
-      row.appendChild(wrap);
-    });
+    if (!row || !window.VEChapters) return;
+    if (dashChapters) { dashChapters.redraw(); return; }
+    dashChapters = VEChapters.mount(row, { url: false, onSave: function (slug, on, list) {
+      currentMember = Object.assign({}, currentMember, { communities: list || [] });
+      try { renderModalGrid(); } catch (e) {}
+    } });
+    row.addEventListener('click', function (e) {
+      // The dashboard's city follows a chapter opened from here (openCommunity).
+      var card = e.target.closest('.vch-card');
+      if (card && !e.target.closest('button')) { try { switchActiveCity(card.getAttribute('data-slug'), currentMember); } catch (x) {} }
+    }, true);
   }
 
   // "Your Tools" customizable add/remove grid (2026-08-19, Logan, V direction):
@@ -3558,6 +3533,8 @@
     var url;
     try { url = new URL(a.href, location.href); } catch (err) { return; }
     if (url.origin !== location.origin || DASH_SELF_PATH.test(url.pathname)) return;
+    // A chapter is its own page, never framed (Sean, 2026-11-01).
+    if (/^\/communities(\/|$)/.test(url.pathname)) return;
     e.preventDefault();
     openConsoleFrame(url.pathname + url.search + url.hash, frameLabelFor(a));
   });
