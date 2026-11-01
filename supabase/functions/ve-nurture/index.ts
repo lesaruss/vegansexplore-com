@@ -341,7 +341,7 @@ Deno.serve(async (req) => {
     if (['offer', 'not_opened', 'opened'].includes(kind)) {
       let o: any = null;
       if (isId(body.offer_id)) { const { data } = await db.from('ve_pc_offers').select('*, ve_links(code)').eq('id', body.offer_id).maybeSingle(); if (data) o = { ...data, link_code: data.ve_links?.code }; }
-      if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
+      if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').eq('status', 'approved').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
       m = await businessEmail(kind, o);
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
       let t: any = SAMPLE_TASTER;
