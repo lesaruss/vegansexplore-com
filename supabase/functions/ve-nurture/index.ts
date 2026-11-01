@@ -21,16 +21,18 @@
 //   { action: 'preview', kind, offer_id?, taster_id? }  super admins: {subject, html} of any email, on a real or a sample person
 //   { action: 'test', kind, offer_id?, taster_id? }     super admins: that email to the signed-in admin, [Test] in the subject
 //   { action: 'tasters' }                            super admins: Tasters on the track, what each was sent and what is next
+// Sending (Sean, 2026-11-01: "where is this living? Do we have an email system in the HQ?"): every email goes through email-send, the
+// LESARUSS email system HQ > Email reads (brand vegans-explore: VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com,
+// one-click unsubscribe, the postal address, the brand's suppressions, an email_sends row per email). Each email has one campaign_ref
+// (refOf), registered once in email_campaigns as an automatic campaign on its first real send, so HQ > Email lists it with its numbers.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const FN_BASE = `${SUPABASE_URL}/functions/v1`;
+const BRAND = 'vegans-explore';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
-const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
-const REPLY = 'contact@lesaruss.com';
-const ADDRESS = 'LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301';
 const DEADLINE = Date.parse('2027-01-01T05:00:00Z');
 const DECEMBER = [['dec-1', '2026-12-01'], ['dec-2', '2026-12-18'], ['dec-3', '2026-12-30']];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret' };
@@ -97,7 +99,7 @@ async function secret(key: string) {
 function shell(body: string, foot: string) {
   return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a">` +
     `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
-    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} ${ADDRESS}.</p></div>`;
+    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} <a href="{{unsubscribe_url}}" style="color:#777">Stop these emails</a>. {{postal_address}}.</p></div>`;
 }
 const btn = (href: string, label: string) => `<p style="margin:22px 0"><a href="${href}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
 const P = (s: string) => `<p>${s}</p>`;
@@ -105,18 +107,43 @@ const sign = P('Vegans Explore team');
 const list = (items: string[]) => items.length ? `<ul style="padding-left:20px;margin:10px 0">${items.map((i) => `<li style="margin:4px 0">${i}</li>`).join('')}</ul>` : '';
 const utm = (u: string, kind: string) => u + (u.includes('?') ? '&' : '?') + 'utm_source=email&utm_medium=nurture&utm_campaign=' + encodeURIComponent(kind);
 
-async function send(to: string, subject: string, html: string, unsub?: string): Promise<{ id?: string; error?: string }> {
-  if (!RESEND_KEY) return { error: 'no_key' };
+// One campaign per email (and per month for the business offer, per date for the weekly Pulse and the December notes).
+function refOf(kind: string) {
+  const m = openMonth(10).slice(0, 7);
+  if (kind === 'offer') return { ref: `ve-pc-offer-${m}`, name: `Passport Challenge offer (${m})` };
+  if (kind === 'not_opened') return { ref: `ve-pc-still-open-${m}`, name: `Passport Challenge follow-up: still open (${m})` };
+  if (kind === 'opened') return { ref: `ve-pc-what-it-costs-${m}`, name: `Passport Challenge follow-up: what it costs (${m})` };
+  if (kind.startsWith('pulse-')) return { ref: `ve-taster-pulse-${kind.slice(6)}`, name: `Taster: the Daily Pulse (${kind.slice(6)})` };
+  const dec = DECEMBER.find(([k]) => k === kind);
+  if (dec) return { ref: `ve-taster-founding-${dec[1]}`, name: `Taster: Founding deadline note (${dec[1]})` };
+  return { ref: `ve-taster-${kind}`, name: `Taster: ${kind.replace('day-', 'Day ')}` };
+}
+async function emailSend(payload: Record<string, unknown>) {
+  const admin = await secret('LESARUSS_ADMIN_TOKEN');
   try {
-    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY, subject, html, ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}) }) });
-    const d = await r.json().catch(() => ({}));
-    return r.ok ? { id: d.id } : { error: String(d.message || r.status) };
-  } catch (e) { return { error: String(e) }; }
+    const r = await fetch(`${FN_BASE}/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin}` }, body: JSON.stringify(payload) });
+    return await r.json().catch(() => ({ ok: false, error: `email-send ${r.status}` }));
+  } catch (e) { return { ok: false, error: String(e) }; }
+}
+// Registered once, on the first real send, as an automatic campaign HQ > Email shows (status sent: email-dispatch never picks it up).
+async function registerCampaign(ref: string, name: string, subject: string, html: string, kind: string) {
+  await db.from('email_campaigns').upsert({ brand_slug: BRAND, campaign_ref: ref, name: `${name}, automatic`, subject, html, status: 'sent',
+    audience: { source: 've-nurture', kind, automatic: true }, notes: 'Sent one at a time by ve-nurture (Earn your Passport). Switch it on or off in the Vegans Explore Depot.',
+    started_at: new Date().toISOString(), completed_at: new Date().toISOString(), created_by: 've-nurture' }, { onConflict: 'campaign_ref', ignoreDuplicates: true });
+}
+// result: sent | already_sent | suppressed | invalid | failed
+async function send(kind: string, to: string, name: string | null, subject: string, html: string, testTo?: string): Promise<{ result: string; id?: string; error?: string }> {
+  const { ref, name: cname } = refOf(kind);
+  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') ? 've-tasters' : 've-pc-offers',
+    subject, html, recipients: [{ email: to, name: name || undefined }], ...(testTo ? { test_to: [testTo] } : {}) });
+  const r = res?.results?.[0];
+  if (!r) return { result: 'failed', error: res?.error || (res?.errors || []).join('; ') || 'email-send' };
+  if (r.result === 'sent' && !testTo) await registerCampaign(ref, cname, subject, html, kind);
+  return { result: r.result, id: r.id, error: r.error };
 }
 async function suppressed(email: string) {
-  const { count } = await db.from('email_suppressions').select('id', { count: 'exact', head: true }).eq('email', email.toLowerCase().trim()).eq('active', true);
-  return (count || 0) > 0;
+  const { data } = await db.rpc('email_is_suppressed', { p_email: email.toLowerCase().trim(), p_brand: BRAND });
+  return data === true;
 }
 
 // ---------- Business emails ----------
@@ -131,7 +158,7 @@ async function offerContext(o: any) {
 async function businessEmail(kind: string, o: any) {
   const c = await offerContext(o);
   const biz = esc(c.l?.name || 'your business'), cards = c.cfg.cards_per_slot, amt = c.cfg.card_cents / 100;
-  const foot = `You are getting this because ${biz} is in the Vegans Explore Directory. <a href="${c.stop}" style="color:#777">Stop these emails</a>.`;
+  const foot = `You are getting this because ${biz} is in the Vegans Explore Directory.`;
   if (kind === 'offer') return { subject: `Be a Passport Challenge stop in ${c.month}`, unsub: c.stop, html: shell(
     P(`Hi ${biz},`) + P(`Every month, up to five Vegan businesses in ${esc(c.chapter)} are the stops on our Passport Challenge. Our members come to check in, post about you, and win your gift cards in the Vegans Explore Vault.`) +
     P(`<b>What you give:</b> ${cards} digital gift cards of $${amt}. One per visit, no cash back, good for ${c.cfg.card_months} months after a member wins one.`) +
@@ -152,7 +179,7 @@ async function tasterEmail(kind: string, t: any) {
   const key = await tasterKey(t.id), unsub = `${SITE}/guides/taste?unsub=${encodeURIComponent(key)}`;
   const chapter = t.chapter && t.chapter !== 'elsewhere' ? t.chapter : 'national';
   const city = CHAPTER_NAME[chapter] || 'your city';
-  const foot = `You are getting this because you asked for A Taste of Vegans Explore. You are not a member, and nothing is charged. <a href="${unsub}" style="color:#777">Stop these emails</a>.`;
+  const foot = `You are getting this because you asked for A Taste of Vegans Explore. You are not a member, and nothing is charged.`;
   const challenges = utm(`${SITE}/challenges?t=${encodeURIComponent(key)}`, kind);
   if (kind === 'day-3') {
     const { data: w } = await db.rpc('ve_nurture_city_week', { p_chapter: chapter });
@@ -208,8 +235,9 @@ async function tick() {
       const { count: clicks } = o.link_id ? await db.from('ve_link_clicks').select('id', { count: 'exact', head: true }).eq('link_id', o.link_id).eq('is_bot', false) : { count: 0 };
       const kind = clicks ? 'opened' : 'not_opened';
       const m = await businessEmail(kind, { ...o, link_code: o.ve_links?.code });
-      const r = o.test ? { id: 'test' } : await send(o.email, m.subject, m.html, m.unsub);
-      if (r.id) { await db.from('ve_pc_offers').update({ followup_kind: kind, followup_at: new Date().toISOString(), send_ids: { ...(o.send_ids || {}), [kind]: r.id } }).eq('id', o.id); out.offers++; }
+      const r = o.test ? { result: 'sent', id: 'test' } : await send(kind, o.email, o.name, m.subject, m.html);
+      if (r.result === 'suppressed' || r.result === 'invalid') { await db.from('ve_pc_offers').update({ status: 'stopped', stopped_at: new Date().toISOString() }).eq('id', o.id); continue; }
+      if (r.result === 'sent' || r.result === 'already_sent') { await db.from('ve_pc_offers').update({ followup_kind: kind, followup_at: new Date().toISOString(), send_ids: { ...(o.send_ids || {}), [kind]: r.id || r.result } }).eq('id', o.id); out.offers++; }
     }
   }
   if (!cfg.tasters_on || !inHours) return out;
@@ -233,8 +261,10 @@ async function tick() {
     const { error: ce } = await db.from('ve_taster_emails').insert({ taster_id: t.id, kind });
     if (ce) continue;
     const m = await tasterEmail(kind, t);
-    const r = await send(t.email, m.subject, m.html, m.unsub);
-    await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.error || null }).eq('taster_id', t.id).eq('kind', kind);
+    const r = await send(kind, t.email, t.name, m.subject, m.html);
+    if (r.result === 'failed') { await db.from('ve_taster_emails').delete().eq('taster_id', t.id).eq('kind', kind); continue; }
+    await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('taster_id', t.id).eq('kind', kind);
+    if (r.result === 'suppressed' || r.result === 'invalid') await db.from('ve_tasters').update({ unsubscribed_at: new Date().toISOString() }).eq('id', t.id);
     out.tasters++;
   }
   return out;
@@ -329,9 +359,10 @@ Deno.serve(async (req) => {
     if (o.status !== 'draft') return json({ error: 'already_sent' }, 409);
     if (await suppressed(o.email)) return json({ error: 'suppressed', message: 'That address asked us to stop emailing.' }, 409);
     const m = await businessEmail('offer', { ...o, link_code: o.ve_links?.code });
-    const r = o.test ? { id: 'test' } : await send(o.email, m.subject, m.html, m.unsub);
-    if (!r.id) return json({ error: 'send_failed', message: r.error }, 502);
-    await db.from('ve_pc_offers').update({ status: 'sent', sent_at: new Date().toISOString(), send_ids: { offer: r.id } }).eq('id', o.id);
+    const r = o.test ? { result: 'sent', id: 'test' } : await send('offer', o.email, o.name, m.subject, m.html);
+    if (r.result === 'suppressed') return json({ error: 'suppressed', message: 'That address asked us to stop emailing.' }, 409);
+    if (r.result !== 'sent' && r.result !== 'already_sent') return json({ error: 'send_failed', message: r.error || r.result }, 502);
+    await db.from('ve_pc_offers').update({ status: 'sent', sent_at: new Date().toISOString(), send_ids: { offer: r.id || r.result } }).eq('id', o.id);
     return json({ ok: true });
   }
 
@@ -348,11 +379,12 @@ Deno.serve(async (req) => {
       if (isId(body.taster_id)) { const { data } = await db.from('ve_tasters').select('*').eq('id', body.taster_id).maybeSingle(); if (data) t = data; }
       m = await tasterEmail(kind === 'pulse' ? 'pulse-' + eastern().date : kind, t);
     } else return json({ error: 'kind' }, 400);
-    if (action === 'preview') return json({ ok: true, subject: m.subject, html: m.html });
+    if (action === 'preview') return json({ ok: true, subject: m.subject, html: m.html.replace(/\{\{\s*unsubscribe_url\s*\}\}/g, '#').replace(/\{\{\s*postal_address\s*\}\}/g, 'LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301') });
     const to = me?.email || String(body.to || '');
     if (!to) return json({ error: 'no_address' }, 400);
-    const r = await send(to, '[Test] ' + m.subject, m.html);
-    return r.id ? json({ ok: true, to }) : json({ error: 'send_failed', message: r.error }, 502);
+    const pk = kind === 'pulse' ? 'pulse-' + eastern().date : kind;
+    const r = await send(pk, to, 'Sean', '[Test] ' + m.subject, m.html, to);
+    return r.result === 'sent' ? json({ ok: true, to, campaign_ref: refOf(pk).ref }) : json({ error: 'send_failed', message: r.error || r.result }, 502);
   }
 
   if (action === 'tasters') {

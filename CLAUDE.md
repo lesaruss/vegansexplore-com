@@ -3937,8 +3937,15 @@ the $11 Passport or a membership earned now; no free account that can take part,
   - **5. The business offer, its follow-up and the not-ready-yet emails** (built and live 2026-11-01, Sean: "Approved, go with your defaults
     and build it"; migration `20261101_earn_your_passport_emails.sql`; edge function `ve-nurture` from commit 6cff6e0, sha256 matched;
     `ve-vault` from 91c8c26). **Off until Sean turns each on** (`ve_site_settings` `nurture`: `offers_on`, `tasters_on`; the switches are on
-    the two Depot pages below). Every email is from VEGANS EXPLORE <hello@vegansexplore.com>, signed Vegans Explore team, replies to
-    contact@lesaruss.com, never Sean's name, with a one-click unsubscribe. **The business offer**: Depot > Passport Challenge stops > **Offers
+    the two Depot pages below). **They send through HQ's email system** (Sean, 2026-11-01: "where is this living? Do we have an email
+    system in the HQ?"; they first called Resend directly, fixed the same day): every one goes through `email-send`, brand `vegans-explore`
+    (VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com), signed Vegans Explore team, never Sean's name, with the
+    brand's one-click unsubscribe, the postal address, its suppressions and an `email_sends` row. Each email is one campaign (`refOf`:
+    `ve-pc-offer-<YYYY-MM>`, `ve-pc-still-open-<YYYY-MM>`, `ve-pc-what-it-costs-<YYYY-MM>`, `ve-taster-day-3|7|14`,
+    `ve-taster-pulse-<date>`, `ve-taster-founding-<date>`), registered in `email_campaigns` as an automatic campaign (status sent, so
+    `email-dispatch` never picks it up) on its first real send, so **HQ > Email** lists it with delivered, opened and clicked. Send me a
+    test goes through `email-send` `test_to`. Not moved yet: the Taster's Day 0 email (`ve-taster`) and the stop emails in `ve-vault`
+    still call Resend directly. **The business offer**: Depot > Passport Challenge stops > **Offers
     we send** (`#offers[/<status>]`, `#offers/new`, `#offers/preview/<kind>[:<offer>]`): New offer (a listing, their email, a name) makes a
     `ve_pc_offers` row and its own tracked link (`ve_links` `pc-<8>`, initiative `passport-challenge-offer`, to `/business/challenge?listing=`);
     **Send it** sends email A ("Be a Passport Challenge stop in <month>") by hand, always. Two days later, on a weekday from 10 AM Eastern
