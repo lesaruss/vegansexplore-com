@@ -112,6 +112,52 @@
     .day h3{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);}
     .day .none{font-size:12px;color:rgba(26,26,26,.5);font-weight:700;}
     @media (max-width:1100px){.week{grid-template-columns:1fr;}.day{min-height:0;}.day.empty-day{display:none;}}
+    /* By day (the default, Sean 2026-11-01): each date a row, its posts in one line that slides sideways; one date bigger. */
+    .viewbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .viewbar .grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .viewbar input[type=date]{width:auto;min-width:170px;}
+    .dayrow{margin:0 0 26px;}
+    .dayrow h3{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:15px;font-weight:900;margin:0 0 10px;}
+    .dayrow h3 a{color:inherit;text-decoration:none;}
+    .dayrow h3 a:hover{text-decoration:underline;}
+    .dayrow h3 .n{font-size:12px;font-weight:700;color:var(--ve-text-75);}
+    .dayrow h3 .td{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:var(--ve-green-deep);color:#fff;border-radius:6px;padding:3px 8px;}
+    .strip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;}
+    .strip .slot{flex:0 0 250px;scroll-snap-align:start;}
+    @media (max-width:600px){.strip .slot{flex-basis:76vw;}}
+    .oneday{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:16px;}
+    .slot.big{padding:12px;gap:8px;}
+    .slot.big .cap{-webkit-line-clamp:3;font-size:14px;}
+    .slot.big .row{font-size:12.5px;}
+    .slot .th.none{display:flex;align-items:center;justify-content:center;color:var(--ve-green-deep);font-weight:900;font-size:12px;letter-spacing:.1em;text-transform:uppercase;background:#eef2ee;}
+    /* The post's media as it will show (Sean, 2026-11-01: "I would like to see the actual asset in that preview window... a light box
+       and play for me... replace the item"). Stories and reels sit in a 9:16 frame, posts and carousels at their own shape. */
+    .mframe{position:relative;border-radius:12px;overflow:hidden;background:#111;cursor:zoom-in;margin:0 auto;}
+    .mframe.tall{aspect-ratio:9/16;max-height:620px;max-width:350px;}
+    .mframe.feed{max-width:520px;}
+    .mframe img,.mframe video{width:100%;height:100%;display:block;object-fit:contain;background:#111;}
+    .mframe.feed img,.mframe.feed video{height:auto;}
+    .mframe .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;}
+    .mframe .play span{width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;}
+    .mframe .cnt{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.6);color:#fff;font-size:12px;font-weight:800;border-radius:6px;padding:3px 8px;}
+    .mframe .arw{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:20px;font-weight:900;cursor:pointer;color:#1a1a1a;}
+    .mframe .arw.l{left:8px;}.mframe .arw.r{right:8px;}
+    .mlabel{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 8px;}
+    .mlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
+    .mitem{border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;background:#fff;display:flex;flex-direction:column;}
+    .mitem .t{aspect-ratio:1/1;background:#111 center/cover no-repeat;cursor:zoom-in;position:relative;}
+    .mitem .t video{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+    .mitem .n{font-size:11px;font-weight:700;color:var(--ve-text-75);padding:4px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .mitem .b{display:flex;gap:4px;padding:6px;}
+    .mitem .b button{flex:1;font:inherit;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:6px 4px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;color:var(--ve-green-deep);cursor:pointer;}
+    .mitem .b button.x{color:#8a1c12;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:56px 64px;}
+    .lb img,.lb video{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;}
+    .lb .c{position:absolute;top:14px;right:16px;color:#fff;background:none;border:0;font-size:32px;cursor:pointer;line-height:1;}
+    .lb .arw{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:24px;font-weight:900;cursor:pointer;}
+    .lb .arw.l{left:12px;}.lb .arw.r{right:12px;}
+    .lb .cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:700;}
+    @media (max-width:600px){.lb{padding:48px 8px;}}
     .slot{display:flex;flex-direction:column;gap:6px;border:1px solid var(--ve-border);border-left:4px solid #bbb;border-radius:8px;padding:8px;text-decoration:none;color:inherit;background:#fff;}
     .slot:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
     .slot .th{aspect-ratio:1/1;border-radius:6px;background:#eef2ee center/cover no-repeat;}
@@ -156,7 +202,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Social</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Every brand's social plan, week by week. Logan fills the slots; you change one directly or leave a note, then approve it and it goes out through Metricool. Anything that has to be posted by hand says so ahead of time. Content and Analytics show what is live and how it did. Every time is Eastern.</p>
+    <p class="sub">Every brand's social plan, day by day. Logan fills the slots; you change one directly or leave a note, then approve it and it goes out through Metricool. Anything that has to be posted by hand says so ahead of time. Content and Analytics show what is live and how it did. Every time is Eastern.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -219,7 +265,7 @@
       var a = data && data.fetched_at ? 'Updated ' + new Date(data.fetched_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: TZ }) + ' ET' : '';
       var live = on === 'content' || on === 'analytics';
       var nOpen = brands.reduce(function (t, b) { return t + (b.open_notes || 0); }, 0);
-      return brandPicker() + '<div class="bar"><div class="tabs"><a href="#plan/' + st.brand + '" class="' + (on === 'plan' ? 'on' : '') + '">Plan</a>' +
+      return brandPicker() + '<div class="bar"><div class="tabs"><a href="#days/' + st.brand + '/up/all" class="' + (on === 'plan' ? 'on' : '') + '">Plan</a>' +
         (me.admin ? '<a href="#notes" class="' + (on === 'notes' ? 'on' : '') + '">Notes for Logan' + (nOpen ? ' <span class="n">' + nOpen + '</span>' : '') + '</a>' : '') +
         '<a href="#content/scheduled/all" class="' + (on === 'content' ? 'on' : '') + '">Content</a><a href="#analytics/all" class="' + (on === 'analytics' ? 'on' : '') + '">Analytics</a></div>' +
         (live ? '<div style="display:flex;gap:10px;align-items:center"><span class="msg" style="margin:0">' + esc(a) + '</span><button class="btn btn-ghost" id="refresh" type="button">Refresh now</button></div>' : '') + '</div>' +
@@ -378,7 +424,7 @@
       return '<div class="bsel"><select id="brand" aria-label="Brand">' + brands.map(function (x) { return '<option value="' + x.slug + '"' + (x.slug === b.slug ? ' selected' : '') + '>' + esc(x.name) + (x.kind === 'client' ? ' (client)' : '') + '</option>'; }).join('') + '</select>' +
         '<span class="note">' + (b.in_metricool ? 'Goes out through Metricool on ' + (b.channels || []).map(netName).join(', ') + '.' : 'Not in Metricool yet: its posts are marked Post by hand until the brand is added there.') + '</span></div>';
     }
-    function wireBrand() { var x = $('brand'); if (x) x.onchange = function () { setBrand(x.value); var h = location.hash; var nh = /^#analytics/.test(h) ? '#analytics/all' : /^#(content|post)/.test(h) ? '#content/scheduled/all' : '#plan/' + x.value; if (nh === h) route(); else location.hash = nh; }; }
+    function wireBrand() { var x = $('brand'); if (x) x.onchange = function () { setBrand(x.value); var h = location.hash; var nh = /^#analytics/.test(h) ? '#analytics/all' : /^#(content|post)/.test(h) ? '#content/scheduled/all' : /^#plan/.test(h) ? '#plan/' + x.value : '#days/' + x.value + '/up/all'; if (nh === h) route(); else location.hash = nh; }; }
     function partsOf(t) { var p = {}; new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(t)).forEach(function (x) { p[x.type] = x.value; }); return p; }
     function offAt(t) { var p = partsOf(t); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - t; }
     function eastIso(local) { var g = Date.parse(local.length === 10 ? local + 'T00:00:00Z' : local + ':00Z'); var t = g - offAt(g); t = g - offAt(t); return new Date(t).toISOString(); }
@@ -416,29 +462,87 @@
             '<a class="btn btn-ghost" href="' + base + addDays(wk, -7) + '/' + f + '">Back a week</a>' +
             (wk !== monday(today) ? '<a class="btn btn-ghost" href="' + base + monday(today) + '/' + f + '">This week</a>' : '') +
             '<a class="btn btn-ghost" href="' + base + addDays(wk, 7) + '/' + f + '">Next week</a>' +
+            '<a class="btn btn-ghost" href="#days/' + b.slug + '/up/' + f + '">By day</a>' +
             (isEditor() && waiting.length ? '<button class="btn" id="approveAll" type="button">Approve the ' + waiting.length + ' waiting</button>' : '') +
             (me.admin ? '<a class="btn" href="#new/' + b.slug + '/' + (wk < today ? today : wk) + '">New slot</a>' : '') +
           '</div></div>' +
           '<div class="tabs" style="margin-bottom:14px">' + chips + '</div><p class="msg" id="pmsg"></p>' +
           (slots.length ? '<div class="week">' + days + '</div>' : '<div class="empty">Nothing is slotted for ' + esc(b.name) + ' this week yet. Logan fills the slots; anything he proposes shows here as Waiting for approval.</div>');
         wireTop();
-        var aa = $('approveAll');
-        if (aa) aa.onclick = function () {
-          if (!confirm('Approve all ' + waiting.length + ' waiting posts for ' + b.name + '? Each one is scheduled in Metricool right away' + (b.in_metricool ? '' : ' (this brand is not in Metricool yet, so they become Post by hand)') + '.')) return;
-          aa.disabled = true; aa.textContent = 'Approving…';
-          api({ action: 'approve', ids: waiting.map(function (x) { return x.id; }) }).then(function (res) {
-            var bad = (res.results || []).filter(function (x) { return x.error; });
-            route();
-            if (bad.length) setTimeout(function () { var m = $('pmsg'); if (m) { m.className = 'msg bad'; m.textContent = bad.length + ' did not go through: ' + bad.map(function (x) { return x.detail || x.error; }).join('; '); } }, 600);
-          });
-        };
+        wireApproveAll(waiting, b);
       });
     }
-    function slotCard(x) {
+    function wireApproveAll(waiting, b) {
+      var aa = $('approveAll');
+      if (!aa) return;
+      aa.onclick = function () {
+        if (!confirm('Approve all ' + waiting.length + ' waiting posts for ' + b.name + '? Each one is scheduled in Metricool right away' + (b.in_metricool ? '' : ' (this brand is not in Metricool yet, so they become Post by hand)') + '. A reel with no video yet comes back as Changes asked.')) return;
+        aa.disabled = true; aa.textContent = 'Approving…';
+        api({ action: 'approve', ids: waiting.map(function (x) { return x.id; }) }).then(function (res) {
+          var bad = (res.results || []).filter(function (x) { return x.error; });
+          route();
+          if (bad.length) setTimeout(function () { var m = $('pmsg'); if (m) { m.className = 'msg bad'; m.textContent = bad.length + ' did not go through: ' + bad.map(function (x) { return x.detail || (x.error === 'no_video' ? 'no video yet' : x.error); }).join('; '); } }, 600);
+        });
+      };
+    }
+    // By day: #days/<brand>/<up|past>/<filter> lists every date with posts, newest first for past; #day/<brand>/<date>/<filter> is one date, bigger.
+    function drawDays(brand, mode, f, date) {
+      setBrand(brand);
+      var b = brandOf(st.brand);
+      if (!b) { app.innerHTML = top('plan') + '<div class="empty">You do not work on that brand.</div>'; wireTop(); return; }
+      var today = eastDay(new Date());
+      mode = mode === 'past' ? 'past' : mode === 'day' ? 'day' : 'up';
+      f = FILT[f] ? f : 'all';
+      if (mode === 'day' && !/^\d{4}-\d{2}-\d{2}$/.test(date || '')) date = today;
+      var from = mode === 'day' ? eastIso(date) : mode === 'past' ? eastIso(addDays(today, -90)) : eastIso(today);
+      var to = mode === 'day' ? eastIso(addDays(date, 1)) : mode === 'past' ? eastIso(today) : eastIso(addDays(today, 90));
+      app.innerHTML = top('plan') + '<p class="msg">Reading ' + esc(b.name) + '’s plan…</p>'; wireTop();
+      api({ action: 'slots', brand: b.slug, from: from, to: to }).then(function (r) {
+        if (r.error) { app.innerHTML = top('plan') + '<div class="err">Could not read the plan: ' + esc(r.error) + '</div>'; wireTop(); return; }
+        var slots = r.slots || [];
+        var shown = slots.filter(function (x) { return inFilt(x, f); });
+        var waiting = shown.filter(function (x) { return x.status === 'proposed'; });
+        var base = mode === 'day' ? '#day/' + b.slug + '/' + date + '/' : '#days/' + b.slug + '/' + mode + '/';
+        var chips = Object.keys(FILT).map(function (k) { var n = slots.filter(function (x) { return inFilt(x, k); }).length; return '<a class="chip' + (k === f ? ' on' : '') + '" href="' + base + k + '">' + FILT[k] + ' <span class="n">' + n + '</span></a>'; }).join('');
+        var byDay = {}, order = [];
+        shown.forEach(function (x) { var d = eastDay(new Date(x.slot_at)); if (!byDay[d]) { byDay[d] = []; order.push(d); } byDay[d].push(x); });
+        if (mode === 'past') order.reverse();
+        var body;
+        if (mode === 'day') {
+          body = shown.length ? '<div class="oneday">' + shown.map(function (x) { return slotCard(x, true, true); }).join('') + '</div>'
+            : '<div class="empty">Nothing is slotted for ' + esc(b.name) + ' on ' + esc(dayLabel(date, true)) + (f === 'all' ? '' : ' under ' + FILT[f]) + '.</div>';
+        } else {
+          body = order.length ? order.map(function (d) {
+            var list = byDay[d];
+            return '<section class="dayrow"><h3><a href="#day/' + b.slug + '/' + d + '/' + f + '">' + esc(dayLabel(d, true)) + '</a>' + (d === today ? '<span class="td">Today</span>' : '') +
+              '<span class="n">' + list.length + ' post' + (list.length > 1 ? 's' : '') + (list.length > 1 ? ' · slide to see them all' : '') + '</span></h3>' +
+              '<div class="strip">' + list.map(function (x) { return slotCard(x, false, true); }).join('') + '</div></section>';
+          }).join('') : '<div class="empty">' + (mode === 'past' ? 'Nothing went out in the last 90 days' : 'Nothing is slotted for ' + esc(b.name) + ' yet') + (f === 'all' ? '' : ' under ' + FILT[f]) + '. Logan fills the slots; anything he proposes shows here as Waiting for approval.</div>';
+        }
+        var dv = mode === 'day' ? date : today;
+        app.innerHTML = top('plan') +
+          '<div class="viewbar"><div class="grp">' +
+            '<a class="chip' + (mode === 'up' ? ' on' : '') + '" href="#days/' + b.slug + '/up/' + f + '">Coming up</a>' +
+            '<a class="chip' + (mode === 'past' ? ' on' : '') + '" href="#days/' + b.slug + '/past/' + f + '">Past</a>' +
+            '<label class="chip' + (mode === 'day' ? ' on' : '') + '" style="gap:8px">Pick a date <input type="date" id="pickDate" value="' + dv + '" aria-label="Pick a date" style="padding:4px 8px;min-width:0;font-size:13px"></label>' +
+            (mode === 'day' ? '<a class="btn btn-ghost" href="#day/' + b.slug + '/' + addDays(date, -1) + '/' + f + '">Day before</a><a class="btn btn-ghost" href="#day/' + b.slug + '/' + addDays(date, 1) + '/' + f + '">Day after</a>' : '') +
+          '</div><div class="grp">' +
+            '<a class="btn btn-ghost" href="#plan/' + b.slug + '/' + monday(dv) + '/' + f + '">Calendar view</a>' +
+            (isEditor() && waiting.length ? '<button class="btn" id="approveAll" type="button">Approve the ' + waiting.length + ' waiting</button>' : '') +
+            (me.admin ? '<a class="btn" href="#new/' + b.slug + '/' + (mode === 'day' && date >= today ? date : today) + '">New slot</a>' : '') +
+          '</div></div>' +
+          (mode === 'day' ? '<p class="crumb"><a href="#days/' + b.slug + '/' + (date < today ? 'past' : 'up') + '/' + f + '">Every day</a> <span>›</span> <span>' + esc(dayLabel(date, true)) + (date === today ? ' · Today' : '') + '</span></p>' : '') +
+          '<div class="tabs" style="margin-bottom:16px">' + chips + '</div><p class="msg" id="pmsg"></p>' + body;
+        wireTop();
+        var pd = $('pickDate'); if (pd) pd.onchange = function () { if (/^\d{4}-\d{2}-\d{2}$/.test(pd.value)) location.hash = '#day/' + b.slug + '/' + pd.value + '/' + f; };
+        wireApproveAll(waiting, b);
+      });
+    }
+    function slotCard(x, big, pic) {
       var m = x.metrics || {}, v = 0, any = false;
       Object.keys(m).forEach(function (k) { if (m[k] && m[k].views != null) { v += +m[k].views; any = true; } });
-      return '<a class="slot s-' + esc(x.status) + '" href="#slot/' + x.id + '">' +
-        (x.thumb ? '<div class="th" style="background-image:url(\'' + esc(x.thumb) + '\')"></div>' : '') +
+      return '<a class="slot s-' + esc(x.status) + (big ? ' big' : '') + '" href="#slot/' + x.id + '">' +
+        (x.thumb ? '<div class="th" style="background-image:url(\'' + esc(x.thumb) + '\')"></div>' : (pic ? '<div class="th none">' + esc(KIND[x.kind] || x.kind) + '</div>' : '')) +
         '<span class="row">' + esc(hm(x.slot_at)) + ' · ' + esc(KIND[x.kind] || x.kind) + ' ' + nets(x.channels, 14) + '</span>' +
         '<span class="cap">' + esc(x.title || x.caption || 'No caption yet') + '</span>' +
         '<span class="row"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span>' + (x.open_notes ? '<span class="nb">' + x.open_notes + ' note' + (x.open_notes > 1 ? 's' : '') + '</span>' : '') + (any ? '<span>' + fmt(v) + ' views</span>' : '') + '</span></a>';
@@ -474,7 +578,107 @@
     }
     function wireCount() { var c = $('f_caption'), n = $('f_count'); if (!c || !n) return; var f = function () { n.textContent = c.value.length + ' characters' + (c.value.length > 2200 ? ' (Instagram stops at 2,200)' : ''); }; c.oninput = f; f(); }
 
+
+    // ---- The post's media: the preview as it will show, the lightbox, replace, add and remove ----
+    var POSTED = function (a) { return a && a.url && a.type !== 'cover' && a.type !== 'storyboard'; };
+    var isVid = function (a) { return a.type === 'video' || /\.(mp4|mov|webm)(\?|$)/i.test(a.url); };
+    var fileOf = function (u) { return String(u || '').split('?')[0].split('/').pop(); };
+    var TALL = { story: 1, reel: 1, video: 1, episode: 1 };
+    var mIdx = 0, mSlot = null;
+    function mediaPanel(x, editable) {
+      var all = (x.assets || []).filter(function (a) { return a && a.url; });
+      var posted = all.filter(POSTED), cover = all.filter(function (a) { return a.type === 'cover'; }), board = all.filter(function (a) { return a.type === 'storyboard'; });
+      var tall = !!TALL[x.kind];
+      if (mIdx >= posted.length) mIdx = 0;
+      var cur = posted[mIdx];
+      var frame = cur ? '<div class="mframe ' + (tall ? 'tall' : 'feed') + '" id="mFrame" title="Open it full size">' +
+          (isVid(cur) ? '<video muted playsinline preload="metadata" src="' + esc(cur.url) + '#t=0.5"></video><span class="play"><span><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>'
+            : '<img id="mImg" src="' + esc(cur.url) + '" alt="">') +
+          (posted.length > 1 ? '<span class="cnt">' + (mIdx + 1) + ' of ' + posted.length + '</span><button type="button" class="arw l" id="mPrev" aria-label="Previous">‹</button><button type="button" class="arw r" id="mNext" aria-label="Next">›</button>' : '') +
+        '</div>' : '<div class="empty">No picture or video yet.' + (board.length ? ' The storyboard is below; the video is made once you approve it.' : '') + '</div>';
+      var label = { story: 'How it shows as a story (9:16)', reel: 'How it shows as a reel (9:16)', video: 'How it shows (9:16)', episode: 'How it shows as a reel (9:16)', carousel: 'Carousel, slide by slide', post: 'How it shows in the feed' }[x.kind] || 'Preview';
+      var tile = function (a, i, kind) {
+        return '<div class="mitem"><div class="t" data-open="' + kind + ':' + i + '"' + (isVid(a) ? '' : ' style="background-image:url(\'' + esc(a.thumb || a.url) + '\')"') + '>' + (isVid(a) ? '<video muted preload="metadata" src="' + esc(a.url) + '#t=0.5"></video>' : '') + '</div>' +
+          '<span class="n" title="' + esc(fileOf(a.url)) + '">' + esc(fileOf(a.url)) + '</span>' +
+          (editable && kind === 'p' ? '<span class="b"><button type="button" data-rep="' + i + '">Replace</button><button type="button" class="x" data-del="' + i + '">Remove</button></span>' : '') + '</div>';
+      };
+      return '<div class="media panel"><h2>' + esc(label) + '</h2>' + frame + '<p class="msg" id="mWarn" style="margin-top:8px"></p>' +
+        '<div class="mlabel">What goes out' + (posted.length ? ' (' + posted.length + ')' : '') + '</div>' +
+        (posted.length ? '<div class="mlist">' + posted.map(function (a, i) { return tile(a, i, 'p'); }).join('') + '</div>' : '<p class="msg">Nothing yet.</p>') +
+        (editable ? '<div class="acts"><button class="btn btn-ghost" type="button" id="mAdd">Add a picture or video</button><span class="msg" id="mMsg" style="margin:8px 0 0"></span></div><input type="file" id="mFile" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm" hidden>' : '') +
+        (cover.length ? '<div class="mlabel">Cover (only on the Plan)</div><div class="mlist">' + cover.map(function (a, i) { return tile(a, i, 'c'); }).join('') + '</div>' : '') +
+        (board.length ? '<div class="mlabel">Storyboard (not posted)</div><div class="mlist">' + board.map(function (a, i) { return tile(a, i, 's'); }).join('') + '</div>' : '') +
+      '</div>';
+    }
+    function lightbox(list, i) {
+      var box = document.createElement('div'); box.className = 'lb'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Full size');
+      var draw = function () {
+        var a = list[i];
+        box.innerHTML = (isVid(a) ? '<video controls autoplay playsinline src="' + esc(a.url) + '"></video>' : '<img src="' + esc(a.url) + '" alt="">') +
+          '<button type="button" class="c" aria-label="Close">×</button>' +
+          (list.length > 1 ? '<button type="button" class="arw l" aria-label="Previous">‹</button><button type="button" class="arw r" aria-label="Next">›</button>' : '') +
+          '<div class="cap">' + esc(fileOf(a.url)) + (list.length > 1 ? ' · ' + (i + 1) + ' of ' + list.length : '') + '</div>';
+        box.querySelector('.c').onclick = close;
+        var l = box.querySelector('.arw.l'), r = box.querySelector('.arw.r');
+        if (l) l.onclick = function (e) { e.stopPropagation(); i = (i - 1 + list.length) % list.length; draw(); };
+        if (r) r.onclick = function (e) { e.stopPropagation(); i = (i + 1) % list.length; draw(); };
+      };
+      var key = function (e) { if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft' && list.length > 1) { i = (i - 1 + list.length) % list.length; draw(); } else if (e.key === 'ArrowRight' && list.length > 1) { i = (i + 1) % list.length; draw(); } };
+      function close() { document.removeEventListener('keydown', key); box.remove(); }
+      box.addEventListener('click', function (e) { if (e.target === box) close(); });
+      document.addEventListener('keydown', key);
+      document.body.appendChild(box); draw();
+    }
+    function wireMedia(x, editable, id) {
+      var all = (x.assets || []).filter(function (a) { return a && a.url; });
+      var posted = all.filter(POSTED);
+      var groups = { p: posted, c: all.filter(function (a) { return a.type === 'cover'; }), s: all.filter(function (a) { return a.type === 'storyboard'; }) };
+      var fr = $('mFrame');
+      if (fr) fr.onclick = function (e) { if (e.target.closest('.arw')) return; lightbox(posted, mIdx); };
+      var pv = $('mPrev'), nx = $('mNext');
+      if (pv) pv.onclick = function () { mIdx = (mIdx - 1 + posted.length) % posted.length; redrawMedia(x, editable, id); };
+      if (nx) nx.onclick = function () { mIdx = (mIdx + 1) % posted.length; redrawMedia(x, editable, id); };
+      var im = $('mImg');
+      if (im) { var chk = function () { if (TALL[x.kind] && im.naturalWidth > im.naturalHeight * 1.05) { var w = $('mWarn'); if (w) { w.className = 'msg bad'; w.textContent = 'This picture is wide, so on a ' + (KIND[x.kind] || x.kind).toLowerCase() + ' it shows with dark bars above and below, as here. A tall (9:16) picture fills the screen.'; } } }; if (im.complete) chk(); else im.onload = chk; }
+      Array.prototype.forEach.call(app.querySelectorAll('[data-open]'), function (t) { t.onclick = function () { var p = t.getAttribute('data-open').split(':'); lightbox(groups[p[0]], +p[1]); }; });
+      if (!editable) return;
+      var file = $('mFile'), target = null;
+      var msg = function (t, bad) { var m = $('mMsg'); if (m) { m.className = 'msg' + (bad ? ' bad' : ''); m.textContent = t; } };
+      var save = function (newPosted, done) {
+        var rest = all.filter(function (a) { return !POSTED(a); });
+        api({ action: 'slot_save', id: id, fields: { assets: newPosted.concat(rest) } }).then(function (res) {
+          if (res.error) { msg(res.error === 'already_posted' ? 'It has gone out already; it cannot change now.' : res.error, true); return; }
+          refreshBrands(); drawSlot(id);
+          setTimeout(function () { var s2 = $('smsg'); if (s2) { s2.className = 'msg'; s2.textContent = done + (res.repushed ? (res.repushed.error ? ' Metricool did not take it: ' + (res.repushed.detail || res.repushed.error) : ' Sent to Metricool again.') : '') + ' Logan has a note saying what changed.'; } }, 500);
+        });
+      };
+      var add = $('mAdd'); if (add) add.onclick = function () { target = -1; file.value = ''; file.click(); };
+      Array.prototype.forEach.call(app.querySelectorAll('[data-rep]'), function (b) { b.onclick = function () { target = +b.getAttribute('data-rep'); file.value = ''; file.click(); }; });
+      Array.prototype.forEach.call(app.querySelectorAll('[data-del]'), function (b) { b.onclick = function () {
+        var i = +b.getAttribute('data-del'); if (!confirm('Take ' + fileOf(posted[i].url) + ' out of this post?')) return;
+        mIdx = 0; save(posted.filter(function (_, j) { return j !== i; }), 'Taken out.');
+      }; });
+      file.onchange = function () {
+        var f = file.files && file.files[0]; if (!f) return;
+        if (f.size > 300 * 1024 * 1024) { msg('That file is over 300 MB.', true); return; }
+        msg('Uploading ' + f.name + '…');
+        api({ action: 'asset_upload', id: id, name: f.name, type: f.type, size: f.size }).then(function (r) {
+          if (r.error) { msg(r.error === 'bad_type' ? 'Use a JPEG, PNG, WebP or GIF picture, or an MP4, MOV or WebM video.' : r.error, true); return; }
+          return fetch(r.upload_url, { method: 'PUT', headers: { 'Content-Type': f.type, 'x-upsert': 'true' }, body: f }).then(function (up) {
+            if (!up.ok) { msg('The upload did not go through (' + up.status + '). Try again.', true); return; }
+            var item = { url: r.url, type: r.kind };
+            var next = posted.slice();
+            if (target >= 0) { next[target] = item; mIdx = target; save(next, 'Replaced.'); } else { next.push(item); mIdx = next.length - 1; save(next, 'Added.'); }
+          });
+        }).catch(function () { msg('The upload did not go through. Try again.', true); });
+      };
+    }
+    function redrawMedia(x, editable, id) {
+      var p = app.querySelector('.media.panel'); if (!p) return;
+      var t = document.createElement('div'); t.innerHTML = mediaPanel(x, editable); p.replaceWith(t.firstChild); wireMedia(x, editable, id);
+    }
     function drawSlot(id) {
+      if (mSlot !== id) { mIdx = 0; mSlot = id; }
       app.innerHTML = top('plan') + '<p class="msg">Reading the slot…</p>'; wireTop();
       api({ action: 'slot_get', id: id }).then(function (r) {
         if (r.error) { app.innerHTML = top('plan') + '<div class="err">' + esc(r.error === 'forbidden' ? 'You do not work on this brand.' : r.error === 'not_found' ? 'That slot is gone.' : r.error) + '</div>'; wireTop(); return; }
@@ -489,9 +693,9 @@
         var canBack = ed && ['proposed', 'approved', 'scheduled', 'failed', 'manual'].indexOf(x.status) >= 0;
         var canSkip = ed && ['posted', 'skipped'].indexOf(x.status) < 0;
         app.innerHTML = top('plan') +
-          '<p class="crumb"><a href="#plan/' + x.brand_slug + '/' + wk + '">' + esc(bi.name || x.brand_slug) + '</a> <span>›</span> <a href="#plan/' + x.brand_slug + '/' + wk + '">Week of ' + esc(dayLabel(wk)) + '</a> <span>›</span> <span>' + esc((x.title || x.caption || 'Slot').slice(0, 60)) + '</span></p>' +
+          '<p class="crumb"><a href="#days/' + x.brand_slug + '/up/all">' + esc(bi.name || x.brand_slug) + '</a> <span>›</span> <a href="#day/' + x.brand_slug + '/' + eastDay(new Date(x.slot_at)) + '/all">' + esc(dayLabel(eastDay(new Date(x.slot_at)), true)) + '</a> <span>›</span> <span>' + esc((x.title || x.caption || 'Slot').slice(0, 60)) + '</span></p>' +
           '<div class="two"><div>' +
-            '<div class="media panel">' + (assets.length ? assets.map(function (a, i) { return a.type === 'video' ? '<video controls preload="metadata" src="' + esc(a.url) + '"' + (i ? ' style="margin-top:8px"' : '') + '></video>' : '<img src="' + esc(a.url) + '" alt=""' + (i ? ' style="margin-top:8px"' : '') + '>'; }).join('') : '<div class="empty">No picture or video yet.</div>') + '</div>' +
+            mediaPanel(x, editable) +
             (Object.keys(urls).length ? '<div class="panel"><h2>Where it went out</h2>' + Object.keys(urls).map(function (n) { return '<div><a href="' + esc(urls[n]) + '" target="_blank" rel="noopener">' + esc(netName(n)) + '</a></div>'; }).join('') + '</div>' : '') +
             (Object.keys(m).length ? '<div class="panel"><h2>How it did</h2>' + Object.keys(m).map(function (n) { var mm = m[n] || {}; var ks = Object.keys(METRIC).filter(function (k) { return mm[k] != null; }); return '<p style="font-weight:800;margin:6px 0">' + esc(netName(n)) + '</p><div class="metrics">' + ks.map(function (k) { return '<div class="metric"><b>' + fmt(mm[k]) + '</b><span>' + METRIC[k] + '</span></div>'; }).join('') + '</div>'; }).join('') +
               '<p class="msg" style="margin-top:8px">Updated ' + esc(x.metrics_at ? when(x.metrics_at) : '') + '. The numbers refresh every 15 minutes.</p></div>' : (x.status === 'posted' ? '<div class="panel"><h2>How it did</h2><p class="msg">The numbers arrive within the hour after it goes out.</p></div>' : '')) +
@@ -515,7 +719,7 @@
               (editable ? '<div class="acts"><button class="btn" type="button" id="save">Save changes</button>' + (x.status === 'scheduled' ? '<span class="msg" style="margin:6px 0 0">Saving sends the change to Metricool.</span>' : '') + '</div><p class="msg" id="fmsg"></p>' : '') + '</div>' +
             (r.edits.length ? '<div class="panel"><h2>History</h2><div class="hist">' + r.edits.map(function (e) { return '<div>' + esc(when(e.at)) + ' · ' + esc(e.by_name) + ' · ' + esc(e.field === 'status' ? 'set it to ' + (SS[e.new_value] || e.new_value) : e.field === 'pushed' ? 'sent it to Metricool' : e.field === 'created' ? 'made it' : 'changed the ' + e.field.replace('_', ' ')) + '</div>'; }).join('') + '</div></div>' : '') +
           '</div></div>';
-        wireTop(); wireCount();
+        wireTop(); wireCount(); wireMedia(x, editable, id);
         var say = function (id2, t, bad) { var e = $(id2); if (e) { e.className = 'msg' + (bad ? ' bad' : ''); e.textContent = t; } };
         var after = function (res, okText) {
           if (res && res.error) { say('smsg', res.error === 'time_passed' ? 'The time has passed. Pick a new time, save, then approve.' : (res.detail || res.error), true); return; }
@@ -545,7 +749,7 @@
       var b = brandOf(st.brand);
       if (!me.admin || !b) { app.innerHTML = top('plan') + '<div class="empty">Only Logan and the super admins add slots.</div>'; wireTop(); return; }
       var x = { slot_at: eastIso((day || eastDay(new Date())) + 'T12:00'), kind: 'post', channels: (b.channels || []).slice(), caption: '' };
-      app.innerHTML = top('plan') + '<p class="crumb"><a href="#plan/' + b.slug + '">' + esc(b.name) + '</a> <span>›</span> <span>New slot</span></p>' +
+      app.innerHTML = top('plan') + '<p class="crumb"><a href="#days/' + b.slug + '/up/all">' + esc(b.name) + '</a> <span>›</span> <span>New slot</span></p>' +
         '<div class="panel" style="max-width:none">' + slotForm(x, b, true) + '<div class="acts"><button class="btn" id="create" type="button">Save as Waiting for approval</button></div><p class="msg" id="fmsg"></p></div>';
       wireTop(); wireCount();
       $('create').onclick = function () {
@@ -555,7 +759,7 @@
     }
 
     function drawNotes() {
-      if (!me.admin) { location.hash = '#plan/' + st.brand; return; }
+      if (!me.admin) { location.hash = '#days/' + st.brand + '/up/all'; return; }
       app.innerHTML = top('notes') + '<p class="msg">Reading the notes…</p>'; wireTop();
       api({ action: 'notes_open' }).then(function (r) {
         var list = r.notes || [];
@@ -566,9 +770,11 @@
     }
 
     function route() {
-      var h = location.hash || '#plan/' + st.brand, m;
-      if ((m = /^#plan\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?(?:\/([a-z]+))?$/.exec(h))) drawPlan(m[1], m[2], m[3]);
-      else if (h === '#plan') drawPlan(st.brand);
+      var h = location.hash || '#days/' + st.brand + '/up/all', m;
+      if ((m = /^#days\/([a-z0-9-]+)(?:\/(up|past))?(?:\/([a-z]+))?$/.exec(h))) drawDays(m[1], m[2] || 'up', m[3]);
+      else if ((m = /^#day\/([a-z0-9-]+)\/(\d{4}-\d{2}-\d{2})(?:\/([a-z]+))?$/.exec(h))) drawDays(m[1], 'day', m[3], m[2]);
+      else if ((m = /^#plan\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?(?:\/([a-z]+))?$/.exec(h))) drawPlan(m[1], m[2], m[3]);
+      else if (h === '#plan') drawDays(st.brand, 'up');
       else if ((m = /^#slot\/([0-9a-f-]{36})$/.exec(h))) drawSlot(m[1]);
       else if ((m = /^#new\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?$/.exec(h))) drawNew(m[1], m[2]);
       else if (h === '#notes') drawNotes();
