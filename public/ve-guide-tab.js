@@ -10,10 +10,10 @@
  * Everyone sees it, signed in or not. The page is short: the Guide's banner, its one line, what is inside, and Open the Guide, which
  * goes to the full Guide page in the same window (never framed). Someone who owns the Guide (ve-guide-unlock status: purchase,
  * Diplomat, Ambassador, super admin) sees Open your Guide and no price.
- * The map is MAP below: a new Guide is one GUIDES entry and its categories in MAP. A Guide not built yet (the Nutrition Guide) falls
- * back to the one named in its row. Views and clicks go to ve_promo_track as promo 'gt-<guide slug>' with the listing, so they read
- * per Guide per listing (ve_promo_funnel). Sections with no real match yet (Nutrition, Products, Services, Studios) open the
- * Welcome Guide until their own Guide exists, Nutrition first. */
+ * The map is MAP below: a new Guide is one GUIDES entry and its categories in MAP. A Guide not in GUIDES yet falls back to the one
+ * named in its row. Views and clicks go to ve_promo_track as promo 'gt-<guide slug>' with the listing, so they read
+ * per Guide per listing (ve_promo_funnel). Sections with no real match yet (Products, Services, Studios) open the
+ * Welcome Guide until their own Guide exists. The Nutrition Guide launched 2026-10-31. */
 (function () {
   if (window.VEGuideTab) return;
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
@@ -39,6 +39,10 @@
       banner: '/public/guides/nonprofit-guide.jpg',
       line: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going, with Dani walking you through it.',
       items: ['Ten ways to fundraise and stay relevant', 'Our nonprofit series and interviews', 'Businesses near you that fit a tie-in', 'How to get found, and becoming a Nonprofit Partner'], free: 'Tip 1 free' },
+    'nutrition-guide': { tab: 'Nutrition Guide', title: 'The Nutrition Guide', guide: 'Theo', paid: true, href: '/guides/nutrition-guide',
+      banner: '/public/guides/nutrition-guide.jpg',
+      line: 'What a Vegan plate needs, nutrient by nutrient, sourced, with Theo walking you through it.',
+      items: ['B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc', 'How much, where to get it, and when to supplement', 'The physicians and health experts in our Directory', 'Our conversations with physicians on the podcast'], free: 'B12 free' },
     'group-partner': { tab: 'Group Guide', title: 'The Group Partner Guide', guide: 'Dani', paid: false, href: '/groups/welcome',
       banner: '/groups/sample/img/brunch-1.jpg', bannerFallback: '/public/guides/welcome-guide.jpg',
       line: 'Host your group\'s community and events on Vegans Explore, and earn as it grows.',
@@ -48,7 +52,7 @@
       line: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work.',
       items: ['Find your places in the Directory', 'Your community, in every chapter', 'The Guides, points and levels', 'What your $11 supports'] }
   };
-  // Category to Guide. 'nutrition-guide' is not built yet, so its rows carry the Guide that stands in for it.
+  // Category to Guide. A row's third slug stands in only while its Guide is not in GUIDES.
   var MAP = [
     [['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep', 'Food Brands'], 'vegan-dairy-guide'],
     [['Nutrition & Supplements', 'Physicians', 'Health Experts'], 'nutrition-guide', 'vegan-dairy-guide'],
