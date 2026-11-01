@@ -2569,31 +2569,32 @@ function loadBrandSite(l){
       ['Our Q1 2027 campaigns', 'Brand Partners get the front row', 'January to March 2027', '2027-04-01']
     ].filter(function(c){ return !c[3] || Date.now() < Date.parse(c[3] + 'T05:00:00Z'); });
     // Front Row Start (Sean, 2026-10-09; named after a panel): join before January 1, 2027 and the rest of 2026 is on us.
-    // The claim page and ve-claims carry it (offer=front-row): no charge today, the first quarter is charged in January.
+    // Since 2026-11-01 (canon canon-branddesk-production-wing) joining pays $111 at once for Period 1, the days until it bonus.
     // After the deadline the last slide goes back to the plain offer and its own clip (brand_door.tour_plain_last).
     var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
     var partnerLabel = FRONT_ROW ? 'Take the Front Row Start' : FIRST ? 'Be our first Brand Partner' : 'Become a Brand Partner';
-    var partnerHref = claimHref + (FRONT_ROW ? '&offer=front-row' : '');
+    var partnerHref = claimHref + (FRONT_ROW ? '&offer=front-row' : ''); // the offer param is informational since 2026-11-01; ve-claims decides the terms
     var OFFER_SLIDE = FRONT_ROW
       ? { t: 'Brand Partner', h: 'Front Row Start: the rest of 2026 is on us',
-          say: 'Join before January first, and the rest of this year is on us. Your first quarter starts in January, with a front-row seat on our campaigns.',
-          body: '<p>Join before January 1, 2027 and pay nothing today. Your first $111, in January, covers Q1 2027 and its campaigns.</p>' +
+          // New line 2026-11-01 (the plan now charges at sign-up); Maya's recording of the old line plays until this one is recorded and approved.
+          say: 'Join now, and every day until January first is on us. Your first period starts in January, with a front-row seat on our campaigns.',
+          body: '<p>Join now and every day until January 1, 2027 is on us. Your $111 today covers Period 1 (January 1 to April 21, 2027) and its campaigns.</p>' +
             '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li><li>A front-row seat on every campaign and city as it opens</li></ul>' +
             (FIRST ? '<p class="bd-small">' + B + ' would be our first Brand Partner.</p>' : '') +
             '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
             '<a class="bd-btn o" href="' + esc(askHref) + '">Ask our team a question</a></div>' +
             '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
-          pic: '<div class="bd-price"><small>Front Row Start</small><b>$0</b><span>today</span><em>Then $111 a quarter from January 2027.<br>Renews every three months. Cancel any time.</em></div>' }
-      : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a quarter',
-          say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.'
-            : 'Become a Brand Partner. It\'s $111 a quarter for a seat at the table, and a first look at everything we build next.',
+          pic: '<div class="bd-price"><small>Front Row Start</small><b>$111</b><span>today</span><em>Covers Period 1, from January 1, 2027. Until then is on us.<br>Then $111 every 111 days. Cancel any time.</em></div>' }
+      : { t: 'Brand Partner', h: FIRST ? 'Be our first Brand Partner' : 'Brand Partner: $111 a period',
+          say: FIRST ? 'Join us as our first Brand Partner. It\'s $111 a period for a seat at the table, and a first look at everything we build next.'
+            : 'Become a Brand Partner. It\'s $111 a period for a seat at the table, and a first look at everything we build next.',
           body: '<ul class="bd-list bd-perks"><li>Your featured brand page, kept up with your products</li><li>Your live dashboard: visits, products opened, store aisles opened</li>' +
             '<li>A front-row seat on every campaign and city as it opens</li></ul>' +
             (FIRST ? '<p class="bd-small">We are early. South Florida is our first live chapter, and ' + B + ' would be our first Brand Partner.</p>' : '') +
             '<div class="bd-btns"><a class="bd-btn" href="' + esc(partnerHref) + '" target="_top">' + partnerLabel + '</a>' +
             '<a class="bd-btn o" href="' + esc(askHref) + '">Ask our team a question</a></div>' +
             '<p class="bd-later"><a href="' + esc(laterHref) + '">Not yet, send me the numbers</a></p>',
-          pic: '<div class="bd-price"><b>$111</b><span>a quarter</span><em>Renews every three months. Cancel any time.</em></div>' };
+          pic: '<div class="bd-price"><b>$111</b><span>a period</span><em>A period is 111 days, the same for every Partner. Join mid-period and pay only for the days left. Cancel any time.</em></div>' };
     var SLIDES = [
       { t: 'Welcome', h: 'We built ' + B + ' a page on Vegans Explore',
         say: 'Hi! I\'m ' + NARR_NAME + (firstGuide ? ', the Guide behind the Vegan ' + firstGuide[0] : '') + '. ' + l.name + ', you\'re already in my guide, so we built you your own page. Take a look around.',
@@ -2653,7 +2654,7 @@ function loadBrandSite(l){
       { t: 'Welcome', h: 'Welcome to the front row, ' + B,
         say: 'Welcome to the front row, ' + l.name + '! Your seat is saved, nothing is charged until January, and I\'ll walk you through everything.',
         body: '<p>This page is your home with us now. Here is where things stand:</p>' +
-          '<ul class="bd-steps"><li class="ok"><b>Your seat is saved.</b> Front Row Start: your first quarter begins in January 2027.</li>' +
+          '<ul class="bd-steps"><li class="ok"><b>Your seat is saved.</b> Front Row Start: your first period begins January 1, 2027, and every day until then is on us.</li>' +
           '<li class="' + (PS.confirmed ? 'ok' : 'wait') + '"><b>' + (PS.confirmed ? 'We confirmed it is you.' : 'We are confirming it is you.') + '</b> ' + (PS.confirmed ? 'Your full dashboard is open.' : 'Your full dashboard opens as soon as we do. We will email you.') + '</li>' +
           '<li><b>Next:</b> a quick tour of how this works and the opportunities ahead.</li></ul>' +
           '<div class="bd-btns">' + (BD.start_tour ? '<button type="button" class="bd-btn" data-bd-start>&#9654; Start the tour</button>' : '') + '</div>',
@@ -3420,7 +3421,7 @@ function mountPartnerLocked(el, l){
       body: '<p>' + (claimed ? 'On the team? Sign in with the account that claimed this page.' : 'Claim ' + N + ' to open its dashboard.') + ' Running a different Vegan business? Apply to be listed.</p>',
       pic: '<div class="vgt-choices">' +
         (claimed ? (signedIn ? '' : '<a href="#" data-pd-signin><small>On the team</small><b>Sign in</b><span>With the account that claimed ' + N + '.</span></a>')
-          : '<a href="' + esc(claimHref) + '"><small>This is mine</small><b>Claim ' + N + '</b><span>Your page, your numbers and your dashboard.' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? ' Front Row Start: nothing today, the rest of 2026 on us.' : '') + '</span></a>') +
+          : '<a href="' + esc(claimHref) + '"><small>This is mine</small><b>Claim ' + N + '</b><span>Your page, your numbers and your dashboard.' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? ' Front Row Start: join now and every day until January is on us.' : '') + '</span></a>') +
         '<a href="/claim?add=1"><small>A different business</small><b>Apply to be listed</b><span>Any Vegan business, anywhere.</span></a></div>' }
   ]});
   pdRail();
@@ -3602,7 +3603,7 @@ function partnerUpsell(l){
   var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   return '<div class="bd-locked"><p><b>' + esc(l.name) + ' is yours.</b> Keep your details, photos and story up to date from this page.</p>' +
     '<p>Become a Founding Member, $11 one time, and your whole dashboard opens: your numbers (views, visitors and what people open), our campaigns and ads, the audit and the Guides.' +
-    ' The Partner plan adds a front-row seat on every campaign and ads placed for you' + (front ? ': nothing today, the rest of 2026 on us, then $111 a quarter from January 2027.' : ', $111 a quarter.') + '</p>' +
+    ' The Partner plan adds a front-row seat on every campaign and ads placed for you' + (front ? ': join now and every day until January 1 is on us: your $111 covers Period 1 (January 1 to April 21, 2027), then $111 every 111 days.' : ', $111 a period of 111 days.') + '</p>' +
     '<div class="bd-btns"><button type="button" class="bd-btn" onclick="this.disabled=true;VEAuth.startEntryCheckout(1100).then(function(d){if(d&&d.url)location.href=d.url;})">Become a Founding Member, $11</button>' +
     '<a class="bd-btn o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand">' + (front ? 'Take my front-row seat' : 'Become a Partner') + '</a></div></div>';
 }

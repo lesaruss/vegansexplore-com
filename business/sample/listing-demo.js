@@ -69,7 +69,7 @@
     checklist: [{ k: 'logo', done: true }, { k: 'description', done: true }, { k: 'photos', done: true }, { k: 'hours', done: true }, { k: 'menu', done: true }, { k: 'audit', done: false }],
     cards: [
       { kind: 'new', title: 'Check-ins are live', body: 'Members check in from your page when they visit. See how many come back under Check-ins.', cta_label: 'See check-ins', cta_url: '?pd=checkins' },
-      { kind: 'offer', title: 'Front Row Start', body: 'Become a Partner before January 1: nothing today, the rest of 2026 on us, then $111 a quarter.', cta_label: 'See the plan', cta_url: '?pd=plan' },
+      { kind: 'offer', title: 'Front Row Start', body: 'Become a Partner now and every day until January 1 is on us. $111 covers Period 1, then $111 every 111 days.', cta_label: 'See the plan', cta_url: '?pd=plan' },
       { kind: 'tip', title: 'Menus get opened first', body: 'Keep your menu current and mark your favorites as Featured.', cta_label: 'Open your menu', cta_url: '?pd=menu' }
     ],
     menu_count: MENU.length,

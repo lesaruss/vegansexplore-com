@@ -468,6 +468,18 @@ to 90 is prorated; days 91 to 111 are the Preparation window, full $111 for the 
 Start now charges $111 at sign-up** (the days before January 1 are bonus); anyone already on the old no-charge trial keeps those terms.
 Build order: the Partner checkout first, then renaming the Studio, the foundation, Social and Website, the plan engine, our own brands
 first.
+**The Partner checkout, built 2026-11-01 on branch `claude/festive-cori-cvqs2o`, not deployed** (Sean: "Logan, build it"). `ve-claims`
+`partnerTerms()` is the shared calendar (`PERIOD_DAYS` 111, `PREP_DAYS` 21, Period 1 from 2027-01-01 Eastern) and the public action
+`partner_terms` (`at` previews a date); tier `brand` checks out as a one-time line for what is due now plus a $111 price every 111 days
+(`interval` day, `interval_count` 111) on a trial to the next shared renewal at noon Eastern; `metadata.offer` front_row | prorated |
+preparation and `metadata.period`. Checked 2026-11-01: today $111 renewing April 22, 2027; March 31, 2027 $22; April 1 to 21 the
+Preparation window, $111 for Period 2 renewing August 11. The `offer=front-row` URL param is informational now. `claim.html` mirrors the
+calendar (`partnerTerms`, `partnerNow`); the Partner wording on `/claim`, `/business`, the listing page and brand tour, the business
+dashboard, the Restaurant Guide, the sample business and Preview journeys, and `/policies#business` (The Partner plan) say it; business
+outreach's Day 4 email lost "No charge today" (migration `20261101_partner_periods_outreach_day4.sql`, applied; nothing had been sent).
+No Partner membership existed, so nobody holds the old no-charge trial. **Before deploying**: three recorded lines say the old terms and
+need new recordings Sean approves: Liz's `j5` on the claim offer (shown as a still with the new words until then), and Maya's last brand
+tour slide (`brand_door.tour`, before January) and `tour_plain_last` (after); then `ve-claims` and the pages go out together.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
