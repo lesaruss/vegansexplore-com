@@ -206,10 +206,12 @@ Deno.serve(async (req) => {
       }
     }
 
-    const [{ data: internal, error: ie }, { data: chaps }, { data: guideTabs, error: ge }] = await Promise.all([
+    const [{ data: internal, error: ie }, { data: chaps }, { data: guideTabs, error: ge }, { data: google }] = await Promise.all([
       db.rpc('ve_analytics_internal', { p_from: from, p_to: to, p_prev_from: prev_from, p_prev_to: prev_to }),
       db.from('ve_outreach_cities').select('community_slug, name, states, cities').eq('kind', 'city').neq('community_slug', 'brands'),
       db.rpc('ve_guide_tab_stats', { p_from: from, p_to: to, p_prev_from: prev_from, p_prev_to: prev_to }),
+      // Google costs (Sean, 2026-11-01): our Places requests by day and job, the caps and the month's estimate (ve_google_report).
+      db.rpc('ve_google_report', { p_days: 31 }),
     ]);
     if (ge) console.error('ve-analytics guide tabs:', ge);
     if (ie) { console.error('ve-analytics internal:', ie); return json({ error: 'load_failed' }, 500); }
@@ -250,7 +252,7 @@ Deno.serve(async (req) => {
     }
     out.cities = Object.values(cities).sort((a, b) => b.users - a.users).slice(0, 200);
 
-    return json({ ok: true, bots: hideBots ? 'hide' : 'show', ga: ga ? out : null, ga_error: gaError, fetched_at: fetchedAt, internal: { ...internal, chapters: undefined, content: undefined }, chapters, content, guide_tabs: guideTabs ?? { guides: [], listings: [] } });
+    return json({ ok: true, bots: hideBots ? 'hide' : 'show', ga: ga ? out : null, ga_error: gaError, fetched_at: fetchedAt, internal: { ...internal, chapters: undefined, content: undefined }, chapters, content, guide_tabs: guideTabs ?? { guides: [], listings: [] }, google: google ?? null });
   } catch (e) {
     console.error('ve-analytics:', e);
     return json({ error: 'server_error' }, 500);

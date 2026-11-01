@@ -4372,6 +4372,16 @@ day, shared by every job (the backlog check every 2 minutes, the nightly essenti
 scan of more than about 200 Google calls, give Sean the call count and the estimated cost, and wait for his go.** Schedule big imports right
 after the midnight-Pacific reset and split them across nights rather than raising the cap. Sean sees the bill in Google Cloud > Billing >
 Reports (filter Places API); a budget alert lives in Billing > Budgets & alerts.
+**The meter and caps** (Sean, 2026-11-01: "we need to be monitoring this carefully and setting caps"; migration
+`20261101_google_spend_meter.sql`): every Places request from `ve-discover`, `ve-listing-about`, `ve-restaurant-audit` and `ve-venues` is
+counted in `ve_google_usage` (day, search | details, job; `ve_google_count`), and each job checks `ve_google_room` before it starts: a
+background job (backlog check, essentials, About writer, check-ups) runs only a batch that fits its share of the day's cap and otherwise waits
+for tomorrow (so nothing is marked not found for lack of an answer), and what a person starts (Add a listing, the free and full audit, Find on
+Google) gets `google_limit` only when the whole cap is used. Caps, the background share, list prices, free monthly amounts and the monthly
+budget are `ve_site_settings` `google_budget` (Logan's defaults: 40 searches and 40 place details a day, background 60%, $15 a month).
+**Depot > Analytics > Google costs** (`#google`, `ve-analytics` returns `ve_google_report`) shows today against the caps, the month's
+requests and estimated cost against the budget, and every day by job. A one-time scan Sean approves runs outside the daily cap but counts
+toward the month (`once:<task>`). Other Google services we use (YouTube, Books, Analytics, sign-in, PageSpeed) are free and not metered.
 
 ## pg_net stalls (2026-10-28)
 

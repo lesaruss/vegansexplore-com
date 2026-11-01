@@ -41,6 +41,16 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
+
+// Google spend meter (Sean, 2026-11-01; migration 20261101_google_spend_meter.sql): every Places request is counted per job per day,
+// and a job checks the day's room before it starts (background jobs get their share; what a person starts keeps the rest).
+async function gCount(kind: 'search' | 'details', job: string) { try { await db.rpc('ve_google_count', { p_kind: kind, p_job: job, p_n: 1 }); } catch { /* counting never blocks */ } }
+async function gRoom(kind: 'search' | 'details', background: boolean): Promise<number> {
+  const { data, error } = await db.rpc('ve_google_room', { p_kind: kind, p_background: background });
+  return error ? 0 : Number(data ?? 0);
+}
+const GOOGLE_LIMIT = { error: 'google_limit', message: 'Our daily Google allowance is used up. It resets at midnight Pacific.' };
+
 const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'], 'supermarket-guide': ['supermarket'] };
 const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : k === 'supermarket' ? 'supermarket-guide' : 'stadium-arena-guide');
 // Every row of a query, a thousand at a time (a chain has hundreds of stores, each with its sections).
@@ -447,6 +457,8 @@ Deno.serve(async (req) => {
     if (!v) return json({ error: 'not_found' }, 404);
     const key = await secret('GOOGLE_PLACES_API_KEY');
     if (!key) return json({ error: 'no_key' }, 500);
+    if ((await gRoom('search', false)) < 1) return json(GOOGLE_LIMIT, 429);
+    await gCount('search', 've-venues:locate');
     const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.types' },

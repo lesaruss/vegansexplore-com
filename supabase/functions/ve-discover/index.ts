@@ -51,6 +51,16 @@ import Anthropic from 'npm:@anthropic-ai/sdk';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
+
+// Google spend meter (Sean, 2026-11-01; migration 20261101_google_spend_meter.sql): every Places request is counted per job per day,
+// and a job checks the day's room before it starts (background jobs get their share; what a person starts keeps the rest).
+async function gCount(kind: 'search' | 'details', job: string) { try { await db.rpc('ve_google_count', { p_kind: kind, p_job: job, p_n: 1 }); } catch { /* counting never blocks */ } }
+async function gRoom(kind: 'search' | 'details', background: boolean): Promise<number> {
+  const { data, error } = await db.rpc('ve_google_room', { p_kind: kind, p_background: background });
+  return error ? 0 : Number(data ?? 0);
+}
+const GOOGLE_LIMIT = { error: 'google_limit', message: 'Our daily Google allowance is used up. It resets at midnight Pacific.' };
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const BATCH = { ig: 40, google: 25, parallel: 5 };
 
@@ -148,6 +158,7 @@ const FIELDS = ['id', 'displayName', 'formattedAddress', 'addressComponents', 'l
 async function findPlace(name: string, where: string, site: string, state = '') {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) throw new Error('no Google key');
+  await gCount('search', 've-discover:backlog');
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': FIELDS.map((f) => 'places.' + f).join(',') },
@@ -343,6 +354,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
 async function searchPlaces(q: string) {
   const key = await secret('GOOGLE_PLACES_API_KEY');
   if (!key) throw new Error('no Google key');
+  await gCount('search', 've-discover:add_search');
   const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': [...FIELDS, 'regularOpeningHours'].map((f) => 'places.' + f).join(',') },
@@ -731,7 +743,12 @@ Deno.serve(async (req) => {
 
   if (action === 'backlog_run') {
     if (!who.ops) return json({ error: 'ops_only' }, 403);
-    return json(await backlogRun(Math.max(0, Math.min(+body.ig || BATCH.ig, 60)), Math.max(0, Math.min(+body.google || BATCH.google, 40))));
+    // The Google batch fits the day's room (an Instagram check can also look a place up on Google, so it pauses near the cap).
+    const room = await gRoom('search', true);
+    const gN = Math.min(Math.max(0, Math.min(+body.google || BATCH.google, 40)), Math.max(0, room - 5));
+    const igN = room < 5 ? 0 : Math.max(0, Math.min(+body.ig || BATCH.ig, 60));
+    if (!gN && !igN) return json({ ok: true, skipped: 'google_limit', room });
+    return json(await backlogRun(igN, gN));
   }
   if (action === 'logo_sweep') {
     if (!who.ops && !who.admin) return json({ error: 'admins_only' }, 403);
@@ -743,6 +760,7 @@ Deno.serve(async (req) => {
     if (!who.admin) return json({ error: 'admins_only' }, 403);
     const name = clean(body.name, 120), where = clean(body.where, 120);
     if (name.length < 2) return json({ error: 'name' }, 400);
+    if ((await gRoom('search', false)) < 1) return json(GOOGLE_LIMIT, 429);
     try { return json({ ok: true, places: await searchPlaces(`${name} ${where}`.trim()) }); }
     catch (e) { return json({ error: String((e as Error).message) }, 502); }
   }

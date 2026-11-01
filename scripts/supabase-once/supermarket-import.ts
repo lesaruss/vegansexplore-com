@@ -158,6 +158,8 @@ async function importPublix(sql: any, onlyHub: string | null, part = 0, of = 1) 
       where not exists (select 1 from ve_venues where google_place_id = ${s.id}) returning id`;
     if (r.length) { added++; await sql`select ve_supermarket_seed_store(${r[0].id})`; }
   }
+  // An approved scan runs outside the daily cap but still counts toward the month (the Google meter, 2026-11-01).
+  await sql`select ve_google_count('search', 'once:publix-import', ${calls})`;
   const byHub: Record<string, number> = {}; for (const s of found.values()) byHub[s.hub] = (byHub[s.hub] || 0) + 1;
   const total = await sql`select hub, count(*)::int n from ve_venues where kind = 'supermarket' and chain_listing_id = ${chain} group by hub order by hub`;
   return { hub: onlyHub, part, of, cities: cities.length, calls, retries, errors, found: found.size, added, byHub, total };

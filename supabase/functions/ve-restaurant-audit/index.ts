@@ -51,6 +51,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
+
+// Google spend meter (Sean, 2026-11-01; migration 20261101_google_spend_meter.sql): every Places request is counted per job per day,
+// and a job checks the day's room before it starts (background jobs get their share; what a person starts keeps the rest).
+async function gCount(kind: 'search' | 'details', job: string) { try { await db.rpc('ve_google_count', { p_kind: kind, p_job: job, p_n: 1 }); } catch { /* counting never blocks */ } }
+async function gRoom(kind: 'search' | 'details', background: boolean): Promise<number> {
+  const { data, error } = await db.rpc('ve_google_room', { p_kind: kind, p_background: background });
+  return error ? 0 : Number(data ?? 0);
+}
+let G_JOB = 'other'; // which job is asking Google, for the meter
+const GOOGLE_LIMIT = { error: 'google_limit', message: 'Our daily Google allowance is used up. It resets at midnight Pacific.' };
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 const UA = 'Mozilla/5.0 (compatible; VegansExploreAudit/1.0; +https://vegansexplore.com/guides/vegan-restaurant-guide)';
 const LIMITS = { freePerVisitor: 5, fullPerMember: 10, freeReuseDays: 7 };
@@ -178,12 +189,14 @@ async function google(placeId: string, name: string, city: string, street = '') 
   if (!key) return { error: 'no key' };
   try {
     if (placeId) {
+      await gCount('details', 've-restaurant-audit:' + G_JOB);
       const r = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(placeId)}`, {
         headers: { 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': PLACE_FIELDS.join(',') },
       });
       if (r.ok) return { place: await r.json() };
     }
     if (!name) return { place: null };
+    await gCount('search', 've-restaurant-audit:' + G_JOB);
     const r = await fetch('https://places.googleapis.com/v1/places:searchText', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': key, 'X-Goog-FieldMask': PLACE_FIELDS.map((f) => 'places.' + f).join(',') },
@@ -783,6 +796,7 @@ Deno.serve(async (req) => {
   }
 
   if (action === 'free') {
+    G_JOB = 'free';
     const r = await inputsFrom(body);
     if (r.error) return json({ error: r.error }, 400);
     const ip = await ipHash(req);
@@ -792,6 +806,7 @@ Deno.serve(async (req) => {
     q = r.listing_id ? q.eq('listing_id', r.listing_id) : q.is('listing_id', null).eq('inputs->>name', r.inputs.name).eq('inputs->>website', r.inputs.website || '');
     const { data: prior } = await q;
     if (prior?.[0] && !body.fresh) return json({ id: prior[0].id, status: prior[0].status, cached: true });
+    if (Math.min(await gRoom('details', false), await gRoom('search', false)) < 1) return json(GOOGLE_LIMIT, 429);
     if (!who.ops) {
       const { count } = await db.from('ve_audits').select('id', { count: 'exact', head: true }).eq('ip_hash', ip).gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
       if ((count || 0) >= LIMITS.freePerVisitor) return json({ error: 'limit', message: 'That is all the free checks for today. Try again tomorrow.' }, 429);
@@ -805,6 +820,8 @@ Deno.serve(async (req) => {
   }
 
   if (action === 'full') {
+    G_JOB = 'full';
+    if (Math.min(await gRoom('details', false), await gRoom('search', false)) < 1) return json(GOOGLE_LIMIT, 429);
     if (!who.ops) {
       if (!who.member) return json({ error: 'sign_in' }, 401);
       // Anyone else buys it (checkout); this free path is the team's, for a business they are talking to.
@@ -994,7 +1011,11 @@ Deno.serve(async (req) => {
   // is a ve_listing_edits row (meta.by google | website) so the Depot can undo it.
   if (action === 'essentials') {
     if (!who.ops) return json({ error: 'ops_only' }, 403);
-    const { data: due } = await db.rpc('ve_listing_essentials_due', { p_limit: Math.max(1, Math.min(+body.limit || 15, 40)) });
+    G_JOB = 'essentials';
+    // One place lookup per listing (a search too when we hold no Google place): the batch fits the day's room.
+    const gLimit = Math.min(Math.max(1, Math.min(+body.limit || 15, 40)), Math.floor(Math.min(await gRoom('details', true), await gRoom('search', true)) / 1));
+    if (gLimit < 1) return json({ ok: true, skipped: 'google_limit' });
+    const { data: due } = await db.rpc('ve_listing_essentials_due', { p_limit: gLimit });
     const out: any[] = [];
     const run = async (d: any) => {
       const { data: l } = await db.from('listings').select('id, name, google_place_id, google_hours_json, address_street, address_city, address_state, address_zip, website, instagram, facebook, tiktok, latitude, longitude').eq('id', d.id).single();
@@ -1063,7 +1084,11 @@ Deno.serve(async (req) => {
   // ---- Monthly check-ups ----
   if (action === 'sweep') {
     if (!who.ops) return json({ error: 'ops_only' }, 403);
-    const { data: due } = await db.rpc('ve_audit_sweep_due', { p_limit: Math.max(1, Math.min(+body.limit || 3, 10)) });
+    G_JOB = 'checkup';
+    // A check-up is a full audit (up to two Google requests): the batch fits the day's room.
+    const sLimit = Math.min(Math.max(1, Math.min(+body.limit || 3, 10)), Math.floor(Math.min(await gRoom('details', true), await gRoom('search', true)) / 2));
+    if (sLimit < 1) return json({ ok: true, skipped: 'google_limit' });
+    const { data: due } = await db.rpc('ve_audit_sweep_due', { p_limit: sLimit });
     const ids: string[] = [], started: string[] = [];
     for (const d of (due || []) as any[]) {
       const r = await inputsFrom({ listing_slug: d.slug });

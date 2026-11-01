@@ -188,7 +188,7 @@
     function store(k, v) { try { if (v === undefined) return JSON.parse(localStorage.getItem('ve_an_' + k) || 'null'); localStorage.setItem('ve_an_' + k, JSON.stringify(v)); } catch (e) { return null; } }
 
     var TABS = [['pages', 'Top pages'], ['communities', 'Communities'], ['pulse', 'Daily Pulse'], ['directory', 'Directory'],
-      ['sources', 'Traffic sources'], ['places', 'Places'], ['campaigns', 'Campaigns'], ['ads', 'Ads'], ['guidetabs', 'Guide tabs'], ['members', 'Members']];
+      ['sources', 'Traffic sources'], ['places', 'Places'], ['campaigns', 'Campaigns'], ['ads', 'Ads'], ['guidetabs', 'Guide tabs'], ['members', 'Members'], ['google', 'Google costs']];
     var CHAPTER_NAME = {};
     var state = { range: '30', from: '', to: '', bots: true, tab: 'pages', data: null, q: {}, page: {}, size: {}, sort: {} };
 
@@ -494,6 +494,37 @@
             { k: 'clicks', h: 'Clicked', n: 1, w: function (r) { return fmt(r.clicks); } },
             { k: 'rate', h: 'Click rate', n: 1, w: function (r) { return rate(r.clicks, r.views); } },
           ], { noun: 'listings or Guides', sort: { k: 'views' }, empty: 'No one has seen a Guide tab in this period yet.', text: function (r) { return r.name + ' ' + r.category + ' ' + r.gname; } });
+      },
+      google: function (d) {
+        var g = d.google;
+        if (!g) return '<p class="intro">The Google meter is not answering. Try Refresh now.</p>';
+        var st = g.settings || {}, cap = st.daily || {}, used = g.today_used || {}, room = g.room || {};
+        var budget = Number(st.monthly_budget_usd || 0), spent = Number(g.month_usd || 0);
+        var mrow = function (k) { return (g.month || []).filter(function (r) { return r.kind === k; })[0] || { calls: 0, usd: 0 }; };
+        var KIND = { search: 'Searches', details: 'Place details' };
+        var JOB = { 've-discover:backlog': 'Backlog check', 've-discover:add_search': 'Add a listing', 've-listing-about': 'About writer',
+          've-restaurant-audit:essentials': 'Essentials (hours, addresses)', 've-restaurant-audit:checkup': 'Monthly check-ups',
+          've-restaurant-audit:free': 'Free audit', 've-restaurant-audit:full': 'Full audit', 've-venues:locate': 'Find a venue on Google',
+          'once:publix-import': 'Publix store import' };
+        var tile = function (h, v, sub) { return '<div class="gtile"><div class="gh">' + h + '</div><div class="gv">' + v + '</div><div class="gs">' + sub + '</div></div>'; };
+        var rows = (g.days || []).map(function (r) { return { day: r.day, kind: KIND[r.kind] || r.kind, job: JOB[r.job] || r.job, calls: r.calls }; });
+        var maxC = Math.max.apply(null, rows.map(function (r) { return r.calls; }).concat([0]));
+        return '<style>.gtiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:12px;margin:0 0 18px}.gtile{border:1px solid rgba(0,0,0,.12);border-radius:6px;padding:14px 16px;background:#fff}' +
+          '.gh{font:700 11px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:rgba(0,0,0,.6)}.gv{font:800 24px Montserrat,sans-serif;margin:6px 0 2px}.gs{font-size:13px;color:rgba(0,0,0,.68)}' +
+          '.gwarn{color:#b42318}</style>' +
+          '<p class="intro">Every request our site sends to Google Places, counted by job and day (Google\'s day, midnight Pacific). Each job checks the day\'s cap before it starts: background jobs stop at ' +
+          Math.round((st.background_share || 0.6) * 100) + '% of it, so what a person starts (Add a listing, a free audit) keeps the rest. The cost is an estimate at Google\'s list price after its free monthly amount; Google Cloud > Billing > Reports has the real bill. Counting started 2026-11-01.</p>' +
+          '<div class="gtiles">' +
+          tile('This month, estimated', '<span class="' + (budget && spent >= budget * 0.9 ? 'gwarn' : '') + '">$' + spent.toFixed(2) + '</span>', 'of a $' + budget.toFixed(0) + ' monthly budget') +
+          tile('Searches today', fmt(used.search || 0) + ' / ' + fmt(cap.search || 0), fmt(room.search_background || 0) + ' left for background jobs') +
+          tile('Place details today', fmt(used.details || 0) + ' / ' + fmt(cap.details || 0), fmt(room.details_background || 0) + ' left for background jobs') +
+          tile('This month', fmt(mrow('search').calls) + ' searches', fmt(mrow('details').calls) + ' place details') +
+          '</div><h3>By day and job</h3>' + table('gdays', rows, [
+            { k: 'day', h: 'Day', cls: 't', label: false, w: function (r) { return nice(r.day); } },
+            { k: 'job', h: 'Job', w: function (r) { return esc(r.job); } },
+            { k: 'kind', h: 'Kind', w: function (r) { return '<span class="chip">' + esc(r.kind) + '</span>'; } },
+            { k: 'calls', h: 'Requests', n: 1, w: function (r) { return bar(r.calls, maxC); } },
+          ], { noun: 'rows', sort: { k: 'day' }, empty: 'No Google requests counted yet.', text: function (r) { return r.job + ' ' + r.kind; } });
       },
       members: function (d) {
         var m = d.internal.members || {}, rows = (m.by_day || []).slice().reverse();
