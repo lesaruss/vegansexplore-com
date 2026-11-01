@@ -87,6 +87,10 @@ What works for us is the standard; every time we learn something, the standard a
 6. Operations (HR, finance, compliance) stays a separate wing of HQ.
 7. **The door is the $111 a quarter Partner plan** (Sean, 2026-11-01: "It's just another perk of the membership"). BrandDesk is a perk
    of it; wizards are rented on top. Front Row Start stays: the official start is January 1, 2027, and the time before it is bonus
-   time, the early Partners' equity being the feedback that makes BrandDesk better by launch.
+   time, the early Partners' equity being the feedback that makes BrandDesk better by launch. **They pay now** (Sean, 2026-11-01:
+   "I'm not going to wait to get paid until January"): the first $111 is charged at sign-up and buys the first period, which starts
+   January 1, 2027; every day from sign-up to then is bonus. **A period is 111 days**, not 90, so the first one runs to April 22, 2027
+   and they renew every 111 days after. This replaces Front Row Start's "no charge today" (a Stripe trial to January 1) in the live
+   checkout and every place that says it; Logan checks for anyone already on the trial and keeps their terms.
 8. A lapsed wizard rental: the wizard closes until renewed; finished work stays in their Library while they are a Partner. Leaving
    the plan gives 30 days to download everything.
