@@ -4496,7 +4496,11 @@ only; posts are scheduled in Metricool).
 **The studio** (Sean, 2026-11-01: "see what's slotted for the different brands... you propose things... the community manager goes
 in... make any adjustments... or leave a note that you will then take care of... you will use your connections to push it out... If
 something needs a manual thing... we know ahead of time... a calendar... track it to its metrics... between different brands...
-clients"; migration `20261101_ve_social_studio.sql`). The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
+clients"; migration `20261101_ve_social_studio.sql`). **By day is the Plan's default** (Sean, 2026-11-01: "the date is the first row and the posts are below it and all in one row... slide...
+select the date... a little bit bigger... I prefer that than the calendar"): `#days/<brand>/<up|past>/<filter>` lists each date with posts
+(Coming up, the next 90 days; Past, the last 90, newest first), the date on top and its posts in one row that slides sideways
+(`drawDays`, `.dayrow`, `.strip`); **Pick a date** or a date's heading opens that one date bigger (`#day/<brand>/<date>/<filter>`, Day
+before / Day after, Every day back); **Calendar view** is the week grid below, kept as an option. The same page opens on **Plan**: a brand picker (`ve_social_brands`: house or
 client, its Metricool brand and connected channels), the week Monday to Sunday (`#plan/<brand>/<monday>/<todo|out|posted|all>`, Back /
 This week / Next week), one card a slot (`ve_social_slots`: time, channels, kind, title, caption, first comment, links, assets, By hand
 steps, status), **Approve the N waiting**, and **New slot** for super admins. A slot (`#slot/<id>`): its pictures, Approve and schedule,
