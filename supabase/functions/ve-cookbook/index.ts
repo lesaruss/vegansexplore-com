@@ -119,7 +119,7 @@ async function countSince(table: string, col: string, id: string, extra?: (q: an
   return count || 0;
 }
 
-const FIELDS = 'id, slug, title, summary, time_text, servings, ingredients, instructions, tip, status, author_kind, author_member_id, author_guide, guide_tags, vote_count, report_count, live_at, submitted_at, review_note, created_at, photo_url, photo_illustrative';
+const FIELDS = 'id, slug, title, summary, time_text, servings, ingredients, instructions, tip, status, author_kind, author_member_id, author_guide, guide_tags, vote_count, report_count, live_at, submitted_at, review_note, created_at, photo_url, photo_illustrative, ingredient_types';
 async function shape(rows: any[]) {
   const ids = [...new Set(rows.map((r) => r.author_member_id).filter(Boolean))];
   const names: Record<string, string> = {};
@@ -132,6 +132,8 @@ async function shape(rows: any[]) {
     // Member recipes keep each ingredient as one line; older rows may carry amount and unit.
     ingredients: (Array.isArray(r.ingredients) ? r.ingredients : []).map((i: any) => typeof i === 'string' ? i : [i.amount, i.unit, i.name].filter(Boolean).join(' ')).filter(Boolean),
     steps: r.instructions || [], tip: r.tip, status: r.status, guides: r.guide_tags || [],
+    // The product type each ingredient line calls for (recipes.ingredient_types, 2026-11-01), so a member can pick their product.
+    types: Array.isArray(r.ingredient_types) ? r.ingredient_types : [],
     photo: r.photo_url || null, photo_illustrative: !!r.photo_illustrative,
     votes: r.vote_count || 0, reports: r.report_count || 0, live_at: r.live_at, submitted_at: r.submitted_at, review_note: r.review_note,
     author: r.author_kind === 'guide' ? { kind: 'guide', name: GUIDE_NAMES[r.author_guide] || 'Your Guide', guide: r.author_guide }

@@ -687,6 +687,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bp-head h3{margin:0}
 .bp-head span{font-size:12px;font-weight:700;color:var(--ve-text-50)}
 .bp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px}
+.bp-item{display:flex;align-items:stretch;gap:0;border:1px solid var(--ve-border);border-radius:12px;background:#fff;overflow:hidden}
+.bp-item:hover{border-color:var(--vb-accent,#5EC47A)}
+.bp-item .bp-card{flex:1;min-width:0;border:0;border-radius:0}
+.bp-vote{flex:0 0 64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:0;border-left:1px solid var(--ve-border);background:#fff;cursor:pointer;font:inherit;color:var(--ve-text-75)}
+.bp-vote b{font-size:18px;font-weight:900;color:#1a1a1a}.bp-vote span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.bp-vote:hover{background:var(--vb-soft,#E8F5E9)}.bp-vote.on{background:var(--vb-soft,#E8F5E9);color:var(--vb-accent-ink,#1f5f22)}
+.bp-rank{color:var(--vb-accent-ink,#1f5f22)}
+.bp-mac{font-size:12px;font-weight:800;color:var(--vb-accent-ink,#1f5f22);margin-top:3px}
 .bp-card{display:flex;gap:12px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:12px;text-decoration:none;color:inherit;background:#fff}
 .bp-card:hover{border-color:var(--vb-accent,#5EC47A)}
 .bp-pic{flex:0 0 64px;height:64px;border-radius:10px;border:1px solid var(--ve-border);background:#fff center/80% no-repeat;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:20px}
@@ -1101,6 +1109,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-products.js"></script>
 <script src="/public/ve-guide-tour.js"></script>
+<script src="/public/ve-macros.js"></script>
 <script src="/public/ve-product-view.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-trust.js"></script>
@@ -2361,26 +2370,42 @@ function isProductBrand(l){
   var d = l.details || {};
   return !isGroceryStore(l) && !!window.VEProducts && !!window.VEProductView && (VEProducts.SOURCES || []).some(function(k){ return Array.isArray(d[k]) && d[k].length; });
 }
-var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,image_url,image_credit,fdc,gallery,certifications,brand_says,brand_url,variants,' +
+var BSITE_SELECT = 'id,slug,product_type,name,made_from,note,guides,department,nutrition,nutrition_source,macros,image_url,image_credit,fdc,gallery,certifications,brand_says,brand_url,variants,' +
   've_product_stores(removed_at,listings(slug,name,status,logo_url,color,initials))';
 function loadBrandSite(l){
   var url = SUPABASE_URL + '/rest/v1/ve_products?brand_listing_id=eq.' + encodeURIComponent(l.id) + '&guides=neq.%7B%7D&select=' + BSITE_SELECT + '&order=product_type';
   var pane = document.getElementById('bsite-products'), side = document.getElementById('bsite-nf');
   var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
-  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l)]).then(function(res){
+  // Votes within the brand (Sean, 2026-11-01: "people to be able to vote for it within the brand. So you're not going to see the
+  // rankings anywhere except when you click on the brand itself"): ve-products votes, one per member per product.
+  function pvApi(body){
+    var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null;
+    if(t) h.Authorization = 'Bearer ' + t;
+    return fetch(SUPABASE_URL + '/functions/v1/ve-products', { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function(r){ return r.json(); });
+  }
+  Promise.all([fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).catch(function(){ return []; }), partnerStatus(l),
+    pvApi({ action: 'votes', brand: l.id }).catch(function(){ return null; })]).then(function(res){
     var rows = Array.isArray(res[0]) ? res[0] : [], PS = res[1] || { partner: false };
+    var PV = (res[2] && res[2].counts) ? res[2] : { counts: {}, mine: [] };
+    function pvCount(p){ return PV.counts[p.id] || 0; }
+    function sortRows(){ rows.sort(function(a, b){ return pvCount(b) - pvCount(a) || String(a.product_type).localeCompare(String(b.product_type)); }); }
+    sortRows();
+    function rankOf(p){ if(!pvCount(p)) return 0; var r = 1; rows.forEach(function(o){ if(pvCount(o) > pvCount(p)) r++; }); return r; }
     var BY = {}; rows.forEach(function(p){ BY[p.slug] = p; });
     var d = l.details || {};
     function title(p){ return VEProducts.title(p, l.name); }
     function href(slug){ return '/directory/' + encodeURIComponent(l.slug) + '?tab=products&product=' + encodeURIComponent(slug); }
     function card(p){
       var pic = p.image_url || l.logo_url, n = Array.isArray(p.variants) ? p.variants.length : 0;
-      return '<a class="bp-card" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || 'var(--vb-go-hover,#1f5f22)')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
-        '<div class="bp-main"><div class="bp-type">' + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
-        '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div></div></a>';
+      var rk = rankOf(p), c = pvCount(p), on = PV.mine.indexOf(p.id) >= 0;
+      return '<div class="bp-item"><a class="bp-card" href="' + esc(href(p.slug)) + '" data-product="' + esc(p.slug) + '"><div class="bp-pic" style="' + (pic ? "background-image:url('" + esc(pic) + "')" : 'background:' + esc(l.color || 'var(--vb-go-hover,#1f5f22)')) + '">' + (pic ? '' : esc(l.initials || l.name.charAt(0))) + '</div>' +
+        '<div class="bp-main"><div class="bp-type">' + (rk ? '<span class="bp-rank">#' + rk + ' at ' + esc(l.name) + '</span> · ' : '') + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
+        '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div>' +
+        (p.macros && window.VEMacros ? '<div class="bp-mac">' + esc(VEMacros.line(p.macros)) + '</div>' : '') + '</div></a>' +
+        '<button type="button" class="bp-vote' + (on ? ' on' : '') + '" data-pvote="' + esc(p.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Take back your vote for ' : 'Vote for ') + esc(title(p)) + '"><b>' + c + '</b><span>' + (on ? 'Voted' : 'Vote') + '</span></button></div>';
     }
-    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides'; }
+    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides' + (rows.some(pvCount) ? ', most voted first' : ''); }
 
     // ---- Overview: about the brand, its products, where to find them
     var stores = {};
@@ -2787,6 +2812,21 @@ function loadBrandSite(l){
         if(tab === 'products' && new URLSearchParams(location.search).get('product')){ go(''); return; }
         if(tab !== 'products') sideOff(); else route();
         syncRail();
+        return;
+      }
+      if((el = e.target.closest('[data-pvote]'))){
+        e.preventDefault();
+        if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
+        var pid = el.getAttribute('data-pvote'), on = el.getAttribute('aria-pressed') !== 'true';
+        el.disabled = true;
+        pvApi({ action: 'vote', product_id: pid, on: on }).then(function(x){
+          el.disabled = false;
+          if(!x || !x.ok){ if(x && x.error === 'payment_required' && window.VEVotes) VEVotes.passportPrompt(); return; }
+          PV.counts[pid] = x.count; PV.mine = PV.mine.filter(function(i){ return i !== pid; }); if(x.on) PV.mine.push(pid);
+          sortRows();
+          var bo = document.querySelector('.bsite-overview .bp-grid'); if(bo) bo.innerHTML = rows.slice(0, 6).map(card).join('');
+          if(pane && !new URLSearchParams(location.search).get('product')) showList();
+        }).catch(function(){ el.disabled = false; });
         return;
       }
       if((el = e.target.closest('a.pv-store[href^="/directory/"]'))) veTrack(l, 'store', el.getAttribute('href').split('?')[0].split('/').pop());

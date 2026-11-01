@@ -20,6 +20,8 @@
       sayMember: 'It\'s all yours. Pick your store, save what you need to your shopping list, and tell us where things are to earn points.' },
     { k: 'stores', label: 'Stores', say: 'Find your store by city or by where you are. Each one opens by what it is, dairy-free, plant-based meat, meals, pantry, snacks and produce, with every product together and the aisle members found it in. Brickell Village in Miami is open to everyone.',
       sayMember: 'Find your store, then tap Save on what you need. If an aisle is not mapped yet, you can be the first to tell us.' },
+    { k: 'scan', label: 'Scan', say: 'Holding something in the aisle? Scan its barcode and I\'ll show you what it is, its macros, and which stores carry it. Open to everyone.',
+      sayMember: 'Scan anything on the shelf. If we know it, you get its macros and its page. If we do not, add it and earn your place on the map.' },
     { k: 'list', label: 'Shopping list', mine: 1, say: 'Everything you save lands here as a shopping list, by store and aisle, with a box to tick as you go.' },
     { k: 'produce', label: 'Produce', say: 'The produce section is where a Vegan basket starts. Here is what is worth buying and why.' },
     { k: 'report', label: 'Help keep it right', say: 'Members map the aisles. Snap a photo in the store, tell us where something is, and earn points when the team accepts it.',
@@ -77,6 +79,11 @@
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
   function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
+  function papi(body) {
+    var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = token();
+    if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(SB + '/functions/v1/ve-products', { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
   function api(body) {
     var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = token();
     if (t) h.Authorization = 'Bearer ' + t;
@@ -296,7 +303,7 @@
     if (PROD) return Promise.resolve(PROD);
     if (PROD_WAIT) return PROD_WAIT;
     PROD_WAIT = Promise.all([
-      rest('ve_products?select=id,slug,name,product_type,made_from,image_url,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url,vote_count)&limit=1000'),
+      rest('ve_products?select=id,slug,name,product_type,made_from,image_url,macros,listings!ve_products_brand_listing_id_fkey(slug,name,status,logo_url,vote_count)&limit=1000'),
       rest('listings?select=id,slug,name,logo_url,vote_count,product_kinds,tags&status=eq.approved&category=eq.Food%20Brands&limit=500')
     ]).then(function (x) {
       PROD = {
@@ -327,7 +334,7 @@
       if (!tn || typeNames.indexOf(tn) < 0) return;
       var b = p.listings || {};
       var row = { kind: 'p', p: p, title: pTitle(p), brand: b.slug, brandName: b.name || '', types: [tn], sub: SUBTYPE[p.product_type] || '', zones: [TYPES[tn].zone],
-        bases: basesOf(p.made_from), votes: b.vote_count || 0, text: [pTitle(p), b.name, p.product_type, p.made_from, tn].join(' ') };
+        bases: basesOf(p.made_from), votes: b.vote_count || 0, macros: p.macros || null, text: [pTitle(p), b.name, p.product_type, p.made_from, tn].join(' ') };
       products.push(row);
       var bb = byBrand[b.slug] || (byBrand[b.slug] = { types: [], zones: [], bases: [] });
       [['types', row.types], ['zones', row.zones], ['bases', row.bases]].forEach(function (f) { f[1].forEach(function (x) { if (bb[f[0]].indexOf(x) < 0) bb[f[0]].push(x); }); });
@@ -349,7 +356,18 @@
     var p = r.p, b = p.listings || {}, pic = p.image_url || b.logo_url;
     return '<a class="sg-ptile" href="/products/' + esc(p.slug) + '"><span class="sg-thumb">' + (pic ? '<img src="' + esc(pic) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
       '<span class="sg-pb"><b>' + esc(r.title) + '</b><em>' + esc(b.name || '') + ' &middot; ' + esc(r.sub || r.types[0]) + (r.bases.length ? ' &middot; ' + esc(r.bases.join(', ')) : '') + '</em>' +
-      (has ? '<span class="dg-tag sa-tag-fresh">Seen at ' + esc(chainName) + '</span>' : '') + '</span></a>';
+      (p.macros && window.VEMacros || has ? '<span class="sg-pmeta">' + (p.macros && window.VEMacros ? '<span class="sg-mac">' + esc(VEMacros.line(p.macros)) + '</span>' : '') +
+        (has ? '<span class="dg-tag sa-tag-fresh">Seen at ' + esc(chainName) + '</span>' : '') + '</span>' : '') + '</span></a>';
+  }
+  // Sort products by their macros per serving (Sean, 2026-11-01: people "working out and watching their nutrition"). Products with
+  // no macros yet go last.
+  var SORTS = [['protein', 'Most protein'], ['p100', 'Most protein per calorie'], ['cal', 'Fewest calories']];
+  function macroSort(o) {
+    var val = function (r) {
+      var m = r.macros; if (!m || m.cal == null) return null;
+      return o === 'protein' ? -Number(m.protein || 0) : o === 'cal' ? Number(m.cal) : -(window.VEMacros ? VEMacros.per100(m) || 0 : 0);
+    };
+    return function (a, b) { var x = val(a), y = val(b); if (x == null && y == null) return 0; if (x == null) return 1; if (y == null) return -1; return x - y; };
   }
   function brandTile(r) {
     var b = r.b;
@@ -392,13 +410,13 @@
           return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
       };
       function draw() {
-        var t = st.t || '', s = st.s || '', m = st.m || '', b = st.b || '', w = st.w || '', q = st.q || '';
+        var t = st.t || '', s = st.s || '', m = st.m || '', b = st.b || '', w = st.w || '', q = st.q || '', o = st.o || '';
         var ok = function (r, skip) {
           return (skip === 't' || !t || r.types.indexOf(t) >= 0) && (skip === 's' || !s || r.sub === s || (r.kind === 'b' && !t)) &&
             (skip === 'm' || !m || r.bases.indexOf(m) >= 0) && (skip === 'b' || !b || r.brand === b) && (skip === 'w' || !w || r.zones.indexOf(w) >= 0) &&
             (!q || q.toLowerCase().split(/\s+/).every(function (word) { return !word || r.text.toLowerCase().indexOf(word) >= 0; }));
         };
-        var P = R.products.filter(function (r) { return ok(r); }).sort(function (a, b2) { return (has[b2.p.id] ? 1 : 0) - (has[a.p.id] ? 1 : 0) || b2.votes - a.votes || a.title.localeCompare(b2.title); });
+        var P = R.products.filter(function (r) { return ok(r); }).sort(function (a, b2) { return (o ? macroSort(o)(a, b2) : 0) || (has[b2.p.id] ? 1 : 0) - (has[a.p.id] ? 1 : 0) || b2.votes - a.votes || a.title.localeCompare(b2.title); });
         var B = R.brands.filter(function (r) { return ok(r, s ? 's' : '') && (!s || R.products.some(function (p) { return p.brand === r.brand && p.sub === s; })); })
           .sort(function (a, b2) { return b2.n - a.n || b2.votes - a.votes || a.title.localeCompare(b2.title); });
         // Facet choices come from what is left under the other filters, so a choice never leads to nothing.
@@ -416,8 +434,9 @@
           [['', 'All cheese', 0]].concat(Object.keys(SUBTYPE).map(function (k) { return [SUBTYPE[k], SUBTYPE[k], subs[SUBTYPE[k]]]; }).filter(function (x) { return x[2]; })).map(function (c) {
             return '<button type="button" class="sg-chip' + (s === c[0] ? ' on' : '') + '" data-s="' + esc(c[0]) + '" aria-pressed="' + (s === c[0]) + '">' + esc(c[1]) + (c[0] ? ' <i>' + c[2] + '</i>' : '') + '</button>'; }).join('') + '</div>' : '';
         var selects = (mOpts.length ? sel('sgM', 'Made from', mOpts, m, 'Anything') : '') + (bOpts.length > 1 ? sel('sgB', 'Brand', bOpts, b, 'Every brand') : '') +
-          (wOpts.length > 1 || w ? sel('sgW', 'Where in the store', wOpts, w, 'Anywhere') : '');
-        var active = [t, s, m, b, w, q].some(Boolean);
+          (wOpts.length > 1 || w ? sel('sgW', 'Where in the store', wOpts, w, 'Anywhere') : '') +
+          (R.products.some(function (r) { return r.macros; }) ? sel('sgO', 'Sort products', SORTS, o, 'Best match') : '');
+        var active = [t, s, m, b, w, q, o].some(Boolean);
         // The aisle at this store for each type in view.
         var aisleItems = items.filter(function (it) { return !t || it.name === t; });
         var aisles = '<h3 class="sg-ph">Where it is at ' + esc(v.name) + '</h3><div class="sg-aminis">' + aisleItems.map(function (it) { return aisleMini(v, it); }).join('') + '</div>';
@@ -441,7 +460,7 @@
       function bind() {
         box.querySelectorAll('[data-t]').forEach(function (el) { el.addEventListener('click', function () { upd('t', el.getAttribute('data-t')); }); });
         box.querySelectorAll('[data-s]').forEach(function (el) { el.addEventListener('click', function () { upd('s', el.getAttribute('data-s')); }); });
-        [['sgM', 'm'], ['sgB', 'b'], ['sgW', 'w']].forEach(function (x) { var el = document.getElementById(x[0]); if (el) el.addEventListener('change', function () { upd(x[1], el.value); }); });
+        [['sgM', 'm'], ['sgB', 'b'], ['sgW', 'w'], ['sgO', 'o']].forEach(function (x) { var el = document.getElementById(x[0]); if (el) el.addEventListener('change', function () { upd(x[1], el.value); }); });
         var qi = document.getElementById('sgPQ'); if (qi) qi.addEventListener('input', function () { clearTimeout(bind.t); bind.t = setTimeout(function () { upd('q', qi.value); }, 200); });
         var rs = document.getElementById('sgReset'); if (rs) rs.addEventListener('click', function () { st = {}; setQs(st); draw(); });
       }
@@ -673,6 +692,91 @@
   }
 
   // ---------- produce ----------
+  // ---------- Scan (Sean, 2026-11-01: "a tab where they can scan an item... it should take them to its profile") ----------
+  // #/scan opens the camera; #/scan/<barcode> shows what it is: ours (its macros, its page, the stores that carry its line), or what Open
+  // Food Facts says with Add it for the team to check.
+  var SCANS = {};
+  function scanBtn(label) { return '<button type="button" class="dg-btn" id="sgScanGo" style="display:inline-flex;align-items:center;gap:8px">' + ICON.camera.replace(/26/g, '20') + esc(label) + '</button>'; }
+  function bindScan() {
+    var b = document.getElementById('sgScanGo');
+    if (b) b.addEventListener('click', function () {
+      if (!window.VEScan) return;
+      VEScan.open({ title: 'Scan a product', onCode: function (code) { location.hash = '#/scan/' + code; } });
+    });
+  }
+  function viewScan(code) {
+    if (!code) {
+      main.innerHTML = crumb([['Scan', '']]) + '<div class="dg-k">Scan</div><h2 class="dg-h1">Scan a product</h2>' +
+        '<p class="dg-lede">Point your phone at the barcode on anything in the aisle. You will see what it is, its macros per serving, and which supermarkets carry it. No camera? Type the numbers under the barcode.</p>' +
+        '<p>' + scanBtn('Scan a barcode') + '</p>' +
+        '<div class="sg-tips" style="margin-top:22px"><div class="sg-tip"><span class="sg-tip-i">' + ICON.star + '</span><div><b>Its macros, right there</b><p>Calories, protein, carbs and fat per serving, and protein per 100 calories for anyone watching their training.</p></div></div>' +
+        '<div class="sg-tip"><span class="sg-tip-i">' + ICON.store + '</span><div><b>Where to find it</b><p>The supermarkets that carry it, and the aisle members found it in at your store.</p></div></div>' +
+        '<div class="sg-tip"><span class="sg-tip-i">' + ICON.leaf + '</span><div><b>Not in the Guide yet?</b><p>Add it. The team checks it is Vegan, and it joins the Guide for everyone.</p></div></div></div>' +
+        '<p class="sg-small" style="margin-top:16px">Nothing is recorded when you scan; the picture never leaves your phone.</p>';
+      bindScan(); return;
+    }
+    main.innerHTML = crumb([['Scan', '#/scan'], [code, '']]) + '<div class="dg-loading">Looking it up...</div>';
+    var go = SCANS[code] ? Promise.resolve(SCANS[code]) : papi({ action: 'lookup', code: code }).then(function (d) { SCANS[code] = d; return d; });
+    go.then(function (d) {
+      if (curView().split('?')[0] !== 'scan/' + code) return;
+      if (!d || d.error) { main.innerHTML = crumb([['Scan', '#/scan'], [code, '']]) + '<p class="dg-empty">' + esc((d && d.message) || 'That did not load. Try again.') + '</p><p>' + scanBtn('Scan again') + '</p>'; bindScan(); return; }
+      if (d.found && d.product) return drawScanOurs(code, d);
+      drawScanOther(code, d);
+    }).catch(function () { main.innerHTML = '<p class="dg-empty">That did not load. Refresh to try again.</p>'; });
+  }
+  function scanHead(code, pic, name, sub) {
+    return crumb([['Scan', '#/scan'], [name || code, '']]) + '<div class="sg-scanhead"><span class="sg-thumb sg-thumb-lg">' + (pic ? '<img src="' + esc(pic) + '" alt="" decoding="async">' : '<i class="sg-letter">?</i>') + '</span>' +
+      '<div><div class="dg-k">Barcode ' + esc(code.replace(/^0+(?=\d{12})/, '')) + '</div><h2 class="dg-h1" style="margin:2px 0 4px">' + esc(name || 'Unknown item') + '</h2>' + (sub || '') + '</div></div>';
+  }
+  function drawScanOurs(code, d) {
+    var p = d.product, b = d.brand || {}, page = '/directory/' + encodeURIComponent(b.slug || '') + '?tab=products&product=' + encodeURIComponent(p.slug);
+    // The Guides' products are all dairy-free today, so their shelf is the Dairy-free category.
+    var tn = typeOfProduct(p.product_type), cat = tn ? catOf('dairy-free') : null;
+    var last = ''; try { last = localStorage.getItem('sg_store') || ''; } catch (e) {}
+    var shelf = cat ? '#/store/' + (last || FREE) + '/c/' + cat.k + '?t=' + encodeURIComponent(tn) + '&b=' + encodeURIComponent(b.slug || '') : '';
+    var pending = d.status === 'pending';
+    main.innerHTML = scanHead(code, d.image_url || p.image_url, d.name, '<p class="dg-lede" style="margin:0">' + esc(b.name || '') + ' &middot; ' + esc(p.product_type || '') +
+      (pending ? ' &middot; <span class="dg-tag sa-tag-ask">Waiting for the team</span>' : '') + '</p>') +
+      (window.VEMacros ? VEMacros.strip(d.macros) || '<p class="sg-small">Macros for this one are not added yet.</p>' : '') +
+      '<div class="sg-scanacts"><a class="dg-btn" href="' + esc(page) + '">Open its page</a>' + (shelf ? '<a class="dg-btn dg-ghost" href="' + esc(shelf) + '">Every ' + esc(tn.toLowerCase()) + ' like it</a>' : '') + '</div>' +
+      '<h3 class="sg-ph">Carried at</h3><div id="sgCarried"><div class="dg-loading">Loading...</div></div>' +
+      (d.ingredients ? '<p class="sg-small" style="margin-top:18px"><b>Ingredients:</b> ' + esc(d.ingredients) + '</p>' : '') +
+      '<p class="sg-small">From ' + (d.source === 'usda' ? 'the USDA\'s record of the label' : 'what members and Open Food Facts reported') + '. Recipes change, so check the package.</p><p>' + scanBtn('Scan another') + '</p>';
+    bindScan();
+    rest('ve_product_stores?select=store_listing_id,removed_at,listings!ve_product_stores_store_listing_id_fkey(slug,name,logo_url,status)&product_id=eq.' + p.id).then(function (rows) {
+      var box = document.getElementById('sgCarried'); if (!box) return;
+      var st = (rows || []).filter(function (r) { return !r.removed_at && r.listings && r.listings.status === 'approved'; }).map(function (r) { return r.listings; })
+        .sort(function (x, y) { return x.name.localeCompare(y.name); });
+      box.innerHTML = st.length ? '<div class="sg-carried">' + st.map(function (l) {
+        return '<a class="sg-ptile" style="height:auto" href="/directory/' + esc(l.slug) + '"><span class="sg-thumb">' + (l.logo_url ? '<img src="' + esc(l.logo_url) + '" alt="" loading="lazy">' : '<i class="sg-letter">' + esc(l.name.charAt(0)) + '</i>') + '</span><span class="sg-pb"><b>' + esc(l.name) + '</b><em>Its Vegan aisle</em></span></a>';
+      }).join('') + '</div><p class="sg-small">The supermarkets our Guides place this line at. Stock changes by store.</p>' : '<p class="sg-small">No supermarket is mapped for it yet. Seen it somewhere? Tell us on that store\'s page.</p>';
+    });
+  }
+  function drawScanOther(code, d) {
+    var o = d.off, b = d.brand;
+    var vegan = o ? { yes: ['Open Food Facts lists it as Vegan.', 'sa-tag-fresh'], no: ['Open Food Facts lists something non-Vegan in it.', 'sa-tag-stale'], maybe: ['Open Food Facts is not sure it is Vegan.', 'sa-tag-ask'], unknown: ['Not checked for Vegan yet.', 'sa-tag-ask'] }[o.vegan] : null;
+    var html = scanHead(code, o && o.image, o ? o.name : '', '<p class="dg-lede" style="margin:0">' + (o && o.brand ? esc(o.brand) : 'We do not know this one yet') +
+      (vegan ? ' &middot; <span class="dg-tag ' + vegan[1] + '">' + esc(vegan[0]) + '</span>' : '') + '</p>');
+    if (o && o.macros && window.VEMacros) html += VEMacros.strip(o.macros, { title: 'Macros ' + (o.serving === 'per 100 g' ? 'per 100 g' : 'per serving') });
+    if (b) html += '<p class="sg-small" style="margin-top:12px">' + esc(b.name) + ' is in our Directory. <a href="/directory/' + esc(b.slug) + '?tab=products">See its products</a>.</p>';
+    html += '<div class="sg-addit"><h3 class="sg-ph" style="margin-top:0">Not in the Guide yet</h3><p class="sg-small" style="margin:0 0 10px">' +
+      (o ? 'Add it and the team checks it is Vegan and puts it in the Guide for everyone.' : 'Nobody has listed this barcode yet. Add it and tell us what it is; the team checks it before it goes in.') + '</p>' +
+      (token() ? '<label class="sa-city" style="display:block;margin-bottom:10px"><span>What is it? (optional)</span><input id="sgAddNote" maxlength="400" placeholder="' + (o ? 'Anything we should know' : 'The brand and product name') + '" style="width:100%"></label>' +
+        '<button type="button" class="dg-btn" id="sgAddIt">Add it</button>' : '<button type="button" class="dg-btn" data-signin>Sign in to add it</button>') + '<p class="sa-msg" id="sgAddMsg" aria-live="polite"></p></div>';
+    if (o) html += '<p class="sg-small">Product details from <a href="https://world.openfoodfacts.org/product/' + esc(code.replace(/^0+(?=\d{12})/, '')) + '" target="_blank" rel="noopener">Open Food Facts</a> (CC BY-SA), as its contributors entered them. Check the package.</p>';
+    html += '<p>' + scanBtn('Scan another') + '</p>';
+    main.innerHTML = html; bindScan();
+    var add = document.getElementById('sgAddIt');
+    if (add) add.addEventListener('click', function () {
+      add.disabled = true; add.textContent = 'Sending...';
+      papi({ action: 'add', code: code, note: (document.getElementById('sgAddNote') || {}).value || '' }).then(function (x) {
+        var m = document.getElementById('sgAddMsg');
+        if (x && x.ok) { add.textContent = 'Sent'; m.textContent = x.already === 'live' ? 'It is already in the Guide.' : 'Thank you. The team checks it and adds it to the Guide.'; delete SCANS[code]; }
+        else { add.disabled = false; add.textContent = 'Add it'; m.textContent = (x && x.message) || 'That did not send. Try again.'; }
+      }).catch(function () { add.disabled = false; add.textContent = 'Add it'; });
+    });
+  }
+
   function viewProduce() {
     main.innerHTML = head('Produce', 'Start with the produce section', 'A Vegan basket is mostly whole food. Here is what is worth buying and why. General advice; the store has the final word on what is in season and on sale.') +
       '<div class="sg-tips">' + PRODUCE.map(function (p) { return '<div class="sg-tip"><span class="sg-tip-i">' + ICON.leaf + '</span><div><b>' + esc(p[0]) + '</b><p>' + esc(p[1]) + '</p></div></div>'; }).join('') + '</div>' +
@@ -741,7 +845,7 @@
     if (/^c\//.test(cv)) { var last = ''; try { last = localStorage.getItem('sg_store') || ''; } catch (e) {} location.replace('#/store/' + (last || FREE) + '/' + cv); return; }
     var parts = cv.split('?')[0].split('/');
     var view = parts[0] || 'overview', sub = cv.split('/').slice(1).join('/');
-    var known = { overview: 1, stores: 1, store: 1, list: 1, produce: 1, report: 1, join: 1 };
+    var known = { overview: 1, stores: 1, store: 1, scan: 1, list: 1, produce: 1, report: 1, join: 1 };
     if (!known[view]) view = 'overview';
     if (view === 'list' && !(owner() && token())) view = 'overview';
     document.body.classList.toggle('dg-member', owner());
@@ -753,6 +857,7 @@
     var key = view === 'store' ? 'stores' : view === 'join' && owner() ? 'overview' : view;
     drawMenu(key);
     if (view === 'store') { var s = sub.split('/'); viewStore(s[0], s.slice(1).join('/')); }
+    else if (view === 'scan') viewScan(sub.split('?')[0]);
     else ({ overview: viewOverview, stores: viewStores, list: viewList, produce: viewProduce, report: viewReportTab, join: viewJoin })[view]();
     curTab = key;
     drawGuide();
@@ -834,8 +939,11 @@
       '.sg-ilink{flex:0 0 auto;display:block}.sg-iname{color:inherit;text-decoration:none}.sg-iname:hover b{text-decoration:underline}.sg-see{display:inline-block;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);text-decoration:none;margin-top:2px}.sg-see:hover{text-decoration:underline}' +
       '.sg-sechead{display:flex;gap:18px;align-items:flex-start;margin:4px 0 18px}.sg-thumb-lg{width:132px!important;height:132px!important;border-radius:14px!important}@media(max-width:560px){.sg-sechead{flex-direction:column}}' +
       '.sg-ph{font-size:15px;font-weight:900;margin:18px 0 6px}.sg-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px}' +
+      '.sg-scanhead{display:flex;gap:16px;align-items:center;margin:6px 0 4px}.sg-scanhead .sg-thumb-lg img{object-fit:contain;background:#fff}.sg-scanacts{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 6px}' +
+      '.sg-carried{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}.sg-small{font-size:12.5px;line-height:1.55;color:var(--ink75);margin:8px 0}.sg-small a{color:var(--vb-accent-ink,#1f5f22);font-weight:700}' +
+      '.sg-addit{border:1px solid var(--line);border-radius:8px;padding:16px;margin:20px 0 8px;background:#fafbfa}.sg-addit input{padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;font:inherit;font-size:15px;box-sizing:border-box}' +
       '.sg-ptile{display:flex;gap:12px;align-items:center;padding:10px;height:94px;box-sizing:border-box;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-ptile:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
-      '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-pb .dg-tag{align-self:flex-start}' +
+      '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-pb .dg-tag{align-self:flex-start}.sg-pmeta{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden}.sg-mac{font-size:11.5px;font-weight:800;color:var(--vb-accent-ink,#1f5f22)}.sg-pmeta .dg-tag{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}' +
       '.sg-pbox{max-height:304px;overflow-y:auto;overscroll-behavior:contain;padding:1px 6px 1px 1px;align-content:start}.sg-ph2 i{font-style:normal;font-weight:700;font-size:12px;color:var(--ink75);margin-left:4px}' +
       '.sg-pfilter{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}.sg-psearch input{width:100%;box-sizing:border-box;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;background:#fff}' +
       '.sg-chips{display:flex;flex-wrap:wrap;gap:8px}.sg-chip{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer}.sg-chip i{font-style:normal;font-weight:600;color:var(--ink75);margin-left:2px}' +
