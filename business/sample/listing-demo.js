@@ -107,8 +107,14 @@
           { area: 'Website', label: 'Menu online', status: 'flag', found: 'No menu we could find.', fix: 'Add your menu on your dashboard or link it.' },
           { area: 'Instagram', label: 'Posting on Instagram', status: 'flag', found: '@cornersproutcafe last posted 8 months ago.', fix: 'One post this week shows people you are open.' },
           { area: 'Your Directory page', label: 'Hours, photos and story', status: 'warn', found: 'No hours and one photo.', fix: 'Fill in Your page on this dashboard.' },
-          { area: 'Your Directory page', label: 'Members are visiting', status: 'warn', found: 'No member check-ins in the last 60 days.' }
-        ] }
+          { area: 'Your Directory page', label: 'Members are visiting', status: 'warn', found: 'No member check-ins in the last 60 days.', fix: 'Put a "Check in on Vegans Explore" sign by the register.' }
+        ],
+        // The monthly check-up's flags (what we found and the fix; the score stays with the paid full audit).
+        checkup: { at: new Date(Date.now() - 6 * 864e5).toISOString(), checked: 34, flags: [
+          { key: 'g_vegan', area: 'Google', label: 'Google knows you are Vegan', found: 'Nothing on your Google profile says Vegan.', fix: 'Put "Vegan" in your business description and your category, and turn on the Vegan options attribute.' },
+          { key: 'g_photos', area: 'Google', label: 'Your Google profile has plenty of photos', found: 'Your Google profile has 4 photos.', fix: 'Add at least 10 clear photos: the outside, the inside, your best dishes and your team.' },
+          { key: 'x_ig_recent', area: 'Social', label: 'You posted on Instagram in the last 14 days', found: 'Your last post was 8 months ago.', fix: 'Post at least once a week: a dish, a special, your team.' }
+        ] } }
     ],
     guides: [
       { slug: 'vegan-restaurant-guide', title: 'The Vegan Restaurant Guide', description: 'Your Google listing, website and social, checked and fixed in order, with Liz.', access_rule: 'points', owned: true },

@@ -37,7 +37,8 @@
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
   var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
-  var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'audit', 'guides'];
+  // The Audit view is free on claim (Sean, 2026-11-01, playbook ve-listing-check): the listing check and the check-up flags show to every owner.
+  var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'guides'];
   // The dashboard speaks to what the listing is (Sean, 2026-10-27). Keep in step with listingKind in directory/listing.html.
   function kindOf(c) {
     if (['Podcasts', 'YouTube', 'News Outlets', 'Media'].indexOf(c) >= 0) return 'show';
@@ -142,6 +143,8 @@
     '.vpd-hc-next{padding:12px 16px;background:#fff8ec;border-top:1px solid rgba(0,0,0,.06);font-size:13.5px;line-height:1.5}'+
     '.vpd-hc-sw{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}.vpd-hc-sw button{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.15);background:#fff;cursor:pointer}'+
     '.vpd-hc-sw button.on{background:var(--vb-go,#2D5C27);color:#fff;border-color:transparent}'+
+    '.vpd-doit{margin-top:8px}.vpd-hc-strip{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:14px 16px;margin:0 0 18px;background:#fff}'+
+    '.vpd-hc-strip b{font-size:15px}.vpd-hc-strip small{display:block;color:rgba(0,0,0,.62);font-size:13px;margin-top:3px}'+
     '@media(max-width:600px){.vpd-row{grid-template-columns:1fr auto}.vpd-row .vpd-tag{display:none}.vpd-tiles{grid-template-columns:1fr 1fr;gap:8px}.vpd-tiles b{font-size:22px}.vpd-tiles>div{padding:12px}}';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -214,7 +217,7 @@
         if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
         if (v[0] === 'managed') return !!D.bd;
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
-        if (v[0] === 'audit') return D.listing.food;
+        if (v[0] === 'audit') return D.listing.food || !!(D.health && D.health.checks && D.health.checks.length);
         if (v[0] === 'checkins') return KIND === 'place';
         if (v[0] === 'saves') return KIND !== 'place';
         return true;
@@ -254,6 +257,7 @@
           '<a href="?tab=brand&pd=insights" data-vpd="insights" class="vpd-btn o sm">See every number</a>';
       }
       if (D.open && D.group) out = groupTiles() + out;
+      out += healthStrip();
       // What is left, as cards; what is done, on one line.
       // A podcast, a book or a brand has no hours or menu to fill in.
       var fits = function (c) { return CK[c.k] && (KIND === 'place' || ['logo', 'description'].indexOf(c.k) >= 0 || (KIND === 'org' && c.k === 'photos')); };
@@ -460,7 +464,8 @@
       h.checks.forEach(function (c) {
         if (c.area !== area) { area = c.area; rows += '<div class="vpd-hc-area">' + esc(area) + '</div>'; }
         rows += '<div class="vpd-hc-row"><span class="vpd-hc-ic ' + esc(c.status) + '" aria-label="' + (c.status === 'pass' ? 'Passed' : c.status === 'flag' ? 'Flagged' : 'Check this') + '">' + mark[c.status] + '</span>' +
-          '<div><b>' + esc(c.label) + '</b><p>' + esc(c.found) + (c.fix && c.status !== 'pass' ? ' <b style="font-size:13px">Fix:</b> ' + esc(c.fix) : '') + '</p></div>' +
+          '<div><b>' + esc(c.label) + '</b><p>' + esc(c.found) + (c.fix && c.status !== 'pass' ? ' <b style="font-size:13px">Fix:</b> ' + esc(c.fix) : '') + '</p>' +
+          (c.status !== 'pass' && c.fix ? doItBtn(c.fix_id || c.area, c.fix_label || c.label) : '') + '</div>' +
           '<span class="vpd-tag' + (c.status === 'pass' ? '' : c.status === 'flag' ? ' warn' : ' off') + '">' + (c.status === 'pass' ? 'Passed' : c.status === 'flag' ? 'Flagged' : 'Check') + '</span></div>';
       });
       var state = h.state === 'review'
@@ -469,7 +474,36 @@
         esc(new Date(h.checked_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; we check again every month</small></div>' +
         '<div class="vpd-hc-score"><span class="vpd-hc-num">' + passed + '/' + h.checks.length + '</span>' + state + '</div></div>' + rows +
         (h.next ? '<div class="vpd-hc-next"><b>What happens next.</b> ' + esc(h.next) + '</div>' : '') +
-        '</div>';
+        '</div>' + checkupCard(h.checkup);
+    }
+    // Have us do it (Sean, 2026-11-01: "do you want us to fix these issues? It takes them down the path to our monthly services"):
+    // every flagged item opens the BrandDesk request window (/public/ve-managed.js, VEManaged.open) with the fix named. The sample
+    // business says what would happen instead, so nothing is sent from it.
+    function doItBtn(fix, label) {
+      return '<button type="button" class="vpd-btn sm o vpd-doit" data-vpd-doit="' + esc(String(fix || '').toLowerCase()) + '" data-label="' + esc(label || '') + '">Have us do it</button>';
+    }
+    // The monthly check-up's flags: what we found and the fix, most important first. The score is the paid full audit's.
+    function checkupCard(cu) {
+      if (!cu) return '';
+      var f = cu.flags || [];
+      return '<div class="vpd-hc" style="margin-top:14px"><div class="vpd-hc-top"><div><b>Our monthly check-up</b><small>' +
+        esc(new Date(cu.at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; Google, search, your website and social</small></div>' +
+        '<div class="vpd-hc-score">' + (f.length ? '<span class="vpd-tag warn">' + f.length + ' to fix</span>' : '<span class="vpd-tag">Nothing to fix</span>') + '</div></div>' +
+        (f.length ? f.map(function (x) {
+          return '<div class="vpd-hc-row"><span class="vpd-hc-ic flag" aria-label="To fix">!</span><div><b>' + esc(x.label) + '</b><p>' + esc(x.found) + '</p>' +
+            (x.fix ? '<p><b style="font-size:13px">Fix:</b> ' + esc(x.fix) + '</p>' : '') + doItBtn(x.key, x.label) + '</div><span class="vpd-tag off">' + esc(x.area) + '</span></div>';
+        }).join('') : '<div class="vpd-hc-next">Every check we read this month came back fine.</div>') +
+        '<div class="vpd-hc-next"><b>Your full score.</b> The check-up shows what to fix. The full audit scores all 40 checks, explains why each matters, and checks again 90 days later. ' +
+        '<a href="/guides/vegan-restaurant-guide#/audit">See your full score</a>.</div></div>';
+    }
+    // Home: one line with the score, opening the board.
+    function healthStrip() {
+      var h = D.health; if (!h || !h.checks || !h.checks.length) return '';
+      var passed = h.checks.filter(function (c) { return c.status === 'pass'; }).length, fl = h.checks.filter(function (c) { return c.status === 'flag'; }).length;
+      var more = h.checkup && h.checkup.flags ? h.checkup.flags.length : 0;
+      return '<div class="vpd-hc-strip"><div><b>Your listing check: ' + passed + ' of ' + h.checks.length + ' passed</b><small>' +
+        (fl || more ? (fl ? fl + ' flagged' : '') + (fl && more ? ' &middot; ' : '') + (more ? more + ' from our monthly check-up' : '') + '. Each one comes with the fix, or we do it for you.' : 'Nothing flagged. We check again every month.') +
+        '</small></div><a class="vpd-btn sm" href="?tab=brand&pd=audit" data-vpd="audit">See your listing check</a></div>';
     }
     function healthBlock() {
       var S = D.healthSamples;
@@ -483,7 +517,8 @@
     }
     function drawAudit() {
       var G = '/guides/vegan-restaurant-guide';
-      var list = D.audits.length ? '<div class="vpd-list">' + D.audits.map(function (a) {
+      var audits = D.audits || [];
+      var list = audits.length ? '<div class="vpd-list">' + audits.map(function (a) {
         var done = a.status === 'done';
         // Our monthly check-up runs every check, but it is ours: the owner reads what to fix, not a score they paid for.
         var mine = a.source !== 'checkup';
@@ -492,10 +527,13 @@
           '<span class="vpd-tag' + (done ? '' : ' warn') + '">' + (done ? 'Ready' : 'Running') + '</span>' +
           (done ? '<a class="vpd-btn sm o" href="' + G + '#/audit/r/' + esc(a.id) + '">Open</a>' : '<span></span>') + '</div>';
       }).join('') + '</div>' : '<p class="vpd-empty">No audits yet.</p>';
-      return healthBlock() + '<div class="vpd-grid"><div class="vpd-card"><b>The free check</b><p>Ten things Google, your website and your Instagram tell a hungry visitor, with what to fix first.</p><a class="vpd-btn sm" href="' + G + '#/audit">Run the free check</a></div>' +
-        '<div class="vpd-card"><b>The full audit, $49</b><p>Every check, scored, with how to fix each one, and a re-check 90 days later.</p><a class="vpd-btn sm o" href="' + G + '#/audit">Get the full audit</a></div>' +
-        '<div class="vpd-card"><b>Full audit and Secret Shopper, $149</b><p>The full audit plus a visit from our team as a normal guest, with a written report.</p><a class="vpd-btn sm o" href="' + G + '#/audit">Add the Secret Shopper</a></div></div>' +
-        '<h4>Your audits</h4>' + list;
+      var managed = '<div class="vpd-card"><b>Have us do all of it</b><p>Our team fixes what is flagged and keeps it fixed every month: your Google profile, website, photos and social, with a Community Manager in your city.</p>' +
+        doItBtn('everything', 'Managed marketing') + '</div>';
+      if (!D.listing.food) return healthBlock() + '<h4>Rather we handled it?</h4><div class="vpd-grid">' + managed + '</div><p class="vpd-msg" id="vpd-msg" role="status"></p>';
+      return healthBlock() + '<h4>See your full score</h4><div class="vpd-grid">' +
+        '<div class="vpd-card"><b>The full audit, $49</b><p>All 40 checks, scored, why each one matters and how to fix it, and a re-check 90 days later.</p><a class="vpd-btn sm" href="' + G + '#/audit">See your full score</a></div>' +
+        '<div class="vpd-card"><b>Full audit and Secret Shopper, $149</b><p>The full audit plus a visit from our team as a normal guest, with a written report.</p><a class="vpd-btn sm o" href="' + G + '#/audit">Add the Secret Shopper</a></div>' +
+        managed + '</div>' + (D.open ? '<h4>Your audits</h4>' + list : '') + '<p class="vpd-msg" id="vpd-msg" role="status"></p>';
     }
 
     // ---- Guides
@@ -775,6 +813,18 @@
         });
       });
       el.querySelectorAll('[data-vpd-hc]').forEach(function (b) { b.addEventListener('click', function () { HC_SAMPLE = Number(b.dataset.vpdHc) || 0; draw(); }); });
+      el.querySelectorAll('[data-vpd-doit]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var fix = b.dataset.vpdDoit, label = b.dataset.label || 'this';
+          if (!REAL) return api({ action: 'demo_only', note: 'Have us do it opens a short request for ' + label + '. Our team gets back within a day; nothing is charged there.' });
+          var go = function () {
+            VEManaged.open({ from: fix === 'everything' ? 'audit' : 'fix', fix: fix === 'everything' ? '' : fix, business: l.name, listing: l.slug, title: fix === 'everything' ? 'Have us take care of it' : 'Have us fix this: ' + label,
+              lead: 'Tell us how to reach you. Someone from our team gets back to you within a day with what it takes. Nothing is charged here.' });
+          };
+          if (window.VEManaged) return go();
+          var s = document.createElement('script'); s.src = '/public/ve-managed.js'; s.onload = go; document.head.appendChild(s);
+        });
+      });
       el.querySelectorAll('[data-vpd-days]').forEach(function (b) { b.addEventListener('click', function () { days = Number(b.dataset.vpdDays); D = null; load(draw); }); });
       el.querySelectorAll('[data-vpd-sort]').forEach(function (h) {
         h.addEventListener('click', function () { var k = h.dataset.vpdSort; sortBy = sortBy[0] === k ? [k, -sortBy[1]] : [k, k === 'day' ? -1 : -1]; draw(); });
