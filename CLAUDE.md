@@ -1855,7 +1855,26 @@ hold also takes off a place Google says is temporarily closed, and every Monday 
 Google (Place Details, `businessStatus` only, job `closed-recheck`, within the background cap) every listing held or Removed because
 Google said closed; ten minutes later `ve_closed_recheck_read` puts back on the Directory any Google shows open again, with a note
 (`ve_closed_rechecks` keeps each answer). The first run, 2026-11-01: all eight (Coco Lov and Seasoned Green temporarily, six permanently)
-still closed. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
+still closed. **The listing check, in Sean's order** (Sean, 2026-11-01: "the first best indicator is Google Maps... If they pass that, they can move
+on to their website... if it doesn't have the right security, automatic flag... then it's Instagram... a grace of 6 months... a bounty... If they confirm they're
+open... we flag them for special support"; migration `20261101_listing_health.sql`, edge function `ve-listing-health`). 1. Google says closed: off (above).
+2. **The website**: every local place with a website (not grocery chains, not LESARUSS.ai) is read once a month (cron `ve-listing-health`, every 10 minutes 3 to
+5 AM Eastern, 25 a run): gone (the address no longer exists, nothing answers, 404, 410 or 5xx, a parked or for-sale page) or no working security (no https, a bad
+certificate) fails; a site that turns scanners away (401, 403, 406, 429, 503) passes, and a slow or refused answer is read again the next day, never held on one
+try. No website at all is Google's job. 3. **Instagram**, only for a failed website (Apify, many handles in one run): a post in the last 6 months passes, and the
+place goes to **Needs support** (its website needs fixing); otherwise it is **held** (On hold, `details.review.by` Listing check, the reasons) and a still-open
+bounty goes up in its chapter's campaign (`ve_listing_still_open_bounty`, made if missing, 50 points, 30 days). 4. Held places are read again every week and
+come back on their own when they pass; a member's visit settles it (`applyCheck` in `ve-bounties`), and a place found open goes to Needs support. A claimed or
+owned listing, or one put back by hand within 90 days, is never held, only flagged. Results in `ve_listing_health` (web and Instagram status, reasons, verdict,
+history, `support_at`/`support_why`/`support_done_at`). **Directory review > Needs support** lists them with Done and Open (`ve-listing-health` `support`,
+`support_done`); `one` (`slug`, `save: false` to only read) checks a single listing. Proven 2026-11-01: Chi Chi Vegan Taco Shop (dead domain, no Instagram post
+since January 2024) held with its Atlanta bounty; Happy Zoe Vegan Bakery (broken certificate, posting on Instagram) left on and flagged for support; Kroger and
+QFC (Akamai turns scanners away) no longer read as down. **The listing check on the dashboard** (Sean: "use that mechanism that we use for BCPS Marcom... one that has
+passed the audit and one that hasn't"): the business dashboard's Audit view opens with **Your listing check** (`healthCard`, `healthBlock` in
+`ve-partner-dashboard.js`): each check by area (Google, Website, Instagram, Your Directory page) as a pass mark, a flag or a Check, with what we found and the
+fix, the score, On the Directory or In review, and What happens next. The sample business shows two made-up places (`healthSamples` in
+`business/sample/listing-demo.js`): Green Leaf Kitchen passing everything and Corner Sprout Cafe in review. The live version (`D.health` from the owner's
+audit) comes with the audit they buy; not wired yet. **One-time scans sit outside the daily cap** (migration `20261101_google_room_skips_once.sql`): `ve_google_room` leaves out
 `once:*` jobs, which had used up the day's cap after the held-listings check.
 Fix it there too (Sean, 2026-10-25: "right now it's allowing me to review but not fix... I want to be able to input it here so it
 updates the listing and unflags it"): a listing's **What it shows** is a form (about, website, Instagram, Facebook, TikTok, phone,

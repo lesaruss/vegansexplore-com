@@ -133,7 +133,7 @@
     '.vpd-hc{border:1px solid rgba(0,0,0,.1);border-radius:10px;background:#fff;overflow:hidden;margin:0 0 18px}'+
     '.vpd-hc-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.07)}'+
     '.vpd-hc-top b{font-size:16px}.vpd-hc-top small{display:block;color:rgba(0,0,0,.6);font-size:12.5px;margin-top:2px}'+
-    '.vpd-hc-score{display:flex;align-items:center;gap:10px}.vpd-hc-score span{font-size:26px;font-weight:900}'+
+    '.vpd-hc-score{display:flex;align-items:center;gap:10px}.vpd-hc-num{font-size:26px;font-weight:900}'+
     '.vpd-hc-area{padding:6px 16px 2px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(0,0,0,.55);background:#fafafa;border-top:1px solid rgba(0,0,0,.06)}'+
     '.vpd-hc-row{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:11px 16px;border-top:1px solid rgba(0,0,0,.06)}'+
     '.vpd-hc-ic{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff}'+
@@ -467,7 +467,7 @@
         ? '<span class="vpd-tag warn">In review</span>' : '<span class="vpd-tag">On the Directory</span>';
       return '<div class="vpd-hc"><div class="vpd-hc-top"><div><b>Your listing check</b><small>' + esc(h.name || D.listing.name) + ' &middot; checked ' +
         esc(new Date(h.checked_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + ' &middot; we check again every month</small></div>' +
-        '<div class="vpd-hc-score"><span>' + passed + '/' + h.checks.length + '</span>' + state + '</div></div>' + rows +
+        '<div class="vpd-hc-score"><span class="vpd-hc-num">' + passed + '/' + h.checks.length + '</span>' + state + '</div></div>' + rows +
         (h.next ? '<div class="vpd-hc-next"><b>What happens next.</b> ' + esc(h.next) + '</div>' : '') +
         '</div>';
     }
