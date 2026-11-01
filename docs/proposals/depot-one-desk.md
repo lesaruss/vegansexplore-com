@@ -52,6 +52,16 @@ Library and asks only what it doesn't know. A module ships to clients only after
 
 The owner can invite their own people.
 
+## Pricing: members rent wizards (Sean, 2026-11-01)
+
+The Guides' model, one level up. **Membership is the door**: no wizard opens without it, and buying a wizard straight from its squeeze
+page makes the buyer a member (as any $11 purchase does today). **Wizards are rented, never owned**: by the month, the quarter or the
+year, each project priced on its own (a book runs longer than a video). Past the period they renew, so they buy when they are ready to
+produce and the clock gives them a reason to finish. **Support is chosen per wizard** (Self-serve, Supported, Managed), the next layer
+of price. Each squeeze page shows **what the wizard has produced**, mostly our own brands' work made with it. **Their assets are always
+theirs**: leaving ends the wizards, and they have 30 days to download everything they made (the locked BrandDesk severance terms).
+The managed service already designed ($1,500 setup, $500 a month) is the Managed level, bundled.
+
 ## The Standard
 
 What works for us is the standard; every time we learn something, the standard and its wizards update, and every brand gets it.
@@ -75,3 +85,6 @@ What works for us is the standard; every time we learn something, the standard a
 4. Unlocking a locked part: requested with a reason, approved by the owner, on record.
 5. Product launch: Coming, with a waitlist, until the relationships exist.
 6. Operations (HR, finance, compliance) stays a separate wing of HQ.
+7. The membership is the $111 Diplomat (LESARUSS-wide), quarterly or monthly; Vegans Explore's $11 Passport stays the member door there.
+8. The current $111 a quarter Partner plan (Front Row Start) carries over: a Partner holds the membership plus their Directory page.
+9. A wizard rental is a month, a quarter or a year at that wizard's price; a lapsed rental keeps its work readable for 30 days.
