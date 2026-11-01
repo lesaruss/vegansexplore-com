@@ -176,7 +176,9 @@
     @media (max-width:600px){.lb{padding:48px 8px;}}
     .slot{display:flex;flex-direction:column;gap:6px;border:1px solid var(--ve-border);border-left:4px solid #bbb;border-radius:8px;padding:8px;text-decoration:none;color:inherit;background:#fff;}
     .slot:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);}
-    .slot .th{aspect-ratio:1/1;border-radius:6px;background:#eef2ee center/cover no-repeat;}
+    .slot .th{aspect-ratio:4/5;border-radius:6px;background:#eef2ee center top/cover no-repeat;}
+    /* A tall post (reel, story, episode) shows whole in the frame, on dark, the way a phone shows it (Sean, 2026-11-01). */
+    .slot .th.v{background-color:#111;background-size:contain;background-position:center;}
     .slot .row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11.5px;font-weight:800;color:var(--ve-green-deep);}
     .slot .row img{width:14px;height:14px;}
     .slot .cap{font-size:12.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -613,7 +615,7 @@
       var m = x.metrics || {}, v = 0, any = false;
       Object.keys(m).forEach(function (k) { if (m[k] && m[k].views != null) { v += +m[k].views; any = true; } });
       return '<a class="slot s-' + esc(x.status) + (big ? ' big' : '') + '" href="#slot/' + x.id + '">' +
-        (x.thumb ? '<div class="th" style="background-image:url(\'' + esc(x.thumb) + '\')"></div>' : (pic ? '<div class="th none">' + esc(KIND[x.kind] || x.kind) + '</div>' : '')) +
+        (x.thumb ? '<div class="th' + (/^(reel|story|episode|video|short)$/.test(x.kind) ? ' v' : '') + '" style="background-image:url(\'' + esc(x.thumb) + '\')"></div>' : (pic ? '<div class="th none">' + esc(KIND[x.kind] || x.kind) + '</div>' : '')) +
         '<span class="row">' + esc(hm(x.slot_at)) + ' · ' + esc(KIND[x.kind] || x.kind) + ' ' + nets(x.channels, 14) + '</span>' +
         '<span class="cap">' + esc(x.title || x.caption || 'No caption yet') + '</span>' +
         '<span class="row"><span class="tag ' + esc(x.status) + '">' + esc(SS[x.status] || x.status) + '</span>' + (x.open_notes ? '<span class="nb">' + x.open_notes + ' note' + (x.open_notes > 1 ? 's' : '') + '</span>' : '') + (any ? '<span>' + fmt(v) + ' views</span>' : '') + '</span></a>';
