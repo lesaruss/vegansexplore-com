@@ -1098,7 +1098,9 @@
   // of our food directory, I couldn't... when I'm going back, it's taking me to the main page and resetting everything"):
   // ?tab=<section>&sub=<sub-section> (food, markets; bakeries-and-cafes), pushed on each click so back and forward move
   // through them. Not the city: the same link opens in whichever chapter the visitor has picked. config.url is the path the
-  // address belongs to (/directory, /dashboard/directory); a city hub, whose ?tab= is its own section, leaves it out.
+  // address belongs to (/directory, /dashboard/directory). A city hub's ?tab= is its own section, so it passes
+  // tabParam: 'dir' (Sean, 2026-11-01: "In Communities when you use the Directory, it doesn't show the unique URLs"):
+  // /communities/<slug>?tab=directory&dir=food&sub=markets.
   function subSlug(v) { return String(v || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''); }
   function defaultPill(panel) {
     var pills = panel ? panel.querySelectorAll('[data-vrd-subcat]') : [];
@@ -1106,17 +1108,18 @@
     return pills[0] || null;
   }
   function urlHere(config) { return config && config.url && location.pathname.replace(/\/$/, '') === config.url; }
+  function tabKey(config) { return (config && config.tabParam) || 'tab'; }
   function pushSection(root, config, tab, sub) {
     if (!urlHere(config) || root._vrdRestoring) return;
     var q = new URLSearchParams(location.search);
-    q.set('tab', tab);
+    q.set(tabKey(config), tab);
     if (sub) q.set('sub', subSlug(subLabel(sub))); else q.delete('sub');
     var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
     if (url !== location.pathname + location.search + location.hash) history.pushState({ vrdTab: tab, vrdSub: sub || '' }, '', url);
   }
   // Opens the section and sub-section the address names (the first section and its first pill when it names none).
   function applySection(root, config) {
-    var q = new URLSearchParams(location.search), tab = (q.get('tab') || '').replace(/[^a-z]/g, ''), sub = q.get('sub') || '';
+    var q = new URLSearchParams(location.search), tab = (q.get(tabKey(config)) || '').replace(/[^a-z]/g, ''), sub = q.get('sub') || '';
     // An old link to a sub-section that moved (?tab=food&sub=food-brands, before Local Food) opens it where it lives now.
     if (tab && sub) {
       var home = CAT_CONFIG.filter(function (c) { return c.subcats.some(function (v) { return subSlug(v) === subSlug(sub) || subSlug(subLabel(v)) === subSlug(sub); }); })[0];
