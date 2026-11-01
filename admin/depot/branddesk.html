@@ -353,7 +353,7 @@
           (rows.length ? rows.map(function (r) {
             return '<div class="prow"><span class="rank">' + (rank.indexOf(r) + 1) + '</span><span><b>' + esc(r.name) + (r.warm ? '<span class="warm">Warm</span>' : '') + '</b><small>' + esc([r.city, CHAPTERS[r.chapter]].filter(Boolean).join(' · ')) + ' · gap ' + r.gap_score + (r.contact_email ? '' : ' · no email yet') + '</small>' + signChips(r) + '</span>' +
               '<span class="pct hide-m">' + r.presence + '%</span><span class="hide-m">' + (r.rating ? esc(r.rating) + ' · ' + r.reviews + ' reviews' : 'No rating') + '</span>' +
-              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
+              '<span class="hide-m"><small>' + esc((r.top_fixes[0] || {}).found || (r.top_fixes[0] || {}).label || '') + (r.fix_count > 1 ? ' (+' + (r.fix_count - 1) + ' more)' : '') + '</small></span>' +
               '<span class="hide-m"><span class="tag ' + ptag(r) + '">' + esc(pstatus(r)) + '</span></span><a class="btn btn-ghost btn-sm" href="#pitch/' + esc(r.slug) + '">Open</a></div>';
           }).join('') : '<p class="empty">Nothing matches.</p>') + '</div>';
         var save = function () { try { sessionStorage.setItem('ve_bd_pitch_filter', JSON.stringify(pf)); } catch (e) {} };

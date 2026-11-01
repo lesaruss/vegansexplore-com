@@ -876,7 +876,7 @@ judge whether food is safe by how a place looks online; businesses want marketin
   (and WordPress `/?page_id=`) with a **301** to its new page. The final check adds **Their old addresses** (never read fails it; up to 12 tried
   for the 301). The owner sees the list read-only. Proven 2026-11-01: Love Life Cafe's site read 15 addresses from its sitemap (/drinks,
   /catering, /menu/kids-menu to Menu, /values to About, /accessibility to Home); sobev.com did not open (said so); the server's 301s tested
-  against the real handler. `ve-branddesk` v20 and v21 (commits 6f14409, 4e950aa, source sha256 matched).
+  against the real handler. `ve-branddesk` v20 and v21 (commits 6f14409, 4e950aa, source sha256 matched). The pitch list's Their biggest gap shows what the check found (`top_fixes[].found`), not the check's goal-worded label.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
