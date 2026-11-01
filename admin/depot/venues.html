@@ -94,7 +94,7 @@
     var $ = function (id) { return document.getElementById(id); };
     var app = $('app');
     var STATUS = { pending: 'Waiting', accepted: 'Accepted', agreed: 'Agreed', declined: 'Declined' };
-    var KIND = { confirm: 'Still here', wrong: 'Update: something changed', gone: 'Update: not there anymore', missing: 'Something missing', comment: 'Comment' };
+    var KIND = { confirm: 'Still here', wrong: 'Update: something changed', gone: 'Update: not there anymore', missing: 'Something missing', comment: 'Comment', scan: 'Scanned item (shop)', shop_confirm: 'Still on the shelf' };
     var VEGAN = { vegan: 'Vegan', on_request: 'Vegan on request', ask: 'Ask before you order' };
     var ZONE = { concourse: 'Concourse', club: 'Club level', suites: 'Suites', outside: 'Outside', airside: 'After security', landside: 'Before security' };
     var ZONE_AIR = { airside: 'After security', landside: 'Before security', club: 'Lounge' };
@@ -134,20 +134,24 @@
         if (!r) { app.innerHTML = '<p class="empty">That report is not here. <a href="#list/pending">Back to the reports</a></p>'; return; }
         var v = r.venue || {}, it = r.item, sp = r.spot;
         // Agrees with the first is for updates and missing items only; a comment or Still here is accepted or declined.
-        var firsts = r.kind === 'comment' || r.kind === 'confirm' ? [] : (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm' && o.kind !== 'comment'; });
+        var firsts = ['comment', 'confirm', 'scan', 'shop_confirm'].indexOf(r.kind) >= 0 ? [] : (d.others || []).filter(function (o) { return o.status === 'accepted' && o.kind !== 'confirm' && o.kind !== 'comment'; });
         // What it pays comes from ve_venue_report_points: more with a photo (Sean, 2026-10-29).
-        var pr = (d.points || []).filter(function (p) { return p.kind === r.kind; })[0] || {}, photo = !!r.photo;
+        var pr = (d.points || []).filter(function (p) { return p.kind === r.kind; })[0] || {}, photo = !!r.photo && (r.kind !== 'missing' || !!r.place_photo || v.kind === 'supermarket');
         // A supermarket report from a store whose chain had no sponsorship when it was sent pays the standard amounts (std_*), no bounty
         // (Sean, 2026-11-01; ve_venue_reports.sponsored).
         var std = r.sponsored === false && pr.std_with_photo != null;
         var pays = std ? (photo ? pr.std_with_photo : pr.std_no_photo) : (photo ? pr.with_photo : pr.no_photo),
           agreePays = std ? (photo ? pr.std_agree_with_photo : pr.std_agree_no_photo) : (photo ? pr.agree_with_photo : pr.agree_no_photo), cap = r.paid_cap || 40, capped = r.paid_that_day >= cap;
         app.innerHTML = '<nav class="crumb"><a href="#list/' + r.status + '">Reports</a><span>/</span><span>' + esc(KIND[r.kind]) + '</span></nav>' +
-          '<div class="two"><div class="panel">' + (r.photo ? '<img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo with this one, so it pays the lower points.</p>') + '</div>' +
+          '<div class="two"><div class="panel">' + (r.photo ? '<p class="m" style="margin:0 0 6px">' + (r.kind === 'missing' || r.kind === 'scan' ? 'The item' : 'The photo') + '</p><img class="photo" src="' + esc(r.photo) + '" alt="The member\'s photo">' : '<p class="empty">No photo of the item with this one.</p>') +
+            (r.place_photo ? '<p class="m" style="margin:12px 0 6px">The sign</p><img class="photo" src="' + esc(r.place_photo) + '" alt="The sign">' : r.kind === 'missing' ? '<p class="empty">No photo of the sign' + (r.photo ? ', so it pays the lower points (a supermarket does not need one).' : '.') + '</p>' : '') + '</div>' +
           '<div><div class="panel"><h2>' + esc(KIND[r.kind]) + ' <span class="tag ' + r.status + '">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span></h2><dl class="kv">' +
             '<dt>Venue</dt><dd><a href="#venue/' + esc(v.slug) + '">' + esc(v.name) + '</a></dd>' +
             (sp ? '<dt>Stand</dt><dd>' + esc(sp.name) + (sp.where_text ? ' · ' + esc(sp.where_text) : '') + '</dd>' : '') +
             (it ? '<dt>Item</dt><dd><a href="#venue/' + esc(v.slug) + '/item/' + it.id + '">' + esc(it.name) + '</a><br><span class="m">' + esc(VEGAN[it.vegan] || '') + (it.last_confirmed_at ? ' · last checked ' + esc(when(it.last_confirmed_at)) : ' · never checked by a member') + '</span></dd>' : '') +
+            (r.item_name ? '<dt>The item</dt><dd>' + esc(r.item_name) + (r.gtin ? '<br><span class="m">Barcode ' + esc(r.gtin.replace(/^0+(?=\d{12})/, '')) + ' · <a href="https://world.openfoodfacts.org/product/' + esc(r.gtin.replace(/^0+(?=\d{12})/, '')) + '" target="_blank" rel="noopener">Open Food Facts</a></span>' : '') + '</dd>' : '') +
+            (r.place_name ? '<dt>The place</dt><dd>' + esc(r.place_name) + (r.place_zone ? ' · ' + (r.place_zone === 'landside' ? 'before security' : 'after security') : '') + (r.place_where ? ' · ' + esc(r.place_where) : '') + (r.kind === 'scan' && !sp ? '<br><span class="m">New shop: accepting adds it to the Guide</span>' : '') + '</dd>' : '') +
+            (r.kind === 'scan' ? '<dt>Accepting</dt><dd>Adds the item to the shop as Vegan. Check the package or Open Food Facts first.</dd>' : '') +
             '<dt>From</dt><dd>' + esc(r.member.name || '') + '<br><span class="m">' + esc(r.member.email || '') + '</span></dd>' +
             '<dt>Sent</dt><dd>' + esc(when(r.at)) + '</dd>' +
             (std ? '<dt>Points</dt><dd>Standard points: the store\'s supermarket was not sponsored when this was sent (no bounty)</dd>' : '') +

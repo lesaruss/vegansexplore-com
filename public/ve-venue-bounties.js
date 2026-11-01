@@ -68,12 +68,20 @@
     var P = o.points || {}, base = o.base + d.venue.slug + '/report/', out = [];
     var miss = pay(P, 'missing');
     out.push({ pts: miss[0], low: miss[1], order: -1, title: 'Find a Vegan item we don\'t have',
-      what: 'Spot a Vegan item or a ' + (o.place === 'airport' ? 'spot' : 'stand') + ' that is not in the Guide yet. Photograph it with the menu or the sign.',
+      what: 'Spot a Vegan item or a ' + (o.place === 'airport' ? 'spot' : 'stand') + ' that is not in the Guide yet. Photograph the item, and the sign with the place\'s name.',
       href: base + 'missing' });
+    var sc = pay(P, 'scan');
+    if (sc[0]) out.push({ pts: sc[0], low: sc[1], order: -0.5, title: 'Scan Vegan items in a shop',
+      what: 'Packaged Vegan snacks and drinks in a ' + (o.place === 'airport' ? 'newsstand, market or gift shop' : 'shop or market stand') + ': scan the barcode. Each new item counts once per shop.',
+      href: base + 'scan' });
     (d.spots || []).forEach(function (s, si) {
       (s.items || []).forEach(function (it, ii) {
         var where = { num: si + 1, stand: s.name, at: s.where || '' };
-        if (it.bounty) {
+        if (it.gtin) {
+          var sh = pay(P, 'shop_confirm');
+          out.push({ pts: sh[0], low: sh[1], order: si * 1000 + ii, where: where, title: 'Check ' + it.name + ' is still on the shelf',
+            what: 'Find it in the shop and confirm it is still sold.', href: base + 'shop_confirm/' + it.id, page: o.base + d.venue.slug + '/bounties/' + it.id });
+        } else if (it.bounty) {
           var f = pay(P, 'confirm', true);
           out.push({ pts: f[0], low: f[1], order: si * 1000 + ii, where: where, bounty: true, title: 'Be first to confirm ' + it.name,
             what: it.freshness === 'stale' ? 'No member has checked it in ' + ((o.limits && o.limits.fresh_days) || 35) + ' days. Photograph it at the stand, or the menu board that shows it.'
@@ -92,7 +100,7 @@
   function jobRow(j) {
     var where = j.where ? '<div class="vbz-where"><span class="vbz-no">' + j.where.num + '</span>' + esc(j.where.stand) + (j.where.at ? ' &middot; ' + esc(j.where.at) : '') + '</div>' : '';
     return '<a class="vbz-job" href="' + esc(j.page || j.href) + '"><span class="vbz-pts' + (j.pts < 25 ? ' lo' : '') + '"><b>' + n(j.pts) + '</b><i>points</i></span>' +
-      '<span><h4>' + esc(j.title) + '</h4>' + where + '<p>' + esc(j.what) + ' ' + n(j.low) + ' without a photo.</p></span><span class="vbz-go">' + (j.page ? 'Find it' : 'Do it') + '</span></a>';
+      '<span><h4>' + esc(j.title) + '</h4>' + where + '<p>' + esc(j.what) + (j.low !== j.pts ? ' ' + n(j.low) + ' without a photo.' : '') + '</p></span><span class="vbz-go">' + (j.page ? 'Find it' : 'Do it') + '</span></a>';
   }
 
   function tierName(p, top, o) {
@@ -160,7 +168,7 @@
       '<div class="vbz-jhead"><span class="vbz-pts' + (j.pts < 25 ? ' lo' : '') + '"><b>' + n(j.pts) + '</b><i>points</i></span><div><div class="dg-k">' + (j.bounty ? 'Bounty: be first' : 'Job') + '</div>' +
         '<h3 class="vbz-jt">' + esc(j.title) + '</h3><div class="vbz-where"><span class="vbz-no">' + st.n + '</span>' + esc(st.name) + (h.s.where ? ' &middot; ' + esc(h.s.where) : '') + '</div></div></div>' +
       (it.description ? '<p class="vbz-jd">' + esc(it.description) + '</p>' : '') +
-      '<p class="vbz-jd"><b>What to do:</b> ' + esc(j.what) + ' ' + n(j.low) + ' points without a photo.</p>' +
+      '<p class="vbz-jd"><b>What to do:</b> ' + esc(j.what) + (j.low !== j.pts ? ' ' + n(j.low) + ' points without a photo.' : '') + '</p>' +
       '<div class="dg-btns" style="margin:10px 0 14px"><a class="dg-btn" href="' + esc(j.href) + '">Do it</a><a class="dg-btn dg-ghost" href="' + esc(o.base + v.slug + '/report/choose/' + it.id) + '">Something changed?</a></div>' +
       (v.layout && o.lib ? '<form class="sa-seat" id="vbzSeat"><label for="vbzSeatIn">Your ' + unit + '</label><div><input id="vbzSeatIn" inputmode="text" autocomplete="off" maxlength="12" placeholder="' + (unit === 'gate' ? 'D7' : '124') + '" value="' + esc(seat) + '">' +
         '<button class="dg-btn" type="submit">Get me there</button></div></form>' : '') + '</div>';
