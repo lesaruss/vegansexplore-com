@@ -784,6 +784,16 @@ Deno.serve(async (req) => {
   const who = await caller(req);
   const run = (id: string) => (body.wait && who.ops ? runAudit(id) : (EdgeRuntime as any).waitUntil(runAudit(id)));
 
+  // The business's own free check by its Directory address (business outreach's first email links /check/<slug>): their latest finished
+  // check-up or check from the last 45 days. Anyone; opening it shows the free view, as any shared check does.
+  if (action === 'latest') {
+    const slug = clean(body.listing_slug, 120);
+    const { data: l } = await db.from('listings').select('id, name').eq('slug', slug).eq('status', 'approved').maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const { data: a } = await db.from('ve_audits').select('id').eq('listing_id', l.id).eq('status', 'done').gte('created_at', new Date(Date.now() - 45 * DAY_MS).toISOString())
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    return a ? json({ id: a.id, name: l.name }) : json({ error: 'no_check', name: l.name }, 404);
+  }
   if (action === 'find') {
     const q = clean(body.q, 80).replace(/[%_,()]/g, ' ').trim();
     if (q.length < 2) return json({ listings: [] });
@@ -805,7 +815,9 @@ Deno.serve(async (req) => {
     let q = db.from('ve_audits').select('id, status').in('status', ['running', 'done']).gte('created_at', since).order('created_at', { ascending: false }).limit(1);
     q = r.listing_id ? q.eq('listing_id', r.listing_id) : q.is('listing_id', null).eq('inputs->>name', r.inputs.name).eq('inputs->>website', r.inputs.website || '');
     const { data: prior } = await q;
-    if (prior?.[0] && !body.fresh) return json({ id: prior[0].id, status: prior[0].status, cached: true });
+    // A sign for BrandDesk's pitch list (handshake, canon v8): a free check asked for a listed business, new or reused (ve_free_check_events).
+    const signRan = (auditId: string | null) => r.listing_id && !who.ops && !who.member?.admin ? db.from('ve_free_check_events').insert({ listing_id: r.listing_id, audit_id: auditId, kind: 'ran', member_id: who.member?.id || null, ip_hash: ip }).then(() => null, () => null) : null;
+    if (prior?.[0] && !body.fresh) { await signRan(prior[0].id); return json({ id: prior[0].id, status: prior[0].status, cached: true }); }
     if (Math.min(await gRoom('details', false), await gRoom('search', false)) < 1) return json(GOOGLE_LIMIT, 429);
     if (!who.ops) {
       const { count } = await db.from('ve_audits').select('id', { count: 'exact', head: true }).eq('ip_hash', ip).gte('created_at', new Date(Date.now() - DAY_MS).toISOString());
@@ -842,6 +854,13 @@ Deno.serve(async (req) => {
     if (!isId(body.id)) return json({ error: 'id' }, 400);
     const { data: a } = await db.from('ve_audits').select('*').eq('id', body.id).maybeSingle();
     if (!a) return json({ error: 'not_found' }, 404);
+    // A sign for BrandDesk's pitch list: someone outside the team opened a business's check (business outreach's first email links here).
+    // Once a visitor a day per audit.
+    if (a.listing_id && !who.ops && !who.member?.admin && !body.again) {
+      const ip = await ipHash(req), since = new Date(Date.now() - DAY_MS).toISOString();
+      const { count } = await db.from('ve_free_check_events').select('id', { count: 'exact', head: true }).eq('audit_id', a.id).eq('kind', 'opened').eq('ip_hash', ip).gte('created_at', since);
+      if (!count) await db.from('ve_free_check_events').insert({ listing_id: a.listing_id, audit_id: a.id, kind: 'opened', member_id: who.member?.id || null, ip_hash: ip }).then(() => null, () => null);
+    }
     // The full detail is the Guide: its member, a super admin or ops. A Guide owner may also open any free check in full.
     let full = who.ops || !!who.member?.admin;
     if (!full && who.member) full = a.tier === 'full' && a.member_id === who.member.id;

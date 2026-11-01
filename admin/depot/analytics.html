@@ -63,14 +63,15 @@
     .chart-h span{font-size:11.5px;color:var(--ve-text-50);}
     .chart svg{display:block;width:100%;height:auto;}
 
-    /* Tabs: a row on desktop, a dropdown on phones */
-    .tabs{display:flex;gap:2px;margin-bottom:12px;border-bottom:1px solid var(--ve-border);overflow-x:auto;}
+    /* Sections: one dropdown at every width (Sean, 2026-11-01: "I'd rather it be a drop down with those same things").
+       The button row stays in the page, hidden, so its keyboard wiring keeps working. */
+    .tabs{display:none!important;gap:2px;margin-bottom:12px;border-bottom:1px solid var(--ve-border);overflow-x:auto;}
     .tabs button{font:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border:0;background:none;cursor:pointer;
       color:var(--ve-text-50);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;}
     .tabs button[aria-selected=true]{color:var(--ve-green-deep);border-bottom-color:var(--ve-green-deep);}
-    .tabsel{display:none;margin-bottom:14px;}
+    .tabsel{display:block;margin-bottom:14px;max-width:420px;}
     .tabsel span{display:block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:4px;}
-    .tabsel select{width:100%;}
+    .tabsel select{width:100%;min-height:44px;font-size:14px;font-weight:800;}
 
     .tools{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:center;margin-bottom:12px;}
     .tools input[type=search]{flex:1;min-width:200px;max-width:380px;}
@@ -109,8 +110,7 @@
 
     @media(max-width:900px){.an-top{grid-template-columns:minmax(0,1fr);}}
     @media(max-width:640px){
-      .tabs{display:none;}
-      .tabsel{display:block;}
+      .tabsel{max-width:none;}
       table.stack thead{display:none;}
       table.stack tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;padding:12px 14px;border-bottom:1px solid #f1f2f1;}
       table.stack td{padding:0;border:0;min-width:0;overflow-wrap:anywhere;}

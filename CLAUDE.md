@@ -60,7 +60,7 @@ this list follows the rule above. A new exception goes on this list first.
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
-  (`/business/sample/site`, Green Leaf Kitchen's). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
+  (`/business/sample/site`, Green Leaf Kitchen's; every real client's site, served by `branddesk-sites/`). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
 Admin tools live in The Depot (`/admin/depot/*`) and do load both scripts. Its Go to menu (`TABS` in `public/depot-tabs.js`) was
 trimmed and grouped on 2026-10-27 (Sean: "way too many things in there"): Directory (Directory review, Business outreach, Claims,
@@ -501,8 +501,8 @@ locked part refuses `kit_save` (409 `locked`); changing it is `kit_change_reques
 **mood board** (`kit_mood_save`: pictures in `media/brandkit/<slug>/` tagged style, type or color, their words; `kit_mood_read`: Claude
 proposes a style, six colors by role and one of the four pairings, saved as `mood.read`; never locked). `business/brand.html` sends Edit on a
 locked part of a real kit to Ask for the change. HQ's **Brand kit** tab (`components/branddesk/BrandKitRoom.tsx`, `/api/branddesk/kit`) shows
-the gate, the mood board, the parts, the requests and Launch; built on lesaruss-hq branch `claude/branddesk-social-deploy-7423db` (0dacf2f),
-not merged. The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
+the gate, the mood board, the parts, the requests and Launch; live on lesaruss-hq main dc947e5 (2026-11-01,
+Sean: "deploy"; vegansexplore-com main 147a39a). The launch gate does not hold back the running Social plans (Logan's default). Next: the Website module.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
@@ -539,6 +539,39 @@ judge whether food is safe by how a place looks online; businesses want marketin
   community night with a coaching sheet.
 - **The pitch**: a presence-gap ranking on the monthly check-ups, then a personal guided page per business (their audit, their site mocked
   on our template, the two-week plan, the price), sent from Sean through business outreach, city by city, with his approval.
+- **A handshake before the ask** (LOCKED by Sean 2026-10-31, "lock it"; canon v8, migration `20261031_branddesk_handshake_canon.sql`;
+  Sean: "is this too heavy of an ask for people who don't even know us?... we need a handshake before we ask them to commit to $500 a
+  month"). 1. **Free**: business outreach's first email gives them their page with the top things from their free restaurant check, no
+  price. 2. **$11**: the Vegan Restaurant Guide (every fix, Or have us do it; the pitch page's Not now offers it too). 3. **The BrandDesk
+  pitch page** only after a sign (clicked their link, claimed, ran the free check, bought the Guide, Have us do it, Talk to someone) or for
+  Sean's warm list; never a cold $500 ask. Outreach starts in the chapters with the biggest gaps and the most signs; every city stays off
+  until Sean turns it on. **Both built 2026-10-31** (Sean: "then the handshakes"). **The first email** (migration
+  `20261031_handshake_free_check_email.sql`): `ve_outreach_free_check(listing)` takes their latest finished audit from the last 45 days (the monthly
+  check-ups), the free check's items to fix, three at most, most important first, each in the check's own words, and a link to their whole free
+  check in the Vegan Restaurant Guide (`#/audit/r/<id>`, the free view for anyone); `ve_outreach_render` (the old one kept as
+  `ve_outreach_render_base`, called first) fills `{free_check}`, now after the guide line in the Day 0 template. No price. A business with no recent
+  check-up gets the email as it was: with the check taken back out, all 234 business emails rendered byte for byte as before; 33 of 78 first
+  emails carry one. An upgrade to the offer, so it may go in during a city's 15-day commitment. **Made accurate 2026-11-01** (Sean, reviewing
+  the walkthrough: "we need to 100% make sure that these things that we're saying are true... That kills our credibility"; "nothing's theirs to
+  keep. They can claim it if they're a member"; "what dashboard? They haven't signed up with us"; migration `20261101_handshake_email_accuracy.sql`).
+  Rootz Soul Cafe's email had said "Google has no hours" (Google marks it closed for now) and "we could not find the Instagram" (our reader
+  missed it). `ve_outreach_free_check` now uses only a check-up from the **last 7 days**, never for a business our check-up or Google marks
+  closed, and only the five checks that read a fact straight from Google or their own home page (hours on Google, the Google rating, phone
+  speed by Google's own test, the page title, the search description; never Instagram, "no Google profile", photo counts or "the website did
+  not open"); the lines are dated ("We also ran our free restaurant check on Pho Boca on October 25"), and the link is
+  **`vegansexplore.com/check/<slug>`** (a redirect in `vercel.json` to the Guide's `?check=`, which asks `ve-restaurant-audit` `latest` for
+  their latest check and opens it). `ve_audit_sweep_due` checks first every business on a send day in the next 10 days whose check-up is more
+  than 5 days old. Day 0 lost "yours to keep" and the Partner Dashboard / Liz line: the listing, the dated check, then "The first step is
+  claiming your listing". On 2026-11-01, 7 first emails carried a check. **Signs** (migration `20261031_handshake_signs.sql`):
+  `ve_branddesk_signs()`, per listing, each sign with its latest time: clicked (their outreach link or a reply), claimed, checked (ran the free
+  check), opened (opened their free check, the email's link), guide (the Vegan Restaurant Guide bought by the owner or the email we write to),
+  asked (Have us do it / Talk to our team, by slug or email), talked (I'm ready, Let me think about it or Talk to someone on a pitch page).
+  `ve_free_check_events` (RLS on, no policies), written by `ve-restaurant-audit` (v16): every free check asked for a listed business, a reused one
+  too (which wrote nothing before), and every opening of a business's check by anyone outside the team, once a visitor a day. The pitch list
+  (Depot > BrandDesk > Pitch list) has **Ready for a pitch (a sign or warm)** and **Showed a sign**, each row and each business's page shows its
+  signs, and **Send it from me refuses a business with no sign that is not on the warm list** (`no_sign`; ticking warm is Sean's override).
+  Proven live 2026-10-31: the cold send refused with the pitch left a draft and checkout still closed, the business's check opened and its sign on
+  the list and its page, the filters drawn; the events, the draft and the proof's free check removed.
 - **They rent the service, they own the assets** (Sean, 2026-10-31: "they paid for those photos... so they have that peace of mind to know
   that if things don't work out, they can always have the pieces to start fresh again somewhere else"; canon v2). Stop paying and the
   website and management stop; what we made is theirs, downloadable at any time, said in the pitch. **The severance package**: their
@@ -825,6 +858,97 @@ judge whether food is safe by how a place looks online; businesses want marketin
   campaigns and the results without the blueprint, and was refused editing and adding; a stranger (the Liz account) was refused reading and
   listing; then every row and the event removed. Deployed from commit b7c8c11 (source sha256 matched). Not yet: a reminder to the Community
   Manager as a step comes due, the owner's choice of campaign on their dashboard, and paying creators for an influencer night.
+  **The social add-on, phase 1** (built 2026-10-31; Sean: "Start on the social add-on"; migration `20261031_branddesk_social.sql`). The canon
+  locks +$500 a month, two platforms "so customers who stay off Meta still find them", offered in a city once we have the talent; the rest is
+  Logan's defaults, Sean's to change: 12 posts a month, the 48-hour OK, the four platforms, at least one off Meta. **Setup** (`ve_branddesk_social`,
+  one row a client, RLS on, no policies): two platforms of Instagram, Facebook, TikTok and YouTube, one of them TikTok or YouTube (`PLATFORMS` in
+  `ve-branddesk`), their handles (a pasted link becomes the @handle), the **social manager** (an account by the email they sign in with, never
+  a Guide account), posts a month, Setting up / Running / Paused (Running needs a manager). Set in **Depot > BrandDesk > a client > Social**.
+  **Posts** (`ve_branddesk_social_posts`): when, where (the client's platforms), photo / carousel / video / story, the caption (2,200
+  characters) and up to 10 pictures from their Library; Draft, then **sent for the owner's OK** (one email a send), Approved (by the owner, or
+  **on its own 48 hours before its date** if they say nothing: `socialApproveDue`, run by the daily `checkin_sweep`, `social_sweep` and every
+  read), Change asked (their note, emailed to the manager), Posted (the live link on each platform, checked against that platform's site), or
+  Skipped. A change after sending makes it a draft again. Posting is by hand; nothing goes through the platforms' APIs yet. **The team** is a
+  super admin, the client's social manager or the chapter's Community Manager (`socialTeam`); the social team may add photos, videos and
+  graphics to the client's Library (`accountForFiles`). **`/business/social`** (`business/social.html`, `noindex`): their clients (this month
+  against the target, drafts, waiting, change asked, to post), one client's month (`?account=&month=YYYY-MM`, Send N for their OK, New post),
+  one post (`&post=<id>|new`: the editor beside their Library, Mark it posted with the links); `?preview=1` is Green Leaf Kitchen's. **The owner**
+  sees **Managed by us > Your social** (`&bd=social`, shown only with the add-on): Waiting for your OK (Looks good / Ask for a change), Coming
+  up, Posted with its links; every post not yet out whatever the month, and what went out this month. **Social at checkout opens by chapter**
+  (`ve_site_settings` `branddesk.social_chapters`, set in Depot > BrandDesk > Who can sign up > Where social is open; super admins always):
+  `plan` returns `social_open`, `/business/managed` and the pitch page's sign-up hide the option where it is closed, and `checkout` refuses
+  it (`social_not_open`). Every write to the `branddesk` setting now merges (`saveSettings`), since `allow` used to write the whole value
+  back. Actions `social_platforms`, `social_chapters`, `social_list`, `social_get`, `social_setup`, `social_post_save`, `social_send`,
+  `social_decide`, `social_posted`, `social_skip`, `social_sweep`. Preview journeys > BrandDesk has the planner, a client's month, a post and
+  Your social. Deployed from commit 1e65808 (version 15, source sha256 matched). **Proven live 2026-10-31** on a [TEST] client on Love Life
+  Cafe (the Logan test account as the owner, Cookbook Tester 1 as the social manager, Sean through the admin token): Meta-only and one platform
+  refused, the owner and a stranger refused setup and reading, `social_open` false for the owner and true for a super admin; set up with the
+  link and the email's capitals cleaned; three posts drafted, a picture from outside the Library and a platform they do not have refused; sent;
+  the post 30 hours away approved on its own, one approved by the owner, an empty change note refused, a change asked, the owner refused
+  editing and a stranger refused approving; a TikTok link on Instagram and posting an unapproved post refused, one posted with its link; the
+  reworked post back to draft; the manager's list right; the sweep refused a wrong secret; then every row removed (through the one-time
+  `ve-once-social-cleanup`, now the 410 stub, as the connector held the delete). **Not yet (phase 2)**: social numbers (followers and reach)
+  in the monthly report, paying the social manager (gig work, Stripe Connect), a reminder when a post is due to go out, and posting through
+  the platforms' APIs once the Meta tokens are in.
+  **The website launch, the real client site** (built 2026-10-31; Sean: "we're going to go ahead with the website launch"; migration
+  `20261031_branddesk_websites.sql`). Each client's site is their Cartridge (`ve_cartridges`) on the same frame as `business/site.html`, only the
+  brand slots changing. **One shared hosting project serves every client**: Vercel `branddesk-sites` (`prj_fwcoroEU9vkhwbWNChxQf2Bi1JhF`, this repo,
+  root directory `branddesk-sites/`, `ve_site_settings` `branddesk.sites` {project, host}). Its build (`branddesk-sites/build.js`) copies the frame in
+  and writes Vercel's Build Output: one Node function (`branddesk-sites/server.js`) answers every request by the domain asked for, calling
+  `ve-branddesk` `site_public`, and serves each page at its own address (`/`, `/menu`, `/order`, `/about`, `/visit`) with its title, description,
+  canonical, share picture, schema.org Restaurant and menu and a plain-text version of the page written on the server, plus `robots.txt` and
+  `sitemap.xml` per domain; the frame draws over it (`window.VE_SITE`: `href()` for real addresses, ordering on their own ordering page or a call,
+  since the point-of-sale cart is not connected; the sample and pitch stills are unchanged). A push that changes the frame or that folder rebuilds
+  it (`commandForIgnoringBuildStep`), so **every client gets the improved frame at once**. Project defaults checked: Vercel made it with login
+  protection on every `vercel.app` address (`all_except_custom_domains`), which would have hidden the preview; it is `preview` only now, so
+  `branddesk-sites.vercel.app` is public; Node 22. **The steps** (`ve_branddesk_sites`, one per client, and `ve_branddesk_site_events`, every step with
+  who and when; RLS on, no policies): **Build their website** (`site_start`, super admin, needs their brand kit; status building) -> **Send it to them for
+  their OK** (`site_send`: the owner is emailed the private preview, `https://branddesk-sites.vercel.app/p/<token>/`, always the brand kit as it is now,
+  never indexed or cached; review waiting) -> the owner **approves** on their dashboard, typing their name, or **asks for changes**
+  (`site_decide`; a super admin can record an OK given another way only with a note saying how). Approving freezes the Cartridge as `published` (a
+  version number) and records the name, version and address: **their domain serves only what they approved**, and a later brand kit change goes live
+  only after it is sent and approved again (the live site stays up meanwhile). -> **Add their domain** (`site_domain`, super admin, after approval:
+  attached to the hosting project through the Vercel API with the server's `VERCEL_TOKEN`; a bare domain also gets www sent to it with a 308; our
+  own domains refused; status connecting) with the records they add at their domain company (A `@` and CNAME `www`, or a CNAME for a subdomain, from
+  Vercel's own recommendation) -> **Check the domain** (`site_domain_check`: on our hosting, DNS pointed, SSL, which Vercel issues on its own once DNS
+  points) -> **Run the final check** (`site_check`: every page over https on their domain with their name, its own canonical address and open to
+  search; robots.txt pointing at the sitemap; the sitemap listing every page; http sent to https; www sent to their domain; every picture in the
+  approved Cartridge loads). All passing makes it **Live** (`launched_at`), emails the owner and the team, and ticks the new onboarding step **Your
+  new website, live on your domain** on its own. `site_status` takes it down for now (a plain page on their domain), puts it back, or ends it (their
+  domain comes off our hosting). Their domain is served only while their account is active, paused or ending. **Where**: the client's
+  **Managed by us > Your website** (`&bd=website`; the preview, Approve my website with their name, Ask for changes, the domain's state, the final
+  check, every step) and **Depot > BrandDesk > a client > Your website** (`#a/<id>/website`: the same view with Build their website, the look, Send it
+  for their OK, Record their OK, Add their domain with the records, Check the domain, Run the final check, Take it down, End it); both are
+  `VEBrandDesk.mount` view `website`. Preview journeys > BrandDesk has the owner's approval (the sample) and the team's view. **Proven live
+  2026-10-31** on a [TEST] client on Love Life Cafe (the Logan test account as the owner, Sean through the admin token): building with no brand kit
+  refused, a stranger refused reading it, the kit started from the listing (11 menu sections, the logo), built, the preview served by the hosting
+  project (home and menu written on the server with all 51 items, noindex, no-store, robots disallowing, an unknown token 404), approving before it
+  was sent refused, sent (the owner emailed), Sean's OK with no note refused, changes asked by the owner, sent again, approved by the owner as
+  version 1 with the name recorded, the owner refused adding a domain; the preview and both views rendered in a browser with no errors; then every
+  row removed (the connector held the delete, so through the one-time `ve-once-bd-sites`, now the 410 stub). **The domain, proven live the same day** (Sean: "go
+  ahead with the domain proof"): a DNS-only CNAME `bd-test-lovelife.lesaruss.com` on Cloudflare, our own domain refused without the test
+  flag, then added (typed as `https://BD-TEST-LOVELIFE.lesaruss.com/` and cleaned), verified and pointed at once, SSL issued within a minute, the
+  final check 9 of 9 and Live on its own, the owner and team emailed, the onboarding step ticked; a preview path on their domain answers 404.
+  **Take it down** shows "This website is not here" within about a minute (`s-maxage=30, stale-while-revalidate=30`; the first proof had 600 and
+  served a page 110 s stale), though a page's cached copy can show once more on its first visit after that; the hosting function keeps only working
+  sites in memory (30 s), so a site put back up answers at once. Then the domain was taken off (it keeps a taken-down site down), the DNS record and
+  every row removed, `ve-once-bd-sites` back to the 410 stub. `ve-branddesk` v19 (commit 434f81a), the hosting project's production build from
+  4e0e6d1 (it builds from `main` on its own; the proof's builds were sent from the branch). Not built yet: the point-of-sale cart on a live site, a
+  branded preview address, purging Vercel's cache on a takedown, and the client's own Google Search Console.
+  **The brand kit is step 1 and their old addresses keep their traffic** (Sean, 2026-11-01: "What about that wizard, the actual brand deck... I
+  don't see that part there"; "run a scan of their domains on their previous site... so they don't lose that traffic"; migration
+  `20261101_branddesk_old_site_map.sql`). Your website opens with **1. Their brand kit** (each part Locked, In progress or Not started, from
+  `data.meta.approvals`; `site_get` `kit.parts`; Open the brand kit), then **2. Their website**. **Their old website's addresses**: at Build their
+  website (and at Add their domain if never done) `ve-branddesk` reads their current site (`oldScan`: sitemap.xml, sitemap_index.xml,
+  wp-sitemap.xml and the ones robots.txt names, then the home page's links; up to 300 addresses, titles for 60) into
+  `ve_branddesk_sites.old_pages` [{path, title, to, how}], each matched to home, menu, order, about or visit by its address, then the title's
+  own part (`OLD_RULES`, `oldMatch`; how `same`, `words`, `home` when nothing matched, `team`). The Depot changes any match or adds an address
+  the scan missed (`site_old_save`), Read their old site again (`site_old_scan`, refused once live: the old site is gone); `site_old_probe {url}`
+  (super admin) reads any site without saving. `site_public` sends live sites `moved`, and `branddesk-sites/server.js` answers each old address
+  (and WordPress `/?page_id=`) with a **301** to its new page. The final check adds **Their old addresses** (never read fails it; up to 12 tried
+  for the 301). The owner sees the list read-only. Proven 2026-11-01: Love Life Cafe's site read 15 addresses from its sitemap (/drinks,
+  /catering, /menu/kids-menu to Menu, /values to About, /accessibility to Home); sobev.com did not open (said so); the server's 301s tested
+  against the real handler. `ve-branddesk` v20 and v21 (commits 6f14409, 4e950aa, source sha256 matched). The pitch list's Their biggest gap shows what the check found (`top_fixes[].found`), not the check's goal-worded label.
 - **Brand kits and the podcast frame** (built 2026-10-31; Sean: "Vegans Explore has its own branding... we need to have it as part of
   this as well"; migration `20261031_brand_cartridges.sql`). A kit's **frame** decides its parts (`FRAMES` in `ve-brand-kit`, `FRAME_SECS`
   in `business/brand.html`): `restaurant` (unchanged), `brand` (logo, colors, type, voice, story) and `podcast` (cover art, colors, type,
@@ -853,7 +977,8 @@ judge whether food is safe by how a place looks online; businesses want marketin
   through a reseller, our own delivery app.
 - **Build order**: Green Leaf Kitchen's site on the template; the make-it-yours switch; Managed by us in `/business` and Have us do it;
   contract, Stripe (setup installments, monthly and Pause), onboarding with the website archive, the Library and the asset sheet; the photographer shot list on the Gig Board (built 2026-10-31); the ranking and pitch
-  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31). Then the social add-on and the ad console.
+  pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31); the social add-on, phase 1 (built 2026-10-31); the website launch (built 2026-10-31, the
+  domain step waiting on its live proof). Then the two handshake builds, social phase 2 and the ad console.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
@@ -1041,7 +1166,7 @@ both sites, so check a change on both (`?brand=lesaruss` turns brand mode on her
 working, which communities are growing the most... break it down by our communities... a ranking based off certain metrics."
 **Depot > Analytics** (`/admin/depot/analytics`, first in the Go to menu, group Insights; super admins only), laid out like
 bcpsmarcomm's `AnalyticsPage.tsx`: the period (Last 7 / 30 / 90 days, This year, Custom; always against the period just before),
-four tiles two by two beside the traffic graph (Visitors, Page views, New members, Top source), then tabs (a dropdown on phones),
+four tiles two by two beside the traffic graph (Visitors, Page views, New members, Top source), then the sections as one dropdown at every width (Sean, 2026-11-01: "I'd rather it be a drop down"),
 each a searchable, sortable, ranked and paged table: Top pages, **Communities**, Daily Pulse, Directory, Traffic sources, Places,
 Campaigns, Ads, Members. The address carries it (`?range=90&bots=show#communities`).
 
@@ -2676,9 +2801,10 @@ name with their logos, the one you are on marked (`famMenu` and `.fam-menu` in `
 tab row so it is not cut off); on a show's page that tab is the active one. One show of a kind keeps its single Podcast or YouTube tab.
 On phones the tab dropdown lists each show by name (`mobileTabMenu` reads the tab's `_fam`). First on Sean's page: Vegans Explore,
 Pre-Vegans and SoFlo Vegans Podcasts.
-**On phones the tab row is a dropdown** (Sean, 2026-10-31: "Do the same drop-down treatment for media"): on a media listing
-(show or work) or a People page with two tabs or more, at 768 px and under the tabs are one full-width dropdown (`mobileTabMenu` and
-`.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as they appear.
+**On phones the tab row is a dropdown on every listing** (Sean, 2026-11-01: "Keep the tab buttons on desktop, dropdown only on
+mobile"; media and People only since 2026-10-31): at 768 px and under, with two tabs or more, the tabs are one full-width dropdown
+(`mobileTabMenu` and `.lt-sel` in `directory/listing.html`), each option clicking its tab or family link, and it follows the tabs as
+they appear (the Guide tab, Partner Dashboard, a family's shows by name). Desktop keeps the tab buttons.
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and

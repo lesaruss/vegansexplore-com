@@ -288,7 +288,7 @@
     function saveC() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
     function loadPlan() {
       if (SAMPLE) { P = { ok: true, allowed: true, listing: { name: D.business.name, slug: 'sample' }, managed: false, account: null, amounts: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900 } }; drawSignup(); return; }
-      api({ action: 'plan', slug: D.business.slug }).then(function (d) { if (d && d.ok) { P = d; drawSignup(); } });
+      api({ action: 'plan', slug: D.business.slug }).then(function (d) { if (d && d.ok) { P = d; if (d.social_open === false) C.social = false; drawSignup(); } });
     }
     function totals() {
       var A = P.amounts, n = C.setup === '3' ? 3 : C.setup === '6' ? 6 : 0, setupNow = n === 3 ? A.setup3 : n === 6 ? A.setup6 : A.setup, monthly = A.monthly + (C.social ? A.social : 0);
@@ -314,7 +314,7 @@
       var A = P.amounts, opts = [['full', 'Pay the setup now', 'All at once.', money(A.setup)], ['3', 'In 3 payments', 'Over your first 3 months.', '3 x ' + money(A.setup3)], ['6', 'In 6 payments', 'Over your first 6 months.', '6 x ' + money(A.setup6)]];
       a.innerHTML = '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">Sign up · ' + name + '</div>' + steps(1) + '<h2 class="vg-h">Your plan</h2>' +
         '<div class="pt-g3" style="margin-top:6px">' + opts.map(function (o) { return '<label class="su-opt' + (C.setup === o[0] ? ' on' : '') + '"><input type="radio" name="su-setup" value="' + o[0] + '"' + (C.setup === o[0] ? ' checked' : '') + '><b>' + o[1] + '</b><small>' + o[2] + '</small><strong>' + o[3] + '</strong></label>'; }).join('') + '</div>' +
-        '<label class="su-opt' + (C.social ? ' on' : '') + '" style="margin-top:12px"><input type="checkbox" name="su-social"' + (C.social ? ' checked' : '') + '><b>Add social media, two platforms</b><small>We plan, make and post on two platforms you pick.</small><strong>+' + money(A.social) + ' a month</strong></label>' +
+        (P.social_open === false ? '' : '<label class="su-opt' + (C.social ? ' on' : '') + '" style="margin-top:12px"><input type="checkbox" name="su-social"' + (C.social ? ' checked' : '') + '><b>Add social media, two platforms</b><small>We plan, make and post on two platforms you pick.</small><strong>+' + money(A.social) + ' a month</strong></label>') +
         summary() + '</div>' +
         '<div><div class="vg-eyebrow">Your starter shoot</div><div class="pt-strip" style="grid-template-columns:repeat(2,minmax(0,1fr))"><img src="' + IMG + 'm-burritobowl.webp" alt=""><img src="' + IMG + 'm-club.webp" alt=""><img src="' + IMG + 'm-smoothie.webp" alt=""><img src="' + IMG + 'm-cheesecake.webp" alt=""></div>' +
         '<p class="pt-cap">Up to 15 of your dishes, shot to one standard, are part of your setup.' + (SAMPLE ? '' : ' These are from our sample restaurant.') + '</p></div></div>';

@@ -1049,6 +1049,15 @@
     document.documentElement.classList.add('dg-fit');
     if (window.VEGuideArt) { var art = VEGuideArt('liz', 'square'); if (art) lizBox.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search), auditBack = params.get('audit');
+    // /check/<slug> (business outreach's first email): open that business's own free check.
+    var checkSlug = params.get('check');
+    if (checkSlug) {
+      params.delete('check'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash);
+      auditApi({ action: 'latest', listing_slug: checkSlug }).then(function (d) {
+        if (d && d.id) location.hash = '#/audit/r/' + d.id;
+        else { location.hash = '#/audit'; setTimeout(function () { setStatus('We do not have a recent check for that business yet. Run one here, free.'); }, 600); }
+      }).catch(function () { location.hash = '#/audit'; });
+    }
     if (auditBack) {
       params.delete('audit'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash);
       setTimeout(function () { setStatus(auditBack === 'paid' ? 'Thank you. Your full audit is running, and we emailed you a copy of the link.' : auditBack === 'cancelled' ? 'Checkout was cancelled. Nothing was charged.' : ''); }, 1200);
