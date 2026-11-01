@@ -492,6 +492,11 @@ note on Stripe's page; then expired and the claim and membership rows removed.
 (`next.config.ts`, not permanent); the `/api/studio` data routes are unchanged. Checked from the database (this session cannot reach
 hq.lesaruss.ai): the old addresses land on the new ones and `/branddesk` asks a signed-out visitor to sign in. Next: each brand's page as
 its home, starting with the Social plan.
+**The Social room, built, not live** (Sean: "go"): `ve-social` version 8 (commit 40e855c, live) takes the admin token with `as_member`;
+HQ's room (lesaruss-hq branch `claude/festive-cori-cvqs2o`, b6653c1: `lib/social.ts`, `app/api/branddesk/social`, `components/branddesk/SocialRoom.tsx`,
+a Social tab on each brand's BrandDesk page) waits for "deploy" and for Sean's HQ sign-in address (no account exists for
+contact@vegansexplore.com; contact@lesaruss.com is the super admin). Where everything stands and the build order: playbook
+`branddesk-production-wing`, BUILD RECORD 1.
 
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
