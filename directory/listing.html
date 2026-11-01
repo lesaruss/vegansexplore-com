@@ -316,14 +316,17 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .fam-menu a img,.fam-menu a .fam-ph{width:32px;height:32px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#eef2ee}
 .fam-menu a[aria-current="page"]{color:var(--ve-green-dark)}
 .fam-menu a[aria-current="page"]::after{content:'';margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--ve-green)}
-/* Phones: every listing's tabs are one full-width dropdown, not a sideways scroll (Sean, 2026-11-01: "Keep the tab buttons on
-   desktop, dropdown only on mobile"; media and People only since 2026-10-31). mobileTabMenu builds it from the tabs and follows them. */
+/* A listing's tabs fold into one dropdown when they do not fit the row, and always on phones (Sean, 2026-11-01: buttons on desktop,
+   "dropdown only on mobile", then agreed: the dropdown also when a long row runs off the edge). mobileTabMenu measures the row and
+   sets lt-fold; buttons stay wherever they fit, so the Guide tab stays in sight. */
 .lt-sel{display:none}
+.listing-tabs.lt-fold{display:block;padding:14px 40px;overflow:visible}
+.listing-tabs.lt-fold>.tab-btn{display:none!important}
+.listing-tabs.lt-fold .lt-sel{display:block;width:100%;max-width:360px;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font:800 13px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
+.listing-tabs.lt-fold .lt-sel:focus{outline:none;border-color:var(--ve-green)}
 @media(max-width:768px){
-  .listing-tabs.lt-has-sel{display:block;padding:12px 16px;overflow:visible}
-  .listing-tabs.lt-has-sel>.tab-btn{display:none!important}
-  .listing-tabs.lt-has-sel .lt-sel{display:block;width:100%;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font:800 13px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23555' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center}
-  .listing-tabs.lt-has-sel .lt-sel:focus{outline:none;border-color:var(--ve-green)}
+  .listing-tabs.lt-fold{padding:12px 16px}
+  .listing-tabs.lt-fold .lt-sel{max-width:none}
 }
 .bk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:22px}
 .bk-card{display:flex;flex-direction:column;gap:6px;text-align:left;background:none;border:0;padding:0;cursor:pointer;font:inherit;color:var(--ve-text)}
@@ -1803,15 +1806,32 @@ function mobileTabMenu(){
     var on = tabs.filter(function(t){ return t.on; })[0] || tabs[0];
     sel.innerHTML = tabs.map(function(t, i){
       return '<option value="' + i + '"' + (t === on ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('');
-    nav.classList.toggle('lt-has-sel', tabs.length > 1);
+    fit();
   }
+  // Fold when there are two tabs or more and either the screen is a phone or the buttons overflow the row (measured with the
+  // buttons showing; a change only when it differs, so the observer below does not loop).
+  function fit(){
+    var fold = false;
+    if(tabs.length > 1){
+      if(window.matchMedia('(max-width:768px)').matches) fold = true;
+      else {
+        var was = nav.classList.contains('lt-fold');
+        if(was) nav.classList.remove('lt-fold');
+        fold = nav.scrollWidth > nav.clientWidth + 2;
+        if(was && !fold) return;
+        if(was) nav.classList.add('lt-fold');
+      }
+    }
+    if(nav.classList.contains('lt-fold') !== fold) nav.classList.toggle('lt-fold', fold);
+  }
+  var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fit, 120); });
   sel.addEventListener('change', function(){
     var t = tabs[+sel.value]; if(t){ if(t.href) location.href = t.href; else if(!t.el._fam) t.el.click(); }
     setTimeout(build, 0); // a link that opens a new tab leaves this page on the tab it was on
   });
   build();
   if(window.MutationObserver) new MutationObserver(function(ms){
-    if(ms.some(function(m){ return !sel.contains(m.target); })) build();
+    if(ms.some(function(m){ return !sel.contains(m.target) && !(m.target === nav && m.type === 'attributes'); })) build();
   }).observe(nav, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
 // A Podcasts or YouTube tab with an arrow (loadFamily): opens the shows by name, the one open marked. The list sits outside the tab
