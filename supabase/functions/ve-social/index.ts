@@ -276,7 +276,7 @@ async function build(from: string, to: string, blogId?: number | null, withPodca
 // brands... clients"). Tables ve_social_brands, ve_social_slots, ve_social_notes, ve_social_edits, ve_social_people (migration
 // 20261101_ve_social_studio.sql). Who: ops (the admin token, written as Logan), super admins, and a brand's people (editor or viewer).
 //   brands, slots {brand, from, to}, slot_get {id}, slot_save {id?, brand?, fields}, note_add {id, body}, note_done {note_id, reply?},
-//   notes_open {brand?}, approve {id}, send_back {id, body}, skip {id}, push {id} (ops), sync (ops or cron), report {from, to, brand?}
+//   notes_open {brand?}, approve {id}, send_back {id, body}, skip {id}, delete {id} (skipped only), push {id} (ops), sync (ops or cron), report {from, to, brand?}
 // Approving pushes the slot to the brand's Metricool scheduler (autoPublish). A channel the brand has not connected in Metricool, or a
 // brand with no Metricool brand yet, makes the slot Manual with the reason, so it is known ahead of time. sync marks Metricool's
 // published posts Posted with their links and copies their numbers from the analytics (matched by link).
@@ -684,6 +684,16 @@ async function studio(body: any, who: Who) {
       res.push({ id, ...(await push(id, who)) });
     }
     return Array.isArray(body.ids) ? { results: res } : res[0];
+  }
+  if (a === 'delete') {
+    // Only a skipped slot, by an editor of its brand. Its notes and history go with it (ON DELETE CASCADE); a story made
+    // from it keeps its own slot (story_of set null). Sean, 2026-11-01: "is it possible for us to delete or hide it?"
+    const { data: s } = await db.from('ve_social_slots').select('id,brand_slug,status,metricool_post_id').eq('id', body.id).maybeSingle();
+    if (!s) return { error: 'not_found' };
+    if ((await roleFor(who, s.brand_slug)) !== 'editor') return { error: 'forbidden' };
+    if (s.status !== 'skipped') return { error: 'not_skipped' };
+    const { error } = await db.from('ve_social_slots').delete().eq('id', s.id);
+    return error ? { error: error.message } : { ok: true, deleted: s.id };
   }
   if (a === 'push') { if (!who.ops) return { error: 'forbidden' }; return await push(body.id, who); }
   if (a === 'sync') { if (!who.ops) return { error: 'forbidden' }; return await sync(); }

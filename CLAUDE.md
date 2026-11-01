@@ -5004,6 +5004,11 @@ to Waiting for approval, and back to held if a wide one goes on. A held story ca
 time when the post moves, is skipped with it, and unticking the option skips it (out of Metricool if scheduled). `slot_get` returns the
 post's `story` and the story's `parent`, linked on each slot. Proven 2026-11-01 with [TEST] slots (made held, moved to Waiting for approval
 by a 1080 x 1920 picture, followed the post's move, skipped with it).
+**Skipped slots are out of sight** (Sean, 2026-11-01: "When we skip a story, is it possible for us to delete or hide it? I don't like to see
+things that we're not using"): the Plan (By day, a day, the Calendar view) and every chip leave skipped slots out, and a **Skipped** chip
+shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **Delete it** (an editor of the brand; `ve-social` `delete`,
+refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
+from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
 ## Image conventions
 
