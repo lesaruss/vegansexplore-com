@@ -3734,10 +3734,13 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   ingredient calls for coffee creamer... pick and choose which coffee creamer they want... save it"; then "Could we also list the macros
   of the item?"; migrations `20261101_product_barcodes_macros.sql`, `20261101_recipe_ingredient_types.sql`; edge function `ve-products`).
   **Barcodes**: `ve_product_barcodes` (GTIN padded to 14 digits, `ve_gtin`), one row per item, tied to its product line, with its Nutrition
-  Facts and macros; 870 filled 2026-11-01 from USDA FoodData Central's Branded Foods (every record of each brand, matched by kind, nothing
-  with milk, cream, whey, casein, egg or honey; `ve_usda_label` builds the label per serving with FDA rounding), 68 of the 86 lines.
+  Facts and macros; 1,044 filled 2026-11-01 from USDA FoodData Central's Branded Foods (every record of each brand, matched by kind,
+  nothing whose ingredients start with milk or cream or list whey, casein, lactose, egg or honey; "almond milk (water, almonds)" is fine;
+  `ve_usda_label` builds the label per serving with FDA rounding) and, for lines USDA lacks or holds only broken records for, Open Food
+  Facts (`ve_off_label`, CC BY-SA; no serving on record means the FDA reference amount: butter 1 Tbsp, cream cheese 2 Tbsp, cheese 30g,
+  grated parmesan 2 tsp). An item whose record is impossible (Natural Bliss Hazelnut, 4g protein a tablespoon) never stands for its line.
   **Macros**: `ve_products.macros` `{serving, cal, protein, carbs, fat, fiber, sugar, sodium, item}` from the line's plain or original item
-  (66 lines; 3 before), shown by `/public/ve-macros.js` (`VEMacros.strip`, `line`, `per100`, `amount`): a strip on every product page
+  (81 of 86 lines; 3 before), shown by `/public/ve-macros.js` (`VEMacros.strip`, `line`, `per100`, `amount`): a strip on every product page
   (`.pv-mac` in `ve-product-view.js`, the chosen version's own), protein and calories on the Supermarket Guide's tiles and the brand's
   Products tab, and Sort products (Most protein, Most protein per calorie, Fewest calories, `o` in the address). **Scan** is a Supermarket
   Guide tab (`#/scan`, `#/scan/<barcode>`, open to everyone): `/public/ve-scan.js` (the browser's BarcodeDetector, else ZXing 0.21.3 from
@@ -3752,8 +3755,9 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   for a product of another type), shown in their recipe with its picture, macros, its page and **Buy it online** (an Amazon search with our
   tag), and the recipe adds up the picked products' macros at the amounts it calls for, per serving. `ve-products` also takes the ops token
   with `as_member`. Proven 2026-11-01 as the Logan test account (vote counted once and taken back, a pick saved, a wrong type and an
-  untagged line refused, then cleared). Not yet: 18 lines with no USDA match (365, Ben & Jerry's, Siggi's and others) and the other
-  Guides' recipe views.
+  untagged line refused, then cleared). Not yet: 5 lines with no public numbers on USDA or Open Food Facts (365 by Whole Foods coconut
+  yogurt and cheese slices, Om Sweet Home, Vlendedful, Panacheeza: "Macros not added yet" until the team adds them from the package or a
+  member scans one), and the other Guides' recipe views.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
