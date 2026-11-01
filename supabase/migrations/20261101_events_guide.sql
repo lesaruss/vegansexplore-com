@@ -99,7 +99,7 @@ alter table public.points_ledger add constraint points_ledger_reason_check check
 -- 7. The gear shop: every item a tracked /go/ link (ve-links adds our Amazon tag, vegansexplore-20). Searches, not one product, so a
 --    link never points at something sold out.
 insert into ve_links (code, label, destination, initiative_slug, tags, channel, active)
-select v.code, v.label, 'https://www.amazon.com/s?k=' || replace(v.q, ' ', '+'), 'vegan-events-guide', array['events-guide', 'gear'], 'guide', true
+select v.code, v.label, 'https://www.amazon.com/s?k=' || replace(v.q, ' ', '+'), 'vegan-events-guide', array['events-guide', 'gear'], 'other', true
 from (values
   ('ev-gear-canopy', 'Events Guide gear: 10x10 pop-up canopy', '10x10 pop up canopy tent commercial'),
   ('ev-gear-weights', 'Events Guide gear: canopy weights', 'canopy weights set of 4'),
