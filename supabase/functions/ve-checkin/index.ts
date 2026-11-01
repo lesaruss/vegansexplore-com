@@ -13,6 +13,18 @@
 // POST { action: 'checkin', listing_id, lat, lng, accuracy }  an active member: { ok, points, distance_m } or { ok: false, why }
 // POST { action: 'mine' }                                a signed-in member: their check-ins, newest first, and the points
 //
+// The check-in menu (Sean, 2026-11-01, canon canon-ve-earn-your-passport): after I'm here, What are you doing here today?
+// POST { action: 'today', listing_id }                   the member's check-in here today (open for window_hours), what they
+//                                                         already sent for it, the points each pays, and the bounties open here
+// POST { action: 'photo_start', checkin_id, kind }       meal | receipt: a one-object signed upload into the private bucket
+//                                                         checkin-photos, only while the check-in is open
+// POST { action: 'act', checkin_id, kind, photo_path?, post_url?, body? }  saves one of meal | receipt | post | shoutout (one each
+//                                                         per check-in); it waits for the team, nothing is paid yet
+// POST { action: 'review_list', status? }                super admins: the queue, with signed photo links
+// POST { action: 'review', id, decision, note? }         super admins: approve (pays its points, ve_points_grant reason checkin,
+//                                                         ref checkin-action:<id>) or decline
+// 'listing' also returns the listing's approved shout-outs (first name and initial). Owners earn nothing at their own place.
+//
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -80,11 +92,14 @@ Deno.serve(async (req) => {
         .eq('listing_id', body.listing_id).eq('member_id', memberId).eq('local_day', today);
       mine_today = (count || 0) > 0;
     }
-    return json({ ok: true, ...(data || {}), mine_today, ...(people ? { people, more } : {}) });
+    const { data: sh } = await db.from('ve_checkin_actions').select('body, created_at, members(name)').eq('listing_id', body.listing_id)
+      .eq('kind', 'shoutout').eq('status', 'approved').order('created_at', { ascending: false }).limit(6);
+    const shoutouts = (sh || []).map((r: any) => { const p = String(r.members?.name || '').trim().split(/\s+/); return { text: r.body, at: r.created_at, name: p[0] ? p[0] + (p[1] ? ' ' + p[1][0] + '.' : '') : 'A member' }; });
+    return json({ ok: true, ...(data || {}), mine_today, shoutouts, ...(people ? { people, more } : {}) });
   }
 
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: m } = await db.from('members').select('id, membership_status').eq('id', memberId).maybeSingle();
+  const { data: m } = await db.from('members').select('id, membership_status, is_superadmin').eq('id', memberId).maybeSingle();
   if (!m) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'privacy') {
@@ -111,6 +126,120 @@ Deno.serve(async (req) => {
       .eq('member_id', memberId).order('created_at', { ascending: false }).limit(100);
     const rows = (data || []).map((c: any) => ({ at: c.created_at, points: c.points, name: c.listings?.name, slug: c.listings?.slug, city: c.listings?.address_city }));
     return json({ ok: true, checkins: rows, points: rows.reduce((a: number, r: any) => a + (r.points || 0), 0) });
+  }
+
+
+  // ---------- The check-in menu ----------
+  const settings = async () => {
+    const { data } = await db.from('ve_site_settings').select('value').eq('key', 'checkin_actions').maybeSingle();
+    return { meal: 15, receipt: 25, post: 25, shoutout: 10, window_hours: 3, ...((data as any)?.value || {}) };
+  };
+  const KINDS = ['meal', 'receipt', 'post', 'shoutout'];
+  // The member's own check-in, open for window_hours after I'm here.
+  const openCheckin = async (id: unknown) => {
+    if (!isId(id)) return null;
+    const { data: c } = await db.from('ve_checkins').select('id, member_id, listing_id, created_at').eq('id', id).maybeSingle();
+    if (!c || c.member_id !== memberId) return null;
+    const st = await settings();
+    const until = Date.parse(c.created_at) + st.window_hours * 3600e3;
+    return { ...c, until, open: Date.now() < until, st };
+  };
+
+  if (body.action === 'today') {
+    if (!isId(body.listing_id)) return json({ error: 'listing_id' }, 400);
+    const st = await settings();
+    const day = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const [{ data: c }, { data: l }, { data: bs }] = await Promise.all([
+      db.from('ve_checkins').select('id, created_at, points').eq('listing_id', body.listing_id).eq('member_id', memberId).eq('local_day', day).maybeSingle(),
+      db.from('listings').select('owner_member_id, claimed_by_member_id').eq('id', body.listing_id).maybeSingle(),
+      db.from('ve_bounties').select('id, title, points, community_slug, campaign_id, kind, gig_kind').eq('status', 'open')
+        .or(`check_listing_id.eq.${body.listing_id},visit_listing_id.eq.${body.listing_id},partner_listing_id.eq.${body.listing_id}`).limit(6),
+    ]);
+    const own = !!l && (l.owner_member_id === memberId || l.claimed_by_member_id === memberId);
+    let sent: any[] = [];
+    if (c) { const { data } = await db.from('ve_checkin_actions').select('kind, status, points').eq('checkin_id', c.id); sent = data || []; }
+    const until = c ? Date.parse(c.created_at) + st.window_hours * 3600e3 : null;
+    return json({ ok: true, own_place: own, checkin: c ? { id: c.id, at: c.created_at, open_until: new Date(until!).toISOString(), open: Date.now() < until! } : null,
+      sent, points: { meal: st.meal, receipt: st.receipt, post: st.post, shoutout: st.shoutout }, window_hours: st.window_hours,
+      bounties: (bs || []).map((b: any) => ({ id: b.id, title: b.title, points: b.points, url: '/bounties?community=' + encodeURIComponent(b.community_slug || '') + (b.campaign_id ? '&campaign=' + encodeURIComponent(b.campaign_id) : '') })) });
+  }
+
+  if (body.action === 'photo_start') {
+    if (m.membership_status !== 'active') return json({ ok: false, why: 'members_only' }, 403);
+    if (body.kind !== 'meal' && body.kind !== 'receipt') return json({ error: 'kind' }, 400);
+    const c = await openCheckin(body.checkin_id);
+    if (!c) return json({ ok: false, why: 'no_checkin' }, 404);
+    if (!c.open) return json({ ok: false, why: 'closed' }, 409);
+    const path = `${c.listing_id}/${c.id}/${body.kind}-${crypto.randomUUID()}.jpg`;
+    const { data: up, error } = await db.storage.from('checkin-photos').createSignedUploadUrl(path);
+    if (error || !up) return json({ error: 'upload_failed' }, 500);
+    return json({ ok: true, path, upload_url: up.signedUrl });
+  }
+
+  if (body.action === 'act') {
+    if (m.membership_status !== 'active') return json({ ok: false, why: 'members_only' }, 403);
+    const kind = String(body.kind || '');
+    if (!KINDS.includes(kind)) return json({ error: 'kind' }, 400);
+    const c = await openCheckin(body.checkin_id);
+    if (!c) return json({ ok: false, why: 'no_checkin' }, 404);
+    if (!c.open) return json({ ok: false, why: 'closed' }, 409);
+    const { data: l } = await db.from('listings').select('owner_member_id, claimed_by_member_id').eq('id', c.listing_id).maybeSingle();
+    if (l && (l.owner_member_id === memberId || l.claimed_by_member_id === memberId)) return json({ ok: false, why: 'own_place' }, 403);
+    const row: Record<string, unknown> = { checkin_id: c.id, member_id: memberId, listing_id: c.listing_id, kind, status: 'pending' };
+    if (kind === 'meal' || kind === 'receipt') {
+      const p = String(body.photo_path || '');
+      if (!p.startsWith(`${c.listing_id}/${c.id}/${kind}-`) || !/\.jpg$/.test(p)) return json({ ok: false, why: 'photo_needed' }, 400);
+      const dir = p.slice(0, p.lastIndexOf('/')), name = p.slice(p.lastIndexOf('/') + 1);
+      const { data: listed } = await db.storage.from('checkin-photos').list(dir, { search: name });
+      if (!(listed || []).some((f: any) => f.name === name)) return json({ ok: false, why: 'photo_missing' }, 400);
+      row.photo_path = p;
+    } else if (kind === 'post') {
+      const u = String(body.post_url || '').trim();
+      if (!/^https:\/\/(www\.)?(instagram\.com|tiktok\.com|vm\.tiktok\.com)\//i.test(u) || u.length > 500) return json({ ok: false, why: 'post_link' }, 400);
+      row.post_url = u;
+    } else {
+      const t = String(body.body || '').replace(/\s+/g, ' ').trim();
+      if (t.length < 10 || t.length > 280) return json({ ok: false, why: 'shoutout_length' }, 400);
+      row.body = t;
+    }
+    const { data: ex } = await db.from('ve_checkin_actions').select('id, status').eq('checkin_id', c.id).eq('kind', kind).maybeSingle();
+    if (ex && ex.status !== 'pending') return json({ ok: false, why: 'already_sent' }, 409);
+    const { error } = ex ? await db.from('ve_checkin_actions').update(row).eq('id', ex.id) : await db.from('ve_checkin_actions').insert(row);
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, status: 'pending', points: (c.st as any)[kind] });
+  }
+
+  if (body.action === 'review_list' || body.action === 'review') {
+    if (!m.is_superadmin) return json({ error: 'forbidden' }, 403);
+    if (body.action === 'review_list') {
+      const status = ['pending', 'approved', 'declined'].includes(body.status) ? body.status : 'pending';
+      const { data: rows } = await db.from('ve_checkin_actions').select('id, kind, photo_path, post_url, body, status, points, review_note, created_at, members(name, email), listings(name, slug, address_city)')
+        .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(100);
+      const out = await Promise.all((rows || []).map(async (r: any) => {
+        let photo = null;
+        if (r.photo_path) { const { data } = await db.storage.from('checkin-photos').createSignedUrl(r.photo_path, 3600); photo = data?.signedUrl || null; }
+        return { id: r.id, kind: r.kind, status: r.status, points: r.points, note: r.review_note, at: r.created_at, photo, post_url: r.post_url, body: r.body,
+          member: { name: r.members?.name || r.members?.email || 'Member' }, listing: { name: r.listings?.name, slug: r.listings?.slug, city: r.listings?.address_city } };
+      }));
+      const { count } = await db.from('ve_checkin_actions').select('id', { count: 'exact', head: true }).eq('status', 'pending');
+      return json({ ok: true, rows: out, pending: count || 0 });
+    }
+    if (!isId(body.id) || !['approve', 'decline'].includes(body.decision)) return json({ error: 'bad_request' }, 400);
+    const { data: a } = await db.from('ve_checkin_actions').select('id, kind, member_id, status').eq('id', body.id).maybeSingle();
+    if (!a) return json({ error: 'not_found' }, 404);
+    if (a.status !== 'pending') return json({ ok: false, why: 'already_reviewed' }, 409);
+    const note = String(body.note || '').trim().slice(0, 300) || null;
+    let pts = 0;
+    if (body.decision === 'approve') {
+      pts = Number((await settings() as any)[a.kind]) || 0;
+      if (pts > 0) {
+        const { data: g, error } = await db.rpc('ve_points_grant', { p_member: a.member_id, p_amount: pts, p_reason: 'checkin', p_ref: 'checkin-action:' + a.id });
+        if (error || g?.error) return json({ error: 'grant_failed' }, 500);
+      }
+    }
+    await db.from('ve_checkin_actions').update({ status: body.decision === 'approve' ? 'approved' : 'declined', points: pts, review_note: note,
+      reviewed_by: memberId, reviewed_at: new Date().toISOString() }).eq('id', a.id);
+    return json({ ok: true, points: pts });
   }
 
   return json({ error: 'unknown_action' }, 400);
