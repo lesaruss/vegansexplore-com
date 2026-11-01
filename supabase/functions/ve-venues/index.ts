@@ -199,7 +199,7 @@ Deno.serve(async (req) => {
   // venue of both Guides with items waiting for their first confirmation, and what they pay. No item names: those are the Guide's.
   if (action === 'bounties') {
     const hub = str(body.hub, 40);
-    const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, sort_order, image_url, season_reset_at, chain_listing_id').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
+    const vs = await allRows(() => { let q2 = db.from('ve_venues').select('id, slug, name, kind, city, state, hub, free_example, latitude, longitude, sort_order, image_url, season_reset_at, chain_listing_id').eq('status', 'live'); if (hub && hub !== 'all') q2 = q2.eq('hub', hub); return q2.order('sort_order').order('id'); });
     const ids = vs.map((v) => v.id);
     const its = ids.length ? await allRows(() => { let q3 = db.from('ve_venue_items').select('venue_id, last_confirmed_at, ve_venues!inner(hub, status)').eq('status', 'live').eq('ve_venues.status', 'live'); if (hub && hub !== 'all') q3 = q3.eq('ve_venues.hub', hub); return q3.order('id'); }) : [];
     const P: Record<string, any> = {}; for (const p of await reportPoints()) P[p.kind] = p;
@@ -218,7 +218,8 @@ Deno.serve(async (req) => {
       // A venue with nothing listed yet has one bounty: be the first to add what is there.
       const points = mine.length ? open * first : missing;
       return { slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub, image: v.image_url, free: v.free_example,
-        guide: guideOfKind(v.kind), items: mine.length, open: mine.length ? open : 1, empty: !mine.length, points };
+        guide: guideOfKind(v.kind), items: mine.length, open: mine.length ? open : 1, empty: !mine.length, points,
+        lat: v.latitude, lng: v.longitude };
     }).filter((v) => v.open > 0).sort((a, b) => b.points - a.points);
     const locked = [...live].filter((g) => !ownsG[g]).map((g) => {
       const vs2 = out.filter((v) => v.guide === g);
