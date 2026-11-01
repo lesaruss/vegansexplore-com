@@ -381,7 +381,7 @@
       if (!LIVE) { C.meta.approvals[k] = { state: s, by: 'You', at: today() }; save(); render(); return; }
       var note = document.getElementById('bkNote'), was = note.innerHTML; note.innerHTML = '<strong>Saving</strong>' + esc((SECTIONS.filter(function (x) { return x[0] === k; })[0] || [k, k])[1]) + '...';
       api('kit_save', { section: k, part: partOf(k), state: s }).then(function (d) {
-        if (!d.ok) { note.innerHTML = '<strong>Not saved</strong>' + esc(d.error === 'photos_only' ? 'Photographers can save photos only.' : d.error === 'upload_first' ? 'A picture was not uploaded yet. Try again.' : 'Something went wrong. Your change was not saved; try again.'); return; }
+        if (!d.ok) { note.innerHTML = '<strong>Not saved</strong>' + esc(d.error === 'photos_only' ? 'Photographers can save photos only.' : d.error === 'upload_first' ? 'A picture was not uploaded yet. Try again.' : d.error === 'locked' ? 'This part is locked. Ask for a change with a reason.' : 'Something went wrong. Your change was not saved; try again.'); return; }
         C = d.cartridge; render();
       }).catch(function () { note.innerHTML = was; alert('Your change was not saved. Check your connection and try again.'); });
     }
@@ -773,9 +773,27 @@
       var r = e.target.closest('[data-reset]'); if (r) { e.preventDefault(); try { sessionStorage.removeItem(KEY); } catch (x) {} location.reload(); return; }
       var b = e.target.closest('[data-edit]'); if (!b) return;
       var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
+      // A real kit's locked part changes only on a request with a reason, approved by the owner (BrandDesk foundation, 2026-11-01).
+      if (LIVE && st(k) === 'locked') { askChange(k, title); return; }
       ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos, cast: editLock, sound: editLock })[k](k);
       if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
     });
+
+    function askChange(k, title) {
+      openEd(title + ' is locked', '<p>Approved means locked: this part is the record everything else is made from. To change it, say why. The owner approves the change, and it stays on record.</p>' +
+        '<label class="bk-muted" for="bkWhy">Why it needs to change</label><textarea id="bkWhy" rows="4" maxlength="1000" style="width:100%;margin-top:6px"></textarea>',
+        '<span class="bk-msg"></span><button class="bk-b ghost" type="button" data-ed-close>Cancel</button><button class="bk-b" type="button" data-ask>Ask for the change</button>');
+      edFoot.querySelector('[data-ask]').addEventListener('click', function (e) {
+        var why = document.getElementById('bkWhy').value.trim(), btn = e.target;
+        if (why.length < 10) { alertIn('Say why in a sentence or more.'); return; }
+        btn.disabled = true;
+        api('kit_change_request', { section: k, reason: why }).then(function (d) {
+          if (!d.ok) { btn.disabled = false; alertIn(d.message || 'It was not sent. Try again.'); return; }
+          edBody.innerHTML = '<p><b>Sent.</b> The owner sees your request in BrandDesk. Once it is approved, ' + esc(title) + ' opens to edit again.</p>';
+          edFoot.innerHTML = '<button class="bk-b" type="button" data-ed-close>Done</button>';
+        }).catch(function () { btn.disabled = false; alertIn('It was not sent. Check your connection.'); });
+      });
+    }
 
     // ---- Your team (a real kit): the owner and super admins add an editor or a photographer by the email they sign in with.
     function teamCard() {
