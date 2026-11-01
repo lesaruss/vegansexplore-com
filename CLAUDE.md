@@ -3708,8 +3708,10 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   (migration `20261029_venue_maps_metlife.sql`, from the stadium's own level charts; the 200 level's b sections are their own ring).
   Citi Field, Madison Square Garden and Barclays Center the same day (migration `20261029_venue_maps_new_york.sql`: Citi Field with
   home plate at the bottom, its lettered and 14 to 16 sections on the field level; the Garden's floor sections 1 to 12, its 400s on
-  the West balcony and its 300s the bridges and East balcony; Barclays' lower bowl 1 to 31). Yankee Stadium and UBS Arena wait on
-  seating charts. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
+  the West balcony and its 300s the bridges and East balcony; Barclays' lower bowl 1 to 31). Yankee Stadium and UBS Arena got theirs
+  2026-11-01 from Sean's chart screenshots (migration `20261101_venue_maps_ubs_yankee.sql`: UBS drawn for hockey, 100s, 200s with 201A/B
+  and 226A/B, 300s; Yankee Stadium home plate at the bottom, the field level, the 200 ring with the Bleachers on its outfield side, the
+  Terrace and the Grandstand, the 011 to 029 seats behind home left off), and left the map-the-venues bounty, now five airport maps. **Choose your city**: the Overview and Venues tabs have a City dropdown (the chapters with venues, then All
   cities; `sessionStorage` `sa_city`, South Florida first). **River steps aside once a visit**: shown on arrival, folded the first
   time they open Venues or a venue (`sa_river_auto`); shown again by hand, he stays. A pin's stand outline is drawn inside the card
   (`inset` box-shadow), so the scrolling column never clips it.
