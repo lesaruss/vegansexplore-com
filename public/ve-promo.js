@@ -156,7 +156,7 @@
         [SBM + 'dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'dairy-guide-billboard.jpg', 'The brands worth buying']] },
     'stadium-arena-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13003', go: '/go/ve-guide-stadium', kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
       line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
-      frames: [['/public/guides/stadium-arena-guide.jpg?v=3', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
+      frames: [['/public/guides/stadium-arena-guide.jpg?v=4', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
         ['/public/guides/venues/madison-square-garden.webp', 'Arenas and ballparks', 'background-size:auto 125%;background-position:50% 70%'], ['/public/guides/venues/citi-field.webp', 'Get there from your seat', 'background-size:auto 150%;background-position:50% 72%']] }
   };
   function adCount(placement, campaign, kind) {

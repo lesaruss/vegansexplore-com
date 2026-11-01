@@ -2994,7 +2994,20 @@ two scripts, recording, test, launch. Copy the Dairy Guide's files; never start 
   `vegan-media/media/communities/guide-banners/<slug>.png`, the originals). One file per Guide, used everywhere: the catalog, the
   listing Guide tab, the house banners (`VEPromo` `GUIDE_ADS`), the HTML5 ad card's first scene (`ads/guides/guide.html`), the pitch
   page, the business dashboard and the Guide page's `og:image`. A new banner bumps `?v=` on those references. The old white ones stay in
-  `vegan-media/media/guides/banners/` for outside links only. Still on white: the Welcome Guide (Dani waving).
+  `vegan-media/media/guides/banners/` for outside links only. On 2026-11-01 every other card got its scene too (originals in the same
+  `guide-banners/` folder): the Partner Guides (`partner-<slug>.jpg`), the Coming soon Guides, and a new Stadium & Arena banner with River
+  as a fan in the stands. A Coming soon card shows its banner (not a link) and **With <Guide>**; with no banner it keeps its flat icon.
+  **Who leads which Guide** (Sean, 2026-11-01: "keep Maya as the guide for Pre-Vegans"): Liz Restaurant, Entrepreneur, Ambassador,
+  Dating; Maya Dairy, Pre-Vegan, Baking; River Stadium & Arena, Community Manager, Eating Out, Athlete; Nori Airport, Budget, Abroad;
+  Dani Nonprofit, Group Partner, Nonprofit Partner, Kids and Family; Theo Nutrition, Seasoned Vegan, Holidays, Pets; Kai Creator, Official
+  Creator, Beauty and Fashion; Pascal Meat Alternatives, Meal Prep. The eleven added as Coming soon on 2026-11-01 (members only, like the
+  rest; their Notify me sign-ups tell us which to build first): Vegan on a Budget, Meal Prep, Eating Out Without Stress, Vegan Kids and
+  Family, Vegan Athlete, Vegan Baking, Vegan Holidays, Vegan Pets, Vegan Beauty and Fashion, Vegan Dating, Vegan Abroad.
+- **The Welcome Guide is the whole cast** (Sean, 2026-11-01: "an ensemble Guide. It can introduce all of the Guides throughout"). Its
+  banner is all eight Guides at an outdoor Vegan market (`welcome-guide.jpg`), and the Passport Guide (`passport.html`, `TABS`) opens on
+  the ensemble (`g: 'all'`, `welcome-ensemble.jpg`, "Your Guides · all eight of us"); each tab after is a different Guide who says who
+  they are and which Guide they lead, every one of the eight once: Pascal, River, Maya, Theo, Dani, Kai, Liz, Nori. Lines are text, no
+  recordings. `/business`'s tabs are unchanged.
 - **The Guide list is one file** (Sean, 2026-10-26: the dashboard should mimic "what we currently have on the main guides
   page"): `/public/ve-guide-catalog.js` (`VEGuideCatalog.render(el, {member, source, open})`) draws the cards on `/guides` and
   the dashboard's Guides tab. In order: the **Welcome Guide** (free, opens the Passport Guide at `/passport`; its banner is Dani's

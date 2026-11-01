@@ -172,17 +172,20 @@
   // Each tab: who shows it (a Guide from VE_GUIDE_ART, footer.js), what they say, and what the page holds. Every fact here
   // is the live site's (CLAUDE.md): prices, points and levels are Sean's lock of 2026-10-25; change them only with canon.
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var GUIDES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani' };
+  // The Welcome Guide is the whole cast (Sean, 2026-11-01: "an ensemble Guide. It can introduce all of the Guides throughout"):
+  // the ensemble opens it ('all'), then each tab is a different Guide saying who they are and which Guide they lead, all eight once.
+  var GUIDES = { all: 'Your Guides', liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani', kai: 'Kai', pascal: 'Pascal' };
+  var ENSEMBLE = '/public/guides/welcome-ensemble.jpg';
   var TABS = [
-    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. Your Passport is how you take part in Vegans Explore. Let me show you what it opens, one tab at a time.' },
-    { k: 'places', label: 'Find your places', g: 'river', say: 'The Directory is every Vegan place we know, city by city. With your Passport you vote for the ones you love, once a day each.' },
-    { k: 'community', label: 'Your community', g: 'nori', say: 'Every city has its own hub: the Daily Pulse, events, the Community Board and the members who make it happen.' },
-    { k: 'guides', label: 'Guides', g: 'maya', say: 'Guides are small apps that put our tools together around one topic. Each one is eleven dollars, or 1,100 points, and yours to keep.' },
-    { k: 'points', label: 'Points and levels', g: 'theo', say: 'Points come from taking part. Spend them on Guides or give them to the places you love. Your level comes from everything you have earned.' },
-    { k: 'supports', label: 'What your $11 supports', g: 'dani', say: 'Your eleven dollars is a contribution, not a donation. It keeps the community growing, city by city.' },
-    { k: 'bring', label: 'Bring people in', g: 'river', say: 'The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
-    { k: 'business', label: 'For businesses', g: 'liz', say: 'Businesses come in the same way, for the same eleven dollars, and then get what we offer only to members.' },
-    { k: 'join', label: 'Get your Passport', g: 'liz', say: 'Eleven dollars, one time, and it comes with 1,100 welcome points: enough for your first Guide. Come join us!' }
+    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us walks you through our own Guides, and you\'ll meet every one of us on the way. Your Passport is how you take part in Vegans Explore.' },
+    { k: 'places', label: 'Find your places', g: 'pascal', say: 'I\'m Pascal, the cook of the crew. I\'m making the Meat Alternatives and Meal Prep Guides. The Directory is every Vegan place we know, city by city, and with your Passport you vote for the ones you love, once a day each.' },
+    { k: 'community', label: 'Your community', g: 'river', say: 'I\'m River. I take you to game day in the Stadium and Arena Guide. Every city has its own hub too: the Daily Pulse, events, the Community Board and the members who make it happen.' },
+    { k: 'guides', label: 'Guides', g: 'maya', say: 'I\'m Maya, from the Dairy Guide, and I\'ll walk you through the Pre-Vegan Guide too. Guides are small apps that put our tools together around one topic. Each one is eleven dollars, or 1,100 points, and yours to keep.' },
+    { k: 'points', label: 'Points and levels', g: 'theo', say: 'I\'m Theo, from the Nutrition Guide. Points come from taking part. Spend them on Guides or give them to the places you love. Your level comes from everything you have earned.' },
+    { k: 'supports', label: 'What your $11 supports', g: 'dani', say: 'I\'m Dani, from the Nonprofit Guide. Your eleven dollars is a contribution, not a donation. It keeps the community growing, city by city.' },
+    { k: 'bring', label: 'Bring people in', g: 'kai', say: 'I\'m Kai, from the Creator Guide. The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
+    { k: 'business', label: 'For businesses', g: 'liz', say: 'I\'m Liz, from the Vegan Restaurant Guide. Businesses come in the same way, for the same eleven dollars, and then get what we offer only to members.' },
+    { k: 'join', label: 'Get your Passport', g: 'nori', say: 'I\'m Nori, from the Airport Guide. Eleven dollars, one time, and it comes with 1,100 welcome points: enough for your first Guide. Come join us!' }
   ];
   // For businesses (Sean, 2026-10-27: "a page specifically for businesses... anytime we're asking them to become a member or
   // do something, they could take them to that version of the passport page"). /business is this page (rewrite in vercel.json)
@@ -208,7 +211,7 @@
   var cur = 'overview', lastGuide = null;
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
+  function art(slug) { return slug === 'all' ? ENSEMBLE : window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
   function auth() { return window.VEAuth || null; }
   function me() { var a = auth(); return a && a.isLoggedIn() ? a.getMember() : null; }
   function isMember() { var m = me(); return !!(m && m.membership_status === 'active'); }
@@ -425,9 +428,9 @@
     sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
     var pic = art(t.g);
     guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
-    guideEl.setAttribute('aria-label', GUIDES[t.g] + ', one of our Guides');
+    guideEl.setAttribute('aria-label', t.g === 'all' ? 'All eight of our Guides together' : GUIDES[t.g] + ', one of our Guides');
     if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
-    nameEl.innerHTML = '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
+    nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
     bubble.textContent = t.say;
     var nav = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';

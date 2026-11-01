@@ -44,11 +44,11 @@
       line: 'What a Vegan plate needs, nutrient by nutrient, sourced, with Theo walking you through it.',
       items: ['B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc', 'How much, where to get it, and when to supplement', 'The physicians and health experts in our Directory', 'Our conversations with physicians on the podcast'], free: 'B12 free' },
     'group-partner': { tab: 'Group Guide', title: 'The Group Partner Guide', guide: 'Dani', paid: false, href: '/groups/welcome',
-      banner: '/groups/sample/img/brunch-1.jpg', bannerFallback: '/public/guides/welcome-guide.jpg',
+      banner: '/groups/sample/img/brunch-1.jpg', bannerFallback: '/public/guides/welcome-guide.jpg?v=3',
       line: 'Host your group\'s community and events on Vegans Explore, and earn as it grows.',
       items: ['Your group\'s page, events and members in one place', 'Tickets, guest passes and check-in at the door', 'Earnings that grow with the members you bring in', 'A sample club to try as a member or as the organizer'] },
     'welcome': { tab: 'Welcome Guide', title: 'The Welcome Guide', guide: 'Dani', paid: false, href: '/passport',
-      banner: '/public/guides/welcome-guide.jpg',
+      banner: '/public/guides/welcome-guide.jpg?v=3',
       line: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work.',
       items: ['Find your places in the Directory', 'Your community, in every chapter', 'The Guides, points and levels', 'What your $11 supports'] }
   };
