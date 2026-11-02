@@ -189,6 +189,7 @@
 <script src="/public/footer.js"></script>
 </div>
 <script src="/public/ve-auth.js"></script>
+<script src="/public/ve-video.js"></script>
 <script src="/public/ve-managed.js" defer></script>
 <script>
 (function () {
@@ -499,10 +500,11 @@
         : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button>' +
           '<a class="dg-taste-btn" href="/guides/taste?from=passport">Not ready? Try a free taste first</a>' +
           '<p style="margin-top:10px;font-size:13px">Your Welcome Guide shows you everything once you join.</p>' + status;
-      return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><ul>' +
+      var vid = !isMember() && window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v1.mp4', vtt: '/public/home/next-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v1' }) : '';
+      return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><div>' + vid + '<ul>' +
         (OPEN ? '<li><b>Founding Member</b> on your profile for good</li>' : '') +
         '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Vote, save, check in</b>, take on bounties and give points</li>' +
-        '<li><b>Your city\'s Daily Pulse</b>, boards and events</li><li><b>Never renews</b></li></ul>' +
+        '<li><b>Your city\'s Daily Pulse</b>, boards and events</li><li><b>Never renews</b></li></ul></div>' +
         '<div class="dg-pricebox">' + box + '</div></div>';
     }
   };

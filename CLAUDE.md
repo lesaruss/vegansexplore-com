@@ -5162,6 +5162,14 @@ is `launch-v3.mp4` (its city card reads From South Florida to London; the logo s
 since the inverted logo's thin green EXPLORE could not be read over the pictures). Any logo over a picture in a video or graphic
 goes on a solid plate.
 
+**The "what's next" video** (Sean approved 2026-11-02: "Very clean and to the point... I approve"): 40 seconds, Liz, what you can do
+today for free and what the Passport adds, cut from live-site screenshots with a "Free" and a "With your Passport" label; no jobs board or
+classifieds. `vegan-media/media/home/next-v1.mp4` (captions `public/home/next-v1.vtt`) sits on the Passport's Get your Passport page above
+the price box for anyone not a member; `next-taste-v1.mp4` (its last line "You've had a taste. Get the rest with your Passport...", captions
+`next-taste-v1.vtt`) is the right side of the Taste's last slide (Picked for you). Both use `/public/ve-video.js` (`VEVideo.markup`: nothing
+plays until Watch the video, captions on, GA `video_start` / `video_complete` with `passport_next_v1` / `taste_next_v1`); use it for any
+other narrated video. Poster `public/home/next-poster.jpg`.
+
 **Never cover a face** (Sean, 2026-11-02: "the covering up Kai's face. It's kind of disrespectful to her"). In a video, graphic or
 banner, text, a logo or a card never sits over a person's or Guide's face, and a picture whose crop cuts off faces is not used. A card
 over a picture goes on a cityscape or an empty part of the frame; check each card's frame by eye before showing it. The homepage video
