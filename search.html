@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search — Vegans Explore</title>
+  <meta name="description" content="Search every Vegan restaurant, brand, doctor, rescue and more in your own words. Vegans Explore finds what you mean and shows the closest first.">
+  <meta name="robots" content="noindex">
+  <link rel="canonical" href="https://vegansexplore.com/search">
+  <meta property="og:title" content="Search — Vegans Explore">
+  <meta property="og:description" content="Type what you are looking for. We find it.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Universal search results (Sean, 2026-11-02, playbook ve-universal-search). Family: the Vault page (a browse page, full width,
+       cards in an auto-fill grid). Search page, not indexed. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{--g:#2d7d31;--gd:#1f5f22;--gl:#eaf7ea;--ink:#1a1a1a;--mute:rgba(26,26,26,.72);--line:rgba(0,0,0,.1)}
+    body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--ink);line-height:1.6}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px}
+    main{max-width:none;margin:0;padding:36px 40px 80px}
+    @media(max-width:700px){main{padding:24px 16px 64px}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:var(--gd)}
+    h1{font-size:clamp(26px,3.4vw,40px);font-weight:900;line-height:1.1;margin:6px 0 16px}
+    .box{position:relative;max-width:980px}
+    .box .ves-field{height:54px}
+    .box .ves-field input{font-size:16px}
+    .read{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:16px 0 4px;min-height:30px}
+    .read .lbl{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);margin-right:4px}
+    .notice{background:#fff4e2;border:1px solid #f1d5a4;color:#5a3500;border-radius:6px;padding:12px 16px;font-size:14px;font-weight:600;margin:14px 0 0;max-width:980px}
+    .notice.ok{background:var(--gl);border-color:#cfe9cf;color:var(--gd)}
+    .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 14px}
+    .pill{appearance:none;font:inherit;font-size:13px;font-weight:700;padding:8px 14px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff;color:var(--ink);cursor:pointer}
+    .pill[aria-pressed="true"]{background:var(--gd);border-color:var(--gd);color:#fff}
+    .pill small{font-weight:600;opacity:.8}
+    select{appearance:none;-webkit-appearance:none;font:inherit;font-size:13px;font-weight:700;padding:9px 44px 9px 14px;border:1.5px solid #ccd3cc;border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;margin-left:auto}
+    .count{font-size:13px;font-weight:700;color:var(--mute)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;color:inherit;text-decoration:none}
+    .card:hover{border-color:var(--g);box-shadow:0 6px 18px rgba(0,0,0,.07)}
+    .logo{width:64px;height:64px;border-radius:10px;background:var(--gl);color:var(--gd);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;overflow:hidden;flex:0 0 auto}
+    .logo img{width:100%;height:100%;object-fit:cover}
+    .t{min-width:0;flex:1}
+    .t b{display:block;font-size:15.5px;line-height:1.3;overflow-wrap:anywhere}
+    .m{font-size:12.5px;color:var(--mute);margin-top:3px}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--gd)}
+    .tag.d{background:#eef0f4;color:#2c3340}
+    .tl{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13px;color:var(--mute);margin-top:6px}
+    .empty{padding:36px 0;font-size:16px;color:var(--mute);max-width:760px}
+    .empty b{color:var(--ink)}
+    .more{margin-top:20px;font-size:14px}
+    .more a{color:var(--gd);font-weight:800}
+    @media(max-width:480px){.card{padding:14px;gap:12px}.logo{width:56px;height:56px}select{margin-left:0}}
+  </style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+<main>
+  <div class="eyebrow">Search</div>
+  <h1>What are you looking for?</h1>
+  <div class="box" id="box">
+    <label class="ves-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+      <input type="text" id="ves-page-input" placeholder="Vegan restaurants in Claremont, egg substitute, vegan doctor" aria-label="Search">
+      <button type="button" class="ves-x" id="clr" aria-label="Clear" hidden>&times;</button></label>
+  </div>
+  <div class="read" id="read" aria-live="polite"></div>
+  <div id="note"></div>
+  <div class="bar" id="bar" hidden></div>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty" hidden></div>
+  <p class="more" id="more" hidden></p>
+</main>
+<script src="/public/ve-search.js"></script>
+<script>
+(function () {
+  var S = window.VESearch, esc = S.esc, input = document.getElementById('ves-page-input'), grid = document.getElementById('grid'),
+      read = document.getElementById('read'), note = document.getElementById('note'), bar = document.getElementById('bar'),
+      empty = document.getElementById('empty'), more = document.getElementById('more'), clr = document.getElementById('clr');
+  var data = null, state = { q: '', cat: '', sort: 'best' };
+  S.css();
+  var P = new URLSearchParams(location.search); state.q = (P.get('q') || '').trim(); state.cat = P.get('cat') || ''; state.sort = P.get('sort') === 'near' ? 'near' : 'best';
+  input.value = state.q; clr.hidden = !state.q; if (!state.q) input.focus();
+
+  // The box here searches in place and keeps the view in the address, so every search is a link.
+  S.mount(input, { host: document.getElementById('box'), openOnFocus: false, onSubmit: function (q) { state.q = q; state.cat = ''; run(true); } });
+  clr.addEventListener('click', function () { input.value = ''; clr.hidden = true; input.focus(); });
+  input.addEventListener('input', function () { clr.hidden = !input.value; });
+
+  function url() {
+    var p = new URLSearchParams(); if (state.q) p.set('q', state.q); if (state.cat) p.set('cat', state.cat); if (state.sort === 'near') p.set('sort', 'near');
+    return '/search' + (p.toString() ? '?' + p : '');
+  }
+  function run(push) {
+    if (state.q.length < 2) { draw(); return; }
+    document.title = state.q + ' — Search — Vegans Explore';
+    if (push) history.pushState(null, '', url()); else history.replaceState(null, '', url());
+    S.query(state.q, { limit: 50, log: true }).then(function (r) { data = r; draw(); }).catch(function () {
+      grid.innerHTML = ''; empty.hidden = false; empty.innerHTML = 'Search could not load. Check your connection and try again.';
+    });
+  }
+  function list() {
+    var rs = (data && data.results) || [];
+    if (state.cat) rs = rs.filter(function (x) { return x.category === state.cat; });
+    if (state.sort === 'near') rs = rs.slice().sort(function (a, b) { return (a.km == null ? 1e9 : a.km) - (b.km == null ? 1e9 : b.km); });
+    return rs;
+  }
+  function draw() {
+    if (!data || state.q.length < 2) { grid.innerHTML = ''; read.innerHTML = ''; note.innerHTML = ''; bar.hidden = true; more.hidden = true; empty.hidden = false;
+      empty.innerHTML = '<b>Search in your own words.</b> Try “vegan restaurants in Claremont”, “egg substitute”, “vegan doctor” or the name of a place.'; return; }
+    var it = data.interpretation || {}, w = S.words(data);
+    read.innerHTML = w.length ? '<span class="lbl">We read this as</span>' + w.map(function (x) { return '<span class="ves-chip">' + esc(x) + '</span>'; }).join('') : '';
+    var n = '';
+    if (it.needs_location) n = '<div class="notice">Turn on location to see what is near you, or add a city: “' + esc(state.q.replace(/near me|nearby|around me/ig, '').trim()) + ' in Miami”.</div>';
+    else if (data.nearest_fallback && it.place) n = '<div class="notice">We have nothing in ' + esc(it.place.name) + ' yet. These are the closest, about ' + esc(data.nearest_km) + ' km away. We keep track of what people look for so we know where to grow next.</div>';
+    else if (data.nearest_fallback) n = '<div class="notice">Nothing close to you yet. These are the closest we have, about ' + esc(data.nearest_km) + ' km away.</div>';
+    note.innerHTML = n;
+    var all = data.results || [], cats = {};
+    all.forEach(function (x) { cats[x.category] = (cats[x.category] || 0) + 1; });
+    var keys = Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; });
+    var hasKm = all.some(function (x) { return x.km != null; });
+    if (all.length > 1 && (keys.length > 1 || hasKm)) {
+      bar.hidden = false;
+      bar.innerHTML = (keys.length > 1 ? '<button class="pill" data-cat="" aria-pressed="' + (!state.cat) + '">All <small>' + all.length + '</small></button>' +
+        keys.map(function (k) { return '<button class="pill" data-cat="' + esc(k) + '" aria-pressed="' + (state.cat === k) + '">' + esc(k) + ' <small>' + cats[k] + '</small></button>'; }).join('') : '') +
+        (hasKm ? '<select id="srt" aria-label="Sort by"><option value="best"' + (state.sort === 'best' ? ' selected' : '') + '>Best match</option><option value="near"' + (state.sort === 'near' ? ' selected' : '') + '>Nearest first</option></select>' : '');
+    } else bar.hidden = true;
+    var rs = list();
+    grid.innerHTML = rs.map(function (x) {
+      var vs = x.vegan_status === 'fully_vegan' || x.vegan_status === 'vegan' ? '<span class="tag">100% Vegan</span>' : (x.vegan_status === 'vegan_options' ? '<span class="tag d">Vegan options</span>' : (x.vegan_status === 'vegan_friendly' ? '<span class="tag d">Vegan friendly</span>' : ''));
+      return '<a class="card" href="/directory/' + encodeURIComponent(x.slug) + '"><span class="logo">' + (x.logo_url ? '<img src="' + esc(x.logo_url) + '" alt="" loading="lazy" width="64" height="64" onerror="this.replaceWith(document.createTextNode(\'' + esc((x.name || '?').charAt(0).toUpperCase()) + '\'))">' : esc((x.name || '?').charAt(0).toUpperCase())) + '</span>' +
+        '<span class="t"><b>' + esc(x.name) + '</b><span class="m">' + esc(S.meta(x)) + '</span>' + ((vs || x.votes) ? '<span class="tags">' + vs + (x.votes ? '<span class="tag d">' + x.votes + (x.votes === 1 ? ' vote' : ' votes') + '</span>' : '') + '</span>' : '') +
+        (x.tagline ? '<span class="tl">' + esc(x.tagline) + '</span>' : '') + '</span></a>';
+    }).join('');
+    empty.hidden = rs.length > 0;
+    if (!rs.length) empty.innerHTML = '<b>Nothing yet for “' + esc(state.q) + '”.</b> We keep track of what people look for so we know what to add next. Try fewer words, or a nearby city.';
+    var more_ = '';
+    if (it.link) more_ = '<a href="' + esc(it.link) + '">See these on the shelf in the Directory &rarr;</a>';
+    else if (rs.length) more_ = '<a href="/directory">Browse the whole Directory &rarr;</a>';
+    more.hidden = !more_; more.innerHTML = more_;
+    var c = document.getElementById('count'); if (c) c.remove();
+  }
+  bar.addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (!b) return; state.cat = b.getAttribute('data-cat'); history.replaceState(null, '', url()); draw(); });
+  bar.addEventListener('change', function (e) { if (e.target.id === 'srt') { state.sort = e.target.value; history.replaceState(null, '', url()); draw(); } });
+  window.addEventListener('popstate', function () { var p = new URLSearchParams(location.search); state.q = (p.get('q') || '').trim(); state.cat = p.get('cat') || ''; state.sort = p.get('sort') === 'near' ? 'near' : 'best'; input.value = state.q; run(false); });
+  if (state.q) run(false); else draw();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</div>
+</body>
+</html>

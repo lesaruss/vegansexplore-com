@@ -20,6 +20,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | A sign-up or a form of more than one section | `claim.html` (`?step=`) |
    | A listing or profile | `directory/listing.html` |
    | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
+   | A search box or a results page | `/public/ve-search.js` and `search.html` (universal search, below) |
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
 2. **Nothing fits?** Stop and bring Sean a recommendation (which parent, or a new template) before building.
 3. **Before it ships**, screenshot the new page beside its parent at 1440 and 390 px. If they do not read as the same family, it does
@@ -1110,6 +1111,39 @@ returns every moment across every show, who said it, a quote, and a play button 
   the rest of the episode's moments beside it. Topic counts and tagging progress: `ve_content_topic_counts()`. `ve-content-index`
   actions `topics`, `search`, `moment` (super admin or the admin token). Not yet: members' search and the Guides' Pulse tabs
   playing moments; episodes not on YouTube cannot play.
+
+## Universal search (Sean, 2026-11-02, BOSS run, playbook `ve-universal-search`)
+
+"I should be able to search what I'm looking for, and then it just shows up, no matter what the category is... Who needs a filter when you
+know what you're looking for?" Then: "We're not doing this for the vegan crowd. We're creating a prototype for something that we're going to
+be reaching out to every single business on. Vegans Explore is just a proof of concept." So the engine holds nothing Vegan: the words it
+knows, the places it knows and what people looked for are rows per brand, and a new brand adds rows, never code.
+
+- **One search box on every page**: the Search button in `nav.js`'s bar (or `/`) opens a bar under the menu (`/public/ve-search.js`,
+  `VESearch.panel`); typing shows a short list (what we read, then the best matches, nearest first), Enter opens `/search?q=` (`search.html`,
+  `noindex`, the Vault page's family): what we read as chips, a notice when nothing is near ("We have nothing in Claremont yet. These are the
+  closest, about 6 km away"), category chips and Best match / Nearest first, all in the address (`?q= &cat= &sort=`). Any text input can become
+  the box with `VESearch.mount(input, opts)`. The mic from `ve-dictate.js` rides on it, so you can speak a search.
+- **The engine** is the database function `ve_search(q, lat, lng, limit, brand)` (migrations `20261102_universal_search*.sql`), behind the
+  public edge function `ve-search` (verify_jwt off). It reads the sentence: **a place** (`ve_search_places`: every city a listing is in, plus
+  nicknames such as NYC and LA through `shows_as`, plus a few added by hand), **a kind of thing** (`ve_search_vocab`: a phrase maps to listing
+  categories, product kinds and cuisines, all of which must match; plurals and misspellings are read, and a half-typed last word is completed),
+  and the leftover words as a name. Then it ranks: name match, votes, Vegan status and distance (places you walk into only; a product you can
+  buy anywhere ignores distance; a local place with no pin sinks). It leaves out what the Directory leaves out: closed, LESARUSS.ai-only and
+  not-yet-vetted food places. `ve_search_core` is the engine and `ve_search` the wrapper that completes a half-typed word.
+- **A phone is asked for its place only on a "near me" search**, kept for the visit (`sessionStorage` `ve_geo`).
+- **The log** (`ve_search_log`: the words, the place read, whether anything came back, how far the nearest was, a random visitor id; RLS on, no
+  policies) is written only for a search the visitor sent (Enter or a pick), never each keystroke. Zero-result searches are the list of where
+  to grow next and the numbers for outreach to businesses ("people searched for what you sell in your city").
+- **The benchmark comes before the interface and after every change**: `ve_search_benchmark` (53 searches scored, 2 known gaps listed, not
+  hidden) and `select * from ve_search_benchmark_run()`. Pass rate 53 of 53 on 2026-11-02 after three rounds (round 1 was 42 of 50 once the
+  scorer was fixed). It is a set Logan wrote, so it can flatter the engine: add real searches from members and from `ve_search_log`.
+- **Known gaps, on purpose**: a venue by name (Hard Rock Stadium) and what a store carries (plant milk at Publix) are not in search yet; the
+  results are listings only (Directory, People, Products); Events, Guides, recipes, the Pulse and a place's menu come next. Places are the ones
+  our listings are in plus six added by hand around Claremont; a full public gazetteer (so any town resolves) is the next build, and Google
+  geocoding stays a fallback only (Google costs rule). Claremont had no listings on 2026-11-02; its nearest was Pomona, 6 km.
+- Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
+  frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 
 ## Tracked links (Sean, 2026-10-04)
 

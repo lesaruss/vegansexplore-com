@@ -254,7 +254,20 @@
      (/public/ve-account-menu.js): their account and Sign out, and for a super admin View As and Sign In As.
      No hamburger and no announcement pill. */
   var desktopRight;
-  var shareBtn = '<button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page">' +
+  /* ---- Search (Sean, 2026-11-02): one box for everything. The magnifier opens a bar under the menu; "/" does too. /public/ve-search.js loads on first use. ---- */
+  var searchBtn = '<button type="button" class="ve-share-btn ve-search-btn" data-ve-search-btn aria-label="Search" aria-expanded="false" title="Search (press /)">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>Search</button>';
+  function veOpenSearch() {
+    if (window.VESearch) { window.VESearch.toggle(); return; }
+    var ss = document.createElement('script'); ss.src = '/public/ve-search.js'; ss.onload = function () { window.VESearch.toggle(true); }; (document.head || document.documentElement).appendChild(ss);
+  }
+  document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('[data-ve-search-btn]'); if (b) { e.preventDefault(); veOpenSearch(); } });
+  document.addEventListener('keydown', function (e) {
+    if (window.VESearch || e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+    var t = e.target, tag = t && t.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+    if (document.getElementById('ves-page-input')) return; e.preventDefault(); veOpenSearch();
+  });
+  var shareBtn = searchBtn + '<button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>';
   if (!window.VEShare && !document.querySelector('script[src*="ve-share.js"]')) {
     var shs = document.createElement('script'); shs.src = '/public/ve-share.js'; shs.async = true; (document.head || document.documentElement).appendChild(shs);
