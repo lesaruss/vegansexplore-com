@@ -321,6 +321,11 @@ module.exports = async (req, res) => {
     // text keeps its own reading width inside its column.
     + '.article{max-width:860px;}'
     // The episode (Sean, 2026-11-01): the show, the player and the way to the show's page, the people on it, the other episodes.
+    // In this story (Sean, 2026-11-02): the Directory cards of the people, restaurants and brands the story names. Filled by
+    // the loader at the foot of the page (ve_content_mentions); hidden until a card is drawn.
+    + '.in-story{margin:40px 0 28px;}.in-story[hidden]{display:none;}'
+    + '.in-story-sub{font-size:13px;color:var(--ve-text-75);margin:0 0 14px;}'
+    + '.in-story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;}'
     + '.ep-card{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:16px;margin:0 0 24px;}'
     + '.ep-art{width:96px;height:96px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--ve-green-light);}'
     + '.ep-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}'
@@ -434,6 +439,10 @@ module.exports = async (req, res) => {
     + '<div id="pulseCommentComposerMount"></div>'
     + '<div id="pulseCommentsList" class="pulse-comments-list"><div class="pulse-comments-empty">Loading comments...</div></div>'
     + '</div>'
+    // In this story, at the foot (after the discussion, before More from). Not on a Depot preview.
+    + (preview ? '' : '<section class="in-story" id="in-story" hidden><div class="share-label">In this story</div>'
+      + '<p class="in-story-sub">The people, restaurants and brands this story names, from our Directory. Vote for them, or open their page.</p>'
+      + '<div class="in-story-grid" id="in-story-grid"></div></section>')
     + moreHtml
     + '</div></div>'
     // One ad per page, the tall one (Sean, 2026-10-27), drawn by public/ve-ad-rail.js through ve-ad-creative.js, so an HTML5 ad
@@ -445,6 +454,24 @@ module.exports = async (req, res) => {
     + '<script src="/public/ve-city-banner.js"></script>'
     + '<script src="/public/ve-ad-creative.js"></script>'
     + '<script src="/public/ve-ad-rail.js"></script>'
+    // The In this story loader: the mentions for this article (anon read, shown rows only), then their Directory cards through
+    // ve-region-directory.js, the same card the Directory and the People pages draw. Nothing shows when nothing is named.
+    + (preview ? '' : '<script>(function(){var CID=' + JSON.stringify(post.id) + ',U=' + JSON.stringify(SUPABASE_URL) + ',K=' + JSON.stringify(SUPABASE_ANON_KEY) + ';'
+      + 'var H={apikey:K,Authorization:"Bearer "+K};'
+      + 'fetch(U+"/rest/v1/ve_content_mentions?select=listings(slug)&content_id=eq."+CID+"&status=eq.shown&limit=100",{headers:H})'
+      + '.then(function(r){return r.ok?r.json():[];}).then(function(rows){'
+      + 'var slugs=(rows||[]).map(function(x){return x.listings&&x.listings.slug;}).filter(Boolean);'
+      + 'if(!slugs.length)return;'
+      + 'var ready=window.VERegionDirectory?Promise.resolve():new Promise(function(res){var s=document.createElement("script");s.src="/public/ve-region-directory.js";s.onload=res;s.onerror=res;document.head.appendChild(s);});'
+      + 'return ready.then(function(){if(!window.VERegionDirectory)return;VERegionDirectory.css();'
+      + 'return fetch(U+"/rest/v1/listings?status=eq.approved&slug=in.("+slugs.map(encodeURIComponent).join(",")+")&select="+encodeURIComponent(VERegionDirectory.FIELDS),{headers:H})'
+      + '.then(function(r){return r.ok?r.json():[];}).then(function(list){'
+      + 'if(!list||!list.length)return;'
+      + 'var grid=document.getElementById("in-story-grid");'
+      + 'grid.innerHTML=list.map(function(r,i){return VERegionDirectory.card(r,i);}).join("");'
+      + 'VERegionDirectory.wire(grid.parentNode);'
+      + 'document.getElementById("in-story").hidden=false;});});'
+      + '}).catch(function(){});})();</script>')
     + '<script>(function(){'
     + 'var SHOW=' + JSON.stringify(showSlug) + ';'
     + "var SHOWS=[{value:'vegans-explore-podcast',label:'Vegans Explore Podcast'},{value:'soflo-vegans-podcast',label:'SoFlo Vegans Podcast'},{value:'vegans-who-lift-podcast',label:'Vegans Who Lift Podcast'},{value:'pre-vegans-podcast',label:'Pre-Vegans Podcast'}];"

@@ -162,6 +162,16 @@ Classes currently under the rule:
   Pulse tab and preview, city hubs), and `.post-body` on `/board.html`. The Daily
   Pulse became discussion topics on the Community Board on 2026-10-04; the topic
   intro (`ve_board_posts.body`) is the summary there.
+- `.pulse-link-excerpt` — the "In the Pulse" section on a listing's page (`loadInPulse`
+  in `directory/listing.html`), each article's summary (`ve_pulse_content.summary`).
+
+**Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article ends with **In this story**: the Directory cards of the
+people, restaurants, brands and groups it names (`api/pulse-article.js`, loaded from `ve_content_mentions`). A listing's page
+shows **In the Pulse** with the articles that name it. Matches are built by `ve_content_mentions_build` (cron
+`ve-content-mentions`, every 15 minutes, an article once a day or when it changes): a person credited on the episode (not
+as its host), the listing's website or Instagram linked in the text, or its full name as whole words (never a one-word name).
+Our four shows and their hosts, and a stop list of plain phrases, are left out (`c_skip`, `c_stop`). A wrong match is taken
+off in **Depot > In this story** (`ve-mentions`); a removed row is never rebuilt. Not yet: the city Daily Pulse topics.
 
 The cap applies to the card only. Full article and detail views
 (`.article-lede`, `.article-p`) are never clamped.
