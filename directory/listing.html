@@ -901,6 +901,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-mmeta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:8px;font-size:11px;color:var(--ve-text-50);flex-wrap:wrap}
 .pp-play{font-weight:800;color:var(--vb-go,#2d7d31);text-decoration:none}
 .pp-scroll{max-height:880px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+/* A person's episodes two across, like the cards above them (Sean, 2026-11-02), one on phones. */
+#pp-credits .vep-list,#pp-elsewhere .vep-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;align-items:start}
+@media(max-width:760px){#pp-credits .vep-list,#pp-elsewhere .vep-list{grid-template-columns:minmax(0,1fr)}}
 .pp-row.pp-row-sq{grid-template-columns:72px 1fr auto}
 .pp-sq{width:72px;height:72px;border-radius:8px;background:#eef2ee center/cover no-repeat;display:block;flex:none}
 .pp-sq-lg{width:96px;height:96px;border-radius:10px}

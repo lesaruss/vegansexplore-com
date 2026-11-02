@@ -41,6 +41,7 @@
     '.vep-img{width:72px;height:72px;border-radius:8px;background:#EAF7EA center/cover no-repeat;display:block;object-fit:cover}' +
     '.vep-t{font-size:14px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#1a1a1a;text-decoration:none}' +
     'a.vep-t:hover{color:#1f5f22;text-decoration:underline}' +
+    '.vep-imga{display:block;line-height:0;border-radius:8px}.vep-imga:hover .vep-img{opacity:.88}' +
     '.vep-meta{font-size:11.5px;font-weight:700;color:rgba(26,26,26,.68);margin:3px 0 4px}' +
     '.vep-sum{font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.78);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}' +
     '.vep-acts{display:flex;flex-direction:column;gap:6px}' +
@@ -155,13 +156,25 @@
 
   // o: saved, href (the title opens the episode), showName (the show in the meta line), pre (words before it, a person's role),
   // acts (more buttons after Play and Save). Play shows only for an episode with audio, Save only with a show and a guid.
+  // Outside its own show's page, an episode row opens that episode on the show's Directory page (Sean, 2026-11-02: "the title should
+  // take me to the episode page... when I click on my logo... it could take me to the episode too... So this really becomes a
+  // discovery engine"): the title and the artwork, never Play or Save. Any row whose show carries its slug gets it; o.link false
+  // turns it off, o.href sets another. From another site (seanarussell.com) the link is the full vegansexplore.com address.
+  function epHref(ep, show, o) {
+    if (o.href) return o.href;
+    if (o.link === false || !show || !show.slug || !ep.guid) return '';
+    var base = /(^|\.)vegansexplore\.com$|^localhost$|\.vercel\.app$/.test(location.hostname) ? '' : 'https://vegansexplore.com';
+    return base + '/directory/' + encodeURIComponent(show.slug) + '?ep=' + encodeURIComponent(ep.guid);
+  }
   function row(ep, show, o) {
     o = o || {};
-    var key = keyOf(ep, show), saved = !!o.saved;
+    var key = keyOf(ep, show), saved = !!o.saved, href = epHref(ep, show, o);
+    if (href && !o.href) o = Object.assign({}, o, { href: href, ext: true });
+    var pic = img(ep.image || show.image || '', 160);
     return '<div class="vep-row">' +
-      img(ep.image || show.image || '', 160) +
+      (href ? '<a class="vep-imga" href="' + esc(href) + '"' + (o.ext ? '' : ' data-vep-open="' + esc(ep.guid) + '"') + ' tabindex="-1" aria-hidden="true">' + pic + '</a>' : pic) +
       '<div style="min-width:0">' +
-        (o.href ? '<a class="vep-t" href="' + esc(o.href) + '" data-vep-open="' + esc(ep.guid) + '">' + esc(ep.title) + '</a>' : '<div class="vep-t">' + esc(ep.title) + '</div>') +
+        (o.href ? '<a class="vep-t" href="' + esc(o.href) + '"' + (o.ext ? '' : ' data-vep-open="' + esc(ep.guid) + '"') + '>' + esc(ep.title) + '</a>' : '<div class="vep-t">' + esc(ep.title) + '</div>') +
         '<div class="vep-meta">' + esc([[o.pre, o.showName ? show.name : ''].filter(Boolean).join(' on '), when(ep.date), len(ep.duration)].filter(Boolean).join(' · ')) + '</div>' +
         (ep.summary ? '<div class="vep-sum">' + esc(ep.summary) + '</div>' : '') +
       '</div>' +

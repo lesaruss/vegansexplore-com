@@ -552,7 +552,7 @@
   function podCard(p) {
     var ep = p.ep;
     if (!ep || !window.VEEpisodes) return '';
-    var show = { name: p.show.name, image: p.show.logo_url || '' };
+    var show = { name: p.show.name, slug: p.show.slug, image: p.show.logo_url || '' };
     return VEEpisodes.row(Object.assign({}, ep, { summary: '', image: show.image || ep.image || '' }), show,
       { showName: true, acts: member() ? gvoteBtn(p.slug) + saveBtn('episode', p.slug) : '' });
   }

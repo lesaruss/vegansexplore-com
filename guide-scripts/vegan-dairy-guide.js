@@ -349,13 +349,13 @@
   // date and length, Play in the player docked above the list; ours add our vote and Save (My list), another show's links to it.
   function podCard(p) {
     if (!p.ep || !window.VEEpisodes) return '';
-    var show = { name: p.show.name, image: p.show.logo_url || '' };
+    var show = { name: p.show.name, slug: p.show.slug, image: p.show.logo_url || '' };
     return VEEpisodes.row(Object.assign({}, p.ep, { summary: '', image: show.image || p.ep.image || '' }), show,
       { showName: true, acts: member() ? gvoteBtn('episode', p.slug) + saveBtn('episode', p.slug) : '' });
   }
   function otherCard(o) {
     if (!window.VEEpisodes) return '';
-    var show = { name: o.show.name, image: o.show.image || '' };
+    var show = { name: o.show.name, slug: o.show.slug, image: o.show.image || '' };
     return VEEpisodes.row(Object.assign({}, o.episode, { summary: '', image: show.image || o.episode.image || '' }), show,
       { showName: true, acts: '<a class="vep-btn" href="/directory/' + encodeURIComponent(o.show.slug) + '" target="_blank" rel="noopener">The show</a>' });
   }
