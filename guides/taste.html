@@ -162,6 +162,8 @@
     }
     function start() {
       if (!window.VEAuth || !window.VEGuideArt) return setTimeout(start, 100);
+      var pulse = qs.get('pulse');
+      if (pulse) { fetch(FN.replace('ve-taster', 've-nurture'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pulse_optin', key: pulse }) }).then(function (r) { return r.json(); }).catch(function () { return null; }).then(function (r) { document.getElementById('form').innerHTML = '<h2>' + (r && r.ok ? 'You are in' : 'That link did not work') + '</h2><p>' + (r && r.ok ? 'Your ' + (r.city ? esc(r.city) + ' ' : '') + 'Daily Pulse comes every Thursday: the week\'s top conversations, once a week. Every email has a link to stop it.' : 'Reply to any of our emails and we will set it up for you.') + '</p><p><a href="/guides/taste">Back to your Taste</a></p>'; }); return; }
       var unsub = qs.get('unsub');
       if (unsub) { api({ action: 'unsubscribe', token: unsub }).then(function (r) { document.getElementById('form').innerHTML = '<h2>Done</h2><p>' + (r && r.ok ? 'We will not email you again. Your taste still opens from this page any time.' : 'That link did not work. Reply to any of our emails and we will stop them.') + '</p>'; }); return; }
       var t = qs.get('t');

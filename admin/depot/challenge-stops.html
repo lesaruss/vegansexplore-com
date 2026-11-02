@@ -144,15 +144,15 @@
           if (!d || !d.ok) { v.innerHTML = '<p class="sub">That did not load.</p>'; return; }
           var on = d.settings.offers_on;
           var chips = [['', 'All'], ['draft', 'Not sent yet'], ['sent', 'Sent'], ['chosen', 'Applied'], ['routed', 'In the Inbox'], ['stopped', 'Stopped']];
-          v.innerHTML = '<div class="switch"><b>Automatic follow-ups are ' + (on ? 'on' : 'off') + '.</b><span class="meta">Two days after an offer: "Your spot is still open" if they never clicked, "What a stop really costs" if they clicked. Weekdays from 10 AM Eastern. The first email is only ever sent by you.</span><button type="button" class="btn' + (on ? ' btn-ghost' : '') + '" id="osw">' + (on ? 'Turn them off' : 'Turn them on') + '</button></div>' +
+          v.innerHTML = '<div class="switch"><b>Automatic follow-ups are ' + (on ? 'on' : 'off') + '.</b><span class="meta">Two days after an offer: the follow-up ("Still room"), to every business that has not applied. Weekdays from 10 AM Eastern. The first email is only ever sent by you.</span><button type="button" class="btn' + (on ? ' btn-ghost' : '') + '" id="osw">' + (on ? 'Turn them off' : 'Turn them on') + '</button></div>' +
             '<div class="bar"><nav class="tabs" style="margin:0">' + chips.map(function (c) { return '<a href="#offers/' + c[0] + '" class="' + ((st || '') === c[0] ? 'on' : '') + '">' + c[1] + '</a>'; }).join('') + '</nav><a class="btn" href="#offers/new" style="margin-left:auto;text-decoration:none">New offer</a></div>' +
-            '<p class="meta" style="margin-bottom:10px">See the emails: <a href="#offers/preview/offer">The offer</a> &middot; <a href="#offers/preview/not_opened">Not opened</a> &middot; <a href="#offers/preview/opened">Opened, not chosen</a></p>' +
+            '<p class="meta" style="margin-bottom:10px">See the emails: <a href="#offers/preview/offer">The offer</a> &middot; <a href="#offers/preview/not_opened">The follow-up: still room</a></p>' +
             (d.rows.length ? '<div class="grid">' + d.rows.map(function (o) {
               return '<div class="card"><div class="body"><h3><a href="/directory/' + esc(o.listing.slug) + '" target="_blank" rel="noopener">' + esc(o.listing.name) + '</a></h3>' +
                 '<div><span class="tag t-' + esc(o.status) + '">' + esc(OWORD[o.status] || o.status) + '</span>' + (o.test ? ' <span class="tag t-draft">Test</span>' : '') + '</div>' +
                 '<span class="meta">' + esc(o.name ? o.name + ' · ' : '') + esc(o.email) + (o.listing.city ? ' · ' + esc(o.listing.city) : '') + '</span>' +
                 (o.sent_at ? '<span class="meta">Sent ' + fmt(o.sent_at) + ' · ' + (o.clicks ? o.clicks + ' click' + (o.clicks > 1 ? 's' : '') + ' on their link' : 'not clicked yet') + '</span>' : '') +
-                (o.followup_at ? '<span class="meta">Followed up ' + fmt(o.followup_at) + ' (' + (o.followup_kind === 'opened' ? 'What a stop really costs' : 'Your spot is still open') + ')</span>' : '') +
+                (o.followup_at ? '<span class="meta">Followed up ' + fmt(o.followup_at) + ' (' + 'The follow-up: still room' + ')</span>' : '') +
                 (o.chosen_at ? '<span class="meta">Applied ' + fmt(o.chosen_at) + '</span>' : '') + (o.routed_at ? '<span class="meta">Sent to the Inbox ' + fmt(o.routed_at) + '</span>' : '') +
                 '<div class="acts">' + (o.status === 'draft' ? '<button type="button" class="btn" data-send="' + o.id + '">Send it</button><a class="btn btn-ghost" style="text-decoration:none" href="#offers/preview/offer:' + o.id + '">Preview</a>' : '') +
                 ((o.status === 'draft' || o.status === 'sent') ? '<button type="button" class="btn btn-ghost" data-cancel="' + o.id + '">Stop</button>' : '') + '<span class="msg" id="om' + o.id + '"></span></div></div></div>';
@@ -184,7 +184,7 @@
       }
       function drawPreview(id) {
         var parts = String(id || 'offer').split(':'), kind = parts[0], oid = parts[1] || null, v = $('offersView');
-        var NAME = { offer: 'The offer', not_opened: 'Your spot is still open', opened: 'What a stop really costs' };
+        var NAME = { offer: 'The offer', not_opened: 'The follow-up: still room' };
         v.innerHTML = '<p class="meta"><a href="#offers">Offers we send</a> / ' + esc(NAME[kind] || kind) + (oid ? '' : ' (on a sample business)') + '</p><p class="sub" id="psub">Loading...</p><iframe class="pv" id="pv" title="The email"></iframe><div class="acts"><button type="button" class="btn btn-ghost" id="ptest">Send me a test</button><span class="msg" id="pmsg"></span></div>';
         napi({ action: 'preview', kind: kind, offer_id: oid }).then(function (d) { $('psub').innerHTML = '<b>Subject:</b> ' + esc(d.subject || ''); $('pv').srcdoc = d.html || ''; });
         $('ptest').onclick = function () { this.disabled = true; napi({ action: 'test', kind: kind, offer_id: oid }).then(function (d) { $('pmsg').textContent = d && d.ok ? 'Sent to ' + d.to + '.' : 'That did not send.'; }); };
