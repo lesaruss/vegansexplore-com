@@ -203,7 +203,15 @@ async function compsAllowed(): Promise<boolean> {
   if (compsCache !== null) return compsCache;
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'founding_member').maybeSingle();
   compsCache = (data as any)?.value?.comps === true;
+  madeRightCache = ((data as any)?.value?.made_right || []).map((e: unknown) => String(e).trim().toLowerCase());
   return compsCache;
+}
+// Made right (Sean, 2026-11-01, playbook ve-outreach-buckets): people who paid on the old platform and did not get its worth. Only
+// the emails in founding_member.made_right may still be invited on us, as Founding Members, with 1,100 points unless set otherwise.
+let madeRightCache: string[] = [];
+async function madeRight(email: string | null): Promise<boolean> {
+  await compsAllowed();
+  return !!email && madeRightCache.includes(email.trim().toLowerCase());
 }
 // The deadline line (Sean, 2026-11-01), only before it passes.
 const FOUNDING_DEADLINE = Date.parse('2027-01-01T05:00:00Z');
@@ -515,11 +523,14 @@ Deno.serve(async (req: Request) => {
         // No more comps (Sean, 2026-11-01: "I'm not going to comp anybody"; ve_site_settings founding_member.comps false): a Founding
         // Member, an Ambassador or a plain invitation is the $11. Partner leads stay on us (locked canon); a dinner seat and the
         // Community Manager role keep their own choice for now.
-        const noComp = ['founding', 'ambassador', 'none'].includes(pointsTo) && !(await compsAllowed());
-        const comp = pointsTo === 'nonprofit' || pointsTo === 'group' ? true : noComp ? false : pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
+        const made = pointsTo === 'founding' && await madeRight(email);
+        const noComp = ['founding', 'ambassador', 'none'].includes(pointsTo) && !made && !(await compsAllowed());
+        const comp = made ? true : pointsTo === 'nonprofit' || pointsTo === 'group' ? true : noComp ? false : pointsTo === 'founding' ? p?.comp === true : p?.comp !== false;
         // A Group Partner's organizer gets the Founding Membership's own 1,100 points at the claim, not the invitation's. An Ambassador's
         // points are granted when they join, comp or not.
-        const points = (comp || pointsTo === 'ambassador') && pointsTo !== 'group' ? pointsOf(p?.points ?? body.points) : 0;
+        const asked = p?.points ?? body.points;
+        const points = made && (asked === undefined || asked === null || asked === '') ? 1100
+          : (comp || pointsTo === 'ambassador') && pointsTo !== 'group' ? pointsOf(asked) : 0;
         const level = levelOf(p?.level ?? body.level);
         const profile = pointsTo === 'ambassador' ? profileOf(p?.profile ?? body.profile) : null;
 
