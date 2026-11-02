@@ -1,0 +1,8 @@
+-- Playbook ve-pricing-points-passport: Sean's review of the part 5 emails (Logan, 2026-11-02). Safe to run twice.
+insert into public.playbook_records (slug, brand_slug, author, body, source, kind)
+select 've-pricing-points-passport', 'vegans-explore', 'Logan', $pb$BUILD RECORD, 2026-11-02 (Logan). Earn your Passport, part 5 after Sean's review of the test emails (Sean: "go"). Switches still OFF.
+EMAILS: Day 14 says why they got it (what they told us at sign-up points to the Guide), what the Guide does, and that they tried a piece in their Taste. Day 7 opens the episode on the show's own listing, where they vote and save. December notes: "$11, one time. Or earn it free: finish one of our three challenges within 30 days." The "what a stop really costs" follow-up is dropped; one follow-up to every business that has not applied, reworded by the review panel ("<Month> Passport Challenge stops in <chapter>", no guess at why they have not answered).
+OPT-IN: the weekly Daily Pulse goes only to Tasters who tap "Yes, send it" in the Day 14 email (ve_tasters.pulse_opt_in_at). December notes still go to every Taster.
+OFFER PAGE: Liz's picture and voice on each of the three steps of /business/challenge, Play to start (her three lines exactly as Sean approved them, checked word for word). Your card runs full width.
+NEXT: email preferences in My Account for members (its own build); moving the Taster Day 0 and the Vault emails onto email-send; 6. the content gig, 7. the business points rule.$pb$, 'text', 'decision'
+where not exists (select 1 from public.playbook_records where slug = 've-pricing-points-passport' and body like 'BUILD RECORD, 2026-11-02 (Logan). Earn your Passport, part 5 after%');

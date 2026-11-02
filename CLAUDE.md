@@ -514,6 +514,28 @@ take it down or end it; every step. All of it is `ve-branddesk`'s `site_*` actio
 runs. Our own brands' websites wait for a brand frame (the frame is a restaurant's). Checked against mocked answers in a browser at 1366 and
 390 px; no BrandDesk client existed yet (`list` returned none).
 
+**The plan engine** (2026-11-01, build order item 4; Sean: "go with your recommendation, next step"; migration
+`20261101_branddesk_plan_engine.sql`, edge function `ve-plan`; HQ BrandDesk > a brand > **Plan**, `components/branddesk/PlanRoom.tsx`,
+`/api/branddesk/plan`, `lib/brandPlan.ts`). A 3, 6 or 12 month plan (`ve_plans`: brand, start, Self-serve / Supported / Managed, the
+rhythm: how many of each kind a month) lays out dated pieces (`ve_plan_pieces`), and each piece rolls out its steps backwards from its
+due date (`ve_plan_steps`; `KINDS` in `ve-plan`, Logan's defaults: Social post 8 a month, steps from 7 days before; Reel 4, 14 days;
+Article 1, 21 days; Email 2, 7 days; Photo shoot every other month, 28 days, with Book the photographer and its request already
+written; Podcast episode, Event and Website update off by default). A piece whose steps would start before today moves later in its
+month, never two of a kind on one day. **Every piece moves the same way**: its questions (Questions to answer), then the draft (Ready to
+write: **Write it for me**, Claude Opus 5.5 in the brand's locked voice and story from its kit, only from the answers and the brief, or a
+person writes it and sends it), Waiting for the OK, Approved (a super admin, the owner of our brands; editors ask for changes with a
+note, which the next draft reads) or Changes asked, then **Stored**: a social piece goes onto the brand's Social plan as a slot waiting
+for approval there (`ve_social_slots` status `proposed`, batch `plan:<plan id>`, the time in Eastern), anything else with a link or a
+note. The answers, draft, OK and store steps tick themselves; the rest are ticked by hand. Every move and comment is a `ve_plan_notes`
+row. **The launch gate**: a plan is made only for a launched brand kit (`kit_not_launched`), so today only Vegans Explore can have one;
+Sean A. Russell's and GeekFon Society's kits are not started. Who: super admins, else the brand's `ve_social_people` role. The tab opens
+on Today (late, today, this week, waiting for the OK), then the plans; `?plan=new|<id>&piece=<id>` carry the view. Proven live
+2026-11-01 as Sean on a [TEST] Vegans Explore plan (the gate on GeekFon, 4 pieces and 20 steps made, answers, a draft in the brand's
+voice, an empty change note refused, changes asked and draft 2 shorter as asked, approve, store refused before the OK and onto the Social
+plan at 12:30 PM Eastern after it, a stored piece refused editing, a stranger refused), then removed through the one-time
+`ve-once-plan-proof` (now the 410 stub; the connector held the delete). Not yet: plans for client listings' kits, emailing the owner
+when a piece waits for them, and the plan's pieces on the Social plan's calendar before they are stored.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
@@ -2572,7 +2594,7 @@ Directory is their chapter's).
 - **Where it applies**: Food, Products, Services, Community, Being vetted (`LOC_SECTIONS`); not Media or People; not Food Brands or
   Nutrition & Supplements unless Sells at is Markets & events (`geoApplies`). Where it does not apply, the location filters nothing.
 - **Remembered across visits**: `/directory` keeps it in `localStorage` `ve_dir_loc` (a first visit takes the member's home chapter,
-  else every location); never in the address, and an old `?city=` link still opens on that chapter. The dashboard starts on its
+  else every location), and since 2026-11-01 writes it in the address too (Every view is a link, below): `?city=<chapter>`. The dashboard starts on its
   active city, and a chapter picked there becomes the active city (`switchActiveCity(slug, member, true)`), every location widening
   only the tab (`DASH_ALL.directory`).
 - **The ad rail follows it**: the chapter's two banners where the location applies and a chapter is picked, else the All cities pair.
@@ -2581,16 +2603,49 @@ Directory is their chapter's).
   `filterMenu: true`. The banner's dropdown is the kind of event (All events, then the kinds on the calendar; `onState` hands the
   page the kinds, `cal.setCat(kind)`, the kind stays in the address as `?cat=`), **Upcoming / Past** are the tab row (`.vev-tabs`),
   and **Filters** (`.vev-fbtn`, the count is Sort only) holds Location (Continent, Country, Chapter from the events on the calendar
-  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. The line under the title reads "Festivals · South
+  and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. **Duplicate events** (Sean, 2026-11-01): Vegan Social Clubs (Atlanta) posts its weekly Wednesday meetup on Meetup twice; "Vegan and Friends" (Atlantucky Brewing) is the official one, and the 68 "The Vegan Social of Atlanta" copies on the same days were turned down (`rejection_reason` "Duplicate of ...", migration `20261101_atlanta_vsc_duplicates.sql`). `ve_event_intake` treats an event turned down as a duplicate as already listed that day, and refuses (`known_duplicate`) a title its host has had turned down as a duplicate three times or more, new dates included. To retire a recurring copy, turn three down with a reason starting "Duplicate of". The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
-  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
-  opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
+  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit) and in the address since 2026-11-01 (`?city=`, else
+  `?continent=` and `?country=`; `syncUrl`), so a shared link opens on the same place; an old `?where=` link opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
   member, 'events')`). LESARUSS.ai's Events and Funding (`VE_BRAND.calendar`) keep their own banner; the old toolbar (Where, Sort,
   Upcoming / Past, the kind pills) stays for any mount without `filterMenu`.
 - **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
+
+## Every view is a link, and Share on every page (Sean, 2026-11-01)
+
+"I saw somebody on Facebook asking about vegan spots in DC, and I wanted to grab the link when I wasn't logged in... it was just a
+generic directory link. So I missed out on that opportunity... I want to be able to copy any page that I see, any configuration that
+I see... a unique URL that I can share... a button somewhere on every page that you can copy... If it's not shareable, it's not gonna
+go anywhere... We need everybody to share it, even if they're not signed in."
+
+- **The Directory's address carries the whole view** (`writeState`, `restoreState`, `locFromUrl` in `ve-region-directory.js`, on any
+  page that passes `config.url`: `/directory` and the dashboard's Directory tab): the section and sub-section as before, the location
+  (`?city=<chapter>`, else `?continent=` and `?country=`), the search (`?q=`), the sort (`?sort=`), the shelf's types that are on
+  (`?kinds=dairy,meat`) and each filter set away from where it started, by its name (`?vegan=`, `?sells=`, `?cuisine=`, `?type=`,
+  `?chain=`, `?area=` for the chapter's city...; `VRD_FKEYS`, `selName`). Paused pills stay out. It is written in place as things
+  change (`replaceState`; a section change clears the old section's filters) and read once the listings are drawn, ahead of the
+  visitor's kept location. `/directory?tab=food&city=washington-dc` is Local Food in D.C. for anyone who opens it.
+- **Events** writes its location too (above, Directory navigation); its kinds, search, sort and Upcoming / Past already were.
+- **Share on every page** (`/public/ve-share.js`, `VEShare`): a Share button in `nav.js`'s bar, signed in or out, before Log In or
+  Apps (icon only at 1060 px and under), and in the dashboard's top bar. On a phone it opens the phone's own share sheet; elsewhere it
+  copies the link and says so. The link (`VEShare.url()`) is the page as anyone can open it: a dashboard address becomes its public
+  page (`/dashboard/directory?...` to `/directory?...`, `/dashboard/directory/<slug>` to `/directory/<slug>`, Events, Media, Guides,
+  the Daily Pulse and Communities the same; the dashboard itself, My Saves, the Depot and account pages share the home page), without
+  sign-in and tracking bits (`vl`, `t`, `view_as`, `utm_*`, `fbclid`...), and with a **signed-in member's own `?ref=<referral_code>`**,
+  so the visit counts on their link and anyone who joins from it is theirs (ve-auth.js keeps any page's `?ref=` for the visit). Any
+  element with `data-ve-share` shares the page. Each share is a Google Analytics `share` event.
+- **Media and framed pages too** (Sean, 2026-11-01: "Everything needs to be able to use that button you just created"): Media's voted
+  list writes its name search, sort and filters on (`?q= &sort= &f=status:active,...`) and the episode search (`?search=`) into the
+  address and reads them on the first load (`readUrl`, `writeUrl` in `ve-media.js`; `opts.url: false` turns it off). In the dashboard,
+  Share sends **the page in the frame** when one is open (a Guide or tool opened with `openConsoleFrame`, or the Daily Pulse tab:
+  `framed()` in `ve-share.js`), so a Guide's tab or the Pulse's chapter and board tab go out as their own public address. Member-only
+  pages (`/guide`, `/levels`, `/survey`, `/secret-shopper`) share the home page, and `hub`, `embed` and `preview` are dropped.
+  City hubs (`?tab=`, `?dir=`), listings (`?tab=`, `?ep=`, `?book=`), Guides (`#/...`) and the Pulse (`/pulse/<tab>?city=`) already
+  kept their view in the address. A new view keeps its state in the address the same way, or Share cannot send it. The phone bar was tightened so Share fits
+  at 320 px.
 
 ## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)
 
@@ -2633,6 +2688,11 @@ see everything and then filter for what they want... the products are the produc
   `listings_product_kinds_known` check), picked in Food & Drink's Makes filter (the switch under the search went 2026-11-01, below). The five Local Food Meal Prep listings were national
   shippers with stand-in Los Angeles addresses and moved here (Purple Carrot, Sakara Life, Splendid Spoon; Mosaic Foods and Trifecta Nutrition
   as Vegan options), with Daily Harvest added. Local Food > Meal Prep is for local meal preppers. Noize was marked open again the same day.
+  **The local meal prep search** (2026-11-02, migration `20261102_meal_prep_search.sql`, scripts in `scripts/meal-prep-search/`): 78 Google
+  searches, every chapter, `once:meal-prep-search`. Few local preppers are on Google under Vegan words: 15 matched the rules, 8 were listed
+  after a look at each (`crawl_source` `meal-prep-search`): Vegan Vibes (Atlanta), PHAT Vegan (Maryland), Remedy Kitchen Vegan Food Co.
+  (Philadelphia), Righteous Life (West Virginia), 100% Vegan; Planthood (London), GURU MEALS and Little Green Forks (Los Angeles), Ambrosia
+  Meals (New York), Vegan options, in Being vetted. Pizza places match on Google's takeaway type, so read every match before listing it.
 - **Live filters are pills, and every Products shelf has its types** (Sean, 2026-11-01: "if I were to choose... egg alternatives, I would
   expect where it says meal prep delivery to say egg alternatives... Put it in that little pill, and if you hit X on it, it clears the
   filter... the search bar just shrinks"; "I don't want 1,000 categories"; migration `20261101_products_shelf_types.sql`). Every filter set
@@ -2734,6 +2794,11 @@ guys. So they get a little bit more prominence." `/media` (`media/index.html`; `
 forwards) are one component, `/public/ve-media.js` (`VEMedia.mount`, after `ve-region-directory.js`). It is what we put
 there, never something members add or follow (the Follow Shows tiles and modal are gone).
 
+- **Filters on the voted list** (Sean, 2026-11-01: "do the same pills on the media filters"): above the top 12, a name search, the live
+  filters as pills (tap one to turn it off and on, its x to take it away) and **Filters**: Podcasts by Status (Active, On hiatus, Ended),
+  Documentaries by Status (Available...), Books by Type of book, any number picked, choices shown only when a listing has them; Sort is
+  Most votes and A to Z, plus Newest and Oldest first for books and films. The 12 are the top 12 of what matches (`FACETS`, `SORTS`,
+  `drawTop` in `ve-media.js`); they reset when the kind changes. Our featured shows are never filtered.
 - **Not about a city** (Sean, same day: "no one's trying to make media just for one location"). The banner is the shared one
   (`VECityBanner` with `VEMedia.bannerOptions`: `choices` instead of cities, one picture) and reads **Vegan Media** over the kind
   of media; its picker is the kind (`TYPES`: Podcasts, Documentaries (`Documentaries & Films`), Books; `?type=` on `/media`), and
@@ -3128,6 +3193,47 @@ Marchese and Dani Taylor (Muscles by Brussels Radio), Dotsie Bausch (Switch4Good
 Vegan Travel), Neal Barnard (The Exam Room); John Thomas and Brooke Sellers host Vegans Who Lift, one of ours, so theirs are under With
 Vegans Explore. A person with another name on other shows gets it in `details.person.aka`.
 
+## The homepage: launching January 1, 2027 (Sean, 2026-11-01)
+
+"Make it a little bit more apparent that we're officially launching January 1st, 2027... right now is the best opportunity for you to
+help steer the direction... locking yourself in as a founder... reviewed by our panel as a video on the homepage... a countdown clock to
+January 1st, 2027. But the call to action to become a founding member for $11." The hero (`index.html`, `.hero-wrap`) keeps the rotating
+city art and now holds: **Officially launching January 1, 2027**, "Help build the Vegan community's home base.", a line on building it
+city by city and how to help, a **countdown** to 2027-01-01T05:00Z (midnight Eastern, `DEADLINE` in the page), **Become a Founding
+Member · $11** (`/passport?from=home#/join`), Explore Now and the locked Founding line; beside it (above it on phones) the **video**.
+After the deadline the countdown and Founding line hide themselves and the button reads Get your Passport · $11.
+- **The video** (66 s, 1280 x 720): the script was written by Logan and revised by a five-person panel (first-time visitor, Vegan
+  restaurant owner, skeptical non-Vegan, brand marketer, clarity editor); Liz narrates (el-media tts, her voice, "Veegan"), checked word
+  for word with `stt`, over an ElevenLabs music bed, about -15 LUFS; title cards over the Guide banners and chapter art. File
+  `vegan-media/media/home/launch-v1.mp4` (voice `launch-liz-v1.mp3`, bed `launch-bed-v1.mp3`); captions `public/home/launch-v1.vtt`
+  (on by default), poster `public/home/launch-poster.jpg`. Nothing plays until Watch the video; playing pauses the city rotation and
+  sends GA `video_start` / `video_complete`. A new cut is `launch-v2.mp4` with its own VTT; a script change is recorded again.
+
+## Communities are cards, and a chapter is its own page (Sean, 2026-11-01)
+
+"The community should be set up like they're in a directory listing... you can vote for them, you could save them. You see the little
+icon on the left-hand side of the city... the landing page for the community is weak. It takes you to the pulse... When I click on
+community, it looked like it was put into a frame. I don't like that. And then when I go backwards, it sends me back to the directory."
+
+- **The cards**: `/communities` and the dashboard's Communities tab draw every chapter with `/public/ve-chapters.js`
+  (`VEChapters.mount(el, opts)`): the chapter's art as a rounded square on the left, its name, where it is, its places, events coming up
+  and members, the votes over **Votes**, and **Save**; a search and Sort by (Most votes, Most places, A to Z; `?q=` and `?sort=` on
+  `/communities`). The whole card opens `/communities/<slug>`. **Vote** is once every 24 hours per member (`ve_chapter_votes`, migration
+  `20261101_chapter_votes.sql`; `ve-votes` `chapter_vote`, `chapter_today`, and the public `chapter_stats` from `ve_chapter_stats()`).
+  **Save is joining the chapter** (`ve-auth` `join_community` / `leave_community`), so a saved chapter is one of the member's communities.
+  Signed out, Vote and Save open the Passport window (`VEVotes`). The old flip cards are gone.
+- **Never framed**: from the dashboard (a card, the Communities banner, or View community in any framed page, `VEOpenCommunity`) a
+  chapter opens as its own page in the same window (`openCommunity` in center-console, which still makes it the dashboard's city), so Back
+  returns to the dashboard and the hub's own Dashboard button is the way in. The dashboard's link catcher leaves `/communities/*` alone.
+- **The hub opens on Overview** (`?tab=` empty; `#tab-overview` in `communities/hub.html`, `renderOverview`): Welcome to Vegan <city>,
+  its own card (vote and save, `VEChapters.mount` with `only`, `bar: false`, `here: true`), four numbers (places, events coming up,
+  members, community votes; each opens its section or votes), Explore <city> (a tile into the Directory, Events, Daily Pulse, Community
+  Board, Bounties and Opportunities), and Most voted in <city> (the top six 100% Vegan places with votes, the Directory's card). The Daily
+  Pulse is `?tab=news`, second in In this community. Proven live 2026-11-01 on iPhone and desktop (signed out: cards, search, the
+  Passport window on Vote, a card into D.C., the Overview, a tile into Events and Back) and the vote path as the Logan test account
+  through the one-time `ve-once-chapter-proof`, now the 410 stub (a bad chapter refused, a vote counted, a second refused with its time,
+  the vote then removed). `ve-votes` deployed from commit 2f41877 (source sha256 matched).
+
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
 "South Florida is the prototype." Every city hub is one file, `/communities/hub.html`, served at
@@ -3206,6 +3312,33 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   sponsor name (`sponsor_only`) and save it in `ve_news_leads.sponsor_name`. A story a topic used
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
+
+## Featured items in the Daily Pulse (Sean, 2026-11-01)
+
+"What I noticed you didn't put into the post today was the episode, the launch of the Vegans Explore podcast. Let's do it for
+tomorrow"; "we could be sending them stuff like that periodically". A `ve_pulse_features` row (`starts_on`, `ends_on` Eastern dates,
+`communities` or null for every Vegans Explore city, `story` {title, take, url, source}; migration `20261102_pulse_features.sql`, RLS on, no
+policies) goes first in the stories of every city's Pulse that publishes in those dates, never LESARUSS.ai's `lr-*` topics.
+`ve_pulse_auto_publish` applies it as each draft goes out (`ve_pulse_features_apply(post)`), and `ve_pulse_features_apply()` applies it to
+every waiting draft at once so the Pulse desk shows it; each story carries `feature_id`, so it is never added twice. A story that is ours
+links to its page on our site (an episode: `/listen?show=&ep=`). First: the podcast's return ("Founder's Report: Back and Ready for Duty",
+Nov 1) in every city on Monday, November 2. The same night five cities' drafts (South, Central and North Florida, Atlanta, D.C.) had failed
+to write ("No new verifiable story"); they were queued again with the episode as their lead (`write_status` queued, `write_note` 500
+characters at most, then `lesaruss_dispatch_tick()`). Each city's Pulse already carries the national news under its own (Across the
+country, since 2026-10-31); there is no separate national Pulse (`pulse_auto.communities` has no `national`).
+
+**5 to 10 stories, never empty, and our own content** (Sean, 2026-11-01: "at least 5 to 10 stories in there. And then we can intermix
+some of our content... podcast episodes, some interviews... spotlight a restaurant... nominate somebody in your community that we should
+interview... share some new bounties... what new listings have been created in their chapter"; migration `20261102_pulse_house.sql`).
+The writer's `pulse_topic_write` instructions now ask for 5 to 10 stories, the city's own first, then national ones to fill, and never fail
+a city for lack of news (lead with the national ones and say so). **From Vegans Explore** is a section of every city's briefing built from
+our data when it publishes (`ve_pulse_house(city, post, record)`, called by `ve_pulse_features_apply`, stored as `briefing.house`, drawn by
+`VEPulse.briefing` in `public/ve-pulse-topics.js` between Heads up and Today's move): **Spotlight** (a 100% Vegan food place in the chapter
+with a logo and its own words, most voted, not spotlighted there in 60 days), **New in the Directory** (public listings that went live in
+the chapter since its last Pulse, five and See all N; `listings.listed_at`, set by `trg_ve_listing_listed_at` when a listing turns
+approved), **Listen** (one of our four shows' episodes on `/listen`, not used there in 120 days), **New bounties** (opened in the chapter
+since the last Pulse) and, on Mondays, **Who should we interview?** (Nominate someone, `/pulse/suggest?city=`). `ve_pulse_house_log`
+rotates them. A featured item is never added twice (not when the writer already wrote its link as a story).
 
 ## The Daily Pulse is the Community Board (Sean, 2026-10-26)
 
@@ -3796,6 +3929,16 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   founding seat, now opens the Passport Guide instead of its own open contribution (Sean, 2026-10-25), members give more from the
   dashboard's Contribute, and the nav's announcement (`ve_nav_announcements`) reads "Your Passport: $11 one time, with 1,100 welcome
   points" and links to `/passport`.
+- **The Passport is the Founding Member flow, four pages** (Sean, 2026-11-01: "bring this down to 4 total pages... Our focus is become a
+  founding member before January 1st"; copy revised by the panel, approved by Sean before it went live): **Why now** (the cast; 13 chapters,
+  $11 one time with 1,100 welcome points, the countdown, three step tiles with topic pictures, `TOPIC`), **What you can do** (Theo: vote,
+  earn points with check-ins and bounties, give points, your first Guide covered by the welcome points, join your city, share your link),
+  **Why join now** (Dani: shape it, Founding Member for good, keep your city growing, the locked line), **Get your Passport** (Liz).
+  `FOUNDING` in `passport.html`. **Become a Founding Member · $11** sits under the Guide's words on every page (`#dgCta`), the Guide sits in
+  the corner on phones (`ve-guide-corner.js`, `#dgRail`), and the header's $11 box is hidden on phones. A members-only prompt
+  (`?from=vote|save|checkin|give|board|tickets`) lands on Why now with its note, never the checkout; old tab links land on the page that holds
+  them (`OLD`). The nine-tab ensemble is the **Welcome Guide** at `/passport?guide=welcome` (`WELCOME`; the catalog card opens it).
+  `/business` is unchanged. After the deadline the pages drop the countdown and the Founding words.
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
@@ -3929,7 +4072,64 @@ the $11 Passport or a membership earned now; no free account that can take part,
     working; in a rolled-back transaction The Connector stayed open at 2 paid friends with 1 unpaid and finished at 3, all three gave Trailblazer
     and 3,633 lifetime points (Level 2), an expired challenge closed, and a paid member was refused. `/challenges` on desktop and an iPhone (no
     errors, no sideways scroll) and Depot > Challenges in the dashboard frame; then every row and test photo removed.
-  - **Still to build**: 5. the two-day business follow-up and the not-ready-yet emails, 6. the content gig, 7. the business points rule.
+  - **5. The business offer, its follow-up and the not-ready-yet emails** (built and live 2026-11-01, Sean: "Approved, go with your defaults
+    and build it"; migration `20261101_earn_your_passport_emails.sql`; edge function `ve-nurture` from commit 6cff6e0, sha256 matched;
+    `ve-vault` from 91c8c26). **Off until Sean turns each on** (`ve_site_settings` `nurture`: `offers_on`, `tasters_on`; the switches are on
+    the two Depot pages below). **They send through HQ's email system** (Sean, 2026-11-01: "where is this living? Do we have an email
+    system in the HQ?"; they first called Resend directly, fixed the same day): every one goes through `email-send`, brand `vegans-explore`
+    (VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com), signed Vegans Explore team, never Sean's name, with the
+    brand's one-click unsubscribe, the postal address, its suppressions and an `email_sends` row. Each email is one campaign (`refOf`:
+    `ve-pc-offer-<YYYY-MM>`, `ve-pc-still-open-<YYYY-MM>`, `ve-pc-what-it-costs-<YYYY-MM>`, `ve-taster-day-3|7|14`,
+    `ve-taster-pulse-<date>`, `ve-taster-founding-<date>`), registered in `email_campaigns` as an automatic campaign (status sent, so
+    `email-dispatch` never picks it up) on its first real send, so **HQ > Email** lists it with delivered, opened and clicked. Send me a
+    test goes through `email-send` `test_to`. Not moved yet: the Taster's Day 0 email (`ve-taster`) and the stop emails in `ve-vault`
+    still call Resend directly. **The business offer**: Depot > Passport Challenge stops > **Offers
+    we send** (`#offers[/<status>]`, `#offers/new`, `#offers/preview/<kind>[:<offer>]`): New offer (a listing, their email, a name) makes a
+    `ve_pc_offers` row and its own tracked link (`ve_links` `pc-<8>`, initiative `passport-challenge-offer`, to `/business/challenge?listing=`);
+    **Send it** sends email A ("Be a Passport Challenge stop in <month>") by hand, always. Two days later, on a weekday from 10 AM Eastern
+    and only with `offers_on`, one follow-up goes on its own to every business that has not applied, "<Month> Passport Challenge stops in <chapter>"
+    (worded by the review panel: no guess at why they have not answered, the deal in one line, greeting the contact by first name or Hello).
+    An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
+    after the follow-up makes it **In the Inbox** (`routed`, a `pc_offer` row of `ve_inbox_items` for the chapter's Community Manager).
+    **Stop these emails** (`/business/challenge?stop=<code>`, `offer_stop`) stops it and adds an `email_suppressions` row. The apply
+    confirmation is now email D ("You applied to be a <month> stop", three next steps; `ve-vault`). **Taster emails**: Depot > Challenges >
+    **Taster emails** (`#emails`, `#emails/preview:<kind>[:<taster>]`): with `tasters_on`, from 10 AM Eastern, Day 3 (this week in their
+    city: events, new places, the Pulse topic; `ve_nurture_city_week`), Day 7 (an episode that fits why they came, `ve_nurture_story`), Day 14
+    (their suggested Guide), then the Daily Pulse every Thursday (`ve_nurture_pulse`, never two emails within six days), and on December 1,
+    18 and 30 the Founding deadline notes; one row per Taster and email in `ve_taster_emails`, claimed before sending. Paying, earning a
+    membership, a [TEST] name, a suppression or `?unsub=<key>` ends the track. Cron `ve-nurture` (every 15 minutes, `tick`, x-cron-secret).
+    Send me a test on every preview. Actions `tick`, `settings`, `offers`, `offer_create`, `offer_send`, `offer_cancel`, `offer_stop`
+    (public), `preview`, `test`, `tasters`. Logan's defaults, Sean's to change: the sender and signature, 10 AM, weekdays for businesses,
+    Thursdays, the December dates. **Proven live 2026-11-01** (outside sending hours, switches off): every preview, a bad email and a second
+    offer to the same business refused, the tick refused without its secret and the admin actions without a super admin; two [TEST] offers
+    sent (no email), a test application made one Applied and a backdated one went to the Inbox on the cron-secret tick (checked in a
+    rolled-back transaction, since test offers stay out of it); its stop link stopped it and wrote the suppression, a bad code 404; both Depot
+    views on desktop and iPhone, no errors; every test row removed. Not yet proven: a real follow-up and a real Taster email going out (the
+    first window after a switch is turned on).
+    **Sean's review of the tests, 2026-11-02** (Sean: "go"; migration `20261102_nurture_fixes.sql`; `ve-nurture` version 5 from 85710a0,
+    sha256 matched): **Day 14** says why they got it ("When you signed up for A Taste of Vegans Explore, you told us you're here for ...
+    That points to <Guide>"), a line on what the Guide does (`GUIDE_LINE`) and that they tried a piece in their Taste. **Day 7** opens the
+    episode on its show's own listing (`/directory/<show>?ep=<guid>`, where they vote and save; `ve_nurture_story` now takes only episodes in
+    `ve_pulse_episode_map`), never the Pulse article or a video. **The December notes** say "It's $11, one time. Or earn it free: finish one
+    of our three challenges within 30 days (check in at Vegan places, bring three friends, or show up for the animals)." **Email C ("What a
+    stop really costs") is dropped** as presumptive. **The weekly Daily Pulse is opt-in**: Day 14 ends with "Want your city's Daily Pulse
+    every Thursday? Yes, send it", opening `/guides/taste?pulse=<key>` (`ve-nurture` `pulse_optin`, public with the Taster key, sets
+    `ve_tasters.pulse_opt_in_at`); only those Tasters get it. The December notes still go to every Taster. **`/business/challenge`**: Liz on
+    each of the three steps, her picture and her voice with Play (nothing plays until pressed, then each step plays its line until Pause,
+    `sessionStorage` `pc_liz`; `LIZ` in the page, `vegan-media/media/liz/passport-challenge/pc-offer|card|agree-v1.mp3`, el-media tts in her
+    profile voice, each checked word for word with stt; a line's text must match its recording), and **Your card** runs full width. Fresh
+    [Test] copies of all nine sent to contact@lesaruss.com. Lesson: a find-and-replace on `not_opened` matched refOf's line first and cut
+    out the send functions; a syntax check does not catch a missing name, so type-check an edge function (`tsc --noEmit`) before deploying.
+    A [TEST] Taster ("Sean [TEST]") is kept so the test Day 14's Yes link works; it is never sent to (the tick skips [TEST] names). Next, as
+    its own build: email preferences in My Account for members.
+    **Then, the same evening** (Sean: "just have the episode, literally the episode isolated by itself there... the horizontal podcast
+    episode, like where we have in the listings... and then we could have the text below"): Day 7's button, **Play the episode**, opens
+    **`/listen?show=<listing slug>&ep=<feed guid>`** (`listen.html`, `noindex`): the show's name, the episode row (`VEEpisodes.row`: the
+    show's art, Play in the player docked above it, Save, **Vote for the show** with its count through `VEVotes`), the episode's notes from
+    the feed under About this episode, and Every episode of the show. `ve-nurture` version 6 from 38a5438. Any episode of any show in the
+    Directory opens there; use it wherever we send one episode (emails, the Pulse).
+  - **The Taste page, redone 2026-11-02** (Sean: "the banner... is cutting off a lot of people's heads... use like a city... It looks pretty dry"): `/guides/taste` wears South Florida's city art (no people) behind "Try Vegans Explore before you join" and Get my free taste (scrolls to the form); eight cards, each a Guide's banner and what you get from it (Maya's swap, Theo's B12, River's Hard Rock, Nori's FLL, Dani's animals, Pascal's city, Liz's restaurant check, Kai's creator tip), four across beside the sticky sign-up on desktop, compact rows on phones. The sampler's cast slide uses the Welcome Guide banner. `nurture.tasters_on` turned on the same day (Sean: "You need to turn something on"), so Day 3, 7 and 14 and the opted-in Pulse go out to Tasters from 10 AM Eastern.
+  - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## The Vegan Events Guide (LOCKED by Sean 2026-11-01, playbook `ve-events-guide`)
 
@@ -4331,7 +4531,7 @@ they're buying their spot in this massive campaign that starts in Q1."
   partner | spotlight, status pending | active | ended, dates; RLS on, no policies) and its trigger run `ve_supermarket_guide_sync()`, which
   sets `ve_guides.access_rule` of `supermarket-guide` to `free` while a Title or Partner sponsorship is active, else `points`; `ve-venues`
   opens everything (reports too) when the rule is free. Stores came from Google Places: 248 Publix in South Florida (245) and Central
-  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida waits on the next day's quota. **Publix is the example, nothing more** (Sean, 2026-11-01: "Let's just do Publix as an example and do the rest once a supermarket sponsors. Part of the sponsorship will cover the crawl"; canon v2): Publix in South, North and Central Florida only, to show supermarkets what the Guide looks like; no other chain and no more Publix areas are imported until a sponsorship pays for the crawl. Publix is the first sponsor we approach. **The preview, and stores stay** (Sean, 2026-11-01; canon v3): Publix in a few Florida chapters is the free preview, the way each Guide
+  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida's went in 2026-11-02 in three parts (84 searches, metered as `once:publix-import`), so the preview holds **731 Publix stores**: South Florida 245, Central Florida 365, North Florida 121; `ve-once-supermarket` is the 410 stub again. **Publix is the example, nothing more** (Sean, 2026-11-01: "Let's just do Publix as an example and do the rest once a supermarket sponsors. Part of the sponsorship will cover the crawl"; canon v2): Publix in South, North and Central Florida only, to show supermarkets what the Guide looks like; no other chain and no more Publix areas are imported until a sponsorship pays for the crawl. Publix is the first sponsor we approach. **The preview, and stores stay** (Sean, 2026-11-01; canon v3): Publix in a few Florida chapters is the free preview, the way each Guide
 features one item free, so every chain sees how it will look. A chain that sponsors keeps its stores in the Guide after the sponsorship ends;
 the sponsorship pays for adding its stores (the crawl) and for the bounties we run on them (specials hunts, in-store content, aisle mapping, bigger
 rewards). Without a sponsorship updates are organic and earn smaller incentives (not built yet: supermarket report points by sponsorship). The pitch
@@ -5111,6 +5311,28 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
 
+## No chapter counts in copy or videos (Sean, 2026-11-02)
+
+"Why are we saying 13? I might decide to have North Carolina be a chapter tomorrow, and then we got to do all these videos over again."
+Never write how many chapters or cities we have ("13 chapters", "thirteen") in page copy, a Guide's lines, a recording or a video.
+Say "city by city", "every chapter" or "from South Florida to London". A live count drawn from the data is fine. The homepage video
+is `launch-v3.mp4` (its city card reads From South Florida to London; the logo sits on a white plate in the official light colors,
+since the inverted logo's thin green EXPLORE could not be read over the pictures). Any logo over a picture in a video or graphic
+goes on a solid plate.
+
+**The "what's next" video** (Sean approved 2026-11-02: "Very clean and to the point... I approve"): 40 seconds, Liz, what you can do
+today for free and what the Passport adds, cut from live-site screenshots with a "Free" and a "With your Passport" label; no jobs board or
+classifieds. `vegan-media/media/home/next-v1.mp4` (captions `public/home/next-v1.vtt`) sits on the Passport's Get your Passport page above
+the price box for anyone not a member; `next-taste-v1.mp4` (its last line "You've had a taste. Get the rest with your Passport...", captions
+`next-taste-v1.vtt`) is the right side of the Taste's last slide (Picked for you). Both use `/public/ve-video.js` (`VEVideo.markup`: nothing
+plays until Watch the video, captions on, GA `video_start` / `video_complete` with `passport_next_v1` / `taste_next_v1`); use it for any
+other narrated video. Poster `public/home/next-poster.jpg`.
+
+**Never cover a face** (Sean, 2026-11-02: "the covering up Kai's face. It's kind of disrespectful to her"). In a video, graphic or
+banner, text, a logo or a card never sits over a person's or Guide's face, and a picture whose crop cuts off faces is not used. A card
+over a picture goes on a cityscape or an empty part of the frame; check each card's frame by eye before showing it. The homepage video
+opens on Jacksonville, puts the Founding card on Richmond and closes on London at dusk, so no Guide is behind a card.
+
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
 "Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
@@ -5212,6 +5434,50 @@ shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **De
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
+## Depot > Outreach: everyone to reach each day (Sean, 2026-11-01, playbook `ve-outreach-buckets`)
+
+"Each day... see all the people I need to communicate with in all the different ways... when I click on it, it tells me exactly what
+to do. It gives me the language. If it's an email... I approve it. It puts it on a schedule to go out... I have up until when it goes
+out... If it's an Instagram message... me copying it... I just confirm that it was sent... text message... I respond in the notes with
+what was said." **Depot > Outreach** (`/admin/depot/outreach`, People in the Go to menu; super admins), the Social studio's way of working
+for one-to-one messages. Locked in V's outreach playbook: five buckets (business, community, sponsor, nonprofit, group), everyone Sean
+knows reached by November 30, a weekend review. It lives in the Depot so it can be checked live from a build session; its tables are
+shared, so it moves to HQ's People app unchanged.
+
+- **A day** (`#day/<YYYY-MM-DD>/<todo|scheduled|finished|all>`): Day before / Today / Next day and a date picker, the days around it with
+  how many still need Sean, a counter (need you, scheduled, done), and one row a person: initials, name and organization, the channel
+  and bucket, what happened or why now, and the status (Needs you, Scheduled, Sent, Done, Skipped, Did not send). Anything left from
+  earlier days shows as a banner on today (`#overdue`).
+- **One message** (`#m/<id>`): what to do in one line, who and why now, where it goes (email, @handle with Open their Instagram via
+  `ig.me/m/<handle>`, phone with Open Messages filled in, or the group), the tracked link in it with **Open the page** and its clicks, the
+  words (editable). **Email**: Approve and schedule (goes out at its time, 10 AM Eastern on its day unless set; refused with no address,
+  an empty subject or body, or a leftover `[Placeholder]`), Pull it back until then, Send me a test; changing the words of a scheduled one
+  puts it back to Needs you. **Instagram, text, Meetup, call**: Copy, open the app, I sent it (or Done). Skip and Open it again. **Notes**
+  are on the person (`person_key`: their email, `ig:<handle>`, or a key we set) and show on every message to them; **Follow up** puts them on
+  a later day by any channel, a new draft. **Before and after** lists their other messages.
+- **Data** (migration `20261101_people_outreach.sql`; RLS on, no policies): `ve_people_outreach` (one row a message: day, send_at,
+  person, bucket, channel email | instagram | text | call | meetup | other, to_address, subject, body, link_code, why, personal,
+  template_key, status draft | approved | sending | sent | done | skipped | failed), `ve_people_outreach_notes`, and
+  `ve_people_outreach_templates` (the two or three base emails a bucket: approving one, `template_approve`, approves its messages that are
+  not `personal`, and any later message made from it starts approved; personal ones always wait for Sean).
+- **Server**: edge function `ve-people-outreach` (verify_jwt off; the VE token of a super admin, or `LESARUSS_ADMIN_TOKEN` with
+  `as_member`): `day`, `overdue`, `get`, `save`, `approve`, `pull_back`, `done`, `skip`, `reopen`, `note`, `follow_up`, `test`, `create`,
+  `templates`, `template_approve`, `tick`. Cron `ve-people-outreach` (every 5 minutes, x-cron-secret) runs `tick`: approved emails whose
+  time has passed are claimed (`sending`), sent through `email-send` as brand `lesaruss` (from Sean A. Russell, replies to
+  contact@lesaruss.com, one-click unsubscribe and the postal address, `campaign_ref` `ve-people-<id>` so nothing goes twice), then marked
+  Sent, or Did not send with why (do-not-email list, bad address). Opened comes from `email_events`, clicks from the message's `/go/` link.
+- **Loaded 2026-11-01** (20 messages, campaign `outreach-nov`, each with its own tracked link): Monday the Miami Meetup post and Instagram to
+  Keya, Elle, Paige and Michelle; Tuesday emails to Dina's, The Rabbit Hole, Christopher's Kitchen and Love Life Cafe, Instagram to
+  Stephanie's, Greens and Grains and Aguacate, emails to Ella Magers, John Thomas, Korin Sutton, Susan Hargreaves and Saffron Rivett, a text
+  to Carol (Florida Animal Rescue Alliance unsubscribed from our email, so never email it); Wednesday the Broward and Friday the Palm Beach
+  Meetup posts. All personal, so every one waits for Sean.
+- **Made-right memberships** (same day): comps stay off, but a Founding Member invitation is on us, with 1,100 points, for the emails in
+  `ve_site_settings` `founding_member.made_right` (Elle Jimenez, Korin Sutton, Ella Magers: they paid on the old platform and did not get its
+  worth; `madeRight` in `ve-invites`, migration `20261101_made_right_memberships.sql`). Sean tells them in his second message, never the
+  first. Proven live: Ella's test invitation came out on us, someone not on the list was refused, both removed.
+- Not built yet: Results by bucket and week (opened, clicked, replied, joined), Logan's proposed 30 for the next day, campaigns from
+  BrandDesk feeding the queue, and reply tracking (replies land in contact@lesaruss.com, not here).
+
 ## Money in: an email for every payment (Sean, 2026-11-01)
 
 "John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that
@@ -5226,9 +5492,43 @@ product (`MONEY_LABELS` by `metadata.type`, else the line item), their first pay
 **See it in Stripe**, and This month so far (Eastern month). `ve_money_alerts` (migration `20261101_ve_money_alerts.sql`, RLS on, no
 policies) keeps one row per payment (`stripe_id` unique), so a Stripe retry never sends twice; `sent_at` or `send_error`. Test mode sends
 nothing. A new product reads best with a `MONEY_LABELS` row. **Preview** any real session: POST
-`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). Payments before
+`ve-stripe-webhook?money_preview=<cs_...>` with `Authorization: Bearer <LESARUSS_ADMIN_TOKEN>` ([Preview] subject, no row). **Labels by what it is** (2026-11-01, v63 from commit 46ab777, source sha256 matched): `moneyLabel` names the one type that covers several
+products from the session itself: `ve_verified` is the Partner plan ($111 every 111 days, with its offer and period) or Passport Stop or Anchor by
+`metadata.tier` (it was "VE Verified (yearly)" for all of them); `entry_contribution` is a listing claim when it carries `claim_id`, a contribution
+when the buyer was a member over an hour before, else the Passport. HQ's LESARUSS-account kinds have labels (`lr_passport`, `listing_claim`,
+`guide_order`, `business_membership`, `campaign_pledge`), and a renewal is labeled from its subscription's metadata
+(`parent.subscription_details`, else `subscription_details`) instead of the raw invoice line. **This month** counts from midnight Eastern on the
+1st, read from the zone (04:00Z under EDT, 05:00Z under EST; it was always 04:00Z, which would have put Nov 30 11 PM in December). Untyped
+sessions (payment links such as the LIVE Donation) read well from their own line item and need no label. Payments before
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
+
+## Revenue on the dashboard (Sean, 2026-11-02)
+
+"I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
+we'll create a financial back end where we could do P&Ls... that's for another day." The super admin's Dashboard tab opens with
+**Revenue** above Recent activity (`#dash-rev`, `renderRevenue` / `revDraw` in `dashboard/center-console.html`): Today, This month (against
+the same days of last month, with last month in full), This year and All time, each gross with payments and what is left after Stripe's
+fee; a bar chart (Last 30 days, Last 90 days, By month; each bar's tooltip says the day, the total, the payments and after fees; drawn at
+its own width so a phone reads it); and the latest 15 payments, each named by its Checkout line item or its invoice's first line, opening
+in Stripe. Read live by `ve-dashboard` `revenue` (super admins only) from the **Vegans Explore Stripe account** (`STRIPE_SECRET_KEY`):
+every succeeded live charge, less refunds, by Eastern day, `balance_transaction` for the fee; cached 5 minutes in `ve_analytics_cache`
+(`ve-revenue-v1`), **Refresh** reads Stripe now (about 3 s for 97 charges). It counts everything on that account, which on 2026-11-02
+included **CRM + Web Hosting for Miss Meatless Muscle** ($200 a month) and VWL Monthly Podcast Donations; the LESARUSS and Meatless Muscle
+Stripe accounts are not counted. Not a P&L: no costs. `ve-dashboard` v20 from commit af6254b (source sha256 matched).
+**Client services apart** (Sean, 2026-11-02: the Meatless Muscle hosting "always probably should have been set up through LESARUSS";
+Vegans Explore Inc. is a Florida nonprofit corporation that never applied for 501(c)(3)). A charge whose Stripe customer carries metadata
+`revenue_class: client_services` is left out of the tiles and the green bars and shown on its own line ("Client services billed through
+Vegans Explore Inc."), grey on top of the bars and tagged in Latest payments (`client` in `ve-dashboard` `revenue`, cache key
+`ve-revenue-v2`). Tagged 2026-11-02, with an `internal_note` each (Stripe metadata, never shown to the customer): Brooke Sellers' CRM +
+Web Hosting subscription (`sub_1R8j48P0w5C9oZhvfxwBZw8p`, $200 a month, active, 20 payments, $4,000), the two Vegans Who Lift "donation"
+subscriptions (Brooke Sellers and John Thomas, $125 a month each, 10 payments each, $2,500, ended 2026-04-15) and their three customers. To
+move another payer apart, tag their customer the same way. Live 2026-11-02, `ve-dashboard` v21 from commit 4397d90 (source sha256 matched):
+client services $6,500 from 40 payments; Vegans Explore $6,416.02 all time from 57, $108 this year. The CPA memo is a private Claude Doc
+(Sean's), not in the repo. Still open: moving Brooke's billing to the LESARUSS Stripe account before the 2026-11-30 charge (Sean's call on
+how to tell Brooke), and the CPA's answers. Proven live
+2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
+this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
 ## Image conventions
 

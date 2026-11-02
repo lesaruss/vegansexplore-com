@@ -7,7 +7,7 @@
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#F69820">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Vegans Explore - Start Your Journey</title>
+  <title>Vegans Explore - Become a Founding Member before January 1, 2027</title>
   <meta name="description" content="Find Vegan restaurants, brands, events and people in your city, vote for the places you love, and join a community that puts the animals first. Your Passport is $11, one time.">
   <link rel="canonical" href="https://vegansexplore.com/">
   <meta property="og:type" content="website">
@@ -175,6 +175,48 @@
       font-family: 'Montserrat', sans-serif;
     }
   </style>
+  <style>
+    /* Launch hero (Sean, 2026-11-01): launch date, countdown, the $11 Founding Member ask and the overview video. */
+    .hero { padding: 40px 0; }
+    .hero-wrap { position: relative; z-index: 2; width: 100%; display: flex; align-items: center; gap: 40px; padding: 0 56px; }
+    .hero-wrap .hero-inner { margin: 0; flex: 0 1 600px; max-width: 600px; }
+    .hero h1.launch-h1 { font-size: clamp(30px, 3.6vw, 50px); line-height: 1.02; margin-bottom: 18px; }
+    .hero h1.launch-h1 em { display: inline; }
+    .hero-sub.launch-sub { max-width: 520px; font-size: 16px; }
+    .cd { margin-top: 24px; }
+    .cd-label { font-size: 11px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.8); margin-bottom: 10px; }
+    .cd-row { display: flex; gap: 10px; }
+    .cd-cell { flex: 0 0 auto; min-width: 74px; text-align: center; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 6px; padding: 10px 8px 8px; }
+    .cd-num { display: block; font-size: 30px; font-weight: 900; color: #fff; line-height: 1; font-variant-numeric: tabular-nums; }
+    .cd-unit { display: block; margin-top: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.7); }
+    .founding-line { margin-top: 16px; font-size: 12.5px; line-height: 1.55; color: rgba(255,255,255,0.78); max-width: 520px; }
+    .hero-video { flex: 1 1 560px; max-width: 760px; margin-left: auto; }
+    .hv-frame { position: relative; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 18px 50px rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.14); aspect-ratio: 16 / 9; }
+    .hv-frame video { display: block; width: 100%; height: 100%; object-fit: cover; background: #000; }
+    .hv-play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 10px; padding-bottom: 26px; border: 0; cursor: pointer; background: linear-gradient(to top, rgba(0,0,0,0.75), rgba(0,0,0,0.05) 60%); color: #fff; font-family: 'Montserrat', sans-serif; }
+    .hv-play-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--ve-orange); padding: 13px 22px; border-radius: 6px; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+    .hv-play[hidden] { display: none; }
+    .hv-play:hover .hv-play-btn { background: var(--ve-orange-dark); }
+    .hv-play-sub { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); }
+    .hero .rotation-dots { display: none; }
+    @media (max-width: 1100px) {
+      .hero-wrap { flex-direction: column; align-items: stretch; padding: 0 32px; gap: 24px; }
+      .hero-wrap .hero-inner { flex: none; max-width: 640px; }
+      .hero-video { flex: none; width: 100%; max-width: 640px; margin: 0; }
+    }
+    @media (max-width: 900px) {
+      .hero { padding: 64px 0 24px; align-items: flex-start; }
+      .hero-wrap { padding: 0 16px; gap: 16px; }
+      .hero-wrap .hero-inner { margin: 0; padding: 22px 20px; }
+      .cd-cell { min-width: 0; flex: 1 1 0; padding: 9px 4px 7px; }
+      .cd-num { font-size: 24px; }
+      .btn-hero-primary { width: 100%; justify-content: center; letter-spacing: 0.06em; font-size: 12px; padding: 15px 12px; }
+      .hero-wrap .hero-eyebrow { letter-spacing: 0.16em; }
+      .hero-video { order: -1; }
+      .hero-wrap .hero-sub.launch-sub { font-size: 15px; }
+      .hero-ctas .btn-hero-secondary { width: 100%; justify-content: center; }
+    }
+  </style>
 </head>
 <body>
   <script src="/public/nav.js"></script>
@@ -186,22 +228,39 @@
   <section class="hero" aria-labelledby="hero-heading" aria-roledescription="carousel" aria-label="Cities we're building for">
     <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
     <p class="visually-hidden" id="heroCityList"></p>
+    <div class="hero-wrap">
     <div class="hero-inner">
-      <div class="hero-eyebrow" aria-hidden="true">Vegans Explore</div>
-      <h1 id="hero-heading">Help Us Build<br><em>Your City.</em></h1>
-      <p class="hero-sub">We're building the Vegan world's home base, city by city.</p>
-      <div class="city-tag">
-        <span class="city-tag-dot" aria-hidden="true"></span>
-        <span class="city-tag-label" id="heroCityLabel" aria-hidden="true">Loading</span>
-        <span class="visually-hidden" id="heroCityLabelLive" aria-live="polite"></span>
+      <div class="hero-eyebrow" id="heroEyebrow">Officially launching January 1, 2027</div>
+      <h1 id="hero-heading" class="launch-h1">Help build the <em>Vegan community's home base.</em></h1>
+      <p class="hero-sub launch-sub" id="heroSub">Right now we're building it city by city, from South Florida to London. Use it, tell us what's missing and how we can support you, and lock in your place as a founder.</p>
+      <span class="visually-hidden"><span id="heroCityLabel" aria-hidden="true">Loading</span><span id="heroCityLabelLive" aria-live="polite"></span></span>
+      <div class="cd" id="heroCountdown" role="timer" aria-live="off">
+        <div class="cd-label">Founding Membership closes in</div>
+        <div class="cd-row">
+          <div class="cd-cell"><span class="cd-num" data-cd="d">--</span><span class="cd-unit">Days</span></div>
+          <div class="cd-cell"><span class="cd-num" data-cd="h">--</span><span class="cd-unit">Hours</span></div>
+          <div class="cd-cell"><span class="cd-num" data-cd="m">--</span><span class="cd-unit">Min</span></div>
+          <div class="cd-cell"><span class="cd-num" data-cd="s">--</span><span class="cd-unit">Sec</span></div>
+        </div>
       </div>
       <div class="hero-ctas">
-        <a class="btn-hero-primary" href="/passport" aria-label="Start your journey">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>
-          Start Your Journey
-        </a>
+        <a class="btn-hero-primary" id="heroJoin" href="/passport?from=home">Become a Founding Member · $11</a>
         <a class="btn-hero-secondary" href="/explore">Explore Now</a>
       </div>
+      <p class="founding-line" id="heroFounding">$11, one time, with 1,100 welcome points. Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.</p>
+    </div>
+    <div class="hero-video">
+      <div class="hv-frame">
+        <video id="heroVideo" playsinline preload="none" poster="/public/home/launch-poster.jpg?v=5" aria-label="What Vegans Explore is, in one minute, narrated by Liz">
+          <source src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/launch-v3.mp4" type="video/mp4">
+          <track kind="captions" srclang="en" label="English" src="/public/home/launch-v1.vtt" default>
+        </video>
+        <button type="button" class="hv-play" id="heroVideoPlay" aria-label="Play the one minute video about Vegans Explore">
+          <span class="hv-play-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6,4 20,12 6,20"></polygon></svg>Watch the video</span>
+          <span class="hv-play-sub">What Vegans Explore is, in one minute</span>
+        </button>
+      </div>
+    </div>
     </div>
     <div class="rotation-dots" id="heroRotationDots" aria-hidden="true"></div>
     <button type="button" class="hero-pause" id="heroPauseBtn" aria-pressed="false">
@@ -296,6 +355,50 @@
 
       pauseBtn.addEventListener('click', function () { setPlaying(!isPlaying); });
       setPlaying(!prefersReducedMotion);
+    })();
+  </script>
+  <script>
+    (function () {
+      // Countdown to the Founding Member deadline: midnight Eastern, January 1, 2027 (2027-01-01T05:00Z).
+      var DEADLINE = Date.UTC(2027, 0, 1, 5, 0, 0);
+      var cd = document.getElementById('heroCountdown');
+      var cells = {}; ['d','h','m','s'].forEach(function (k) { cells[k] = cd.querySelector('[data-cd="' + k + '"]'); });
+      function pad(n) { return (n < 10 ? '0' : '') + n; }
+      function after() {
+        cd.hidden = true;
+        document.getElementById('heroFounding').hidden = true;
+        document.getElementById('heroEyebrow').textContent = 'Vegans Explore';
+        document.getElementById('hero-heading').innerHTML = 'The Vegan community\u2019s <em>home base.</em>';
+        document.getElementById('heroSub').textContent = 'Find Vegan places, events and people in your city, vote for the ones you love, and help it grow.';
+        var j = document.getElementById('heroJoin'); j.textContent = 'Get your Passport \u00b7 $11'; j.href = '/passport?from=home';
+      }
+      function tick() {
+        var ms = DEADLINE - Date.now();
+        if (ms <= 0) { after(); return false; }
+        var s = Math.floor(ms / 1000);
+        cells.d.textContent = Math.floor(s / 86400);
+        cells.h.textContent = pad(Math.floor(s % 86400 / 3600));
+        cells.m.textContent = pad(Math.floor(s % 3600 / 60));
+        cells.s.textContent = pad(s % 60);
+        cd.setAttribute('aria-label', 'Founding Membership closes in ' + Math.floor(s / 86400) + ' days');
+        return true;
+      }
+      if (tick()) { var t = setInterval(function () { if (!tick()) clearInterval(t); }, 1000); }
+
+      // The video: nothing plays until the visitor presses play.
+      var v = document.getElementById('heroVideo'), btn = document.getElementById('heroVideoPlay');
+      btn.addEventListener('click', function () {
+        btn.hidden = true; v.controls = true;
+        var p = v.play(); if (p && p.catch) p.catch(function () {});
+        try { if (window.gtag) gtag('event', 'video_start', { video_title: 'home_launch_v1' }); } catch (e) {}
+      });
+      v.addEventListener('play', function () {
+        var pb = document.getElementById('heroPauseBtn');
+        if (pb && pb.getAttribute('aria-pressed') === 'true') pb.click();
+      });
+      v.addEventListener('ended', function () {
+        try { if (window.gtag) gtag('event', 'video_complete', { video_title: 'home_launch_v1' }); } catch (e) {}
+      });
     })();
   </script>
   <script src="/public/footer.js"></script>

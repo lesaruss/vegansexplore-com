@@ -410,6 +410,32 @@ const MONEY_LABELS: Record<string, [string, string]> = {
   coach_os_subscription: ['Coach OS', 'Coach OS subscription'],
   problem_solver_deposit: ['LESARUSS', 'Problem Solver deposit'],
   talentvangelist_audit: ['TalentVangelist', 'TalentVangelist Audit'],
+  // LESARUSS-account checkouts that carry metadata.kind (lesaruss-hq lib/*.ts; the campaigns checkout on every brand).
+  lr_passport: ['LESARUSS.ai', 'LESARUSS Passport'],
+  listing_claim: ['LESARUSS.ai', 'LESARUSS.ai listing claim'],
+  guide_order: ['LESARUSS.ai', 'A LESARUSS.ai Guide'],
+  business_membership: ['LESARUSS', 'LESARUSS business membership'],
+  campaign_pledge: ['LESARUSS', 'Campaign pledge'],
+}
+// The one type that names several products: label it by what the session says (Sean, 2026-11-01, Money in item 2).
+function moneyLabel(type: string, meta: Record<string, string>, member: any, at: Date): string {
+  if (type === 've_verified') {
+    if (meta.tier === 'brand') {
+      const offer = meta.offer === 'front_row' ? 'Front Row Start' : meta.offer === 'prorated' ? 'prorated' : meta.offer === 'preparation' ? 'Preparation window' : ''
+      return 'Partner plan ($111 every 111 days)' + (offer || meta.period ? ` · ${[offer, meta.period ? 'Period ' + meta.period : ''].filter(Boolean).join(', ')}` : '')
+    }
+    if (meta.tier === 'plus') return 'Passport Anchor (quarterly)'
+    if (meta.tier === 'verified') return 'Passport Stop (quarterly)'
+    return 'Listing plan'
+  }
+  if (type === 'entry_contribution') {
+    if (meta.claim_id) return 'Listing claim with the Passport'
+    // Already a member well before this payment: the dashboard's Contribute, not a new Passport.
+    if (member?.entry_paid_at && new Date(member.entry_paid_at).getTime() < at.getTime() - 3600e3) return 'A contribution'
+    return 'Vegans Explore Passport'
+  }
+  if (type === 'campaign_pledge' && meta.campaign_slug) return `Campaign pledge: ${meta.campaign_slug}`
+  return MONEY_LABELS[type]?.[1] || ''
 }
 function moneyAccount(verifiedWith: string | null): { name: string; slug: string; key: string | undefined } {
   if (verifiedWith && verifiedWith === Deno.env.get('STRIPE_WEBHOOK_SECRET')) return { name: 'Vegans Explore', slug: 'vegans-explore', key: Deno.env.get('STRIPE_SECRET_KEY') }
@@ -438,10 +464,19 @@ async function moneyMember(email: string | null) {
 }
 // Their first payment: not a renewal, and their account was paid for within the hour of this payment (or they have none yet).
 const moneyFirst = (o: any) => !o.renewal && (!o.member?.entry_paid_at || new Date(o.member.entry_paid_at).getTime() >= o.at.getTime() - 3600e3)
+// Midnight Eastern on the 1st of this Eastern month, as UTC: 04:00Z under EDT, 05:00Z under EST (the clock change is read
+// from the zone itself, so December counts from 05:00Z and April from 04:00Z).
+function moneyMonthStart(now: Date): string {
+  const ym = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit' }).format(now)
+  for (const h of [4, 5]) {
+    const t = new Date(`${ym}-01T0${h}:00:00Z`)
+    const hour = new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: '2-digit', hourCycle: 'h23' }).format(t)
+    if (hour === '00') return t.toISOString()
+  }
+  return new Date(`${ym}-01T05:00:00Z`).toISOString()
+}
 async function moneyMonth(): Promise<{ cents: number; count: number }> {
-  const now = new Date()
-  const p = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit' }).format(now)
-  const { data } = await supabase.from('ve_money_alerts').select('amount_cents').gte('created_at', `${p}-01T04:00:00Z`)
+  const { data } = await supabase.from('ve_money_alerts').select('amount_cents').gte('created_at', moneyMonthStart(new Date()))
   return { cents: (data || []).reduce((t: number, r: any) => t + (r.amount_cents || 0), 0), count: (data || []).length }
 }
 function moneyEmail(o: { amount: number; currency: string; brand: string; product: string; lines: string[]; name: string; email: string;
@@ -491,11 +526,13 @@ async function moneySend(subject: string, html: string): Promise<string | null> 
 }
 async function moneyFromSession(session: Stripe.Checkout.Session, acct: { name: string; slug: string; key: string | undefined }, preview: boolean) {
   const type = String(session.metadata?.type || session.metadata?.kind || '')
-  const [brand0, label0] = MONEY_LABELS[type] || (type.startsWith('ve_') ? ['Vegans Explore', ''] : [acct.name, ''])
+  const [brand0] = MONEY_LABELS[type] || (type.startsWith('ve_') ? ['Vegans Explore', ''] : [acct.name, ''])
   const lines = await moneyLines(session.id, acct.key)
-  const product = label0 || (lines[0] ? lines[0].replace(/ \([^)]*\)$/, '') : 'A payment')
   const email = session.customer_details?.email || session.customer_email || ''
   const member = await moneyMember(email)
+  const at0 = new Date((session.created || Date.now() / 1000) * 1000)
+  const label0 = moneyLabel(type, (session.metadata || {}) as Record<string, string>, member, at0)
+  const product = label0 || (lines[0] ? lines[0].replace(/ \([^)]*\)$/, '') : 'A payment')
   const name = session.customer_details?.name || member?.name || ''
   const pi = typeof session.payment_intent === 'string' ? session.payment_intent : (session.payment_intent as any)?.id
   const stripeUrl = `https://dashboard.stripe.com/${session.livemode ? '' : 'test/'}${pi ? 'payments/' + pi : 'checkout/sessions/' + session.id}`
@@ -517,7 +554,14 @@ async function moneyAlert(event: Stripe.Event, verifiedWith: string | null) {
     const email = inv.customer_email || ''
     const member = await moneyMember(email)
     const line = (inv.lines?.data || []).map((l: any) => `${l.description || 'Subscription'} (${moneyFmt(l.amount ?? 0, inv.currency)})`)
-    o = { amount: inv.amount_paid, currency: inv.currency, brand: acct.name, product: line[0] ? line[0].replace(/ \([^)]*\)$/, '') : 'Subscription renewal', lines: line,
+    // The subscription carries its checkout's metadata (ve-claims sets subscription_data[metadata]), so a renewal is labeled like
+    // its first payment: under API 2025+ it is on inv.parent.subscription_details, before that inv.subscription_details.
+    const subMeta = ((inv as any).parent?.subscription_details?.metadata || (inv as any).subscription_details?.metadata || {}) as Record<string, string>
+    const subType = String(subMeta.type || subMeta.kind || '')
+    const atR = new Date(((inv as any).status_transitions?.paid_at || inv.created) * 1000)
+    const subLabel = subType ? moneyLabel(subType, subMeta, member, atR) : ''
+    const subBrand = MONEY_LABELS[subType]?.[0] || (subType.startsWith('ve_') ? 'Vegans Explore' : acct.name)
+    o = { amount: inv.amount_paid, currency: inv.currency, brand: subBrand, product: subLabel || (line[0] ? line[0].replace(/ \([^)]*\)$/, '') : 'Subscription renewal'), lines: line,
       name: inv.customer_name || member?.name || '', email, member, ref: inv.id, at: new Date(((inv as any).status_transitions?.paid_at || inv.created) * 1000), account: acct.name, renewal: true, preview: false,
       stripeUrl: `https://dashboard.stripe.com/invoices/${inv.id}` }
   } else return

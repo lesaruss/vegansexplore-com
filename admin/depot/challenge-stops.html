@@ -45,6 +45,15 @@
     .t-applied{background:#fff4e2;color:#6b3f00;}.t-approved{background:var(--ve-green-light);color:var(--ve-green-deep);}.t-declined,.t-withdrawn{background:#fbeeec;color:#8a1c12;}
     .logo{width:44px;height:44px;border-radius:8px;object-fit:cover;background:var(--ve-green);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;}
     .head{display:flex;gap:12px;align-items:center;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .t-draft{background:#eef0ee;color:#333;}.t-sent{background:#fff4e2;color:#6b3f00;}.t-chosen{background:var(--ve-green-light);color:var(--ve-green-deep);}.t-routed{background:#e8eefb;color:#1d3f8a;}.t-stopped{background:#fbeeec;color:#8a1c12;}
+    .fld{display:block;width:100%;font:inherit;font-size:15px;padding:10px 12px;border:1.5px solid #ccd3cc;border-radius:6px;margin:4px 0 10px;}
+    .res button{display:block;width:100%;text-align:left;font:inherit;font-size:14px;padding:9px 12px;border:0;border-top:1px solid var(--ve-border);background:#fff;cursor:pointer;}
+    .res button.on{background:var(--ve-green-light);font-weight:800;}
+    .pv{width:100%;height:560px;border:1px solid var(--ve-border);border-radius:10px;background:#fff;}
+    .switch{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;margin:0 0 14px;flex-wrap:wrap;}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -62,8 +71,12 @@
     <p class="sub">Businesses that offered four $25 gift cards to be a stop (Sean, 2026-11-01). Pick up to five a chapter for each month by the 10th of the month before. Approving one opens the business's membership (Founding before January 1, 2027), covers its claim if nobody owns the page, and puts its cards in the Vault on the 1st. Each choice emails the business. The business's page: <a href="/business/challenge">/business/challenge</a>; the Vault: <a href="/vault">/vault</a>.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden>
+      <nav class="tabs" id="vtabs" aria-label="Views"><a href="#" data-v="apps">Applications</a><a href="#offers" data-v="offers">Offers we send</a></nav>
+      <div id="offersView" hidden></div>
+      <div id="appsView">
       <div class="bar"><select id="month" aria-label="Month"></select><span class="meta" id="dl"></span><button type="button" class="btn" id="settle" style="margin-left:auto">Settle the Vault now</button><span class="msg" id="sm"></span></div>
       <div id="list"><p class="sub">Loading...</p></div>
+      </div>
     </main>
   </div>
   <script src="/public/ve-hubs.js"></script>
@@ -112,12 +125,84 @@
         });
       });
       $('settle').addEventListener('click', function () { var b = this; b.disabled = true; api({ action: 'settle' }).then(function (r) { b.disabled = false; $('sm').textContent = r && r.ok ? 'Opened ' + r.opened + ', won ' + r.won + ', another week ' + r.extended + ', expired ' + r.expired + '.' : 'That did not run.'; }); });
+      // ---------- Offers we send (Earn your Passport part 5, ve-nurture) ----------
+      var NFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nurture';
+      var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var OWORD = { draft: 'Not sent yet', sent: 'Sent', chosen: 'Applied', routed: 'No answer, in the Inbox', stopped: 'Stopped' };
+      function napi(b) { return fetch(NFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
+      function fmt(t) { return t ? new Date(t).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) + ' ET' : ''; }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); return h[0] === 'offers' ? { v: 'offers', sub: h[1] || '', id: h[2] || '' } : { v: 'apps' }; }
+      function showView() {
+        var r = route();
+        document.querySelectorAll('#vtabs a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-v') === r.v); });
+        $('appsView').hidden = r.v !== 'apps'; $('offersView').hidden = r.v !== 'offers';
+        if (r.v === 'offers') { if (r.sub === 'new') drawNew(); else if (r.sub === 'preview') drawPreview(r.id); else loadOffers(r.sub); }
+      }
+      function loadOffers(st) {
+        var v = $('offersView'); v.innerHTML = '<p class="sub">Loading...</p>';
+        napi({ action: 'offers', status: st || null }).then(function (d) {
+          if (!d || !d.ok) { v.innerHTML = '<p class="sub">That did not load.</p>'; return; }
+          var on = d.settings.offers_on;
+          var chips = [['', 'All'], ['draft', 'Not sent yet'], ['sent', 'Sent'], ['chosen', 'Applied'], ['routed', 'In the Inbox'], ['stopped', 'Stopped']];
+          v.innerHTML = '<div class="switch"><b>Automatic follow-ups are ' + (on ? 'on' : 'off') + '.</b><span class="meta">Two days after an offer: the follow-up ("Still room"), to every business that has not applied. Weekdays from 10 AM Eastern. The first email is only ever sent by you.</span><button type="button" class="btn' + (on ? ' btn-ghost' : '') + '" id="osw">' + (on ? 'Turn them off' : 'Turn them on') + '</button></div>' +
+            '<div class="bar"><nav class="tabs" style="margin:0">' + chips.map(function (c) { return '<a href="#offers/' + c[0] + '" class="' + ((st || '') === c[0] ? 'on' : '') + '">' + c[1] + '</a>'; }).join('') + '</nav><a class="btn" href="#offers/new" style="margin-left:auto;text-decoration:none">New offer</a></div>' +
+            '<p class="meta" style="margin-bottom:10px">See the emails: <a href="#offers/preview/offer">The offer</a> &middot; <a href="#offers/preview/not_opened">The follow-up: still room</a></p>' +
+            (d.rows.length ? '<div class="grid">' + d.rows.map(function (o) {
+              return '<div class="card"><div class="body"><h3><a href="/directory/' + esc(o.listing.slug) + '" target="_blank" rel="noopener">' + esc(o.listing.name) + '</a></h3>' +
+                '<div><span class="tag t-' + esc(o.status) + '">' + esc(OWORD[o.status] || o.status) + '</span>' + (o.test ? ' <span class="tag t-draft">Test</span>' : '') + '</div>' +
+                '<span class="meta">' + esc(o.name ? o.name + ' · ' : '') + esc(o.email) + (o.listing.city ? ' · ' + esc(o.listing.city) : '') + '</span>' +
+                (o.sent_at ? '<span class="meta">Sent ' + fmt(o.sent_at) + ' · ' + (o.clicks ? o.clicks + ' click' + (o.clicks > 1 ? 's' : '') + ' on their link' : 'not clicked yet') + '</span>' : '') +
+                (o.followup_at ? '<span class="meta">Followed up ' + fmt(o.followup_at) + ' (' + 'The follow-up: still room' + ')</span>' : '') +
+                (o.chosen_at ? '<span class="meta">Applied ' + fmt(o.chosen_at) + '</span>' : '') + (o.routed_at ? '<span class="meta">Sent to the Inbox ' + fmt(o.routed_at) + '</span>' : '') +
+                '<div class="acts">' + (o.status === 'draft' ? '<button type="button" class="btn" data-send="' + o.id + '">Send it</button><a class="btn btn-ghost" style="text-decoration:none" href="#offers/preview/offer:' + o.id + '">Preview</a>' : '') +
+                ((o.status === 'draft' || o.status === 'sent') ? '<button type="button" class="btn btn-ghost" data-cancel="' + o.id + '">Stop</button>' : '') + '<span class="msg" id="om' + o.id + '"></span></div></div></div>';
+            }).join('') + '</div>' : '<p class="sub">No offers here.</p>');
+          $('osw').onclick = function () { this.disabled = true; napi({ action: 'settings', offers_on: !on }).then(function () { loadOffers(st); }); };
+        });
+      }
+      function drawNew() {
+        var v = $('offersView'), pick = null, t = null;
+        v.innerHTML = '<p class="meta"><a href="#offers">Offers we send</a> / New offer</p><div class="card" style="max-width:720px"><div class="body"><h3>New offer</h3>' +
+          '<label class="meta" for="nq">The business</label><input class="fld" id="nq" type="search" placeholder="Start typing its name" autocomplete="off"><div class="res" id="nres"></div>' +
+          '<label class="meta" for="ne">Their email</label><input class="fld" id="ne" type="email" placeholder="owner@business.com">' +
+          '<label class="meta" for="nn">Who it goes to (optional)</label><input class="fld" id="nn" type="text" placeholder="Their name">' +
+          '<p class="meta">This makes the offer and its own tracked link. Nothing is sent until you press Send it. A name with [TEST] sends nothing.</p>' +
+          '<div class="acts"><button type="button" class="btn" id="nmake">Make the offer</button><a class="btn btn-ghost" href="#offers" style="text-decoration:none">Back</a><span class="msg" id="nmsg"></span></div></div></div>';
+        $('nq').addEventListener('input', function (e) {
+          clearTimeout(t); var q = e.target.value.trim(); if (q.length < 2) { $('nres').innerHTML = ''; return; }
+          t = setTimeout(function () {
+            fetch(SB + '/rest/v1/listings?select=name,slug,address_city&status=eq.approved&name=ilike.*' + encodeURIComponent(q.replace(/[*,()]/g, ' ')) + '*&limit=8', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }).then(function (rows) {
+              $('nres').innerHTML = (rows || []).map(function (r) { return '<button type="button" data-s="' + esc(r.slug) + '" class="' + (pick === r.slug ? 'on' : '') + '">' + esc(r.name) + ' <span class="meta">' + esc(r.address_city || '') + '</span></button>'; }).join('');
+            });
+          }, 250);
+        });
+        $('nres').addEventListener('click', function (e) { var b = e.target.closest('[data-s]'); if (!b) return; pick = b.getAttribute('data-s'); $('nres').querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); }); });
+        $('nmake').onclick = function () {
+          var b = this, m = $('nmsg'); if (!pick) { m.textContent = 'Pick the business.'; return; } b.disabled = true;
+          napi({ action: 'offer_create', slug: pick, email: $('ne').value, name: $('nn').value }).then(function (d) { if (d && d.ok) { location.hash = 'offers/draft'; return; } b.disabled = false; m.textContent = (d && d.message) || 'That did not save.'; });
+        };
+      }
+      function drawPreview(id) {
+        var parts = String(id || 'offer').split(':'), kind = parts[0], oid = parts[1] || null, v = $('offersView');
+        var NAME = { offer: 'The offer', not_opened: 'The follow-up: still room' };
+        v.innerHTML = '<p class="meta"><a href="#offers">Offers we send</a> / ' + esc(NAME[kind] || kind) + (oid ? '' : ' (on a sample business)') + '</p><p class="sub" id="psub">Loading...</p><iframe class="pv" id="pv" title="The email"></iframe><div class="acts"><button type="button" class="btn btn-ghost" id="ptest">Send me a test</button><span class="msg" id="pmsg"></span></div>';
+        napi({ action: 'preview', kind: kind, offer_id: oid }).then(function (d) { $('psub').innerHTML = '<b>Subject:</b> ' + esc(d.subject || ''); $('pv').srcdoc = d.html || ''; });
+        $('ptest').onclick = function () { this.disabled = true; napi({ action: 'test', kind: kind, offer_id: oid }).then(function (d) { $('pmsg').textContent = d && d.ok ? 'Sent to ' + d.to + '.' : 'That did not send.'; }); };
+      }
+      $('offersView').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-send],[data-cancel]'); if (!b) return;
+        var send = b.hasAttribute('data-send'), id = b.getAttribute(send ? 'data-send' : 'data-cancel');
+        if (send && !confirm('Send the offer now?')) return;
+        b.disabled = true;
+        napi({ action: send ? 'offer_send' : 'offer_cancel', id: id }).then(function (d) { if (d && d.ok) return loadOffers(route().sub); b.disabled = false; $('om' + id).textContent = (d && d.message) || 'That did not go through.'; });
+      });
+      window.addEventListener('hashchange', showView);
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
         if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in.', function () { location.reload(); }); }; return; }
         if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
-        $('app').hidden = false; load();
+        $('app').hidden = false; load(); showView();
       }
       start();
     })();

@@ -90,18 +90,16 @@
     // canon-ve-directory-navigation: "what should be in this drop down is the actual directory main navigation... the first
     // thing in the filter would be choosing the city"). Every listing loads once; the filter's Continent > Country > Chapter
     // narrows the cards, the line under the title reads "Local Food · South Florida", and the chapter's art and ads follow it.
-    // The location is kept across visits (localStorage ve_dir_loc), never in the address: a shared link opens in the
-    // visitor's own location. First visit: a member's home chapter, else every location.
+    // The location is kept across visits (localStorage ve_dir_loc) and written in the address (?city=), so a shared link opens
+    // on the same chapter. First visit: the link's, else a member's home chapter, else every location.
     var LOC_KEY = 've_dir_loc', loc0 = null;
     try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
     if (!loc0) { try { var old = sessionStorage.getItem('ve_dir_city'); if (old) loc0 = old; } catch (e) {} }
     if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = me.home_community; }
-    // An old ?city= link still opens on that chapter before the address drops it.
+    // The address carries the location now (?city=<chapter>, Sean 2026-11-01: every view is a link to share), and the
+    // component reads it ahead of the kept one.
     var q0 = new URLSearchParams(location.search);
-    if (q0.get('city') !== null) {
-      loc0 = q0.get('city') || { continent: '' };
-      q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash);
-    }
+    if (q0.get('city')) loc0 = q0.get('city');
     var banner = VECityBanner.mount('dir-hero', {
       key: 'dir', title: 'Vegan Directory', allTitle: 'Local Food', param: false, pickLabel: 'Section',
       sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',

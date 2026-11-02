@@ -305,6 +305,25 @@
       .hub-sec-pick { grid-column: 1; grid-row: 1; }
     }
     .hub-content-grid.hub-wide .hub-content-sidebar { display: none; }
+    /* The Overview (Sean, 2026-11-01). */
+    #hub-ov-card { margin: 4px 0 18px; }
+    .hov-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0 0 26px; }
+    .hov-stat { display: block; text-align: left; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 14px 16px; background: #fff; text-decoration: none; color: var(--ve-text); font: inherit; cursor: pointer; min-height: 44px; }
+    .hov-stat:hover, .hov-stat:focus-visible { border-color: var(--ve-green); outline: none; }
+    .hov-stat b { display: block; font-size: 24px; font-weight: 900; line-height: 1.1; }
+    .hov-stat span { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hov-h { font-size: 16px; font-weight: 900; margin: 0 0 12px; }
+    .hov-go { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 28px; }
+    .hov-tile { display: flex; gap: 12px; align-items: flex-start; text-align: left; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 14px; background: #fff; font: inherit; color: var(--ve-text); cursor: pointer; text-decoration: none; min-height: 44px; }
+    .hov-tile:hover, .hov-tile:focus-visible { border-color: var(--ve-green); outline: none; }
+    .hov-ic { width: 40px; height: 40px; min-width: 40px; border-radius: 8px; background: var(--ve-green-light, #e8f5e9); display: flex; align-items: center; justify-content: center; }
+    .hov-ic svg { width: 20px; height: 20px; stroke: #1f5f22; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .hov-tile b { display: block; font-size: 14px; font-weight: 800; }
+    .hov-tile small { display: block; font-size: 12px; font-weight: 500; color: var(--ve-text-75); line-height: 1.4; margin-top: 2px; }
+    .hov-more { margin: 12px 0 0; font-size: 13px; font-weight: 700; }
+    .hov-more a { color: #1f5f22; }
+    @media (max-width: 1100px) { .hov-go { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 700px) { .hov-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hov-go { grid-template-columns: 1fr; } }
     /* Opportunities: every open role, two across beside the billboard. */
     #tab-opportunities .news-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     /* The Board and Bounties open here, under the community, instead of on their own pages. */
@@ -336,6 +355,7 @@
   <script src="/public/hub-news.js"></script>
   <script src="/public/ve-region-directory.js"></script>
   <script src="/public/hub-community.js"></script>
+  <script src="/public/ve-chapters.js"></script>
 
   <!-- The city's banner is the shared one (Sean, 2026-10-27: "the same look and feel as everywhere else"): open, the city, its
        cities and the badge, Get your Passport (Dashboard when signed in) and Page tour; folded, the same bar as the Directory and
@@ -377,8 +397,28 @@
   <div class="hub-content-grid" id="hub-content-grid">
   <div class="hub-content-main">
 
+  <!-- OVERVIEW: the community's front door (Sean, 2026-11-01: "the landing page for the community is weak. It takes you to the
+       pulse. It's not a good first intro"). Its card (vote and save), what is here, the most voted places and a way into every section. -->
+  <section class="hub-section active" id="tab-overview" aria-labelledby="hub-ov-title">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title" id="hub-ov-title" data-hub-text="Welcome to Vegan {name}"></h2>
+        <p class="section-sub" data-hub-text="Places, people, events and conversations across {area}. Vote for this community and save it if it is home."></p>
+      </div>
+    </div>
+    <div id="hub-ov-card"></div>
+    <div class="hov-stats" id="hub-ov-stats"></div>
+    <h3 class="hov-h" data-hub-text="Explore {name}"></h3>
+    <div class="hov-go" id="hub-ov-go"></div>
+    <div id="hub-ov-top" hidden>
+      <h3 class="hov-h" data-hub-text="Most voted in {name}"></h3>
+      <div class="vrd-root"><div class="rank-grid" id="hub-ov-top-grid"></div></div>
+      <p class="hov-more"><a href="?tab=directory" data-hov-tab="directory">See the whole Directory</a></p>
+    </div>
+  </section>
+
   <!-- NEWS -->
-  <section class="hub-section active" id="tab-news" aria-labelledby="hub-news-title">
+  <section class="hub-section" id="tab-news" aria-labelledby="hub-news-title">
     <!-- The Passport Challenge: shows only while a challenge is live in this city. -->
     <div id="hub-hunt" hidden style="background:#1f5f22;color:#fff;border-radius:14px;padding:18px 20px;margin:0 0 22px">
       <div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#cdeccf">The Passport Challenge is on</div>
@@ -603,6 +643,7 @@
   // Partners is hidden for now, and the Board and Bounties open here, under the community.
   // Members and Rewards are for members. `wide` sections take the full width (no billboard).
   var TABS = [
+    { id: 'overview', label: 'Overview' },
     { id: 'news', label: 'Daily Pulse' },
     { id: 'events', label: 'Events' },
     { id: 'directory', label: 'Directory' },
@@ -647,7 +688,7 @@
     if (t.frame) openFrame(t);
     if (!opts.noPush) {
       var u = new URL(location.href);
-      if (id === 'news') u.searchParams.delete('tab'); else u.searchParams.set('tab', id);
+      if (id === 'overview') u.searchParams.delete('tab'); else u.searchParams.set('tab', id);
       // The Directory's own section (?dir= and ?sub=) belongs to the Directory section only.
       if (id !== 'directory') { u.searchParams.delete('dir'); u.searchParams.delete('sub'); }
       if (id !== 'events') u.searchParams.delete('when');
@@ -655,7 +696,7 @@
     }
   }
   window.switchTab = function (id) { switchTab(id); };
-  window.addEventListener('popstate', function () { switchTab(new URLSearchParams(location.search).get('tab') || 'news', { noPush: true }); });
+  window.addEventListener('popstate', function () { switchTab(new URLSearchParams(location.search).get('tab') || 'overview', { noPush: true }); });
 
   // ---- Board and Bounties in a frame under the community. The page inside says how tall it is
   // (ve-frame-height), so it scrolls with the hub; asks to scroll (ve-frame-scroll); and is told
@@ -744,9 +785,73 @@
   // ---- The ad rail: this city's tall slot (public/ve-ad-rail.js, loaded at the end of the page).
   document.getElementById('hub-ad-rail').setAttribute('data-ad-chapter', SLUG);
 
+  // ---- The Overview: the community's card (vote, save), its numbers, a tile into every section, and its most voted places.
+  function renderOverview() {
+    if (window.VEChapters) VEChapters.mount('hub-ov-card', { only: [SLUG], bar: false, url: false, here: true });
+    var IC = {
+      directory: '<path d="M3 21h18M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/>',
+      events: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/>',
+      news: '<path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h8M8 17h5"/>',
+      board: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+      bounties: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
+      opportunities: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>'
+    };
+    var GO = [
+      ['directory', 'Directory', 'Restaurants, shops, services and the people behind them.'],
+      ['events', 'Events', 'Meetups, pop-ups, festivals and dinners coming up.'],
+      ['news', 'Daily Pulse', "Today's briefing and the conversation around it."],
+      ['board', 'Community Board', 'Jobs, classifieds, fosters and rescues.'],
+      ['bounties', 'Bounties', 'Jobs around town that earn you points.'],
+      ['opportunities', 'Opportunities', 'Ways to take part, from hosting to Community Manager.']
+    ];
+    document.getElementById('hub-ov-go').innerHTML = GO.map(function (g) {
+      return '<a class="hov-tile" href="?tab=' + g[0] + '" data-hov-tab="' + g[0] + '"><span class="hov-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[g[0]] + '</svg></span>' +
+        '<span><b>' + esc(g[1]) + '</b><small>' + esc(g[2]) + '</small></span></a>';
+    }).join('');
+    var stats = document.getElementById('hub-ov-stats');
+    function drawStats(s) {
+      s = s || {};
+      var f = function (v) { return v == null ? '&ndash;' : Number(v).toLocaleString(); };
+      stats.innerHTML = [['directory', s.places, 'Places'], ['events', s.events, 'Events coming up'], ['members', s.members, 'Members'], ['vote', s.votes, 'Community votes']].map(function (x) {
+        var v = f(x[1]);
+        if (x[0] === 'vote') return '<button type="button" class="hov-stat" data-hov-vote><b>' + v + '</b><span>' + esc(x[2]) + '</span></button>';
+        return '<a class="hov-stat" href="?tab=' + x[0] + '" data-hov-tab="' + x[0] + '"><b>' + v + '</b><span>' + esc(x[2]) + '</span></a>';
+      }).join('');
+    }
+    drawStats(null);
+    fetch(SUPABASE_URL + '/functions/v1/ve-votes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'chapter_stats' }) })
+      .then(function (r) { return r.json(); }).then(function (d) { drawStats((d.chapters || []).filter(function (c) { return c.chapter === SLUG; })[0]); }).catch(function () {});
+    document.getElementById('tab-overview').addEventListener('click', function (e) {
+      if (e.target.closest('[data-hov-vote]')) { var vb = document.querySelector('#hub-ov-card [data-vch-vote]'); if (vb) vb.click(); return; }
+      var a = e.target.closest('[data-hov-tab]'); if (!a || e.metaKey || e.ctrlKey) return;
+      e.preventDefault(); switchTab(a.getAttribute('data-hov-tab')); window.scrollTo(0, 0);
+    });
+    // Most voted: open places in this chapter with votes, 100% Vegan first in a tie (public at once), the Directory's own card.
+    if (!window.VERegionDirectory) return;
+    var q = 'listings?select=' + VERegionDirectory.FIELDS + '&status=eq.approved&vote_count=gt.0&vegan_status=eq.fully_vegan&order=vote_count.desc&limit=400';
+    fetch(SUPABASE_URL + '/rest/v1/' + q, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+      .then(function (r) { return r.json(); }).then(function (rows) {
+        var LR = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
+        var top = (rows || []).filter(function (l) {
+          if ((l.tags || []).some(function (t) { return LR.indexOf(t) >= 0; })) return false;
+          if (l.business_status === 'CLOSED_PERMANENTLY') return false;
+          if (!l.address_city && !l.address_state) return false;
+          if (HUB.match.cities && HUB.match.cities.indexOf(l.address_city) < 0) return false;
+          if (HUB.match.states && HUB.match.states.indexOf(l.address_state) < 0) return false;
+          return true;
+        }).slice(0, 6);
+        if (!top.length) return;
+        var g = document.getElementById('hub-ov-top-grid');
+        g.innerHTML = top.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
+        VERegionDirectory.wire(g.parentNode);
+        document.getElementById('hub-ov-top').hidden = false;
+      }).catch(function () {});
+  }
+
   // Open on ?tab= (a listing breadcrumb, a shared link, or back). Old tab names land somewhere useful.
-  var wanted = new URLSearchParams(location.search).get('tab') || 'news';
+  var wanted = new URLSearchParams(location.search).get('tab') || 'overview';
   if (wanted === 'pulse' || wanted === 'newsletter' || wanted === 'chat' || wanted === 'partners') wanted = wanted === 'chat' ? 'board' : 'news';
+  renderOverview();
   switchTab(wanted, { initial: true, noPush: !new URLSearchParams(location.search).get('tab') });
 })();
 </script>
