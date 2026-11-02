@@ -462,28 +462,33 @@ async function socialReport(brand: string, from: string, to: string) {
 function socialSummary(s: any) {
   if (!s || s.error || s.not_connected) return { connected: false };
   const channels = Object.entries(s.channels ?? {}).filter(([, c]: any) => c?.connected).map(([k, c]: any) => ({ channel: k, followers: c.followers ?? null, followers_start: c.followers_start ?? null }));
-  const posts = (s.posts ?? []).filter((p: any) => p.status === 'published');
+  const all = (s.posts ?? []).filter((p: any) => p.status === 'published');
+  // A post Metricool has not reported numbers for yet has no metrics at all: it is "not reported yet", never zero.
+  const posts = all.filter((p: any) => p.metrics && Object.keys(p.metrics).length);
   const sum = (k: string) => posts.reduce((n: number, p: any) => n + (Number(p.metrics?.[k]) || 0), 0);
   const top = [...posts].sort((a: any, b: any) => (b.metrics?.views || 0) - (a.metrics?.views || 0)).slice(0, 5).map((p: any) => ({ channel: p.channel, kind: p.kind, at: p.at, caption: String(p.caption || '').slice(0, 120), views: p.metrics?.views ?? 0, likes: p.metrics?.likes ?? 0, comments: p.metrics?.comments ?? 0 }));
   const byChannel: Record<string, number> = {};
-  for (const p of posts) byChannel[p.channel] = (byChannel[p.channel] ?? 0) + 1;
-  return { connected: true, channels, posts: posts.length, posts_by_channel: byChannel, views: sum('views'), likes: sum('likes'), comments: sum('comments'), shares: sum('shares'), top, scheduled: (s.posts ?? []).filter((p: any) => p.status === 'scheduled').length };
+  for (const p of all) byChannel[p.channel] = (byChannel[p.channel] ?? 0) + 1;
+  return { connected: true, channels, posts_published: all.length, posts_with_numbers: posts.length, posts_without_numbers_yet: all.length - posts.length, posts_by_channel: byChannel, views: sum('views'), likes: sum('likes'), comments: sum('comments'), shares: sum('shares'), top, scheduled_in_metricool: (s.posts ?? []).filter((p: any) => p.status === 'scheduled').length,
+    note: 'views, likes, comments and shares count only posts Metricool has reported numbers for' };
 }
 async function analysis(brand: string, name: string, from: string, to: string) {
   const errs: string[] = [];
   const safe = async <T,>(label: string, f: () => Promise<T>) => { try { return await f(); } catch (e) { errs.push(`${label}: ${(e as Error).message}`); return null; } };
-  const [web, search, ad, camp, soc] = await Promise.all([
+  const today = new Date().toISOString();
+  const [web, search, ad, camp, soc, plan] = await Promise.all([
     safe('web', () => cached(`ins:web:${brand}:${from}:${to}`, 3 * H, false, () => webAnalytics(brand, from, to))),
     safe('seo', () => cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, false, () => seo(brand, from, to))),
     safe('ads', () => ads(brand, from, to)),
     safe('campaigns', () => campaigns(brand, from, to)),
     safe('social', () => socialReport(brand, from, to)),
+    safe('plan', async () => { const { data } = await db.from('ve_social_slots').select('status').eq('brand_slug', brand).gte('slot_at', today).limit(2000); const c: Record<string, number> = {}; for (const r of (data ?? []) as any[]) c[r.status] = (c[r.status] ?? 0) + 1; return c; }),
   ]);
   const facts = {
     brand: name, period: { from, to, compared_with: web && (web as any).prev_from ? { from: (web as any).prev_from, to: (web as any).prev_to } : null },
     web: web && (web as any).connected ? { totals: (web as any).totals, before: (web as any).totals_prev, top_pages: (web as any).pages.slice(0, 8).map((p: any) => ({ path: p.path, views: p.views })), channels: (web as any).channels.slice(0, 6), sources: (web as any).sources.slice(0, 6), countries: (web as any).countries.slice(0, 5), devices: (web as any).devices } : { connected: false },
     search: search && (search as any).connected ? { totals: (search as any).totals, before: (search as any).totals_prev, top_queries: (search as any).queries.slice(0, 10), near_page_one: (search as any).nearly.slice(0, 8) } : { connected: false },
-    social: socialSummary(soc),
+    social: { ...socialSummary(soc), social_plan_coming_up_by_status: plan ?? {}, plan_status_words: { proposed: 'waiting for approval in the Social plan', approved: 'approved', scheduled: 'scheduled in Metricool', manual: 'to post by hand', held: 'held' } },
     ads: ad ? { totals: (ad as any).totals, campaigns: (ad as any).campaigns.slice(0, 6), empty_slots: (ad as any).slots.filter((s: any) => !s.filled_by).length } : null,
     campaigns: camp ? (camp as any).campaigns.map((c: any) => ({ kind: c.kind, name: c.name, status: c.status, line: c.line })).slice(0, 30) : null,
   };
@@ -499,7 +504,7 @@ async function analysis(brand: string, name: string, from: string, to: string) {
       next_steps: { type: 'array', items: { type: 'string' } },
     },
   };
-  const system = `You write the Insights analysis for ${name}'s team in BrandDesk. Read only the numbers given. Never invent a number, a cause or a trend the numbers do not show; when something is not connected, say so in one line. Plain words, short sentences, no jargon (say "visitors" not "active users", "shown in Google" not "impressions" the first time, then either). Compare with the period before wherever both are given, with the change as a number and a percent. Capitalize Vegan. Never use dashes as punctuation (no em or en dashes, no hyphens between clauses). The headline is one sentence. The summary is two to four sentences. Each section has two to five points. next_steps are three to six concrete things to do this week, each tied to a number above.`;
+  const system = `You write the Insights analysis for ${name}'s team in BrandDesk. Read only the numbers given. Never invent a number, a cause or a trend the numbers do not show; when something is not connected, say so in one line. Plain words, short sentences, no jargon (say "visitors" not "active users", "shown in Google" not "impressions" the first time, then either). Compare with the period before wherever both are given, with the change as a number and a percent. Capitalize Vegan. Never use dashes as punctuation (no em or en dashes, no hyphens between clauses). The headline is one sentence. The summary is two to four sentences. Each section has two to five points. next_steps are three to six concrete things to do this week, each tied to a number above. Posts with no numbers yet are not zero views: say their numbers have not come in. Referral visits from hq.lesaruss.ai are the team's own dashboard framing the site, not outside traffic; say so if they show up.`;
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST', headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({ model: MODEL, max_tokens: 3000, system, messages: [{ role: 'user', content: 'The numbers, as JSON:\n' + JSON.stringify(facts) }],
