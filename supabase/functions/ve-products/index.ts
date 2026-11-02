@@ -16,7 +16,7 @@
 // POST { action: 'sighting_at', code, venue, seen, lat, lng, accuracy, path? } active member -> { ok, points, chain, venue, seen_locations, not_locations, flagged }
 //   The phone must be inside that store (its radius plus up to 100 m of accuracy). Only a live barcode (an item we know is Vegan) counts. One report
 //   per member, store and item a day; small points a day (ve_site_settings store_sightings). A yes sets the chain's last checked date.
-// POST { action: 'store_gaps', venue } anyone -> { gaps: [{brand, type, gtin, reason: flagged|not_checked}] }   items its chain carries that nobody has checked here lately
+// POST { action: 'store_gaps', venue | slug } anyone -> { gaps: [{brand, type, gtin, reason: flagged|not_checked}] }   items its chain carries that nobody has checked here lately
 // POST { action: 'flags' } / { action: 'flag_decide', chain, product, decision: kept|dropped, note? } super admin   items locations say are not on the shelf
 // POST { action: 'votes', brand }        anyone -> { counts: {product_id: n}, mine: [product_id] }   brand = its listing id
 // POST { action: 'vote', product_id, on } active member -> { ok, count }
@@ -241,8 +241,10 @@ Deno.serve(async (req) => {
     return json(r);
   }
   if (action === 'store_gaps') {
-    if (!isId(body.venue)) return json({ error: 'bad_request' }, 400);
-    const { data } = await db.rpc('ve_store_gaps', { p_venue: body.venue, p_limit: 12 });
+    let vid = isId(body.venue) ? body.venue : null;
+    if (!vid && typeof body.slug === 'string' && /^[a-z0-9-]{1,120}$/.test(body.slug)) vid = (await db.from('ve_venues').select('id').eq('slug', body.slug).eq('kind', 'supermarket').maybeSingle()).data?.id || null;
+    if (!vid) return json({ error: 'bad_request' }, 400);
+    const { data } = await db.rpc('ve_store_gaps', { p_venue: vid, p_limit: 12 });
     return json({ gaps: data || [] });
   }
   if (action === 'flags' || action === 'flag_decide') {

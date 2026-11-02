@@ -520,7 +520,7 @@
   }
   // Help check this store (Sean, 2026-11-02): items its chain carries that nobody has checked here lately, flagged ones first, each a scan away.
   function loadGaps(v) {
-    papi({ action: 'store_gaps', venue: v.id }).then(function (x) {
+    papi({ action: 'store_gaps', slug: v.slug }).then(function (x) {
       var box = document.getElementById('sgGaps'); if (!box || !x || !x.gaps || !x.gaps.length) return;
       box.innerHTML = '<h3 class="sg-ph">Help check this store</h3><p class="sg-small" style="margin:0 0 8px">Nobody has confirmed these here lately. Standing in the store? Scan one and tell us if it is on the shelf.</p><div class="sg-carried">' +
         x.gaps.map(function (g) {
