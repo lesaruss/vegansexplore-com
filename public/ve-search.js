@@ -57,9 +57,29 @@
   var PLAY = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#2D5C27" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
   function hasContent(c) { return !!c && ((c.moments || []).length + (c.episodes || []).length + (c.shows || []).length) > 0; }
 
+
+  /* ---- a store and a thing: "does Walmart carry vegan ice cream" ---- */
+  function cap(t) { t = String(t || ''); return t.charAt(0).toUpperCase() + t.slice(1); }
+  function storeSay(st) {
+    var n = st.store.name, what = st.term ? st.term : (st.thing || '');
+    if (st.mode === 'unknown_item') return { yes: false, head: 'Not confirmed yet: ' + what + ' at ' + n, line: 'We have not confirmed ' + what + ' at ' + n + ' yet. We only say yes to what we have seen.' };
+    if (st.total > 0) return { yes: true, head: (st.mode === 'all' ? 'Vegan at ' + n : cap(what) + ' at ' + n),
+      line: st.mode === 'all' ? 'Our Guides place ' + st.total + ' Vegan product' + (st.total === 1 ? '' : 's') + ' at ' + n + '. Stock changes by store, so check the shelf.'
+        : 'Yes. Our Guides place ' + st.total + ' Vegan ' + what + ' product' + (st.total === 1 ? '' : 's') + ' at ' + n + '. Stock changes by store, so check the shelf.' };
+    return { yes: false, head: 'Not confirmed yet: ' + what + ' at ' + n, line: st.store_mapped ? 'We have ' + st.store_mapped + ' Vegan products mapped at ' + n + ', but no ' + what + ' yet.' : 'We have no Vegan products mapped at ' + n + ' yet.' };
+  }
+  function ago(iso) {
+    if (!iso) return 'From the Guides, not checked in a store yet';
+    var d = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
+    return 'Checked in a store ' + (d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago');
+  }
+  function storeHref(x) { return '/directory/' + encodeURIComponent(x.brand_slug) + '?tab=products' + (x.product_slug ? '&product=' + encodeURIComponent(x.product_slug) : ''); }
+  var SCAN_HREF = '/guides/supermarket-guide#/scan';
+
   /* ---- what we understood, in words ---- */
   function words(r) {
     var it = (r && r.interpretation) || {}, out = [], ci = r && r.content && r.content.intent;
+    if (r && r.store) return ['At ' + r.store.store.name, r.store.mode === 'all' ? 'Everything Vegan' : cap(r.store.term || r.store.thing)];
     // A question about a topic is read as that topic ("Talking with family"), not as its leftover words.
     if (!(it.labels && it.labels.length) && !it.place && !it.near_me && ci && ci.labels && ci.labels.length) return ci.labels.slice();
     (it.labels || []).forEach(function (l) { out.push(l); });
@@ -124,9 +144,15 @@
       function id() { return uid + '-' + (n++); }
       html += '<div class="ves-h">Search</div><a class="ves-row" role="option" id="' + uid + '-0" href="' + href + '" data-q="1">' + '<span class="ves-logo">' + SVG.replace('<svg', '<svg style="width:18px;height:18px;stroke:#2D5C27;fill:none;stroke-width:2.2"') + '</span>' +
         '<span class="ves-t"><span class="ves-n">' + esc(q) + '</span><span class="ves-m">' + (w.length ? esc(w.join(' · ')) : 'See every match') + '</span></span><span class="ves-go">See all' + (r.total ? ' ' + r.total : '') + '</span></a>';
+      var sHtml = '';
+      if (r.store) {
+        var sy = storeSay(r.store);
+        sHtml += '<div class="ves-h">In the store</div><a class="ves-row" role="option" id="' + id() + '" href="' + href + '" data-go="1"><span class="ves-logo">' + (sy.yes ? '&#10003;' : '?') + '</span><span class="ves-t"><span class="ves-n">' + esc(sy.head) + '</span><span class="ves-m">' + esc(sy.line) + '</span></span></a>';
+        (r.store.items || []).slice(0, 2).forEach(function (x) { sHtml += '<a class="ves-row" role="option" id="' + id() + '" href="' + storeHref(x) + '" data-go="1">' + letterTile(x.brand, x.logo) + '<span class="ves-t"><span class="ves-n">' + esc(x.brand + ' ' + x.type) + '</span><span class="ves-m">' + esc(ago(x.checked_at)) + '</span></span></a>'; });
+      }
       var listingIntent = (it.labels && it.labels.length) || it.place || it.near_me;
       var contentFirst = hasContent(c) && !listingIntent && ((c.intent && c.intent.topics && c.intent.topics.length) || !(r.results || []).length);
-      var res = contentFirst ? [] : (r.results || []).slice(0, hasContent(c) ? 4 : 6);
+      var res = contentFirst ? [] : (r.results || []).slice(0, r.store ? 2 : hasContent(c) ? 4 : 6);
       var cHtml = '', oHtml = '', lHtml = '';
       var mo = (c.moments || []).slice(0, 2), ep = (c.episodes || []).slice(0, mo.length ? 1 : 2), ot = (c.shows || []).slice(0, 1);
       if (mo.length || ep.length) {
@@ -143,9 +169,9 @@
         res.forEach(function (x) { lHtml += '<a class="ves-row" role="option" id="' + id() + '" href="/directory/' + encodeURIComponent(x.slug) + '" data-slug="' + esc(x.slug) + '" data-go="1">' + tile(x) + '<span class="ves-t"><span class="ves-n">' + esc(x.name) + '</span><span class="ves-m">' + esc(meta(x)) + '</span></span></a>'; });
       }
       // What the question is about leads: a question about a topic shows our shows first, a place or a thing shows the Directory first.
-      html += contentFirst ? (cHtml + oHtml + lHtml) : (lHtml + cHtml + oHtml);
+      html += sHtml + (contentFirst ? (cHtml + oHtml + lHtml) : (lHtml + cHtml + oHtml));
       if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(away(r.nearest_km)) + '.</div>';
-      else if (!res.length && !hasContent(c)) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
+      else if (!res.length && !hasContent(c) && !r.store) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
       list.innerHTML = html; list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
     }
     function run() {
@@ -204,5 +230,5 @@
     }
   });
 
-  window.VESearch = { fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
+  window.VESearch = { storeSay: storeSay, ago: ago, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

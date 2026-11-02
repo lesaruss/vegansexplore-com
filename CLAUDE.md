@@ -1164,6 +1164,21 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   search); a place or thing question leads with the Directory and shows no content ("sushi near me", "vegan restaurants in Claremont"). Content
   benchmark: `ve_search_content_benchmark_run()` (24 cases, one known gap: documentaries on Netflix). Weak spots: an episode with no transcript
   matches on title and summary only, and other shows never match on what is said. Every SoFlo Vegans transcript Sean adds improves it.
+- **A store and a thing** (LOCKED by Sean 2026-11-02, playbook `ve-store-scan-search`, canon `canon-ve-store-scan-search`; migration
+  `20261102_store_scan_search.sql`; Sean, from a Walmart at 8:31 AM: "scan an item... see if it's vegan, organic, GMO free... see where all the vegan
+  items are in the store... bounties so people can scan the stores... the last time it was checked... the scan part be the free thing in a Taste
+  guide, and the full package is the supermarket guide"). **Search**: `ve_search_store(q)` reads a store (`ve_store_aliases`) and a thing
+  (`ve_store_search_terms`, a row per phrase with its product types and an optional `made_from_like`, so "oat milk" is only oat products), and
+  answers "does Walmart carry vegan ice cream", "oat milk at Target", "what is vegan at Whole Foods" from `ve_product_stores`. A store with nothing for
+  that thing says **Not confirmed yet**, never a guess; each item shows **Checked in a store N days ago** (`ve_product_stores.confirmed_at`) or
+  "From the Guides, not checked in a store yet". `ve-search` returns it as `data.store` (the Directory listings and content are left out then); the
+  box shows an **In the store** group and `/search` an answer card (`VESearch.storeSay`). **Scan**: a result shows **Vegan, Organic, GMO free** as the
+  package says (Open Food Facts labels; `flags` on ours, `off.organic` / `off.gmo`), else **Not stated**, never inferred. **Sightings**: on a scan
+  result a signed-in Passport holder picks a store and taps **I see it here** or **Not here** (`ve-products` `sighting`, `ve_store_sighting_save`,
+  30 a day, `ve_store_sightings`, RLS on); a yes on one of our products sets that store link's `confirmed_at`. The carried tiles show it. **Honest
+  limits, 2026-11-02**: only the 86 dairy-free product lines are linked to stores (Walmart 15, none for ice cream or animal crackers), so most
+  questions answer Not confirmed yet. **Not built yet**: the scan as a Taste slide, store-by-store stock, business confirmation, points and bounties
+  for sightings, a sighting of a barcode we do not hold feeding search.
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 

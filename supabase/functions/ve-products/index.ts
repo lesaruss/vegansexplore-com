@@ -9,6 +9,8 @@
 //   from Open Food Facts (CC BY-SA), read live, nothing saved.
 // POST { action: 'add', code, product_id?, note? }   active member -> { ok }   a pending ve_product_barcodes row (source member, what Open
 //   Food Facts said), 20 a day; the team approves it in Depot > Venues > Barcodes.
+// POST { action: 'sighting', code, store, seen? } active member -> { ok, linked }   store = a grocery listing id; seen false means Not here.
+//   A yes on a barcode that is one of our products sets that store link's confirmed_at (the last checked date). 30 a day. Migration 20261102_store_scan_search.sql.
 // POST { action: 'votes', brand }        anyone -> { counts: {product_id: n}, mine: [product_id] }   brand = its listing id
 // POST { action: 'vote', product_id, on } active member -> { ok, count }
 // POST { action: 'picks', recipe_id }    member -> { picks: [{line, product_id, gtin}] }
@@ -90,6 +92,9 @@ async function offLookup(code: string) {
     const g = (k: string) => { const v = n[k + (perServ ? '_serving' : '_100g')]; return v == null || v === '' ? undefined : Math.round(Number(v) * 10) / 10; };
     const tags: string[] = p.ingredients_analysis_tags || [], labels: string[] = p.labels_tags || [];
     const vegan = labels.some((t) => /en:vegan/.test(t)) || tags.includes('en:vegan') ? 'yes' : tags.includes('en:non-vegan') ? 'no' : tags.includes('en:maybe-vegan') ? 'maybe' : 'unknown';
+    // Organic and GMO free only as the package says it (Open Food Facts labels); anything else is "unknown", shown as Not stated, never inferred.
+    const organic = labels.some((t) => /(^|:)(organic|usda-organic|eu-organic|ca-organic)$/.test(t)) ? 'yes' : 'unknown';
+    const gmo = labels.some((t) => /(non-gmo|no-gmos|gmo-free|non-gmo-project)/.test(t)) ? 'yes' : 'unknown';
     // Sodium comes in grams: read it before rounding.
     const sRaw = n['sodium' + (perServ ? '_serving' : '_100g')], sodium = sRaw == null || sRaw === '' ? undefined : Number(sRaw);
     return {
@@ -98,7 +103,7 @@ async function offLookup(code: string) {
       serving: perServ ? (p.serving_size || 'per serving') : 'per 100 g',
       macros: g('energy-kcal') == null ? null : { cal: Math.round(g('energy-kcal')!), protein: g('proteins'), carbs: g('carbohydrates'), fat: g('fat'),
         fiber: g('fiber'), sugar: g('sugars'), sodium: sodium == null ? undefined : Math.round(sodium * 1000), serving: perServ ? (p.serving_size || '') : '100 g' },
-      ingredients: p.ingredients_text_en || p.ingredients_text || '', vegan,
+      ingredients: p.ingredients_text_en || p.ingredients_text || '', vegan, organic, gmo,
     };
   } catch { return null; }
 }
@@ -133,7 +138,7 @@ Deno.serve(async (req) => {
     if (!code) return json({ error: 'bad_code', message: 'That does not look like a barcode.' }, 400);
     const { data } = await db.rpc('ve_barcode_lookup', { p_code: code });
     let out: any;
-    if (data && data.found) out = data;
+    if (data && data.found) { out = data; const o = await offLookup(code); out.flags = o ? { organic: o.organic, gmo: o.gmo } : { organic: 'unknown', gmo: 'unknown' }; }
     else {
       const off = await offLookup(code);
       const brand = off?.brand ? await brandFor(off.brand) : null;
@@ -169,6 +174,19 @@ Deno.serve(async (req) => {
     });
     if (error) return json({ error: 'save_failed', message: 'That did not save. Try again.' }, 500);
     return json({ ok: true });
+  }
+
+  // "I see it here" / "Not here": a member at a store says whether an item is on its shelf. A yes sets that store link's last checked date.
+  if (action === 'sighting') {
+    const deny = needMember(); if (deny) return deny;
+    const code = gtin(body.code);
+    if (!code || !isId(body.store)) return json({ error: 'bad_request' }, 400);
+    const { data: bc } = await db.from('ve_product_barcodes').select('product_id').eq('gtin', code).maybeSingle();
+    const { data: r, error } = await db.rpc('ve_store_sighting_save', { p_member: viewer!.id, p_store: body.store, p_gtin: code, p_product: bc?.product_id || null, p_seen: body.seen !== false });
+    if (error || !r) return json({ error: 'save_failed', message: 'That did not save. Try again.' }, 500);
+    if (r.error === 'daily_limit') return json({ error: 'daily_limit', message: 'That is 30 for today. Thank you. Try again tomorrow.' }, 429);
+    if (r.error) return json({ error: r.error, message: 'That is not a store we list.' }, 400);
+    return json({ ok: true, linked: !!bc?.product_id });
   }
 
   if (action === 'votes') {

@@ -821,6 +821,42 @@
     return crumb([['Scan', '#/scan'], [name || code, '']]) + '<div class="sg-scanhead"><span class="sg-thumb sg-thumb-lg">' + (pic ? '<img src="' + esc(pic) + '" alt="" decoding="async">' : '<i class="sg-letter">?</i>') + '</span>' +
       '<div><div class="dg-k">Barcode ' + esc(code.replace(/^0+(?=\d{12})/, '')) + '</div><h2 class="dg-h1" style="margin:2px 0 4px">' + esc(name || 'Unknown item') + '</h2>' + (sub || '') + '</div></div>';
   }
+  function agoText(iso) { var d = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago'; }
+  // What the package says, as it says it. Anything it does not say reads Not stated, never a guess.
+  function flagsHtml(vegan, organic, gmo, vegansrc) {
+    function tag(label, v, yesText) {
+      var cls = v === 'yes' ? 'sa-tag-fresh' : v === 'no' ? 'sa-tag-stale' : 'sa-tag-ask';
+      var txt = v === 'yes' ? yesText : v === 'no' ? 'No' : v === 'maybe' ? 'Maybe' : 'Not stated';
+      return '<span class="dg-tag ' + cls + '" style="margin:0 6px 6px 0"><b>' + label + '</b> ' + txt + '</span>';
+    }
+    return '<p style="margin:10px 0 4px">' + tag('Vegan', vegan, 'Yes') + tag('Organic', organic, 'Yes') + tag('GMO free', gmo, 'Yes') + '</p>' +
+      '<p class="sg-small" style="margin:0 0 6px">' + (vegansrc || 'As Open Food Facts lists it from the package.') + ' Not stated means the package does not say, not that it is not.</p>';
+  }
+  // "Is it at your store?": a member says it is on the shelf (or not). A yes sets that store's last checked date.
+  function sightingBox(code) {
+    return '<div class="sg-addit" id="sgSight"><h3 class="sg-ph" style="margin-top:0">Standing in a store?</h3><p class="sg-small" style="margin:0 0 10px">Tell us if you can see it on the shelf. It keeps this Guide current for everyone, with the date you checked.</p>' +
+      (token() ? '<label class="sa-city" style="display:block;margin-bottom:10px"><span>Which store?</span><select id="sgSightStore" style="width:100%"><option value="">Loading stores...</option></select></label>' +
+        '<div class="dg-btns"><button type="button" class="dg-btn" id="sgSeen">I see it here</button><button type="button" class="dg-btn dg-ghost" id="sgNotSeen">Not here</button></div>' :
+        '<button type="button" class="dg-btn" data-signin>Sign in to tell us</button>') + '<p class="sa-msg" id="sgSightMsg" aria-live="polite"></p></div>';
+  }
+  function wireSighting(code) {
+    var sel = document.getElementById('sgSightStore'); if (!sel) return;
+    var last = ''; try { last = localStorage.getItem('sg_sight_store') || ''; } catch (e) {}
+    rest('listings?select=id,name,slug&tags=cs.%7Bve-grocery-store%7D&status=eq.approved&slug=not.in.(amazon-com,instacart)&order=name').then(function (rows) {
+      sel.innerHTML = '<option value="">Pick the store</option>' + (rows || []).map(function (r) { return '<option value="' + esc(r.id) + '"' + (r.id === last ? ' selected' : '') + '>' + esc(r.name) + '</option>'; }).join('');
+    });
+    function send(seen) {
+      var m = document.getElementById('sgSightMsg');
+      if (!sel.value) { m.textContent = 'Pick the store first.'; return; }
+      try { localStorage.setItem('sg_sight_store', sel.value); } catch (e) {}
+      m.textContent = 'Sending...';
+      papi({ action: 'sighting', code: code, store: sel.value, seen: seen }).then(function (x) {
+        m.textContent = x && x.ok ? (seen ? 'Thank you. Checked today.' + (x.linked ? ' It now shows as checked at that store.' : ' We kept it for the team.') : 'Thank you. We noted it is not on the shelf there.') : ((x && x.message) || 'That did not send. Try again.');
+      }).catch(function () { m.textContent = 'That did not send. Try again.'; });
+    }
+    document.getElementById('sgSeen').onclick = function () { send(true); };
+    document.getElementById('sgNotSeen').onclick = function () { send(false); };
+  }
   function drawScanOurs(code, d) {
     var p = d.product, b = d.brand || {}, page = '/directory/' + encodeURIComponent(b.slug || '') + '?tab=products&product=' + encodeURIComponent(p.slug);
     // The Guides' products are all dairy-free today, so their shelf is the Dairy-free category.
@@ -832,19 +868,21 @@
     var lineName = p.name || ((b.name || '') + ' ' + (p.product_type || '')).trim();
     main.innerHTML = scanHead(code, d.image_url || p.image_url, lineName, '<p class="dg-lede" style="margin:0">' + (d.name && d.name !== lineName ? esc(d.name) + ' &middot; ' : '') + esc(b.name || '') +
       (pending ? ' &middot; <a href="#/tracker" class="dg-tag sa-tag-ask" style="text-decoration:none">Waiting for the team</a>' : '') + '</p>') +
+      flagsHtml('yes', d.flags && d.flags.organic, d.flags && d.flags.gmo, 'Vegan: it is in our Guide, so our team checked it. Organic and GMO free are as the package says (Open Food Facts).') +
       (window.VEMacros ? VEMacros.strip(d.macros) || '<p class="sg-small">Macros for this one are not added yet.</p>' : '') +
       '<div class="sg-scanacts"><a class="dg-btn" href="' + esc(page) + '">Open its page</a>' + (shelf ? '<a class="dg-btn dg-ghost" href="' + esc(shelf) + '">Every ' + esc(tn.toLowerCase()) + ' like it</a>' : '') + '</div>' +
       '<h3 class="sg-ph">Carried at</h3><div id="sgCarried"><div class="dg-loading">Loading...</div></div>' +
+      sightingBox(code) +
       (d.ingredients ? '<p class="sg-small" style="margin-top:18px"><b>Ingredients:</b> ' + esc(d.ingredients) + '</p>' : '') +
       '<p class="sg-small">From ' + (d.source === 'usda' ? 'the USDA\'s record of the label' : 'what members and Open Food Facts reported') + '. Recipes change, so check the package.</p><p>' + scanBtn('Scan another') + '</p>';
-    bindScan();
-    rest('ve_product_stores?select=store_listing_id,removed_at,listings!ve_product_stores_store_listing_id_fkey(slug,name,logo_url,status)&product_id=eq.' + p.id).then(function (rows) {
+    bindScan(); wireSighting(code);
+    rest('ve_product_stores?select=store_listing_id,removed_at,confirmed_at,listings!ve_product_stores_store_listing_id_fkey(slug,name,logo_url,status)&product_id=eq.' + p.id).then(function (rows) {
       var box = document.getElementById('sgCarried'); if (!box) return;
-      var st = (rows || []).filter(function (r) { return !r.removed_at && r.listings && r.listings.status === 'approved'; }).map(function (r) { return r.listings; })
+      var st = (rows || []).filter(function (r) { return !r.removed_at && r.listings && r.listings.status === 'approved'; }).map(function (r) { var l = r.listings; l._chk = r.confirmed_at; return l; })
         .sort(function (x, y) { return x.name.localeCompare(y.name); });
       box.innerHTML = st.length ? '<div class="sg-carried">' + st.map(function (l) {
-        return '<a class="sg-ptile" style="height:auto" href="/directory/' + esc(l.slug) + '"><span class="sg-thumb">' + (l.logo_url ? '<img src="' + esc(l.logo_url) + '" alt="" loading="lazy">' : '<i class="sg-letter">' + esc(l.name.charAt(0)) + '</i>') + '</span><span class="sg-pb"><b>' + esc(l.name) + '</b><em>Its Vegan aisle</em></span></a>';
-      }).join('') + '</div><p class="sg-small">The supermarkets our Guides place this line at. Stock changes by store.</p>' : '<p class="sg-small">No supermarket is mapped for it yet. Seen it somewhere? Tell us on that store\'s page.</p>';
+        return '<a class="sg-ptile" style="height:auto" href="/directory/' + esc(l.slug) + '"><span class="sg-thumb">' + (l.logo_url ? '<img src="' + esc(l.logo_url) + '" alt="" loading="lazy">' : '<i class="sg-letter">' + esc(l.name.charAt(0)) + '</i>') + '</span><span class="sg-pb"><b>' + esc(l.name) + '</b><em>' + (l._chk ? 'Checked in a store ' + agoText(l._chk) : 'From the Guides, not checked in a store yet') + '</em></span></a>';
+      }).join('') + '</div><p class="sg-small">The supermarkets our Guides place this line at. Stock changes by store, so check the shelf.</p>' : '<p class="sg-small">No supermarket is mapped for it yet. Seen it somewhere? Tell us on that store\'s page.</p>';
     });
   }
   function drawScanOther(code, d) {
@@ -852,6 +890,7 @@
     var vegan = o ? { yes: ['Open Food Facts lists it as Vegan.', 'sa-tag-fresh'], no: ['Open Food Facts lists something non-Vegan in it.', 'sa-tag-stale'], maybe: ['Open Food Facts is not sure it is Vegan.', 'sa-tag-ask'], unknown: ['Not checked for Vegan yet.', 'sa-tag-ask'] }[o.vegan] : null;
     var html = scanHead(code, o && o.image, o ? o.name : '', '<p class="dg-lede" style="margin:0">' + (o && o.brand ? esc(o.brand) : 'We do not know this one yet') +
       (vegan ? ' &middot; <span class="dg-tag ' + vegan[1] + '">' + esc(vegan[0]) + '</span>' : '') + '</p>');
+    if (o) html += flagsHtml(o.vegan, o.organic, o.gmo);
     if (o && o.macros && window.VEMacros) html += VEMacros.strip(o.macros, { title: 'Macros ' + (o.serving === 'per 100 g' ? 'per 100 g' : 'per serving') });
     if (b) html += '<p class="sg-small" style="margin-top:12px">' + esc(b.name) + ' is in our Directory. <a href="/directory/' + esc(b.slug) + '?tab=products">See its products</a>.</p>';
     html += '<div class="sg-addit"><h3 class="sg-ph" style="margin-top:0">Not in the Guide yet</h3><p class="sg-small" style="margin:0 0 10px">' +
