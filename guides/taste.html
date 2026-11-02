@@ -174,6 +174,8 @@
     .tz-fine{font-size:12.5px;color:var(--ink55);line-height:1.5;margin:10px 0 0;}
     .tz-vid{max-width:640px;margin:0 0 16px;}
     @media (max-width:900px){.dg-joinbox{display:none !important;}#dgRail>.dg-cta{grid-column:2 / -1;}}
+    @media (min-width:901px){#dgCta{display:none !important;}}
+    .tz-found{font-size:13px;font-weight:700;color:var(--ink75);margin:14px 0 0;max-width:860px;}
   </style>
   <script src="/public/ve-guide-corner.js"></script>
 </head>
@@ -192,7 +194,7 @@
     </div>
     <div class="dg-joinbox" id="tzJoinbox">
       <div class="dg-jb-price"><b>Free</b><small>name and<br>email only</small></div>
-      <a class="dg-btn" id="tzJoinBtn" href="#/join">Get my free taste</a>
+      <a class="dg-btn" id="tzJoinBtn" href="#/join">Open all 8 free pieces</a>
       <div class="dg-jb-in" id="tzSignin">Already a member?<br><a href="/login?next=%2Fguides%2Ftaste">Sign in</a></div>
     </div>
   </div>
@@ -207,7 +209,7 @@
     <div class="dg-guide" id="dgGuide" role="img"></div>
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
-    <a class="dg-cta" id="dgCta" href="#/join">Get my free taste</a>
+    <a class="dg-cta" id="dgCta" href="#/join">Open all 8 free pieces</a>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -224,16 +226,16 @@
   var GUIDES = { all: 'Your Guides', liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani', kai: 'Kai', pascal: 'Pascal' };
   // One tab per Guide, each that Guide's free piece. The lines are text drafts for Sean (no recordings).
   var TABS = [
-    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us has a free piece of our Guide for you. Take the tour, then get your taste with just your name and email.' },
-    { k: 'dairy', label: 'Dairy swaps', g: 'maya', pic: '/public/guides/vegan-dairy-guide.jpg', say: 'I\'m Maya, from the Vegan Dairy Guide. Your taste is the Buttermilk swap: five minutes, and you probably have everything already.' },
-    { k: 'nutrition', label: 'Nutrition', g: 'theo', pic: '/public/guides/nutrition-guide.jpg', say: 'I\'m Theo, from the Nutrition Guide. B12 is the one nutrient every Vegan plans for. Here is how much and where to get it.' },
-    { k: 'stadium', label: 'Game day', g: 'river', pic: '/public/guides/venues/hard-rock-stadium.webp', say: 'I\'m River, from the Stadium and Arena Guide. Hard Rock Stadium is mapped stand by stand, and it is yours to open.' },
-    { k: 'airport', label: 'Travel', g: 'nori', pic: '/public/guides/airports/fll.webp', say: 'I\'m Nori, from the Airport Guide. Type your gate at Fort Lauderdale and I\'ll show you the closest Vegan food.' },
-    { k: 'animals', label: 'The animals', g: 'dani', pic: '/public/guides/nonprofit-guide.jpg', say: 'I\'m Dani. The rescues and sanctuaries near you, the animals who need a foster, and tip one for anyone running a nonprofit.' },
+    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us has a free piece of our Guide for you. Take the tour; your name and email open every tab.' },
+    { k: 'dairy', label: 'Buttermilk swap', g: 'maya', pic: '/public/guides/vegan-dairy-guide.jpg', say: 'I\'m Maya, from the Vegan Dairy Guide. Your taste is the Buttermilk swap: five minutes, and you probably have everything already.' },
+    { k: 'nutrition', label: 'Vitamin B12', g: 'theo', pic: '/public/guides/nutrition-guide.jpg', say: 'I\'m Theo, from the Nutrition Guide. B12 is the one nutrient every Vegan plans for. Here is how much and where to get it.' },
+    { k: 'stadium', label: 'Stadium & Arena', g: 'river', pic: '/public/guides/venues/hard-rock-stadium.webp', say: 'I\'m River, from the Stadium and Arena Guide. Hard Rock Stadium is mapped stand by stand, and it is yours to open.' },
+    { k: 'airport', label: 'Airport', g: 'nori', pic: '/public/guides/airports/fll.webp', say: 'I\'m Nori, from the Airport Guide. Type your gate at Fort Lauderdale and I\'ll show you the closest Vegan food.' },
+    { k: 'animals', label: 'The animals', g: 'dani', pic: '/public/guides/nonprofit-guide.jpg', say: 'I\'m Dani. The rescues and sanctuaries near you, the animals who need a foster, and tip 1 for anyone running a nonprofit.' },
     { k: 'city', label: 'Your city', g: 'pascal', say: 'I\'m Pascal. Your city on Vegans Explore: the places members vote up, the Daily Pulse every morning and what is coming up.' },
-    { k: 'restaurant', label: 'Restaurants', g: 'liz', pic: '/public/guides/vegan-restaurant-guide.jpg', say: 'I\'m Liz, from the Vegan Restaurant Guide. Run a Vegan place? Pick it and I\'ll check how it shows up online, free.' },
-    { k: 'creator', label: 'Creators', g: 'kai', pic: '/public/guides/creator-guide.jpg', say: 'I\'m Kai, from the Creator Guide. Tip one is about knowing exactly who you are making content for, and why.' },
-    { k: 'join', label: 'Get your taste', g: 'all', say: 'Your name and email open every tab. Nothing is charged, and it is not a membership.' }
+    { k: 'restaurant', label: 'Restaurant check', g: 'liz', pic: '/public/guides/vegan-restaurant-guide.jpg', say: 'I\'m Liz, from the Vegan Restaurant Guide. Run a Vegan place? Pick it and I\'ll check how it shows up online, free.' },
+    { k: 'creator', label: 'Creator tip 1', g: 'kai', pic: '/public/guides/creator-guide.jpg', say: 'I\'m Kai, from the Creator Guide. Tip 1 is about knowing exactly who you are making content for, and why.' },
+    { k: 'join', label: 'Open every tab', g: 'all', say: 'Your name and email open every tab. We send your taste, then a short note now and then.' }
   ];
   var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
   var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
@@ -256,57 +258,61 @@
   function keep() { try { sessionStorage.setItem('tz_form', JSON.stringify(F)); } catch (e) {} }
   function btn(h, label, ghost) { return '<a class="dg-btn' + (ghost ? ' dg-ghost' : '') + '" href="' + h + '">' + label + '</a>'; }
   function city() { var ch = T && T.chapter && T.chapter !== 'elsewhere' ? T.chapter : ''; var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === ch; })[0]; return { slug: ch, name: hub ? (hub.name || hub.title) : '' }; }
-  var REST = '<p class="tz-rest">The rest of this Guide comes with your Passport.</p>';
+  // The panel (2026-11-02): say the real offer. A Guide is $11 or 1,100 points; the Passport is $11 with 1,100 welcome points.
+  function REST(g) { return '<p class="tz-rest">Get the full ' + g + ' for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership.</p>'; }
+  function FOUND() { return (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="tz-found">Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.</p>' : ''); }
+  var NEXT = { business: 'restaurant', creator: 'creator', animals: 'animals' };
   // A locked tab: the real piece, blurred, with the note on top (the Dairy Guide's gated(), Sean 2026-10-09).
-  function gated(inner, g) {
+  // Only our own pieces are locked; anything already public on the site is never blurred (the panel, 2026-11-02).
+  function gated(inner, piece) {
     if (T) return inner;
-    return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><b>' + esc(GUIDES[g]) + '\'s piece is free</b><p>Your name and email open it, and every other Guide\'s piece too. Nothing is charged.</p><a class="dg-btn" href="#/join">Get my free taste</a></div></div>';
+    return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><b>' + esc(piece) + ' is free</b><p>Your name and email open it, and every other tab too.</p><a class="dg-btn" href="#/join">Open all 8 free pieces</a></div></div>';
   }
 
   var VIEWS = {
     overview: function () {
-      var BLURB = { dairy: 'The Buttermilk swap, from what is in your kitchen.', nutrition: 'Vitamin B12: how much, and where to get it.', stadium: 'Hard Rock Stadium, every Vegan stand.', airport: 'Fort Lauderdale airport, gate by gate.', animals: 'Rescues, sanctuaries and fosters near you.', city: 'Your city\'s places, Pulse and events.', restaurant: 'A free check of any Vegan restaurant.', creator: 'Creator tip 1: your purpose and niche.' };
+      var BLURB = { dairy: 'Make buttermilk from what is in your kitchen. Open now.', nutrition: 'Vitamin B12: how much, and where to get it.', stadium: 'Hard Rock Stadium, every Vegan stand.', airport: 'Fort Lauderdale airport, gate by gate.', animals: 'Rescues, sanctuaries and fosters near you.', city: 'Your city\'s places, Pulse and events.', restaurant: 'A free check of any Vegan restaurant.', creator: 'Know who you make content for, and why.' };
       var tiles = TABS.filter(function (t) { return BLURB[t.k]; }).map(function (t) {
         return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
       return (note ? '<p class="dg-note">' + note + '</p>' : '') +
-        head('A Taste of Vegans Explore', T ? 'Hi ' + (T.first_name || 'there') + ', your taste is open' : 'A free piece of every Guide', 'Vegans Explore is the Vegan world, city by city: places to eat and shop, the people, the events, the Daily Pulse, and <b>Guides</b> that bring it together. Each of our Guides has a free piece for you. ' + (T ? 'Every tab is open. Come back any time.' : 'Your name and email open all of them. <b>Nothing is charged, and it is not a membership.</b>')) +
+        head('Free from every Guide', T ? 'Hi ' + (T.first_name || 'there') + ', every tab is open' : 'Free recipes, swaps and tips from our Guides', 'Vegans Explore helps you find Vegan food, places, people and events, city by city. Our <b>Guides</b> each walk you through one part of it. ' + (T ? 'Every tab is open. Come back any time.' : 'The Buttermilk swap is open now. Add your name and email and every tab opens. Nothing is charged.')) +
         '<div class="dg-tiles">' + tiles + '</div>' +
-        '<div class="dg-btns">' + (T ? btn('#/dairy', 'Start the tour') : btn('#/join', 'Get my free taste') + btn('#/dairy', 'Take the tour first', true)) + '</div>';
+        '<div class="dg-btns">' + (T ? btn('#/dairy', 'Start the tour') : btn('#/dairy', 'Try the Buttermilk swap', true)) + '</div>' + (T ? '' : FOUND());
     },
     dairy: function () {
-      return head('Maya · The Vegan Dairy Guide', 'The Buttermilk swap', 'Milk, butter, cheese, cream: the Dairy Guide shows what to use instead, the brands members vote up, and a Cookbook. Your taste is the Buttermilk swap.') +
-        gated('<div class="tz-box"><b>Make it:</b> it takes 5 minutes.<br>1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.<br><b>Tip:</b> soy curdles best; room-temperature milk curdles faster.</div>' + REST + '<div class="dg-btns">' + btn('/guides/vegan-dairy-guide#/swaps', 'Open the Dairy Guide') + '</div>', 'maya');
+      return head('Maya · The Vegan Dairy Guide', 'The Buttermilk swap', 'Milk, butter, cheese, cream: the Dairy Guide shows what to use instead, the brands members vote up, and a Cookbook. This one is open to everyone.') +
+        ('<div class="tz-box"><b>Make it:</b> it takes 5 minutes.<br>1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.<br><b>Tip:</b> soy curdles best; room-temperature milk curdles faster.</div>' + REST('Dairy Guide') + '<div class="dg-btns">' + btn('/guides/vegan-dairy-guide#/swaps', 'Open the Dairy Guide', true) + '</div>');
     },
     nutrition: function () {
-      return head('Theo · The Nutrition Guide', 'Vitamin B12, the one to know', 'Eight nutrients every Vegan should know, each with how much, where to get it and the sources. Your taste is B12.') +
-        gated('<div class="tz-box"><b>Why:</b> B12 keeps your nerves and blood cells healthy, and plants do not make it reliably.<br><b>How much:</b> 2.4 mcg a day for adults.<br><b>Where:</b> foods with B12 added, or a supplement. Seaweed look-alikes do not count.</div><p class="tz-rest" style="margin-top:0">General information from the NIH and The Vegan Society, not medical advice.</p>' + REST + '<div class="dg-btns">' + btn('/guides/nutrition-guide#/nutrients/b12', 'Read the B12 page') + '</div>', 'theo');
+      return head('Theo · The Nutrition Guide', 'Vitamin B12, the one to know', 'Eight nutrients every Vegan should know, each with how much, where to get it and the sources. B12 is the free example.') +
+        gated('<div class="tz-box"><b>Why:</b> B12 keeps your nerves and blood cells healthy, and plants do not make it reliably.<br><b>How much:</b> 2.4 mcg a day for adults.<br><b>Where:</b> foods with B12 added, or a supplement. Seaweed and algae are not a reliable source.</div><p class="tz-rest" style="margin-top:0">General information from the NIH and The Vegan Society, not medical advice.</p>' + REST('Nutrition Guide') + '<div class="dg-btns">' + btn('/guides/nutrition-guide#/nutrients/b12', 'Read the B12 page', true) + '</div>', 'Vitamin B12');
     },
     stadium: function () {
-      return head('River · The Stadium & Arena Guide', 'A whole stadium, mapped', 'Every stand with Vegan food, by section, with Get me there from your seat. Members keep it right on game day.') +
-        gated('<div class="tz-pic" style="background-image:url(\'' + tab('stadium').pic + '\')"></div>' + REST + '<div class="dg-btns">' + btn('/guides/stadium-arena-guide#/venue/hard-rock-stadium', 'Open Hard Rock Stadium') + '</div>', 'river');
+      return head('River · The Stadium & Arena Guide', 'A whole stadium, mapped', 'Every stand with Vegan food, by section, with Get me there from your seat. Hard Rock Stadium is open to everyone.') +
+        '<div class="tz-pic" style="background-image:url(\'' + tab('stadium').pic + '\')"></div>' + '<div class="dg-btns">' + btn('/guides/stadium-arena-guide#/venue/hard-rock-stadium', 'Open Hard Rock Stadium', true) + '</div>' + REST('Stadium & Arena Guide');
     },
     airport: function () {
-      return head('Nori · The Airport Guide', 'Vegan food, gate by gate', 'Type your gate and see the closest Vegan food you can reach without going through security again. Your taste is Fort Lauderdale.') +
-        gated('<div class="tz-pic" style="background-image:url(\'' + tab('airport').pic + '\')"></div>' + REST + '<div class="dg-btns">' + btn('/guides/airport-guide#/airport/fll', 'Open Fort Lauderdale') + '</div>', 'nori');
+      return head('Nori · The Airport Guide', 'Vegan food, gate by gate', 'Type your gate and see the closest Vegan food you can reach without going through security again. Fort Lauderdale is open to everyone.') +
+        '<div class="tz-pic" style="background-image:url(\'' + tab('airport').pic + '\')"></div>' + '<div class="dg-btns">' + btn('/guides/airport-guide#/airport/fll', 'Open Fort Lauderdale', true) + '</div>' + REST('Airport Guide');
     },
     animals: function () {
       return head('Dani · For the animals', 'The rescues, sanctuaries and people helping', 'Find the rescues and sanctuaries near you, see who needs a foster, and if you run a nonprofit, start with tip 1 of the Nonprofit Guide: telling your story.') +
-        gated('<div class="tz-box">Rescues and sanctuaries near you, the animals waiting for a foster on the Fosters board, and the Nonprofit Guide\'s first tip on telling your story.</div><div class="dg-btns">' + btn('/directory?tab=community', 'Rescues and sanctuaries') + btn('/pulse/fosters', 'The Fosters board', true) + btn('/guides/nonprofit-guide#/tips/story', 'Nonprofit tip 1', true) + '</div>', 'dani');
+        '<div class="tz-box">Rescues and sanctuaries near you, the animals waiting for a foster on the Fosters board, and the Nonprofit Guide\'s first tip on telling your story.</div><div class="dg-btns">' + btn('/directory?tab=community', 'Rescues and sanctuaries', true) + btn('/pulse/fosters', 'The Fosters board', true) + btn('/guides/nonprofit-guide#/tips/story', 'Nonprofit tip 1', true) + '</div>';
     },
     city: function () {
       var c = city(), hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === c.slug; })[0];
       var pic = hub && hub.page && hub.page.banner ? hub.page.banner : '/communities/south-florida/banner.jpg';
       return head('Pascal · Your city', c.name ? c.name + ', on Vegans Explore' : 'Your city, on Vegans Explore', 'The places to eat and shop, the Daily Pulse every morning, and the events coming up' + (c.name ? ' in ' + esc(c.name) : '') + '. Anyone can look around; members vote, post and check in.') +
-        gated('<div class="tz-pic" style="background-image:url(\'' + esc(pic) + '\')"></div><div class="dg-btns">' + btn(c.slug ? '/communities/' + c.slug : '/communities', c.name ? 'Open ' + esc(c.name) : 'Find your city') + btn('/pulse' + (c.slug ? '?city=' + c.slug : ''), 'The Daily Pulse', true) + btn('/events', 'Events', true) + '</div>', 'pascal');
+        '<div class="tz-pic" style="background-image:url(\'' + esc(pic) + '\')"></div><div class="dg-btns">' + btn(c.slug ? '/communities/' + c.slug : '/communities', c.name ? 'Open ' + esc(c.name) : 'Find your city', true) + btn('/pulse' + (c.slug ? '?city=' + c.slug : ''), 'The Daily Pulse', true) + btn('/events', 'Events', true) + '</div>';
     },
     restaurant: function () {
       return head('Liz · The Vegan Restaurant Guide', 'A free check of any Vegan restaurant', 'Pick a business and Liz checks its Google listing, website, search and social, then lists what to fix right away. Free for everyone.') +
-        gated('<div class="tz-box"><b>What it checks:</b> your Google listing, your website, how you show up in search, and your social. <b>What you get:</b> the things to fix first, in plain words.</div>' + REST + '<div class="dg-btns">' + btn('/guides/vegan-restaurant-guide#/audit', 'Run the free check') + '</div>', 'liz');
+        ('<div class="tz-box"><b>What it checks:</b> your Google listing, your website, how you show up in search, and your social. <b>What you get:</b> the things to fix first, in plain words.</div><div class="dg-btns">' + btn('/guides/vegan-restaurant-guide#/audit', 'Run the free check', true) + '</div>' + REST('Vegan Restaurant Guide'));
     },
     creator: function () {
       return head('Kai · The Creator Guide', 'Tip 1: Define your purpose and niche', 'Ten moves from hobby to professional, each with a real Vegan creator doing it and three things to start this week.') +
-        gated('<div class="tz-box">The most effective creators know exactly who they are speaking to and why. A clear mission keeps your content focused and helps you stand out in a crowded space.</div><div class="tz-box"><b>In action:</b> Ed Winters (Earthling Ed) built his platform by focusing solely on animal ethics. His talks, debates, and books all serve one mission: to help people think critically about the ethics of eating animals.</div><div class="tz-box"><b>This week:</b><ol><li>Write a one-sentence mission statement for your content.</li><li>Identify your target audience such as families, athletes, or students.</li><li>Audit your last five posts and ask if they align with your mission.</li></ol></div>' + REST + '<div class="dg-btns">' + btn('/guides/creator-guide#/tips/purpose', 'Open the Creator Guide') + '</div>', 'kai');
+        gated('<div class="tz-box">The most effective creators know exactly who they are speaking to and why. A clear mission keeps your content focused and helps you stand out in a crowded space.</div><div class="tz-box"><b>In action:</b> Ed Winters (Earthling Ed) built his platform by focusing solely on animal ethics. His talks, debates, and books all serve one mission: to help people think critically about the ethics of eating animals.</div><div class="tz-box"><b>This week:</b><ol><li>Write a one-sentence mission statement for your content.</li><li>Identify your target audience such as families, athletes, or students.</li><li>Audit your last five posts and ask if they align with your mission.</li></ol></div>' + REST('Creator Guide') + '<div class="dg-btns">' + btn('/guides/creator-guide#/tips/purpose', 'Open the Creator Guide', true) + '</div>', 'Creator tip 1');
     },
     join: function () { return T ? picked() : form(); }
   };
@@ -317,32 +323,31 @@
     var sg = T.suggested_guide || 'vegan-dairy-guide', gn = GUIDE_NAME[sg] || 'The Vegan Dairy Guide';
     var vid = window.VEVideo ? '<div class="tz-vid">' + VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-taste-v1.mp4', vtt: '/public/home/next-taste-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'taste_next_v1' }) + '</div>' : '';
     return head('Picked for you', 'Where to go next, ' + (T.first_name || 'there'), '') + vid +
-      '<div class="tz-box"><b>Your Guide:</b> ' + esc(gn) + ', from what you told us. $11 or 1,100 points, yours to keep.</div>' +
-      '<div class="tz-box"><b>Earn your Passport:</b> three challenges, 30 days each. Support local places, bring friends in, or help the animals, and your membership is earned, not paid.</div>' +
-      '<div class="tz-box"><b>Or join now:</b> the Passport is $11, one time, with 1,100 points.' + (Date.now() < Date.parse('2027-01-01T05:00:00Z') ? ' Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : '') + '</div>' +
-      '<div class="dg-btns">' + btn('/passport?from=taste', 'Get your Passport') + btn('/challenges', 'See the challenges', true) + btn('/guides/' + sg, 'See ' + esc(gn), true) + '</div>';
+      '<div class="tz-box"><b>Get your Passport, $11 one time.</b> It is our membership: vote, save, check in and post, and it comes with 1,100 points, enough to open ' + esc(gn) + ', the Guide that fits what you told us.</div>' +
+      '<div class="dg-btns">' + btn('/passport?from=taste', 'Get your Passport · $11') + '</div>' + FOUND() +
+      '<p class="tz-fine" style="margin-top:18px">Rather earn it? Finish one of three 30-day challenges (support local places, bring friends in, or help the animals) and your Passport is on us. <a href="/challenges" style="color:var(--g);font-weight:800">See the challenges</a></p>';
   }
 
   // ---------- The sign-up, two steps (the same answers ve-taster join takes) ----------
-  var WHY = [['food', 'Finding Vegan food and places'], ['going', 'Going Vegan, or eating more Vegan'], ['vegan', 'I am Vegan and want my community'], ['animals', 'Helping animals'], ['business', 'I run a business'], ['creator', 'I create content']];
+  var WHY = [['food', 'Finding Vegan food and places'], ['going', 'Going Vegan, or eating more Vegan'], ['vegan', 'I\'m Vegan and want to meet others nearby'], ['animals', 'Helping animals'], ['business', 'I run a business'], ['creator', 'I create content']];
   var JOURNEY = [['curious', 'Curious'], ['flexitarian', 'Eating less meat'], ['vegetarian', 'Vegetarian'], ['new', 'Vegan, less than a year'], ['years', 'Vegan for years']];
   function chapters() { return (window.VE_HUBS || []).map(function (h) { return [h.slug, h.name || h.title || h.slug]; }).concat([['elsewhere', 'Somewhere else']]); }
   function opts(list, v) { return '<option value="">Pick one</option>' + list.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === v ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join(''); }
   function form() {
     var s = step;
-    return head('Get your taste', 'Open every Guide\'s free piece', 'Just your name, your email and three quick questions, so we can point you to the right Guide. <b>Nothing is charged, and it is not a membership.</b>') +
+    return head('Free', 'Open every tab', 'Your name, your email and three quick questions, so we can point you to the right Guide. Nothing is charged.') +
       '<div class="tz-form"><div class="tz-steps"><span class="' + (s === 1 ? 'on' : '') + '">You</span><span class="' + (s === 2 ? 'on' : '') + '">Three questions</span></div>' +
-      (s === 1 ? '<label for="tz-name">Your name</label><input type="text" id="tz-name" autocomplete="name" value="' + esc(F.name) + '"><label for="tz-email">Your email</label><input type="email" id="tz-email" autocomplete="email" value="' + esc(F.email) + '">'
+      (s === 1 ? '<label for="tz-name">Your name</label><input type="text" id="tz-name" autocomplete="name" value="' + esc(F.name) + '"><label for="tz-email">Your email</label><input type="email" id="tz-email" autocomplete="email" value="' + esc(F.email) + '"><p class="tz-fine">We send your taste, then a short note now and then. Stop any time.</p>'
         : '<label for="tz-why">What brings you here?</label><select id="tz-why">' + opts(WHY, F.why) + '</select><label for="tz-ch">Your city</label><select id="tz-ch">' + opts(chapters(), F.chapter) + '</select><label for="tz-j">Where are you on your Vegan journey?</label><select id="tz-j">' + opts(JOURNEY, F.journey) + '</select><div id="tz-consent"></div>') +
-      '<div class="tz-nav">' + (s === 2 ? '<button type="button" class="dg-tnav" id="tz-back">Back</button>' : '<span></span>') + '<span>Step ' + s + ' of 2</span><button type="button" class="dg-tnav next" id="tz-next">' + (s === 1 ? 'Next' : 'Open my taste') + '</button></div>' +
-      '<p class="tz-msg" id="tz-msg" role="status"></p><p class="tz-fine">Already a member? <a href="/login?next=%2Fguides%2Ftaste" style="color:var(--g);font-weight:800">Sign in</a> and every tab opens.</p></div>';
+      '<div class="tz-nav">' + (s === 2 ? '<button type="button" class="dg-tnav" id="tz-back">Back</button>' : '<span></span>') + '<span>Step ' + s + ' of 2</span><button type="button" class="dg-tnav next" id="tz-next">' + (s === 1 ? 'Next' : 'Open every tab') + '</button></div>' +
+      '<p class="tz-msg" id="tz-msg" role="status"></p><p class="tz-fine">Already a member? <a href="/login?next=%2Fguides%2Ftaste" style="color:var(--g);font-weight:800">Sign in</a> and every tab opens.</p></div>' + FOUND();
   }
   function wireForm() {
     var nx = document.getElementById('tz-next'); if (!nx) return;
     var consent = function () {
       var box = document.getElementById('tz-consent'); if (!box) return;
       box.innerHTML = document.getElementById('tz-ch').value === 'london' ? '<label class="agree"><input type="checkbox" id="tz-ok"' + (F.consent ? ' checked' : '') + '> <span>Yes, send me emails from Vegans Explore. I can stop them any time.</span></label>'
-        : '<p class="tz-fine">You will get our emails: your taste, then a few notes about your city. Every one has a link to stop them.</p>';
+        : '';
     };
     if (step === 2) { consent(); document.getElementById('tz-ch').addEventListener('change', consent); document.getElementById('tz-back').addEventListener('click', function () { step = 1; draw(); }); }
     nx.addEventListener('click', function () {
@@ -360,7 +365,7 @@
       nx.disabled = true;
       api({ action: 'join', name: F.name, email: F.email, why: F.why, chapter: F.chapter, journey: F.journey, consent: F.consent, source: qs.get('from') || document.referrer.slice(0, 60) }).then(function (r) {
         nx.disabled = false;
-        if (r && r.ok) { setTok(r.token); try { sessionStorage.removeItem('tz_form'); } catch (e) {} T = r.taster; location.hash = '#/dairy'; draw(); return; }
+        if (r && r.ok) { setTok(r.token); try { sessionStorage.removeItem('tz_form'); } catch (e) {} T = r.taster; location.hash = '#/' + (NEXT[F.why] || 'nutrition'); draw(); return; }
         if (r && r.member) { m.innerHTML = esc(r.message) + ' <a href="/login?next=%2Fguides%2Ftaste">Sign in</a>'; return; }
         m.textContent = (r && r.message) || 'That did not go through. Try again.';
       }).catch(function () { nx.disabled = false; m.textContent = 'Could not connect. Try again.'; });
@@ -371,7 +376,7 @@
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
-    if (cur === 'join' && T) t = Object.assign({}, t, { label: 'Picked for you', say: 'Here is where to go next. Your taste stays open from the link in your email.' });
+    if (cur === 'join' && T) t = Object.assign({}, t, { label: 'Picked for you', say: 'Here is where to go next. Every tab stays open from the link in your email.' });
     main.innerHTML = VIEWS[cur]();
     main.scrollTop = 0;
     if (cur === 'join') wireForm();
@@ -384,7 +389,7 @@
     nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
     bubble.textContent = t.say;
     cta.hidden = cur === 'join';
-    if (T) { cta.href = '/passport?from=taste'; cta.textContent = 'Get your Passport · $11'; } else { cta.href = '#/join'; cta.textContent = 'Get my free taste'; }
+    if (T) { cta.href = '/passport?from=taste'; cta.textContent = 'Get your Passport · $11'; } else { cta.href = '#/join'; cta.textContent = 'Open all 8 free pieces'; }
     var jb = document.getElementById('tzJoinbox');
     if (T) { jb.querySelector('.dg-jb-price').innerHTML = '<b>$11</b><small>one time<br>Passport</small>'; var b = document.getElementById('tzJoinBtn'); b.href = '/passport?from=taste'; b.textContent = 'Get your Passport'; }
     jb.style.display = T && T.member ? 'none' : '';
