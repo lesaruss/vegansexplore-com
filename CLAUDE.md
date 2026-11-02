@@ -5,6 +5,29 @@ Static HTML site. No build pipeline. Vercel serves the repo root directly
 (`outputDirectory: "."`). All pages are `.html` files. Styling is inline CSS
 in `<style>` blocks. No separate CSS files. No framework.
 
+## The template gate (Sean, 2026-11-02): never build from a blank file
+
+"It's like you just made something up. Not following any templates, not using any previous examples... We need a system. That's why
+we have systems, so we don't waste time and usage." Canon `canon-template-gate` (always loaded), error registry
+`UI-BUILT-FROM-BLANK-NOT-TEMPLATE`. Before writing any new page or view, and before redoing one:
+
+1. **Name its parent** from this map and copy that file; change only the content.
+   | Building | Copy from |
+   |---|---|
+   | A Guide, a sampler, anything a Guide walks people through | `guides/vegan-dairy-guide.html` (`docs/guides/BUILD-A-GUIDE.md`); the whole cast: `passport.html?guide=welcome` |
+   | A walkthrough, pitch, mock or concept page | `/partners` with `/public/ve-guided.js` |
+   | A working tool, queue or console | `admin/depot/social.html` and the Depot pages |
+   | A sign-up or a form of more than one section | `claim.html` (`?step=`) |
+   | A listing or profile | `directory/listing.html` |
+   | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
+   | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
+2. **Nothing fits?** Stop and bring Sean a recommendation (which parent, or a new template) before building.
+3. **Before it ships**, screenshot the new page beside its parent at 1440 and 390 px. If they do not read as the same family, it does
+   not ship. A new template joins this table and the canon.
+
+First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
+Passport, part 3).
+
 ## Nav and Footer — MANDATORY (LOCKED 2026-05-18)
 
 Every HTML page on this site MUST include both shared component scripts.
@@ -4123,7 +4146,7 @@ the $11 Passport or a membership earned now; no free account that can take part,
     show's art, Play in the player docked above it, Save, **Vote for the show** with its count through `VEVotes`), the episode's notes from
     the feed under About this episode, and Every episode of the show. `ve-nurture` version 6 from 38a5438. Any episode of any show in the
     Directory opens there; use it wherever we send one episode (emails, the Pulse).
-  - **The Taste page, redone 2026-11-02** (Sean: "the banner... is cutting off a lot of people's heads... use like a city... It looks pretty dry"): `/guides/taste` wears South Florida's city art (no people) behind "Try Vegans Explore before you join" and Get my free taste (scrolls to the form); eight cards, each a Guide's banner and what you get from it (Maya's swap, Theo's B12, River's Hard Rock, Nori's FLL, Dani's animals, Pascal's city, Liz's restaurant check, Kai's creator tip), four across beside the sticky sign-up on desktop, compact rows on phones. The sampler's cast slide uses the Welcome Guide banner. `nurture.tasters_on` turned on the same day (Sean: "You need to turn something on"), so Day 3, 7 and 14 and the opted-in Pulse go out to Tasters from 10 AM Eastern.
+  - **The Taste page is the Welcome Guide's shell** (rebuilt 2026-11-02 under the template gate; Sean: "we haven't made something like this in months... We need a system"): `/guides/taste` copies `passport.html`'s Guide layout and CSS (the tabs are the tour, a Guide on the right of each tab with their words, Back / N of M / Next, the joinbox reading Free). Ten tabs (`#/<tab>`): Overview (the cast), Dairy swaps (Maya, the Buttermilk swap), Nutrition (Theo, B12), Game day (River, Hard Rock Stadium), Travel (Nori, FLL), The animals (Dani), Your city (Pascal, their chapter), Restaurants (Liz, the free check), Creators (Kai, tip 1 word for word from `cg-public`), and **Get your taste** (the two-step sign-up, `ve-taster` `join` as before), which becomes **Picked for you** (the video, their Guide, the challenges, the Passport) once they have their taste. Until then each Guide's tab is locked the Dairy Guide way (`gated()`: the piece blurred, a card on top, Get my free taste; never over a picture with a face). `?t=`, `?unsub=`, `?pulse=` and old `?step=` links still work. The Guides' lines are text drafts for Sean. `nurture.tasters_on` turned on the same day (Sean: "You need to turn something on"), so Day 3, 7 and 14 and the opted-in Pulse go out to Tasters from 10 AM Eastern.
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
