@@ -76,7 +76,9 @@
     '.vpc-claim b{display:block;font-size:14px;font-weight:800;color:#111;margin:0 0 4px}' +
     '.vpc-claim p{font-size:12.5px;line-height:1.55;color:rgba(0,0,0,.68);margin:0 0 10px}' +
     '.vpc-claim a{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;color:var(--vb-accent-ink,#14532d);border:1px solid var(--vb-accent,#16a34a);border-radius:6px;padding:8px 14px;background:#fff}' +
-    '.vpc-ad{display:block;position:relative;border-radius:8px;overflow:hidden;text-decoration:none;color:#fff;background:#0f1f17;aspect-ratio:4/5;max-height:440px;box-shadow:0 2px 10px rgba(0,0,0,.12)}' +
+    '.vpc-ad{display:block;position:relative;border-radius:8px;overflow:hidden;text-decoration:none;color:#fff;background:#0f1f17;width:100%;aspect-ratio:4/5;max-height:440px;box-shadow:0 2px 10px rgba(0,0,0,.12)}' +
+    // On phones the card runs the column's full width: Safari shrank its width to keep 4:5 under the 440px cap (2026-11-02).
+    '@media(max-width:900px){.vpc-ad{max-height:none}}' +
     '.vpc-ad:focus-visible{outline:3px solid var(--vb-accent,#16a34a);outline-offset:2px}' +
     '.vpc-f{position:absolute;inset:0;background-size:cover;background-position:center 20%;opacity:0;animation:vpcF 16s infinite}' +
     '.vpc-f:nth-child(1){animation-delay:0s}.vpc-f:nth-child(2){animation-delay:4s}.vpc-f:nth-child(3){animation-delay:8s}.vpc-f:nth-child(4){animation-delay:12s}' +
@@ -108,7 +110,7 @@
   function creatorCards(el, ctx) {
     if (!el || !ctx) return;
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
-    var first = String(ctx.name || '').split(/\s+/)[0];
+    var first = String(ctx.name || '').split(/\s+/)[0].replace(/[,.;:!?]+$/, '');
     var page = ctx.page || location.pathname;
     var claimHref = '/gigs/sample?claim=' + encodeURIComponent(ctx.claim || '') + '#join/1';
     el.innerHTML = '<div class="vpc">' +
