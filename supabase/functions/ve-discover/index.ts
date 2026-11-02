@@ -345,7 +345,7 @@ async function backlogRun(igN: number, gN: number) {
 const CATEGORIES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Brands', 'Nutrition & Supplements', 'Markets', 'Catering', 'Meal Prep',
   'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media', 'Web & Development',
-  'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
+  'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios', 'Event Venues', 'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -589,7 +589,7 @@ async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
   }
 }
 // People (the People section, 2026-10-28) wear their own photo, never a business logo: the logo jobs leave them out.
-const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
 const notPerson = (l: any) => !PEOPLE_CATS.includes(l.category);
 // LESARUSS.ai's own listings (its tags) are not Vegans Explore's to fix: the logo jobs leave them out (Sean, 2026-10-30: "the depot
 // was pulling in thumbnails for those as well. It should only be focused on Vegans Explore items").

@@ -2711,6 +2711,11 @@ see everything and then filter for what they want... the products are the produc
   `listings_product_kinds_known` check), picked in Food & Drink's Makes filter (the switch under the search went 2026-11-01, below). The five Local Food Meal Prep listings were national
   shippers with stand-in Los Angeles addresses and moved here (Purple Carrot, Sakara Life, Splendid Spoon; Mosaic Foods and Trifecta Nutrition
   as Vegan options), with Daily Harvest added. Local Food > Meal Prep is for local meal preppers. Noize was marked open again the same day.
+  **The local meal prep search** (2026-11-02, migration `20261102_meal_prep_search.sql`, scripts in `scripts/meal-prep-search/`): 78 Google
+  searches, every chapter, `once:meal-prep-search`. Few local preppers are on Google under Vegan words: 15 matched the rules, 8 were listed
+  after a look at each (`crawl_source` `meal-prep-search`): Vegan Vibes (Atlanta), PHAT Vegan (Maryland), Remedy Kitchen Vegan Food Co.
+  (Philadelphia), Righteous Life (West Virginia), 100% Vegan; Planthood (London), GURU MEALS and Little Green Forks (Los Angeles), Ambrosia
+  Meals (New York), Vegan options, in Being vetted. Pizza places match on Google's takeaway type, so read every match before listing it.
 - **Live filters are pills, and every Products shelf has its types** (Sean, 2026-11-01: "if I were to choose... egg alternatives, I would
   expect where it says meal prep delivery to say egg alternatives... Put it in that little pill, and if you hit X on it, it clears the
   filter... the search bar just shrinks"; "I don't want 1,000 categories"; migration `20261101_products_shelf_types.sql`). Every filter set
@@ -4149,6 +4154,197 @@ the $11 Passport or a membership earned now; no free account that can take part,
   - **The Taste page is the Welcome Guide's shell** (rebuilt 2026-11-02 under the template gate; Sean: "we haven't made something like this in months... We need a system"): `/guides/taste` copies `passport.html`'s Guide layout and CSS (the tabs are the tour, a Guide on the right of each tab with their words, Back / N of M / Next, the joinbox reading Free). Ten tabs (`#/<tab>`): Overview (the cast), Dairy swaps (Maya, the Buttermilk swap), Nutrition (Theo, B12), Game day (River, Hard Rock Stadium), Travel (Nori, FLL), The animals (Dani), Your city (Pascal, their chapter), Restaurants (Liz, the free check), Creators (Kai, tip 1 word for word from `cg-public`), and **Get your taste** (the two-step sign-up, `ve-taster` `join` as before), which becomes **Picked for you** (the video, their Guide, the challenges, the Passport) once they have their taste. Until then each Guide's tab is locked the Dairy Guide way (`gated()`: the piece blurred, a card on top, Get my free taste; never over a picture with a face). `?t=`, `?unsub=`, `?pulse=` and old `?step=` links still work. **Panel pass, 2026-11-02** (Sean: "go"): only our own pieces are locked (B12, Creator tip 1); the Buttermilk swap is open to everyone, and anything already public (Hard Rock, FLL, the restaurant check, the city and animal links) is never blurred. Tabs are named for what is in them, one green button a screen (Open all 8 free pieces in the header; the rail's button only on phones), the email terms under the email field, Nothing is charged said once, the Founding deadline before sign-up, each Guide's tab ending "Get the full <Guide> for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership", Picked for you leading with the Passport and the challenges under it, and after sign-up a business lands on Restaurant check, a creator on Creator tip 1, animals on The animals, everyone else on Vitamin B12. The Guides' lines are text drafts for Sean. `nurture.tasters_on` turned on the same day (Sean: "You need to turn something on"), so Day 3, 7 and 14 and the opted-in Pulse go out to Tasters from 10 AM Eastern.
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
+## The Vegan Events Guide (LOCKED by Sean 2026-11-01, playbook `ve-events-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-events-guide`; migration `20261101_events_guide_canon.sql`).
+**Built 2026-11-01, not launched** (below). Sean: "tips on running a successful event... access to resources... where the directory falls into place... address the
+elephants in the room... walk people through a journey so that they work with us... apply for a sponsorship from us... what to do when it
+rains... interview event hosts... they record their voice... those voice recordings then become part of a podcast."
+
+- **The Guide**, for anyone hosting a Vegan event (potlucks, social clubs, festival promoters, pop-ups, a restaurant's community night, a
+  fundraiser), on the Dairy Guide pattern, **River** narrating (Dani keeps the Group Partner Guide), $11 or 1,100 points, included for Group
+  Partner leads. Free example: **What to do when it rains** (and heat, no-shows, a vendor who does not show, losing power). It is the top of the
+  organizer funnel: Submit an event, Promote your event, Group Partners (tickets at 5%, guest pass, door list), the sponsorship, then the Group
+  Partner Guide. Never "Survival Guide" in its title.
+- **Tabs**: Overview, Kinds of events, The plan (a 12-week countdown checklist, saved and exportable), Money, Venue, Vendors and food, Gear (the
+  shop: every item a tracked `/go/` Amazon link with our tag; partner printers and booth makers later), Getting the word out, Day of, After,
+  **The elephants in the room** (no-shows on free RSVPs, the same 40 people, vendors losing money, venues that are not Vegan, sponsors that are
+  not Vegan, date clashes, activism vs a good time, insurance and permits, burnout, accessibility), Hosts who've done it, Work with us, My list,
+  Get access.
+- **Directory**: a new **Services > Event Venues** sub-section and a hosts-events flag on restaurants (change every section list together, see
+  Directory filters); the Guide points to Vendors, Food Trucks, Catering, brands that vend, Groups, Nonprofits, Studios, Content Creators, People.
+- **Event sponsorship, paid in marketing, never cash**. We give: calendar and chapter Daily Pulse feature, 2 posts and a story, a 2-week chapter
+  ad slot, a creator or member covering it, a recap. They give: a 10x10 booth, two comped meals or tickets, our logo, a stage mention, our QR
+  cards. A **Represent Vegans Explore** gig on the chapter's Gig Board staffs the booth (points plus the meal, approved like a visit bounty: 3
+  photos and a recap). Vegan events qualify; plant-forward events at venues that are not Vegan only for Group Partners; 2 a chapter a month. A
+  paginated application to the Inbox, routed to the chapter's Community Manager.
+- **Why us** leads with what is true today (13 chapters, 1,000+ listings, the calendar, the Daily Pulse, 5% ticketing, the guest pass); the 2027
+  plan is labeled as the plan; no reach we cannot show.
+- **Host interviews**: Tell us your story, 6 questions answered by voice in the browser, a release (audio on our shows and site, name credited,
+  taken down on request), 100 points once approved. They become clips in the Guide, a **Host Notes** segment on the Vegans Explore Podcast,
+  People credits and the content index.
+- **Build order**: the shell and the rain tab; the checklist and the gear shop; Event Venues; the sponsorship intake and bounty; the voice
+  interviews.
+- **Built 2026-11-01** (Sean: "Logan, build the Events Guide"; migration `20261101_events_guide.sql`, applied through the one-time
+  `ve-once-events-guide`, now the 410 stub; edge function `ve-events-guide`). `guides/vegan-events-guide.html` and
+  `guide-scripts/vegan-events-guide.js` (the Nutrition Guide's shell, `noindex`, River on the right, his lines as text drafts, no recordings):
+  Overview, Kinds of events, The plan (the 12-week checklist, ticks in `localStorage` `ev_checks`, Copy it and Print it), Money (a break-even
+  calculator, `ev_calc`), Venue and Vendors and food (the Directory's card by chapter, `ev_chapter`), Gear (34 tracked Amazon searches,
+  `/go/ev-gear-*`, initiative `vegan-events-guide`), Getting the word out, Day of (the free example, rain, heat, no-shows, a vendor no-show,
+  power; `#ev-public`), After, The elephants in the room, Hosts who've done it (our host episodes, `PULSE_PICKS`, and the approved stories),
+  Work with us (the sponsorship and its 4-step application `#/work/apply/N`, `ev_apply`), My list and Get access. Everything but the free
+  parts is `ve_guides.content_html` (`<script id="ev-data">`), never in the repo. The `ve_guides` row `vegan-events-guide` is published ($11
+  or 1,100 points, sort 9) so it sells and opens; Sean holds a comp copy; every Group Partner lead owns it (backfill and trigger
+  `trg_ve_events_guide_for_lead` on `ve_group_partners`). Its catalog card is Coming soon, members only, banner
+  `public/guides/vegan-events-guide.jpg` (River with a clipboard at an evening outdoor Vegan market, Higgsfield, originals in
+  `vegan-media/media/communities/guide-banners/vegan-events-guide-a.png|-b.png`). **Sponsorship**: `ve-events-guide` `sponsor_apply` (anyone,
+  3 a day per email) into `ve_event_sponsor_applications`, emailed to the chapter's active Community Managers, else the team, confirmed to them,
+  in the Inbox (source `event_sponsorship`). **Depot > Event sponsors** (`/admin/depot/event-sponsors`, Directory in the Go to menu): the
+  applications (`#apps/<status>`, `#app/<id>`) with Approve (can post the Represent Vegans Explore gig: 150 points, one spot, `GIG_DEFAULTS`;
+  2 a chapter a month, `MONTH_CAP`) and Decline with a note they get; the stories (`#stories/<status>`, `#story/<id>`). **Host stories**:
+  `#/hosts/tell/1..3`, six questions (`STORY_QS`) recorded in the browser (MediaRecorder) or uploaded, into the private bucket
+  `event-host-stories` (25 MB, audio only) through `story_start` / `story_submit` (an HMAC upload key), saved in `ve_event_host_stories` with the
+  release; approving pays 100 points once (reason `host_story`), Removed deletes the audio; approved ones play on Hosts who've done it
+  (`stories`, signed links). Both new tables RLS on, no policies. **Services > Event Venues** is a sub-section everywhere the lists live
+  (`CAT_MAP`, `SECTIONS`, `KINDS`, `CATS`, and `ve-claims`, `ve-outreach`, `ve-discover`, `ve-listing-intake`, redeployed). It has no listings
+  yet; filling it per chapter is a Google search (ask Sean with the count and cost first). Not yet: the hosts-events flag on restaurants, the
+  Guide tab mapping (Event Venues and Community > Events), River's recordings, launch (noindex off, the sitemap, the catalog card live).
+- **Venues from where Vegan events were held** (Sean, 2026-11-01: "do a scan of the past events for the year in each of those cities and
+  look where they held the event... that's a good indicator of where vegans hold their events"; migration `20261101_event_venues_from_events.sql`,
+  applied through the one-time `ve-once-event-venues`, now the 410 stub). `events.venue_listing_id` is the listing an event was held at
+  (`host_listing_id` stays the group that put it on). `ve_event_venues_sync()` (cron `ve-event-venues-sync`, 08:47 UTC) links an approved event
+  whose place name is a listing's name (or starts with it, 8+ letters) in the same city, and keeps the tag **`ve-hosts-events`** (the
+  hosts-events flag) on every listing with an event held there in the last 400 days or coming up. The first run linked 74 events to 38 listings
+  (Pipoca Vegan, Market on South, DC Vegan, the Maryland sanctuaries...). A listing's Events section reads **Vegan events here** when it only
+  hosts others' events (`loadHostedEvents` in `directory/listing.html`), and the Guide's Venue tab lists Event Venues plus every tagged listing.
+  **The seed**: the 2026 calendar names 325 places across 605 events; neighborhoods (Partiful gives Philadelphia's events only an area), bare
+  addresses with fewer than 3 events, parks, stations, landmarks, homes, gyms, stores and places outside our chapters were left out, 95 kept in
+  `ve_event_venue_seed` (76 venues, 19 Vegan or vegetarian food places not yet listed). Their Google look-ups were refused on 2026-11-01 (the day's
+  500 text searches were already spent; nothing billed), so one-shot crons run them after the quota resets: `ve_event_venue_search()` at 3:10 AM
+  Eastern 2026-11-02 and `ve_event_venue_import()` at 3:25 (job `once:event-venues`): a venue becomes a live **Services > Event Venues** listing
+  (Not a Vegan business, Google's address, pin, phone, website, hours and summary, `crawl_source` `event-venue-search`, its events linked); a food
+  place waits quarantined in Business outreach > New places > Ready to list; one already listed only gets its events linked. Each seed row keeps its
+  `result` (listed, ready to list, already listed, no match, no answer). **Ran 2026-11-02** (the 3:10 cron fired nothing: pg_net clears
+  responses after 6 hours, so yesterday's 429s were gone, and the function's counter clashed with the seed's `n` column; fixed in
+  `20261102_event_venue_search_fix.sql`, which re-fires any seed with no 200 answer, and run by hand at 3:50 AM Eastern, 95 searches): 69 Event
+  Venues live, 7 food places in Ready to list (Karamel N22, Siena's, Candle, The Fresh Beet, Philly Vegan Market, GreenFare, Fruitive), 9
+  already listed, 10 no match (four street addresses, Larry Bell Recreational Center, The Lifestyle Building, Hip City Veg in D.C., and Urban
+  Vegan Roots, Natuurlik and MOOD, which Google calls permanently closed), 255 events linked, 82 listings tagged `ve-hosts-events`. Each match
+  checked against its events' addresses; none set aside.
+- **Every event feeds the Directory, and is checked every week** (Sean, 2026-11-02: "we put one thing in, put in one event, and we can
+  get a whole bunch of things from that"; "run a scan at least once a week just to make sure the event information is still available";
+  migrations `20261102_event_intake_feeds.sql`, `20261102_event_leads_noise.sql`; edge function `ve-event-check`). **Who puts it on**:
+  `events.organizer_name` / `organizer_url`, kept by `ve_event_intake` and asked of the Background writer's `events_crawl`. **The weekly
+  check** (cron `ve-event-check`, hourly at :23, 12 a run, so each upcoming event about once a week): reads the official page (JSON-LD,
+  Partiful's `__NEXT_DATA__`, else Claude), and **cancelled** on the page makes the event `cancelled` (off the calendar; its page stays,
+  saying so), a **different date or time** moves ours to match (only when no other event of ours shares the link, a weekly series on one
+  page), **postponed** is flagged, a page **gone** (404, 410, parked) twice a day apart is flagged, one that turns us away is Could not
+  read, and Instagram and Facebook posts are skipped. It fills an empty organizer, place and city from the page. Every read is a
+  `ve_event_checks` row and `events.link_status`, `link_checked_at`, `link_note`, `link_fails`; the event page says "Checked against its
+  official page on <date>". **Leads** (`ve_event_leads`, `ve_event_leads_refresh()` after every sweep): the places events were held and
+  the organizers they name that are not in the Directory, counted across events; an organizer whose name is a listing's is linked on its
+  own (a People listing gets the event as a credit, role Promoter, anyone else hosts it); Partiful neighborhoods, "address shared with
+  those registered" and stations are set aside with why (`ve_event_leads_tidy`). **Depot > Events > From our events** (`#leads/venue|organizer/
+  new|listed|linked|set_aside`): Add it (`ve_event_lead_add`: a live listing from what the events say, no Google: Event Venues, Groups,
+  Nonprofits or People > Promoters, its events linked), Already listed (`ve_event_lead_link`, by slug), Set aside. **Depot > Events >
+  Weekly check** (`#checks[/<outcome>]`). **People > Promoters** (Sean: "they're automatically an event promoter... Ella Magers does a lot of
+  events... a new tag in addition to her other tags"): a People sub-section everywhere the People list lives (`ve-region-directory.js`,
+  `listing.html` reads Event promoter, `ve-listing-admin.js`, Directory review, `ve-claims`, `ve-people`, `ve-discover`, `ve-ambassador`); a
+  person credited on an event as promoter, host, producer or organizer gets Promoters among their sections, and Ella Magers has it. **On
+  the pages**: a listing's Events section adds **Worked with** (the venues a host used, the hosts a venue had, with event counts;
+  `workedWith` in `directory/listing.html`, links to `/events?event=<id>`), and an event's page shows **Held at** (the venue's card with
+  its address), **Put on by** (an organizer not in the Directory yet), **People at this event** (credits) and when it was last checked.
+  First runs 2026-11-02: 183 venue leads from the 2026 calendar before tidying; 12 events checked (11 read from their own data, one Instagram
+  skipped), the Crust meetup moved from November 1 to November 22 as its Partiful page says, 8 events with their organizer. Logan's
+  defaults, Sean's to change: once a week, the 30-minute rule, a gone page flagged rather than hidden, leads added by a person.
+
+## The event host path (LOCKED by Sean 2026-11-02, playbook `ve-event-host-path`)
+
+Locked with Logan's panel answers (Sean: "lock it and then deploy"; canon `canon-ve-event-host-path`; migration
+`20261102_event_host_path_canon.sql`; write-up `docs/proposals/event-host-path.md`). **Step 1 is built (below); the rest is not.** Sean: "every time we bring a
+new event in, we're building our directory in other places... are you running this event? Click here... do you want to do an event
+with us?... it's per event." Separate from Group Partners.
+
+- **Every approved event's page** (server-rendered, `api/event.js`) links its people, venue and group, and offers **Are you running
+  this event?** into the Vegan Events Guide and a claim.
+- **Paid events: 5% a ticket**, no flat fee, the same for everyone. Card processing is on the buyer, and the host may pass the 5% on.
+  Member hosts get no lower rate. A ticket of $11 or more makes the buyer a member.
+- **Free events are a Vegans Explore sponsorship**:
+  - **They give:** "Sponsored by Vegans Explore" on their flyer and page, RSVPs through our page, a stage mention, our QR cards,
+    tags on their posts.
+  - **We give:** a featured calendar spot, a Daily Pulse mention, a story, the weekly roundup, door check-in, a recap, sponsor prices.
+  - Events of 200 or more apply for the Events Guide's full sponsorship.
+- **Extras** (the sponsor price is 30% off):
+
+  | Extra | Price |
+  |---|---|
+  | Pulse feature | $50 |
+  | Pinned on the calendar, 2 weeks | $50 |
+  | Social push | $75 |
+  | Share bounty | $75 |
+  | Chapter ad slots, 2 weeks | $100 |
+  | A creator at the event | $150 |
+  | Recap reel | $150 |
+  | Press release | $500 |
+
+  Packages: Spotlight $149, Boost $279, Front Row $499. Each is checked against delivery cost before it opens.
+- **$50 in ad credit**, once per host, on claiming their event: our slots only, 90 days, no cash value. It comes with **creative
+  support**: we make the ad from what they send, they approve it, one round of changes. Every ad on our pages is made or approved by
+  our team, paid ones too.
+- **The heads-up email**:
+  - **From:** the team, signed by the chapter's Community Manager, never Sean's name.
+  - **How often:** at most one every 14 days per host, events grouped.
+  - **To whom:** published emails only; in London, business addresses only.
+  - **What it says:** no prices.
+  - Sean approves the template once; after that it goes out on its own through the outreach people-list engine.
+- **Step 1, the event claim, built and live 2026-11-02** (Sean: "start step 1"; migration `20261102_event_claims.sql`, applied
+  through the one-time `ve-once-event-claims`, now the 410 stub; `ve-events` from commit 4ec511b, source sha256 matched). Every live
+  event's page has **Are you running this event?** under the RSVP box (Your claim is in / approved once they have sent one), opening
+  `#claim/<id>` (`drawClaim` in `public/ve-events.js`): their part (I'm hosting it, I'm promoting it, It's at my venue), name, email,
+  their group or venue (the name guests see), phone, a link that shows it is theirs (else a note), Send my claim; then a thank-you
+  with the Vegan Events Guide. Open to anyone (a host is often not a member). `ve-events` `claim` (public): `ve_event_claims` (RLS on,
+  no policies), 3 a day per email, one open claim per event and email, the signed-in account kept only when the claim is in its own
+  email; an email to the chapter's active Community Managers (else the team) and a confirmation to them from the team; a [TEST] name
+  sends nothing. It is in the Inbox (source `event_claim`). **Depot > Events > Claims** (`#claims/new|approved|declined`,
+  `#claim/<id>`): who, their part, their link, whether an account has their email; **Approve** or **Decline** (a note needed, which they
+  get). Approving makes them the event's organizer (`ve_event_organizers`, the name guests see, Guests and messages) through
+  `ve_event_claim_link`, at once when an account has their email, else when one is made (`trg_ve_event_claim_link` on `members`), and
+  emails them their page, Promote your event, and tickets and the sponsorship as coming soon. Proven 2026-11-02 against the live
+  function: bad email, role and proof refused, a repeat recognized, a visitor refused the admin actions, a decline without a note
+  refused, an approval linking the internal test account, a second approval refused, an approval with no account linking once the
+  account appeared (in a rolled-back transaction), the page at 1366 and 390 px with no errors; every test row removed. Not yet: a host
+  with no account cannot make one without the $11 (sign-up is the Passport), so the email asks them to reply and the team helps; the
+  $50 ad credit on claim waits for step 5.
+- **Build order:**
+  1. The event claim (built 2026-11-02).
+  2. The heads-up.
+  3. Per-event ticketing.
+  4. The sponsorship and extras checkout.
+  5. The ad console's credit, booking and creative support.
+
+## Door Guides (LOCKED by Sean 2026-11-02, playbook `ve-door-guides`)
+
+Concept session with V, locked by Sean: "lock it", with the panel's seven changes (canon `canon-ve-door-guides`; migration
+`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Not built yet**: it comes after the event host path's
+heads-up email (step 2). Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
+don't scare them away by saying it's $11"; the $11 unlocks their voice.
+
+- **Which**: the Vegan Events Guide first, then the Creator, Nonprofit and Vegan Restaurant Guides. Topic Guides (Dairy, Nutrition,
+  Airport, Stadium & Arena...) stay $11 or 1,100 points. On 2026-11-02 nobody had paid for the four door Guides (only Sean's comps).
+- **Three levels**: open (the Overview and the free example, indexed); **free with an email** (the rest to read; asked inside the Guide
+  when they open a second section, one field, confirmed by the emailed link, making them a Taster with a welcome series for that Guide);
+  **the $11 Passport, their voice** (record in the browser the question of the month, their story, good news, what they are struggling
+  with; approved clips become podcast segments, one per Guide, Host Notes for events, credited on their People profile, points once
+  approved; saving to their account on every device).
+- **Always free**: the event claim, the sponsorship application, and a claimed host recording their own Host Notes interview. Ticketing
+  and messaging guests belong to the host path (5% for everyone), never behind the Passport.
+- **Struggling is private by default**: the team and the chapter's Community Manager only; it airs only with a second yes.
+- **Recording rules**: 18 and over, 90 seconds a clip, a prompt card and quiet-room tips, the release on every clip, the team listens
+  before anything airs, never naming another business in a bad light.
+- **Living**: a This month section per door Guide (the question of the month, open opportunities, the latest segment).
+- **Measure 30 days** on the Events Guide (emails per Guide, Taster to Passport, clips sent and aired) before the other three.
+- Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
@@ -4399,7 +4595,7 @@ they're buying their spot in this massive campaign that starts in Q1."
   partner | spotlight, status pending | active | ended, dates; RLS on, no policies) and its trigger run `ve_supermarket_guide_sync()`, which
   sets `ve_guides.access_rule` of `supermarket-guide` to `free` while a Title or Partner sponsorship is active, else `points`; `ve-venues`
   opens everything (reports too) when the rule is free. Stores came from Google Places: 248 Publix in South Florida (245) and Central
-  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida waits on the next day's quota. **Publix is the example, nothing more** (Sean, 2026-11-01: "Let's just do Publix as an example and do the rest once a supermarket sponsors. Part of the sponsorship will cover the crawl"; canon v2): Publix in South, North and Central Florida only, to show supermarkets what the Guide looks like; no other chain and no more Publix areas are imported until a sponsorship pays for the crawl. Publix is the first sponsor we approach. **The preview, and stores stay** (Sean, 2026-11-01; canon v3): Publix in a few Florida chapters is the free preview, the way each Guide
+  Florida (3) on 2026-11-01, the import cut short by Google's rate limit. North Florida's 121 went in 2026-11-01 (`import_publix&hub=<chapter>&part=N&of=M` in `scripts/supabase-once/supermarket-import.ts`: one chapter a run, three workers, a retry on 429, three pages a city, a big chapter split into parts to stay under the gateway's 150 s; safe to run again). **Google allows 500 text searches a day for the whole project** (`SearchTextRequest per day`, resets midnight Pacific), shared with the essentials pass, audits, the backlog check and Add a listing; a run cut off by the gateway keeps searching and still spends it. Central Florida's went in 2026-11-02 in three parts (84 searches, metered as `once:publix-import`), so the preview holds **731 Publix stores**: South Florida 245, Central Florida 365, North Florida 121; `ve-once-supermarket` is the 410 stub again. **Publix is the example, nothing more** (Sean, 2026-11-01: "Let's just do Publix as an example and do the rest once a supermarket sponsors. Part of the sponsorship will cover the crawl"; canon v2): Publix in South, North and Central Florida only, to show supermarkets what the Guide looks like; no other chain and no more Publix areas are imported until a sponsorship pays for the crawl. Publix is the first sponsor we approach. **The preview, and stores stay** (Sean, 2026-11-01; canon v3): Publix in a few Florida chapters is the free preview, the way each Guide
 features one item free, so every chain sees how it will look. A chain that sponsors keeps its stores in the Guide after the sponsorship ends;
 the sponsorship pays for adding its stores (the crawl) and for the bounties we run on them (specials hunts, in-store content, aisle mapping, bigger
 rewards). Without a sponsorship updates are organic and earn smaller incentives (not built yet: supermarket report points by sponsorship). The pitch
@@ -5145,12 +5341,14 @@ ships with them on the first pass, never as a later fix:
   (about 150 characters, what the page is), `<link rel="canonical">`, `og:title`, `og:description`, `og:image` (1200 x 630; the
   fallback is `/public/og-default.jpg`, never a file that does not exist) and `twitter:card`. Link previews (Facebook, iMessage,
   Slack) never run JavaScript.
-- **A page built from the database** gets a server function that writes them in, like `api/listing.js` (every
+- **A page built from the database** gets a server function that writes them in, like `api/event.js` (every
+  `/events?event=<id>`, sent there by `middleware.js` since the static page wins over a `vercel.json` rewrite: the event's title, schema.org Event with status, place, organizer and
+  offer, and the event itself as plain HTML inside `#ev-cal`, which `ve-events.js` replaces; 2026-11-02), `api/listing.js` (every
   `/directory/<slug>`, with schema.org data: Restaurant, LocalBusiness, Organization, Person, PodcastSeries, Book, Movie) and
   `api/pulse-article.js` (`/pulse/<slug>`). Change `api/listing.js` with the SEO block in `directory/listing.html` (search "SEO:
   title, OG tags"): both use the same title, the city only for a local business.
 - **The sitemap is live**: `/sitemap.xml` is `api/sitemap.js` (the main pages, every chapter, every live Guide, every approved
-  listing, every published Pulse article). A new page to be found goes in its `PAGES` or `GUIDES`, a new chapter in `CHAPTERS`.
+  listing, every published Pulse article, every live event from the last year on). A new page to be found goes in its `PAGES` or `GUIDES`, a new chapter in `CHAPTERS`.
   Never link a redirect from it.
 - Pages that should not be found (samples, Depot, account, welcome Guides for invitees) carry `noindex` and stay out of the sitemap.
 

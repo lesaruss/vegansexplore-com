@@ -266,7 +266,7 @@
       // The Directory's sections and their kinds (CAT_CONFIG in /public/ve-region-directory.js).
       var KINDS = [['Local Food', ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep']],
         ['Products', ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces']],
-        ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth']],
+        ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Event Venues', 'Marketing & Growth']],
         ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
         ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']]];
       var PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
@@ -931,7 +931,7 @@
         });
       }
       // The Directory's People sections (PEOPLE_CATS in public/ve-region-directory.js).
-      var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+      var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
       function viewLogo(id, fromSuggestion) {
         if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id, fromSuggestion); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
         var redo = fromSuggestion === 'redo';

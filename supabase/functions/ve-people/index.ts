@@ -30,7 +30,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const MODEL = 'claude-opus-5-5';
 
 // Keep in step with PEOPLE_CATS in /public/ve-region-directory.js and SPECIALTIES there and in /public/ve-listing-admin.js.
-const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
 const SPECIALTIES = ['cardiology', 'gastroenterology', 'internal', 'family', 'lifestyle', 'psychiatry', 'urology', 'surgery', 'other'];
 const KINDS = ['episode', 'event', 'article', 'video'];
 

@@ -49,6 +49,9 @@
     'Health Professionals': 'services', 'Animal Care': 'services',
     // Studios (Sean, 2026-10-29): production, podcast and photo studios a creator can book; claimed with the $11 Passport like any listing.
     'Studios': 'services',
+    // Event Venues (Sean, 2026-11-01, the Vegan Events Guide): rooms, breweries, galleries, permitted parks, community centers. A
+    // restaurant that hosts events keeps its own category and adds Event Venues under Also show it under.
+    'Event Venues': 'services',
     'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
     // Community is the animals first (Sean, 2026-10-27: "it being about nonprofits, it being about events, it being about rescues...
     // sanctuaries"). Community Partner was not a kind of listing; its rows were re-filed the same day.
@@ -56,7 +59,7 @@
     // People (Sean, 2026-10-28: "a people directory... people that we've actually interacted with"): a person is a listing, so votes
     // and saves work the same. Keep PEOPLE_CATS below, SECTIONS in ve-listing-admin.js and PEOPLE in directory/listing.html in step.
     'Activists': 'people', 'Content Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people',
-    'Chefs': 'people', 'Founders': 'people',
+    'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
     'Uncategorized': 'hidden'
   };
 
@@ -70,7 +73,7 @@
       subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'], everywhere: true },
     { key: 'services', label: 'Services', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>',
-      subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Marketing & Growth'] },
+      subcats: ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Event Venues', 'Marketing & Growth'] },
     { key: 'media', label: 'Media', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10a7 7 0 0014 0"></path><line x1="12" x2="12" y1="17" y2="22"></line></svg>',
       // Media (Other media) is hidden for now (Sean, 2026-10-27: "I don't know what media is"); its listings show nowhere until re-filed.
@@ -82,7 +85,7 @@
     // People. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
     { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
-      subcats: ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'] },
+      subcats: ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'] },
     // Being vetted (Sean, 2026-10-25): Vegan-friendly and Vegan-options food places the community has not vetted yet
     // (/public/ve-trust.js). Members only; each one moves to Food once 10 different members vote for it.
     { key: 'vetting', label: 'Being vetted', hasVF: false, membersOnly: true,
@@ -576,7 +579,7 @@
   var MEDIA_CATS = ['Podcasts', 'YouTube', 'News Outlets', 'Media', 'Documentaries & Films', 'Books'];
   function isMedia(l) { return MEDIA_CATS.indexOf(l.category) >= 0; }
   // A person is not a place either: every chapter, no address, and the line under the name is what they do (details.person.title).
-  var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+  var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
   function isPerson(l) { return PEOPLE_CATS.indexOf(l.category) >= 0; }
   function personMeta(l) {
     var spec = l.category === 'Physicians' ? specLabel(l.specialty) : '';
@@ -691,7 +694,7 @@
     'Clothing and Fashion': { kind: 'clothing' }, 'Beauty and Personal Care': { kind: 'beauty' }, 'Markets': { chain: true }, 'Health Professionals': { htype: true }, 'Restaurants': { cuisine: true },
     'Food Trucks': { cuisine: true }, 'Vendors': { cuisine: true }, 'Catering': { cuisine: true },
     'Activists': { geo: false }, 'Content Creators': { geo: false }, 'Athletes': { geo: false }, 'Physicians': { geo: false, spec: true },
-    'Health Experts': { geo: false }, 'Chefs': { geo: false }, 'Founders': { geo: false } };
+    'Health Experts': { geo: false }, 'Chefs': { geo: false }, 'Founders': { geo: false }, 'Promoters': { geo: false } };
   // Location (Sean, 2026-10-30, canon canon-ve-directory-navigation: "you would pick the location, maybe the continent... then
   // the country, and then the city... grayed out until you choose the first one"). With config.location the city leaves the page's
   // banner and is picked first in the filter: Continent, Country, Chapter (VE_HUBS[].continent, .country), then Area, the

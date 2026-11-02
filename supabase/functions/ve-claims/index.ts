@@ -117,11 +117,11 @@ const CATEGORIES = [
   'Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Food Brands', 'Nutrition & Supplements', 'Catering', 'Meal Prep',
   'Brands', 'Clothing and Fashion', 'Beauty and Personal Care', 'Fitness and Athletics', 'E-Commerce & Marketplaces', 'Marketplaces',
   'Health and Wellness', 'Coaches and Consultants', 'Marketing & Growth', 'Branding & Creative Assets', 'Content Creation & Media',
-  'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios',
+  'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios', 'Event Venues',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events',
   // People (2026-10-28): a person's profile; ve-people holds the rest of it.
-  'Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Uncategorized'];
+  'Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters', 'Uncategorized'];
 // At a Glance, which listing.html shows for restaurants and cafes.
 const ATMOSPHERES = ['casual', 'upscale', 'fine-dining', 'fast-casual', 'bar-lounge'];
 const ACCOMMODATIONS = ['Dine-in', 'Takeout', 'Delivery', 'Outdoor Seating', 'Reservations', 'WiFi', 'Parking', 'Dog-Friendly',
@@ -1220,7 +1220,7 @@ Deno.serve(async (req) => {
       : ['Podcasts', 'YouTube', 'News Outlets', 'Media'].includes(l.category) ? 'show'
       : ['Documentaries & Films', 'Books'].includes(l.category) ? 'work'
       : ['Food Brands', 'Nutrition & Supplements', 'Fitness and Athletics', 'Clothing and Fashion', 'Beauty and Personal Care', 'E-Commerce & Marketplaces', 'Marketplaces', 'Markets'].includes(l.category) ? 'brand'
-      : ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'].includes(l.category) ? 'person'
+      : ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'].includes(l.category) ? 'person'
       : 'service';
     const hours = (() => { let h: any = l.google_hours_json; if (typeof h === 'string') { try { h = JSON.parse(h); } catch { h = null; } } return h && (Array.isArray(h) ? h.length : Object.keys(h).length); })();
     const [menu, audit, cardsQ] = await Promise.all([

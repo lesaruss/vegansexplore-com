@@ -58,6 +58,10 @@ module.exports = async (req, res) => {
     });
     const posts = await all('ve_pulse_content', 'select=slug,published_at&status=eq.published&slug=not.is.null');
     posts.forEach((p) => lines.push(url(SITE + '/pulse/' + encodeURIComponent(p.slug), day(p.published_at))));
+    // Every live event from the last year and every one coming up (their pages are rendered by api/event.js).
+    const since = new Date(Date.now() - 365 * 864e5).toISOString();
+    const events = await all('events', 'select=id,updated_at&tenant_id=eq.00000000-0000-4000-a000-000000000002&status=eq.approved&starts_at=gte.' + since);
+    events.forEach((e) => lines.push(url(SITE + '/events?event=' + e.id, day(e.updated_at))));
   } catch (e) {
     ok = false;
   }

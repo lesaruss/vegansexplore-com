@@ -35,6 +35,13 @@
 // POST { action: 'guests', id }                   -> the organizer's view: counts, the shown profile parts of guests who said yes,
 //        their messages and what is left; { action: 'organizer_name', id, name }; { action: 'message_send', id, body } through us,
 //        3 per event at least 24 hours apart, until 7 days after the event, never an email address either way
+// Claiming an event (the event host path, step 1; Sean, 2026-11-02; migration 20261102_event_claims.sql). Anyone:
+// POST { action: 'claim', id, name, email, role: host|promoter|venue, org_name?, proof_url?, phone?, note? } -> { ok }
+//        "Are you running this event?": a ve_event_claims row (3 a day per email, one open claim per event and email), the
+//        Inbox, an email to the chapter's Community Managers (else the team) and a confirmation to them. A signed-in claimer's
+//        account is kept on the claim. The event's page answers { viewer.claim } with the signed-in member's own claim status.
+// Super admin: { action: 'claims', status } -> { claims, counts }; { action: 'claim_decide', claim, decision: approve|decline,
+//        note? }: approving makes them the organizer once an account has their email (ve_event_claim_link) and emails them.
 // Super admin:
 // POST { action: 'organizers', id } | { action: 'organizer_add', id, email, name } | { action: 'organizer_remove' | 'organizer_resume', organizer_id }
 // POST { action: 'queue', status }                -> { events, counts }    pending | approved | rejected, with signed flyer links
@@ -112,6 +119,19 @@ const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v)
 const isUrl = (v: unknown) => typeof v === 'string' && /^https?:\/\/[^\s.]+\.[^\s]+$/i.test(v.trim());
 const esc = (s: string) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
 const p = (s: string) => `<p style="font-family:sans-serif;font-size:15px;line-height:1.6">${s}</p>`;
+const btnLink = (href: string, label: string) => `<p style="margin:0 0 16px"><a href="${href}" style="display:inline-block;background:#2d7d31;color:#fff;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:6px;font-family:sans-serif">${esc(label)}</a></p>`;
+const FOOT = `<p style="font-family:sans-serif;font-size:12px;color:#777;margin:18px 0 0">Vegans Explore, a LESARUSS brand. 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p>`;
+const CLAIM_ROLES: Record<string, string> = { host: 'Hosting it', promoter: 'Promoting it', venue: 'It is at their venue' };
+// The chapter's active Community Managers, else the team.
+async function chapterTeam(city: string | null, state: string | null): Promise<string[]> {
+  const { data: ch } = await db.rpc('ve_chapter_of', { p_city: city || '', p_state: state || '' });
+  const chapter = typeof ch === 'string' ? ch : '';
+  if (!chapter) return [SEAN_EMAIL];
+  const slugs = chapter === 'washington-dc' ? ['washington-dc', 'dc'] : [chapter];
+  const { data } = await db.from('members').select('email').eq('ve_role', 'community_manager').eq('membership_status', 'active').in('home_community', slugs);
+  const list = (data || []).map((m: any) => m.email).filter(Boolean);
+  return list.length ? list : [SEAN_EMAIL];
+}
 
 async function sendEmail(to: string[], subject: string, html: string) {
   if (!RESEND_KEY || !to.length) return false;
@@ -388,17 +408,68 @@ async function sendBatch(items: { to: string; subject: string; html: string }[])
 async function publicAction(action: string, body: any, memberId: string | null) {
   if (action === 'event') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status, host_listing_id')
+    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status, host_listing_id, venue_listing_id, organizer_name, organizer_url, link_status, link_checked_at, rejection_reason')
       .eq('id', body.id).maybeSingle();
-    if (!ev || ev.status !== 'approved') return json({ error: 'not_found' }, 404);
+    // A cancelled event keeps its page (the weekly check cancels from its official page, 2026-11-02), saying so.
+    if (!ev || (ev.status !== 'approved' && ev.status !== 'cancelled')) return json({ error: 'not_found' }, 404);
     const { data: viewer } = await db.rpc('ve_event_viewer', { p_event: ev.id, p_member: memberId || NULL_ID });
     const { data: mt } = await db.from('ve_event_member_tickets').select('event_id').eq('event_id', ev.id).maybeSingle();
-    const { status: _s, host_listing_id: hid, ...out } = ev as any;
+    const { status: evStatus, host_listing_id: hid, venue_listing_id: vid, rejection_reason: _r, ...out } = ev as any;
     // The group (or organization) that hosts it, linked to its Directory page (Sean, 2026-10-29).
     let host = null;
     if (hid) { const { data: h } = await db.from('listings').select('slug, name, logo_url, category').eq('id', hid).eq('status', 'approved').maybeSingle(); host = h || null; }
+    // Where it is held and who else is part of it (Sean, 2026-11-02: every event ties to its venue, its organizer and its people).
+    let venue = null;
+    if (vid) { const { data: vv } = await db.from('listings').select('slug, name, logo_url, category, address_street, address_city, address_state, phone, website').eq('id', vid).eq('status', 'approved').maybeSingle(); venue = vv || null; }
+    const { data: cr } = await db.from('ve_person_credits').select('role, listing:listings!inner(slug, name, logo_url, status)').eq('event_id', ev.id).limit(20);
+    const people = (cr || []).filter((c: any) => c.listing?.status === 'approved').map((c: any) => ({ role: c.role, slug: c.listing.slug, name: c.listing.name, logo_url: c.listing.logo_url }));
     // A members-only ticket link: the page learns there is one, never the link itself (that is `tickets`, for members).
-    return json({ event: { ...out, host }, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
+    // The signed-in member's own claim on it, so the page says it is waiting rather than asking again.
+    let claim = null;
+    if (memberId) { const { data: c } = await db.from('ve_event_claims').select('status').eq('event_id', ev.id).eq('member_id', memberId).order('created_at', { ascending: false }).limit(1).maybeSingle(); claim = c?.status || null; }
+    return json({ event: { ...out, host, venue, people, cancelled: evStatus === 'cancelled' }, viewer: { ...(viewer || {}), claim }, signed_in: !!memberId, member_tickets: !!mt });
+  }
+  if (action === 'claim') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: ev } = await db.from('events').select('id, title, starts_at, city, state, status, tenant_id').eq('id', body.id).maybeSingle();
+    if (!ev || ev.status !== 'approved' || ev.tenant_id !== VE_TENANT) return json({ error: 'not_found', message: 'That event is not on the calendar.' }, 404);
+    let name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase();
+    // The signed-in account is kept on the claim only when the claim is in its own email.
+    let claimer: string | null = null;
+    if (memberId) {
+      const { data: m } = await db.from('members').select('name, email').eq('id', memberId).maybeSingle();
+      if (m) { name = name || clean(m.name, 120); email = email || String(m.email || '').toLowerCase(); if (String(m.email || '').toLowerCase() === email) claimer = memberId; }
+    }
+    const role = String(body.role || '');
+    const proof = clean(body.proof_url, 500), org = clean(body.org_name, 120), phone = clean(body.phone, 40), note = clean(body.note, 1000);
+    if (name.length < 2) return json({ error: 'name', message: 'Add your name.' }, 400);
+    if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(email)) return json({ error: 'email', message: 'Add an email we can reach you at.' }, 400);
+    if (!CLAIM_ROLES[role]) return json({ error: 'role', message: 'Tell us your part in it.' }, 400);
+    if (proof && !/^https?:\/\/\S+\.\S+/i.test(proof)) return json({ error: 'proof', message: 'The link should start with https://.' }, 400);
+    if (!proof && note.length < 10) return json({ error: 'proof', message: 'Add a link that shows it is yours, or tell us a little about it.' }, 400);
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { count: today } = await db.from('ve_event_claims').select('id', { count: 'exact', head: true }).ilike('email', email).gte('created_at', since);
+    if ((today || 0) >= 3) return json({ error: 'rate_limited', message: 'That is three claims today. Send the rest tomorrow, or reply to our email.' }, 429);
+    const { data: open } = await db.from('ve_event_claims').select('id, status').eq('event_id', ev.id).ilike('email', email).in('status', ['new', 'approved']).maybeSingle();
+    if (open) return json({ ok: true, already: open.status });
+    const { data: row, error } = await db.from('ve_event_claims').insert({ event_id: ev.id, member_id: claimer, name, email, role, org_name: org || null, proof_url: proof || null, phone: phone || null, note: note || null }).select('id').single();
+    if (error || !row) return json({ error: 'save_failed', message: 'That did not send. Try again.' }, 500);
+    if (!/\[TEST\]/i.test(name)) {
+      const team = await chapterTeam(ev.city, ev.state);
+      await sendEmail(team, `[Events] ${name} says they run ${ev.title}`,
+        p(`<b>${esc(name)}</b>${org ? ` (${esc(org)})` : ''} says they run <b>${esc(ev.title)}</b>: ${esc(CLAIM_ROLES[role])}.`) +
+        p(`Email: ${esc(email)}${phone ? `<br>Phone: ${esc(phone)}` : ''}${proof ? `<br>Their link: <a href="${esc(proof)}">${esc(proof)}</a>` : ''}`) +
+        (note ? p(`What they said: ${esc(note)}`) : '') +
+        p(`<a href="${SITE}/admin/depot/events#claim/${row.id}">Approve or decline it in Depot &gt; Events</a> · <a href="${SITE}/events?event=${ev.id}">The event's page</a>`));
+      const first = name.split(/\s+/)[0];
+      await sendEmail([email], `We got your claim for ${ev.title}`,
+        p(`Hi ${esc(first)},`) +
+        p(`Thanks for telling us you run <b>${esc(ev.title)}</b>. Our team checks every claim before it is approved, usually within a day or two, and we will email you either way.`) +
+        p('While you wait, the Vegan Events Guide has what we know about running a Vegan event, from the 12-week plan to what to do when it rains.') +
+        btnLink(`${SITE}/events?event=${ev.id}`, 'See your event page') +
+        p('If anything on the page is wrong, reply to this email and tell us.') + p('Vegans Explore team') + FOOT);
+    }
+    return json({ ok: true, id: row.id });
   }
   const tok = typeof body.token === 'string' && /^[0-9a-f]{64}$/.test(body.token) ? body.token : '';
   if (!tok) return json({ error: 'not_found' }, 404);
@@ -444,7 +515,7 @@ Deno.serve(async (req) => {
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
-  if (['event', 'msg_get', 'msg_mute', 'msg_report'].includes(action)) return publicAction(action, body, memberId);
+  if (['event', 'claim', 'msg_get', 'msg_mute', 'msg_report'].includes(action)) return publicAction(action, body, memberId);
   if (!memberId) return json({ error: 'not_authenticated', message: 'Sign in to send an event.' }, 401);
   const { data: member } = await db.from('members').select('id, name, email, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'member_not_found' }, 404);
@@ -786,6 +857,60 @@ Deno.serve(async (req) => {
         going: going || 0, opted_in: optin || 0,
         messages: (msgs || []).map((m) => ({ ...m, organizer: names[m.organizer_id] || '', reports: reports[m.id] || [] })),
       });
+    }
+
+    case 'claims': {
+      const gate = needAdmin(); if (gate) return gate;
+      const status = ['new', 'approved', 'declined'].includes(String(body.status)) ? String(body.status) : 'new';
+      const { data: rows } = await db.from('ve_event_claims').select('id, event_id, member_id, name, email, role, org_name, proof_url, phone, note, status, organizer_id, decided_at, decision_note, created_at').eq('status', status).order('created_at', { ascending: false }).limit(200);
+      const ids = Array.from(new Set((rows || []).map((r: any) => r.event_id)));
+      const { data: evs } = ids.length ? await db.from('events').select('id, title, starts_at, city, state, status').in('id', ids) : { data: [] };
+      const evOf: Record<string, any> = {}; (evs || []).forEach((e: any) => { evOf[e.id] = e; });
+      const counts: Record<string, number> = {};
+      for (const st of ['new', 'approved', 'declined']) { const { count } = await db.from('ve_event_claims').select('id', { count: 'exact', head: true }).eq('status', st); counts[st] = count || 0; }
+      // Whether an account has their email yet (approving links them now; otherwise when they make one).
+      const emails = Array.from(new Set((rows || []).map((r: any) => String(r.email).toLowerCase())));
+      const { data: ms } = emails.length ? await db.from('members').select('email').in('email', emails) : { data: [] };
+      const has = new Set((ms || []).map((m: any) => String(m.email).toLowerCase()));
+      return json({ claims: (rows || []).map((r: any) => ({ ...r, has_account: !!r.member_id || has.has(String(r.email).toLowerCase()), event: evOf[r.event_id] || null })), counts });
+    }
+
+    case 'claim_decide': {
+      const gate = needAdmin(); if (gate) return gate;
+      if (!isId(body.claim)) return json({ error: 'bad_id' }, 400);
+      const decision = String(body.decision || '');
+      if (!['approve', 'decline'].includes(decision)) return json({ error: 'decision' }, 400);
+      const note = clean(body.note, 1000);
+      const { data: c } = await db.from('ve_event_claims').select('*').eq('id', body.claim).maybeSingle();
+      if (!c) return json({ error: 'not_found' }, 404);
+      if (c.status !== 'new') return json({ error: 'decided', message: 'This claim was already ' + c.status + '.' }, 409);
+      if (decision === 'decline' && note.length < 5) return json({ error: 'note', message: 'Say why, so they know what would show it is theirs.' }, 400);
+      const { data: ev } = await db.from('events').select('id, title').eq('id', c.event_id).maybeSingle();
+      await db.from('ve_event_claims').update({ status: decision === 'approve' ? 'approved' : 'declined', decided_at: new Date().toISOString(), decided_by: memberId, decision_note: note || null }).eq('id', c.id);
+      let linked = false;
+      if (decision === 'approve') { const { data: n } = await db.rpc('ve_event_claim_link', { p_claim: c.id }); linked = Number(n) > 0; }
+      const first = String(c.name || '').split(/\s+/)[0];
+      const title = ev?.title || 'your event';
+      if (!/\[TEST\]/i.test(c.name)) {
+        if (decision === 'approve') {
+          await sendEmail([c.email], `${title} is yours on Vegans Explore`,
+            p(`Hi ${esc(first)},`) +
+            p(`Your claim is approved: <b>${esc(title)}</b> is yours on Vegans Explore, with your name on its page.`) +
+            btnLink(`${SITE}/events?event=${c.event_id}`, 'Open your event page') +
+            p(linked
+              ? `Signed in with this email, you see who is going and can message the guests who said yes, through us (Guests and messages on the page). Members who RSVP choose whether you can message them.`
+              : `To see who is going and message the guests who said yes, sign in to Vegans Explore with this email. If you do not have an account, reply to this email and we will help.`) +
+            p(`Want more people there? <a href="${SITE}/events#promote/${c.event_id}">Tell us how we can promote it</a>. Selling tickets on your page and a Vegans Explore sponsorship for free events are coming soon, and we will tell you when they open.`) +
+            p('If anything on the page is wrong, reply to this email.') + p('Vegans Explore team') + FOOT);
+        } else {
+          await sendEmail([c.email], `About your claim for ${title}`,
+            p(`Hi ${esc(first)},`) +
+            p(`We could not confirm that you run <b>${esc(title)}</b> yet. ${esc(note)}`) +
+            p('Reply to this email with anything that shows it is yours, a page where you are named as the host or a post from your account, and we will look again.') +
+            p('Vegans Explore team') + FOOT);
+        }
+      }
+      return json({ ok: true, linked });
     }
 
     case 'organizer_add': {

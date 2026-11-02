@@ -146,6 +146,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .he-body span{font-size:13px;color:rgba(26,26,26,.68)}
 .he-go{flex:none;font-size:12px;font-weight:800;padding:8px 12px;border-radius:6px;background:var(--vb-go,#2d7d31);color:#fff;text-decoration:none;white-space:nowrap}
 .he-tabs{display:flex;gap:6px;margin:0 0 12px}
+.he-sub{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:rgba(26,26,26,.7);margin:22px 0 10px}
+.he-with{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:8px}
+.he-wcard{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff}
+.he-wcard:hover{border-color:var(--vb-go,#2d7d31)}
+.he-wcard img,.he-wcard i{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;background:var(--vb-go,#2d7d31);color:#fff;font-style:normal;font-weight:900}
+.he-wcard span{display:flex;flex-direction:column;min-width:0}
+.he-wcard b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.he-wcard small{font-size:12px;color:rgba(26,26,26,.68)}
 .he-tabs button{font:inherit;font-size:13px;font-weight:800;padding:8px 14px;border-radius:6px;border:1px solid var(--ve-border,rgba(0,0,0,.12));background:#fff;color:inherit;cursor:pointer}
 .he-tabs button[aria-selected="true"]{background:#1a1a1a;border-color:#1a1a1a;color:#fff}
 .he-go.ghost{background:#fff;color:var(--vb-go-hover,#1f5f22);border:1px solid rgba(31,95,34,.35)}
@@ -1379,7 +1387,10 @@ function loadGroupLive(l){
 }
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
-  var url = SUPABASE_URL + '/rest/v1/events?host_listing_id=eq.' + l.id + '&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url&order=starts_at.asc&limit=1000';
+  // Events it puts on (host_listing_id) and events held at it (venue_listing_id, Sean, 2026-11-01: where Vegans hold their events;
+  // ve_event_venues_sync links them by the event's place name). A place that only hosts others' events reads "Vegan events here".
+  var url = SUPABASE_URL + '/rest/v1/events?or=(host_listing_id.eq.' + l.id + ',venue_listing_id.eq.' + l.id + ')&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url,host_listing_id,venue_listing_id,' +
+    'hostL:listings!events_host_listing_id_fkey(id,slug,name,logo_url,category,status),venueL:listings!events_venue_listing_id_fkey(id,slug,name,logo_url,category,status)&order=starts_at.asc&limit=1000';
   // The sample group's events come from its demo file; each opens the sample's RSVP and ticket simulation (data-demo-ev).
   var demoEv = DEMO && DEMO.events;
   (demoEv ? Promise.resolve(DEMO.events.slice().sort(function(a, b){ return Date.parse(a.starts_at) - Date.parse(b.starts_at); }))
@@ -1397,7 +1408,7 @@ function loadHostedEvents(l){
       var where = e.event_type === 'virtual' && !e.city ? 'Online' : [e.location_name, e.city].filter(Boolean).join(', ');
       var link = /^https?:\/\//.test(e.ticket_url || '') ? e.ticket_url : /^https?:\/\//.test(e.virtual_url || '') ? e.virtual_url : '';
       return '<div class="he-row' + (old ? ' he-past' : '') + '"><div class="he-date" aria-hidden="true"><b>' + esc(fmt(e, { day: 'numeric' })) + '</b><span>' + esc(fmt(e, { month: 'short' })) + '</span></div>' +
-        '<div class="he-body"><a class="he-name" href="' + (demoEv ? '#' : '/events#event/' + esc(e.id)) + '"' + (demoEv ? ' data-demo-ev="' + esc(e.id) + '"' : '') + '>' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + (demoEv ? ' · ' + (e.price_cents ? '$' + (e.price_cents / 100).toFixed(2) : 'Free') + ' · ' + e.going + (old ? ' went' : ' going') : '') + '</span></div>' +
+        '<div class="he-body"><a class="he-name" href="' + (demoEv ? '#' : '/events?event=' + esc(e.id)) + '"' + (demoEv ? ' data-demo-ev="' + esc(e.id) + '"' : '') + '>' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + (demoEv ? ' · ' + (e.price_cents ? '$' + (e.price_cents / 100).toFixed(2) : 'Free') + ' · ' + e.going + (old ? ' went' : ' going') : '') + '</span></div>' +
         (demoEv ? '<button type="button" class="he-go' + (old ? ' ghost' : '') + '" data-demo-ev="' + esc(e.id) + '">' + (old ? 'See it' : e.price_cents ? 'Get tickets' : 'RSVP') + '</button>' : '') +
         (!demoEv && link ? '<a class="he-go' + (old ? ' ghost' : '') + '" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + (old ? 'Event page for ' : 'Tickets and details for ') + esc(e.title) + '">' + (old ? 'Event page' : 'Tickets &amp; info') + '</a>' : '') + '</div>';
     };
@@ -1409,9 +1420,11 @@ function loadHostedEvents(l){
     };
     box.hidden = false;
     box.className = 'section';
-    box.innerHTML = '<h2 class="section-title">Events</h2>' +
+    var heldOnly = !isGroup && !demoEv && rows.every(function(e){ return e.host_listing_id !== l.id; });
+    box.innerHTML = '<h2 class="section-title">' + (heldOnly ? 'Vegan events here' : 'Events') + '</h2>' +
+      (heldOnly ? '<p class="about-text he-note">Vegan events held at ' + esc(l.name) + ', from our calendar.</p>' : '') +
       '<div class="he-tabs" role="tablist"><button type="button" role="tab" data-he="up" aria-selected="true">Upcoming (' + up.length + ')</button>' +
-      '<button type="button" role="tab" data-he="past" aria-selected="false">Past (' + past.length + ')</button></div><div class="he-pane"></div>';
+      '<button type="button" role="tab" data-he="past" aria-selected="false">Past (' + past.length + ')</button></div><div class="he-pane"></div>' + workedWith(l, rows);
     var show = function(k){
       box.querySelectorAll('.he-tabs [data-he]').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-he') === k ? 'true' : 'false'); });
       box.querySelector('.he-pane').innerHTML = lists[k];
@@ -1420,6 +1433,26 @@ function loadHostedEvents(l){
     box.querySelectorAll('.he-tabs [data-he]').forEach(function(b){ b.onclick = function(){ show(b.getAttribute('data-he')); }; });
     show('up');
   }).catch(function(){});
+}
+
+// Worked with (Sean, 2026-11-02: "the organizations they've worked with... another section"): the listings on the other side of
+// its events. A venue shows who put events on there; a host shows where it held them. Each opens its page.
+function workedWith(l, rows){
+  if(DEMO) return '';
+  var seen = {}, list = [];
+  (rows || []).forEach(function(e){
+    var other = e.host_listing_id === l.id ? e.venueL : e.venue_listing_id === l.id ? e.hostL : null;
+    var role = e.host_listing_id === l.id ? 'Venue' : 'Host';
+    if(!other || other.status !== 'approved' || other.id === l.id) return;
+    if(!seen[other.id]){ seen[other.id] = { l: other, n: 0, role: role }; list.push(seen[other.id]); }
+    seen[other.id].n++;
+  });
+  if(!list.length) return '';
+  list.sort(function(a, b){ return b.n - a.n || a.l.name.localeCompare(b.l.name); });
+  return '<h3 class="he-sub">Worked with</h3><div class="he-with">' + list.slice(0, 12).map(function(x){
+    return '<a class="he-wcard" href="/directory/' + encodeURIComponent(x.l.slug) + '">' + (x.l.logo_url ? '<img src="' + esc(x.l.logo_url) + '" alt="" loading="lazy">' : '<i aria-hidden="true">' + esc((x.l.name || '?').charAt(0)) + '</i>') +
+      '<span><b>' + esc(x.l.name) + '</b><small>' + esc(x.role) + ' · ' + x.n + ' event' + (x.n === 1 ? '' : 's') + '</small></span></a>';
+  }).join('') + '</div>';
 }
 
 function loadLocations(l){
@@ -3218,7 +3251,7 @@ function pdRail(){
 // listing in the People section: no place, no phone, no address, no claim; their bio, their links, and what they did with us
 // (ve_person_credits), voted on and saved like everyone else. Keep in step with PEOPLE_CATS in /public/ve-region-directory.js.
 var PEOPLE = { 'Activists': 'Activist', 'Content Creators': 'Content creator', 'Athletes': 'Athlete', 'Physicians': 'Physician',
-  'Health Experts': 'Health expert', 'Chefs': 'Chef', 'Founders': 'Founder' };
+  'Health Experts': 'Health expert', 'Chefs': 'Chef', 'Founders': 'Founder', 'Promoters': 'Event promoter' };
 function isPersonL(l){ return !!(l && PEOPLE[l.category]); }
 function personOf(l){ return (l && l.details && l.details.person) || {}; }
 function personRoles(l){

@@ -32,7 +32,8 @@
     "qualities": [75]
   },
   "functions": {
-    "api/listing.js": { "includeFiles": "directory/listing.html" }
+    "api/listing.js": { "includeFiles": "directory/listing.html" },
+    "api/event.js": { "includeFiles": "events/index.html" }
   },
   "headers": [
     {
