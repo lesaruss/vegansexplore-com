@@ -893,8 +893,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .pp-empty{font-size:13px;color:var(--ve-text-50)}
 #film-pods .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:900px){#film-pods .vep-list{grid-template-columns:1fr}}
-#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-@media(max-width:560px){#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
+#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid,.lk-sec .vrd-root .rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:560px){#film-people .vrd-root .rank-grid,#pp-shows .vrd-root .rank-grid,.lk-sec .vrd-root .rank-grid{grid-template-columns:minmax(0,1fr)}}
 .pp-moment{padding:14px 0;border-top:1px solid var(--ve-border)}
 .pp-moment blockquote{margin:0;font-size:14px;line-height:1.6;font-style:italic}
 .pp-moment p{font-size:12px;color:var(--ve-text-50);margin-top:6px}
@@ -1766,6 +1766,44 @@ function bookPeople(l){
     '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
   host.appendChild(sec);
   loadFilmPeople(l);
+}
+// Linked sections (Sean, 2026-11-02: "put Elle as the founder in Vegans in Clermont... for Elle, we could put communities... for Paige,
+// let's include affiliations... in two columns"). details.linked [{title, sub?, items: [{slug, role?}]}] on any listing: each a
+// section under About (and Their work on a person) with the Directory's own card and votes, two across, one on phones. Founder on a
+// group, Communities and Affiliations on a person; a new kind is just a new title.
+function linkedSections(l){
+  var groups = ((l.details || {}).linked || []).filter(function(g){ return g && g.title && Array.isArray(g.items) && g.items.length; });
+  var host = document.querySelector('#tab-overview > div'); if(!groups.length || !host || host.querySelector('.lk-sec')) return;
+  var after = null;
+  Array.prototype.forEach.call(host.querySelectorAll(':scope > .section'), function(sec){
+    var t = sec.querySelector('.section-title'); if(t && /^(About|Their work)$/.test(t.textContent.trim())) after = sec; });
+  var secs = groups.map(function(g){
+    var sec = document.createElement('div'); sec.className = 'section lk-sec';
+    sec.innerHTML = '<h2 class="section-title">' + esc(g.title) + '</h2>' + (g.sub ? '<p class="pp-sub">' + esc(g.sub) + '</p>' : '') +
+      '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
+    if(after){ after.parentNode.insertBefore(sec, after.nextSibling); after = sec; } else host.appendChild(sec);
+    return sec;
+  });
+  var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+    var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+  });
+  var slugs = []; groups.forEach(function(g){ g.items.forEach(function(x){ if(x && x.slug && slugs.indexOf(x.slug) < 0) slugs.push(x.slug); }); });
+  ready.then(function(){
+    if(!window.VERegionDirectory) throw 0;
+    VERegionDirectory.css();
+    var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    var sel = VERegionDirectory.FIELDS + ',person_title:details->person->>title,specialty:details->person->>specialty';
+    return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&slug=in.(' + slugs.map(encodeURIComponent).join(',') + ')&select=' + encodeURIComponent(sel), { headers: H })
+      .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+        var by = {}; (rows || []).forEach(function(r){ by[r.slug] = r; });
+        groups.forEach(function(g, gi){
+          var cards = g.items.map(function(x){ return by[x.slug]; }).filter(Boolean), grid = secs[gi].querySelector('.rank-grid');
+          if(!cards.length){ secs[gi].hidden = true; return; }
+          grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
+          VERegionDirectory.wire(grid.parentNode);
+        });
+      });
+  }).catch(function(){ secs.forEach(function(sec){ sec.hidden = true; }); });
 }
 // On our podcast (Sean, 2026-10-29: "include the podcasts that I did with the directors on the films... a few doctors that appeared in
 // these films as well"). details.film_podcasts [{show, guid, with, person?}] names each episode by its show's slug and feed guid; each
@@ -5299,6 +5337,7 @@ if(!slug || slug === 'listing'){
       mobileTabMenu();
       if(isPersonL(l)){ loadPerson(l); ppPromo(l); }
       else if(!l._brandSite) loadPartnerHome(l);
+      if(!DEMO) linkedSections(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       if(!DEMO || DEMO.events) loadHostedEvents(l);
