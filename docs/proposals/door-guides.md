@@ -40,3 +40,27 @@ added. Then the same pattern goes to the Creator, Nonprofit and Vegan Restaurant
 
 "Every Guide is $11 or 1,100 points" becomes "every Guide is $11 or 1,100 points, except the door Guides: free with an email, your
 voice and tools with the Passport."
+
+## Panel review (2026-11-02, V's panel; waiting on Sean's agree or adjust)
+
+Panel: a growth lead, a podcast producer, a trust and legal lead, a Vegan event organizer (the reader), a community lead.
+Checked first: no one has paid for the Events, Creator, Nonprofit or Restaurant Guides (the only owners are Sean's comp copies).
+
+Agreed: the three levels, Events Guide first, and the Passport as your voice. Changes the panel asks for:
+
+1. **Ask for the email inside the Guide, not at the door.** The Overview and the free example stay open; the ask comes when they open
+   a second section ("Get the rest of the Guide free: just your email"), one field, confirmed by the emailed link.
+2. **Ticketing and messaging guests are not Passport features.** They belong to the host path we locked today (5% a ticket for
+   everyone, a free claim). Putting them behind the $11 would break that.
+3. **A claimed host records their own Host Notes interview free.** It is about their event, and it keeps the segment full while the
+   Passport audience grows. The question of the month, your story and telling the community stay with the Passport.
+4. **"What you're struggling with" is private by default.** It goes to the team and the chapter's Community Manager to help; it airs
+   only with a second yes from them.
+5. **Recording rules:** 18 and over, up to 90 seconds a clip, a prompt card and quiet-room tips before recording, the release ticked
+   on every clip, the team listens before anything airs, never naming another business in a bad light.
+6. **Saving:** the plan and checklists save in the browser for everyone; saved to your account on every device with the Passport.
+7. **Measure for 30 days before rolling out:** emails per Guide, Taster to Passport, clips sent and aired. Then the Creator, Nonprofit
+   and Restaurant Guides.
+
+The one dissent: the producer would let everyone record one clip free to fill the first segments faster. The panel kept the
+Passport rule, with point 3 covering the early volume.
