@@ -230,6 +230,12 @@ module.exports = async (req, res) => {
     // Updated (Sean, 2026-09-29): what changed after the subject replied, the way newsrooms mark it.
     + (post.updatedNote ? '<p class="article-updated">Updated' + (post.updatedAt ? ' ' + esc(new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' })) : '') + ': ' + esc(post.updatedNote) + '</p>' : '');
 
+  // In this story (Sean, 2026-11-02): ONE section, above "On this episode" (for an episode) or after the body (any other article).
+  // Its cards are filled by the loader at the foot of the page. Never on a Depot preview.
+  const inStoryBlock = preview ? '' : '<section class="in-story" id="in-story" hidden><div class="share-label">In this story</div>'
+    + '<p class="in-story-sub">The people, places and media this story names, from our Directory. Vote for them, or open their page.</p>'
+    + '<div class="in-story-pills" id="in-story-pills" role="group" aria-label="Filter"></div>'
+    + '<div class="vrd-root"><div class="rank-grid" id="in-story-grid"></div></div></section>';
   let epHtml = '', moreHtml = '';
   if (epData) {
     const show = epData.show;
@@ -245,6 +251,7 @@ module.exports = async (req, res) => {
       + (!post.youtubeId && feedEp ? '<audio controls preload="none" src="' + esc(feedEp.audio) + '" aria-label="Listen: ' + esc(title) + '"></audio>' : '')
       + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (post.youtubeId || !feedEp ? 'Listen on the show page' : 'Open on the show page') + '</a>'
       + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>';
+    epHtml += inStoryBlock;
     if (people.length) epHtml += '<h3 class="article-section-head">On this episode</h3><div class="ep-people">' + people.map(function (c) {
       const l = c.listings;
       const face = l.logo_url ? pic(l.logo_url, 128, ' width="56" height="56"') : '<span class="ep-letter">' + esc((l.name || '?').charAt(0)) + '</span>';
@@ -281,6 +288,7 @@ module.exports = async (req, res) => {
     const m = bodyHtml.match(/<p class="article-lede">[\s\S]*?<\/p>/);
     articleHtml = m ? bodyHtml.slice(0, m.index + m[0].length) + embedHtml + epHtml + bodyHtml.slice(m.index + m[0].length) : embedHtml + epHtml + bodyHtml;
   }
+  if (!epData) articleHtml += inStoryBlock;
   const ld = epData ? {
     '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: shortTitle(title), url: pageUrl, description: post.excerpt || undefined,
     datePublished: post.publishedAt || undefined, episodeNumber: post.epNum || undefined, image: (post.img || epData.show.logo) || undefined,
@@ -326,6 +334,11 @@ module.exports = async (req, res) => {
     + '.in-story{margin:40px 0 28px;}.in-story[hidden]{display:none;}'
     + '.in-story-sub{font-size:13px;color:var(--ve-text-75);margin:0 0 14px;}'
     + '.in-story-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;}'
+    + '.in-story-grid>.in-story-item{min-width:0;}.in-story-item[hidden]{display:none;}'
+    + '.in-story-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}'
+    + '.in-story-pills button{font:inherit;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:9px 14px;min-height:38px;border-radius:99px;border:1px solid rgba(0,0,0,.2);background:#fff;color:var(--ve-text);cursor:pointer;}'
+    + '.in-story-pills button[aria-pressed="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}'
+    + '.in-story-pills button span{font-weight:600;opacity:.75;margin-left:4px;}'
     + '.ep-card{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:16px;margin:0 0 24px;}'
     + '.ep-art{width:96px;height:96px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--ve-green-light);}'
     + '.ep-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px;}'
@@ -439,10 +452,6 @@ module.exports = async (req, res) => {
     + '<div id="pulseCommentComposerMount"></div>'
     + '<div id="pulseCommentsList" class="pulse-comments-list"><div class="pulse-comments-empty">Loading comments...</div></div>'
     + '</div>'
-    // In this story, at the foot (after the discussion, before More from). Not on a Depot preview.
-    + (preview ? '' : '<section class="in-story" id="in-story" hidden><div class="share-label">In this story</div>'
-      + '<p class="in-story-sub">The people, restaurants and brands this story names, from our Directory. Vote for them, or open their page.</p>'
-      + '<div class="in-story-grid" id="in-story-grid"></div></section>')
     + moreHtml
     + '</div></div>'
     // One ad per page, the tall one (Sean, 2026-10-27), drawn by public/ve-ad-rail.js through ve-ad-creative.js, so an HTML5 ad
@@ -454,10 +463,16 @@ module.exports = async (req, res) => {
     + '<script src="/public/ve-city-banner.js"></script>'
     + '<script src="/public/ve-ad-creative.js"></script>'
     + '<script src="/public/ve-ad-rail.js"></script>'
-    // The In this story loader: the mentions for this article (anon read, shown rows only), then their Directory cards through
-    // ve-region-directory.js, the same card the Directory and the People pages draw. Nothing shows when nothing is named.
+    // The In this story loader (Sean, 2026-11-02): the shown mentions for this article (anon read), their Directory cards through
+    // ve-region-directory.js (the same card, votes and page as the Directory), sorted into People, Media, Places and Organizations
+    // with pills to pick one. Nothing shows when nothing is named.
     + (preview ? '' : '<script>(function(){var CID=' + JSON.stringify(post.id) + ',U=' + JSON.stringify(SUPABASE_URL) + ',K=' + JSON.stringify(SUPABASE_ANON_KEY) + ';'
       + 'var H={apikey:K,Authorization:"Bearer "+K};'
+      + 'var GROUP={People:["Activists","Content Creators","Athletes","Physicians","Health Experts","Chefs","Founders"],'
+      + 'Media:["Podcasts","Documentaries & Films","Books","YouTube","News Outlets","Radio and TV"],'
+      + 'Organizations:["Nonprofits","Rescues","Sanctuaries","Groups","Event Venues","Events"]};'
+      + 'var ORDER=["People","Media","Places","Organizations"];'
+      + 'function groupOf(c){for(var g in GROUP){if(GROUP[g].indexOf(c)>=0)return g;}return "Places";}'
       + 'fetch(U+"/rest/v1/ve_content_mentions?select=listings(slug)&content_id=eq."+CID+"&status=eq.shown&limit=100",{headers:H})'
       + '.then(function(r){return r.ok?r.json():[];}).then(function(rows){'
       + 'var slugs=(rows||[]).map(function(x){return x.listings&&x.listings.slug;}).filter(Boolean);'
@@ -467,10 +482,19 @@ module.exports = async (req, res) => {
       + 'return fetch(U+"/rest/v1/listings?status=eq.approved&slug=in.("+slugs.map(encodeURIComponent).join(",")+")&select="+encodeURIComponent(VERegionDirectory.FIELDS),{headers:H})'
       + '.then(function(r){return r.ok?r.json():[];}).then(function(list){'
       + 'if(!list||!list.length)return;'
-      + 'var grid=document.getElementById("in-story-grid");'
-      + 'grid.innerHTML=list.map(function(r,i){return VERegionDirectory.card(r,i);}).join("");'
+      + 'list.forEach(function(r){r._g=groupOf(r.category);});'
+      + 'list.sort(function(a,b){return ORDER.indexOf(a._g)-ORDER.indexOf(b._g);});'
+      + 'var section=document.getElementById("in-story"), grid=document.getElementById("in-story-grid"), pills=document.getElementById("in-story-pills");'
+      + 'grid.innerHTML=list.map(function(r,i){return "<div class=\\"in-story-item\\" data-g=\\""+r._g+"\\">"+VERegionDirectory.card(r,i)+"</div>";}).join("");'
       + 'VERegionDirectory.wire(grid.parentNode);'
-      + 'document.getElementById("in-story").hidden=false;});});'
+      + 'var present=ORDER.filter(function(g){return list.some(function(r){return r._g===g;});});'
+      + 'function n(g){return list.filter(function(r){return !g||r._g===g;}).length;}'
+      + 'pills.innerHTML=\'<button type="button" aria-pressed="true" data-g="">All<span>\'+n("")+\'</span></button>\''
+      + '+present.map(function(g){return \'<button type="button" aria-pressed="false" data-g="\'+g+\'">\'+g+\'<span>\'+n(g)+\'</span></button>\';}).join("");'
+      + 'pills.onclick=function(e){var b=e.target.closest("button");if(!b)return;var g=b.getAttribute("data-g");'
+      + 'pills.querySelectorAll("button").forEach(function(x){x.setAttribute("aria-pressed",String(x===b));});'
+      + 'grid.querySelectorAll(".in-story-item").forEach(function(it){it.hidden=!!g&&it.getAttribute("data-g")!==g;});};'
+      + 'section.hidden=false;});});'
       + '}).catch(function(){});})();</script>')
     + '<script>(function(){'
     + 'var SHOW=' + JSON.stringify(showSlug) + ';'

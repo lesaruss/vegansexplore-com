@@ -165,11 +165,11 @@ Classes currently under the rule:
 - `.pulse-link-excerpt` — the "In the Pulse" section on a listing's page (`loadInPulse`
   in `directory/listing.html`), each article's summary (`ve_pulse_content.summary`).
 
-**Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article ends with **In this story**: the Directory cards of the
-people, restaurants, brands and groups it names (`api/pulse-article.js`, loaded from `ve_content_mentions`). A listing's page
+**Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article carries **In this story** above **On this episode** (one section, grouped by pills: People, Media,
+Places, Organizations; each card keeps its vote and opens the listing): the Directory cards of the people, restaurants, brands and groups it names (`api/pulse-article.js`, loaded from `ve_content_mentions`). A listing's page
 shows **In the Pulse** with the articles that name it. Matches are built by `ve_content_mentions_build` (cron
 `ve-content-mentions`, every 15 minutes, an article once a day or when it changes): a person credited on the episode (not
-as its host), the listing's website or Instagram linked in the text, or its full name as whole words (never a one-word name).
+as its host), the listing's website or Instagram linked in the text, or its full name as whole words (one-word names only for Documentaries & Films).
 Our four shows and their hosts, and a stop list of plain phrases, are left out (`c_skip`, `c_stop`). A wrong match is taken
 off in **Depot > In this story** (`ve-mentions`); a removed row is never rebuilt. Not yet: the city Daily Pulse topics.
 
