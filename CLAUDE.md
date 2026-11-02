@@ -5103,6 +5103,15 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
 
+## No chapter counts in copy or videos (Sean, 2026-11-02)
+
+"Why are we saying 13? I might decide to have North Carolina be a chapter tomorrow, and then we got to do all these videos over again."
+Never write how many chapters or cities we have ("13 chapters", "thirteen") in page copy, a Guide's lines, a recording or a video.
+Say "city by city", "every chapter" or "from South Florida to London". A live count drawn from the data is fine. The homepage video
+is `launch-v2.mp4` (its city card reads From South Florida to London; the logo sits on a white plate in the official light colors,
+since the inverted logo's thin green EXPLORE could not be read over the pictures). Any logo over a picture in a video or graphic
+goes on a solid plate.
+
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
 "Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
