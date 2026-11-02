@@ -4238,7 +4238,7 @@ rains... interview event hosts... they record their voice... those voice recordi
 ## The event host path (LOCKED by Sean 2026-11-02, playbook `ve-event-host-path`)
 
 Locked with Logan's panel answers (Sean: "lock it and then deploy"; canon `canon-ve-event-host-path`; migration
-`20261102_event_host_path_canon.sql`; write-up `docs/proposals/event-host-path.md`). **Not built yet.** Sean: "every time we bring a
+`20261102_event_host_path_canon.sql`; write-up `docs/proposals/event-host-path.md`). **Step 1 is built (below); the rest is not.** Sean: "every time we bring a
 new event in, we're building our directory in other places... are you running this event? Click here... do you want to do an event
 with us?... it's per event." Separate from Group Partners.
 
@@ -4274,8 +4274,26 @@ with us?... it's per event." Separate from Group Partners.
   - **To whom:** published emails only; in London, business addresses only.
   - **What it says:** no prices.
   - Sean approves the template once; after that it goes out on its own through the outreach people-list engine.
+- **Step 1, the event claim, built and live 2026-11-02** (Sean: "start step 1"; migration `20261102_event_claims.sql`, applied
+  through the one-time `ve-once-event-claims`, now the 410 stub; `ve-events` from commit 4ec511b, source sha256 matched). Every live
+  event's page has **Are you running this event?** under the RSVP box (Your claim is in / approved once they have sent one), opening
+  `#claim/<id>` (`drawClaim` in `public/ve-events.js`): their part (I'm hosting it, I'm promoting it, It's at my venue), name, email,
+  their group or venue (the name guests see), phone, a link that shows it is theirs (else a note), Send my claim; then a thank-you
+  with the Vegan Events Guide. Open to anyone (a host is often not a member). `ve-events` `claim` (public): `ve_event_claims` (RLS on,
+  no policies), 3 a day per email, one open claim per event and email, the signed-in account kept only when the claim is in its own
+  email; an email to the chapter's active Community Managers (else the team) and a confirmation to them from the team; a [TEST] name
+  sends nothing. It is in the Inbox (source `event_claim`). **Depot > Events > Claims** (`#claims/new|approved|declined`,
+  `#claim/<id>`): who, their part, their link, whether an account has their email; **Approve** or **Decline** (a note needed, which they
+  get). Approving makes them the event's organizer (`ve_event_organizers`, the name guests see, Guests and messages) through
+  `ve_event_claim_link`, at once when an account has their email, else when one is made (`trg_ve_event_claim_link` on `members`), and
+  emails them their page, Promote your event, and tickets and the sponsorship as coming soon. Proven 2026-11-02 against the live
+  function: bad email, role and proof refused, a repeat recognized, a visitor refused the admin actions, a decline without a note
+  refused, an approval linking the internal test account, a second approval refused, an approval with no account linking once the
+  account appeared (in a rolled-back transaction), the page at 1366 and 390 px with no errors; every test row removed. Not yet: a host
+  with no account cannot make one without the $11 (sign-up is the Passport), so the email asks them to reply and the team helps; the
+  $50 ad credit on claim waits for step 5.
 - **Build order:**
-  1. The event claim.
+  1. The event claim (built 2026-11-02).
   2. The heads-up.
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
