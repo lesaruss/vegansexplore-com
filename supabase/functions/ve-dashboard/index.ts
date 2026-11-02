@@ -291,7 +291,7 @@ Deno.serve(async (req) => {
       const charges: any[] = [];
       let after = '';
       for (let page = 0; page < 30; page++) {
-        const d = await stripe('charges?limit=100&expand[]=data.balance_transaction' + (after ? '&starting_after=' + after : ''));
+        const d = await stripe('charges?limit=100&expand[]=data.balance_transaction&expand[]=data.invoice' + (after ? '&starting_after=' + after : ''));
         charges.push(...(d.data || []));
         if (!d.has_more || !d.data?.length) break;
         after = d.data[d.data.length - 1].id;
@@ -324,12 +324,17 @@ Deno.serve(async (req) => {
         const s = await stripe('checkout/sessions?limit=40&status=complete&expand[]=data.line_items');
         for (const x of s.data || []) if (x.payment_intent) names.set(String(x.payment_intent), x.line_items?.data?.[0]?.description || '');
       } catch (_) { /* names are a nice to have */ }
+      // A subscription's charge is named by its invoice's first line ("1 × Brand Partner (at $200.00 / month)" reads as its product).
+      const invLine = (inv: any) => {
+        const t = inv && typeof inv === 'object' ? String(inv.lines?.data?.[0]?.description || '') : '';
+        return t.replace(/^\d+\s*[×x]\s*/, '').replace(/\s*\(at [^)]*\)\s*$/, '').trim();
+      };
       const isEmail = (v: string) => /^[^\s@]+@[^\s@]+$/.test(v);
       const latest = rows.slice(0, 15).map((r) => {
         const c = r.c, email = c.billing_details?.email || c.receipt_email || (isEmail(c.description || '') ? c.description : '') || '';
         const desc = c.description && !isEmail(c.description) && !/^(Description|Subscription (creation|update))$/.test(c.description) ? c.description : '';
         return { at: new Date(c.created * 1000).toISOString(), gross: r.gross, net: r.net, refunded: c.amount_refunded || 0,
-          what: names.get(String(c.payment_intent || '')) || desc || (c.invoice ? 'Subscription payment' : 'Payment'),
+          what: names.get(String(c.payment_intent || '')) || desc || invLine(c.invoice) || (c.invoice ? 'Subscription payment' : 'Payment'),
           who: c.billing_details?.name || email || '', email,
           url: 'https://dashboard.stripe.com/payments/' + (c.payment_intent || c.id) };
       });
