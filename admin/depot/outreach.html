@@ -134,7 +134,7 @@
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
     function err(e) { return ERR[e] || ('It did not work (' + e + ').'); }
     function chIcon(c) { var x = CH[c] || {}; return x.icon ? '<img src="' + x.icon + '" alt="">' : ''; }
-    function initials(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase(); }
+    function initials(n) { return String(n || '?').replace(/\(.*$/, '').trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase(); }
     function inFilter(m, f) {
       if (f === 'todo') return m.status === 'draft' || m.status === 'failed';
       if (f === 'scheduled') return m.status === 'approved' || m.status === 'sending';

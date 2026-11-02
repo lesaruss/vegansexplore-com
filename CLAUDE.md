@@ -5187,6 +5187,50 @@ shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **De
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
+## Depot > Outreach: everyone to reach each day (Sean, 2026-11-01, playbook `ve-outreach-buckets`)
+
+"Each day... see all the people I need to communicate with in all the different ways... when I click on it, it tells me exactly what
+to do. It gives me the language. If it's an email... I approve it. It puts it on a schedule to go out... I have up until when it goes
+out... If it's an Instagram message... me copying it... I just confirm that it was sent... text message... I respond in the notes with
+what was said." **Depot > Outreach** (`/admin/depot/outreach`, People in the Go to menu; super admins), the Social studio's way of working
+for one-to-one messages. Locked in V's outreach playbook: five buckets (business, community, sponsor, nonprofit, group), everyone Sean
+knows reached by November 30, a weekend review. It lives in the Depot so it can be checked live from a build session; its tables are
+shared, so it moves to HQ's People app unchanged.
+
+- **A day** (`#day/<YYYY-MM-DD>/<todo|scheduled|finished|all>`): Day before / Today / Next day and a date picker, the days around it with
+  how many still need Sean, a counter (need you, scheduled, done), and one row a person: initials, name and organization, the channel
+  and bucket, what happened or why now, and the status (Needs you, Scheduled, Sent, Done, Skipped, Did not send). Anything left from
+  earlier days shows as a banner on today (`#overdue`).
+- **One message** (`#m/<id>`): what to do in one line, who and why now, where it goes (email, @handle with Open their Instagram via
+  `ig.me/m/<handle>`, phone with Open Messages filled in, or the group), the tracked link in it with **Open the page** and its clicks, the
+  words (editable). **Email**: Approve and schedule (goes out at its time, 10 AM Eastern on its day unless set; refused with no address,
+  an empty subject or body, or a leftover `[Placeholder]`), Pull it back until then, Send me a test; changing the words of a scheduled one
+  puts it back to Needs you. **Instagram, text, Meetup, call**: Copy, open the app, I sent it (or Done). Skip and Open it again. **Notes**
+  are on the person (`person_key`: their email, `ig:<handle>`, or a key we set) and show on every message to them; **Follow up** puts them on
+  a later day by any channel, a new draft. **Before and after** lists their other messages.
+- **Data** (migration `20261101_people_outreach.sql`; RLS on, no policies): `ve_people_outreach` (one row a message: day, send_at,
+  person, bucket, channel email | instagram | text | call | meetup | other, to_address, subject, body, link_code, why, personal,
+  template_key, status draft | approved | sending | sent | done | skipped | failed), `ve_people_outreach_notes`, and
+  `ve_people_outreach_templates` (the two or three base emails a bucket: approving one, `template_approve`, approves its messages that are
+  not `personal`, and any later message made from it starts approved; personal ones always wait for Sean).
+- **Server**: edge function `ve-people-outreach` (verify_jwt off; the VE token of a super admin, or `LESARUSS_ADMIN_TOKEN` with
+  `as_member`): `day`, `overdue`, `get`, `save`, `approve`, `pull_back`, `done`, `skip`, `reopen`, `note`, `follow_up`, `test`, `create`,
+  `templates`, `template_approve`, `tick`. Cron `ve-people-outreach` (every 5 minutes, x-cron-secret) runs `tick`: approved emails whose
+  time has passed are claimed (`sending`), sent through `email-send` as brand `lesaruss` (from Sean A. Russell, replies to
+  contact@lesaruss.com, one-click unsubscribe and the postal address, `campaign_ref` `ve-people-<id>` so nothing goes twice), then marked
+  Sent, or Did not send with why (do-not-email list, bad address). Opened comes from `email_events`, clicks from the message's `/go/` link.
+- **Loaded 2026-11-01** (20 messages, campaign `outreach-nov`, each with its own tracked link): Monday the Miami Meetup post and Instagram to
+  Keya, Elle, Paige and Michelle; Tuesday emails to Dina's, The Rabbit Hole, Christopher's Kitchen and Love Life Cafe, Instagram to
+  Stephanie's, Greens and Grains and Aguacate, emails to Ella Magers, John Thomas, Korin Sutton, Susan Hargreaves and Saffron Rivett, a text
+  to Carol (Florida Animal Rescue Alliance unsubscribed from our email, so never email it); Wednesday the Broward and Friday the Palm Beach
+  Meetup posts. All personal, so every one waits for Sean.
+- **Made-right memberships** (same day): comps stay off, but a Founding Member invitation is on us, with 1,100 points, for the emails in
+  `ve_site_settings` `founding_member.made_right` (Elle Jimenez, Korin Sutton, Ella Magers: they paid on the old platform and did not get its
+  worth; `madeRight` in `ve-invites`, migration `20261101_made_right_memberships.sql`). Sean tells them in his second message, never the
+  first. Proven live: Ella's test invitation came out on us, someone not on the list was refused, both removed.
+- Not built yet: Results by bucket and week (opened, clicked, replied, joined), Logan's proposed 30 for the next day, campaigns from
+  BrandDesk feeding the queue, and reply tracking (replies land in contact@lesaruss.com, not here).
+
 ## Money in: an email for every payment (Sean, 2026-11-01)
 
 "John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that
