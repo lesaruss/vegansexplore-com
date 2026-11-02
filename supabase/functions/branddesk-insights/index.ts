@@ -24,6 +24,10 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const MODEL = 'claude-opus-5-5';
 const H = 3600 * 1000;
+// Search Console calls are billed to the LESARUSS Google Cloud project (lesaruss-493806), where the Search Console API is on. The
+// reader's own project (studious-optics-499502-m9) is not reachable from Sean's account (2026-11-02); the reader holds Service Usage
+// Consumer on lesaruss-493806 so it may use it.
+const GSC_PROJECT = 'lesaruss-493806';
 
 // Each brand's site. A brand not listed reads its domain from analytics_connections (config.brand_slug).
 const DOMAINS: Record<string, string> = { 'vegans-explore': 'vegansexplore.com', 'sean-a-russell': 'seanarussell.com', 'geekfon-society': 'geekfon.ai' };
@@ -158,7 +162,7 @@ async function webAnalytics(brand: string, from: string, to: string) {
 // ---- Search Console ----
 async function gscSite(domain: string): Promise<{ site: string | null; token: string; sites: string[] }> {
   const token = await gToken('https://www.googleapis.com/auth/webmasters.readonly');
-  const r = await fetch('https://www.googleapis.com/webmasters/v3/sites', { headers: { Authorization: 'Bearer ' + token } });
+  const r = await fetch('https://www.googleapis.com/webmasters/v3/sites', { headers: { Authorization: 'Bearer ' + token, 'x-goog-user-project': GSC_PROJECT } });
   const j = await r.json();
   // Every property the reader was added to, with its level, so a miss says why (Sean added it, the address differs, still unverified).
   const seen: string[] = (j.siteEntry ?? []).map((s: any) => `${s.siteUrl} (${s.permissionLevel})`);
@@ -168,14 +172,14 @@ async function gscSite(domain: string): Promise<{ site: string | null; token: st
 }
 async function gscQuery(token: string, site: string, body: Record<string, any>) {
   const r = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`, {
-    method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }, body: JSON.stringify(body),
+    method: 'POST', headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json', 'x-goog-user-project': GSC_PROJECT }, body: JSON.stringify(body),
   });
   const j = await r.json();
   if (j.error) throw new Error('search_console: ' + j.error.message);
   return (j.rows ?? []) as { keys?: string[]; clicks: number; impressions: number; ctr: number; position: number }[];
 }
 async function gscSitemaps(token: string, site: string) {
-  const r = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/sitemaps`, { headers: { Authorization: 'Bearer ' + token } });
+  const r = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/sitemaps`, { headers: { Authorization: 'Bearer ' + token, 'x-goog-user-project': GSC_PROJECT } });
   const j = await r.json();
   return (j.sitemap ?? []).map((s: any) => ({
     path: s.path, last_submitted: s.lastSubmitted ?? null, last_read: s.lastDownloaded ?? null, pending: !!s.isPending,
