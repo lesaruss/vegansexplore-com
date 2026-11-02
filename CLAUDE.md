@@ -3308,6 +3308,20 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
 
+## Featured items in the Daily Pulse (Sean, 2026-11-01)
+
+"What I noticed you didn't put into the post today was the episode, the launch of the Vegans Explore podcast. Let's do it for
+tomorrow"; "we could be sending them stuff like that periodically". A `ve_pulse_features` row (`starts_on`, `ends_on` Eastern dates,
+`communities` or null for every Vegans Explore city, `story` {title, take, url, source}; migration `20261102_pulse_features.sql`, RLS on, no
+policies) goes first in the stories of every city's Pulse that publishes in those dates, never LESARUSS.ai's `lr-*` topics.
+`ve_pulse_auto_publish` applies it as each draft goes out (`ve_pulse_features_apply(post)`), and `ve_pulse_features_apply()` applies it to
+every waiting draft at once so the Pulse desk shows it; each story carries `feature_id`, so it is never added twice. A story that is ours
+links to its page on our site (an episode: `/listen?show=&ep=`). First: the podcast's return ("Founder's Report: Back and Ready for Duty",
+Nov 1) in every city on Monday, November 2. The same night five cities' drafts (South, Central and North Florida, Atlanta, D.C.) had failed
+to write ("No new verifiable story"); they were queued again with the episode as their lead (`write_status` queued, `write_note` 500
+characters at most, then `lesaruss_dispatch_tick()`). Each city's Pulse already carries the national news under its own (Across the
+country, since 2026-10-31); there is no separate national Pulse (`pulse_auto.communities` has no `national`).
+
 ## The Daily Pulse is the Community Board (Sean, 2026-10-26)
 
 "I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
@@ -4090,6 +4104,12 @@ the $11 Passport or a membership earned now; no free account that can take part,
     out the send functions; a syntax check does not catch a missing name, so type-check an edge function (`tsc --noEmit`) before deploying.
     A [TEST] Taster ("Sean [TEST]") is kept so the test Day 14's Yes link works; it is never sent to (the tick skips [TEST] names). Next, as
     its own build: email preferences in My Account for members.
+    **Then, the same evening** (Sean: "just have the episode, literally the episode isolated by itself there... the horizontal podcast
+    episode, like where we have in the listings... and then we could have the text below"): Day 7's button, **Play the episode**, opens
+    **`/listen?show=<listing slug>&ep=<feed guid>`** (`listen.html`, `noindex`): the show's name, the episode row (`VEEpisodes.row`: the
+    show's art, Play in the player docked above it, Save, **Vote for the show** with its count through `VEVotes`), the episode's notes from
+    the feed under About this episode, and Every episode of the show. `ve-nurture` version 6 from 38a5438. Any episode of any show in the
+    Directory opens there; use it wherever we send one episode (emails, the Pulse).
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
