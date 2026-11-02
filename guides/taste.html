@@ -49,6 +49,7 @@
     .msg{font-size:13.5px;font-weight:700;color:#8a1c12;margin-top:10px;min-height:20px}
     .done{padding:40px;font-size:16px}
     /* The sampler slides */
+    .tz-vid{width:min(560px,100%);justify-self:center;align-self:center}.tz-vid .vv{margin:0}
     .tz-art{width:min(380px,100%);aspect-ratio:1;border-radius:18px;background:#1b2a1d center/cover no-repeat;box-shadow:0 18px 44px rgba(0,0,0,.4);justify-self:center}
     .tz-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14.5px;line-height:1.55}
     .tz-box b{color:#9fe0a6}
@@ -77,6 +78,7 @@
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/footer.js"></script>
+  <script src="/public/ve-video.js"></script>
   </div>
   <script>
   (function () {
@@ -137,7 +139,8 @@
     function slide(id, title, g, eyebrow, h, body, links) {
       return '<section class="vg-slide" id="' + id + '" data-title="' + esc(title) + '"><div class="vg-split"><div class="vg-glass"><p class="vg-eyebrow">' + esc(eyebrow) + '</p><h2 class="vg-h">' + h + '</h2>' + body +
         (links ? '<div class="tz-links">' + links + '</div>' : '') + (g !== 'all' && id !== 'you' && id !== 'city' ? '<p class="tz-rest">The rest of this Guide comes with your Passport.</p>' : '') + '</div>' +
-        '<div class="tz-art" role="img" aria-label="' + esc(eyebrow) + '" style="background-image:url(\'' + esc(g === 'all' ? '/public/guides/welcome-ensemble.jpg' : art(g)) + '\')"></div></div></section>';
+        (id === 'you' && window.VEVideo ? '<div class="tz-vid">' + VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-taste-v1.mp4', vtt: '/public/home/next-taste-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'taste_next_v1' }) + '</div>' :
+        '<div class="tz-art" role="img" aria-label="' + esc(eyebrow) + '" style="background-image:url(\'' + esc(g === 'all' ? '/public/guides/welcome-ensemble.jpg' : art(g)) + '\')"></div>') + '</div></section>';
     }
     function sampler(t) {
       document.getElementById('gate').hidden = true;
@@ -162,6 +165,8 @@
     }
     function start() {
       if (!window.VEAuth || !window.VEGuideArt) return setTimeout(start, 100);
+      var pulse = qs.get('pulse');
+      if (pulse) { fetch(FN.replace('ve-taster', 've-nurture'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'pulse_optin', key: pulse }) }).then(function (r) { return r.json(); }).catch(function () { return null; }).then(function (r) { document.getElementById('form').innerHTML = '<h2>' + (r && r.ok ? 'You are in' : 'That link did not work') + '</h2><p>' + (r && r.ok ? 'Your ' + (r.city ? esc(r.city) + ' ' : '') + 'Daily Pulse comes every Thursday: the week\'s top conversations, once a week. Every email has a link to stop it.' : 'Reply to any of our emails and we will set it up for you.') + '</p><p><a href="/guides/taste">Back to your Taste</a></p>'; }); return; }
       var unsub = qs.get('unsub');
       if (unsub) { api({ action: 'unsubscribe', token: unsub }).then(function (r) { document.getElementById('form').innerHTML = '<h2>Done</h2><p>' + (r && r.ok ? 'We will not email you again. Your taste still opens from this page any time.' : 'That link did not work. Reply to any of our emails and we will stop them.') + '</p>'; }); return; }
       var t = qs.get('t');

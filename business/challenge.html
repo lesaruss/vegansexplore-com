@@ -62,6 +62,17 @@
     .results button{text-align:left;font:inherit;background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer}
     .results button b{display:block}
     .results button span{font-size:12.5px;color:var(--mute)}
+    .gift.wide{max-width:none;padding:28px 32px}
+    .gift.wide .amt{font-size:64px}
+    .cardstep{display:flex;flex-direction:column;gap:18px}
+    /* Liz on each step: her picture and her voice, nothing plays until Play (Sean, 2026-11-01). */
+    .liz{display:flex;gap:16px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 18px}
+    .liz .pic{width:88px;height:88px;flex:0 0 88px;border-radius:12px;background:#eef4ee center/cover no-repeat}
+    .liz .say{flex:1;min-width:0}
+    .liz .who{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gd)}
+    .liz p{font-size:14.5px;margin:4px 0 0;line-height:1.55}
+    .liz .play{flex:0 0 auto}
+    @media(max-width:700px){.liz{flex-wrap:wrap}.liz .pic{width:72px;height:72px;flex-basis:72px}.liz .play{width:100%}}
     [hidden]{display:none!important}
   </style>
 </head>
@@ -73,6 +84,7 @@
     <h1>Be a Passport Challenge stop</h1>
     <p class="sub">Every month, up to five Vegan businesses in each chapter are the stops on our Passport Challenge. Members come to check in, show you off and win your gift cards in the Vault. You give four $25 gift cards. We give you a month of promotion, and your membership and your page come with it.</p>
     <div class="steps" id="steps"></div>
+    <div class="liz" id="liz" hidden><div class="pic" id="lizpic" role="img" aria-label="Liz, one of our Guides"></div><div class="say"><div class="who">Liz &middot; Vegans Explore</div><p id="lizsay"></p></div><button type="button" class="btn play" id="lizplay">Play Liz</button></div>
     <div id="view"><p class="sub">Loading...</p></div>
   </main>
   <script src="/public/ve-auth.js"></script>
@@ -97,9 +109,35 @@
       return '<div class="nav">' + (back ? '<button type="button" class="btn ghost" data-go="' + back + '">Back</button>' : '<span></span>') +
         '<span class="n">Step ' + (i + 1) + ' of 3</span>' + (next ? '<button type="button" class="btn" id="next">' + (label || 'Next') + '</button>' : '<span></span>') + '</div><p class="msg" id="msg" role="status"></p>';
     }
-    function giftCard() {
+    // Liz's lines, word for word as recorded (vegan-media/media/liz/passport-challenge/, el-media tts in her profile voice).
+    var LIZ = {
+      offer: { audio: 'pc-offer-v1.mp3', say: 'Hi, I\'m Liz with Vegans Explore. We\'re building the home of the global Vegan movement, and it starts in your city. In January we kick off our biggest year yet, and we\'re inviting a few businesses to help build it as Founding Members. That\'s why we reached out: we\'d love you to be one of the five Passport Challenge stops in your city. Take a look at the next two pages. I\'ll walk you through each one, or you can just read along. Then decide if it\'s a fit.' },
+      card: { audio: 'pc-card-v1.mp3', say: 'This is your card, exactly how members will see it on their phone. You give four twenty-five dollar gift cards, and members win them in our Vault by taking part. In return, you\'re a featured stop for the month, on our challenge map, in our reels and in the Daily Pulse.' },
+      agree: { audio: 'pc-agree-v1.mp3', say: 'Last step. Read the agreement, type your name, and pick a short staff PIN. When a member comes in to use a card, your staff type that PIN on the member\'s phone, and that\'s it. No app, nothing to install. We pick the five stops by the tenth, and we\'ll email you either way.' }
+    };
+    var LIZ_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/passport-challenge/';
+    var lizAudio = new Audio(), lizOn = false;
+    try { lizOn = sessionStorage.getItem('pc_liz') === '1'; } catch (e) {}
+    function lizBtn() { var b = document.getElementById('lizplay'); b.textContent = lizAudio.paused ? 'Play Liz' : 'Pause'; }
+    lizAudio.addEventListener('play', lizBtn); lizAudio.addEventListener('pause', lizBtn); lizAudio.addEventListener('ended', lizBtn);
+    document.getElementById('lizplay').addEventListener('click', function () {
+      if (lizAudio.paused) { lizOn = true; lizAudio.play().catch(function () {}); } else { lizOn = false; lizAudio.pause(); }
+      try { sessionStorage.setItem('pc_liz', lizOn ? '1' : '0'); } catch (e) {}
+    });
+    function lizShow(s) {
+      var box = document.getElementById('liz'), line = LIZ[s];
+      lizAudio.pause();
+      if (!line || !O || !O.in_pilot) { box.hidden = true; return; }
+      box.hidden = false;
+      document.getElementById('lizsay').textContent = line.say;
+      var pic = document.getElementById('lizpic'), art = window.VEGuideArt && VEGuideArt('liz', 'square');
+      if (art) pic.style.backgroundImage = 'url("' + art + '")'; else setTimeout(function () { var a = window.VEGuideArt && VEGuideArt('liz', 'square'); if (a) pic.style.backgroundImage = 'url("' + a + '")'; }, 600);
+      lizAudio.src = LIZ_BASE + line.audio; lizBtn();
+      if (lizOn) lizAudio.play().catch(function () {});
+    }
+    function giftCard(wide) {
       var l = O.listing;
-      return '<div class="gift" aria-label="How your gift card looks on a member\'s phone"><div class="top"><div class="logo">' + (l.logo_url ? '<img alt="" src="' + esc(l.logo_url) + '">' : esc((l.name || 'V').charAt(0))) + '</div><div><b>' + esc(l.name) + '</b><div class="who">' + esc(l.city || '') + '</div></div></div>' +
+      return '<div class="gift' + (wide ? ' wide' : '') + '" aria-label="How your gift card looks on a member\'s phone"><div class="top"><div class="logo">' + (l.logo_url ? '<img alt="" src="' + esc(l.logo_url) + '">' : esc((l.name || 'V').charAt(0))) + '</div><div><b>' + esc(l.name) + '</b><div class="who">' + esc(l.city || '') + '</div></div></div>' +
         '<div class="amt">$' + (O.card_cents / 100) + '</div><div class="who">Won by Sam R. in the Vegans Explore Vault</div><div class="code">7KQ4 M2XP</div><div class="small">One per visit. No cash back. Expires 12 months after it is won. Your staff type your PIN on this screen to redeem it.</div></div>';
     }
     function finder() {
@@ -119,6 +157,7 @@
     }
     function draw() {
       var s = step();
+      lizShow(s);
       document.getElementById('steps').innerHTML = STEPS.slice(0, 3).map(function (x) { return '<span class="' + (x[0] === s || (s === 'done' && x[0] === 'agree') ? 'on' : '') + '">' + x[1] + '</span>'; }).join('');
       var v = document.getElementById('view'), l = O.listing, left = Math.max(0, O.slots - O.taken);
       var applied = (O.applied || []).filter(function (a) { return a.month === O.month && a.status !== 'withdrawn'; })[0];
@@ -135,7 +174,7 @@
           '</div><div class="card"><h2>Why it works</h2><p style="font-size:14.5px">Four $25 cards cost you about $30 in food. The people who come back to use them are new customers, many of them for good. And all month our promotion shows your cards as a reason to join Vegans Explore, so your name is in front of every member and everyone thinking about it.</p></div></div>' +
           nav(null, O.in_pilot && !O.owned_by_other && !applied && left > 0 ? 'card' : null, 'See your card');
       } else if (s === 'card') {
-        v.innerHTML = '<div class="grid"><div class="card"><h2>How your card looks</h2><p style="font-size:14.5px;margin-bottom:12px">A member who wins one of your cards in the Vault sees it on their phone like this. At your counter, your staff type your short PIN on the member\'s screen. The card is used once, on the spot. No app, nothing to install.</p><ul class="ticks"><li>$' + (O.card_cents / 100) + ' off, one card per visit, no cash back.</li><li>Each card expires ' + O.card_months + ' months after it is won.</li><li>You see how many were won and used, never who.</li></ul></div><div>' + giftCard() + '</div></div>' + nav('offer', 'agree', 'Next');
+        v.innerHTML = '<div class="cardstep"><div class="card"><h2>How your card looks</h2><p style="font-size:14.5px;margin-bottom:12px">A member who wins one of your cards in the Vault sees it on their phone like this. At your counter, your staff type your short PIN on the member\'s screen. The card is used once, on the spot. No app, nothing to install.</p><ul class="ticks"><li>$' + (O.card_cents / 100) + ' off, one card per visit, no cash back.</li><li>Each card expires ' + O.card_months + ' months after it is won.</li><li>You see how many were won and used, never who.</li></ul></div>' + giftCard(true) + '</div>' + nav('offer', 'agree', 'Next');
       } else if (s === 'agree') {
         v.innerHTML = '<div class="grid"><div class="card"><h2>The agreement</h2><div class="terms"><p><b>Passport Challenge stop agreement</b>, version ' + esc(O.agreement_version) + '. Between ' + esc(l.name) + ' and LESARUSS Inc. (Vegans Explore), 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p><ol>' +
           '<li>' + esc(l.name) + ' gives ' + O.cards + ' promotional digital gift cards of $' + (O.card_cents / 100) + ' each for ' + esc(O.month_words) + ', if picked as one of the month\'s stops.</li>' +

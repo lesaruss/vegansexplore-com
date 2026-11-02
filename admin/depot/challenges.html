@@ -112,7 +112,7 @@
       }
       // ---------- Taster emails (Earn your Passport part 5, ve-nurture) ----------
       var NFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nurture';
-      var KINDS = [['day-3', 'Day 3: this week in their city'], ['day-7', 'Day 7: a story for them'], ['day-14', 'Day 14: their Guide'], ['pulse', 'Thursdays: the Daily Pulse'], ['dec-1', 'December 1: Founding closes January 1'], ['dec-2', 'December 18: two weeks left'], ['dec-3', 'December 30: tomorrow is the last day']];
+      var KINDS = [['day-3', 'Day 3: this week in their city'], ['day-7', 'Day 7: a story for them'], ['day-14', 'Day 14: their Guide'], ['pulse', 'Thursdays: the Daily Pulse, only if they said yes on Day 14'], ['dec-1', 'December 1: Founding closes January 1'], ['dec-2', 'December 18: two weeks left'], ['dec-3', 'December 30: tomorrow is the last day']];
       function napi(b) { return fetch(NFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
       function kindName(k) { if (/^pulse-/.test(k)) return 'Daily Pulse ' + k.slice(6); var f = KINDS.filter(function (x) { return x[0] === k; })[0]; return f ? f[1].split(':')[0] : k; }
       function drawEmails(sub) {

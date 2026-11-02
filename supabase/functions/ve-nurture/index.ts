@@ -3,12 +3,13 @@
 //
 // THE BUSINESS OFFER (Passport Challenge stops). The team makes an offer for a business (its email and its own tracked link,
 // /go/pc-<code> to /business/challenge?listing=<slug>) and sends it (email A). Two days later, on a weekday from 10 AM Eastern, one
-// follow-up: B "Your spot is still open" if they never clicked their link, C "What a stop really costs" if they clicked and did not
-// apply. Applying (a ve_pc_slots row) is "chosen": ve-vault sends D at once. Two days after the follow-up with no application the
+// follow-up, "<Month> Passport Challenge stops in <chapter>" (Sean, 2026-11-01: the "what it really costs" email for those who clicked was dropped as
+// presumptive; everyone who has not applied gets the same note). Applying (a ve_pc_slots row) is "chosen": ve-vault sends D at once. Two days after the follow-up with no application the
 // offer is routed to the Inbox for the chapter's Community Manager. Every email from VEGANS EXPLORE, signed Vegans Explore team.
 //
 // THE NOT-READY-YET EMAILS (Tasters). Day 3 "This week in <chapter>", Day 7 a story that fits why they came, Day 14 their Guide,
-// then the Daily Pulse on Thursdays (never two emails in six days), and in December three notes on Founding Membership closing.
+// then the Daily Pulse on Thursdays only for Tasters who said yes to it in the Day 14 email (ve_tasters.pulse_opt_in_at; never two
+// emails in six days), and in December three notes on Founding Membership closing.
 // Ends when they stop our emails, pay, or earn their membership.
 //
 //   { action: 'tick' }                               the cron (x-cron-secret) or ops: sends what is due
@@ -18,19 +19,22 @@
 //   { action: 'offer_send', id }                     super admins: sends email A now
 //   { action: 'offer_cancel', id }                   super admins: stops an offer
 //   { action: 'offer_stop', code }                   anyone with the code (the email's link): stops our emails to that address
+//   { action: 'pulse_optin', key }                   a Taster with their key (the Day 14 email's link): the weekly Daily Pulse, yes
 //   { action: 'preview', kind, offer_id?, taster_id? }  super admins: {subject, html} of any email, on a real or a sample person
 //   { action: 'test', kind, offer_id?, taster_id? }     super admins: that email to the signed-in admin, [Test] in the subject
 //   { action: 'tasters' }                            super admins: Tasters on the track, what each was sent and what is next
+// Sending (Sean, 2026-11-01: "where is this living? Do we have an email system in the HQ?"): every email goes through email-send, the
+// LESARUSS email system HQ > Email reads (brand vegans-explore: VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com,
+// one-click unsubscribe, the postal address, the brand's suppressions, an email_sends row per email). Each email has one campaign_ref
+// (refOf), registered once in email_campaigns as an automatic campaign on its first real send, so HQ > Email lists it with its numbers.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const FN_BASE = `${SUPABASE_URL}/functions/v1`;
+const BRAND = 'vegans-explore';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
-const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
-const REPLY = 'contact@lesaruss.com';
-const ADDRESS = 'LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301';
 const DEADLINE = Date.parse('2027-01-01T05:00:00Z');
 const DECEMBER = [['dec-1', '2026-12-01'], ['dec-2', '2026-12-18'], ['dec-3', '2026-12-30']];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret' };
@@ -44,6 +48,14 @@ function fromB64u(s: string) { const pad = s.length % 4 ? '='.repeat(4 - (s.leng
 
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'nutrition-guide': 'The Nutrition Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide',
   'stadium-arena-guide': 'The Stadium & Arena Guide', 'airport-guide': 'The Airport Guide', 'creator-guide': 'The Creator Guide', 'nonprofit-guide': 'The Nonprofit Guide' };
+const GUIDE_LINE: Record<string, string> = {
+  'vegan-dairy-guide': 'It shows you the Vegan milk, cheese, butter and ice cream worth buying, where to find them, and simple swaps and recipes.',
+  'nutrition-guide': 'It covers the nutrients people ask about, B12, protein, iron and the rest: how much you need and where to get it, with the sources named.',
+  'vegan-restaurant-guide': 'It walks a Vegan restaurant through getting found online, with a free check of your listing and every fix explained.',
+  'stadium-arena-guide': 'It maps the Vegan food inside the stadiums and arenas near you, stand by stand, with directions from your seat.',
+  'airport-guide': 'It maps the Vegan food in the airports, terminal by terminal, before and after security, with directions from your gate.',
+  'creator-guide': 'It is ten lessons for Vegan creators on building an audience and working with brands.',
+  'nonprofit-guide': 'It is ten lessons for people who run Vegan nonprofits, rescues and sanctuaries.' };
 const WHY: Record<string, string> = { food: 'finding Vegan food and places', going: 'going Vegan, or eating more Vegan', vegan: 'your Vegan community', animals: 'helping animals', business: 'your business', creator: 'creating content' };
 const CHAPTER_NAME: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.',
   delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
@@ -77,6 +89,16 @@ async function tasterKey(id: string) {
   const h = b64uStr(JSON.stringify({ alg: 'HS256', typ: 'TASTER' })), p = b64uStr(JSON.stringify({ sub: id, k: 'taster', exp: Math.floor(Date.now() / 1000) + 400 * 86400 }));
   return `${h}.${p}.${b64u(new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(`${h}.${p}`))))}`;
 }
+async function tasterFrom(token: string): Promise<string | null> {
+  try {
+    const [h, p, s] = token.split('.');
+    if (!h || !p || !s) return null;
+    const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(SERVICE_KEY.slice(32, 64).padEnd(32, '1')), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('HMAC', k, fromB64u(s), new TextEncoder().encode(`${h}.${p}`)))) return null;
+    const d = JSON.parse(new TextDecoder().decode(fromB64u(p)));
+    return d.k === 'taster' && isId(d.sub) && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+  } catch { return null; }
+}
 async function memberFrom(token: string): Promise<string | null> {
   try {
     const [h, p, s] = token.split('.');
@@ -97,7 +119,7 @@ async function secret(key: string) {
 function shell(body: string, foot: string) {
   return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a">` +
     `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
-    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} ${ADDRESS}.</p></div>`;
+    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} <a href="{{unsubscribe_url}}" style="color:#777">Stop these emails</a>. {{postal_address}}.</p></div>`;
 }
 const btn = (href: string, label: string) => `<p style="margin:22px 0"><a href="${href}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
 const P = (s: string) => `<p>${s}</p>`;
@@ -105,18 +127,42 @@ const sign = P('Vegans Explore team');
 const list = (items: string[]) => items.length ? `<ul style="padding-left:20px;margin:10px 0">${items.map((i) => `<li style="margin:4px 0">${i}</li>`).join('')}</ul>` : '';
 const utm = (u: string, kind: string) => u + (u.includes('?') ? '&' : '?') + 'utm_source=email&utm_medium=nurture&utm_campaign=' + encodeURIComponent(kind);
 
-async function send(to: string, subject: string, html: string, unsub?: string): Promise<{ id?: string; error?: string }> {
-  if (!RESEND_KEY) return { error: 'no_key' };
+// One campaign per email (and per month for the business offer, per date for the weekly Pulse and the December notes).
+function refOf(kind: string) {
+  const m = openMonth(10).slice(0, 7);
+  if (kind === 'offer') return { ref: `ve-pc-offer-${m}`, name: `Passport Challenge offer (${m})` };
+  if (kind === 'not_opened') return { ref: `ve-pc-still-open-${m}`, name: `Passport Challenge follow-up: still open (${m})` };
+  if (kind.startsWith('pulse-')) return { ref: `ve-taster-pulse-${kind.slice(6)}`, name: `Taster: the Daily Pulse (${kind.slice(6)})` };
+  const dec = DECEMBER.find(([k]) => k === kind);
+  if (dec) return { ref: `ve-taster-founding-${dec[1]}`, name: `Taster: Founding deadline note (${dec[1]})` };
+  return { ref: `ve-taster-${kind}`, name: `Taster: ${kind.replace('day-', 'Day ')}` };
+}
+async function emailSend(payload: Record<string, unknown>) {
+  const admin = await secret('LESARUSS_ADMIN_TOKEN');
   try {
-    const r = await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ from: FROM, to: [to], reply_to: REPLY, subject, html, ...(unsub ? { headers: { 'List-Unsubscribe': `<${unsub}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } } : {}) }) });
-    const d = await r.json().catch(() => ({}));
-    return r.ok ? { id: d.id } : { error: String(d.message || r.status) };
-  } catch (e) { return { error: String(e) }; }
+    const r = await fetch(`${FN_BASE}/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin}` }, body: JSON.stringify(payload) });
+    return await r.json().catch(() => ({ ok: false, error: `email-send ${r.status}` }));
+  } catch (e) { return { ok: false, error: String(e) }; }
+}
+// Registered once, on the first real send, as an automatic campaign HQ > Email shows (status sent: email-dispatch never picks it up).
+async function registerCampaign(ref: string, name: string, subject: string, html: string, kind: string) {
+  await db.from('email_campaigns').upsert({ brand_slug: BRAND, campaign_ref: ref, name: `${name}, automatic`, subject, html, status: 'sent',
+    audience: { source: 've-nurture', kind, automatic: true }, notes: 'Sent one at a time by ve-nurture (Earn your Passport). Switch it on or off in the Vegans Explore Depot.',
+    started_at: new Date().toISOString(), completed_at: new Date().toISOString(), created_by: 've-nurture' }, { onConflict: 'campaign_ref', ignoreDuplicates: true });
+}
+// result: sent | already_sent | suppressed | invalid | failed
+async function send(kind: string, to: string, name: string | null, subject: string, html: string, testTo?: string): Promise<{ result: string; id?: string; error?: string }> {
+  const { ref, name: cname } = refOf(kind);
+  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') ? 've-tasters' : 've-pc-offers',
+    subject, html, recipients: [{ email: to, name: name || undefined }], ...(testTo ? { test_to: [testTo] } : {}) });
+  const r = res?.results?.[0];
+  if (!r) return { result: 'failed', error: res?.error || (res?.errors || []).join('; ') || 'email-send' };
+  if (r.result === 'sent' && !testTo) await registerCampaign(ref, cname, subject, html, kind);
+  return { result: r.result, id: r.id, error: r.error };
 }
 async function suppressed(email: string) {
-  const { count } = await db.from('email_suppressions').select('id', { count: 'exact', head: true }).eq('email', email.toLowerCase().trim()).eq('active', true);
-  return (count || 0) > 0;
+  const { data } = await db.rpc('email_is_suppressed', { p_email: email.toLowerCase().trim(), p_brand: BRAND });
+  return data === true;
 }
 
 // ---------- Business emails ----------
@@ -131,19 +177,18 @@ async function offerContext(o: any) {
 async function businessEmail(kind: string, o: any) {
   const c = await offerContext(o);
   const biz = esc(c.l?.name || 'your business'), cards = c.cfg.cards_per_slot, amt = c.cfg.card_cents / 100;
-  const foot = `You are getting this because ${biz} is in the Vegans Explore Directory. <a href="${c.stop}" style="color:#777">Stop these emails</a>.`;
+  const foot = `You are getting this because ${biz} is in the Vegans Explore Directory.`;
   if (kind === 'offer') return { subject: `Be a Passport Challenge stop in ${c.month}`, unsub: c.stop, html: shell(
     P(`Hi ${biz},`) + P(`Every month, up to five Vegan businesses in ${esc(c.chapter)} are the stops on our Passport Challenge. Our members come to check in, post about you, and win your gift cards in the Vegans Explore Vault.`) +
     P(`<b>What you give:</b> ${cards} digital gift cards of $${amt}. One per visit, no cash back, good for ${c.cfg.card_months} months after a member wins one.`) +
     P(`<b>What you get:</b> a month of promotion as a featured stop, your Vegans Explore membership and your listing claimed. If we pick you before January 1, you are a Founding Member.`) +
     P(`There are five spots for ${esc(c.month)}, and we choose them on ${esc(c.deadline)}.`) + btn(c.link, 'See the offer') + sign, foot) };
-  if (kind === 'not_opened') return { subject: `Your spot for ${c.month} is still open`, unsub: c.stop, html: shell(
-    P(`Hi ${biz},`) + P(`There are still spots for ${esc(c.month)} in ${esc(c.chapter)}, and we choose the five on ${esc(c.deadline)}. It takes about three minutes: look over the offer, see how your card looks, and agree.`) +
+  // The follow-up, reworded by the review panel (2026-11-02): a plain subject, no guess at why they have not answered, the deal in one line.
+  const hello = o.name && !/\[TEST\]/i.test(o.name) ? `Hi ${esc(String(o.name).trim().split(/\s+/)[0])},` : 'Hello,';
+  return { subject: `${c.month} Passport Challenge stops in ${c.chapter}`, unsub: c.stop, html: shell(
+    P(hello) + P(`This follows our earlier note. We choose ${esc(c.month)}'s five Passport Challenge stops in ${esc(c.chapter)} on ${esc(c.deadline)}, and there is still room for ${biz}. A stop gives ${cards} digital gift cards of $${amt} for our members to win, and gets a month of promotion and a membership in return.`) +
+    P(`The details are on one page, with a short walkthrough from Liz, one of our Guides. If now isn't the right time, there's nothing you need to do.`) +
     btn(c.link, 'See the offer') + sign, foot) };
-  return { subject: 'What a Passport Challenge stop really costs', unsub: c.stop, html: shell(
-    P(`Hi ${biz},`) + P(`Thanks for taking a look. ${cards === 4 ? 'Four' : cards} $${amt} cards usually cost you about $30 in food, and the people who come in to use them are new customers.`) +
-    P(`Redeeming is easy. There's no app and nothing to install: the member shows the card on their phone, your staff type your short PIN on it, and that card is used.`) +
-    P(`You'll see how many cards were won and used, never who used them. Spots for ${esc(c.month)} close on ${esc(c.deadline)}.`) + btn(c.link, 'Pick your spot') + sign, foot) };
 }
 
 // ---------- Taster emails ----------
@@ -152,7 +197,7 @@ async function tasterEmail(kind: string, t: any) {
   const key = await tasterKey(t.id), unsub = `${SITE}/guides/taste?unsub=${encodeURIComponent(key)}`;
   const chapter = t.chapter && t.chapter !== 'elsewhere' ? t.chapter : 'national';
   const city = CHAPTER_NAME[chapter] || 'your city';
-  const foot = `You are getting this because you asked for A Taste of Vegans Explore. You are not a member, and nothing is charged. <a href="${unsub}" style="color:#777">Stop these emails</a>.`;
+  const foot = `You are getting this because you asked for A Taste of Vegans Explore. You are not a member, and nothing is charged.`;
   const challenges = utm(`${SITE}/challenges?t=${encodeURIComponent(key)}`, kind);
   if (kind === 'day-3') {
     const { data: w } = await db.rpc('ve_nurture_city_week', { p_chapter: chapter });
@@ -168,15 +213,18 @@ async function tasterEmail(kind: string, t: any) {
   if (kind === 'day-7') {
     const { data: s } = await db.rpc('ve_nurture_story', { p_why: t.why || 'vegan' });
     const st: any = s || null;
-    const body = st ? P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}, so we thought you'd like this one${st.show ? ` from ${esc(st.show)}` : ''}: <b>${esc(st.title)}</b>.`) + (st.summary ? P(esc(st.summary.replace(/\s+\S*$/, '')) + '...') : '') + btn(utm(`${SITE}/pulse/${st.slug}`, kind), 'Listen')
+    const body = st ? P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}, so we thought you'd like this one${st.show ? ` from ${esc(st.show_name || st.show)}` : ''}: <b>${esc(st.title)}</b>.`) + (st.summary ? P(esc(st.summary.replace(/\s+\S*$/, '')) + '...') : '') + btn(utm(`${SITE}/listen?show=${st.show_slug}&ep=${encodeURIComponent(st.guid)}`, kind), 'Play the episode') + P(`It plays right on the page, where you can save it and vote for the show.`)
       : P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}. Our shows have ten years of conversations about it.`) + btn(utm(`${SITE}/media`, kind), 'Listen');
     return { subject: st ? String(st.title).slice(0, 90) : 'A story for you', unsub, html: shell(P(`Hi ${first},`) + body + P(`More like it is in the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#1f5f22">Daily Pulse</a>.`) + sign, foot) };
   }
   if (kind === 'day-14') {
     const g = GUIDES[t.suggested_guide] ? t.suggested_guide : 'vegan-dairy-guide', name = GUIDES[g];
-    return { subject: `${name} is the one for you`, unsub, html: shell(
-      P(`Hi ${first},`) + P(`Based on what you told us, start with ${esc(name)}. You saw a piece of it in your Taste. The full Guide is $11 or 1,100 points, and it's yours to keep.`) +
-      btn(utm(`${SITE}/guides/${g}`, kind), 'See the Guide') + P(`Or <a href="${challenges}" style="color:#1f5f22">earn your Passport through a challenge</a>, and your points cover it.`) + sign, foot) };
+    const optin = `${SITE}/guides/taste?pulse=${encodeURIComponent(key)}`;
+    const pulseAsk = t.pulse_opt_in_at ? '' : P(`<b>Want your city's Daily Pulse every Thursday?</b> It's the week's top conversations ${chapter === 'national' ? 'on Vegans Explore' : 'in ' + esc(city)}, once a week. <a href="${optin}" style="color:#1f5f22;font-weight:700">Yes, send it</a>. If you don't tap it, we won't send it.`);
+    return { subject: `${name}: picked from your answers`, unsub, html: shell(
+      P(`Hi ${first},`) + P(`When you signed up for A Taste of Vegans Explore, you told us you're here for ${esc(WHY[t.why] || 'Vegan living')}. That points to ${esc(name)}.`) +
+      P(`${esc(GUIDE_LINE[g] || 'It takes one part of Vegan living and makes it easy, with a Guide walking you through it.')} You tried a piece of it in your Taste. The full Guide is $11, one time, or 1,100 points, and it's yours to keep.`) +
+      btn(utm(`${SITE}/guides/${g}`, kind), 'See the Guide') + P(`Or <a href="${challenges}" style="color:#1f5f22">earn your Passport free through a challenge</a>, and its points cover the Guide.`) + pulseAsk + sign, foot) };
   }
   if (kind.startsWith('pulse-')) {
     const { data: p } = await db.rpc('ve_nurture_pulse', { p_chapter: chapter });
@@ -187,8 +235,8 @@ async function tasterEmail(kind: string, t: any) {
   }
   const n = kind === 'dec-1' ? 1 : kind === 'dec-2' ? 2 : 3;
   const passport = utm(`${SITE}/passport?from=nurture`, kind);
-  if (n === 1) return { subject: 'Founding Membership closes January 1', unsub, html: shell(P(`Hi ${first},`) + P(`Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good. It's $11, one time, or earn it with a challenge.`) + btn(passport, 'Get your Passport') + P(`<a href="${challenges}" style="color:#1f5f22">See the challenges</a>`) + sign, foot) };
-  if (n === 2) return { subject: 'Two weeks left to be a Founding Member', unsub, html: shell(P(`Hi ${first},`) + P(`Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good. It's $11, one time, or earn it with a challenge.`) + P(`A challenge takes up to 30 days, so the $11 is the sure way before the deadline.`) + btn(passport, 'Get your Passport') + P(`<a href="${challenges}" style="color:#1f5f22">See the challenges</a>`) + sign, foot) };
+  if (n === 1) return { subject: 'Founding Membership closes January 1', unsub, html: shell(P(`Hi ${first},`) + P(`Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good. It's $11, one time. Or earn it free: finish one of our three challenges within 30 days (check in at Vegan places, bring three friends, or show up for the animals).`) + btn(passport, 'Get your Passport') + P(`<a href="${challenges}" style="color:#1f5f22">See the challenges</a>`) + sign, foot) };
+  if (n === 2) return { subject: 'Two weeks left to be a Founding Member', unsub, html: shell(P(`Hi ${first},`) + P(`Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good. It's $11, one time. Or earn it free: finish one of our three challenges within 30 days (check in at Vegan places, bring three friends, or show up for the animals).`) + P(`A challenge takes up to 30 days, so the $11 is the sure way before the deadline.`) + btn(passport, 'Get your Passport') + P(`<a href="${challenges}" style="color:#1f5f22">See the challenges</a>`) + sign, foot) };
   return { subject: 'Tomorrow is the last day', unsub, html: shell(P(`Hi ${first},`) + P(`Tomorrow, December 31, is the last day. Founding Membership closes at midnight Eastern as January 1 begins. Join before then and Founding Member stays on your profile for good.`) + btn(passport, 'Get your Passport') + sign, foot) };
 }
 
@@ -205,15 +253,15 @@ async function tick() {
     if (o.followup_at && since >= 2 * 864e5) { await db.from('ve_pc_offers').update({ status: 'routed', routed_at: new Date().toISOString() }).eq('id', o.id); out.routed++; continue; }
     if (!o.followup_at && since >= 2 * 864e5 && cfg.offers_on && inHours && weekday(e) && out.offers < cfg.per_tick) {
       if (await suppressed(o.email)) { await db.from('ve_pc_offers').update({ status: 'stopped', stopped_at: new Date().toISOString() }).eq('id', o.id); continue; }
-      const { count: clicks } = o.link_id ? await db.from('ve_link_clicks').select('id', { count: 'exact', head: true }).eq('link_id', o.link_id).eq('is_bot', false) : { count: 0 };
-      const kind = clicks ? 'opened' : 'not_opened';
+      const kind = 'not_opened';
       const m = await businessEmail(kind, { ...o, link_code: o.ve_links?.code });
-      const r = o.test ? { id: 'test' } : await send(o.email, m.subject, m.html, m.unsub);
-      if (r.id) { await db.from('ve_pc_offers').update({ followup_kind: kind, followup_at: new Date().toISOString(), send_ids: { ...(o.send_ids || {}), [kind]: r.id } }).eq('id', o.id); out.offers++; }
+      const r = o.test ? { result: 'sent', id: 'test' } : await send(kind, o.email, o.name, m.subject, m.html);
+      if (r.result === 'suppressed' || r.result === 'invalid') { await db.from('ve_pc_offers').update({ status: 'stopped', stopped_at: new Date().toISOString() }).eq('id', o.id); continue; }
+      if (r.result === 'sent' || r.result === 'already_sent') { await db.from('ve_pc_offers').update({ followup_kind: kind, followup_at: new Date().toISOString(), send_ids: { ...(o.send_ids || {}), [kind]: r.id || r.result } }).eq('id', o.id); out.offers++; }
     }
   }
   if (!cfg.tasters_on || !inHours) return out;
-  const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, ve_taster_emails(kind, sent_at)')
+  const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
     .is('unsubscribed_at', null).is('member_id', null).not('name', 'ilike', '%[TEST]%').limit(1000);
   for (const t of ts || []) {
     if (out.tasters >= cfg.per_tick) break;
@@ -227,14 +275,16 @@ async function tick() {
     else if (!sent.has('day-3') && age >= 3 * 864e5) kind = 'day-3';
     else if (sent.has('day-3') && !sent.has('day-7') && age >= 7 * 864e5) kind = 'day-7';
     else if (sent.has('day-7') && !sent.has('day-14') && age >= 14 * 864e5) kind = 'day-14';
-    else if (sent.has('day-14') && e.weekday === 'Thu' && Date.now() - last >= 6 * 864e5 && !sent.has('pulse-' + e.date)) kind = 'pulse-' + e.date;
+    else if (sent.has('day-14') && (t as any).pulse_opt_in_at && e.weekday === 'Thu' && Date.now() - last >= 6 * 864e5 && !sent.has('pulse-' + e.date)) kind = 'pulse-' + e.date;
     if (!kind) continue;
     // Claim the row first so a second tick never sends twice.
     const { error: ce } = await db.from('ve_taster_emails').insert({ taster_id: t.id, kind });
     if (ce) continue;
     const m = await tasterEmail(kind, t);
-    const r = await send(t.email, m.subject, m.html, m.unsub);
-    await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.error || null }).eq('taster_id', t.id).eq('kind', kind);
+    const r = await send(kind, t.email, t.name, m.subject, m.html);
+    if (r.result === 'failed') { await db.from('ve_taster_emails').delete().eq('taster_id', t.id).eq('kind', kind); continue; }
+    await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('taster_id', t.id).eq('kind', kind);
+    if (r.result === 'suppressed' || r.result === 'invalid') await db.from('ve_tasters').update({ unsubscribed_at: new Date().toISOString() }).eq('id', t.id);
     out.tasters++;
   }
   return out;
@@ -268,6 +318,15 @@ Deno.serve(async (req) => {
     const { count } = await db.from('email_suppressions').select('id', { count: 'exact', head: true }).eq('email', email).eq('active', true);
     if (!count) await db.from('email_suppressions').insert({ email, scope: 'vegans-explore', reason: 'unsubscribe', source: 've-nurture', note: 'Passport Challenge offer', active: true });
     return json({ ok: true });
+  }
+
+  if (action === 'pulse_optin') {
+    const id = await tasterFrom(String(body.key || ''));
+    if (!id) return json({ error: 'bad_key' }, 400);
+    const { data: t } = await db.from('ve_tasters').select('id, chapter, pulse_opt_in_at, unsubscribed_at').eq('id', id).maybeSingle();
+    if (!t) return json({ error: 'not_found' }, 404);
+    if (!t.pulse_opt_in_at) await db.from('ve_tasters').update({ pulse_opt_in_at: new Date().toISOString(), unsubscribed_at: null }).eq('id', id);
+    return json({ ok: true, city: CHAPTER_NAME[t.chapter] || null });
   }
 
   // Everything else is the team's.
@@ -329,16 +388,17 @@ Deno.serve(async (req) => {
     if (o.status !== 'draft') return json({ error: 'already_sent' }, 409);
     if (await suppressed(o.email)) return json({ error: 'suppressed', message: 'That address asked us to stop emailing.' }, 409);
     const m = await businessEmail('offer', { ...o, link_code: o.ve_links?.code });
-    const r = o.test ? { id: 'test' } : await send(o.email, m.subject, m.html, m.unsub);
-    if (!r.id) return json({ error: 'send_failed', message: r.error }, 502);
-    await db.from('ve_pc_offers').update({ status: 'sent', sent_at: new Date().toISOString(), send_ids: { offer: r.id } }).eq('id', o.id);
+    const r = o.test ? { result: 'sent', id: 'test' } : await send('offer', o.email, o.name, m.subject, m.html);
+    if (r.result === 'suppressed') return json({ error: 'suppressed', message: 'That address asked us to stop emailing.' }, 409);
+    if (r.result !== 'sent' && r.result !== 'already_sent') return json({ error: 'send_failed', message: r.error || r.result }, 502);
+    await db.from('ve_pc_offers').update({ status: 'sent', sent_at: new Date().toISOString(), send_ids: { offer: r.id || r.result } }).eq('id', o.id);
     return json({ ok: true });
   }
 
   if (action === 'preview' || action === 'test') {
     const kind = String(body.kind || '');
     let m: any;
-    if (['offer', 'not_opened', 'opened'].includes(kind)) {
+    if (['offer', 'not_opened'].includes(kind)) {
       let o: any = null;
       if (isId(body.offer_id)) { const { data } = await db.from('ve_pc_offers').select('*, ve_links(code)').eq('id', body.offer_id).maybeSingle(); if (data) o = { ...data, link_code: data.ve_links?.code }; }
       if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').eq('status', 'approved').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
@@ -348,11 +408,12 @@ Deno.serve(async (req) => {
       if (isId(body.taster_id)) { const { data } = await db.from('ve_tasters').select('*').eq('id', body.taster_id).maybeSingle(); if (data) t = data; }
       m = await tasterEmail(kind === 'pulse' ? 'pulse-' + eastern().date : kind, t);
     } else return json({ error: 'kind' }, 400);
-    if (action === 'preview') return json({ ok: true, subject: m.subject, html: m.html });
+    if (action === 'preview') return json({ ok: true, subject: m.subject, html: m.html.replace(/\{\{\s*unsubscribe_url\s*\}\}/g, '#').replace(/\{\{\s*postal_address\s*\}\}/g, 'LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301') });
     const to = me?.email || String(body.to || '');
     if (!to) return json({ error: 'no_address' }, 400);
-    const r = await send(to, '[Test] ' + m.subject, m.html);
-    return r.id ? json({ ok: true, to }) : json({ error: 'send_failed', message: r.error }, 502);
+    const pk = kind === 'pulse' ? 'pulse-' + eastern().date : kind;
+    const r = await send(pk, to, 'Sean', '[Test] ' + m.subject, m.html, to);
+    return r.result === 'sent' ? json({ ok: true, to, campaign_ref: refOf(pk).ref }) : json({ error: 'send_failed', message: r.error || r.result }, 502);
   }
 
   if (action === 'tasters') {

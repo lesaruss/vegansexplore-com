@@ -3308,6 +3308,33 @@ image isn't worth the time. The one exception is a sponsor, because a sponsor gi
   (`topic_post_id`) counts as done (migration `20261005_ve_news_leads_sponsor_only.sql`). HQ's Depot calls
   the same function, so its write-up needs a sponsor too.
 
+## Featured items in the Daily Pulse (Sean, 2026-11-01)
+
+"What I noticed you didn't put into the post today was the episode, the launch of the Vegans Explore podcast. Let's do it for
+tomorrow"; "we could be sending them stuff like that periodically". A `ve_pulse_features` row (`starts_on`, `ends_on` Eastern dates,
+`communities` or null for every Vegans Explore city, `story` {title, take, url, source}; migration `20261102_pulse_features.sql`, RLS on, no
+policies) goes first in the stories of every city's Pulse that publishes in those dates, never LESARUSS.ai's `lr-*` topics.
+`ve_pulse_auto_publish` applies it as each draft goes out (`ve_pulse_features_apply(post)`), and `ve_pulse_features_apply()` applies it to
+every waiting draft at once so the Pulse desk shows it; each story carries `feature_id`, so it is never added twice. A story that is ours
+links to its page on our site (an episode: `/listen?show=&ep=`). First: the podcast's return ("Founder's Report: Back and Ready for Duty",
+Nov 1) in every city on Monday, November 2. The same night five cities' drafts (South, Central and North Florida, Atlanta, D.C.) had failed
+to write ("No new verifiable story"); they were queued again with the episode as their lead (`write_status` queued, `write_note` 500
+characters at most, then `lesaruss_dispatch_tick()`). Each city's Pulse already carries the national news under its own (Across the
+country, since 2026-10-31); there is no separate national Pulse (`pulse_auto.communities` has no `national`).
+
+**5 to 10 stories, never empty, and our own content** (Sean, 2026-11-01: "at least 5 to 10 stories in there. And then we can intermix
+some of our content... podcast episodes, some interviews... spotlight a restaurant... nominate somebody in your community that we should
+interview... share some new bounties... what new listings have been created in their chapter"; migration `20261102_pulse_house.sql`).
+The writer's `pulse_topic_write` instructions now ask for 5 to 10 stories, the city's own first, then national ones to fill, and never fail
+a city for lack of news (lead with the national ones and say so). **From Vegans Explore** is a section of every city's briefing built from
+our data when it publishes (`ve_pulse_house(city, post, record)`, called by `ve_pulse_features_apply`, stored as `briefing.house`, drawn by
+`VEPulse.briefing` in `public/ve-pulse-topics.js` between Heads up and Today's move): **Spotlight** (a 100% Vegan food place in the chapter
+with a logo and its own words, most voted, not spotlighted there in 60 days), **New in the Directory** (public listings that went live in
+the chapter since its last Pulse, five and See all N; `listings.listed_at`, set by `trg_ve_listing_listed_at` when a listing turns
+approved), **Listen** (one of our four shows' episodes on `/listen`, not used there in 120 days), **New bounties** (opened in the chapter
+since the last Pulse) and, on Mondays, **Who should we interview?** (Nominate someone, `/pulse/suggest?city=`). `ve_pulse_house_log`
+rotates them. A featured item is never added twice (not when the writer already wrote its link as a story).
+
 ## The Daily Pulse is the Community Board (Sean, 2026-10-26)
 
 "I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
@@ -3897,6 +3924,16 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   founding seat, now opens the Passport Guide instead of its own open contribution (Sean, 2026-10-25), members give more from the
   dashboard's Contribute, and the nav's announcement (`ve_nav_announcements`) reads "Your Passport: $11 one time, with 1,100 welcome
   points" and links to `/passport`.
+- **The Passport is the Founding Member flow, four pages** (Sean, 2026-11-01: "bring this down to 4 total pages... Our focus is become a
+  founding member before January 1st"; copy revised by the panel, approved by Sean before it went live): **Why now** (the cast; 13 chapters,
+  $11 one time with 1,100 welcome points, the countdown, three step tiles with topic pictures, `TOPIC`), **What you can do** (Theo: vote,
+  earn points with check-ins and bounties, give points, your first Guide covered by the welcome points, join your city, share your link),
+  **Why join now** (Dani: shape it, Founding Member for good, keep your city growing, the locked line), **Get your Passport** (Liz).
+  `FOUNDING` in `passport.html`. **Become a Founding Member · $11** sits under the Guide's words on every page (`#dgCta`), the Guide sits in
+  the corner on phones (`ve-guide-corner.js`, `#dgRail`), and the header's $11 box is hidden on phones. A members-only prompt
+  (`?from=vote|save|checkin|give|board|tickets`) lands on Why now with its note, never the checkout; old tab links land on the page that holds
+  them (`OLD`). The nine-tab ensemble is the **Welcome Guide** at `/passport?guide=welcome` (`WELCOME`; the catalog card opens it).
+  `/business` is unchanged. After the deadline the pages drop the countdown and the Founding words.
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.
@@ -4033,13 +4070,21 @@ the $11 Passport or a membership earned now; no free account that can take part,
   - **5. The business offer, its follow-up and the not-ready-yet emails** (built and live 2026-11-01, Sean: "Approved, go with your defaults
     and build it"; migration `20261101_earn_your_passport_emails.sql`; edge function `ve-nurture` from commit 6cff6e0, sha256 matched;
     `ve-vault` from 91c8c26). **Off until Sean turns each on** (`ve_site_settings` `nurture`: `offers_on`, `tasters_on`; the switches are on
-    the two Depot pages below). Every email is from VEGANS EXPLORE <hello@vegansexplore.com>, signed Vegans Explore team, replies to
-    contact@lesaruss.com, never Sean's name, with a one-click unsubscribe. **The business offer**: Depot > Passport Challenge stops > **Offers
+    the two Depot pages below). **They send through HQ's email system** (Sean, 2026-11-01: "where is this living? Do we have an email
+    system in the HQ?"; they first called Resend directly, fixed the same day): every one goes through `email-send`, brand `vegans-explore`
+    (VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com), signed Vegans Explore team, never Sean's name, with the
+    brand's one-click unsubscribe, the postal address, its suppressions and an `email_sends` row. Each email is one campaign (`refOf`:
+    `ve-pc-offer-<YYYY-MM>`, `ve-pc-still-open-<YYYY-MM>`, `ve-pc-what-it-costs-<YYYY-MM>`, `ve-taster-day-3|7|14`,
+    `ve-taster-pulse-<date>`, `ve-taster-founding-<date>`), registered in `email_campaigns` as an automatic campaign (status sent, so
+    `email-dispatch` never picks it up) on its first real send, so **HQ > Email** lists it with delivered, opened and clicked. Send me a
+    test goes through `email-send` `test_to`. Not moved yet: the Taster's Day 0 email (`ve-taster`) and the stop emails in `ve-vault`
+    still call Resend directly. **The business offer**: Depot > Passport Challenge stops > **Offers
     we send** (`#offers[/<status>]`, `#offers/new`, `#offers/preview/<kind>[:<offer>]`): New offer (a listing, their email, a name) makes a
     `ve_pc_offers` row and its own tracked link (`ve_links` `pc-<8>`, initiative `passport-challenge-offer`, to `/business/challenge?listing=`);
     **Send it** sends email A ("Be a Passport Challenge stop in <month>") by hand, always. Two days later, on a weekday from 10 AM Eastern
-    and only with `offers_on`, the follow-up goes on its own: B "Your spot for <month> is still open" when the link was never clicked (bots
-    left out), C "What a stop really costs" when it was. An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
+    and only with `offers_on`, one follow-up goes on its own to every business that has not applied, "<Month> Passport Challenge stops in <chapter>"
+    (worded by the review panel: no guess at why they have not answered, the deal in one line, greeting the contact by first name or Hello).
+    An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
     after the follow-up makes it **In the Inbox** (`routed`, a `pc_offer` row of `ve_inbox_items` for the chapter's Community Manager).
     **Stop these emails** (`/business/challenge?stop=<code>`, `offer_stop`) stops it and adds an `email_suppressions` row. The apply
     confirmation is now email D ("You applied to be a <month> stop", three next steps; `ve-vault`). **Taster emails**: Depot > Challenges >
@@ -4056,6 +4101,28 @@ the $11 Passport or a membership earned now; no free account that can take part,
     rolled-back transaction, since test offers stay out of it); its stop link stopped it and wrote the suppression, a bad code 404; both Depot
     views on desktop and iPhone, no errors; every test row removed. Not yet proven: a real follow-up and a real Taster email going out (the
     first window after a switch is turned on).
+    **Sean's review of the tests, 2026-11-02** (Sean: "go"; migration `20261102_nurture_fixes.sql`; `ve-nurture` version 5 from 85710a0,
+    sha256 matched): **Day 14** says why they got it ("When you signed up for A Taste of Vegans Explore, you told us you're here for ...
+    That points to <Guide>"), a line on what the Guide does (`GUIDE_LINE`) and that they tried a piece in their Taste. **Day 7** opens the
+    episode on its show's own listing (`/directory/<show>?ep=<guid>`, where they vote and save; `ve_nurture_story` now takes only episodes in
+    `ve_pulse_episode_map`), never the Pulse article or a video. **The December notes** say "It's $11, one time. Or earn it free: finish one
+    of our three challenges within 30 days (check in at Vegan places, bring three friends, or show up for the animals)." **Email C ("What a
+    stop really costs") is dropped** as presumptive. **The weekly Daily Pulse is opt-in**: Day 14 ends with "Want your city's Daily Pulse
+    every Thursday? Yes, send it", opening `/guides/taste?pulse=<key>` (`ve-nurture` `pulse_optin`, public with the Taster key, sets
+    `ve_tasters.pulse_opt_in_at`); only those Tasters get it. The December notes still go to every Taster. **`/business/challenge`**: Liz on
+    each of the three steps, her picture and her voice with Play (nothing plays until pressed, then each step plays its line until Pause,
+    `sessionStorage` `pc_liz`; `LIZ` in the page, `vegan-media/media/liz/passport-challenge/pc-offer|card|agree-v1.mp3`, el-media tts in her
+    profile voice, each checked word for word with stt; a line's text must match its recording), and **Your card** runs full width. Fresh
+    [Test] copies of all nine sent to contact@lesaruss.com. Lesson: a find-and-replace on `not_opened` matched refOf's line first and cut
+    out the send functions; a syntax check does not catch a missing name, so type-check an edge function (`tsc --noEmit`) before deploying.
+    A [TEST] Taster ("Sean [TEST]") is kept so the test Day 14's Yes link works; it is never sent to (the tick skips [TEST] names). Next, as
+    its own build: email preferences in My Account for members.
+    **Then, the same evening** (Sean: "just have the episode, literally the episode isolated by itself there... the horizontal podcast
+    episode, like where we have in the listings... and then we could have the text below"): Day 7's button, **Play the episode**, opens
+    **`/listen?show=<listing slug>&ep=<feed guid>`** (`listen.html`, `noindex`): the show's name, the episode row (`VEEpisodes.row`: the
+    show's art, Play in the player docked above it, Save, **Vote for the show** with its count through `VEVotes`), the episode's notes from
+    the feed under About this episode, and Every episode of the show. `ve-nurture` version 6 from 38a5438. Any episode of any show in the
+    Directory opens there; use it wherever we send one episode (emails, the Pulse).
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
@@ -5086,6 +5153,28 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 - Not done yet: the homepage loads every chapter's banner at once; `directory/listing.html` loads ten scripts in order before the page
   shows, the admin editor and business dashboard scripts included for visitors.
 
+## No chapter counts in copy or videos (Sean, 2026-11-02)
+
+"Why are we saying 13? I might decide to have North Carolina be a chapter tomorrow, and then we got to do all these videos over again."
+Never write how many chapters or cities we have ("13 chapters", "thirteen") in page copy, a Guide's lines, a recording or a video.
+Say "city by city", "every chapter" or "from South Florida to London". A live count drawn from the data is fine. The homepage video
+is `launch-v3.mp4` (its city card reads From South Florida to London; the logo sits on a white plate in the official light colors,
+since the inverted logo's thin green EXPLORE could not be read over the pictures). Any logo over a picture in a video or graphic
+goes on a solid plate.
+
+**The "what's next" video** (Sean approved 2026-11-02: "Very clean and to the point... I approve"): 40 seconds, Liz, what you can do
+today for free and what the Passport adds, cut from live-site screenshots with a "Free" and a "With your Passport" label; no jobs board or
+classifieds. `vegan-media/media/home/next-v1.mp4` (captions `public/home/next-v1.vtt`) sits on the Passport's Get your Passport page above
+the price box for anyone not a member; `next-taste-v1.mp4` (its last line "You've had a taste. Get the rest with your Passport...", captions
+`next-taste-v1.vtt`) is the right side of the Taste's last slide (Picked for you). Both use `/public/ve-video.js` (`VEVideo.markup`: nothing
+plays until Watch the video, captions on, GA `video_start` / `video_complete` with `passport_next_v1` / `taste_next_v1`); use it for any
+other narrated video. Poster `public/home/next-poster.jpg`.
+
+**Never cover a face** (Sean, 2026-11-02: "the covering up Kai's face. It's kind of disrespectful to her"). In a video, graphic or
+banner, text, a logo or a card never sits over a person's or Guide's face, and a picture whose crop cuts off faces is not used. A card
+over a picture goes on a cityscape or an empty part of the frame; check each card's frame by eye before showing it. The homepage video
+opens on Jacksonville, puts the Founding card on Richmond and closes on London at dusk, so no Guide is behind a card.
+
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
 "Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
@@ -5255,6 +5344,33 @@ when the buyer was a member over an hour before, else the Passport. HQ's LESARUS
 sessions (payment links such as the LIVE Donation) read well from their own line item and need no label. Payments before
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
+
+## Revenue on the dashboard (Sean, 2026-11-02)
+
+"I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
+we'll create a financial back end where we could do P&Ls... that's for another day." The super admin's Dashboard tab opens with
+**Revenue** above Recent activity (`#dash-rev`, `renderRevenue` / `revDraw` in `dashboard/center-console.html`): Today, This month (against
+the same days of last month, with last month in full), This year and All time, each gross with payments and what is left after Stripe's
+fee; a bar chart (Last 30 days, Last 90 days, By month; each bar's tooltip says the day, the total, the payments and after fees; drawn at
+its own width so a phone reads it); and the latest 15 payments, each named by its Checkout line item or its invoice's first line, opening
+in Stripe. Read live by `ve-dashboard` `revenue` (super admins only) from the **Vegans Explore Stripe account** (`STRIPE_SECRET_KEY`):
+every succeeded live charge, less refunds, by Eastern day, `balance_transaction` for the fee; cached 5 minutes in `ve_analytics_cache`
+(`ve-revenue-v1`), **Refresh** reads Stripe now (about 3 s for 97 charges). It counts everything on that account, which on 2026-11-02
+included **CRM + Web Hosting for Miss Meatless Muscle** ($200 a month) and VWL Monthly Podcast Donations; the LESARUSS and Meatless Muscle
+Stripe accounts are not counted. Not a P&L: no costs. `ve-dashboard` v20 from commit af6254b (source sha256 matched).
+**Client services apart** (Sean, 2026-11-02: the Meatless Muscle hosting "always probably should have been set up through LESARUSS";
+Vegans Explore Inc. is a Florida nonprofit corporation that never applied for 501(c)(3)). A charge whose Stripe customer carries metadata
+`revenue_class: client_services` is left out of the tiles and the green bars and shown on its own line ("Client services billed through
+Vegans Explore Inc."), grey on top of the bars and tagged in Latest payments (`client` in `ve-dashboard` `revenue`, cache key
+`ve-revenue-v2`). Tagged 2026-11-02, with an `internal_note` each (Stripe metadata, never shown to the customer): Brooke Sellers' CRM +
+Web Hosting subscription (`sub_1R8j48P0w5C9oZhvfxwBZw8p`, $200 a month, active, 20 payments, $4,000), the two Vegans Who Lift "donation"
+subscriptions (Brooke Sellers and John Thomas, $125 a month each, 10 payments each, $2,500, ended 2026-04-15) and their three customers. To
+move another payer apart, tag their customer the same way. Live 2026-11-02, `ve-dashboard` v21 from commit 4397d90 (source sha256 matched):
+client services $6,500 from 40 payments; Vegans Explore $6,416.02 all time from 57, $108 this year. The CPA memo is a private Claude Doc
+(Sean's), not in the repo. Still open: moving Brooke's billing to the LESARUSS Stripe account before the 2026-11-30 charge (Sean's call on
+how to tell Brooke), and the CPA's answers. Proven live
+2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
+this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
 ## Image conventions
 
