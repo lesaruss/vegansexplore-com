@@ -1,6 +1,6 @@
-# Door Guides: free with an email, your voice with the Passport (Sean's idea, 2026-11-02, not locked)
+# Door Guides: free with an email, your voice with the Passport (LOCKED by Sean 2026-11-02, canon `canon-ve-door-guides`)
 
-A concept session with V. Not locked, not built. The Vegan Events Guide is the first; the Creator, Nonprofit and Vegan Restaurant
+Sean: "lock it", with the panel's seven changes below (they win wherever V's first shape differs). Playbook `ve-door-guides`. Not built yet: it follows the event host path's heads-up email. The Vegan Events Guide is the first; the Creator, Nonprofit and Vegan Restaurant
 Guides follow once the events work is done.
 
 ## Sean, in his words (condensed)
@@ -41,7 +41,7 @@ added. Then the same pattern goes to the Creator, Nonprofit and Vegan Restaurant
 "Every Guide is $11 or 1,100 points" becomes "every Guide is $11 or 1,100 points, except the door Guides: free with an email, your
 voice and tools with the Passport."
 
-## Panel review (2026-11-02, V's panel; waiting on Sean's agree or adjust)
+## Panel review (2026-11-02, V's panel; locked by Sean the same day)
 
 Panel: a growth lead, a podcast producer, a trust and legal lead, a Vegan event organizer (the reader), a community lead.
 Checked first: no one has paid for the Events, Creator, Nonprofit or Restaurant Guides (the only owners are Sean's comp copies).

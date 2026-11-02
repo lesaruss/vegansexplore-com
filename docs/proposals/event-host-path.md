@@ -1,6 +1,6 @@
 # The event host path (LOCKED by Sean 2026-11-02, canon `canon-ve-event-host-path`)
 
-Sean: "lock it and then deploy". Locked with the panel's answers below, the $50 ad credit and creative support. Not built yet.
+Sean: "lock it and then deploy". Locked with the panel's answers below, the $50 ad credit and creative support. Step 1 (the event claim) is built and live 2026-11-02; steps 2 to 5 are not.
 
 ## The idea, in Sean's words (condensed)
 
@@ -76,7 +76,7 @@ Sean: "lock it and then deploy". Locked with the panel's answers below, the $50 
 3. Which a la carte items, and their regular and sponsor prices.
 4. Who the heads-up goes from (Sean, or the team), and whether a host gets one per event or once.
 
-## Panel recommendation (Logan's panel, 2026-11-02; waiting on Sean's agree or adjust)
+## Panel recommendation (Logan's panel, 2026-11-02; locked by Sean the same day)
 
 Panel: an event promoter, a ticketing marketplace pricing lead, a community lead, an email and compliance lead.
 

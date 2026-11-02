@@ -4299,6 +4299,29 @@ with us?... it's per event." Separate from Group Partners.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
 
+## Door Guides (LOCKED by Sean 2026-11-02, playbook `ve-door-guides`)
+
+Concept session with V, locked by Sean: "lock it", with the panel's seven changes (canon `canon-ve-door-guides`; migration
+`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Not built yet**: it comes after the event host path's
+heads-up email (step 2). Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
+don't scare them away by saying it's $11"; the $11 unlocks their voice.
+
+- **Which**: the Vegan Events Guide first, then the Creator, Nonprofit and Vegan Restaurant Guides. Topic Guides (Dairy, Nutrition,
+  Airport, Stadium & Arena...) stay $11 or 1,100 points. On 2026-11-02 nobody had paid for the four door Guides (only Sean's comps).
+- **Three levels**: open (the Overview and the free example, indexed); **free with an email** (the rest to read; asked inside the Guide
+  when they open a second section, one field, confirmed by the emailed link, making them a Taster with a welcome series for that Guide);
+  **the $11 Passport, their voice** (record in the browser the question of the month, their story, good news, what they are struggling
+  with; approved clips become podcast segments, one per Guide, Host Notes for events, credited on their People profile, points once
+  approved; saving to their account on every device).
+- **Always free**: the event claim, the sponsorship application, and a claimed host recording their own Host Notes interview. Ticketing
+  and messaging guests belong to the host path (5% for everyone), never behind the Passport.
+- **Struggling is private by default**: the team and the chapter's Community Manager only; it airs only with a second yes.
+- **Recording rules**: 18 and over, 90 seconds a clip, a prompt card and quiet-room tips, the release on every clip, the team listens
+  before anything airs, never naming another business in a bad light.
+- **Living**: a This month section per door Guide (the question of the month, open opportunities, the latest segment).
+- **Measure 30 days** on the Events Guide (emails per Guide, Taster to Passport, clips sent and aired) before the other three.
+- Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
