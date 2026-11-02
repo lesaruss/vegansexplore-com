@@ -73,6 +73,15 @@
     var d = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5);
     return 'Checked in a store ' + (d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago');
   }
+  function daysAgo(iso) { var d = Math.floor((Date.now() - new Date(iso).getTime()) / 864e5); return d <= 0 ? 'today' : d === 1 ? 'yesterday' : d + ' days ago'; }
+  // What the locations say about an item: seen at N locations and when, missing at some, or flagged as maybe gone.
+  function itemLine(x) {
+    var b = [];
+    if (x.seen_locations) b.push('Seen at ' + x.seen_locations + ' location' + (x.seen_locations === 1 ? '' : 's') + (x.checked_at ? ', last ' + daysAgo(x.checked_at) : ''));
+    else b.push(ago(x.checked_at));
+    if (x.flagged) b.push('some locations say it is gone'); else if (x.not_locations) b.push('missing at ' + x.not_locations);
+    return b.join(' · ');
+  }
   function storeHref(x) { return '/directory/' + encodeURIComponent(x.brand_slug) + '?tab=products' + (x.product_slug ? '&product=' + encodeURIComponent(x.product_slug) : ''); }
   var SCAN_HREF = '/guides/supermarket-guide#/scan';
 
@@ -148,7 +157,7 @@
       if (r.store) {
         var sy = storeSay(r.store);
         sHtml += '<div class="ves-h">In the store</div><a class="ves-row" role="option" id="' + id() + '" href="' + href + '" data-go="1"><span class="ves-logo">' + (sy.yes ? '&#10003;' : '?') + '</span><span class="ves-t"><span class="ves-n">' + esc(sy.head) + '</span><span class="ves-m">' + esc(sy.line) + '</span></span></a>';
-        (r.store.items || []).slice(0, 2).forEach(function (x) { sHtml += '<a class="ves-row" role="option" id="' + id() + '" href="' + storeHref(x) + '" data-go="1">' + letterTile(x.brand, x.logo) + '<span class="ves-t"><span class="ves-n">' + esc(x.brand + ' ' + x.type) + '</span><span class="ves-m">' + esc(ago(x.checked_at)) + '</span></span></a>'; });
+        (r.store.items || []).slice(0, 2).forEach(function (x) { sHtml += '<a class="ves-row" role="option" id="' + id() + '" href="' + storeHref(x) + '" data-go="1">' + letterTile(x.brand, x.logo) + '<span class="ves-t"><span class="ves-n">' + esc(x.brand + ' ' + x.type) + '</span><span class="ves-m">' + esc(itemLine(x)) + '</span></span></a>'; });
       }
       var listingIntent = (it.labels && it.labels.length) || it.place || it.near_me;
       var contentFirst = hasContent(c) && !listingIntent && ((c.intent && c.intent.topics && c.intent.topics.length) || !(r.results || []).length);
@@ -230,5 +239,5 @@
     }
   });
 
-  window.VESearch = { storeSay: storeSay, ago: ago, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
+  window.VESearch = { storeSay: storeSay, ago: ago, itemLine: itemLine, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

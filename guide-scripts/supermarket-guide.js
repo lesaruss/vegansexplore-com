@@ -514,8 +514,19 @@
     }
     var note = '<p class="dg-lede" style="font-size:13px;margin-top:4px">Stores move things around, so an aisle can change. Every type says when a member last checked it. Something not where it says? Tap Update and tell us.</p>';
     main.innerHTML = crumb([['Stores', '#/stores'], [v.name, '']]) + head(v.free && !owner() ? 'Free to everyone' : (v.chain ? v.chain.name : 'Supermarket'), esc(v.name), lede, acts) + meta + sw +
-      (d.open || !byWhere ? body + (d.open ? note : '') : gated('<div class="dg-skel"><i></i><i style="width:70%"></i></div>', v.name + ' is in the full Guide', 'Every Vegan type in this store and the aisle members found it in.'));
+      (d.open || !byWhere ? body + (d.open ? note + '<div id="sgGaps"></div>' : '') : gated('<div class="dg-skel"><i></i><i style="width:70%"></i></div>', v.name + ' is in the full Guide', 'Every Vegan type in this store and the aisle members found it in.'));
     wrapRail();
+    if (d.open && !byWhere) loadGaps(v);
+  }
+  // Help check this store (Sean, 2026-11-02): items its chain carries that nobody has checked here lately, flagged ones first, each a scan away.
+  function loadGaps(v) {
+    papi({ action: 'store_gaps', venue: v.id }).then(function (x) {
+      var box = document.getElementById('sgGaps'); if (!box || !x || !x.gaps || !x.gaps.length) return;
+      box.innerHTML = '<h3 class="sg-ph">Help check this store</h3><p class="sg-small" style="margin:0 0 8px">Nobody has confirmed these here lately. Standing in the store? Scan one and tell us if it is on the shelf.</p><div class="sg-carried">' +
+        x.gaps.map(function (g) {
+          return '<a class="sg-ptile" style="height:auto" href="#/scan' + (g.gtin ? '/' + esc(g.gtin.replace(/^0+(?=\d{12})/, '')) : '') + '"><span class="sg-thumb"><i class="sg-letter">' + esc((g.brand || '?').charAt(0)) + '</i></span><span class="sg-pb"><b>' + esc(g.brand) + '</b><em>' + esc(g.type) + ' &middot; ' + (g.reason === 'flagged' ? 'other stores say it is gone' : 'not checked here lately') + '</em></span></a>';
+        }).join('') + '</div>';
+    }).catch(function () {});
   }
   // Three-fourths content, one-fourth our sponsors' space (Sean, 2026-11-01): the rail is ve-ad-rail.js, page /guides/supermarket-guide,
   // a Guide in slot 1 and Humble Cabbage's still image in slot 2 until a supermarket or brand sponsor takes them.
@@ -832,30 +843,77 @@
     return '<p style="margin:10px 0 4px">' + tag('Vegan', vegan, 'Yes') + tag('Organic', organic, 'Yes') + tag('GMO free', gmo, 'Yes') + '</p>' +
       '<p class="sg-small" style="margin:0 0 6px">' + (vegansrc || 'As Open Food Facts lists it from the package.') + ' Not stated means the package does not say, not that it is not.</p>';
   }
-  // "Is it at your store?": a member says it is on the shelf (or not). A yes sets that store's last checked date.
+  // "Standing in a store?" (Sean, 2026-11-02): the phone says where it is, we offer the mapped stores near it, and the member says whether the item is on
+  // that shelf. The server checks the phone is inside the store (ve-products sighting_at). Only items already in our Vegan registry count.
   function sightingBox(code) {
-    return '<div class="sg-addit" id="sgSight"><h3 class="sg-ph" style="margin-top:0">Standing in a store?</h3><p class="sg-small" style="margin:0 0 10px">Tell us if you can see it on the shelf. It keeps this Guide current for everyone, with the date you checked.</p>' +
-      (token() ? '<label class="sa-city" style="display:block;margin-bottom:10px"><span>Which store?</span><select id="sgSightStore" style="width:100%"><option value="">Loading stores...</option></select></label>' +
-        '<div class="dg-btns"><button type="button" class="dg-btn" id="sgSeen">I see it here</button><button type="button" class="dg-btn dg-ghost" id="sgNotSeen">Not here</button></div>' :
+    return '<div class="sg-addit" id="sgSight"><h3 class="sg-ph" style="margin-top:0">Standing in a store?</h3><p class="sg-small" style="margin:0 0 10px">Tell us if you can see it on the shelf. We check your phone is inside the store, so the registry stays honest, and you earn a few points.</p>' +
+      (token() ? '<button type="button" class="dg-btn" id="sgWhere">Find my store</button><div id="sgSightBody"></div>' :
         '<button type="button" class="dg-btn" data-signin>Sign in to tell us</button>') + '<p class="sa-msg" id="sgSightMsg" aria-live="polite"></p></div>';
   }
   function wireSighting(code) {
-    var sel = document.getElementById('sgSightStore'); if (!sel) return;
-    var last = ''; try { last = localStorage.getItem('sg_sight_store') || ''; } catch (e) {}
-    rest('listings?select=id,name,slug&tags=cs.%7Bve-grocery-store%7D&status=eq.approved&slug=not.in.(amazon-com,instacart)&order=name').then(function (rows) {
-      sel.innerHTML = '<option value="">Pick the store</option>' + (rows || []).map(function (r) { return '<option value="' + esc(r.id) + '"' + (r.id === last ? ' selected' : '') + '>' + esc(r.name) + '</option>'; }).join('');
-    });
-    function send(seen) {
-      var m = document.getElementById('sgSightMsg');
-      if (!sel.value) { m.textContent = 'Pick the store first.'; return; }
-      try { localStorage.setItem('sg_sight_store', sel.value); } catch (e) {}
-      m.textContent = 'Sending...';
-      papi({ action: 'sighting', code: code, store: sel.value, seen: seen }).then(function (x) {
-        m.textContent = x && x.ok ? (seen ? 'Thank you. Checked today.' + (x.linked ? ' It now shows as checked at that store.' : ' We kept it for the team.') : 'Thank you. We noted it is not on the shelf there.') : ((x && x.message) || 'That did not send. Try again.');
-      }).catch(function () { m.textContent = 'That did not send. Try again.'; });
+    var btn = document.getElementById('sgWhere'); if (!btn) return;
+    var msg = function (t) { var m = document.getElementById('sgSightMsg'); if (m) m.innerHTML = t || ''; };
+    var POS = null;
+    btn.onclick = function () {
+      if (!navigator.geolocation) { msg('This browser cannot share your location, which the check needs.'); return; }
+      btn.disabled = true; btn.textContent = 'Finding you...'; msg('');
+      navigator.geolocation.getCurrentPosition(function (p) {
+        POS = { lat: p.coords.latitude, lng: p.coords.longitude, accuracy: p.coords.accuracy };
+        papi({ action: 'nearby_stores', lat: POS.lat, lng: POS.lng }).then(function (x) {
+          btn.disabled = false; btn.textContent = 'Check again';
+          drawStores((x && x.stores) || []);
+        }).catch(function () { btn.disabled = false; btn.textContent = 'Find my store'; msg('That did not load. Try again.'); });
+      }, function () { btn.disabled = false; btn.textContent = 'Find my store'; msg('We could not get your location. Allow it for this page and try again.'); },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 20000 });
+    };
+    function drawStores(stores) {
+      var box = document.getElementById('sgSightBody');
+      if (!stores.length) { box.innerHTML = '<p class="sg-small" style="margin-top:10px">We have no store mapped near you yet. Publix stores in South, Central and North Florida are mapped today; more come as supermarkets join.</p>'; return; }
+      var inside = stores.filter(function (s) { return s.distance_m <= s.radius_m + Math.min(POS.accuracy || 0, 100); });
+      var pick = inside[0] || null;
+      box.innerHTML = '<label class="sa-city" style="display:block;margin:10px 0"><span>Which store are you in?</span><select id="sgStorePick" style="width:100%">' +
+        stores.map(function (s) { return '<option value="' + esc(s.id) + '"' + (pick && pick.id === s.id ? ' selected' : '') + '>' + esc(s.name) + ' (' + (s.distance_m < 1000 ? s.distance_m + ' m' : (s.distance_m / 1609).toFixed(1) + ' mi') + ')</option>'; }).join('') + '</select></label>' +
+        (pick ? '' : '<p class="sg-small">You do not look to be inside one of these yet. Walk in and tap Check again.</p>') +
+        '<div class="dg-btns"><button type="button" class="dg-btn" id="sgSeen">I see it here</button><button type="button" class="dg-btn dg-ghost" id="sgNot">Not here</button></div>' +
+        '<div id="sgNotBox" hidden style="margin-top:10px"><p class="sg-small" style="margin:0 0 6px">A photo of the empty shelf spot or its label pays more (optional).</p>' +
+        '<input type="file" accept="image/*" capture="environment" id="sgNotPhoto"><div class="dg-btns" style="margin-top:8px"><button type="button" class="dg-btn" id="sgNotSend">Send Not here</button></div></div>';
+      document.getElementById('sgSeen').onclick = function () { send(true, null); };
+      document.getElementById('sgNot').onclick = function () { document.getElementById('sgNotBox').hidden = false; };
+      document.getElementById('sgNotSend').onclick = function () {
+        var f = document.getElementById('sgNotPhoto').files[0];
+        if (!f) return send(false, null);
+        msg('Preparing the photo...');
+        shrink(f).then(function (blob) {
+          return papi({ action: 'sighting_photo_start' }).then(function (u) {
+            if (!u || !u.upload_url) throw {};
+            return fetch(u.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: blob }).then(function (r) { if (!r.ok) throw {}; return send(false, u.path); });
+          });
+        }).catch(function () { msg('The photo did not upload. Try again, or send it without one.'); });
+      };
     }
-    document.getElementById('sgSeen').onclick = function () { send(true); };
-    document.getElementById('sgNotSeen').onclick = function () { send(false); };
+    function send(seen, path) {
+      var sel = document.getElementById('sgStorePick'); if (!sel || !POS) return;
+      msg('Checking you are in the store...');
+      papi({ action: 'sighting_at', code: code, venue: sel.value, seen: seen, lat: POS.lat, lng: POS.lng, accuracy: POS.accuracy, path: path || undefined }).then(function (x) {
+        if (x && x.ok) {
+          var t = seen ? 'Thank you. Logged at ' + esc(x.venue) + ' today.' : 'Thank you. We noted it is not on the shelf at ' + esc(x.venue) + '.';
+          if (x.points) t += ' +' + x.points + ' points.';
+          t += ' ' + esc(x.chain) + ' now has it seen at ' + x.seen_locations + ' location' + (x.seen_locations === 1 ? '' : 's') + (x.not_locations ? ' and missing at ' + x.not_locations : '') + '.';
+          if (x.flagged) t += ' Enough locations say it is gone that our team will take a look.';
+          msg(t);
+        } else msg(esc((x && x.message) || 'That did not send. Try again.'));
+      }).catch(function () { msg('That did not send. Try again.'); });
+    }
+  }
+  // What each chain's locations say about an item, in words.
+  function chainLine(c) {
+    var bits = [];
+    if (c.seen_locations) bits.push('Seen at ' + c.seen_locations + ' location' + (c.seen_locations === 1 ? '' : 's') + ', last ' + agoText(c.last_seen));
+    else if (c.checked_at) bits.push('Checked in a store ' + agoText(c.checked_at));
+    else bits.push('From the Guides, not checked in a store yet');
+    if (c.flagged) bits.push('some locations say it is gone');
+    else if (c.not_locations) bits.push('missing at ' + c.not_locations);
+    return bits.join(' · ');
   }
   function drawScanOurs(code, d) {
     var p = d.product, b = d.brand || {}, page = '/directory/' + encodeURIComponent(b.slug || '') + '?tab=products&product=' + encodeURIComponent(p.slug);
@@ -876,14 +934,13 @@
       (d.ingredients ? '<p class="sg-small" style="margin-top:18px"><b>Ingredients:</b> ' + esc(d.ingredients) + '</p>' : '') +
       '<p class="sg-small">From ' + (d.source === 'usda' ? 'the USDA\'s record of the label' : 'what members and Open Food Facts reported') + '. Recipes change, so check the package.</p><p>' + scanBtn('Scan another') + '</p>';
     bindScan(); wireSighting(code);
-    rest('ve_product_stores?select=store_listing_id,removed_at,confirmed_at,listings!ve_product_stores_store_listing_id_fkey(slug,name,logo_url,status)&product_id=eq.' + p.id).then(function (rows) {
-      var box = document.getElementById('sgCarried'); if (!box) return;
-      var st = (rows || []).filter(function (r) { return !r.removed_at && r.listings && r.listings.status === 'approved'; }).map(function (r) { var l = r.listings; l._chk = r.confirmed_at; return l; })
-        .sort(function (x, y) { return x.name.localeCompare(y.name); });
-      box.innerHTML = st.length ? '<div class="sg-carried">' + st.map(function (l) {
-        return '<a class="sg-ptile" style="height:auto" href="/directory/' + esc(l.slug) + '"><span class="sg-thumb">' + (l.logo_url ? '<img src="' + esc(l.logo_url) + '" alt="" loading="lazy">' : '<i class="sg-letter">' + esc(l.name.charAt(0)) + '</i>') + '</span><span class="sg-pb"><b>' + esc(l.name) + '</b><em>' + (l._chk ? 'Checked in a store ' + agoText(l._chk) : 'From the Guides, not checked in a store yet') + '</em></span></a>';
-      }).join('') + '</div><p class="sg-small">The supermarkets our Guides place this line at. Stock changes by store, so check the shelf.</p>' : '<p class="sg-small">No supermarket is mapped for it yet. Seen it somewhere? Tell us on that store\'s page.</p>';
-    });
+    var box0 = document.getElementById('sgCarried');
+    if (box0) {
+      var st = (d.chains || []).slice();
+      box0.innerHTML = st.length ? '<div class="sg-carried">' + st.map(function (c) {
+        return '<a class="sg-ptile" style="height:auto" href="/directory/' + esc(c.slug) + '"><span class="sg-thumb"><i class="sg-letter">' + esc(c.name.charAt(0)) + '</i></span><span class="sg-pb"><b>' + esc(c.name) + '</b><em>' + esc(chainLine(c)) + '</em></span></a>';
+      }).join('') + '</div><p class="sg-small">The supermarkets our Guides place this line at, and what members standing in their stores have said. Stock changes by store, so check the shelf.</p>' : '<p class="sg-small">No supermarket is mapped for it yet. Seen it somewhere? Tell us below.</p>';
+    }
   }
   function drawScanOther(code, d) {
     var o = d.off, b = d.brand;

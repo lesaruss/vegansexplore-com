@@ -125,7 +125,7 @@
     return '<h2 class="ch">In the store <small>what we hold, never a guess</small></h2><div class="ans ' + (sy.yes ? 'yes' : 'no') + '"><b>' + esc(sy.head) + '</b><span>' + esc(sy.line) + '</span>' +
       '<a href="' + S.scanHref + '">Standing in ' + esc(st.store.name) + '? Scan an item and tell us what is on the shelf &rarr;</a></div>' +
       (rows.length ? '<div class="grid">' + rows.map(function (x) {
-        return '<a class="card" href="' + S.storeHref(x) + '"><span class="logo">' + (x.logo ? '<img src="' + esc(x.logo) + '" alt="" loading="lazy" width="64" height="64">' : esc((x.brand || '?').charAt(0))) + '</span><span class="t"><b>' + esc(x.brand) + '</b><span class="m">' + esc(x.type) + '</span><span class="tl">' + esc(S.ago(x.checked_at)) + '</span></span></a>';
+        return '<a class="card" href="' + S.storeHref(x) + '"><span class="logo">' + (x.logo ? '<img src="' + esc(x.logo) + '" alt="" loading="lazy" width="64" height="64">' : esc((x.brand || '?').charAt(0))) + '</span><span class="t"><b>' + esc(x.brand) + '</b><span class="m">' + esc(x.type) + '</span><span class="tl">' + esc(S.itemLine(x)) + '</span></span></a>';
       }).join('') + '</div>' : '') +
       '<p class="tl" style="margin:10px 0 0;font-weight:800">' + (st.total > rows.length ? 'Showing ' + rows.length + ' of ' + st.total + '. ' : '') + '<a style="color:var(--gd)" href="/directory/' + encodeURIComponent(st.store.slug) + '">See everything at ' + esc(st.store.name) + ' &rarr;</a></p>';
   }

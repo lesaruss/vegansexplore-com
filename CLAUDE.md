@@ -1177,8 +1177,26 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   result a signed-in Passport holder picks a store and taps **I see it here** or **Not here** (`ve-products` `sighting`, `ve_store_sighting_save`,
   30 a day, `ve_store_sightings`, RLS on); a yes on one of our products sets that store link's `confirmed_at`. The carried tiles show it. **Honest
   limits, 2026-11-02**: only the 86 dairy-free product lines are linked to stores (Walmart 15, none for ice cream or animal crackers), so most
-  questions answer Not confirmed yet. **Not built yet**: the scan as a Taste slide, store-by-store stock, business confirmation, points and bounties
-  for sightings, a sighting of a barcode we do not hold feeding search.
+  questions answer Not confirmed yet.
+  **Location-checked sightings and the chain registry** (Sean, 2026-11-02: "I can lock it in for Publix and specifically that location... Publix is
+  known to carry this product... people go in and they say, I don't see the product... if enough locations don't carry it, then maybe that raises a
+  red flag... once we're able to get sponsored by a supermarket, maybe there's a way for us to get access to their inventory"; migration
+  `20261102_store_location_sightings.sql`, `ve-products` version 7). On a scan result, **Standing in a store?** > **Find my store** reads the phone's
+  position (`nearby_stores`: the mapped supermarkets, `ve_venues` kind supermarket, nearest first), the member picks the store and taps **I see it
+  here** or **Not here** (a photo of the empty spot is optional and pays more), and `sighting_at` (`ve_store_sighting_at`) refuses unless the phone is
+  inside that store (its `radius_m` plus up to 100 m of accuracy, nothing worse than 500 m, the venue reports' own rule). Only an item with a live
+  barcode (one we know is Vegan) counts; one report per member, store and item a day (`ve_store_sightings.venue_id`, `local_day`). Small points,
+  capped a day, paid at once for a location-checked report (`ve_site_settings` `store_sightings`: seen 2, not here 2, with a photo 5, 20 a day;
+  `venue_report` in the ledger, ref `sighting:<id>`; no sponsor multiplier yet). A yes sets the chain's `ve_product_stores.confirmed_at`. **The
+  registry rolls up per chain** (`ve_item_chain_counts`: the latest report from each location in 60 days): Seen at N locations, last seen, missing at N;
+  the scan result's Carried at, the search answer and the Guide say so. **The red flag**: an item is flagged when at least 3 locations say Not here and
+  at least 30% of the locations that reported say so (`flag_min_locations`, `flag_share`, `window_days`, all in that setting); nothing comes off a
+  registry on its own. **Depot > Venues > Flags** (`ve_item_flags`, `ve-products` `flags`, `flag_decide`): Still carried (the flag returns only on newer
+  reports) or Take it off the registry (`ve_item_flag_reviews`, `removed_at`; a member's yes brings it back). **Bounties**: a store's page has **Help check
+  this store** (`store_gaps`, `ve_store_gaps`): items its chain carries that nobody has checked there lately, flagged ones first, each a scan away.
+  **Inventory later** is another source of the same rows (a feed from a sponsoring supermarket), never promised before one agrees. Publix is the only
+  chain with stores mapped, so only Publix areas (South, Central and North Florida) can report today. **Not built yet**: the scan as a Taste slide,
+  business confirmation, a sponsor multiplier on sighting points, a sighting of a barcode we do not hold feeding search, other chains' stores.
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 

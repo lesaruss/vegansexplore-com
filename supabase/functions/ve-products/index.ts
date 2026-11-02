@@ -11,6 +11,13 @@
 //   Food Facts said), 20 a day; the team approves it in Depot > Venues > Barcodes.
 // POST { action: 'sighting', code, store, seen? } active member -> { ok, linked }   store = a grocery listing id; seen false means Not here.
 //   A yes on a barcode that is one of our products sets that store link's confirmed_at (the last checked date). 30 a day. Migration 20261102_store_scan_search.sql.
+// POST { action: 'nearby_stores', lat, lng }  anyone -> { stores: [{id, name, address, city, chain, distance_m, radius_m}] }   the mapped supermarkets nearest a phone
+// POST { action: 'sighting_photo_start' } active member -> { path, upload_url }   a signed upload for the shelf photo (private bucket venue-reports)
+// POST { action: 'sighting_at', code, venue, seen, lat, lng, accuracy, path? } active member -> { ok, points, chain, venue, seen_locations, not_locations, flagged }
+//   The phone must be inside that store (its radius plus up to 100 m of accuracy). Only a live barcode (an item we know is Vegan) counts. One report
+//   per member, store and item a day; small points a day (ve_site_settings store_sightings). A yes sets the chain's last checked date.
+// POST { action: 'store_gaps', venue } anyone -> { gaps: [{brand, type, gtin, reason: flagged|not_checked}] }   items its chain carries that nobody has checked here lately
+// POST { action: 'flags' } / { action: 'flag_decide', chain, product, decision: kept|dropped, note? } super admin   items locations say are not on the shelf
 // POST { action: 'votes', brand }        anyone -> { counts: {product_id: n}, mine: [product_id] }   brand = its listing id
 // POST { action: 'vote', product_id, on } active member -> { ok, count }
 // POST { action: 'picks', recipe_id }    member -> { picks: [{line, product_id, gtin}] }
@@ -138,7 +145,12 @@ Deno.serve(async (req) => {
     if (!code) return json({ error: 'bad_code', message: 'That does not look like a barcode.' }, 400);
     const { data } = await db.rpc('ve_barcode_lookup', { p_code: code });
     let out: any;
-    if (data && data.found) { out = data; const o = await offLookup(code); out.flags = o ? { organic: o.organic, gmo: o.gmo } : { organic: 'unknown', gmo: 'unknown' }; }
+    if (data && data.found) {
+      out = data;
+      const [o, cs] = await Promise.all([offLookup(code), data.product?.id ? db.rpc('ve_item_chain_status', { p_product: data.product.id }) : Promise.resolve({ data: [] })]);
+      out.flags = o ? { organic: o.organic, gmo: o.gmo } : { organic: 'unknown', gmo: 'unknown' };
+      out.chains = cs.data || [];
+    }
     else {
       const off = await offLookup(code);
       const brand = off?.brand ? await brandFor(off.brand) : null;
@@ -187,6 +199,59 @@ Deno.serve(async (req) => {
     if (r.error === 'daily_limit') return json({ error: 'daily_limit', message: 'That is 30 for today. Thank you. Try again tomorrow.' }, 429);
     if (r.error) return json({ error: r.error, message: 'That is not a store we list.' }, 400);
     return json({ ok: true, linked: !!bc?.product_id });
+  }
+
+  // ---- Location-checked sightings (Sean, 2026-11-02): a phone inside a mapped store says an item is, or is not, on its shelf. ----
+  const SIGHT_WHY: Record<string, string> = {
+    not_found: 'That store is not in our list.', not_ours: 'We only track items already in our Vegan registry. Use Add it for a new one.',
+    no_position: 'We could not read your location.', no_location: 'That store has no map pin yet.',
+    not_precise: 'Your phone cannot place you closely enough here. Step outside or near a window and try again.',
+    too_far: 'You are not inside that store. Report from the store itself.', daily_limit: 'That is the most reports for today. Thank you. Try again tomorrow.',
+    already_today: 'You already reported this item here today.', bad_code: 'That does not look like a barcode.',
+  };
+  if (action === 'nearby_stores') {
+    const lat = Number(body.lat), lng = Number(body.lng);
+    if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return json({ error: 'bad_position' }, 400);
+    const { data } = await db.rpc('ve_nearby_stores', { p_lat: lat, p_lng: lng, p_limit: 4 });
+    return json({ stores: data || [] });
+  }
+  if (action === 'sighting_photo_start') {
+    const deny = needMember(); if (deny) return deny;
+    const path = `${viewer!.id}/${crypto.randomUUID()}.jpg`;
+    const { data: up, error } = await db.storage.from('venue-reports').createSignedUploadUrl(path);
+    if (error || !up) return json({ error: 'upload_failed' }, 500);
+    return json({ path, upload_url: up.signedUrl });
+  }
+  if (action === 'sighting_at') {
+    const deny = needMember(); if (deny) return deny;
+    const code = gtin(body.code);
+    if (!code || !isId(body.venue)) return json({ error: 'bad_request' }, 400);
+    let photo = '';
+    if (typeof body.path === 'string' && body.path) {
+      const p = body.path;
+      if (!p.startsWith(viewer!.id + '/') || !/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/.test(p)) return json({ error: 'bad_photo' }, 400);
+      const { data: listed } = await db.storage.from('venue-reports').list(viewer!.id, { search: p.split('/')[1] });
+      if (!(listed || []).some((f) => f.name === p.split('/')[1])) return json({ error: 'bad_photo', message: 'The photo did not upload. Try again.' }, 400);
+      photo = p;
+    }
+    const { data: r, error } = await db.rpc('ve_store_sighting_at', { p_member: viewer!.id, p_venue: body.venue, p_gtin: code, p_seen: body.seen !== false,
+      p_lat: Number(body.lat), p_lng: Number(body.lng), p_accuracy: Number(body.accuracy) || 0, p_photo: photo });
+    if (error || !r) return json({ error: 'save_failed', message: 'That did not save. Try again.' }, 500);
+    if (!r.ok) return json({ error: r.why, message: SIGHT_WHY[r.why] || 'That did not save.', distance_m: r.distance_m }, 400);
+    return json(r);
+  }
+  if (action === 'store_gaps') {
+    if (!isId(body.venue)) return json({ error: 'bad_request' }, 400);
+    const { data } = await db.rpc('ve_store_gaps', { p_venue: body.venue, p_limit: 12 });
+    return json({ gaps: data || [] });
+  }
+  if (action === 'flags' || action === 'flag_decide') {
+    if (!viewer?.admin) return json({ error: 'forbidden' }, 403);
+    if (action === 'flags') { const { data } = await db.rpc('ve_item_flags'); return json({ flags: data || [] }); }
+    if (!isId(body.chain) || !isId(body.product) || !['kept', 'dropped'].includes(body.decision)) return json({ error: 'bad_input' }, 400);
+    const { data, error } = await db.rpc('ve_item_flag_decide', { p_member: viewer.id, p_chain: body.chain, p_product: body.product, p_decision: body.decision, p_note: clean(body.note, 400) });
+    if (error || !data?.ok) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true });
   }
 
   if (action === 'votes') {

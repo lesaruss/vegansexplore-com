@@ -107,7 +107,7 @@
     function fail(r) { return r.message || WHY[r.why] || r.why || r.error || 'That did not save.'; }
     function sel(id, map, val) { return '<select id="' + id + '">' + Object.keys(map).map(function (k) { return '<option value="' + k + '"' + (k === val ? ' selected' : '') + '>' + esc(map[k]) + '</option>'; }).join('') + '</select>'; }
     function topTabs(on) {
-      return '<div class="tabs" style="margin-bottom:14px"><a href="#list/pending" class="' + (on === 'reports' ? 'on' : '') + '">Reports</a><a href="#venues" class="' + (on === 'venues' ? 'on' : '') + '">Venues</a><a href="#barcodes" class="' + (on === 'barcodes' ? 'on' : '') + '">Barcodes</a></div>';
+      return '<div class="tabs" style="margin-bottom:14px"><a href="#list/pending" class="' + (on === 'reports' ? 'on' : '') + '">Reports</a><a href="#venues" class="' + (on === 'venues' ? 'on' : '') + '">Venues</a><a href="#barcodes" class="' + (on === 'barcodes' ? 'on' : '') + '">Barcodes</a><a href="#flags" class="' + (on === 'flags' ? 'on' : '') + '">Flags</a></div>';
     }
     // How far from the venue, against the fence the save allowed (radius plus up to 100 m of the phone's own uncertainty).
     function distLine(r) { return r.distance_m == null ? 'No location' : Math.round(r.distance_m) + ' m from the venue\'s center (phone accurate to ' + Math.round(r.accuracy_m || 0) + ' m)'; }
@@ -370,8 +370,34 @@
         if (r.ok) { card.remove(); if (!document.querySelector('[data-gtin]')) drawBarcodes(); } else msg.textContent = r.message || r.error || 'That did not save.';
       });
     });
+    // Items a chain's locations say are not on the shelf (2026-11-02): enough locations reported Not here, so the team decides. Still carried
+    // keeps it, and the flag comes back only on newer reports; Take it off the registry removes it from that chain until a member sees it again.
+    function drawFlags() {
+      app.innerHTML = topTabs('flags') + '<p class="msg">Loading…</p>';
+      papi({ action: 'flags' }).then(function (d) {
+        if (!d.flags) { app.innerHTML = topTabs('flags') + '<p class="empty">The flags did not load. Refresh to try again.</p>'; return; }
+        app.innerHTML = topTabs('flags') + '<p class="sub">Items our members, standing in the stores, say are not on the shelf at several locations. Nothing comes off a chain\'s registry unless you say so.</p>' +
+          (d.flags.length ? d.flags.map(function (f) {
+            return '<div class="panel" data-chain="' + esc(f.chain_id) + '" data-product="' + esc(f.product_id) + '"><b>' + esc(f.brand) + ' ' + esc(f.type) + '</b> at ' + esc(f.chain) +
+              '<div class="sub" style="margin:2px 0 6px">Missing at ' + esc(f.not_locations) + ' location' + (f.not_locations === 1 ? '' : 's') + ', seen at ' + esc(f.seen_locations) + (f.last_seen ? ', last seen ' + esc(when(f.last_seen)) : '') + '</div>' +
+              '<div class="sub" style="margin:0 0 8px">' + (f.where || []).slice(0, 8).map(function (w) { return esc(w.store) + (w.city ? ' (' + esc(w.city) + ')' : '') + ' ' + esc(when(w.at)); }).join(' · ') + '</div>' +
+              '<div class="row" style="gap:10px;flex-wrap:wrap;align-items:center"><input data-fl-note placeholder="A note (optional)" style="min-width:240px">' +
+              '<button type="button" class="btn" data-fl="kept">Still carried</button><button type="button" class="btn btn-red" data-fl="dropped">Take it off the registry</button><span class="msg" data-fl-msg></span></div></div>';
+          }).join('') : '<p class="empty">Nothing flagged. It shows here when 3 or more locations say an item is not on the shelf.</p>');
+      });
+    }
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-fl]'); if (!b) return;
+      var card = b.closest('[data-chain]'), msg = card.querySelector('[data-fl-msg]');
+      b.disabled = true;
+      papi({ action: 'flag_decide', chain: card.getAttribute('data-chain'), product: card.getAttribute('data-product'), decision: b.getAttribute('data-fl'), note: card.querySelector('[data-fl-note]').value }).then(function (r) {
+        b.disabled = false;
+        if (r.ok) { card.remove(); if (!document.querySelector('[data-chain]')) drawFlags(); } else msg.textContent = r.message || r.error || 'That did not save.';
+      });
+    });
     function route() {
       var h = location.hash || '#list/pending', m;
+      if (h === '#flags') { drawFlags(); try { window.scrollTo(0, 0); } catch (e) {} return; }
       if (h === '#barcodes') { drawBarcodes(); try { window.scrollTo(0, 0); } catch (e) {} return; }
       if ((m = /^#r\/([0-9a-f-]{36})$/.exec(h))) drawReport(m[1]);
       else if (h === '#venues') drawVenues();
