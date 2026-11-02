@@ -4055,8 +4055,9 @@ the $11 Passport or a membership earned now; no free account that can take part,
     we send** (`#offers[/<status>]`, `#offers/new`, `#offers/preview/<kind>[:<offer>]`): New offer (a listing, their email, a name) makes a
     `ve_pc_offers` row and its own tracked link (`ve_links` `pc-<8>`, initiative `passport-challenge-offer`, to `/business/challenge?listing=`);
     **Send it** sends email A ("Be a Passport Challenge stop in <month>") by hand, always. Two days later, on a weekday from 10 AM Eastern
-    and only with `offers_on`, the follow-up goes on its own: B "Your spot for <month> is still open" when the link was never clicked (bots
-    left out), C "What a stop really costs" when it was. An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
+    and only with `offers_on`, one follow-up goes on its own to every business that has not applied, "<Month> Passport Challenge stops in <chapter>"
+    (worded by the review panel: no guess at why they have not answered, the deal in one line, greeting the contact by first name or Hello).
+    An application (`ve_pc_slots` after the send) makes it **Applied**; nothing two days
     after the follow-up makes it **In the Inbox** (`routed`, a `pc_offer` row of `ve_inbox_items` for the chapter's Community Manager).
     **Stop these emails** (`/business/challenge?stop=<code>`, `offer_stop`) stops it and adds an `email_suppressions` row. The apply
     confirmation is now email D ("You applied to be a <month> stop", three next steps; `ve-vault`). **Taster emails**: Depot > Challenges >
@@ -4073,6 +4074,22 @@ the $11 Passport or a membership earned now; no free account that can take part,
     rolled-back transaction, since test offers stay out of it); its stop link stopped it and wrote the suppression, a bad code 404; both Depot
     views on desktop and iPhone, no errors; every test row removed. Not yet proven: a real follow-up and a real Taster email going out (the
     first window after a switch is turned on).
+    **Sean's review of the tests, 2026-11-02** (Sean: "go"; migration `20261102_nurture_fixes.sql`; `ve-nurture` version 5 from 85710a0,
+    sha256 matched): **Day 14** says why they got it ("When you signed up for A Taste of Vegans Explore, you told us you're here for ...
+    That points to <Guide>"), a line on what the Guide does (`GUIDE_LINE`) and that they tried a piece in their Taste. **Day 7** opens the
+    episode on its show's own listing (`/directory/<show>?ep=<guid>`, where they vote and save; `ve_nurture_story` now takes only episodes in
+    `ve_pulse_episode_map`), never the Pulse article or a video. **The December notes** say "It's $11, one time. Or earn it free: finish one
+    of our three challenges within 30 days (check in at Vegan places, bring three friends, or show up for the animals)." **Email C ("What a
+    stop really costs") is dropped** as presumptive. **The weekly Daily Pulse is opt-in**: Day 14 ends with "Want your city's Daily Pulse
+    every Thursday? Yes, send it", opening `/guides/taste?pulse=<key>` (`ve-nurture` `pulse_optin`, public with the Taster key, sets
+    `ve_tasters.pulse_opt_in_at`); only those Tasters get it. The December notes still go to every Taster. **`/business/challenge`**: Liz on
+    each of the three steps, her picture and her voice with Play (nothing plays until pressed, then each step plays its line until Pause,
+    `sessionStorage` `pc_liz`; `LIZ` in the page, `vegan-media/media/liz/passport-challenge/pc-offer|card|agree-v1.mp3`, el-media tts in her
+    profile voice, each checked word for word with stt; a line's text must match its recording), and **Your card** runs full width. Fresh
+    [Test] copies of all nine sent to contact@lesaruss.com. Lesson: a find-and-replace on `not_opened` matched refOf's line first and cut
+    out the send functions; a syntax check does not catch a missing name, so type-check an edge function (`tsc --noEmit`) before deploying.
+    A [TEST] Taster ("Sean [TEST]") is kept so the test Day 14's Yes link works; it is never sent to (the tick skips [TEST] names). Next, as
+    its own build: email preferences in My Account for members.
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
