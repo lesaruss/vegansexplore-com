@@ -47,9 +47,31 @@ Captured as Sean said it, so it isn't lost. Not decided, not built. It goes to a
 - A points-for-connections rule.
 - Focus groups.
 
+## Sean's clarification (2026-11-02, same day)
+
+- **Not Group Partners.** Group Partners stays its own give and take: a percentage, and every guest is a member, which keeps the
+  community real ("people don't troll and pay money"). It needs more finessing, but separately.
+- **This is per event, nothing long term**: "Do you want to do an event with us?"
+  - A paid event: a charge per ticket.
+  - A free event: they make Vegans Explore a sponsor.
+- **Maybe it's branded a Vegans Explore sponsorship.** Part of it is selling through our platform, plus promotion that's clearly
+  laid out. Beyond that, sponsors see the full a la carte list of event promotion at steeply discounted prices.
+- The point is for them to see what our marketing can do, and some will buy more.
+- **Every event we bring in** with an email for its host goes into the daily email queue, with a templated heads-up message
+  that sends automatically.
+
+## Logan's notes for the build
+
+- The automatic heads-up fits the outreach people-list engine: a list, its own template, daily cap, warm-up, unsubscribe and
+  the postal footer, one email per host per event, never to an address that unsubscribed.
+- Business outreach today waits for Sean to approve every send day. Here, Sean approves the template once and the emails then
+  go out on their own (Sean's direction).
+- This merges with the event sponsorship already built in the Events Guide (booth, comped meals, our promotion). One offer, not
+  two.
+
 ## Open questions for Sean
 
-1. **Ticket fees.** Locked Group Partner canon (2026-10-29) takes a 5% fee on paid tickets. This idea says "no additional
-   fees, just be a member." Does the 5% go away, or apply only to non-members, or stay?
-2. Is the exclusive host path the same program as Group Partners, or a separate one for promoters and venues that aren't groups?
-3. Which a la carte items, and at what prices ($50 and $75 were examples)?
+1. The per-ticket charge (an amount or a percent), and whether members who host pay less.
+2. What a free event's sponsorship asks of them (logo, a booth, a stage mention, our QR cards), and what promotion we give.
+3. Which a la carte items, and their regular and sponsor prices.
+4. Who the heads-up goes from (Sean, or the team), and whether a host gets one per event or once.
