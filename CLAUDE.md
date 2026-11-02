@@ -514,6 +514,28 @@ take it down or end it; every step. All of it is `ve-branddesk`'s `site_*` actio
 runs. Our own brands' websites wait for a brand frame (the frame is a restaurant's). Checked against mocked answers in a browser at 1366 and
 390 px; no BrandDesk client existed yet (`list` returned none).
 
+**The plan engine** (2026-11-01, build order item 4; Sean: "go with your recommendation, next step"; migration
+`20261101_branddesk_plan_engine.sql`, edge function `ve-plan`; HQ BrandDesk > a brand > **Plan**, `components/branddesk/PlanRoom.tsx`,
+`/api/branddesk/plan`, `lib/brandPlan.ts`). A 3, 6 or 12 month plan (`ve_plans`: brand, start, Self-serve / Supported / Managed, the
+rhythm: how many of each kind a month) lays out dated pieces (`ve_plan_pieces`), and each piece rolls out its steps backwards from its
+due date (`ve_plan_steps`; `KINDS` in `ve-plan`, Logan's defaults: Social post 8 a month, steps from 7 days before; Reel 4, 14 days;
+Article 1, 21 days; Email 2, 7 days; Photo shoot every other month, 28 days, with Book the photographer and its request already
+written; Podcast episode, Event and Website update off by default). A piece whose steps would start before today moves later in its
+month, never two of a kind on one day. **Every piece moves the same way**: its questions (Questions to answer), then the draft (Ready to
+write: **Write it for me**, Claude Opus 5.5 in the brand's locked voice and story from its kit, only from the answers and the brief, or a
+person writes it and sends it), Waiting for the OK, Approved (a super admin, the owner of our brands; editors ask for changes with a
+note, which the next draft reads) or Changes asked, then **Stored**: a social piece goes onto the brand's Social plan as a slot waiting
+for approval there (`ve_social_slots` status `proposed`, batch `plan:<plan id>`, the time in Eastern), anything else with a link or a
+note. The answers, draft, OK and store steps tick themselves; the rest are ticked by hand. Every move and comment is a `ve_plan_notes`
+row. **The launch gate**: a plan is made only for a launched brand kit (`kit_not_launched`), so today only Vegans Explore can have one;
+Sean A. Russell's and GeekFon Society's kits are not started. Who: super admins, else the brand's `ve_social_people` role. The tab opens
+on Today (late, today, this week, waiting for the OK), then the plans; `?plan=new|<id>&piece=<id>` carry the view. Proven live
+2026-11-01 as Sean on a [TEST] Vegans Explore plan (the gate on GeekFon, 4 pieces and 20 steps made, answers, a draft in the brand's
+voice, an empty change note refused, changes asked and draft 2 shorter as asked, approve, store refused before the OK and onto the Social
+plan at 12:30 PM Eastern after it, a stored piece refused editing, a stranger refused), then removed through the one-time
+`ve-once-plan-proof` (now the 410 stub; the connector held the delete). Not yet: plans for client listings' kits, emailing the owner
+when a piece waits for them, and the plan's pieces on the Social plan's calendar before they are stored.
+
 ## BrandDesk: managed marketing for Vegan businesses (LOCKED by Sean 2026-10-31, playbook `ve-front-of-house`)
 
 **The name is BrandDesk** (Sean, 2026-10-31: "I like brand desk... it could fit for anybody, anything"; canon v7). It was called
@@ -2572,7 +2594,7 @@ Directory is their chapter's).
 - **Where it applies**: Food, Products, Services, Community, Being vetted (`LOC_SECTIONS`); not Media or People; not Food Brands or
   Nutrition & Supplements unless Sells at is Markets & events (`geoApplies`). Where it does not apply, the location filters nothing.
 - **Remembered across visits**: `/directory` keeps it in `localStorage` `ve_dir_loc` (a first visit takes the member's home chapter,
-  else every location); never in the address, and an old `?city=` link still opens on that chapter. The dashboard starts on its
+  else every location), and since 2026-11-01 writes it in the address too (Every view is a link, below): `?city=<chapter>`. The dashboard starts on its
   active city, and a chapter picked there becomes the active city (`switchActiveCity(slug, member, true)`), every location widening
   only the tab (`DASH_ALL.directory`).
 - **The ad rail follows it**: the chapter's two banners where the location applies and a chapter is picked, else the All cities pair.
@@ -2584,13 +2606,46 @@ Directory is their chapter's).
   and `VE_HUBS[].countryCode`) and Sort; a tag by the search names the location. **Kinds are pills too** (Sean, 2026-11-01: "Do the same pills on the Events filters"): Filters has **Kind of event**, any number picked (`?cat=` comma separated), each a pill between the search and Filters: tap it to turn it off and on (grey, struck through), its x to take it away (`paintKinds`, `st.off` in `ve-events.js`); the count on Filters is Sort plus the kinds on, and the banner reads the one kind or "N kinds". Picking from the banner's dropdown sets one kind. **Duplicate events** (Sean, 2026-11-01): Vegan Social Clubs (Atlanta) posts its weekly Wednesday meetup on Meetup twice; "Vegan and Friends" (Atlantucky Brewing) is the official one, and the 68 "The Vegan Social of Atlanta" copies on the same days were turned down (`rejection_reason` "Duplicate of ...", migration `20261101_atlanta_vsc_duplicates.sql`). `ve_event_intake` treats an event turned down as a duplicate as already listed that day, and refuses (`known_duplicate`) a title its host has had turned down as a duplicate three times or more, new dates included. To retire a recurring copy, turn three down with a reason starting "Duplicate of". The line under the title reads "Festivals · South
   Florida" and the banner wears the chapter's art. **The chapter never fills itself here** (events happen everywhere, not only in
   our chapters, so United Kingdom shows every UK event); a country with one choice still does. `/events` keeps the location in
-  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit); an old `?city=` (a hub's Submit an event) or `?where=` link
-  opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
+  `localStorage` `ve_ev_loc` (a member's home chapter on a first visit) and in the address since 2026-11-01 (`?city=`, else
+  `?continent=` and `?country=`; `syncUrl`), so a shared link opens on the same place; an old `?where=` link opens on it once. The dashboard starts on its active city, and a chapter picked there becomes it (`switchActiveCity(slug,
   member, 'events')`). LESARUSS.ai's Events and Funding (`VE_BRAND.calendar`) keep their own banner; the old toolbar (Where, Sort,
   Upcoming / Past, the kind pills) stays for any mount without `filterMenu`.
 - **Not done**: LESARUSS.ai's `/directory` (lesaruss-ai-site) still mounts the component without `sectionMenu` or `location`, so it
   keeps its old layout until that page passes them (its sections fill the banner menu in brand mode). South Florida's counties are not
   an Area step in location mode (Area is the chapter's cities).
+
+## Every view is a link, and Share on every page (Sean, 2026-11-01)
+
+"I saw somebody on Facebook asking about vegan spots in DC, and I wanted to grab the link when I wasn't logged in... it was just a
+generic directory link. So I missed out on that opportunity... I want to be able to copy any page that I see, any configuration that
+I see... a unique URL that I can share... a button somewhere on every page that you can copy... If it's not shareable, it's not gonna
+go anywhere... We need everybody to share it, even if they're not signed in."
+
+- **The Directory's address carries the whole view** (`writeState`, `restoreState`, `locFromUrl` in `ve-region-directory.js`, on any
+  page that passes `config.url`: `/directory` and the dashboard's Directory tab): the section and sub-section as before, the location
+  (`?city=<chapter>`, else `?continent=` and `?country=`), the search (`?q=`), the sort (`?sort=`), the shelf's types that are on
+  (`?kinds=dairy,meat`) and each filter set away from where it started, by its name (`?vegan=`, `?sells=`, `?cuisine=`, `?type=`,
+  `?chain=`, `?area=` for the chapter's city...; `VRD_FKEYS`, `selName`). Paused pills stay out. It is written in place as things
+  change (`replaceState`; a section change clears the old section's filters) and read once the listings are drawn, ahead of the
+  visitor's kept location. `/directory?tab=food&city=washington-dc` is Local Food in D.C. for anyone who opens it.
+- **Events** writes its location too (above, Directory navigation); its kinds, search, sort and Upcoming / Past already were.
+- **Share on every page** (`/public/ve-share.js`, `VEShare`): a Share button in `nav.js`'s bar, signed in or out, before Log In or
+  Apps (icon only at 1060 px and under), and in the dashboard's top bar. On a phone it opens the phone's own share sheet; elsewhere it
+  copies the link and says so. The link (`VEShare.url()`) is the page as anyone can open it: a dashboard address becomes its public
+  page (`/dashboard/directory?...` to `/directory?...`, `/dashboard/directory/<slug>` to `/directory/<slug>`, Events, Media, Guides,
+  the Daily Pulse and Communities the same; the dashboard itself, My Saves, the Depot and account pages share the home page), without
+  sign-in and tracking bits (`vl`, `t`, `view_as`, `utm_*`, `fbclid`...), and with a **signed-in member's own `?ref=<referral_code>`**,
+  so the visit counts on their link and anyone who joins from it is theirs (ve-auth.js keeps any page's `?ref=` for the visit). Any
+  element with `data-ve-share` shares the page. Each share is a Google Analytics `share` event.
+- **Media and framed pages too** (Sean, 2026-11-01: "Everything needs to be able to use that button you just created"): Media's voted
+  list writes its name search, sort and filters on (`?q= &sort= &f=status:active,...`) and the episode search (`?search=`) into the
+  address and reads them on the first load (`readUrl`, `writeUrl` in `ve-media.js`; `opts.url: false` turns it off). In the dashboard,
+  Share sends **the page in the frame** when one is open (a Guide or tool opened with `openConsoleFrame`, or the Daily Pulse tab:
+  `framed()` in `ve-share.js`), so a Guide's tab or the Pulse's chapter and board tab go out as their own public address. Member-only
+  pages (`/guide`, `/levels`, `/survey`, `/secret-shopper`) share the home page, and `hub`, `embed` and `preview` are dropped.
+  City hubs (`?tab=`, `?dir=`), listings (`?tab=`, `?ep=`, `?book=`), Guides (`#/...`) and the Pulse (`/pulse/<tab>?city=`) already
+  kept their view in the address. A new view keeps its state in the address the same way, or Share cannot send it. The phone bar was tightened so Share fits
+  at 320 px.
 
 ## Local Food and Products (LOCKED by Sean 2026-11-01, playbook `ve-local-food-products`)
 
@@ -3132,6 +3187,47 @@ rebuilt every 6 hours by cron `ve-person-episodes`. Hosts set 2026-10-28 from ea
 Marchese and Dani Taylor (Muscles by Brussels Radio), Dotsie Bausch (Switch4Good), Jason Kartalian (Vegan Hacks), Brighde Reed (World
 Vegan Travel), Neal Barnard (The Exam Room); John Thomas and Brooke Sellers host Vegans Who Lift, one of ours, so theirs are under With
 Vegans Explore. A person with another name on other shows gets it in `details.person.aka`.
+
+## The homepage: launching January 1, 2027 (Sean, 2026-11-01)
+
+"Make it a little bit more apparent that we're officially launching January 1st, 2027... right now is the best opportunity for you to
+help steer the direction... locking yourself in as a founder... reviewed by our panel as a video on the homepage... a countdown clock to
+January 1st, 2027. But the call to action to become a founding member for $11." The hero (`index.html`, `.hero-wrap`) keeps the rotating
+city art and now holds: **Officially launching January 1, 2027**, "Help build the Vegan community's home base.", a line on building it
+city by city and how to help, a **countdown** to 2027-01-01T05:00Z (midnight Eastern, `DEADLINE` in the page), **Become a Founding
+Member · $11** (`/passport?from=home#/join`), Explore Now and the locked Founding line; beside it (above it on phones) the **video**.
+After the deadline the countdown and Founding line hide themselves and the button reads Get your Passport · $11.
+- **The video** (66 s, 1280 x 720): the script was written by Logan and revised by a five-person panel (first-time visitor, Vegan
+  restaurant owner, skeptical non-Vegan, brand marketer, clarity editor); Liz narrates (el-media tts, her voice, "Veegan"), checked word
+  for word with `stt`, over an ElevenLabs music bed, about -15 LUFS; title cards over the Guide banners and chapter art. File
+  `vegan-media/media/home/launch-v1.mp4` (voice `launch-liz-v1.mp3`, bed `launch-bed-v1.mp3`); captions `public/home/launch-v1.vtt`
+  (on by default), poster `public/home/launch-poster.jpg`. Nothing plays until Watch the video; playing pauses the city rotation and
+  sends GA `video_start` / `video_complete`. A new cut is `launch-v2.mp4` with its own VTT; a script change is recorded again.
+
+## Communities are cards, and a chapter is its own page (Sean, 2026-11-01)
+
+"The community should be set up like they're in a directory listing... you can vote for them, you could save them. You see the little
+icon on the left-hand side of the city... the landing page for the community is weak. It takes you to the pulse... When I click on
+community, it looked like it was put into a frame. I don't like that. And then when I go backwards, it sends me back to the directory."
+
+- **The cards**: `/communities` and the dashboard's Communities tab draw every chapter with `/public/ve-chapters.js`
+  (`VEChapters.mount(el, opts)`): the chapter's art as a rounded square on the left, its name, where it is, its places, events coming up
+  and members, the votes over **Votes**, and **Save**; a search and Sort by (Most votes, Most places, A to Z; `?q=` and `?sort=` on
+  `/communities`). The whole card opens `/communities/<slug>`. **Vote** is once every 24 hours per member (`ve_chapter_votes`, migration
+  `20261101_chapter_votes.sql`; `ve-votes` `chapter_vote`, `chapter_today`, and the public `chapter_stats` from `ve_chapter_stats()`).
+  **Save is joining the chapter** (`ve-auth` `join_community` / `leave_community`), so a saved chapter is one of the member's communities.
+  Signed out, Vote and Save open the Passport window (`VEVotes`). The old flip cards are gone.
+- **Never framed**: from the dashboard (a card, the Communities banner, or View community in any framed page, `VEOpenCommunity`) a
+  chapter opens as its own page in the same window (`openCommunity` in center-console, which still makes it the dashboard's city), so Back
+  returns to the dashboard and the hub's own Dashboard button is the way in. The dashboard's link catcher leaves `/communities/*` alone.
+- **The hub opens on Overview** (`?tab=` empty; `#tab-overview` in `communities/hub.html`, `renderOverview`): Welcome to Vegan <city>,
+  its own card (vote and save, `VEChapters.mount` with `only`, `bar: false`, `here: true`), four numbers (places, events coming up,
+  members, community votes; each opens its section or votes), Explore <city> (a tile into the Directory, Events, Daily Pulse, Community
+  Board, Bounties and Opportunities), and Most voted in <city> (the top six 100% Vegan places with votes, the Directory's card). The Daily
+  Pulse is `?tab=news`, second in In this community. Proven live 2026-11-01 on iPhone and desktop (signed out: cards, search, the
+  Passport window on Vote, a card into D.C., the Overview, a tile into Events and Back) and the vote path as the Logan test account
+  through the one-time `ve-once-chapter-proof`, now the 410 stub (a bad chapter refused, a vote counted, a second refused with its time,
+  the vote then removed). `ve-votes` deployed from commit 2f41877 (source sha256 matched).
 
 ## City hubs: one page for every city (Sean, 2026-10-05)
 
@@ -3801,6 +3897,16 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   founding seat, now opens the Passport Guide instead of its own open contribution (Sean, 2026-10-25), members give more from the
   dashboard's Contribute, and the nav's announcement (`ve_nav_announcements`) reads "Your Passport: $11 one time, with 1,100 welcome
   points" and links to `/passport`.
+- **The Passport is the Founding Member flow, four pages** (Sean, 2026-11-01: "bring this down to 4 total pages... Our focus is become a
+  founding member before January 1st"; copy revised by the panel, approved by Sean before it went live): **Why now** (the cast; 13 chapters,
+  $11 one time with 1,100 welcome points, the countdown, three step tiles with topic pictures, `TOPIC`), **What you can do** (Theo: vote,
+  earn points with check-ins and bounties, give points, your first Guide covered by the welcome points, join your city, share your link),
+  **Why join now** (Dani: shape it, Founding Member for good, keep your city growing, the locked line), **Get your Passport** (Liz).
+  `FOUNDING` in `passport.html`. **Become a Founding Member · $11** sits under the Guide's words on every page (`#dgCta`), the Guide sits in
+  the corner on phones (`ve-guide-corner.js`, `#dgRail`), and the header's $11 box is hidden on phones. A members-only prompt
+  (`?from=vote|save|checkin|give|board|tickets`) lands on Why now with its note, never the checkout; old tab links land on the page that holds
+  them (`OLD`). The nine-tab ensemble is the **Welcome Guide** at `/passport?guide=welcome` (`WELCOME`; the catalog card opens it).
+  `/business` is unchanged. After the deadline the pages drop the countdown and the Founding words.
 - Migration `20261025_ve_points_levels_admission.sql` (functions, contributions table) and `20261025_ve_guides_points_rule.sql`
   (Guides to points, the Guides' facts, saved answers, canon). What the Guides say about prices lives in
   `ve-guide-platform-facts` and `guide_kb_answers`; change them with this.

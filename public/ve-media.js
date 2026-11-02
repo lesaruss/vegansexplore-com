@@ -193,6 +193,7 @@
       grid.innerHTML = '<p class="vem-note">Loading&hellip;</p>';
       cache = null; f = { q: '', picks: {}, sort: 'votes' }; nameIn.value = ''; nameIn.placeholder = 'Search ' + t.label.toLowerCase() + ' by name';
       sortSel.innerHTML = sortsFor(t.key).map(function (o) { return '<option value="' + o[0] + '">' + o[1] + '</option>'; }).join('');
+      if (!restored) { restored = true; readUrl(t.key); }
       paintFilters();
       var cat = '"' + t.cat + '"';
       get('listings?select=' + fields + '&status=eq.approved&or=' + encodeURIComponent('(category.eq.' + cat + ',extra_categories.cs.{' + cat + '})') + '&limit=500')
@@ -239,8 +240,34 @@
       var n = onPicks().length + (f.sort !== 'votes' ? 1 : 0), cnt = el.querySelector('.vem-fcount');
       cnt.textContent = n; cnt.hidden = !n;
     }
+    // Every view is a link (Sean, 2026-11-01): the name search, the sort and the filters on ride in the address (?q= &sort= &f=
+    // status:active,...), and the episode search as ?search=, so Share sends exactly this list. Read once, on the first load.
+    var restored = opts.url === false;
+    function readUrl(kind) {
+      try {
+        var p = new URLSearchParams(location.search);
+        f.q = (p.get('q') || '').trim(); nameIn.value = f.q;
+        var so = p.get('sort'); if (so && sortsFor(kind).some(function (o) { return o[0] === so; })) f.sort = so;
+        (p.get('f') || '').split(',').forEach(function (k) { if (k && facetOf(k)) f.picks[k] = true; });
+        var se = (p.get('search') || '').trim(); if (se && kind === 'podcasts') { input.value = se; setTimeout(function () { input.dispatchEvent(new Event('input')); }, 0); }
+      } catch (e) {}
+    }
+    function writeUrl() {
+      if (opts.url === false || !restored) return;
+      try {
+        var u = new URL(location.href), p = u.searchParams;
+        ['q', 'sort', 'f', 'search'].forEach(function (k) { p.delete(k); });
+        if (f.q) p.set('q', f.q);
+        if (f.sort !== 'votes') p.set('sort', f.sort);
+        if (onPicks().length) p.set('f', onPicks().join(','));
+        if (input.value.trim() && type === 'podcasts') p.set('search', input.value.trim());
+        var next = u.pathname + (p.toString() ? '?' + p.toString() : '') + u.hash;
+        if (next !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', next);
+      } catch (e) {}
+    }
     function drawTop() {
       paintFilters();
+      writeUrl();
       if (!cache) return;
       var top = rank(cache.filter(passes), f.sort);
       if (!top.length) { grid.innerHTML = '<p class="vem-note">' + (onPicks().length || f.q ? 'Nothing matches these filters.' : 'Nothing here yet.') + '</p>'; return; }
@@ -271,6 +298,7 @@
     input.addEventListener('input', function () {
       clearTimeout(timer);
       var q = input.value.trim();
+      writeUrl();
       if (!q) { results.innerHTML = ''; return; }
       timer = setTimeout(function () {
         get('ve_pulse_content?content_type=eq.podcast&status=eq.published&search_vector=wfts.' + encodeURIComponent(q) +

@@ -413,7 +413,7 @@
     // banner lists the kinds of event (opts.onState hands it the kinds; setCat picks one), Upcoming / Past are the tab row, and
     // the location is picked in Filters: Continent, Country, Chapter (st.city), each waiting on the one above. A country with
     // one choice fills itself; a chapter never does, since events happen everywhere, not only in our chapters. The location
-    // is never in the address (an old ?where= link is read once); the page keeps it (opts.onLocation).
+    // rides in the address (?city=, or ?continent= and ?country=; syncUrl) and the page keeps it too (opts.onLocation).
     var menu = !!opts.filterMenu && !brandCal;
     st.loc = { continent: '', country: '' };
     function hubOf(slug) { return slug && window.VECityBanner ? VECityBanner.hubBySlug(slug) : null; }
@@ -445,6 +445,13 @@
       var q = new URLSearchParams(location.search);
       ['q', 'where', 'cat'].forEach(function (k) { if (st[k]) q.set(k, st[k]); else q.delete(k); });
       if (menu) q.delete('where');
+      // The location rides in the address too (Sean, 2026-11-01: every view is a link to share): ?city=<chapter>, else
+      // ?continent= and ?country=.
+      if (menu) {
+        ['city', 'continent', 'country'].forEach(function (k) { q.delete(k); });
+        if (st.city) q.set('city', st.city);
+        else if (st.loc.continent) { q.set('continent', st.loc.continent); if (st.loc.country) q.set('country', st.loc.country); }
+      }
       if (st.when === 'past') q.set('when', 'past'); else q.delete('when');
       if (st.sort === 'city') q.set('sort', 'city'); else q.delete('sort');
       var s = q.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
@@ -552,7 +559,7 @@
       if (cnt) { var k = (st.sort !== 'date' ? 1 : 0) + onKinds().length; cnt.textContent = k; cnt.hidden = !k; }
     }
     function locChanged() {
-      paintLoc(); st.shown = 40; drawRows();
+      paintLoc(); st.shown = 40; syncUrl(); drawRows();
       if (opts.onLocation) opts.onLocation(locNow(), hubOf(st.city));
     }
     function setLevel(lv, v) {

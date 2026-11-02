@@ -185,11 +185,20 @@
     '@media(max-width:960px){.ve-nav-in .ve-pub-nav{display:none;} .ve-nav-in .ve-nav-right-wrap{margin-left:auto;} .ve-nav-in .ve-burger{display:inline-flex;}}',
     '@media(max-width:860px){.ve-nav-public .ve-pub-nav{display:none;} .ve-nav-public .ve-nav-right-wrap{display:flex !important;margin-left:auto;} .ve-nav-public .ve-burger{display:inline-flex;}}',
     '.ve-nav-right-wrap{display:flex;align-items:center;}',
+    // Share on every page (Sean, 2026-11-01: "a button somewhere on every page that you can copy... even if they're not signed
+    // in"): /public/ve-share.js copies the page's link (or opens the phone's share sheet). The same look as Apps; icon only on phones.
+    '.ve-share-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 13px;margin-right:6px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.12);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;cursor:pointer;flex-shrink:0;}',
+    '.ve-share-btn:hover{border-color:#2d7d31;color:#2d7d31;}',
+    '.ve-share-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}',
+    '@media(max-width:1060px){.ve-share-btn{width:38px;padding:0;font-size:0;gap:0;}}',
+    '@media(max-width:380px){.ve-share-btn{width:36px;height:36px;margin-right:4px;}}',
     // Every control is a 40px target, and the bar fits a 320px phone (2026-10-29: signed out, Log In, Join and the hamburger
     // ran 31px past the edge). Under 380px the logo, gaps and padding tighten; the two buttons stay on the bar.
     '.ve-wordmark,.ve-nav-login,.ve-nav-cta{min-height:40px;box-sizing:border-box;}',
     '.ve-nav-login,.ve-nav-cta{display:inline-flex;align-items:center;}',
-    '@media(max-width:380px){.ve-nav-inner{padding:0 12px;gap:8px;} .ve-wordmark-logo{height:26px;} .ve-nav-login{padding:9px 8px;} .ve-nav-cta{padding:9px 12px;} .ve-burger{margin-left:4px;}}',
+    // With Share on the bar (2026-11-01) phones tighten a little more so nothing runs past the edge.
+    '@media(max-width:480px){.ve-nav-inner{gap:10px;} .ve-wordmark-logo{height:30px;} .ve-nav-login{padding:9px 8px;} .ve-nav-cta{padding:9px 14px;} .ve-burger{margin-left:4px;} .ve-share-btn{margin-right:4px;}}',
+    '@media(max-width:380px){.ve-nav-inner{padding:0 10px;gap:6px;} .ve-wordmark-logo{height:24px;} .ve-nav-login{padding:9px 6px;letter-spacing:0.04em;} .ve-nav-cta{padding:9px 10px;} .ve-burger{margin-left:3px;width:38px;height:38px;} .ve-share-btn{width:34px;height:34px;margin-right:2px;}}',
   ].join('');
 
   var styleEl = document.createElement('style');
@@ -245,6 +254,11 @@
      (/public/ve-account-menu.js): their account and Sign out, and for a super admin View As and Sign In As.
      No hamburger and no announcement pill. */
   var desktopRight;
+  var shareBtn = '<button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>';
+  if (!window.VEShare && !document.querySelector('script[src*="ve-share.js"]')) {
+    var shs = document.createElement('script'); shs.src = '/public/ve-share.js'; shs.async = true; (document.head || document.documentElement).appendChild(shs);
+  }
   if (loggedIn && member) {
     var avatarStyle = 'background:' + swEsc(member.color || '#22C55E') + ';';
     var avatarSrc = member.avatar_url
@@ -254,7 +268,7 @@
     // the one-time Founding Membership; Community Manager appears once Sean approves them.
     var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador'
       : (member.membership_status === 'active' ? 'Founding Member' : 'Member');
-    desktopRight =
+    desktopRight = shareBtn +
       '<button type="button" class="ve-nav-apps" id="ve-nav-apps" aria-haspopup="menu" aria-expanded="false" aria-label="Apps: go to a LESARUSS brand">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Apps' +
       '</button>' +
@@ -263,7 +277,7 @@
         '<span class="ve-nav-lesars">' + tierBadge + '</span>' +
       '</button>';
   } else {
-    desktopRight =
+    desktopRight = shareBtn +
       '<a href="/login" class="ve-nav-login"' + cur('/login') + '>Log In</a>' +
       '<a href="/passport" class="ve-nav-cta">Join</a>';
   }

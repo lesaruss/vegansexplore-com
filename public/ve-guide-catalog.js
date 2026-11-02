@@ -93,7 +93,7 @@
   // In order (Sean, 2026-10-26): the Welcome Guide, the Dairy Guide, the Restaurant Guide, the Stadium & Arena Guide
   // (launched 2026-10-29), the Airport Guide and the Nonprofit Guide (both launched 2026-10-29), then what is coming.
   var GUIDES = [
-    { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg?v=3', interests: ['starting'], href: '/passport',
+    { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg?v=3', interests: ['starting'], href: '/passport?guide=welcome',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
       chips: [{ text: 'Free', cls: 'free' }], cta: 'Start the Welcome Guide' },
     { slug: 'taste', shelf: 'everyday', label: 'Getting Started', title: 'A Taste of Vegans Explore', banner: '/public/guides/welcome-ensemble.jpg', interests: ['starting'], href: '/guides/taste',

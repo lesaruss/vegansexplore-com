@@ -74,16 +74,15 @@
   // The banner's dropdown is the kind of event and the location is picked in Filters (Sean, 2026-10-30, after the Directory's
   // navigation: "do something similar to the events"; canon canon-ve-directory-navigation). The line under the title reads
   // "Festivals · South Florida", and the chapter's art follows the location. The location is kept across visits (localStorage
-  // ve_ev_loc; a member's home chapter on a first visit), never in the address; an old ?city= link (a city hub's Submit an
-  // event) opens on that chapter before the address drops it.
+  // ve_ev_loc; a member's home chapter on a first visit) and written in the address (?city=, or ?continent= and ?country=), so a
+  // shared link opens on the same place.
   var LOC_KEY = 've_ev_loc', loc0 = null;
   try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
   if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = { chapter: me.home_community }; }
   var q0 = new URLSearchParams(location.search);
-  if (q0.get('city') !== null) {
-    loc0 = { chapter: q0.get('city') || '' };
-    q0.delete('city'); var s0 = q0.toString(); history.replaceState(history.state, '', location.pathname + (s0 ? '?' + s0 : '') + location.hash);
-  }
+  // The address carries the location (Sean, 2026-11-01: every view is a link to share), read ahead of the kept one.
+  if (q0.get('city')) loc0 = { chapter: q0.get('city') };
+  else if (q0.get('continent')) loc0 = { continent: q0.get('continent'), country: q0.get('country') || '' };
   var banner = VECityBanner.mount('ev-hero', {
     key: 'events', title: 'Vegan Events', allTitle: 'All events', param: false, pickLabel: 'Kind of event',
     sub: 'Festivals, meetups, markets and gatherings, in our cities and around the world. Pick a kind, search, and find your next one.',

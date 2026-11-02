@@ -146,7 +146,15 @@ const SECTIONS = ['logo', 'colors', 'type', 'voice', 'story', 'menu', 'photos', 
 // ve_brand_cartridges), and a podcast, whose frame is the show (the cover, the episode art and the social templates).
 const FRAMES: Record<string, string[]> = { restaurant: SECTIONS, brand: ['logo', 'colors', 'type', 'voice', 'story'],
   podcast: ['logo', 'colors', 'type', 'voice', 'story', 'cast', 'sound'] };
-const secs = (d: any) => FRAMES[d?.meta?.frame] || SECTIONS;
+// A kit can carry more parts than its frame (Sean, 2026-11-01, the Vegans Explore kit: "our characters need to be in there...
+// something to set to the graphics, types of graphics that we use"): meta.parts lists them, always the frame's own parts first,
+// plus any of EXTRA_PARTS. The cast (the Guides or the show's people) and graphics (the kinds of graphics the brand uses).
+const EXTRA_PARTS = ['cast', 'graphics'];
+const secs = (d: any) => {
+  const base = FRAMES[d?.meta?.frame] || SECTIONS;
+  const more = Array.isArray(d?.meta?.parts) ? d.meta.parts.filter((x: unknown) => typeof x === 'string' && EXTRA_PARTS.includes(x) && !base.includes(x)) : [];
+  return [...base, ...more];
+};
 // The color pairs every frame scores for readability (the same five a restaurant's kit starts with).
 const PAIRS = [['text', 'page', 'Headings and text'], ['page', 'accent', 'Button words'], ['page', 'text', 'Words on the dark panels'], ['ink', 'highlight', 'Words on a highlight'], ['text', 'soft', 'Words on a soft panel']];
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];

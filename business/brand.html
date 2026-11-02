@@ -144,6 +144,7 @@
     <section class="vg-slide" id="info" data-title="Hours and details"></section>
     <section class="vg-slide" id="cast" data-title="The cast"></section>
     <section class="vg-slide" id="sound" data-title="Sound"></section>
+    <section class="vg-slide" id="graphics" data-title="Graphics"></section>
     <section class="vg-slide" id="next" data-title="Into the frame"></section>
   </main>
 
@@ -170,7 +171,10 @@
       podcast: [['logo', 'Cover art'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['cast', 'The cast'], ['sound', 'Sound']] };
     function frame() { return (C && C.meta && C.meta.frame) || 'restaurant'; }
     function useFrame() {
-      SECTIONS = FRAME_SECS[frame()] || SECTIONS;
+      SECTIONS = (FRAME_SECS[frame()] || SECTIONS).slice();
+      // A kit can add the cast and graphics to its frame (meta.parts; EXTRA_PARTS in ve-brand-kit; Sean, 2026-11-01).
+      var EXTRA = { cast: frame() === 'brand' ? 'The Guides' : 'The cast', graphics: 'Graphics' };
+      ((C.meta && C.meta.parts) || []).forEach(function (k) { if (EXTRA[k] && !SECTIONS.some(function (x) { return x[0] === k; })) SECTIONS.push([k, EXTRA[k]]); });
       var keep = { cover: 1, cartridge: 1, next: 1 }; SECTIONS.forEach(function (x) { keep[x[0]] = 1; });
       document.querySelectorAll('#bkStage .vg-slide').forEach(function (x) { if (!keep[x.id]) x.remove(); else if (x.id === 'logo') x.setAttribute('data-title', SECTIONS[0][1]); });
     }
@@ -236,6 +240,7 @@
       menu: { need: 'Every item and drink, its price and a photo.', why: 'Menus are the first thing people open. We copy yours in and write each description; you check it and add new items here.', who: 'You check it. We write and photograph it.', time: '20 minutes' },
       photos: { need: 'Every dish, every drink, your space and your team, shot to our standard.', why: 'Photos are what make someone hungry enough to come in.', who: 'Our photographer shoots them and uploads them here.', time: 'One shoot' },
       cast: { need: 'The host and every correspondent: what each covers and the voice they record with.', why: 'Listeners come back for the people. Each voice is set once, on the Guide\'s profile, and never picked again.', who: 'The team.', time: '10 minutes' },
+      graphics: { need: 'Every kind of graphic the brand makes: what it is for, its size, how it looks and the rules.', why: 'The same kinds, sized and styled the same way, are how people know it is you before they read a word.', who: 'The team.', time: 'Once' },
       sound: { need: 'The intro, the outro, a bed for each segment, the commercial beds and effects, and the closing tag.', why: 'The same sounds every week are how the show is recognized in the first three seconds.', who: 'The team.', time: 'Once' },
       info: { need: 'Hours, address, phone, parking, and how people order.', why: 'Change it here and your website, your Directory page and Google change with it. No more "are you open?" calls.', who: 'You. Your Community Manager checks it with you every month.', time: '5 minutes' }
     };
@@ -342,6 +347,27 @@
           '<h3 style="margin-top:16px">Find us</h3><p>' + esc(I.address.street) + ', ' + esc(I.address.city) + ', ' + esc(I.address.state) + ' ' + esc(I.address.zip) + ' · ' + esc(I.phone) + '</p>' +
           '<p class="bk-muted">' + esc(I.details.join(' · ')) + '</p><div class="bk-sect"><span>Ordering: ' + esc(I.ordering.pos) + '</span>' + tag(I.ordering.state) + '</div></div>';
       });
+      }
+
+      // A brand's Guides and its graphics (meta.parts): each Guide with their picture, what they lead and how they are drawn; each
+      // kind of graphic with its size, where it runs and an example.
+      if (frame() !== 'podcast' && SECTIONS.some(function (x) { return x[0] === 'cast'; })) {
+        var GC = C.cast || {};
+        sect('cast', 'The Guides', 'Who walks people through', shown('cast') ? esc(GC.summary || '') : 'Every character the brand uses, how each one looks, what they lead and the voice they speak with.', function () {
+          return '<div class="bk-card bk-scroll"><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">' + (GC.members || []).map(function (p) {
+            return '<div style="text-align:center">' + (p.art ? '<img src="' + esc(p.art) + '" alt="' + esc(p.name) + '" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;background:#fff">' : '') +
+              '<b style="display:block;margin-top:6px">' + esc(p.name) + '</b><span class="bk-muted" style="font-size:12px">' + esc(p.role || '') + '</span></div>'; }).join('') + '</div>' +
+            ((GC.rules || []).length ? '<h3 style="margin-top:16px">How they are drawn and heard</h3><ul>' + GC.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+        });
+      }
+      if (SECTIONS.some(function (x) { return x[0] === 'graphics'; })) {
+        var GR = C.graphics || {};
+        sect('graphics', 'Graphics', 'The kinds of graphics we make', shown('graphics') ? esc(GR.summary || '') : 'Every kind of graphic, its size and where it runs.', function () {
+          return '<div class="bk-card bk-scroll">' + (GR.kinds || []).map(function (g) {
+            return '<div class="bk-sect" style="align-items:flex-start;gap:12px">' + (g.example ? '<img src="' + esc(g.example) + '" alt="" style="width:96px;height:64px;object-fit:cover;border-radius:6px;flex-shrink:0">' : '') +
+              '<span style="flex:1"><b>' + esc(g.name) + '</b> · <span class="bk-muted">' + esc(g.size || '') + '</span><br><span class="bk-muted">' + esc(g.use || '') + '</span></span></div>'; }).join('') +
+            ((GR.rules || []).length ? '<h3 style="margin-top:16px">Rules</h3><ul>' + GR.rules.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul>' : '') + '</div>';
+        });
       }
 
       if (frame() === 'podcast') {
@@ -775,7 +801,7 @@
       var k = b.dataset.edit, title = (SECTIONS.filter(function (s) { return s[0] === k; })[0] || [k, k])[1];
       // A real kit's locked part changes only on a request with a reason, approved by the owner (BrandDesk foundation, 2026-11-01).
       if (LIVE && st(k) === 'locked') { askChange(k, title); return; }
-      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos, cast: editLock, sound: editLock })[k](k);
+      ({ colors: editColors, voice: editVoice, menu: editMenu, story: editStory, info: editInfo, type: editType, logo: editLogo, photos: editPhotos, cast: editLock, sound: editLock, graphics: editLock })[k](k);
       if (st(k) === 'locked') edBody.insertAdjacentHTML('afterbegin', '<div class="bk-warn"><b>' + esc(title) + ' is locked.</b> Changing a locked part of your brand can throw it off and set you back. Only change it if something is wrong, and talk to your Community Manager first.</div>');
     });
 
