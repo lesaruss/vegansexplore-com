@@ -116,7 +116,9 @@ begin
       where (r.auto_publish_at at time zone 'America/New_York')::date between starts_on and ends_on
         and (communities is null or r.community_slug = any(communities)) order by created_at
     loop
-      if not exists (select 1 from jsonb_array_elements(coalesce(r.briefing->'stories','[]')) s where s->>'feature_id' = f.id::text) then
+      -- Never twice: not when it is already there, and not when the writer already wrote the same link as a story.
+      if not exists (select 1 from jsonb_array_elements(coalesce(r.briefing->'stories','[]')) s
+                     where s->>'feature_id' = f.id::text or (f.story->>'url' is not null and s->>'url' = f.story->>'url')) then
         r.briefing := jsonb_set(r.briefing, '{stories}', jsonb_build_array(f.story || jsonb_build_object('feature_id', f.id::text)) || coalesce(r.briefing->'stories','[]'));
         n := n + 1;
       end if;
@@ -133,3 +135,6 @@ begin
   return n;
 end $$;
 revoke all on function public.ve_pulse_features_apply(uuid) from public, anon, authenticated;
+
+-- The writer's rules (lesaruss_dispatch_sources pulse_topic_write) were changed the same night in place: 5 to 10 stories, national ones
+-- to fill, never fail a city for lack of news, and leave From Vegans Explore and featured stories to the publish step.
