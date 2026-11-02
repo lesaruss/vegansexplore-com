@@ -434,9 +434,11 @@ async function publicAction(action: string, body: any, memberId: string | null) 
     const { data: ev } = await db.from('events').select('id, title, starts_at, city, state, status, tenant_id').eq('id', body.id).maybeSingle();
     if (!ev || ev.status !== 'approved' || ev.tenant_id !== VE_TENANT) return json({ error: 'not_found', message: 'That event is not on the calendar.' }, 404);
     let name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase();
+    // The signed-in account is kept on the claim only when the claim is in its own email.
+    let claimer: string | null = null;
     if (memberId) {
       const { data: m } = await db.from('members').select('name, email').eq('id', memberId).maybeSingle();
-      if (m) { name = name || clean(m.name, 120); email = email || String(m.email || '').toLowerCase(); }
+      if (m) { name = name || clean(m.name, 120); email = email || String(m.email || '').toLowerCase(); if (String(m.email || '').toLowerCase() === email) claimer = memberId; }
     }
     const role = String(body.role || '');
     const proof = clean(body.proof_url, 500), org = clean(body.org_name, 120), phone = clean(body.phone, 40), note = clean(body.note, 1000);
@@ -450,7 +452,7 @@ async function publicAction(action: string, body: any, memberId: string | null) 
     if ((today || 0) >= 3) return json({ error: 'rate_limited', message: 'That is three claims today. Send the rest tomorrow, or reply to our email.' }, 429);
     const { data: open } = await db.from('ve_event_claims').select('id, status').eq('event_id', ev.id).ilike('email', email).in('status', ['new', 'approved']).maybeSingle();
     if (open) return json({ ok: true, already: open.status });
-    const { data: row, error } = await db.from('ve_event_claims').insert({ event_id: ev.id, member_id: memberId, name, email, role, org_name: org || null, proof_url: proof || null, phone: phone || null, note: note || null }).select('id').single();
+    const { data: row, error } = await db.from('ve_event_claims').insert({ event_id: ev.id, member_id: claimer, name, email, role, org_name: org || null, proof_url: proof || null, phone: phone || null, note: note || null }).select('id').single();
     if (error || !row) return json({ error: 'save_failed', message: 'That did not send. Try again.' }, 500);
     if (!/\[TEST\]/i.test(name)) {
       const team = await chapterTeam(ev.city, ev.state);
