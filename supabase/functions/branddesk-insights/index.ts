@@ -160,9 +160,11 @@ async function gscSite(domain: string): Promise<{ site: string | null; token: st
   const token = await gToken('https://www.googleapis.com/auth/webmasters.readonly');
   const r = await fetch('https://www.googleapis.com/webmasters/v3/sites', { headers: { Authorization: 'Bearer ' + token } });
   const j = await r.json();
+  // Every property the reader was added to, with its level, so a miss says why (Sean added it, the address differs, still unverified).
+  const seen: string[] = (j.siteEntry ?? []).map((s: any) => `${s.siteUrl} (${s.permissionLevel})`);
   const sites: string[] = (j.siteEntry ?? []).filter((s: any) => s.permissionLevel !== 'siteUnverifiedUser').map((s: any) => s.siteUrl);
-  const want = [`sc-domain:${domain}`, `https://${domain}/`, `https://www.${domain}/`, `http://${domain}/`];
-  return { site: want.find((w) => sites.includes(w)) ?? null, token, sites };
+  const want = [`sc-domain:${domain}`, `https://${domain}/`, `https://www.${domain}/`, `http://${domain}/`, `http://www.${domain}/`];
+  return { site: want.find((w) => sites.includes(w)) ?? null, token, sites: seen, error: j.error?.message };
 }
 async function gscQuery(token: string, site: string, body: Record<string, any>) {
   const r = await fetch(`https://www.googleapis.com/webmasters/v3/sites/${encodeURIComponent(site)}/searchAnalytics/query`, {
@@ -185,7 +187,7 @@ async function seo(brand: string, from: string, to: string) {
   const site = await brandSite(brand);
   if (!site.domain) return { connected: false, domain: null };
   const g = await gscSite(site.domain);
-  if (!g.site) return { connected: false, domain: site.domain, reader: saEmail };
+  if (!g.site) return { connected: false, domain: site.domain, reader: saEmail, reader_sees: g.sites, google_error: g.error || null };
   const { pf, pt } = prevOf(from, to);
   const tot = (rows: any[]) => rows[0] ? { clicks: rows[0].clicks, impressions: rows[0].impressions, ctr: rows[0].ctr, position: rows[0].position } : { clicks: 0, impressions: 0, ctr: 0, position: 0 };
   const [cur, prev, trend, queries, pages, countries, devices, sitemaps] = await Promise.all([
