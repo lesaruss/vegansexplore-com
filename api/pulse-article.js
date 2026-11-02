@@ -230,7 +230,7 @@ module.exports = async (req, res) => {
     // Updated (Sean, 2026-09-29): what changed after the subject replied, the way newsrooms mark it.
     + (post.updatedNote ? '<p class="article-updated">Updated' + (post.updatedAt ? ' ' + esc(new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' })) : '') + ': ' + esc(post.updatedNote) + '</p>' : '');
 
-  // In this story (Sean, 2026-11-02): ONE section, above "On this episode" (for an episode) or after the body (any other article).
+  // In this story (Sean, 2026-11-02): ONE section, after the write-up and its source and just before Share this article, on every article.
   // Its cards are filled by the loader at the foot of the page. Never on a Depot preview.
   const inStoryBlock = preview ? '' : '<section class="in-story" id="in-story" hidden><div class="share-label">In this story</div>'
     + '<p class="in-story-sub">The people, places and media this story names, from our Directory. Vote for them, or open their page.</p>'
@@ -251,7 +251,6 @@ module.exports = async (req, res) => {
       + (!post.youtubeId && feedEp ? '<audio controls preload="none" src="' + esc(feedEp.audio) + '" aria-label="Listen: ' + esc(title) + '"></audio>' : '')
       + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (post.youtubeId || !feedEp ? 'Listen on the show page' : 'Open on the show page') + '</a>'
       + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>';
-    epHtml += inStoryBlock;
     if (people.length) epHtml += '<h3 class="article-section-head">On this episode</h3><div class="ep-people">' + people.map(function (c) {
       const l = c.listings;
       const face = l.logo_url ? pic(l.logo_url, 128, ' width="56" height="56"') : '<span class="ep-letter">' + esc((l.name || '?').charAt(0)) + '</span>';
@@ -288,7 +287,6 @@ module.exports = async (req, res) => {
     const m = bodyHtml.match(/<p class="article-lede">[\s\S]*?<\/p>/);
     articleHtml = m ? bodyHtml.slice(0, m.index + m[0].length) + embedHtml + epHtml + bodyHtml.slice(m.index + m[0].length) : embedHtml + epHtml + bodyHtml;
   }
-  if (!epData) articleHtml += inStoryBlock;
   const ld = epData ? {
     '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: shortTitle(title), url: pageUrl, description: post.excerpt || undefined,
     datePublished: post.publishedAt || undefined, episodeNumber: post.epNum || undefined, image: (post.img || epData.show.logo) || undefined,
@@ -435,6 +433,8 @@ module.exports = async (req, res) => {
     + '<div class="article">' + articleHtml + sourceHtml
     // Anyone can ask for a change or a removal (Sean, 2026-09-29).
     + (post.fromDepot ? '<p class="article-change">Something wrong, or want this taken down? <a href="mailto:hello@vegansexplore.com?subject=' + encodeURIComponent('Change request: ' + post.headline) + '">Email us</a> and we will fix it.</p>' : '')
+    // In this story (Sean, 2026-11-02): after the write-up and its source, the last thing before Share this article.
+    + inStoryBlock
     + '<div class="share-bar">'
     + '<textarea id="captionInput" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;"></textarea>'
     + '<div class="share-label">Share this article</div>'

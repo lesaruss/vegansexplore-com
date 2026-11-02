@@ -104,7 +104,7 @@
   function open() {
     var u = url(), touch = window.matchMedia && matchMedia('(pointer:coarse)').matches;
     if (touch && navigator.share) {
-      navigator.share({ title: title(), url: u }).then(function () { track('share_sheet'); }).catch(function (e) {
+      navigator.share({ title: title(), text: title(), url: u }).then(function () { track('share_sheet'); }).catch(function (e) {
         if (e && e.name === 'AbortError') return;
         copy(u).then(function () { toast('<b>Link copied.</b> Anyone can open it.<span class="u">' + esc(u) + '</span>'); track('copy'); });
       });
