@@ -303,6 +303,13 @@
     '.vev-plain{font-family:inherit;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;}',
     '.vev-host{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
     '.vev-host:hover{border-color:var(--vb-go,#2d7d31);}',
+    '.vev-people{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;align-items:center;}',
+    '.vev-people>small{flex-basis:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
+    '.vev-people a{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
+    '.vev-people a:hover{border-color:var(--vb-go,#2d7d31);}',
+    '.vev-people img,.vev-people i{width:32px;height:32px;border-radius:6px;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;background:var(--vb-go,#2d7d31);color:#fff;font-style:normal;font-weight:900;}',
+    '.vev-people span{display:flex;flex-direction:column;font-size:12px;color:rgba(26,26,26,.68);}',
+    '.vev-people b{font-size:14px;color:#1a1a1a;}',
     '.vev-host img,.vev-host i{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;}',
     '.vev-host i{display:flex;align-items:center;justify-content:center;background:var(--vb-go,#2d7d31);color:#fff;font-style:normal;font-weight:900;}',
     '.vev-host span{display:flex;flex-direction:column;min-width:0;flex:1;}',
@@ -1232,10 +1239,11 @@
       api({ action: 'event', id: id }).then(function (d) {
         var e = d.event, v = d.viewer || {};
         if (!e) { el.innerHTML = crumbs([['Event']]) + '<div class="vev-form"><h2>That event is not on the calendar</h2><p class="lead">It may have ended or been taken down.</p><button type="button" class="vev-btn ghost" data-go="list">See the events</button></div>'; bindList(); return; }
-        var over = new Date(e.ends_at || new Date(e.starts_at).getTime() + 6 * 3600000) < new Date();
+        var over = e.cancelled || new Date(e.ends_at || new Date(e.starts_at).getTime() + 6 * 3600000) < new Date();
         var tix = !!d.member_tickets && !over, link = tix ? '' : (safeUrl(e.ticket_url) || safeUrl(e.virtual_url)), org = v.organizer, member = signedIn();
         var rsvp;
-        if (over) rsvp = '<h3>This event is over</h3><p>' + (v.going_count ? esc(v.going_count) + ' went with Vegans Explore.' : 'Thanks to everyone who went.') + '</p>';
+        if (e.cancelled) rsvp = '<h3>This event was cancelled</h3><p>Its official page says it is not happening. ' + (e.host && e.host.slug ? 'See what else ' + esc(e.host.name) + ' has coming up on their page.' : 'See what else is coming up on the calendar.') + '</p>';
+        else if (over) rsvp = '<h3>This event is over</h3><p>' + (v.going_count ? esc(v.going_count) + ' went with Vegans Explore.' : 'Thanks to everyone who went.') + '</p>';
         else if (!member || !v.going) rsvp = '<h3>Going?</h3><p>' + (v.going_count ? esc(v.going_count) + (v.going_count === 1 ? ' member is' : ' members are') + ' going. ' : '') + 'Let us know, and it shows on My events. ' + (tix ? 'Get your tickets through our group link.' : 'Tickets are on the official page.') + '</p>' +
           (org ? '<label class="vev-optin"><input type="checkbox" data-v="optin"><span><b>Let ' + esc(org) + ' message me about this event</b><small>Through Vegans Explore only: ' + esc(org) + ' never sees your email. Until ' + esc(closes(e)) + ', 7 days after the event. Turn it off any time. ' + (v.optin_paid ? '' : '25 points for saying yes.') + '</small></span></label>' : '') +
           '<button type="button" class="vev-btn green" data-v="going">I\'m going</button>';
@@ -1247,10 +1255,16 @@
           '<div class="vev-facts"><span>' + esc(when(e)) + '</span><span>' + esc(place(e)) + (e.address && e.address !== e.location_name ? ' · ' + esc(e.address) : '') + '</span>' + (org ? '<span>Organized by ' + esc(org) + '</span>' : '') + '</div>' +
           // The group that hosts it, linked to its page in the Directory (Sean, 2026-10-29: "their profile will be tied to all their events").
           (e.host && e.host.slug ? '<a class="vev-host" href="/directory/' + encodeURIComponent(e.host.slug) + '">' + (e.host.logo_url ? '<img src="' + esc(e.host.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((e.host.name || '?').charAt(0)) + '</i>') + '<span><small>Hosted by</small><b>' + esc(e.host.name) + '</b></span><em>See their page and events</em></a>' : '') +
+          // Where it is held, linked to the venue's page (Sean, 2026-11-02), and the organizer when they are not in the Directory yet.
+          (e.venue && e.venue.slug ? '<a class="vev-host" href="/directory/' + encodeURIComponent(e.venue.slug) + '">' + (e.venue.logo_url ? '<img src="' + esc(e.venue.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((e.venue.name || '?').charAt(0)) + '</i>') + '<span><small>Held at</small><b>' + esc(e.venue.name) + '</b>' + (e.venue.address_street || e.venue.address_city ? '<small style="text-transform:none;letter-spacing:0;font-weight:600">' + esc([e.venue.address_street, e.venue.address_city].filter(Boolean).join(', ')) + '</small>' : '') + '</span><em>See the venue and its events</em></a>' : '') +
+          (!(e.host && e.host.slug) && !org && e.organizer_name ? '<p class="vev-note" style="margin:0 0 12px"><b>Put on by</b> ' + (safeUrl(e.organizer_url) ? '<a href="' + esc(safeUrl(e.organizer_url)) + '" target="_blank" rel="noopener noreferrer">' + esc(e.organizer_name) + '</a>' : esc(e.organizer_name)) + '</p>' : '') +
+          (e.people && e.people.length ? '<div class="vev-people"><small>People at this event</small>' + e.people.map(function (pp) { return '<a href="/directory/' + encodeURIComponent(pp.slug) + '">' + (pp.logo_url ? '<img src="' + esc(pp.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((pp.name || '?').charAt(0)) + '</i>') + '<span><b>' + esc(pp.name) + '</b>' + esc(pp.role || '') + '</span></a>'; }).join('') + '</div>' : '') +
+          (e.cancelled ? '<div class="vev-warn">Cancelled: its official page says this event is not happening.</div>' : '') +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
           (e.host && e.host.category === 'Groups' ? '<div class="vev-sale" data-v="sale"></div>' : '') +
           (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for Passport holders.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
-          (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') + '</div>' +
+          (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') +
+          (e.link_checked_at && !over ? '<p class="vev-note" style="margin-top:8px">' + (e.link_status === 'gone' ? 'We could not reach its official page on ' : e.link_status === 'postponed' ? 'Its official page said it is postponed on ' : 'Checked against its official page on ') + esc(new Date(e.link_checked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '.</p>' : '') + '</div>' +
           '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
             '<p class="vev-note bad" data-v="err" role="alert"></p>' +
             (v.organizes ? '<p style="margin-top:14px"><a class="vev-btn" href="#guests/' + esc(e.id) + '">Guests and messages</a></p>' : '') +

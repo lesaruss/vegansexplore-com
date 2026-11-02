@@ -154,7 +154,7 @@
       }).join('');
       app.innerHTML = brandBar() + '<div class="tabs" data-v="qtabs">' + tabs + '</div>' +
         '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
-        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a><a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
         '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
       $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
       (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
@@ -443,11 +443,66 @@
       if ($('s-now')) $('s-now').onclick = function () { api({ action: 'source_check', id: id }).then(function (d) { if (d.ok) { sources = null; m('Queued for the next run.'); } else m('That did not save.', true); }); };
     }
 
+    /* ---------- the weekly check and the leads (Sean, 2026-11-02; edge function ve-event-check) ---------- */
+    var CK = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-event-check';
+    function ck(b) {
+      var t = ''; try { t = localStorage.getItem('ve_token') || ''; } catch (e) {}
+      return fetch(CK, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify(b) }).then(function (r) { return r.json(); });
+    }
+    var OUT = { changed: ['Date changed', 'approved'], postponed: ['Postponed', 'pending'], cancelled: ['Cancelled', 'rejected'], gone: ['Page gone', 'rejected'], unreadable: ['Could not read', 'pending'] };
+    function drawChecks(outcome) {
+      app.innerHTML = '<nav class="crumb"><a href="#queue/approved">Events</a><span>/</span><span>Weekly check</span></nav>' +
+        '<p class="sub">Every upcoming event\'s official page is read again once a week. A cancelled event comes off the calendar; a date the page changed is moved to match; a page that is gone twice, or one we cannot read, waits here for a look. Nothing else changes on its own.</p>' +
+        '<div class="tabs">' + [['', 'Everything'], ['changed', 'Date changed'], ['cancelled', 'Cancelled'], ['postponed', 'Postponed'], ['gone', 'Page gone'], ['unreadable', 'Could not read']].map(function (t) {
+          return '<a href="#checks' + (t[0] ? '/' + t[0] : '') + '" class="' + ((outcome || '') === t[0] ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</div>' +
+        '<p class="m" id="ck-sum"></p><div class="rows" id="ck-rows"><p class="msg">Loading…</p></div>';
+      ck({ action: 'checks', outcome: outcome || '' }).then(function (d) {
+        $('ck-sum').textContent = (d.checked || 0) + ' of ' + (d.upcoming || 0) + ' upcoming events checked so far. What needs a look in the last 45 days:';
+        var rows = d.checks || [];
+        $('ck-rows').innerHTML = rows.length ? rows.map(function (r) {
+          var e = r.event || {}, o = OUT[r.outcome] || [r.outcome, 'pending'], ch = r.changes && r.changes.starts_at;
+          return '<div class="row"><span class="d">' + esc(new Date(r.checked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</span>' +
+            '<span><span class="t">' + esc(e.title || 'An event') + '</span><br><span class="m">' + esc(r.note || '') + (ch ? ' Was ' + esc(new Date(ch.was).toLocaleString('en-US', { timeZone: e.timezone || undefined, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) + '.' : '') + '</span></span>' +
+            '<span class="m">' + esc(e.city || '') + (r.url ? ' · <a href="' + esc(r.url) + '" target="_blank" rel="noopener">Its page</a>' : '') + '</span>' +
+            '<span class="tag ' + o[1] + '">' + esc(o[0]) + '</span><a class="btn btn-ghost" href="#event/' + esc(r.event_id) + '">Open</a></div>';
+        }).join('') : '<p class="empty">Nothing to look at.</p>';
+      }, function () { $('ck-rows').innerHTML = '<p class="msg bad">That did not load.</p>'; });
+    }
+    var LSTAT = { 'new': 'Not in the Directory', listed: 'Added', linked: 'Linked', set_aside: 'Set aside' };
+    function drawLeads(kind, status) {
+      app.innerHTML = '<nav class="crumb"><a href="#queue/approved">Events</a><span>/</span><span>From our events</span></nav>' +
+        '<p class="sub">Every event names where it was held and who put it on. These are the places and organizers not in the Directory yet, most events first. Add one and its events link to it, with no Google lookup: the events say where. A person who puts on events goes under People &gt; Promoters.</p>' +
+        '<div class="tabs" data-v="kinds"></div><div class="tabs" data-v="stats"></div><div class="rows" id="ld-rows"><p class="msg">Loading…</p></div>';
+      ck({ action: 'leads', kind: kind, status: status }).then(function (d) {
+        var c = d.counts || {};
+        app.querySelector('[data-v="kinds"]').innerHTML = [['venue', 'Venues'], ['organizer', 'Organizers']].map(function (k) { return '<a href="#leads/' + k[0] + '/new" class="' + (k[0] === kind ? 'on' : '') + '">' + k[1] + ' (' + (c[k[0] + ':new'] || 0) + ')</a>'; }).join('');
+        app.querySelector('[data-v="stats"]').innerHTML = Object.keys(LSTAT).map(function (k) { return '<a href="#leads/' + kind + '/' + k + '" class="' + (k === status ? 'on' : '') + '">' + LSTAT[k] + ' (' + (c[kind + ':' + k] || 0) + ')</a>'; }).join('');
+        var hubs = {}; (window.VE_HUBS || []).forEach(function (h) { hubs[h.slug] = h.name; });
+        var cats = kind === 'venue' ? [['Event Venues', 'An Event Venue']] : [['Groups', 'A group'], ['Nonprofits', 'A nonprofit'], ['Promoters', 'A person (Promoters)'], ['Event Venues', 'A venue']];
+        var rows = d.leads || [];
+        $('ld-rows').innerHTML = rows.length ? rows.map(function (l) {
+          var evs = (l.events || []).map(function (e) { return esc(e.title); }).join(' · ');
+          var act = status !== 'new' ? (l.listing ? '<a class="btn btn-ghost" href="/directory/' + esc(l.listing.slug) + '" target="_blank" rel="noopener">Open</a>' : '<span></span>') :
+            '<span style="display:flex;flex-direction:column;gap:6px"><select data-cat="' + l.id + '" aria-label="Add as">' + cats.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join('') + '</select>' +
+            '<button class="btn" data-add="' + l.id + '">Add it</button><button class="btn btn-ghost" data-link="' + l.id + '">Already listed</button><button class="btn btn-red" data-aside="' + l.id + '">Set aside</button></span>';
+          return '<div class="row" style="grid-template-columns:84px minmax(0,1.6fr) minmax(0,1fr) 190px"><span class="d">' + l.event_count + ' event' + (l.event_count === 1 ? '' : 's') + '</span>' +
+            '<span><span class="t">' + esc(l.name) + '</span><br><span class="m">' + evs + '</span></span>' +
+            '<span class="m">' + esc([l.address, l.city, l.state].filter(Boolean).join(', ')) + (l.hub ? ' · ' + esc(hubs[l.hub] || l.hub) : '') + (l.url ? ' · <a href="' + esc(l.url) + '" target="_blank" rel="noopener">Their page</a>' : '') + (l.note ? '<br>' + esc(l.note) : '') + '</span>' + act + '</div>';
+        }).join('') : '<p class="empty">Nothing here.</p>';
+        var done = function (r, el) { if (r && r.ok === false) { alert('That did not save: ' + (r.why || 'try again')); el.disabled = false; return; } drawLeads(kind, status); };
+        app.querySelectorAll('[data-add]').forEach(function (b) { b.onclick = function () { b.disabled = true; var id = b.getAttribute('data-add'); ck({ action: 'lead_add', id: id, category: app.querySelector('[data-cat="' + id + '"]').value }).then(function (r) { done(r, b); }); }; });
+        app.querySelectorAll('[data-link]').forEach(function (b) { b.onclick = function () { var slug = prompt('Its Directory address or slug (vegansexplore.com/directory/...)'); if (!slug) return; b.disabled = true; ck({ action: 'lead_link', id: b.getAttribute('data-link'), slug: slug }).then(function (r) { if (r && r.why === 'no_listing') { alert('No live listing has that address.'); b.disabled = false; return; } done(r, b); }); }; });
+        app.querySelectorAll('[data-aside]').forEach(function (b) { b.onclick = function () { var note = prompt('Why? (optional: a neighborhood, a private home, not a real place)'); if (note === null) return; b.disabled = true; ck({ action: 'lead_aside', id: b.getAttribute('data-aside'), note: note }).then(function (r) { done(r, b); }); }; });
+      }, function () { $('ld-rows').innerHTML = '<p class="msg bad">That did not load.</p>'; });
+    }
+
     function route() {
       var h = location.hash || '#queue/pending', m;
       if ((m = /^#event\/([0-9a-f-]{36})$/.exec(h))) drawEvent(m[1]);
       else if (h === '#add') drawAdd();
       else if (h === '#sources') drawSources();
+      else if ((m = /^#checks(?:\/(changed|cancelled|postponed|gone|unreadable))?$/.exec(h))) drawChecks(m[1] || '');
+      else if ((m = /^#leads\/(venue|organizer)\/(new|listed|linked|set_aside)$/.exec(h))) drawLeads(m[1], m[2]);
       else if ((m = /^#source\/(new|[0-9a-f-]{36})$/.exec(h))) drawSource(m[1]);
       else drawQueue((/^#queue\/(pending|approved|rejected)$/.exec(h) || [0, 'pending'])[1]);
       try { window.scrollTo(0, 0); } catch (e) {}

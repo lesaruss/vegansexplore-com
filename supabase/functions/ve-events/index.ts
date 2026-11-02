@@ -388,17 +388,23 @@ async function sendBatch(items: { to: string; subject: string; html: string }[])
 async function publicAction(action: string, body: any, memberId: string | null) {
   if (action === 'event') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
-    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status, host_listing_id')
+    const { data: ev } = await db.from('events').select('id, title, description, starts_at, ends_at, timezone, time_set, location_name, address, city, state, country, continent, category, event_type, ticket_url, virtual_url, is_featured, recording_url, status, host_listing_id, venue_listing_id, organizer_name, organizer_url, link_status, link_checked_at, rejection_reason')
       .eq('id', body.id).maybeSingle();
-    if (!ev || ev.status !== 'approved') return json({ error: 'not_found' }, 404);
+    // A cancelled event keeps its page (the weekly check cancels from its official page, 2026-11-02), saying so.
+    if (!ev || (ev.status !== 'approved' && ev.status !== 'cancelled')) return json({ error: 'not_found' }, 404);
     const { data: viewer } = await db.rpc('ve_event_viewer', { p_event: ev.id, p_member: memberId || NULL_ID });
     const { data: mt } = await db.from('ve_event_member_tickets').select('event_id').eq('event_id', ev.id).maybeSingle();
-    const { status: _s, host_listing_id: hid, ...out } = ev as any;
+    const { status: evStatus, host_listing_id: hid, venue_listing_id: vid, rejection_reason: _r, ...out } = ev as any;
     // The group (or organization) that hosts it, linked to its Directory page (Sean, 2026-10-29).
     let host = null;
     if (hid) { const { data: h } = await db.from('listings').select('slug, name, logo_url, category').eq('id', hid).eq('status', 'approved').maybeSingle(); host = h || null; }
+    // Where it is held and who else is part of it (Sean, 2026-11-02: every event ties to its venue, its organizer and its people).
+    let venue = null;
+    if (vid) { const { data: vv } = await db.from('listings').select('slug, name, logo_url, category, address_street, address_city, address_state, phone, website').eq('id', vid).eq('status', 'approved').maybeSingle(); venue = vv || null; }
+    const { data: cr } = await db.from('ve_person_credits').select('role, listing:listings!inner(slug, name, logo_url, status)').eq('event_id', ev.id).limit(20);
+    const people = (cr || []).filter((c: any) => c.listing?.status === 'approved').map((c: any) => ({ role: c.role, slug: c.listing.slug, name: c.listing.name, logo_url: c.listing.logo_url }));
     // A members-only ticket link: the page learns there is one, never the link itself (that is `tickets`, for members).
-    return json({ event: { ...out, host }, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
+    return json({ event: { ...out, host, venue, people, cancelled: evStatus === 'cancelled' }, viewer: viewer || {}, signed_in: !!memberId, member_tickets: !!mt });
   }
   const tok = typeof body.token === 'string' && /^[0-9a-f]{64}$/.test(body.token) ? body.token : '';
   if (!tok) return json({ error: 'not_found' }, 404);

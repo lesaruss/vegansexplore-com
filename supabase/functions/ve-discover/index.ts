@@ -589,7 +589,7 @@ async function allRows(make: () => any): Promise<{ data: any[]; error: any }> {
   }
 }
 // People (the People section, 2026-10-28) wear their own photo, never a business logo: the logo jobs leave them out.
-const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
 const notPerson = (l: any) => !PEOPLE_CATS.includes(l.category);
 // LESARUSS.ai's own listings (its tags) are not Vegans Explore's to fix: the logo jobs leave them out (Sean, 2026-10-30: "the depot
 // was pulling in thumbnails for those as well. It should only be focused on Vegans Explore items").

@@ -43,7 +43,7 @@
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
     // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.
-    ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders']]
+    ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters']]
   ];
   // A physician's specialty (details.person.specialty); keep in step with SPECIALTIES in /public/ve-region-directory.js and ve-people.
   var SPECIALTIES = [['cardiology', 'Cardiology'], ['gastroenterology', 'Gastroenterology'], ['internal', 'Internal medicine'], ['family', 'Family medicine'],

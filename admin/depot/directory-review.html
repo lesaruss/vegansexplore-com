@@ -931,7 +931,7 @@
         });
       }
       // The Directory's People sections (PEOPLE_CATS in public/ve-region-directory.js).
-      var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+      var PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
       function viewLogo(id, fromSuggestion) {
         if (!lg.rows) { V().innerHTML = '<p class="empty">Loading...</p>'; loadLogos().then(function () { viewLogo(id, fromSuggestion); }).catch(function (e) { V().innerHTML = '<p class="msg err">Could not load: ' + esc(e.message) + '</p>'; }); return; }
         var redo = fromSuggestion === 'redo';

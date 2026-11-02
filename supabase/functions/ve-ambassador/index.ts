@@ -49,7 +49,7 @@ const SEAN_EMAIL = 'contact@lesaruss.com';
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
 const DAY_MS = 24 * 60 * 60 * 1000;
 // Keep in step with PEOPLE_CATS in /public/ve-region-directory.js and ve-people.
-const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders'];
+const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
 const KINDS = ['instagram', 'tiktok', 'youtube', 'facebook', 'podcast'];
 const RATE_KEYS = ['post', 'reel', 'story', 'appearance', 'hosting', 'social_day'];
 const SKILLS = ['recipes', 'fitness', 'hosting', 'speaking', 'ugc', 'photo', 'video_edit', 'design', 'social', 'writing', 'outreach'];
