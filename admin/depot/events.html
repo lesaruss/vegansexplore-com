@@ -154,7 +154,7 @@
       }).join('');
       app.innerHTML = brandBar() + '<div class="tabs" data-v="qtabs">' + tabs + '</div>' +
         '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
-        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#claims/new">Claims</a><a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#claims/new">Claims</a><a class="btn btn-ghost" href="#headsup">Heads-up</a><a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
         '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
       $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
       (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
@@ -551,12 +551,111 @@
       });
     }
 
+    /* ---------- the heads-up email (the event host path, step 2; Sean, 2026-11-02; edge function ve-event-headsup) ---------- */
+    var HU = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-event-headsup';
+    function hu(b) {
+      var t = ''; try { t = localStorage.getItem('ve_token') || ''; } catch (e) {}
+      return fetch(HU, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t }, body: JSON.stringify(b) }).then(function (r) { return r.json(); });
+    }
+    var HSTAT = { active: ['Ready to email', 'approved'], no_email: ['No email yet', 'src'], held: ['Held', 'pending'], has_account: ['Has an account', 'src'], stopped: ['Stopped', 'rejected'] };
+    var huData = null;
+    function huCrumb(last) { return '<nav class="crumb"><a href="#queue/approved">Events</a><span>/</span>' + (last ? '<a href="#headsup">Heads-up</a><span>/</span><span>' + esc(last) + '</span>' : '<span>Heads-up</span>') + '</nav>'; }
+    function huWhen(t) { return t ? new Date(t).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'America/New_York' }) : ''; }
+    function drawHeadsup(filter) {
+      app.innerHTML = huCrumb() +
+        '<p class="sub">When a host\'s events are on our calendar, they hear about it: one email naming their new events, at most one every 14 days, to an email they publish, signed by their chapter\'s Community Manager (else the Vegans Explore team). No prices. It goes out on weekdays, 10 AM to 5 PM Eastern, only once the email is approved.</p>' +
+        '<div id="hu-state"><p class="msg">Loading…</p></div><div class="tabs" data-v="tabs" style="margin-top:16px"></div><div class="rows" id="hu-rows"></div>';
+      hu({ action: 'overview' }).then(function (d) {
+        if (!d.ok) { $('hu-state').innerHTML = '<p class="msg bad">That did not load.</p>'; return; }
+        huData = d;
+        var ok = d.template && d.template.status === 'ready' && d.list && d.list.approved_at, on = ok && d.list.enabled;
+        $('hu-state').innerHTML = '<div class="row" style="grid-template-columns:minmax(0,1fr) auto">' +
+          '<span><span class="tag ' + (on ? 'approved' : ok ? 'pending' : 'pending') + '">' + (on ? 'Approved, sending' : ok ? 'Approved, paused' : 'Waiting for your approval') + '</span> ' +
+          '<span class="m">' + (ok ? 'Approved ' + esc(huWhen(d.list.approved_at)) + '. ' : 'Nothing sends until you approve the email. ') + 'Daily cap ' + esc(d.list.daily_cap) + '.</span></span>' +
+          '<span style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-ghost" href="#headsup/email">See the email</a><a class="btn btn-ghost" href="#headsup/edit">Change the words</a>' +
+          (ok ? (on ? '<button class="btn btn-red" id="hu-pause">Pause</button>' : '<button class="btn" id="hu-resume">Switch it on</button>') : '') + '</span></div><p class="msg" id="hu-msg"></p>';
+        if ($('hu-pause')) $('hu-pause').onclick = function () { hu({ action: 'pause' }).then(function () { drawHeadsup(filter); }); };
+        if ($('hu-resume')) $('hu-resume').onclick = function () { hu({ action: 'resume' }).then(function (r) { if (!r.ok) $('hu-msg').textContent = r.message || 'That did not save.'; else drawHeadsup(filter); }); };
+        var hosts = d.hosts || [], counts = {};
+        hosts.forEach(function (h) { counts[h.status] = (counts[h.status] || 0) + 1; });
+        app.querySelector('[data-v="tabs"]').innerHTML = '<a href="#headsup" class="' + (!filter ? 'on' : '') + '">All (' + hosts.length + ')</a>' +
+          Object.keys(HSTAT).map(function (k) { return '<a href="#headsup/' + k + '" class="' + (k === filter ? 'on' : '') + '">' + HSTAT[k][0] + ' (' + (counts[k] || 0) + ')</a>'; }).join('');
+        var rows = hosts.filter(function (h) { return !filter || h.status === filter; });
+        $('hu-rows').innerHTML = rows.length ? rows.map(function (h) {
+          return '<div class="row" style="grid-template-columns:minmax(0,1.4fr) minmax(0,1.2fr) 150px 110px">' +
+            '<span><span class="t">' + esc(h.name) + '</span><br><span class="m">' + esc(h.chapter_name || 'No chapter') + ' · ' + h.waiting.length + ' new event' + (h.waiting.length === 1 ? '' : 's') + '</span></span>' +
+            '<span class="m">' + (h.email ? esc(h.email) : 'No email yet') + (h.last_sent_at ? '<br>Last emailed ' + esc(huWhen(h.last_sent_at)) : '') + (h.status_note ? '<br>' + esc(h.status_note) : '') + '</span>' +
+            '<span class="tag ' + HSTAT[h.status][1] + '">' + HSTAT[h.status][0] + '</span><a class="btn btn-ghost" href="#headsup/host/' + esc(h.id) + '">Open</a></div>';
+        }).join('') : '<p class="empty">Nothing here.</p>';
+      }, function () { $('hu-state').innerHTML = '<p class="msg bad">That did not load.</p>'; });
+    }
+    function drawHeadsupEmail(contact) {
+      app.innerHTML = huCrumb('The email') + '<div id="hu-mail"><p class="msg">Loading…</p></div>';
+      hu({ action: 'preview', contact_id: contact || undefined }).then(function (d) {
+        if (!d.ok) { $('hu-mail').innerHTML = '<p class="msg bad">' + esc(d.message || 'That did not load.') + '</p>'; return; }
+        var ready = d.status === 'ready';
+        $('hu-mail').innerHTML = '<p class="sub">As <b>' + esc(d.host) + '</b> would get it' + (d.to ? ' at ' + esc(d.to) : ' (no email for them yet)') + '. Signed by ' + (d.signed_by === 'chapter' ? 'their chapter\'s Community Manager' : 'the Vegans Explore team (no Community Manager in their chapter yet)') + '. The event links become their own tracked links when it really goes.</p>' +
+          '<div class="row" style="grid-template-columns:110px minmax(0,1fr)"><span class="m">Subject</span><span class="t">' + esc(d.subject) + '</span></div>' +
+          '<iframe id="hu-frame" title="The email" style="width:100%;min-height:620px;border:1px solid var(--ve-border);border-radius:10px;background:#fff;margin-top:10px"></iframe>' +
+          '<p class="msg" id="hu-msg"></p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px"><button class="btn btn-ghost" id="hu-test">Send me a test</button><a class="btn btn-ghost" href="#headsup/edit">Change the words</a>' +
+          (ready ? '' : '<button class="btn" id="hu-approve">Approve this email</button>') + '</div>' +
+          (ready ? '' : '<p class="m" style="margin-top:8px">Approving switches the list on: from then on it goes out by itself to every host with a published email.</p>');
+        $('hu-frame').srcdoc = d.html;
+        $('hu-test').onclick = function () { $('hu-test').disabled = true; hu({ action: 'test', contact_id: contact || undefined }).then(function (r) { $('hu-test').disabled = false; $('hu-msg').className = 'msg' + (r.ok ? '' : ' bad'); $('hu-msg').textContent = r.ok ? 'Sent to ' + r.to + '.' : (r.message || 'That did not send.'); }); };
+        if ($('hu-approve')) $('hu-approve').onclick = function () { if (!confirm('Approve this email and switch the heads-up on?')) return; hu({ action: 'approve' }).then(function (r) { if (r.ok) go('#headsup'); else $('hu-msg').textContent = 'That did not save.'; }); };
+      });
+    }
+    function drawHeadsupEdit() {
+      app.innerHTML = huCrumb('Change the words') + '<div id="hu-ed"><p class="msg">Loading…</p></div>';
+      var show = function (d) {
+        var t = d.template || {};
+        $('hu-ed').innerHTML = '<p class="sub">Saving new words puts the email back to waiting for approval and pauses it. Fill-ins: {host}, {greeting}, {host_possessive}, {events_word}, {it_them}, {events} (their events, each with its link) and {signoff}. No prices, and the team signs it.</p>' +
+          '<label class="m" for="hu-subj">Subject</label><input id="hu-subj" value="' + esc(t.subject || '') + '" style="margin:6px 0 12px">' +
+          '<label class="m" for="hu-body">The email</label><textarea id="hu-body" rows="16" style="margin-top:6px">' + esc(t.body || '') + '</textarea>' +
+          '<p class="msg" id="hu-msg"></p><div style="display:flex;gap:10px;margin-top:6px"><button class="btn" id="hu-save">Save</button><a class="btn btn-ghost" href="#headsup/email">Cancel</a></div>';
+        $('hu-save').onclick = function () {
+          hu({ action: 'template_save', subject: $('hu-subj').value, body: $('hu-body').value }).then(function (r) {
+            if (r.ok) go('#headsup/email'); else { $('hu-msg').className = 'msg bad'; $('hu-msg').textContent = r.message || 'That did not save.'; }
+          });
+        };
+      };
+      if (huData) show(huData); else hu({ action: 'overview' }).then(function (d) { huData = d; show(d); });
+    }
+    function drawHeadsupHost(id) {
+      app.innerHTML = huCrumb('One host') + '<div id="hu-host"><p class="msg">Loading…</p></div>';
+      hu({ action: 'overview' }).then(function (d) {
+        huData = d;
+        var h = (d.hosts || []).filter(function (x) { return x.id === id; })[0], box = $('hu-host');
+        if (!h) { box.innerHTML = '<p class="empty">That host was not found.</p>'; return; }
+        var L = h.listing || {}, line = function (k, v) { return '<div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">' + k + '</span><span>' + v + '</span></div>'; };
+        box.innerHTML = '<h2 style="margin:0 0 6px">' + esc(h.name) + '</h2><p class="sub"><span class="tag ' + HSTAT[h.status][1] + '">' + HSTAT[h.status][0] + '</span> ' + esc(h.status_note || '') + '</p><div class="rows">' +
+          line('Their page', L.slug ? '<a href="/directory/' + esc(L.slug) + '" target="_blank" rel="noopener">/directory/' + esc(L.slug) + '</a>' : '') +
+          line('Chapter', esc(h.chapter_name || 'None')) +
+          line('Email', h.email ? esc(h.email) + '<br><span class="m">' + esc(h.email_source || '') + '</span>' : 'None yet. We only email an address they publish.') +
+          line('Last emailed', h.last_sent_at ? esc(huWhen(h.last_sent_at)) : 'Never') +
+          line('Waiting to tell them', h.waiting.length ? h.waiting.map(function (e) { return '<a href="/events?event=' + esc(e.id) + '" target="_blank" rel="noopener">' + esc(e.title) + '</a> <span class="m">' + esc(e.when) + '</span>'; }).join('<br>') : 'Nothing new') +
+          line('Sent', h.sends.length ? h.sends.map(function (s) { return esc(huWhen(s.sent_at)) + ': ' + esc(s.result) + ', ' + s.event_ids.length + ' event' + (s.event_ids.length === 1 ? '' : 's'); }).join('<br>') : 'Nothing yet') + '</div>' +
+          (h.status !== 'stopped' ? '<h2 style="margin:20px 0 8px">Their email</h2><div style="display:flex;gap:10px;flex-wrap:wrap">' + (L.category === 'Groups' ? '<button class="btn btn-ghost" id="hu-find">Find their email</button>' : '') + '</div>' +
+            '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr));gap:10px;margin-top:10px"><input id="hu-em" type="email" placeholder="An email they publish" value=""><input id="hu-src" placeholder="Where it is published (a link)"></div>' +
+            '<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><button class="btn" id="hu-save">Save the email</button><a class="btn btn-ghost" href="#headsup/email/' + esc(h.id) + '">See their email</a><button class="btn btn-red" id="hu-stop">Never email them</button></div>' : '') +
+          '<p class="msg" id="hu-msg"></p>';
+        var msg = function (t, bad) { $('hu-msg').className = 'msg' + (bad ? ' bad' : ''); $('hu-msg').textContent = t; };
+        if ($('hu-find')) $('hu-find').onclick = function () { $('hu-find').disabled = true; msg('Reading their website and Instagram…'); hu({ action: 'find_email', contact_id: h.id }).then(function (r) { if (r.email) drawHeadsupHost(id); else { $('hu-find').disabled = false; msg('No email found. ' + (r.tried || []).join('. '), true); } }); };
+        if ($('hu-save')) $('hu-save').onclick = function () { hu({ action: 'email_save', contact_id: h.id, email: $('hu-em').value, source: $('hu-src').value }).then(function (r) { if (r.ok) drawHeadsupHost(id); else msg(r.message || 'That did not save.', true); }); };
+        if ($('hu-stop')) $('hu-stop').onclick = function () { if (!confirm('Never send ' + h.name + ' the heads-up again?')) return; hu({ action: 'stop', contact_id: h.id }).then(function () { drawHeadsupHost(id); }); };
+      });
+    }
+
     function route() {
       var h = location.hash || '#queue/pending', m;
       if ((m = /^#event\/([0-9a-f-]{36})$/.exec(h))) drawEvent(m[1]);
       else if (h === '#add') drawAdd();
       else if ((m = /^#claims\/(new|approved|declined)$/.exec(h))) drawClaims(m[1]);
       else if ((m = /^#claim\/([0-9a-f-]{36})$/.exec(h))) drawClaim(m[1]);
+      else if (h === '#headsup/edit') drawHeadsupEdit();
+      else if ((m = /^#headsup\/email(?:\/([0-9a-f-]{36}))?$/.exec(h))) drawHeadsupEmail(m[1] || '');
+      else if ((m = /^#headsup\/host\/([0-9a-f-]{36})$/.exec(h))) drawHeadsupHost(m[1]);
+      else if ((m = /^#headsup(?:\/(active|no_email|held|has_account|stopped))?$/.exec(h))) drawHeadsup(m[1] || '');
       else if (h === '#sources') drawSources();
       else if ((m = /^#checks(?:\/(changed|cancelled|postponed|gone|unreadable))?$/.exec(h))) drawChecks(m[1] || '');
       else if ((m = /^#leads\/(venue|organizer)\/(new|listed|linked|set_aside)$/.exec(h))) drawLeads(m[1], m[2]);

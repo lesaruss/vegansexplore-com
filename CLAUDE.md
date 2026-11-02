@@ -4315,9 +4315,32 @@ with us?... it's per event." Separate from Group Partners.
   account appeared (in a rolled-back transaction), the page at 1366 and 390 px with no errors; every test row removed. Not yet: a host
   with no account cannot make one without the $11 (sign-up is the Passport), so the email asks them to reply and the team helps; the
   $50 ad credit on claim waits for step 5.
+- **Step 2, the heads-up email, built 2026-11-02, waiting for Sean's approval** (Sean: "Build the list and template on the outreach
+  people-list engine... Nothing sends until I approve it once"; migration `20261102_event_heads_up.sql`; edge function `ve-event-headsup`
+  from commit 91d3db4, sha256 matched). **On the engine**: the list is `ve_outreach_cities` `event-hosts` (kind people, program
+  `event-heads-up`, off, daily cap 30) and the email is `ve_outreach_templates` `event-heads-up` step 1 (draft until approved; any change
+  to its words puts it back to draft and switches it off). `ve-outreach` never sends it (it has no contacts there); a host is told again as
+  new events come, which the engine's three-step sequence cannot do, so the sending is `ve-event-headsup`. **Hosts**:
+  `ve_event_host_contacts`, one per Directory listing that hosts upcoming approved events (`events.host_listing_id`), rebuilt by
+  `ve_event_hosts_refresh()` on every tick and overview: the email it publishes (`details.group.contact_email` from `ve-groups`
+  `find_contact`, their own site then their Instagram bio, else the listing's `email`) with where it was found; status active, no_email,
+  held (London: business addresses only, `ve_is_free_mail`), has_account (an owned listing or a Group Partner, who run it themselves) or
+  stopped. **What goes**: `ve_event_heads_up_due()`: an active host, not suppressed, not emailed in 14 days, with new events
+  (`ve_event_host_new_events`: approved, ours, 2 to 120 days out, no organizer or open claim, never named to them; up to 8 in one email).
+  Weekdays 10 AM to 5 PM Eastern, cron `ve-event-headsup` every 15 minutes, through `email-send` brand vegans-explore (its one-click
+  unsubscribe is the brand's permanent suppression), signed by the chapter's active Community Manager else "The Vegans Explore team",
+  never Sean's name, no prices (`template_save` refuses both). Each event is its own tracked link (`/go/eh-...`, initiative
+  `event-heads-up`, to `/events?event=<id>`, where Are you running this event? is); every send a `ve_event_headsups` row; campaign
+  `ve-event-headsup-<date>` in HQ > Email. Replies go to contact@lesaruss.com (email-send has no per-email reply-to). **Depot > Events >
+  Heads-up** (`#headsup[/<status>]`, `#headsup/email[/<host>]`, `#headsup/edit`, `#headsup/host/<id>`): the switch, the email as a host
+  gets it, Send me a test, **Approve this email** (switches it on), Change the words, each host with Find their email, an email typed
+  with where it is published, and Never email them. Proven live 2026-11-02 (unauthenticated calls refused, the tick held while
+  unapproved, Find email found three published emails: Plant Powered Metro New York, Vegetarians of Central Florida, Philly Vegan Social
+  Club; tests of London Vegan Meetup's 8 events and Philly's to contact@lesaruss.com with nothing recorded; a price refused; switching on
+  before approval refused). On 2026-11-02, 15 hosts, 3 with an email; the Meetup-only groups publish none.
 - **Build order:**
   1. The event claim (built 2026-11-02).
-  2. The heads-up.
+  2. The heads-up (built 2026-11-02, waiting for approval).
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
