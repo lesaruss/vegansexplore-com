@@ -1136,12 +1136,20 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   policies) is written only for a search the visitor sent (Enter or a pick), never each keystroke. Zero-result searches are the list of where
   to grow next and the numbers for outreach to businesses ("people searched for what you sell in your city").
 - **The benchmark comes before the interface and after every change**: `ve_search_benchmark` (53 searches scored, 2 known gaps listed, not
-  hidden) and `select * from ve_search_benchmark_run()`. Pass rate 53 of 53 on 2026-11-02 after three rounds (round 1 was 42 of 50 once the
+  hidden) and `select * from ve_search_benchmark_run()`. Pass rate 61 of 61 on 2026-11-02 after four rounds (round 1 was 42 of 50 once the
   scorer was fixed). It is a set Logan wrote, so it can flatter the engine: add real searches from members and from `ve_search_log`.
 - **Known gaps, on purpose**: a venue by name (Hard Rock Stadium) and what a store carries (plant milk at Publix) are not in search yet; the
-  results are listings only (Directory, People, Products); Events, Guides, recipes, the Pulse and a place's menu come next. Places are the ones
-  our listings are in plus six added by hand around Claremont; a full public gazetteer (so any town resolves) is the next build, and Google
-  geocoding stays a fallback only (Google costs rule). Claremont had no listings on 2026-11-02; its nearest was Pomona, 6 km.
+  results are listings only (Directory, People, Products); Events, Guides, recipes, the Pulse and a place's menu come next. Claremont had no listings on 2026-11-02; its nearest was Pomona, 6 km.
+- **The gazetteer** (Sean, 2026-11-02: "cool with that"): `ve_search_places` holds **GeoNames cities500**, 236,874 places of 500 people or more
+  worldwide, loaded by a one-time function from geonames.org (this build session cannot reach it; the edge function can), plus the chapter
+  cities our listings sit in and nicknames (NYC, LA, DC, Philly) that show as their city (`shows_as`). `key` is the lower-case, no-accent name a
+  person types; the engine tries every run of one to four words against it by index, a bigger town wins a tie (`population`), and a US state or
+  nothing after the name is fine ("Asheville NC"). **A place word that is also a town needs in, near or around** (`ve_search_place_words`:
+  reading, mobile, surprise, normal...; any phrase in the vocabulary; any GeoNames town under 20,000 people, so "vegan reading list" is not
+  the town of List). Google geocoding stays a fallback only (its terms allow caching coordinates 30 days). **GeoNames is credited** on
+  `/policies#terms` (Credits) and under the results, as its Creative Commons Attribution license asks. Refresh by running the load again (the
+  geonameid is unique); GeoNames changes daily and ours is as of 2026-11-02. Not done: GeoNames alternate names (so "Munich" finds München) and
+  proximity to the visitor when two towns share a name.
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 

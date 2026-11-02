@@ -26,7 +26,7 @@ declare
   c_lat float8 := null; c_lng float8 := null; use_center boolean := false; place_json jsonb := null;
   name_terms text := ''; has_intent boolean; res jsonb; min_km float8; total int; top_city text;
   stop text[] := array['vegan','vegans','plant','based','plantbased','best','top','good','great','find','me','for','a','an','the','some','any','places','place','spots','spot','near','nearby','with','that','are','is','i','want','looking','to','get','buy','my','of','and','or','in','at','around','close','shop','store','stores'];
-  placed boolean := false; w text;
+  placed boolean := false; fw text;
 begin
   q := lower(coalesce(p_q, ''));
   q := replace(replace(q, '''', ''), '’', '');
@@ -75,20 +75,20 @@ begin
 
 
   -- a misspelled word: the closest vocabulary phrase, only for longer words
-  for w in select x from unnest(string_to_array(btrim(rest), ' ')) x where length(x) >= 5 and x <> all(stop) loop
+  for fw in select x from unnest(string_to_array(btrim(rest), ' ')) x where length(x) >= 5 and x <> all(stop) loop
     select * into v from ve_search_vocab where brand = p_brand
-      and similarity(replace(phrase, ' ', ''), w) >= (case when length(w) >= 7 then 0.55 else 0.72 end)
-    order by similarity(replace(phrase, ' ', ''), w) desc limit 1;
+      and similarity(replace(phrase, ' ', ''), fw) >= (case when length(fw) >= 7 then 0.55 else 0.72 end)
+    order by similarity(replace(phrase, ' ', ''), fw) desc limit 1;
     if found then
-      rest := regexp_replace(rest, ' ' || w || ' ', ' ', 'g');
+      rest := regexp_replace(rest, ' ' || fw || ' ', ' ', 'g');
       v_cats := v_cats || v.cats; v_kinds := v_kinds || v.kinds; v_cui := v_cui || v.cuisines;
       if not (v.label = any(v_labels)) then v_labels := v_labels || v.label; end if;
       if v_link is null and array_length(v_labels, 1) = 1 then v_link := v.link; end if;
     end if;
   end loop;
 
-  select coalesce(string_agg(w, ' '), '') into name_terms
-  from unnest(string_to_array(btrim(rest), ' ')) w where w <> '' and w <> all(stop);
+  select coalesce(string_agg(tw, ' '), '') into name_terms
+  from unnest(string_to_array(btrim(rest), ' ')) tw where tw <> '' and tw <> all(stop);
   has_intent := cardinality(v_cats) + cardinality(v_kinds) + cardinality(v_cui) > 0;
   use_center := c_lat is not null and cardinality(v_kinds) = 0;
 
