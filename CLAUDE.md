@@ -3322,6 +3322,19 @@ to write ("No new verifiable story"); they were queued again with the episode as
 characters at most, then `lesaruss_dispatch_tick()`). Each city's Pulse already carries the national news under its own (Across the
 country, since 2026-10-31); there is no separate national Pulse (`pulse_auto.communities` has no `national`).
 
+**5 to 10 stories, never empty, and our own content** (Sean, 2026-11-01: "at least 5 to 10 stories in there. And then we can intermix
+some of our content... podcast episodes, some interviews... spotlight a restaurant... nominate somebody in your community that we should
+interview... share some new bounties... what new listings have been created in their chapter"; migration `20261102_pulse_house.sql`).
+The writer's `pulse_topic_write` instructions now ask for 5 to 10 stories, the city's own first, then national ones to fill, and never fail
+a city for lack of news (lead with the national ones and say so). **From Vegans Explore** is a section of every city's briefing built from
+our data when it publishes (`ve_pulse_house(city, post, record)`, called by `ve_pulse_features_apply`, stored as `briefing.house`, drawn by
+`VEPulse.briefing` in `public/ve-pulse-topics.js` between Heads up and Today's move): **Spotlight** (a 100% Vegan food place in the chapter
+with a logo and its own words, most voted, not spotlighted there in 60 days), **New in the Directory** (public listings that went live in
+the chapter since its last Pulse, five and See all N; `listings.listed_at`, set by `trg_ve_listing_listed_at` when a listing turns
+approved), **Listen** (one of our four shows' episodes on `/listen`, not used there in 120 days), **New bounties** (opened in the chapter
+since the last Pulse) and, on Mondays, **Who should we interview?** (Nominate someone, `/pulse/suggest?city=`). `ve_pulse_house_log`
+rotates them. A featured item is never added twice (not when the writer already wrote its link as a story).
+
 ## The Daily Pulse is the Community Board (Sean, 2026-10-26)
 
 "I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
