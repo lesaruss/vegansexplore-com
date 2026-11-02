@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listen — Vegans Explore</title>
+  <meta name="description" content="Listen to an episode from the Vegans Explore podcast network, right on the page.">
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* One episode on its own (Sean, 2026-11-01, on the Day 7 email: "the episode isolated by itself... the horizontal podcast episode,
+       like where we have in the listings, and then they could play it from there. And then we could have the text below").
+       /listen?show=<listing slug>&ep=<feed guid>: the episode row (Play, Save, vote for the show), the player above it, the notes below.
+       The episode comes from the show's feed through ve-podcast, the same as a show's own page. noindex: the show page is the one to find. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #f5f5f5; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 40px 40px 80px; }
+    @media (max-width: 700px) { main { padding: 24px 16px 64px; } }
+    .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: #1f5f22; margin-bottom: 14px; }
+    .eyebrow a { color: inherit; text-decoration: none; } .eyebrow a:hover { text-decoration: underline; }
+    #ep .vep-row { max-width: 1100px; }
+    #ep .vep-sum { display: none; }
+    .vote-count { font-size: 12px; font-weight: 800; color: rgba(26,26,26,.68); text-align: center; }
+    .vote-btn { display: inline-flex; align-items: center; justify-content: center; font: inherit; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; padding: 8px 12px; min-height: 36px; cursor: pointer; background: #fff; border: 1px solid rgba(0,0,0,.25); color: #1a1a1a; }
+    .notes { max-width: 860px; margin-top: 26px; }
+    .notes h2 { font-size: 12px; font-weight: 800; letter-spacing: .2em; text-transform: uppercase; color: rgba(26,26,26,.75); margin: 0 0 12px; }
+    .notes .vep-full { font-size: 15px; }
+    .more { margin-top: 26px; font-size: 14px; } .more a { color: #1f5f22; font-weight: 800; }
+    .vep-dock { max-width: 1100px; margin-bottom: 12px; }
+    .msg { font-size: 15px; color: rgba(26,26,26,.75); }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main>
+    <p class="eyebrow" id="eyebrow">Listen</p>
+    <div class="vep-dock" data-vep-always></div>
+    <div id="ep"><p class="msg">Loading the episode...</p></div>
+  </main>
+  <script src="/public/footer.js"></script>
+  </div>
+  <script src="/public/ve-episodes.js"></script>
+  <script src="/public/ve-votes.js"></script>
+  <script>
+  (function () {
+    var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var qs = new URLSearchParams(location.search), slug = qs.get('show') || '', guid = qs.get('ep') || '';
+    var box = document.getElementById('ep');
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function fail() { box.innerHTML = '<p class="msg">That episode did not load. <a href="/media" style="color:#1f5f22;font-weight:800">See our shows</a>.</p>'; }
+    if (!slug || !guid || !/^[a-z0-9-]+$/.test(slug)) return fail();
+    var listing = fetch(SB + '/rest/v1/listings?select=id,slug,name,logo_url,vote_count&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1',
+      { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }).then(function (a) { return a && a[0]; });
+    var token = ''; try { token = localStorage.getItem('ve_token') || ''; } catch (e) {}
+    var h = { 'Content-Type': 'application/json' }; if (token) h.Authorization = 'Bearer ' + token;
+    var episode = fetch(SB + '/functions/v1/ve-podcast', { method: 'POST', headers: h, body: JSON.stringify({ action: 'episode', slug: slug, guid: guid }) }).then(function (r) { return r.json(); });
+    Promise.all([listing, episode]).then(function (r) {
+      var l = r[0], d = r[1];
+      if (!l || !d || !d.ok || !d.episode) return fail();
+      var ep = d.episode, show = { id: l.id, name: l.name, slug: l.slug, image: l.logo_url || (d.show && d.show.image) || '' };
+      document.title = ep.title + ' — ' + l.name + ' — Vegans Explore';
+      document.getElementById('eyebrow').innerHTML = '<a href="/directory/' + esc(l.slug) + '">' + esc(l.name) + '</a>';
+      var vote = '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for ' + esc(l.name) + '">Vote for the show</button>' +
+        '<div class="vote-count">' + Number(l.vote_count || 0).toLocaleString() + ' votes</div>';
+      box.innerHTML = VEEpisodes.row(Object.assign({}, ep, { image: show.image || ep.image || '' }), show, { showName: true, saved: !!d.saved, acts: vote }) +
+        (ep.summary ? '<div class="notes"><h2>About this episode</h2><div class="vep-full">' + esc(ep.summary) + '</div></div>' : '') +
+        '<p class="more"><a href="/directory/' + esc(l.slug) + '">Every episode of ' + esc(l.name) + '</a></p>';
+      VEEpisodes.css();
+      if (window.VEVotes) VEVotes.wire(box);
+      box.addEventListener('click', function (e) {
+        var b = e.target.closest('[data-vep-play]');
+        if (b) { e.preventDefault(); VEEpisodes.play(Object.assign({}, ep, { image: show.image || ep.image || '' }), show); return; }
+        var s = e.target.closest('[data-vep-save]');
+        if (s) { e.preventDefault(); VEEpisodes.save(l.id, ep.guid, s); }
+      });
+    }).catch(fail);
+  })();
+  </script>
+</body>
+</html>
