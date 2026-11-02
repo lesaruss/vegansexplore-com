@@ -134,3 +134,24 @@ Panel: an event promoter, a ticketing marketplace pricing lead, a community lead
    - **What it says:** we added your event, here's the page, correct anything or claim it, and do you want to sell tickets with us
      or make us a sponsor. **No prices in the first email** (the handshake rule we locked for BrandDesk). Prices start on the page
      they click.
+
+## $50 in ad credits (Sean, 2026-11-02)
+
+Sean: "$50 in advertising credits that they can use... to get them into the system so they realize they can use this at any time.
+They might just run ads and not even sell... introduce them to the platform by giving them a little taste."
+
+Logan's terms (Sean's to change):
+- **Who gets it:** once per host, not per event. It lands when they claim their event page, which gives them a reason to claim.
+- **What it buys:** our own ad slots only.
+- **Expiry:** 90 days.
+- **Not money:** no cash value, no refund.
+- **Topping up:** they can add their own money on top.
+- **What it costs us:** the slots it fills now carry our house ads (Guides, Humble Cabbage), so the cost is what that slot could
+  have sold for, not cash.
+
+The ad console needs three things first:
+- a credit balance per business (a ledger, like points);
+- booking a slot and dates themselves, with a clear price;
+- a "spend your $50" step in the claim.
+
+Today the dashboard's Ads view only lists spots and "Ask about this spot".
