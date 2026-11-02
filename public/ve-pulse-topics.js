@@ -45,6 +45,10 @@
     '.vep-brief .vep-take{display:block;font-size:14px;line-height:1.55;color:rgba(26,26,26,0.78);margin-top:2px;}',
     '.vep-brief .vep-src{display:block;font-size:12px;color:#595959;margin-top:2px;}',
     '.vep-brief .vep-ev li{border-left-color:#F69820;}',
+    '.vep-house{background:#f4f9f4;border:1px solid #d6ead7;border-radius:12px;padding:16px 18px;display:grid;gap:14px;}',
+    '.vep-house h5{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#1f5f22;margin:0 0 6px;}',
+    '.vep-house li{border-left-color:#9fd3a2;}',
+    '.vep-house .vep-more{font-size:13px;font-weight:800;color:#1f5f22;text-decoration:none;}',
     '.vep-move{background:#1f5f22;color:#fff;border-radius:12px;padding:16px 18px;}',
     '.vep-move h4{color:#cfe8d0;}',
     '.vep-move strong{display:block;font-size:17px;line-height:1.3;}',
@@ -96,6 +100,23 @@
         return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
           '<span class="vep-take">' + esc([x.when, x.where].filter(Boolean).join(' \u00b7 ')) + '</span></li>';
       }).join('') + '</ul></section>';
+    }
+    // From Vegans Explore (Sean, 2026-11-01: "intermix some of our content"): new places in the chapter since the last Pulse, new bounties,
+    // a spotlight, one of our episodes and, on Mondays, who should we interview. Built from our data at publish (ve_pulse_house).
+    var h = b.house;
+    if (h) {
+      var our = function (u, label) { u = safe(u); return u ? '<a href="' + esc(u) + '" target="_top">' + esc(label) + '</a>' : '<strong>' + esc(label) + '</strong>'; };
+      var cut = function (x) { x = String(x || ''); return x.length > 210 ? x.slice(0, 210).replace(/\s+\S*$/, '') + '...' : x; };
+      var parts = [];
+      if (h.spotlight) parts.push('<div><h5>Spotlight</h5><ul><li>' + our(h.spotlight.url, h.spotlight.name) + '<span class="vep-take">' + esc(cut(h.spotlight.line)) + '</span><span class="vep-src">' + esc([h.spotlight.kind, h.spotlight.city].filter(Boolean).join(' \u00b7 ')) + '</span></li></ul></div>');
+      if ((h.new_listings || []).length) parts.push('<div><h5>New in the Directory</h5><ul>' + h.new_listings.map(function (x) {
+        return '<li>' + our(x.url, x.name) + '<span class="vep-src">' + esc([x.kind, x.city].filter(Boolean).join(' \u00b7 ')) + '</span></li>'; }).join('') + '</ul>' +
+        (h.new_count > h.new_listings.length ? '<p style="margin:8px 0 0"><a class="vep-more" href="' + esc(safe(h.new_url)) + '" target="_top">See all ' + h.new_count + ' new places</a></p>' : '') + '</div>');
+      if (h.episode) parts.push('<div><h5>Listen</h5><ul><li>' + our(h.episode.url, h.episode.title) + '<span class="vep-take">' + esc(cut(h.episode.summary)) + '</span><span class="vep-src">' + esc(h.episode.show) + '</span></li></ul></div>');
+      if ((h.bounties || []).length) parts.push('<div><h5>New bounties</h5><ul>' + h.bounties.map(function (x) {
+        return '<li>' + our(h.bounties_url, x.title) + (x.points ? '<span class="vep-src">' + Number(x.points).toLocaleString() + ' points</span>' : '') + '</li>'; }).join('') + '</ul></div>');
+      if (h.ask && h.ask.title) parts.push('<div><h5>' + esc(h.ask.title) + '</h5><p style="font-size:14px;line-height:1.55;margin:0 0 6px">' + esc(h.ask.text) + '</p><a class="vep-more" href="' + esc(safe(h.ask.url)) + '" target="_top">' + esc(h.ask.label || 'Tell us') + '</a></div>');
+      if (parts.length) out += '<section class="vep-house"><h4>From Vegans Explore</h4>' + parts.join('') + '</section>';
     }
     if (b.action && b.action.title) {
       var au = safe(b.action.url), ext = /^https?:/i.test(au);
