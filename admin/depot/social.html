@@ -188,14 +188,16 @@
     .mlabel{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 8px;}
     .mlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;}
     .mitem{border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;background:#fff;display:flex;flex-direction:column;}
-    .mitem .t{aspect-ratio:1/1;background:#111 center/cover no-repeat;cursor:zoom-in;position:relative;}
-    .mitem .t video{width:100%;height:100%;object-fit:cover;pointer-events:none;}
+    .mitem .t{aspect-ratio:1/1;background:#111;cursor:zoom-in;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .mitem .t.tall{aspect-ratio:9/16;}
+    .media .mitem .t img,.media .mitem .t video{width:100%;height:100%;max-width:100%;object-fit:contain;border-radius:0;background:#111;pointer-events:none;display:block;}
+    .mitem .t .pb{position:absolute;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;}
     .mitem .n{font-size:11px;font-weight:700;color:var(--ve-text-75);padding:4px 6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .mitem .b{display:flex;gap:4px;padding:6px;}
     .mitem .b button{flex:1;font:inherit;font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:6px 4px;border-radius:6px;border:1px solid rgba(0,0,0,.2);background:#fff;color:var(--ve-green-deep);cursor:pointer;}
     .mitem .b button.x{color:#8a1c12;}
-    .lb{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9999;display:flex;align-items:center;justify-content:center;padding:56px 64px;}
-    .lb img,.lb video{max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;}
+    .lb{position:fixed;left:0;right:0;top:0;height:100vh;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;padding:56px 64px;}
+    .lb img,.lb video{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain;border-radius:6px;background:#000;}
     .lb .c{position:absolute;top:14px;right:16px;color:#fff;background:none;border:0;font-size:32px;cursor:pointer;line-height:1;}
     .lb .arw{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.9);font-size:24px;font-weight:900;cursor:pointer;}
     .lb .arw.l{left:12px;}.lb .arw.r{right:12px;}
@@ -787,14 +789,16 @@
       var tall = !!TALL[x.kind];
       if (mIdx >= posted.length) mIdx = 0;
       var cur = posted[mIdx];
+      var poster = cover.length ? (cover[0].thumb || cover[0].url) : '';
       var frame = cur ? '<div class="mframe ' + (tall ? 'tall' : 'feed') + '" id="mFrame" title="Open it full size">' +
-          (isVid(cur) ? '<video muted playsinline preload="metadata" src="' + esc(cur.url) + '#t=0.5"></video><span class="play"><span><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>'
+          (isVid(cur) ? '<video muted playsinline preload="metadata"' + (poster ? ' poster="' + esc(poster) + '"' : '') + ' src="' + esc(cur.url) + '#t=0.5"></video><span class="play"><span><svg width="26" height="26" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></span>'
             : '<img id="mImg" src="' + esc(cur.url) + '" alt="">') +
           (posted.length > 1 ? '<span class="cnt">' + (mIdx + 1) + ' of ' + posted.length + '</span><button type="button" class="arw l" id="mPrev" aria-label="Previous">‹</button><button type="button" class="arw r" id="mNext" aria-label="Next">›</button>' : '') +
         '</div>' : '<div class="empty">No picture or video yet.' + (board.length ? ' The storyboard is below; the video is made once you approve it.' : '') + '</div>';
       var label = { story: 'How it shows as a story (9:16)', reel: 'How it shows as a reel (9:16)', video: 'How it shows (9:16)', episode: 'How it shows as a reel (9:16)', carousel: 'Carousel, slide by slide', post: 'How it shows in the feed' }[x.kind] || 'Preview';
       var tile = function (a, i, kind) {
-        return '<div class="mitem"><div class="t" data-open="' + kind + ':' + i + '"' + (isVid(a) ? '' : ' style="background-image:url(\'' + esc(a.thumb || a.url) + '\')"') + '>' + (isVid(a) ? '<video muted preload="metadata" src="' + esc(a.url) + '#t=0.5"></video>' : '') + '</div>' +
+        var pic = isVid(a) ? (poster ? '<img src="' + esc(poster) + '" alt="">' : '<video muted playsinline preload="metadata" src="' + esc(a.url) + '#t=0.5"></video>') + '<span class="pb"><svg width="16" height="16" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span>' : '<img src="' + esc(a.thumb || a.url) + '" alt="" loading="lazy">';
+        return '<div class="mitem"><div class="t' + (tall && kind !== 's' ? ' tall' : '') + '" data-open="' + kind + ':' + i + '">' + pic + '</div>' +
           '<span class="n" title="' + esc(fileOf(a.url)) + '">' + esc(fileOf(a.url)) + '</span>' +
           (editable && kind === 'p' ? '<span class="b"><button type="button" data-rep="' + i + '">Replace</button><button type="button" class="x" data-del="' + i + '">Remove</button></span>' : '') + '</div>';
       };
@@ -806,23 +810,41 @@
         (board.length ? '<div class="mlabel">Storyboard (not posted)</div><div class="mlist">' + board.map(function (a, i) { return tile(a, i, 's'); }).join('') + '</div>' : '') +
       '</div>';
     }
+    // The part of this page the person can see. The Depot and BrandDesk show this page in a frame as tall as the page, so the
+    // frame's own window is the whole page: the lightbox sits over the visible part of the screen instead (Sean, 2026-11-02: the
+    // video "blows up really large. I have to scroll to see the top and the bottom").
+    function seen(w) {
+      try {
+        if (w === w.top || !w.frameElement) return { top: 0, bottom: w.innerHeight };
+        var p = seen(w.parent), r = w.frameElement.getBoundingClientRect();
+        return { top: Math.max(0, p.top - r.top), bottom: Math.min(w.innerHeight, p.bottom - r.top) };
+      } catch (e) { return { top: 0, bottom: w.innerHeight }; }
+    }
     function lightbox(list, i) {
       var box = document.createElement('div'); box.className = 'lb'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-label', 'Full size');
+      var fit = function () {
+        var v = seen(window), h = Math.max(240, v.bottom - v.top);
+        box.style.top = v.top + 'px'; box.style.height = h + 'px';
+        var m = box.querySelector('img,video'); if (m) m.style.maxHeight = Math.max(160, h - 112) + 'px';
+      };
+      var tops = []; try { var w = window; while (w) { tops.push(w); if (w === w.top) break; w = w.parent; } } catch (e) {}
       var draw = function () {
         var a = list[i];
         box.innerHTML = (isVid(a) ? '<video controls autoplay playsinline src="' + esc(a.url) + '"></video>' : '<img src="' + esc(a.url) + '" alt="">') +
           '<button type="button" class="c" aria-label="Close">×</button>' +
           (list.length > 1 ? '<button type="button" class="arw l" aria-label="Previous">‹</button><button type="button" class="arw r" aria-label="Next">›</button>' : '') +
           '<div class="cap">' + esc(fileOf(a.url)) + (list.length > 1 ? ' · ' + (i + 1) + ' of ' + list.length : '') + '</div>';
+        fit();
         box.querySelector('.c').onclick = close;
         var l = box.querySelector('.arw.l'), r = box.querySelector('.arw.r');
         if (l) l.onclick = function (e) { e.stopPropagation(); i = (i - 1 + list.length) % list.length; draw(); };
         if (r) r.onclick = function (e) { e.stopPropagation(); i = (i + 1) % list.length; draw(); };
       };
       var key = function (e) { if (e.key === 'Escape') close(); else if (e.key === 'ArrowLeft' && list.length > 1) { i = (i - 1 + list.length) % list.length; draw(); } else if (e.key === 'ArrowRight' && list.length > 1) { i = (i + 1) % list.length; draw(); } };
-      function close() { document.removeEventListener('keydown', key); box.remove(); }
+      function close() { document.removeEventListener('keydown', key); tops.forEach(function (w) { try { w.removeEventListener('scroll', fit); w.removeEventListener('resize', fit); } catch (e) {} }); box.remove(); }
       box.addEventListener('click', function (e) { if (e.target === box) close(); });
       document.addEventListener('keydown', key);
+      tops.forEach(function (w) { try { w.addEventListener('scroll', fit, { passive: true }); w.addEventListener('resize', fit); } catch (e) {} });
       document.body.appendChild(box); draw();
     }
     function wireMedia(x, editable, id) {
