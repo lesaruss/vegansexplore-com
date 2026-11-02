@@ -304,6 +304,9 @@
     '.vev-host{display:flex;align-items:center;gap:12px;margin:0 0 14px;padding:10px 14px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
     '.vev-host:hover{border-color:var(--vb-go,#2d7d31);}',
     '.vev-people{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;align-items:center;}',
+    '.vev-claim{margin-top:16px;padding:14px;border:1px dashed rgba(26,26,26,.22);border-radius:8px;display:flex;flex-direction:column;gap:6px;}',
+    '.vev-claim b{font-size:15px;}.vev-claim span{font-size:13px;color:rgba(26,26,26,.72);line-height:1.5;}.vev-claim .vev-btn{align-self:flex-start;margin-top:4px;}',
+    '.vev-roles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:10px;margin:0 0 16px;}',
     '.vev-people>small{flex-basis:100%;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
     '.vev-people a{display:flex;align-items:center;gap:8px;padding:6px 10px 6px 6px;border:1px solid rgba(26,26,26,.12);border-radius:8px;text-decoration:none;color:inherit;background:#fff;}',
     '.vev-people a:hover{border-color:var(--vb-go,#2d7d31);}',
@@ -1091,6 +1094,61 @@
       ['coverage', 'Coverage', 'A member of ours attends, captures content, and we post a recap video after.'],
       ['coproduce', 'Co-produce it with us', 'The full service: the event\'s page, tickets, vendors and volunteers, run with a Community Manager.']
     ];
+    // "Are you running this event?" (the event host path, step 1; Sean, 2026-11-02). Open to anyone: a host is often not a member.
+    var CLAIM_ROLES = [['host', 'I\'m hosting it', 'It is our event.'], ['promoter', 'I\'m promoting it', 'I put it on with the host or sell its tickets.'], ['venue', 'It\'s at my venue', 'We are the place it is held.']];
+    function drawClaim(id, sent) {
+      var back = '?event=' + id;
+      var head = function (t) { return '<nav class="vev-crumb" aria-label="Breadcrumb"><a href="#" data-go="list">' + esc(opts.listLabel || 'Events') + '</a><span>/</span><a href="#" data-go="event">' + esc(t || 'Event') + '</a><span>/</span><span>Claim this event</span></nav>'; };
+      var bind = function () {
+        el.querySelectorAll('[data-go]').forEach(function (b) {
+          b.addEventListener('click', function (ev) { ev.preventDefault(); if (b.getAttribute('data-go') === 'list') go(''); else goEvent(id); });
+        });
+      };
+      el.innerHTML = head() + '<div class="vev-form"><p class="vev-count">Loading…</p></div>';
+      bind();
+      api({ action: 'event', id: id }).then(function (d) {
+        var e = d.event;
+        if (!e) { el.innerHTML = head() + '<div class="vev-form"><h2>That event is not on the calendar</h2><button type="button" class="vev-btn ghost" data-go="list">See the events</button></div>'; bind(); return; }
+        if (sent) {
+          el.innerHTML = head(e.title) + '<div class="vev-form"><h2>Thanks, your claim is in</h2><p class="lead">Our team checks every claim before it is approved, usually within a day or two, and emails you either way. Once it is approved, ' + esc(e.title) + ' carries your name, and you can message the guests who say yes, through us.</p>' +
+            '<p class="lead">While you wait, the <a class="vev-link" href="/guides/vegan-events-guide">Vegan Events Guide</a> has what we know about running a Vegan event, from the 12-week plan to what to do when it rains.</p>' +
+            '<div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="event">Back to the event</button></div></div>';
+          bind(); return;
+        }
+        var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null, member = signedIn() && me;
+        var pick = '';
+        el.innerHTML = head(e.title) + '<div class="vev-form"><h2>Are you running ' + esc(e.title) + '?</h2>' +
+          '<p class="lead">Claim this page and it carries your name. Guests who RSVP can let you message them through us, and we can help you get the word out. It is free. Our team checks every claim before it is approved.</p>' +
+          '<p class="vev-sub">Your part in it</p><div class="vev-roles" role="group" aria-label="Your part in it">' +
+            CLAIM_ROLES.map(function (r) { return '<button type="button" class="vev-card" data-role="' + r[0] + '" aria-pressed="false"><b>' + esc(r[1]) + '</b><span>' + esc(r[2]) + '</span></button>'; }).join('') +
+          '</div><div class="vev-grid">' +
+            field('cname', 'Your name', inp('cname', member ? (me.name || '') : '', 'text', ' maxlength="120" autocomplete="name"'), '', false) +
+            field('cemail', 'Your email', inp('cemail', member ? (me.email || '') : '', 'email', ' maxlength="200" autocomplete="email"'), 'Sign in with this email later to see your guests.', false) +
+            field('corg', 'Your group, business or venue', inp('corg', '', 'text', ' maxlength="120"'), 'Optional. This is the name guests see.', false) +
+            field('cphone', 'Phone', inp('cphone', '', 'tel', ' maxlength="40" autocomplete="tel"'), 'Optional. Only our team sees it.', false) +
+            field('cproof', 'A link that shows it is yours', inp('cproof', '', 'url', ' maxlength="500" placeholder="https://"'), 'The event\'s page that names you, your website, or your Instagram post about it.', true) +
+            field('cnote', 'Anything we should know?', '<textarea id="vev-cnote" maxlength="1000"></textarea>', 'No link? Tell us how you are involved.', true) +
+          '</div><p class="vev-note bad" data-v="err" role="alert"></p>' +
+          '<div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="event">Not now</button><button type="button" class="vev-btn green" data-v="send">Send my claim</button></div></div>';
+        bind();
+        el.querySelectorAll('[data-role]').forEach(function (b) {
+          b.addEventListener('click', function () { pick = b.getAttribute('data-role'); el.querySelectorAll('[data-role]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); });
+        });
+        el.querySelector('[data-v="send"]').addEventListener('click', function () {
+          var btn = this, err = el.querySelector('[data-v="err"]'), val = function (k) { return el.querySelector('#vev-' + k).value.trim(); };
+          if (!pick) { err.textContent = 'Pick your part in it.'; return; }
+          if (val('cname').length < 2) { err.textContent = 'Add your name.'; return; }
+          if (!/^[^@\s]+@[^@\s]+\.[a-z]{2,}$/i.test(val('cemail'))) { err.textContent = 'Add an email we can reach you at.'; return; }
+          if (!val('cproof') && val('cnote').length < 10) { err.textContent = 'Add a link that shows it is yours, or tell us a little about it.'; return; }
+          btn.disabled = true; btn.textContent = 'Sending…'; err.textContent = '';
+          api({ action: 'claim', id: id, role: pick, name: val('cname'), email: val('cemail'), org_name: val('corg'), phone: val('cphone'), proof_url: val('cproof'), note: val('cnote') }).then(function (r) {
+            if (!r.ok) { btn.disabled = false; btn.textContent = 'Send my claim'; err.textContent = r.message || 'That did not send. Try again.'; return; }
+            if (window.gtag) try { gtag('event', 'event_claim', { event_id: id }); } catch (x) {}
+            go('#claim/' + id + '/sent');
+          }).catch(function () { btn.disabled = false; btn.textContent = 'Send my claim'; err.textContent = 'That did not send. Try again.'; });
+        });
+      });
+    }
     function drawPromote(id, sent) {
       var head = '<nav class="vev-crumb" aria-label="Breadcrumb"><a href="#" data-go="list">' + esc(opts.listLabel || 'Events') + '</a><span>/</span><a href="#mine" data-go="mine">My events</a><span>/</span><span>Promote your event</span></nav>';
       var bind = function () {
@@ -1277,6 +1335,10 @@
           '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
             '<p class="vev-note bad" data-v="err" role="alert"></p>' +
             (v.organizes ? '<p style="margin-top:14px"><a class="vev-btn" href="#guests/' + esc(e.id) + '">Guests and messages</a></p>' : '') +
+            // The event host path, step 1 (Sean, 2026-11-02): "Are you running this event? Click here."
+            (!v.organizes && !brandCal ? '<div class="vev-claim">' + (v.claim === 'new' ? '<b>Your claim is in</b><span>Our team checks every claim, usually within a day or two, and emails you either way.</span>' :
+              v.claim === 'approved' ? '<b>Your claim is approved</b><span>Sign in with the email you gave us to see your guests.</span>' :
+              '<b>Are you running this event?</b><span>Claim this page: your name on it, your guests, and our help getting the word out. Free.</span><a class="vev-btn ghost" href="#claim/' + esc(e.id) + '">Claim this event</a>') + '</div>' : '') +
             (member ? '<p style="margin-top:10px"><a class="vev-link" href="#mine">My events</a></p>' : '') + '</div></div>';
         bindList();
         var err = el.querySelector('[data-v="err"]'), opt = el.querySelector('[data-v="optin"]');
@@ -1385,6 +1447,8 @@
       var h = location.hash || '', em = /^#event\/([0-9a-f-]{36})(\/tickets)?$/i.exec(h), gm = /^#guests\/([0-9a-f-]{36})$/i.exec(h), mm = /^#message\/([0-9a-f]{64})$/.exec(h);
       if (em) { drawEvent(em[1], null, !!em[2]); if (opts.onView) opts.onView('event'); return; }
       if (gm) { drawGuests(gm[1]); if (opts.onView) opts.onView('guests'); return; }
+      var cm = /^#claim\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
+      if (cm) { drawClaim(cm[1], !!cm[2]); if (opts.onView) opts.onView('claim'); return; }
       if (mm) { drawMessage(mm[1]); if (opts.onView) opts.onView('message'); return; }
       var m = /^#submit\/([1-4])$/.exec(h), pm = /^#promote\/([0-9a-f-]{36})(\/sent)?$/i.exec(h);
       if (pm) { drawPromote(pm[1], !!pm[2]); if (opts.onView) opts.onView('promote'); return; }
@@ -1408,15 +1472,15 @@
     window.addEventListener('hashchange', route);
 
     route();
-    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash) && !qEvent()) { drawList(); } });
+    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message|claim)/.test(location.hash) && !qEvent()) { drawList(); } });
 
     return {
       setCity: function (slug) {
         if (menu) { if (slug) locSetCity(slug); else setLevel('continent', ''); paintLoc(); } else st.city = slug || '';
-        st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message)/.test(location.hash) && !qEvent()) drawRows();
+        st.shown = 40; if (!/^#(submit|mine|promote|event|guests|message|claim)/.test(location.hash) && !qEvent()) drawRows();
       },
       // The menu layout: the banner's kind of event, and where the filter's location stands.
-      setCat: function (k) { st.cat = k || ''; st.off = {}; st.shown = 40; syncUrl(true); if (/^#(submit|mine|promote|event|guests|message)/.test(location.hash) || qEvent()) go(''); else drawRows(); },
+      setCat: function (k) { st.cat = k || ''; st.off = {}; st.shown = 40; syncUrl(true); if (/^#(submit|mine|promote|event|guests|message|claim)/.test(location.hash) || qEvent()) go(''); else drawRows(); },
       location: function () { return locNow(); },
       submit: function () { go('#submit/1'); }, // the city banner's Submit an event button (2026-10-26)
       // The banner's Events home (Sean, 2026-10-27): every event in the city again, no search or filter, the list in view.

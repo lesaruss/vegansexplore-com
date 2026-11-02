@@ -154,7 +154,7 @@
       }).join('');
       app.innerHTML = brandBar() + '<div class="tabs" data-v="qtabs">' + tabs + '</div>' +
         '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
-        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#claims/new">Claims</a><a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
         '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
       $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
       (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
@@ -496,10 +496,67 @@
       }, function () { $('ld-rows').innerHTML = '<p class="msg bad">That did not load.</p>'; });
     }
 
+    /* ---------- Claims: "Are you running this event?" (the event host path, step 1; Sean, 2026-11-02) ---------- */
+    var CROLE = { host: 'Hosting it', promoter: 'Promoting it', venue: 'At their venue' }, CSTAT = { 'new': 'Waiting', approved: 'Approved', declined: 'Declined' };
+    function claimCard(c) {
+      var e = c.event || {};
+      return '<div class="row" style="grid-template-columns:84px minmax(0,1.4fr) minmax(0,1.2fr) 150px">' +
+        '<span class="d">' + esc(new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '</span>' +
+        '<span><span class="t">' + esc(e.title || 'An event') + '</span><br><span class="m">' + esc(e.starts_at ? new Date(e.starts_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '') + (e.city ? ' · ' + esc(e.city) : '') + '</span></span>' +
+        '<span><span class="t">' + esc(c.name) + '</span>' + (c.org_name ? ' (' + esc(c.org_name) + ')' : '') + '<br><span class="m">' + esc(CROLE[c.role] || c.role) + ' · ' + esc(c.email) + (c.has_account ? ' · has an account' : ' · no account yet') + '</span></span>' +
+        '<span class="tag ' + (c.status === 'approved' ? 'approved' : c.status === 'declined' ? 'rejected' : 'pending') + '">' + CSTAT[c.status] + '</span>' +
+        '<a class="btn btn-ghost" href="#claim/' + esc(c.id) + '" style="grid-column:4">Open</a></div>';
+    }
+    var claimCache = {};
+    function drawClaims(status) {
+      app.innerHTML = '<nav class="crumb"><a href="#queue/approved">Events</a><span>/</span><span>Claims</span></nav>' +
+        '<p class="sub">People who say they run an event on the calendar. Approving puts their name on the event and lets them message the guests who say yes, once an account has their email (now, or when they make one). They are emailed either way.</p>' +
+        '<div class="tabs" data-v="tabs"></div><div class="rows" id="cl-rows"><p class="msg">Loading…</p></div>';
+      api({ action: 'claims', status: status }).then(function (d) {
+        var c = d.counts || {};
+        app.querySelector('[data-v="tabs"]').innerHTML = Object.keys(CSTAT).map(function (k) { return '<a href="#claims/' + k + '" class="' + (k === status ? 'on' : '') + '">' + CSTAT[k] + ' (' + (c[k] || 0) + ')</a>'; }).join('');
+        (d.claims || []).forEach(function (x) { claimCache[x.id] = x; });
+        $('cl-rows').innerHTML = (d.claims || []).length ? d.claims.map(claimCard).join('') : '<p class="empty">Nothing here.</p>';
+      }, function () { $('cl-rows').innerHTML = '<p class="msg bad">That did not load.</p>'; });
+    }
+    function drawClaim(id) {
+      app.innerHTML = '<nav class="crumb"><a href="#queue/approved">Events</a><span>/</span><a href="#claims/new">Claims</a><span>/</span><span>One claim</span></nav><div id="cl-one"><p class="msg">Loading…</p></div>';
+      var show = function (c) {
+        var e = c.event || {}, box = $('cl-one');
+        if (!c) { box.innerHTML = '<p class="empty">That claim was not found.</p>'; return; }
+        var safe = function (u) { return /^https?:\/\//i.test(u || '') ? u : ''; };
+        box.innerHTML = '<h2 style="margin:0 0 6px">' + esc(c.name) + (c.org_name ? ' · ' + esc(c.org_name) : '') + '</h2>' +
+          '<p class="sub">' + esc(CROLE[c.role] || c.role) + ' <b>' + esc(e.title || '') + '</b>' + (e.starts_at ? ', ' + esc(new Date(e.starts_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) : '') + (e.city ? ', ' + esc(e.city) : '') + '. <a href="/events?event=' + esc(c.event_id) + '" target="_blank" rel="noopener">The event\'s page</a> · <a href="#event/' + esc(c.event_id) + '">In the Depot</a></p>' +
+          '<div class="rows"><div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">Email</span><span>' + esc(c.email) + (c.has_account ? ' (has an account)' : ' (no account yet: approving links them when they make one)') + '</span></div>' +
+          (c.phone ? '<div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">Phone</span><span>' + esc(c.phone) + '</span></div>' : '') +
+          '<div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">Their link</span><span>' + (safe(c.proof_url) ? '<a href="' + esc(c.proof_url) + '" target="_blank" rel="noopener">' + esc(c.proof_url) + '</a>' : 'None') + '</span></div>' +
+          (c.note ? '<div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">What they said</span><span>' + esc(c.note) + '</span></div>' : '') +
+          '<div class="row" style="grid-template-columns:160px minmax(0,1fr)"><span class="m">Status</span><span>' + CSTAT[c.status] + (c.decided_at ? ', ' + esc(new Date(c.decided_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) : '') + (c.decision_note ? '. ' + esc(c.decision_note) : '') + (c.status === 'approved' ? (c.organizer_id ? '. Now the event\'s organizer.' : '. Becomes the organizer when an account has their email.') : '') + '</span></div></div>' +
+          (c.status === 'new' ? '<label class="m" for="cl-note" style="display:block;margin:16px 0 6px">A note (needed to decline; they get it in the email)</label><textarea id="cl-note" rows="3" style="width:100%;font:inherit;padding:10px;border:1px solid #ccc;border-radius:6px" data-dictate="on"></textarea>' +
+            '<p class="msg" id="cl-msg"></p><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px"><button class="btn" id="cl-ok">Approve</button><button class="btn btn-red" id="cl-no">Decline</button></div>' : '');
+        var dec = function (d) {
+          var n = $('cl-note').value.trim(); if (d === 'decline' && n.length < 5) { $('cl-msg').textContent = 'Say why, so they know what would show it is theirs.'; return; }
+          $('cl-ok').disabled = $('cl-no').disabled = true;
+          api({ action: 'claim_decide', claim: c.id, decision: d, note: n }).then(function (r) {
+            if (!r.ok) { $('cl-ok').disabled = $('cl-no').disabled = false; $('cl-msg').textContent = r.message || 'That did not save.'; return; }
+            go('#claims/' + (d === 'approve' ? 'approved' : 'declined'));
+          });
+        };
+        if ($('cl-ok')) { $('cl-ok').onclick = function () { dec('approve'); }; $('cl-no').onclick = function () { dec('decline'); }; }
+      };
+      if (claimCache[id]) { show(claimCache[id]); return; }
+      Promise.all(['new', 'approved', 'declined'].map(function (st) { return api({ action: 'claims', status: st }); })).then(function (all) {
+        all.forEach(function (d) { (d.claims || []).forEach(function (x) { claimCache[x.id] = x; }); });
+        show(claimCache[id] || null);
+      });
+    }
+
     function route() {
       var h = location.hash || '#queue/pending', m;
       if ((m = /^#event\/([0-9a-f-]{36})$/.exec(h))) drawEvent(m[1]);
       else if (h === '#add') drawAdd();
+      else if ((m = /^#claims\/(new|approved|declined)$/.exec(h))) drawClaims(m[1]);
+      else if ((m = /^#claim\/([0-9a-f-]{36})$/.exec(h))) drawClaim(m[1]);
       else if (h === '#sources') drawSources();
       else if ((m = /^#checks(?:\/(changed|cancelled|postponed|gone|unreadable))?$/.exec(h))) drawChecks(m[1] || '');
       else if ((m = /^#leads\/(venue|organizer)\/(new|listed|linked|set_aside)$/.exec(h))) drawLeads(m[1], m[2]);
