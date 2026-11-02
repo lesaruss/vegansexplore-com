@@ -2923,6 +2923,15 @@ mobile", then agreed with Logan: buttons keep the Guide tab in sight, so fold on
 with two tabs or more, `mobileTabMenu` in `directory/listing.html` sets `lt-fold` (one dropdown, `.lt-sel`; 360 px on desktop, full width
 on phones) at 768 px and under, or on a wider screen when the buttons overflow the row (measured again on resize and as tabs appear).
 Each option clicks its tab or family link (a family's shows by name). Otherwise the tab buttons stay.
+**Linked pages are card sections, not tabs, since 2026-11-02** (Sean: "instead of having it in the tabs... just have about as the tab...
+the affiliations, and then under the affiliations, that's where we would have the podcasts... You don't have 1,000 tabs and some exceptions
+with a drop down arrow"). `loadFamily` in `directory/listing.html` no longer adds tabs: a family's other listings are the Directory's own cards
+(votes, opening their page) on the first tab, drawn by `cardSections` (which also draws `details.linked`). A People page's first tab reads
+**About**: the bio, Their work, Affiliations (`details.linked`), Their shows (`ppShowTiles`, its hosted shows plus the family's podcasts and
+channels, `PP_HOSTED`, `PP_FAMSHOWS`), People, Their books, Related, then With Vegans Explore. A show, book or outlet keeps Overview: Hosts
+after About, and More shows, Books and Related after its own content (Episodes, Latest stories; tag `famend`). A listing already under
+`details.linked` is not drawn twice. An old `?tab=books` link scrolls to the books; the in-page book view and the Podcasts dropdown are gone
+(`drawBooks` and `famMenu` remain, unused). What follows below about tabs is history.
 **The tab order and Books** (Sean, 2026-10-29: "The order should be overview, podcast, YouTube, and then the dashboard... I also want to add
 in books... after YouTube and before partner dashboard"). The family's tabs go right after the page's own tab, so the row is always
 Overview (the person's profile), Podcast, YouTube, Books, then the page's other tabs and Partner Dashboard last (shown only to the owner and
