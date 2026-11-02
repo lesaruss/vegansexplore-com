@@ -4001,7 +4001,13 @@ rains... interview event hosts... they record their voice... those voice recordi
   Eastern 2026-11-02 and `ve_event_venue_import()` at 3:25 (job `once:event-venues`): a venue becomes a live **Services > Event Venues** listing
   (Not a Vegan business, Google's address, pin, phone, website, hours and summary, `crawl_source` `event-venue-search`, its events linked); a food
   place waits quarantined in Business outreach > New places > Ready to list; one already listed only gets its events linked. Each seed row keeps its
-  `result` (listed, ready to list, already listed, no match, no answer).
+  `result` (listed, ready to list, already listed, no match, no answer). **Ran 2026-11-02** (the 3:10 cron fired nothing: pg_net clears
+  responses after 6 hours, so yesterday's 429s were gone, and the function's counter clashed with the seed's `n` column; fixed in
+  `20261102_event_venue_search_fix.sql`, which re-fires any seed with no 200 answer, and run by hand at 3:50 AM Eastern, 95 searches): 69 Event
+  Venues live, 7 food places in Ready to list (Karamel N22, Siena's, Candle, The Fresh Beet, Philly Vegan Market, GreenFare, Fruitive), 9
+  already listed, 10 no match (four street addresses, Larry Bell Recreational Center, The Lifestyle Building, Hip City Veg in D.C., and Urban
+  Vegan Roots, Natuurlik and MOOD, which Google calls permanently closed), 255 events linked, 82 listings tagged `ve-hosts-events`. Each match
+  checked against its events' addresses; none set aside.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
