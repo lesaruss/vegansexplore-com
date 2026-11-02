@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Outreach | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Outreach (Sean, 2026-11-01, playbook ve-outreach-buckets: "each day see all the people I need to communicate with in all
+       the different ways... when I click on it, it tells me exactly what to do. It gives me the language... I approve it. It puts it on
+       a schedule to go out... If it's an Instagram message... me copying it... I just confirm that it was sent... I respond in the notes
+       with what was said"). One thing per view: a day (#day/<YYYY-MM-DD>/<filter>): one row a person, the counter of what is left;
+       one message (#m/<id>): what to do, the words, where it goes, the button for its channel, notes, follow up, history.
+       Server: ve-people-outreach. Every time is Eastern. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:12px;}
+    a{color:var(--ve-green-deep);}
+    .crumb{font-size:13px;font-weight:700;color:var(--ve-text-75);margin:4px 0 14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .crumb a{font-weight:800;text-decoration:none;}
+    .chip{font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.14);background:#fff;color:var(--ve-text-75);text-decoration:none;display:inline-flex;align-items:center;gap:7px;cursor:pointer;font-family:inherit;}
+    .chip.on{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .chip .n{font-size:11px;opacity:.75;}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+    input,select,textarea{font:inherit;font-size:14px;font-weight:600;padding:10px 12px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background-color:#fff;color:#1a1a1a;width:100%;}
+    textarea{font-weight:500;line-height:1.55;resize:vertical;}
+    select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:44px;}
+    label.f{display:block;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin:12px 0 6px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 16px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;white-space:nowrap;}
+    .btn[disabled]{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .btn-warn{background:#fff;color:#8a1c12;border:1px solid rgba(138,28,18,.35);}
+    .row-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-text-75);min-height:22px;margin:0 0 10px;}
+    .msg.bad{color:#8a1c12;}.msg.good{color:var(--ve-green-deep);}
+    .daybar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin:0 0 12px;}
+    .daybar .lbl{font-size:18px;font-weight:900;}
+    .daybar .grp{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+    .daybar input[type=date]{width:auto;min-width:170px;}
+    .strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin:0 0 14px;}
+    .strip a{flex:none;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:8px 12px;text-decoration:none;color:inherit;font-size:12px;font-weight:700;min-width:96px;}
+    .strip a.on{border-color:var(--ve-green-deep);box-shadow:0 0 0 1px var(--ve-green-deep) inset;}
+    .strip a b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .strip a .left{color:#7a4a00;}
+    .left-card{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--ve-green-light);border-radius:12px;padding:14px 18px;margin:0 0 14px;}
+    .left-card b{font-size:30px;font-weight:900;line-height:1;}
+    .left-card span{font-size:13px;font-weight:700;color:var(--ve-text-75);}
+    .over{background:#fff4e0;color:#7a4a00;border-radius:10px;padding:10px 14px;font-weight:700;font-size:13.5px;margin:0 0 12px;}
+    .list{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;}
+    .prow{display:grid;grid-template-columns:44px minmax(0,1.4fr) minmax(0,1fr) minmax(0,1.4fr) auto;gap:14px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--ve-border);text-decoration:none;color:inherit;}
+    .prow:last-child{border-bottom:0;}
+    .prow:hover{background:#fafcfa;}
+    .av{width:44px;height:44px;border-radius:10px;background:var(--ve-green-light);color:var(--ve-green-deep);font-weight:900;display:flex;align-items:center;justify-content:center;font-size:16px;}
+    .prow .nm{font-weight:800;font-size:15px;line-height:1.3;}
+    .prow .og{font-size:12.5px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+    .prow .how{font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;}
+    .prow .how img{width:18px;height:18px;}
+    .prow .todo{font-size:13px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    @media (max-width:900px){.prow{grid-template-columns:44px minmax(0,1fr) auto;}.prow .how,.prow .todo{display:none;}}
+    .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;display:inline-block;background:#f1f1f1;color:#444;}
+    .tag.draft{background:#fff4e0;color:#7a4a00;}.tag.approved{background:#eef1f6;color:#2c3e66;}.tag.sending{background:#eef1f6;color:#2c3e66;}
+    .tag.sent,.tag.done{background:#e8f5e9;color:#1f5f22;}.tag.failed{background:#fbeeec;color:#8a1c12;}.tag.skipped{background:#f1f1f1;color:#666;}
+    .tag.b{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .two{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px;align-items:start;}
+    @media (max-width:1000px){.two{grid-template-columns:1fr;}}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px;margin:0 0 16px;}
+    .doit{background:var(--ve-green-deep);color:#fff;border-radius:12px;padding:14px 18px;margin:0 0 16px;font-weight:800;font-size:15px;}
+    .doit small{display:block;font-weight:600;font-size:13px;opacity:.85;margin-top:2px;}
+    .kv{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 14px;font-size:13.5px;}
+    .kv dt{font-weight:800;color:var(--ve-green-deep);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-top:2px;}
+    .kv dd{word-break:break-word;}
+    .note{border-top:1px solid var(--ve-border);padding:10px 0;font-size:13.5px;white-space:pre-wrap;}
+    .note small{display:block;font-size:11.5px;font-weight:700;color:var(--ve-text-75);}
+    .hist a{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--ve-border);text-decoration:none;color:inherit;font-size:13px;}
+    .empty{background:#fff;border:1px dashed rgba(0,0,0,.2);border-radius:12px;padding:28px;text-align:center;color:var(--ve-text-75);font-weight:700;}
+    .gate{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:24px;font-weight:700;}
+    .copybox{white-space:pre-wrap;background:#f7f8f7;border:1px solid var(--ve-border);border-radius:8px;padding:12px 14px;font-size:14.5px;line-height:1.6;}
+    .stat{font-size:12.5px;font-weight:700;color:var(--ve-text-75);}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}</script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Outreach</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Everyone to reach today, and how. Open a person: email, look it over and approve it, and it goes out at its time from you (you can pull it back until then). Instagram, text or a call: copy the words, do it, and mark it done. Notes stay on the person. Every time is Eastern.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-people-outreach';
+    var TZ = 'America/New_York';
+    var $ = function (id) { return document.getElementById(id); };
+    var app = $('app');
+    var CH = {
+      email: { name: 'Email', todo: 'Look it over and approve it' },
+      instagram: { name: 'Instagram', icon: '/public/icons/platforms/instagram.svg', todo: 'Copy it, send it on Instagram, mark it sent' },
+      text: { name: 'Text', todo: 'Copy it, text it, mark it sent' },
+      call: { name: 'Call', todo: 'Call them, then write what was said' },
+      meetup: { name: 'Meetup', todo: 'Copy it, post it to the group, mark it sent' },
+      other: { name: 'Other', todo: 'Do it, then mark it done' }
+    };
+    var BUCKET = { business: 'Business', community: 'Community', sponsor: 'Sponsor', nonprofit: 'Nonprofit', group: 'Group' };
+    var STATUS = { draft: 'Needs you', approved: 'Scheduled', sending: 'Sending', sent: 'Sent', done: 'Done', skipped: 'Skipped', failed: 'Did not send' };
+    var FILTERS = { todo: 'To do', scheduled: 'Scheduled', finished: 'Done', all: 'All' };
+    var ERR = {
+      no_email_address: 'There is no email address to send to.', empty: 'Write the subject and the message first.',
+      placeholder_left: 'There is still a [placeholder] in the message.', not_waiting: 'That one is not waiting any more.',
+      already_sent: 'That one has already gone out.', not_scheduled: 'That one is not scheduled.', day_in_past: 'Pick today or a later day.',
+      forbidden: 'This page is for super admins.', not_authenticated: 'Sign in again.', network: 'No connection. Try again.'
+    };
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function eastDay(d) { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); }
+    function addDays(day, n) { var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
+    function niceDay(d, long) { return new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', long ? { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' } : { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+    function when(t) { return t ? new Date(t).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ }) + ' ET' : ''; }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
+    function err(e) { return ERR[e] || ('It did not work (' + e + ').'); }
+    function chIcon(c) { var x = CH[c] || {}; return x.icon ? '<img src="' + x.icon + '" alt="">' : ''; }
+    function initials(n) { return String(n || '?').split(/\s+/).filter(Boolean).slice(0, 2).map(function (w) { return w[0]; }).join('').toUpperCase(); }
+    function inFilter(m, f) {
+      if (f === 'todo') return m.status === 'draft' || m.status === 'failed';
+      if (f === 'scheduled') return m.status === 'approved' || m.status === 'sending';
+      if (f === 'finished') return m.status === 'sent' || m.status === 'done' || m.status === 'skipped';
+      return true;
+    }
+    function after(m) {
+      var out = [];
+      if (m.sent_at) out.push('Sent ' + when(m.sent_at));
+      if (m.done_at) out.push('Done ' + when(m.done_at));
+      if (m.opened_at) out.push('Opened');
+      if (m.clicks) out.push('Clicked ' + m.clicks + (m.clicks === 1 ? ' time' : ' times'));
+      if (m.bounced_at) out.push('Bounced');
+      return out.join(' · ');
+    }
+
+    // ---- a day ----
+    function drawDay(day, filter) {
+      app.innerHTML = '<p class="msg">Loading ' + esc(niceDay(day, true)) + '…</p>';
+      api({ action: 'day', day: day }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var ms = r.messages || [], today = r.today;
+        var left = ms.filter(function (m) { return inFilter(m, 'todo'); }).length;
+        var sched = ms.filter(function (m) { return inFilter(m, 'scheduled'); }).length;
+        var fin = ms.filter(function (m) { return inFilter(m, 'finished'); }).length;
+        var h = '<div class="daybar"><span class="lbl">' + esc(niceDay(day, true)) + (day === today ? ' · Today' : '') + '</span><span class="grp">' +
+          '<a class="btn btn-ghost" href="#day/' + addDays(day, -1) + '/' + filter + '">‹ Day before</a>' +
+          (day !== today ? '<a class="btn btn-ghost" href="#day/' + today + '/' + filter + '">Today</a>' : '') +
+          '<a class="btn btn-ghost" href="#day/' + addDays(day, 1) + '/' + filter + '">Next day ›</a>' +
+          '<input type="date" id="pick" value="' + day + '" aria-label="Pick a day"></span></div>';
+        if (r.week && r.week.length) {
+          h += '<div class="strip">' + r.week.map(function (w) {
+            return '<a href="#day/' + w.day + '/' + filter + '" class="' + (w.day === day ? 'on' : '') + '"><b>' + esc(niceDay(w.day)) + '</b>' + w.total + ' ' + (w.total === 1 ? 'person' : 'people') + (w.left ? '<br><span class="left">' + w.left + ' need you</span>' : '<br>All handled') + '</a>';
+          }).join('') + '</div>';
+        }
+        if (r.overdue) h += '<div class="over">' + r.overdue + ' from earlier days still need you. <a href="#overdue">See them</a></div>';
+        h += '<div class="left-card"><div><b>' + left + '</b><span> need you</span></div><div><b>' + sched + '</b><span> scheduled</span></div><div><b>' + fin + '</b><span> done</span></div><div><b>' + ms.length + '</b><span> in all</span></div></div>';
+        h += '<div class="chips">' + Object.keys(FILTERS).map(function (k) {
+          var n = ms.filter(function (m) { return inFilter(m, k); }).length;
+          return '<a class="chip' + (k === filter ? ' on' : '') + '" href="#day/' + day + '/' + k + '">' + FILTERS[k] + ' <span class="n">' + n + '</span></a>';
+        }).join('') + '</div>';
+        var shown = ms.filter(function (m) { return inFilter(m, filter); });
+        h += shown.length ? '<div class="list">' + shown.map(row).join('') + '</div>'
+          : '<div class="empty">' + (ms.length ? 'Nothing here. ' + (filter === 'todo' ? 'Everything for this day is handled.' : '') : 'Nobody is planned for this day yet.') + '</div>';
+        app.innerHTML = h;
+        $('pick').addEventListener('change', function () { if (this.value) location.hash = 'day/' + this.value + '/' + filter; });
+      });
+    }
+    function row(m) {
+      var c = CH[m.channel] || CH.other;
+      return '<a class="prow" href="#m/' + m.id + '"><span class="av">' + esc(initials(m.name)) + '</span>' +
+        '<span><span class="nm">' + esc(m.name) + '</span><span class="og">' + esc(m.org || BUCKET[m.bucket]) + '</span></span>' +
+        '<span class="how">' + chIcon(m.channel) + esc(c.name) + ' <span class="tag b">' + esc(BUCKET[m.bucket]) + '</span></span>' +
+        '<span class="todo">' + esc(after(m) || m.why || c.todo) + '</span>' +
+        '<span class="tag ' + m.status + '">' + esc(STATUS[m.status] || m.status) + '</span></a>';
+    }
+    function drawOverdue() {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'overdue' }).then(function (r) {
+        var ms = r.messages || [];
+        app.innerHTML = '<p class="crumb"><a href="#day/' + eastDay(new Date()) + '/todo">Today</a> › From earlier days</p>' +
+          (ms.length ? '<div class="list">' + ms.map(row).join('') + '</div>' : '<div class="empty">Nothing left over.</div>');
+      });
+    }
+
+    // ---- one message ----
+    function drawMsg(id) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'get', id: id }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var m = r.message, c = CH[m.channel] || CH.other, link = r.link;
+        var locked = ['sent', 'sending', 'done', 'skipped'].indexOf(m.status) >= 0;
+        var isEmail = m.channel === 'email';
+        var dest = link ? (/^https?:/.test(link.destination) ? link.destination : 'https://vegansexplore.com' + link.destination) : null;
+        var h = '<p class="crumb"><a href="#day/' + m.day + '/todo">' + esc(niceDay(m.day, true)) + '</a> › ' + esc(m.name) + '</p>';
+        var doit = isEmail ? (m.status === 'approved' ? 'Scheduled for ' + when(m.send_at) + '. You can pull it back until then.'
+          : m.status === 'sent' ? 'Sent ' + when(m.sent_at) + '.' : m.status === 'failed' ? 'It did not send: ' + (m.send_error || '') + ' Fix it and approve it again.' : c.todo + '. It goes out ' + (m.send_at ? when(m.send_at) : 'at 10 AM Eastern on ' + niceDay(m.day)) + ' once approved.')
+          : (m.status === 'done' ? 'Done ' + when(m.done_at) + '.' : c.todo + '.');
+        h += '<div class="doit">' + esc(c.name) + ' · ' + esc(STATUS[m.status]) + '<small>' + esc(doit) + '</small></div>';
+        h += '<div class="two"><div>';
+        h += '<div class="panel"><dl class="kv"><dt>Who</dt><dd><b>' + esc(m.name) + '</b>' + (m.org ? ', ' + esc(m.org) : '') + ' <span class="tag b">' + esc(BUCKET[m.bucket]) + '</span></dd>' +
+          (m.why ? '<dt>Why now</dt><dd>' + esc(m.why) + '</dd>' : '') +
+          '<dt>' + (isEmail ? 'Goes to' : m.channel === 'instagram' ? 'Instagram' : m.channel === 'text' || m.channel === 'call' ? 'Phone' : 'Where') + '</dt><dd>' + toLink(m) + '</dd>' +
+          (dest ? '<dt>The link in it</dt><dd><a href="' + esc(dest) + '" target="_blank" rel="noopener">vegansexplore.com/go/' + esc(link.code) + '</a> goes to <a href="' + esc(dest) + '" target="_blank" rel="noopener">' + esc(link.destination) + '</a> · <a class="btn btn-ghost" style="min-height:30px;padding:4px 10px" href="' + esc(dest) + '" target="_blank" rel="noopener">Open the page</a><br><span class="stat">' + (link.clicks ? 'Clicked ' + link.clicks + (link.clicks === 1 ? ' time' : ' times') + ', last ' + when(link.last_click_at) : 'No clicks yet') + '</span></dd>' : '') +
+          (after(m) ? '<dt>What happened</dt><dd>' + esc(after(m)) + '</dd>' : '') + '</dl></div>';
+        h += '<div class="panel"><h2>The message</h2>';
+        if (locked) {
+          h += (m.subject ? '<p><b>' + esc(m.subject) + '</b></p>' : '') + '<div class="copybox">' + esc(m.body) + '</div>';
+          if (!isEmail) h += '<div class="row-btns"><button class="btn btn-ghost" id="copy">Copy</button></div>';
+        } else {
+          if (isEmail) h += '<label class="f" for="to">To</label><input id="to" type="email" value="' + esc(m.to_address || '') + '">';
+          else h += '<label class="f" for="to">' + (m.channel === 'instagram' ? 'Their Instagram' : m.channel === 'text' || m.channel === 'call' ? 'Their number' : 'Where') + '</label><input id="to" value="' + esc(m.to_address || '') + '">';
+          if (isEmail) h += '<label class="f" for="subj">Subject</label><input id="subj" value="' + esc(m.subject || '') + '">';
+          h += '<label class="f" for="body">' + (m.channel === 'call' ? 'What to cover' : 'Message') + '</label><textarea id="body" rows="' + (isEmail ? 14 : 8) + '">' + esc(m.body) + '</textarea>';
+          if (isEmail) h += '<label class="f" for="at">Goes out at (Eastern)</label><input id="at" type="datetime-local" value="' + esc(localVal(m.send_at || null, m.day)) + '">';
+          h += '<p class="msg" id="mmsg"></p><div class="row-btns">';
+          if (isEmail) {
+            if (m.status === 'approved') h += '<button class="btn btn-warn" id="pull">Pull it back</button>';
+            else h += '<button class="btn" id="approve">Approve and schedule</button>';
+            h += '<button class="btn btn-ghost" id="save">Save changes</button><button class="btn btn-ghost" id="test">Send me a test</button>';
+          } else {
+            h += '<button class="btn btn-ghost" id="copy">Copy</button>' + openBtn(m) + '<button class="btn" id="done">' + (m.channel === 'call' ? 'Done' : 'I sent it') + '</button><button class="btn btn-ghost" id="save">Save changes</button>';
+          }
+          h += '<button class="btn btn-ghost" id="skip">Skip</button></div>';
+        }
+        if (m.status === 'skipped' || (m.status === 'done' && !isEmail)) h += '<div class="row-btns"><button class="btn btn-ghost" id="reopen">Open it again</button></div>';
+        h += '</div></div><div>';
+        // Notes, follow up, history.
+        h += '<div class="panel"><h2>Notes on ' + esc(m.name.split(' ')[0]) + '</h2><textarea id="note" rows="3" placeholder="What they said, what comes next…"></textarea><div class="row-btns"><button class="btn" id="addnote">Add note</button></div>' +
+          ((r.notes || []).map(function (n) { return '<div class="note"><small>' + esc(n.author_name || '') + ' · ' + esc(when(n.created_at)) + '</small>' + esc(n.body) + '</div>'; }).join('') || '<p class="stat" style="margin-top:10px">No notes yet.</p>') + '</div>';
+        h += '<div class="panel"><h2>Follow up</h2><label class="f" for="fday">On</label><input id="fday" type="date" value="' + addDays(eastDay(new Date()), 3) + '" min="' + eastDay(new Date()) + '">' +
+          '<label class="f" for="fch">By</label><select id="fch">' + Object.keys(CH).map(function (k) { return '<option value="' + k + '"' + (k === m.channel ? ' selected' : '') + '>' + CH[k].name + '</option>'; }).join('') + '</select>' +
+          '<div class="row-btns"><button class="btn btn-ghost" id="fup">Put them on that day</button></div><p class="msg" id="fmsg"></p></div>';
+        if ((r.history || []).length) h += '<div class="panel hist"><h2>Before and after</h2>' + r.history.map(function (x) { return '<a href="#m/' + x.id + '"><span>' + esc(niceDay(x.day)) + ' · ' + esc((CH[x.channel] || {}).name) + '</span><span class="tag ' + x.status + '">' + esc(STATUS[x.status]) + '</span></a>'; }).join('') + '</div>';
+        h += '</div></div>';
+        app.innerHTML = h;
+        wireMsg(m);
+      });
+    }
+    function toLink(m) {
+      var t = m.to_address || '';
+      if (!t) return '<span class="stat">Not set yet</span>';
+      if (m.channel === 'email') return '<a href="mailto:' + esc(t) + '">' + esc(t) + '</a>';
+      if (m.channel === 'instagram') { var hd = t.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, ''); return '<a href="https://instagram.com/' + esc(hd) + '" target="_blank" rel="noopener">@' + esc(hd) + '</a>'; }
+      if (m.channel === 'text' || m.channel === 'call') return '<a href="tel:' + esc(t.replace(/[^\d+]/g, '')) + '">' + esc(t) + '</a>';
+      if (/^https?:/.test(t)) return '<a href="' + esc(t) + '" target="_blank" rel="noopener">' + esc(t) + '</a>';
+      return esc(t);
+    }
+    function openBtn(m) {
+      var t = m.to_address || '';
+      if (m.channel === 'instagram' && t) { var hd = t.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '').replace(/\/.*$/, ''); return '<a class="btn btn-ghost" target="_blank" rel="noopener" href="https://ig.me/m/' + esc(hd) + '">Open their Instagram</a>'; }
+      if (m.channel === 'text' && t) return '<a class="btn btn-ghost" id="sms" href="sms:' + esc(t.replace(/[^\d+]/g, '')) + '">Open Messages</a>';
+      if (m.channel === 'call' && t) return '<a class="btn btn-ghost" href="tel:' + esc(t.replace(/[^\d+]/g, '')) + '">Call</a>';
+      if (m.channel === 'meetup' && /^https?:/.test(t)) return '<a class="btn btn-ghost" target="_blank" rel="noopener" href="' + esc(t) + '">Open the group</a>';
+      return '';
+    }
+    // datetime-local wants local wall time; we show and take Eastern.
+    function localVal(iso, day) {
+      if (!iso) return day + 'T10:00';
+      var p = {}; new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }).formatToParts(new Date(iso)).forEach(function (x) { p[x.type] = x.value; });
+      return p.year + '-' + p.month + '-' + p.day + 'T' + p.hour + ':' + p.minute;
+    }
+    function easternIso(v) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(v || ''); if (!m) return null;
+      var guess = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+      function off(ms) { var p = {}; new Intl.DateTimeFormat('en-US', { timeZone: TZ, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).formatToParts(new Date(ms)).forEach(function (x) { p[x.type] = x.value; }); return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - ms; }
+      var t = guess - off(guess); t = guess - off(t); return new Date(t).toISOString();
+    }
+    function wireMsg(m) {
+      function say(t, cls) { var e = $('mmsg'); if (e) { e.textContent = t; e.className = 'msg ' + (cls || ''); } }
+      function fields() {
+        var o = { action: 'save', id: m.id };
+        if ($('to')) o.to_address = $('to').value;
+        if ($('subj')) o.subject = $('subj').value;
+        if ($('body')) o.body = $('body').value;
+        if ($('at')) { var iso = easternIso($('at').value); if (iso) o.send_at = iso; }
+        return o;
+      }
+      function changed() { return ($('to') && $('to').value !== (m.to_address || '')) || ($('subj') && $('subj').value !== (m.subject || '')) || ($('body') && $('body').value !== m.body) || ($('at') && easternIso($('at').value) !== (m.send_at ? new Date(m.send_at).toISOString() : easternIso(m.day + 'T10:00'))); }
+      function saveThen(next) { if (!changed()) return next(); api(fields()).then(function (r) { if (r.error) say(err(r.error), 'bad'); else next(); }); }
+      var b;
+      if ((b = $('save'))) b.onclick = function () { api(fields()).then(function (r) { if (r.error) say(err(r.error), 'bad'); else { say(r.pulled_back ? 'Saved. It changed, so it is back to Needs you: approve it again.' : 'Saved.', 'good'); setTimeout(function () { drawMsg(m.id); }, 600); } }); };
+      if ((b = $('approve'))) b.onclick = function () { b.disabled = true; saveThen(function () { api({ action: 'approve', id: m.id }).then(function (r) { if (r.error) { b.disabled = false; say(err(r.error), 'bad'); } else { say('Approved. It goes out ' + when(r.send_at) + '.', 'good'); setTimeout(next, 700); } }); }); };
+      if ((b = $('pull'))) b.onclick = function () { api({ action: 'pull_back', id: m.id }).then(function (r) { if (r.error) say(err(r.error), 'bad'); else drawMsg(m.id); }); };
+      if ((b = $('test'))) b.onclick = function () { b.disabled = true; saveThen(function () { api({ action: 'test', id: m.id }).then(function (r) { b.disabled = false; say(r.ok ? 'Test sent to ' + r.to + '.' : err(r.error), r.ok ? 'good' : 'bad'); }); }); };
+      if ((b = $('copy'))) b.onclick = function () { var t = $('body') ? $('body').value : m.body; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { say('Copied. Paste it, send it, then mark it sent.', 'good'); }, function () { say('Select the message and copy it.', 'bad'); }); };
+      if ((b = $('sms'))) { var t0 = $('body') ? $('body').value : m.body; b.href = b.getAttribute('href') + (/iPhone|iPad|Mac/.test(navigator.userAgent) ? '&' : '?') + 'body=' + encodeURIComponent(t0); }
+      if ((b = $('done'))) b.onclick = function () { saveThen(function () { api({ action: 'done', id: m.id }).then(function (r) { if (r.error) say(err(r.error), 'bad'); else { say('Marked done.', 'good'); setTimeout(next, 600); } }); }); };
+      if ((b = $('skip'))) b.onclick = function () { if (!confirm('Skip ' + m.name + ' for now?')) return; api({ action: 'skip', id: m.id }).then(function (r) { if (r.error) say(err(r.error), 'bad'); else next(); }); };
+      if ((b = $('reopen'))) b.onclick = function () { api({ action: 'reopen', id: m.id }).then(function (r) { if (!r.error) drawMsg(m.id); }); };
+      if ((b = $('addnote'))) b.onclick = function () { var t = $('note').value.trim(); if (!t) return; b.disabled = true; api({ action: 'note', id: m.id, body: t }).then(function (r) { b.disabled = false; if (!r.error) drawMsg(m.id); }); };
+      if ((b = $('fup'))) b.onclick = function () { api({ action: 'follow_up', id: m.id, day: $('fday').value, channel: $('fch').value }).then(function (r) { var e = $('fmsg'); if (r.error) { e.textContent = err(r.error); e.className = 'msg bad'; } else { e.innerHTML = 'On ' + esc(niceDay(r.follow_up.day, true)) + '. <a href="#m/' + r.follow_up.id + '">Open it</a>'; e.className = 'msg good'; } }); };
+      function next() { location.hash = 'day/' + m.day + '/todo'; }
+    }
+
+    function route() {
+      var h = (location.hash || '').replace(/^#/, '').split('/');
+      window.scrollTo(0, 0);
+      if (h[0] === 'm' && h[1]) return drawMsg(h[1]);
+      if (h[0] === 'overdue') return drawOverdue();
+      var day = /^\d{4}-\d{2}-\d{2}$/.test(h[1] || '') ? h[1] : eastDay(new Date());
+      drawDay(day, FILTERS[h[2]] ? h[2] : 'todo');
+    }
+    function start() {
+      if (!window.VEAuth || !VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').textContent = 'Sign in to see Outreach.'; return; }
+      app.hidden = false;
+      window.addEventListener('hashchange', route);
+      route();
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
