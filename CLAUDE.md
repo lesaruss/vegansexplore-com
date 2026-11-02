@@ -5293,6 +5293,22 @@ sessions (payment links such as the LIVE Donation) read well from their own line
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
 
+## Revenue on the dashboard (Sean, 2026-11-02)
+
+"I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
+we'll create a financial back end where we could do P&Ls... that's for another day." The super admin's Dashboard tab opens with
+**Revenue** above Recent activity (`#dash-rev`, `renderRevenue` / `revDraw` in `dashboard/center-console.html`): Today, This month (against
+the same days of last month, with last month in full), This year and All time, each gross with payments and what is left after Stripe's
+fee; a bar chart (Last 30 days, Last 90 days, By month; each bar's tooltip says the day, the total, the payments and after fees; drawn at
+its own width so a phone reads it); and the latest 15 payments, each named by its Checkout line item or its invoice's first line, opening
+in Stripe. Read live by `ve-dashboard` `revenue` (super admins only) from the **Vegans Explore Stripe account** (`STRIPE_SECRET_KEY`):
+every succeeded live charge, less refunds, by Eastern day, `balance_transaction` for the fee; cached 5 minutes in `ve_analytics_cache`
+(`ve-revenue-v1`), **Refresh** reads Stripe now (about 3 s for 97 charges). It counts everything on that account, which on 2026-11-02
+included **CRM + Web Hosting for Miss Meatless Muscle** ($200 a month) and VWL Monthly Podcast Donations; the LESARUSS and Meatless Muscle
+Stripe accounts are not counted. Not a P&L: no costs. `ve-dashboard` v20 from commit <REV_SHA> (source sha256 matched). Proven live
+2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
+this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.

@@ -357,7 +357,7 @@
   .rev-tile small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-50);}
   .rev-tile b{display:block;font-size:26px;font-weight:900;color:var(--ve-text);margin:4px 0 2px;line-height:1.1;}
   .rev-tile span{display:block;font-size:12px;color:var(--ve-text-50);}
-  .rev-tile span.up{color:var(--ve-green-dark);font-weight:700;}.rev-tile span.down{color:#b42318;font-weight:700;}
+  .rev-tile em{font-style:normal;font-weight:800;}.rev-tile em.up{color:var(--ve-green-dark);}.rev-tile em.down{color:#b42318;}
   .rev-body{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:14px;}
   .rev-chart,.rev-latest{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;min-width:0;}
   .rev-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
@@ -4345,11 +4345,12 @@
     var d = REV.data, pts;
     if (REV.view === 'm') pts = d.monthly.slice(-18).map(function (x) { var dt = new Date(x.m + '-15T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }) + (x.m.slice(5) === '01' || d.monthly.length < 13 ? " '" + x.m.slice(2, 4) : ''), full: dt.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net }; });
     else pts = d.daily.slice(REV.view === '90' ? -90 : -30).map(function (x) { var dt = new Date(x.d + 'T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }), full: dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net }; });
-    var W = 600, H = 220, L = 46, B = 24, T = 8, max = Math.max.apply(null, pts.map(function (p) { return p.v; }).concat([100]));
+    // Drawn at the width it has, so labels never squeeze on a phone.
+    var box = document.getElementById('dash-rev'), bw0 = box && box.clientWidth ? box.clientWidth : 900, W = Math.max(260, Math.round((window.innerWidth > 1100 ? (bw0 - 14) * 2 / 3 : bw0) - 34)), H = 220, L = 46, B = 24, T = 8, max = Math.max.apply(null, pts.map(function (p) { return p.v; }).concat([100]));
     var step = Math.pow(10, Math.floor(Math.log10(max))); var top = Math.ceil(max / step) * step; if (top / step < 3) { step /= 2; top = Math.ceil(max / step) * step; }
     var bw = (W - L) / pts.length, g = '';
     for (var y = 0; y <= top; y += step) { var yy = T + (H - B - T) * (1 - y / top); g += '<line x1="' + L + '" x2="' + W + '" y1="' + yy + '" y2="' + yy + '"/><text x="' + (L - 6) + '" y="' + (yy + 3) + '" text-anchor="end">' + revMoney(y) + '</text>'; }
-    var every = Math.ceil(pts.length / 8);
+    var every = Math.ceil(pts.length / Math.max(3, Math.floor(W / 75)));
     pts.forEach(function (p, i) {
       var h = (H - B - T) * (p.v / top), x = L + i * bw;
       g += '<rect class="bar" x="' + (x + bw * 0.15) + '" y="' + (H - B - h) + '" width="' + Math.max(1, bw * 0.7) + '" height="' + Math.max(0, h) + '" rx="2"><title>' + dvEsc(p.full + ': ' + revMoney(p.v, true) + ' from ' + p.n + ' payment' + (p.n === 1 ? '' : 's') + ', ' + revMoney(p.net, true) + ' after fees') + '</title></rect>';
@@ -4361,14 +4362,16 @@
   }
   function revDraw() {
     var box = document.getElementById('dash-rev'), d = REV.data; if (!box || !d) return;
-    var t = d.totals, ch = t.last_month.gross ? Math.round((t.month.gross - t.last_month.gross) / t.last_month.gross * 100) : null;
+    // This month against the same days of last month, so the 1st is not compared with a whole month.
+    var t = d.totals, ls = t.last_month_same_days || t.last_month, ch = ls.gross ? Math.round((t.month.gross - ls.gross) / ls.gross * 100) : null;
     var tile = function (label, v, sub, cls) { return '<div class="rev-tile"><small>' + label + '</small><b>' + revMoney(v.gross, true) + '</b><span' + (cls ? ' class="' + cls + '"' : '') + '>' + sub + '</span></div>'; };
     var pay = function (n) { return n + ' payment' + (n === 1 ? '' : 's'); };
     var asOf = new Date(d.as_of).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) + ' Eastern';
     box.innerHTML = '<div class="rev-head"><p class="dash-section-title">Revenue</p><span class="rev-asof">Vegans Explore Stripe &middot; as of ' + asOf + '</span>' +
       '<button type="button" class="rev-btn" id="rev-refresh">Refresh</button></div>' +
       '<div class="rev-tiles">' + tile('Today', t.today, pay(t.today.n)) +
-      tile('This month', t.month, ch == null ? pay(t.month.n) : (ch >= 0 ? '+' : '') + ch + '% against last month (' + revMoney(t.last_month.gross) + ')', ch == null ? '' : ch >= 0 ? 'up' : 'down') +
+      tile('This month', t.month, (ch == null ? pay(t.month.n) : '<em class="' + (ch >= 0 ? 'up' : 'down') + '">' + (ch >= 0 ? '+' : '') + ch + '%</em> against the same days last month') +
+        '<br>Last month in full: ' + revMoney(t.last_month.gross)) +
       tile('This year', t.year, pay(t.year.n) + ', ' + revMoney(t.year.net) + ' after fees') +
       tile('All time', t.all, pay(t.all.n) + ', ' + revMoney(t.all.net) + ' after fees') + '</div>' +
       '<div class="rev-body"><div class="rev-chart"><div class="rev-tabs" role="tablist">' +
@@ -4383,6 +4386,8 @@
     box.querySelectorAll('[data-rev]').forEach(function (b) { b.onclick = function () { REV.view = b.getAttribute('data-rev'); revDraw(); }; });
     document.getElementById('rev-refresh').onclick = function () { this.disabled = true; this.textContent = 'Reading Stripe...'; renderRevenue(true); };
   }
+  var revResizeT = null;
+  window.addEventListener('resize', function () { clearTimeout(revResizeT); revResizeT = setTimeout(function () { var b = document.getElementById('dash-rev'); if (REV.data && b && !b.hidden && b.offsetWidth) revDraw(); }, 200); });
   function renderRevenue(refresh) {
     var box = document.getElementById('dash-rev'); if (!box) return;
     box.hidden = false;

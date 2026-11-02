@@ -307,7 +307,7 @@ Deno.serve(async (req) => {
         return { c, d: day(c.created), gross, net: gross - (c.refunded ? 0 : fee) };
       });
       const sum = (f: (r: any) => boolean) => rows.filter(f).reduce((a, r) => ({ gross: a.gross + r.gross, net: a.net + r.net, n: a.n + 1 }), { gross: 0, net: 0, n: 0 });
-      const totals = { today: sum((r) => r.d === today), month: sum((r) => r.d.startsWith(month)), last_month: sum((r) => r.d.startsWith(lm)),
+      const totals = { today: sum((r) => r.d === today), month: sum((r) => r.d.startsWith(month)), last_month: sum((r) => r.d.startsWith(lm)), last_month_same_days: sum((r) => r.d.startsWith(lm) && r.d.slice(8) <= today.slice(8)),
         year: sum((r) => r.d.startsWith(year)), all: sum(() => true) };
       const byDay = new Map<string, any>(), byMonth = new Map<string, any>();
       for (const r of rows) {
