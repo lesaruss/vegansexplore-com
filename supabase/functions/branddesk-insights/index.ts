@@ -160,7 +160,7 @@ async function webAnalytics(brand: string, from: string, to: string) {
 }
 
 // ---- Search Console ----
-async function gscSite(domain: string): Promise<{ site: string | null; token: string; sites: string[] }> {
+async function gscSite(domain: string): Promise<{ site: string | null; token: string; sites: string[]; error?: string }> {
   const token = await gToken('https://www.googleapis.com/auth/webmasters.readonly');
   const r = await fetch('https://www.googleapis.com/webmasters/v3/sites', { headers: { Authorization: 'Bearer ' + token, 'x-goog-user-project': GSC_PROJECT } });
   const j = await r.json();
