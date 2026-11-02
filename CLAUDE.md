@@ -1131,6 +1131,8 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   and the leftover words as a name. Then it ranks: name match, votes, Vegan status and distance (places you walk into only; a product you can
   buy anywhere ignores distance; a local place with no pin sinks). It leaves out what the Directory leaves out: closed, LESARUSS.ai-only and
   not-yet-vetted food places. `ve_search_core` is the engine and `ve_search` the wrapper that completes a half-typed word.
+- **No floating mic on the search box** (Sean, 2026-11-02: it crowded the clear button and was easy to hit while deleting; phones dictate from their own
+  keyboard): `VESearch.mount` marks every search field `data-dictate="off"`, so `ve-dictate.js` skips it. Every other form keeps its mic.
 - **Distances show in miles** (Sean, 2026-11-02); the engine returns km and `VESearch.kmText` / `away` convert in the browser. The "nothing near" notice
   fires past 40 km (25 miles).
 - **A phone is asked for its place only on a "near me" search**, kept for the visit (`sessionStorage` `ve_geo`).

@@ -90,6 +90,7 @@
     var list = document.createElement('div'); list.className = 'ves-list'; list.id = uid; list.setAttribute('role', 'listbox'); list.hidden = true;
     host.style.position = host.style.position || 'relative'; host.appendChild(list);
     input.setAttribute('role', 'combobox'); input.setAttribute('aria-autocomplete', 'list'); input.setAttribute('aria-expanded', 'false'); input.setAttribute('aria-controls', uid);
+    input.setAttribute('data-dictate', 'off');   // the phone's own keyboard dictates; the floating mic crowded the clear button (Sean, 2026-11-02)
     input.setAttribute('autocomplete', 'off'); input.setAttribute('autocapitalize', 'off'); input.setAttribute('spellcheck', 'false');
     var timer, ctl, rows = [], cur = -1, last = '';
     function submit(q) { q = (q || input.value).trim(); if (q.length < 2) return; close(); if (o.onSubmit) o.onSubmit(q); else location.href = '/search?q=' + encodeURIComponent(q); }
