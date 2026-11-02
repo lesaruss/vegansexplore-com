@@ -23,6 +23,11 @@
 // POST { action: 'leaderboard' }            every member: the top 100 by points (ve_leaderboard), each with their id and picture, so a
 //   super admin's thumbnail opens who they are (Sean, 2026-10-30).
 // POST { action: 'recent_leads' }           super admins: the latest 100 ve_initiative_interest rows with the member's picture.
+// POST { action: 'revenue', refresh? }     super admins: money coming in on the Vegans Explore Stripe account, read live from Stripe
+//   (Sean, 2026-11-02: "see that revenue coming in through Vegans Explore in real time... just some little module"). Every succeeded
+//   charge, gross less refunds, and net after Stripe's fee: today, this month, last month, this year, all time (Eastern days), each day
+//   of the last 90 and each month, and the latest 15 payments named by their Checkout line item. Cached 5 minutes in
+//   ve_analytics_cache (refresh skips it). Not a P&L: no costs, no other Stripe accounts.
 // POST { action: 'inbox' }                  super admins (every request) or a Community Manager (the ones assigned to them): every
 //   request a person sent us (ve_inbox_items), with who it is assigned to (the chapter's Community Manager, else the team), whether
 //   they opened it, the 24-hour reply clock and the requester's picture (Sean, 2026-10-30: "no more than... 24 hours... that's how we
@@ -267,6 +272,78 @@ Deno.serve(async (req) => {
     const pics = await pictures(rows.map((r: any) => r.id));
     return json({ ok: true, rows: rows.map((r: any, i: number) => ({ rank: i + 1, id: member.is_superadmin ? r.id : null, name: r.name, initials: r.initials,
       color: r.color, avatar_url: pics.get(r.id) || r.avatar_url || null, points: r.points || 0, is_you: r.id === memberId })) });
+  }
+
+  if (body.action === 'revenue') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const KEY = 've-revenue-v1';
+    if (!body.refresh) {
+      const { data: hit } = await db.from('ve_analytics_cache').select('data, fetched_at').eq('key', KEY).maybeSingle();
+      if (hit && Date.now() - new Date((hit as any).fetched_at).getTime() < 5 * 60e3) return json({ ...(hit as any).data, cached: true });
+    }
+    const sk = Deno.env.get('STRIPE_SECRET_KEY') ?? '';
+    if (!sk) return json({ error: 'no_stripe' }, 500);
+    const stripe = async (path: string) => {
+      const r = await fetch('https://api.stripe.com/v1/' + path, { headers: { Authorization: 'Bearer ' + sk } });
+      const d = await r.json(); if (!r.ok) throw new Error(d?.error?.message || 'stripe ' + r.status); return d;
+    };
+    try {
+      const charges: any[] = [];
+      let after = '';
+      for (let page = 0; page < 30; page++) {
+        const d = await stripe('charges?limit=100&expand[]=data.balance_transaction&expand[]=data.invoice' + (after ? '&starting_after=' + after : ''));
+        charges.push(...(d.data || []));
+        if (!d.has_more || !d.data?.length) break;
+        after = d.data[d.data.length - 1].id;
+      }
+      const day = (t: number) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(t * 1000));
+      const now = Math.floor(Date.now() / 1000), today = day(now), month = today.slice(0, 7), year = today.slice(0, 4);
+      const lm = new Date(Date.UTC(+year, +month.slice(5) - 2, 15)).toISOString().slice(0, 7);
+      const paid = charges.filter((c) => c.status === 'succeeded' && c.livemode);
+      const rows = paid.map((c) => {
+        const gross = (c.amount || 0) - (c.amount_refunded || 0);
+        const bt = c.balance_transaction && typeof c.balance_transaction === 'object' ? c.balance_transaction : null;
+        const fee = bt ? bt.fee || 0 : 0;
+        return { c, d: day(c.created), gross, net: gross - (c.refunded ? 0 : fee) };
+      });
+      const sum = (f: (r: any) => boolean) => rows.filter(f).reduce((a, r) => ({ gross: a.gross + r.gross, net: a.net + r.net, n: a.n + 1 }), { gross: 0, net: 0, n: 0 });
+      const totals = { today: sum((r) => r.d === today), month: sum((r) => r.d.startsWith(month)), last_month: sum((r) => r.d.startsWith(lm)), last_month_same_days: sum((r) => r.d.startsWith(lm) && r.d.slice(8) <= today.slice(8)),
+        year: sum((r) => r.d.startsWith(year)), all: sum(() => true) };
+      const byDay = new Map<string, any>(), byMonth = new Map<string, any>();
+      for (const r of rows) {
+        for (const [m, k] of [[byDay, r.d], [byMonth, r.d.slice(0, 7)]] as [Map<string, any>, string][]) {
+          const v = m.get(k) || { gross: 0, net: 0, n: 0 }; v.gross += r.gross; v.net += r.net; v.n++; m.set(k, v);
+        }
+      }
+      const daily: any[] = [];
+      for (let i = 89; i >= 0; i--) { const k = day(now - i * 86400); daily.push({ d: k, ...(byDay.get(k) || { gross: 0, net: 0, n: 0 }) }); }
+      const monthly = [...byMonth.entries()].sort().map(([m, v]) => ({ m, ...v }));
+      // The latest payments, named by their Checkout line item when there is one.
+      const names = new Map<string, string>();
+      try {
+        const s = await stripe('checkout/sessions?limit=40&status=complete&expand[]=data.line_items');
+        for (const x of s.data || []) if (x.payment_intent) names.set(String(x.payment_intent), x.line_items?.data?.[0]?.description || '');
+      } catch (_) { /* names are a nice to have */ }
+      // A subscription's charge is named by its invoice's first line ("1 × Brand Partner (at $200.00 / month)" reads as its product).
+      const invLine = (inv: any) => {
+        const t = inv && typeof inv === 'object' ? String(inv.lines?.data?.[0]?.description || '') : '';
+        return t.replace(/^\d+\s*[×x]\s*/, '').replace(/\s*\(at [^)]*\)\s*$/, '').trim();
+      };
+      const isEmail = (v: string) => /^[^\s@]+@[^\s@]+$/.test(v);
+      const latest = rows.slice(0, 15).map((r) => {
+        const c = r.c, email = c.billing_details?.email || c.receipt_email || (isEmail(c.description || '') ? c.description : '') || '';
+        const desc = c.description && !isEmail(c.description) && !/^(Description|Subscription (creation|update))$/.test(c.description) ? c.description : '';
+        return { at: new Date(c.created * 1000).toISOString(), gross: r.gross, net: r.net, refunded: c.amount_refunded || 0,
+          what: names.get(String(c.payment_intent || '')) || desc || invLine(c.invoice) || (c.invoice ? 'Subscription payment' : 'Payment'),
+          who: c.billing_details?.name || email || '', email,
+          url: 'https://dashboard.stripe.com/payments/' + (c.payment_intent || c.id) };
+      });
+      const out = { ok: true, as_of: new Date().toISOString(), currency: 'usd', account: 'Vegans Explore', totals, daily, monthly, latest, today, charges: rows.length };
+      await db.from('ve_analytics_cache').upsert({ key: KEY, data: out, fetched_at: out.as_of });
+      return json({ ...out, cached: false });
+    } catch (e) {
+      return json({ error: 'stripe_failed', detail: String((e as Error).message || e).slice(0, 200) }, 502);
+    }
   }
 
   if (body.action === 'recent_leads') {
