@@ -1,6 +1,6 @@
-# The event host path (Sean's idea, 2026-11-02, not locked)
+# The event host path (LOCKED by Sean 2026-11-02, canon `canon-ve-event-host-path`)
 
-Captured as Sean said it, so it isn't lost. Not decided, not built. It goes to a concept session with V before anything is locked.
+Sean: "lock it and then deploy". Locked with the panel's answers below, the $50 ad credit and creative support. Not built yet.
 
 ## The idea, in Sean's words (condensed)
 

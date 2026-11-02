@@ -4035,6 +4035,52 @@ rains... interview event hosts... they record their voice... those voice recordi
   skipped), the Crust meetup moved from November 1 to November 22 as its Partiful page says, 8 events with their organizer. Logan's
   defaults, Sean's to change: once a week, the 30-minute rule, a gone page flagged rather than hidden, leads added by a person.
 
+## The event host path (LOCKED by Sean 2026-11-02, playbook `ve-event-host-path`)
+
+Locked with Logan's panel answers (Sean: "lock it and then deploy"; canon `canon-ve-event-host-path`; migration
+`20261102_event_host_path_canon.sql`; write-up `docs/proposals/event-host-path.md`). **Not built yet.** Sean: "every time we bring a
+new event in, we're building our directory in other places... are you running this event? Click here... do you want to do an event
+with us?... it's per event." Separate from Group Partners.
+
+- **Every approved event's page** (server-rendered, `api/event.js`) links its people, venue and group, and offers **Are you running
+  this event?** into the Vegan Events Guide and a claim.
+- **Paid events: 5% a ticket**, no flat fee, the same for everyone. Card processing is on the buyer, and the host may pass the 5% on.
+  Member hosts get no lower rate. A ticket of $11 or more makes the buyer a member.
+- **Free events are a Vegans Explore sponsorship**:
+  - **They give:** "Sponsored by Vegans Explore" on their flyer and page, RSVPs through our page, a stage mention, our QR cards,
+    tags on their posts.
+  - **We give:** a featured calendar spot, a Daily Pulse mention, a story, the weekly roundup, door check-in, a recap, sponsor prices.
+  - Events of 200 or more apply for the Events Guide's full sponsorship.
+- **Extras** (the sponsor price is 30% off):
+
+  | Extra | Price |
+  |---|---|
+  | Pulse feature | $50 |
+  | Pinned on the calendar, 2 weeks | $50 |
+  | Social push | $75 |
+  | Share bounty | $75 |
+  | Chapter ad slots, 2 weeks | $100 |
+  | A creator at the event | $150 |
+  | Recap reel | $150 |
+  | Press release | $500 |
+
+  Packages: Spotlight $149, Boost $279, Front Row $499. Each is checked against delivery cost before it opens.
+- **$50 in ad credit**, once per host, on claiming their event: our slots only, 90 days, no cash value. It comes with **creative
+  support**: we make the ad from what they send, they approve it, one round of changes. Every ad on our pages is made or approved by
+  our team, paid ones too.
+- **The heads-up email**:
+  - **From:** the team, signed by the chapter's Community Manager, never Sean's name.
+  - **How often:** at most one every 14 days per host, events grouped.
+  - **To whom:** published emails only; in London, business addresses only.
+  - **What it says:** no prices.
+  - Sean approves the template once; after that it goes out on its own through the outreach people-list engine.
+- **Build order:**
+  1. The event claim.
+  2. The heads-up.
+  3. Per-event ticketing.
+  4. The sponsorship and extras checkout.
+  5. The ad console's credit, booking and creative support.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
