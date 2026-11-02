@@ -33,6 +33,10 @@
 //   in ve_kit_change_requests, and in ve_cartridge_edits.
 //   kit_launch: every part locked -> status launched, meta.launched {at, by}. The launch gate: no module opens before it.
 //   kit_mood_save {mood: {pins: [{src, note, says: [style|type|color]}], words}}: the mood board, an intake that is never locked.
+//   kit_intake_save {intake: {done, have: most|some|none, guide_url, answers: {logo, colors, type, voice, story: yes|no}}} (Sean,
+//   2026-11-02, the first BrandDesk drive: "Do you have a brand kit? Do you have a logo already?... we'll know exactly what we need to
+//   do from this intake"): what the owner already has, kept in meta.intake, never locked. HQ's Brand kit room asks it first, saves
+//   what they give into each part (In progress, for them to lock), and shows the mood board only when a logo, colors or type is missing.
 //   kit_mood_read: Claude looks at the pins and words and proposes a style, six colors by role and one of the four type pairings
 //   (saved as mood.read; the colors and type parts are still the owner's to choose and lock).
 //   kit_photo_url / kit_photo_done with kind 'mood' (and, on a brand kit, 'logo') upload a picture to media/brandkit/<slug>/.
@@ -340,6 +344,21 @@ async function foundation(b: any, k: Kit): Promise<Response | null> {
     await logEdit(k, 'mood', 'saved', before, mood);
     return json({ ok: true, cartridge: data, status: k.status });
   }
+  if (a === 'kit_intake_save') {
+    if (!canEdit) return json({ error: 'forbidden' }, 403);
+    const i = b.intake || {}, yn = (v: unknown) => (v === 'yes' || v === 'no' ? v : null);
+    const answers: Record<string, string | null> = {};
+    for (const p of parts) answers[p] = yn(i.answers?.[p]);
+    const guide = clean(i.guide_url, 500);
+    const intake = { done: i.done === true, have: ['most', 'some', 'none'].includes(i.have) ? i.have : null,
+      guide_url: /^https:\/\//i.test(guide) ? guide : '', answers, at: new Date().toISOString(), by: clean(k.m.name, 60) || 'Team' };
+    const before = data.meta?.intake ?? null;
+    data.meta = data.meta || {}; data.meta.intake = intake; data.meta.updated = today();
+    const err = await k.save(data, k.status);
+    if (err) return json({ error: 'save_failed', message: err }, 500);
+    await logEdit(k, 'intake', 'saved', before, intake);
+    return json({ ok: true, cartridge: data, status: k.status });
+  }
   if (a === 'kit_mood_read') {
     if (!canEdit) return json({ error: 'forbidden' }, 403);
     const pins = (data.mood?.pins || []).slice(0, 12);
@@ -521,7 +540,7 @@ async function kit(b: any, memberId: string) {
     return json({ ok: true, cartridge: data, status });
   }
 
-  if (cart && role !== 'photographer' && ['kit_changes', 'kit_change_request', 'kit_change_decide', 'kit_launch', 'kit_mood_save', 'kit_mood_read'].includes(b.action)) {
+  if (cart && role !== 'photographer' && ['kit_changes', 'kit_change_request', 'kit_change_decide', 'kit_launch', 'kit_mood_save', 'kit_mood_read', 'kit_intake_save'].includes(b.action)) {
     const fk: Kit = { key: { listing_id: l.id }, name: l.name, data: cart.data, status: cart.status, role, m,
       save: async (d, st) => (await db.from('ve_cartridges').update({ data: d, status: st, updated_at: new Date().toISOString(), updated_by: memberId }).eq('listing_id', l.id)).error?.message || null };
     const r = await foundation(b, fk);
