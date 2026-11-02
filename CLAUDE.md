@@ -3098,6 +3098,11 @@ doorway into making them an ambassador." **Launched to everyone 2026-10-28** (Se
   How to check: **Link it** (signed in: `owner_member_id` and `details.person.member_id`, a `ve_listing_edits` row, an email saying we
   update the profile for them on request) or **Checked** (no account: closes it here; the team writes to them from the Inbox and invites
   them), and **Decline** (emails them with the note). A linked person who is not an Ambassador edits through the team for now.
+- **Founder, Communities and Affiliations** (Sean, 2026-11-02): any listing's `details.linked` `[{title, sub?, items: [{slug, role?}]}]`
+  adds a section under About (and Their work) per title, the Directory's own card two across, one on phones (`linkedSections` in
+  `directory/listing.html`). First: Vegans in Clermont (Central Florida group) names Elle Jimenez under Founder, her page lists the group
+  under Communities, and Paige Parsons Roache's lists UnchainedTV, Plantbased in the Burbs and Plant Based Treaty (added as a Nonprofit,
+  every chapter) under Affiliations (migrations `20261102_outreach_people_pages.sql`, `20261102_linked_sections.sql`).
 - Not built yet: people from events and articles beyond the Foodie Fest, and the Ambassador path from a profile.
 
 ## Podcast episodes on a listing (Sean, 2026-10-27)
