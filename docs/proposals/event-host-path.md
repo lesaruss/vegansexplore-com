@@ -75,3 +75,62 @@ Captured as Sean said it, so it isn't lost. Not decided, not built. It goes to a
 2. What a free event's sponsorship asks of them (logo, a booth, a stage mention, our QR cards), and what promotion we give.
 3. Which a la carte items, and their regular and sponsor prices.
 4. Who the heads-up goes from (Sean, or the team), and whether a host gets one per event or once.
+
+## Panel recommendation (Logan's panel, 2026-11-02; waiting on Sean's agree or adjust)
+
+Panel: an event promoter, a ticketing marketplace pricing lead, a community lead, an email and compliance lead.
+
+1. **Per-ticket charge: 5% of the ticket price, no flat fee, the same for everyone.** Card processing (2.9% + 30 cents) goes to the
+   buyer, and the host may pass our 5% on to the buyer as well. This is the Group Partner number, so we have one rate. It is under
+   Eventbrite (3.7% + $1.79), Posh (10% + $0.99) and Partiful (about 10% + $2) on almost every ticket, and level with Luma (5%).
+   Member hosts get no lower rate; they get the sponsor package and the extras discount instead. Any ticket of $11 or more
+   already makes the buyer a member (`ve_member_admit`), so a host's paid event brings us members as well as the 5%.
+2. **A free event's sponsorship.**
+   - We ask the host to:
+     - put "Sponsored by Vegans Explore" on their flyer and event page;
+     - take RSVPs through our page (the guest pass and the door list);
+     - give a stage mention;
+     - put out our QR cards;
+     - tag us in their posts.
+     A booth only if there is room.
+   - We give them:
+     - a featured spot on the calendar for their chapter;
+     - a mention in their city's Daily Pulse;
+     - one Instagram story;
+     - a place in the weekly events roundup;
+     - door check-in;
+     - a recap post;
+     - the sponsor price on every extra.
+   - Events of 200 or more people can apply for the full sponsorship in the Events Guide (booth, creator, ad slot, 2 per
+     chapter a month).
+3. **Extras.** The sponsor price is 30% off. These are set against delivery cost and checked before each one opens.
+
+   | Extra | Price | Sponsor |
+   |---|---|---|
+   | Featured in their city's Daily Pulse | $50 | $35 |
+   | Pinned first on the chapter calendar, 2 weeks | $50 | $35 |
+   | Social push: 1 feed post and 2 stories on our Instagram and TikTok | $75 | $50 |
+   | A share bounty: members earn points for posting it | $75 | $50 |
+   | Our chapter's ad slots, 2 weeks | $100 | $70 |
+   | A creator at the event, posting about it | $150 | $105 |
+   | A recap reel from their footage | $150 | $105 |
+   | Press release, written and pitched (the shop's price) | $500 | $350 |
+
+   Packages (the names already on Promote your event):
+
+   | Package | What's in it | Price | Sponsor |
+   |---|---|---|---|
+   | Spotlight | Pulse, pinned and the social push | $149 | $99 |
+   | Boost | Spotlight, plus ad slots and the bounty | $279 | $199 |
+   | Front Row | Boost, plus the creator and the recap reel | $499 | $349 |
+
+4. **The heads-up email.**
+   - **From:** the team (hello@vegansexplore.com), signed by the chapter's Community Manager when there is one. Never Sean's name,
+     which is the rule we already follow for groups.
+   - **When:** at most one email every 14 days per host. Several events get one email together ("We put your 3 events on Vegans
+     Explore"). An unsubscribe is permanent.
+   - **To whom:** only approved events, and only an email the host publishes themselves. In London, a business's general address
+     only (UK email rules).
+   - **What it says:** we added your event, here's the page, correct anything or claim it, and do you want to sell tickets with us
+     or make us a sponsor. **No prices in the first email** (the handshake rule we locked for BrandDesk). Prices start on the page
+     they click.
