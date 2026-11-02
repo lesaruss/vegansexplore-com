@@ -155,3 +155,20 @@ The ad console needs three things first:
 - a "spend your $50" step in the claim.
 
 Today the dashboard's Ads view only lists spots and "Ask about this spot".
+
+## Creative support (Sean, 2026-11-02)
+
+Sean: "we don't want them sending us trash... we'll work on making sure that it's the absolute best thing that we can put out there.
+And that will then give them a taste of what we can do from a marketing service perspective... and it helps us make sure that we can
+keep the look and feel we want for our platform."
+
+Logan's terms (Sean's to change):
+- **Included with the $50:** we make their ad from whatever they send (flyer, photos, logo, a line about the event), in every size
+  the slots use (300 x 250, 300 x 600 and the phone's wide box). It's a still image, or our animated card on the Guide ads' template.
+- **Approval and changes:** they approve it before it runs. One round of changes is included.
+- **Every ad on our pages is made or approved by our team**, paid ones too. That is the quality gate. A host's own finished creative
+  runs only once it passes our check (sizes, legible, no clutter), else we remake it.
+- **What we say:** "We made your ad" is the door to the rest. The approval screen shows what more we can do (the extras, BrandDesk)
+  with no push.
+- **What it costs us:** a few minutes per ad with our own tools. A remake beyond the included round is an extra (price to be set
+  against delivery cost).
