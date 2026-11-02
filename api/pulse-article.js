@@ -100,6 +100,8 @@ module.exports = async (req, res) => {
   }
 
   const previewToken = String((req.query && req.query.preview) || '');
+  // A search result can open an episode at the moment it is about: /pulse/<slug>?t=<seconds>.
+  const startAt = Math.max(0, Math.min(parseInt((req.query && req.query.t) || '', 10) || 0, 86400));
   const preview = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(previewToken);
   let previewStatus = '';
 
@@ -215,7 +217,7 @@ module.exports = async (req, res) => {
   // cover picture for an article or interview. Mirrors pulseMediaHtml() in /pulse.html.
   const box = '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">';
   let embedHtml = '';
-  if (post.youtubeId) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+  if (post.youtubeId) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + (startAt ? '?start=' + startAt + '&autoplay=1' : '') + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
   else if (post.videoUrl) embedHtml = box + '<video controls playsinline preload="metadata" poster="' + esc(post.img || '') + '" src="' + esc(post.videoUrl) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;" aria-label="' + esc(title) + '"></video></div>';
   else if (post.img && post.fromDepot) {
     // The cover's credit (Sean, 2026-09-29): who the photo is from, or that it is an illustration.

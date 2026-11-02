@@ -53,6 +53,11 @@
     .empty b{color:var(--ink)}
     .more{margin-top:20px;font-size:14px}
     .more a{color:var(--gd);font-weight:800}
+    #res{display:flex;flex-direction:column}
+    .ch{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin:26px 0 12px}
+    .ch small{font-weight:700;letter-spacing:.04em;text-transform:none;color:var(--mute);margin-left:8px}
+    .qt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:700;line-height:1.4}
+    .logo.play{background:var(--gd)}.logo.play svg{width:26px;height:26px;fill:#fff}
     @media(max-width:480px){.card{padding:14px;gap:12px}.logo{width:56px;height:56px}select{margin-left:0}}
   </style>
 </head>
@@ -69,10 +74,13 @@
   </div>
   <div class="read" id="read" aria-live="polite"></div>
   <div id="note"></div>
-  <div class="bar" id="bar" hidden></div>
-  <div class="grid" id="grid"></div>
-  <div class="empty" id="empty" hidden></div>
-  <p class="more" id="more" hidden></p>
+  <div id="res">
+    <div id="content"></div>
+    <div class="bar" id="bar" hidden></div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty" hidden></div>
+    <p class="more" id="more" hidden></p>
+  </div>
   <p class="more" style="font-size:12px;color:var(--mute)">Place data from <a href="https://www.geonames.org" rel="noopener" style="font-weight:700">GeoNames</a>, used under a Creative Commons Attribution license.</p>
 </main>
 <script src="/public/ve-search.js"></script>
@@ -80,7 +88,7 @@
 (function () {
   var S = window.VESearch, esc = S.esc, input = document.getElementById('ves-page-input'), grid = document.getElementById('grid'),
       read = document.getElementById('read'), note = document.getElementById('note'), bar = document.getElementById('bar'),
-      empty = document.getElementById('empty'), more = document.getElementById('more'), clr = document.getElementById('clr');
+      empty = document.getElementById('empty'), more = document.getElementById('more'), clr = document.getElementById('clr'), contentEl = document.getElementById('content');
   var data = null, state = { q: '', cat: '', sort: 'best' };
   S.css();
   var P = new URLSearchParams(location.search); state.q = (P.get('q') || '').trim(); state.cat = P.get('cat') || ''; state.sort = P.get('sort') === 'near' ? 'near' : 'best';
@@ -99,18 +107,45 @@
     if (state.q.length < 2) { draw(); return; }
     document.title = state.q + ' — Search — Vegans Explore';
     if (push) history.pushState(null, '', url()); else history.replaceState(null, '', url());
-    S.query(state.q, { limit: 50, log: true }).then(function (r) { data = r; draw(); }).catch(function () {
+    S.query(state.q, { limit: 50, contentLimit: 6, log: true }).then(function (r) { data = r; draw(); }).catch(function () {
       grid.innerHTML = ''; empty.hidden = false; empty.innerHTML = 'Search could not load. Check your connection and try again.';
     });
   }
   function list() {
-    var rs = (data && data.results) || [];
+    var rs = data && !data.results_hidden ? (data.results || []) : [];
     if (state.cat) rs = rs.filter(function (x) { return x.category === state.cat; });
     if (state.sort === 'near') rs = rs.slice().sort(function (a, b) { return (a.km == null ? 1e9 : a.km) - (b.km == null ? 1e9 : b.km); });
     return rs;
   }
+  function drawContent(c, it, nListings) {
+    var html = '', mo = c.moments || [], ep = c.episodes || [], ot = c.shows || [];
+    function play() { return '<span class="logo play"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span>'; }
+    function logo(name, img) { return '<span class="logo">' + (img ? '<img src="' + esc(img) + '" alt="" loading="lazy" width="64" height="64" onerror="this.replaceWith(document.createTextNode(\'' + esc((name || '?').charAt(0).toUpperCase()) + '\'))">' : esc((name || '?').charAt(0).toUpperCase())) + '</span>'; }
+    if (mo.length) {
+      html += '<h2 class="ch">From our shows <small>the moment someone says it</small></h2><div class="grid">' + mo.map(function (x) {
+        return '<a class="card" href="' + S.momentHref(x) + '">' + play() + '<span class="t"><span class="qt" title="' + esc(x.quote) + '">“' + esc(x.quote) + '”</span><span class="m">' +
+          esc([x.speaker, S.epTag(x), 'at ' + S.fmtTime(x.start)].filter(Boolean).join(' · ')) + '</span>' + (x.summary ? '<span class="tl">' + esc(x.summary) + '</span>' : '') + '</span></a>';
+      }).join('') + '</div>';
+    }
+    if (ep.length) {
+      html += '<h2 class="ch">Episodes <small>from our shows</small></h2><div class="grid">' + ep.map(function (x) {
+        return '<a class="card" href="/pulse/' + encodeURIComponent(x.slug) + '">' + logo(x.title, x.thumb) + '<span class="t"><b>' + esc(x.title) + '</b><span class="m">' + esc([S.epTag(x), x.guest].filter(Boolean).join(' · ')) + '</span>' +
+          (x.summary ? '<span class="tl">' + esc(x.summary) + '</span>' : '') + '</span></a>';
+      }).join('') + '</div>';
+    }
+    if (ot.length) {
+      html += '<h2 class="ch">From other shows <small>matched on the show\'s title and description</small></h2><div class="grid">' + ot.map(function (x) {
+        return '<a class="card" href="' + S.showHref(x) + '">' + logo(x.show, x.logo_url) + '<span class="t"><b>' + esc(x.title) + '</b><span class="m">' + esc(x.show) + '</span>' +
+          (x.summary ? '<span class="tl">' + esc(x.summary) + '</span>' : '') + '</span></a>';
+      }).join('') + '</div>';
+    }
+    contentEl.innerHTML = html;
+    // A question about a topic leads with our shows; a place or a thing leads with the Directory.
+    var listingIntent = (it.labels && it.labels.length) || it.place || it.near_me;
+    contentEl.style.order = (S.hasContent(c) && !listingIntent && ((c.intent && c.intent.topics && c.intent.topics.length) || !nListings)) ? '-1' : '9';
+  }
   function draw() {
-    if (!data || state.q.length < 2) { grid.innerHTML = ''; read.innerHTML = ''; note.innerHTML = ''; bar.hidden = true; more.hidden = true; empty.hidden = false;
+    if (!data || state.q.length < 2) { contentEl.innerHTML = ''; grid.innerHTML = ''; read.innerHTML = ''; note.innerHTML = ''; bar.hidden = true; more.hidden = true; empty.hidden = false;
       empty.innerHTML = '<b>Search in your own words.</b> Try “vegan restaurants in Claremont”, “egg substitute”, “vegan doctor” or the name of a place.'; return; }
     var it = data.interpretation || {}, w = S.words(data);
     read.innerHTML = w.length ? '<span class="lbl">We read this as</span>' + w.map(function (x) { return '<span class="ves-chip">' + esc(x) + '</span>'; }).join('') : '';
@@ -119,7 +154,10 @@
     else if (data.nearest_fallback && it.place) n = '<div class="notice">We have nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(S.away(data.nearest_km)) + '. We keep track of what people look for so we know where to grow next.</div>';
     else if (data.nearest_fallback) n = '<div class="notice">Nothing close to you yet. These are the closest we have, ' + esc(S.away(data.nearest_km)) + '.</div>';
     note.innerHTML = n;
-    var all = data.results || [], cats = {};
+    var c0 = data.content || {}, lint = (it.labels && it.labels.length) || it.place || it.near_me;
+    var cFirst = S.hasContent(c0) && !lint && ((c0.intent && c0.intent.topics && c0.intent.topics.length) || !(data.results || []).length);
+    data.results_hidden = cFirst;
+    var all = cFirst ? [] : (data.results || []), cats = {};
     all.forEach(function (x) { cats[x.category] = (cats[x.category] || 0) + 1; });
     var keys = Object.keys(cats).sort(function (a, b) { return cats[b] - cats[a]; });
     var hasKm = all.some(function (x) { return x.km != null; });
@@ -136,11 +174,14 @@
         '<span class="t"><b>' + esc(x.name) + '</b><span class="m">' + esc(S.meta(x)) + '</span>' + ((vs || x.votes) ? '<span class="tags">' + vs + (x.votes ? '<span class="tag d">' + x.votes + (x.votes === 1 ? ' vote' : ' votes') + '</span>' : '') + '</span>' : '') +
         (x.tagline ? '<span class="tl">' + esc(x.tagline) + '</span>' : '') + '</span></a>';
     }).join('');
-    empty.hidden = rs.length > 0;
-    if (!rs.length) empty.innerHTML = '<b>Nothing yet for “' + esc(state.q) + '”.</b> We keep track of what people look for so we know what to add next. Try fewer words, or a nearby city.';
+    var c = data.content || {}, hasC = S.hasContent(c);
+    empty.hidden = rs.length > 0 || hasC;
+    if (!rs.length && !hasC) empty.innerHTML = '<b>Nothing yet for “' + esc(state.q) + '”.</b> We keep track of what people look for so we know what to add next. Try fewer words, or a nearby city.';
+    drawContent(c, it, all.length);
     var more_ = '';
     if (it.link) more_ = '<a href="' + esc(it.link) + '">See these on the shelf in the Directory &rarr;</a>';
     else if (rs.length) more_ = '<a href="/directory">Browse the whole Directory &rarr;</a>';
+    if (cFirst) more_ = '<a href="/directory?q=' + encodeURIComponent(state.q) + '">Search the Directory for “' + esc(state.q) + '” &rarr;</a>';
     more.hidden = !more_; more.innerHTML = more_;
     var c = document.getElementById('count'); if (c) c.remove();
   }

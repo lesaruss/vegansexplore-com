@@ -34,16 +34,34 @@
   function query(q, o) {
     o = o || {};
     return (wantsNear(q) ? geo() : Promise.resolve(savedGeo())).then(function (g) {
-      var body = { q: q, limit: o.limit || 20, brand: BRAND, log: !!o.log, visitor: o.log ? vid() : undefined };
+      var body = { q: q, limit: o.limit || 20, content_limit: o.contentLimit || 6, brand: BRAND, log: !!o.log, visitor: o.log ? vid() : undefined };
       if (g) { body.lat = g.lat; body.lng = g.lng; }
       return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: o.signal })
         .then(function (r) { if (!r.ok) throw new Error('search'); return r.json(); });
     });
   }
 
+
+  // ---- content: moments from our shows, our episodes, other shows ----
+  function fmtTime(sec) {
+    sec = Math.max(0, Math.floor(Number(sec) || 0)); var h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+    return (h ? h + ':' + (m < 10 ? '0' : '') + m : m) + ':' + (s < 10 ? '0' : '') + s;
+  }
+  function epTag(x) { return [x.show, x.episode ? 'Ep ' + x.episode : ''].filter(Boolean).join(' · '); }
+  function momentHref(x) { return '/pulse/' + encodeURIComponent(x.slug) + (x.youtube_id && x.start ? '?t=' + Math.floor(x.start) : ''); }
+  function showHref(x) { return '/listen?show=' + encodeURIComponent(x.show_slug) + '&ep=' + encodeURIComponent(x.guid); }
+  function letterTile(name, img) {
+    var l = img ? '<img src="' + esc(img) + '" alt="" loading="lazy" width="40" height="40" onerror="this.replaceWith(document.createTextNode(\'' + esc((name || '?').charAt(0).toUpperCase()) + '\'))">' : '<span>' + esc((name || '?').charAt(0).toUpperCase()) + '</span>';
+    return '<span class="ves-logo">' + l + '</span>';
+  }
+  var PLAY = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:#2D5C27" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+  function hasContent(c) { return !!c && ((c.moments || []).length + (c.episodes || []).length + (c.shows || []).length) > 0; }
+
   /* ---- what we understood, in words ---- */
   function words(r) {
-    var it = (r && r.interpretation) || {}, out = [];
+    var it = (r && r.interpretation) || {}, out = [], ci = r && r.content && r.content.intent;
+    // A question about a topic is read as that topic ("Talking with family"), not as its leftover words.
+    if (!(it.labels && it.labels.length) && !it.place && !it.near_me && ci && ci.labels && ci.labels.length) return ci.labels.slice();
     (it.labels || []).forEach(function (l) { out.push(l); });
     if (it.terms) out.push('“' + it.terms + '”');
     if (it.place) out.push('in ' + it.place.name + (it.place.state ? ', ' + it.place.state : ''));
@@ -101,24 +119,40 @@
       if (i >= 0 && els[i]) { input.setAttribute('aria-activedescendant', els[i].id); els[i].scrollIntoView({ block: 'nearest' }); } else input.removeAttribute('aria-activedescendant');
     }
     function draw(r, q) {
-      var it = r.interpretation || {}, w = words(r), html = '';
+      var it = r.interpretation || {}, w = words(r), html = '', n = 1, c = r.content || {};
       var href = '/search?q=' + encodeURIComponent(q);
+      function id() { return uid + '-' + (n++); }
       html += '<div class="ves-h">Search</div><a class="ves-row" role="option" id="' + uid + '-0" href="' + href + '" data-q="1">' + '<span class="ves-logo">' + SVG.replace('<svg', '<svg style="width:18px;height:18px;stroke:#2D5C27;fill:none;stroke-width:2.2"') + '</span>' +
         '<span class="ves-t"><span class="ves-n">' + esc(q) + '</span><span class="ves-m">' + (w.length ? esc(w.join(' · ')) : 'See every match') + '</span></span><span class="ves-go">See all' + (r.total ? ' ' + r.total : '') + '</span></a>';
-      var res = (r.results || []).slice(0, 6);
-      if (res.length) {
-        html += '<div class="ves-h">' + (r.nearest_fallback ? 'Closest we have' : 'Best matches') + '</div>';
-        res.forEach(function (x, i) { html += '<a class="ves-row" role="option" id="' + uid + '-' + (i + 1) + '" href="/directory/' + encodeURIComponent(x.slug) + '" data-slug="' + esc(x.slug) + '">' + tile(x) + '<span class="ves-t"><span class="ves-n">' + esc(x.name) + '</span><span class="ves-m">' + esc(meta(x)) + '</span></span></a>'; });
+      var listingIntent = (it.labels && it.labels.length) || it.place || it.near_me;
+      var contentFirst = hasContent(c) && !listingIntent && ((c.intent && c.intent.topics && c.intent.topics.length) || !(r.results || []).length);
+      var res = contentFirst ? [] : (r.results || []).slice(0, hasContent(c) ? 4 : 6);
+      var cHtml = '', oHtml = '', lHtml = '';
+      var mo = (c.moments || []).slice(0, 2), ep = (c.episodes || []).slice(0, mo.length ? 1 : 2), ot = (c.shows || []).slice(0, 1);
+      if (mo.length || ep.length) {
+        cHtml += '<div class="ves-h">From our shows</div>';
+        mo.forEach(function (x) { cHtml += '<a class="ves-row" role="option" id="' + id() + '" href="' + momentHref(x) + '" data-go="1"><span class="ves-logo">' + PLAY + '</span><span class="ves-t"><span class="ves-n">“' + esc(x.quote) + '”</span><span class="ves-m">' + esc([x.speaker, epTag(x), 'at ' + fmtTime(x.start)].filter(Boolean).join(' · ')) + '</span></span></a>'; });
+        ep.forEach(function (x) { cHtml += '<a class="ves-row" role="option" id="' + id() + '" href="/pulse/' + encodeURIComponent(x.slug) + '" data-go="1">' + letterTile(x.title, x.thumb) + '<span class="ves-t"><span class="ves-n">' + esc(x.title) + '</span><span class="ves-m">' + esc(epTag(x)) + '</span></span></a>'; });
       }
+      if (ot.length) {
+        oHtml += '<div class="ves-h">From other shows</div>';
+        ot.forEach(function (x) { oHtml += '<a class="ves-row" role="option" id="' + id() + '" href="' + showHref(x) + '" data-go="1">' + letterTile(x.show, x.logo_url) + '<span class="ves-t"><span class="ves-n">' + esc(x.title) + '</span><span class="ves-m">' + esc(x.show) + ' · from the show\'s description</span></span></a>'; });
+      }
+      if (res.length) {
+        lHtml += '<div class="ves-h">' + (r.nearest_fallback ? 'Closest we have' : 'Best matches') + '</div>';
+        res.forEach(function (x) { lHtml += '<a class="ves-row" role="option" id="' + id() + '" href="/directory/' + encodeURIComponent(x.slug) + '" data-slug="' + esc(x.slug) + '" data-go="1">' + tile(x) + '<span class="ves-t"><span class="ves-n">' + esc(x.name) + '</span><span class="ves-m">' + esc(meta(x)) + '</span></span></a>'; });
+      }
+      // What the question is about leads: a question about a topic shows our shows first, a place or a thing shows the Directory first.
+      html += contentFirst ? (cHtml + oHtml + lHtml) : (lHtml + cHtml + oHtml);
       if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(away(r.nearest_km)) + '.</div>';
-      else if (!res.length) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
+      else if (!res.length && !hasContent(c)) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
       list.innerHTML = html; list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
     }
     function run() {
       var q = input.value.trim(); if (q.length < 2) { close(); return; }
       if (q === last) { list.hidden = false; input.setAttribute('aria-expanded', 'true'); return; }
       if (ctl) ctl.abort(); ctl = window.AbortController ? new AbortController() : null;
-      query(q, { limit: 6, signal: ctl && ctl.signal }).then(function (r) { if (input.value.trim() !== q) return; last = q; draw(r, q); }).catch(function (e) { if (e && e.name === 'AbortError') return; });
+      query(q, { limit: 6, contentLimit: 3, signal: ctl && ctl.signal }).then(function (r) { if (input.value.trim() !== q) return; last = q; draw(r, q); }).catch(function (e) { if (e && e.name === 'AbortError') return; });
     }
     input.addEventListener('input', function () { last = ''; clearTimeout(timer); timer = setTimeout(run, 170); });
     if (o.openOnFocus !== false) input.addEventListener('focus', function () { if (input.value.trim().length >= 2) run(); });
@@ -129,7 +163,7 @@
       else if (e.key === 'Escape') { if (!list.hidden) { close(); e.stopPropagation(); } else if (o.onEscape) o.onEscape(); }
       else if (e.key === 'Enter') {
         e.preventDefault(); var el = cur >= 0 ? list.querySelectorAll('.ves-row')[cur] : null;
-        if (el && el.getAttribute('data-slug')) { query(input.value.trim(), { limit: 1, log: true }).catch(function () {}); location.href = el.getAttribute('href'); }
+        if (el && el.getAttribute('data-go')) { query(input.value.trim(), { limit: 1, log: true }).catch(function () {}); location.href = el.getAttribute('href'); }
         else submit();
       }
     });
@@ -170,5 +204,5 @@
     }
   });
 
-  window.VESearch = { mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
+  window.VESearch = { fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

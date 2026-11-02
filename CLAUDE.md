@@ -1154,6 +1154,16 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   `/policies#terms` (Credits) and under the results, as its Creative Commons Attribution license asks. Refresh by running the load again (the
   geonameid is unique); GeoNames changes daily and ours is as of 2026-11-02. Not done: GeoNames alternate names (so "Munich" finds München) and
   proximity to the visitor when two towns share a name.
+- **The content lane** (Sean, 2026-11-02: "how do I convince my family to go vegan... reference all of the podcasts... not just the directory
+  listings"; migrations `20261102_universal_search_content*.sql`): the same box answers questions with content, in groups. `ve_search_content(q,
+  limit, brand)` reads topic phrases (`ve_search_topics`, a row per phrase, so a new brand adds rows), then returns **moments** from our shows
+  (`ve_content_moments_live`: quote, speaker, the second it starts; opens `/pulse/<slug>?t=<seconds>`, which `api/pulse-article.js` starts the
+  video at), **our episodes** (`ve_pulse_content.search_vector`) and **other shows** (`ve_search_feed_episodes`, titles and descriptions only,
+  refreshed by cron `ve-search-feed-refresh` every 6 hours, labeled as such). `ve-search` runs it beside `ve_search` (`content`, `content_limit`);
+  the log's intent adds `topic: <label>`. **Ordering**: a topic question leads with our content and hides listing rows (a link goes to the Directory
+  search); a place or thing question leads with the Directory and shows no content ("sushi near me", "vegan restaurants in Claremont"). Content
+  benchmark: `ve_search_content_benchmark_run()` (24 cases, one known gap: documentaries on Netflix). Weak spots: an episode with no transcript
+  matches on title and summary only, and other shows never match on what is said. Every SoFlo Vegans transcript Sean adds improves it.
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 
