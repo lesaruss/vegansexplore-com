@@ -4008,6 +4008,32 @@ rains... interview event hosts... they record their voice... those voice recordi
   already listed, 10 no match (four street addresses, Larry Bell Recreational Center, The Lifestyle Building, Hip City Veg in D.C., and Urban
   Vegan Roots, Natuurlik and MOOD, which Google calls permanently closed), 255 events linked, 82 listings tagged `ve-hosts-events`. Each match
   checked against its events' addresses; none set aside.
+- **Every event feeds the Directory, and is checked every week** (Sean, 2026-11-02: "we put one thing in, put in one event, and we can
+  get a whole bunch of things from that"; "run a scan at least once a week just to make sure the event information is still available";
+  migrations `20261102_event_intake_feeds.sql`, `20261102_event_leads_noise.sql`; edge function `ve-event-check`). **Who puts it on**:
+  `events.organizer_name` / `organizer_url`, kept by `ve_event_intake` and asked of the Background writer's `events_crawl`. **The weekly
+  check** (cron `ve-event-check`, hourly at :23, 12 a run, so each upcoming event about once a week): reads the official page (JSON-LD,
+  Partiful's `__NEXT_DATA__`, else Claude), and **cancelled** on the page makes the event `cancelled` (off the calendar; its page stays,
+  saying so), a **different date or time** moves ours to match (only when no other event of ours shares the link, a weekly series on one
+  page), **postponed** is flagged, a page **gone** (404, 410, parked) twice a day apart is flagged, one that turns us away is Could not
+  read, and Instagram and Facebook posts are skipped. It fills an empty organizer, place and city from the page. Every read is a
+  `ve_event_checks` row and `events.link_status`, `link_checked_at`, `link_note`, `link_fails`; the event page says "Checked against its
+  official page on <date>". **Leads** (`ve_event_leads`, `ve_event_leads_refresh()` after every sweep): the places events were held and
+  the organizers they name that are not in the Directory, counted across events; an organizer whose name is a listing's is linked on its
+  own (a People listing gets the event as a credit, role Promoter, anyone else hosts it); Partiful neighborhoods, "address shared with
+  those registered" and stations are set aside with why (`ve_event_leads_tidy`). **Depot > Events > From our events** (`#leads/venue|organizer/
+  new|listed|linked|set_aside`): Add it (`ve_event_lead_add`: a live listing from what the events say, no Google: Event Venues, Groups,
+  Nonprofits or People > Promoters, its events linked), Already listed (`ve_event_lead_link`, by slug), Set aside. **Depot > Events >
+  Weekly check** (`#checks[/<outcome>]`). **People > Promoters** (Sean: "they're automatically an event promoter... Ella Magers does a lot of
+  events... a new tag in addition to her other tags"): a People sub-section everywhere the People list lives (`ve-region-directory.js`,
+  `listing.html` reads Event promoter, `ve-listing-admin.js`, Directory review, `ve-claims`, `ve-people`, `ve-discover`, `ve-ambassador`); a
+  person credited on an event as promoter, host, producer or organizer gets Promoters among their sections, and Ella Magers has it. **On
+  the pages**: a listing's Events section adds **Worked with** (the venues a host used, the hosts a venue had, with event counts;
+  `workedWith` in `directory/listing.html`, links to `/events?event=<id>`), and an event's page shows **Held at** (the venue's card with
+  its address), **Put on by** (an organizer not in the Directory yet), **People at this event** (credits) and when it was last checked.
+  First runs 2026-11-02: 183 venue leads from the 2026 calendar before tidying; 12 events checked (11 read from their own data, one Instagram
+  skipped), the Crust meetup moved from November 1 to November 22 as its Partiful page says, 8 events with their organizer. Logan's
+  defaults, Sean's to change: once a week, the 30-minute rule, a gone page flagged rather than hidden, leads added by a person.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
