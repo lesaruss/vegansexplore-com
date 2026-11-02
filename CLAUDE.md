@@ -5305,7 +5305,18 @@ in Stripe. Read live by `ve-dashboard` `revenue` (super admins only) from the **
 every succeeded live charge, less refunds, by Eastern day, `balance_transaction` for the fee; cached 5 minutes in `ve_analytics_cache`
 (`ve-revenue-v1`), **Refresh** reads Stripe now (about 3 s for 97 charges). It counts everything on that account, which on 2026-11-02
 included **CRM + Web Hosting for Miss Meatless Muscle** ($200 a month) and VWL Monthly Podcast Donations; the LESARUSS and Meatless Muscle
-Stripe accounts are not counted. Not a P&L: no costs. `ve-dashboard` v20 from commit af6254b (source sha256 matched). Proven live
+Stripe accounts are not counted. Not a P&L: no costs. `ve-dashboard` v20 from commit af6254b (source sha256 matched).
+**Client services apart** (Sean, 2026-11-02: the Meatless Muscle hosting "always probably should have been set up through LESARUSS";
+Vegans Explore Inc. is a Florida nonprofit corporation that never applied for 501(c)(3)). A charge whose Stripe customer carries metadata
+`revenue_class: client_services` is left out of the tiles and the green bars and shown on its own line ("Client services billed through
+Vegans Explore Inc."), grey on top of the bars and tagged in Latest payments (`client` in `ve-dashboard` `revenue`, cache key
+`ve-revenue-v2`). Tagged 2026-11-02, with an `internal_note` each (Stripe metadata, never shown to the customer): Brooke Sellers' CRM +
+Web Hosting subscription (`sub_1R8j48P0w5C9oZhvfxwBZw8p`, $200 a month, active, 20 payments, $4,000), the two Vegans Who Lift "donation"
+subscriptions (Brooke Sellers and John Thomas, $125 a month each, 10 payments each, $2,500, ended 2026-04-15) and their three customers. To
+move another payer apart, tag their customer the same way. Live 2026-11-02, `ve-dashboard` v21 from commit 4397d90 (source sha256 matched):
+client services $6,500 from 40 payments; Vegans Explore $6,416.02 all time from 57, $108 this year. The CPA memo is a private Claude Doc
+(Sean's), not in the repo. Still open: moving Brooke's billing to the LESARUSS Stripe account before the 2026-11-30 charge (Sean's call on
+how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
