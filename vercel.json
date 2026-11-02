@@ -92,11 +92,6 @@
       "destination": "/api/sitemap"
     },
     {
-      "source": "/events",
-      "has": [{ "type": "query", "key": "event", "value": "(?<eid>[0-9a-fA-F-]{36})" }],
-      "destination": "/api/event?id=:eid"
-    },
-    {
       "source": "/directory/:slug",
       "destination": "/api/listing?slug=:slug"
     },
