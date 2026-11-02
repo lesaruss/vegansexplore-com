@@ -1771,14 +1771,25 @@ function bookPeople(l){
 // let's include affiliations... in two columns"). details.linked [{title, sub?, items: [{slug, role?}]}] on any listing: each a
 // section under About (and Their work on a person) with the Directory's own card and votes, two across, one on phones. Founder on a
 // group, Communities and Affiliations on a person; a new kind is just a new title.
-function linkedSections(l){
-  var groups = ((l.details || {}).linked || []).filter(function(g){ return g && g.title && Array.isArray(g.items) && g.items.length; });
-  var host = document.querySelector('#tab-overview > div'); if(!groups.length || !host || host.querySelector('.lk-sec')) return;
+function linkedSections(l){ cardSections(l, (l.details || {}).linked, 'lk'); }
+// The card sections on a listing's first tab (linkedSections for details.linked, loadFamily for the family): one section a group, the
+// Directory's own card two across. Affiliations go under About and Their work; a family's sections after them (on a person's page,
+// after Their shows). tag keeps each kind apart so neither draws twice.
+function cardSections(l, groupsIn, tag, opt){
+  opt = opt || {};
+  var groups = (groupsIn || []).filter(function(g){ return g && g.title && Array.isArray(g.items) && g.items.length; });
+  var host = document.querySelector('#tab-overview > div'); if(!groups.length || !host || host.querySelector('.lk-' + tag)) return;
   var after = null;
   Array.prototype.forEach.call(host.querySelectorAll(':scope > .section'), function(sec){
     var t = sec.querySelector('.section-title'); if(t && /^(About|Their work)$/.test(t.textContent.trim())) after = sec; });
+  if(tag === 'famend') after = null;
+  else if(tag !== 'lk'){
+    var ps = host.querySelector('#pp-shows');
+    if(ps) after = ps;
+    else { var lks = host.querySelectorAll(':scope > .lk-lk'); if(lks.length) after = lks[lks.length - 1]; }
+  }
   var secs = groups.map(function(g){
-    var sec = document.createElement('div'); sec.className = 'section lk-sec';
+    var sec = document.createElement('div'); sec.className = 'section lk-sec lk-' + tag; if(g.key) sec.id = 'lk-' + g.key;
     sec.innerHTML = '<h2 class="section-title">' + esc(g.title) + '</h2>' + (g.sub ? '<p class="pp-sub">' + esc(g.sub) + '</p>' : '') +
       '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
     if(after){ after.parentNode.insertBefore(sec, after.nextSibling); after = sec; } else host.appendChild(sec);
@@ -1802,6 +1813,7 @@ function linkedSections(l){
           grid.innerHTML = cards.map(function(r, i){ return VERegionDirectory.card(r, i); }).join('');
           VERegionDirectory.wire(grid.parentNode);
         });
+        if(opt.done) opt.done();
       });
   }).catch(function(){ secs.forEach(function(sec){ sec.hidden = true; }); });
 }
@@ -1935,78 +1947,57 @@ function famMenu(btn, g, curId){
     var first = FAM_MENU.querySelector('a'); if(first && e.detail === 0) first.focus();
   });
 }
+// Linked pages (Sean, 2026-11-02: "instead of having it in the tabs... just have about as the tab... the affiliations, and then under the
+// affiliations, that's where we would have the podcasts... You don't have 1,000 tabs and some exceptions with a drop down arrow"). The
+// listings that share details.family (or details.families) show as card sections on this page's first tab, never as tabs: on a person's
+// page their shows join Their shows (ppShowTiles), then People, Their books and Related; on a show, book or outlet, Hosts (the people),
+// Books and Related. Each card votes and opens its own page. An old ?tab=books link scrolls to the books.
+var PP_HOSTED = [], PP_FAMSHOWS = [];
+function ppShowsAll(){ var all = PP_HOSTED.slice(); PP_FAMSHOWS.forEach(function(s2){ if(all.indexOf(s2) < 0) all.push(s2); }); return all; }
 function loadFamily(l){
-  var d = l.details || {}, nav = document.querySelector('.listing-tabs'), ov = nav && nav.querySelector('[data-tab="overview"]');
+  var d = l.details || {};
   var fams = [d.family].concat(Array.isArray(d.families) ? d.families : []).filter(function(f, i, all){
     return typeof f === 'string' && /^[a-z0-9-]{1,80}$/.test(f) && all.indexOf(f) === i; });
-  if(!fams.length || !ov) return;
+  if(!fams.length) return;
   var shared = fams.length > 1;
   var or = '(details->>family.in.(' + fams.join(',') + ')' + fams.map(function(f){ return ',details->families.cs.["' + f + '"]'; }).join('') + ')';
   fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&or=' + encodeURIComponent(or) +
-    '&select=id,slug,name,category,logo_url,description,tagline,yt:details->>youtube_channel_id,summary:details->>summary,year:details->>release_year,book_type:details->>book_type,publisher:details->>publisher,creator:details->>creator,buy:details->>buy_link,buy_label:details->>buy_label,ford:details->>family_order&limit=40',
+    '&select=id,slug,name,category,yt:details->>youtube_channel_id,ford:details->>family_order&limit=40',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
       rows = (rows || []).map(function(x){ x.details = { youtube_channel_id: x.yt }; return x; });
       if(shared) rows = rows.filter(function(x){ return x.id === l.id || familyKind(x) === 0; });
-      if(rows.length < 2 || !rows.some(function(x){ return x.id === l.id; })) return;
-      // Within a kind, details.family_order puts one first (Sean, 2026-10-29: Vegans Explore Podcast before his other shows), then A to Z.
+      if(!rows.some(function(x){ return x.id === l.id; })) return;
+      // Already on the page as an affiliation (details.linked): not drawn twice.
+      var linked = []; (d.linked || []).forEach(function(g){ (g.items || []).forEach(function(x){ if(x && x.slug) linked.push(x.slug); }); });
+      rows = rows.filter(function(x){ return x.id !== l.id && linked.indexOf(x.slug) < 0; });
+      if(!rows.length) return;
       function ford(x){ var n = parseInt(x.ford, 10); return isNaN(n) ? 999 : n; }
       rows.sort(function(a, b){ return familyKind(a) - familyKind(b) || ford(a) - ford(b) || String(a.name).localeCompare(String(b.name)); });
-      var people = rows.filter(function(x){ return familyKind(x) === 0; }), books = rows.filter(function(x){ return familyKind(x) === 3; });
-      // The person whose page holds the Books tab: this page's when it is a person, else the first one.
-      var author = isPersonL(l) ? l : people[0];
-      var BOOKS = author && books.length ? { books: true } : null;
-      var items = []; rows.forEach(function(x){ if(familyKind(x) !== 3 || !BOOKS) items.push(x); else if(items.indexOf(BOOKS) < 0) items.push(BOOKS); });
-      var WORD = ['Overview', 'Podcast', 'YouTube', 'Book'];
-      var count = {}; items.forEach(function(x){ if(x.books) return; var k = familyKind(x); count[k] = (count[k] || 0) + 1; });
-      // More than one show of a kind is one tab (Sean, 2026-11-01: "all under a title called Podcasts with a drop-down... when you go
-      // to Vegans Explore, you see that same drop down"): Podcasts or YouTube with an arrow, opening the shows by name (famMenu).
-      var GROUP = { 1: 'Podcasts', 2: 'YouTube' }, grouped = [];
-      items.forEach(function(x){
-        var k = x.books ? 3 : familyKind(x);
-        if(!GROUP[k] || count[k] < 2){ grouped.push(x); return; }
-        var g = grouped.filter(function(y){ return y.group === k; })[0];
-        if(!g){ g = { group: k, list: [] }; grouped.push(g); }
-        g.list.push(x);
-      });
-      items = grouped;
-      function label(x){ if(x.books) return 'Books'; if(x.group) return GROUP[x.group]; var k = familyKind(x); return count[k] > 1 || k > 3 || k < 0 ? x.name : WORD[k]; }
-      var mine = BOOKS && familyKind(l) === 3 ? BOOKS : items.filter(function(x){ return x.id === l.id || (x.group && x.list.some(function(y){ return y.id === l.id; })); })[0];
-      var at = items.indexOf(mine);
-      ov.textContent = label(mine);
-      if(mine && mine.group) famMenu(ov, mine, l.id);
-      function link(x){
-        if(x.group){
-          var gb = document.createElement('button'); gb.type = 'button'; gb.className = 'tab-btn tab-fam'; gb.textContent = label(x);
-          famMenu(gb, x, l.id); return gb;
-        }
-        var a = document.createElement('a'); a.className = 'tab-btn tab-fam'; a.textContent = label(x);
-        if(x.books){ a.href = '/directory/' + encodeURIComponent(author.slug) + '?tab=books'; a.title = 'Books by ' + author.name; }
-        else { a.href = '/directory/' + encodeURIComponent(x.slug); a.title = x.name; }
-        return a;
-      }
-      // Books on the person's own page is a tab of this page, with its panel.
-      function booksTab(){
-        var b = document.createElement('button'); b.className = 'tab-btn'; b.setAttribute('data-tab', 'books'); b.setAttribute('role', 'tab');
-        b.setAttribute('aria-selected', 'false'); b.textContent = 'Books';
-        b.addEventListener('click', function(){ showListingTab('books'); drawBooks(null, true); });
-        return b;
-      }
-      items.slice(0, at).forEach(function(x){ nav.insertBefore(link(x), ov); });
-      // What comes after this page goes right after its tab, so the page's own tabs and Partner Dashboard follow the family.
-      var after = ov;
-      items.slice(at + 1).forEach(function(x){
-        var node = x.books && author === l ? booksTab() : link(x);
-        nav.insertBefore(node, after.nextSibling); after = node;
-      });
-      if(!(BOOKS && author === l)) return;
-      var panel = document.createElement('div'); panel.className = 'tab-panel'; panel.id = 'tab-books'; panel.setAttribute('role', 'tabpanel');
-      var ovp = document.getElementById('tab-overview'); ovp.parentNode.insertBefore(panel, ovp.nextSibling);
-      BOOK_STATE = { author: l, books: books, panel: panel };
-      var q = new URLSearchParams(location.search);
-      if(q.get('tab') === 'books'){ showListingTab('books'); drawBooks(q.get('book'), false); } else drawBooks(null, false);
+      var person = isPersonL(l);
+      function pick(fn){ return rows.filter(fn).map(function(x){ return { slug: x.slug }; }); }
+      var people = pick(function(x){ return familyKind(x) === 0; }), books = pick(function(x){ return familyKind(x) === 3; });
+      var shows = pick(function(x){ var k = familyKind(x); return k === 1 || k === 2; });
+      var other = pick(function(x){ var k = familyKind(x); return k === -1 || k > 3; });
+      var groups = [];
+      if(person){
+        PP_FAMSHOWS = shows.map(function(x){ return x.slug; });
+        if(PP_FAMSHOWS.length) ppShowTiles(ppShowsAll());
+        if(people.length) groups.push({ title: 'People', key: 'people', items: people });
+      } else if(people.length) groups.push({ title: people.length > 1 ? 'Hosts' : 'Host', key: 'people', items: people });
+      // On a show, book or outlet the page's own content (Episodes, Latest stories) comes first; the rest of the family goes after it.
+      var tail = person ? groups : [];
+      if(!person && shows.length) tail.push({ title: 'More shows', key: 'shows', items: shows });
+      if(books.length) tail.push({ title: person ? 'Their books' : 'Books', key: 'books', items: books });
+      if(other.length) tail.push({ title: 'Related', key: 'related', items: other });
+      if(!person) cardSections(l, groups, 'fam');
+      cardSections(l, tail, person ? 'fam' : 'famend', { done: function(){
+        if(new URLSearchParams(location.search).get('tab') !== 'books') return;
+        var bk = document.getElementById('lk-books'); if(bk) bk.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } });
     }).catch(function(){});
 }
+
 // The Books tab on a person's page: the covers, then About the author (Sean, 2026-10-29: "people might not come from the overview
 // section. Just like a little short 150 character of the author"). A cover opens that book in the same space: the breadcrumb (Books >
 // the title) inside the page, the synopsis (details.summary, else the listing's description) and Buy on Amazon, our tracked /go/ link
@@ -3384,7 +3375,7 @@ function loadPerson(l){
       var hosted = (pe.shows || []).map(function(sh){ return sh.slug; }), count = {};
       ours.forEach(function(ep){ if(ep.role === 'Host' && ep.show && ep.show.slug){ count[ep.show.slug] = (count[ep.show.slug] || 0) + 1; } });
       Object.keys(count).sort(function(a, b){ return count[b] - count[a]; }).forEach(function(s2){ if(hosted.indexOf(s2) < 0) hosted.push(s2); });
-      ppShowTiles(hosted);
+      PP_HOSTED = hosted; ppShowTiles(ppShowsAll());
       var other = pe.elsewhere || [], os = document.getElementById('pp-elsewhere');
       if(os && other.length){ os.querySelector('.pp-scroll').innerHTML = '<div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, 'Guest'); }).join('') + '</div>'; os.hidden = false; }
       // In their words: moments from their interviews in the content index (ve_person_moments), played from the episode's audio at
@@ -3406,8 +3397,8 @@ function loadPerson(l){
 // The shows a person hosts, drawn with the Directory's card and votes (VERegionDirectory, loaded on first need, as loadFilmPeople does).
 function ppShowTiles(slugs){
   var sh = document.getElementById('pp-shows'); if(!sh || !slugs.length) return;
-  sh.innerHTML = '<div class="section pp-show"><h2 class="section-title">' + (slugs.length > 1 ? 'Their podcasts' : 'Their podcast') + '</h2>' +
-    '<p class="pp-sub">Open a show for every episode.</p><div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>';
+  sh.innerHTML = '<div class="section pp-show"><h2 class="section-title">' + (slugs.length > 1 ? 'Their shows' : 'Their show') + '</h2>' +
+    '<p class="pp-sub">Open a show for every episode or video.</p><div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>';
   var grid = sh.querySelector('.rank-grid');
   var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
     var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
@@ -5335,7 +5326,7 @@ if(!slug || slug === 'listing'){
       if(l.category === 'Books' && !DEMO){ bookPeople(l); loadBookTalks(l.id, document.querySelector('#tab-overview > div')); }
       if(!DEMO) loadFamily(l);
       mobileTabMenu();
-      if(isPersonL(l)){ loadPerson(l); ppPromo(l); }
+      if(isPersonL(l)){ loadPerson(l); ppPromo(l); var ovt = document.querySelector('.listing-tabs [data-tab="overview"]'); if(ovt) ovt.textContent = 'About'; }
       else if(!l._brandSite) loadPartnerHome(l);
       if(!DEMO) linkedSections(l);
       // Always fetch menu items — show tab for any listing that has them
