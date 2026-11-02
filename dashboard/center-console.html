@@ -365,6 +365,11 @@
   .rev-tabs button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
   .rev-svg{width:100%;height:220px;display:block;}
   .rev-svg rect.bar{fill:var(--ve-green,#3A9B3E);}.rev-svg rect.bar:hover{fill:var(--ve-green-dark,#2D5C27);}
+  .rev-svg rect.bar-c{fill:#b9bdb7;}
+  .rev-client{font-size:12.5px;color:var(--ve-text-75);background:#fff;border:1px dashed rgba(0,0,0,.18);border-radius:8px;padding:9px 14px;margin:-2px 0 14px;}
+  .rev-client b{font-weight:800;color:var(--ve-text);}
+  .rev-tag{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#555;background:#eceeea;border-radius:4px;padding:2px 6px;vertical-align:1px;}
+  .rev-row.is-client .rev-amt{color:var(--ve-text-50);}
   .rev-svg text{font-size:10px;fill:rgba(0,0,0,.55);font-family:inherit;}
   .rev-svg line{stroke:rgba(0,0,0,.08);}
   .rev-sum{font-size:12.5px;color:var(--ve-text-75);margin-top:6px;}
@@ -4343,22 +4348,24 @@
   function revMoney(c, cents) { var v = (c || 0) / 100; return '$' + v.toLocaleString('en-US', { minimumFractionDigits: cents ? 2 : 0, maximumFractionDigits: cents ? 2 : 0 }); }
   function revChart() {
     var d = REV.data, pts;
-    if (REV.view === 'm') pts = d.monthly.slice(-18).map(function (x) { var dt = new Date(x.m + '-15T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }) + (x.m.slice(5) === '01' || d.monthly.length < 13 ? " '" + x.m.slice(2, 4) : ''), full: dt.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net }; });
-    else pts = d.daily.slice(REV.view === '90' ? -90 : -30).map(function (x) { var dt = new Date(x.d + 'T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }), full: dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net }; });
+    if (REV.view === 'm') pts = d.monthly.slice(-18).map(function (x) { var dt = new Date(x.m + '-15T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', timeZone: 'UTC' }) + (x.m.slice(5) === '01' || d.monthly.length < 13 ? " '" + x.m.slice(2, 4) : ''), full: dt.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net, c: x.client || 0 }; });
+    else pts = d.daily.slice(REV.view === '90' ? -90 : -30).map(function (x) { var dt = new Date(x.d + 'T12:00:00Z'); return { k: dt.toLocaleString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' }), full: dt.toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }), v: x.gross, n: x.n, net: x.net, c: x.client || 0 }; });
     // Drawn at the width it has, so labels never squeeze on a phone.
-    var box = document.getElementById('dash-rev'), bw0 = box && box.clientWidth ? box.clientWidth : 900, W = Math.max(260, Math.round((window.innerWidth > 1100 ? (bw0 - 14) * 2 / 3 : bw0) - 34)), H = 220, L = 46, B = 24, T = 8, max = Math.max.apply(null, pts.map(function (p) { return p.v; }).concat([100]));
+    var box = document.getElementById('dash-rev'), bw0 = box && box.clientWidth ? box.clientWidth : 900, W = Math.max(260, Math.round((window.innerWidth > 1100 ? (bw0 - 14) * 2 / 3 : bw0) - 34)), H = 220, L = 46, B = 24, T = 8, max = Math.max.apply(null, pts.map(function (p) { return p.v + p.c; }).concat([100]));
     var step = Math.pow(10, Math.floor(Math.log10(max))); var top = Math.ceil(max / step) * step; if (top / step < 3) { step /= 2; top = Math.ceil(max / step) * step; }
     var bw = (W - L) / pts.length, g = '';
     for (var y = 0; y <= top; y += step) { var yy = T + (H - B - T) * (1 - y / top); g += '<line x1="' + L + '" x2="' + W + '" y1="' + yy + '" y2="' + yy + '"/><text x="' + (L - 6) + '" y="' + (yy + 3) + '" text-anchor="end">' + revMoney(y) + '</text>'; }
     var every = Math.ceil(pts.length / Math.max(3, Math.floor(W / 75)));
     pts.forEach(function (p, i) {
-      var h = (H - B - T) * (p.v / top), x = L + i * bw;
-      g += '<rect class="bar" x="' + (x + bw * 0.15) + '" y="' + (H - B - h) + '" width="' + Math.max(1, bw * 0.7) + '" height="' + Math.max(0, h) + '" rx="2"><title>' + dvEsc(p.full + ': ' + revMoney(p.v, true) + ' from ' + p.n + ' payment' + (p.n === 1 ? '' : 's') + ', ' + revMoney(p.net, true) + ' after fees') + '</title></rect>';
+      var h = (H - B - T) * (p.v / top), hc = (H - B - T) * (p.c / top), x = L + i * bw;
+      var tip = p.full + ': ' + revMoney(p.v, true) + ' from ' + p.n + ' payment' + (p.n === 1 ? '' : 's') + ', ' + revMoney(p.net, true) + ' after fees' + (p.c ? '; client services ' + revMoney(p.c, true) : '');
+      g += '<rect class="bar" x="' + (x + bw * 0.15) + '" y="' + (H - B - h) + '" width="' + Math.max(1, bw * 0.7) + '" height="' + Math.max(0, h) + '" rx="2"><title>' + dvEsc(tip) + '</title></rect>';
+      if (hc > 0) g += '<rect class="bar-c" x="' + (x + bw * 0.15) + '" y="' + (H - B - h - hc) + '" width="' + Math.max(1, bw * 0.7) + '" height="' + hc + '" rx="2"><title>' + dvEsc(tip) + '</title></rect>';
       if (i % every === 0 || i === pts.length - 1 && REV.view === 'm') g += '<text x="' + (x + bw / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + dvEsc(p.k) + '</text>';
     });
-    var tot = pts.reduce(function (a, p) { return { v: a.v + p.v, n: a.n + p.n, net: a.net + p.net }; }, { v: 0, n: 0, net: 0 });
+    var tot = pts.reduce(function (a, p) { return { v: a.v + p.v, n: a.n + p.n, net: a.net + p.net, c: a.c + p.c }; }, { v: 0, n: 0, net: 0, c: 0 });
     return '<svg class="rev-svg" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Revenue chart">' + g + '</svg>' +
-      '<p class="rev-sum">' + revMoney(tot.v, true) + ' from ' + tot.n + ' payment' + (tot.n === 1 ? '' : 's') + ' in this view, ' + revMoney(tot.net, true) + ' after Stripe fees.</p>';
+      '<p class="rev-sum">' + revMoney(tot.v, true) + ' from ' + tot.n + ' payment' + (tot.n === 1 ? '' : 's') + ' in this view, ' + revMoney(tot.net, true) + ' after Stripe fees' + (tot.c ? '. Client services, in grey: ' + revMoney(tot.c, true) : '') + '.</p>';
   }
   function revDraw() {
     var box = document.getElementById('dash-rev'), d = REV.data; if (!box || !d) return;
@@ -4374,15 +4381,17 @@
         '<br>Last month in full: ' + revMoney(t.last_month.gross)) +
       tile('This year', t.year, pay(t.year.n) + ', ' + revMoney(t.year.net) + ' after fees') +
       tile('All time', t.all, pay(t.all.n) + ', ' + revMoney(t.all.net) + ' after fees') + '</div>' +
+      (d.client && d.client.all.n ? '<p class="rev-client"><b>Client services billed through Vegans Explore Inc.</b>, not counted above: this month ' + revMoney(d.client.month.gross) +
+        ', this year ' + revMoney(d.client.year.gross) + ', all time ' + revMoney(d.client.all.gross) + ' (' + pay(d.client.all.n) + ').</p>' : '') +
       '<div class="rev-body"><div class="rev-chart"><div class="rev-tabs" role="tablist">' +
       [['30', 'Last 30 days'], ['90', 'Last 90 days'], ['m', 'By month']].map(function (x) { return '<button type="button" role="tab" data-rev="' + x[0] + '" aria-selected="' + (REV.view === x[0]) + '">' + x[1] + '</button>'; }).join('') +
       '</div>' + revChart() + '</div>' +
       '<div class="rev-latest"><h4>Latest payments</h4><div class="rev-list">' + (d.latest.length ? d.latest.map(function (p) {
         var when = new Date(p.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' });
-        return '<a class="rev-row" href="' + dvEsc(p.url) + '" target="_blank" rel="noopener"><div><span class="rev-what">' + dvEsc(p.what) + '</span><span class="rev-who">' +
+        return '<a class="rev-row' + (p.client ? ' is-client' : '') + '" href="' + dvEsc(p.url) + '" target="_blank" rel="noopener"><div><span class="rev-what">' + (p.client ? '<i class="rev-tag">Client services</i> ' : '') + dvEsc(p.what) + '</span><span class="rev-who">' +
           dvEsc((p.who ? p.who + ' · ' : '') + when) + (p.refunded ? ' · refunded ' + dvEsc(revMoney(p.refunded, true)) : '') + '</span></div><span class="rev-amt">' + revMoney(p.gross, true) + '</span></a>';
       }).join('') : '<p class="dash-preview-empty">No payments yet.</p>') + '</div></div></div>' +
-      '<p class="rev-note">Payments on the Vegans Explore Stripe account, less refunds, by Eastern day. Payments to the LESARUSS and Meatless Muscle accounts are not counted here. Each payment opens in Stripe.</p>';
+      '<p class="rev-note">Payments on the Vegans Explore Stripe account, less refunds, by Eastern day. Client services (a Stripe customer tagged client_services) are shown apart. Payments to the LESARUSS and Meatless Muscle accounts are not counted here. Each payment opens in Stripe.</p>';
     box.querySelectorAll('[data-rev]').forEach(function (b) { b.onclick = function () { REV.view = b.getAttribute('data-rev'); revDraw(); }; });
     document.getElementById('rev-refresh').onclick = function () { this.disabled = true; this.textContent = 'Reading Stripe...'; renderRevenue(true); };
   }

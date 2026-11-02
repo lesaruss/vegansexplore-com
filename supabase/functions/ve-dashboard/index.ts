@@ -27,7 +27,9 @@
 //   (Sean, 2026-11-02: "see that revenue coming in through Vegans Explore in real time... just some little module"). Every succeeded
 //   charge, gross less refunds, and net after Stripe's fee: today, this month, last month, this year, all time (Eastern days), each day
 //   of the last 90 and each month, and the latest 15 payments named by their Checkout line item. Cached 5 minutes in
-//   ve_analytics_cache (refresh skips it). Not a P&L: no costs, no other Stripe accounts.
+//   ve_analytics_cache (refresh skips it). Not a P&L: no costs, no other Stripe accounts. Charges whose Stripe customer carries
+//   metadata revenue_class client_services are client services billed through Vegans Explore Inc.: left out of totals, daily gross and
+//   monthly gross, and returned as client {month, year, all} and each day's and month's client amount (Sean, 2026-11-02).
 // POST { action: 'inbox' }                  super admins (every request) or a Community Manager (the ones assigned to them): every
 //   request a person sent us (ve_inbox_items), with who it is assigned to (the chapter's Community Manager, else the team), whether
 //   they opened it, the 24-hour reply clock and the requester's picture (Sean, 2026-10-30: "no more than... 24 hours... that's how we
@@ -276,7 +278,7 @@ Deno.serve(async (req) => {
 
   if (body.action === 'revenue') {
     if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
-    const KEY = 've-revenue-v1';
+    const KEY = 've-revenue-v2';
     if (!body.refresh) {
       const { data: hit } = await db.from('ve_analytics_cache').select('data, fetched_at').eq('key', KEY).maybeSingle();
       if (hit && Date.now() - new Date((hit as any).fetched_at).getTime() < 5 * 60e3) return json({ ...(hit as any).data, cached: true });
@@ -291,7 +293,7 @@ Deno.serve(async (req) => {
       const charges: any[] = [];
       let after = '';
       for (let page = 0; page < 30; page++) {
-        const d = await stripe('charges?limit=100&expand[]=data.balance_transaction&expand[]=data.invoice' + (after ? '&starting_after=' + after : ''));
+        const d = await stripe('charges?limit=100&expand[]=data.balance_transaction&expand[]=data.invoice&expand[]=data.customer' + (after ? '&starting_after=' + after : ''));
         charges.push(...(d.data || []));
         if (!d.has_more || !d.data?.length) break;
         after = d.data[d.data.length - 1].id;
@@ -304,19 +306,27 @@ Deno.serve(async (req) => {
         const gross = (c.amount || 0) - (c.amount_refunded || 0);
         const bt = c.balance_transaction && typeof c.balance_transaction === 'object' ? c.balance_transaction : null;
         const fee = bt ? bt.fee || 0 : 0;
-        return { c, d: day(c.created), gross, net: gross - (c.refunded ? 0 : fee) };
+        // Client services billed through Vegans Explore Inc. (Sean, 2026-11-02): a customer tagged revenue_class client_services in
+        // Stripe (Miss Meatless Muscle's hosting, the Vegans Who Lift hosting). Shown on their own line, never as Vegans Explore revenue.
+        const client = !!(c.customer && typeof c.customer === 'object' && c.customer.metadata?.revenue_class === 'client_services');
+        return { c, d: day(c.created), gross, net: gross - (c.refunded ? 0 : fee), client };
       });
-      const sum = (f: (r: any) => boolean) => rows.filter(f).reduce((a, r) => ({ gross: a.gross + r.gross, net: a.net + r.net, n: a.n + 1 }), { gross: 0, net: 0, n: 0 });
+      const sumAll = (f: (r: any) => boolean) => rows.filter(f).reduce((a, r) => ({ gross: a.gross + r.gross, net: a.net + r.net, n: a.n + 1 }), { gross: 0, net: 0, n: 0 });
+      const sum = (f: (r: any) => boolean) => sumAll((r) => !r.client && f(r));
+      const csum = (f: (r: any) => boolean) => sumAll((r) => r.client && f(r));
+      const client = { month: csum((r) => r.d.startsWith(month)), year: csum((r) => r.d.startsWith(year)), all: csum(() => true) };
       const totals = { today: sum((r) => r.d === today), month: sum((r) => r.d.startsWith(month)), last_month: sum((r) => r.d.startsWith(lm)), last_month_same_days: sum((r) => r.d.startsWith(lm) && r.d.slice(8) <= today.slice(8)),
         year: sum((r) => r.d.startsWith(year)), all: sum(() => true) };
       const byDay = new Map<string, any>(), byMonth = new Map<string, any>();
       for (const r of rows) {
         for (const [m, k] of [[byDay, r.d], [byMonth, r.d.slice(0, 7)]] as [Map<string, any>, string][]) {
-          const v = m.get(k) || { gross: 0, net: 0, n: 0 }; v.gross += r.gross; v.net += r.net; v.n++; m.set(k, v);
+          const v = m.get(k) || { gross: 0, net: 0, n: 0, client: 0 };
+          if (r.client) v.client += r.gross; else { v.gross += r.gross; v.net += r.net; v.n++; }
+          m.set(k, v);
         }
       }
       const daily: any[] = [];
-      for (let i = 89; i >= 0; i--) { const k = day(now - i * 86400); daily.push({ d: k, ...(byDay.get(k) || { gross: 0, net: 0, n: 0 }) }); }
+      for (let i = 89; i >= 0; i--) { const k = day(now - i * 86400); daily.push({ d: k, ...(byDay.get(k) || { gross: 0, net: 0, n: 0, client: 0 }) }); }
       const monthly = [...byMonth.entries()].sort().map(([m, v]) => ({ m, ...v }));
       // The latest payments, named by their Checkout line item when there is one.
       const names = new Map<string, string>();
@@ -333,12 +343,12 @@ Deno.serve(async (req) => {
       const latest = rows.slice(0, 15).map((r) => {
         const c = r.c, email = c.billing_details?.email || c.receipt_email || (isEmail(c.description || '') ? c.description : '') || '';
         const desc = c.description && !isEmail(c.description) && !/^(Description|Subscription (creation|update))$/.test(c.description) ? c.description : '';
-        return { at: new Date(c.created * 1000).toISOString(), gross: r.gross, net: r.net, refunded: c.amount_refunded || 0,
+        return { at: new Date(c.created * 1000).toISOString(), gross: r.gross, net: r.net, refunded: c.amount_refunded || 0, client: r.client,
           what: names.get(String(c.payment_intent || '')) || desc || invLine(c.invoice) || (c.invoice ? 'Subscription payment' : 'Payment'),
           who: c.billing_details?.name || email || '', email,
           url: 'https://dashboard.stripe.com/payments/' + (c.payment_intent || c.id) };
       });
-      const out = { ok: true, as_of: new Date().toISOString(), currency: 'usd', account: 'Vegans Explore', totals, daily, monthly, latest, today, charges: rows.length };
+      const out = { ok: true, as_of: new Date().toISOString(), currency: 'usd', account: 'Vegans Explore', totals, client, daily, monthly, latest, today, charges: rows.length };
       await db.from('ve_analytics_cache').upsert({ key: KEY, data: out, fetched_at: out.as_of });
       return json({ ...out, cached: false });
     } catch (e) {
