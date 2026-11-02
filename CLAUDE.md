@@ -5108,9 +5108,14 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 "Why are we saying 13? I might decide to have North Carolina be a chapter tomorrow, and then we got to do all these videos over again."
 Never write how many chapters or cities we have ("13 chapters", "thirteen") in page copy, a Guide's lines, a recording or a video.
 Say "city by city", "every chapter" or "from South Florida to London". A live count drawn from the data is fine. The homepage video
-is `launch-v2.mp4` (its city card reads From South Florida to London; the logo sits on a white plate in the official light colors,
+is `launch-v3.mp4` (its city card reads From South Florida to London; the logo sits on a white plate in the official light colors,
 since the inverted logo's thin green EXPLORE could not be read over the pictures). Any logo over a picture in a video or graphic
 goes on a solid plate.
+
+**Never cover a face** (Sean, 2026-11-02: "the covering up Kai's face. It's kind of disrespectful to her"). In a video, graphic or
+banner, text, a logo or a card never sits over a person's or Guide's face, and a picture whose crop cuts off faces is not used. A card
+over a picture goes on a cityscape or an empty part of the frame; check each card's frame by eye before showing it. The homepage video
+opens on Jacksonville, puts the Founding card on Richmond and closes on London at dusk, so no Guide is behind a card.
 
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
