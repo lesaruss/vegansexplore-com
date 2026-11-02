@@ -131,7 +131,59 @@ const utm = (u: string, kind: string) => u + (u.includes('?') ? '&' : '?') + 'ut
 function refOf(kind: string) {
   const m = openMonth(10).slice(0, 7);
   if (kind === 'offer') return { ref: `ve-pc-offer-${m}`, name: `Passport Challenge offer (${m})` };
-  // Reworded by the review panel (2026-11-02): a plain subject, no guess at why they have not answered, the deal in one line.
+  if (kind === 'not_opened') return { ref: `ve-pc-still-open-${m}`, name: `Passport Challenge follow-up: still open (${m})` };
+  if (kind.startsWith('pulse-')) return { ref: `ve-taster-pulse-${kind.slice(6)}`, name: `Taster: the Daily Pulse (${kind.slice(6)})` };
+  const dec = DECEMBER.find(([k]) => k === kind);
+  if (dec) return { ref: `ve-taster-founding-${dec[1]}`, name: `Taster: Founding deadline note (${dec[1]})` };
+  return { ref: `ve-taster-${kind}`, name: `Taster: ${kind.replace('day-', 'Day ')}` };
+}
+async function emailSend(payload: Record<string, unknown>) {
+  const admin = await secret('LESARUSS_ADMIN_TOKEN');
+  try {
+    const r = await fetch(`${FN_BASE}/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${admin}` }, body: JSON.stringify(payload) });
+    return await r.json().catch(() => ({ ok: false, error: `email-send ${r.status}` }));
+  } catch (e) { return { ok: false, error: String(e) }; }
+}
+// Registered once, on the first real send, as an automatic campaign HQ > Email shows (status sent: email-dispatch never picks it up).
+async function registerCampaign(ref: string, name: string, subject: string, html: string, kind: string) {
+  await db.from('email_campaigns').upsert({ brand_slug: BRAND, campaign_ref: ref, name: `${name}, automatic`, subject, html, status: 'sent',
+    audience: { source: 've-nurture', kind, automatic: true }, notes: 'Sent one at a time by ve-nurture (Earn your Passport). Switch it on or off in the Vegans Explore Depot.',
+    started_at: new Date().toISOString(), completed_at: new Date().toISOString(), created_by: 've-nurture' }, { onConflict: 'campaign_ref', ignoreDuplicates: true });
+}
+// result: sent | already_sent | suppressed | invalid | failed
+async function send(kind: string, to: string, name: string | null, subject: string, html: string, testTo?: string): Promise<{ result: string; id?: string; error?: string }> {
+  const { ref, name: cname } = refOf(kind);
+  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') ? 've-tasters' : 've-pc-offers',
+    subject, html, recipients: [{ email: to, name: name || undefined }], ...(testTo ? { test_to: [testTo] } : {}) });
+  const r = res?.results?.[0];
+  if (!r) return { result: 'failed', error: res?.error || (res?.errors || []).join('; ') || 'email-send' };
+  if (r.result === 'sent' && !testTo) await registerCampaign(ref, cname, subject, html, kind);
+  return { result: r.result, id: r.id, error: r.error };
+}
+async function suppressed(email: string) {
+  const { data } = await db.rpc('email_is_suppressed', { p_email: email.toLowerCase().trim(), p_brand: BRAND });
+  return data === true;
+}
+
+// ---------- Business emails ----------
+async function offerContext(o: any) {
+  const cfg = await pcSettings();
+  const { data: l } = await db.from('listings').select('name, slug, address_city, address_state').eq('id', o.listing_id).maybeSingle();
+  const { data: chapter } = await db.rpc('ve_chapter_of', { p_city: l?.address_city, p_state: l?.address_state });
+  const month = openMonth(cfg.lock_day);
+  return { cfg, l, chapter: (CHAPTER_NAME[chapter as string] || 'your city'), month: monthWords(month).split(' ')[0], deadline: deadlineWords(month, cfg.lock_day),
+    link: o.link_code ? `${SITE}/go/${o.link_code}` : `${SITE}/business/challenge?listing=${l?.slug}`, stop: `${SITE}/business/challenge?stop=${o.code}` };
+}
+async function businessEmail(kind: string, o: any) {
+  const c = await offerContext(o);
+  const biz = esc(c.l?.name || 'your business'), cards = c.cfg.cards_per_slot, amt = c.cfg.card_cents / 100;
+  const foot = `You are getting this because ${biz} is in the Vegans Explore Directory.`;
+  if (kind === 'offer') return { subject: `Be a Passport Challenge stop in ${c.month}`, unsub: c.stop, html: shell(
+    P(`Hi ${biz},`) + P(`Every month, up to five Vegan businesses in ${esc(c.chapter)} are the stops on our Passport Challenge. Our members come to check in, post about you, and win your gift cards in the Vegans Explore Vault.`) +
+    P(`<b>What you give:</b> ${cards} digital gift cards of $${amt}. One per visit, no cash back, good for ${c.cfg.card_months} months after a member wins one.`) +
+    P(`<b>What you get:</b> a month of promotion as a featured stop, your Vegans Explore membership and your listing claimed. If we pick you before January 1, you are a Founding Member.`) +
+    P(`There are five spots for ${esc(c.month)}, and we choose them on ${esc(c.deadline)}.`) + btn(c.link, 'See the offer') + sign, foot) };
+  // The follow-up, reworded by the review panel (2026-11-02): a plain subject, no guess at why they have not answered, the deal in one line.
   const hello = o.name && !/\[TEST\]/i.test(o.name) ? `Hi ${esc(String(o.name).trim().split(/\s+/)[0])},` : 'Hello,';
   return { subject: `${c.month} Passport Challenge stops in ${c.chapter}`, unsub: c.stop, html: shell(
     P(hello) + P(`This follows our earlier note. We choose ${esc(c.month)}'s five Passport Challenge stops in ${esc(c.chapter)} on ${esc(c.deadline)}, and there is still room for ${biz}. A stop gives ${cards} digital gift cards of $${amt} for our members to win, and gets a month of promotion and a membership in return.`) +
