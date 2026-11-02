@@ -32,7 +32,8 @@
     "qualities": [75]
   },
   "functions": {
-    "api/listing.js": { "includeFiles": "directory/listing.html" }
+    "api/listing.js": { "includeFiles": "directory/listing.html" },
+    "api/event.js": { "includeFiles": "events/index.html" }
   },
   "headers": [
     {
@@ -89,6 +90,11 @@
     {
       "source": "/sitemap.xml",
       "destination": "/api/sitemap"
+    },
+    {
+      "source": "/events",
+      "has": [{ "type": "query", "key": "event", "value": "(?<eid>[0-9a-fA-F-]{36})" }],
+      "destination": "/api/event?id=:eid"
     },
     {
       "source": "/directory/:slug",

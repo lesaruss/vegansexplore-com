@@ -569,6 +569,7 @@
       if (lv === 'continent' && v) { var c = locChoices('country'); if (c.length === 1) st.loc.country = c[0].value; }
     }
     function drawMenu() {
+      if (window.__vevTitle && !window.VE_BRAND) document.title = window.__vevTitle;
       var pin = '<svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>';
       var popId = (el.id || 'vev') + '-filters';
       el.innerHTML =
@@ -1250,6 +1251,7 @@
         else rsvp = '<p class="vev-going">You\'re going</p>' +
           (org ? '<label class="vev-optin"><input type="checkbox" data-v="optin"' + (v.optin ? ' checked' : '') + '><span><b>Let ' + esc(org) + ' message me about this event</b><small>Through Vegans Explore only: ' + esc(org) + ' never sees your email. Until ' + esc(closes(e)) + ', 7 days after the event. ' + (v.optin_paid ? '' : '25 points for saying yes.') + '</small></span></label>' : '') +
           '<button type="button" class="vev-plain" data-v="notgoing">I can\'t make it</button>';
+        if (!window.VE_BRAND && !document.documentElement.classList.contains('ve-embedded')) { window.__vevTitle = window.__vevTitle || document.title; document.title = e.title + ' — Vegans Explore'; }
         el.innerHTML = crumbs([[e.title]]) + '<div class="vev-ev"><div class="vev-form">' +
           '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured ? ' · Featured' : '') + '</p><h2>' + esc(e.title) + '</h2>' +
           '<div class="vev-facts"><span>' + esc(when(e)) + '</span><span>' + esc(place(e)) + (e.address && e.address !== e.location_name ? ' · ' + esc(e.address) : '') + '</span>' + (org ? '<span>Organized by ' + esc(org) + '</span>' : '') + '</div>' +
