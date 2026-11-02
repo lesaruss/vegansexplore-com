@@ -33,7 +33,7 @@
 //   in ve_kit_change_requests, and in ve_cartridge_edits.
 //   kit_launch: every part locked -> status launched, meta.launched {at, by}. The launch gate: no module opens before it.
 //   kit_mood_save {mood: {pins: [{src, note, says: [style|type|color]}], words}}: the mood board, an intake that is never locked.
-//   kit_intake_save {intake: {done, have: most|some|none, guide_url, answers: {logo, colors, type, voice, story: yes|no}}} (Sean,
+//   kit_intake_save {intake: {done, have: most|some|none, guide_url, answers: {logo, colors, type, voice, story: yes|no}, notes: {have, logo...}}} (Sean,
 //   2026-11-02, the first BrandDesk drive: "Do you have a brand kit? Do you have a logo already?... we'll know exactly what we need to
 //   do from this intake"): what the owner already has, kept in meta.intake, never locked. HQ's Brand kit room asks it first, saves
 //   what they give into each part (In progress, for them to lock), and shows the mood board only when a logo, colors or type is missing.
@@ -350,8 +350,11 @@ async function foundation(b: any, k: Kit): Promise<Response | null> {
     const answers: Record<string, string | null> = {};
     for (const p of parts) answers[p] = yn(i.answers?.[p]);
     const guide = clean(i.guide_url, 500);
+    // What they told us on each question, typed or spoken (Sean, 2026-11-02), up to 2,000 characters each; saved on every step.
+    const notes: Record<string, string> = {};
+    for (const key of ['have', ...parts]) { const v = clean(i.notes?.[key], 2000); if (v) notes[key] = v; }
     const intake = { done: i.done === true, have: ['most', 'some', 'none'].includes(i.have) ? i.have : null,
-      guide_url: /^https:\/\//i.test(guide) ? guide : '', answers, at: new Date().toISOString(), by: clean(k.m.name, 60) || 'Team' };
+      guide_url: /^https:\/\//i.test(guide) ? guide : '', answers, notes, at: new Date().toISOString(), by: clean(k.m.name, 60) || 'Team' };
     const before = data.meta?.intake ?? null;
     data.meta = data.meta || {}; data.meta.intake = intake; data.meta.updated = today();
     const err = await k.save(data, k.status);
