@@ -50,7 +50,10 @@
     else if (it.near_me) out.push('near you');
     return out;
   }
-  function kmText(km) { return km == null ? '' : (km < 1 ? 'under 1 km' : (km >= 100 ? Math.round(km) : km) + ' km'); }
+  // Distances come from the engine in km; people read miles (Sean, 2026-11-02).
+  function miNum(km) { var m = km * 0.621371; return m < 0.1 ? 0.1 : (m < 10 ? Math.round(m * 10) / 10 : Math.round(m)); }
+  function kmText(km) { return km == null ? '' : (km * 0.621371 < 0.1 ? 'under 0.1 mi' : miNum(km) + ' mi'); }
+  function away(km) { return km == null ? '' : 'about ' + miNum(km) + (miNum(km) === 1 ? ' mile' : ' miles') + ' away'; }
   function meta(x) { return [x.category, x.city && (x.city + (x.state ? ', ' + x.state : '')), kmText(x.km)].filter(Boolean).join(' · '); }
   function tile(x) {
     var l = x.logo_url ? '<img src="' + esc(x.logo_url) + '" alt="" loading="lazy" width="40" height="40" onerror="this.replaceWith(document.createTextNode(\'' + esc((x.name || '?').charAt(0).toUpperCase()) + '\'))">' : '<span>' + esc((x.name || '?').charAt(0).toUpperCase()) + '</span>';
@@ -106,7 +109,7 @@
         html += '<div class="ves-h">' + (r.nearest_fallback ? 'Closest we have' : 'Best matches') + '</div>';
         res.forEach(function (x, i) { html += '<a class="ves-row" role="option" id="' + uid + '-' + (i + 1) + '" href="/directory/' + encodeURIComponent(x.slug) + '" data-slug="' + esc(x.slug) + '">' + tile(x) + '<span class="ves-t"><span class="ves-n">' + esc(x.name) + '</span><span class="ves-m">' + esc(meta(x)) + '</span></span></a>'; });
       }
-      if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, about ' + esc(r.nearest_km) + ' km away.</div>';
+      if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(away(r.nearest_km)) + '.</div>';
       else if (!res.length) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
       list.innerHTML = html; list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
     }
@@ -166,5 +169,5 @@
     }
   });
 
-  window.VESearch = { mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, css: css, vid: vid };
+  window.VESearch = { mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

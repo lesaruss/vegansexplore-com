@@ -116,8 +116,8 @@
     read.innerHTML = w.length ? '<span class="lbl">We read this as</span>' + w.map(function (x) { return '<span class="ves-chip">' + esc(x) + '</span>'; }).join('') : '';
     var n = '';
     if (it.needs_location) n = '<div class="notice">Turn on location to see what is near you, or add a city: “' + esc(state.q.replace(/near me|nearby|around me/ig, '').trim()) + ' in Miami”.</div>';
-    else if (data.nearest_fallback && it.place) n = '<div class="notice">We have nothing in ' + esc(it.place.name) + ' yet. These are the closest, about ' + esc(data.nearest_km) + ' km away. We keep track of what people look for so we know where to grow next.</div>';
-    else if (data.nearest_fallback) n = '<div class="notice">Nothing close to you yet. These are the closest we have, about ' + esc(data.nearest_km) + ' km away.</div>';
+    else if (data.nearest_fallback && it.place) n = '<div class="notice">We have nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(S.away(data.nearest_km)) + '. We keep track of what people look for so we know where to grow next.</div>';
+    else if (data.nearest_fallback) n = '<div class="notice">Nothing close to you yet. These are the closest we have, ' + esc(S.away(data.nearest_km)) + '.</div>';
     note.innerHTML = n;
     var all = data.results || [], cats = {};
     all.forEach(function (x) { cats[x.category] = (cats[x.category] || 0) + 1; });
