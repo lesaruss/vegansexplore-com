@@ -141,6 +141,33 @@
     .strip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;}
     .strip .slot{flex:0 0 250px;scroll-snap-align:start;}
     @media (max-width:600px){.strip .slot{flex-basis:76vw;}}
+    /* One day at a time (Sean, 2026-11-02: "I don't want to scroll down. I want to toggle through... see the stuff on one row"). */
+    .daynav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px;}
+    .daynav .mid{flex:1;min-width:0;text-align:center;}
+    .daynav .mid h3{margin:0;font-size:18px;font-weight:900;justify-content:center;}
+    .daynav .mid .n{display:block;font-size:12px;font-weight:700;color:var(--ve-text-75);margin-top:2px;}
+    .daynav .btn{min-width:44px;}
+    .daynav .btn[aria-disabled="true"]{opacity:.35;pointer-events:none;}
+    .stripwrap{position:relative;}
+    .stripwrap .sarr{position:absolute;top:40%;z-index:2;width:40px;height:40px;border-radius:6px;border:1.5px solid rgba(0,0,0,.14);background:#fff;cursor:pointer;font-size:20px;font-weight:900;line-height:1;box-shadow:0 4px 12px rgba(0,0,0,.12);}
+    .stripwrap .sarr.l{left:-6px;}.stripwrap .sarr.r{right:-6px;}
+    .stripwrap .sarr[hidden]{display:none;}
+    /* The date picker: days with something scheduled are light blue. */
+    .calwrap{position:relative;display:inline-flex;}
+    .calpop{position:absolute;top:calc(100% + 6px);left:0;z-index:30;background:#fff;border:1.5px solid rgba(0,0,0,.14);border-radius:10px;box-shadow:0 14px 40px rgba(0,0,0,.18);padding:12px;width:300px;}
+    .calpop .ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-weight:900;font-size:14px;}
+    .calpop .ch button{border:1.5px solid rgba(0,0,0,.14);background:#fff;border-radius:6px;width:32px;height:32px;cursor:pointer;font-size:16px;font-weight:900;}
+    .calpop .cg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+    .calpop .cw{font-size:10px;font-weight:800;text-align:center;color:var(--ve-text-75);text-transform:uppercase;}
+    .calpop a.cd,.calpop span.cd{display:flex;flex-direction:column;align-items:center;justify-content:center;height:36px;border-radius:6px;font-size:13px;font-weight:700;color:var(--ve-text);text-decoration:none;border:1.5px solid transparent;}
+    .calpop a.cd:hover{border-color:rgba(0,0,0,.25);}
+    .calpop .cd.has{background:#DBEAFE;border-color:#93C5FD;}
+    .calpop .cd.has small{font-size:9px;font-weight:800;color:#1E40AF;line-height:1;}
+    .calpop .cd.today{box-shadow:inset 0 0 0 2px var(--ve-green-deep);}
+    .calpop .cd.sel{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .calpop .cd.sel small{color:#fff;}
+    .calpop .cl{font-size:11px;color:var(--ve-text-75);margin-top:8px;display:flex;align-items:center;gap:6px;}
+    .calpop .cl i{display:inline-block;width:12px;height:12px;border-radius:3px;background:#DBEAFE;border:1.5px solid #93C5FD;}
     .oneday{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:16px;}
     .slot.big{padding:12px;gap:8px;}
     .slot.big .cap{-webkit-line-clamp:3;font-size:14px;}
@@ -597,24 +624,37 @@
         var byDay = {}, order = [];
         shown.forEach(function (x) { var d = eastDay(new Date(x.slot_at)); if (!byDay[d]) { byDay[d] = []; order.push(d); } byDay[d].push(x); });
         if (mode === 'past') order.reverse();
-        var body;
+        var body, cur = null;
         if (mode === 'day') {
           body = shown.length ? '<div class="oneday">' + shown.map(function (x) { return slotCard(x, true, true); }).join('') + '</div>'
             : '<div class="empty">Nothing is slotted for ' + esc(b.name) + ' on ' + esc(dayLabel(date, true)) + (f === 'all' ? '' : ' under ' + FILT[f]) + '.</div>';
         } else {
-          body = order.length ? order.map(function (d) {
-            var list = byDay[d];
-            return '<section class="dayrow"><h3><a href="#day/' + b.slug + '/' + d + '/' + f + '">' + esc(dayLabel(d, true)) + '</a>' + (d === today ? '<span class="td">Today</span>' : '') +
-              '<span class="n">' + list.length + ' post' + (list.length > 1 ? 's' : '') + (list.length > 1 ? ' · slide to see them all' : '') + '</span></h3>' +
-              '<div class="strip">' + list.map(function (x) { return slotCard(x, false, true); }).join('') + '</div></section>';
-          }).join('') : '<div class="empty">' + (mode === 'past' ? 'Nothing went out in the last 90 days' : 'Nothing is slotted for ' + esc(b.name) + ' yet') + (f === 'all' ? '' : ' under ' + FILT[f]) + '. Logan fills the slots; anything he proposes shows here as Waiting for approval.</div>';
+          // One day at a time, in date order, with back and forth (and the arrow keys); the address keeps the day shown.
+          var asc = order.slice().sort();
+          var i = asc.indexOf(date);
+          if (i < 0) { i = mode === 'past' ? asc.length - 1 : 0; if (date) { for (var k = 0; k < asc.length; k++) if (asc[k] >= date) { i = k; break; } } }
+          var cur = asc[i], prevD = asc[i - 1], nextD = asc[i + 1];
+          var dayHref = function (d) { return '#days/' + b.slug + '/' + mode + '/' + f + '/' + d; };
+          body = asc.length ? (function () {
+            var list = byDay[cur];
+            return '<section class="dayrow one" data-prev="' + (prevD ? dayHref(prevD) : '') + '" data-next="' + (nextD ? dayHref(nextD) : '') + '">' +
+              '<div class="daynav">' +
+                '<a class="btn btn-ghost" ' + (prevD ? 'href="' + dayHref(prevD) + '"' : 'aria-disabled="true"') + ' aria-label="Earlier day">‹ ' + (prevD ? esc(dayLabel(prevD)) : '') + '</a>' +
+                '<div class="mid"><h3><a href="#day/' + b.slug + '/' + cur + '/' + f + '">' + esc(dayLabel(cur, true)) + '</a>' + (cur === today ? ' <span class="td">Today</span>' : '') + '</h3>' +
+                  '<span class="n">' + list.length + ' post' + (list.length > 1 ? 's' : '') + ' · day ' + (i + 1) + ' of ' + asc.length + ' with posts</span></div>' +
+                '<a class="btn btn-ghost" ' + (nextD ? 'href="' + dayHref(nextD) + '"' : 'aria-disabled="true"') + ' aria-label="Later day">' + (nextD ? esc(dayLabel(nextD)) : '') + ' ›</a>' +
+              '</div>' +
+              '<div class="stripwrap"><button class="sarr l" type="button" aria-label="Earlier posts" hidden>‹</button>' +
+              '<div class="strip" id="dayStrip">' + list.map(function (x) { return slotCard(x, false, true); }).join('') + '</div>' +
+              '<button class="sarr r" type="button" aria-label="More posts" hidden>›</button></div></section>';
+          })() : '<div class="empty">' + (mode === 'past' ? 'Nothing went out in the last 90 days' : 'Nothing is slotted for ' + esc(b.name) + ' yet') + (f === 'all' ? '' : ' under ' + FILT[f]) + '. Logan fills the slots; anything he proposes shows here as Waiting for approval.</div>';
         }
         var dv = mode === 'day' ? date : today;
         app.innerHTML = top('plan') +
           '<div class="viewbar"><div class="grp">' +
             '<a class="chip' + (mode === 'up' ? ' on' : '') + '" href="#days/' + b.slug + '/up/' + f + '">Coming up</a>' +
             '<a class="chip' + (mode === 'past' ? ' on' : '') + '" href="#days/' + b.slug + '/past/' + f + '">Past</a>' +
-            '<label class="chip' + (mode === 'day' ? ' on' : '') + '" style="gap:8px">Pick a date <input type="date" id="pickDate" value="' + dv + '" aria-label="Pick a date" style="padding:4px 8px;min-width:0;font-size:13px"></label>' +
+            '<span class="calwrap"><button class="chip' + (mode === 'day' ? ' on' : '') + '" id="pickDate" type="button" aria-haspopup="dialog" aria-expanded="false">Pick a date · ' + esc(dayLabel(mode === 'day' ? date : (cur || today))) + ' ▾</button></span>' +
             (mode === 'day' ? '<a class="btn btn-ghost" href="#day/' + b.slug + '/' + addDays(date, -1) + '/' + f + '">Day before</a><a class="btn btn-ghost" href="#day/' + b.slug + '/' + addDays(date, 1) + '/' + f + '">Day after</a>' : '') +
           '</div><div class="grp">' +
             '<a class="btn btn-ghost" href="#plan/' + b.slug + '/' + monday(dv) + '/' + f + '">Calendar view</a>' +
@@ -624,8 +664,68 @@
           (mode === 'day' ? '<p class="crumb"><a href="#days/' + b.slug + '/' + (date < today ? 'past' : 'up') + '/' + f + '">Every day</a> <span>›</span> <span>' + esc(dayLabel(date, true)) + (date === today ? ' · Today' : '') + '</span></p>' : '') +
           '<div class="tabs" style="margin-bottom:16px">' + chips + '</div><p class="msg" id="pmsg"></p>' + body;
         wireTop();
-        var pd = $('pickDate'); if (pd) pd.onchange = function () { if (/^\d{4}-\d{2}-\d{2}$/.test(pd.value)) location.hash = '#day/' + b.slug + '/' + pd.value + '/' + f; };
+        wireCalendar(b, f, mode === 'day' ? date : (cur || today), today);
+        wireStrip();
         wireApproveAll(waiting, b);
+      });
+    }
+    // The date picker: a month at a time; a day with something slotted (in the chosen filter) is light blue with its count.
+    function wireCalendar(b, f, sel, today) {
+      var btn = $('pickDate'); if (!btn) return;
+      var wrap = btn.parentNode, pop = null, month = sel.slice(0, 7);
+      function close() { if (pop) { pop.remove(); pop = null; btn.setAttribute('aria-expanded', 'false'); document.removeEventListener('mousedown', outside); document.removeEventListener('keydown', esc1); } }
+      function outside(e) { if (pop && !wrap.contains(e.target)) close(); }
+      function esc1(e) { if (e.key === 'Escape') close(); }
+      function draw(counts) {
+        var y = +month.slice(0, 4), mo = +month.slice(5, 7) - 1;
+        var first = new Date(Date.UTC(y, mo, 1)), days = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate(), lead = (first.getUTCDay() + 6) % 7;
+        var title = first.toLocaleDateString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        var cells = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map(function (w) { return '<span class="cw">' + w + '</span>'; }).join('');
+        for (var k = 0; k < lead; k++) cells += '<span></span>';
+        for (var d = 1; d <= days; d++) {
+          var iso = month + '-' + (d < 10 ? '0' : '') + d, n = counts ? counts[iso] || 0 : 0;
+          cells += '<a class="cd' + (n ? ' has' : '') + (iso === today ? ' today' : '') + (iso === sel ? ' sel' : '') + '" href="#day/' + b.slug + '/' + iso + '/' + f + '" title="' + (n ? n + ' slotted' : 'Nothing slotted') + '">' + d + (n ? '<small>' + n + '</small>' : '') + '</a>';
+        }
+        pop.innerHTML = '<div class="ch"><button type="button" data-m="-1" aria-label="Previous month">‹</button><span>' + esc(title) + '</span><button type="button" data-m="1" aria-label="Next month">›</button></div>' +
+          '<div class="cg">' + cells + '</div><div class="cl"><i></i> Something is slotted' + (counts ? '' : ' (reading…)') + '</div>';
+        Array.prototype.forEach.call(pop.querySelectorAll('[data-m]'), function (x) { x.onclick = function () { var dd = new Date(Date.UTC(y, mo + +x.getAttribute('data-m'), 1)); month = dd.toISOString().slice(0, 7); load(); }; });
+        Array.prototype.forEach.call(pop.querySelectorAll('a.cd'), function (x) { x.onclick = function () { close(); }; });
+      }
+      function load() {
+        draw(null);
+        var m0 = month, nxt = new Date(Date.UTC(+month.slice(0, 4), +month.slice(5, 7), 1)).toISOString().slice(0, 10);
+        api({ action: 'slots', brand: b.slug, from: eastIso(month + '-01'), to: eastIso(nxt) }).then(function (r) {
+          if (!pop || m0 !== month) return;
+          var c = {}; (r.slots || []).forEach(function (x) { if (inFilt(x, f)) { var d = eastDay(new Date(x.slot_at)); c[d] = (c[d] || 0) + 1; } });
+          draw(c);
+        });
+      }
+      btn.onclick = function () {
+        if (pop) { close(); return; }
+        pop = document.createElement('div'); pop.className = 'calpop'; pop.setAttribute('role', 'dialog'); pop.setAttribute('aria-label', 'Pick a date');
+        wrap.appendChild(pop); btn.setAttribute('aria-expanded', 'true');
+        document.addEventListener('mousedown', outside); document.addEventListener('keydown', esc1);
+        load();
+      };
+    }
+    // The day's row slides sideways; arrows show when there is more to see.
+    function wireStrip() {
+      var s = $('dayStrip'); if (!s) return;
+      var w = s.parentNode, l = w.querySelector('.sarr.l'), r = w.querySelector('.sarr.r');
+      function upd() { l.hidden = s.scrollLeft <= 4; r.hidden = s.scrollLeft + s.clientWidth >= s.scrollWidth - 4; }
+      l.onclick = function () { s.scrollBy({ left: -s.clientWidth * 0.9, behavior: 'smooth' }); };
+      r.onclick = function () { s.scrollBy({ left: s.clientWidth * 0.9, behavior: 'smooth' }); };
+      s.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd); setTimeout(upd, 50);
+    }
+    // Left and right arrow keys move a day on Coming up and Past (not while typing).
+    if (!window.__veDayKeys) {
+      window.__veDayKeys = true;
+      document.addEventListener('keydown', function (e) {
+        if (!/^#days\//.test(location.hash) || e.altKey || e.ctrlKey || e.metaKey) return;
+        var t = e.target && e.target.tagName; if (t === 'INPUT' || t === 'TEXTAREA' || t === 'SELECT') return;
+        var row = document.querySelector('.dayrow.one'); if (!row) return;
+        var to = e.key === 'ArrowLeft' ? row.getAttribute('data-prev') : e.key === 'ArrowRight' ? row.getAttribute('data-next') : '';
+        if (to) { e.preventDefault(); location.hash = to; }
       });
     }
     function slotCard(x, big, pic) {
@@ -992,7 +1092,7 @@
 
     function route() {
       var h = location.hash || '#days/' + st.brand + '/up/all', m;
-      if ((m = /^#days\/([a-z0-9-]+)(?:\/(up|past))?(?:\/([a-z]+))?$/.exec(h))) drawDays(m[1], m[2] || 'up', m[3]);
+      if ((m = /^#days\/([a-z0-9-]+)(?:\/(up|past))?(?:\/([a-z]+))?(?:\/(\d{4}-\d{2}-\d{2}))?$/.exec(h))) drawDays(m[1], m[2] || 'up', m[3], m[4]);
       else if ((m = /^#day\/([a-z0-9-]+)\/(\d{4}-\d{2}-\d{2})(?:\/([a-z]+))?$/.exec(h))) drawDays(m[1], 'day', m[3], m[2]);
       else if ((m = /^#plan\/([a-z0-9-]+)(?:\/(\d{4}-\d{2}-\d{2}))?(?:\/([a-z]+))?$/.exec(h))) drawPlan(m[1], m[2], m[3]);
       else if (h === '#plan') drawDays(st.brand, 'up');

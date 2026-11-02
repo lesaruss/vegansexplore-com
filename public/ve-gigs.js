@@ -558,7 +558,7 @@
       overview: function () {
         return '<div class="vg-land"><div class="vg-land-l">' +
           '<p class="vg-kick">For content creators</p><h2 class="vg-h">Looking for paid work that fits what you already make?</h2>' +
-          '<p>Over the next few months we are bringing local businesses, national brands and events onto Vegans Explore in all thirteen of our chapters, and their campaigns need creators. Register to be considered, and the opportunities that fit you come straight to your own Creator Dashboard.</p>' +
+          '<p>Over the next few months we are bringing local businesses, national brands and events onto Vegans Explore in every one of our chapters, and their campaigns need creators. Register to be considered, and the opportunities that fit you come straight to your own Creator Dashboard.</p>' +
           '<h3 class="vg-sec">What you get</h3><ul class="vg-gets">' +
           [['Gigs delivered to you', 'Paid campaigns, product collaborations, hosting and events, matched to your city, your topics and your audience.'],
            ['A media kit partners trust', 'Your platforms, your best work and your results in one page, shown to a partner only once you are shortlisted.'],
