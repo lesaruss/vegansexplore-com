@@ -213,7 +213,7 @@ async function tasterEmail(kind: string, t: any) {
   if (kind === 'day-7') {
     const { data: s } = await db.rpc('ve_nurture_story', { p_why: t.why || 'vegan' });
     const st: any = s || null;
-    const body = st ? P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}, so we thought you'd like this one${st.show ? ` from ${esc(st.show_name || st.show)}` : ''}: <b>${esc(st.title)}</b>.`) + (st.summary ? P(esc(st.summary.replace(/\s+\S*$/, '')) + '...') : '') + btn(utm(`${SITE}/directory/${st.show_slug}?ep=${encodeURIComponent(st.guid)}`, kind), 'Listen to the episode') + P(`It plays right on the show's page, where you can vote for the show and save the episode.`)
+    const body = st ? P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}, so we thought you'd like this one${st.show ? ` from ${esc(st.show_name || st.show)}` : ''}: <b>${esc(st.title)}</b>.`) + (st.summary ? P(esc(st.summary.replace(/\s+\S*$/, '')) + '...') : '') + btn(utm(`${SITE}/listen?show=${st.show_slug}&ep=${encodeURIComponent(st.guid)}`, kind), 'Play the episode') + P(`It plays right on the page, where you can save it and vote for the show.`)
       : P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}. Our shows have ten years of conversations about it.`) + btn(utm(`${SITE}/media`, kind), 'Listen');
     return { subject: st ? String(st.title).slice(0, 90) : 'A story for you', unsub, html: shell(P(`Hi ${first},`) + body + P(`More like it is in the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#1f5f22">Daily Pulse</a>.`) + sign, foot) };
   }
