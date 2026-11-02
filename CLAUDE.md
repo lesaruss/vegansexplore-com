@@ -2688,6 +2688,11 @@ see everything and then filter for what they want... the products are the produc
   `listings_product_kinds_known` check), picked in Food & Drink's Makes filter (the switch under the search went 2026-11-01, below). The five Local Food Meal Prep listings were national
   shippers with stand-in Los Angeles addresses and moved here (Purple Carrot, Sakara Life, Splendid Spoon; Mosaic Foods and Trifecta Nutrition
   as Vegan options), with Daily Harvest added. Local Food > Meal Prep is for local meal preppers. Noize was marked open again the same day.
+  **The local meal prep search** (2026-11-02, migration `20261102_meal_prep_search.sql`, scripts in `scripts/meal-prep-search/`): 78 Google
+  searches, every chapter, `once:meal-prep-search`. Few local preppers are on Google under Vegan words: 15 matched the rules, 8 were listed
+  after a look at each (`crawl_source` `meal-prep-search`): Vegan Vibes (Atlanta), PHAT Vegan (Maryland), Remedy Kitchen Vegan Food Co.
+  (Philadelphia), Righteous Life (West Virginia), 100% Vegan; Planthood (London), GURU MEALS and Little Green Forks (Los Angeles), Ambrosia
+  Meals (New York), Vegan options, in Being vetted. Pizza places match on Google's takeaway type, so read every match before listing it.
 - **Live filters are pills, and every Products shelf has its types** (Sean, 2026-11-01: "if I were to choose... egg alternatives, I would
   expect where it says meal prep delivery to say egg alternatives... Put it in that little pill, and if you hit X on it, it clears the
   filter... the search bar just shrinks"; "I don't want 1,000 categories"; migration `20261101_products_shelf_types.sql`). Every filter set
