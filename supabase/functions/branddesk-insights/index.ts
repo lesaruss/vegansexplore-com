@@ -79,10 +79,11 @@ async function secret(key: string): Promise<string | null> {
 }
 async function cached<T>(key: string, ttl: number, refresh: boolean, make: () => Promise<T>): Promise<T & { fetched_at?: string; cached?: boolean }> {
   const { data: hit } = await db.from('ve_analytics_cache').select('data, fetched_at').eq('key', key).maybeSingle();
-  if (hit && !refresh && Date.now() - Date.parse(hit.fetched_at) < ttl) return { ...(hit.data as T), fetched_at: hit.fetched_at, cached: true };
+  if (hit && !refresh && (hit.data as any)?.connected !== false && Date.now() - Date.parse(hit.fetched_at) < ttl) return { ...(hit.data as T), fetched_at: hit.fetched_at, cached: true };
   const data = await make();
   const fetched_at = new Date().toISOString();
-  if (!(data as any)?.error) await db.from('ve_analytics_cache').upsert({ key, data, fetched_at });
+  // A "not connected" answer is never kept, so connecting a source shows at once (Sean, 2026-11-02: SEO kept saying not connected).
+  if (!(data as any)?.error && (data as any)?.connected !== false) await db.from('ve_analytics_cache').upsert({ key, data, fetched_at });
   return { ...data, fetched_at };
 }
 
