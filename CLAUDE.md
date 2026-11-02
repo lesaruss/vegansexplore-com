@@ -4123,6 +4123,7 @@ the $11 Passport or a membership earned now; no free account that can take part,
     show's art, Play in the player docked above it, Save, **Vote for the show** with its count through `VEVotes`), the episode's notes from
     the feed under About this episode, and Every episode of the show. `ve-nurture` version 6 from 38a5438. Any episode of any show in the
     Directory opens there; use it wherever we send one episode (emails, the Pulse).
+  - **The Taste page, redone 2026-11-02** (Sean: "the banner... is cutting off a lot of people's heads... use like a city... It looks pretty dry"): `/guides/taste` wears South Florida's city art (no people) behind "Try Vegans Explore before you join" and Get my free taste (scrolls to the form); eight cards, each a Guide's banner and what you get from it (Maya's swap, Theo's B12, River's Hard Rock, Nori's FLL, Dani's animals, Pascal's city, Liz's restaurant check, Kai's creator tip), four across beside the sticky sign-up on desktop, compact rows on phones. The sampler's cast slide uses the Welcome Guide banner. `nurture.tasters_on` turned on the same day (Sean: "You need to turn something on"), so Day 3, 7 and 14 and the opted-in Pulse go out to Tasters from 10 AM Eastern.
   - **Still to build**: 6. the content gig, 7. the business points rule.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)

@@ -18,15 +18,28 @@
     body{font-family:Montserrat,sans-serif;background:#f7f8f7;color:var(--ink);line-height:1.6}
     :focus-visible{outline:3px solid #F69820;outline-offset:2px}
     #gate{max-width:none;margin:0;padding:0 0 72px}
-    .hero{position:relative;min-height:340px;display:flex;align-items:flex-end;background:#0d130e url('/public/guides/welcome-ensemble.jpg') center/cover no-repeat;color:#fff}
+    .hero{position:relative;min-height:340px;display:flex;align-items:flex-end;background:#0d130e url('/communities/south-florida/banner.jpg') center 42%/cover no-repeat;color:#fff}
     .hero::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,rgba(0,0,0,.92) 0%,rgba(0,0,0,.78) 45%,rgba(0,0,0,.25) 80%,transparent)}
     .hero .in{position:relative;padding:40px 40px 34px;max-width:760px}
-    @media(max-width:700px){.hero::before{background:rgba(0,0,0,.62)}.hero .in{padding:28px 16px 24px}}
+    @media(max-width:700px){.hero::before{background:rgba(0,0,0,.74)}.hero .in{padding:28px 16px 24px}}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#9fe0a6}
     .hero h1{font-size:clamp(28px,4vw,46px);font-weight:900;line-height:1.08;margin:8px 0 10px}
-    .hero p{font-size:15.5px;color:rgba(255,255,255,.88)}
-    .wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:24px;padding:28px 40px 0;align-items:start}
-    @media(max-width:900px){.wrap{grid-template-columns:1fr;padding:22px 16px 0}.wrap #form{order:-1}}
+    .hero p{font-size:15.5px;color:rgba(255,255,255,.9);max-width:640px}
+    .hero .btn{margin-top:18px}
+    .tz-perks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    @media(min-width:1280px){.tz-perks{grid-template-columns:repeat(4,minmax(0,1fr))}}
+    .tz-perk{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+    .tz-perk .pic{aspect-ratio:8/5;background:#e9efe9 center/cover no-repeat}
+    .tz-perk .tx{padding:12px 14px 14px}
+    .tz-perk b{display:block;font-size:15px;font-weight:900;line-height:1.3}
+    .tz-perk span{display:block;font-size:13.5px;color:var(--mute);margin-top:4px;line-height:1.45}
+    .tz-perk small{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gd);margin-bottom:4px}
+    #form{scroll-margin-top:90px}
+    @media(max-width:520px){.tz-perks{grid-template-columns:1fr;gap:10px}.tz-perk{flex-direction:row;align-items:center}.tz-perk .pic{width:128px;flex:none;align-self:stretch;aspect-ratio:auto;min-height:80px;background-size:contain;background-color:#fff}.tz-perk .tx{padding:10px 12px}.tz-perk span{font-size:12.5px}}
+    .tz-side{position:sticky;top:calc(var(--ve-nav-h,64px) + 16px)}
+    .wrap{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,1fr);gap:24px;padding:28px 40px 0;align-items:start}
+    .wrap > h2.tz-h{grid-column:1/-1}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr;padding:22px 16px 0}.tz-side{position:static}}
     .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px}
     .card h2{font-size:13px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--gd);margin:0 0 12px}
     ul.ticks{list-style:none;display:flex;flex-direction:column;gap:9px}
@@ -50,6 +63,7 @@
     .done{padding:40px;font-size:16px}
     /* The sampler slides */
     .tz-vid{width:min(560px,100%);justify-self:center;align-self:center}.tz-vid .vv{margin:0}
+    .tz-art.wide{width:min(560px,100%);aspect-ratio:8/5}
     .tz-art{width:min(380px,100%);aspect-ratio:1;border-radius:18px;background:#1b2a1d center/cover no-repeat;box-shadow:0 18px 44px rgba(0,0,0,.4);justify-self:center}
     .tz-box{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;margin:14px 0;font-size:14.5px;line-height:1.55}
     .tz-box b{color:#9fe0a6}
@@ -62,19 +76,27 @@
   <div class="page-frame">
   <script src="/public/nav.js"></script>
   <div id="gate">
-    <section class="hero"><div class="in"><p class="eyebrow">Free with your name and email</p><h1>A Taste of Vegans Explore</h1><p>A piece of every one of our Guides, walked through by the whole cast: Maya, Theo, Liz, River, Nori, Kai, Dani and Pascal. See what Vegans Explore is before you decide anything.</p></div></section>
+    <section class="hero"><div class="in"><p class="eyebrow">Free. Just your name and email</p><h1>Try Vegans Explore before you join</h1><p>Our Guides are how Vegans Explore helps you eat, travel and live Vegan. Get a free piece of each one, and see your city's places, people and events up close.</p><a class="btn" href="#form" id="tz-jump">Get my free taste</a></div></section>
     <div class="wrap">
-      <div class="card"><h2>What's inside</h2><ul class="ticks">
-        <li>A Vegan swap from the Dairy Guide and the B12 page from the Nutrition Guide.</li>
-        <li>A whole stadium and a whole airport, mapped for Vegan food.</li>
-        <li>The free restaurant check and the first tips for creators and nonprofits.</li>
-        <li>The animals: the rescues and sanctuaries near you, and the Fosters board.</li>
-        <li>Your city: its Directory, Daily Pulse and events.</li>
-      </ul><p class="fine">You will not be a member and nothing is charged. You are on our list, and we will send you a few notes about what is happening in your city.</p></div>
+      <div>
+        <div class="tz-perks">
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/vegan-dairy-guide.jpg')"></div><div class="tx"><small>Maya · Dairy Guide</small><b>Swap dairy without missing it</b><span>The Buttermilk swap, made with what is already in your kitchen.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/nutrition-guide.jpg')"></div><div class="tx"><small>Theo · Nutrition Guide</small><b>Get your B12 right</b><span>The one nutrient every Vegan needs to plan for, how much and where to get it.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/stadium-arena-guide.jpg')"></div><div class="tx"><small>River · Stadium &amp; Arena Guide</small><b>Eat Vegan at the game</b><span>Hard Rock Stadium: every Vegan stand, and the walk there from your seat.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/airport-guide.jpg')"></div><div class="tx"><small>Nori · Airport Guide</small><b>Eat Vegan before your flight</b><span>Fort Lauderdale airport: every Vegan spot and the gate it is near.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/nonprofit-guide.jpg')"></div><div class="tx"><small>Dani · For the animals</small><b>Help the animals near you</b><span>The rescues and sanctuaries close to you, and the Fosters board.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/communities/south-florida/banner.jpg');background-position:center 42%"></div><div class="tx"><small>Pascal · Your city</small><b>Your city, up close</b><span>Its Vegan places ranked by member votes, its events and its Daily Pulse.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/vegan-restaurant-guide.jpg')"></div><div class="tx"><small>Liz · For Vegan businesses</small><b>Run a Vegan restaurant?</b><span>A free check of how your place shows up on Google and online.</span></div></div>
+          <div class="tz-perk"><div class="pic" style="background-image:url('/public/guides/creator-guide.jpg')"></div><div class="tx"><small>Kai · For creators</small><b>Make Vegan content?</b><span>The first tip from the Creator Guide on growing an audience that sticks.</span></div></div>
+        </div>
+        <p class="fine">Nothing is charged and you are not signing up for a membership. We will send you a few notes about your city, and every one has a link to stop them.</p>
+      </div>
+      <div class="tz-side">
       <div class="card" id="form"></div>
+      </div>
     </div>
   </div>
-  <main class="vg-stage" id="stage" data-bg="/public/guides/welcome-ensemble.jpg" aria-label="A Taste of Vegans Explore" hidden></main>
+  <main class="vg-stage" id="stage" data-bg="/communities/south-florida/banner.jpg" aria-label="A Taste of Vegans Explore" hidden></main>
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/footer.js"></script>
@@ -98,6 +120,8 @@
     function step() { return qs.get('step') === '2' ? 2 : 1; }
     function go(n) { qs.set('step', String(n)); history.pushState(null, '', location.pathname + '?' + qs.toString()); drawForm(); }
     window.addEventListener('popstate', function () { qs = new URLSearchParams(location.search); if (!document.getElementById('gate').hidden) drawForm(); });
+    var jump = document.getElementById('tz-jump');
+    if (jump) jump.addEventListener('click', function (e) { e.preventDefault(); var f = document.getElementById('form'); f.scrollIntoView({ behavior: 'smooth', block: 'start' }); setTimeout(function () { var i = document.getElementById('tz-name'); if (i) i.focus({ preventScroll: true }); }, 450); });
     function drawForm() {
       var s = step(), el = document.getElementById('form');
       el.innerHTML = '<h2>Get your taste</h2><div class="steps"><span class="' + (s === 1 ? 'on' : '') + '">You</span><span class="' + (s === 2 ? 'on' : '') + '">Three questions</span></div>' +
@@ -140,7 +164,7 @@
       return '<section class="vg-slide" id="' + id + '" data-title="' + esc(title) + '"><div class="vg-split"><div class="vg-glass"><p class="vg-eyebrow">' + esc(eyebrow) + '</p><h2 class="vg-h">' + h + '</h2>' + body +
         (links ? '<div class="tz-links">' + links + '</div>' : '') + (g !== 'all' && id !== 'you' && id !== 'city' ? '<p class="tz-rest">The rest of this Guide comes with your Passport.</p>' : '') + '</div>' +
         (id === 'you' && window.VEVideo ? '<div class="tz-vid">' + VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-taste-v1.mp4', vtt: '/public/home/next-taste-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'taste_next_v1' }) + '</div>' :
-        '<div class="tz-art" role="img" aria-label="' + esc(eyebrow) + '" style="background-image:url(\'' + esc(g === 'all' ? '/public/guides/welcome-ensemble.jpg' : art(g)) + '\')"></div>') + '</div></section>';
+        '<div class="tz-art' + (g === 'all' ? ' wide' : '') + '" role="img" aria-label="' + esc(eyebrow) + '" style="background-image:url(\'' + esc(g === 'all' ? '/public/guides/welcome-guide.jpg' : art(g)) + '\')"></div>') + '</div></section>';
     }
     function sampler(t) {
       document.getElementById('gate').hidden = true;
