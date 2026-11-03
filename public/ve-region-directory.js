@@ -201,6 +201,9 @@
     // Area is a region and then its cities: one label, the two dropdowns under it.
     + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}'
     + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo:empty{display:none}'
+    // Area's two dropdowns (region, then its cities) stay inside their own cell: the toolbar's 300px minimum for that pair
+    // pushed All cities off a phone's screen (Sean, 2026-11-03: "it needs to be the same width as all the others on mobile").
+    + '.vrd-root .vrd-filter-pop .sort-bar .vrd-geo,.vrd-root .vrd-filter-pop .sort-bar .vrd-geo:has(select[data-vrd-city]){min-width:0 !important;flex-grow:0 !important;max-width:100%}'
     + '.vrd-root .vrd-filter-pop .sort-bar .geo-label,.vrd-root .vrd-filter-pop .sort-bar .sort-label{margin:0;font-size:10px;letter-spacing:.08em;color:#666}'
     // Dropdowns: our chevron 16px from the edge (canon rule 15), the 6px corner (rule 13), one height.
     + '.vrd-root .vrd-filter-pop .sort-bar select,.vrd-root .vrd-filter-pop select{flex:0 0 auto;width:100%;max-width:100%;min-width:0;height:40px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 12px;font-size:12px;color:#1a1a1a;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
