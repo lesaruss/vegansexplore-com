@@ -9,6 +9,6 @@ All live on main (last: d453ff2, Vercel production READY). Verified with Playwri
 - Pulse episode pages (`api/pulse-article.js`): order = short description, player (the show page's episode row via `VEEpisodes.row`, docked player), Topics Covered, About the Guest, On this episode (all credited people: Guest then Host), In this story (excludes credited people), share. No guest line at the top.
 
 ## Open
-- Sean has not answered: should YouTube-video episodes (about 223 of 278) also use the show-page episode row instead of the YouTube iframe + old card? Row's Play uses the audio feed.
+- DONE 2026-11-03: YouTube-video episodes now use the show-page episode row too (default taken). Exception: a moment link (`?t=`) keeps the YouTube player, since the second is timed on the video.
 - On this episode should also list people discussed, once Sean uploads transcripts (held until then).
 - Sandbox cannot reach hq.lesaruss.ai, Captivate or mzstatic: audio and artwork not loaded in local tests.

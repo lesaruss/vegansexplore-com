@@ -217,7 +217,10 @@ module.exports = async (req, res) => {
   // cover picture for an article or interview. Mirrors pulseMediaHtml() in /pulse.html.
   const box = '<div style="position:relative;width:100%;aspect-ratio:16/9;margin-bottom:28px;border-radius:8px;overflow:hidden;background:#000;">';
   let embedHtml = '';
-  if (post.youtubeId) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + (startAt ? '?start=' + startAt + '&autoplay=1' : '') + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+  // Episode row for every episode we can match to its feed (Sean, 2026-11-03); a moment link (?t=) keeps the YouTube player,
+  // since its second is timed on the video.
+  const useRow = !!feedEp && !(post.youtubeId && startAt);
+  if (post.youtubeId && !useRow) embedHtml = box + '<iframe src="https://www.youtube.com/embed/' + esc(post.youtubeId) + (startAt ? '?start=' + startAt + '&autoplay=1' : '') + '" title="' + esc(title) + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
   else if (post.videoUrl) embedHtml = box + '<video controls playsinline preload="metadata" poster="' + esc(post.img || '') + '" src="' + esc(post.videoUrl) + '" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;" aria-label="' + esc(title) + '"></video></div>';
   else if (post.img && post.fromDepot) {
     // The cover's credit (Sean, 2026-09-29): who the photo is from, or that it is an illustration.
@@ -250,13 +253,13 @@ module.exports = async (req, res) => {
     // row as on its show's page, art, Play and Save, with the docked player above it (public/ve-episodes.js, drawn by the script
     // at the foot of the page; this card is what shows until it loads and for anyone without scripts). An episode with a video keeps
     // its YouTube player and the card.
-    playerIsRow = !post.youtubeId && !!feedEp;
+    playerIsRow = useRow;
     epHtml = (playerIsRow ? '<div class="vep-dock" data-vep-always></div><div id="ep-player" class="ep-player" data-show="' + esc(show.slug) + '" data-guid="' + esc(feedEp.guid) + '">' : '')
       + '<div class="ep-card">'
       + (art ? pic(art, 256, ' class="ep-art" width="96" height="96"') : '')
       + '<div class="ep-body"><a class="ep-show" href="' + showUrl + '">' + esc(show.name) + '</a>'
       + '<div class="ep-meta">' + meta + '</div>'
-      + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (post.youtubeId || !feedEp ? 'Listen on the show page' : 'Open on the show page') + '</a>'
+      + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (!playerIsRow && (post.youtubeId || !feedEp) ? 'Listen on the show page' : 'Open on the show page') + '</a>'
       + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>'
       + (playerIsRow ? '</div>' : '');
     // On this episode (Sean, 2026-11-03: "put them below About the Guest, and then that's where all those slots will fill"): the guest
