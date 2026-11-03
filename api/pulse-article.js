@@ -238,7 +238,7 @@ module.exports = async (req, res) => {
     + '<p class="in-story-sub">The people, places and media this story names, from our Directory. Vote for them, or open their page.</p>'
     + '<div class="in-story-pills" id="in-story-pills" role="group" aria-label="Filter"></div>'
     + '<div class="vrd-root"><div class="rank-grid" id="in-story-grid"></div></div></section>';
-  let epHtml = '', moreHtml = '';
+  let epHtml = '', peopleHtml = '', withHtml = '', playerIsRow = false, moreHtml = '';
   if (epData) {
     const show = epData.show;
     const showUrl = '/directory/' + encodeURIComponent(show.slug);
@@ -246,14 +246,26 @@ module.exports = async (req, res) => {
     const art = (feedEp && feedEp.image) || show.logo || '';
     const mins = feedEp && feedEp.duration ? Math.round(feedEp.duration / 60) + ' min' : '';
     const meta = [post.epNum ? 'Episode ' + post.epNum : '', fmtDate(post.publishedAt), mins].filter(Boolean).join(' &middot; ');
-    epHtml = '<div class="ep-card">'
+    // The player (Sean, 2026-11-03: "I want the player to be consistent, like the episode"): an episode with no video is the same
+    // row as on its show's page, art, Play and Save, with the docked player above it (public/ve-episodes.js, drawn by the script
+    // at the foot of the page; this card is what shows until it loads and for anyone without scripts). An episode with a video keeps
+    // its YouTube player and the card.
+    playerIsRow = !post.youtubeId && !!feedEp;
+    epHtml = (playerIsRow ? '<div class="vep-dock" data-vep-always></div><div id="ep-player" class="ep-player" data-show="' + esc(show.slug) + '" data-guid="' + esc(feedEp.guid) + '">' : '')
+      + '<div class="ep-card">'
       + (art ? pic(art, 256, ' class="ep-art" width="96" height="96"') : '')
       + '<div class="ep-body"><a class="ep-show" href="' + showUrl + '">' + esc(show.name) + '</a>'
       + '<div class="ep-meta">' + meta + '</div>'
-      + (!post.youtubeId && feedEp ? '<audio controls preload="none" src="' + esc(feedEp.audio) + '" aria-label="Listen: ' + esc(title) + '"></audio>' : '')
       + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (post.youtubeId || !feedEp ? 'Listen on the show page' : 'Open on the show page') + '</a>'
-      + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>';
-    if (people.length) epHtml += '<h3 class="article-section-head">On this episode</h3><div class="ep-people">' + people.map(function (c) {
+      + '<a class="ep-btn" href="' + showUrl + '">Every episode</a></div></div></div>'
+      + (playerIsRow ? '</div>' : '');
+    // The guest and the host sit at the top, under the short description (Sean, 2026-11-03: "he should be already at the top").
+    const plink = function (c) { return '<a href="/directory/' + encodeURIComponent(c.listings.slug) + '">' + esc(c.listings.name) + '</a>'; };
+    const guests = people.filter(function (c) { return c.role === 'Guest'; }), hosts = people.filter(function (c) { return c.role === 'Host'; });
+    const others = people.filter(function (c) { return c.role !== 'Guest' && c.role !== 'Host'; });
+    if (guests.length || hosts.length) withHtml = '<p class="ep-with">' + [guests.length ? 'With ' + guests.map(plink).join(', ') : '', hosts.length ? 'Hosted by ' + hosts.map(plink).join(', ') : ''].filter(Boolean).join(' &middot; ') + '</p>';
+    // On this episode: anyone else it names or has on, never the guest or host again.
+    if (others.length) peopleHtml = '<h3 class="article-section-head">On this episode</h3><div class="ep-people">' + others.map(function (c) {
       const l = c.listings;
       const face = l.logo_url ? pic(l.logo_url, 128, ' width="56" height="56"') : '<span class="ep-letter">' + esc((l.name || '?').charAt(0)) + '</span>';
       return '<a class="ep-person" href="/directory/' + encodeURIComponent(l.slug) + '">' + face + '<span><strong>' + esc(l.name) + '</strong><small>' + esc(c.role || '') + '</small></span></a>';
@@ -286,8 +298,10 @@ module.exports = async (req, res) => {
   // For an episode, the player and the show sit under the title and its summary, not above the title.
   let articleHtml = embedHtml + bodyHtml;
   if (epData) {
+    // Short description, the guest, the player, then Topics Covered and About the Guest, then On this episode (Sean, 2026-11-03).
     const m = bodyHtml.match(/<p class="article-lede">[\s\S]*?<\/p>/);
-    articleHtml = m ? bodyHtml.slice(0, m.index + m[0].length) + embedHtml + epHtml + bodyHtml.slice(m.index + m[0].length) : embedHtml + epHtml + bodyHtml;
+    articleHtml = m ? bodyHtml.slice(0, m.index + m[0].length) + withHtml + embedHtml + epHtml + bodyHtml.slice(m.index + m[0].length) + peopleHtml
+      : withHtml + embedHtml + epHtml + bodyHtml + peopleHtml;
   }
   const ld = epData ? {
     '@context': 'https://schema.org', '@type': 'PodcastEpisode', name: shortTitle(title), url: pageUrl, description: post.excerpt || undefined,
@@ -349,6 +363,8 @@ module.exports = async (req, res) => {
     + '.ep-btn{display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ve-text);background:#fff;border:1.5px solid var(--ve-border);border-radius:6px;padding:10px 16px;}'
     + '.ep-btn:hover{border-color:var(--ve-text);}'
     + '.ep-btn-go{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}.ep-btn-go:hover{background:#1f5f22;border-color:#1f5f22;}'
+    + '.ep-with{font-size:13px;font-weight:600;color:var(--ve-text-75);margin:-12px 0 22px;}.ep-with a{color:var(--ve-green-dark);font-weight:800;text-decoration:none;}.ep-with a:hover{text-decoration:underline;}'
+    + '.ep-player .vep-sum{display:none;}.vep-dock{margin-bottom:12px;}.ep-player{margin:0 0 24px;}.ep-player .ep-card{margin:0;}.ep-player-more{margin:12px 0 0;font-size:13px;}.ep-player-more a{color:var(--ve-green-dark);font-weight:800;}'
     + '.ep-people{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;margin:0 0 24px;}'
     + '.ep-person{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--ve-border);border-radius:8px;padding:10px;text-decoration:none;color:var(--ve-text);}'
     + '.ep-person:hover{border-color:var(--ve-green);}'
@@ -469,7 +485,7 @@ module.exports = async (req, res) => {
     // The In this story loader (Sean, 2026-11-02): the shown mentions for this article (anon read), their Directory cards through
     // ve-region-directory.js (the same card, votes and page as the Directory), sorted into People, Media, Places and Organizations
     // with pills to pick one. Nothing shows when nothing is named.
-    + (preview ? '' : '<script>(function(){var CID=' + JSON.stringify(post.id) + ',U=' + JSON.stringify(SUPABASE_URL) + ',K=' + JSON.stringify(SUPABASE_ANON_KEY) + ';'
+    + (preview ? '' : '<script>(function(){var EXC=' + JSON.stringify(people.map(function (c) { return c.listings.slug; })) + ';var CID=' + JSON.stringify(post.id) + ',U=' + JSON.stringify(SUPABASE_URL) + ',K=' + JSON.stringify(SUPABASE_ANON_KEY) + ';'
       + 'var H={apikey:K,Authorization:"Bearer "+K};'
       + 'var GROUP={People:["Activists","Content Creators","Athletes","Physicians","Health Experts","Chefs","Founders"],'
       + 'Media:["Podcasts","Documentaries & Films","Books","YouTube","News Outlets","Radio and TV"],'
@@ -478,7 +494,7 @@ module.exports = async (req, res) => {
       + 'function groupOf(c){for(var g in GROUP){if(GROUP[g].indexOf(c)>=0)return g;}return "Places";}'
       + 'fetch(U+"/rest/v1/ve_content_mentions?select=listings(slug)&content_id=eq."+CID+"&status=eq.shown&limit=100",{headers:H})'
       + '.then(function(r){return r.ok?r.json():[];}).then(function(rows){'
-      + 'var slugs=(rows||[]).map(function(x){return x.listings&&x.listings.slug;}).filter(Boolean);'
+      + 'var slugs=(rows||[]).map(function(x){return x.listings&&x.listings.slug;}).filter(function(x){return x&&EXC.indexOf(x)<0;});'
       + 'if(!slugs.length)return;'
       + 'var ready=window.VERegionDirectory?Promise.resolve():new Promise(function(res){var s=document.createElement("script");s.src="/public/ve-region-directory.js";s.onload=res;s.onerror=res;document.head.appendChild(s);});'
       + 'return ready.then(function(){if(!window.VERegionDirectory)return;VERegionDirectory.css();'
@@ -499,6 +515,21 @@ module.exports = async (req, res) => {
       + 'grid.querySelectorAll(".in-story-item").forEach(function(it){it.hidden=!!g&&it.getAttribute("data-g")!==g;});};'
       + 'section.hidden=false;});});'
       + '}).catch(function(){});})();</script>')
+    // The episode player (public/ve-episodes.js, the same row as a show's page and /listen): the show's art, Play into the docked
+    // player, and Save, from the show's feed through ve-podcast.
+    + (playerIsRow ? '<script src="/public/ve-episodes.js"></script><script>(function(){var box=document.getElementById("ep-player");if(!box||!window.VEEpisodes)return;'
+      + 'var SB=' + JSON.stringify(SUPABASE_URL) + ',ANON=' + JSON.stringify(SUPABASE_ANON_KEY) + ',slug=box.getAttribute("data-show"),guid=box.getAttribute("data-guid");'
+      + 'var tok="";try{tok=localStorage.getItem("ve_token")||"";}catch(e){}'
+      + 'var h={"Content-Type":"application/json"};if(tok)h.Authorization="Bearer "+tok;'
+      + 'var listing=fetch(SB+"/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=eq."+encodeURIComponent(slug)+"&limit=1",{headers:{apikey:ANON,Authorization:"Bearer "+ANON}}).then(function(r){return r.json();}).then(function(a){return a&&a[0];});'
+      + 'var episode=fetch(SB+"/functions/v1/ve-podcast",{method:"POST",headers:h,body:JSON.stringify({action:"episode",slug:slug,guid:guid})}).then(function(r){return r.json();});'
+      + 'Promise.all([listing,episode]).then(function(r){var l=r[0],d=r[1];if(!l||!d||!d.ok||!d.episode)return;'
+      + 'var ep=d.episode,show={id:l.id,name:l.name,slug:l.slug,image:l.logo_url||(d.show&&d.show.image)||""},e2=Object.assign({},ep,{image:show.image||ep.image||""});'
+      + "box.innerHTML=VEEpisodes.row(e2,show,{showName:true,saved:!!d.saved})+'<p class=\"ep-player-more\"><a href=\"/directory/'+encodeURIComponent(l.slug)+'\">Every episode of '+String(l.name).replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</a></p>';"
+      + 'VEEpisodes.css();'
+      + 'box.addEventListener("click",function(e){var b=e.target.closest("[data-vep-play]");if(b){e.preventDefault();VEEpisodes.play(e2,show);return;}'
+      + 'var sv=e.target.closest("[data-vep-save]");if(sv){e.preventDefault();VEEpisodes.save(l.id,ep.guid,sv);}});'
+      + '}).catch(function(){});})();</script>' : '')
     + '<script>(function(){'
     + 'var SHOW=' + JSON.stringify(showSlug) + ';'
     + "var SHOWS=[{value:'vegans-explore-podcast',label:'Vegans Explore Podcast'},{value:'soflo-vegans-podcast',label:'SoFlo Vegans Podcast'},{value:'vegans-who-lift-podcast',label:'Vegans Who Lift Podcast'},{value:'pre-vegans-podcast',label:'Pre-Vegans Podcast'}];"
