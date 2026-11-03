@@ -1275,6 +1275,20 @@ playbook (`playbook_records`, the brand's slug, one decision row per topic), can
 every DB change, `docs/handoff/<date>-<topic>.md`, pushed to main), a `brief_checkpoints` row (handed_off) and a `stream_events` row; checks each
 landed; then gives Sean one self-contained paste prompt for a new chat (no "continue" needed, no skills needed). Never call it done before the check.
 
+## Playbooks: open here first (Sean, 2026-11-03)
+
+"I've steered away from it being work on a playbook to going back to working on individual tasks... It's just idea after idea after idea. I need
+the playbooks to reel me in." **Depot > Playbooks** (`/admin/depot/playbooks`, first in the Go to menu; `ve_playbook_index`, edge function
+`ve-playbooks`, super admin token; migration `20261103_playbook_index.sql`; playbook `ve-playbook-index`): one card per active playbook with its
+goal, where it stands, **the one next action**, who owns it (Logan or Sean) and a due date. Tabs: Needs Sean (soonest due first), Building,
+Watching, Parked, Done, All and **Not in the index** (playbooks with records and no row, Vegans Explore only). One playbook per view (`#p/<slug>`):
+edit the row and read the playbook's records, newest first. Status words: Building, Waiting on Sean, Watching, Parked, Done.
+- **Every chat names its playbook first.** Before building anything, Logan says which playbook the work belongs to and what its next action is. Work
+  that fits no playbook is a new idea: say so, and bring Sean a recommendation (add a playbook, or park it), never build it quietly.
+- **Wrap up updates the row** (with the playbook record, canon and the rest of the wrap-up above): where it stands, the one next action, status, due date.
+- Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
+  index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
+
 ## The new header (Sean, 2026-11-03)
 
 Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit
@@ -4627,6 +4641,9 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   how Vegan 20, Vegan venue and booth and meals 20, care in their answers 15; Logan's weights, Sean's to change) with their survey answers; the team decides in the application.
   **The welcome notes** now go to members who finished the event survey (`ve_door_emails`, Day 3 and Day 7 counted from completion), reworded, so they are a draft again until Sean approves.
   Proven 2026-11-03 in a rolled-back transaction (bad value refused, the last required answer admits, Founding, 90 of 100) and the page in a browser at 1440 and 390 px against mocked answers.
+  **Deployed and proven live 2026-11-03** (main 0fff134; `ve-mission-survey`, `ve-guide-unlock`, `ve-taster`, `ve-events-guide`, `ve-nurture`, source sha256 matched): `guide_join` answers 410, a signed-out
+  application is refused (`sign_in`), a [TEST] account with no survey is refused (`survey_needed`) and one that finished it applies. **Found while proving it**: `viewer()` in `ve-events-guide` selected
+  `members.first_name` and `last_name`, which do not exist (the table has `name`), so every signed-in caller read as signed out; it would have refused every real applicant and host-story recorder. Fixed in 0fff134.
   Not yet: a live sign-up as a real unpaid account, canon v2 (waits for Sean's two answers), the survey step on the pages with their own join step, the free organizer account for hosts with no account.
   The two open answers (Logan's defaults used until Sean says): event survey points 100; whether the general survey admits without the event survey (yes; a sponsorship still needs the event survey).
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.

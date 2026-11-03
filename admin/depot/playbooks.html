@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Playbooks | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.watching{background:#fff1dc;color:#8a5200;}.tag.suspended{background:#e3eefc;color:#0f4a91;}.tag.banned,.tag.voided{background:#fde7e5;color:var(--ve-red);}.tag.cleared,.tag.good{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    .tag.building{background:#e3eefc;color:#0f4a91;}.tag.waiting_on_sean{background:#fff1dc;color:#8a5200;}.tag.watching{background:#eef1ee;color:#333;}.tag.parked{background:#f1ecf7;color:#4b2a73;}.tag.done{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .goal{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .next{background:#f7faf7;border:1px solid var(--ve-border);border-left:4px solid var(--ve-green);border-radius:8px;padding:8px 10px;font-size:13px;}
+    .next.sean{border-left-color:var(--ve-orange);background:#fffaf1;}
+    .next b{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);}
+    .form{display:grid;gap:12px;}.form label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);display:grid;gap:4px;}
+    .form input,.form select,.form textarea{font-family:inherit;font-size:14px;min-height:42px;padding:9px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);width:100%;text-transform:none;letter-spacing:0;font-weight:500;}
+    .form select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .form textarea{min-height:84px;}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;}@media (max-width:600px){.two{grid-template-columns:1fr;}}
+    .rec{border-bottom:1px solid var(--ve-border);padding:10px 0;font-size:13px;}.rec:last-child{border-bottom:0;}.rec .meta{margin-bottom:4px;}.rec .txt{white-space:pre-wrap;word-break:break-word;}
+    .count{font-size:12.5px;color:var(--ve-text-75);margin:0 0 14px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Playbooks</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every active playbook on one page: what it is for, where it stands, the one thing that happens next and who owns it. Open this first in any chat, so the work answers to a playbook and not to the latest idea. Logan updates each row at every wrap up.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-playbooks';
+      var $ = function (id) { return document.getElementById(id); };
+      var TABS = [['sean', 'Needs Sean'], ['building', 'Building'], ['watching', 'Watching'], ['parked', 'Parked'], ['done', 'Done'], ['all', 'All'], ['new', 'Not in the index']];
+      var STATUS = { building: 'Building', waiting_on_sean: 'Waiting on Sean', watching: 'Watching', parked: 'Parked', done: 'Done' };
+      var data = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function day(t) { return t ? new Date(String(t).length === 10 ? t + 'T12:00:00Z' : t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function dueIn(t) { if (!t) return ''; var n = Math.round((new Date(t + 'T12:00:00Z') - Date.now()) / 864e5); return n < 0 ? Math.abs(n) + ' days late' : n === 0 ? 'today' : n === 1 ? 'tomorrow' : 'in ' + n + ' days'; }
+      function tag(s) { return '<span class="tag ' + esc(s) + '">' + esc(STATUS[s] || s) + '</span>'; }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if ((h[0] === 'p' || h[0] === 'add') && h[1]) return { v: 'item', slug: h[1] }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'sean' }; }
+      function pretty(slug) { return slug.replace(/^ve-/, '').replace(/-/g, ' '); }
+      function card(r) {
+        var sean = r.owner === 'Sean';
+        return '<div class="card"><div class="body"><div><b style="font-size:15px;font-weight:800;line-height:1.25">' + esc(r.title) + '</b></div>' +
+          '<div>' + tag(r.status) + ' <span class="meta">' + (r.brand_slug !== 'vegans-explore' ? esc(r.brand_slug) + ' &middot; ' : '') + 'Owner: ' + esc(r.owner) + (r.due_on ? ' &middot; ' + esc(day(r.due_on)) + ' (' + dueIn(r.due_on) + ')' : '') + '</span></div>' +
+          '<div class="goal">' + esc(r.goal) + '</div>' +
+          '<div class="next' + (sean ? ' sean' : '') + '"><b>Next' + (sean ? ' &middot; needs Sean' : '') + '</b>' + esc(r.next_action) + '</div>' +
+          '<div class="acts"><a class="btn" href="#p/' + esc(r.slug) + '">Open</a></div></div></div>';
+      }
+      function drawList(r) {
+        var rows = data.rows, un = data.unindexed || [], cnt = { all: rows.length, new: un.length };
+        cnt.sean = rows.filter(function (x) { return x.status === 'waiting_on_sean'; }).length;
+        ['building', 'watching', 'parked', 'done'].forEach(function (s) { cnt[s] = rows.filter(function (x) { return x.status === s; }).length; });
+        var html = '<nav class="tabs" aria-label="Filter">' + TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (cnt[t[0]] || 0) + ')</a>'; }).join('') + '</nav>';
+        if (r.tab === 'new') {
+          html += un.length ? '<p class="sub">These Vegans Explore playbooks have records but no row here yet. Add the ones that are still live; leave the rest as history.</p><div class="box">' + un.map(function (u) { return '<div class="row"><b>' + esc(pretty(u.slug)) + '</b><span class="meta">' + esc(u.slug) + ' &middot; ' + u.n + ' records &middot; last ' + esc(day(u.last)) + '</span><a class="btn btn-quiet" href="#add/' + esc(u.slug) + '">Add to the index</a></div>'; }).join('') + '</div>' : '<p class="sub">Every playbook with records is in the index.</p>';
+        } else {
+          var list = rows.filter(function (x) { return r.tab === 'all' || (r.tab === 'sean' ? x.status === 'waiting_on_sean' : x.status === r.tab); });
+          if (r.tab === 'sean') list.sort(function (a, b) { return (a.due_on || '9999') < (b.due_on || '9999') ? -1 : 1; });
+          html += list.length ? '<p class="count">' + list.length + (list.length === 1 ? ' playbook' : ' playbooks') + (r.tab === 'sean' ? ', soonest due first' : ', most important first') + '</p><div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">None here.</p>';
+        }
+        $('view').innerHTML = html;
+      }
+      function sel(id, opts, cur) { return '<select id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === cur ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select>'; }
+      function drawItem(r) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', slug: r.slug }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="crumb"><a href="#list/sean">Playbooks</a></p><p class="sub">Not found.</p>'; return; }
+          var x = d.row;
+          var form = x ? '<div class="box"><h2>Where it stands</h2><div class="form">' +
+            '<label>Goal<textarea id="f-goal">' + esc(x.goal) + '</textarea></label>' +
+            '<label>Where it stands<textarea id="f-stage">' + esc(x.stage) + '</textarea></label>' +
+            '<label>The one next action<textarea id="f-next">' + esc(x.next_action) + '</textarea></label>' +
+            '<div class="two"><label>Status' + sel('f-status', [['building', 'Building'], ['waiting_on_sean', 'Waiting on Sean'], ['watching', 'Watching'], ['parked', 'Parked'], ['done', 'Done']], x.status) + '</label><label>Owner of the next action' + sel('f-owner', [['Logan', 'Logan'], ['Sean', 'Sean']], x.owner) + '</label></div>' +
+            '<div class="two"><label>Date it is due<input id="f-due" type="date" value="' + esc(x.due_on || '') + '" data-dictate="off"></label><label>Order (1 is first)<input id="f-pri" type="number" min="1" max="999" value="' + esc(x.priority) + '" data-dictate="off"></label></div>' +
+            '<div class="acts"><button type="button" class="btn" id="save">Save</button><span class="msg" id="msg"></span></div></div></div>'
+            : '<div class="box"><h2>Not in the index yet</h2><p class="meta" style="margin-bottom:10px">This playbook has records but no row.</p><div class="form"><label>Title<input id="a-title" placeholder="Name it in plain words"></label><label>Goal<textarea id="a-goal" placeholder="What is it for, in one sentence"></textarea></label><div class="acts"><button type="button" class="btn" id="add">Add to the index</button><span class="msg" id="msg"></span></div></div></div>';
+          var recs = (d.records || []).length ? '<div class="box"><h2>The playbook record (newest first)</h2><div class="scroll" style="max-height:520px;padding:4px 14px">' + d.records.map(function (rc) { return '<div class="rec"><div class="meta">' + esc(rc.kind) + ' &middot; ' + esc(rc.author || '') + ' &middot; ' + esc(day(rc.created_at)) + '</div><div class="txt">' + esc(rc.body) + '</div></div>'; }).join('') + '</div></div>' : '';
+          $('view').innerHTML = '<p class="crumb"><a href="#list/' + (x && x.status === 'waiting_on_sean' ? 'sean' : 'all') + '">Playbooks</a> / ' + esc(x ? x.title : pretty(r.slug)) + '</p>' +
+            '<div class="cols"><div>' + form + '</div><div>' + recs + '</div></div>';
+          var m = $('msg');
+          if ($('save')) $('save').onclick = function () {
+            var b = $('save'); b.disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+            api({ action: 'save', slug: r.slug, goal: $('f-goal').value, stage: $('f-stage').value, next_action: $('f-next').value, status: $('f-status').value, owner: $('f-owner').value, due_on: $('f-due').value || null, priority: Number($('f-pri').value) || 50 }).then(function (res) { b.disabled = false; if (res && res.ok) { data = null; m.textContent = 'Saved.'; } else { m.className = 'msg err'; m.textContent = 'That did not save (' + ((res && res.error) || 'error') + ').'; } });
+          };
+          if ($('add')) $('add').onclick = function () {
+            var b = $('add'); b.disabled = true; m.className = 'msg'; m.textContent = 'Adding...';
+            api({ action: 'add', slug: r.slug, title: $('a-title').value, goal: $('a-goal').value }).then(function (res) { if (res && res.ok) { data = null; drawItem(r); } else { b.disabled = false; m.className = 'msg err'; m.textContent = 'That did not add (' + ((res && res.error) || 'error') + ').'; } });
+          };
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'item') return drawItem(r);
+        if (data) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } data = d; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open Playbooks.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
