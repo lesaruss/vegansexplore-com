@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Search questions | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .tag.open{background:#fff1dc;color:#8a5200;}.tag.answered{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.quarantined{background:#fde7e5;color:#8a1c12;}
+    .sw{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 16px;margin:0 0 16px;font-size:13.5px;}
+    .item input[type=text],.item select{font-family:inherit;font-size:14px;width:100%;min-height:42px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .item select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .item h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ve-green-deep);}
+    .mailprev{border:1px solid var(--ve-border);border-radius:8px;padding:6px 14px;background:#fff;max-height:340px;overflow:auto;}
+    .askers{max-height:180px;overflow:auto;font-size:13px;border:1px solid var(--ve-border);border-radius:8px;padding:8px 12px;background:#fafafa;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Search questions</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every search that came back empty is a question for our team (Sean, 2026-11-03). The most asked come first and say what to write next. Answer one, link it to the Guide it belongs in, and, once Sean turns it on, Liz emails the people who left an address. Junk and scripts wait under Quarantined.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="sw"></div><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-search';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['open', 'Open'], ['working', 'Working'], ['answered', 'Answered'], ['set_aside', 'Set aside'], ['quarantined', 'Quarantined'], ['all', 'All']];
+      var rows = [], guides = [], settings = { send_on: false }, loaded = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function stLabel(s) { for (var i = 0; i < ST.length; i++) if (ST[i][0] === s) return ST[i][1]; return s; }
+      function gTitle(slug) { for (var i = 0; i < guides.length; i++) if (guides[i].slug === slug) return guides[i].title; return slug || ''; }
+      // #list/<status>/<guide>  or  #q/<id>
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); return h[0] === 'q' ? { v: 'q', id: h[1] } : { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'open', guide: decodeURIComponent(h[2] || 'all') }; }
+      function swBox() {
+        $('sw').innerHTML = '<div class="sw"><b>Emailing askers is ' + (settings.send_on ? 'On' : 'Off') + '.</b><span class="meta">' + (settings.send_on ? 'Answered questions can be sent to the people who left an address.' : 'Nothing goes to a real person until you turn this on. Send me a test works either way.') + '</span><button type="button" class="btn btn-quiet" id="swb">' + (settings.send_on ? 'Turn off' : 'Turn on') + '</button></div>';
+        $('swb').onclick = function () { if (!settings.send_on && !confirm('Turn on emailing the people who asked? Each answered question can then be sent to its askers, once.')) return; api({ action: 'q_setting', send_on: !settings.send_on }).then(function (d) { if (d && d.ok) { settings = d.settings; swBox(); } }); };
+      }
+      function drawList(r) {
+        var counts = {}; rows.forEach(function (x) { counts[x.status] = (counts[x.status] || 0) + 1; });
+        var tabs = ST.map(function (s) { var n = s[0] === 'all' ? rows.length : (counts[s[0]] || 0); return '<a href="#list/' + s[0] + '/' + encodeURIComponent(r.guide) + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + n + ')</a>'; }).join('');
+        var gopts = '<option value="all">Every Guide</option><option value="none"' + (r.guide === 'none' ? ' selected' : '') + '>No Guide yet</option>' + guides.map(function (g) { return '<option value="' + esc(g.slug) + '"' + (g.slug === r.guide ? ' selected' : '') + '>' + esc(g.title) + '</option>'; }).join('');
+        $('view').innerHTML = '<nav class="tabs" aria-label="Filter by status">' + tabs + '</nav><div class="tools"><select id="fg" aria-label="Guide">' + gopts + '</select><input id="q" type="search" placeholder="Search the questions" data-dictate="off"></div><div class="grid" id="grid"></div>';
+        $('fg').onchange = function () { location.hash = 'list/' + r.st + '/' + encodeURIComponent(this.value); };
+        $('q').oninput = function () { fill(r); }; fill(r);
+      }
+      function fill(r) {
+        var q = $('q').value.toLowerCase();
+        var list = rows.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (r.guide === 'all' || (r.guide === 'none' ? !x.guide_slug : x.guide_slug === r.guide)) && (!q || x.q.toLowerCase().indexOf(q) >= 0); });
+        $('grid').innerHTML = list.length ? list.map(function (x) {
+          return '<div class="card"><div class="body"><span class="kind">Asked ' + esc(x.asked_count) + (x.asked_count === 1 ? ' time' : ' times') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
+            '<h3>' + esc(x.q) + '</h3><span class="meta">' + (x.emails ? esc(x.emails) + ' left an email' + (x.status === 'answered' && x.to_tell ? ', ' + esc(x.to_tell) + ' still to tell' : '') : 'No email left') + (x.guide_slug ? ' &middot; ' + esc(gTitle(x.guide_slug)) : '') + ' &middot; last asked ' + esc(when(x.last_asked_at)) + '</span>' +
+            '<div class="acts"><a class="btn" href="#q/' + x.id + '">Open</a></div></div></div>';
+        }).join('') : '<p class="sub">' + (r.st === 'open' ? 'Nothing waiting.' : 'None here.') + '</p>';
+      }
+      function drawItem(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'q_get', id: id }).then(function (d) {
+          if (!d || !d.row) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var x = d.row; settings = d.settings || settings; guides = d.guides || guides; swBox();
+          var left = (d.askers || []).filter(function (a) { return a.email && !a.notified_at; }).length;
+          var btns = [['working', 'Working on it'], ['set_aside', 'Set aside'], ['quarantined', 'Quarantine'], ['open', 'Back to Open']].filter(function (b) { return b[0] !== x.status; });
+          var gopts = '<option value="">No Guide yet</option>' + guides.map(function (g) { return '<option value="' + esc(g.slug) + '"' + (g.slug === x.guide_slug ? ' selected' : '') + '>' + esc(g.title) + '</option>'; }).join('');
+          $('view').innerHTML = '<p class="crumb"><a href="#list/open/all">Search questions</a> / ' + esc(x.q) + '</p><div class="item">' +
+            '<div><span class="kind">Asked ' + esc(x.asked_count) + ' times</span> <span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div><div class="full">' + esc(x.q) + '</div>' +
+            '<dl><dt>First asked</dt><dd>' + esc(when(x.first_asked_at)) + '</dd><dt>Last asked</dt><dd>' + esc(when(x.last_asked_at)) + '</dd><dt>People</dt><dd>' + esc((d.askers || []).filter(function (a) { return a.email; }).length) + ' left an email, ' + esc(d.anonymous) + ' did not' + (x.status === 'answered' ? ' (' + esc(left) + ' not told yet)' : '') + '</dd></dl>' +
+            ((d.askers || []).some(function (a) { return a.email; }) ? '<div class="askers">' + d.askers.filter(function (a) { return a.email; }).map(function (a) { return esc(a.email) + ' <span class="meta">' + esc(when(a.at)) + (a.notified_at ? ' &middot; told ' + esc(when(a.notified_at)) : '') + '</span>'; }).join('<br>') + '</div>' : '') +
+            '<h3>The Guide it belongs in</h3><select id="gs">' + gopts + '</select>' +
+            '<h3>The answer</h3><textarea id="at" data-dictate="off" placeholder="What we say to the people who asked">' + esc(x.answer_text || '') + '</textarea><input type="text" id="au" data-dictate="off" placeholder="A link, if one page says it best (https://... or /guides/...)" value="' + esc(x.answer_url || '') + '">' +
+            '<h3>Note</h3><textarea id="note" data-dictate="off" placeholder="For the team, never shown">' + esc(x.note || '') + '</textarea>' +
+            '<div class="acts"><button type="button" class="btn btn-quiet" id="sv">Save</button><button type="button" class="btn" id="ans">' + (x.status === 'answered' ? 'Save the answer' : 'Mark it answered') + '</button>' + btns.map(function (b) { return '<button type="button" class="btn btn-quiet" data-st="' + b[0] + '">' + b[1] + '</button>'; }).join('') + '<span class="msg" id="msg"></span></div>' +
+            (x.status === 'answered' ? '<h3>The email, as Liz sends it</h3><p class="meta">Subject: ' + esc(d.preview.subject) + '</p><div class="mailprev">' + d.preview.html + '</div><div class="acts"><button type="button" class="btn btn-quiet" id="nt">Send me a test</button><button type="button" class="btn" id="ns"' + (left && settings.send_on ? '' : ' disabled') + '>Send to ' + esc(left) + (left === 1 ? ' person' : ' people') + '</button><span class="meta">' + (settings.send_on ? (left ? '' : 'Everyone who left an address has been told.') : 'Turn on emailing above first.') + '</span></div>' : '') + '</div>';
+          function fields(extra) { return Object.assign({ action: 'q_set', id: id, guide_slug: $('gs').value, answer_text: $('at').value, answer_url: $('au').value, note: $('note').value }, extra || {}); }
+          function save(p, then) { $('msg').textContent = 'Saving...'; api(p).then(function (r) { if (r && r.ok) { loaded = false; if (then) then(); else { $('msg').textContent = 'Saved.'; } } else $('msg').textContent = r && r.error === 'answer_needed' ? 'Write the answer or add a link first.' : r && r.error === 'bad_link' ? 'The link must start with https:// or /.' : 'That did not go through.'; }); }
+          $('sv').onclick = function () { save(fields()); };
+          $('ans').onclick = function () { save(fields({ status: 'answered' }), function () { drawItem(id); }); };
+          [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { save(fields({ status: b.getAttribute('data-st') }), function () { location.hash = 'list/open/all'; }); }; });
+          if ($('nt')) $('nt').onclick = function () { $('msg').textContent = 'Sending the test...'; api({ action: 'q_notify', id: id, mode: 'test' }).then(function (r) { $('msg').textContent = r && r.ok ? 'Test sent to you.' : 'The test did not send' + (r && r.error ? ': ' + r.error : '.'); }); };
+          if ($('ns')) $('ns').onclick = function () { if (!confirm('Email ' + left + ' real ' + (left === 1 ? 'person' : 'people') + ' the answer to this question? Each is told once.')) return; $('msg').textContent = 'Sending...'; api({ action: 'q_notify', id: id, mode: 'send' }).then(function (r) { if (r && r.ok) { $('msg').textContent = 'Sent ' + r.sent + (r.skipped ? ', ' + r.skipped + ' skipped (unsubscribed)' : '') + (r.failed ? ', ' + r.failed + ' failed' : '') + '.'; setTimeout(function () { drawItem(id); }, 1200); } else $('msg').textContent = r && r.error === 'sending_off' ? 'Emailing is off.' : 'That did not go through.'; }); };
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'q') return drawItem(r.id);
+        if (loaded) { swBox(); return drawList(r); }
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'q_list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.rows; guides = d.guides; settings = d.settings; loaded = true; swBox(); drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to work the search questions.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
