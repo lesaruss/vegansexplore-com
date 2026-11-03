@@ -9,7 +9,7 @@ Read CLAUDE.md "Door Guides" (the step 2 bullet, the launch bullet and the wrap-
 - Bug fixed: `ve-events-guide` `viewer()` read columns that do not exist.
 
 ## Pending, in order
-1. Check the host heads-up approval landed: `select approved_at, enabled from ve_outreach_cities where community_slug = 'event-hosts'`. If not, call `ve-event-headsup` `approve` again (ops token read inside SQL). It sends weekdays 10 AM to 5 PM Eastern.
+1. Host heads-up email: approved by Sean and switched on (verified `approved_at` set, `enabled` true). Watch its first sends in Depot > Events > Heads-up (weekdays 10 AM to 5 PM Eastern).
 2. Sean's two defaults then canon v2 for `canon-ve-door-guides`: event survey 100 points; the general survey admits without the event survey.
 3. Real unpaid sign-up through the Guide's survey gate (ask Sean; 3 sign-ups an hour per address).
 4. Free organizer account for hosts with no account; River's recordings; This month, question of the month, private struggling clip; a Depot view of `ve_door_guide_stats`; the other three door Guides after 30 days of numbers.
