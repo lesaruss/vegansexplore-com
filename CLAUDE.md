@@ -4646,6 +4646,7 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   `members.first_name` and `last_name`, which do not exist (the table has `name`), so every signed-in caller read as signed out; it would have refused every real applicant and host-story recorder. Fixed in 0fff134.
   Not yet: a live sign-up as a real unpaid account, canon v2 (waits for Sean's two answers), the survey step on the pages with their own join step, the free organizer account for hosts with no account.
   The two open answers (Logan's defaults used until Sean says): event survey points 100; whether the general survey admits without the event survey (yes; a sponsorship still needs the event survey).
+- **The Vegan Events Guide launched 2026-11-03** (Sean: "Launch the Events Guide"): `noindex` off, in the sitemap (`GUIDES` in `api/sitemap.js`), its catalog card live on the For your work shelf (Free with the survey, Walked through by River, was Coming soon; `ve-guide-catalog.js`), og description says free with a short survey. The `ve_guides` row was already published. River's lines stay text drafts. Its welcome notes are approved and switched on (Day 3 and Day 7, to members who finished the event survey).
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
