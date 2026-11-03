@@ -132,14 +132,14 @@
   // Another brand's site draws its own header (ve-brand.js drawNav), in this script's place.
   if (window.VE_BRAND && window.VE_BRAND.drawNav) { window.VE_BRAND.drawNav(); return; }
   /* ---- The new header (Sean, 2026-11-03, mocks at /mocks/header, Option A: "the search bar is the header") ----
-     Behind ?header=new for now, kept for the visit (sessionStorage ve_header); ?header=old turns it off. Two rows on desktop: the logo, one
+     The default since 2026-11-03 (Sean: "flip it"). ?header=old turns it off for the visit (sessionStorage ve_header); ?header=new puts it back. Two rows on desktop: the logo, one
      wide search box and Log In / Join; then the menu. Phones: logo, Join and the hamburger, with the search box on its own row. The banner
      on inner pages becomes a one-line page bar (ve-city-banner.js), and Share moves into it. */
   var hdrNew = false;
   try {
     var _hq = new URLSearchParams(location.search).get('header');
-    if (_hq === 'new') sessionStorage.setItem('ve_header', 'new'); else if (_hq === 'old') sessionStorage.removeItem('ve_header');
-    hdrNew = sessionStorage.getItem('ve_header') === 'new';
+    if (_hq === 'old') sessionStorage.setItem('ve_header', 'old'); else if (_hq === 'new') sessionStorage.removeItem('ve_header');
+    hdrNew = sessionStorage.getItem('ve_header') !== 'old';
   } catch (e) {}
   if (hdrNew) document.documentElement.classList.add('ve-hdr-new');
   /* ---- Styles ---- */

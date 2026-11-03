@@ -492,7 +492,7 @@
   var SUB_LABELS = { 'Food Brands': 'Food & Drink' };
   function subLabel(v) { return SUB_LABELS[v] || v; }
   // New header (Sean, 2026-11-03): the list's own box is a filter, not a second search.
-  function hdrNewOn() { try { return document.documentElement.classList.contains('ve-hdr-new') || sessionStorage.getItem('ve_header') === 'new'; } catch (e) { return false; } }
+  function hdrNewOn() { return document.documentElement.classList.contains('ve-hdr-new'); }
   function sectionsOf(l) {
     var out = [l.category || ''];
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
