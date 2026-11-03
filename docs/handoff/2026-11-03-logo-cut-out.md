@@ -15,6 +15,10 @@ Add a listing. Written up in CLAUDE.md under Logos.
 Real browser (Playwright) on a synthetic menu photo: diagonal shape cut with clean filled corners, undo, box + Enter, blob export,
 no console errors, 1440 and 390 px. Live file confirmed serving the new code.
 
-## Not checked
-Lettuce Stain's real logo (Sean to try). A fill on a busy or gradient background is approximate. Not built: freehand lasso, magic-wand
-background removal.
+## Verified on the real logo
+Lettuce Stain (London), whose logo sat inside a menu picture: Sean tried Cut out on it on 2026-11-03 and it worked perfectly. No change
+to `ve-logo-editor.js` was needed.
+
+## Known limits (unchanged)
+A fill on a busy or gradient background is approximate. Not built: freehand lasso, magic-wand background removal. Build them only when
+a real logo needs them (a per-edge-pixel blend for busy backgrounds first, then the wand).
