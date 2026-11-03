@@ -338,7 +338,7 @@
     // 2026-10-03 (Sean): the badge names the membership a person actually has. Membership is
     // the one-time Founding Membership; Community Manager appears once Sean approves them.
     var tierBadge = member.ve_role === 'community_manager' ? 'Community Manager' : member.ve_role === 'ambassador' ? 'Ambassador'
-      : (member.membership_status === 'active' ? 'Founding Member' : 'Member');
+      : (member.membership_status === 'active' ? 'Founding Member' : member.membership_status === 'pending_payment' ? 'Passport pending' : 'Member');
     desktopRight = shareBtn +
       '<button type="button" class="ve-nav-apps" id="ve-nav-apps" aria-haspopup="menu" aria-expanded="false" aria-label="Apps: go to a LESARUSS brand">' +
         '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Apps' +
