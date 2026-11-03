@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>People | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.watching{background:#fff1dc;color:#8a5200;}.tag.suspended{background:#e3eefc;color:#0f4a91;}.tag.banned,.tag.voided{background:#fde7e5;color:var(--ve-red);}.tag.cleared,.tag.good{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    .tl{list-style:none;display:grid;gap:0;}.tl li{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;}.tl li:last-child{border-bottom:0;}
+    .tl .k{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:#eef1ee;margin-right:6px;}
+    .tl .k.opened,.tl .k.clicked,.tl .k.action{background:var(--ve-green-light);color:var(--ve-green-deep);}.tl .k.bounced{background:#fde7e5;color:var(--ve-red);}.tl .k.note,.tl .k.tag{background:#fff1dc;color:#8a5200;}.tl .k.points{background:#e3eefc;color:#0f4a91;}
+    @media (max-width:600px){.tl li{grid-template-columns:1fr;gap:2px;}}
+    .tgchip{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:4px 10px;border-radius:6px;color:#fff;}
+    .tgchip button{background:none;border:0;color:#fff;cursor:pointer;font-size:14px;line-height:1;font-family:inherit;}
+    .tgchip.off{background:#c9cfc9 !important;text-decoration:line-through;}
+    select,.inp{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tagrow{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>People</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Everyone we have touched, one page each: who they are, their tags, every email sent, opened and clicked, notes, and (for a member) their points. A tag is added or taken off by you with a reason; a rule never puts a removed tag back.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-person-profile';
+      var $ = function (id) { return document.getElementById(id); };
+      var cache = null, catalog = [];
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function day(t) { return t ? new Date(/^\d{4}-\d\d-\d\d$/.test(t) ? t + 'T12:00:00' : t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function num(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function initials(n) { return String(n || '?').split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(function (x) { return x[0]; }).join('').toUpperCase() || '?'; }
+      function avatar(p) { var m = p.member; return m && m.avatar_url ? '<img class="av" src="' + esc(m.avatar_url) + '" alt="">' : '<span class="av" style="background:' + esc((m && m.color) || '#1f5f22') + '">' + esc((m && m.initials) || initials(p.name)) + '</span>'; }
+      function tagColor(slug) { for (var i = 0; i < catalog.length; i++) if (catalog[i].slug === slug) return catalog[i].color || '#1f5f22'; return '#1f5f22'; }
+      function tagName(slug) { for (var i = 0; i < catalog.length; i++) if (catalog[i].slug === slug) return catalog[i].name; return slug; }
+      function chip(slug) { return '<span class="tgchip" style="background:' + esc(tagColor(slug)) + '">' + esc(tagName(slug)) + '</span>'; }
+      var ERR = { note_required: 'Write a reason first.', reason_needed: 'Write a reason first.', not_a_member: 'They are not a member, so there are no points.', bad_amount: 'Pick an amount from 1 to 100,000.', insufficient_points: 'They do not have that many spendable points.', account_frozen: 'Their account is frozen.', not_for_this_account: 'Not for this account.', no_such_tag: 'That tag is not on the list.' };
+      function route() { var h = location.hash.replace(/^#/, ''); if (h.indexOf('person/') === 0) return { v: 'person', key: decodeURIComponent(h.slice(7)) }; var p = h.split('/'); return { v: 'list', tag: p[0] === 'list' && p[1] ? decodeURIComponent(p[1]) : '' }; }
+      function drawList(r) {
+        var q = ($('q') && $('q').value) || '';
+        $('view').innerHTML = '<div class="tools"><input id="q" type="search" placeholder="Search name, email or handle" data-dictate="off" value="' + esc(q) + '"></div><nav class="tabs" id="tagtabs"></nav><div id="rows"><p class="sub">Loading...</p></div>';
+        var t;
+        function load() {
+          api({ action: 'list', q: $('q').value, tag: r.tag }).then(function (d) {
+            if (!d || !d.ok) { $('rows').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; }
+            catalog = d.tags; cache = d;
+            $('tagtabs').innerHTML = '<a href="#list" class="' + (r.tag ? '' : 'on') + '">Everyone</a>' + d.tags.map(function (g) { return '<a href="#list/' + esc(g.slug) + '" class="' + (r.tag === g.slug ? 'on' : '') + '">' + esc(g.name) + '</a>'; }).join('');
+            $('rows').innerHTML = d.people.length ? '<p class="meta" style="margin-bottom:10px">' + num(d.total) + (d.total === 1 ? ' person' : ' people') + (d.total > d.people.length ? ', showing ' + d.people.length : '') + '</p><div class="grid">' + d.people.map(function (p) {
+              return '<div class="card"><div class="body"><div class="who"><span class="av">' + esc(initials(p.name)) + '</span><div><b>' + esc(p.name || p.key) + '</b><span class="meta">' + esc(p.key) + (p.org ? ' &middot; ' + esc(p.org) : '') + '</span></div></div>' +
+                (p.tags.length ? '<div class="tagrow">' + p.tags.map(chip).join('') + '</div>' : '') +
+                '<div class="meta">' + p.sent + ' sent of ' + p.messages + (p.last ? ' &middot; last ' + esc(day(p.last)) : '') + (p.campaigns.length ? ' &middot; ' + esc(p.campaigns.slice(0, 2).join(', ')) : '') + '</div>' +
+                '<div class="acts"><a class="btn" href="#person/' + encodeURIComponent(p.key) + '">Open</a></div></div></div>';
+            }).join('') + '</div>' : '<p class="sub">' + (r.tag || $('q').value ? 'Nobody matches.' : 'Nobody yet. A person appears here once we write to them in Depot > Outreach or give them a tag.') + '</p>';
+          });
+        }
+        $('q').oninput = function () { clearTimeout(t); t = setTimeout(load, 250); };
+        load();
+      }
+      function dl(rows) { return '<dl>' + rows.filter(Boolean).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>'; }
+      function drawPerson(r) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', key: r.key }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="crumb"><a href="#list">People</a></p><p class="sub">' + (d && d.error === 'not_found' ? 'We have not touched this person yet.' : 'That did not load.') + '</p>'; return; }
+          catalog = d.catalog;
+          var m = d.member, active = d.tags.filter(function (t) { return t.active; }), has = {}; active.forEach(function (t) { has[t.tag_slug] = 1; });
+          var who = '<div class="box"><div class="who">' + avatar(d) + '<div><b style="font-size:18px">' + esc(d.name) + '</b><span class="meta">' + esc(d.key) + (d.org ? ' &middot; ' + esc(d.org) : '') + '</span></div></div>' +
+            '<div class="tagrow" id="mytags">' + (active.length ? active.map(function (t) { return '<span class="tgchip" style="background:' + esc(tagColor(t.tag_slug)) + '" title="' + esc((t.source === 'rule' ? 'Added by a rule' : 'Added by hand') + (t.note ? ': ' + t.note : '')) + '">' + esc(tagName(t.tag_slug)) + '<button type="button" data-rm="' + esc(t.tag_slug) + '" aria-label="Take off ' + esc(tagName(t.tag_slug)) + '">&times;</button></span>'; }).join('') : '<span class="meta">No tags.</span>') + '</div>' +
+            '<div class="tools" style="margin:12px 0 0"><select id="addtag" aria-label="Add a tag"><option value="">Add a tag...</option>' + catalog.filter(function (g) { return !has[g.slug]; }).map(function (g) { return '<option value="' + esc(g.slug) + '">' + esc(g.name) + '</option>'; }).join('') + '</select><input class="inp" id="tagnote" placeholder="Why (optional)" data-dictate="off"><button type="button" class="btn" id="tagadd">Add</button></div>' +
+            '<div id="rmbox" hidden style="margin-top:12px"><label class="meta" for="rmnote"><b id="rmwhat"></b> Why? (required, kept in the history)</label><textarea id="rmnote"></textarea><div class="acts"><button type="button" class="btn btn-stop" id="rmgo">Take it off</button><button type="button" class="btn btn-quiet" id="rmno">Cancel</button></div></div><p class="msg" id="tagmsg" role="status"></p>' +
+            '<div style="margin-top:12px">' + dl([
+              d.email ? ['Email', esc(d.email)] : null, d.handles.length ? ['Instagram', '<a href="https://instagram.com/' + esc(d.handles[0]) + '" target="_blank" rel="noopener">@' + esc(d.handles[0]) + '</a>'] : null,
+              ['Written to', num(d.counts.sent) + ' sent of ' + num(d.counts.messages) + ' messages' + (d.counts.opened ? ', ' + d.counts.opened + ' opened' : '') + (d.counts.clicks ? ', ' + d.counts.clicks + ' clicked' : '')],
+              d.campaigns.length ? ['Campaigns', esc(d.campaigns.join(', '))] : null,
+              m ? ['Member', m.membership_status === 'active' ? (m.founding_member ? 'Founding Member' : 'Member') + (m.entry_via === 'survey' ? ' (survey door)' : m.entry_via === 'passport' ? ' (paid the $11)' : '') : 'Account waiting on its Passport'] : ['Member', 'Not a Vegans Explore member yet'],
+              m ? ['Joined', esc(when(m.created_at))] : null, m && m.home_community ? ['Chapter', esc(m.home_community)] : null, m && m.standing && m.standing !== 'good' ? ['Standing', esc(m.standing)] : null]) + '</div></div>';
+          var notes = '<div class="box"><h2>Notes</h2><textarea id="nbody" placeholder="What they said, what you know about them"></textarea><div class="acts"><button type="button" class="btn" id="nadd">Save note</button><span class="msg" id="nmsg" role="status"></span></div><div id="nlist">' + d.notes.map(function (n) { return '<div class="row" style="display:block"><span class="meta">' + esc(n.author_name || 'Team') + ' &middot; ' + esc(when(n.created_at)) + '</span><div>' + esc(n.body) + '</div></div>'; }).join('') + '</div></div>';
+          var pts = '';
+          if (m && m.member_class !== 'agent' && !m.is_superadmin) pts = '<div class="box"><h2>Points</h2>' + dl([['Spendable', '<b>' + num(d.points.available_points) + '</b>'], ['Lifetime', num(d.points.total_points)]]) +
+            '<div class="tools" style="margin:12px 0 0"><input class="inp" id="pamt" type="number" min="1" max="100000" placeholder="Points" style="max-width:120px;flex:none"><input class="inp" id="pnote" placeholder="Reason (required)" data-dictate="off"></div><div class="acts"><button type="button" class="btn" data-pts="give_points">Give</button><button type="button" class="btn btn-ghost" data-pts="take_points">Take back</button><span class="msg" id="pmsg" role="status"></span></div><p class="meta" style="margin-top:8px">Taking back removes spendable points only; lifetime points and level stay.</p></div>';
+          var tl = '<div class="box"><h2>Timeline</h2>' + (d.timeline.length ? '<ul class="tl">' + d.timeline.map(function (e) { return '<li><span class="meta">' + esc(when(e.at)) + '</span><div><span class="k ' + esc(e.kind) + '">' + esc(e.kind) + '</span>' + (e.link ? '<a href="' + esc(e.link) + '">' + esc(e.title) + '</a>' : esc(e.title)) + (e.detail ? '<br><span class="meta">' + esc(e.detail) + '</span>' : '') + '</div></li>'; }).join('') + '</ul>' : '<p class="meta">Nothing yet.</p>') + '</div>';
+          $('view').innerHTML = '<p class="crumb"><a href="#list">People</a> / ' + esc(d.name) + '</p><div class="cols"><div>' + tl + '</div><div>' + who + notes + pts + '</div></div>';
+          wirePerson(d);
+        });
+      }
+      function wirePerson(d) {
+        function again() { drawPerson({ key: d.key }); }
+        function say(id, ok, t) { var e = $(id); if (!e) return; e.className = 'msg' + (ok ? '' : ' err'); e.textContent = t; }
+        $('tagadd').onclick = function () { var s = $('addtag').value; if (!s) return say('tagmsg', false, 'Pick a tag first.'); this.disabled = true; api({ action: 'tag_add', key: d.key, tag: s, note: $('tagnote').value }).then(function (r) { if (r && r.ok) again(); else { $('tagadd').disabled = false; say('tagmsg', false, ERR[r && r.error] || 'That did not go through.'); } }); };
+        var pending = null;
+        [].forEach.call(document.querySelectorAll('[data-rm]'), function (b) { b.onclick = function () { pending = b.getAttribute('data-rm'); $('rmbox').hidden = false; $('rmwhat').textContent = 'Take off ' + tagName(pending) + '.'; $('rmnote').focus(); }; });
+        $('rmno').onclick = function () { $('rmbox').hidden = true; pending = null; };
+        $('rmgo').onclick = function () { if (!pending) return; if (($('rmnote').value || '').trim().length < 3) return say('tagmsg', false, ERR.note_required); this.disabled = true; api({ action: 'tag_remove', key: d.key, tag: pending, note: $('rmnote').value }).then(function (r) { if (r && r.ok) again(); else { $('rmgo').disabled = false; say('tagmsg', false, ERR[r && r.error] || 'That did not go through.'); } }); };
+        $('nadd').onclick = function () { if (($('nbody').value || '').trim().length < 2) return say('nmsg', false, ERR.note_required); this.disabled = true; api({ action: 'note_add', key: d.key, body: $('nbody').value }).then(function (r) { if (r && r.ok) again(); else { $('nadd').disabled = false; say('nmsg', false, 'That did not save.'); } }); };
+        [].forEach.call(document.querySelectorAll('[data-pts]'), function (b) { b.onclick = function () {
+          var k = b.getAttribute('data-pts'), amt = Math.floor(Number($('pamt').value)), note = ($('pnote').value || '').trim();
+          if (!(amt >= 1)) return say('pmsg', false, ERR.bad_amount); if (note.length < 3) return say('pmsg', false, ERR.reason_needed);
+          if (!confirm((k === 'give_points' ? 'Give ' : 'Take back ') + num(amt) + ' points ' + (k === 'give_points' ? 'to ' : 'from ') + d.name + '?')) return;
+          b.disabled = true; say('pmsg', true, 'Saving...');
+          api({ action: k, key: d.key, amount: amt, note: note }).then(function (r) { if (r && r.ok) again(); else { b.disabled = false; say('pmsg', false, ERR[r && r.error] || 'That did not go through.'); } });
+        }; });
+      }
+      function render() { var r = route(); if (r.v === 'person') return drawPerson(r); drawList(r); }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open People.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

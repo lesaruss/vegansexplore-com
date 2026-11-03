@@ -61,6 +61,7 @@
     { group: 'Content', href: '/admin/depot/mentions', label: 'In this story' },
     { group: 'Content', href: '/admin/depot', label: 'Library' },
     { group: 'People', href: '/admin/depot/outreach', label: 'Outreach' },
+    { group: 'People', href: '/admin/depot/people', label: 'People' },
     { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
     { group: 'People', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
     { group: 'People', href: '/admin/depot/founding', label: 'Founding Members' },
