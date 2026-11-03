@@ -361,6 +361,7 @@
   button.dash-preview-av:hover,button.dash-preview-av:focus-visible{box-shadow:0 0 0 2.5px var(--ve-green-dark);outline:none;}
   /* Your tools: the search on the left, the category filters to its right, dropping to another row when they run out of room; on
      phones the filters sit behind a filter icon beside the search (Sean, 2026-10-30). */
+  .dash-tools-bar[hidden]{display:none;}
   .dash-tools-bar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:16px;}
   .dash-tools-find{flex:0 1 360px;min-width:0;display:flex;gap:8px;align-items:center;}
   .dash-tools-filter{display:none;flex:0 0 auto;width:44px;height:44px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.18);background:#fff;color:var(--ve-green-dark);cursor:pointer;align-items:center;justify-content:center;position:relative;padding:0;}
@@ -4564,7 +4565,7 @@
 
       dashReorder(recent, 've_dash_recent_order');
       // No Your tools for a super admin (Sean, 2026-10-30: "all of the items that are listed below in the your tools really should just
-      // be part of the depot"): the Depot box beside For you holds every Depot page, the Admin pages and the Demos. Secret Shopper, the
+      // be part of the depot"): the Depot box at the bottom of the tab holds every Depot page, the Admin pages and the Demos. Secret Shopper, the
       // Community Board and Guides left (the Daily Pulse and Guides are in the menu).
       ['dash-tools-title', 'dash-tools-bar', 'dash-tools-cats', 'dash-tools-none'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = true; });
       host.innerHTML = '';
