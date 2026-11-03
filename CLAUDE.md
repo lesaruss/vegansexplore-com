@@ -1213,7 +1213,7 @@ the active members of class member or internal, `ve_referrer_search`) and record
 (`status`, `search`, `claim`; migrations `20261103_referrer_claims*.sql`). **Rules**: a claim sets `referred_by` only when the link did not; a
 claim that disagrees with the link keeps the link's sponsor and is saved as `conflict`; typed words that match no one are saved as `unresolved`
 (`ve_referral_claims.status`: credited, matched, conflict, unresolved, self), one claim per member, refused once the account has paid
-(`already_member`). Not yet: a Depot view of conflict and unresolved claims (read the table until then), the field on the invitation,
+(`already_member`). **Depot > Referral claims** (`/admin/depot/referral-claims`, People in the Go to menu; built 2026-11-03; `ve-referrer` `admin_list`, `admin_get`, `admin_find`, `admin_decide`, super admin token; migration `20261103_referral_claims_review.sql`): To review, Conflicts, Not found, Decided, All; one claim per view with who joined, what they typed, who the link credits and who they named, and the decision: keep the link's sponsor, credit the person they named, credit another member you pick, or dismiss, with a note. `ve_referral_claim_decide` is atomic and once per claim; it changes `members.referred_by` only while the friend is still `pending_payment` (the 111 points and commission are paid when the account turns active), else it records the decision and you give points by hand. Proven in a rolled-back transaction. Not yet: the field on the invitation,
 challenge and dinner join steps, and a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
 Sign-up from one address is limited to 3 an hour (`ve-auth` `signup`), which a test run hits.
 
@@ -1236,8 +1236,8 @@ those same information." Locked: "Lock it in." (migrations `20261103_search_ques
 - **Search is an editorial tool**: the queue, most asked first, says what to write; content made for a question goes into the Guide it
   fits as added value, and search finds it. The Guides are the site's blog, with no separate blog page.
 - **Built 2026-11-03**: both tables, `ve_search_ask` (service role only), `ve-search` `ask` (and every zero-result logged search is queued),
-  Liz's card at 1440 and 390 px. **Not built yet**: the Depot queue view, emailing askers and an Inbox notice when answered, Guide
-  articles found by search, and the first vegan suit brands in Clothing and Fashion (Suits & formal has none). Open: who works the queue
+  Liz's card at 1440 and 390 px. **Built 2026-11-03: **Depot > Search questions** (`/admin/depot/search-questions`, Content in the Go to menu; `ve-search` `q_list`, `q_get`, `q_set`, `q_notify`, `q_setting`, super admin token, in `ve-search` v6 from e816d07): chips Open / Working / Answered / Set aside / Quarantined / All, a Guide filter and search (`#list/<status>/<guide>`), one question per view (`#q/<id>`: who asked and how many left an email, the Guide it belongs in, the answer text and link, a note, status buttons, and the email as Liz sends it). **Emailing askers is off until Sean turns it on** (`ve_site_settings` `search_answers` `send_on`, the switch on the page); Send me a test works either way; each asker is told once (`notified_at`), through `email-send` brand `vegans-explore`, campaign `ve-search-answer-<id>`, suppressions respected. Liz's email is a text draft for Sean. **Not built yet**: an Inbox notice when answered, Guide
+  articles found by search, and more vegan suit brands (Suits & formal has WILDA.ECO since 2026-11-03; Hangrr and Sartoro sell wool too, Brave GentleMan shows no sign of trading). Open: who works the queue
   daily; whether a signed-out email also joins the Daily Pulse list (default no until Pulse subscribe exists).
 
 ## Feedback button on every page (Sean, 2026-11-03)
@@ -1274,10 +1274,14 @@ the search box on its own row. The search is `VESearch.mount` (`/public/ve-searc
 touch devices do not. On a list page (the Directory's sub-sections) the box carries a scope chip, "in Documentaries & Films x", set through
 `window.VEHeaderScope.set({label, cat})` and sent to `/search?cat=`; the list's own box reads **Filter**. A banner (`VECityBanner`) outside a chapter hub
 is a **one-line page bar** (`vcb-bar`: the title as the way home, the picker, the page's buttons, Share); on phones the page name sits on its own row
-and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. The dashboard has its own header file
-(`dashboard/center-console.html`) with the same two rows and `/public/ve-header-search.js`; its Directory, Events, Daily Pulse, Media, Guides and
-Communities are links to the public pages, and `/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only
-Dashboard, My Saves and the Depot are under `/dashboard`. Keep the search wiring in `nav.js` and `ve-header-search.js` in step. Not done: the city
+and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. **One header, no copy** (Sean, 2026-11-03: "the font is not the same for the dashboard pages versus the non-dashboard pages... why aren't we using the
+same elements?... no drift"): the dashboard (`dashboard/center-console.html`) loads `/public/nav.js` like every page and holds no header markup, CSS or
+script of its own; `ve-header-search.js` was deleted. Its Directory, Events, Daily Pulse, Media, Guides and Communities are links to the public pages, and
+`/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only Dashboard, My Saves and the Depot are under `/dashboard`:
+`initDashTabs` opens those three in place when the shared bar's link is clicked (`NAV_TAB`, `markNav`; the Dashboard tab's address is `/dashboard`), every other
+link loads its page. The dashboard tour (`public/ve-tour.js`) points at the bar's menu row (`navLink`). A header change is made once, in `nav.js`. Checked
+2026-11-03 against a mocked signed-in super admin at 1440 and 390 px beside `/directory`: the same height, fonts and logo, the menu opens the tabs in place, no
+script errors. Not done: the city
 picker in the menu row, Apps in the account menu, scoping the dropdown (only Enter is scoped), the Events list box wording.
 
 ## Tracked links (Sean, 2026-10-04)
@@ -2363,7 +2367,7 @@ website, Instagram, Facebook, Google Images, and the logo we set aside on 2026-1
 then Ctrl+V), drag one from another tab, or paste its link (fetched server side by `logo_fetch`, JPEG, PNG, WebP, GIF or SVG, so the
 canvas is never tainted); an 800 x 800 square to drag, zoom (slider or wheel), Fit, Fill, Trim edges and Center; the background
 fills what the picture does not (Match its edges by default for a solid picture, white for a transparent one, black, our green or
-any color); a preview at card and listing size. **Save and next** uploads the square as a JPEG (`add_logo_url`, staged in
+any color); a preview at card and listing size. **Cut out** (Sean, 2026-11-03, Lettuce Stain's logo sitting inside a menu picture: "crop it so I can just select the section that I want... diagonal patterns... it automatically will fill the background"): **Box** (drag) or **Shape** (click points, so diagonals work; close on the green first point, Enter or a double click; Backspace takes a point back; Shift and drag moves the picture, the wheel zooms), then **Cut it out** crops to the selection and fills what a shape leaves outside with the most common color along its edge, which also becomes Match its edges (a see-through edge stays see-through and takes the white default); **Undo cut** steps back and cuts can follow one another. It is inside `ve-logo-editor.js`, so Depot > Logos, the listing editor's Replace the logo, New places and Add a listing all have it. **Save and next** uploads the square as a JPEG (`add_logo_url`, staged in
 `vegan-media/media/listings/_new/`) and `logo_set` copies it to `media/listings/<slug>/logo-*` (never hot-linked; under 200 px on
 the shorter side is refused), sets `details.logo_source` admin and `details.logo_checked`, moves a set-aside logo to
 `details.logo_replaced`, and logs a `ve_listing_edits` row (field `logo`). **The letter is fine** (`logo_skip`,
@@ -2910,7 +2914,7 @@ see everything and then filter for what they want... the products are the produc
   Delivery showing). The Makes filter follows the shelf (`KIND_GROUPS`, `SUB_FILTERS` `kind`): Food & Drink **Makes** (as before);
   Nutrition & Supplements **Type**: Protein, Vitamins & minerals, Meal replacements, Greens & superfoods, Sports & performance; Clothing and
   Fashion: Shoes, Streetwear & casual, Outerwear, Suits & formal, Bags & accessories; Beauty and Personal Care: Makeup, Skincare, Hair care,
-  Fragrance, Body & bath. A type shows only when at least one listing on the shelf has it (Suits & formal waits for its first). All are
+  Fragrance, Body & bath. A type shows only when at least one listing on the shelf has it (Suits & formal has WILDA.ECO, 2026-11-03; search reads suit, blazer, tuxedo and formalwear through `ve_search_vocab`, migrations `20261103_suits_formal_wilda.sql`, `20261103_search_vocab_suits.sql`). All are
   `listings.product_kinds` (keys `vitamins`, `meal_replace`, `greens`, `sports`, `shoes`, `streetwear`, `outerwear`, `formal`, `bags`,
   `makeup`, `skincare`, `haircare`, `fragrance`, `bodycare`; `protein` is shared with Food & Drink), set in the listing editor per shelf
   ticked (`KIND_SETS` in `ve-listing-admin.js`) and saved by `ve-claims` `admin_listing`. Every listing on the three shelves was tagged from
@@ -4541,8 +4545,7 @@ with us?... it's per event." Separate from Group Partners.
 ## Door Guides (LOCKED by Sean 2026-11-02, playbook `ve-door-guides`)
 
 Concept session with V, locked by Sean: "lock it", with the panel's seven changes (canon `canon-ve-door-guides`; migration
-`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Not built yet**: it comes after the event host path's
-heads-up email (step 2). Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
+`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Step 1 built and live 2026-11-03 (below); the rest is not built.** Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
 don't scare them away by saying it's $11"; the $11 unlocks their voice.
 
 - **Which**: the Vegan Events Guide first, then the Creator, Nonprofit and Vegan Restaurant Guides. Topic Guides (Dairy, Nutrition,
@@ -4559,6 +4562,41 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   before anything airs, never naming another business in a bad light.
 - **Living**: a This month section per door Guide (the question of the month, open opportunities, the latest segment).
 - **Measure 30 days** on the Events Guide (emails per Guide, Taster to Passport, clips sent and aired) before the other three.
+- **Step 1, the Vegan Events Guide free with an email, built and live 2026-11-03** (Sean: "Go ahead and deploy, then send me the diff
+  afterward"; migration `20261103_door_guides.sql`, applied through the connector; main 7497a6c; `ve-taster`, `ve-guide-unlock` and
+  `ve-events-guide` deployed from that commit through `ve-function-deploy`, source lengths matched). `ve_guides.door` marks a door Guide
+  (the Events Guide). **Reader level**: `ve-taster` `guide_join {email, guide}` makes a Taster from one field (name from the email's first
+  part, `ve_tasters.door_guides`, source `door:<slug>`; a member is told to sign in; 60 door joins per 10 minutes overall; one email with
+  the Guide's link `?t=<key>`, none for an `example.com` or `[TEST]` address) and `ve-guide-unlock` `open` returns the door Guide's
+  members-only screens to a valid Taster key (`taster_token`, `reader: true`, `unlocked` stays false: it is not an unlock, and no other
+  Guide takes it). The page (`guide-scripts/vegan-events-guide.js`): `access` `reader`; `member()` reads every screen, `signedIn()` owns
+  it (saves, votes, My list stay with owners); where a screen closes, the gate is one email field (**Open the Guide, free**), the header
+  reads Free with your email / Read it free, the key is kept in `localStorage` `ve_taster`, `?t=` opens it on any device and confirms the
+  email, `?unsub=` stops our emails. Logan's defaults, Sean's to change: the ask comes at the first closed screen (the Overview and the
+  rain example stay open), the Guide opens at once and the link confirms (the welcome series, when built, goes only to confirmed
+  addresses). **Recording rules** (`ve-events-guide` `story_start` / `story_submit`): an approved event claim on the email (a claimed host's
+  Host Notes is free), an active Passport member or a super admin, else `passport_needed`; 18 or over ticked (`adult`); 90 seconds an
+  answer (the recorder stops at 90, the server refuses over 100); the page shows the rules card (18+, 90 seconds, quiet room, never name
+  another business in a bad light, team listens first, taken down on request). Stories carry `kind` (`host_notes` now; `question_of_month`,
+  `my_story`, `good_news`, `struggling` waiting), `claimed`, `adult_at`. **Measures**: `ve_door_guide_stats(p_from)` (service role): emails,
+  confirmed, became members, clips sent and aired per door Guide. Proven live 2026-11-03: wrong Guide, bad email, a join, the reader's
+  screens, no key, a forged key and another Guide's door; recording refused without a claim or the Passport and without the 18 box; the
+  test Taster removed. Checked in a browser at 1440 and 390 px beside the Dairy Guide (same shell). **Not proven live**: a claimed host's
+  recording going through (no real claim to use), the emailed link in a mailbox. **Not built yet**: the welcome series (Day 3 and 7 notes
+  tailored to the Guide), **This month**, the question of the month, your story, good news and the private **struggling** clip (team and
+  Community Manager only, a second yes to air), the free organizer account for claimed hosts with no account, saving the plan to an
+  account, a Depot view of the measures, and the other three door Guides after 30 days of numbers.
+- **The Events Guide's welcome notes, built 2026-11-03, draft and off** (Sean: "Drafts are good, build the sender in draft state"; `ve-nurture`
+  from 4ec38d8, Depot > Challenges > Taster emails). Two notes to a reader (a Taster with `door_guides` holding the Guide, email confirmed,
+  not unsubscribed, not a member, and who has not taken the Taste): Day 3 "Decide the rain plan before the day", Day 7 "Running an event?
+  Here is what we can do with you" (`door-events-3`, `door-events-7`, one `ve_taster_emails` row each, campaign `ve-taster-door-events-*` in HQ
+  > Email, through `email-send` brand vegans-explore, signed Vegans Explore team, no prices, weekdays from 10 AM Eastern). **Draft until
+  approved**: they send only while `ve_site_settings` `nurture.door_on` is true and `door_approved_hash` equals the hash of the words in the
+  code (`doorHash`), so any edit puts them back to draft. The Depot card shows Draft / Approved, switched off / Sending, with **Approve this
+  wording**, **Switch on** and links to read each email. `ve-nurture` `settings` {door_approve: true | door_on: bool}. The Taster sequence now
+  skips anyone with no Taste answers (`why` null), so a reader never gets the Taste's Day 3, 7 and 14. Day 3 and Day 7 link the calendar
+  (the event claim is on each event's page, so the note says find your event and tap Are you running this event?). Previews proven live;
+  nothing sent, nothing switched on.
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)

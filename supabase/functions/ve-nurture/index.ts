@@ -153,7 +153,7 @@ async function registerCampaign(ref: string, name: string, subject: string, html
 // result: sent | already_sent | suppressed | invalid | failed
 async function send(kind: string, to: string, name: string | null, subject: string, html: string, testTo?: string): Promise<{ result: string; id?: string; error?: string }> {
   const { ref, name: cname } = refOf(kind);
-  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') ? 've-tasters' : 've-pc-offers',
+  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') || kind.startsWith('door-') ? 've-tasters' : 've-pc-offers',
     subject, html, recipients: [{ email: to, name: name || undefined }], ...(testTo ? { test_to: [testTo] } : {}) });
   const r = res?.results?.[0];
   if (!r) return { result: 'failed', error: res?.error || (res?.errors || []).join('; ') || 'email-send' };
@@ -241,6 +241,61 @@ async function tasterEmail(kind: string, t: any) {
 }
 
 // ---------- The tick ----------
+// ---------- Door Guide emails (canon-ve-door-guides; Sean approved the wording 2026-11-03) ----------
+// The Vegan Events Guide's two notes to a reader who gave their email there and confirmed it. They start as a draft: they send only
+// while ve_site_settings nurture.door_on is true AND door_approved_hash equals the hash of the words below, so any change to the
+// words puts them back to draft until Sean approves again (Depot > Challenges > Taster emails).
+const DOOR_GUIDE = 'vegan-events-guide';
+const DOOR_KINDS = ['door-events-3', 'door-events-7'];
+async function doorEmail(kind: string, t: any, key?: string) {
+  const k = key ?? await tasterKey(t.id);
+  const unsub = `${SITE}/guides/${DOOR_GUIDE}?unsub=${encodeURIComponent(k)}`;
+  const foot = `You are getting this because you asked for the Vegan Events Guide. You are not a member, and nothing is charged.`;
+  const rain = utm(`${SITE}/guides/${DOOR_GUIDE}?t=${encodeURIComponent(k)}#/dayof/rain`, kind);
+  const cal = utm(`${SITE}/events`, kind);
+  const apply = utm(`${SITE}/guides/${DOOR_GUIDE}?t=${encodeURIComponent(k)}#/work/apply/1`, kind);
+  if (kind === 'door-events-3') return { subject: 'Decide the rain plan before the day', unsub, html: shell(P('Hi,') +
+    P('Most event days that go wrong go wrong in one of five ways: rain, heat, guests who do not come, a vendor who does not show, or the power going out. Every one is easier when you decided what to do weeks before.') +
+    P('The rain plan is open in your Guide, with a checklist you can copy and print.') + btn(rain, 'Open what to do when it rains') +
+    P(`If you are hosting an event now, the next step is free: <a href="${cal}" style="color:#1f5f22">find it on our calendar</a> and tell us about it, and we will list it, link its page, and help you reach more people.`) + sign, foot) };
+  return { subject: 'Running an event? Here is what we can do with you', unsub, html: shell(P('Hi,') +
+    P('If you are running a Vegan event, there are two free ways to work with us.') +
+    P(`<b>Claim your event.</b> It is free and open to anyone. It makes you the event's organizer on Vegans Explore, so you can message your guests and see who is coming. <a href="${cal}" style="color:#1f5f22">Find your event</a> and tap Are you running this event?`) +
+    P('<b>Apply for a sponsorship.</b> We feature qualifying events on our calendar, in your chapter\'s Daily Pulse and on our socials, in exchange for a booth, two comped meals or tickets, and our logo.') + btn(apply, 'Open the sponsorship application') +
+    P('Your voice is welcome too. Claimed hosts can record their story for the Vegans Explore Podcast, up to 90 seconds an answer, and our team listens before anything airs.') + sign, foot) };
+}
+async function doorHash() {
+  const parts: string[] = [];
+  for (const k of DOOR_KINDS) { const m = await doorEmail(k, null, 'KEY'); parts.push(m.subject + '\n' + m.html); }
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join('\n---\n')));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function doorState(cfg: any) { const hash = await doorHash(); return { on: !!cfg.door_on, approved: !!cfg.door_approved_hash && cfg.door_approved_hash === hash, hash }; }
+
+async function doorTick(cfg: any, e: any, inHours: boolean, out: Record<string, number>) {
+  // The Vegan Events Guide's two notes: confirmed readers who have not taken the Taste, only while switched on and approved.
+  const ds = await doorState(cfg);
+  if (ds.on && ds.approved && inHours && weekday(e)) {
+    const { data: rs } = await db.from('ve_tasters').select('id, email, name, created_at, ve_taster_emails(kind, sent_at)').contains('door_guides', [DOOR_GUIDE])
+      .is('unsubscribed_at', null).is('member_id', null).is('why', null).not('confirmed_at', 'is', null).not('name', 'ilike', '%[TEST]%').limit(1000);
+    for (const t of rs || []) {
+      if (out.tasters >= cfg.per_tick) break;
+      if (await suppressed(t.email)) continue;
+      const sent = new Set(((t as any).ve_taster_emails || []).map((x: any) => x.kind)), age = Date.now() - Date.parse(t.created_at);
+      const kind = !sent.has('door-events-3') && age >= 3 * 864e5 ? 'door-events-3' : sent.has('door-events-3') && !sent.has('door-events-7') && age >= 7 * 864e5 ? 'door-events-7' : null;
+      if (!kind) continue;
+      const { error: ce } = await db.from('ve_taster_emails').insert({ taster_id: t.id, kind });
+      if (ce) continue;
+      const m = await doorEmail(kind, t);
+      const r = await send(kind, t.email, null, m.subject, m.html);
+      if (r.result === 'failed') { await db.from('ve_taster_emails').delete().eq('taster_id', t.id).eq('kind', kind); continue; }
+      await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('taster_id', t.id).eq('kind', kind);
+      if (r.result === 'suppressed' || r.result === 'invalid') await db.from('ve_tasters').update({ unsubscribed_at: new Date().toISOString() }).eq('id', t.id);
+      out.tasters++;
+    }
+  }
+}
+
 async function tick() {
   const cfg = await settings(), e = eastern(), out: Record<string, number> = { offers: 0, routed: 0, tasters: 0 };
   const inHours = e.hour >= cfg.send_hour && e.hour < 17;
@@ -260,9 +315,10 @@ async function tick() {
       if (r.result === 'sent' || r.result === 'already_sent') { await db.from('ve_pc_offers').update({ followup_kind: kind, followup_at: new Date().toISOString(), send_ids: { ...(o.send_ids || {}), [kind]: r.id || r.result } }).eq('id', o.id); out.offers++; }
     }
   }
-  if (!cfg.tasters_on || !inHours) return out;
+  if (!inHours) return out;
+  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); return out; }
   const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
-    .is('unsubscribed_at', null).is('member_id', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
+    .is('unsubscribed_at', null).is('member_id', null).not('why', 'is', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
   for (const t of ts || []) {
     if (out.tasters >= cfg.per_tick) break;
     if (t.account_id) { const { data: a } = await db.from('members').select('membership_status').eq('id', t.account_id).maybeSingle(); if (a?.membership_status === 'active') continue; }
@@ -287,6 +343,7 @@ async function tick() {
     if (r.result === 'suppressed' || r.result === 'invalid') await db.from('ve_tasters').update({ unsubscribed_at: new Date().toISOString() }).eq('id', t.id);
     out.tasters++;
   }
+  await doorTick(cfg, e, inHours, out);
   return out;
 }
 
@@ -339,12 +396,14 @@ Deno.serve(async (req) => {
 
   if (action === 'settings') {
     const cur = await settings();
+    if (body.door_approve === true) { const next = { ...cur, door_approved_hash: await doorHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
+    if (typeof body.door_on === 'boolean') { const next = { ...cur, door_on: body.door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
     if (typeof body.offers_on === 'boolean' || typeof body.tasters_on === 'boolean') {
       const next = { ...cur, ...(typeof body.offers_on === 'boolean' ? { offers_on: body.offers_on } : {}), ...(typeof body.tasters_on === 'boolean' ? { tasters_on: body.tasters_on } : {}) };
       await db.from('ve_site_settings').upsert({ key: 'nurture', value: next });
       return json({ ok: true, settings: next });
     }
-    return json({ ok: true, settings: cur });
+    return json({ ok: true, settings: cur, door: await doorState(cur) });
   }
 
   if (action === 'offers') {
@@ -358,7 +417,7 @@ Deno.serve(async (req) => {
         chosen_at: o.chosen_at, routed_at: o.routed_at, stopped_at: o.stopped_at, clicks: count || 0, link: o.ve_links?.code ? `${SITE}/go/${o.ve_links.code}` : null,
         listing: { name: o.listings?.name, slug: o.listings?.slug, city: o.listings?.address_city } };
     }));
-    return json({ ok: true, rows, settings: await settings() });
+    const cfgNow = await settings(); return json({ ok: true, rows, settings: cfgNow, door: await doorState(cfgNow) });
   }
 
   if (action === 'offer_create') {
@@ -403,6 +462,8 @@ Deno.serve(async (req) => {
       if (isId(body.offer_id)) { const { data } = await db.from('ve_pc_offers').select('*, ve_links(code)').eq('id', body.offer_id).maybeSingle(); if (data) o = { ...data, link_code: data.ve_links?.code }; }
       if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').eq('status', 'approved').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
       m = await businessEmail(kind, o);
+    } else if (DOOR_KINDS.includes(kind)) {
+      m = await doorEmail(kind, SAMPLE_TASTER);
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
       let t: any = SAMPLE_TASTER;
       if (isId(body.taster_id)) { const { data } = await db.from('ve_tasters').select('*').eq('id', body.taster_id).maybeSingle(); if (data) t = data; }

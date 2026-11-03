@@ -157,7 +157,6 @@ async function verifyToken(token: string): Promise<{ sub: string; email: string 
   }
 }
 
-
 // Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
 async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
   if (!memberId) return false;
@@ -165,6 +164,20 @@ async function standingBlocked(db: any, memberId: string | null): Promise<boolea
   return !!data?.standing && data.standing !== 'good';
 }
 const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
+
+// The Taster key signed by ve-taster (bytes 32 to 64 of the service key; a member session is never accepted here as one).
+async function readTaster(token: unknown): Promise<string | null> {
+  try {
+    const [h, p, sg] = String(token || '').split('.');
+    if (!h || !p || !sg) return null;
+    const pad = (x: string) => x.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (x.length % 4)) % 4);
+    const bytes = (x: string) => Uint8Array.from(atob(pad(x)), (c) => c.charCodeAt(0));
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode((Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '').slice(32, 64).padEnd(32, '1')), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('HMAC', key, bytes(sg), new TextEncoder().encode(`${h}.${p}`)))) return null;
+    const d = JSON.parse(new TextDecoder().decode(bytes(p)));
+    return d.k === 'taster' && typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+  } catch { return null; }
+}
 
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -188,7 +201,7 @@ serve(async (req: Request) => {
 
     const { data: guide } = await supabase
       .from('ve_guides')
-      .select('id, cost_lesars, published, access_rule')
+      .select('id, cost_lesars, published, access_rule, door')
       .eq('slug', slug)
       .maybeSingle();
 
@@ -226,6 +239,14 @@ serve(async (req: Request) => {
       const { email: _email, ...a } = await access();
       const out: Record<string, unknown> = { ...a, cost: guide.cost_lesars, access_rule: guide.access_rule, credit_cap: CREDIT_CAP, points_per_credit: POINTS_PER_CREDIT };
       if (auth && a.loggedIn) { const { data: lv } = await supabase.rpc('ve_member_level', { p_member: auth.sub }); out.level = lv || null; }
+      // A door Guide (canon-ve-door-guides) is free to read with an email: a Taster key opens its screens, but it is not an unlock.
+      if (!a.unlocked && guide.door && body.taster_token && await readTaster(body.taster_token)) {
+        out.reader = true; out.via = 'reader';
+        if (action === 'open') {
+          const { data: full } = await supabase.from('ve_guides').select('content_html').eq('id', guide.id).maybeSingle();
+          out.html = full?.content_html ?? '';
+        }
+      }
       if (action === 'open' && a.unlocked) {
         const { data: full } = await supabase.from('ve_guides').select('content_html').eq('id', guide.id).maybeSingle();
         out.html = full?.content_html ?? '';
