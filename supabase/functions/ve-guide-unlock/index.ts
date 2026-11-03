@@ -157,6 +157,15 @@ async function verifyToken(token: string): Promise<{ sub: string; email: string 
   }
 }
 
+
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const url = new URL(req.url);
@@ -186,6 +195,8 @@ serve(async (req: Request) => {
     if (!guide || !guide.published) return json({ error: 'guide_not_found' }, 404);
 
     const auth = body.token ? await verifyToken(body.token) : null;
+    const READ_ACTIONS = new Set(['status', 'open']);
+    if (auth && !READ_ACTIONS.has(String(action)) && await standingBlocked(supabase, auth.sub)) return json(NOT_IN_GOOD_STANDING, 403);
 
     // Who this person is, and whether they have this Guide.
     // via says why it is open: free, purchase or membership.

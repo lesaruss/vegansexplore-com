@@ -56,6 +56,15 @@ function limited(sub: string): boolean {
   return list.length > 40;
 }
 
+
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -64,6 +73,8 @@ Deno.serve(async (req: Request) => {
     const action = String(body.action ?? '');
     const sub = await verifyToken(bearer(req));
     if (!sub) return json({ error: 'not_authenticated' }, 401);
+    const READ_ACTIONS = new Set(['status', 'search']);
+    if (!READ_ACTIONS.has(action) && await standingBlocked(db, sub)) return json(NOT_IN_GOOD_STANDING, 403);
 
     if (action === 'status') {
       const { data: me } = await db.from('members').select('referred_by, membership_status').eq('id', sub).maybeSingle();
