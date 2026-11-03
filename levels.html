@@ -148,6 +148,8 @@
     var pts = [];
     if (l.level === 1) pts.push('Share your link: 111 points each time a friend becomes a member', 'Points from everything you take part in move you up');
     else pts.push('Everything at Level ' + (l.level - 1));
+    if (l.level === 2) pts.push('A friend who pays earns you the commission; a friend who joins free by finishing the survey still earns you 111 points');
+    if (l.level === 3) pts.push('Both on every friend: the 111 points and the commission on what they buy');
     if (earns) pts.push(Number(l.rate_pct) + '% of ' + (l.products || []).map(function (p) { return PRODUCT[p] || p; }).join(' and ') + ' bought through your link (' + usd(1100 * l.rate_pct / 100) + ' on $11)');
     if (l.level === 4 && earns) pts.push('The top rate');
     return '<div class="step' + (mine ? ' you' : '') + '">' + (mine ? '<span class="you-tag">You are here</span>' : '') +

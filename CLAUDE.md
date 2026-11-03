@@ -4107,7 +4107,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   quicker to level two, where you can start getting commissions... 20%... level three... 25%... level four... 30%, and we max out at
   30%... when they get level three... the guides now become open... route their commissions to a nonprofit of their choosing... So they
   get the credit for the donation"; migration `20261028_affiliate_levels.sql`, run through `ve-once-affiliate`, now the 410 stub). Every
-  member's link is `/passport?ref=<referral_code>`. Level 1: 111 points when a friend becomes a member. Level 2: 20% of the Passport
+  member's link is `/passport?ref=<referral_code>`. Level 1: 111 points when a friend becomes a member. **Level 2 gets the commission instead when the friend pays, but still the 111 points when the friend joins free by the survey door; Level 3 and up get both** (Sean, 2026-11-03: "they should get the 111 points if that person completes the survey"; `ve_referral_on_admit`, proven 2026-11-03 in a rolled-back transaction: a Level 2 sponsor got 111 points on a survey join and none extra on a paid join). Level 2: 20% of the Passport
   bought through the link; Level 3: 25%, and Guides bought with money too; Level 4: 30%, the top (`ve_affiliate_levels`: `rate_pct`,
   `products`, one row a level; change a rate or what a level opens there). Defaults Logan set, Sean's to change: the commission is a
   share of the $11 price (`sale_cents`), never of anything given on top; it counts for purchases by someone who joined with the link
