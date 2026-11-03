@@ -330,6 +330,7 @@
               <p class="sb-title">Your seat is held.</p>
               <p class="sb-text" id="sb-when">Friday, October 23, Palm Beach. The venue and time come in your confirmation.</p>
               <p class="sb-gift" id="sb-member" hidden>Your Founding Membership is active. Thank you for what you do for this community.</p>
+              <div id="sb-ref" style="margin:14px 0"></div>
               <p class="sb-label" id="sb-who-head" hidden>At the table so far</p>
               <ul class="sb-who" id="sb-who"></ul>
               <button type="button" class="sb-alt" id="sb-cancel">Can&rsquo;t make it after all?</button>
@@ -505,6 +506,7 @@
         .then(function (r) { return r.json(); });
     }
     function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    function mountReferrer(el, tok) { if (!el) return; var go = function () { window.VEReferrer.mount(el, tok ? { token: tok } : undefined); }; if (window.VEReferrer) return go(); var s = document.createElement('script'); s.src = '/public/ve-referrer.js'; s.onload = go; document.head.appendChild(s); }
     function view(id) { ['sb-hold', 'sb-yes-done', 'sb-declined', 'sb-ask'].forEach(function (v) { $(v).hidden = v !== id; }); }
     function paint() {
       msg.textContent = '';
@@ -528,6 +530,7 @@
         var g = st.guests || [];
         $('sb-who-head').hidden = !g.length;
         $('sb-who').innerHTML = g.map(function (n) { return '<li>' + esc(n) + '</li>'; }).join('');
+        if (!window.VE_PREVIEW) mountReferrer($('sb-ref'));
         return;
       }
       if (inv.status === 'declined') { view('sb-declined'); $('sb-reopen').hidden = !!st.closed; return; }
