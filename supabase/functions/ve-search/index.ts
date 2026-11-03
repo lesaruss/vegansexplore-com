@@ -25,6 +25,7 @@ Deno.serve(async (req) => {
   if (b.action === 'ask') {
     const r = await db.rpc('ve_search_ask', { p_q: q, p_email: typeof b.email === 'string' ? b.email.slice(0, 200) : null, p_visitor: typeof b.visitor === 'string' ? b.visitor.slice(0, 40) : null, p_brand: BRANDS.includes(b.brand) ? b.brand : 'vegans-explore' });
     if (r.error) return json({ error: 'ask_failed' }, 500);
+    if (r.data?.error === 'rate_limited') return json(r.data, 429);
     return json(r.data);
   }
   if (q.length < 2) return json({ q, interpretation: { labels: [] }, results: [], total: 0 });
