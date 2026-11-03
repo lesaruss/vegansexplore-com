@@ -130,6 +130,58 @@
 
   var SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>';
 
+
+  /* ---- Liz: when we have no answer (Sean, 2026-11-03) ---- */
+  var ASK_CSS = '.vesa-back{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:16px}' +
+    '.vesa-card{background:#fff;border-radius:12px;max-width:560px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.3);font-family:Montserrat,sans-serif;color:#1a1a1a;overflow:hidden}' +
+    '.vesa-in{display:flex;gap:18px;padding:22px}.vesa-liz{flex:none;width:92px;height:92px;border-radius:12px;background:#E8F5E9 center/cover no-repeat}' +
+    '.vesa-q{font:800 11px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px}.vesa-h{font:900 19px/1.25 Montserrat,sans-serif;margin:0 0 8px}' +
+    '.vesa-p{font:500 14px/1.55 Montserrat,sans-serif;color:#333;margin:0 0 10px}.vesa-p b{font-weight:800}' +
+    '.vesa-f{padding:0 22px 20px}.vesa-f label{display:block;font:700 12px Montserrat,sans-serif;margin:0 0 6px}.vesa-row{display:flex;gap:8px}' +
+    '.vesa-row input{flex:1;min-width:0;height:44px;border:1.5px solid #ddd;border-radius:6px;padding:0 12px;font:500 14px Montserrat,sans-serif}.vesa-row input:focus{outline:none;border-color:#2D5C27}' +
+    '.vesa-b{height:44px;padding:0 16px;border-radius:6px;border:0;background:#2D5C27;color:#fff;font:800 13px Montserrat,sans-serif;cursor:pointer}.vesa-b:hover{background:#1f4a1b}' +
+    '.vesa-x{display:block;margin:12px 0 0;background:none;border:0;color:#666;font:700 12px Montserrat,sans-serif;cursor:pointer;padding:0;text-decoration:underline}' +
+    '.vesa-ok{font:700 13px Montserrat,sans-serif;color:#2D5C27;margin:10px 0 0}.vesa-fine{font:500 11.5px/1.45 Montserrat,sans-serif;color:#666;margin:8px 0 0}' +
+    '[data-ask-more]{color:#2D5C27;font-weight:800;text-decoration:underline;text-underline-offset:2px}' +
+    '@media(max-width:480px){.vesa-in{flex-direction:column;padding:18px}.vesa-liz{width:72px;height:72px}.vesa-row{flex-direction:column}.vesa-row input{flex:none}.vesa-b{width:100%}}';
+  var lastAsk = '';
+  function askCss() { if (document.getElementById('vesa-css')) return; var s = document.createElement('style'); s.id = 'vesa-css'; s.textContent = ASK_CSS; document.head.appendChild(s); }
+  function askPost(q, email) {
+    return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'ask', q: q, email: email || undefined, brand: BRAND, visitor: vid() }) }).then(function (r) { return r.json(); });
+  }
+  function lizUrl() { try { return window.VEGuideArt ? window.VEGuideArt('liz', 'square') : ''; } catch (e) { return ''; } }
+  // The full card: Liz says how this works once, then it is a compact line.
+  function askCard(q) {
+    askCss(); if (document.getElementById('vesa-back')) return;
+    try { localStorage.setItem('ve_ask_seen', '1'); } catch (e) {}
+    var b = document.createElement('div'); b.className = 'vesa-back'; b.id = 'vesa-back'; b.setAttribute('role', 'dialog'); b.setAttribute('aria-modal', 'true'); b.setAttribute('aria-label', 'How questions work');
+    b.innerHTML = '<div class="vesa-card"><div class="vesa-in"><div class="vesa-liz" style="background-image:url(\'' + esc(lizUrl()) + '\')" role="img" aria-label="Liz"></div><div>' +
+      '<p class="vesa-q">Liz, your Guide</p><h2 class="vesa-h">We don\'t have that one yet.</h2>' +
+      '<p class="vesa-p">Vegans Explore is early, and every question you ask teaches us what to add. Yours is in our team\'s queue. When we have an answer, <b>we\'ll send it to you</b>, and everyone who asks the same thing after you will find it waiting.</p>' +
+      '<p class="vesa-p">So keep asking. The more people use it, the smarter it gets.</p></div></div>' +
+      '<form class="vesa-f"><label for="vesa-em">Want us to email you the answer? (optional)</label><div class="vesa-row"><input id="vesa-em" type="email" autocomplete="email" placeholder="you@example.com"><button class="vesa-b" type="submit">Email me the answer</button></div>' +
+      '<p class="vesa-ok" hidden></p><p class="vesa-fine">We use your email only to send you this answer.</p><button type="button" class="vesa-x">Got it</button></form></div>';
+    document.body.appendChild(b);
+    askPost(q, '').catch(function () {});
+    function close() { b.remove(); document.removeEventListener('keydown', esc_); }
+    function esc_(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc_);
+    b.addEventListener('click', function (e) { if (e.target === b || e.target.classList.contains('vesa-x')) close(); });
+    var em = b.querySelector('#vesa-em'); setTimeout(function () { try { em.focus(); } catch (e) {} }, 50);
+    b.querySelector('form').addEventListener('submit', function (e) {
+      e.preventDefault(); var v = em.value.trim(), ok = b.querySelector('.vesa-ok');
+      if (!v) { close(); return; }
+      askPost(q, v).then(function (r) { ok.hidden = false; ok.textContent = r && r.ok ? 'Got it. We\'ll write to you when we have it.' : 'That email does not look right. Try again.'; if (r && r.ok) setTimeout(close, 1800); }).catch(function () { ok.hidden = false; ok.textContent = 'Something went wrong. Try again in a moment.'; });
+    });
+    var h = b.querySelector('.vesa-h'); h.setAttribute('tabindex', '-1');
+  }
+  // The line under a search with nothing: the first time the full card, after that a short note with a link to it.
+  function askNote(q) {
+    askCss();
+    var seen = false; try { seen = localStorage.getItem('ve_ask_seen') === '1'; } catch (e) {}
+    return { seen: seen, html: 'We don\'t have that yet. <b>It\'s in our team\'s queue</b>, and we\'ll write back when we have an answer. <a href="#" data-ask-more>How this works</a>' };
+  }
+
   /* ---- the box: a field, a list under it, keyboard like a combobox ---- */
   function mount(input, o) {
     o = o || {}; css();
@@ -180,7 +232,7 @@
       // What the question is about leads: a question about a topic shows our shows first, a place or a thing shows the Directory first.
       html += sHtml + (contentFirst ? (cHtml + oHtml + lHtml) : (lHtml + cHtml + oHtml));
       if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(away(r.nearest_km)) + '.</div>';
-      else if (!res.length && !hasContent(c) && !r.store) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
+      else if (!res.length && !hasContent(c) && !r.store) { html += '<div class="ves-note" data-ask="1">' + askNote(q).html + '</div>'; lastAsk = q; }
       list.innerHTML = html; list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
     }
     function run() {
@@ -202,6 +254,7 @@
         else submit();
       }
     });
+    list.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('[data-ask-more]'); if (a) { e.preventDefault(); askCard(lastAsk || input.value.trim()); } });
     list.addEventListener('mousedown', function (e) { var a = e.target.closest && e.target.closest('a.ves-row'); if (a && a.getAttribute('data-q') && o.onSubmit) { e.preventDefault(); submit(input.value); } });
     document.addEventListener('click', function (e) { if (!host.contains(e.target)) close(); });
     return { close: close, submit: submit };
@@ -239,5 +292,5 @@
     }
   });
 
-  window.VESearch = { storeSay: storeSay, ago: ago, itemLine: itemLine, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
+  window.VESearch = { askCard: askCard, askNote: askNote, storeSay: storeSay, ago: ago, itemLine: itemLine, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

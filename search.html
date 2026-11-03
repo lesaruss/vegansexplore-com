@@ -189,7 +189,7 @@
     }).join('');
     var c = data.content || {}, hasC = S.hasContent(c) || !!data.store;
     empty.hidden = rs.length > 0 || hasC;
-    if (!rs.length && !hasC) empty.innerHTML = '<b>Nothing yet for “' + esc(state.q) + '”.</b> We keep track of what people look for so we know what to add next. Try fewer words, or a nearby city.';
+    if (!rs.length && !hasC) { var an = S.askNote(state.q); empty.innerHTML = '<b>Nothing yet for “' + esc(state.q) + '”.</b> ' + an.html + ' Try fewer words, or a nearby city.'; if (!an.seen) S.askCard(state.q); }
     drawContent(c, it, all.length);
     var more_ = '';
     if (it.link) more_ = '<a href="' + esc(it.link) + '">See these on the shelf in the Directory &rarr;</a>';
@@ -198,6 +198,7 @@
     more.hidden = !more_; more.innerHTML = more_;
     var c = document.getElementById('count'); if (c) c.remove();
   }
+  empty.addEventListener('click', function (e) { var a = e.target.closest('[data-ask-more]'); if (a) { e.preventDefault(); S.askCard(state.q); } });
   bar.addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (!b) return; state.cat = b.getAttribute('data-cat'); history.replaceState(null, '', url()); draw(); });
   bar.addEventListener('change', function (e) { if (e.target.id === 'srt') { state.sort = e.target.value; history.replaceState(null, '', url()); draw(); } });
   window.addEventListener('popstate', function () { var p = new URLSearchParams(location.search); state.q = (p.get('q') || '').trim(); state.cat = p.get('cat') || ''; state.sort = p.get('sort') === 'near' ? 'near' : 'best'; input.value = state.q; run(false); });
