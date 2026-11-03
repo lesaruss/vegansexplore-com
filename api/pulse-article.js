@@ -170,6 +170,7 @@ module.exports = async (req, res) => {
     const got = await Promise.all([
       get(fetch(SUPABASE_URL + '/rest/v1/rpc/ve_pulse_episode', { method: 'POST', headers: h, body: JSON.stringify({ p_slug: post.slug }) })),
       get(fetch(SUPABASE_URL + '/rest/v1/ve_person_credits?select=role,listings(slug,name,category,logo_url,status)&content_id=eq.' + encodeURIComponent(post.id), { headers: h })),
+      get(fetch(SUPABASE_URL + '/rest/v1/ve_content_mentions?select=listings(slug,name,category,logo_url,status)&status=eq.shown&content_id=eq.' + encodeURIComponent(post.id) + '&limit=100', { headers: h })),
       get(fetch(SUPABASE_URL + '/rest/v1/ve_pulse_content?select=slug,title,episode_number,published_at,thumbnail_url&status=eq.published&podcast_show=eq.' + encodeURIComponent(post.show) + '&order=published_at.asc&limit=500', { headers: h }))
     ]);
     epData = got[0] && got[0].show ? got[0] : null;
@@ -177,7 +178,14 @@ module.exports = async (req, res) => {
     people = (Array.isArray(got[1]) ? got[1] : []).filter(function (c) {
       const l = c.listings; if (!l || l.status !== 'approved' || seen[l.slug]) return false; seen[l.slug] = 1; return true;
     }).sort(function (a, b) { return (a.role === 'Host') - (b.role === 'Host'); });
-    siblings = Array.isArray(got[2]) ? got[2] : [];
+    // Discussed (Sean, 2026-11-03: "if you can fill it in, put it in"): People profiles the episode's own text names, from the same
+    // matches In this story uses (ve_content_mentions; a wrong one comes off in Depot > In this story). Credits come first.
+    const PEOPLE_CATS = ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'];
+    (Array.isArray(got[2]) ? got[2] : []).forEach(function (m) {
+      const l = m.listings; if (!l || l.status !== 'approved' || seen[l.slug] || PEOPLE_CATS.indexOf(l.category) < 0) return;
+      seen[l.slug] = 1; people.push({ role: 'Discussed', listings: l });
+    });
+    siblings = Array.isArray(got[3]) ? got[3] : [];
   }
   const showSlug = epData ? epData.show.slug : '';
   const feedEp = epData && epData.episode && epData.episode.audio ? epData.episode : null;
@@ -308,7 +316,7 @@ module.exports = async (req, res) => {
     datePublished: post.publishedAt || undefined, episodeNumber: post.epNum || undefined, image: (post.img || epData.show.logo) || undefined,
     partOfSeries: { '@type': 'PodcastSeries', name: epData.show.name, url: 'https://vegansexplore.com/directory/' + epData.show.slug },
     associatedMedia: feedEp ? { '@type': 'MediaObject', contentUrl: feedEp.audio } : (post.youtubeId ? { '@type': 'VideoObject', name: shortTitle(title), embedUrl: 'https://www.youtube.com/embed/' + post.youtubeId, thumbnailUrl: post.img || undefined, uploadDate: post.publishedAt || undefined } : undefined),
-    actor: people.filter(function (c) { return c.role !== 'Host'; }).map(function (c) { return { '@type': 'Person', name: c.listings.name, url: 'https://vegansexplore.com/directory/' + c.listings.slug }; })
+    actor: people.filter(function (c) { return c.role !== 'Host' && c.role !== 'Discussed'; }).map(function (c) { return { '@type': 'Person', name: c.listings.name, url: 'https://vegansexplore.com/directory/' + c.listings.slug }; })
   } : null;
 
   const html = '<!DOCTYPE html>'
