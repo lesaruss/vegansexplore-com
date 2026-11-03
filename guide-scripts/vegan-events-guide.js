@@ -264,7 +264,8 @@
   }
   function drawJoinbox() {
     var b = document.querySelector('.dg-joinbox'); if (!b || signedIn()) return;
-    b.querySelector('[data-join]').textContent = ctaLabel();
+    b.style.display = access === 'reader' ? 'none' : '';
+    b.querySelector('[data-join]').textContent = access === 'guest' || access === 'checking' ? 'Read it free' : ctaLabel();
     b.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -1061,6 +1062,7 @@
     }
     if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
     var jb = e.target.closest('[data-join]');
+    if (jb && jb.closest('.dg-joinbox') && (access === 'guest' || access === 'checking')) { location.hash = '#/kinds'; return; }
     if (jb) {
       if (!a || access === 'checking' || jb.disabled) return;
       var m = mode();
