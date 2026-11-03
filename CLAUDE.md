@@ -1217,14 +1217,13 @@ signed-in member's Share link carries `?ref=<referral_code>` (`VEShare.url()`), 
 and counted once a visitor a day (`ve_referral_visit`), the sign-up sets `members.referred_by`, and the friend's payment pays the sharer 111 points
 once (`trg_zz_referral_on_admit`; commission from Level 2). **Where credit slips**: a link opened on one device and joined on another, or a later
 visit with no link. So the $11 window asks **Did someone send you?** (`/public/ve-referrer.js`, mounted by `showActivateModal` in `ve-auth.js`,
-which every email and Google sign-up passes through; the invitation, challenge and dinner pages have their own join steps and do not ask yet):
+which every email and Google sign-up passes through; since 2026-11-03 the same field is on the invitation's One step left, the challenges' signed-in banner (its own session, `mount(el, {token})`) and the dinner's seat-held panel, each hiding itself once the account has paid):
 the field says who the link already credits, suggests members as they type (first name, last initial, chapter; no emails; unpaid accounts only,
 the active members of class member or internal, `ve_referrer_search`) and records the pick through the edge function `ve-referrer`
 (`status`, `search`, `claim`; migrations `20261103_referrer_claims*.sql`). **Rules**: a claim sets `referred_by` only when the link did not; a
 claim that disagrees with the link keeps the link's sponsor and is saved as `conflict`; typed words that match no one are saved as `unresolved`
 (`ve_referral_claims.status`: credited, matched, conflict, unresolved, self), one claim per member, refused once the account has paid
-(`already_member`). **Depot > Referral claims** (`/admin/depot/referral-claims`, People in the Go to menu; built 2026-11-03; `ve-referrer` `admin_list`, `admin_get`, `admin_find`, `admin_decide`, super admin token; migration `20261103_referral_claims_review.sql`): To review, Conflicts, Not found, Decided, All; one claim per view with who joined, what they typed, who the link credits and who they named, and the decision: keep the link's sponsor, credit the person they named, credit another member you pick, or dismiss, with a note. `ve_referral_claim_decide` is atomic and once per claim; it changes `members.referred_by` only while the friend is still `pending_payment` (the 111 points and commission are paid when the account turns active), else it records the decision and you give points by hand. Proven in a rolled-back transaction. Not yet: the field on the invitation,
-challenge and dinner join steps, and a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
+(`already_member`). **Depot > Referral claims** (`/admin/depot/referral-claims`, People in the Go to menu; built 2026-11-03; `ve-referrer` `admin_list`, `admin_get`, `admin_find`, `admin_decide`, super admin token; migration `20261103_referral_claims_review.sql`): To review, Conflicts, Not found, Decided, All; one claim per view with who joined, what they typed, who the link credits and who they named, and the decision: keep the link's sponsor, credit the person they named, credit another member you pick, or dismiss, with a note. `ve_referral_claim_decide` is atomic and once per claim; it changes `members.referred_by` only while the friend is still `pending_payment` (the 111 points and commission are paid when the account turns active), else it records the decision and you give points by hand. Proven in a rolled-back transaction. Not yet: a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
 Sign-up from one address is limited to 3 an hour (`ve-auth` `signup`), which a test run hits.
 
 ## When search has no answer: Liz, the queue and the editorial loop (LOCKED by Sean 2026-11-03, canon `canon-ve-search-questions`)
@@ -1286,6 +1285,15 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
 - **Every chat names its playbook first.** Before building anything, Logan says which playbook the work belongs to and what its next action is. Work
   that fits no playbook is a new idea: say so, and bring Sean a recommendation (add a playbook, or park it), never build it quietly.
 - **Wrap up updates the row** (with the playbook record, canon and the rest of the wrap-up above): where it stands, the one next action, status, due date.
+- **Everything handed off is named by its playbook** (Sean, 2026-11-03: "named by their playbook... the playbook is the name of the task... I'm going in and updating it manually"): every playbook record, `brief_checkpoints` summary, `stream_events` summary, handoff doc title and paste prompt starts with the playbook's slug and the task, as `<playbook slug>: <task>` (for example `ve-pricing-points-passport: referral field on the join steps`). One chat can touch several playbooks; list each as its own line with the same pattern, never a bare task name.
+- **`ve-feedback` is Sean's spot-check playbook** (Sean, 2026-11-03: "I want to be able every day just to look through the site. And if I
+  see something small, a little tweak... go to this playbook... I'm only working out of one playbook"). Always open, never closed: Watching
+  when nothing is queued. Logan triages every item Sean gives before touching it: a tweak to something that exists goes in this queue; an
+  item that belongs to an existing build goes to that playbook's queue, named by its slug; anything bigger than a tweak is a new idea, so say
+  so and bring Sean a recommendation (a new playbook, or park it), never build it quietly. One pinned task per playbook (a second task on the
+  same playbook is wrapped and its open items go back to the queue). Work the queue top to bottom, confirm each item live, mark it Done, pull
+  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. First two items, both Done: the dashboard Insights
+  block and the Depot moved to the bottom (above).
 - Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
@@ -5356,7 +5364,21 @@ only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboar
 lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
 that we're selling"), and a tile in Your tools.
 
-**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is **The Depot** (Sean, the same day:
+**Insights beside For you, the Depot at the bottom** (Sean, 2026-11-03, playbook `ve-feedback`, live on main c905155): the Depot left the
+top right of the super admin's Dashboard tab for the bottom, below Recent activity (`#dash-depot-block`, still `renderDepotBlock`, its own box
+of about 330 px that scrolls inside and no longer matches For you's height), and in its place beside For you is **Insights**
+(`#dash-insights-block`, `renderInsights` in `dashboard/center-console.html`): Web, Social and SEO tabs over the last 30 days against the 30
+before, scrolling inside a box that `syncHome` sizes to For you. **Web** is visitors, page views, new members and top source plus the five
+most visited pages (the same `ve-analytics` `report` Depot > Analytics reads, bots left out). **Social** is Vegans Explore's views, posts,
+followers and their change, likes, top post and followers by channel (`ve-social` `report`, Metricool). **SEO** is Organic Search visits
+against before, their share of all visits and the top content pages; there are no search terms or indexing numbers because Search Console is
+not connected, and the tab says so. **See full insights** in the block's header follows the tab: Depot > Analytics, Depot > Social >
+Analytics, Analytics > Traffic sources (`INS_FULL`). Order down the tab: For you and Insights, Revenue, the draggable Recent activity boxes,
+the Depot. Same day: `.dash-tools-bar[hidden]{display:none}`, since `display:flex` had kept the Your tools search box showing to super admins.
+Checked in a browser at 1440 and 390 px against mocked answers only; real numbers are Sean's first live look. The paragraph below is the
+Depot's history; where it says beside For you, read bottom of the tab.
+
+**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, was **The Depot** (Sean, the same day:
 "the most used depot tools that I use... sortable... most recently used... by the different topics"; `renderDepotBlock`,
 `#dash-depot-block`): every row of `TABS` in `public/depot-tabs.js` as small tiles two across, with a search and Most used, Recently used,
 By topic or Only one topic (kept in `localStorage` `ve_dash_depot_sort`). Use is counted in the browser (`localStorage` `ve_depot_use`,
@@ -5844,7 +5866,7 @@ shared, so it moves to HQ's People app unchanged.
   `ve_site_settings` `founding_member.made_right` (Elle Jimenez, Korin Sutton, Ella Magers: they paid on the old platform and did not get its
   worth; `madeRight` in `ve-invites`, migration `20261101_made_right_memberships.sql`). Sean tells them in his second message, never the
   first. Proven live: Ella's test invitation came out on us, someone not on the list was refused, both removed.
-- Not built yet: Results by bucket and week (opened, clicked, replied, joined), Logan's proposed 30 for the next day, campaigns from
+- Built since: pick people and make drafts, the Campaigns table and the Week view (see Three doors, one Welcome, campaigns on people). Not built yet: replied and joined counts, Logan's proposed 30 for the next day, campaigns from
   BrandDesk feeding the queue, and reply tracking (replies land in contact@lesaruss.com, not here).
 
 ## Money in: an email for every payment (Sean, 2026-11-01)
@@ -5903,7 +5925,7 @@ this year, $11 today; cached 0.3 s; a member who is not a super admin refused (4
 
 Concept session with V, locked by Sean: "we can lock it" (canon `canon-ve-people-campaigns-doors`; migration
 `20261103_people_campaigns_doors_canon.sql`; the full write-up, build order and open question are
-`docs/proposals/people-campaigns-doors.md`: read it before building any of this). **Not built yet** except the member card below.
+`docs/proposals/people-campaigns-doors.md`: read it before building any of this). **Built so far (below): the member card, the survey door, Pulse subscribe (dark) and the people sender. Not built: the updated Welcome, profiles with groups, campaign homes.**
 Sean: "people don't have to pay to get in, but they do have to show some effort."
 
 - **Three doors, no comps**: a free **Daily Pulse subscription** (an email; cities picked; not a membership); the **survey**
@@ -5936,7 +5958,9 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   Get your Passport tab, `/policies#membership`, `ve-guide-platform-facts` (`knowledge_records` `body.facts`, its old 30% top rate and "everyone joins with the $11"
   fixed) and six saved answers. **Not yet**: the page checked in a browser as an unpaid account, `/claim` and the pages with their own join step (`VE_ACTIVATE_HANDLER`)
   do not offer the survey, nothing stops one person making many unpaid accounts to farm the 111-point referral (Sean's call), and the three challenges are not retired.
-- **Build order**: Pulse subscribe, the people sender, the survey door, the updated Welcome, profiles with groups, campaign homes.
+- **Pulse subscribe, built 2026-11-03 and deployed, dark** (commit e3348b1, migration `20261103_pulse_subscribe.sql`, `ve-pulse-subscribe` v2, cron `ve-pulse-subscribe` every 15 minutes, `public/ve-pulse-subscribe.js`, `pulse-preferences.html`): the subscribe box and desktop exit pop-up on `pulse.html` and `api/pulse-article.js`, double opt-in, daily or weekly per city (up to 3), a subscriber is a `ve_tasters` row with source `pulse-subscribe` and the Taster sequence skips it; sends through `email-send` brand `vegans-explore`. **Shown and sent only while `ve_site_settings` `pulse_subscribe.on` is true: it is false, with 0 subscribers.** Checked live 2026-11-03: status `open:false`, subscribe `not_open`, counts `forbidden` without an admin, `/pulse` and `/pulse-preferences` answer 200. **Not proven**: a real subscribe, confirm and first send, and the issue preview and test (super admin only). Sean previews the issue and turns it on.
+- **The people sender, built 2026-11-03** (playbook `ve-pathways`; `ve-people-outreach` v7 from c5e3e981, source sha256 matched; PRs #138 and #139), on Depot > Outreach: **Pick people** (`pick`: `ve_founding_candidates`, HQ People with an email and unpaid accounts, no members, no one invited, nobody suppressed, Tasters not in it; search, a pool filter, tick, a pager; each shows where they already stand in a campaign), **Write the drafts** (`draft_batch`: a bucket, a campaign name, a day, a subject and a message; `{first_name}` filled in; one draft each, status draft and personal, never approved here; a person already in that campaign, suppressed or picked twice is skipped and listed; any link must be a tracked vegansexplore.com `/go/` link; `{link}` with a destination makes each person's own `ve_links` link, `pp-<code>`, initiative the campaign, so a click names them, and Send me a test swaps it for the page so a test never counts), **Campaigns** (`campaigns`, `campaign`: people, needs you, scheduled, sent, opened, clicked, bounced, open rate against sent and click rate against sent plus done by hand; a click counts only on a message sent or done, since the first version counted drafts and read 300%; opens are the email system's, so a floor) with Opened, Clicked and Bounced chips on every row, and the **Week** view (`week`, `move`, `approve_range`: Monday to Friday, buckets as colors and labels, drag a message to another day or use its Move menu, a moved message goes back to Needs you and gets its new day's time when approved again, **Approve the day** and **Approve the week** behind a confirm, email drafts from today only, each through the same checks as one approval via `approveMessage`, any that fail left and listed). Proven live with made-up 2099 drafts, then removed (approve scheduled it for 10 AM Eastern on its day, move after approve returned it to Needs you, a past day refused, a non-/go/ link refused, `{link}` with no destination refused). **Not proven**: a real pick and draft run as Sean in the browser (the page was checked at 1440 and 390 px against mocked answers; dragging was not clicked). **Not built**: sources beyond unpaid accounts and the HQ People pool, a campaign filter on the week view, replied and joined counts.
+- **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome, profiles with groups, campaign homes.
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 

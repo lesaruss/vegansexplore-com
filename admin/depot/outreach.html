@@ -67,6 +67,24 @@
     .prow .how img{width:18px;height:18px;}
     .prow .todo{font-size:13px;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     @media (max-width:900px){.prow{grid-template-columns:44px minmax(0,1fr) auto;}.prow .how,.prow .todo{display:none;}}
+    .prow>span:last-child{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;}
+    @media (max-width:900px){.prow>span:last-child{flex-direction:column;align-items:flex-end;}}
+    .wk{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start;margin:0 0 16px;}
+    .wk.seven{grid-template-columns:repeat(7,minmax(0,1fr));}
+    @media (max-width:1100px){.wk,.wk.seven{grid-template-columns:1fr;}}
+    .wd{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px;min-height:120px;}
+    .wd.today{border-color:var(--ve-green-deep);box-shadow:0 0 0 1px var(--ve-green-deep);}
+    .wd.over{background:#f3faf3;border-style:dashed;}
+    .wd h3{margin:0 0 2px;font-size:14px;}
+    .wd .cnt{font-size:12px;font-weight:700;color:var(--ve-text-75);margin:0 0 8px;}
+    .wc{border:1px solid var(--ve-border);border-left-width:5px;border-radius:8px;padding:8px 10px;margin:0 0 8px;background:#fff;cursor:grab;font-size:13px;}
+    .wc a{color:inherit;text-decoration:none;font-weight:800;display:block;line-height:1.3;}
+    .wc .meta{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0;align-items:center;}
+    .wc select{font-size:12px;padding:4px 6px;margin-top:6px;width:100%;border-radius:6px;}
+    .wc.dragging{opacity:.4;}
+    .bk-business{border-left-color:#2d5c27}.bk-community{border-left-color:#c9791a}.bk-sponsor{border-left-color:#2c3e66}.bk-nonprofit{border-left-color:#8a3a7a}.bk-group{border-left-color:#0f7c8a}
+    .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;font-weight:700;color:var(--ve-text-75);margin:0 0 14px;}
+    .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px;}
     .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:4px 9px;border-radius:6px;white-space:nowrap;display:inline-block;background:#f1f1f1;color:#444;}
     .tag.draft{background:#fff4e0;color:#7a4a00;}.tag.approved{background:#eef1f6;color:#2c3e66;}.tag.sending{background:#eef1f6;color:#2c3e66;}
     .tag.sent,.tag.done{background:#e8f5e9;color:#1f5f22;}.tag.failed{background:#fbeeec;color:#8a1c12;}.tag.skipped{background:#f1f1f1;color:#666;}
@@ -124,10 +142,11 @@
       no_email_address: 'There is no email address to send to.', empty: 'Write the subject and the message first.',
       placeholder_left: 'There is still a [placeholder] in the message.', not_waiting: 'That one is not waiting any more.',
       already_sent: 'That one has already gone out.', not_scheduled: 'That one is not scheduled.', day_in_past: 'Pick today or a later day.',
-      forbidden: 'This page is for super admins.', not_authenticated: 'Sign in again.', network: 'No connection. Try again.'
+      forbidden: 'This page is for super admins.', nobody_picked: 'Tick at least one person first.', bad_request: 'That did not work. Reload and try again.', not_email: 'Only emails can be approved here.', destination_needed: 'Put the page the link goes to (https://…) in the box under the message.', link_not_in_subject: 'Put {link} in the message, not the subject.', could_not_make_link: 'Could not make the links. Try again.', use_tracked_link: 'Links in a draft must be tracked vegansexplore.com/go/ links (make one in Depot > Links).', not_authenticated: 'Sign in again.', network: 'No connection. Try again.'
     };
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
     function eastDay(d) { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d); }
+    function mondayOf(day) { var w = new Date(day + 'T12:00:00Z').getUTCDay(); return addDays(day, -((w + 6) % 7)); }
     function addDays(day, n) { var d = new Date(day + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); }
     function niceDay(d, long) { return new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', long ? { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' } : { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
     function when(t) { return t ? new Date(t).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ }) + ' ET' : ''; }
@@ -164,7 +183,8 @@
           '<a class="btn btn-ghost" href="#day/' + addDays(day, -1) + '/' + filter + '">‹ Day before</a>' +
           (day !== today ? '<a class="btn btn-ghost" href="#day/' + today + '/' + filter + '">Today</a>' : '') +
           '<a class="btn btn-ghost" href="#day/' + addDays(day, 1) + '/' + filter + '">Next day ›</a>' +
-          '<input type="date" id="pick" value="' + day + '" aria-label="Pick a day"></span></div>';
+          '<input type="date" id="pick" value="' + day + '" aria-label="Pick a day">' +
+          '<a class="btn btn-ghost" href="#week/' + mondayOf(day) + '">Week</a><a class="btn btn-ghost" href="#campaigns">Campaigns</a><a class="btn" href="#pick">Pick people</a></span></div>';
         if (r.week && r.week.length) {
           h += '<div class="strip">' + r.week.map(function (w) {
             return '<a href="#day/' + w.day + '/' + filter + '" class="' + (w.day === day ? 'on' : '') + '"><b>' + esc(niceDay(w.day)) + '</b>' + w.total + ' ' + (w.total === 1 ? 'person' : 'people') + (w.left ? '<br><span class="left">' + w.left + ' need you</span>' : '<br>All handled') + '</a>';
@@ -189,7 +209,10 @@
         '<span><span class="nm">' + esc(m.name) + '</span><span class="og">' + esc(m.org || BUCKET[m.bucket]) + '</span></span>' +
         '<span class="how">' + chIcon(m.channel) + esc(c.name) + ' <span class="tag b">' + esc(BUCKET[m.bucket]) + '</span></span>' +
         '<span class="todo">' + esc(after(m) || m.why || c.todo) + '</span>' +
-        '<span class="tag ' + m.status + '">' + esc(STATUS[m.status] || m.status) + '</span></a>';
+        '<span>' + chips(m) + '<span class="tag ' + m.status + '">' + esc(STATUS[m.status] || m.status) + '</span></span></a>';
+    }
+    function chips(m) {
+      return (m.opened_at ? '<span class="tag sent" title="Opened the email">Opened</span> ' : '') + (m.clicks ? '<span class="tag sent" title="Clicked their link ' + m.clicks + ' time(s)">Clicked</span> ' : '') + (m.bounced_at ? '<span class="tag failed">Bounced</span> ' : '');
     }
     function drawOverdue() {
       app.innerHTML = '<p class="msg">Loading…</p>';
@@ -310,11 +333,167 @@
       function next() { location.hash = 'day/' + m.day + '/todo'; }
     }
 
+    var PK = { sel: {}, q: '', pool: '', off: 0 };
+    var POOLS = { suggested: 'Suggested for Vegans Explore', guest: 'On our shows', unpaid: 'Signed up, never paid', soflo: 'SoFlo Vegans', email: 'Emailed with you', mailing: 'Mailing list', other: 'Other lists' };
+    function nPicked() { return Object.keys(PK.sel).length; }
+    function drawPick() {
+      app.innerHTML = '<p class="msg">Loading people…</p>';
+      api({ action: 'pick', q: PK.q, pool: PK.pool, limit: 50, offset: PK.off }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var rows = r.rows || [], total = r.total || 0;
+        var h = '<div class="daybar"><span class="lbl">Pick people</span><span class="grp"><a class="btn btn-ghost" href="#day/' + eastDay(new Date()) + '/todo">‹ Back to the day</a></span></div>' +
+          '<p class="stat" style="margin:0 0 12px">HQ People with an email, and accounts that never paid. Members, anyone already invited and anyone who asked not to be emailed are left out. Nothing is written or sent until you make drafts and approve each one.</p>' +
+          '<div class="panel"><label class="f" for="pq" style="margin-top:0">Search</label><div style="display:flex;gap:10px"><input id="pq" type="search" value="' + esc(PK.q) + '" placeholder="Name, email, organization, city" style="flex:1"><button class="btn" id="pgo">Search</button></div></div>' +
+          '<div class="chips"><a class="chip' + (!PK.pool ? ' on' : '') + '" href="#pick" data-pool="">Everyone</a>' + Object.keys(POOLS).filter(function (k) { return (r.pools || {})[k]; }).map(function (k) {
+            return '<a class="chip' + (PK.pool === k ? ' on' : '') + '" href="#pick" data-pool="' + k + '">' + esc(POOLS[k]) + ' <span class="n">' + r.pools[k] + '</span></a>'; }).join('') + '</div>' +
+          '<div class="left-card"><div><b>' + total + '</b><span> people</span></div><div><b>' + nPicked() + '</b><span> picked</span></div></div>';
+        h += rows.length ? '<div class="list">' + rows.map(function (x) {
+          var em = String(x.email || '').toLowerCase(), q = (x.queued || []).map(function (y) { return esc(y.campaign) + ' · ' + esc(niceDay(y.day)); }).join(', ');
+          return '<label class="prow" style="cursor:pointer"><input type="checkbox" data-em="' + esc(em) + '"' + (PK.sel[em] ? ' checked' : '') + ' aria-label="Pick ' + esc(x.name) + '">' +
+            '<span><span class="nm">' + esc(x.name) + '</span><span class="og">' + esc([x.organization, x.title].filter(Boolean).join(' · ') || em) + '</span></span>' +
+            '<span class="how">' + (x.pools || []).slice(0, 2).map(function (k) { return '<span class="tag b">' + esc(POOLS[k] || k) + '</span>'; }).join(' ') + '</span>' +
+            '<span class="todo">' + (q ? 'Already in: ' + q : esc(x.city || '')) + '</span><span></span></label>';
+        }).join('') + '</div>' : '<div class="empty">Nobody matches.</div>';
+        h += '<div class="daybar" style="margin-top:14px"><span class="grp">' +
+          (PK.off > 0 ? '<button class="btn btn-ghost" id="pprev">‹ Previous</button>' : '') +
+          (PK.off + rows.length < total ? '<button class="btn btn-ghost" id="pnext">Next ›</button>' : '') + '</span>' +
+          '<span class="grp"><button class="btn" id="pwrite"' + (nPicked() ? '' : ' disabled') + '>Write the drafts for ' + nPicked() + ' ›</button></span></div>';
+        app.innerHTML = h;
+        var map = {}; rows.forEach(function (x) { map[String(x.email || '').toLowerCase()] = x; });
+        app.querySelectorAll('input[data-em]').forEach(function (c) { c.addEventListener('change', function () {
+          var em = c.getAttribute('data-em'); if (c.checked) PK.sel[em] = { name: map[em].name, email: em, person_id: map[em].person_id || null, org: map[em].organization || null }; else delete PK.sel[em];
+          var b = $('pwrite'); b.disabled = !nPicked(); b.textContent = 'Write the drafts for ' + nPicked() + ' ›'; app.querySelectorAll('.left-card b')[1].textContent = nPicked(); }); });
+        app.querySelectorAll('[data-pool]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); PK.pool = a.getAttribute('data-pool'); PK.off = 0; drawPick(); }); });
+        var go = function () { PK.q = $('pq').value.trim(); PK.off = 0; drawPick(); };
+        $('pgo').onclick = go; $('pq').addEventListener('keydown', function (e) { if (e.key === 'Enter') go(); });
+        if ($('pprev')) $('pprev').onclick = function () { PK.off = Math.max(0, PK.off - 50); drawPick(); };
+        if ($('pnext')) $('pnext').onclick = function () { PK.off += 50; drawPick(); };
+        $('pwrite').onclick = function () { location.hash = 'pick/write'; };
+      });
+    }
+    function nextWeekday() { var d = addDays(eastDay(new Date()), 1), w = new Date(d + 'T12:00:00Z').getUTCDay(); return w === 6 ? addDays(d, 2) : w === 0 ? addDays(d, 1) : d; }
+    function drawWrite() {
+      var ppl = Object.keys(PK.sel).map(function (k) { return PK.sel[k]; });
+      if (!ppl.length) { location.hash = 'pick'; return; }
+      app.innerHTML = '<div class="daybar"><span class="lbl">Write the drafts</span><span class="grp"><a class="btn btn-ghost" href="#pick">‹ Back to the list</a></span></div>' +
+        '<div class="two"><div class="panel"><p class="msg" id="wmsg"></p>' +
+        '<label class="f" for="wbk">Bucket</label><select id="wbk">' + Object.keys(BUCKET).map(function (k) { return '<option value="' + k + '">' + BUCKET[k] + '</option>'; }).join('') + '</select>' +
+        '<label class="f" for="wcp">Campaign name</label><input id="wcp" type="text" placeholder="for example outreach-nov" maxlength="60">' +
+        '<label class="f" for="wday">Day they go on</label><input id="wday" type="date" value="' + nextWeekday() + '" min="' + eastDay(new Date()) + '">' +
+        '<label class="f" for="wsub">Subject</label><input id="wsub" type="text" maxlength="200">' +
+        '<label class="f" for="wbody">Message</label><textarea id="wbody" rows="12" placeholder="Hi {first_name},"></textarea>' +
+        '<label class="f" for="wdest">Where {link} goes (optional)</label><input id="wdest" type="url" placeholder="https://vegansexplore.com/passport">' +
+        '<p class="stat" style="margin-top:8px">{first_name} is filled in for each person. Put {link} in the message and each person gets their own tracked link to the page above, so a click names them. Any other link must already be a tracked vegansexplore.com/go/ link. These are drafts only: you open each one, change it and approve it, and it goes at its time.</p>' +
+        '<button class="btn" id="wmake">Make ' + ppl.length + ' drafts</button></div>' +
+        '<div class="panel"><h2>Picked (' + ppl.length + ')</h2>' + ppl.map(function (x) { return '<div class="note">' + esc(x.name) + '<small>' + esc(x.email) + '</small></div>'; }).join('') + '</div></div>';
+      $('wmake').onclick = function () {
+        var b = this, m = $('wmsg'); b.disabled = true; m.textContent = 'Making drafts…'; m.className = 'msg';
+        api({ action: 'draft_batch', people: ppl, bucket: $('wbk').value, campaign: $('wcp').value, day: $('wday').value, subject: $('wsub').value, body: $('wbody').value, destination: $('wdest').value }).then(function (r) {
+          b.disabled = false;
+          if (r.error) { m.textContent = err(r.error) + (r.link ? ' (' + r.link + ')' : ''); m.className = 'msg bad'; return; }
+          PK.sel = {};
+          var sk = (r.skipped || []).map(function (x) { return esc(x.name || x.email) + ' (' + esc({ already_in_campaign: 'already in this campaign', do_not_email: 'asked not to be emailed', no_email: 'no valid email', picked_twice: 'picked twice' }[x.why] || x.why) + ')'; });
+          app.innerHTML = '<div class="panel"><h2>' + r.created + ' draft' + (r.created === 1 ? '' : 's') + ' made for ' + esc(niceDay(r.day, true)) + '</h2><p class="stat">Campaign ' + esc(r.campaign) + '. Nothing is approved or sent. ' +
+            '<a href="#day/' + r.day + '/todo">Open that day</a></p>' + (sk.length ? '<p class="stat">Left out: ' + sk.join(', ') + '.</p>' : '') + '</div>';
+        });
+      };
+    }
+    function pct(v) { return v == null ? '–' : v + '%'; }
+    function drawCampaigns() {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'campaigns' }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var cs = r.campaigns || [];
+        var h = '<div class="daybar"><span class="lbl">Campaigns</span><span class="grp"><a class="btn btn-ghost" href="#day/' + eastDay(new Date()) + '/todo">‹ Back to the day</a><a class="btn" href="#pick">Pick people</a></span></div>';
+        h += cs.length ? '<div class="panel" style="padding:0;overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13.5px"><thead><tr style="text-align:left">' +
+          ['Campaign', 'People', 'Needs you', 'Scheduled', 'Sent', 'Opened', 'Open rate', 'Clicked', 'Click rate', 'Days'].map(function (t, i) { return '<th style="padding:12px 14px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);' + (i ? 'text-align:right' : '') + '">' + t + '</th>'; }).join('') + '</tr></thead><tbody>' +
+          cs.map(function (c) {
+            var td = function (v) { return '<td style="padding:12px 14px;text-align:right;border-top:1px solid var(--ve-border)">' + v + '</td>'; };
+            return '<tr><td style="padding:12px 14px;border-top:1px solid var(--ve-border);font-weight:800"><a href="#campaign/' + encodeURIComponent(c.campaign) + '">' + esc(c.campaign) + '</a></td>' +
+              td(c.people) + td(c.draft) + td(c.scheduled) + td(c.sent + (c.done ? ' <small>+' + c.done + ' by hand</small>' : '')) + td(c.opened) + td(pct(c.open_rate)) + td(c.clicked) + td(pct(c.click_rate)) +
+              td(esc(niceDay(c.first_day)) + (c.last_day !== c.first_day ? ' – ' + esc(niceDay(c.last_day)) : '')) + '</tr>';
+          }).join('') + '</tbody></table></div><p class="stat">Opens are counted by the email system (some mail apps hide them, so read opens as a floor). A click is a click on that person\'s own link. Open rate is against emails sent; click rate is against everything sent or done by hand. A link shared by several messages to one person counts once per message sent.</p>'
+          : '<div class="empty">No campaigns yet. Pick people and make drafts.</div>';
+        app.innerHTML = h;
+      });
+    }
+    function drawCampaign(name) {
+      app.innerHTML = '<p class="msg">Loading…</p>';
+      api({ action: 'campaign', campaign: name }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var ms = r.messages || [];
+        app.innerHTML = '<div class="daybar"><span class="lbl">' + esc(name) + '</span><span class="grp"><a class="btn btn-ghost" href="#campaigns">‹ All campaigns</a></span></div>' +
+          (ms.length ? '<div class="list">' + ms.map(function (m) { return row(m).replace('<span class="og">', '<span class="og">' + esc(niceDay(m.day)) + ' · '); }).join('') + '</div>' : '<div class="empty">Nobody in this campaign.</div>');
+      });
+    }
+    var WHY = { no_email_address: 'no email address', empty: 'no subject or message', placeholder_left: 'a [placeholder] is left in it', not_waiting: 'not waiting any more', not_email: 'not an email' };
+    function drawWeek(monday) {
+      app.innerHTML = '<p class="msg">Loading the week…</p>';
+      api({ action: 'week', monday: monday }).then(function (r) {
+        if (r.error) { app.innerHTML = '<div class="gate">' + esc(err(r.error)) + '</div>'; return; }
+        var today = r.today, days = r.days || [];
+        var showEnd = days[5].messages.length || days[6].messages.length;
+        var shown = showEnd ? days : days.slice(0, 5);
+        var waiting = function (d) { return d.messages.filter(function (m) { return m.channel === 'email' && m.status === 'draft'; }); };
+        var all = shown.reduce(function (n, d) { return n + (d.day >= today ? waiting(d).length : 0); }, 0);
+        var movable = function (m) { return m.status === 'draft' || m.status === 'failed' || m.status === 'approved'; };
+        var h = '<div class="daybar"><span class="lbl">Week of ' + esc(niceDay(monday, true)) + '</span><span class="grp">' +
+          '<a class="btn btn-ghost" href="#week/' + addDays(monday, -7) + '">‹ Week before</a>' +
+          (monday !== mondayOf(today) ? '<a class="btn btn-ghost" href="#week/' + mondayOf(today) + '">This week</a>' : '') +
+          '<a class="btn btn-ghost" href="#week/' + addDays(monday, 7) + '">Next week ›</a>' +
+          '<a class="btn btn-ghost" href="#day/' + (today >= monday && today <= addDays(monday, 6) ? today : monday) + '/todo">Day view</a>' +
+          '<button class="btn" id="wkall"' + (all ? '' : ' disabled') + '>Approve the week (' + all + ')</button></span></div>' +
+          '<div class="legend">' + Object.keys(BUCKET).map(function (k) { var c = { business: '#2d5c27', community: '#c9791a', sponsor: '#2c3e66', nonprofit: '#8a3a7a', group: '#0f7c8a' }[k]; return '<span><i style="background:' + c + '"></i>' + BUCKET[k] + '</span>'; }).join('') +
+          '<span>Drag a message to another day, or use its Move menu. A moved message goes back to Needs you.</span></div><p class="msg" id="wmsg"></p><div class="wk' + (showEnd ? ' seven' : '') + '">';
+        shown.forEach(function (d) {
+          var w = waiting(d), past = d.day < today;
+          h += '<div class="wd' + (d.day === today ? ' today' : '') + '" data-day="' + d.day + '"><h3><a href="#day/' + d.day + '/todo" style="color:inherit">' + esc(niceDay(d.day)) + (d.day === today ? ' · Today' : '') + '</a></h3>' +
+            '<p class="cnt">' + d.messages.length + ' ' + (d.messages.length === 1 ? 'person' : 'people') + (w.length ? ' · ' + w.length + ' need you' : '') + '</p>' +
+            (w.length && !past ? '<button class="btn btn-ghost" data-approve-day="' + d.day + '" style="margin:0 0 8px;width:100%">Approve the day (' + w.length + ')</button>' : '') +
+            d.messages.map(function (m) {
+              return '<div class="wc bk-' + m.bucket + '"' + (movable(m) ? ' draggable="true"' : '') + ' data-id="' + m.id + '"><a href="#m/' + m.id + '">' + esc(m.name) + '</a>' +
+                '<div class="meta"><span class="tag b">' + esc(BUCKET[m.bucket]) + '</span>' + (m.channel !== 'email' ? '<span class="tag">' + esc((CH[m.channel] || {}).name) + '</span>' : '') +
+                chips(m) + '<span class="tag ' + m.status + '">' + esc(STATUS[m.status] || m.status) + '</span></div>' +
+                (movable(m) ? '<select data-move="' + m.id + '" aria-label="Move ' + esc(m.name) + '"><option value="">Move to…</option>' + days.filter(function (x) { return x.day !== d.day && x.day >= today; }).map(function (x) { return '<option value="' + x.day + '">' + esc(niceDay(x.day)) + '</option>'; }).join('') + '</select>' : '') + '</div>';
+            }).join('') + '</div>';
+        });
+        h += '</div>';
+        app.innerHTML = h;
+        var say = function (t, c) { var e = $('wmsg'); e.textContent = t; e.className = 'msg ' + (c || ''); };
+        var move = function (id, day) { api({ action: 'move', id: id, day: day }).then(function (x) { if (x.error) say(err(x.error), 'bad'); else drawWeek(monday); }); };
+        app.querySelectorAll('select[data-move]').forEach(function (sel) { sel.addEventListener('change', function () { if (sel.value) move(sel.getAttribute('data-move'), sel.value); }); });
+        app.querySelectorAll('.wc[draggable]').forEach(function (c) {
+          c.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', c.getAttribute('data-id')); c.classList.add('dragging'); });
+          c.addEventListener('dragend', function () { c.classList.remove('dragging'); });
+        });
+        app.querySelectorAll('.wd').forEach(function (col) {
+          col.addEventListener('dragover', function (e) { if (col.getAttribute('data-day') >= today) { e.preventDefault(); col.classList.add('over'); } });
+          col.addEventListener('dragleave', function () { col.classList.remove('over'); });
+          col.addEventListener('drop', function (e) { e.preventDefault(); col.classList.remove('over'); var id = e.dataTransfer.getData('text/plain'); if (id) move(id, col.getAttribute('data-day')); });
+        });
+        function approve(from, to, n, label) {
+          if (!confirm('Approve ' + n + ' email' + (n === 1 ? '' : 's') + ' for ' + label + '? Each goes out from you at its time (10 AM Eastern on its day). You can pull any back until then.')) return;
+          say('Approving…');
+          api({ action: 'approve_range', from: from, to: to }).then(function (x) {
+            if (x.error) { say(err(x.error), 'bad'); return; }
+            var sk = (x.skipped || []).map(function (y) { return y.name + ' (' + (WHY[y.why] || y.why) + ')'; });
+            drawWeek(monday);
+            setTimeout(function () { say('Approved ' + x.approved + '.' + (sk.length ? ' Left for you to fix: ' + sk.join(', ') + '.' : ''), sk.length ? 'bad' : 'good'); }, 300);
+          });
+        }
+        app.querySelectorAll('[data-approve-day]').forEach(function (b) { b.onclick = function () { var d = b.getAttribute('data-approve-day'), n = waiting(days.filter(function (x) { return x.day === d; })[0]).length; approve(d, d, n, niceDay(d, true)); }; });
+        if ($('wkall')) $('wkall').onclick = function () { approve(shown[0].day < today ? today : shown[0].day, shown[shown.length - 1].day, all, 'the rest of this week'); };
+      });
+    }
     function route() {
       var h = (location.hash || '').replace(/^#/, '').split('/');
       window.scrollTo(0, 0);
       if (h[0] === 'm' && h[1]) return drawMsg(h[1]);
       if (h[0] === 'overdue') return drawOverdue();
+      if (h[0] === 'week') return drawWeek(/^\d{4}-\d{2}-\d{2}$/.test(h[1] || '') ? mondayOf(h[1]) : mondayOf(eastDay(new Date())));
+      if (h[0] === 'campaigns') return drawCampaigns();
+      if (h[0] === 'campaign' && h[1]) return drawCampaign(decodeURIComponent(h[1]));
+      if (h[0] === 'pick') return h[1] === 'write' ? drawWrite() : drawPick();
       var day = /^\d{4}-\d{2}-\d{2}$/.test(h[1] || '') ? h[1] : eastDay(new Date());
       drawDay(day, FILTERS[h[2]] ? h[2] : 'todo');
     }

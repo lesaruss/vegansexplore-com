@@ -161,11 +161,14 @@
       } else if (S.active && !S.can_take) {
         top = '<div class="banner"><div><b>You are already a member</b><p class="meta">The challenges are how people earn their way in. Your Passport is open, and your points and level grow the usual ways.</p></div><a class="btn" href="/dashboard">Your dashboard</a></div>';
       } else {
-        top = '<p class="meta" style="margin-top:6px">Signed in as ' + esc(S.member.name) + ' (' + esc(S.member.email) + '). Pick one, two or all three. Each runs 30 days from Start and can restart once.</p>';
+        top = '<p class="meta" style="margin-top:6px">Signed in as ' + esc(S.member.name) + ' (' + esc(S.member.email) + '). Pick one, two or all three. Each runs 30 days from Start and can restart once.</p><div id="ve-ref-host" style="margin-top:14px;max-width:440px"></div>';
       }
       app.innerHTML = intro() + top + cards(S.can_take);
       wire();
+      mountReferrer(document.getElementById('ve-ref-host'), memberTok);
     }
+
+    function mountReferrer(el, tok) { if (!el) return; var go = function () { window.VEReferrer.mount(el, tok ? { token: tok } : undefined); }; if (window.VEReferrer) return go(); var s = document.createElement('script'); s.src = '/public/ve-referrer.js'; s.onload = go; document.head.appendChild(s); }
 
     function wire() {
       app.querySelectorAll('[data-start],[data-restart]').forEach(function (b) {

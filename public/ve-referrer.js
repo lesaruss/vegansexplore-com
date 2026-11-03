@@ -1,6 +1,6 @@
 /* ve-referrer.js: "Did someone send you?" on the sign-up step (Sean, 2026-11-03: "the name of the person that registered you, so we can do a
    double check to make sure they get credit... if their name shows up in our system as they're typing it, it'll auto give them an option").
-   VEReferrer.mount(el) draws the field into el while the account is unpaid (the $11 window, /public/ve-auth.js). It tells them who their link
+   VEReferrer.mount(el, {token}) draws the field into el while the account is unpaid (the $11 window, /public/ve-auth.js). It tells them who their link
    already credits, suggests members as they type (first name, last initial, chapter) and records the pick through the ve-referrer function.
    Where the link already names someone, a different name is kept for the team and the link's person stays credited.
    VEReferrer.flush() saves typed words that were not picked, so the pay button can call it first. */
@@ -9,7 +9,8 @@
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-referrer';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function token() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
+  var tokOverride = null; // a page with its own session (the challenges) passes it: mount(el, {token: fn})
+  function token() { if (tokOverride) { try { return tokOverride() || ''; } catch (e) { return ''; } } try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
   function call(body) {
     return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + token() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
   }
@@ -63,7 +64,8 @@
     state.saved = t;
     return call({ action: 'claim', text: t }).then(function (d) { outcome(d, t); }).catch(function () {});
   }
-  function mount(el) {
+  function mount(el, opts) {
+    tokOverride = opts && typeof opts.token === 'function' ? opts.token : null;
     if (!el || !token()) return;
     if (!document.getElementById('ve-ref-css')) { var s = document.createElement('style'); s.id = 've-ref-css'; s.textContent = CSS; document.head.appendChild(s); }
     el.innerHTML = '<div class="ve-ref"><label for="ve-ref-in">Did someone send you?<span>Optional</span></label>' +

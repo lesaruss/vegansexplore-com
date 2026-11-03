@@ -361,6 +361,7 @@
   button.dash-preview-av:hover,button.dash-preview-av:focus-visible{box-shadow:0 0 0 2.5px var(--ve-green-dark);outline:none;}
   /* Your tools: the search on the left, the category filters to its right, dropping to another row when they run out of room; on
      phones the filters sit behind a filter icon beside the search (Sean, 2026-10-30). */
+  .dash-tools-bar[hidden]{display:none;}
   .dash-tools-bar{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;margin-bottom:16px;}
   .dash-tools-find{flex:0 1 360px;min-width:0;display:flex;gap:8px;align-items:center;}
   .dash-tools-filter{display:none;flex:0 0 auto;width:44px;height:44px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.18);background:#fff;color:var(--ve-green-dark);cursor:pointer;align-items:center;justify-content:center;position:relative;padding:0;}
@@ -405,6 +406,22 @@
   /* The Depot beside For you (Sean, 2026-10-30): small tiles two across, scrolling inside at For you's height. */
   .dash-depot-sort{font:inherit;font-size:13px;font-weight:700;color:var(--ve-text);min-height:36px;padding:6px 40px 6px 12px;border:1.5px solid rgba(0,0,0,0.18);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px;-webkit-appearance:none;appearance:none;cursor:pointer;max-width:60%;}
   .dash-depot-search{margin:0 0 10px;}
+  .dash-ins-more{font-size:13px;font-weight:700;color:var(--ve-green-dark);text-decoration:none;white-space:nowrap;}
+  .dash-ins-more:hover{text-decoration:underline;}
+  .dash-ins-tabs{display:flex;gap:6px;margin:0 0 12px;}
+  .dash-ins-tabs button{font:inherit;font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);cursor:pointer;}
+  .dash-ins-tabs button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
+  #dash-ins-body{position:relative;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;max-height:330px;}
+  .dash-ins-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px;}
+  .dash-ins-k{background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:10px 12px;}
+  .dash-ins-k small{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ve-text-50);}
+  .dash-ins-k b{display:block;font-size:22px;font-weight:800;line-height:1.2;color:var(--ve-text);}
+  .dash-ins-k i{display:block;font-style:normal;font-size:11px;font-weight:700;}
+  .dash-ins-k i.up{color:#1f6f25;} .dash-ins-k i.down{color:#b3261e;} .dash-ins-k i.flat{color:var(--ve-text-50);}
+  .dash-ins-h{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);margin:4px 0 6px;}
+  .dash-ins-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid var(--ve-border);}
+  .dash-ins-row span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .dash-ins-note{font-size:12px;color:var(--ve-text-50);margin:8px 0 0;}
   #dash-depot-list{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
   .dash-dp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
   @media (max-width:420px){ .dash-dp-grid{grid-template-columns:minmax(0,1fr);} }
@@ -1058,14 +1075,13 @@
       <div class="dash-lb-head"><p class="dash-section-title">Leaderboard</p></div>
       <div id="dash-leaderboard-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
-      <!-- The Depot (Sean, 2026-10-30): in the Leaderboard's place for super admins, who get the Leaderboard and the Inbox as Recent
-           activity boxes. Every Depot page, the Admin pages and the Demos (TABS in public/depot-tabs.js), most used first, or most
-           recently used, or by topic, with a search. renderDepotBlock(); use counted in the browser (VE_DEPOT_USE). -->
-      <div id="dash-depot-block" hidden>
-      <div class="dash-lb-head"><p class="dash-section-title">The Depot</p>
-        <select id="dash-depot-sort" class="dash-depot-sort" aria-label="Sort the Depot"></select></div>
-      <input type="search" id="dash-depot-search" class="dash-tools-search dash-depot-search" placeholder="Search the Depot" aria-label="Search the Depot" autocomplete="off">
-      <div id="dash-depot-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
+      <!-- Insights (Sean, 2026-11-03): in the Leaderboard's place for super admins, beside For you. Web, Social and SEO at a glance,
+           with See full insights to Depot > Analytics. renderInsights(). The Depot moved to the bottom of the tab. -->
+      <div id="dash-insights-block" hidden>
+      <div class="dash-lb-head"><p class="dash-section-title">Insights</p>
+        <a class="dash-ins-more" id="dash-ins-more" href="/admin/depot/analytics">See full insights &rarr;</a></div>
+      <div class="dash-ins-tabs" id="dash-ins-tabs" role="tablist" aria-label="Insights"></div>
+      <div id="dash-ins-body"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
       </div>
 
@@ -1087,6 +1103,14 @@
         </div>
         <p class="dash-recent-hint">Drag a box by its handle to put it where you want it.</p>
         <div id="dash-recent-grid" class="dash-preview-grid"></div>
+      </div>
+      <!-- The Depot (Sean, 2026-10-30; moved to the bottom 2026-11-03, below Recent activity): every Depot page, the Admin pages and the
+           Demos (TABS in public/depot-tabs.js), most used first, or most recently used, or by topic, with a search. renderDepotBlock(). -->
+      <div id="dash-depot-block" hidden>
+      <div class="dash-lb-head"><p class="dash-section-title">The Depot</p>
+        <select id="dash-depot-sort" class="dash-depot-sort" aria-label="Sort the Depot"></select></div>
+      <input type="search" id="dash-depot-search" class="dash-tools-search dash-depot-search" placeholder="Search the Depot" aria-label="Search the Depot" autocomplete="off">
+      <div id="dash-depot-list"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
       <p class="dash-section-title" id="dash-tools-title">Your tools</p>
       <div class="dash-tools-bar" id="dash-tools-bar">
@@ -2754,11 +2778,13 @@
     var list = document.getElementById('dash-leaderboard-list');
     if (!list) return;
     // Super admins: the Depot takes this place, and the Leaderboard and the Inbox are Recent activity boxes (Sean, 2026-10-30).
-    var lbBlock = document.getElementById('dash-leaderboard-block'), dpBlock = document.getElementById('dash-depot-block');
+    // Insights takes the Leaderboard's place beside For you (Sean, 2026-11-03); the Depot moved to the bottom of the tab.
+    var lbBlock = document.getElementById('dash-leaderboard-block'), dpBlock = document.getElementById('dash-depot-block'), inBlock = document.getElementById('dash-insights-block');
     var admin = !!(member && member.is_superadmin);
     if (lbBlock) lbBlock.hidden = admin;
     if (dpBlock) dpBlock.hidden = !admin;
-    if (admin) { renderDepotBlock(); return; }
+    if (inBlock) inBlock.hidden = !admin;
+    if (admin) { renderDepotBlock(); renderInsights(); return; }
     var useScope = scope || dashLeaderboardScope;
     var cities;
     if (useScope === 'global') {
@@ -3941,10 +3967,85 @@
     else html = order.map(tile).join('');
     list.innerHTML = '<div class="dash-dp-grid">' + html + '</div>';
     list.onclick = function (e) { var b = e.target.closest('[data-dp]'); if (b) depotOpen(tabs[+b.getAttribute('data-dp')]); };
-    // Six rows show; on desktop it matches For you's height (syncHome).
-    var tiles = list.querySelectorAll('.dash-dp-tile');
-    if (tiles.length > 12 && tiles[11].offsetHeight) list.dataset.five = (tiles[11].offsetTop + tiles[11].offsetHeight) + 'px';
+  }
+  // Insights beside For you (Sean, 2026-11-03): Web, Social and SEO at a glance, the last 30 days against the 30 before, scrolling inside the
+  // box. Same reads as Depot > Analytics (ve-analytics report) and Depot > Social (ve-social report); See full insights opens them.
+  var INS = { tab: 'web', web: null, social: null, at: 0, busy: false };
+  var INS_FULL = { web: '/admin/depot/analytics', social: '/admin/depot/social#analytics/all', seo: '/admin/depot/analytics#sources' };
+  function insDay(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function insN(v) { return v == null || isNaN(v) ? '-' : Number(v).toLocaleString('en-US'); }
+  function insDelta(cur, prev) {
+    if (!prev) return '<i class="flat">no earlier period</i>';
+    var d = (cur - prev) / prev * 100; return '<i class="' + (d > 0 ? 'up' : d < 0 ? 'down' : 'flat') + '">' + (d > 0 ? '+' : '') + d.toFixed(1) + '% vs before</i>';
+  }
+  function insK(label, v, extra) { return '<div class="dash-ins-k"><small>' + dvEsc(label) + '</small><b>' + v + '</b>' + (extra || '') + '</div>'; }
+  function insCall(fn, body) {
+    return fetch(SUPABASE_URL + '/functions/v1/' + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return null; });
+  }
+  function insLoad(force) {
+    if (INS.busy || (!force && INS.web && Date.now() - INS.at < 180000)) return;
+    INS.busy = true;
+    var end = new Date(); end.setDate(end.getDate() - 1);
+    var from = new Date(end); from.setDate(from.getDate() - 29);
+    var pend = new Date(from); pend.setDate(pend.getDate() - 1);
+    var pfrom = new Date(pend); pfrom.setDate(pfrom.getDate() - 29);
+    Promise.all([
+      insCall('ve-analytics', { action: 'report', from: insDay(from), to: insDay(end), prev_from: insDay(pfrom), prev_to: insDay(pend), bots: 'hide' }),
+      insCall('ve-social', { action: 'report', brand: 'vegans-explore', from: insDay(from), to: insDay(end) })
+    ]).then(function (r) { INS.web = r[0]; INS.social = r[1]; INS.at = Date.now(); INS.busy = false; insDraw(); });
+  }
+  function insWeb(d) {
+    if (!d || d.ok === false) return '<p class="dash-ins-note">Analytics did not answer right now.</p>';
+    var g = d.ga || {}, t = g.totals || {}, tp = g.totals_prev || {}, m = (d.internal || {}).members || {}, top = (g.channels || [])[0];
+    return '<div class="dash-ins-grid">' + insK('Visitors', insN(t.users), insDelta(t.users, tp.users)) + insK('Page views', insN(t.views), insDelta(t.views, tp.views)) +
+      insK('New members', insN(m.new), insDelta(m.new, m.new_prev)) + insK('Top source', top ? dvEsc(top.channel) : '-', top ? '<i class="flat">' + insN(top.sessions) + ' visits</i>' : '') + '</div>' +
+      '<p class="dash-ins-h">Most visited pages</p>' + (g.pages || []).slice(0, 5).map(function (p) { return '<div class="dash-ins-row"><span>' + dvEsc(p.title || p.path) + '</span><span>' + insN(p.views) + '</span></div>'; }).join('') +
+      '<p class="dash-ins-note">Last 30 days, likely bots left out' + (d.ga_error ? '. Google Analytics did not answer, so some numbers may be missing' : '') + '.</p>';
+  }
+  function insSocial(d) {
+    if (!d || d.error) return '<p class="dash-ins-note">Social did not answer right now.</p>';
+    var posts = (d.posts || []).filter(function (p) { return p.status === 'published' && p.channel !== 'podcast'; }), chans = d.channels || {};
+    var sum = function (k) { return posts.reduce(function (a, p) { return a + ((p.metrics || {})[k] || 0); }, 0); };
+    var gain = 0, any = false, followers = 0;
+    Object.keys(chans).forEach(function (c) { var i = chans[c] || {}; if (c === 'podcast' || i.followers == null) return; followers += i.followers; if (i.followers_start != null && (i.series || []).length > 1) { gain += i.followers - i.followers_start; any = true; } });
+    var best = posts.slice().sort(function (a, b) { return ((b.metrics || {}).views || 0) - ((a.metrics || {}).views || 0); })[0];
+    var NAMES = { instagram: 'Instagram', facebook: 'Facebook', tiktok: 'TikTok', youtube: 'YouTube', linkedin: 'LinkedIn' };
+    var rows = Object.keys(chans).filter(function (c) { return c !== 'podcast' && chans[c] && chans[c].followers != null; }).map(function (c) { return '<div class="dash-ins-row"><span>' + dvEsc(NAMES[c] || c) + '</span><span>' + insN(chans[c].followers) + '</span></div>'; }).join('');
+    return '<div class="dash-ins-grid">' + insK('Views', insN(sum('views'))) + insK('Posts', insN(posts.length)) +
+      insK('Followers', insN(followers), any ? '<i class="' + (gain > 0 ? 'up' : gain < 0 ? 'down' : 'flat') + '">' + (gain > 0 ? '+' : '') + insN(gain) + ' in the period</i>' : '<i class="flat">no history yet</i>') + insK('Likes', insN(sum('likes'))) + '</div>' +
+      (best ? '<p class="dash-ins-h">Top post</p><div class="dash-ins-row"><span>' + dvEsc((NAMES[best.channel] || best.channel) + ': ' + (best.caption || best.title || 'Post').slice(0, 60)) + '</span><span>' + insN((best.metrics || {}).views) + ' views</span></div>' : '') +
+      (rows ? '<p class="dash-ins-h">Followers by channel</p>' + rows : '') + '<p class="dash-ins-note">Vegans Explore, last 30 days, from Metricool.</p>';
+  }
+  function insSeo(d) {
+    if (!d || d.ok === false) return '<p class="dash-ins-note">Analytics did not answer right now.</p>';
+    var g = d.ga || {}, t = g.totals || {}, org = (g.channels || []).filter(function (c) { return /organic search/i.test(c.channel); })[0] || { sessions: 0, sessions_prev: 0 };
+    var share = t.sessions ? (org.sessions / t.sessions * 100).toFixed(1) + '%' : '-';
+    var pages = (g.pages || []).filter(function (p) { return /^\/(directory|pulse|guides|communities|events)\b/.test(p.path || ''); }).slice(0, 5);
+    return '<div class="dash-ins-grid">' + insK('Search visits', insN(org.sessions), insDelta(org.sessions, org.sessions_prev)) + insK('Share of all visits', share) + '</div>' +
+      '<p class="dash-ins-h">Most visited content pages</p>' + (pages.length ? pages.map(function (p) { return '<div class="dash-ins-row"><span>' + dvEsc(p.title || p.path) + '</span><span>' + insN(p.views) + '</span></div>'; }).join('') : '<p class="dash-ins-note">No content pages in the top list yet.</p>') +
+      '<p class="dash-ins-note">Visits Google counts as Organic Search. Search terms and indexing need Search Console, which is not connected yet.</p>';
+  }
+  function insDraw() {
+    var body = document.getElementById('dash-ins-body'), tabs = document.getElementById('dash-ins-tabs'), more = document.getElementById('dash-ins-more'); if (!body || !tabs) return;
+    var T = [['web', 'Web'], ['social', 'Social'], ['seo', 'SEO']];
+    tabs.innerHTML = T.map(function (t) { return '<button type="button" role="tab" data-ins="' + t[0] + '" aria-selected="' + (INS.tab === t[0]) + '">' + t[1] + '</button>'; }).join('');
+    if (more) more.setAttribute('href', INS_FULL[INS.tab]);
+    if (!INS.web && !INS.social) { body.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Reading Analytics and Social&hellip;</p>'; return; }
+    body.innerHTML = INS.tab === 'social' ? insSocial(INS.social) : INS.tab === 'seo' ? insSeo(INS.web) : insWeb(INS.web);
     if (window.veSyncHome) setTimeout(window.veSyncHome, 0);
+  }
+  function renderInsights() {
+    var tabs = document.getElementById('dash-ins-tabs'), more = document.getElementById('dash-ins-more');
+    if (tabs && !tabs.dataset.wired) {
+      tabs.dataset.wired = '1';
+      tabs.addEventListener('click', function (e) { var b = e.target.closest('[data-ins]'); if (b) { INS.tab = b.getAttribute('data-ins'); insDraw(); } });
+    }
+    if (more && !more.dataset.wired) {
+      more.dataset.wired = '1';
+      more.addEventListener('click', function (e) { e.preventDefault(); var h = INS_FULL[INS.tab]; if (typeof openDepotPage === 'function') openDepotPage(h); else location.href = h; });
+    }
+    insDraw(); insLoad(false);
   }
   function inboxItem(r) {
     var old = document.getElementById('dash-mc'); if (old) old.remove();
@@ -4083,8 +4184,8 @@
     var lastCards = [], lastCap = 0;
     function syncHome(cards, capH) {
       if (cards) { lastCards = cards; lastCap = capH; } else { cards = lastCards; capH = lastCap; }
-      var side = document.getElementById('dash-depot-block');
-      var lb = side && !side.hidden ? document.getElementById('dash-depot-list') : document.getElementById('dash-leaderboard-list'); if (!lb) return;
+      var side = document.getElementById('dash-insights-block');
+      var lb = side && !side.hidden ? document.getElementById('dash-ins-body') : document.getElementById('dash-leaderboard-list'); if (!lb) return;
       var wide = window.innerWidth > 900 && list.offsetHeight > 0 && lb.offsetHeight > 0;
       if (!wide) {
         if (list.style.minHeight) list.style.minHeight = '';
@@ -4464,7 +4565,7 @@
 
       dashReorder(recent, 've_dash_recent_order');
       // No Your tools for a super admin (Sean, 2026-10-30: "all of the items that are listed below in the your tools really should just
-      // be part of the depot"): the Depot box beside For you holds every Depot page, the Admin pages and the Demos. Secret Shopper, the
+      // be part of the depot"): the Depot box at the bottom of the tab holds every Depot page, the Admin pages and the Demos. Secret Shopper, the
       // Community Board and Guides left (the Daily Pulse and Guides are in the menu).
       ['dash-tools-title', 'dash-tools-bar', 'dash-tools-cats', 'dash-tools-none'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = true; });
       host.innerHTML = '';
