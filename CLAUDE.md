@@ -174,6 +174,15 @@ as its host), the listing's website or Instagram linked in the text, or its full
 Our four shows and their hosts, and a stop list of plain phrases, are left out (`c_skip`, `c_stop`). A wrong match is taken
 off in **Depot > In this story** (`ve-mentions`); a removed row is never rebuilt. Not yet: the city Daily Pulse topics.
 
+**The episode page's player and people (Sean, 2026-11-03).** Every episode we can match to its feed plays through the show page's own episode row
+(`VEEpisodes.row`, docked player, Save), YouTube-video episodes included; only a moment link (`?t=<seconds>`, from the content index's search)
+keeps the YouTube player, since that second is timed on the video. **On this episode** lists Guest then Host (`ve_person_credits`), then
+**Discussed**: People profiles the episode's own text names, read from the same `ve_content_mentions` matches In this story uses (People
+sections only, `PEOPLE_CATS` in `api/pulse-article.js`; a wrong one comes off in Depot > In this story; Discussed people are left out of the
+structured-data `actor` list). As transcripts are added the matcher finds more. Klaper's missing Guest credits on two episodes were added the
+same day; an episode with a guest but no Guest credit reads Discussed until it is credited (audit open, see the playbook below). The work is
+tracked in the playbook `podcast-network-transcript-upload` (all four shows' transcripts; closes when every episode with audio has one).
+
 The cap applies to the card only. Full article and detail views
 (`.article-lede`, `.article-p`) are never clamped.
 
@@ -1102,6 +1111,7 @@ returns every moment across every show, who said it, a quote, and a play button 
   tagged on the next run. Nothing is deleted: each save is a run (`run_id`), the transcript points at its latest (`moments_run`),
   and `ve_content_moments_live` is what counts (ready transcripts, latest run, with the episode's title, show, number and
   YouTube id). Proven 2026-10-23 on Vegans Explore episode 1 (7 moments; a made-up quote and an off-list topic were refused).
+- **Step 1 now lives in its own playbook** (Sean, 2026-11-03: "podcast network transcript upload... once that's done, that playbook is closed out"): `podcast-network-transcript-upload`, open while Sean transcribes, closed when all four shows have a transcript on every episode with audio (132 of 278 on 2026-11-03). Steps 2 and 3 stay in `ve-content-index`.
 - Step 3, search and clips (started 2026-10-23, Sean: "start step 3"; migration `20261023_ve_content_search.sql`). In
   **Depot > Content index** first, so Sean can judge it before members get it: **Search** (`#search?q=&topic=&show=`, a card
   on the home view with the moment count) finds moments by words and topic, best match first (`ve_content_moments_search`,

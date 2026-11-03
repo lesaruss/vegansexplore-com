@@ -12,3 +12,9 @@ All live on main (last: d453ff2, Vercel production READY). Verified with Playwri
 - DONE 2026-11-03: YouTube-video episodes now use the show-page episode row too (default taken). Exception: a moment link (`?t=`) keeps the YouTube player, since the second is timed on the video.
 - On this episode should also list people discussed, once Sean uploads transcripts (held until then).
 - Sandbox cannot reach hq.lesaruss.ai, Captivate or mzstatic: audio and artwork not loaded in local tests.
+
+## Update (second half of 2026-11-03)
+- YouTube-video episodes use the show-page episode row (c477c60); `?t=` moment links keep the YouTube player.
+- On this episode lists Discussed people from `ve_content_mentions` (1d6dd86). Klaper credited Guest on `klaper-moving-medicine-forward-nutrition` and `nutrition-blind-spot-modern-medicine` (data only, `ve_person_credits`).
+- Playbook: `podcast-network-transcript-upload` (briefings + playbook_records, brand vegans-explore). Open while Sean transcribes all four shows; closes when every episode with audio has a transcript (132 of 278 on Nov 3: VE 126/143, SoFlo 2/59, Pre-Vegans 3/19, VWL 1/57). Step 1 of `ve-content-index` moved there.
+- Open: audit episodes with a guest but no Guest credit; rebuild mentions after each transcript batch; the Studio page for the new playbook was checked by structure in the database, not in a browser (hq.lesaruss.ai is unreachable from the sandbox).
