@@ -23,6 +23,10 @@
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
   html,body{height:100%;}
+  /* Footer always at the foot of the window, even on a short page such as My Saves (Sean, 2026-11-03). */
+  body{min-height:100vh;display:flex;flex-direction:column;}
+  body>main{flex:1 0 auto;}
+  body>.ve-footer,body>footer{margin-top:auto;}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);}
   main{max-width:none;margin:0;padding:44px 32px 80px;}
 
@@ -838,6 +842,8 @@
      the public pages (Sean, 2026-10-27: "I actually prefer it to be full width on the page"), and so does the Daily Pulse's frame,
      whose banner is the /pulse page's own. main's side padding is 32px (16px on phones). */
   .dash-hero-banner{border-radius:0;margin:0 -32px 22px;}
+  /* The page bar (.vcb.vcb-bar sets margin:0 at higher specificity) must still run edge to edge (Sean, 2026-11-03). */
+  .dash-hero-banner.vcb.vcb-bar{margin:0 -32px 22px;}
   #dash-pulse-host{margin:0 -32px;}
   #dash-depot-host{margin:-22px -32px 0;}
   @media (max-width:700px){ #dash-depot-host{margin:-22px -16px 0;} }
@@ -852,7 +858,7 @@
   body.dash-has-banner main{padding-top:0;}
   /* Phones: every tab's banner flush under the bar (Sean, 2026-10-27). After the rules above, so it wins. */
   @media (max-width:760px){ body.dash-has-banner main, body[data-dash-tab] main, body[data-dash-tab]:not([data-dash-tab="profile"]) main{padding-top:0;} }
-  @media (max-width:700px){ .dash-hero-banner{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
+  @media (max-width:700px){ .dash-hero-banner,.dash-hero-banner.vcb.vcb-bar{margin:0 -16px 22px;} #dash-pulse-host{margin:0 -16px;} }
   .event-row{display:flex;align-items:stretch;gap:0;border:1.5px solid var(--ve-border);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;margin-bottom:10px;}
   .event-row:hover{border-color:var(--ve-green-dark);box-shadow:0 3px 14px rgba(58,155,62,0.07);}
   .event-date-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;background:var(--ve-green-light);min-width:72px;text-align:center;flex-shrink:0;}

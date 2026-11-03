@@ -56,6 +56,8 @@
   var css = [
     '.vear-layout{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:28px;align-items:start;}',
     '.vear-main{min-width:0;}',
+    // The rail starts a little below the page bar and the controls, as on the Daily Pulse, so the top has room to breathe (Sean, 2026-11-03).
+    '.vear-layout>.vear-rail{margin-top:16px;}',
     // Sticks just under the site's sticky menu (--ve-nav-h, set by nav.js; 0 inside the dashboard window).
     '.vear-rail{position:sticky;top:calc(var(--ve-nav-h, 0px) + 16px);display:flex;flex-direction:column;align-items:stretch;gap:14px;min-width:0;}',
     '.vear-label{font-size:9px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(26,26,26,0.45);text-align:center;}',
