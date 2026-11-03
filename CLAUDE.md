@@ -1256,7 +1256,7 @@ and browser, a note, and the status buttons). `ve-feedback` `admin_list`, `admin
 
 **Search queue, working it** (Sean, 2026-11-03): Logan works the queue daily with discretion (answer, write it up as a Guide piece, add a listing
 or set aside); the queue feeds what we write next (articles, new sections, new Directory listings). Spam: a question sent through the box needs
-an email; abusers are quarantined (a `quarantined` status and a rate limit are not built yet).
+an email; abusers are quarantined. **Spam control built 2026-11-03** (migration `20261103_search_queue_spam_control.sql`; `ve-search` v5): `ve_search_ask` takes `p_explicit` (an explicit ask without an email is refused, `email_needed`), files a question as `quarantined` when it is junk (`ve_search_q_junk`: a link or address, mostly non-letters, one character repeated, no vowel) or comes with neither a visitor id nor an email (a script), and refuses with `rate_limited` (429 from `ve-search`) a visitor or email past 15 new questions an hour or 40 a day (Logan's defaults, Sean's to change). A quarantined question never shows in the queue's open list. The Liz card's email stays optional (the dead end is logged anonymously; the email only says where to write back). Proven live: a junk ask came back quarantined, a normal one open, both removed.
 
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
