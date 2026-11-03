@@ -5971,7 +5971,19 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   A members-only prompt (`?from=vote|save|checkin|give|board|tickets`) still lands on the Overview with its note, now naming both ways. `/business` is the same file with its own tabs and
   was checked unchanged. **Taster and challenges retired the same day** (Sean: "Go retire the Taster and challenges"; migration `20261103_retire_taster_challenges.sql`): `nurture.tasters_on` false (the Events Guide's `door_on` notes untouched), `/guides/taste` and `/challenges` redirect to `/passport` (`/guides/taste?unsub=` still opens, so an old unsubscribe link works), both left the Guide catalog and the sitemap. Nothing deleted: `ve_tasters`, `ve_challenges`, Depot > Challenges and the `ve-taster` and `ve-challenge` functions stay (one test Taster, no challenge existed); a direct call to their start actions still works, since no function was changed. **Not done**: the
   40-second video on Enter the room (`next-v1`) still says Passport, a new cut is Sean's call; the Passport Guide's old four-page copy lives only in git history.
-- **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome (built, awaiting merge), retire the Taster and challenges (Sean's go), profiles with groups, campaign homes.
+- **Profiles with groups, step 1 built 2026-11-03** (playbook `ve-pathways`; Sean: "Go with your recommendation on all four"; migration `20261103_people_tags.sql`, applied; nothing on a page yet).
+  The proposal's **group** is called a **tag** so it never clashes with community groups (`ve_group_*`). **Only people we have touched get a profile**, keyed as Depot > Outreach keys them
+  (`ve_people_outreach.person_key`: a lower-case email, `ig:<handle>`, or a key we set); the profile page is step 2, pick-by-tag step 3. `ve_tags` (seeded: Sponsor interested `sponsor-interested`,
+  Vendor, Volunteer, Pre-ticket `pre-ticket`; Logan's list, Sean's to change), `ve_person_tags` (one row a person and tag, `source` hand or rule, who and when; **taking one off keeps the row with
+  a reason, `removed_at`**, so history reads and **a rule never puts it back**; adding it by hand does) and `ve_tag_rules` (kind `link_click`, `match` any of `initiative_slug`, `tag`,
+  `code_prefix`, all must match, an empty match matches nobody; **every rule starts off**). All RLS on, no policies; the functions are service role only: `ve_tag_add`, `ve_tag_remove` (a note
+  required), `ve_tag_rule_matches(rule)` and `ve_tag_rules_run(apply)`, which with `apply` false only reports who each rule **would** tag (a log-only preview, on or off) and with `apply` true tags
+  for rules that are on. Cron `ve-tag-rules` (every 15 minutes) applies only rules that are on, so it does nothing until Sean turns a rule on. No rule exists yet; the first (clicks on the sponsor
+  ad tag Sponsor interested) waits for a real sponsor link. Proven 2026-11-03 in rolled-back transactions as Test Manager: preview with the rule off, applying while off tagged nobody, on tagged the one
+  matching person and nobody for the empty rule, a second run added none, remove with no note refused, a removed tag not rebuilt by a rule and put back by hand, a bad tag refused. **Not built**:
+  the profile page (Depot > People > a person, `#person/<key>`, every email, click, action and note on one timeline, tags, Give and Take back points for a member), tag chips and a filter in
+  Pick people, rule and tag editing in the Depot, an edge function for any of it.
+- **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome (live), retire the Taster and challenges (done), profiles with groups (step 1 built: tags and rules; next the profile page, then pick by tag), campaign homes.
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 

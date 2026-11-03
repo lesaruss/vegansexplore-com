@@ -123,3 +123,8 @@ See CLAUDE.md, "Three doors, one Welcome". Migration `20261103_survey_door.sql`;
 - Hover rings are no longer clipped on the left of any scrolling dashboard box.
 - Not found: a member named Zelda (searched members, Tasters, invitations and listings in this database on 2026-11-03); the only
   account created that day was an internal QA test. Ask Sean for her email.
+
+## Profiles with groups: the plan Sean approved (2026-11-03: "Go with your recommendation on all four")
+
+- **Tags**, not groups (community groups already own the word). **Touched people only**, keyed by `person_key`. Seed tags: Sponsor interested, Vendor, Volunteer, Pre-ticket. **Depot here**, moving to BrandDesk with campaign homes.
+- Step 1 (database: tags, person tags, rules, preview) is built. Step 2: the profile page. Step 3: pick by tag.
