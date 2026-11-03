@@ -4461,7 +4461,7 @@
           // Real members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03).
           var rows = ((d && d.members) || []).filter(function (m) { return m.member_class === 'member'; }).sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
           dpCount(t, rows.length);
-          dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color, url: m.avatar_url, memberId: m.id }; });
+          dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color, url: m.avatar_url, memberId: m.id || (m.identity_source === 'members' ? m.identity_id : null) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       // Recent Votes: what got the vote, and who gave it on the right (Sean, 2026-10-30: "who's voting, who's getting the votes").
