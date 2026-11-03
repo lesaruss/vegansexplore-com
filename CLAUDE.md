@@ -5762,6 +5762,33 @@ how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
+## Three doors, one Welcome, campaigns on people (LOCKED by Sean 2026-11-03, playbooks `ve-pathways`, `ve-pricing-points-passport`)
+
+Concept session with V, locked by Sean: "we can lock it" (canon `canon-ve-people-campaigns-doors`; migration
+`20261103_people_campaigns_doors_canon.sql`; the full write-up, build order and open question are
+`docs/proposals/people-campaigns-doors.md`: read it before building any of this). **Not built yet** except the member card below.
+Sean: "people don't have to pay to get in, but they do have to show some effort."
+
+- **Three doors, no comps**: a free **Daily Pulse subscription** (an email; cities picked; not a membership); the **survey**
+  (membership, full access, 250 points); the **$11** (membership, full access, 1,100 points). Bonus points are given by hand from a
+  member's card. Open question: does the survey door earn Founding Member (default no; Founding is paying before 2027-01-01).
+- **One Welcome**: the Welcome, the Passport and the Taste merge into one free, public guide that explains how to use Vegans
+  Explore and ends with the two paths. The Taster account type goes away; `ve-taster`, `/guides/taste` and the Taster emails keep
+  working until then, and Pulse subscribers get no Taster sequence.
+- **Pulse subscribe** (first to build): a box on every Pulse page and article, a desktop-only exit pop-up once per visitor per 30
+  days, double opt-in, daily or weekly per city, a short issue with a From Vegans Explore slot for campaigns.
+- **Campaigns on people**: a person enters a campaign on a real action, with a source (banner, Pulse, email, form) and a stage
+  (Noticed, Interested, Committed); default follow-up Day 0, 3, 7, 14; a two-week calendar approved once; a campaign lives in
+  BrandDesk (its Plan tab becomes **Playbook**) with Overview, People, Assets, Messages, Playbook, Results.
+- **The people sender** (BCPS Marcom's way, rebuilt on Depot > Outreach): pick people and make drafts, Sent / Opened / Clicked on
+  every row and a campaign table, then a week view. Nothing sends until Sean approves each message.
+- **Built 2026-11-03**: the dashboard's member card opens from a Recent Members, Votes, Leads, Leaderboard or Inbox picture or name
+  (Recent Members lists only Vegans Explore members, `identity_source` `members`), and **Take back** points sits beside Give
+  (`ve_points_take`, `ve-dashboard` `take_points`: spendable only, never lifetime, never below zero, a reason required, once per
+  ref). The button was proven in the database, not yet clicked in a browser. Hover rings are no longer clipped in the dashboard's
+  scrolling boxes.
+- **Build order**: Pulse subscribe, the people sender, the survey door, the updated Welcome, profiles with groups, campaign homes.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
