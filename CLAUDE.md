@@ -5987,9 +5987,24 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   for rules that are on. Cron `ve-tag-rules` (every 15 minutes) applies only rules that are on, so it does nothing until Sean turns a rule on. No rule exists yet; the first (clicks on the sponsor
   ad tag Sponsor interested) waits for a real sponsor link. Proven 2026-11-03 in rolled-back transactions as Test Manager: preview with the rule off, applying while off tagged nobody, on tagged the one
   matching person and nobody for the empty rule, a second run added none, remove with no note refused, a removed tag not rebuilt by a rule and put back by hand, a bad tag refused. **Not built**:
-  the profile page (Depot > People > a person, `#person/<key>`, every email, click, action and note on one timeline, tags, Give and Take back points for a member), tag chips and a filter in
-  Pick people, rule and tag editing in the Depot, an edge function for any of it.
-- **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome (live), retire the Taster and challenges (done), profiles with groups (step 1 built: tags and rules; next the profile page, then pick by tag), campaign homes.
+  rule editing in the Depot (rules are rows; every one is off).
+- **Profiles step 2, the person page, built and live 2026-11-03** (playbook `ve-pathways`; main merge pending; `ve-person-profile` v1 from 8d6a5c9, verify_jwt off, super admin token checked inside, or the ops token with `as_member`;
+  `admin/depot/people.html`, **Depot > People > People** in the Go to menu, copying the Watchlist's shell). **List** (`#list/<tag>`): everyone we have touched (a `person_key` on a Depot > Outreach message, or an active tag), search over name,
+  email, handle and organization, the tag as chips, each card with its tags and last contact. **A person** (`#person/<key>`, the key URL-encoded): one timeline, newest first (every email and message sent, drafted or done by hand with its
+  campaign, opened and bounced from `email_events`, a click on their tracked link, the other emails we sent that address from `email_sends`, actions from `ve_initiative_interest`, tag adds and removals, notes, and a member's points ledger), then
+  who they are (the member found by email: how and when they joined, Founding, chapter, standing), **tags** (add with an optional reason; take off with a required reason; a removed tag stays in the history and a rule never puts it back, a hand add does),
+  **notes** (`ve_people_outreach_notes`, the same ones Depot > Outreach shows) and, for a member who is not a super admin or a Guide, **Give** and **Take back** points (the same `ve_points_grant` and `ve_points_take` as the dashboard's member card, a
+  reason required, spendable only on take back). Actions `list`, `get`, `tags`, `tag_add`, `tag_remove`, `note_add`, `give_points`, `take_points`. A person with no outreach rows, tags or notes who is not a member answers 404. Limit: a person whose only
+  record is a removed tag drops out of the list (they still open by address). Proven live 2026-11-03 through the one-time `ve-once-person-proof` (now the 410 stub): no token 401, a non-admin 403, unknown person 404, a bad tag, a removal with no reason and an
+  empty note refused, tag then note on a throwaway key, removal kept as history, give 50 and take 50 on Test Manager (lifetime points there are 50 higher; spendable back to 0), too many refused, a non-member refused for points; throwaway rows deleted.
+  The page checked at 1440 and 390 px against mocked answers beside the Watchlist (same family, no sideways scroll, no script errors).
+- **Profiles step 3, pick by tag, built and live 2026-11-03** (migration `20261103_pick_by_tag.sql`; `ve-people-outreach` v8 from 1156f14 through `ve-function-deploy`, source sha256 matched; `admin/depot/outreach.html`).
+  Depot > Outreach > Pick people has a **Tag** row of chips (Any, then each tag) beside the pools, and each person shows their tags as badges. `pick` takes `tag`: the people holding it (active, by email) are the only candidates, still minus members,
+  invited, suppressed and unsubscribed. `ve_founding_candidates` gained `p_emails text[]` (null means everyone; an empty list means nobody); its other callers pass named arguments and are unchanged (3,199 candidates before and after). Proven
+  live with a throwaway Volunteer tag on one candidate (volunteer returned just them with their badge, vendor none, no tag all 3,199; the row deleted). The phone layout hides each row's badges, as it already did the pools (existing behavior).
+  **Not built**: campaign homes in BrandDesk (waits for Sean to pick the first campaign, the Plant-Based Showcase at the Dolphins game on Nov 29 being the proposed pilot), a tag rule (the first, sponsor-ad clicks, waits for a real sponsor link), tags
+  for people who are only in a campaign by Instagram handle in the pick list (the pick list is email-only).
+- **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome (live), retire the Taster and challenges (done), profiles with groups (steps 1 to 3 built: tags and rules, the person page, pick by tag), campaign homes (next, waits for the first campaign).
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 
