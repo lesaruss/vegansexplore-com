@@ -48,12 +48,14 @@
   function dashTab(key) {
     if (typeof global.activateDashTab === 'function') { try { global.activateDashTab(key, { skipHistory: true }); } catch (e) {} }
   }
+  // The dashboard's menu is the shared header (public/nav.js): a section's link in its menu row, as every page draws it.
+  function navLink(key) { return '.ve-nav .ve-menu-row a[href="' + (key === 'saves' || key === 'depot' ? '/dashboard/' : '/') + key + '"]'; }
   function dashTabAvailable(key) {
-    return key === 'profile' || !!q('#dash-tabs .dash-tab[data-tab-key="' + key + '"]');
+    return key === 'profile' || !!q(navLink(key));
   }
   function dashboardReady() {
     var c = document.getElementById('dash-content');
-    return c && getComputedStyle(c).display !== 'none' && q('#dash-tabs .dash-tab');
+    return c && getComputedStyle(c).display !== 'none' && q('.ve-nav .ve-menu-row a');
   }
   function hubTab(key) {
     if (typeof global.switchTab === 'function') { try { global.switchTab(key); } catch (e) {} }
@@ -88,21 +90,21 @@
           body: 'What to do next, picked for you: set up your Guide, vote for your favorite spots, take on a bounty. New ones show up here.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-cm-cert-prompt'], title: 'Your certification',
           body: 'Community Managers start here. Nine short modules, each with a quick quiz. Pass them all to be certified.' },
-        { page: DASH_PAGE, tab: 'profile', sel: ['#dash-tabs', '#dash-tabs-mobile'], title: 'Everything is one tab away',
+        { page: DASH_PAGE, tab: 'profile', sel: ['.ve-nav .ve-menu-row', '#ve-burger'], title: 'Everything is one tab away',
           body: 'The Guides, the Directory, Events, Shows, the Daily Pulse and Communities all live right here.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['#dash-leaderboard-block'], placement: 'top', title: 'The leaderboard',
           body: 'See who is leading the whole community. Everything you do earns points.' },
-        { page: DASH_PAGE, tab: 'guides', sel: ['#dash-tabs .dash-tab[data-tab-key="guides"]', '#dash-tabs-mobile'], title: 'Guides',
+        { page: DASH_PAGE, tab: 'guides', sel: ['.ve-nav .ve-menu-row a[href="/guides"]', '#ve-burger'], title: 'Guides',
           body: 'Step-by-step Guides, each walked through by one of our Guides: $11 or 1,100 points, yours to keep.' },
-        { page: DASH_PAGE, tab: 'pulse', sel: ['#dash-tabs .dash-tab[data-tab-key="pulse"]', '#dash-tabs-mobile'], title: "Today's Daily Pulse",
+        { page: DASH_PAGE, tab: 'pulse', sel: ['.ve-nav .ve-menu-row a[href="/pulse"]', '#ve-burger'], title: "Today's Daily Pulse",
           body: "Your city's daily briefing and today's national one: what is happening, what is coming up, and one thing you can do." },
-        { page: DASH_PAGE, tab: 'directory', sel: ['#dash-tabs .dash-tab[data-tab-key="directory"]', '#dash-tabs-mobile'], title: 'The Directory',
+        { page: DASH_PAGE, tab: 'directory', sel: ['.ve-nav .ve-menu-row a[href="/directory"]', '#ve-burger'], title: 'The Directory',
           body: 'Vegan and Vegan-friendly restaurants, shops and services in your city. Vote for your favorites and save them to My List.' },
-        { page: DASH_PAGE, tab: 'events', sel: ['#dash-tabs .dash-tab[data-tab-key="events"]', '#dash-tabs-mobile'], title: 'Events',
+        { page: DASH_PAGE, tab: 'events', sel: ['.ve-nav .ve-menu-row a[href="/events"]', '#ve-burger'], title: 'Events',
           body: "What's coming up in your city, from potlucks to festivals." },
-        { page: DASH_PAGE, tab: 'media', sel: ['#dash-tabs .dash-tab[data-tab-key="media"]', '#dash-tabs-mobile'], title: 'Media',
+        { page: DASH_PAGE, tab: 'media', sel: ['.ve-nav .ve-menu-row a[href="/media"]', '#ve-burger'], title: 'Media',
           body: 'Our shows first, then the top podcasts, documentaries and books as members vote for them in the Directory.' },
-        { page: DASH_PAGE, tab: 'communities', sel: ['#dash-tabs .dash-tab[data-tab-key="communities"]', '#dash-tabs-mobile'], title: 'Communities',
+        { page: DASH_PAGE, tab: 'communities', sel: ['.ve-nav .ve-menu-row a[href="/communities"]', '#ve-burger'], title: 'Communities',
           body: 'Every city has its own community. Visit yours, or look around another city before you go.' },
         { page: DASH_PAGE, tab: 'profile', sel: ['.dash-home-overview'], placement: 'top', title: 'Your tools',
           body: 'Bounties, campaigns, ways to get involved, the Guides and My List, all in one place on your dashboard.' },
@@ -476,7 +478,7 @@
       // Parts that load after the page (certification, the Pulse Desk) get a few seconds.
       if (!currentTarget && ++tries < 25) { setTimeout(paint, 200); return; }
       currentRing = null;
-      if (step.tab && step.tab !== 'profile') currentRing = q('#dash-tabs .dash-tab[data-tab-key="' + step.tab + '"]');
+      if (step.tab && step.tab !== 'profile') currentRing = q(navLink(step.tab));
       currentPlacement = step.placement || 'bottom';
       if (currentTarget && currentTarget.scrollIntoView) currentTarget.scrollIntoView({ block: 'center', behavior: 'smooth' });
 

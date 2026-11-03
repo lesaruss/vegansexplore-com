@@ -1274,10 +1274,14 @@ the search box on its own row. The search is `VESearch.mount` (`/public/ve-searc
 touch devices do not. On a list page (the Directory's sub-sections) the box carries a scope chip, "in Documentaries & Films x", set through
 `window.VEHeaderScope.set({label, cat})` and sent to `/search?cat=`; the list's own box reads **Filter**. A banner (`VECityBanner`) outside a chapter hub
 is a **one-line page bar** (`vcb-bar`: the title as the way home, the picker, the page's buttons, Share); on phones the page name sits on its own row
-and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. The dashboard has its own header file
-(`dashboard/center-console.html`) with the same two rows and `/public/ve-header-search.js`; its Directory, Events, Daily Pulse, Media, Guides and
-Communities are links to the public pages, and `/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only
-Dashboard, My Saves and the Depot are under `/dashboard`. Keep the search wiring in `nav.js` and `ve-header-search.js` in step. Not done: the city
+and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. **One header, no copy** (Sean, 2026-11-03: "the font is not the same for the dashboard pages versus the non-dashboard pages... why aren't we using the
+same elements?... no drift"): the dashboard (`dashboard/center-console.html`) loads `/public/nav.js` like every page and holds no header markup, CSS or
+script of its own; `ve-header-search.js` was deleted. Its Directory, Events, Daily Pulse, Media, Guides and Communities are links to the public pages, and
+`/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only Dashboard, My Saves and the Depot are under `/dashboard`:
+`initDashTabs` opens those three in place when the shared bar's link is clicked (`NAV_TAB`, `markNav`; the Dashboard tab's address is `/dashboard`), every other
+link loads its page. The dashboard tour (`public/ve-tour.js`) points at the bar's menu row (`navLink`). A header change is made once, in `nav.js`. Checked
+2026-11-03 against a mocked signed-in super admin at 1440 and 390 px beside `/directory`: the same height, fonts and logo, the menu opens the tabs in place, no
+script errors. Not done: the city
 picker in the menu row, Apps in the account menu, scoping the dropdown (only Enter is scoped), the Events list box wording.
 
 ## Tracked links (Sean, 2026-10-04)

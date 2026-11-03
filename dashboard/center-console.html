@@ -42,43 +42,7 @@
      as the new LESARUSS HQ"): the nav moved from a fixed bar above the window
      to the window's second row, under the title bar, exactly as HQ's did the
      same day. Solid and in flow now; position:relative anchors its menus. */
-  .ve-topnav{position:sticky;top:0;z-index:40;flex-shrink:0;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;background:#fff;border-bottom:1px solid var(--ve-border);}
-  .ve-topnav-left{display:flex;align-items:center;gap:22px;min-width:0;flex-shrink:0;}
-  .ve-topnav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
-  /* The dashboard tab strip lives in the top nav (2026-09-20, Sean: "the
-     navigation should be at the top, like HQ is"), where HQ carries its
-     primary nav. It scrolls inside the bar rather than widening it. */
-  .ve-topnav-nav{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;}
-  /* New header (Sean, 2026-11-03): the same two rows as every other page: logo, one wide search box, Share / Apps / avatar; then the sections. */
-  .ve-topnav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"left search right" "nav nav nav";height:auto;gap:0 24px;justify-content:stretch;}
-  .ve-topnav-left{grid-area:left;height:62px;}
-  .ve-topnav .ve-hs{grid-area:search;}
-  .ve-topnav-right{grid-area:right;justify-self:end;height:62px;}
-  .ve-topnav-nav{grid-area:nav;height:40px;border-top:1px solid rgba(0,0,0,.06);margin:0 -20px;padding:0 20px;}
-  a.dash-tab{text-decoration:none;display:inline-block;}
-  html.ve-has-pagebar .ve-topnav-right [data-ve-share]{display:none;}
-  .ve-topnav .dash-tabs{border-bottom:none;margin-bottom:0;overflow-x:auto;scrollbar-width:none;}
-  .ve-topnav .dash-tabs::-webkit-scrollbar{display:none;}
-  .ve-topnav .dash-tab{padding:7px 4px;}
-  .ve-wordmark{font-size:16px;font-weight:900;text-transform:uppercase;letter-spacing:0.05em;color:var(--ve-text);white-space:nowrap;flex-shrink:0;text-decoration:none;display:flex;align-items:center;}
-  .ve-wordmark .dot{color:var(--ve-green);}
-  /* Real Vegans Explore logo in the top-left (Sean, 2026-09-22), replacing the
-     text wordmark. Same landscape SVG the public site nav uses. */
-  .ve-wordmark-logo{height:30px;width:auto;display:block;}
-  @media (max-width:760px){ .ve-wordmark-logo{height:26px;} }
-  .ve-apps-btn{display:inline-flex;align-items:center;gap:7px;height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--ve-border);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--ve-text);cursor:pointer;transition:border-color 0.15s;}
-  .ve-apps-btn:hover,.ve-apps-btn.is-open{border-color:var(--ve-green);}
-  .ve-apps-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;}
-  .ve-avatar{width:34px;height:34px;border-radius:50%;flex-shrink:0;background:var(--ve-green);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:900;letter-spacing:0.05em;border:none;cursor:pointer;margin-left:2px;overflow:hidden;padding:0;}
-  .ve-avatar-img{width:100%;height:100%;object-fit:cover;display:block;}
-  .ve-burger{display:none;align-items:center;justify-content:center;width:38px;height:38px;border-radius:6px;border:1.5px solid var(--ve-border);background:#fff;color:var(--ve-text);cursor:pointer;flex-shrink:0;}
-  .ve-burger svg{width:20px;height:20px;}
-  .ve-burger[aria-expanded="true"]{border-color:var(--ve-green-dark);color:var(--ve-green-dark);}
-  .ve-burger-menu{position:absolute;left:0;right:0;top:100%;z-index:60;background:#fff;border-bottom:1px solid var(--ve-border);box-shadow:0 14px 28px rgba(0,0,0,.12);padding:6px 0;}
-  .ve-burger-menu[hidden]{display:none;}
-  .ve-burger-menu button{display:block;width:100%;text-align:left;padding:14px 22px;font:inherit;font-size:14px;font-weight:800;color:var(--ve-text);background:none;border:0;border-left:3px solid transparent;cursor:pointer;}
-  .ve-burger-menu button:hover{background:#f6faf7;}
-  .ve-burger-menu button[aria-current="page"]{color:var(--ve-green-dark);border-left-color:var(--ve-green);background:#f0faf4;}
+  /* The header is public/nav.js, shared with every page (Sean, 2026-11-03: "no drift"); its CSS lives there, not here. */
 
   /* --- Center Console frame (2026-09-06, Logan, Sean direction: dashboard v1,
      non-destructive parallel build). Updated 2026-09-07 (Sean direction):
@@ -152,24 +116,6 @@
   body .gw-launch{display:none !important;}
   @media (max-width:760px){
     .console-backdrop{display:none;}
-    /* The top nav rides at the top of normal flow on a phone, same as HQ's
-       does at this width, rather than floating fixed over the content. The
-       section nav drops to its own row (the mobile select), like HQ wraps its
-       primary nav below the bar at this width. */
-    .ve-topnav{height:auto;flex-wrap:wrap;row-gap:8px;padding-top:8px;padding-bottom:8px;}
-    /* Phones (Sean, 2026-10-27: "make the menu on mobile the hamburger menu in the right corner"): no section row; Apps keeps its
-       icon, the avatar stays, and the hamburger after them opens the sections in a panel under the bar. Every tab's banner
-       sits flush under the bar. */
-    .ve-topnav-nav{display:none;}
-    .ve-topnav{grid-template-columns:1fr auto;grid-template-areas:"left right" "search search";row-gap:8px;}
-    .ve-topnav-left,.ve-topnav-right{height:46px;}
-    .ve-apps-btn{padding:0;width:38px;justify-content:center;font-size:0;gap:0;}
-    /* Phones (Sean, 2026-11-03): a series of squares, right to left the hamburger, the member's square, Apps, Feedback. */
-    .ve-topnav-right{gap:6px;}
-    .ve-avatar{width:38px;height:38px;border-radius:6px;margin-left:0;}
-    .ve-topnav-right .ve-feedback-btn,.ve-topnav-right .ve-share-btn{margin:0;}
-    .ve-burger{display:inline-flex;}
-    .ve-topnav-nav .dash-tabs-mobile{margin-bottom:0;}
     .console-frame{position:static;width:auto;height:auto;min-height:0;display:block;margin:0;border-radius:0;box-shadow:none;max-width:100%;}
     .console-titlebar{display:none;}
     .console-frame main{flex:none;min-height:0;overflow:visible;}
@@ -655,11 +601,6 @@
   .dash-tab + .dash-tab{margin-left:14px;}
   .dash-tab:hover{color:var(--ve-text);}
   .dash-tab.active{color:var(--ve-green-dark);border-bottom-color:var(--ve-green);}
-  .dash-tabs-mobile{display:none;}
-  @media (max-width:640px){
-    .dash-tabs{display:none;}
-    .dash-tabs-mobile{display:block;width:100%;margin-bottom:20px;padding:12px 40px 12px 14px;border:1.5px solid var(--ve-border);border-radius:10px;font:inherit;font-size:13px;font-weight:800;color:var(--ve-text);background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' stroke='%23475569' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 16px center;-webkit-appearance:none;appearance:none;}
-  }
 
   /* --- Bounties topic toggle + horizontal scroll-all row. Only "All" is
      wired to real content right now -- there is exactly one live bounty
@@ -934,32 +875,9 @@
 <div id="lr-dock-mount"></div>
 
 <div class="console-frame" id="console-frame">
-  <header class="ve-topnav" role="banner">
-  <div class="ve-topnav-left">
-    <a class="ve-wordmark" id="ve-logo-home" href="/dashboard/center-console" aria-label="Vegans Explore dashboard home"><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>
-  </div>
-  <!-- Dashboard section nav, in the top bar like HQ (2026-09-20). initDashTabs
-       fills #dash-tabs / #dash-tabs-mobile by id regardless of where they sit. -->
-  <form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg><input type="text" name="q" id="ves-page-input" placeholder="Search places, people, shows, products&hellip; try &ldquo;vegan pizza in Atlanta&rdquo;" aria-label="Search Vegans Explore"><kbd aria-hidden="true">/</kbd></label></form>
-  <script src="/public/ve-header-search.js"></script>
-  <div class="ve-topnav-nav">
-    <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
-    <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
-  </div>
-  <div class="ve-topnav-right">
-    <button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>
-    <script src="/public/ve-share.js" defer></script>
-    <button type="button" class="ve-feedback-btn" data-ve-feedback aria-label="Send feedback" title="Send feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button>
-    <script src="/public/ve-feedback.js" defer></script>
-    <button type="button" class="ve-apps-btn" id="ve-apps-btn" aria-haspopup="menu" aria-expanded="false" aria-label="All brands in the LESARUSS Universe">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-      Apps
-    </button>
-    <button type="button" class="ve-avatar" id="ve-topnav-avatar" aria-label="Your account"></button>
-    <button type="button" class="ve-burger" id="ve-burger" aria-label="Menu" aria-expanded="false" aria-controls="ve-burger-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg></button>
-  </div>
-  <div class="ve-burger-menu" id="ve-burger-menu" role="menu" aria-label="Dashboard sections" hidden></div>
-</header>
+  <!-- The one header (public/nav.js), the same bar as every other page: no header markup, CSS or script lives in this page.
+       Dashboard, My Saves and the Depot are tabs of this page and open in place (initDashTabs). -->
+  <script src="/public/nav.js"></script>
   <main>
   <div id="dash-gate">
     <p>Checking access&hellip;</p>
@@ -1004,7 +922,6 @@
       </div>
     </div>
 
-    <!-- The tab strip moved up into the top nav (.ve-topnav-nav) 2026-09-20. -->
 
     <!-- Dashboard (home). The default/landing tab, first in the nav row, and
          also reachable via the top-left logo (Sean, 2026-09-22: keep an explicit
@@ -3463,7 +3380,7 @@
     if (m) m.classList.toggle('frame-fit', on);
     if (!on) { if (f && !f.classList.contains('ve-sized')) f.style.height = ''; return; }
     // The page scrolls now (no window since 2026-11-01): the frame is one screen tall under the sticky nav, 24px short of the foot.
-    var nav = document.querySelector('.ve-topnav');
+    var nav = document.querySelector('.ve-nav');
     var h = Math.floor(window.innerHeight - (nav ? nav.offsetHeight : 0) - 24 - (f.offsetHeight - f.clientHeight));
     f.style.height = Math.max(440, h) + 'px';
   }
@@ -4671,11 +4588,6 @@
       .map(function (s, i) { return { el: s, order: parseFloat(s.getAttribute('data-tab-order')), i: i }; })
       .sort(function (a, b) { return (isNaN(a.order) ? a.i + 1000 : a.order) - (isNaN(b.order) ? b.i + 1000 : b.order); })
       .map(function (x) { return x.el; });
-    var tabBar = document.getElementById('dash-tabs');
-    var mobileSelect = document.getElementById('dash-tabs-mobile');
-    if (!tabBar || !mobileSelect) return;
-    tabBar.innerHTML = '';
-    mobileSelect.innerHTML = '';
 
     // Real, shareable per-tab URLs (2026-09-07, Logan, Sean direction: "each
     // of these tabs, I would like to have its own unique link... so if I
@@ -4709,15 +4621,12 @@
       sections.forEach(function (s) {
         s.style.display = (s.getAttribute('data-tab-key') === key) ? 'block' : 'none';
       });
-      Array.prototype.forEach.call(tabBar.children, function (btn) {
-        btn.classList.toggle('active', btn.getAttribute('data-tab-key') === key);
-      });
-      mobileSelect.value = key;
+      markNav(key);
       if (key === 'saves') renderSavesTab();
       if (key === 'depot') openDepot();
       if (!opts.skipHistory) {
         if (key === 'directory') closeDashboardListing(true);
-        var url = key === 'depot' ? depotAddress() : '/dashboard/' + key;
+        var url = key === 'depot' ? depotAddress() : key === 'profile' ? '/dashboard' : '/dashboard/' + key; // the Dashboard tab is /dashboard, which the header marks
         if (location.pathname + (key === 'depot' ? location.search + location.hash : '') !== url) history.pushState({ tabKey: key }, '', url);
       }
     }
@@ -4726,45 +4635,29 @@
     // keep everything inside this one environment).
     window.activateDashTab = activate;
 
-    sections.forEach(function (s, i) {
-      var key = s.getAttribute('data-tab-key');
-      var label = s.getAttribute('data-tab-label') || key;
-
-      // Hidden sections (e.g. Dashboard/home) still get show/hide + default +
-      // URL handling via the sections array, but no nav chip or select option
-      // (Sean, 2026-09-22).
-      if (s.getAttribute('data-tab-hidden')) return;
-
-      var btn;
-      if (PUBLIC_TABS[key]) { btn = document.createElement('a'); btn.href = PUBLIC_TABS[key]; }
-      else { btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('role', 'tab'); btn.addEventListener('click', function () { activate(key); }); }
-      btn.className = 'dash-tab';
-      btn.setAttribute('data-tab-key', key);
-      btn.textContent = label;
-      tabBar.appendChild(btn);
-
-      var opt = document.createElement('option');
-      opt.value = key;
-      opt.textContent = label;
-      mobileSelect.appendChild(opt);
+    // The header is the shared bar (public/nav.js), not a copy of it. Dashboard, My Saves and the Depot are tabs of this page, so a
+    // click on them there opens the tab in place (no page load) and the bar's current-page mark follows; every other link is the
+    // site's own page and loads as it does anywhere.
+    var NAV_TAB = { '/dashboard': 'profile', '/dashboard/saves': 'saves', '/dashboard/depot': 'depot' };
+    function hasTab(key) { return sections.some(function (s) { return s.getAttribute('data-tab-key') === key; }); }
+    function markNav(key) {
+      Array.prototype.forEach.call(document.querySelectorAll('.ve-nav .ve-menu-row a[href], .ve-nav .ve-burger-menu a[href], .ve-nav .ve-pub-tabs a[href]'), function (a) {
+        var h = a.getAttribute('href');
+        if (!Object.prototype.hasOwnProperty.call(NAV_TAB, h)) return;
+        if (NAV_TAB[h] === key) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      });
+    }
+    document.addEventListener('click', function (e) {
+      if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target.closest && e.target.closest('.ve-nav a[href]');
+      if (!a) return;
+      var key = NAV_TAB[a.getAttribute('href')];
+      if (!key || !hasTab(key)) return;
+      e.preventDefault();
+      var bm = document.getElementById('ve-burger-menu'), bb = document.getElementById('ve-burger');
+      if (bm) bm.hidden = true; if (bb) bb.setAttribute('aria-expanded', 'false');
+      activate(key);
     });
-
-    mobileSelect.addEventListener('change', function () { activate(mobileSelect.value); });
-    // The phone's hamburger lists the same sections as the select, the open one marked (Sean, 2026-10-27).
-    (function () {
-      var burger = document.getElementById('ve-burger'), menu = document.getElementById('ve-burger-menu');
-      if (!burger || !menu) return;
-      function set(open) {
-        if (open) menu.innerHTML = Array.prototype.map.call(mobileSelect.options, function (o) {
-          return '<button type="button" role="menuitem" data-key="' + o.value + '"' + (o.value === mobileSelect.value ? ' aria-current="page"' : '') + '>' + o.textContent.replace(/</g, '&lt;') + '</button>';
-        }).join('');
-        menu.hidden = !open; burger.setAttribute('aria-expanded', open ? 'true' : 'false');
-      }
-      burger.addEventListener('click', function (e) { e.stopPropagation(); set(menu.hidden); });
-      menu.addEventListener('click', function (e) { var b = e.target.closest('[data-key]'); if (!b) return; set(false); activate(b.getAttribute('data-key')); });
-      document.addEventListener('click', function (e) { if (!menu.hidden && !menu.contains(e.target)) set(false); });
-      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) { set(false); burger.focus(); } });
-    })();
 
     window.addEventListener('popstate', function (e) {
       if (/^\/dashboard\/bounties\/?$/.test(location.pathname)) { openBounties(location.search, true); return; }
@@ -5243,81 +5136,7 @@
     });
   })();
 
-  // HQ-style top nav wiring (2026-09-20). The avatar is the same member icon
-  // the bottom bar draws: painted from the shell member universal-bar.js
-  // publishes (event, or window cache if it already fired). The Apps button
-  // opens the same brand waffle the bottom bar's plus opens.
-  (function initTopNav() {
-    // The page scrolls under a sticky nav now (2026-11-01): tell sticky things (the ad rail) how tall it is, as nav.js does.
-    (function navHeight() {
-      var nav = document.querySelector('.ve-topnav');
-      function set() { if (nav) document.documentElement.style.setProperty('--ve-nav-h', nav.offsetHeight + 'px'); }
-      set(); window.addEventListener('resize', set);
-      if (window.ResizeObserver && nav) new ResizeObserver(set).observe(nav);
-    })();
-    var avatar = document.getElementById('ve-topnav-avatar');
-    var apps = document.getElementById('ve-apps-btn');
-
-    function inkFor(hex) {
-      // Same AA ink pick the bar uses, so the initials are legible on any
-      // member colour. Falls back to white on a bad value.
-      if (window.LRUniversalBar && typeof window.LRUniversalBar.inkFor === 'function') return window.LRUniversalBar.inkFor(hex);
-      return '#ffffff';
-    }
-    function paintAvatar(m) {
-      if (!avatar || !m) return;
-      if (m.avatarUrl) {
-        avatar.innerHTML = '<img class="ve-avatar-img" src="' + m.avatarUrl + '" alt="">';
-      } else {
-        avatar.textContent = m.initials || '';
-        if (m.color) { avatar.style.background = m.color; avatar.style.color = inkFor(m.color); }
-      }
-      if (m.name) avatar.setAttribute('aria-label', 'Your account, ' + m.name);
-    }
-    if (window.__lrShellMember) paintAvatar(window.__lrShellMember);
-    else {
-      // Until (or unless) the bar reports the member, paint the initials we hold, so the avatar is never blank.
-      try {
-        var held = JSON.parse(localStorage.getItem('ve_member') || 'null');
-        if (held) paintAvatar({ initials: held.initials || (held.name || '').charAt(0), color: held.color, avatarUrl: held.avatar_url, name: held.name });
-      } catch (e) {}
-    }
-    // The avatar opens the account menu (Sean, 2026-10-27): account, Sign out, and for a super admin View As and Sign In As.
-    if (avatar && window.VEAccountMenu) VEAccountMenu.attach(avatar);
-    window.addEventListener('lr:shell-member', function (e) { paintAvatar(e.detail); });
-
-    // The logo is home: on the dashboard it jumps to the Dashboard tab in place
-    // (Sean, 2026-09-22: Dashboard left the nav, the logo is how you get back)
-    // rather than doing a full-page reload.
-    var logo = document.getElementById('ve-logo-home');
-    if (logo) {
-      logo.addEventListener('click', function (e) {
-        if (window.activateDashTab && /^\/dashboard\//.test(location.pathname)) {
-          e.preventDefault();
-          window.activateDashTab('profile');
-        }
-      });
-    }
-
-    if (apps) {
-      apps.addEventListener('click', function (e) {
-        // Stop the click here: without this it bubbles to the bar's
-        // document-level outside-click handler, which -- seeing a click
-        // outside the bar mount -- closes the waffle on the very same click
-        // that just opened it, so the button appeared to do nothing. The
-        // bar's own plus button stops propagation for exactly this reason.
-        e.stopPropagation();
-        // Apps is the launcher: it takes you to the brand you tap (Sean,
-        // 2026-09-27). Adding a shortcut to the bar is the bar's own plus.
-        // The launcher drops from this button, and reports open/closed back
-        // so aria-expanded stays true to what is on screen.
-        window.dispatchEvent(new CustomEvent('lr:toggle-waffle', { detail: { anchor: apps } }));
-      });
-      window.addEventListener('lr:launcher-state', function (ev) {
-        apps.setAttribute('aria-expanded', ev.detail && ev.detail.open ? 'true' : 'false');
-      });
-    }
-  })();
+  // The top nav (account menu, Apps, Share, Feedback, search, the menu) is public/nav.js: nothing here wires a header any more.
 
   // Traffic lights (2026-09-27, Sean: the Vegans Explore dashboard gets the
   // same setup as LESARUSS HQ). Same behaviour as HQ's window:
