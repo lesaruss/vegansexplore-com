@@ -1293,7 +1293,9 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   so and bring Sean a recommendation (a new playbook, or park it), never build it quietly. One pinned task per playbook (a second task on the
   same playbook is wrapped and its open items go back to the queue). Work the queue top to bottom, confirm each item live, mark it Done, pull
   the next one without being asked. Each item is one decision record `ve-feedback: <task>`. First two items, both Done: the dashboard Insights
-  block and the Depot moved to the bottom (above).
+  block and the Depot moved to the bottom (above). Item 3, Done 2026-11-03 (main e7008ae): the footer overlapped the dashboard's content on phones
+  because `html,body{height:100%}` with the flex-column body let `.console-frame` shrink; the body now grows (`height:auto`) and the frame is
+  `flex:1 0 auto`. Any page that puts the footer last in a flex-column body must not give the body a fixed height.
 - Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
