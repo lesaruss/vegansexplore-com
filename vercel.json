@@ -425,6 +425,13 @@
     }
   ],
   "redirects": [
+    {"source": "/dashboard/directory/:slug", "destination": "/directory/:slug", "permanent": false},
+    {"source": "/dashboard/directory", "destination": "/directory", "permanent": false},
+    {"source": "/dashboard/events", "destination": "/events", "permanent": false},
+    {"source": "/dashboard/pulse", "destination": "/pulse", "permanent": false},
+    {"source": "/dashboard/media", "destination": "/media", "permanent": false},
+    {"source": "/dashboard/guides", "destination": "/guides", "permanent": false},
+    {"source": "/dashboard/communities", "destination": "/communities", "permanent": false},
     { "source": "/branddesk-sites/:path*", "destination": "/business", "permanent": false },
     { "source": "/check/:slug([a-z0-9-]{2,120})", "destination": "/guides/vegan-restaurant-guide?check=:slug", "permanent": false },
     {

@@ -43,6 +43,13 @@
      navigation should be at the top, like HQ is"), where HQ carries its
      primary nav. It scrolls inside the bar rather than widening it. */
   .ve-topnav-nav{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;}
+  /* New header (Sean, 2026-11-03): the same two rows as every other page: logo, one wide search box, Share / Apps / avatar; then the sections. */
+  .ve-topnav{display:grid;grid-template-columns:1fr minmax(0,720px) 1fr;grid-template-areas:"left search right" "nav nav nav";height:auto;gap:0 22px;justify-content:stretch;}
+  .ve-topnav-left{grid-area:left;height:62px;}
+  .ve-topnav .ve-hs{grid-area:search;}
+  .ve-topnav-right{grid-area:right;justify-self:end;height:62px;}
+  .ve-topnav-nav{grid-area:nav;height:40px;border-top:1px solid rgba(0,0,0,.06);margin:0 -20px;padding:0 20px;}
+  a.dash-tab{text-decoration:none;display:inline-block;}
   .ve-topnav .dash-tabs{border-bottom:none;margin-bottom:0;overflow-x:auto;scrollbar-width:none;}
   .ve-topnav .dash-tabs::-webkit-scrollbar{display:none;}
   .ve-topnav .dash-tab{padding:7px 4px;}
@@ -147,6 +154,8 @@
        icon, the avatar stays, and the hamburger after them opens the sections in a panel under the bar. Every tab's banner
        sits flush under the bar. */
     .ve-topnav-nav{display:none;}
+    .ve-topnav{grid-template-columns:1fr auto;grid-template-areas:"left right" "search search";row-gap:8px;}
+    .ve-topnav-left,.ve-topnav-right{height:46px;}
     .ve-apps-btn{padding:0;width:38px;justify-content:center;font-size:0;gap:0;}
     .ve-burger{display:inline-flex;}
     .ve-topnav-nav .dash-tabs-mobile{margin-bottom:0;}
@@ -914,6 +923,8 @@
   </div>
   <!-- Dashboard section nav, in the top bar like HQ (2026-09-20). initDashTabs
        fills #dash-tabs / #dash-tabs-mobile by id regardless of where they sit. -->
+  <form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg><input type="text" name="q" id="ves-page-input" data-dictate="off" placeholder="Search places, people, shows, products&hellip; try &ldquo;vegan pizza in Atlanta&rdquo;" aria-label="Search Vegans Explore"><kbd aria-hidden="true">/</kbd></label></form>
+  <script src="/public/ve-header-search.js"></script>
   <div class="ve-topnav-nav">
     <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
     <select class="dash-tabs-mobile" id="dash-tabs-mobile" aria-label="Dashboard sections"></select>
@@ -3032,6 +3043,7 @@
   // Each listing has its own address (Sean, 2026-10-27: "if somebody just wanted to share a link to their page"):
   // /dashboard/directory/<slug> while it is open, and Share copies the public /directory/<slug>.
   function openDashboardListing(slug, name, noPush) {
+    if (slug) { location.href = '/directory/' + encodeURIComponent(slug); return; } // the listing's own page, never a framed copy (Sean, 2026-11-03)
     // Phones open the listing as its own page (Sean, 2026-10-31: "it keeps restarting... it locks the whole thing, so I can't even
     // click the menu"). Framed, the listing was a fixed 1800 px box that took every swipe, so the menu above it could not be reached,
     // and the phone held two whole apps at once (the dashboard and the listing page), so Safari threw the frame out of memory and
@@ -4639,8 +4651,12 @@
       return found ? m[1] : null;
     }
 
+    // The public sections are the site's own pages, not copies framed in the dashboard (Sean, 2026-11-03: "it completely changes the URL for
+    // sharing... we don't have different URLs for the same thing"). Signed in, those pages already carry the member features (votes, saves).
+    var PUBLIC_TABS = { directory: '/directory', events: '/events', pulse: '/pulse', media: '/media', guides: '/guides', communities: '/communities' };
     function activate(key, opts) {
       opts = opts || {};
+      if (PUBLIC_TABS[key]) { location.href = PUBLIC_TABS[key]; return; }
       if (window.veCloseToolPanels) window.veCloseToolPanels();
       // The welcome hero is scoped to the Dashboard tab via a body attribute
       // (Sean, 2026-09-21). CSS keys off body[data-dash-tab]; the city pill and
@@ -4675,13 +4691,12 @@
       // (Sean, 2026-09-22).
       if (s.getAttribute('data-tab-hidden')) return;
 
-      var btn = document.createElement('button');
-      btn.type = 'button';
+      var btn;
+      if (PUBLIC_TABS[key]) { btn = document.createElement('a'); btn.href = PUBLIC_TABS[key]; }
+      else { btn = document.createElement('button'); btn.type = 'button'; btn.setAttribute('role', 'tab'); btn.addEventListener('click', function () { activate(key); }); }
       btn.className = 'dash-tab';
       btn.setAttribute('data-tab-key', key);
-      btn.setAttribute('role', 'tab');
       btn.textContent = label;
-      btn.addEventListener('click', function () { activate(key); });
       tabBar.appendChild(btn);
 
       var opt = document.createElement('option');
