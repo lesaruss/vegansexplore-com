@@ -1200,6 +1200,38 @@ knows, the places it knows and what people looked for are rows per brand, and a 
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 
+## Who sent you, and credit for shared links (Sean, 2026-11-03)
+
+"The name of the person that registered you, so we can do a double check to make sure they get credit." **Tested end to end 2026-11-03**: a
+signed-in member's Share link carries `?ref=<referral_code>` (`VEShare.url()`), the code is kept for the visit (`sessionStorage` `ve_join_ref`)
+and counted once a visitor a day (`ve_referral_visit`), the sign-up sets `members.referred_by`, and the friend's payment pays the sharer 111 points
+once (`trg_zz_referral_on_admit`; commission from Level 2). **Where credit slips**: a link opened on one device and joined on another, or a later
+visit with no link. So the $11 window asks **Did someone send you?** (`/public/ve-referrer.js`, mounted by `showActivateModal` in `ve-auth.js`,
+which every email and Google sign-up passes through; the invitation, challenge and dinner pages have their own join steps and do not ask yet):
+the field says who the link already credits, suggests members as they type (first name, last initial, chapter; no emails; unpaid accounts only,
+the active members of class member or internal, `ve_referrer_search`) and records the pick through the edge function `ve-referrer`
+(`status`, `search`, `claim`; migrations `20261103_referrer_claims*.sql`). **Rules**: a claim sets `referred_by` only when the link did not; a
+claim that disagrees with the link keeps the link's sponsor and is saved as `conflict`; typed words that match no one are saved as `unresolved`
+(`ve_referral_claims.status`: credited, matched, conflict, unresolved, self), one claim per member, refused once the account has paid
+(`already_member`). Not yet: a Depot view of conflict and unresolved claims (read the table until then), the field on the invitation,
+challenge and dinner join steps, and a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
+Sign-up from one address is limited to 3 an hour (`ve-auth` `signup`), which a test run hits.
+
+## The new header (Sean, 2026-11-03)
+
+Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit
+(`sessionStorage` `ve_header`), `?header=new` puts it back. Two rows: the logo, one search box that runs from a 24px gap after the logo to a 24px
+gap before the right-hand buttons, then Log In and Join (Apps and the avatar signed in); then the menu. Phones: logo, Join and the hamburger, with
+the search box on its own row. The search is `VESearch.mount` (`/public/ve-search.js`); desktop keeps the speak-instead-of-type mic (`dictate: true`),
+touch devices do not. On a list page (the Directory's sub-sections) the box carries a scope chip, "in Documentaries & Films x", set through
+`window.VEHeaderScope.set({label, cat})` and sent to `/search?cat=`; the list's own box reads **Filter**. A banner (`VECityBanner`) outside a chapter hub
+is a **one-line page bar** (`vcb-bar`: the title as the way home, the picker, the page's buttons, Share); on phones the page name sits on its own row
+and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. The dashboard has its own header file
+(`dashboard/center-console.html`) with the same two rows and `/public/ve-header-search.js`; its Directory, Events, Daily Pulse, Media, Guides and
+Communities are links to the public pages, and `/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only
+Dashboard, My Saves and the Depot are under `/dashboard`. Keep the search wiring in `nav.js` and `ve-header-search.js` in step. Not done: the city
+picker in the menu row, Apps in the account menu, scoping the dropdown (only Enter is scoped), the Events list box wording.
+
 ## Tracked links (Sean, 2026-10-04)
 
 Every link we send for a campaign (a one-on-one message, an email, a post, a flyer) is a tracked

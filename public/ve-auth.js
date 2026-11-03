@@ -165,6 +165,8 @@ function showActivateModal(message){
   var bl=document.getElementById('ve-pm-benefits');if(bl)bl.style.display=fo?'':'none';
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
+  // "Did someone send you?" (Sean, 2026-11-03): the sponsor's name, so the right member is credited when the link was lost.
+  try{var rh=document.getElementById('ve-pm-ref');if(rh&&getToken()){var mt=function(){global.VEReferrer.mount(rh);};if(global.VEReferrer)mt();else{var rs=document.createElement('script');rs.src='/public/ve-referrer.js';rs.onload=mt;document.head.appendChild(rs);}}}catch(e){}
 }
 function hideActivateModal(){_needUrl=null;var m=document.getElementById('ve-pledge-modal');if(m){m.style.display='none';document.body.style.overflow='';}if(isPending(getRealMember()))clearSession();}
 function _buildActivateModal(){
@@ -215,6 +217,7 @@ el.innerHTML=
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Guides for $11 or 1,100 points, plus merchandise and event tickets</span></li>'+
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>For businesses: advertising, sponsorships and marketing services, only for members</span></li>'+
 '</ul>'+
+'<div id="ve-pm-ref"></div>'+
 '<button type="button" id="ve-pm-founding-btn">'+(VE_FOUNDING_OPEN?'Founding Membership':'Passport')+' - $11 one time</button>'+
 '<p id="ve-pm-hint">One time. It never renews.'+(VE_FOUNDING_OPEN?' <b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.':'')+'</p>'+
 '<div id="ve-pm-passport">'+
@@ -245,7 +248,7 @@ document.getElementById('ve-pm-founding-btn').addEventListener('click',function(
 var btn=this;
 btn.disabled=true;var orig=btn.textContent;btn.textContent='Redirecting to checkout...';
 if(_needUrl){window.location.href=_needUrl;return;}
-startEntryCheckout(1100).then(function(d){
+Promise.resolve(global.VEReferrer&&global.VEReferrer.flush?global.VEReferrer.flush():null).catch(function(){}).then(function(){return startEntryCheckout(1100);}).then(function(d){
 if(d&&d.url){window.location.href=d.url;return;}
 btn.disabled=false;btn.textContent=orig;showPmErr(d&&d.error?d.error:'Something went wrong starting checkout. Please try again.');
 }).catch(function(){btn.disabled=false;btn.textContent=orig;showPmErr('Something went wrong starting checkout. Please try again.');});
