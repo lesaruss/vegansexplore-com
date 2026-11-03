@@ -138,8 +138,11 @@ async function chapterTeam(chapter: string): Promise<string[]> {
 }
 async function viewer(id: string | null) {
   if (!id) return null;
-  const { data } = await db.from('members').select('id, email, first_name, last_name, is_superadmin, membership_status, member_class').eq('id', id).maybeSingle();
-  return data;
+  // members has one `name` column (no first_name / last_name): the old select failed, so every signed-in caller read as signed out (found 2026-11-03).
+  const { data } = await db.from('members').select('id, email, name, is_superadmin, membership_status, member_class').eq('id', id).maybeSingle();
+  if (!data) return null;
+  const parts = String((data as any).name || '').trim().split(/\s+/).filter(Boolean);
+  return { ...data, first_name: parts[0] || '', last_name: parts.slice(1).join(' ') };
 }
 
 // Door Guide rules: a host with an approved event claim records Host Notes free; everyone else needs the Passport (an active member).
