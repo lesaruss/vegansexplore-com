@@ -1,0 +1,84 @@
+/* A Guide's own survey (Sean, 2026-11-03: "they have to complete the survey that's tied to that guide").
+ * VEGuideSurvey.mount(el, { survey: 'vegan-events-guide', onDone(res), onChange() }) draws one question per view (#q/<n>), Back / Question N of M / Next,
+ * saving and paying each answer as it is given (ve-mission-survey survey_get / survey_answer, rows in ve_surveys and ve_survey_questions).
+ * A new Guide's survey is rows, never code here. Needs a token (an active member, or an account waiting on its Passport for a survey that admits). */
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var CSS = '.vgs{max-width:860px}.vgs-bar{height:6px;background:#e8f5e9;border-radius:6px;overflow:hidden;margin:0 0 18px}.vgs-bar i{display:block;height:100%;background:#22C55E}' +
+    '.vgs-k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1f5f22;margin:0 0 6px}.vgs-q{font-size:clamp(20px,2.2vw,26px);font-weight:900;margin:0 0 6px;line-height:1.25}' +
+    '.vgs-h{font-size:14px;color:rgba(26,26,26,.78);margin:0 0 16px;line-height:1.5}.vgs-opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px;margin:0 0 18px}' +
+    '.vgs-opt{min-height:48px;padding:12px 16px;text-align:left;background:#fff;border:1.5px solid rgba(0,0,0,.16);border-radius:6px;font:700 14px Montserrat,sans-serif;color:#1a1a1a;cursor:pointer}' +
+    '.vgs-opt[aria-pressed="true"]{border-color:#1f5f22;background:#e8f5e9;color:#1f5f22}.vgs-in{width:100%;min-height:48px;padding:12px 14px;border:1.5px solid rgba(0,0,0,.16);border-radius:6px;font:500 15px Montserrat,sans-serif;margin:0 0 18px;box-sizing:border-box}' +
+    'textarea.vgs-in{min-height:140px;resize:vertical}.vgs-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.vgs-c{font-size:12px;font-weight:800;color:#595959}' +
+    '.vgs-b{min-height:44px;padding:12px 22px;border-radius:6px;border:0;background:#22C55E;color:#03170a;font:800 12px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block}' +
+    '.vgs-b.g{background:#fff;border:1.5px solid rgba(0,0,0,.2);color:#1a1a1a}.vgs-b[disabled]{opacity:.5;cursor:default}.vgs-err{color:#b42318;font-size:13px;font-weight:700;min-height:18px;margin:0 0 10px}.vgs-pts{font-size:12px;font-weight:800;background:#e8f5e9;color:#1f5f22;border-radius:6px;padding:4px 8px;display:inline-block;margin-left:8px}';
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function tok() { try { return localStorage.getItem('ve_token'); } catch (e) { return null; } }
+  function api(action, body) {
+    return fetch(FN + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(Object.assign({ token: tok() }, body)) })
+      .then(function (r) { return r.json().then(function (d) { d = d || {}; d._status = r.status; return d; }); });
+  }
+  function mount(el, opts) {
+    if (!document.getElementById('vgs-css')) { var st = document.createElement('style'); st.id = 'vgs-css'; st.textContent = CSS; document.head.appendChild(st); }
+    var S = null, A = {}, n = 1, busy = false;
+    function say(h) { el.innerHTML = '<div class="vgs">' + h + '</div>'; if (opts.onChange) opts.onChange(); }
+    function fromHash() { var m = /^#q\/(\d+)/.exec(location.hash); return m ? parseInt(m[1], 10) : 1; }
+    function draw() {
+      var Q = S.questions, q = Q[n - 1];
+      if (!q) return summary();
+      var v = A[q.id], opts2 = '';
+      if (q.kind === 'choice' || q.kind === 'multi') {
+        opts2 = '<div class="vgs-opts" role="group">' + (q.options || []).map(function (o) {
+          var on = q.kind === 'multi' ? (v || []).indexOf(o.v) >= 0 : v === o.v;
+          return '<button type="button" class="vgs-opt" data-v="' + esc(o.v) + '" aria-pressed="' + on + '">' + esc(o.label) + '</button>'; }).join('') + '</div>';
+      } else if (q.kind === 'long') opts2 = '<textarea class="vgs-in" maxlength="2000" aria-label="' + esc(q.prompt) + '">' + esc(v || '') + '</textarea>';
+      else opts2 = '<input class="vgs-in" maxlength="200" aria-label="' + esc(q.prompt) + '" value="' + esc(v || '') + '">';
+      say('<div class="vgs-bar"><i style="width:' + Math.round(((n - 1) / Q.length) * 100) + '%"></i></div><p class="vgs-k">' + esc(S.title) + '<span class="vgs-pts">' + q.points + ' points</span></p>' +
+        '<h2 class="vgs-q">' + esc(q.prompt) + (q.required ? '' : ' (optional)') + '</h2>' + (q.help ? '<p class="vgs-h">' + esc(q.help) + '</p>' : '<p class="vgs-h"></p>') + opts2 +
+        '<p class="vgs-err" id="vgsErr" role="alert"></p><div class="vgs-nav">' + (n > 1 ? '<a class="vgs-b g" href="#q/' + (n - 1) + '">Back</a>' : '<span></span>') +
+        '<span class="vgs-c">Question ' + n + ' of ' + Q.length + '</span><button type="button" class="vgs-b" id="vgsNext">' + (n === Q.length ? 'Finish' : 'Next') + '</button></div>');
+    }
+    function summary() {
+      var left = S.questions.filter(function (q) { return q.required && empty(A[q.id]); });
+      if (S.completed) return finished();
+      say('<h2 class="vgs-q">Almost there</h2><p class="vgs-h">' + (left.length ? 'A few questions still need an answer.' : 'Every question is answered.') + '</p>' +
+        (left.length ? left.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(q.prompt) + '</a></p>'; }).join('') : ''));
+    }
+    function empty(v) { return v == null || v === '' || (Array.isArray(v) && !v.length); }
+    function finished(res) { say('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>'); if (opts.onDone) opts.onDone(res || {}); }
+    function save() {
+      var q = S.questions[n - 1], v = A[q.id], err = document.getElementById('vgsErr');
+      if (q.required && empty(v)) { err.textContent = 'Pick or write an answer to go on.'; return; }
+      if (q.kind === 'multi' && q.help && /up to three/i.test(q.help) && (v || []).length > 3) { err.textContent = 'Pick up to three.'; return; }
+      if (busy) return; busy = true; var b = document.getElementById('vgsNext'); b.disabled = true;
+      api('survey_answer', { survey: S.slug, id: q.id, value: empty(v) ? null : v }).then(function (d) {
+        busy = false;
+        if (d.error) { b.disabled = false; err.textContent = d.error === 'not_eligible' ? 'This account cannot take this survey. Sign in again, or get your Passport.' : 'That did not save. Try again.'; return; }
+        if (d.completed && (d.admitted || n === S.questions.length)) { S.completed = true; return finished(d); }
+        if (n < S.questions.length) location.hash = '#q/' + (n + 1); else summary();
+      }).catch(function () { busy = false; b.disabled = false; err.textContent = 'That did not go through. Try again.'; });
+    }
+    el.addEventListener('click', function (e) {
+      var o = e.target.closest('.vgs-opt'); if (o && S) {
+        var q = S.questions[n - 1], val = o.getAttribute('data-v');
+        if (q.kind === 'multi') { var cur = (A[q.id] || []).slice(), i = cur.indexOf(val); if (i >= 0) cur.splice(i, 1); else cur.push(val); A[q.id] = cur; } else A[q.id] = val;
+        draw(); return;
+      }
+      if (e.target.id === 'vgsNext') save();
+    });
+    el.addEventListener('input', function (e) { if (e.target.classList.contains('vgs-in') && S) A[S.questions[n - 1].id] = e.target.value; });
+    window.addEventListener('hashchange', function () { if (S) { n = fromHash(); draw(); } });
+    say('<p class="vgs-h">Loading the questions...</p>');
+    api('survey_get', { survey: opts.survey }).then(function (d) {
+      if (d.error || !d.survey) { say('<p class="vgs-h">We could not open this survey. Sign in and try again.</p>'); return; }
+      S = d.survey; A = S.answers || {}; if (opts.onLoaded) opts.onLoaded(S);
+      if (S.completed) { if (opts.onAlreadyDone) { opts.onAlreadyDone(S); } return finished(); }
+      // Resume at the first unanswered required question.
+      if (!/^#q\//.test(location.hash)) { var first = 0; S.questions.some(function (q, i) { if (q.required && empty(A[q.id])) { first = i; return true; } return false; }); n = first + 1; location.replace('#q/' + n); }
+      else n = fromHash();
+      draw();
+    }).catch(function () { say('<p class="vgs-h">We could not reach the survey. Try again in a minute.</p>'); });
+  }
+  window.VEGuideSurvey = { mount: mount };
+})();

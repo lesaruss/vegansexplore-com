@@ -30,7 +30,6 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var COOK_URL = SB + '/functions/v1/ve-cookbook';
-  var TASTER_URL = SB + '/functions/v1/ve-taster';
   var PODCAST_FN = SB + '/functions/v1/ve-podcast';
   var EV_FN = SB + '/functions/v1/ve-events-guide';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -116,6 +115,8 @@
       sayMember: 'Every one of these has happened to someone. Read them before your next event, not after.' },
     { k: 'hosts', label: 'Hosts', say: 'Hosts who have done it, on our shows. Hosted an event? Tell us your story by voice and you could be on the podcast.',
       sayMember: 'Hear from hosts who have done it, and tell us your own story. Approved stories earn you points.' },
+    { k: 'claim', label: 'Claim', lock: 1, say: 'Your event, your group and your own profile, claimed, so people find you and we can work together.',
+      sayMember: 'Claim what is yours: the event on our calendar, your group or venue in the Directory, and your own profile. Then apply for a sponsorship.' },
     { k: 'work', label: 'Work with us', say: 'We can sponsor your event with marketing: our calendar, the Daily Pulse, our socials and someone to cover it.',
       sayMember: 'Here is what a sponsorship from us looks like. If your event qualifies, apply right here.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: sections, venues, vendors and episodes.' },
@@ -153,7 +154,7 @@
   var qEl = document.getElementById('dgQ');
   var PUB = JSON.parse(document.getElementById('ev-public').textContent);
 
-  var access = 'checking';       // checking | guest | pending | reader | member  (reader: free with an email, canon-ve-door-guides)
+  var access = 'checking';       // checking | guest | pending | member  (a door Guide opens for an active member: the $11, or the Guide's survey, canon-ve-door-guides)
   var MEM = null;                // members-only payload
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var PODS = null, VENUES = null, VENDORS = null, STORIES = null;
@@ -162,11 +163,18 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
   function token() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; }
-  // member() = can read every screen (a Passport owner or a reader with an email); signedIn() = owns the Guide (saves, votes, My list).
-  function member() { return access === 'member' || access === 'reader'; }
+  // member() = can read every screen (an active member: the $11, or the Guide's survey); signedIn() = the same, for saves (saves, votes, My list).
+  function member() { return access === 'member'; }
   function signedIn() { return access === 'member'; }
-  var TASTER_KEY = 'ev_taster';
-  function tasterTok() { return recall(TASTER_KEY) || null; }
+  // The event survey (ve_surveys 'vegan-events-guide'): free, earns points, opens the Guide and a membership, and is step one of a sponsorship application.
+  var SURVEY = { done: false, known: false };
+  var SURVEY_URL = '/survey?s=' + SLUG;
+  function surveyGo() { try { sessionStorage.setItem('ve_survey_for', SLUG); } catch (e) {} location.href = SURVEY_URL; }
+  function loadSurvey() {
+    var tok = token(); if (!tok) { SURVEY.known = true; return; }
+    fetch(SB + '/functions/v1/ve-mission-survey?action=survey_get', { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ token: tok, survey: SLUG }) })
+      .then(function (r) { return r.json(); }).then(function (d) { SURVEY.done = !!(d && d.survey && d.survey.completed); SURVEY.known = true; if (/^#\/(work|claim)/.test(location.hash)) route(); }).catch(function () { SURVEY.known = true; });
+  }
   function sources(list) { return list && list.length ? '<span class="dg-src">' + list.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</span>' : ''; }
   function tabs() { return TABS.filter(function (t) { return !(t.guest && signedIn()) && !(t.mine && !signedIn()); }); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
@@ -207,30 +215,13 @@
   }
   function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
   function gated(inner, title, text) {
-    var ask = access === 'guest' || access === 'checking';
     return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
-      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + (ask ? 'Get the rest of the Guide free: just your email.' : esc(offerLine())) + '</p>' + (ask ? readerAsk() : ctaBtns()) + '</div></div>';
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' Take the free event survey to open the rest of the Guide, or ' + esc(offerLine().replace(/^It is /, 'it is ')) + '</p>' + surveyBtns() + '</div></div>';
   }
-  // Free with an email (canon-ve-door-guides): one field, asked where the Guide closes. The Guide opens at once on this device; the emailed link opens it anywhere.
-  function readerAsk() {
-    return '<form class="dg-readerask" data-reader-form><input type="email" name="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">' +
-      '<button type="submit" class="dg-btn">Open the Guide, free</button><p class="rg-fine" style="margin:6px 0 0">We will email you the link and a few notes on hosting. You are not a member and nothing is charged. <a href="#" data-signin>Already a member? Sign in</a></p>' +
-      '<span class="dg-status" role="status"></span></form>';
-  }
-  function readerJoin(form) {
-    var em = form.querySelector('input[name=email]').value.trim(), btn = form.querySelector('button'), st = form.querySelector('.dg-status');
-    btn.disabled = true; btn.textContent = 'Opening...';
-    fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'guide_join', guide: SLUG, email: em }) })
-      .then(function (r) { return r.json(); }).then(function (d) {
-        if (d && d.token) { store(TASTER_KEY, d.token); loadReader(d.token); return; }
-        throw d || {};
-      }).catch(function (e) { btn.disabled = false; btn.textContent = 'Open the Guide, free'; st.textContent = (e && e.message) || 'That did not go through. Try again in a minute.'; });
-  }
-  function loadReader(tok) {
-    api('open', null, tok).then(function (d) {
-      if (d && d.html) { fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'confirm', token: tok }) }).catch(function () {}); becomeMember(d.html, 'reader'); }
-      else { store(TASTER_KEY, null); route(); }
-    }).catch(function () { route(); });
+  // Free with the Guide's survey (Sean, 2026-11-03): about ten minutes, earns points, opens the Guide and a membership. The $11 is the other way through.
+  function surveyBtns() {
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the event survey, free</button>' +
+      '<button type="button" class="dg-btn dg-ghost" data-join>' + esc(ctaLabel()) + '</button>' + (mode() === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
   }
   function row(o) {
     return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="dg-th rg-th" aria-hidden="true">' + o.icon + '</span>' : '') +
@@ -264,8 +255,8 @@
   }
   function drawJoinbox() {
     var b = document.querySelector('.dg-joinbox'); if (!b || signedIn()) return;
-    b.style.display = access === 'reader' ? 'none' : '';
-    b.querySelector('[data-join]').textContent = access === 'guest' || access === 'checking' ? 'Read it free' : ctaLabel();
+    var jb = b.querySelector('[data-survey]') || b.querySelector('[data-join]');
+    jb.textContent = 'Take the survey, free'; jb.setAttribute('data-survey', '1'); jb.removeAttribute('data-join');
     b.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -783,11 +774,28 @@
         '<div class="dg-btns"><a class="dg-btn" href="/events#submit/1">Put it on our calendar</a><a class="dg-btn dg-ghost" href="#/">Back to the Guide</a></div>';
     }).catch(function (e) { btn.disabled = false; btn.textContent = 'Send my application'; var el = document.getElementById('evErr'); if (el) el.textContent = (e && e.message) || 'That did not send. Try again in a minute.'; });
   }
+  // Claim your profile (Sean, 2026-11-03: the Guide "will walk them through claiming their profile"). Three claims that already exist, in order.
+  function viewClaim() {
+    var m = member();
+    var cards = [
+      ['1. Claim your event', 'Find your event on our calendar and tap Are you running this event? Tell us if you host it, promote it or it is at your venue. Not on the calendar yet? Submit it first.',
+        '<a class="dg-btn" href="/events">Find your event</a><a class="dg-btn dg-ghost" href="/events#submit/1">Submit an event</a>'],
+      ['2. Claim your group, venue or business', 'Find it in the Directory and claim it, or add it. A claimed page is yours to keep up to date, with its own numbers.',
+        '<a class="dg-btn" href="/claim">Find your listing</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add it to the Directory</a>'],
+      ['3. Claim your own profile', 'Hosts, promoters and people with a story have profiles in our People section. Find yours and tap Is this you? If you are not there yet, ask us to add you.',
+        '<a class="dg-btn" href="/directory?tab=people">Find your profile</a>']];
+    main.innerHTML = head('Claim', 'Claim what is yours', 'Three short steps. Do the ones that fit, in any order.') +
+      '<div class="ev-give">' + cards.map(function (c) { return box(c[0], '<p class="dg-srow-p">' + esc(c[1]) + '</p>' + (m ? '<div class="dg-btns" style="margin-top:10px">' + c[2] + '</div>' : '')); }).join('') + '</div>' +
+      (m ? '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/work">Then, apply for a sponsorship</a></div>' : '<div style="margin-top:16px">' + gated(skel('', 3), 'Claim your event, group and profile', 'The links, in order.') + '</div>');
+  }
+
   function viewWork(sub) {
     var parts = String(sub || '').split('/');
+    if (parts[0] === 'apply' && SURVEY.known && !SURVEY.done) { location.hash = '#/work'; return; }
     if (parts[0] === 'apply') return viewApply(parseInt(parts[1], 10) || 1);
     main.innerHTML = head('Work with us', 'We can sponsor your event, with marketing', 'We sponsor events in marketing, never cash. You give us a little space at your event; we put our community and our channels behind it.',
-      '<div class="dg-btns"><a class="dg-btn" href="#/work/apply/1">Apply for a sponsorship</a></div>') +
+      (SURVEY.done ? '<div class="dg-btns"><a class="dg-btn" href="#/work/apply/1">Apply for a sponsorship</a></div>'
+        : '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Step 1: take the event survey</button></div><p class="dg-srow-p" style="margin-top:8px">Every application starts with the free event survey. We review all applications against each other, so a sponsorship is never automatic.</p>')) +
       '<div class="ev-give">' +
       box('What we give', list(['A feature on the Vegans Explore calendar and in your chapter\'s Daily Pulse', 'Two posts and a story on our socials', 'An ad on your chapter\'s pages for two weeks', 'A creator or member covering it', 'A recap feature after'])) +
       box('What we ask', list(['A 10x10 booth', 'Two comped meals or tickets for the member who staffs it', 'Our logo on your flyer and event page', 'A mention from the stage', 'Our QR cards at the door'])) +
@@ -850,7 +858,8 @@
           : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
         '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide. Group Partner leads have it included.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'The Vegan Events Guide is free to read with your email. The $11 Passport is for your voice and your tools: record your own story for the podcast, save your plan to your account on every device, earn points. What to do when it rains, the venues, the hosts and the sponsorship stay open to everyone.') + lst;
+    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey (about ten minutes, with points for every answer), or get the $11 Passport. Either way you can claim your profile, apply for a sponsorship and record your story for the podcast. What to do when it rains stays open to everyone.') + lst;
+    if (!signedIn()) main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox" style="margin-bottom:14px"><div class="dg-big">Free<small>with the event survey</small></div><p>About ten minutes, up to 100 points, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the event survey, free</button></div>');
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + bx + '</div>');
   }
 
@@ -875,7 +884,7 @@
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="' + (member() ? '#/plan' : '#/dayof/rain') + '">' + (member() ? 'Start your plan' : 'Read: what to do when it rains') + '</a><a class="dg-btn dg-ghost" href="#/work">Work with us</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow River with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow River with Next.</p>' : '<p>The full Guide is free with the event survey, or $11. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // ---------- search (members) ----------
@@ -938,7 +947,7 @@
   }
 
   // ---------- router ----------
-  var VIEWS = { overview: 1, kinds: 1, plan: 1, money: 1, venue: 1, vendors: 1, gear: 1, word: 1, dayof: 1, after: 1, elephants: 1, hosts: 1, work: 1, mylist: 1, join: 1, search: 1 };
+  var VIEWS = { overview: 1, kinds: 1, plan: 1, money: 1, venue: 1, vendors: 1, gear: 1, word: 1, dayof: 1, after: 1, elephants: 1, hosts: 1, claim: 1, work: 1, mylist: 1, join: 1, search: 1 };
   function route() {
     if (recorder && !/^#\/hosts\/tell\/2/.test(location.hash)) stopRec();
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
@@ -957,7 +966,7 @@
     var bar = document.getElementById('vep-player');
     ({ overview: viewOverview, kinds: function () { viewKinds(sub); }, plan: viewPlan, money: viewMoney, venue: function () { viewVenue(sub); },
        vendors: function () { viewVendors(sub); }, gear: viewGear, word: viewWord, dayof: function () { viewDayof(sub); }, after: viewAfter,
-       elephants: function () { viewElephants(sub); }, hosts: function () { viewHosts(sub); }, work: function () { viewWork(sub); },
+       elephants: function () { viewElephants(sub); }, hosts: function () { viewHosts(sub); }, claim: viewClaim, work: function () { viewWork(sub); },
        mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     curTab = key;
@@ -967,16 +976,17 @@
   window.addEventListener('hashchange', function () { shown = 24; route(); });
 
   // ---------- access ----------
-  function api(action, tok, taster) {
-    return fetch(UNLOCK_URL + '?action=' + action, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: SLUG, token: tok || undefined, taster_token: taster || undefined }) })
+  function api(action, tok) {
+    return fetch(UNLOCK_URL + '?action=' + action, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: SLUG, token: tok || undefined }) })
       .then(function (r) { return r.json(); });
   }
-  function becomeMember(html, as) {
+  function becomeMember(html) {
     var t = document.createElement('template'); t.innerHTML = html;
     var el = t.content.getElementById('ev-data');
     MEM = el ? JSON.parse(el.textContent) : null;
-    access = MEM ? (as === 'reader' ? 'reader' : 'member') : 'pending';
+    access = MEM ? 'member' : 'pending';
     route();
+    if (MEM) loadSurvey();
   }
   function feedEp(show, guid) {
     return fetch(PODCAST_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'episode', slug: show, guid: guid }) })
@@ -1006,7 +1016,6 @@
       if (pp) playPod(pp.slug); return;
     }
     if (e.target.closest('[data-more]')) { shown += 24; route(); return; }
-    if (e.target.closest('[data-reader-form]') && e.target.closest('[data-signin]')) { /* falls through to the sign-in handler */ }
     if (e.target.closest('[data-clear-plan]')) {
       if (!confirm('Clear every tick in the plan, to start a new event?')) return;
       var cc = checks(); Object.keys(cc).forEach(function (k) { if (k.indexOf('plan-') === 0) delete cc[k]; });
@@ -1062,7 +1071,7 @@
     }
     if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
     var jb = e.target.closest('[data-join]');
-    if (jb && jb.closest('.dg-joinbox') && (access === 'guest' || access === 'checking')) { location.hash = '#/kinds'; return; }
+    if ((el = e.target.closest('[data-survey]'))) { e.preventDefault(); surveyGo(); return; }
     if (jb) {
       if (!a || access === 'checking' || jb.disabled) return;
       var m = mode();
@@ -1137,7 +1146,6 @@
     }).catch(function () { if (tries > 0) setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); else route(); });
   }
 
-  document.addEventListener('submit', function (e) { var f = e.target.closest && e.target.closest('[data-reader-form]'); if (f) { e.preventDefault(); readerJoin(f); } });
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
     document.documentElement.classList.add('dg-fit');
@@ -1146,16 +1154,10 @@
     var params = new URLSearchParams(location.search);
     route();
     loadPublic();
-    // The emailed link (?t=<key>) opens the Guide on any device and confirms the email; ?unsub= stops our emails.
-    var tk = params.get('t'), un = params.get('unsub');
-    if (tk || un) { ['t', 'unsub'].forEach(function (k) { params.delete(k); }); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
-    if (un) fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'unsubscribe', token: un }) }).then(function () { setTimeout(function () { setStatus('You are off our email list. The Guide stays open to you.'); }, 800); }).catch(function () {});
-    if (tk) store(TASTER_KEY, tk);
     var a = auth(), viewAs = a && a.getViewAs ? a.getViewAs() : null;
     var tok = a && a.isLoggedIn() && !viewAs ? a.getToken() : null;
     if (!tok) {
       access = viewAs && viewAs.mode !== 'public' ? 'pending' : 'guest'; route(); api('status').then(function (d) { take(d); route(); }).catch(function () {});
-      if (access === 'guest' && tasterTok()) loadReader(tasterTok());
       return;
     }
     var val = params.get('guide');

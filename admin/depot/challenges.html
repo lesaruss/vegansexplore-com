@@ -119,7 +119,7 @@
       function doorCard(g) {
         if (!g) return '';
         var st = g.on && g.approved ? 'Sending' : g.approved ? 'Approved, switched off' : 'Draft: waiting for your approval';
-        return '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Vegan Events Guide notes: ' + st + '</h3><span class="meta">Two notes to readers who confirmed their email in the Guide: Day 3 the rain plan, Day 7 work with us. Weekdays from 10 AM Eastern. Read both first (links below), then approve.</span>' +
+        return '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Vegan Events Guide notes: ' + st + '</h3><span class="meta">Two notes to members who finished the Guide's event survey, counted from the day they finished: Day 3 the rain plan, Day 7 claim and apply. Reworded 2026-11-03 for members, so it is a draft again. Weekdays from 10 AM Eastern. Read both first (links below), then approve.</span>' +
           '<div class="acts"><button type="button" class="btn' + (g.approved ? ' btn-ghost' : '') + '" id="dap">' + (g.approved ? 'Approved' : 'Approve this wording') + '</button>' +
           '<button type="button" class="btn' + (g.on ? ' btn-ghost' : '') + '" id="dsw"' + (g.approved ? '' : ' disabled') + '>' + (g.on ? 'Switch off' : 'Switch on') + '</button></div>' +
           '<span class="meta"><a href="#emails/preview:door-events-3">Read Day 3</a> &middot; <a href="#emails/preview:door-events-7">Read Day 7</a></span></div></div>';

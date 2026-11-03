@@ -164,21 +164,6 @@ async function standingBlocked(db: any, memberId: string | null): Promise<boolea
   return !!data?.standing && data.standing !== 'good';
 }
 const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
-
-// The Taster key signed by ve-taster (bytes 32 to 64 of the service key; a member session is never accepted here as one).
-async function readTaster(token: unknown): Promise<string | null> {
-  try {
-    const [h, p, sg] = String(token || '').split('.');
-    if (!h || !p || !sg) return null;
-    const pad = (x: string) => x.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (x.length % 4)) % 4);
-    const bytes = (x: string) => Uint8Array.from(atob(pad(x)), (c) => c.charCodeAt(0));
-    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode((Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '').slice(32, 64).padEnd(32, '1')), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-    if (!(await crypto.subtle.verify('HMAC', key, bytes(sg), new TextEncoder().encode(`${h}.${p}`)))) return null;
-    const d = JSON.parse(new TextDecoder().decode(bytes(p)));
-    return d.k === 'taster' && typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
-  } catch { return null; }
-}
-
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
   const url = new URL(req.url);
@@ -201,7 +186,7 @@ serve(async (req: Request) => {
 
     const { data: guide } = await supabase
       .from('ve_guides')
-      .select('id, cost_lesars, published, access_rule, door')
+      .select('id, cost_lesars, published, access_rule, door, survey_slug')
       .eq('slug', slug)
       .maybeSingle();
 
@@ -227,6 +212,8 @@ serve(async (req: Request) => {
         : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
       // Super admins see every Guide open (Sean, 2026-10-30: "I should be seeing this completely unlocked as a super admin. And if I
       // want to see how it looks otherwise, I can change my view"). View As previews send no token, so they still see it locked.
+      // A door Guide (canon-ve-door-guides) is open to any active member: they got in with the $11 or by finishing the survey (Sean, 2026-11-03).
+      if (!via && member && guide!.door && status === 'active') via = 'door';
       if (!via && member?.is_superadmin) via = 'admin';
       if (!via && member && await isDiplomat(member.email ?? auth.email)) via = 'diplomat';
       // The Creator Guide comes with being an active Ambassador (canon-ve-ambassadors-talent-shop, Sean 2026-10-29).
@@ -237,16 +224,9 @@ serve(async (req: Request) => {
 
     if (action === 'status' || action === 'open') {
       const { email: _email, ...a } = await access();
-      const out: Record<string, unknown> = { ...a, cost: guide.cost_lesars, access_rule: guide.access_rule, credit_cap: CREDIT_CAP, points_per_credit: POINTS_PER_CREDIT };
+      const out: Record<string, unknown> = { ...a, cost: guide.cost_lesars, access_rule: guide.access_rule, door: !!guide.door, survey: guide.survey_slug ?? null, credit_cap: CREDIT_CAP, points_per_credit: POINTS_PER_CREDIT };
       if (auth && a.loggedIn) { const { data: lv } = await supabase.rpc('ve_member_level', { p_member: auth.sub }); out.level = lv || null; }
-      // A door Guide (canon-ve-door-guides) is free to read with an email: a Taster key opens its screens, but it is not an unlock.
-      if (!a.unlocked && guide.door && body.taster_token && await readTaster(body.taster_token)) {
-        out.reader = true; out.via = 'reader';
-        if (action === 'open') {
-          const { data: full } = await supabase.from('ve_guides').select('content_html').eq('id', guide.id).maybeSingle();
-          out.html = full?.content_html ?? '';
-        }
-      }
+      // The email-only reader level was replaced by the Guide's survey (2026-11-03).
       if (action === 'open' && a.unlocked) {
         const { data: full } = await supabase.from('ve_guides').select('content_html').eq('id', guide.id).maybeSingle();
         out.html = full?.content_html ?? '';

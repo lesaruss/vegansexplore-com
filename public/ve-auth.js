@@ -158,6 +158,8 @@ function showActivateModal(message){
   if(!_amInited){_buildActivateModal();_amInited=true;}
   var msg=document.getElementById('ve-pm-msg');
   if(msg)msg.textContent=message||'$11, one time. Your Passport and the full community.';
+  // A Guide's own survey (ve_surveys): a door Guide's gate sets sessionStorage ve_survey_for, so the free path is that Guide's survey.
+  try{var sf=sessionStorage.getItem('ve_survey_for');var sl=document.getElementById('ve-pm-survey');if(sl)sl.setAttribute('href',sf&&/^[a-z0-9-]{1,60}$/.test(sf)?'/survey?s='+sf:'/survey?door=1');}catch(e){}
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
   // Sean, 2026-10-25: the $11, one time, is the way in everywhere, and it is the Passport. No monthly
   // Passport upsell here; members buy Guides, merchandise and event tickets after. Benefits always shown.

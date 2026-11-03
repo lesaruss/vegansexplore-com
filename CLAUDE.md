@@ -4597,13 +4597,28 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   skips anyone with no Taste answers (`why` null), so a reader never gets the Taste's Day 3, 7 and 14. Day 3 and Day 7 link the calendar
   (the event claim is on each event's page, so the note says find your event and tap Are you running this event?). Previews proven live;
   nothing sent, nothing switched on.
-- **Direction change, 2026-11-03, after step 1 (Sean; not built, canon v1 not yet edited)**: the email-only reader is replaced by a survey gate.
-  Everyone can get a free account, but must complete the survey tied to the Guide; the Guide is free to share, walks them through claiming
-  their profile and lays out what Vegans Explore offers; the way through is the one-time $11 or the Guide's survey, and a member who paid can
-  still take the survey for points. For events, everyone takes the event survey first; completing it admits a non-member and puts a sponsorship
-  applicant in the running; sponsorships are reviewed against each other, never an entitlement. It runs on the survey door engine
-  (`/survey?door=1`). Two answers wait on Sean: the event survey's points (Logan's default 100) and whether the general survey admits without
-  the event survey (default yes, but a sponsorship still needs the event survey). Full plan in `docs/handoff/2026-11-03-door-guides.md`.
+- **Step 2, the survey gate, built 2026-11-03** (Sean's direction after step 1: "everybody can get a free account, but they have to complete the survey that's
+  tied to that guide"; migrations `20261103_guide_surveys.sql`, `_guide_surveys_reason.sql`, `_door_guide_owns.sql`, `_door_emails.sql`). **Replaces the email-only reader**
+  (`ve-taster` `guide_join` answers 410; `ve-guide-unlock` no longer reads a Taster key). **A survey per Guide is rows**: `ve_surveys` (slug, `guide_slug`, `admits`,
+  intro), `ve_survey_questions` (kind choice | multi | text | long, options, points, required), `ve_survey_answers`, `ve_survey_completions`; `ve_guides.survey_slug`.
+  `ve_survey_answer(member, survey, question, value)` validates the value, saves it, pays its points once (ledger reason `survey_answer`, ref `survey:<slug>:<q>`),
+  and when every required question is answered records the completion and, for an account waiting on its Passport, runs the survey door (`survey_door_at`, then
+  `ve_survey_door_admit`: active, `entry_via` survey, Founding before the deadline). A member who paid can take it for the points. `ve-mission-survey` `survey_get`
+  and `survey_answer`; page `/survey?s=<slug>` (`survey.html` and `public/ve-guide-survey.js`, one question per view `#q/<n>`, Back / Question N of M / Next; signed
+  out it asks for the free account first and the $11 window's "Take the survey instead" goes to that Guide's survey through `sessionStorage` `ve_survey_for`). Done,
+  it goes to `/guides/<slug>?welcome=survey`. **A door Guide opens for any active member** (`ve-guide-unlock` via `door`; `ve_owns_guide` true for them, so saves and votes work).
+  **The event survey** (`vegan-events-guide`): 12 questions about their part, chapter, kinds of events, how many they hosted, crowd, group and link, who it is for, how
+  Vegan, what is hardest, what would help, an event in 90 days, and an optional proud moment; **100 points** (Logan's default, Sean's to change: 90 required, 10 optional).
+  **The Guide** (`guide-scripts/vegan-events-guide.js`): a closed screen offers **Take the event survey, free** beside the $11; the header box reads Free with the survey;
+  a new **Claim** tab walks them through claiming their event, their group or venue and their own profile (links to `/events`, `/claim`, the People section); **Work with us**
+  shows **Step 1: take the event survey** until it is done. **Sponsorship**: `ve-events-guide` `sponsor_apply` now needs a signed-in account that finished the event survey
+  (`survey_needed`, `sign_in`); applications are reviewed against each other, never an entitlement. **Depot > Event sponsors > Compare** (`#compare`, `#compare/<chapter>/<month>`,
+  `admin_compare`): each chapter and month with its open and approved count against the cap of 2, then the applications ranked by a guide score (events hosted 20, crowd 20,
+  how Vegan 20, Vegan venue and booth and meals 20, care in their answers 15; Logan's weights, Sean's to change) with their survey answers; the team decides in the application.
+  **The welcome notes** now go to members who finished the event survey (`ve_door_emails`, Day 3 and Day 7 counted from completion), reworded, so they are a draft again until Sean approves.
+  Proven 2026-11-03 in a rolled-back transaction (bad value refused, the last required answer admits, Founding, 90 of 100) and the page in a browser at 1440 and 390 px against mocked answers.
+  Not yet: a live sign-up as a real unpaid account, canon v2 (waits for Sean's two answers), the survey step on the pages with their own join step, the free organizer account for hosts with no account.
+  The two open answers (Logan's defaults used until Sean says): event survey points 100; whether the general survey admits without the event survey (yes; a sponsorship still needs the event survey).
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)

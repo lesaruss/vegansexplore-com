@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'admin_list', 'admin_get'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
@@ -110,6 +110,20 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.rpc('ve_survey_door_start', { p_member: memberId });
       if (error) throw new Error('door_start: ' + error.message);
       if (data?.error) return json(data, 403);
+      return json(data);
+    }
+    // A Guide's own survey (ve_surveys rows; 2026-11-03): the questions and a member's answers, and one answer at a time.
+    // An account waiting on its Passport may answer a survey that admits; finishing it makes them a member.
+    if (action === 'survey_get') {
+      const { data, error } = await supabase.rpc('ve_survey_get', { p_survey: String(body.survey ?? ''), p_member: memberId });
+      if (error) throw new Error('survey_get: ' + error.message);
+      if (!data) return json({ error: 'unknown_survey' }, 404);
+      return json({ ok: true, survey: data });
+    }
+    if (action === 'survey_answer') {
+      const { data, error } = await supabase.rpc('ve_survey_answer', { p_member: memberId, p_survey: String(body.survey ?? ''), p_question: String(body.id ?? ''), p_value: body.value ?? null });
+      if (error) throw new Error('survey_answer: ' + error.message);
+      if (data?.error) return json(data, data.error === 'not_eligible' ? 403 : 400);
       return json(data);
     }
     if (action === 'shown') {

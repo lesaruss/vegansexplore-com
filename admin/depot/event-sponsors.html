@@ -89,12 +89,13 @@
       function tag(s) { return '<span class="tag t-' + esc(s) + '">' + esc(WORD[s] || s) + '</span>'; }
       function day(d) { return d ? new Date(String(d).length === 10 ? d + 'T12:00:00' : d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
       function top(cur) {
-        return '<nav class="tabs"><a href="#apps/new" class="' + (cur === 'apps' ? 'on' : '') + '">Applications</a><a href="#stories/new" class="' + (cur === 'stories' ? 'on' : '') + '">Host stories</a><a href="/guides/vegan-events-guide#/work" target="_blank" rel="noopener">The Guide</a></nav>';
+        return '<nav class="tabs"><a href="#apps/new" class="' + (cur === 'apps' ? 'on' : '') + '">Applications</a><a href="#compare" class="' + (cur === 'compare' ? 'on' : '') + '">Compare</a><a href="#stories/new" class="' + (cur === 'stories' ? 'on' : '') + '">Host stories</a><a href="/guides/vegan-events-guide#/work" target="_blank" rel="noopener">The Guide</a></nav>';
       }
       function route() {
         var p = location.hash.replace(/^#/, '').split('/');
         if (p[0] === 'app' && p[1]) return viewApp(p[1]);
         if (p[0] === 'story' && p[1]) return viewStory(p[1]);
+        if (p[0] === 'compare') return viewCompare(p[1], p[2]);
         return viewList(p[0] === 'stories' ? 'stories' : 'apps', p[1] == null ? 'new' : p[1]);
       }
       function viewList(kind, status) {
@@ -108,6 +109,34 @@
               return '<a class="row" href="#story/' + r.id + '"><div><b>' + esc(r.name) + (r.event_name ? ' &middot; ' + esc(r.event_name) : '') + '</b><div class="meta">' + esc([day(r.created_at), (d.chapters || {})[r.chapter], r.answered + ' answers', r.member_id ? 'Member' : 'Not signed in', r.published ? 'Plays in the Guide' : ''].filter(Boolean).join(' · ')) + '</div></div>' + tag(r.status) + '</a>';
             }).join('') + '</div>' : '<p class="sub">None here.</p>');
         }).catch(function () { V.innerHTML = top(kind) + '<p class="sub">That did not load. Refresh to try again.</p>'; });
+      }
+      // Compare (2026-11-03): every application is reviewed against the others for its chapter and month. The score guides; the team decides.
+      var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      function monthWord(m) { return MON[parseInt(m.slice(5, 7), 10) - 1] + ' ' + m.slice(0, 4); }
+      function viewCompare(chapter, month) {
+        V.innerHTML = top('compare') + '<p class="sub">Loading...</p>';
+        api({ action: 'admin_compare', chapter: chapter || '', month: month || '' }).then(function (d) {
+          if (!d || !d.ok) throw 0;
+          var ch = d.chapters || {}, intro = '<p class="sub">Every application starts with the free event survey. We review them against each other for the same chapter and month, so a sponsorship is never automatic. The score is a guide; you decide. We take ' + d.cap + ' a chapter a month.</p>';
+          if (d.groups) {
+            V.innerHTML = top('compare') + intro + (d.groups.length ? '<div class="list">' + d.groups.map(function (g) {
+              return '<a class="row" href="#compare/' + esc(g.chapter) + '/' + esc(g.month) + '"><div><b>' + esc(ch[g.chapter] || g.chapter) + ' &middot; ' + esc(monthWord(g.month)) + '</b><div class="meta">' + g.total + ' application' + (g.total === 1 ? '' : 's') + ', ' + g.open + ' still open, ' + g.approved + ' of ' + d.cap + ' approved</div></div><span class="tag ' + (g.open ? 't-new' : 't-approved') + '">' + (g.open ? 'To review' : 'Done') + '</span></a>';
+            }).join('') + '</div>' : '<p class="sub">No applications yet.</p>');
+            return;
+          }
+          var full = d.approved >= d.cap;
+          V.innerHTML = '<div class="crumb"><a href="#compare">Compare</a> &rsaquo; ' + esc(ch[d.chapter] || d.chapter) + ' &middot; ' + esc(monthWord(d.month)) + '</div>' + intro +
+            '<p class="' + (full ? 'warn' : 'meta') + '">' + d.approved + ' of ' + d.cap + ' approved for this chapter and month' + (full ? ': the cap is reached.' : '.') + '</p>' +
+            '<div class="grid">' + d.items.map(function (r, i) {
+              var P = d.weights || {};
+              return '<div class="card"><div class="body"><div class="kind">#' + (i + 1) + ' &middot; score ' + r.score + ' ' + tag(r.status) + '</div><h3><a href="#app/' + r.id + '">' + esc(r.event_name) + '</a></h3>' +
+                '<div class="meta">' + esc([day(r.event_date), r.city, r.host_name + (r.host_org ? ', ' + r.host_org : '')].filter(Boolean).join(' &middot; ')) + '</div>' +
+                (r.surveyed ? '' : '<p class="warn">No event survey on file.</p>') +
+                '<div class="meta">' + Object.keys(r.part).map(function (k) { return esc((P[k] || k).replace(/ \(\d+\)$/, '')) + ': <b>' + r.part[k] + '</b>'; }).join('<br>') + '</div>' +
+                (r.survey.length ? '<details><summary class="meta" style="cursor:pointer;font-weight:800">Their survey answers</summary>' + r.survey.map(function (x) { return '<p class="meta" style="margin-top:6px"><b>' + esc(x.q) + '</b><br>' + esc(x.a) + '</p>'; }).join('') + '</details>' : '') +
+                '<div class="acts"><a class="btn" href="#app/' + r.id + '">Open and decide</a></div></div></div>';
+            }).join('') + '</div>' + (d.items.length ? '' : '<p class="sub">None here.</p>');
+        }).catch(function () { V.innerHTML = top('compare') + '<p class="sub">That did not load. Refresh to try again.</p>'; });
       }
       function viewApp(id) {
         V.innerHTML = '<p class="sub">Loading...</p>';

@@ -241,58 +241,65 @@ async function tasterEmail(kind: string, t: any) {
 }
 
 // ---------- The tick ----------
-// ---------- Door Guide emails (canon-ve-door-guides; Sean approved the wording 2026-11-03) ----------
-// The Vegan Events Guide's two notes to a reader who gave their email there and confirmed it. They start as a draft: they send only
-// while ve_site_settings nurture.door_on is true AND door_approved_hash equals the hash of the words below, so any change to the
-// words puts them back to draft until Sean approves again (Depot > Challenges > Taster emails).
+// ---------- Door Guide emails (canon-ve-door-guides) ----------
+// The Vegan Events Guide's two notes to a MEMBER who finished the Guide's event survey (Sean, 2026-11-03: the survey replaced the email-only
+// reader). They start as a draft: they send only while ve_site_settings nurture.door_on is true AND door_approved_hash equals the hash of the
+// words below, so any change to the words puts them back to draft until Sean approves again (Depot > Challenges > Taster emails).
 const DOOR_GUIDE = 'vegan-events-guide';
 const DOOR_KINDS = ['door-events-3', 'door-events-7'];
-async function doorEmail(kind: string, t: any, key?: string) {
-  const k = key ?? await tasterKey(t.id);
-  const unsub = `${SITE}/guides/${DOOR_GUIDE}?unsub=${encodeURIComponent(k)}`;
-  const foot = `You are getting this because you asked for the Vegan Events Guide. You are not a member, and nothing is charged.`;
-  const rain = utm(`${SITE}/guides/${DOOR_GUIDE}?t=${encodeURIComponent(k)}#/dayof/rain`, kind);
-  const cal = utm(`${SITE}/events`, kind);
-  const apply = utm(`${SITE}/guides/${DOOR_GUIDE}?t=${encodeURIComponent(k)}#/work/apply/1`, kind);
-  if (kind === 'door-events-3') return { subject: 'Decide the rain plan before the day', unsub, html: shell(P('Hi,') +
+const SAMPLE_MEMBER = { id: '00000000-0000-4000-8000-000000000002', name: 'Sam Rivera', email: 'sam@example.com' };
+async function doorEmail(kind: string, m: any, _key?: string) {
+  const first = esc(String(m?.name || '').trim().split(/\s+/)[0] || 'there');
+  const foot = `You are getting this because you took the event survey in the Vegan Events Guide.`;
+  const rain = utm(`${SITE}/guides/${DOOR_GUIDE}#/dayof/rain`, kind);
+  const claim = utm(`${SITE}/guides/${DOOR_GUIDE}#/claim`, kind);
+  const apply = utm(`${SITE}/guides/${DOOR_GUIDE}#/work`, kind);
+  if (kind === 'door-events-3') return { subject: 'Decide the rain plan before the day', unsub: '', html: shell(P(`Hi ${first},`) +
+    P('Thank you for taking the event survey. The Vegan Events Guide is open to you.') +
     P('Most event days that go wrong go wrong in one of five ways: rain, heat, guests who do not come, a vendor who does not show, or the power going out. Every one is easier when you decided what to do weeks before.') +
-    P('The rain plan is open in your Guide, with a checklist you can copy and print.') + btn(rain, 'Open what to do when it rains') +
-    P(`If you are hosting an event now, the next step is free: <a href="${cal}" style="color:#1f5f22">find it on our calendar</a> and tell us about it, and we will list it, link its page, and help you reach more people.`) + sign, foot) };
-  return { subject: 'Running an event? Here is what we can do with you', unsub, html: shell(P('Hi,') +
-    P('If you are running a Vegan event, there are two free ways to work with us.') +
-    P(`<b>Claim your event.</b> It is free and open to anyone. It makes you the event's organizer on Vegans Explore, so you can message your guests and see who is coming. <a href="${cal}" style="color:#1f5f22">Find your event</a> and tap Are you running this event?`) +
-    P('<b>Apply for a sponsorship.</b> We feature qualifying events on our calendar, in your chapter\'s Daily Pulse and on our socials, in exchange for a booth, two comped meals or tickets, and our logo.') + btn(apply, 'Open the sponsorship application') +
-    P('Your voice is welcome too. Claimed hosts can record their story for the Vegans Explore Podcast, up to 90 seconds an answer, and our team listens before anything airs.') + sign, foot) };
+    P('The rain plan is a good place to start, with a checklist you can copy and print.') + btn(rain, 'Open what to do when it rains') +
+    P(`Hosting soon? The Guide's Claim tab walks you through putting your event, your group and your own profile on Vegans Explore, so people can find you.`) + sign, foot) };
+  return { subject: 'Claim your event, then tell us about it', unsub: '', html: shell(P(`Hi ${first},`) +
+    P('Two things to do with us, both free.') +
+    P(`<b>Claim what is yours.</b> Your event on our calendar, your group or venue in the Directory, and your own profile. It makes you the organizer on Vegans Explore, so you can message your guests and see who is coming.`) + btn(claim, 'Open the Claim tab') +
+    P('<b>Apply for a sponsorship.</b> We feature qualifying events on our calendar, in your chapter\'s Daily Pulse and on our socials, in exchange for a booth, two comped meals or tickets, and our logo. Your event survey is already done, so you can apply now. We review every application against the others for the same chapter and month, and we take two a chapter a month, so a sponsorship is never automatic.') + btn(apply, 'See the sponsorship') +
+    P('Your voice is welcome too. You can record your story for the Vegans Explore Podcast, up to 90 seconds an answer, and our team listens before anything airs.') + sign, foot) };
 }
 async function doorHash() {
   const parts: string[] = [];
-  for (const k of DOOR_KINDS) { const m = await doorEmail(k, null, 'KEY'); parts.push(m.subject + '\n' + m.html); }
+  for (const k of DOOR_KINDS) { const m = await doorEmail(k, SAMPLE_MEMBER); parts.push(m.subject + '\n' + m.html); }
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join('\n---\n')));
   return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 async function doorState(cfg: any) { const hash = await doorHash(); return { on: !!cfg.door_on, approved: !!cfg.door_approved_hash && cfg.door_approved_hash === hash, hash }; }
 
 async function doorTick(cfg: any, e: any, inHours: boolean, out: Record<string, number>) {
-  // The Vegan Events Guide's two notes: confirmed readers who have not taken the Taste, only while switched on and approved.
+  // Members who finished the event survey, Day 3 and Day 7 after they finished, only while switched on and approved.
   const ds = await doorState(cfg);
-  if (ds.on && ds.approved && inHours && weekday(e)) {
-    const { data: rs } = await db.from('ve_tasters').select('id, email, name, created_at, ve_taster_emails(kind, sent_at)').contains('door_guides', [DOOR_GUIDE])
-      .is('unsubscribed_at', null).is('member_id', null).is('why', null).not('confirmed_at', 'is', null).not('name', 'ilike', '%[TEST]%').limit(1000);
-    for (const t of rs || []) {
-      if (out.tasters >= cfg.per_tick) break;
-      if (await suppressed(t.email)) continue;
-      const sent = new Set(((t as any).ve_taster_emails || []).map((x: any) => x.kind)), age = Date.now() - Date.parse(t.created_at);
-      const kind = !sent.has('door-events-3') && age >= 3 * 864e5 ? 'door-events-3' : sent.has('door-events-3') && !sent.has('door-events-7') && age >= 7 * 864e5 ? 'door-events-7' : null;
-      if (!kind) continue;
-      const { error: ce } = await db.from('ve_taster_emails').insert({ taster_id: t.id, kind });
-      if (ce) continue;
-      const m = await doorEmail(kind, t);
-      const r = await send(kind, t.email, null, m.subject, m.html);
-      if (r.result === 'failed') { await db.from('ve_taster_emails').delete().eq('taster_id', t.id).eq('kind', kind); continue; }
-      await db.from('ve_taster_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('taster_id', t.id).eq('kind', kind);
-      if (r.result === 'suppressed' || r.result === 'invalid') await db.from('ve_tasters').update({ unsubscribed_at: new Date().toISOString() }).eq('id', t.id);
-      out.tasters++;
-    }
+  if (!(ds.on && ds.approved && inHours && weekday(e))) return;
+  const { data: cs } = await db.from('ve_survey_completions').select('member_id, completed_at').eq('survey_slug', DOOR_GUIDE).order('completed_at', { ascending: true }).limit(1000);
+  const ids = (cs || []).map((c: any) => c.member_id);
+  if (!ids.length) return;
+  const { data: ms } = await db.from('members').select('id, email, name, membership_status, member_class, standing').in('id', ids);
+  const byId = new Map((ms || []).map((m: any) => [m.id, m]));
+  const { data: sent } = await db.from('ve_door_emails').select('member_id, kind').in('member_id', ids);
+  const done = new Set((sent || []).map((x: any) => x.member_id + '|' + x.kind));
+  for (const c of cs || []) {
+    if (out.tasters >= cfg.per_tick) break;
+    const m: any = byId.get(c.member_id);
+    if (!m || !m.email || m.membership_status !== 'active' || (m.member_class || 'member') !== 'member' || (m.standing || 'good') !== 'good' || /\[TEST\]/i.test(m.name || '')) continue;
+    if (await suppressed(m.email)) continue;
+    const age = Date.now() - Date.parse(c.completed_at);
+    const has3 = done.has(m.id + '|door-events-3'), has7 = done.has(m.id + '|door-events-7');
+    const kind = !has3 && age >= 3 * 864e5 ? 'door-events-3' : has3 && !has7 && age >= 7 * 864e5 ? 'door-events-7' : null;
+    if (!kind) continue;
+    const { error: ce } = await db.from('ve_door_emails').insert({ member_id: m.id, kind });
+    if (ce) continue;
+    const mail = await doorEmail(kind, m);
+    const r = await send(kind, m.email, m.name, mail.subject, mail.html);
+    if (r.result === 'failed') { await db.from('ve_door_emails').delete().eq('member_id', m.id).eq('kind', kind); continue; }
+    await db.from('ve_door_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('member_id', m.id).eq('kind', kind);
+    out.tasters++;
   }
 }
 
@@ -463,7 +470,7 @@ Deno.serve(async (req) => {
       if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').eq('status', 'approved').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
       m = await businessEmail(kind, o);
     } else if (DOOR_KINDS.includes(kind)) {
-      m = await doorEmail(kind, SAMPLE_TASTER);
+      m = await doorEmail(kind, SAMPLE_MEMBER);
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
       let t: any = SAMPLE_TASTER;
       if (isId(body.taster_id)) { const { data } = await db.from('ve_tasters').select('*').eq('id', body.taster_id).maybeSingle(); if (data) t = data; }

@@ -117,6 +117,10 @@ Deno.serve(async (req) => {
   // Door Guides (Sean, 2026-11-02, canon-ve-door-guides): one field, the email, asked inside a door Guide. Makes a Taster with no
   // questions answered (name from the email's first part), tagged with the Guide, and sends one email with the Guide's link.
   if (action === 'guide_join') {
+    // Retired 2026-11-03: a door Guide's way in is its survey (ve_surveys), not an email.
+    return json({ error: 'retired', message: 'Take the Guide\'s survey instead.' }, 410);
+  }
+  if (action === 'guide_join_retired') {
     const email = String(body.email || '').trim().toLowerCase();
     const guide = String(body.guide || '');
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) return json({ error: 'email', message: 'That email does not look right.' }, 400);

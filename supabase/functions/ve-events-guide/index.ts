@@ -54,6 +54,7 @@ const CHAPTER_WORDS: Record<string, string> = { 'south-florida': 'South Florida'
   'washington-dc': 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia',
   'new-york': 'New York', 'los-angeles': 'Los Angeles', london: 'London', other: 'Somewhere else' };
 const GIG_DEFAULTS = { points: 150, slots: 1 };   // Logan's defaults, Sean's to change.
+const SURVEY = 'vegan-events-guide';              // the event survey (ve_surveys); step one of every sponsorship application
 const MONTH_CAP = 2;                              // sponsorships approved a chapter a month (canon)
 
 const cors = {
@@ -164,6 +165,10 @@ Deno.serve(async (req: Request) => {
 
   // ---------- the sponsorship application ----------
   if (action === 'sponsor_apply') {
+    // Step one is the event survey (Sean, 2026-11-03): a signed-in account that finished it. Applications are reviewed against each other.
+    if (!me) return json({ error: 'sign_in', message: 'Make your free account and take the event survey first.' }, 401);
+    const { data: done } = await db.from('ve_survey_completions').select('member_id').eq('member_id', me.id).eq('survey_slug', SURVEY).maybeSingle();
+    if (!done && !me.is_superadmin) return json({ error: 'survey_needed', message: 'Take the free event survey first. Every application starts there.' }, 403);
     const a = body.answers && typeof body.answers === 'object' ? body.answers : {};
     const answers: Record<string, string> = {};
     for (const [k] of APPLY_FIELDS) { const v = clean(a[k], k === 'past' || k === 'why' || k === 'ask' || k === 'offer' || k === 'note' ? 2000 : 300); if (v) answers[k] = v; }
@@ -324,6 +329,50 @@ Deno.serve(async (req: Request) => {
     }
     const { data: gig } = a.bounty_id ? await db.from('ve_bounties').select('id, title, status, points, slots').eq('id', a.bounty_id).maybeSingle() : { data: null };
     return json({ ok: true, item: a, fields: APPLY_FIELDS, chapters: CHAPTER_WORDS, approved_this_month: approvedThisMonth, cap: MONTH_CAP, gig, gig_defaults: GIG_DEFAULTS });
+  }
+
+  // Compare (2026-11-03): applications for a chapter and month, side by side, with the host's event survey. The score is a guide for the
+  // reviewer (Logan's weights, Sean's to change), never the decision: nothing is an entitlement and the team decides.
+  if (action === 'admin_compare') {
+    const { data: all } = await db.from('ve_event_sponsor_applications').select('id, created_at, event_name, event_date, chapter, city, host_name, host_email, host_org, status, member_id, answers')
+      .order('event_date', { ascending: true }).limit(600);
+    const rows = (all || []) as any[];
+    const chapter = clean(body.chapter, 40), month = clean(body.month, 7);
+    if (!chapter || !month) {
+      const g: Record<string, any> = {};
+      for (const r of rows) {
+        const m = String(r.event_date || '').slice(0, 7); if (!m) continue;
+        const k = r.chapter + '|' + m; g[k] = g[k] || { chapter: r.chapter, month: m, open: 0, approved: 0, total: 0 };
+        g[k].total++; if (r.status === 'approved') g[k].approved++; if (r.status === 'new' || r.status === 'reviewing') g[k].open++;
+      }
+      return json({ ok: true, groups: Object.values(g).sort((a: any, b: any) => (a.month < b.month ? -1 : a.month > b.month ? 1 : a.chapter < b.chapter ? -1 : 1)), chapters: CHAPTER_WORDS, cap: MONTH_CAP });
+    }
+    const set = rows.filter((r) => r.chapter === chapter && String(r.event_date || '').slice(0, 7) === month);
+    const ids = set.map((r) => r.member_id).filter(Boolean);
+    const sv: Record<string, Record<string, any>> = {};
+    if (ids.length) {
+      const { data: ans } = await db.from('ve_survey_answers').select('member_id, question_id, value').eq('survey_slug', SURVEY).in('member_id', ids);
+      for (const a of (ans || []) as any[]) { (sv[a.member_id] = sv[a.member_id] || {})[a.question_id] = a.value; }
+    }
+    const { data: qs } = await db.from('ve_survey_questions').select('id, prompt, kind, options, pos').eq('survey_slug', SURVEY).order('pos');
+    const label = (q: any, v: any) => { const f = (x: any) => (q.options || []).find((o: any) => o.v === x)?.label ?? x; return Array.isArray(v) ? v.map(f).join(', ') : q.kind === 'choice' ? f(v) : String(v ?? ''); };
+    const items = set.map((r) => {
+      const a = sv[r.member_id] || {}, ap = r.answers || {};
+      const part = {
+        record: ({ '0': 0, '1-3': 8, '4-12': 16, '13+': 20 } as any)[a.e_count] ?? 0,
+        crowd: ({ '<25': 4, '25-75': 8, '75-200': 12, '200-1000': 16, '1000+': 20 } as any)[a.e_crowd] ?? 0,
+        vegan: ({ all: 20, mostly: 12, friendly: 6, notyet: 2 } as any)[a.e_vegan] ?? 0,
+        fit: (ap.venue_vegan === 'Yes' ? 10 : 0) + (ap.booth === 'Yes' ? 5 : 0) + (ap.meals === 'Yes' ? 5 : 0),
+        care: Math.min(10, Math.floor((String(a.e_audience || '').length + String(a.e_help || '').length) / 40)) + (a.e_story ? 5 : 0),
+      };
+      const score = Object.values(part).reduce((x: number, y: any) => x + (y as number), 0);
+      return { id: r.id, event_name: r.event_name, event_date: r.event_date, city: r.city, host_name: r.host_name, host_org: r.host_org, status: r.status,
+        surveyed: !!sv[r.member_id], score, part,
+        survey: (qs || []).filter((q: any) => a[q.id] != null).map((q: any) => ({ q: q.prompt, a: label(q, a[q.id]) })) };
+    }).sort((x, y) => y.score - x.score);
+    const approved = set.filter((r) => r.status === 'approved').length;
+    return json({ ok: true, chapter, month, items, approved, cap: MONTH_CAP, chapters: CHAPTER_WORDS,
+      weights: { record: 'Events hosted in the last year (20)', crowd: 'Typical crowd (20)', vegan: 'How Vegan the events are (20)', fit: 'Vegan venue, booth, comped meals (20)', care: 'Care in their answers (15)' } });
   }
 
   if (action === 'app_decide') {
