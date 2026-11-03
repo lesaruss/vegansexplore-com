@@ -5885,8 +5885,21 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
   neither says why, both give contact@lesaruss.com (403, `code` `account_suspended` or `account_banned`). Checked: the normal paths still
   answer live; the refusal itself was not run against a real suspended account. **Known gap**: other edge functions (the board, check-ins,
   bounties...) check only the token, so an old session could still post until it expires; points are frozen everywhere regardless.
-- **Not built yet**: **Depot > Watchlist** (one case a view: evidence, points history,
-  linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
+- **Depot > Watchlist** (`/admin/depot/watchlist`, People in the Go to menu, built 2026-11-03 on the Feedback page's shell; edge function `ve-abuse`
+  from 7a4085a, source sha256 matched, verify_jwt off, super admin token checked inside, the signed-in admin is the judge): tabs Watching, **Would
+  flag** (log-only: who the scan would have opened a case for), Suspended, Banned, Points voided, Cleared, All cases, and **Watch someone**
+  (`#new`: find a member by name or email). A banner says whether opening cases is on (**Turn on opening cases** / Back to log only, `set_mode`).
+  One case per view (`#case/<id>`, `#member/<id>` before a case exists): who they are and how they joined, **Why they were flagged** (every
+  signal with what we saw), **Points** (balance, lifetime, the ledger), **People around them** (who they joined through, who they brought in with
+  how each joined, other accounts on the same browser or network; a busy network is counted, not named), the history, and **Your decision**: a
+  required note, then Clear, Void their points, Restore their points, Suspend, Ban or Reinstate as the case allows, each behind a confirm
+  that says what it does. `ve-abuse` actions `list`, `get`, `find`, `watch`, `decide`, `set_mode`; you cannot open a case on or decide your own
+  account. Proven live 2026-11-03 as Sean through a one-time function on the Test Manager account (no token 401, a non-admin 403, list, find,
+  get, watch with no note and on yourself refused, watch, a second watch refused, void, a second void refused, restore, suspend, reinstate, ban,
+  unban, the history, a bad decision and a bad mode refused; then every row removed). The page checked at 1440 and 390 px beside Feedback.
+- **Not built yet**: the `/policies#community` paragraph, which must be live before any enforcement; one shared standing check in the other
+  functions (board, check-ins, bounties) and a per-member guard in the two cron loops (`ve_vault_settle`, `ve_challenge_settle`), both before
+  the first suspension; the Watchlist's decision box sits below Points on a phone.
 
 ## Image conventions
 

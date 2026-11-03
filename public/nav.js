@@ -207,13 +207,15 @@
     '.ve-feedback-btn:hover{border-color:#2d7d31;color:#2d7d31;}',
     '.ve-feedback-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}',
     '@media(max-width:1060px){.ve-feedback-btn{width:38px;padding:0;font-size:0;gap:0;}}',
-    '@media(max-width:700px){.ve-feedback-btn{position:fixed;right:12px;bottom:14px;z-index:9000;width:auto;height:40px;padding:0 14px;font-size:11px;gap:7px;margin:0;box-shadow:0 6px 18px rgba(0,0,0,.22);background:#14261a;color:#fff;border-color:#14261a;}}',
     // Every control is a 40px target, and the bar fits a 320px phone (2026-10-29: signed out, Log In, Join and the hamburger
     // ran 31px past the edge). Under 380px the logo, gaps and padding tighten; the two buttons stay on the bar.
     '.ve-wordmark,.ve-nav-login,.ve-nav-cta{min-height:40px;box-sizing:border-box;}',
     '.ve-nav-login,.ve-nav-cta{display:inline-flex;align-items:center;}',
     // With Share on the bar (2026-11-01) phones tighten a little more so nothing runs past the edge.
     '@media(max-width:480px){.ve-nav-inner{gap:10px;} .ve-wordmark-logo{height:30px;} .ve-nav-login{padding:9px 8px;} .ve-nav-cta{padding:9px 14px;} .ve-burger{margin-left:4px;} .ve-share-btn{margin-right:4px;}}',
+    // Phones (Sean, 2026-11-03: "a series of squares on the top"): right to left the hamburger, the member's square, Apps, Feedback, every
+    // one the same 38px square with 6px corners. The member's picture is a rounded square too, not a circle.
+    '@media(max-width:860px){.ve-nav-public .ve-nav-right-wrap{gap:6px;} .ve-nav-right-wrap>.ve-feedback-btn,.ve-nav-right-wrap>.ve-share-btn,.ve-nav-right-wrap>.ve-nav-apps,.ve-nav-right-wrap>.ve-burger{width:38px;height:38px;margin:0;padding:0;box-sizing:border-box;} .ve-nav-member{width:38px;height:38px;padding:0;margin:0;gap:0;} .ve-nav-member .ve-nav-lesars{display:none;} .ve-nav-avatar,.ve-nav-avatar img{width:38px !important;height:38px !important;border-radius:6px !important;box-sizing:border-box;}}',
     '@media(max-width:380px){.ve-nav-inner{padding:0 10px;gap:6px;} .ve-wordmark-logo{height:24px;} .ve-nav-login{padding:9px 6px;letter-spacing:0.04em;} .ve-nav-cta{padding:9px 10px;} .ve-burger{margin-left:3px;width:38px;height:38px;} .ve-share-btn{width:34px;height:34px;margin-right:2px;}}',
   ].join('');
 
@@ -241,7 +243,7 @@
       '.ve-has-pagebar #main-content{padding-top:24px !important;}',
       '.ve-hs-field.scoped input{min-width:48px;}',
       '.ve-menu-row{display:flex;align-items:center;gap:30px;height:40px;padding:0 28px;border-top:1px solid rgba(0,0,0,.06);font-family:"Montserrat",sans-serif;}',
-      '.ve-menu-row a{font-size:13px;font-weight:700;color:#1a1a1a;text-decoration:none;padding:9px 0;white-space:nowrap;}',
+      '.ve-menu-row a{font-size:13px;font-weight:800;color:#1a1a1a;text-decoration:none;padding:9px 0;white-space:nowrap;}',
       '.ve-menu-row a:hover{color:#2d7d31;}',
       '.ve-menu-row a[aria-current="page"]{color:#2d7d31;box-shadow:0 2px 0 #3A9B3E;}',
       '.ve-nav-new .ve-burger{display:none;}',
@@ -320,7 +322,7 @@
   });
   var shareBtn = searchBtn + '<button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>' +
-    /* Feedback (Sean, 2026-11-03): beside Share on every page; /public/ve-feedback.js loads below. On phones it is a small fixed tab (see the CSS). */
+    /* Feedback (Sean, 2026-11-03): beside Share on every page; /public/ve-feedback.js loads below. On phones it is a square in the bar, left of Apps (Sean, 2026-11-03). */
     '<button type="button" class="ve-feedback-btn" data-ve-feedback aria-label="Send feedback" title="Send feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button>';
   if (!window.VEFeedback && !document.querySelector('script[src*="ve-feedback.js"]')) {
     var fbs = document.createElement('script'); fbs.src = '/public/ve-feedback.js'; fbs.async = true; (document.head || document.documentElement).appendChild(fbs);
@@ -466,7 +468,7 @@
       if (loading) return;
       loading = true;
       var sc = document.createElement('script');
-      sc.src = 'https://hq.lesaruss.ai/shell/universal-bar.js';
+      sc.src = 'https://hq.lesaruss.ai/shell/universal-bar.js?v=20261103';
       sc.onload = function () { loading = false; if (mount()) toggle(); };
       sc.onerror = function () { loading = false; };
       document.head.appendChild(sc);

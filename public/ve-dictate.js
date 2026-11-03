@@ -12,6 +12,9 @@
 (function () {
   if (window.VEDictate) return;
   var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // Desktop only (Sean, 2026-11-03: "we don't need the audio recording button on mobile because there's already a recording feature to
+  // dictate... I'm seeing it on there"): a touch device or a phone-width window uses its own keyboard's mic, so no floating button.
+  if (window.matchMedia && (matchMedia('(pointer: coarse)').matches || matchMedia('(max-width: 760px)').matches)) { window.VEDictate = { supported: false }; return; }
   if (!SR) { window.VEDictate = { supported: false }; return; }
 
   var SKIP_AUTO = /email|tel|postal|cc-|one-time-code|username|password|url/i;
