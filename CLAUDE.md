@@ -2990,6 +2990,12 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   post's picture to `vegan-media/media/social-posts/<shortcode>.<ext>`, one failure waits 30 days. **Found 2026-11-03: every picture link
   in the May scan had expired by 2026-05-13** (Instagram's `oe=` stamp), so the 1,661 featured tiles show the Instagram mark and caption
   until their pictures are read again. Reading them again is a paid Apify run of the matched posts' URLs (about 580 posts): quote and Sean's go first.
+- **The picture refresh for the featured posts** (written 2026-11-03, committed, **not deployed and never run**): `ve-listing-posts`
+  `admin_refresh_quote` (free: counts the posts with no picture, estimates `apify_usd_per_1000_results` (default 2.30, list price, unverified)
+  and asks Apify's free account calls for the plan and usage) and `admin_refresh_run` (batches of `refresh_batch` 25, Apify
+  `instagram-scraper` on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the
+  quote's post count). Both are super admin only. The deployed function still lacks them. The thumbnail cron marked about 40 featured rows
+  failed on 2026-11-03 (expired links) and keeps going; the run resets them by writing `thumb_url`.
 - Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
   button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
 

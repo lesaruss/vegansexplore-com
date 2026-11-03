@@ -6,6 +6,9 @@
 //                                  recent posts (Apify instagram-scraper) when their last fetch is older than refresh_days
 //   owner_get / owner_post / owner_pause / owner_refresh   the owner's Social step in Edit your page (member token, the listing's owner)
 //   admin_list / admin_set / admin_fetch / admin_thumbs     the Depot review (super admin)
+//   admin_refresh_quote / admin_refresh_run   re-read the FEATURED posts' pictures (the May 2026 links expired). The quote is free (it asks
+//                                  Apify for the account's plan and usage); the run needs listing_social.refresh_ours_on true AND `confirm` equal to
+//                                  the quote's post count, so nothing is bought by accident.
 // NOTHING IS FETCHED FROM APIFY until ve_site_settings listing_social.scrape_on is true (Sean's go, after the cost quote).
 // verify_jwt is off: the VE token (an HMAC session, as ve-mentions) or the cron secret is checked inside.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -148,6 +151,71 @@ async function fetchTheirs(listingId: string, force = false) {
   await db.from('ve_listing_social').update({ last_fetch_at: now, last_fetch_note: `Read ${posts.length} recent posts: ${added} new, ${updated} updated`, fetch_fails: 0 }).eq('listing_id', listingId);
   return { ok: true, read: posts.length, added, updated };
 }
+// ---------- the featured posts' pictures (source 'ours'), one batch at a time ----------
+async function refreshCandidates(): Promise<{ shortcode: string; url: string }[]> {
+  const out: { shortcode: string; url: string }[] = []; const seen = new Set<string>();
+  for (let from = 0; ; from += 1000) {
+    const { data } = await db.from('ve_listing_posts').select('shortcode, post_url').eq('source', 'ours').eq('status', 'shown').is('thumb_url', null)
+      .order('shortcode').range(from, from + 999);
+    for (const r of data || []) if (!seen.has(r.shortcode)) { seen.add(r.shortcode); out.push({ shortcode: r.shortcode, url: r.post_url }); }
+    if (!data || data.length < 1000) break;
+  }
+  return out;
+}
+async function apifyAccount(token: string) {
+  // Free account calls: what plan this token is on and what it has used this cycle. Nothing here starts a run.
+  const get = async (path: string) => { try { const r = await fetch(`https://api.apify.com/v2/${path}?token=${token}`, { signal: AbortSignal.timeout(15000) }); return r.ok ? ((await r.json()) as any).data : null; } catch { return null; } };
+  const me = await get('users/me'), lim = await get('users/me/limits');
+  return {
+    plan: me?.plan?.id || me?.plan?.name || null,
+    monthly_usage_usd: lim?.current?.monthlyUsageUsd ?? null,
+    max_monthly_usage_usd: lim?.limits?.maxMonthlyUsageUsd ?? null,
+    cycle_ends: lim?.monthlyUsageCycle?.endAt || null,
+    readable: !!(me || lim),
+  };
+}
+async function refreshQuote() {
+  const S = await settings();
+  const todo = await refreshCandidates();
+  const per1000 = Number(S.apify_usd_per_1000_results) || 2.3;   // Apify's list price for the Instagram scraper, a setting so it can be corrected
+  const token = await apifyToken();
+  const acct = token ? await apifyAccount(token) : null;
+  const est = Math.round(todo.length * per1000) / 1000;
+  const room = acct && acct.max_monthly_usage_usd != null && acct.monthly_usage_usd != null ? Math.round((acct.max_monthly_usage_usd - acct.monthly_usage_usd) * 100) / 100 : null;
+  return { posts: todo.length, batch_size: S.refresh_batch || 25, batches: Math.ceil(todo.length / (S.refresh_batch || 25)), usd_per_1000_results: per1000,
+    estimated_usd: est, apify: acct, room_left_usd: room, fits: room == null ? null : est <= room, enabled: !!S.refresh_ours_on, has_token: !!token };
+}
+async function refreshRun(confirm: number) {
+  const S = await settings();
+  if (!S.refresh_ours_on) return { ok: false, error: 'not_switched_on' };
+  const todo = await refreshCandidates();
+  // The first call states the quote's count; the rest of a run carry the same number down as `remaining` goes, so a stale confirm is refused.
+  if (!Number.isFinite(confirm) || confirm < todo.length || confirm > todo.length + 200) return { ok: false, error: 'confirm_mismatch', posts: todo.length };
+  const token = await apifyToken(); if (!token) return { ok: false, error: 'no_reader' };
+  const batch = todo.slice(0, S.refresh_batch || 25);
+  if (!batch.length) return { ok: true, done: true, remaining: 0 };
+  let items: any[] = [];
+  try {
+    const r = await fetch(`https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-dataset-items?token=${token}&timeout=140`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ directUrls: batch.map((b) => b.url), resultsType: 'posts', resultsLimit: batch.length }), signal: AbortSignal.timeout(150000) });
+    if (!r.ok) return { ok: false, error: 'read_failed', status: r.status, remaining: todo.length };
+    items = (await r.json()) as any[];
+  } catch (e) { return { ok: false, error: 'read_failed', message: String((e as Error).message || e).slice(0, 160), remaining: todo.length }; }
+  const by = new Map<string, any>(); for (const x of items || []) if (x && x.shortCode && !x.error) by.set(x.shortCode, x);
+  const now = new Date().toISOString(); let copied = 0, gone = 0;
+  for (const b of batch) {
+    const x = by.get(b.shortcode);
+    if (!x) { await db.from('ve_listing_posts').update({ thumb_checked_at: now, thumb_error: 'Not returned by the reader (the post may be gone)' }).eq('shortcode', b.shortcode).is('thumb_url', null); gone++; continue; }
+    const url = await copyThumb(b.shortcode, x.displayUrl || '');
+    const patch: Record<string, unknown> = { like_count: Math.max(0, Number(x.likesCount) || 0), comment_count: Math.max(0, Number(x.commentsCount) || 0),
+      view_count: x.videoViewCount != null ? Math.max(0, Number(x.videoViewCount) || 0) : null, src_thumb_url: x.displayUrl || null, scraped_at: now, updated_at: now,
+      thumb_checked_at: now, thumb_error: url ? null : 'The picture could not be copied' };
+    if (url) { patch.thumb_url = url; copied++; }
+    await db.from('ve_listing_posts').update(patch).eq('shortcode', b.shortcode);
+  }
+  return { ok: true, batch: batch.length, returned: by.size, copied, gone, remaining: Math.max(0, todo.length - batch.length) };
+}
 async function weeklyRun() {
   const S = await settings();
   // Enrol every claimed listing that has a valid handle (any claim unlocks it; the owner can pause it).
@@ -260,6 +328,8 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_listing_posts').update({ status, updated_at: new Date().toISOString() }).eq('id', body.id);
     return error ? json({ error: 'save_failed' }, 500) : json({ ok: true });
   }
+  if (action === 'admin_refresh_quote') return json(await refreshQuote());
+  if (action === 'admin_refresh_run') return json(await refreshRun(Number(body.confirm)));
   if (action === 'admin_thumbs') return json(await thumbsRun(Math.min(40, Number(body.limit) || 20)));
   if (action === 'admin_fetch') return json(await fetchTheirs(String(body.listing_id || '')));
   return json({ error: 'unknown_action' }, 400);
