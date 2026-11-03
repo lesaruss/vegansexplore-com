@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Research queue | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Depot > Research queue (Sean, 2026-11-03, playbook ve-universal-search). Parent: Depot > Cookbook (a Depot queue with draft, check and
+       live), its styles and routing. Questions the search box and the Guides could not answer wait here; a person researches one, writes
+       the answer as a draft, records the sources and the check, and only then publishes it. It expires in 90 days (30 for stock and
+       hours) and comes back to the queue. #panels: a set of questions run through the whole engine and scored by a person.
+       One thing per view: #queue/<status>, #item/<id>, #panels, #panel/<id>. Data: ve-research. */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-text-55:rgba(26,26,26,0.6);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:22px;font-weight:900;line-height:1.2;margin:6px 0 8px;}
+    .k{font-size:11px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .crumb{font-size:12.5px;font-weight:700;color:var(--ve-text-55);margin-bottom:12px;}
+    .crumb a{color:var(--ve-green-deep);text-decoration:none;}
+    .views{display:inline-flex;gap:4px;margin-bottom:14px;}
+    .views a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text-75);text-decoration:none;}
+    .views a[aria-current="page"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px;margin-bottom:14px;}
+    .stat{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 16px;}
+    .stat b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .stat span{font-size:12px;color:var(--ve-text-55);font-weight:700;}
+    .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-bottom:14px;}
+    .filters{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:8px;background:#eceeec;}
+    .filters button{font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:8px 12px;border:0;border-radius:6px;background:transparent;color:var(--ve-text-75);cursor:pointer;}
+    .filters button[aria-pressed="true"]{background:#fff;color:var(--ve-green-deep);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+    .filters b{font-weight:900;margin-left:4px;color:var(--ve-text-55);}
+    .bar input,.bar select{font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .bar input{flex:0 1 320px;}
+    .bar select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round'/></svg>") no-repeat right 16px center;}
+    .rows{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 340px);min-height:240px;overflow:auto;padding-right:4px;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) 170px 120px;gap:14px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 16px;}
+    .row b{display:block;font-size:14.5px;font-weight:800;}
+    .row .meta{font-size:12.5px;color:var(--ve-text-55);}
+    @media (max-width:700px){.row{grid-template-columns:minmax(0,1fr);}}
+    .prow{display:grid;grid-template-columns:34px minmax(0,1.1fr) minmax(0,1.3fr) 150px;gap:14px;align-items:start;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:12px 16px;}
+    .prow .n{font-weight:900;color:var(--ve-text-55);font-size:13px;}
+    .prow b{display:block;font-size:14px;font-weight:800;}
+    .prow .meta{font-size:12.5px;color:var(--ve-text-55);}
+    .prow .got{font-size:13px;color:var(--ve-text-75);}
+    @media (max-width:900px){.prow{grid-template-columns:minmax(0,1fr);}}
+    .tag{justify-self:start;display:inline-block;font-size:10px;font-weight:900;letter-spacing:0.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;margin:0 4px 4px 0;}
+    .t-new{background:#fff4e2;color:#6b3f00;}
+    .t-researching,.t-drafted{background:#e7f0fb;color:#1c4a85;}
+    .t-needs_sean{background:#fff4e2;color:#8a5a00;}
+    .t-answered,.t-pass,.t-judged{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .t-set_aside,.t-draft,.t-run{background:#eef0ee;color:#4a4f4a;}
+    .t-partial{background:#fff4e2;color:#8a5a00;}
+    .t-fail{background:#fbeeec;color:#8a1c12;}
+    .t-src{background:#f1ecfa;color:#4a2b85;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 16px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.5;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-text);border:1px solid rgba(0,0,0,0.25);}
+    .btn-ghost:hover{background:#f4f5f4;}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid rgba(138,28,18,0.4);}
+    .panel{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:20px 22px;margin:0 0 14px;}
+    .detail{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:16px;align-items:start;}
+    @media (max-width:900px){.detail{grid-template-columns:minmax(0,1fr);}}
+    label.f{display:block;font-size:12px;font-weight:800;margin:10px 0 4px;}
+    .panel textarea,.panel input[type=text],.panel select{width:100%;font-family:inherit;font-size:14px;padding:9px 11px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .panel select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round'/></svg>") no-repeat right 16px center;}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    @media (max-width:600px){.two{grid-template-columns:1fr;}}
+    .actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;}
+    .msg{font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;margin-top:8px;}
+    .msg.err{color:#8a1c12;}
+    .empty{font-size:14px;color:var(--ve-text-55);padding:14px 0;}
+    ul.have{padding-left:18px;font-size:13.5px;color:var(--ve-text-75);}
+    ul.have li{margin-bottom:4px;}
+    .state{font-size:13px;font-weight:700;background:#f7f8f7;border-radius:8px;padding:8px 10px;margin-bottom:10px;}
+    .note{font-size:13px;background:#fff7e8;color:#8a5a00;border-radius:6px;padding:8px 10px;margin:8px 0;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Research queue</h1>
+    <div id="depot-tabs"></div>
+    <div id="rq-gate" class="gate" hidden></div>
+    <div id="rq-app" hidden></div>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-research';
+      var $ = function (id) { return document.getElementById(id); };
+      var app = $('rq-app'), Q = null, PANELS = null, filter = 'new', q = '';
+      var STATUS = { new: 'Needs an answer', researching: 'Being researched', drafted: 'Draft', needs_sean: 'Needs Sean', answered: 'Live', set_aside: 'Set aside' };
+      var FILTERS = ['new', 'drafted', 'needs_sean', 'answered', 'set_aside'];
+      var SRC = { search_box: 'Send it to our team', search_log: 'Searched, nothing found', guide: 'Asked a Guide', panel: 'Found by a panel', expiry: 'Answer expired', team: 'Added by the team' };
+      var COV = { store: 'Store answer', bank: 'Banked answer', content: 'Shows and episodes', listing: 'Directory', none: 'Nothing' };
+      var ORIGIN = { gsc: 'Search Console', search_log: 'Our search log', guide: 'Asked a Guide', logan: 'Written by Logan' };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' }) : ''; }
+      function views(cur) { return '<nav class="views"><a href="#"' + (cur === 'queue' ? ' aria-current="page"' : '') + '>Questions</a><a href="#panels"' + (cur === 'panels' ? ' aria-current="page"' : '') + '>Panels</a></nav>'; }
+      function tag(cls, text) { return '<span class="tag t-' + cls + '">' + esc(text) + '</span>'; }
+
+      /* ---- the queue ---- */
+      function viewQueue() {
+        if (!Q) { app.innerHTML = views('queue') + '<p class="sub">Loading...</p>'; load(); return; }
+        var words = q.trim().toLowerCase();
+        var rows = Q.rows.filter(function (r) { return r.status === filter && (!words || r.question.toLowerCase().indexOf(words) >= 0); });
+        app.innerHTML = views('queue') +
+          '<p class="sub">What people asked that we could not answer: from the search box (Send it to our team), searches that found nothing, Guide questions and the panels. Write an answer, record where it came from, check it, then publish. It runs out in 90 days (30 for stock and hours) and comes back here.</p>' +
+          '<div class="stats"><div class="stat"><b>' + Q.stats.live_research + '</b><span>Answers live from this queue</span></div><div class="stat"><b>' + Q.stats.expiring_14d + '</b><span>Expiring in 14 days</span></div><div class="stat"><b>' + Q.stats.live_total + '</b><span>Banked answers live in all</span></div></div>' +
+          '<div class="bar"><div class="filters" role="group">' + FILTERS.map(function (f) { return '<button type="button" data-f="' + f + '" aria-pressed="' + (f === filter) + '">' + STATUS[f] + (Q.counts[f] ? '<b>' + Q.counts[f] + '</b>' : '') + '</button>'; }).join('') + '</div>' +
+          '<input type="search" id="rq-q" placeholder="Search questions" aria-label="Search questions" value="' + esc(q) + '"><button type="button" class="btn btn-ghost" id="rq-sync">Check for new ones</button></div>' +
+          '<div class="rows">' + (rows.map(function (r) {
+            return '<div class="row"><div><b>' + esc(r.question) + '</b><span class="meta">' + esc(SRC[r.source] || r.source) + ' &middot; asked ' + r.asks + (r.asks === 1 ? ' time' : ' times') + (r.visitors ? ' by ' + r.visitors + (r.visitors === 1 ? ' person' : ' people') : '') + ' &middot; last ' + when(r.last_asked) + (r.note ? ' &middot; ' + esc(r.note) : '') + '</span></div>' +
+              '<div>' + tag(r.status, STATUS[r.status]) + '</div><a class="btn btn-ghost" href="#item/' + r.id + '">Open</a></div>';
+          }).join('') || '<p class="empty">' + (filter === 'new' ? 'Nothing waiting. New questions arrive from the search box and the Guides.' : 'None here.') + '</p>') + '</div>';
+        $('rq-q').addEventListener('input', function () { q = this.value; var p = this.selectionStart; viewQueue(); var el = $('rq-q'); el.focus(); el.setSelectionRange(p, p); });
+        $('rq-sync').addEventListener('click', function () { var b = this; b.disabled = true; api({ action: 'sync' }).then(function () { load(); }); });
+      }
+      function load() {
+        return api({ action: 'queue' }).then(function (d) {
+          if (!d.ok) throw new Error(d.error);
+          Q = d; route();
+        }).catch(function () { app.innerHTML = '<p class="sub">The queue did not load. Refresh to try again.</p>'; });
+      }
+
+      /* ---- one question ---- */
+      function engineHtml(e) {
+        var li = [];
+        if (e.store) li.push('<li><b>Store:</b> ' + esc(e.store.store && e.store.store.name) + ' &middot; ' + esc(e.store.term || e.store.thing || 'everything Vegan') + ' &middot; ' + (e.store.total || 0) + ' found</li>');
+        (e.listings || []).slice(0, 3).forEach(function (x) { li.push('<li><b>Directory:</b> <a href="/directory/' + encodeURIComponent(x.slug) + '" target="_blank" rel="noopener">' + esc(x.name) + '</a>' + (x.city ? ' (' + esc(x.city) + ')' : '') + '</li>'); });
+        (e.moments || []).slice(0, 2).forEach(function (x) { li.push('<li><b>Said on our shows:</b> &ldquo;' + esc((x.quote || '').slice(0, 130)) + '&rdquo; ' + esc(x.speaker || '') + '</li>'); });
+        (e.episodes || []).slice(0, 2).forEach(function (x) { li.push('<li><b>Episode:</b> ' + esc(x.title) + '</li>'); });
+        (e.bank || []).forEach(function (x) { li.push('<li><b>Closest banked question:</b> ' + esc(x.question) + ' (' + x.score + (x.score >= 0.65 ? ', would be served' : ', under the 0.65 floor, not served') + ')</li>'); });
+        return li.length ? '<ul class="have">' + li.join('') + '</ul>' : '<p class="empty">The engine has nothing for this yet.</p>';
+      }
+      function evRow(e, i) {
+        return '<div class="two"><input type="text" data-ev-label="' + i + '" placeholder="Source name" value="' + esc(e && e.label || '') + '" aria-label="Source ' + (i + 1) + ' name"><input type="text" data-dictate="off" data-ev-url="' + i + '" placeholder="Link (optional)" value="' + esc(e && e.url || '') + '" aria-label="Source ' + (i + 1) + ' link"></div>';
+      }
+      function stateLine(a) {
+        if (!a) return 'No draft yet.';
+        if (a.status === 'live') return 'Live until ' + when(a.expires_at) + '. Checked by ' + esc(a.checked_by || '?') + ' on ' + when(a.checked_at) + '.';
+        if (a.checked_at) return 'Draft, checked by ' + esc(a.checked_by) + ' on ' + when(a.checked_at) + '. Ready to publish.';
+        return 'Draft. Not checked yet, so it cannot go live.';
+      }
+      function viewItem(id, saidAfter) {
+        app.innerHTML = '<div class="crumb"><a href="#">Questions</a> &rsaquo; Loading...</div>';
+        api({ action: 'item', id: id }).then(function (d) {
+          if (!d.ok) { app.innerHTML = '<div class="crumb"><a href="#">Questions</a> &rsaquo; Question</div><p class="empty">That question is not in the queue.</p>'; return; }
+          var it = d.item, a = d.answer, ev = (a && a.evidence) || [];
+          var n = Math.max(3, ev.length);
+          var evs = ''; for (var i = 0; i < n; i++) evs += evRow(ev[i], i);
+          app.innerHTML = '<div class="crumb"><a href="#">Questions</a> &rsaquo; <a href="#queue/' + esc(it.status) + '">' + esc(STATUS[it.status]) + '</a> &rsaquo; ' + esc(it.question) + '</div>' +
+            '<div class="detail"><div><div class="panel"><div>' + tag(it.status, STATUS[it.status]) + tag('src', SRC[it.source] || it.source) + '</div><h2>' + esc(it.question) + '</h2>' +
+            '<p class="sub" style="margin-bottom:6px">Asked ' + it.asks + (it.asks === 1 ? ' time' : ' times') + (it.visitors ? ' by ' + it.visitors + (it.visitors === 1 ? ' person' : ' people') : '') + ' &middot; first ' + when(it.first_asked) + ' &middot; last ' + when(it.last_asked) + '</p>' +
+            (it.note ? '<div class="note">' + esc(it.note) + '</div>' : '') +
+            '<p class="k" style="margin-top:12px">What the engine already has</p>' + engineHtml(d.engine) + '</div></div>' +
+            '<div class="panel"><p class="k">The answer</p><div class="state" id="rq-state">' + stateLine(a) + '</div>' +
+            '<label class="f" for="rq-ans">Answer (plain words, only what our own data shows)</label><textarea id="rq-ans" rows="6" maxlength="1500">' + esc(a ? a.answer : '') + '</textarea>' +
+            '<div class="two"><div><label class="f" for="rq-kind">How long it holds</label><select id="rq-kind"><option value="evergreen"' + (!a || a.kind !== 'stock_hours' ? ' selected' : '') + '>Stays true: 90 days</option><option value="stock_hours"' + (a && a.kind === 'stock_hours' ? ' selected' : '') + '>Stock or hours: 30 days</option></select></div>' +
+            '<div><label class="f" for="rq-also">Other ways people ask it (one per line)</label><textarea id="rq-also" rows="2">' + esc(((a && a.also_asked) || []).join('\n')) + '</textarea></div></div>' +
+            '<div class="two"><div><label class="f" for="rq-link">A page to open (optional)</label><input type="text" data-dictate="off" id="rq-link" placeholder="/directory or a full link" value="' + esc(a && a.link_url || '') + '"></div><div><label class="f" for="rq-linklabel">Button words</label><input type="text" data-dictate="off" id="rq-linklabel" placeholder="Open the Directory" value="' + esc(a && a.link_label || '') + '"></div></div>' +
+            '<p class="k" style="margin-top:14px">Where it came from (at least one, to check it)</p>' + evs +
+            '<div class="actions"><button type="button" class="btn" data-op="save">Save draft</button><button type="button" class="btn btn-ghost" data-op="check"' + (a ? '' : ' disabled') + '>Mark checked</button><button type="button" class="btn" data-op="publish"' + (a && a.checked_at && a.status !== 'live' ? '' : ' disabled') + '>Publish</button></div>' +
+            '<div class="actions">' + (a && a.status === 'live' ? '<button type="button" class="btn btn-red" data-op="retire">Take it down</button>' : '') +
+            (it.status !== 'needs_sean' ? '<button type="button" class="btn btn-ghost" data-op="needs_sean">Needs Sean</button>' : '') +
+            (it.status !== 'set_aside' ? '<button type="button" class="btn btn-red" data-op="set_aside">Set aside</button>' : '') +
+            (it.status === 'set_aside' || it.status === 'needs_sean' ? '<button type="button" class="btn btn-ghost" data-op="reopen">Open it again</button>' : '') + '</div>' +
+            '<p class="msg" id="rq-msg" role="status"></p></div></div>';
+          app.setAttribute('data-item', id);
+          if (saidAfter) say(saidAfter);
+        }).catch(function () { app.innerHTML = '<p class="sub">The question did not load. Refresh to try again.</p>'; });
+      }
+      function readForm() {
+        var ev = [], i = 0, l;
+        while ((l = app.querySelector('[data-ev-label="' + i + '"]'))) { ev.push({ label: l.value.trim(), url: (app.querySelector('[data-ev-url="' + i + '"]').value || '').trim() }); i++; }
+        return { answer: $('rq-ans').value, kind: $('rq-kind').value, also_asked: $('rq-also').value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean), link_url: $('rq-link').value.trim(), link_label: $('rq-linklabel').value.trim(),
+          evidence: ev.filter(function (e) { return e.label || e.url; }) };
+      }
+      function say(text, err) { var m = $('rq-msg'); if (m) { m.textContent = text; m.className = 'msg' + (err ? ' err' : ''); } }
+      function itemOp(op, id, b) {
+        say('Saving...');
+        var body = { id: id };
+        if (op === 'save') { body = Object.assign(readForm(), { id: id }); body.action = 'draft_save'; }
+        else if (op === 'check' || op === 'publish' || op === 'retire' || op === 'needs_sean' || op === 'set_aside' || op === 'reopen') body.action = op;
+        if (op === 'needs_sean' || op === 'set_aside') { var n = prompt(op === 'set_aside' ? 'Why is it being set aside?' : 'What does Sean need to decide?', ''); if (n === null) { say(''); return; } body.note = n; }
+        if (op === 'publish' && !confirm('Publish it? It goes live in the search box now and expires in ' + ($('rq-kind').value === 'stock_hours' ? 30 : 90) + ' days.')) { say(''); return; }
+        if (op === 'retire' && !confirm('Take this answer down? It stops showing and the question goes back to the queue.')) { say(''); return; }
+        b.disabled = true;
+        // Save first when the form has unsaved words, so a check or publish is always of what is on screen.
+        var go = (op === 'check' || op === 'publish') ? api(Object.assign(readForm(), { id: id, action: 'draft_save' })).then(function (s) { if (!s.ok) throw s; return api(body); }) : api(body);
+        go.then(function (d) {
+          b.disabled = false;
+          if (!d.ok) { say(d.message || ({ not_checked: 'Check it first.', no_evidence: 'Add at least one source before checking.', answer_too_short: 'Write at least a sentence.', already_in_bank: 'The bank already has this exact question.' }[d.error]) || 'Did not save.', true); return; }
+          var done = op === 'publish' ? 'Live until ' + when(d.expires_at) + '.' : op === 'check' ? 'Checked. It can be published now.' : 'Saved.';
+          say(done);
+          load_then(function () { viewItem(id, done); });
+        }).catch(function (e) { b.disabled = false; say((e && e.message) || (e && e.error) || 'Could not connect.', true); });
+      }
+      function load_then(fn) { api({ action: 'queue' }).then(function (d) { if (d.ok) Q = d; fn(); }); }
+
+      /* ---- panels ---- */
+      var pf = { verdict: 'all', coverage: 'all', category: 'all', q: '' };
+      function viewPanels() {
+        if (!PANELS) { app.innerHTML = views('panels') + '<p class="sub">Loading...</p>'; api({ action: 'panels' }).then(function (d) { PANELS = d.runs || []; viewPanels(); }); return; }
+        app.innerHTML = views('panels') + '<p class="sub">A panel is a set of questions run through the whole search box (the Directory, shows and episodes, the store lane and the answer bank) and scored by a person against what a right answer would be. Nothing here goes live. It shows where the engine is thin, and which questions need an answer.</p>' +
+          '<div class="rows">' + (PANELS.map(function (r) {
+            var s = r.summary || { total: 0, verdict: {} };
+            return '<div class="row"><div><b>' + esc(r.name) + '</b><span class="meta">' + s.total + ' questions &middot; ' + (s.verdict.pass || 0) + ' pass &middot; ' + (s.verdict.partial || 0) + ' partial &middot; ' + (s.verdict.fail || 0) + ' fail &middot; run ' + when(r.run_at) + '</span></div><div>' + tag(r.status, r.status === 'judged' ? 'Scored' : r.status === 'run' ? 'Run, not scored' : 'Not run') + '</div><a class="btn btn-ghost" href="#panel/' + r.id + '">Open</a></div>';
+          }).join('') || '<p class="empty">No panels yet.</p>') + '</div>';
+      }
+      function viewPanel(id) {
+        app.innerHTML = views('panels') + '<p class="sub">Loading...</p>';
+        api({ action: 'panel', id: id }).then(function (d) {
+          if (!d.ok) { app.innerHTML = views('panels') + '<p class="empty">That panel is not here.</p>'; return; }
+          drawPanel(d);
+        });
+      }
+      function drawPanel(d) {
+        var all = d.questions, cats = {}; all.forEach(function (x) { cats[x.category] = 1; });
+        var by = { pass: 0, partial: 0, fail: 0 }; all.forEach(function (x) { if (by[x.verdict] != null) by[x.verdict]++; });
+        var rows = all.filter(function (x) {
+          return (pf.verdict === 'all' || (x.verdict || 'none') === pf.verdict) && (pf.coverage === 'all' || x.coverage === pf.coverage) && (pf.category === 'all' || x.category === pf.category) && (!pf.q || x.question.toLowerCase().indexOf(pf.q.toLowerCase()) >= 0);
+        });
+        function opt(v, l, cur) { return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(l) + '</option>'; }
+        app.setAttribute('data-panel', d.run.id);
+        app.innerHTML = '<div class="crumb"><a href="#panels">Panels</a> &rsaquo; ' + esc(d.run.name) + '</div>' +
+          '<p class="sub">' + esc(d.run.note || '') + '</p>' +
+          '<div class="stats"><div class="stat"><b>' + by.pass + '</b><span>Pass</span></div><div class="stat"><b>' + by.partial + '</b><span>Partial</span></div><div class="stat"><b>' + by.fail + '</b><span>Fail</span></div><div class="stat"><b>' + all.length + '</b><span>Questions</span></div></div>' +
+          '<div class="bar"><select id="pf-v" aria-label="Score">' + opt('all', 'Every score', pf.verdict) + opt('pass', 'Pass', pf.verdict) + opt('partial', 'Partial', pf.verdict) + opt('fail', 'Fail', pf.verdict) + opt('none', 'Not scored', pf.verdict) + '</select>' +
+          '<select id="pf-c" aria-label="What came back">' + opt('all', 'Anything came back', pf.coverage) + Object.keys(COV).map(function (k) { return opt(k, COV[k], pf.coverage); }).join('') + '</select>' +
+          '<select id="pf-g" aria-label="Category">' + opt('all', 'Every category', pf.category) + Object.keys(cats).sort().map(function (k) { return opt(k, k, pf.category); }).join('') + '</select>' +
+          '<input type="search" id="pf-q" placeholder="Search questions" aria-label="Search questions" value="' + esc(pf.q) + '"></div>' +
+          '<div class="rows">' + (rows.map(function (x) {
+            var e = x.engine || {};
+            return '<div class="prow"><span class="n">' + x.n + '</span><div><b>' + esc(x.question) + '</b><span class="meta">' + esc(x.category) + ' &middot; ' + esc(ORIGIN[x.origin] || x.origin) + '</span><span class="meta" style="display:block">Right answer: ' + esc(x.expect || '') + '</span></div>' +
+              '<div class="got">' + (x.coverage ? tag('src', COV[x.coverage]) : '') + ' ' + esc(x.top_label || 'Nothing came back') + (x.judge_note ? '<span class="meta" style="display:block">' + esc(x.judge_note) + '</span>' : '') + '</div>' +
+              '<div>' + (x.verdict ? tag(x.verdict, x.verdict) : tag('draft', 'Not scored')) + '<select data-judge="' + x.id + '" aria-label="Score question ' + x.n + '"><option value="">Change score</option><option value="pass">Pass</option><option value="partial">Partial</option><option value="fail">Fail</option></select></div></div>';
+          }).join('') || '<p class="empty">None match.</p>') + '</div>';
+        $('pf-q').addEventListener('input', function () { pf.q = this.value; var p = this.selectionStart; drawPanel(d); var el = $('pf-q'); el.focus(); el.setSelectionRange(p, p); });
+        ['v:verdict', 'c:coverage', 'g:category'].forEach(function (p) { var k = p.split(':'); $('pf-' + k[0]).addEventListener('change', function () { pf[k[1]] = this.value; drawPanel(d); }); });
+        app.querySelectorAll('[data-judge]').forEach(function (s) {
+          s.addEventListener('change', function () {
+            if (!this.value) return; var sel = this, qid = this.getAttribute('data-judge'), v = this.value;
+            api({ action: 'panel_judge', question_id: qid, verdict: v }).then(function (r) { if (!r.ok) { alert('Did not save.'); return; } all.forEach(function (x) { if (x.id === qid) x.verdict = v; }); drawPanel(d); });
+          });
+        });
+      }
+
+      function route() {
+        var h = location.hash, m;
+        if ((m = h.match(/^#item\/([0-9a-f-]{36})/))) { viewItem(m[1]); }
+        else if (h === '#panels') { viewPanels(); }
+        else if ((m = h.match(/^#panel\/([0-9a-f-]{36})/))) { viewPanel(m[1]); }
+        else { if ((m = h.match(/^#queue\/(\w+)/)) && STATUS[m[1]]) filter = m[1]; viewQueue(); }
+        window.scrollTo(0, 0);
+      }
+      app.addEventListener('click', function (e) {
+        var b;
+        if ((b = e.target.closest('[data-f]'))) { filter = b.getAttribute('data-f'); viewQueue(); return; }
+        if ((b = e.target.closest('[data-op]'))) { var id = (location.hash.match(/^#item\/([0-9a-f-]{36})/) || [])[1]; if (id) itemOp(b.getAttribute('data-op'), id, b); }
+      });
+      window.addEventListener('hashchange', route);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('rq-gate').hidden = false; $('rq-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="rq-signin">Sign in</button>'; $('rq-signin').onclick = function () { VEAuth.showAuthModal('Sign in to work the research queue.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('rq-gate').hidden = false; $('rq-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        app.hidden = false; app.innerHTML = '<p class="sub">Loading...</p>';
+        load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

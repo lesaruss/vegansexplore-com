@@ -1197,6 +1197,28 @@ knows, the places it knows and what people looked for are rows per brand, and a 
   **Inventory later** is another source of the same rows (a feed from a sponsoring supermarket), never promised before one agrees. Publix is the only
   chain with stores mapped, so only Publix areas (South, Central and North Florida) can report today. **Not built yet**: the scan as a Taste slide,
   business confirmation, a sponsor multiplier on sighting points, a sighting of a barcode we do not hold feeding search, other chains' stores.
+- **The research queue, the answer bank's check and panels** (Sean, 2026-11-03: "go" on item 1; migrations `20261103_research_queue_answer_bank.sql`,
+  `20261103_research_answer_floor.sql`; edge function `ve-research`; **Depot > Research queue**, `/admin/depot/research`, parent Depot > Cookbook).
+  - **Capture**: the box's dropdown and `/search` end with **Not what you were looking for? Send it to our team** (`VESearch.askHtml`, `wireAsk`;
+    `ve-research` `ask`, five a visitor a day, words and the random visitor id only; a question the bank already answers is answered instead of queued;
+    search operators, links and emails are refused). Guide questions come through `guide_kb_gaps`; searches that found nothing through `ve_search_log` zero
+    rows; both join `ve_research_queue` every 30 minutes (cron `ve-research-sync`, `ve_research_sync()`), plus panel gaps (source `panel`) and expired
+    answers (source `expiry`).
+  - **The check before live** is in the database: a research answer (`guide_kb_answers.origin` `research`) goes live only through `ve_kb_publish`, which needs
+    `checked_at`, `checked_by` and at least one `evidence` source, then sets `expires_at` (90 days, `kind` `stock_hours` 30); trigger `ve_kb_guard`
+    refuses any other path and puts a live answer back to draft, unchecked, when its words change. Cron `ve-kb-expire` (08:17 UTC) retires an expired answer
+    and puts its question back in the queue. `guide_kb_match` leaves out an expired answer. The 149 older answers are `legacy`, unchanged, never expire.
+  - **Our team's answer in the box** (`ve-research` `answer`, `VESearch.answer`, `ansBox`): shown above the results only at a 0.65 match or better. **The 0.65
+    floor is new**: the Guides' quick answers (`ve-auth` `guide_ask`) use 0.42, which the first panel showed serving near-miss answers ("vegan restaurants in
+    miami" got "How do I eat Vegan at a non-Vegan restaurant?" at 0.56; "meat substitute" got "Are eggs Vegan?"). The Guides' 0.42 is not changed: Sean's call.
+  - **Panels** (`ve_panel_runs`, `ve_panel_questions`, `ve_panel_run`): questions run through the whole engine (Directory, shows, store lane, answer bank), what came
+    back kept, then scored pass, partial or fail by a person against what a right answer would be; nothing in a panel goes live. **Panel 1** (2026-11-03, 100
+    questions): 57 pass, 25 partial, 18 fail. 36 are real-derived (31 from Search Console after dropping quoted and operator strings, which are rank trackers,
+    1 search-log gap, 4 Guide questions), 64 are Logan's, tagged by origin. `ve_search_log` held only our own test searches that day, so it added no real demand.
+    Weak: events are not searchable, Guides and venues by name are not searchable, off-topic questions return junk instead of an honest nothing, a place we do not
+    hold shows a fuzzy match with no not-found notice, scan and label questions have no answer, and legacy answers about events point to city hubs.
+  - Search Console is read through HQ's `gsc-admin` (its own service account, `GSC_SERVICE_ACCOUNT_JSON`, owner on `sc-domain:vegansexplore.com`), not the GA4
+    reader, whose Google project has the Search Console API off.
 - Not built yet: the same engine on LESARUSS.ai (it needs its own vocabulary rows and `VE_BRAND.searchBrand`), search inside the dashboard's
   frame, "recent searches", and a map. Checked in a browser against the live function at 1440 and 390 px beside the Vault page.
 

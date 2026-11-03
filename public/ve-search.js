@@ -85,6 +85,40 @@
   function storeHref(x) { return '/directory/' + encodeURIComponent(x.brand_slug) + '?tab=products' + (x.product_slug ? '&product=' + encodeURIComponent(x.product_slug) : ''); }
   var SCAN_HREF = '/guides/supermarket-guide#/scan';
 
+  /* ---- our team's answers, and "Send it to our team" (Sean, 2026-11-03, playbook ve-universal-search) ----
+     A question with a checked, unexpired answer in our answer bank shows it above the results (ve-research `answer`, 0.65 match or better,
+     live answers only). A search that did not find what the visitor wanted has one button, Send it to our team: the question joins the
+     research queue in the Depot (`ask`, five a visitor a day), or is answered at once when the bank already has it. No name, email or
+     location is sent: the words and the random visitor id the search log already uses. */
+  var RFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-research';
+  function rpost(body) { return fetch(RFN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function answer(q) {
+    q = String(q || '').trim();
+    if (q.length < 8 || q.split(/\s+/).length < 3) return Promise.resolve(null);
+    return rpost({ action: 'answer', q: q }).then(function (d) { return d && d.found ? d : null; }).catch(function () { return null; });
+  }
+  function ansBox(a) {
+    var href = a.link_url && /^(\/(?!\/)|https:\/\/)/.test(a.link_url) ? a.link_url : '';
+    return '<div class="ves-ansbox" role="note"><span class="ves-h" style="display:block;padding:0 0 4px">From our team</span><p>' + esc(a.answer) + '</p>' +
+      (href ? '<a class="ves-go" href="' + esc(href) + '">' + esc(a.link_label || 'Learn more') + ' &rarr;</a>' : '') + '</div>';
+  }
+  function askHtml() { return '<div class="ves-ask-wrap"><button type="button" class="ves-ask" data-ves-ask>Not what you were looking for? Send it to our team</button><span class="ves-ask-msg" role="status"></span></div>'; }
+  function wireAsk(root, getQ) {
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('[data-ves-ask]'); if (!b) return;
+      e.preventDefault(); e.stopPropagation();
+      var q = String(getQ() || '').trim(); if (q.length < 4) return;
+      var wrap = b.parentNode, msg = wrap.querySelector('.ves-ask-msg'); b.disabled = true; msg.textContent = '';
+      rpost({ action: 'ask', question: q, source: 'search_box', visitor: vid() }).then(function (d) {
+        if (d && d.answered) { wrap.outerHTML = ansBox(d); }
+        else if (d && d.queued) { b.hidden = true; msg.textContent = 'Thank you. Our team will look into it.'; }
+        else if (d && d.error === 'limit') { b.disabled = false; msg.textContent = 'You have sent a few today. Try again tomorrow.'; }
+        else if (d && d.error === 'not_a_question') { b.hidden = true; msg.textContent = 'That one does not look like a question we can answer. Try it in your own words.'; }
+        else { b.disabled = false; msg.textContent = 'That did not send. Try again.'; }
+      }).catch(function () { b.disabled = false; msg.textContent = 'That did not send. Try again.'; });
+    });
+  }
+
   /* ---- what we understood, in words ---- */
   function words(r) {
     var it = (r && r.interpretation) || {}, out = [], ci = r && r.content && r.content.intent;
@@ -124,6 +158,9 @@
     '.ves-t{min-width:0;flex:1}.ves-n{display:block;font:700 14px Montserrat,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ves-m{display:block;font:500 12px Montserrat,sans-serif;color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.ves-go{flex:none;font:800 12px Montserrat,sans-serif;color:#2D5C27;white-space:nowrap}' +
     '.ves-note{padding:10px 14px;font:500 12.5px Montserrat,sans-serif;color:#444;background:#fafafa;border-top:1px solid #eee}' +
+    '.ves-ansbox{padding:12px 14px;background:#f0faf4;border-bottom:1px solid #dfeee3;font:500 13.5px/1.5 Montserrat,sans-serif;color:#1a1a1a}.ves-ansbox p{margin:0 0 6px}.ves-ansbox .ves-go{text-decoration:none}' +
+    '.ves-ask-wrap{padding:10px 14px;border-top:1px solid #eee;background:#fff}.ves-ask{border:0;background:transparent;padding:6px 0;font:800 12.5px Montserrat,sans-serif;color:#2D5C27;cursor:pointer;text-decoration:underline;text-underline-offset:3px}' +
+    '.ves-ask:disabled{opacity:.5;cursor:default}.ves-ask-msg{display:block;font:600 12.5px Montserrat,sans-serif;color:#444;min-height:0}' +
     '.ves-chip{display:inline-block;padding:3px 9px;border-radius:6px;background:#E8F5E9;color:#1f4a1b;font:700 12px Montserrat,sans-serif;margin:0 6px 4px 0}' +
     '@media(max-width:600px){.ves-panel{padding:10px 16px 12px}.ves-field{height:46px}}';
   function css() { if (document.getElementById('ves-css')) return; var s = document.createElement('style'); s.id = 'ves-css'; s.textContent = CSS; document.head.appendChild(s); }
@@ -147,8 +184,9 @@
       els.forEach(function (e, k) { e.setAttribute('aria-selected', k === i ? 'true' : 'false'); });
       if (i >= 0 && els[i]) { input.setAttribute('aria-activedescendant', els[i].id); els[i].scrollIntoView({ block: 'nearest' }); } else input.removeAttribute('aria-activedescendant');
     }
-    function draw(r, q) {
+    function draw(r, q, ans) {
       var it = r.interpretation || {}, w = words(r), html = '', n = 1, c = r.content || {};
+      if (ans) html += ansBox(ans);
       var href = '/search?q=' + encodeURIComponent(q);
       function id() { return uid + '-' + (n++); }
       html += '<div class="ves-h">Search</div><a class="ves-row" role="option" id="' + uid + '-0" href="' + href + '" data-q="1">' + '<span class="ves-logo">' + SVG.replace('<svg', '<svg style="width:18px;height:18px;stroke:#2D5C27;fill:none;stroke-width:2.2"') + '</span>' +
@@ -181,13 +219,14 @@
       html += sHtml + (contentFirst ? (cHtml + oHtml + lHtml) : (lHtml + cHtml + oHtml));
       if (r.nearest_fallback && it.place) html += '<div class="ves-note">Nothing in ' + esc(it.place.name) + ' yet. These are the closest, ' + esc(away(r.nearest_km)) + '.</div>';
       else if (!res.length && !hasContent(c) && !r.store) html += '<div class="ves-note">Nothing matches yet. We keep track of what people look for so we know what to add next.</div>';
+      html += askHtml();
       list.innerHTML = html; list.hidden = false; input.setAttribute('aria-expanded', 'true'); cur = -1;
     }
     function run() {
       var q = input.value.trim(); if (q.length < 2) { close(); return; }
       if (q === last) { list.hidden = false; input.setAttribute('aria-expanded', 'true'); return; }
       if (ctl) ctl.abort(); ctl = window.AbortController ? new AbortController() : null;
-      query(q, { limit: 6, contentLimit: 3, signal: ctl && ctl.signal }).then(function (r) { if (input.value.trim() !== q) return; last = q; draw(r, q); }).catch(function (e) { if (e && e.name === 'AbortError') return; });
+      Promise.all([query(q, { limit: 6, contentLimit: 3, signal: ctl && ctl.signal }), answer(q)]).then(function (x) { if (input.value.trim() !== q) return; last = q; draw(x[0], q, x[1]); }).catch(function (e) { if (e && e.name === 'AbortError') return; });
     }
     input.addEventListener('input', function () { last = ''; clearTimeout(timer); timer = setTimeout(run, 170); });
     if (o.openOnFocus !== false) input.addEventListener('focus', function () { if (input.value.trim().length >= 2) run(); });
@@ -202,6 +241,7 @@
         else submit();
       }
     });
+    wireAsk(list, function () { return input.value; });
     list.addEventListener('mousedown', function (e) { var a = e.target.closest && e.target.closest('a.ves-row'); if (a && a.getAttribute('data-q') && o.onSubmit) { e.preventDefault(); submit(input.value); } });
     document.addEventListener('click', function (e) { if (!host.contains(e.target)) close(); });
     return { close: close, submit: submit };
@@ -239,5 +279,5 @@
     }
   });
 
-  window.VESearch = { storeSay: storeSay, ago: ago, itemLine: itemLine, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
+  window.VESearch = { answer: answer, ansBox: ansBox, askHtml: askHtml, wireAsk: wireAsk, storeSay: storeSay, ago: ago, itemLine: itemLine, storeHref: storeHref, scanHref: SCAN_HREF, fmtTime: fmtTime, epTag: epTag, momentHref: momentHref, showHref: showHref, hasContent: hasContent, mount: mount, panel: panel, toggle: toggle, query: query, words: words, meta: meta, tile: tile, esc: esc, kmText: kmText, away: away, css: css, vid: vid };
 })();

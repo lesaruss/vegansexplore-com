@@ -59,6 +59,7 @@
     .ans.no{border-left-color:#F69820}
     .ans b{font-size:17px;font-weight:900}.ans span{font-size:14.5px;line-height:1.5;color:rgba(26,26,26,.8)}.ans a{font-size:14px;font-weight:800;color:var(--gd)}
     .ch small{font-weight:700;letter-spacing:.04em;text-transform:none;color:var(--mute);margin-left:8px}
+    #teamans .ves-ansbox{border:1px solid #dfeee3;border-radius:10px;margin:0 0 14px;padding:14px 16px}#askrow .ves-ask-wrap{border:0;padding:14px 0 0;background:transparent}
     .qt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:15px;font-weight:700;line-height:1.4}
     .logo.play{background:var(--gd)}.logo.play svg{width:26px;height:26px;fill:#fff}
     @media(max-width:480px){.card{padding:14px;gap:12px}.logo{width:56px;height:56px}select{margin-left:0}}
@@ -77,12 +78,14 @@
   </div>
   <div class="read" id="read" aria-live="polite"></div>
   <div id="note"></div>
+  <div id="teamans"></div>
   <div id="res">
     <div id="content"></div>
     <div class="bar" id="bar" hidden></div>
     <div class="grid" id="grid"></div>
     <div class="empty" id="empty" hidden></div>
     <p class="more" id="more" hidden></p>
+    <div id="askrow"></div>
   </div>
   <p class="more" style="font-size:12px;color:var(--mute)">Place data from <a href="https://www.geonames.org" rel="noopener" style="font-weight:700">GeoNames</a>, used under a Creative Commons Attribution license.</p>
 </main>
@@ -157,8 +160,17 @@
     var listingIntent = (it.labels && it.labels.length) || it.place || it.near_me;
     contentEl.style.order = data.store ? '-1' : (S.hasContent(c) && !listingIntent && ((c.intent && c.intent.topics && c.intent.topics.length) || !nListings)) ? '-1' : '9';
   }
+  // Our team's answer for a question (a checked, unexpired one from the answer bank) and the one button for what we did not find.
+  var teamEl = document.getElementById('teamans'), askEl = document.getElementById('askrow'), teamQ = '';
+  S.wireAsk(askEl, function () { return teamQ; });
+  function team(q) {
+    q = (q || '').trim(); if (teamQ === q) return; teamQ = q; teamEl.innerHTML = ''; askEl.innerHTML = '';
+    if (q.length < 4) return;
+    askEl.innerHTML = S.askHtml();
+    S.answer(q).then(function (a) { if (teamQ === q) teamEl.innerHTML = a ? S.ansBox(a) : ''; });
+  }
   function draw() {
-    if (!data || state.q.length < 2) { contentEl.innerHTML = ''; grid.innerHTML = ''; read.innerHTML = ''; note.innerHTML = ''; bar.hidden = true; more.hidden = true; empty.hidden = false;
+    if (!data || state.q.length < 2) { team(''); contentEl.innerHTML = ''; grid.innerHTML = ''; read.innerHTML = ''; note.innerHTML = ''; bar.hidden = true; more.hidden = true; empty.hidden = false;
       empty.innerHTML = '<b>Search in your own words.</b> Try “vegan restaurants in Claremont”, “egg substitute”, “vegan doctor” or the name of a place.'; return; }
     var it = data.interpretation || {}, w = S.words(data);
     read.innerHTML = w.length ? '<span class="lbl">We read this as</span>' + w.map(function (x) { return '<span class="ves-chip">' + esc(x) + '</span>'; }).join('') : '';
@@ -197,6 +209,7 @@
     if (cFirst) more_ = '<a href="/directory?q=' + encodeURIComponent(state.q) + '">Search the Directory for “' + esc(state.q) + '” &rarr;</a>';
     more.hidden = !more_; more.innerHTML = more_;
     var c = document.getElementById('count'); if (c) c.remove();
+    team(state.q);
   }
   bar.addEventListener('click', function (e) { var b = e.target.closest('[data-cat]'); if (!b) return; state.cat = b.getAttribute('data-cat'); history.replaceState(null, '', url()); draw(); });
   bar.addEventListener('change', function (e) { if (e.target.id === 'srt') { state.sort = e.target.value; history.replaceState(null, '', url()); draw(); } });
