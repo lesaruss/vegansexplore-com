@@ -203,6 +203,11 @@
     '.ve-share-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}',
     '@media(max-width:1060px){.ve-share-btn{width:38px;padding:0;font-size:0;gap:0;}}',
     '@media(max-width:380px){.ve-share-btn{width:36px;height:36px;margin-right:4px;}}',
+    '.ve-feedback-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 13px;margin-right:6px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.12);background:#fff;font-family:"Montserrat",sans-serif;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#1a1a1a;cursor:pointer;flex-shrink:0;}',
+    '.ve-feedback-btn:hover{border-color:#2d7d31;color:#2d7d31;}',
+    '.ve-feedback-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}',
+    '@media(max-width:1060px){.ve-feedback-btn{width:38px;padding:0;font-size:0;gap:0;}}',
+    '@media(max-width:700px){.ve-feedback-btn{position:fixed;right:12px;bottom:14px;z-index:9000;width:auto;height:40px;padding:0 14px;font-size:11px;gap:7px;margin:0;box-shadow:0 6px 18px rgba(0,0,0,.22);background:#14261a;color:#fff;border-color:#14261a;}}',
     // Every control is a 40px target, and the bar fits a 320px phone (2026-10-29: signed out, Log In, Join and the hamburger
     // ran 31px past the edge). Under 380px the logo, gaps and padding tighten; the two buttons stay on the bar.
     '.ve-wordmark,.ve-nav-login,.ve-nav-cta{min-height:40px;box-sizing:border-box;}',
@@ -314,7 +319,12 @@
     if (document.getElementById('ves-page-input')) return; e.preventDefault(); veOpenSearch();
   });
   var shareBtn = searchBtn + '<button type="button" class="ve-share-btn" data-ve-share aria-label="Share this page" title="Share this page">' +
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>';
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7"/><path d="M12 3v13"/><path d="M7 8l5-5 5 5"/></svg>Share</button>' +
+    /* Feedback (Sean, 2026-11-03): beside Share on every page; /public/ve-feedback.js loads below. On phones it is a small fixed tab (see the CSS). */
+    '<button type="button" class="ve-feedback-btn" data-ve-feedback aria-label="Send feedback" title="Send feedback"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button>';
+  if (!window.VEFeedback && !document.querySelector('script[src*="ve-feedback.js"]')) {
+    var fbs = document.createElement('script'); fbs.src = '/public/ve-feedback.js'; fbs.async = true; (document.head || document.documentElement).appendChild(fbs);
+  }
   if (!window.VEShare && !document.querySelector('script[src*="ve-share.js"]')) {
     var shs = document.createElement('script'); shs.src = '/public/ve-share.js'; shs.async = true; (document.head || document.documentElement).appendChild(shs);
   }

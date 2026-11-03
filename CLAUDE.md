@@ -1240,6 +1240,22 @@ those same information." Locked: "Lock it in." (migrations `20261103_search_ques
   articles found by search, and the first vegan suit brands in Clothing and Fashion (Suits & formal has none). Open: who works the queue
   daily; whether a signed-out email also joins the Daily Pulse list (default no until Pulse subscribe exists).
 
+## Feedback button on every page (Sean, 2026-11-03)
+
+"A feedback button... prominent across the site, the same way we have the share button... it loads the page you are on as the default, you can still
+choose another... select different options... so we know immediately if anything is wrong" (the weeks into January). `/public/ve-feedback.js`
+(`VEFeedback.open`, `button`; any element with `data-ve-feedback` opens it), loaded by `nav.js` and the dashboard's top bar beside Share (icon only
+under 1060 px; on phones a small fixed tab bottom right). The window: **What is it about?** (this page, the main pages, or Another page with a
+line to say which), the kind (Something is broken, Wrong or out of date, Confusing, Something is missing, An idea, Working well, Something else),
+what happened, an optional email for a reply. `ve-feedback` (public, verify_jwt off, 5 an hour and 15 a day per visitor) saves a `ve_feedback`
+row (migration `20261103_ve_feedback.sql`, RLS on, `status` new | working | fixed | set_aside | spam) with the page, the viewport and the browser,
+and emails contact@lesaruss.com at once ("[Feedback] kind: page", reply-to their email). Not built yet: a Depot > Feedback queue view and an Inbox
+row. Until then Logan reads `ve_feedback` every day and fixes what is broken.
+
+**Search queue, working it** (Sean, 2026-11-03): Logan works the queue daily with discretion (answer, write it up as a Guide piece, add a listing
+or set aside); the queue feeds what we write next (articles, new sections, new Directory listings). Spam: a question sent through the box needs
+an email; abusers are quarantined (a `quarantined` status and a rate limit are not built yet).
+
 ## The new header (Sean, 2026-11-03)
 
 Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit
