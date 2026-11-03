@@ -395,7 +395,7 @@
             return '<tr><td style="padding:12px 14px;border-top:1px solid var(--ve-border);font-weight:800"><a href="#campaign/' + encodeURIComponent(c.campaign) + '">' + esc(c.campaign) + '</a></td>' +
               td(c.people) + td(c.draft) + td(c.scheduled) + td(c.sent + (c.done ? ' <small>+' + c.done + ' by hand</small>' : '')) + td(c.opened) + td(pct(c.open_rate)) + td(c.clicked) + td(pct(c.click_rate)) +
               td(esc(niceDay(c.first_day)) + (c.last_day !== c.first_day ? ' – ' + esc(niceDay(c.last_day)) : '')) + '</tr>';
-          }).join('') + '</tbody></table></div><p class="stat">Opens are counted by the email system (some mail apps hide them, so read opens as a floor). A click is a click on that person\'s own link. Rates are against emails sent.</p>'
+          }).join('') + '</tbody></table></div><p class="stat">Opens are counted by the email system (some mail apps hide them, so read opens as a floor). A click is a click on that person\'s own link. Open rate is against emails sent; click rate is against everything sent or done by hand. A link shared by several messages to one person counts once per message sent.</p>'
           : '<div class="empty">No campaigns yet. Pick people and make drafts.</div>';
         app.innerHTML = h;
       });

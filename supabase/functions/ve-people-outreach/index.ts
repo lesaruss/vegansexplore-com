@@ -437,12 +437,12 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
       else if (r.status === 'sent') c.sent++; else if (r.status === 'done') c.done++; else if (r.status === 'failed') c.failed++; else if (r.status === 'skipped') c.skipped++;
       if (opened.has(r.id)) c.opened++;
       if (bounced.has(r.id)) c.bounced++;
-      if (r.link_code && clicked.has(r.link_code)) c.clicked++;
+      if (r.link_code && clicked.has(r.link_code) && (r.status === 'sent' || r.status === 'done')) c.clicked++;  // a draft that has not gone out cannot have been clicked
       if (r.day < c.first_day) c.first_day = r.day; if (r.day > c.last_day) c.last_day = r.day;
       by.set(r.campaign, c);
     }
     const pct = (n: number, d: number) => (d ? Math.round((n / d) * 1000) / 10 : null);
-    const out = [...by.values()].map((c) => ({ ...c, people: c.people.size, open_rate: pct(c.opened, c.sent), click_rate: pct(c.clicked, c.sent) })).sort((a, b) => (a.last_day < b.last_day ? 1 : -1));
+    const out = [...by.values()].map((c) => ({ ...c, people: c.people.size, open_rate: pct(c.opened, c.sent), click_rate: pct(c.clicked, c.sent + c.done) })).sort((a, b) => (a.last_day < b.last_day ? 1 : -1));
     return { campaigns: out };
   }
 
