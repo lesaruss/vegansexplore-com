@@ -1286,6 +1286,14 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   that fits no playbook is a new idea: say so, and bring Sean a recommendation (add a playbook, or park it), never build it quietly.
 - **Wrap up updates the row** (with the playbook record, canon and the rest of the wrap-up above): where it stands, the one next action, status, due date.
 - **Everything handed off is named by its playbook** (Sean, 2026-11-03: "named by their playbook... the playbook is the name of the task... I'm going in and updating it manually"): every playbook record, `brief_checkpoints` summary, `stream_events` summary, handoff doc title and paste prompt starts with the playbook's slug and the task, as `<playbook slug>: <task>` (for example `ve-pricing-points-passport: referral field on the join steps`). One chat can touch several playbooks; list each as its own line with the same pattern, never a bare task name.
+- **`ve-feedback` is Sean's spot-check playbook** (Sean, 2026-11-03: "I want to be able every day just to look through the site. And if I
+  see something small, a little tweak... go to this playbook... I'm only working out of one playbook"). Always open, never closed: Watching
+  when nothing is queued. Logan triages every item Sean gives before touching it: a tweak to something that exists goes in this queue; an
+  item that belongs to an existing build goes to that playbook's queue, named by its slug; anything bigger than a tweak is a new idea, so say
+  so and bring Sean a recommendation (a new playbook, or park it), never build it quietly. One pinned task per playbook (a second task on the
+  same playbook is wrapped and its open items go back to the queue). Work the queue top to bottom, confirm each item live, mark it Done, pull
+  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. First two items, both Done: the dashboard Insights
+  block and the Depot moved to the bottom (above).
 - Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
@@ -5356,7 +5364,21 @@ only as the place a tool opens (Bounties, Campaigns, My List...), with "Dashboar
 lands on the Dashboard tab. **Guides** is a tab in the top menu, after Dashboard (`/dashboard/guides`; "one of the big things
 that we're selling"), and a tile in Your tools.
 
-**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, is **The Depot** (Sean, the same day:
+**Insights beside For you, the Depot at the bottom** (Sean, 2026-11-03, playbook `ve-feedback`, live on main c905155): the Depot left the
+top right of the super admin's Dashboard tab for the bottom, below Recent activity (`#dash-depot-block`, still `renderDepotBlock`, its own box
+of about 330 px that scrolls inside and no longer matches For you's height), and in its place beside For you is **Insights**
+(`#dash-insights-block`, `renderInsights` in `dashboard/center-console.html`): Web, Social and SEO tabs over the last 30 days against the 30
+before, scrolling inside a box that `syncHome` sizes to For you. **Web** is visitors, page views, new members and top source plus the five
+most visited pages (the same `ve-analytics` `report` Depot > Analytics reads, bots left out). **Social** is Vegans Explore's views, posts,
+followers and their change, likes, top post and followers by channel (`ve-social` `report`, Metricool). **SEO** is Organic Search visits
+against before, their share of all visits and the top content pages; there are no search terms or indexing numbers because Search Console is
+not connected, and the tab says so. **See full insights** in the block's header follows the tab: Depot > Analytics, Depot > Social >
+Analytics, Analytics > Traffic sources (`INS_FULL`). Order down the tab: For you and Insights, Revenue, the draggable Recent activity boxes,
+the Depot. Same day: `.dash-tools-bar[hidden]{display:none}`, since `display:flex` had kept the Your tools search box showing to super admins.
+Checked in a browser at 1440 and 390 px against mocked answers only; real numbers are Sean's first live look. The paragraph below is the
+Depot's history; where it says beside For you, read bottom of the tab.
+
+**The super admin's Dashboard tab** (Sean, 2026-10-30). Beside For you, in the Leaderboard's place, was **The Depot** (Sean, the same day:
 "the most used depot tools that I use... sortable... most recently used... by the different topics"; `renderDepotBlock`,
 `#dash-depot-block`): every row of `TABS` in `public/depot-tabs.js` as small tiles two across, with a search and Most used, Recently used,
 By topic or Only one topic (kept in `localStorage` `ve_dash_depot_sort`). Use is counted in the browser (`localStorage` `ve_depot_use`,
