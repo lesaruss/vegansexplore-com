@@ -247,6 +247,24 @@ Deno.serve(async (req) => {
     return json({ ok: true, granted: amount, points: pts || null });
   }
 
+  // Take points back (Sean, 2026-11-03). Spendable points only, never lifetime, never below zero; a reason is required for the record.
+  if (body.action === 'take_points') {
+    if (!member.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const id = String(body.member_id || '');
+    if (!/^[0-9a-f-]{36}$/i.test(id)) return json({ error: 'bad_member' }, 400);
+    const amount = Math.floor(Number(body.amount));
+    if (!Number.isFinite(amount) || amount < 1 || amount > 100000) return json({ error: 'bad_amount' }, 400);
+    const note = String(body.note || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+    if (note.length < 3) return json({ error: 'reason_needed' }, 400);
+    const { data: t } = await db.from('members').select('id, is_superadmin, member_class').eq('id', id).maybeSingle();
+    if (!t) return json({ error: 'not_found' }, 404);
+    if (t.is_superadmin || t.member_class === 'agent') return json({ error: 'not_for_this_account' }, 400);
+    const { data, error } = await db.rpc('ve_points_take', { p_member: id, p_amount: amount, p_ref: `founder-take:${crypto.randomUUID()}:${note}` });
+    if (error || data?.error) return json({ error: data?.error || 'take_failed', balance: data?.balance ?? null }, data?.error === 'insufficient_points' ? 400 : 500);
+    const { data: pts } = await db.from('member_points').select('total_points, available_points').eq('member_id', id).limit(1).maybeSingle();
+    return json({ ok: true, taken: amount, points: pts || null });
+  }
+
   // Find any member by name, username or email, to open their card (Sean, 2026-11-01). Super admins; up to 20, people with the
   // closest match first (an exact email, then a name that starts with it). Guide accounts, quarantined and merged rows are left out.
   if (body.action === 'member_search') {

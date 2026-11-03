@@ -3634,6 +3634,8 @@
       var nm = document.createElement('div'); nm.className = 'dash-preview-name'; nm.textContent = m.name || '—';
       var mt = document.createElement('div'); mt.className = 'dash-preview-meta'; mt.textContent = m.meta || '';
       rb.appendChild(nm); rb.appendChild(mt);
+      // The name opens their card too, not only the picture (Sean, 2026-11-03).
+      if (m.memberId) { rb.style.cursor = 'pointer'; rb.title = 'See who ' + (m.name || 'this member') + ' is'; rb.addEventListener('click', function () { memberCard(m.memberId); }); }
       row.appendChild(av); row.appendChild(rb);
       if (m.who) {
         var who = document.createElement('button'); who.type = 'button'; who.className = 'dash-preview-who';
@@ -3767,7 +3769,7 @@
           '<div class="picks">' + [111, 500, 1100, 2500, 5000].map(function (n) { return '<button type="button" data-mc-pick="' + n + '">' + n.toLocaleString() + '</button>'; }).join('') + '</div>' +
           '<div class="row"><input type="number" min="1" max="100000" step="1" placeholder="Points" aria-label="Points to give" data-mc-amt>' +
           '<input type="text" maxlength="200" placeholder="Why (for the record)" aria-label="Why you are giving them" data-mc-note>' +
-          '<button type="button" class="go" data-mc-give>Give</button></div><div class="msg" data-mc-msg role="status"></div>' +
+          '<button type="button" class="go" data-mc-give>Give</button><button type="button" data-mc-take title="Takes spendable points back. A reason is required. Lifetime points and level never go down.">Take back</button></div><div class="msg" data-mc-msg role="status"></div>' +
           ((d.gifts || []).length ? '<ul class="dash-mc-list" style="margin-top:10px">' + d.gifts.map(function (g) { return '<li><span>' + e(Number(g.amount).toLocaleString()) + ' points' + (g.note ? ' · ' + e(g.note) : '') + '</span><span>' + e(dpWhen(g.at)) + '</span></li>'; }).join('') + '</ul>' : '') +
           '</div>' : '') +
         (m.email ? '<div class="dash-mc-acts"><button type="button" data-mc-copy>Copy email</button></div>' : '');
@@ -3782,6 +3784,21 @@
         dvCall({ action: 'give_points', member_id: m.id, amount: n, note: note }).then(function (r) {
           giveBtn.disabled = false;
           if (r && r.ok) { msg.textContent = 'Done. ' + name + ' now has ' + Number((r.points || {}).available_points || 0).toLocaleString() + ' points to spend.'; setTimeout(function () { memberCard(m.id); }, 1400); }
+          else msg.textContent = 'That did not go through' + (r && r.error ? ' (' + r.error + ')' : '') + '.';
+        });
+      });
+      // Take points back (Sean, 2026-11-03): spendable points only, a reason required, lifetime points and level untouched.
+      var takeBtn = box.querySelector('[data-mc-take]');
+      if (takeBtn) takeBtn.addEventListener('click', function () {
+        var n = Math.floor(Number(amtIn.value)), msg = box.querySelector('[data-mc-msg]'), note = box.querySelector('[data-mc-note]').value.trim();
+        if (!(n >= 1 && n <= 100000)) { msg.textContent = 'Pick an amount from 1 to 100,000.'; return; }
+        if (note.length < 3) { msg.textContent = 'Say why you are taking them back, for the record.'; return; }
+        if (!confirm('Take ' + n.toLocaleString() + ' points back from ' + name + '? Their level stays the same.')) return;
+        takeBtn.disabled = true; msg.textContent = 'Taking back…';
+        dvCall({ action: 'take_points', member_id: m.id, amount: n, note: note }).then(function (r) {
+          takeBtn.disabled = false;
+          if (r && r.ok) { msg.textContent = 'Done. ' + name + ' now has ' + Number((r.points || {}).available_points || 0).toLocaleString() + ' points to spend.'; setTimeout(function () { memberCard(m.id); }, 1400); }
+          else if (r && r.error === 'insufficient_points') msg.textContent = 'They only have ' + Number(r.balance || 0).toLocaleString() + ' points to spend.';
           else msg.textContent = 'That did not go through' + (r && r.error ? ' (' + r.error + ')' : '') + '.';
         });
       });
