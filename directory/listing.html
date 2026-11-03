@@ -3710,11 +3710,13 @@ function oeSocial(el, l, D, msg){
         'We read your recent public posts about once a week' + (when ? ' (last read ' + esc(when) + ')' : '') + '. Hide any you do not want shown, or pin your favorites.</p>';
       if(!d.switched_on) h += '<p class="bd-small" style="margin:0 0 12px"><b>Coming soon:</b> your posts appear here the first time we read your page. Nothing else for you to do.</p>';
       else if(d.note) h += '<p class="bd-small" style="margin:0 0 12px">' + esc(d.note) + '</p>';
+      if(d.paused) h += '<p class="bd-small" style="margin:0 0 12px"><b>Paused.</b> Your Instagram posts are not showing on your Social tab. Show them again below to pick up where you left off; what you hid and pinned is kept.</p>';
       if(d.posts.length){
         h += '<div class="oe-photos">' + d.posts.map(function(p){
-          return '<div style="' + (p.thumb_url ? 'background-image:url(\'' + esc(p.thumb_url) + '\')' : 'background:#EAF7EA') + (p.status === 'hidden' ? ';opacity:.4' : '') + '">' +
-            '<button type="button" data-oe-sp="' + (p.status === 'hidden' ? 'show' : 'hide') + '" data-id="' + esc(p.id) + '">' + (p.status === 'hidden' ? 'Show' : 'Hide') + '</button>' +
-            '<button type="button" style="top:auto;bottom:6px" data-oe-sp="' + (p.pinned ? 'unpin' : 'pin') + '" data-id="' + esc(p.id) + '">' + (p.pinned ? 'Unpin' : 'Pin') + '</button></div>'; }).join('') + '</div>';
+          var off = p.status === 'hidden' || p.status === 'paused';
+          return '<div style="' + (p.thumb_url ? 'background-image:url(\'' + esc(p.thumb_url) + '\')' : 'background:#EAF7EA') + (off ? ';opacity:.4' : '') + '">' +
+            (d.paused ? '' : '<button type="button" data-oe-sp="' + (p.status === 'hidden' ? 'show' : 'hide') + '" data-id="' + esc(p.id) + '">' + (p.status === 'hidden' ? 'Show' : 'Hide') + '</button>' +
+            '<button type="button" style="top:auto;bottom:6px" data-oe-sp="' + (p.pinned ? 'unpin' : 'pin') + '" data-id="' + esc(p.id) + '">' + (p.pinned ? 'Unpin' : 'Pin') + '</button>') + '</div>'; }).join('') + '</div>';
       }
       h += '<div class="bd-btns" style="margin-top:6px"><button type="button" class="bd-btn o" data-oe-refresh>Read my page now</button>' +
         '<button type="button" class="bd-btn o" data-oe-pause>' + (d.paused ? 'Show my Instagram posts again' : 'Stop showing my Instagram posts') + '</button></div>';
@@ -3726,7 +3728,7 @@ function oeSocial(el, l, D, msg){
         msg('Reading your page...');
         oeSocialCall({ action: 'owner_refresh', listing_id: l.id }).then(function(r){
           if(r && r.ok){ msg('Done. ' + (r.added || 0) + ' new posts.'); draw(); }
-          else msg(r && r.message ? r.message : r && r.error === 'too_soon' ? 'You can read your page once a day. Try again tomorrow.' : r && r.error === 'daily_cap' ? 'We are busy reading pages today. It will happen on its own this week.' : 'Could not read your page just now.', true);
+          else msg(r && r.message ? r.message : r && r.error === 'paused' ? 'Your Instagram posts are paused. Show them again first.' : r && r.error === 'too_soon' ? 'You can read your page once a day. Try again tomorrow.' : r && r.error === 'daily_cap' ? 'We are busy reading pages today. It will happen on its own this week.' : 'Could not read your page just now.', true);
         }); });
       q('[data-oe-pause]').addEventListener('click', function(){
         oeSocialCall({ action: 'owner_pause', listing_id: l.id, paused: !d.paused }).then(function(r){ if(r && r.ok) draw(); else msg('Could not save that. Try again.', true); }); });

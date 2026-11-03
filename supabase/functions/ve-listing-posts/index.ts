@@ -109,6 +109,8 @@ async function fetchTheirs(listingId: string, force = false) {
   if (!l.owner_member_id) return { ok: false, error: 'not_claimed' };
   const handle = handleOf(l.instagram);
   if (!handle) return { ok: false, error: 'no_handle' };
+  const { data: pz } = await db.from('ve_listing_social').select('paused').eq('listing_id', listingId).maybeSingle();
+  if (pz?.paused && !force) return { ok: false, error: 'paused' };   // paused means no new public posts either
   const token = await apifyToken(); if (!token) return { ok: false, error: 'no_reader' };
   // A daily cap on listings fetched, so a flood of claims never makes a surprise bill.
   const since = new Date(); since.setUTCHours(0, 0, 0, 0);
@@ -251,10 +253,21 @@ Deno.serve(async (req) => {
   }
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const memberId = token ? await verifyToken(token) : null;
-  if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
-  if (!member) return json({ error: 'not_authenticated' }, 401);
+  // Ops: LESARUSS_ADMIN_TOKEN may run the Depot's admin_* actions (the repo's usual ops path), never the owner's.
+  let opsOk = false;
+  if (token && action.startsWith('admin_')) {
+    const { data: ops } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+    opsOk = !!ops?.value && ops.value === token;
+  }
+  let member: { id: string | null; is_superadmin: boolean } | null = null;
+  if (opsOk) member = { id: null, is_superadmin: true };
+  else {
+    const memberId = token ? await verifyToken(token) : null;
+    if (!memberId) return json({ error: 'not_authenticated' }, 401);
+    const { data: m } = await db.from('members').select('id, is_superadmin').eq('id', memberId).maybeSingle();
+    if (!m) return json({ error: 'not_authenticated' }, 401);
+    member = m;
+  }
 
   // ----- the owner's Social step -----
   if (action.startsWith('owner_')) {
@@ -283,11 +296,13 @@ Deno.serve(async (req) => {
     if (action === 'owner_pause') {
       if (!soc) return json({ error: 'no_handle' }, 400);
       await db.from('ve_listing_social').update({ paused: !!body.paused }).eq('listing_id', listingId);
-      if (body.paused) await db.from('ve_listing_posts').update({ status: 'hidden', updated_at: new Date().toISOString() }).eq('listing_id', listingId).eq('source', 'theirs').eq('status', 'shown');
-      else await db.from('ve_listing_posts').update({ status: 'shown', updated_at: new Date().toISOString() }).eq('listing_id', listingId).eq('source', 'theirs').eq('status', 'hidden').is('pinned', false).eq('matched', '@' + handle);
+      // Pause sets shown posts to 'paused' (pins kept); Resume puts back only 'paused' ones. 'hidden' stays the owner's own choice.
+      if (body.paused) await db.from('ve_listing_posts').update({ status: 'paused', updated_at: new Date().toISOString() }).eq('listing_id', listingId).eq('source', 'theirs').eq('status', 'shown');
+      else await db.from('ve_listing_posts').update({ status: 'shown', updated_at: new Date().toISOString() }).eq('listing_id', listingId).eq('source', 'theirs').eq('status', 'paused');
       return json({ ok: true, paused: !!body.paused });
     }
     if (action === 'owner_post') {
+      if (soc?.paused) return json({ error: 'paused', message: 'Your Instagram posts are paused. Show them again to change them.' }, 409);
       const op = String(body.op || '');
       const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (op === 'hide') { patch.status = 'hidden'; patch.pinned = false; } else if (op === 'show') patch.status = 'shown';

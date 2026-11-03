@@ -2989,13 +2989,30 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
 - **Pictures are copied into our storage** (the logo rule): `thumbs` (cron `ve-listing-posts-thumbs`, every 10 minutes, 20 a run) copies each
   post's picture to `vegan-media/media/social-posts/<shortcode>.<ext>`, one failure waits 30 days. **Found 2026-11-03: every picture link
   in the May scan had expired by 2026-05-13** (Instagram's `oe=` stamp), so the 1,661 featured tiles show the Instagram mark and caption
-  until their pictures are read again. Reading them again is a paid Apify run of the matched posts' URLs (about 580 posts): quote and Sean's go first.
-- **The picture refresh for the featured posts** (written 2026-11-03, committed, **not deployed and never run**): `ve-listing-posts`
-  `admin_refresh_quote` (free: counts the posts with no picture, estimates `apify_usd_per_1000_results` (default 2.30, list price, unverified)
-  and asks Apify's free account calls for the plan and usage) and `admin_refresh_run` (batches of `refresh_batch` 25, Apify
-  `instagram-scraper` on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the
-  quote's post count). Both are super admin only. The deployed function still lacks them. The thumbnail cron marked about 40 featured rows
-  failed on 2026-11-03 (expired links) and keeps going; the run resets them by writing `thumb_url`.
+  until their pictures are read again. Reading them again is a paid Apify run of the matched posts' URLs (721 distinct posts, not 580).
+- **The picture refresh for the featured posts** (deployed and **running, not finished**, 2026-11-03; Sean: "go ahead" after the quote):
+  `ve-listing-posts` `admin_refresh_quote` (free: counts the posts with no picture, estimates `apify_usd_per_1000_results` (default 2.30,
+  list price, unverified) and reads Apify's plan and usage) and `admin_refresh_run` (batches of `refresh_batch` 25, Apify `instagram-scraper`
+  on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the quote's post
+  count). Quote 2026-11-03: **721 posts, about $1.66, Apify plan Starter ($29 a month, $12.98 used, $16.02 room, cycle ends 2026-11-06)**.
+  A batch takes about 40 to 60 seconds and returned 25 of 25 pictures. The Depot actions take `LESARUSS_ADMIN_TOKEN` (ops, `admin_*` only,
+  never the owner's) as well as a super admin session. The run is driven by a **temporary pg_cron job 111 `ve-listing-refresh-tmp`**
+  (every minute; the setting `ve_site_settings` `tmp_refresh_req` holds the last pg_net request id): it fires the next batch only when the
+  previous response is back and `{"ok":true`, stops (does nothing) on any error, and unschedules itself when `remaining` is 0. A batch hit
+  `504 IDLE_TIMEOUT` once after a redeploy during it (never redeploy `ve-listing-posts` while it runs); the job halted, 546 posts were
+  left, and one batch was fired again by hand. **When it is done**: delete job 111 if still there, delete the `tmp_refresh_req` setting, set
+  `listing_social.refresh_ours_on` back to false (`scrape_on` stays false), count `thumb_url` rows and `thumb_error` rows ("Not returned by
+  the reader" means the post is gone), and look at a Social tab. Never run a second refresh at once: two overlapping calls pick the same posts.
+- **Paused is its own status** (2026-11-03, migration `20261103_listing_posts_paused.sql`; Sean: "do the paused status too"). `ve_listing_posts.status`
+  is shown, hidden, **paused** or removed. **Stop showing my Instagram posts** moves shown posts to `paused` (pins kept) and Show again moves
+  only `paused` ones back; `hidden` is only ever the owner's own choice, so Resume never re-shows what they hid. While paused the owner
+  cannot Hide, Show or Pin (`owner_post` answers 409 `paused`) and `fetchTheirs` pulls no new posts (`paused`); the owner's screen says so and
+  dims the posts. Public read is still `status = 'shown'`. Proven live as Sean on the Vegans Explore Podcast listing with three test posts
+  (pinned, hidden by hand, plain): Pause gave paused+pin, hidden, paused; an edit was refused 409; Resume gave shown+pin, hidden, shown; the
+  public saw only the two shown. Not proven: `fetchTheirs`' paused guard (needs `scrape_on`, which is off).
+- **Owner Social step proven live 2026-11-03** (a one-time session as Sean, then the 410 stub `ve-once-listing-posts-proof`): owner_get, hide, show,
+  pin, a bad op, pause and resume, the refresh refused 409 while `scrape_on` is false, a non-owner (Logan test account) refused 403 on get and
+  post, no token 401, a non-admin refused on `admin_list`. Not yet seen in a browser: no preview deploy of the branch was checked.
 - Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
   button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
 
