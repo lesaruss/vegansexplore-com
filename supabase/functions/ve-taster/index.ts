@@ -7,6 +7,7 @@
 //       London asks for the unticked box (consent: true); everywhere else the form says plainly they will get our emails.
 //       An email that already belongs to a member is told to sign in instead. Joining again with the same email updates the answers.
 //       Day 0's email carries their sampler link, which signs them in on any device and confirms the email.
+//   { action: 'guide_join', email, guide }  -> { ok, token } : a door Guide's one-field sign-up (ve_guides.door); see migration 20261103_door_guides.sql
 //   { action: 'me', token }            -> the Taster (name, chapter, answers, the suggested Guide) or { member: true } once converted
 //   { action: 'confirm', token }       -> marks the email confirmed (they opened the emailed link)
 //   { action: 'unsubscribe', token }   -> stops our emails to them
@@ -108,6 +109,45 @@ Deno.serve(async (req) => {
             `<p style="margin:26px 0"><a href="${link}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:14px 26px;border-radius:6px;text-decoration:none">Open your Taste</a></p>` +
             `<p>We will send you a few notes about what is happening in your city. You are not a member, and nothing is charged.</p><p>Vegans Explore team</p>` +
             `<p style="margin-top:26px;font-size:12px;color:#777">You are getting this because you asked for A Taste of Vegans Explore. <a href="${unsub}" style="color:#777">Stop these emails</a>. LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p></div>`,
+          headers: { 'List-Unsubscribe': `<${unsub}>` } }) }).catch((e) => console.error('mail', e));
+    }
+    return json({ ok: true, token, taster: out(t) });
+  }
+
+  // Door Guides (Sean, 2026-11-02, canon-ve-door-guides): one field, the email, asked inside a door Guide. Makes a Taster with no
+  // questions answered (name from the email's first part), tagged with the Guide, and sends one email with the Guide's link.
+  if (action === 'guide_join') {
+    const email = String(body.email || '').trim().toLowerCase();
+    const guide = String(body.guide || '');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) return json({ error: 'email', message: 'That email does not look right.' }, 400);
+    const { data: g } = await db.from('ve_guides').select('slug, title, door').eq('slug', guide).eq('door', true).maybeSingle();
+    if (!g) return json({ error: 'not_door', message: 'That Guide is not open this way.' }, 400);
+    const { data: m } = await db.from('members').select('id, membership_status').ilike('email', likeEsc(email)).maybeSingle();
+    if (m && m.membership_status === 'active') return json({ ok: false, member: true, message: 'You are already a member. Sign in and everything is open to you.' });
+    const { count: recent } = await db.from('ve_tasters').select('id', { count: 'exact', head: true }).like('source', 'door:%').gte('updated_at', new Date(Date.now() - 10 * 60e3).toISOString());
+    if ((recent ?? 0) > 60) return json({ error: 'busy', message: 'Try again in a few minutes.' }, 429);
+    const { data: ex } = await db.from('ve_tasters').select('*').ilike('email', likeEsc(email)).maybeSingle();
+    if (ex && ex.updated_at && Date.now() - Date.parse(ex.updated_at) < 60e3) return json({ error: 'slow_down', message: 'Give it a minute and try again.' }, 429);
+    const now = new Date().toISOString();
+    const guides = Array.from(new Set([...(ex?.door_guides || []), g.slug]));
+    let res;
+    if (ex) res = await db.from('ve_tasters').update({ door_guides: guides, unsubscribed_at: null, source: ex.source || `door:${g.slug}`, updated_at: now }).eq('id', ex.id).select('*').single();
+    else {
+      const local = email.split('@')[0].replace(/[._+\-]+/g, ' ').replace(/\d+/g, '').trim();
+      const name = (local ? local.charAt(0).toUpperCase() + local.slice(1) : 'Friend').slice(0, 80);
+      res = await db.from('ve_tasters').insert({ email, name, consent_basis: 'notice', consent_at: now, source: `door:${g.slug}`, door_guides: guides, updated_at: now }).select('*').single();
+    }
+    if (res.error || !res.data) return json({ error: 'save_failed' }, 500);
+    const t = res.data, token = await signTaster(t.id);
+    if (RESEND_KEY && !/\[TEST\]/i.test(t.name) && !/\+test@|@example\./i.test(email)) {
+      const link = `${SITE}/guides/${g.slug}?t=${encodeURIComponent(token)}`, unsub = `${SITE}/guides/${g.slug}?unsub=${encodeURIComponent(token)}`;
+      await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ from: FROM, to: [email], reply_to: 'contact@lesaruss.com', subject: `Your ${esc(g.title || 'Guide')}`,
+          html: `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a"><p>Hi,</p>` +
+            `<p>Here is the ${esc(g.title || 'Guide')}, open to you on any device from this link. It also confirms your email.</p>` +
+            `<p style="margin:26px 0"><a href="${link}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:14px 26px;border-radius:6px;text-decoration:none">Open the Guide</a></p>` +
+            `<p>You are not a member and nothing is charged.</p><p>Vegans Explore team</p>` +
+            `<p style="margin-top:26px;font-size:12px;color:#777">You are getting this because you asked for the ${esc(g.title || 'Guide')}. <a href="${unsub}" style="color:#777">Stop these emails</a>. LESARUSS Inc., 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p></div>`,
           headers: { 'List-Unsubscribe': `<${unsub}>` } }) }).catch((e) => console.error('mail', e));
     }
     return json({ ok: true, token, taster: out(t) });

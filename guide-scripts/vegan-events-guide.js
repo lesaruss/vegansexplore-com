@@ -30,6 +30,7 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var COOK_URL = SB + '/functions/v1/ve-cookbook';
+  var TASTER_URL = SB + '/functions/v1/ve-taster';
   var PODCAST_FN = SB + '/functions/v1/ve-podcast';
   var EV_FN = SB + '/functions/v1/ve-events-guide';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -152,7 +153,7 @@
   var qEl = document.getElementById('dgQ');
   var PUB = JSON.parse(document.getElementById('ev-public').textContent);
 
-  var access = 'checking';       // checking | guest | pending | member
+  var access = 'checking';       // checking | guest | pending | reader | member  (reader: free with an email, canon-ve-door-guides)
   var MEM = null;                // members-only payload
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var PODS = null, VENUES = null, VENDORS = null, STORIES = null;
@@ -161,9 +162,13 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
   function token() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; }
-  function member() { return access === 'member'; }
+  // member() = can read every screen (a Passport owner or a reader with an email); signedIn() = owns the Guide (saves, votes, My list).
+  function member() { return access === 'member' || access === 'reader'; }
+  function signedIn() { return access === 'member'; }
+  var TASTER_KEY = 'ev_taster';
+  function tasterTok() { return recall(TASTER_KEY) || null; }
   function sources(list) { return list && list.length ? '<span class="dg-src">' + list.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener">' + esc(s[0]) + '</a>'; }).join('') + '</span>' : ''; }
-  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()); }); }
+  function tabs() { return TABS.filter(function (t) { return !(t.guest && signedIn()) && !(t.mine && !signedIn()); }); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
   function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -202,8 +207,30 @@
   }
   function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
   function gated(inner, title, text) {
+    var ask = access === 'guest' || access === 'checking';
     return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
-      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + esc(offerLine()) + '</p>' + ctaBtns() + '</div></div>';
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + (ask ? 'Get the rest of the Guide free: just your email.' : esc(offerLine())) + '</p>' + (ask ? readerAsk() : ctaBtns()) + '</div></div>';
+  }
+  // Free with an email (canon-ve-door-guides): one field, asked where the Guide closes. The Guide opens at once on this device; the emailed link opens it anywhere.
+  function readerAsk() {
+    return '<form class="dg-readerask" data-reader-form><input type="email" name="email" required placeholder="you@email.com" autocomplete="email" aria-label="Your email">' +
+      '<button type="submit" class="dg-btn">Open the Guide, free</button><p class="rg-fine" style="margin:6px 0 0">We will email you the link and a few notes on hosting. You are not a member and nothing is charged. <a href="#" data-signin>Already a member? Sign in</a></p>' +
+      '<span class="dg-status" role="status"></span></form>';
+  }
+  function readerJoin(form) {
+    var em = form.querySelector('input[name=email]').value.trim(), btn = form.querySelector('button'), st = form.querySelector('.dg-status');
+    btn.disabled = true; btn.textContent = 'Opening...';
+    fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'guide_join', guide: SLUG, email: em }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        if (d && d.token) { store(TASTER_KEY, d.token); loadReader(d.token); return; }
+        throw d || {};
+      }).catch(function (e) { btn.disabled = false; btn.textContent = 'Open the Guide, free'; st.textContent = (e && e.message) || 'That did not go through. Try again in a minute.'; });
+  }
+  function loadReader(tok) {
+    api('open', null, tok).then(function (d) {
+      if (d && d.html) { fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'confirm', token: tok }) }).catch(function () {}); becomeMember(d.html, 'reader'); }
+      else { store(TASTER_KEY, null); route(); }
+    }).catch(function () { route(); });
   }
   function row(o) {
     return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="dg-th rg-th" aria-hidden="true">' + o.icon + '</span>' : '') +
@@ -236,7 +263,7 @@
     ST.balance = d.balance || 0; ST.active = d.membership_status === 'active'; ST.via = d.via || null;
   }
   function drawJoinbox() {
-    var b = document.querySelector('.dg-joinbox'); if (!b || member()) return;
+    var b = document.querySelector('.dg-joinbox'); if (!b || signedIn()) return;
     b.querySelector('[data-join]').textContent = ctaLabel();
     b.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
@@ -253,7 +280,7 @@
   function loadSaves(then) {
     if (then) svWait.push(then);
     if (svState === 'loading') return;
-    if (!member() || svState === 'loaded') { var w0 = svWait; svWait = []; w0.forEach(function (f) { f(); }); return; }
+    if (!signedIn() || svState === 'loaded') { var w0 = svWait; svWait = []; w0.forEach(function (f) { f(); }); return; }
     svState = 'loading';
     var finish = function () { paintSaves(); var w = svWait; svWait = []; w.forEach(function (f) { f(); }); };
     cookApi({ action: 'saves' }).then(function (d) {
@@ -315,7 +342,7 @@
     var g = document.getElementById(gridId);
     if (!g || !window.VERegionDirectory) return;
     VERegionDirectory.wire(g, function (slug) { location.hash = back + '/listing/' + encodeURIComponent(slug); });
-    if (member()) [].forEach.call(g.querySelectorAll('.rank-card[data-slug]'), function (card) {
+    if (signedIn()) [].forEach.call(g.querySelectorAll('.rank-card[data-slug]'), function (card) {
       var right = card.querySelector('.rank-right'); if (!right || right.querySelector('[data-save]')) return;
       right.insertAdjacentHTML('beforeend', saveBtn('listing', card.getAttribute('data-slug')));
     });
@@ -367,7 +394,7 @@
     var tiles = allKinds().map(function (k) {
       return row({ icon: ic(KIND_ICON[k.id] || ICON.kinds, 30), title: k.title, href: member() ? '#/kinds/' + k.id : '',
         body: '<p class="dg-srow-p">' + esc(k.short) + '</p>' + (member() ? '' : '<p class="dg-srow-p">' + LOCK_SVG + ' In the full Guide</p>'),
-        acts: member() ? saveBtn('fix', 'kind-' + k.id) : '' });
+        acts: signedIn() ? saveBtn('fix', 'kind-' + k.id) : '' });
     }).join('');
     main.innerHTML = head('Kinds of events', 'Pick the kind of event you are hosting', 'Each kind costs different, grows different and goes wrong in its own way. Know which one you are planning before you plan it.') +
       '<div class="dg-srows">' + tiles + '</div>' +
@@ -565,7 +592,7 @@
     var ep = p.ep;
     if (!ep || !window.VEEpisodes) return '';
     var show = { name: p.show.name, slug: p.show.slug, image: p.show.logo_url || '' };
-    return VEEpisodes.row(Object.assign({}, ep, { summary: '', image: show.image || ep.image || '' }), show, { showName: true, acts: member() ? gvoteBtn(p.slug) + saveBtn('episode', p.slug) : '' });
+    return VEEpisodes.row(Object.assign({}, ep, { summary: '', image: show.image || ep.image || '' }), show, { showName: true, acts: signedIn() ? gvoteBtn(p.slug) + saveBtn('episode', p.slug) : '' });
   }
   function podKey(p) { return '|' + p.ep.guid; }
   function playPod(slug) {
@@ -580,7 +607,7 @@
   }
   function podList(group) {
     var pods = PODS ? PODS.filter(function (p) { return p.group === group; }) : null;
-    if (member() && !gvLoaded) loadGVotes(function () { if (curTab === 'hosts' || curTab === 'word') route(); });
+    if (signedIn() && !gvLoaded) loadGVotes(function () { if (curTab === 'hosts' || curTab === 'word') route(); });
     return '<div class="vep-dock" data-vep-always></div><div class="rg-eps">' +
       (pods ? (pods.length ? '<div class="vep-list">' + pods.map(podCard).join('') + '</div>' : '<p class="dg-empty">No episodes yet.</p>') : '<div class="dg-loading">Loading...</div>') + '</div>';
   }
@@ -605,8 +632,8 @@
     if (STORIES === null) evApi({ action: 'stories' }).then(function (d) { STORIES = (d && d.stories) || []; if (curTab === 'hosts' && !/tell/.test(location.hash) && STORIES.length) viewHosts(''); }).catch(function () { STORIES = []; });
   }
 
-  // The recorder: six answers by voice, each up to three minutes, then sent with a release. The audio stays in the browser until Send.
-  var TELL = { name: '', email: '', event_name: '', chapter: '', note: '', release: false, rec: {} };
+  // The recorder: six answers by voice, each up to 90 seconds, then sent with a release. The audio stays in the browser until Send.
+  var TELL = { name: '', email: '', event_name: '', chapter: '', note: '', release: false, adult: false, rec: {} };
   try { var t0 = JSON.parse(sessionStorage.getItem('ev_tell') || 'null'); if (t0) { for (var k0 in t0) if (k0 !== 'rec') TELL[k0] = t0[k0]; } } catch (e) {}
   function keepTell() { try { var c = {}; for (var k in TELL) if (k !== 'rec') c[k] = TELL[k]; sessionStorage.setItem('ev_tell', JSON.stringify(c)); } catch (e) {} }
   var recorder = null, recQ = null, recChunks = [], recStart = 0, recTimer = null;
@@ -618,13 +645,13 @@
     if (m && !TELL.email) TELL.email = m.email || '';
     var body = '';
     if (n === 1) {
-      body = '<div class="ev-form"><label>Your name</label><input data-tell="name" value="' + esc(TELL.name) + '" autocomplete="name">' +
+      body = '<div class="ng-ours" style="margin-bottom:14px"><b>Before you record</b>You must be 18 or over. Each answer is up to 90 seconds. Find a quiet room and hold the phone a hand away from your mouth. Tell your own story, and never name another business in a bad light. Our team listens before anything airs, and you can ask us to take a recording down at any time.</div><div class="ev-form"><label>Your name</label><input data-tell="name" value="' + esc(TELL.name) + '" autocomplete="name">' +
         '<label>Your email <i>(only for us to reach you)</i></label><input type="email" data-tell="email" value="' + esc(TELL.email) + '" autocomplete="email">' +
         '<label>The event you host <i>(its name)</i></label><input data-tell="event_name" value="' + esc(TELL.event_name) + '">' +
         '<label>Where</label><select data-tell="chapter"><option value="">Pick one</option>' + CHAPTERS.map(function (c) { return '<option value="' + c[0] + '"' + (TELL.chapter === c[0] ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('') + '</select></div>';
     } else if (n === 2) {
       var canRec = !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
-      body = '<p class="dg-lede">Answer as many as you like, at least two. Talk like you are telling a friend, up to three minutes each. ' + (canRec ? 'Tap Record, then Stop.' : 'Your browser cannot record here, so attach a voice memo for each answer instead.') + '</p>' +
+      body = '<p class="dg-lede">Answer as many as you like, at least two. Talk like you are telling a friend, up to 90 seconds each. ' + (canRec ? 'Tap Record, then Stop.' : 'Your browser cannot record here, so attach a voice memo for each answer instead.') + '</p>' +
         STORY_QS.map(function (q) {
           var r = TELL.rec[q[0]];
           return '<div class="ev-rec' + (r ? ' done' : '') + '" data-q="' + q[0] + '"><b>' + esc(q[1]) + '</b><div class="ev-recbar">' +
@@ -637,6 +664,7 @@
       var got = Object.keys(TELL.rec).length;
       body = '<div class="ev-form"><p class="dg-lede">' + got + ' of ' + STORY_QS.length + ' answers recorded.</p>' +
         '<label>Anything else? <i>(optional)</i></label><textarea data-tell="note">' + esc(TELL.note) + '</textarea>' +
+        '<label class="ev-check"><input type="checkbox" data-tell="adult"' + (TELL.adult ? ' checked' : '') + '><span>I am 18 or over.</span></label>' +
         '<label class="ev-check"><input type="checkbox" data-tell="release"' + (TELL.release ? ' checked' : '') + '><span>Vegans Explore may use my recordings on its shows and its website, with my name credited. I can ask for them to be taken down at any time by emailing contact@lesaruss.com.</span></label>' +
         '<p class="rg-fine">' + (token() ? 'Once our team approves your story, you get 100 points.' : 'Sign in first and an approved story earns you 100 points.') + '</p></div>';
     }
@@ -673,16 +701,17 @@
       recTimer = setInterval(function () {
         var s = (Date.now() - recStart) / 1000, el = document.getElementById('evLive');
         if (el) el.textContent = 'Recording ' + fmtSec(s);
-        if (s >= 180) stopRec();
+        if (s >= 90) stopRec();
       }, 500);
     }).catch(function () { tellErr('We could not use your microphone. Allow it in your browser, or attach a voice memo instead.'); });
   }
   function stopRec() { if (recorder && recorder.state !== 'inactive') recorder.stop(); }
   function sendStory(btn) {
+    if (!TELL.adult) { tellErr('Tick the box to say you are 18 or over.'); return; }
     if (!TELL.release) { tellErr('Tick the box to let us use your recordings.'); return; }
     var qs = Object.keys(TELL.rec);
     btn.disabled = true; btn.textContent = 'Sending...'; tellErr('');
-    evApi({ action: 'story_start', name: TELL.name, email: TELL.email, answers: qs.map(function (q) { return { q: q, type: TELL.rec[q].type || 'audio/webm', size: TELL.rec[q].blob.size }; }) })
+    evApi({ action: 'story_start', adult: true, name: TELL.name, email: TELL.email, answers: qs.map(function (q) { return { q: q, type: TELL.rec[q].type || 'audio/webm', size: TELL.rec[q].blob.size }; }) })
       .then(function (d) {
         if (!d || !d.ok) throw d || {};
         return Promise.all(d.uploads.map(function (u) {
@@ -690,7 +719,7 @@
           return fetch(u.url, { method: 'PUT', headers: { 'Content-Type': r.type || 'audio/webm', 'x-upsert': 'true' }, body: r.blob }).then(function (res) { if (!res.ok) throw { message: 'An answer did not upload.' }; });
         })).then(function () {
           var answers = {}; d.uploads.forEach(function (u) { answers[u.q] = { path: u.path, seconds: Math.round(TELL.rec[u.q].seconds) }; });
-          return evApi({ action: 'story_submit', id: d.id, upload_key: d.upload_key, name: TELL.name, email: TELL.email, event_name: TELL.event_name, chapter: TELL.chapter, note: TELL.note, release: true, answers: answers });
+          return evApi({ action: 'story_submit', adult: true, id: d.id, upload_key: d.upload_key, name: TELL.name, email: TELL.email, event_name: TELL.event_name, chapter: TELL.chapter, note: TELL.note, release: true, answers: answers });
         });
       })
       .then(function (r) {
@@ -700,7 +729,7 @@
         main.innerHTML = crumb([['Hosts', '#/hosts'], ['Sent']]) + head('Thank you', 'Your story is with our team', 'We listen to every one. We will email you if it goes on the podcast' + (token() ? ', and the 100 points land once it is approved.' : '.')) +
           '<div class="dg-btns"><a class="dg-btn" href="#/hosts">Back to the hosts</a><a class="dg-btn dg-ghost" href="#/work">Work with us</a></div>';
       })
-      .catch(function (e) { btn.disabled = false; btn.textContent = 'Send my story'; tellErr((e && e.message) || 'That did not send. Try again in a minute.'); });
+      .catch(function (e) { btn.disabled = false; btn.textContent = 'Send my story'; tellErr((e && e.message) || 'That did not send. Try again in a minute.'); if (e && e.error === 'passport_needed') { var er = document.getElementById('evErr'); if (er) er.innerHTML = esc(e.message) + ' <a href="/passport">Get your Passport</a>'; } });
   }
 
   // ---------- Work with us: why us, the sponsorship, and the application ----------
@@ -805,7 +834,7 @@
 
   // ---------- Get access ----------
   function viewJoin() {
-    if (member()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
+    if (signedIn()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
     var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var lst = '<div class="dg-access"><ul>' +
       '<li><b>Every kind of event</b>, what it costs, how big it gets and what goes wrong.</li>' +
@@ -820,7 +849,7 @@
           : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
         '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide. Group Partner leads have it included.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. What to do when it rains, the worksheet, venues, vendors, the gear, the hosts and the sponsorship stay open to everyone.') + lst;
+    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'The Vegan Events Guide is free to read with your email. The $11 Passport is for your voice and your tools: record your own story for the podcast, save your plan to your account on every device, earn points. What to do when it rains, the venues, the hosts and the sponsorship stay open to everyone.') + lst;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + bx + '</div>');
   }
 
@@ -915,13 +944,13 @@
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
     if (!VIEWS[view]) view = 'overview';
-    document.body.classList.toggle('dg-member', member());
+    document.body.classList.toggle('dg-member', signedIn());
     drawJoinbox();
     var key = view;
     if (view === 'search') key = curTab;
-    if (view === 'join' && member()) key = 'overview';
-    if (view === 'mylist' && !member()) { view = 'overview'; key = 'overview'; }
-    if (member() && !svState) loadSaves();
+    if (view === 'join' && signedIn()) key = 'overview';
+    if (view === 'mylist' && !signedIn()) { view = 'overview'; key = 'overview'; }
+    if (signedIn() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     var bar = document.getElementById('vep-player');
@@ -937,15 +966,15 @@
   window.addEventListener('hashchange', function () { shown = 24; route(); });
 
   // ---------- access ----------
-  function api(action, tok) {
-    return fetch(UNLOCK_URL + '?action=' + action, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: SLUG, token: tok || undefined }) })
+  function api(action, tok, taster) {
+    return fetch(UNLOCK_URL + '?action=' + action, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ slug: SLUG, token: tok || undefined, taster_token: taster || undefined }) })
       .then(function (r) { return r.json(); });
   }
-  function becomeMember(html) {
+  function becomeMember(html, as) {
     var t = document.createElement('template'); t.innerHTML = html;
     var el = t.content.getElementById('ev-data');
     MEM = el ? JSON.parse(el.textContent) : null;
-    access = MEM ? 'member' : 'pending';
+    access = MEM ? (as === 'reader' ? 'reader' : 'member') : 'pending';
     route();
   }
   function feedEp(show, guid) {
@@ -976,6 +1005,7 @@
       if (pp) playPod(pp.slug); return;
     }
     if (e.target.closest('[data-more]')) { shown += 24; route(); return; }
+    if (e.target.closest('[data-reader-form]') && e.target.closest('[data-signin]')) { /* falls through to the sign-in handler */ }
     if (e.target.closest('[data-clear-plan]')) {
       if (!confirm('Clear every tick in the plan, to start a new event?')) return;
       var cc = checks(); Object.keys(cc).forEach(function (k) { if (k.indexOf('plan-') === 0) delete cc[k]; });
@@ -1105,6 +1135,7 @@
     }).catch(function () { if (tries > 0) setTimeout(function () { confirmAfterCheckout(tok, tries - 1); }, 2500); else route(); });
   }
 
+  document.addEventListener('submit', function (e) { var f = e.target.closest && e.target.closest('[data-reader-form]'); if (f) { e.preventDefault(); readerJoin(f); } });
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
     document.documentElement.classList.add('dg-fit');
@@ -1113,9 +1144,18 @@
     var params = new URLSearchParams(location.search);
     route();
     loadPublic();
+    // The emailed link (?t=<key>) opens the Guide on any device and confirms the email; ?unsub= stops our emails.
+    var tk = params.get('t'), un = params.get('unsub');
+    if (tk || un) { ['t', 'unsub'].forEach(function (k) { params.delete(k); }); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    if (un) fetch(TASTER_URL, { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'unsubscribe', token: un }) }).then(function () { setTimeout(function () { setStatus('You are off our email list. The Guide stays open to you.'); }, 800); }).catch(function () {});
+    if (tk) store(TASTER_KEY, tk);
     var a = auth(), viewAs = a && a.getViewAs ? a.getViewAs() : null;
     var tok = a && a.isLoggedIn() && !viewAs ? a.getToken() : null;
-    if (!tok) { access = viewAs && viewAs.mode !== 'public' ? 'pending' : 'guest'; route(); api('status').then(function (d) { take(d); route(); }).catch(function () {}); return; }
+    if (!tok) {
+      access = viewAs && viewAs.mode !== 'public' ? 'pending' : 'guest'; route(); api('status').then(function (d) { take(d); route(); }).catch(function () {});
+      if (access === 'guest' && tasterTok()) loadReader(tasterTok());
+      return;
+    }
     var val = params.get('guide');
     if (val) { params.delete('guide'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
     if (val === 'success' || val === 'bought') { confirmAfterCheckout(tok, 8); return; }

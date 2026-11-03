@@ -141,6 +141,17 @@ async function viewer(id: string | null) {
   return data;
 }
 
+// Door Guide rules: a host with an approved event claim records Host Notes free; everyone else needs the Passport (an active member).
+async function hostClaimed(email: string): Promise<boolean> {
+  if (!email) return false;
+  const { count } = await db.from('ve_event_claims').select('id', { count: 'exact', head: true }).eq('status', 'approved').ilike('email', email.replace(/[\\%_]/g, (c) => '\\' + c));
+  return (count ?? 0) > 0;
+}
+async function mayRecord(me: any, email: string): Promise<boolean> {
+  if (me && (me.is_superadmin || (me.membership_status === 'active' && me.member_class !== 'agent'))) return true;
+  return await hostClaimed(email);
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -193,6 +204,9 @@ Deno.serve(async (req: Request) => {
     const list = Array.isArray(body.answers) ? body.answers : [];
     const qs = list.filter((x: any) => QUESTIONS[x?.q] && Number(x?.size) > 0 && Number(x.size) <= 25 * 1024 * 1024 && /^audio\//.test(String(x?.type || '')));
     if (qs.length < 2 || qs.length !== list.length) return json({ error: 'bad_answers', message: 'Record at least two answers, each under 25 MB.' }, 400);
+    // Door Guide rules (canon-ve-door-guides): 18 and over, and a claimed host's Host Notes is free; anyone else needs the Passport.
+    if (body.adult !== true) return json({ error: 'adult', message: 'Tick the box to say you are 18 or over.' }, 400);
+    if (!(await mayRecord(me, email))) return json({ error: 'passport_needed', message: 'Recording is for hosts with a claimed event, and for Passport members. Claim your event, or get your Passport.' }, 403);
     const since = new Date(Date.now() - DAY_MS).toISOString();
     const { count } = await db.from('ve_event_host_stories').select('id', { count: 'exact', head: true }).ilike('email', email).gte('created_at', since);
     if ((count ?? 0) >= 3) return json({ error: 'daily_limit', message: 'That is three stories today. Email us at contact@lesaruss.com.' }, 429);
@@ -212,7 +226,9 @@ Deno.serve(async (req: Request) => {
     const id = String(body.id || '');
     if (!isId(id) || String(body.upload_key || '') !== (await uploadKey(id))) return json({ error: 'bad_story' }, 400);
     if (body.release !== true) return json({ error: 'release', message: 'Tick the box to let us use your recordings.' }, 400);
+    if (body.adult !== true) return json({ error: 'adult', message: 'Tick the box to say you are 18 or over.' }, 400);
     const name = clean(body.name, 120), email = clean(body.email, 200).toLowerCase();
+    if (!(await mayRecord(me, email || me?.email || ''))) return json({ error: 'passport_needed', message: 'Recording is for hosts with a claimed event, and for Passport members.' }, 403);
     const a = body.answers && typeof body.answers === 'object' ? body.answers : {};
     const answers: Record<string, { path: string; seconds: number }> = {};
     for (const q of Object.keys(QUESTIONS)) {
@@ -221,7 +237,8 @@ Deno.serve(async (req: Request) => {
       if (!path.startsWith(id + '/' + q + '.')) return json({ error: 'bad_path' }, 400);
       const { data: f } = await db.storage.from(BUCKET).list(id, { search: q + '.' });
       if (!f || !f.length) return json({ error: 'missing_audio', message: 'An answer did not upload. Try sending again.' }, 400);
-      answers[q] = { path, seconds: Math.max(0, Math.min(600, Math.round(Number(x.seconds) || 0))) };
+      if ((Number(x.seconds) || 0) > 100) return json({ error: 'too_long', message: 'Each answer can be up to 90 seconds. Record that one again, shorter.' }, 400);
+      answers[q] = { path, seconds: Math.max(0, Math.min(90, Math.round(Number(x.seconds) || 0))) };
     }
     if (Object.keys(answers).length < 2) return json({ error: 'bad_answers', message: 'Record at least two answers.' }, 400);
     const { data: exists } = await db.from('ve_event_host_stories').select('id').eq('id', id).maybeSingle();
@@ -231,6 +248,7 @@ Deno.serve(async (req: Request) => {
     const { error } = await db.from('ve_event_host_stories').insert({
       id, member_id: me?.id || null, name: nm || (me ? [me.first_name, me.last_name].filter(Boolean).join(' ') : 'A host'),
       email: em || me?.email || '', event_name: clean(body.event_name, 160) || null, chapter: CHAPTER_WORDS[String(body.chapter || '')] ? String(body.chapter) : null,
+      kind: 'host_notes', claimed: await hostClaimed(em || me?.email || ''), adult_at: nowIso(),
       answers: { ...answers, ...(clean(body.note, 1500) ? { note: clean(body.note, 1500) } : {}) }, release_at: nowIso(),
     });
     if (error) return json({ error: 'save_failed', message: error.message }, 500);
