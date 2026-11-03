@@ -8,6 +8,7 @@
 //   log: true on a search the visitor sent (Enter or a pick), never on each keystroke. The log keeps the words, the place read, whether
 //   anything came back and how far the nearest was: no names, no emails (visitor is a random id from the browser, or empty).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
+import { handleAdmin } from './admin.ts';
 
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
@@ -21,6 +22,10 @@ Deno.serve(async (req) => {
   let b: any = {};
   try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const q = String(b.q ?? '').slice(0, 120).trim();
+  // Depot > Search questions (super admin token): the queue a person works, and the answer email.
+  if (['q_list', 'q_get', 'q_set', 'q_notify', 'q_setting'].includes(String(b.action || ''))) {
+    return handleAdmin(b, req, db, json, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, async (k: string) => { const e = Deno.env.get(k); if (e) return e; const { data } = await db.from('lesaruss_secrets').select('value').eq('key', k).maybeSingle(); return data?.value && data.value !== 'pending' ? String(data.value) : null; });
+  }
   // Ask (Sean, 2026-11-03): a question we could not answer goes in the queue; an email is optional and used only to write back the answer.
   if (b.action === 'ask') {
     const r = await db.rpc('ve_search_ask', { p_q: q, p_email: typeof b.email === 'string' ? b.email.slice(0, 200) : null, p_visitor: typeof b.visitor === 'string' ? b.visitor.slice(0, 40) : null, p_brand: BRANDS.includes(b.brand) ? b.brand : 'vegans-explore' });
