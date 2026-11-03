@@ -425,6 +425,8 @@
     }
   ],
   "redirects": [
+    { "source": "/guides/taste", "missing": [{"type": "query", "key": "unsub"}], "destination": "/passport", "permanent": false },
+    { "source": "/challenges", "destination": "/passport", "permanent": false },
     {"source": "/dashboard/directory/:slug", "destination": "/directory/:slug", "permanent": false},
     {"source": "/dashboard/directory", "destination": "/directory", "permanent": false},
     {"source": "/dashboard/events", "destination": "/events", "permanent": false},
