@@ -1,0 +1,4 @@
+-- The saved answer on commissions says the top is 30%; Founding Members now climb to 50% (Sean, 2026-11-03). Words follow /policies#membership.
+update public.guide_kb_answers
+set answer = 'Yes, from Level 2. Every member has a link to the Passport: a friend who becomes a member earns you 111 points, and from Level 2 you also earn 20% of the Passport they buy, 25% at Level 3 (Guides too) and 30% at Level 4, the most for anyone who joins after the founding period. Founding Members, who join before midnight Eastern on January 1, 2027, keep climbing past Level 4, to 35%, 40%, 45% and 50% at Levels 5 to 8. You can keep it or give it to a rescue, sanctuary or nonprofit in your name. Points and levels in your dashboard shows it all.'
+where id = '8dc33c97-9be8-4cbf-8b0b-4b83bcc5f55f' and answer like '%30% at Level 4. You can keep it%';

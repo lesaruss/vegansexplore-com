@@ -1616,7 +1616,7 @@
       a.onclick = function (e) { e.preventDefault(); openLevels(a.getAttribute('data-levels')); };
     });
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
-    var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
+    var lv = veLevelFor(life, member.level_override, member.founding_member), nextAt = veLevelTable(member.founding_member)[lv];
     document.getElementById('dash-mine-points').textContent = pts.toLocaleString();
     document.getElementById('dash-mine-level').textContent = 'Level ' + lv;
     document.getElementById('dash-mine-level-sub').textContent = nextAt == null ? 'The top level' : Math.max(0, nextAt - life).toLocaleString() + ' points to Level ' + (lv + 1);
@@ -2618,11 +2618,14 @@
   // the affiliate ladder): Level 2 from 2,500 lifetime points, Level 3 from 10,000, Level 4 from 25,000. The same
   // thresholds as ve_affiliate_levels in the database; change both together.
   var VE_LEVEL_AT = [0, 2500, 10000, 25000];
+  // The Founding branch (Sean, 2026-11-03): Levels 5 to 8, Founding Members only (ve_affiliate_levels founding_only); everyone else stops at Level 4.
+  var VE_FOUNDING_AT = [50000, 100000, 200000, 400000];
+  function veLevelTable(founding) { return founding ? VE_LEVEL_AT.concat(VE_FOUNDING_AT) : VE_LEVEL_AT; }
   // A level the team set (members.level_override, Depot > Ambassadors; Sean 2026-10-28) is the least they have.
-  function veLevelFor(lifetimePoints, floorLevel) {
+  function veLevelFor(lifetimePoints, floorLevel, founding) {
     var lifetime = typeof lifetimePoints === 'number' && lifetimePoints > 0 ? lifetimePoints : 0;
     var lv = 1;
-    VE_LEVEL_AT.forEach(function (at, i) { if (lifetime >= at) lv = i + 1; });
+    veLevelTable(founding).forEach(function (at, i) { if (lifetime >= at) lv = i + 1; });
     return Math.max(lv, Math.min(4, Number(floorLevel) || 1));
   }
 
@@ -2639,7 +2642,7 @@
     if (membershipEl) membershipEl.textContent = member.ve_tier === 'passport' ? 'Passport'
       : member.membership_status === 'active' && member.membership_tier === 'guest' ? 'Guest Passport'
       : member.membership_status === 'active' ? (member.founding_member ? 'Founding Member Passport' : 'Passport') : 'Free';
-    if (levelEl) levelEl.textContent = veLevelFor(member.total_points, member.level_override).toLocaleString();
+    if (levelEl) levelEl.textContent = veLevelFor(member.total_points, member.level_override, member.founding_member).toLocaleString();
     // Passport Challenge badges (playbook ve-verified-tours-hunt group C; "The Hunt" until
     // Sean renamed it 2026-09-27): one per monthly challenge completed.
     var badgesEl = document.getElementById('dash-hero-badges');
@@ -2650,7 +2653,7 @@
     var levelProgressEl = document.getElementById('dash-hero-level-progress');
     if (levelProgressEl) {
       var lifetimeForProgress = typeof member.total_points === 'number' && member.total_points > 0 ? member.total_points : 0;
-      var lvNow = veLevelFor(lifetimeForProgress, member.level_override), nextAt = VE_LEVEL_AT[lvNow];
+      var lvNow = veLevelFor(lifetimeForProgress, member.level_override, member.founding_member), nextAt = veLevelTable(member.founding_member)[lvNow];
       levelProgressEl.textContent = nextAt == null ? 'Top level' : lifetimeForProgress.toLocaleString() + ' / ' + nextAt.toLocaleString() + ' to Lv ' + (lvNow + 1);
     }
   }
@@ -2980,7 +2983,7 @@
     });
     if (dashTabBanners.home) document.body.classList.add('dash-has-banner');
     var pts = typeof member.points === 'number' ? member.points : 0, life = typeof member.total_points === 'number' ? member.total_points : 0;
-    var lv = veLevelFor(life, member.level_override), nextAt = VE_LEVEL_AT[lv];
+    var lv = veLevelFor(life, member.level_override, member.founding_member), nextAt = veLevelTable(member.founding_member)[lv];
     // A super admin earns no points, so their numbers read unlimited, as in the member card (Sean, 2026-10-30: "I don't want to make
     // the illusion that I'm earning points").
     if (member.is_superadmin) setTabStats('home', [['&infin;', 'Points'], ['&infin;', 'Lifetime points'], ['&infin;', 'Level', '/dashboard/levels']]);

@@ -172,7 +172,7 @@
       '<section class="card" style="margin-top:16px"><h2>How levels work</h2><ul class="fine">' +
         '<li>Your level goes by lifetime points: every point you have ever earned. Spending points on a Guide or giving them to a business never lowers it.</li>' +
         '<li>Some members start at a higher level because the team invited them there. They still climb with points.</li>' +
-        (D.can_see ? '<li>From Level 2, your link earns a share of what the people you bring in buy. The higher your level, the bigger the share, up to 30%. See What your link earned.</li>' : '') +
+        (D.can_see ? '<li>From Level 2, your link earns a share of what the people you bring in buy. The higher your level, the bigger the share, up to ' + Math.max.apply(null, (D.ladder || []).map(function (l) { return Number(l.rate_pct) || 0; }).concat([0])) + '%. See What your link earned.</li>' : '') +
         '<li>We keep adding to what each level opens. This page always shows what is live.</li></ul></section>';
     if ($('cp')) $('cp').addEventListener('click', function () { copy(D.link, this); });
   }
