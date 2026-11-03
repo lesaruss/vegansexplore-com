@@ -4107,7 +4107,7 @@ Concept session with V, locked by Sean: "lock it". This replaces Guide credits (
   quicker to level two, where you can start getting commissions... 20%... level three... 25%... level four... 30%, and we max out at
   30%... when they get level three... the guides now become open... route their commissions to a nonprofit of their choosing... So they
   get the credit for the donation"; migration `20261028_affiliate_levels.sql`, run through `ve-once-affiliate`, now the 410 stub). Every
-  member's link is `/passport?ref=<referral_code>`. Level 1: 111 points when a friend becomes a member. Level 2: 20% of the Passport
+  member's link is `/passport?ref=<referral_code>`. Level 1: 111 points when a friend becomes a member. **Level 2 gets the commission instead when the friend pays, but still the 111 points when the friend joins free by the survey door; Level 3 and up get both** (Sean, 2026-11-03: "they should get the 111 points if that person completes the survey"; `ve_referral_on_admit`, proven 2026-11-03 in a rolled-back transaction: a Level 2 sponsor got 111 points on a survey join and none extra on a paid join). Level 2: 20% of the Passport
   bought through the link; Level 3: 25%, and Guides bought with money too; Level 4: 30%, the top (`ve_affiliate_levels`: `rate_pct`,
   `products`, one row a level; change a rate or what a level opens there). Defaults Logan set, Sean's to change: the commission is a
   share of the $11 price (`sale_cents`), never of anything given on top; it counts for purchases by someone who joined with the link
@@ -5879,8 +5879,13 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
   `ve-abuse-scan-devices`, 9:09 UTC, before the scan) adds `shared_browser` (three or more accounts on one browser in 30 days, 35) and `shared_ip`
   (four or more on one network in 7 days, 20: offices, homes and events share one, so it is weak alone). Browser ids reach the server only once
   the page's `ve-auth.js` is on `main`; until then only the IP signal fills. Proven in a rolled-back transaction.
-- **Not built yet**: sign-in and
-  participation refusing a suspended or banned account with a plain message; **Depot > Watchlist** (one case a view: evidence, points history,
+- **Standing is enforced at sign-in** (`ve-auth` and `ve-votes` from e2c549c, source sha256 matched): `standingBlock` in `ve-auth` refuses email
+  login (after the password is right), Google sign-in, `me` (so a session in a browser drops) and `requireActiveMembership`; `ve-votes` refuses a
+  vote. A suspended account reads "suspended while our team reviews it, your points are on hold"; a banned one "this account has been closed";
+  neither says why, both give contact@lesaruss.com (403, `code` `account_suspended` or `account_banned`). Checked: the normal paths still
+  answer live; the refusal itself was not run against a real suspended account. **Known gap**: other edge functions (the board, check-ins,
+  bounties...) check only the token, so an old session could still post until it expires; points are frozen everywhere regardless.
+- **Not built yet**: **Depot > Watchlist** (one case a view: evidence, points history,
   linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
 
 ## Image conventions

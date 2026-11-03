@@ -151,7 +151,10 @@ Deno.serve(async (req) => {
       if (inDir !== true) return json({ error: 'not_found' }, 404);
     } else {
       // Members only: the same gate as ve-auth's requireActiveMembership (Guest Passport included).
-      const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+      const { data: member } = await db.from('members').select('membership_status, standing').eq('id', memberId).maybeSingle();
+      if (member && member.standing && member.standing !== 'good') {
+        return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+      }
       if (!member || member.membership_status !== 'active') {
         return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the places you love every day.' }, 402);
       }

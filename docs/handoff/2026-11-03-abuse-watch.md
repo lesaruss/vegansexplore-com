@@ -10,7 +10,7 @@ Read CLAUDE.md "Abuse watch: a judge decides". Migration `supabase/migrations/20
 
 ## Not done, in order
 1. DONE 2026-11-03 (commit c7ddf70): `ve_member_devices`, `ve-auth` v71, `shared_browser` and `shared_ip` signals. `public/ve-auth.js` (sends `visitor`) is on the branch only: merge to `main` when Sean says deploy, or browser ids stay empty.
-2. `ve-auth` sign-in and participation refuse `standing` suspended or banned, with a plain message (not the survey door's account).
+2. DONE (e2c549c): sign-in, Google, `me`, `requireActiveMembership` and votes refuse a suspended or banned account. Not yet run against a real one (needs a [TEST] account). Gap: board, check-ins and bounties check only the token; add a shared standing check there before the first suspension.
 3. Depot > Watchlist (`/admin/depot/watchlist`, `TABS` row in `public/depot-tabs.js`): cases list, one case per view with evidence, points
    history, linked accounts, and the judge's buttons (note required). Calls `ve-dashboard` or a new `ve-abuse` function with a super admin token.
 4. `/policies#community` paragraph on points gained by gaming the system, before any enforcement.
