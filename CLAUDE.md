@@ -4541,8 +4541,7 @@ with us?... it's per event." Separate from Group Partners.
 ## Door Guides (LOCKED by Sean 2026-11-02, playbook `ve-door-guides`)
 
 Concept session with V, locked by Sean: "lock it", with the panel's seven changes (canon `canon-ve-door-guides`; migration
-`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Not built yet**: it comes after the event host path's
-heads-up email (step 2). Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
+`20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Step 1 built and live 2026-11-03 (below); the rest is not built.** Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
 don't scare them away by saying it's $11"; the $11 unlocks their voice.
 
 - **Which**: the Vegan Events Guide first, then the Creator, Nonprofit and Vegan Restaurant Guides. Topic Guides (Dairy, Nutrition,
@@ -4559,6 +4558,30 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   before anything airs, never naming another business in a bad light.
 - **Living**: a This month section per door Guide (the question of the month, open opportunities, the latest segment).
 - **Measure 30 days** on the Events Guide (emails per Guide, Taster to Passport, clips sent and aired) before the other three.
+- **Step 1, the Vegan Events Guide free with an email, built and live 2026-11-03** (Sean: "Go ahead and deploy, then send me the diff
+  afterward"; migration `20261103_door_guides.sql`, applied through the connector; main 7497a6c; `ve-taster`, `ve-guide-unlock` and
+  `ve-events-guide` deployed from that commit through `ve-function-deploy`, source lengths matched). `ve_guides.door` marks a door Guide
+  (the Events Guide). **Reader level**: `ve-taster` `guide_join {email, guide}` makes a Taster from one field (name from the email's first
+  part, `ve_tasters.door_guides`, source `door:<slug>`; a member is told to sign in; 60 door joins per 10 minutes overall; one email with
+  the Guide's link `?t=<key>`, none for an `example.com` or `[TEST]` address) and `ve-guide-unlock` `open` returns the door Guide's
+  members-only screens to a valid Taster key (`taster_token`, `reader: true`, `unlocked` stays false: it is not an unlock, and no other
+  Guide takes it). The page (`guide-scripts/vegan-events-guide.js`): `access` `reader`; `member()` reads every screen, `signedIn()` owns
+  it (saves, votes, My list stay with owners); where a screen closes, the gate is one email field (**Open the Guide, free**), the header
+  reads Free with your email / Read it free, the key is kept in `localStorage` `ve_taster`, `?t=` opens it on any device and confirms the
+  email, `?unsub=` stops our emails. Logan's defaults, Sean's to change: the ask comes at the first closed screen (the Overview and the
+  rain example stay open), the Guide opens at once and the link confirms (the welcome series, when built, goes only to confirmed
+  addresses). **Recording rules** (`ve-events-guide` `story_start` / `story_submit`): an approved event claim on the email (a claimed host's
+  Host Notes is free), an active Passport member or a super admin, else `passport_needed`; 18 or over ticked (`adult`); 90 seconds an
+  answer (the recorder stops at 90, the server refuses over 100); the page shows the rules card (18+, 90 seconds, quiet room, never name
+  another business in a bad light, team listens first, taken down on request). Stories carry `kind` (`host_notes` now; `question_of_month`,
+  `my_story`, `good_news`, `struggling` waiting), `claimed`, `adult_at`. **Measures**: `ve_door_guide_stats(p_from)` (service role): emails,
+  confirmed, became members, clips sent and aired per door Guide. Proven live 2026-11-03: wrong Guide, bad email, a join, the reader's
+  screens, no key, a forged key and another Guide's door; recording refused without a claim or the Passport and without the 18 box; the
+  test Taster removed. Checked in a browser at 1440 and 390 px beside the Dairy Guide (same shell). **Not proven live**: a claimed host's
+  recording going through (no real claim to use), the emailed link in a mailbox. **Not built yet**: the welcome series (Day 3 and 7 notes
+  tailored to the Guide), **This month**, the question of the month, your story, good news and the private **struggling** clip (team and
+  Community Manager only, a second yes to air), the free organizer account for claimed hosts with no account, saving the plan to an
+  account, a Depot view of the measures, and the other three door Guides after 30 days of numbers.
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
