@@ -22,6 +22,10 @@
 //                                              recipient), so a click names them
 //   { action: 'campaigns' }                 one row a campaign: people, drafts, scheduled, sent, opened, clicked, bounced, with the rates
 //   { action: 'campaign', campaign }        that campaign's messages, each with Sent / Opened / Clicked
+//   { action: 'week', monday? }             Monday to Sunday, each day's messages (no bodies) with Sent / Opened / Clicked
+//   { action: 'move', id, day }             draft, failed or scheduled -> another day (today or later); it goes back to Needs you
+//   { action: 'approve_range', from, to }   approve every email draft from `from` to `to` (at most 7 days) through the same checks as one approval;
+//                                              the ones that fail a check are left alone and listed
 //   { action: 'tick' }                      sends approved emails whose send_at has passed (cron, every 5 minutes)
 // Emails go through email-send as brand lesaruss: from Sean A. Russell, replies to contact@lesaruss.com, one-click unsubscribe,
 // the postal address, campaign_ref ve-people-<id> so nothing goes twice. Opens come from email_events, clicks from ve_links.
@@ -145,6 +149,29 @@ async function enrich(rows: any[]) {
 }
 const LEFT = ['draft', 'failed'];
 
+// Approve one email draft: the same checks whether it is one message or a whole day. Goes out at its time (10 AM Eastern on its day when
+// unset, or in 5 minutes if that has passed).
+async function approveMessage(id: string, who: Who): Promise<Record<string, unknown>> {
+  const { data: m } = await db.from('ve_people_outreach').select('id,status,channel,day,send_at,to_address,subject,body').eq('id', id).maybeSingle();
+  if (!m) return { error: 'not_found' };
+  if (m.channel !== 'email') return { error: 'not_email' };
+  if (!['draft', 'failed'].includes(m.status)) return { error: 'not_waiting' };
+  if (!m.to_address || !isEmail(m.to_address)) return { error: 'no_email_address' };
+  if (!clean(m.subject, 200) || !clean(m.body, 8000)) return { error: 'empty' };
+  if (/\[[A-Z][^\]]{1,40}\]/.test(m.body) || /\[[A-Z][^\]]{1,40}\]/.test(m.subject || '')) return { error: 'placeholder_left' };
+  let at = m.send_at ? Date.parse(m.send_at) : Date.parse(eastern(m.day));
+  const soon = Date.now() + 5 * 60 * 1000;
+  if (at < soon) at = soon;
+  const { error } = await db.from('ve_people_outreach').update({ status: 'approved', send_at: new Date(at).toISOString(), approved_at: new Date().toISOString(), approved_by: who.id, send_error: null, updated_at: new Date().toISOString() }).eq('id', m.id).in('status', ['draft', 'failed']);
+  if (error) return { error: error.message };
+  return { ok: true, send_at: new Date(at).toISOString() };
+}
+function mondayOf(day: string): string {
+  const w = new Date(day + 'T12:00:00Z').getUTCDay();
+  return addDays(day, -((w + 6) % 7));
+}
+const WEEK_COLS = COLS.replace(',body', '');
+
 async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
   const action = String(body.action || '');
 
@@ -220,19 +247,7 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
 
   if (action === 'approve') {
     if (!isId(body.id)) return { error: 'bad_id' };
-    const { data: m } = await db.from('ve_people_outreach').select('id,status,channel,day,send_at,to_address,subject,body').eq('id', body.id).maybeSingle();
-    if (!m) return { error: 'not_found' };
-    if (m.channel !== 'email') return { error: 'not_email' };
-    if (!['draft', 'failed'].includes(m.status)) return { error: 'not_waiting' };
-    if (!m.to_address || !isEmail(m.to_address)) return { error: 'no_email_address' };
-    if (!clean(m.subject, 200) || !clean(m.body, 8000)) return { error: 'empty' };
-    if (/\[[A-Z][^\]]{1,40}\]/.test(m.body) || /\[[A-Z][^\]]{1,40}\]/.test(m.subject || '')) return { error: 'placeholder_left' };
-    let at = m.send_at ? Date.parse(m.send_at) : Date.parse(eastern(m.day));
-    const soon = Date.now() + 5 * 60 * 1000;
-    if (at < soon) at = soon;
-    const { error } = await db.from('ve_people_outreach').update({ status: 'approved', send_at: new Date(at).toISOString(), approved_at: new Date().toISOString(), approved_by: who.id, send_error: null, updated_at: new Date().toISOString() }).eq('id', m.id).in('status', ['draft', 'failed']);
-    if (error) return { error: error.message };
-    return { ok: true, send_at: new Date(at).toISOString() };
+    return await approveMessage(body.id, who);
   }
 
   if (action === 'pull_back') {
@@ -444,6 +459,39 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
     const pct = (n: number, d: number) => (d ? Math.round((n / d) * 1000) / 10 : null);
     const out = [...by.values()].map((c) => ({ ...c, people: c.people.size, open_rate: pct(c.opened, c.sent), click_rate: pct(c.clicked, c.sent + c.done) })).sort((a, b) => (a.last_day < b.last_day ? 1 : -1));
     return { campaigns: out };
+  }
+
+  if (action === 'week') {
+    const monday = mondayOf(isDay(body.monday) ? body.monday : todayEastern());
+    const { data, error } = await db.from('ve_people_outreach').select(WEEK_COLS).gte('day', monday).lte('day', addDays(monday, 6)).neq('status', 'skipped').order('sort').order('created_at').limit(2000);
+    if (error) return { error: error.message };
+    const ms = await enrich(data || []);
+    const days = Array.from({ length: 7 }, (_, i) => { const d = addDays(monday, i); return { day: d, messages: ms.filter((m: any) => m.day === d) }; });
+    return { monday, today: todayEastern(), days };
+  }
+
+  if (action === 'move') {
+    if (!isId(body.id) || !isDay(body.day)) return { error: 'bad_request' };
+    if (body.day < todayEastern()) return { error: 'day_in_past' };
+    const { data: m } = await db.from('ve_people_outreach').select('id,status').eq('id', body.id).maybeSingle();
+    if (!m) return { error: 'not_found' };
+    if (!['draft', 'failed', 'approved'].includes(m.status)) return { error: 'already_sent' };
+    // Its time was set for the old day, so a moved message goes back to Needs you and gets its new day's time when approved again.
+    const { error } = await db.from('ve_people_outreach').update({ day: body.day, send_at: null, status: 'draft', approved_at: null, approved_by: null, send_error: null, updated_at: new Date().toISOString() }).eq('id', m.id).in('status', ['draft', 'failed', 'approved']);
+    if (error) return { error: error.message };
+    return { ok: true, pulled_back: m.status === 'approved' };
+  }
+
+  if (action === 'approve_range') {
+    if (!isDay(body.from) || !isDay(body.to) || body.to < body.from || body.to > addDays(body.from, 6)) return { error: 'bad_request' };
+    const { data } = await db.from('ve_people_outreach').select('id,name,day').eq('status', 'draft').eq('channel', 'email').gte('day', body.from).lte('day', body.to).order('day').order('sort').limit(500);
+    let approved = 0;
+    const skipped: { name: string; day: string; why: string }[] = [];
+    for (const m of data || []) {
+      const r: any = await approveMessage(m.id, who);
+      if (r.ok) approved++; else skipped.push({ name: m.name, day: m.day, why: String(r.error) });
+    }
+    return { ok: true, approved, skipped };
   }
 
   if (action === 'templates') {
