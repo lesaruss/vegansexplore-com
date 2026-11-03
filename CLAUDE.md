@@ -4582,6 +4582,17 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   tailored to the Guide), **This month**, the question of the month, your story, good news and the private **struggling** clip (team and
   Community Manager only, a second yes to air), the free organizer account for claimed hosts with no account, saving the plan to an
   account, a Depot view of the measures, and the other three door Guides after 30 days of numbers.
+- **The Events Guide's welcome notes, built 2026-11-03, draft and off** (Sean: "Drafts are good, build the sender in draft state"; `ve-nurture`
+  from 4ec38d8, Depot > Challenges > Taster emails). Two notes to a reader (a Taster with `door_guides` holding the Guide, email confirmed,
+  not unsubscribed, not a member, and who has not taken the Taste): Day 3 "Decide the rain plan before the day", Day 7 "Running an event?
+  Here is what we can do with you" (`door-events-3`, `door-events-7`, one `ve_taster_emails` row each, campaign `ve-taster-door-events-*` in HQ
+  > Email, through `email-send` brand vegans-explore, signed Vegans Explore team, no prices, weekdays from 10 AM Eastern). **Draft until
+  approved**: they send only while `ve_site_settings` `nurture.door_on` is true and `door_approved_hash` equals the hash of the words in the
+  code (`doorHash`), so any edit puts them back to draft. The Depot card shows Draft / Approved, switched off / Sending, with **Approve this
+  wording**, **Switch on** and links to read each email. `ve-nurture` `settings` {door_approve: true | door_on: bool}. The Taster sequence now
+  skips anyone with no Taste answers (`why` null), so a reader never gets the Taste's Day 3, 7 and 14. Day 3 and Day 7 link the calendar
+  (the event claim is on each event's page, so the note says find your event and tap Are you running this event?). Previews proven live;
+  nothing sent, nothing switched on.
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
