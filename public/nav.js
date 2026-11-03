@@ -131,6 +131,17 @@
 (function () {
   // Another brand's site draws its own header (ve-brand.js drawNav), in this script's place.
   if (window.VE_BRAND && window.VE_BRAND.drawNav) { window.VE_BRAND.drawNav(); return; }
+  /* ---- The new header (Sean, 2026-11-03, mocks at /mocks/header, Option A: "the search bar is the header") ----
+     Behind ?header=new for now, kept for the visit (sessionStorage ve_header); ?header=old turns it off. Two rows on desktop: the logo, one
+     wide search box and Log In / Join; then the menu. Phones: logo, Join and the hamburger, with the search box on its own row. The banner
+     on inner pages becomes a one-line page bar (ve-city-banner.js), and Share moves into it. */
+  var hdrNew = false;
+  try {
+    var _hq = new URLSearchParams(location.search).get('header');
+    if (_hq === 'new') sessionStorage.setItem('ve_header', 'new'); else if (_hq === 'old') sessionStorage.removeItem('ve_header');
+    hdrNew = sessionStorage.getItem('ve_header') === 'new';
+  } catch (e) {}
+  if (hdrNew) document.documentElement.classList.add('ve-hdr-new');
   /* ---- Styles ---- */
   var css = [
     '.ve-nav{position:sticky;top:0;z-index:400;width:100%;background:rgba(255,255,255,0.97);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.09);}',
@@ -204,6 +215,40 @@
   var styleEl = document.createElement('style');
   styleEl.textContent = css;
   document.head.appendChild(styleEl);
+
+  if (hdrNew) {
+    var hs = document.createElement('style'); hs.id = 've-hdr-css';
+    hs.textContent = [
+      '.ve-nav-new .ve-nav-inner{gap:22px;}',
+      '.ve-hs{flex:1 1 auto;max-width:720px;margin:0 auto;position:relative;min-width:0;}',
+      '.ve-hs-field{display:flex;align-items:center;gap:10px;height:44px;border:1.5px solid #2d7d31;border-radius:6px;padding:0 14px;background:#fff;box-shadow:0 0 0 3px rgba(58,155,62,.12);margin:0;cursor:text;}',
+      '.ve-hs-field:focus-within{box-shadow:0 0 0 3px rgba(58,155,62,.28);}',
+      '.ve-hs-field>svg{width:18px;height:18px;flex:none;stroke:#1a1a1a;fill:none;stroke-width:2.3;stroke-linecap:round;}',
+      '.ve-hs-field input{flex:1;min-width:0;border:0;outline:0;background:none;font:600 14px Montserrat,sans-serif;color:#1a1a1a;height:100%;padding:0;}',
+      '.ve-hs-field input::placeholder{color:#5a5a5a;font-weight:600;opacity:1;}',
+      '.ve-hs-field kbd{font:800 11px Montserrat,sans-serif;border:1.5px solid rgba(0,0,0,.18);border-radius:4px;padding:1px 7px;color:#555;flex:none;}',
+      '.ve-hs-chip{display:inline-flex;align-items:center;gap:7px;flex:none;background:#e8f5e9;color:#1f5f22;border:1px solid #b9dfbc;border-radius:5px;padding:3px 4px 3px 10px;font:800 12px Montserrat,sans-serif;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis;}',
+      '.ve-hs-chip[hidden]{display:none;}',
+      '.ve-hs-chip button{border:0;background:none;cursor:pointer;font:800 15px/1 Montserrat,sans-serif;color:#1f5f22;padding:2px 6px;border-radius:4px;}',
+      '.ve-hs-chip button:hover{background:rgba(31,95,34,.12);}',
+      '.ve-hs .ves-list{top:calc(100% + 8px);}',
+      '.ve-has-pagebar #main-content{padding-top:24px !important;}',
+      '.ve-hs-field.scoped input{min-width:48px;}',
+      '.ve-menu-row{display:flex;align-items:center;gap:30px;height:40px;padding:0 28px;border-top:1px solid rgba(0,0,0,.06);font-family:"Montserrat",sans-serif;}',
+      '.ve-menu-row a{font-size:13px;font-weight:700;color:#1a1a1a;text-decoration:none;padding:9px 0;white-space:nowrap;}',
+      '.ve-menu-row a:hover{color:#2d7d31;}',
+      '.ve-menu-row a[aria-current="page"]{color:#2d7d31;box-shadow:0 2px 0 #3A9B3E;}',
+      '.ve-nav-new .ve-burger{display:none;}',
+      '.ve-nav-new .ve-nav-right-wrap{margin-left:auto;}',
+      '.ve-hdr-new.ve-has-pagebar .ve-nav-new [data-ve-share]{display:none;}',
+      '.ve-nav-new .ve-burger-menu .ve-bm-login{border-top:1px solid rgba(0,0,0,.08);margin-top:6px;}',
+      '@media(max-width:1060px){.ve-menu-row{gap:22px;}}',
+      '@media(max-width:860px){.ve-nav-new .ve-burger{display:inline-flex;}.ve-menu-row{display:none;}.ve-nav-new .ve-burger-menu .ve-bm-login{display:block;}}',
+      '@media(min-width:861px){.ve-nav-new .ve-burger-menu .ve-bm-login{display:none;}}',
+      '@media(max-width:700px){.ve-nav-new .ve-nav-inner{flex-wrap:wrap;height:auto;padding:8px 14px 10px;row-gap:8px;gap:10px;}.ve-hs{order:3;flex:1 0 100%;max-width:none;margin:0;}.ve-hs-field kbd{display:none;}.ve-nav-new .ve-nav-right-wrap{margin-left:auto;}.ve-nav-new .ve-nav-login{display:none;}.ve-nav-new .ve-nav-right-wrap>.ve-share-btn{display:none;}}'
+    ].join('');
+    document.head.appendChild(hs);
+  }
 
   /* ---- Auth state ---- */
   var realMember = null;
@@ -339,6 +384,32 @@
       '</div>' +
     '</nav>';
 
+
+  if (hdrNew) {
+    var _onSearch = p === '/search';
+    var _rightNew = desktopRight.replace(searchBtn, '');
+    var _mag = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>';
+    html =
+      '<nav class="ve-nav ve-nav-public ve-nav-new' + (loggedIn ? ' ve-nav-in' : '') + '" role="navigation" aria-label="Main navigation">' +
+        '<div class="ve-nav-inner">' +
+          '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>' +
+          '<form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field">' + _mag +
+            '<span class="ve-hs-chip" id="ve-hs-chip" hidden></span>' +
+            '<input type="text" name="q" id="' + (_onSearch ? 've-hs-input' : 'ves-page-input') + '" placeholder="Search places, people, shows, products… try “vegan pizza in Atlanta”" aria-label="Search Vegans Explore" data-dictate="off">' +
+            '<kbd aria-hidden="true">/</kbd></label></form>' +
+          '<div class="ve-nav-right-wrap">' + _rightNew +
+            '<button type="button" class="ve-burger" id="ve-burger" aria-label="Menu" aria-expanded="false" aria-controls="ve-burger-menu">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="17" x2="20" y2="17"></line></svg>' +
+            '</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="ve-menu-row">' + MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') + '</div>' +
+        '<div class="ve-burger-menu" id="ve-burger-menu" hidden>' +
+          MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') +
+          (loggedIn ? '' : '<a class="ve-bm-login" href="/login">Log In</a>') +
+        '</div>' +
+      '</nav>';
+  }
   document.currentScript.insertAdjacentHTML('beforebegin', html);
   // The menu's height, for anything that sticks under it (the ad rail): --ve-nav-h on the page.
   (function () {
@@ -390,6 +461,44 @@
     });
   })();
 
+
+  /* ---- The new header's search box: the same engine as the old bar (ve-search.js), always visible. On a list page it can carry a scope
+     (window.VEHeaderScope.set({label, cat}), the Directory sets it): a chip "in Documentaries & Films" that sends the search to /search?cat=.
+     The x on the chip, or Backspace in an empty box, widens it to everything. ---- */
+  if (hdrNew) (function () {
+    var form = document.getElementById('ve-hs'); if (!form) return;
+    var input = form.querySelector('input'), chip = document.getElementById('ve-hs-chip'), scope = null, mounted = false;
+    function go(q) {
+      q = (q || '').trim(); if (q.length < 2) return;
+      location.href = '/search?q=' + encodeURIComponent(q) + (scope && scope.cat ? '&cat=' + encodeURIComponent(scope.cat) : '');
+    }
+    function ensure() {
+      if (mounted) return; mounted = true;
+      function m() { window.VESearch.mount(input, { host: form, onSubmit: go }); if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input')); }
+      if (window.VESearch) { m(); return; }
+      var ss = document.createElement('script'); ss.src = '/public/ve-search.js'; ss.onload = m; (document.head || document.documentElement).appendChild(ss);
+    }
+    function draw() {
+      var fld = input.closest('.ve-hs-field');
+      if (!input.hasAttribute('data-ph')) input.setAttribute('data-ph', input.placeholder);
+      fld.classList.toggle('scoped', !!scope); input.placeholder = scope ? (window.innerWidth <= 700 ? '' : 'Search\u2026') : input.getAttribute('data-ph');
+      if (!scope) { chip.hidden = true; chip.textContent = ''; return; }
+      chip.hidden = false; chip.innerHTML = '<span>in ' + swEsc(scope.label) + '</span><button type="button" aria-label="Search everything instead of only ' + swEsc(scope.label) + '">×</button>';
+    }
+    function set(s) { scope = s && s.cat ? { label: s.label || s.cat, cat: s.cat } : null; draw(); }
+    chip.addEventListener('click', function (e) { if (e.target.closest('button')) { set(null); input.focus(); } });
+    input.addEventListener('keydown', function (e) { if (e.key === 'Backspace' && !input.value && scope) set(null); });
+    input.addEventListener('focus', ensure);
+    input.addEventListener('input', ensure);
+    form.addEventListener('submit', function (e) { e.preventDefault(); ensure(); go(input.value); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      var t = e.target, tag = t && t.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || (t && t.isContentEditable)) return;
+      e.preventDefault(); input.focus(); input.select();
+    });
+    window.VEHeaderScope = { set: set, get: function () { return scope; } };
+    window.dispatchEvent(new CustomEvent('ve:header-ready'));
+  })();
   // The hamburger opens and closes the menu panel; Escape or a tap outside closes it.
   (function () {
     var burger = document.getElementById('ve-burger'), menu = document.getElementById('ve-burger-menu');

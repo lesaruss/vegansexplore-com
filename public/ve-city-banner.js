@@ -98,9 +98,38 @@
     '@media (max-width:480px){.vcb-inner{background:rgba(0,0,0,.62);margin:0;padding:24px 16px;max-width:100%;border:0;}.vcb-pick select{min-width:0;width:100%;}.vcb.is-collapsed .vcb-inner{padding:14px 16px;grid-template-columns:minmax(0,1fr) minmax(118px,36%);gap:12px 22px;}.vcb.is-collapsed h1{font-size:18px;}.vcb.is-collapsed h1 em{font-size:15px;}.vcb.is-collapsed .vcb-pick select{flex:1 1 100%;width:100%;}.vcb.is-collapsed .vcb-btn{font-size:10px;letter-spacing:.06em;white-space:normal;text-align:center;}.vcb-actions .vcb-btn{flex:1 1 auto;}}'
   ].join('');
 
+
+  // The page bar (Sean, 2026-11-03, new header Option A): behind ?header=new, a banner outside the chapter hub pages is one line: where you are,
+  // the picker, the page's buttons and Share. Same markup and API, so every page that mounts a banner keeps working.
+  var DARKCHEV = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E\")";
+  var barCss = [
+    '.vcb.vcb-bar{min-height:0 !important;display:block;background:#f4f7f4 !important;background-image:none !important;border-bottom:1px solid rgba(0,0,0,.07);margin:0;}',
+    '.vcb.vcb-bar::before,.vcb.vcb-bar::after{display:none !important;}',
+    '.vcb.vcb-bar .vcb-inner{max-width:none !important;width:100%;margin:0 !important;padding:0 40px !important;min-height:48px;display:flex !important;flex-direction:row;align-items:center;gap:14px;background:none !important;border:0;border-radius:0;backdrop-filter:none;-webkit-backdrop-filter:none;}',
+    '.vcb.vcb-bar .vcb-main{display:flex !important;flex-direction:row;align-items:center;gap:14px;flex:1;min-width:0;}',
+    '.vcb.vcb-bar .vcb-eyebrow,.vcb.vcb-bar .vcb-sub,.vcb.vcb-bar .vcb-meta,.vcb.vcb-bar .vcb-toggle,.vcb.vcb-bar .vcb-open-only,.vcb.vcb-bar [data-vcb-home]{display:none !important;}',
+    '.vcb.vcb-bar h1{display:flex;align-items:baseline;gap:10px;margin:0 !important;font-size:14px !important;line-height:1.2 !important;font-weight:900;letter-spacing:0;text-transform:none;color:#1a1a1a;text-shadow:none;white-space:nowrap;min-width:0;}',
+    '.vcb.vcb-bar h1 .vcb-t{display:inline !important;font-size:14px !important;line-height:1.2 !important;white-space:nowrap !important;color:#1a1a1a;}',
+    '.vcb.vcb-bar h1 .vcb-t[role="link"]{cursor:pointer;}.vcb.vcb-bar h1 .vcb-t[role="link"]:hover{text-decoration:underline;text-underline-offset:3px;}',
+    '.vcb.vcb-bar h1 em{display:inline !important;font-size:14px !important;margin:0 !important;color:#2d7d31;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+    '.vcb.vcb-bar h1 em::before{content:"\\203A";color:#8a8a8a;margin-right:10px;font-weight:700;}',
+    '.vcb.vcb-bar .vcb-pick{margin:0 !important;flex-wrap:nowrap;}',
+    '.vcb.vcb-bar .vcb-pick select{font-size:12px;color:#1a1a1a;background:#fff ' + DARKCHEV + ' no-repeat right 14px center;border:1.5px solid rgba(0,0,0,.18);padding:7px 38px 7px 12px !important;min-width:0;max-width:240px;}',
+    '.vcb.vcb-bar .vcb-actions{display:flex !important;flex-direction:row;flex-wrap:nowrap;margin:0 !important;gap:8px;align-items:center;}',
+    '.vcb.vcb-bar .vcb-btn{width:auto !important;padding:8px 12px;color:#1a1a1a;background:#fff;border-color:rgba(0,0,0,.16);}',
+    '.vcb.vcb-bar .vcb-btn:hover{border-color:#2d7d31;color:#2d7d31;background:#fff;}',
+    '.vcb.vcb-bar .vcb-btn-go{background:var(--vb-go,#2d7d31);border-color:var(--vb-go,#2d7d31);color:#fff;}',
+    '.vcb.vcb-bar .vcb-btn-go:hover{background:var(--vb-go-hover,#1f5f22);color:#fff;}',
+    '.vcb.vcb-bar :focus-visible{outline-color:#2d7d31;}',
+    '@media (max-width:900px){.vcb.vcb-bar{align-items:center;}.vcb.vcb-bar .vcb-inner{padding:8px 14px !important;gap:8px;}.vcb.vcb-bar h1{display:none;}.vcb.vcb-bar .vcb-pick{flex:1;min-width:0;}.vcb.vcb-bar .vcb-pick select{width:100%;max-width:none;}.vcb.vcb-bar .vcb-actions{display:flex !important;}.vcb.vcb-bar .vcb-btn:not(.vcb-btn-go):not(.vcb-share){display:none;}.vcb.vcb-bar .vcb-share{padding:8px 10px;}}'
+  ].join('');
+
+  function hdrNew() { return document.documentElement.classList.contains('ve-hdr-new'); }
+  function isHubPage() { return /^\/communities\/[^\/]+\/?$/.test(location.pathname); }
+
   function injectCss() {
     if (document.getElementById('vcb-css')) return;
-    var s = document.createElement('style'); s.id = 'vcb-css'; s.textContent = css;
+    var s = document.createElement('style'); s.id = 'vcb-css'; s.textContent = css + barCss;
     document.head.appendChild(s);
   }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -162,6 +191,13 @@
         '</div>' +
       '</div>';
 
+    // New header: one-line page bar (not on a chapter's hub page, which keeps its art). Share lives here instead of the menu bar.
+    var bar = hdrNew() && !isHubPage() && !opts.hero;
+    if (bar) {
+      el.classList.add('vcb-bar'); document.documentElement.classList.add('ve-has-pagebar');
+      var _ac = el.querySelector('.vcb-actions'), _tg = el.querySelector('.vcb-toggle');
+      if (_ac) { var _sh = document.createElement('button'); _sh.type = 'button'; _sh.className = 'vcb-btn vcb-share'; _sh.setAttribute('data-ve-share', ''); _sh.setAttribute('aria-label', 'Share this page'); _sh.textContent = 'Share'; _ac.insertBefore(_sh, _tg); }
+    }
     var select = el.querySelector('select'), cityEl = el.querySelector('[data-vcb-city]');
     var link = el.querySelector('[data-vcb-link]'), toggle = el.querySelector('.vcb-toggle');
     var mobile = window.matchMedia('(max-width: 900px)');
@@ -239,7 +275,7 @@
     var title = el.querySelector('.vcb-t'), h1 = el.querySelector('h1'), pick = el.querySelector('.vcb-pick');
     var phone = window.matchMedia('(max-width: 900px)'), fitting = false;
     function fitTitle() {
-      if (!title || fitting) return;
+      if (!title || fitting || bar) return;
       fitting = true;
       title.style.fontSize = ''; title.style.whiteSpace = ''; title.style.lineHeight = ''; cityEl.style.fontSize = '';
       if (el.classList.contains('is-collapsed')) {
@@ -295,6 +331,13 @@
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return;
       e.preventDefault(); opts.home.onClick();
     });
+    // In the page bar the title is the way home (it replaces the Directory home / Events home button).
+    if (bar && opts.home && title) {
+      title.setAttribute('role', 'link'); title.tabIndex = 0;
+      var goHome = function () { if (opts.home.onClick) opts.home.onClick(); else if (homeBtn && homeBtn.href) location.href = homeBtn.href; };
+      title.addEventListener('click', goHome);
+      title.addEventListener('keydown', function (e) { if (e.key === 'Enter') goHome(); });
+    }
     var actionBtn = el.querySelector('[data-vcb-action]');
     if (actionBtn) actionBtn.addEventListener('click', function () { if (!chosen) { autoFolded = true; fold(true); } opts.action.onClick(); });
 

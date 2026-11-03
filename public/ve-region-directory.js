@@ -394,7 +394,7 @@
     var first = cat.label;
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
-      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="Search ' + esc(first) + '&hellip;" aria-label="Search ' + esc(first) + '">' +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
       '</div>';
 
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
@@ -491,6 +491,8 @@
   // How a sub-section reads where it differs from its stored category (Food Brands reads Food & Drink in Products).
   var SUB_LABELS = { 'Food Brands': 'Food & Drink' };
   function subLabel(v) { return SUB_LABELS[v] || v; }
+  // New header (Sean, 2026-11-03): the list's own box is a filter, not a second search.
+  function hdrNewOn() { try { return document.documentElement.classList.contains('ve-hdr-new') || sessionStorage.getItem('ve_header') === 'new'; } catch (e) { return false; } }
   function sectionsOf(l) {
     var out = [l.category || ''];
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
@@ -1382,7 +1384,9 @@
         applyPanelFilters(panel, state, true);
         countFilters(panel);
         var q = panel.querySelector('[data-vrd-search]'), sub = btn.getAttribute('data-vrd-subcat');
-        if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : subLabel(sub); q.placeholder = 'Search ' + lbl + '\u2026'; q.setAttribute('aria-label', 'Search ' + lbl); }
+        if (q) { var lbl = sub === 'All' ? (CAT_CONFIG.filter(function (c) { return 'board-' + c.key === panel.id; })[0] || {}).label : subLabel(sub); var vb = hdrNewOn() ? 'Filter ' : 'Search '; q.placeholder = vb + lbl + '\u2026'; q.setAttribute('aria-label', vb + lbl); }
+        // New header: the top search box carries this list as its scope (a chip) while a single sub-section is open.
+        if (hdrNewOn() && window.VEHeaderScope && panel.classList.contains('active')) window.VEHeaderScope.set(sub === 'All' ? null : { label: subLabel(sub), cat: sub });
         pushSection(root, state, panel.id.replace(/^board-/, ''), btn._vrdDefault ? '' : btn.getAttribute('data-vrd-subcat'));
         if (panel.classList.contains('active')) tellSection(root, state);
       });
