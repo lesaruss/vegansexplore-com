@@ -29,3 +29,10 @@ Read CLAUDE.md "Abuse watch: a judge decides" first. Canon `canon-ve-abuse-watch
 - `pg_get_functiondef` over every function fails on aggregates: filter `prokind = 'f'`.
 - A new edge function defaults to verify_jwt on: create it first with `deploy_edge_function` and `verify_jwt false`, then deploy the real source with `ve-function-deploy`.
 - Test accounts: Test Manager (`d8235957-df5a-4e7f-98cd-6ea6414c25ab`, zero points) is the safe target; the judge is Sean (`72712a4a-ea0e-4ef4-a29e-d382496ef8da`).
+
+## Update (2026-11-03, later, Logan): items 1 and 2 done
+- Item 1, freeze safety: `20261103_abuse_freeze_safety.sql` applied and proven (see CLAUDE.md "Abuse watch"). Commit f08d7b1.
+- Item 2, standing check: 15 edge functions deployed from 30bdda79 (commits e7d3bce, 30bdda7), source sha256 matched; proven live with a suspended Test Manager session (writes 403, reads 200). Fail closed: a new action on those functions is a write until added to its `READ_ACTIONS`.
+- Item 3, `/policies#community` wording: draft written, waiting for Sean's approval; nothing is on the page yet. **Do not turn on opening cases before it is live.**
+- Item 4: after 2026-11-10 read the Watchlist's Would flag tab; Sean decides whether to turn opening on.
+- Still guarded only by the trigger (points frozen) and not by the edge-function check: `ve-dashboard`, `ve-affiliate`, `ve-nonprofit`, `ve-ambassador`, `ve-people-outreach` and the other functions not listed above. Direct-balance writers not changed are listed in CLAUDE.md.
