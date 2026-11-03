@@ -1,0 +1,30 @@
+# Handoff: shared header, first suit brand, search vocabulary (2026-11-03, Logan, third session)
+
+Stores written at wrap-up: `playbook_records` (slugs `ve-dashboard-roadmap` for the header, `ve-universal-search` for the suits, Liz and the Depot checks, `ve-pricing-points-passport` for the open referral items), `brief_checkpoints` (latest handed_off for vegans-explore), `stream_events`, CLAUDE.md ("The new header", "When search has no answer", the Suits & formal line in Local Food and Products).
+
+## Done (on main, Supabase fwbhwfxpncrsfhttimna)
+- **Liz's picture on the search card**: Sean confirmed it shows on his own browser. (This sandbox blocks the Higgsfield CDN host, so it could not be checked from here.)
+- **First suit brand** (`supabase/migrations/20261103_suits_formal_wilda.sql`): WILDA.ECO, a Polish women's suit label, Clothing and Fashion > Suits & formal, 100% Vegan (Good On You lists its whole range as Vegan, updated 2026-02-04; its own site says the same). Left out on the whole-line rule: Hangrr and Sartoro (wool lines too), Hugo Boss (one linen suit), Hall Madden (a specialist, not whole line), Brave GentleMan (no sign it trades now), Will's Vegan Store (closed). Checked by web search only: this session cannot open brand sites.
+- **Search vocabulary for suits** (`20261103_search_vocab_suits.sql`): suit, suits, blazer, blazers, tuxedo, tuxedos, formal wear, formalwear, business suit, wedding suit map to Clothing and Fashion with the `formal` kind. "vegan suit" now reads as Suits & formal and returns WILDA.ECO first (before: fuzzy name matches such as Su Vegan Buffet). Benchmark case 64 added and passing; the rest of the benchmark is unchanged (everything passes except the known Hard Rock Stadium gap).
+- **One header, no copy** (Sean: "the font is not the same for the dashboard pages versus the non-dashboard pages... why aren't we using the same elements?"): `dashboard/center-console.html` now loads `/public/nav.js` and holds no header markup, CSS or script. About 220 lines of the old header went; `public/ve-header-search.js` (a duplicate of nav.js's search box) was deleted. `initDashTabs` opens Dashboard, My Saves and the Depot in place when the shared bar's link is clicked (`NAV_TAB`, `markNav`); the Dashboard tab's address is `/dashboard`. The dashboard tour (`public/ve-tour.js`) points at the bar's menu row (`navLink`). Merged to main as ce67de2 from branch `claude/dashboard-shared-header`; production deploy READY.
+- **Measured before the change** (signed out, live): font family Montserrat everywhere; the dashboard's header wordmark and links were 16px with 0.8px letter-spacing against 15px and 0.9px on `/directory` and `/events`, and it reported no Montserrat 900 loaded. Header code was duplicated, which is why it drifted.
+- **Tested after** (headless browser, mocked signed-in super admin, 1440 and 390 px): one `.ve-nav`, no `.ve-topnav`, full menu with Depot, same height, fonts and logo as `/directory`, My Saves opens in place at `/dashboard/saves`, Dashboard returns to `/dashboard`, the phone menu opens Depot and closes, no script errors. The test caught one bug (the Dashboard tab pushed `/dashboard/profile`, which the bar would not mark as current after a reload); fixed before merge.
+
+## Not done, in order
+1. **Sean signs in and checks the live dashboard** (nothing signed in was run by Logan): click Dashboard, My Saves and Depot, open a Depot page, try the phone menu, tap the account chip and Apps, run "Take the tour" once.
+2. **Sean opens the three Depot pages signed in** and tries one action on each (carried over from the depot-queues handoff, results never reported): Feedback status change, Search questions "Send me a test", Referral claims (empty, so Logan proves the decision function on a [TEST] claim in a rolled-back transaction).
+3. **Sean approves Liz's answer-email wording**; emailing askers stays off (`ve_site_settings` `search_answers` `send_on`) until the first real answers exist. Default: approve the wording, leave sending off.
+4. **Mark the "vegan suit" question answered** in Depot > Search questions once Sean has seen the WILDA.ECO listing live.
+5. **Inbox row for answered search questions**: Sean's call; default no (the queue page already shows the answer).
+6. **Referral claims** (playbook `ve-pricing-points-passport`): the "Did someone send you?" field on the invitation, challenge and dinner join steps, and a duplicate-account filter. Nothing moved this session.
+7. **More suit brands**, men's first: only ones whose whole line is Vegan.
+
+## Proposed, not locked
+- **Canon for one header**: "the dashboard and every public page draw the bar from `nav.js`; only Dashboard, My Saves and the Depot are dashboard-only; a header change is made once." Sean said "no drift" and agreed the plan but did not say "lock it", so no canon was written. Ask once; default: lock it as a short rule next to `canon-template-gate`.
+
+## Cautions
+- **Withdrawn from the earlier status**: "abuse-watch freeze fix still open" was wrong by the end of the day. `20261103_abuse_freeze_safety.sql` is applied and the standing check is on 15 edge functions (another session, main d68314c); see `docs/handoff/2026-11-03-abuse-watch.md`. What stays open there is Sean's: merge, the policies wording, and turning on opening cases after 2026-11-10.
+- The dashboard tour's steps for Guides, Pulse, Directory, Events, Media and Communities call `activateDashTab`, which sends the browser to the public page (those tabs became public pages on 2026-11-03). That was already so before this change; only the highlight targets were retargeted. A tour rewrite is its own job.
+- Real Montserrat weights were not compared (Google Fonts is blocked here). If the dashboard still looks different, check the weight of the bold text first.
+- Branch `claude/dashboard-shared-header` can be deleted; it is merged.
+- Deploy: push to main non-force (fetch, merge origin/main, `git push origin HEAD:main`). Commit author Sean A. Russell <contact@lesaruss.com>.
