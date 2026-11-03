@@ -22,10 +22,12 @@
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
   :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);}
-  html,body{height:100%;}
-  /* Footer always at the foot of the window, even on a short page such as My Saves (Sean, 2026-11-03). */
-  body{min-height:100vh;display:flex;flex-direction:column;}
-  body>main{flex:1 0 auto;}
+  html{height:100%;}
+  /* Footer always at the foot of the window, even on a short page such as My Saves (Sean, 2026-11-03).
+     body grows with its content (height:auto) and the frame never shrinks, or on a phone the content
+     spills over the footer (Sean, 2026-11-03, ve-feedback). */
+  body{min-height:100vh;height:auto;display:flex;flex-direction:column;}
+  body>main,body>.console-frame{flex:1 0 auto;}
   body>.ve-footer,body>footer{margin-top:auto;}
   body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);}
   main{max-width:none;margin:0;padding:44px 32px 80px;}
