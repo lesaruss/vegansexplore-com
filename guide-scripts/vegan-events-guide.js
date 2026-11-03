@@ -721,7 +721,7 @@
         main.innerHTML = crumb([['Hosts', '#/hosts'], ['Sent']]) + head('Thank you', 'Your story is with our team', 'We listen to every one. We will email you if it goes on the podcast' + (token() ? ', and the 100 points land once it is approved.' : '.')) +
           '<div class="dg-btns"><a class="dg-btn" href="#/hosts">Back to the hosts</a><a class="dg-btn dg-ghost" href="#/work">Work with us</a></div>';
       })
-      .catch(function (e) { btn.disabled = false; btn.textContent = 'Send my story'; tellErr((e && e.message) || 'That did not send. Try again in a minute.'); if (e && e.error === 'passport_needed') { var er = document.getElementById('evErr'); if (er) er.innerHTML = esc(e.message) + ' <a href="/passport">Get your Passport</a>'; } });
+      .catch(function (e) { btn.disabled = false; btn.textContent = 'Send my story'; tellErr((e && e.message) || 'That did not send. Try again in a minute.'); if (e && e.error === 'passport_needed') { var er = document.getElementById('evErr'); if (er) er.innerHTML = esc(e.message) + ' <a href="/survey?s=vegan-events-guide">Take the free event survey</a> or <a href="/passport">get your Passport</a>. Both make you a member.'; } });
   }
 
   // ---------- Work with us: why us, the sponsorship, and the application ----------

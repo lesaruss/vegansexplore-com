@@ -99,7 +99,7 @@
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-playbooks';
       var $ = function (id) { return document.getElementById(id); };
-      var TABS = [['sean', 'Needs Sean'], ['building', 'Building'], ['watching', 'Watching'], ['parked', 'Parked'], ['done', 'Done'], ['all', 'All'], ['new', 'Not in the index']];
+      var TABS = [['sean', 'Needs Sean'], ['building', 'Building'], ['watching', 'Watching'], ['parked', 'Parked'], ['done', 'Done'], ['all', 'All open'], ['new', 'Not in the index']];
       var STATUS = { building: 'Building', waiting_on_sean: 'Waiting on Sean', watching: 'Watching', parked: 'Parked', done: 'Done' };
       var data = null;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -125,7 +125,7 @@
         if (r.tab === 'new') {
           html += un.length ? '<p class="sub">These Vegans Explore playbooks have records but no row here yet. Add the ones that are still live; leave the rest as history.</p><div class="box">' + un.map(function (u) { return '<div class="row"><b>' + esc(pretty(u.slug)) + '</b><span class="meta">' + esc(u.slug) + ' &middot; ' + u.n + ' records &middot; last ' + esc(day(u.last)) + '</span><a class="btn btn-quiet" href="#add/' + esc(u.slug) + '">Add to the index</a></div>'; }).join('') + '</div>' : '<p class="sub">Every playbook with records is in the index.</p>';
         } else {
-          var list = rows.filter(function (x) { return r.tab === 'all' || (r.tab === 'sean' ? x.status === 'waiting_on_sean' : x.status === r.tab); });
+          var list = rows.filter(function (x) { return r.tab === 'all' ? x.status !== 'done' : (r.tab === 'sean' ? x.status === 'waiting_on_sean' : x.status === r.tab); });
           if (r.tab === 'sean') list.sort(function (a, b) { return (a.due_on || '9999') < (b.due_on || '9999') ? -1 : 1; });
           html += list.length ? '<p class="count">' + list.length + (list.length === 1 ? ' playbook' : ' playbooks') + (r.tab === 'sean' ? ', soonest due first' : ', most important first') + '</p><div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">None here.</p>';
         }
