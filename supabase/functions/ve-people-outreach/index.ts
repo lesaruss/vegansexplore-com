@@ -13,6 +13,11 @@
 //   { action: 'test', id }                  the email to the signed-in admin only, [Test] in the subject, nothing recorded as sent
 //   { action: 'create', messages: [...] }   load messages (ops or admin)
 //   { action: 'templates' } | { action: 'template_approve', key }   approving a base email approves its messages that are not personal
+//   { action: 'pick', q?, pool?, limit?, offset? }   people to pick from (ve_founding_candidates: HQ People with an email and unpaid accounts, no members,
+//                                              no one invited, nobody suppressed; Tasters are not in it), each with where they already stand in a campaign
+//   { action: 'draft_batch', people: [{name, email, person_id?, org?}], bucket, campaign, day, subject, body }
+//                                              one draft each (status draft, personal, never approved here); {first_name} is filled in; a person already
+//                                              in that campaign or suppressed is skipped and listed; links must be tracked /go/ links
 //   { action: 'tick' }                      sends approved emails whose send_at has passed (cron, every 5 minutes)
 // Emails go through email-send as brand lesaruss: from Sean A. Russell, replies to contact@lesaruss.com, one-click unsubscribe,
 // the postal address, campaign_ref ve-people-<id> so nothing goes twice. Opens come from email_events, clicks from ve_links.
@@ -322,6 +327,60 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
       if (error) return { error: error.message };
     }
     return { ok: true, created: rows.length, skipped };
+  }
+
+  if (action === 'pick') {
+    const limit = Math.min(Math.max(Math.floor(+body.limit || 50), 1), 100);
+    const offset = Math.max(Math.floor(+body.offset || 0), 0);
+    const { data, error } = await db.rpc('ve_founding_candidates', { p_q: clean(body.q, 100) || null, p_pool: clean(body.pool, 30) || null, p_limit: limit, p_offset: offset });
+    if (error) return { error: error.message };
+    const rows: any[] = data?.rows || [];
+    const emails = rows.map((r) => String(r.email || '').toLowerCase()).filter(Boolean);
+    const queued = new Map<string, unknown[]>();
+    if (emails.length) {
+      const { data: q } = await db.from('ve_people_outreach').select('person_key,campaign,day,status').in('person_key', emails).neq('status', 'skipped');
+      for (const x of q || []) { const l = queued.get(x.person_key) || []; l.push({ campaign: x.campaign, day: x.day, status: x.status }); queued.set(x.person_key, l); }
+    }
+    return { total: data?.total ?? 0, pools: data?.pools || {}, limit, offset, rows: rows.map((r) => ({ ...r, queued: queued.get(String(r.email || '').toLowerCase()) || [] })) };
+  }
+
+  if (action === 'draft_batch') {
+    const people = Array.isArray(body.people) ? body.people.slice(0, 100) : [];
+    const bucket = BUCKETS.includes(body.bucket) ? body.bucket : null;
+    const campaign = clean(body.campaign, 60).toLowerCase().replace(/[^a-z0-9-]+/g, '-').replace(/^-+|-+$/g, '');
+    const subject = clean(body.subject, 200);
+    const text = String(body.body ?? '').replace(/\r/g, '').slice(0, 8000);
+    if (!people.length) return { error: 'nobody_picked' };
+    if (!bucket || !campaign || !subject || !text.trim()) return { error: 'empty' };
+    if (!isDay(body.day) || body.day < todayEastern()) return { error: 'day_in_past' };
+    for (const u of (subject + ' ' + text).match(/https?:\/\/[^\s<]+/g) || []) {
+      let ok = false; try { const x = new URL(u); ok = /(^|\.)vegansexplore\.com$/.test(x.hostname) && x.pathname.startsWith('/go/'); } catch { /* not a link */ }
+      if (!ok) return { error: 'use_tracked_link', link: u };
+    }
+    const list = people.map((x: any) => ({ name: clean(x.name, 160), email: clean(x.email, 200).toLowerCase(), person_id: isId(x.person_id) ? x.person_id : null, org: clean(x.org, 160) || null }));
+    const skipped: { name: string; email: string; why: string }[] = [];
+    const ok = list.filter((x) => { if (!x.name || !isEmail(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'no_email' }); return false; } return true; });
+    const emails = [...new Set(ok.map((x) => x.email))];
+    const gone = new Set<string>();
+    const { data: s1 } = await db.from('email_suppressions').select('email').in('email', emails).eq('active', true);
+    const { data: s2 } = await db.from('people_suppression').select('email').in('email', emails).eq('active', true);
+    for (const x of [...(s1 || []), ...(s2 || [])]) gone.add(String(x.email).toLowerCase());
+    const { data: have } = await db.from('ve_people_outreach').select('person_key').eq('campaign', campaign).neq('status', 'skipped').in('person_key', emails);
+    const already = new Set((have || []).map((x) => x.person_key));
+    const seen = new Set<string>();
+    const rows: Record<string, unknown>[] = [];
+    for (const x of ok) {
+      if (seen.has(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'picked_twice' }); continue; }
+      seen.add(x.email);
+      if (gone.has(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'do_not_email' }); continue; }
+      if (already.has(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'already_in_campaign' }); continue; }
+      const first = x.name.split(/\s+/)[0] || 'there';
+      const fill = (t: string) => t.replace(/\{first_name\}/gi, first);
+      rows.push({ day: body.day, person_id: x.person_id, person_key: x.email, name: x.name, org: x.org, bucket, channel: 'email', to_address: x.email,
+        subject: fill(subject), body: fill(text), why: 'Picked for ' + campaign, template_key: null, personal: true, campaign, sort: rows.length, status: 'draft' });
+    }
+    if (rows.length) { const { error } = await db.from('ve_people_outreach').insert(rows); if (error) return { error: error.message }; }
+    return { ok: true, created: rows.length, day: body.day, campaign, skipped };
   }
 
   if (action === 'templates') {
