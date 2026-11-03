@@ -143,6 +143,15 @@ async function stateFor(m: any) {
     link: (me || m).referral_code ? `${SITE}/r/${(me || m).referral_code}` : null, challenges: list, settings: await settings() };
 }
 
+// Abuse watch (Sean 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+// Pure reads. Anything not listed is treated as a write (start, restart, pick, proof_start, proof, set_password).
+const READ_ACTIONS = new Set(['state', 'nearby']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -153,6 +162,7 @@ Deno.serve(async (req) => {
   const admin = await secret('LESARUSS_ADMIN_TOKEN');
   const ops = !!admin && bearer.length === admin.length && bearer === admin;
   let memberId: string | null = ops ? (isId(body.as_member) ? body.as_member : null) : (bearer ? await readMember(bearer) : null);
+  const memberViaToken = !ops && !!memberId; // a member token only: not ops as_member, not a Taster key
   const tasterId = await readTaster(body.taster);
   let session: string | null = null;
 
@@ -220,6 +230,9 @@ Deno.serve(async (req) => {
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
   const { data: m } = await db.from('members').select(MEMBER_COLS).eq('id', memberId).maybeSingle();
   if (!m) return json({ error: 'not_found' }, 404);
+  if (memberViaToken && !READ_ACTIONS.has(action) && await standingBlocked(db, memberId)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
   const extra = session ? { token: session } : {};
 
   if (action === 'state') return json({ ok: true, ...extra, ...(await stateFor(m)) });

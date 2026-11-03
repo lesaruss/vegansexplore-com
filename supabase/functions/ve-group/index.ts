@@ -353,6 +353,15 @@ async function confirmSession(sessionId: string): Promise<Response> {
   return await confirmGift(sessionId);
 }
 
+// Abuse watch (Sean 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+// Reads, and public or email-link actions with no member write (apply, meet, msg_* by link token). Anything not listed is treated as a write.
+const READ_ACTIONS = new Set(['page', 'dash', 'tickets', 'event_tickets', 'apply', 'meet']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -367,6 +376,15 @@ Deno.serve(async (req) => {
   const memberId = await memberOf(req, body);
   const { data: member } = memberId ? await db.from('members').select('id, name, email, membership_status, is_superadmin').eq('id', memberId).maybeSingle() : { data: null };
   const active = member?.membership_status === 'active';
+  // Only a member token is checked: not ops acting as_member, not the cron.
+  if (memberId && !action.startsWith('msg_') && !READ_ACTIONS.has(action)) {
+    const bearer = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+    const adminTok = await secret('LESARUSS_ADMIN_TOKEN');
+    const isOps = !!adminTok && bearer.length === adminTok.length && bearer === adminTok;
+    if (!isOps && await standingBlocked(db, memberId)) {
+      return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+    }
+  }
 
   // ---- A member's link from an announcement email (no sign-in: the link is theirs alone).
   if (action.startsWith('msg_')) {

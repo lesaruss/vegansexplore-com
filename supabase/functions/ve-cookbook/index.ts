@@ -142,12 +142,24 @@ async function shape(rows: any[]) {
   }));
 }
 
+// Abuse watch (Sean 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+// Pure reads. Anything not listed is treated as a write.
+const READ_ACTIONS = new Set(['list', 'gvotes', 'saves', 'photos', 'mine', 'queue', 'photo_queue']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const viewer = await loadViewer(req);
+  if (viewer && !READ_ACTIONS.has(String(body.action || '')) && await standingBlocked(db, viewer.id)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
   const guide = GUIDES[body.guide] ? String(body.guide) : null;
   // Inside a Guide, the Cookbook is the Guide's: its owners (and super admins) are its members.
   let owns = false;

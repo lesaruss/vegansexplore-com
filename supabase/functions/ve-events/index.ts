@@ -506,6 +506,14 @@ async function publicAction(action: string, body: any, memberId: string | null) 
   return json({ error: 'unknown_action' }, 400);
 }
 
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+const READ_ACTIONS = new Set(['mine', 'guests', 'promote_get', 'queue', 'organizers', 'claims', 'hosts', 'sources']);
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -519,6 +527,9 @@ Deno.serve(async (req) => {
   if (!memberId) return json({ error: 'not_authenticated', message: 'Sign in to send an event.' }, 401);
   const { data: member } = await db.from('members').select('id, name, email, is_superadmin').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'member_not_found' }, 404);
+  if (!READ_ACTIONS.has(action) && await standingBlocked(db, memberId)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
   const admin = !!member.is_superadmin;
   const needAdmin = () => (admin ? null : json({ error: 'no_access' }, 403));
   // A member reads and submits only their own flyers; the team any.

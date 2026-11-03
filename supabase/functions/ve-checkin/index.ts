@@ -65,6 +65,14 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+const READ_ACTIONS = new Set(['listing', 'mine', 'today', 'review_list']);
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -111,6 +119,9 @@ Deno.serve(async (req) => {
   const { data: m0 } = memberId ? await db.from('members').select('id, membership_status, is_superadmin').eq('id', memberId).maybeSingle() : { data: null };
   const m: any = m0 || (ops ? { id: null, membership_status: 'active', is_superadmin: true } : null);
   if (!m) return json({ error: 'not_found' }, 404);
+  if (memberId && !READ_ACTIONS.has(String(body.action || '')) && await standingBlocked(db, memberId)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
 
   if (body.action === 'privacy') {
     if (typeof body.show_checkins === 'boolean') {
