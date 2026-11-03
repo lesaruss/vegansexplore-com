@@ -18,6 +18,10 @@
 //   { action: 'draft_batch', people: [{name, email, person_id?, org?}], bucket, campaign, day, subject, body }
 //                                              one draft each (status draft, personal, never approved here); {first_name} is filled in; a person already
 //                                              in that campaign or suppressed is skipped and listed; links must be tracked /go/ links
+//   draft_batch also takes destination: where {link} goes, made into each person's own tracked /go/ link (ve_links, one per person, named by
+//                                              recipient), so a click names them
+//   { action: 'campaigns' }                 one row a campaign: people, drafts, scheduled, sent, opened, clicked, bounced, with the rates
+//   { action: 'campaign', campaign }        that campaign's messages, each with Sent / Opened / Clicked
 //   { action: 'tick' }                      sends approved emails whose send_at has passed (cron, every 5 minutes)
 // Emails go through email-send as brand lesaruss: from Sean A. Russell, replies to contact@lesaruss.com, one-click unsubscribe,
 // the postal address, campaign_ref ve-people-<id> so nothing goes twice. Opens come from email_events, clicks from ve_links.
@@ -290,8 +294,13 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
     const { data: me } = await db.from('members').select('email').eq('id', who.id).maybeSingle();
     const to = String(me?.email || '').toLowerCase();
     if (!isEmail(to)) return { error: 'no_email_for_you' };
-    const { data: m } = await db.from('ve_people_outreach').select('id,channel,subject,body,name').eq('id', body.id).maybeSingle();
+    const { data: m } = await db.from('ve_people_outreach').select('id,channel,subject,body,name,link_code').eq('id', body.id).maybeSingle();
     if (!m || m.channel !== 'email') return { error: 'not_email' };
+    if (m.link_code) {
+      // A test shows the page itself, so a test click never counts as theirs.
+      const { data: l } = await db.from('ve_links').select('destination').eq('code', m.link_code).maybeSingle();
+      if (l?.destination) m.body = String(m.body).split(`${SITE}/go/${m.link_code}`).join(l.destination);
+    }
     const res = await emailSend({ brand: BRAND, campaign_ref: `ve-people-test-${m.id}-${Date.now()}`, subject: '[Test] ' + (m.subject || ''),
       html: toHtml(m.body), text: toText(m.body), test_to: [to], recipients: [{ email: to }] });
     const result = res?.results?.[0]?.result || (res?.ok ? 'sent' : 'failed');
@@ -353,6 +362,10 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
     if (!people.length) return { error: 'nobody_picked' };
     if (!bucket || !campaign || !subject || !text.trim()) return { error: 'empty' };
     if (!isDay(body.day) || body.day < todayEastern()) return { error: 'day_in_past' };
+    const dest = clean(body.destination, 500);
+    const wantsLink = /\{link\}/i.test(text);
+    if (wantsLink) { let ok = false; try { ok = new URL(dest).protocol === 'https:'; } catch { /* not a link */ } if (!ok) return { error: 'destination_needed' }; }
+    if (/\{link\}/i.test(subject)) return { error: 'link_not_in_subject' };
     for (const u of (subject + ' ' + text).match(/https?:\/\/[^\s<]+/g) || []) {
       let ok = false; try { const x = new URL(u); ok = /(^|\.)vegansexplore\.com$/.test(x.hostname) && x.pathname.startsWith('/go/'); } catch { /* not a link */ }
       if (!ok) return { error: 'use_tracked_link', link: u };
@@ -375,12 +388,62 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
       if (gone.has(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'do_not_email' }); continue; }
       if (already.has(x.email)) { skipped.push({ name: x.name, email: x.email, why: 'already_in_campaign' }); continue; }
       const first = x.name.split(/\s+/)[0] || 'there';
-      const fill = (t: string) => t.replace(/\{first_name\}/gi, first);
-      rows.push({ day: body.day, person_id: x.person_id, person_key: x.email, name: x.name, org: x.org, bucket, channel: 'email', to_address: x.email,
+      let code: string | null = null;
+      if (wantsLink) {
+        for (let i = 0; i < 4 && !code; i++) {
+          const c = 'pp-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => 'abcdefghjkmnpqrstuvwxyz23456789'[b % 31]).join('');
+          const { error } = await db.from('ve_links').insert({ code: c, label: ('People outreach: ' + x.name).slice(0, 120), destination: dest, initiative_slug: campaign,
+            tags: [campaign, bucket, 'people-outreach'], channel: 'email', recipient_email: x.email, recipient_name: x.name.slice(0, 120), active: true, created_by: who.id });
+          if (!error) code = c;
+        }
+        if (!code) return { error: 'could_not_make_link' };
+      }
+      const fill = (t: string) => t.replace(/\{first_name\}/gi, first).replace(/\{link\}/gi, code ? `${SITE}/go/${code}` : '');
+      rows.push({ link_code: code, day: body.day, person_id: x.person_id, person_key: x.email, name: x.name, org: x.org, bucket, channel: 'email', to_address: x.email,
         subject: fill(subject), body: fill(text), why: 'Picked for ' + campaign, template_key: null, personal: true, campaign, sort: rows.length, status: 'draft' });
     }
     if (rows.length) { const { error } = await db.from('ve_people_outreach').insert(rows); if (error) return { error: error.message }; }
     return { ok: true, created: rows.length, day: body.day, campaign, skipped };
+  }
+
+  if (action === 'campaigns' || action === 'campaign') {
+    let q = db.from('ve_people_outreach').select('id,campaign,day,status,channel,person_key,sent_at,link_code,send_error').order('day', { ascending: false }).limit(5000);
+    if (action === 'campaign') { const c = clean(body.campaign, 60); if (!c) return { error: 'empty' }; q = q.eq('campaign', c); }
+    const { data, error } = await q;
+    if (error) return { error: error.message };
+    const rows = data || [];
+    const opened = new Set<string>(), bounced = new Set<string>();
+    const ids = rows.filter((r) => r.channel === 'email' && r.sent_at).map((r) => r.id);
+    for (let i = 0; i < ids.length; i += 200) {
+      const { data: ev } = await db.from('email_events').select('campaign_ref,event_type').in('campaign_ref', ids.slice(i, i + 200).map((x) => `ve-people-${x}`)).in('event_type', ['email.opened', 'email.bounced']);
+      for (const e of ev || []) { const id = String(e.campaign_ref).slice('ve-people-'.length); (e.event_type === 'email.opened' ? opened : bounced).add(id); }
+    }
+    const codes = [...new Set(rows.map((r) => r.link_code).filter(Boolean))] as string[];
+    const clicked = new Set<string>();
+    for (let i = 0; i < codes.length; i += 200) {
+      const { data: ls } = await db.from('ve_links').select('code,clicks').in('code', codes.slice(i, i + 200)).gt('clicks', 0);
+      for (const l of ls || []) clicked.add(l.code);
+    }
+    if (action === 'campaign') {
+      const { data: full } = await db.from('ve_people_outreach').select(COLS).eq('campaign', clean(body.campaign, 60)).order('day').order('sort').limit(1000);
+      const ms = (await enrich(full || [])).map((m: any) => ({ ...m, body: undefined }));
+      return { campaign: clean(body.campaign, 60), messages: ms };
+    }
+    const by = new Map<string, any>();
+    for (const r of rows) {
+      const c = by.get(r.campaign) || { campaign: r.campaign, people: new Set<string>(), messages: 0, draft: 0, scheduled: 0, sent: 0, done: 0, failed: 0, skipped: 0, opened: 0, clicked: 0, bounced: 0, first_day: r.day, last_day: r.day };
+      c.people.add(r.person_key); c.messages++;
+      if (r.status === 'draft') c.draft++; else if (r.status === 'approved' || r.status === 'sending') c.scheduled++;
+      else if (r.status === 'sent') c.sent++; else if (r.status === 'done') c.done++; else if (r.status === 'failed') c.failed++; else if (r.status === 'skipped') c.skipped++;
+      if (opened.has(r.id)) c.opened++;
+      if (bounced.has(r.id)) c.bounced++;
+      if (r.link_code && clicked.has(r.link_code)) c.clicked++;
+      if (r.day < c.first_day) c.first_day = r.day; if (r.day > c.last_day) c.last_day = r.day;
+      by.set(r.campaign, c);
+    }
+    const pct = (n: number, d: number) => (d ? Math.round((n / d) * 1000) / 10 : null);
+    const out = [...by.values()].map((c) => ({ ...c, people: c.people.size, open_rate: pct(c.opened, c.sent), click_rate: pct(c.clicked, c.sent) })).sort((a, b) => (a.last_day < b.last_day ? 1 : -1));
+    return { campaigns: out };
   }
 
   if (action === 'templates') {
