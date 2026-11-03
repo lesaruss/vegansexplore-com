@@ -460,6 +460,7 @@ module.exports = async (req, res) => {
     // plays in its frame (it was drawn as an <img> here, a broken picture), with Your ad here under it.
     + '<aside class="vear-rail" data-ad-page="pulse"></aside>'
     + '</div></div>'
+    + '<script src="/public/ve-pulse-subscribe.js" defer></script>'
     + '<script src="/public/footer.js"></script>'
     + '<script src="/public/ve-hubs.js"></script>'
     + '<script src="/public/ve-city-banner.js"></script>'

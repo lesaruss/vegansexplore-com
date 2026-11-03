@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Your Daily Pulse — Vegans Explore</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Daily Pulse subscription's page (Sean, 2026-11-03; ve-pulse-subscribe). /pulse-preferences?t=<key>: confirm the email
+       (&confirm=1), change cities and how often, or stop (&unsub=1). No sign-in: the emailed link is theirs alone. Built on messages.html. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-deep: #1f5f22; --ve-green-light: #e8f5e9; --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75); }
+    body { background: #f5f5f5; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 3px solid #F69820; outline-offset: 2px; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 44px 40px 80px; }
+    @media (max-width: 600px) { main { padding: 28px 16px 56px; } }
+    .eyebrow { font-size: 10px; font-weight: 800; letter-spacing: 0.32em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 14px; }
+    h1 { font-size: clamp(24px, 3.4vw, 36px); font-weight: 900; line-height: 1.1; margin-bottom: 8px; }
+    .lead { font-size: 14.5px; line-height: 1.6; color: var(--ve-text-75); max-width: 860px; margin-bottom: 18px; }
+    .acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; font-family: inherit; font-size: 12px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 12px 22px; border: 1.5px solid var(--ve-green-dark); border-radius: 6px; background: #fff; color: var(--ve-green-dark); cursor: pointer; text-decoration: none; }
+    .btn.solid { background: var(--ve-green-dark); color: #fff; }
+    .btn:disabled { opacity: .5; cursor: default; }
+    .done { border-radius: 10px; background: var(--ve-green-light); color: var(--ve-green-deep); font-size: 14px; font-weight: 700; line-height: 1.55; padding: 14px 16px; max-width: 860px; margin-bottom: 16px; }
+    .err { border-radius: 10px; background: #fdecea; color: #b3261e; font-size: 14px; font-weight: 700; padding: 14px 16px; max-width: 860px; margin-bottom: 16px; }
+    .h { font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ve-green-deep); margin: 22px 0 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: 8px; max-width: 860px; }
+    .chip { position: relative; }
+    .chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+    .chip span { display: block; border: 1.5px solid rgba(0,0,0,.18); border-radius: 6px; padding: 11px 14px; font-size: 14px; font-weight: 600; background: #fff; }
+    .chip input:checked + span { background: var(--ve-green-dark); border-color: var(--ve-green-dark); color: #fff; }
+    .chip input:focus-visible + span { outline: 3px solid #F69820; outline-offset: 2px; }
+    .freq { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+    .freq label { display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    .more { margin-top: 22px; font-size: 13.5px; }
+    .more a { color: var(--ve-green-deep); font-weight: 800; }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <main id="app" aria-live="polite"><p class="lead">Loading…</p></main>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-pulse-subscribe';
+    var app = document.getElementById('app'), q = new URLSearchParams(location.search), tok = q.get('t') || '';
+    function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
+    function bad() { app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>That link is not complete</h1><p class="lead">Open the whole link from your email, or <a href="/pulse">get the Daily Pulse again</a>.</p>'; }
+    if (!tok) return bad();
+    var action = q.get('unsub') ? 'unsubscribe' : q.get('confirm') ? 'confirm' : 'me';
+    api({ action: action, token: tok }).then(function (d) {
+      if (!d || !d.ok) return bad();
+      var s = d.subscriber, names = d.cities || {};
+      try { localStorage.setItem('ve_pulse_sub', s.unsubscribed ? '' : '1'); } catch (e) {}
+      if (action === 'unsubscribe') {
+        app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>You are unsubscribed</h1><div class="done">We will not send you the Daily Pulse any more.</div>' +
+          '<p class="lead">Changed your mind? <a href="/pulse-preferences?t=' + encodeURIComponent(tok) + '&confirm=1">Turn it back on</a>.</p><p class="more"><a href="/pulse">Read the Daily Pulse on the site</a></p>';
+        return;
+      }
+      var chips = Object.keys(names).map(function (k) { return '<label class="chip"><input type="checkbox" name="city" value="' + k + '"' + (s.cities.indexOf(k) > -1 ? ' checked' : '') + '><span>' + esc(names[k]) + '</span></label>'; }).join('');
+      app.innerHTML = '<p class="eyebrow">Vegans Explore</p><h1>' + (action === 'confirm' ? 'You are in' : 'Your Daily Pulse') + '</h1>' +
+        (action === 'confirm' ? '<div class="done">Confirmed. The Daily Pulse starts with the next issue.</div>' : '') +
+        '<p class="lead">Pick up to three cities and how often you want it.</p><div id="msg" role="status"></div>' +
+        '<form id="f"><p class="h">Cities</p><div class="grid">' + chips + '</div>' +
+        '<p class="h">How often</p><div class="freq"><label><input type="radio" name="freq" value="daily"' + (s.frequency !== 'weekly' ? ' checked' : '') + '> Every day</label>' +
+        '<label><input type="radio" name="freq" value="weekly"' + (s.frequency === 'weekly' ? ' checked' : '') + '> Once a week, on Monday</label></div>' +
+        '<div class="acts"><button class="btn solid" type="submit">Save</button><a class="btn" href="/pulse-preferences?t=' + encodeURIComponent(tok) + '&unsub=1">Stop these emails</a></div></form>' +
+        '<p class="more"><a href="/pulse">Read the Daily Pulse on the site</a></p>';
+      var f = document.getElementById('f'), msg = document.getElementById('msg');
+      f.addEventListener('change', function (e) {
+        if (e.target.name === 'city' && f.querySelectorAll('input[name=city]:checked').length > 3) { e.target.checked = false; msg.innerHTML = '<div class="err">Pick up to three cities.</div>'; }
+        else msg.innerHTML = '';
+      });
+      f.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var cities = Array.prototype.map.call(f.querySelectorAll('input[name=city]:checked'), function (i) { return i.value; });
+        if (!cities.length) { msg.innerHTML = '<div class="err">Pick at least one city.</div>'; return; }
+        api({ action: 'save', token: tok, cities: cities, frequency: f.freq.value }).then(function (r) {
+          msg.innerHTML = r && r.ok ? '<div class="done">Saved.</div>' : '<div class="err">That did not go through. Try again in a minute.</div>';
+        });
+      });
+    });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

@@ -262,7 +262,7 @@ async function tick() {
   }
   if (!cfg.tasters_on || !inHours) return out;
   const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
-    .is('unsubscribed_at', null).is('member_id', null).not('name', 'ilike', '%[TEST]%').limit(1000);
+    .is('unsubscribed_at', null).is('member_id', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
   for (const t of ts || []) {
     if (out.tasters >= cfg.per_tick) break;
     if (t.account_id) { const { data: a } = await db.from('members').select('membership_status').eq('id', t.account_id).maybeSingle(); if (a?.membership_status === 'active') continue; }
