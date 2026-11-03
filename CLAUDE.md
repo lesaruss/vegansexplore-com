@@ -1296,6 +1296,13 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   block and the Depot moved to the bottom (above). Item 3, Done 2026-11-03 (main e7008ae): the footer overlapped the dashboard's content on phones
   because `html,body{height:100%}` with the flex-column body let `.console-frame` shrink; the body now grows (`height:auto`) and the frame is
   `flex:1 0 auto`. Any page that puts the footer last in a flex-column body must not give the body a fixed height.
+- **`ve-guides` is the one playbook for every Guide** (Sean, 2026-11-03: "we don't have a new playbook for every single guide... we focus on one, and then we go
+  from there"; canon `canon-ve-guides-playbook`; migration `20261103_ve_guides_playbook.sql`). One Guide is pinned at a time; a new Guide idea is a queue item,
+  never a new playbook; each Guide is one decision record `ve-guides: <Guide>`. Queue: the fold review of the other playbooks (which of ve-events-guide,
+  ve-door-guides, ve-supermarket-guide, ve-venue-guides and the Guide parts of ve-nonprofit-partners fold in, only as Sean says), Sean's two Nutrition calls,
+  bringing `docs/guides/BUILD-A-GUIDE.md` up to date, naming the gate (the functional ve-pathways work comes before the Coming soon Guides), then the sixteen
+  Coming soon Guides in the order of their Notify me sign-ups. The Nutrition Guide (live 2026-10-31) is under it and `ve-nutrition-guide` is Done, folded.
+  Guides feed the Pathways, not the other way round; `ve-door-guides` is where the two meet.
 - Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
