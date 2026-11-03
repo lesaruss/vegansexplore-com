@@ -9,6 +9,20 @@ const TEAM = 'contact@lesaruss.com';
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
 const KINDS: Record<string, string> = { broken: 'Something is broken', wrong: 'Something is wrong or out of date', confusing: 'Something is confusing', missing: 'Something is missing', idea: 'An idea', praise: 'Something is working well', other: 'Something else' };
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const STATUSES = ['new', 'working', 'fixed', 'set_aside', 'spam'];
+function b64d(s: string): Uint8Array { const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4)); const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
+// Same key derivation as ve-auth's signJWT / decodeToken.
+async function verifyToken(token: string): Promise<string | null> {
+  try {
+    const [h, p, sg] = token.split('.');
+    if (!h || !p || !sg) return null;
+    const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(SERVICE_KEY.slice(0, 32).padEnd(32, '0')), { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+    if (!(await crypto.subtle.verify('HMAC', key, b64d(sg), new TextEncoder().encode(`${h}.${p}`)))) return null;
+    const d = JSON.parse(new TextDecoder().decode(b64d(p)));
+    return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
+  } catch { return null; }
+}
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 
 Deno.serve(async (req) => {
@@ -16,6 +30,29 @@ Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'post_only' }, 405);
   let b: any = {};
   try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+  if (['admin_list', 'admin_get', 'admin_set'].includes(String(b.action || ''))) {
+    const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    const mid = tok ? await verifyToken(tok) : null;
+    if (!mid) return json({ error: 'not_authenticated' }, 401);
+    const { data: m } = await db.from('members').select('is_superadmin').eq('id', mid).maybeSingle();
+    if (!m?.is_superadmin) return json({ error: 'no_access' }, 403);
+    if (b.action === 'admin_list') {
+      const { data, error } = await db.from('ve_feedback').select('id, created_at, kind, page_url, page_label, message, email, name, status').order('created_at', { ascending: false }).limit(1000);
+      if (error) return json({ error: 'load_failed' }, 500);
+      return json({ ok: true, rows: data, kinds: KINDS });
+    }
+    if (!/^[0-9a-f-]{36}$/i.test(String(b.id || ''))) return json({ error: 'bad_id' }, 400);
+    if (b.action === 'admin_get') {
+      const { data } = await db.from('ve_feedback').select('*').eq('id', b.id).maybeSingle();
+      return data ? json({ ok: true, row: data }) : json({ error: 'not_found' }, 404);
+    }
+    const patch: Record<string, unknown> = {};
+    if (b.status !== undefined) { if (!STATUSES.includes(b.status)) return json({ error: 'bad_status' }, 400); patch.status = b.status; }
+    if (b.note !== undefined) patch.note = clean(b.note, 2000) || null;
+    if (!Object.keys(patch).length) return json({ error: 'nothing_to_save' }, 400);
+    const { data, error } = await db.from('ve_feedback').update(patch).eq('id', b.id).select('*').maybeSingle();
+    return error || !data ? json({ error: 'save_failed' }, 500) : json({ ok: true, row: data });
+  }
   const kind = KINDS[b.kind] ? String(b.kind) : 'other';
   const message = clean(b.message, 3000);
   const page = clean(b.page_url, 500);

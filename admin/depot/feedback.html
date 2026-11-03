@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Feedback | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Feedback</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">What people send through the Feedback button on every page (Sean, 2026-11-03). Each one arrives as New and is also in the Inbox until you move it. Open one to see the page it was about, what they said and where they were; set it to Working, Fixed or Set aside, or mark it Spam, and leave a note.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['new', 'New'], ['working', 'Working'], ['fixed', 'Fixed'], ['set_aside', 'Set aside'], ['spam', 'Spam'], ['all', 'All']];
+      var KINDS = { broken: 'Something is broken', wrong: 'Something is wrong or out of date', confusing: 'Something is confusing', missing: 'Something is missing', idea: 'An idea', praise: 'Something is working well', other: 'Something else' }, rows = [], loaded = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET'; }
+      function path(u) { try { var x = new URL(u); return x.pathname + x.search; } catch (e) { return u; } }
+      function stLabel(s) { for (var i = 0; i < ST.length; i++) if (ST[i][0] === s) return ST[i][1]; return s; }
+      // #list/<status>/<kind>/<page>?q=  or  #item/<id>
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); return h[0] === 'item' ? { v: 'item', id: h[1] } : { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'new', kind: decodeURIComponent(h[2] || 'all'), page: decodeURIComponent(h[3] || 'all') }; }
+      function go(st, kind, page) { location.hash = 'list/' + st + '/' + encodeURIComponent(kind) + '/' + encodeURIComponent(page); }
+      function drawList(r) {
+        var counts = {}; rows.forEach(function (x) { counts[x.status] = (counts[x.status] || 0) + 1; });
+        var pages = {}; rows.forEach(function (x) { var p = path(x.page_url).split('?')[0]; pages[p] = (pages[p] || 0) + 1; });
+        var list = rows.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (r.kind === 'all' || x.kind === r.kind) && (r.page === 'all' || path(x.page_url).split('?')[0] === r.page); });
+        var q = ($('q') && $('q').value || '').toLowerCase();
+        var tabs = ST.map(function (s) { var n = s[0] === 'all' ? rows.length : (counts[s[0]] || 0); return '<a href="#list/' + s[0] + '/' + encodeURIComponent(r.kind) + '/' + encodeURIComponent(r.page) + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + n + ')</a>'; }).join('');
+        var kopts = '<option value="all">Every kind</option>' + Object.keys(KINDS).map(function (k) { return '<option value="' + k + '"' + (k === r.kind ? ' selected' : '') + '>' + esc(KINDS[k]) + '</option>'; }).join('');
+        var popts = '<option value="all">Every page</option>' + Object.keys(pages).sort(function (a, b) { return pages[b] - pages[a]; }).map(function (p) { return '<option value="' + esc(p) + '"' + (p === r.page ? ' selected' : '') + '>' + esc(p) + ' (' + pages[p] + ')</option>'; }).join('');
+        $('view').innerHTML = '<nav class="tabs" aria-label="Filter by status">' + tabs + '</nav>' +
+          '<div class="tools"><select id="fk" aria-label="Kind">' + kopts + '</select><select id="fp" aria-label="Page">' + popts + '</select><input id="q" type="search" placeholder="Search what they said" value="' + esc(q) + '" data-dictate="off"></div><div class="grid" id="grid"></div>';
+        $('fk').onchange = function () { go(r.st, this.value, r.page); };
+        $('fp').onchange = function () { go(r.st, r.kind, this.value); };
+        $('q').oninput = function () { fill(r); };
+        fill(r);
+      }
+      function fill(r) {
+        var q = $('q').value.toLowerCase();
+        var list = rows.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (r.kind === 'all' || x.kind === r.kind) && (r.page === 'all' || path(x.page_url).split('?')[0] === r.page) && (!q || (x.message + ' ' + (x.email || '') + ' ' + (x.name || '')).toLowerCase().indexOf(q) >= 0); });
+        $('grid').innerHTML = list.length ? list.map(function (x) {
+          return '<div class="card"><div class="body"><span class="kind">' + esc(KINDS[x.kind] || x.kind) + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
+            '<div class="excerpt">' + esc(x.message) + '</div><span class="meta">' + esc(path(x.page_url)) + ' &middot; ' + esc(x.name || x.email || 'No name left') + ' &middot; ' + esc(when(x.created_at)) + '</span>' +
+            '<div class="acts"><a class="btn" href="#item/' + x.id + '">Open</a></div></div></div>';
+        }).join('') : '<p class="sub">' + (r.st === 'new' ? 'Nothing new.' : 'None here.') + '</p>';
+      }
+      function drawItem(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_get', id: id }).then(function (d) {
+          if (!d || !d.row) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var x = d.row;
+          var btns = [['working', 'Working on it'], ['fixed', 'Fixed'], ['set_aside', 'Set aside'], ['spam', 'Spam'], ['new', 'Back to New']].filter(function (b) { return b[0] !== x.status; });
+          $('view').innerHTML = '<p class="crumb"><a href="#list/new/all/all">Feedback</a> / ' + esc(KINDS[x.kind] || x.kind) + '</p><div class="item">' +
+            '<div><span class="kind">' + esc(KINDS[x.kind] || x.kind) + '</span> <span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
+            '<div class="full">' + esc(x.message) + '</div>' +
+            '<dl><dt>Page</dt><dd><a href="' + esc(x.page_url) + '" target="_blank" rel="noopener">' + esc(x.page_label || path(x.page_url)) + '</a><br><span class="meta">' + esc(x.page_url) + '</span></dd>' +
+            '<dt>From</dt><dd>' + esc(x.name || 'No name left') + (x.email ? ' &middot; <a href="mailto:' + esc(x.email) + '">' + esc(x.email) + '</a>' : ' &middot; no email left') + ' &middot; ' + (x.member_signed_in ? 'signed in' : 'not signed in') + '</dd>' +
+            '<dt>When</dt><dd>' + esc(when(x.created_at)) + '</dd><dt>Screen</dt><dd>' + esc(x.viewport || 'Not recorded') + '</dd><dt>Browser</dt><dd>' + esc(x.user_agent || 'Not recorded') + '</dd></dl>' +
+            '<div><label class="meta" for="note"><b>Note</b> (for the team, never shown to them)</label><textarea id="note" data-dictate="off">' + esc(x.note || '') + '</textarea></div>' +
+            '<div class="acts"><button type="button" class="btn btn-quiet" id="sv">Save note</button>' + btns.map(function (b) { return '<button type="button" class="btn' + (b[0] === 'spam' ? ' btn-ghost' : '') + '" data-st="' + b[0] + '">' + b[1] + '</button>'; }).join('') + '<span class="msg" id="msg"></span></div></div>';
+          function save(patch) { $('msg').textContent = 'Saving...'; api(Object.assign({ action: 'admin_set', id: id }, patch)).then(function (r) { if (r && r.ok) { loaded = false; if (patch.status) location.hash = 'list/new/all/all'; else $('msg').textContent = 'Saved.'; } else $('msg').textContent = 'That did not go through.'; }); }
+          $('sv').onclick = function () { save({ note: $('note').value }); };
+          [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { save({ status: b.getAttribute('data-st'), note: $('note').value }); }; });
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'item') return drawItem(r.id);
+        if (loaded) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.rows; KINDS = d.kinds; loaded = true; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to read feedback.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

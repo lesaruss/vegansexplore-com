@@ -51,6 +51,7 @@
     { group: 'Directory', href: '/admin/depot/event-sponsors', label: 'Event sponsors' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/social', label: 'Social' },
+    { group: 'Site', href: '/admin/depot/feedback', label: 'Feedback' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },

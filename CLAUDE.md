@@ -1249,8 +1249,10 @@ under 1060 px; on phones a small fixed tab bottom right). The window: **What is 
 line to say which), the kind (Something is broken, Wrong or out of date, Confusing, Something is missing, An idea, Working well, Something else),
 what happened, an optional email for a reply. `ve-feedback` (public, verify_jwt off, 5 an hour and 15 a day per visitor) saves a `ve_feedback`
 row (migration `20261103_ve_feedback.sql`, RLS on, `status` new | working | fixed | set_aside | spam) with the page, the viewport and the browser,
-and emails contact@lesaruss.com at once ("[Feedback] kind: page", reply-to their email). Not built yet: a Depot > Feedback queue view and an Inbox
-row. Until then Logan reads `ve_feedback` every day and fixes what is broken.
+and emails contact@lesaruss.com at once ("[Feedback] kind: page", reply-to their email). **Depot > Feedback** (`/admin/depot/feedback`, Site in the Go to menu; built 2026-11-03): status chips New / Working / Fixed / Set aside / Spam with counts, a kind and a page
+filter and a search over what they said (`#list/<status>/<kind>/<page>`), and one item per view (`#item/<id>`: the message, the page it was about, who, when, screen
+and browser, a note, and the status buttons). `ve-feedback` `admin_list`, `admin_get`, `admin_set` (super admin token). A New item is also an Inbox row
+(`feedback`, migration `20261103_feedback_inbox.sql`) until its status moves. Logan still reads it every day.
 
 **Search queue, working it** (Sean, 2026-11-03): Logan works the queue daily with discretion (answer, write it up as a Guide piece, add a listing
 or set aside); the queue feeds what we write next (articles, new sections, new Directory listings). Spam: a question sent through the box needs
