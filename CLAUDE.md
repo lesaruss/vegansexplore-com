@@ -1256,6 +1256,13 @@ row. Until then Logan reads `ve_feedback` every day and fixes what is broken.
 or set aside); the queue feeds what we write next (articles, new sections, new Directory listings). Spam: a question sent through the box needs
 an email; abusers are quarantined (a `quarantined` status and a rate limit are not built yet).
 
+## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
+
+"When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
+playbook (`playbook_records`, the brand's slug, one decision row per topic), canon (`knowledge_records`), the repo (CLAUDE.md, a migration file for
+every DB change, `docs/handoff/<date>-<topic>.md`, pushed to main), a `brief_checkpoints` row (handed_off) and a `stream_events` row; checks each
+landed; then gives Sean one self-contained paste prompt for a new chat (no "continue" needed, no skills needed). Never call it done before the check.
+
 ## The new header (Sean, 2026-11-03)
 
 Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit
