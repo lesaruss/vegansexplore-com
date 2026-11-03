@@ -56,6 +56,7 @@
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
     { group: 'Content', href: '/admin/depot/books', label: 'Books' },
     { group: 'Content', href: '/admin/depot/mentions', label: 'In this story' },
+    { group: 'Content', href: '/admin/depot/listing-posts', label: 'Social posts' },
     { group: 'Content', href: '/admin/depot', label: 'Library' },
     { group: 'People', href: '/admin/depot/outreach', label: 'Outreach' },
     { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
