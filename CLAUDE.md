@@ -4578,13 +4578,17 @@ with us?... it's per event." Separate from Group Partners.
 
 Concept session with V, locked by Sean: "lock it", with the panel's seven changes (canon `canon-ve-door-guides`; migration
 `20261102_door_guides_canon.sql`; write-up `docs/proposals/door-guides.md`). **Step 1 built and live 2026-11-03 (below); the rest is not built.** Sean: "turn these... into free guides... all they got to do is give us their email address to unlock it... We
-don't scare them away by saying it's $11"; the $11 unlocks their voice.
+don't scare them away by saying it's $11."
+**Canon v3 (Sean, 2026-11-03): one membership, two doors.** The survey door and the $11 Passport are the same membership: the same
+access to everything a member can do (the whole door Guide, recording clips for the podcast, claiming, sponsorship, saving across devices).
+The only differences are the points (1,100 with the $11; the survey pays its own) and a few perks the $11 has. The "Three levels" below are
+v1 history: the email-only reader level is retired (step 2 replaced it), and the $11 does not alone unlock recording.
 
 - **Which**: the Vegan Events Guide first, then the Creator, Nonprofit and Vegan Restaurant Guides. Topic Guides (Dairy, Nutrition,
   Airport, Stadium & Arena...) stay $11 or 1,100 points. On 2026-11-02 nobody had paid for the four door Guides (only Sean's comps).
 - **Three levels**: open (the Overview and the free example, indexed); **free with an email** (the rest to read; asked inside the Guide
   when they open a second section, one field, confirmed by the emailed link, making them a Taster with a welcome series for that Guide);
-  **the $11 Passport, their voice** (record in the browser the question of the month, their story, good news, what they are struggling
+  **a member, by either door, their voice** (v3: not the $11 alone; record in the browser the question of the month, their story, good news, what they are struggling
   with; approved clips become podcast segments, one per Guide, Host Notes for events, credited on their People profile, points once
   approved; saving to their account on every device).
 - **Always free**: the event claim, the sponsorship application, and a claimed host recording their own Host Notes interview. Ticketing
