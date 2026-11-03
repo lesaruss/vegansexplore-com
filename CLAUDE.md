@@ -1217,6 +1217,29 @@ claim that disagrees with the link keeps the link's sponsor and is saved as `con
 challenge and dinner join steps, and a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
 Sign-up from one address is limited to 3 an hour (`ve-auth` `signup`), which a test run hits.
 
+## When search has no answer: Liz, the queue and the editorial loop (LOCKED by Sean 2026-11-03, canon `canon-ve-search-questions`)
+
+Sean typed "vegan suit" and got "nothing matches yet". "Every question that you ask helps us make this knowledge base better... our team
+is going to work on getting the answers... we will send you a notification... Liz be the one who delivers that message... sleek, clean."
+Then: "we can use this as an editorial tool... if somebody's asking for a suit... maybe we should write an article on vegan suits...
+Our guides are these tools, these enrollment tools, but it's also where we're putting this content. And if people search, they can get
+those same information." Locked: "Lock it in." (migrations `20261103_search_questions_queue.sql`, `20261103_search_questions_canon.sql`)
+
+- **A search with nothing back is a question for our team.** `ve-search` queues it once (`ve_search_questions`, one row by its words,
+  `ve_search_ask`; every asker kept in `ve_search_question_askers`, counted once per email or visitor), so a duplicate adds an asker,
+  never a row. Statuses open, working, answered, set_aside; `guide_slug` is the Guide it belongs in; `answer_text`, `answer_url`.
+- **Liz tells them** (`VESearch.askCard`, `askNote` in `public/ve-search.js`; the empty state of `search.html`): the first time a visitor
+  hits a dead end she opens as a card (her picture, "We don't have that one yet", four short lines, an optional email to send the answer to,
+  used for nothing else); after that a one-line note, "It's in our team's queue... How this works", which reopens the card
+  (`localStorage` `ve_ask_seen`). Her lines are text drafts for Sean. No turnaround is promised, only that the team works the queue every
+  day; the email is not a subscription.
+- **Search is an editorial tool**: the queue, most asked first, says what to write; content made for a question goes into the Guide it
+  fits as added value, and search finds it. The Guides are the site's blog, with no separate blog page.
+- **Built 2026-11-03**: both tables, `ve_search_ask` (service role only), `ve-search` `ask` (and every zero-result logged search is queued),
+  Liz's card at 1440 and 390 px. **Not built yet**: the Depot queue view, emailing askers and an Inbox notice when answered, Guide
+  articles found by search, and the first vegan suit brands in Clothing and Fashion (Suits & formal has none). Open: who works the queue
+  daily; whether a signed-out email also joins the Daily Pulse list (default no until Pulse subscribe exists).
+
 ## The new header (Sean, 2026-11-03)
 
 Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit

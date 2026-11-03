@@ -137,6 +137,27 @@
     rail.setAttribute('data-ad-chapter', slug || '');
     if (rail.getAttribute('data-ad-ready')) { rail.removeAttribute('data-ad-ready'); mount(rail); }
   }
+  // The controls (tabs, search and Filters) sit on their own row; the rail starts under them, level with the first cards, as on the
+  // Daily Pulse (Sean, 2026-11-03). Measured, since the controls differ per page; a phone stacks the rail under the content instead.
+  var ctlSel = '.vrd-tools,.vev-bar';
+  function align() {
+    Array.prototype.forEach.call(document.querySelectorAll('.vear-layout'), function (lay) {
+      var rail = lay.querySelector(':scope > .vear-rail'), main = lay.querySelector(':scope > .vear-main');
+      if (!rail || !main) return;
+      var ctl = main.querySelector(ctlSel);
+      if (!ctl || window.innerWidth <= 900) { rail.style.marginTop = ''; return; }
+      var off = ctl.getBoundingClientRect().bottom - lay.getBoundingClientRect().top + 16;
+      rail.style.marginTop = Math.max(16, Math.round(off)) + 'px';
+    });
+  }
+  var alignT = null;
+  function alignSoon() { clearTimeout(alignT); alignT = setTimeout(align, 120); }
+  window.addEventListener('resize', alignSoon);
+  function watch() {
+    align();
+    if (window.MutationObserver) Array.prototype.forEach.call(document.querySelectorAll('.vear-layout > .vear-main'), function (m) { new MutationObserver(alignSoon).observe(m, { childList: true, subtree: true }); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watch); else watch();
   window.VEAdRail = { mount: mount, mountAll: mountAll, chapter: chapter };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountAll); else mountAll();
 })();
