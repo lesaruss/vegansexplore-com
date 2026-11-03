@@ -219,8 +219,9 @@
   if (hdrNew) {
     var hs = document.createElement('style'); hs.id = 've-hdr-css';
     hs.textContent = [
-      '.ve-nav-new .ve-nav-inner{gap:22px;}',
-      '.ve-hs{flex:1 1 auto;max-width:720px;margin:0 auto;position:relative;min-width:0;}',
+      '.ve-nav-new .ve-nav-inner{gap:24px;}',
+      '.ve-hs-field.dict kbd{display:none;}',
+      '.ve-hs{flex:1 1 auto;max-width:none;margin:0;position:relative;min-width:0;}',
       '.ve-hs-field{display:flex;align-items:center;gap:10px;height:44px;border:1.5px solid #2d7d31;border-radius:6px;padding:0 14px;background:#fff;box-shadow:0 0 0 3px rgba(58,155,62,.12);margin:0;cursor:text;}',
       '.ve-hs-field:focus-within{box-shadow:0 0 0 3px rgba(58,155,62,.28);}',
       '.ve-hs-field>svg{width:18px;height:18px;flex:none;stroke:#1a1a1a;fill:none;stroke-width:2.3;stroke-linecap:round;}',
@@ -395,7 +396,7 @@
           '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>' +
           '<form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field">' + _mag +
             '<span class="ve-hs-chip" id="ve-hs-chip" hidden></span>' +
-            '<input type="text" name="q" id="' + (_onSearch ? 've-hs-input' : 'ves-page-input') + '" placeholder="Search places, people, shows, products… try “vegan pizza in Atlanta”" aria-label="Search Vegans Explore" data-dictate="off">' +
+            '<input type="text" name="q" id="' + (_onSearch ? 've-hs-input' : 'ves-page-input') + '" placeholder="Search places, people, shows, products… try “vegan pizza in Atlanta”" aria-label="Search Vegans Explore"' + (window.matchMedia && matchMedia('(pointer: coarse)').matches ? ' data-dictate="off"' : '') + '>' +
             '<kbd aria-hidden="true">/</kbd></label></form>' +
           '<div class="ve-nav-right-wrap">' + _rightNew +
             '<button type="button" class="ve-burger" id="ve-burger" aria-label="Menu" aria-expanded="false" aria-controls="ve-burger-menu">' +
@@ -469,13 +470,15 @@
   if (hdrNew) (function () {
     var form = document.getElementById('ve-hs'); if (!form) return;
     var input = form.querySelector('input'), chip = document.getElementById('ve-hs-chip'), scope = null, mounted = false;
+    // Speak instead of typing: a desktop has the room for it (Sean, 2026-11-03); a phone's own keyboard dictates.
+    if (!input.hasAttribute('data-dictate')) input.closest('.ve-hs-field').classList.add('dict');
     function go(q) {
       q = (q || '').trim(); if (q.length < 2) return;
       location.href = '/search?q=' + encodeURIComponent(q) + (scope && scope.cat ? '&cat=' + encodeURIComponent(scope.cat) : '');
     }
     function ensure() {
       if (mounted) return; mounted = true;
-      function m() { window.VESearch.mount(input, { host: form, onSubmit: go }); if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input')); }
+      function m() { window.VESearch.mount(input, { host: form, onSubmit: go, dictate: !input.hasAttribute('data-dictate') }); if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input')); }
       if (window.VESearch) { m(); return; }
       var ss = document.createElement('script'); ss.src = '/public/ve-search.js'; ss.onload = m; (document.head || document.documentElement).appendChild(ss);
     }

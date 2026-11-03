@@ -5,7 +5,8 @@
 (function () {
   if (window.VEHeaderSearch) return;
   var css = [
-    '.ve-hs{flex:1 1 auto;max-width:720px;width:100%;margin:0 auto;position:relative;min-width:0;}',
+    '.ve-hs{flex:1 1 auto;max-width:none;width:100%;margin:0;position:relative;min-width:0;}',
+    '.ve-hs-field.dict kbd{display:none;}',
     '.ve-hs-field{display:flex;align-items:center;gap:10px;height:44px;border:1.5px solid #2d7d31;border-radius:6px;padding:0 14px;background:#fff;box-shadow:0 0 0 3px rgba(58,155,62,.12);margin:0;cursor:text;}',
     '.ve-hs-field:focus-within{box-shadow:0 0 0 3px rgba(58,155,62,.28);}',
     '.ve-hs-field>svg{width:18px;height:18px;flex:none;stroke:#1a1a1a;fill:none;stroke-width:2.3;stroke-linecap:round;}',
@@ -20,10 +21,12 @@
     var st = document.getElementById('ve-hs-css');
     if (!st) { st = document.createElement('style'); st.id = 've-hs-css'; st.textContent = css; document.head.appendChild(st); }
     var input = form.querySelector('input'), mounted = false;
+    if (window.matchMedia && matchMedia('(pointer: coarse)').matches) input.setAttribute('data-dictate', 'off');
+    else input.closest('.ve-hs-field').classList.add('dict');
     function go(q) { q = (q || '').trim(); if (q.length < 2) return; location.href = '/search?q=' + encodeURIComponent(q); }
     function ensure() {
       if (mounted) return; mounted = true;
-      function m() { window.VESearch.mount(input, { host: form, onSubmit: go }); if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input')); }
+      function m() { window.VESearch.mount(input, { host: form, onSubmit: go, dictate: !input.hasAttribute('data-dictate') }); if (input.value.trim().length >= 2) input.dispatchEvent(new Event('input')); }
       if (window.VESearch) { m(); return; }
       var ss = document.createElement('script'); ss.src = '/public/ve-search.js'; ss.onload = m; (document.head || document.documentElement).appendChild(ss);
     }

@@ -4,6 +4,8 @@
   <script src="/analytics.js"></script>
 <meta charset="UTF-8">
 <script>
+// The new header (Sean, 2026-11-03): banners here are the one-line page bar, as on every other page. ?header=old opts out for the visit.
+(function(){try{var q=new URLSearchParams(location.search).get('header');if(q==='old')sessionStorage.setItem('ve_header','old');else if(q==='new')sessionStorage.removeItem('ve_header');if(sessionStorage.getItem('ve_header')!=='old')document.documentElement.classList.add('ve-hdr-new');}catch(e){document.documentElement.classList.add('ve-hdr-new');}})();
 // A listing opened from the dashboard is its own page, on every screen since 2026-11-01 (see openDashboardListing): go there before the dashboard loads.
 (function(){try{var m=location.pathname.match(/^\/dashboard\/directory\/([a-z0-9][a-z0-9_-]*)\/?$/i);if(m)location.replace('/directory/'+m[1]+location.search+location.hash);}catch(e){}})();
 </script>
@@ -44,12 +46,13 @@
      primary nav. It scrolls inside the bar rather than widening it. */
   .ve-topnav-nav{flex:1;min-width:0;display:flex;align-items:center;overflow:hidden;}
   /* New header (Sean, 2026-11-03): the same two rows as every other page: logo, one wide search box, Share / Apps / avatar; then the sections. */
-  .ve-topnav{display:grid;grid-template-columns:1fr minmax(0,720px) 1fr;grid-template-areas:"left search right" "nav nav nav";height:auto;gap:0 22px;justify-content:stretch;}
+  .ve-topnav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"left search right" "nav nav nav";height:auto;gap:0 24px;justify-content:stretch;}
   .ve-topnav-left{grid-area:left;height:62px;}
   .ve-topnav .ve-hs{grid-area:search;}
   .ve-topnav-right{grid-area:right;justify-self:end;height:62px;}
   .ve-topnav-nav{grid-area:nav;height:40px;border-top:1px solid rgba(0,0,0,.06);margin:0 -20px;padding:0 20px;}
   a.dash-tab{text-decoration:none;display:inline-block;}
+  html.ve-has-pagebar .ve-topnav-right [data-ve-share]{display:none;}
   .ve-topnav .dash-tabs{border-bottom:none;margin-bottom:0;overflow-x:auto;scrollbar-width:none;}
   .ve-topnav .dash-tabs::-webkit-scrollbar{display:none;}
   .ve-topnav .dash-tab{padding:7px 4px;}
@@ -923,7 +926,7 @@
   </div>
   <!-- Dashboard section nav, in the top bar like HQ (2026-09-20). initDashTabs
        fills #dash-tabs / #dash-tabs-mobile by id regardless of where they sit. -->
-  <form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg><input type="text" name="q" id="ves-page-input" data-dictate="off" placeholder="Search places, people, shows, products&hellip; try &ldquo;vegan pizza in Atlanta&rdquo;" aria-label="Search Vegans Explore"><kbd aria-hidden="true">/</kbd></label></form>
+  <form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg><input type="text" name="q" id="ves-page-input" placeholder="Search places, people, shows, products&hellip; try &ldquo;vegan pizza in Atlanta&rdquo;" aria-label="Search Vegans Explore"><kbd aria-hidden="true">/</kbd></label></form>
   <script src="/public/ve-header-search.js"></script>
   <div class="ve-topnav-nav">
     <div class="dash-tabs" id="dash-tabs" role="tablist" aria-label="Dashboard sections"></div>
