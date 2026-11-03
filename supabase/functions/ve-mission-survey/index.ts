@@ -80,7 +80,7 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit', 'shown', 'admin_list', 'admin_get'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'admin_list', 'admin_get'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
@@ -94,6 +94,13 @@ Deno.serve(async (req) => {
       if (error || !data) throw new Error('state: ' + (error?.message ?? 'none'));
       return data as Record<string, unknown>;
     };
+    // The survey door (Sean, 2026-11-03): an account waiting on its Passport may earn its membership with the whole survey.
+    if (action === 'door_start') {
+      const { data, error } = await supabase.rpc('ve_survey_door_start', { p_member: memberId });
+      if (error) throw new Error('door_start: ' + error.message);
+      if (data?.error) return json(data, 403);
+      return json(data);
+    }
     if (action === 'shown') {
       const id = String(body.id ?? '');
       const { data, error } = await supabase.rpc('ve_profile_set_shown', { p_member: memberId, p_question: id, p_shown: body.shown === true });

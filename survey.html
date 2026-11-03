@@ -7,7 +7,8 @@
     (function () {
       var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
       var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
-      if (alone && signedIn) location.replace('/dashboard/survey' + location.search + location.hash);
+      var door = /[?&]door=1/.test(location.search);
+      if (alone && signedIn && !door) location.replace('/dashboard/survey' + location.search + location.hash);
     })();
   </script>
   <meta charset="UTF-8">
@@ -57,6 +58,7 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
   function tellParent() {
     if (!inFrame()) return;
@@ -65,6 +67,8 @@
   if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
   function start() {
     if (!window.VEAuth || !window.VEMissionSurvey) return setTimeout(start, 200);
+    var rm = VEAuth.getRealMember && VEAuth.getRealMember();
+    if (/[?&]door=1/.test(location.search) && VEAuth.getToken() && rm && rm.membership_status === 'pending_payment') return door();
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
     if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
@@ -75,6 +79,27 @@
       preview: preview,
       // One question per view: the page's introduction shows on the cards only.
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); }
+    });
+  }
+  // The survey door (Sean, 2026-11-03: "people don't have to pay to get in, but they do have to show some effort"): an account
+  // waiting on its Passport answers the whole profile and the last answer makes it a member (Founding before January 1, 2027).
+  function door() {
+    $('lede').textContent = 'No $11 needed. Answer the whole profile and your membership opens the moment you finish, with the survey\'s own 250 points. Every answer goes on your profile, and you can stop and come back: your answers are saved as you go.';
+    $('why').innerHTML = '<span>Free</span><span>250 points</span><span>Membership when you finish</span><span>Saved as you go</span>';
+    VEMissionSurvey.doorStart().then(function (d) {
+      if (!d || d.error) { $('gate').hidden = false; $('gate').textContent = 'This account cannot start the survey. Sign in again, or get your Passport.'; return; }
+      $('host').hidden = false;
+      VEMissionSurvey.profile($('host'), {
+        onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
+        // The last answer admits the account: refresh the session, then on to the dashboard.
+        onAdmitted: function () {
+          fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
+            .then(function (r) { return r.json(); })
+            .then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); })
+            .catch(function () {})
+            .then(function () { location.href = '/dashboard?welcome=survey'; });
+        }
+      });
     });
   }
   start();

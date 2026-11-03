@@ -99,6 +99,10 @@ time (pull back until then), buckets, tracked links, opens from the email system
 3. **Week view**: Monday to Friday, buckets as colors, move a message between days, approve the day or the week.
 Keep the safety rules: nothing sends until Sean approves each message; every list or city switch stays off until he turns it on.
 
+## The survey door (built 2026-11-03)
+
+See CLAUDE.md, "Three doors, one Welcome". Migration `20261103_survey_door.sql`; `/survey?door=1`; Founding follows either door.
+
 ## Build order (Sean: get this buttoned up, then the Welcome)
 
 1. Pulse subscribe (box, confirm email, daily send, preferences page).

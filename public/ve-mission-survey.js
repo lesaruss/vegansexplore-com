@@ -367,8 +367,9 @@
         var btns = host.querySelectorAll('.vms-nav button'); Array.prototype.forEach.call(btns, function (b) { b.disabled = true; });
         saveAnswer(S, q.id, value, opts).then(function (d) {
           if (!d.ok) { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block';
-            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once your Passport is active.' : 'Could not save right now. Please try again.'; return; }
+            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once your Passport is active, or when you start it from the join window.' : 'Could not save right now. Please try again.'; return; }
           if (d.paid_now) flash = '+' + d.points + ' points';
+          if (d.admitted && opts.onAdmitted) { opts.onAdmitted(d); return; }
           var to = goNext ? nextOpen(q.id) : null;
           location.hash = to ? '#q/' + to : '#';
           if (!to && flash) { var t = flash; setTimeout(function () { var el = host.querySelector('.vmp-top span'); if (el) el.textContent = t + ' earned. ' + el.textContent; }, 0); flash = ''; }
@@ -464,5 +465,5 @@
     });
   }
 
-  window.VEMissionSurvey = { mount: mount, profile: profile, steps: STEPS, count: QUESTIONS.length, points: PTS, shown: SHOWN, said: said };
+  window.VEMissionSurvey = { mount: mount, profile: profile, steps: STEPS, count: QUESTIONS.length, points: PTS, shown: SHOWN, said: said, doorStart: function () { return api('door_start'); } };
 })();

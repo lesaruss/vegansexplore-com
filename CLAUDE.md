@@ -5826,6 +5826,18 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   (`ve_points_take`, `ve-dashboard` `take_points`: spendable only, never lifetime, never below zero, a reason required, once per
   ref). The button was proven in the database, not yet clicked in a browser. Hover rings are no longer clipped in the dashboard's
   scrolling boxes.
+- **The survey door, built 2026-11-03** (Sean: "move forward"; migration `20261103_survey_door.sql`, applied through the one-time `ve-once-survey-door`,
+  now the 410 stub). An account waiting on its Passport (`pending_payment`) opens `/survey?door=1` (the join window's **Take the survey instead - free**),
+  `ve-mission-survey` `door_start` (`ve_survey_door_start`) sets `members.survey_door_at`, and `ve_profile_answer` then accepts its answers (it refused anyone
+  not active before). Each answer pays its points as always (250 in all, the survey's own, never the 1,100); the last one admits the account
+  (`ve_survey_door_admit`: `membership_status` active, `entry_via` `survey`, `entry_paid_at` stays null, since nothing was paid). **Founding**:
+  `ve_founding_on_paid` now also fires when a survey door account turns active before `ve_founding_deadline()`; the brand membership is its own kind,
+  `survey` (not a comp). `ve_referral_on_admit` already pays the sharer 111 points for a join with no payment (Level 2 gets the commission only on a payment).
+  `members.entry_via` is `passport` for everyone who paid (backfilled) and `survey` here; older comps are null. Proven 2026-11-03 in a rolled-back transaction
+  (refused before the door, 250 of 250 admits, active, `survey`, no `entry_paid_at`, Founding, brand membership `survey`). Wording: the join window, the Passport's
+  Get your Passport tab, `/policies#membership`, `ve-guide-platform-facts` (`knowledge_records` `body.facts`, its old 30% top rate and "everyone joins with the $11"
+  fixed) and six saved answers. **Not yet**: the page checked in a browser as an unpaid account, `/claim` and the pages with their own join step (`VE_ACTIVATE_HANDLER`)
+  do not offer the survey, nothing stops one person making many unpaid accounts to farm the 111-point referral (Sean's call), and the three challenges are not retired.
 - **Build order**: Pulse subscribe, the people sender, the survey door, the updated Welcome, profiles with groups, campaign homes.
 
 ## Image conventions

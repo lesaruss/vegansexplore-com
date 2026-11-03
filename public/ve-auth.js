@@ -220,6 +220,9 @@ el.innerHTML=
 '<div id="ve-pm-ref"></div>'+
 '<button type="button" id="ve-pm-founding-btn">'+(VE_FOUNDING_OPEN?'Founding Membership':'Passport')+' - $11 one time</button>'+
 '<p id="ve-pm-hint">One time. It never renews.'+(VE_FOUNDING_OPEN?' <b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.':'')+'</p>'+
+'<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or give us your time</span><div class="ve-pm-divider-line"></div></div>'+
+'<a id="ve-pm-survey" href="/survey?door=1" style="display:block;text-align:center;padding:13px;border:1.5px solid rgba(0,0,0,0.2);border-radius:6px;color:#1a1a1a;font:800 12px Montserrat,sans-serif;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;">Take the survey instead - free</a>'+
+'<p style="margin:8px 0 0;font-size:11px;color:#595959;text-align:center;line-height:1.5;font-family:Montserrat,sans-serif;">Answer the whole profile and your membership opens when you finish, with the survey\'s 250 points. The $11 comes with 1,100.'+(VE_FOUNDING_OPEN?' Either way, join before the deadline and you are a Founding Member.':'')+'</p>'+
 '<div id="ve-pm-passport">'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
 '<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+

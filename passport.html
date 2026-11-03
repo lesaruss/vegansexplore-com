@@ -347,7 +347,7 @@
           : 'Create your account and get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
           '</p><button type="button" class="dg-btn" data-join>Get your Passport</button>' + status;
       }
-      return head('Get your Passport', 'One time, yours to keep', 'It never renews, and it makes you a Vegan Explorer. After that, you buy only what you want: Guides, merchandise and event tickets.') + (isMember() ? '' : FOUNDING_LINE) +
+      return head('Get your Passport', 'One time, yours to keep', 'It never renews, and it makes you a Vegan Explorer. After that, you buy only what you want: Guides, merchandise and event tickets.') + (isMember() ? '' : FOUNDING_LINE + '<p class="dg-note"><b>Would rather give your time than $11?</b> Make your account, then choose to finish the whole profile survey instead. Membership opens when you finish, with the survey\'s 250 points, and it counts toward Founding Member before the deadline.</p>') +
         '<div class="dg-access"><ul>' +
         '<li><b>1,100 welcome points</b>, enough for your first Guide.</li>' +
         '<li><b>Vote</b> every day for the places you love in the Directory.</li>' +
