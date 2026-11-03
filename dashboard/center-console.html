@@ -477,6 +477,10 @@
   .dash-inbox-tabs button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
   .dash-inbox-tabs button[aria-selected="true"] span{color:rgba(255,255,255,.8);}
   #dash-inbox-list{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  /* A scrolling box clips anything past its left edge, including the 2.5px hover ring on a picture (Sean, 2026-11-03: "it's cut off on
+     the left"). Every scrolling list gets 4px of room on the left, pulled back with a negative margin so nothing moves. */
+  .dash-action-list.is-capped,#dash-leaderboard-list,#dash-recent .dash-preview-body,#dash-depot-list,#dash-inbox-list,.rev-list{padding-left:4px;margin-left:-4px;}
+  .dash-preview-name.dash-link:hover{text-decoration:underline;color:var(--ve-green-dark);}
   .dash-ib-row{display:flex;gap:10px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--ve-border);cursor:pointer;border-radius:6px;}
   .dash-ib-row:last-child{border-bottom:none;}
   .dash-ib-row:hover,.dash-ib-row:focus-visible{background:#f6faf6;outline:none;}
@@ -4458,8 +4462,9 @@
       recent.appendChild(inboxCard());
       recent.appendChild(dpDataCard('Recent Members', '/dashboard/members', function (token, body, t) {
         dpFetch('/functions/v1/ve-members-admin?action=list_all_members', { token: token }).then(function (d) {
-          // Real members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03).
-          var rows = ((d && d.members) || []).filter(function (m) { return m.member_class === 'member'; }).sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
+          // Real Vegans Explore members only: AI, staff, test and spam accounts stay on the Members page (2026-10-03), and so do sign-ins
+          // from other LESARUSS systems that have no member record here (Sean, 2026-11-03: "Idalina Orda... is actually a BCPS person").
+          var rows = ((d && d.members) || []).filter(function (m) { return m.member_class === 'member' && m.identity_source === 'members'; }).sort(function (a, b) { return new Date(b.joined_at || 0) - new Date(a.joined_at || 0); });
           dpCount(t, rows.length);
           dpRows(body, rows, function (m) { return { name: m.display_name || m.email || 'Member', meta: m.joined_at ? ('Joined ' + dpDate(m.joined_at)) : (m.email || ''), color: m.color, url: m.avatar_url, memberId: m.id || (m.identity_source === 'members' ? m.identity_id : null) }; });
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
@@ -4477,8 +4482,12 @@
           // A listing's name opens it under the Directory tab.
           Array.prototype.forEach.call(body.querySelectorAll('.dash-preview-row'), function (row, i) {
             var l = rows[i] && rows[i].listing; if (!l || !l.slug) return;
-            var nm = row.querySelector('.dash-preview-name'); nm.style.cursor = 'pointer'; nm.title = 'Open ' + (l.name || 'the listing');
-            nm.addEventListener('click', function () { if (window.activateDashTab) activateDashTab('directory'); openDashboardListing(l.slug); });
+            var nm = row.querySelector('.dash-preview-name'); nm.style.cursor = 'pointer'; nm.title = 'Open ' + (l.name || 'the listing'); nm.classList.add('dash-link');
+            var openIt = function () { if (window.activateDashTab) activateDashTab('directory'); openDashboardListing(l.slug); };
+            nm.addEventListener('click', openIt);
+            // The listing's picture opens it too, not only its name (Sean, 2026-11-03).
+            var pic = row.querySelector('.dash-preview-av');
+            if (pic) { pic.style.cursor = 'pointer'; pic.title = 'Open ' + (l.name || 'the listing'); pic.addEventListener('click', openIt); }
           });
         });
       }));
