@@ -20,6 +20,14 @@ Concept session with V, locked by Sean: "we can lock it" (canon `canon-ve-people
   member by either door before midnight Eastern on 2027-01-01 is a Founding Member, whether they paid the $11 or earned it with the
   survey. After the deadline neither door makes one. (This replaces "Founding is paying the $11"; `trg_ve_founding_on_paid` follows
   `entry_paid_at` and must also fire for the survey door's membership.)
+- **Founding Members can earn up to 50% (Sean, 2026-11-03)**: "they can earn up to 50%. They still have to go up the level... anyone after the
+  founding member period can only earn a maximum of 30%... A founding member can get to 50%... that 30% number turns, there would be another
+  branch after that. And we could equate it to the levels based off the sequencing we have." So the affiliate ladder (Level 4 = 30%, the
+  top today) gets a **Founding branch** above it, reachable only by Founding Members, still by levelling up. **Not built yet; the rates and
+  thresholds below are Logan's recommendation, Sean's to change.** Recommended: Levels 5 to 8 at 35, 40, 45 and 50% (the same 5-point steps as
+  the Group Partner ladder, 20% to 50%), from 50,000, 100,000, 200,000 and 400,000 lifetime points; a non-founding member stops at Level 4,
+  30%, however many points they earn. Touches `ve_affiliate_levels` (a `founding_only` flag; its rate check allows 0 to 30 today),
+  `ve_member_level`, the dashboard's `VE_LEVEL_AT`, Points and levels, `/policies#membership` and the Guides' facts.
 - The survey door is a rule change to "Earn your Passport" (the three challenges as the free path). Build it, then retire the
   challenges' role as the free path; do not delete them until Sean says.
 
