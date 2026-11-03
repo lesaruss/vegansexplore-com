@@ -910,7 +910,7 @@ Deno.serve(async (req) => {
             btnLink(`${SITE}/events?event=${c.event_id}`, 'Open your event page') +
             p(linked
               ? `Signed in with this email, you see who is going and can message the guests who said yes, through us (Guests and messages on the page). Members who RSVP choose whether you can message them.`
-              : `To see who is going and message the guests who said yes, sign in to Vegans Explore with this email. If you do not have an account, reply to this email and we will help.`) +
+              : `To see who is going and message the guests who said yes, sign in to Vegans Explore with this email. No account yet? It is free: <a href="${SITE}/survey?s=vegan-events-guide">take the short event survey</a> and you are in. Use this same email and we link your event to you.`) +
             p(`Want more people there? <a href="${SITE}/events#promote/${c.event_id}">Tell us how we can promote it</a>. Selling tickets on your page and a Vegans Explore sponsorship for free events are coming soon, and we will tell you when they open.`) +
             p('If anything on the page is wrong, reply to this email.') + p('Vegans Explore team') + FOOT);
         } else {
