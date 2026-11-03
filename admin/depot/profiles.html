@@ -121,6 +121,46 @@
       function city(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : (slug || 'No city'); }
       var TOTAL_Q = VEMissionSurvey.count;
       function route() { return location.hash.replace(/^#/, '') || 'list'; }
+      // The survey door waits for us (Sean, 2026-11-03): answers finalized by someone earning membership with the survey.
+      var reviews = null;
+      function loadReviews() { return api('review_list').then(function (d) { reviews = (d && d.members) || []; return reviews; }); }
+      function waiting() { return (reviews || []).filter(function (x) { return x.survey_review === 'pending'; }).length; }
+      function tabsBar(on) {
+        return '<nav class="acts" style="margin:0 0 14px" aria-label="Profiles"><a class="btn ' + (on === 'list' ? '' : 'btn-ghost') + ' btn-sm" href="#list">Everyone</a>' +
+          '<a class="btn ' + (on === 'review' ? '' : 'btn-ghost') + ' btn-sm" href="#review">Waiting for review' + (reviews ? ' (' + waiting() + ')' : '') + '</a></nav>';
+      }
+      function drawReviewList() {
+        app.innerHTML = tabsBar('review') + '<p class="empty">Loading...</p>';
+        loadReviews().then(function (rows) {
+          app.innerHTML = tabsBar('review') + '<p class="hint" style="margin:0 0 12px">People who earn membership with the survey finalize their answers here. Check them, then approve (their points are paid and they become a member, a Founding Member if they finalized before January 1, 2027) or send them back with a note they can read.</p>' +
+            '<div class="list">' + (rows.length ? rows.map(function (p) {
+              var back = p.survey_review === 'sent_back';
+              return '<div class="row"><div><b>' + esc(p.name || 'No name') + '</b><small>' + esc(p.email) + ' &middot; ' + esc(city(p.home_community)) + (p.survey_submitted_at ? ' &middot; finalized ' + esc(day(p.survey_submitted_at)) : '') + '</small></div>' +
+                '<span class="pts"></span><span class="tag ' + (back ? 't-team' : 't-shown') + '">' + (back ? 'Sent back' : 'Waiting for review') + '</span>' +
+                '<a class="btn btn-ghost btn-sm" href="#r/' + esc(p.id) + '">' + (back ? 'Open' : 'Review') + '</a></div>';
+            }).join('') : '<p class="empty">Nobody is waiting.</p>') + '</div>';
+        }, function () { app.innerHTML = '<p class="empty">The queue did not load. Refresh to try again.</p>'; });
+      }
+      function decisionPanel(m) {
+        if (!m || m.survey_review !== 'pending') return m && m.survey_review === 'sent_back' ? '<div class="card"><h2>Sent back</h2><p>Waiting for them to fix it and finalize again. Your note: ' + esc(m.survey_review_note || '') + '</p></div>' : '';
+        return '<div class="card" style="border:2px solid var(--ve-green-deep)"><h2>Your decision</h2><p class="hint" style="margin:0 0 8px">Finalized ' + esc(day(m.survey_submitted_at)) + '. Approving pays every answer\'s points and makes them a member. Sending back needs a note, which they read and get by email.</p>' +
+          '<label class="hint" for="rnote"><b>Note</b> (required to send back)</label><textarea id="rnote" style="width:100%;min-height:90px;font:inherit;padding:10px;border:1px solid rgba(0,0,0,.25);border-radius:6px;margin:6px 0 10px"></textarea>' +
+          '<div class="acts"><button type="button" class="btn" id="rapprove">Approve</button><button type="button" class="btn btn-ghost" id="rback">Send back with this note</button><span class="hint" id="rmsg" role="status"></span></div></div>';
+      }
+      function wireDecision(m) {
+        var a = $('rapprove'), b = $('rback'); if (!a) return;
+        function go(decision) {
+          var note = ($('rnote').value || '').trim();
+          if (decision === 'send_back' && note.length < 3) { $('rmsg').textContent = 'Write the note first.'; return; }
+          if (!confirm(decision === 'approve' ? 'Approve ' + (m.name || 'this member') + '? Their points are paid and they become a member.' : 'Send these answers back to ' + (m.name || 'this member') + '?')) return;
+          a.disabled = b.disabled = true; $('rmsg').textContent = 'Saving...';
+          api('review_decide', { member_id: m.id, decision: decision, note: note }).then(function (d) {
+            if (d && d.ok) { reviews = null; people = null; location.hash = '#review'; if (route() === 'review') drawReviewList(); }
+            else { a.disabled = b.disabled = false; $('rmsg').textContent = d && d.error === 'not_waiting' ? 'Someone already decided this one.' : d && d.error === 'note_required' ? 'Write the note first.' : 'That did not go through.'; }
+          }, function () { a.disabled = b.disabled = false; $('rmsg').textContent = 'Could not reach the server.'; });
+        }
+        a.onclick = function () { go('approve'); }; b.onclick = function () { go('send_back'); };
+      }
 
       function drawList() {
         var cities = {};
@@ -129,7 +169,7 @@
         var rows = people.filter(function (p) {
           return (!filt.city || p.home_community === filt.city) && (!q || (String(p.name || '') + ' ' + String(p.email || '')).toLowerCase().indexOf(q) >= 0);
         });
-        app.innerHTML = '<div class="bar"><div class="filters"><input id="fq" type="search" placeholder="Search a name or email" aria-label="Search" value="' + esc(filt.q) + '">' +
+        app.innerHTML = tabsBar('list') + '<div class="bar"><div class="filters"><input id="fq" type="search" placeholder="Search a name or email" aria-label="Search" value="' + esc(filt.q) + '">' +
           '<select id="fc" aria-label="City"><option value="">Every city</option>' + Object.keys(cities).sort().map(function (c) { return '<option value="' + esc(c) + '"' + (c === filt.city ? ' selected' : '') + '>' + esc(city(c)) + '</option>'; }).join('') + '</select></div>' +
           '<span class="hint">' + rows.length + ' of ' + people.length + ' members with answers</span></div>' +
           '<div class="list">' + (rows.length ? rows.map(function (p) {
@@ -141,7 +181,7 @@
         $('fc').onchange = function () { filt.city = this.value; drawList(); };
       }
 
-      function drawOne(id) {
+      function drawOne(id, rev) {
         app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / Loading...</p>';
         api('admin_get', { member_id: id }).then(function (d) {
           if (!d || !d.ok) { app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a></p><p class="empty">This profile did not load.</p>'; return; }
@@ -158,7 +198,8 @@
             }).join('') + '</div>';
           }).join('');
           var pubKeys = Object.keys(pub.answers || {});
-          app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / ' + esc(m.name || 'Member') + '</p>' +
+          setTimeout(function () { if (rev) wireDecision(rev); }, 0);
+          app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / ' + (rev ? '<a href="#review">Waiting for review</a> / ' : '') + esc(m.name || 'Member') + '</p>' + (rev ? decisionPanel(rev) : '') +
             '<div class="kv"><div><span>Name</span>' + esc(m.name) + '</div><div><span>Email</span>' + esc(m.email) + '</div><div><span>City</span>' + esc(city(m.home_community)) + '</div>' +
             '<div><span>Role</span>' + esc(m.ve_role || 'Member') + '</div><div><span>Member since</span>' + esc(day(m.entry_paid_at || m.created_at)) + '</div>' +
             '<div><span>Profile points</span>' + Number(P.earned || 0) + ' of ' + Number(P.total || 250) + '</div></div>' +
@@ -169,8 +210,10 @@
       }
 
       function draw() {
-        var r = route(), m = r.match(/^m\/([0-9a-f-]{36})$/);
+        var r = route(), m = r.match(/^m\/([0-9a-f-]{36})$/), rv = r.match(/^r\/([0-9a-f-]{36})$/);
         if (m) return drawOne(m[1]);
+        if (r === 'review') return drawReviewList();
+        if (rv) { app.innerHTML = '<p class="empty">Loading...</p>'; return loadReviews().then(function (rows) { var row = rows.filter(function (x) { return x.id === rv[1]; })[0]; drawOne(rv[1], row || null); }); }
         if (!people) { app.innerHTML = '<p class="empty">Loading...</p>'; return api('admin_list').then(function (d) { people = (d && d.members) || []; drawList(); }, function () { app.innerHTML = '<p class="empty">The profiles did not load. Refresh to try again.</p>'; }); }
         drawList();
       }
@@ -180,6 +223,7 @@
         var me = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
         if (!VEAuth.isLoggedIn() || !me || !me.is_superadmin) { $('gate').hidden = false; $('gate').textContent = 'This page is for Vegans Explore admins. Sign in with an admin account.'; return; }
         app.hidden = false;
+        loadReviews().then(function () { }, function () { });
         window.addEventListener('hashchange', draw);
         draw();
       }

@@ -44,25 +44,25 @@
     { title: 'Your Vegan journey', qs: [
       { id: 'q6_stage', label: 'Where are you on your journey?', type: 'single', options: ['Curious / pre-Vegan', 'Flexitarian', 'Vegetarian', 'New Vegan (under 1 year)', 'Established (1-5 years)', 'Longtime (5+ years)'] },
       { id: 'q7_vegan_since', label: 'Roughly when did you go (or start going) Vegan?', hint: 'optional', type: 'month' },
-      { id: 'q8_drivers', label: 'What first drew you to it?', hint: 'select all that apply', type: 'multi', options: ['Animals / ethics', 'Health', 'Environment', 'Faith / spirituality', 'Cost', 'Taste / curiosity', 'Family / friends'] },
-      { id: 'q9_challenges', team: true, label: 'Biggest challenge staying Vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
+      { id: 'q8_drivers', none: true, label: 'What first drew you to it?', hint: 'select all that apply', type: 'multi', options: ['Animals / ethics', 'Health', 'Environment', 'Faith / spirituality', 'Cost', 'Taste / curiosity', 'Family / friends'] },
+      { id: 'q9_challenges', none: true, team: true, label: 'Biggest challenge staying Vegan?', hint: 'select all that apply', type: 'multi', options: ['Dining out', 'Social pressure', 'Cost', 'Convenience', 'Recipes / knowledge', 'Family', 'Travel'] }
     ] },
     { title: 'What matters to you', qs: [
-      { id: 'q23_matters', label: 'What matters most to you?', hint: 'select all that apply', type: 'multi', options: ['The animals', 'My health and fitness', 'Building community', 'Supporting local Vegan businesses', 'Supporting nonprofits and rescues', 'Creating content', 'Earning extra income'] },
-      { id: 'q24_diet', label: 'Any of these for how you eat?', hint: 'select all that apply', type: 'multi', options: ['Gluten-free', 'Nut allergy', 'Soy-free', 'Oil-free', 'Whole-food plant-based', 'Raw', 'High protein'] },
+      { id: 'q23_matters', none: true, label: 'What matters most to you?', hint: 'select all that apply', type: 'multi', options: ['The animals', 'My health and fitness', 'Building community', 'Supporting local Vegan businesses', 'Supporting nonprofits and rescues', 'Creating content', 'Earning extra income'] },
+      { id: 'q24_diet', none: true, label: 'Any of these for how you eat?', hint: 'select all that apply', type: 'multi', options: ['Gluten-free', 'Nut allergy', 'Soy-free', 'Oil-free', 'Whole-food plant-based', 'Raw', 'High protein'] },
       { id: 'q25_household', team: true, label: 'Who do you cook and eat with at home?', hint: 'optional', type: 'single', options: ['Just me', 'A partner', 'Kids', 'People who are not Vegan', 'Roommates or family'] },
       { id: 'q26_work', team: true, label: 'Do you work in any of these?', hint: 'optional', type: 'single', options: ['Health or medicine', 'Coaching or fitness', 'Food: a chef, a restaurant or a brand', 'Content or media', 'A nonprofit or rescue', 'None of these'] }
     ] },
     { title: 'Your community & region', qs: [
       { id: 'q10_options_rating', team: true, label: 'How would you rate Vegan options in your area today?', hint: '1 = poor, 5 = excellent', type: 'scale', scale: [1, 2, 3, 4, 5] },
-      { id: 'q11_missing', team: true, label: "What's missing most where you live?", hint: 'select all that apply', type: 'multi', options: ['Restaurants', 'Grocery / products', 'Events', 'Social groups', 'Health / wellness services', 'Education', 'Kid / family options'] },
-      { id: 'q12_business_types', team: true, label: 'Which Vegan businesses would you support if they opened here?', hint: 'select all that apply', type: 'multi', options: ['Restaurant / cafe', 'Bakery', 'Grocer', 'Food truck', 'Meal prep', 'Wellness', 'Clothing / goods'] },
+      { id: 'q11_missing', none: true, team: true, label: "What's missing most where you live?", hint: 'select all that apply', type: 'multi', options: ['Restaurants', 'Grocery / products', 'Events', 'Social groups', 'Health / wellness services', 'Education', 'Kid / family options'] },
+      { id: 'q12_business_types', team: true, label: 'Which kinds of Vegan business do you support?', hint: 'select all that apply', type: 'multi', none: true, options: ['100% Vegan', 'Vegan options', 'Vegan friendly'] },
       { id: 'q13_eatout_freq', team: true, label: 'How often do you eat out or order Vegan?', type: 'single', options: ['Daily', 'A few times a week', 'Weekly', 'Occasionally', 'Rarely'] },
       { id: 'q14_spend', team: true, label: 'Roughly what do you spend on Vegan food & products a month?', type: 'single', options: ['Under $50', '$50-$150', '$150-$300', '$300-$600', '$600+'] },
-      { id: 'q15_local_spots', team: true, label: 'Any local Vegan spots or businesses we should add to the directory?', hint: 'optional', type: 'text', placeholder: 'Names, links, anything' }
+      { id: 'q15_local_spots', team: true, label: 'Any local Vegan spots or businesses we should add to the directory?', hint: 'optional', type: 'places', placeholder: 'Start typing a name' }
     ] },
     { title: 'How we can serve you', qs: [
-      { id: 'q16_wants', team: true, label: 'What do you most want from Vegans Explore?', hint: 'select all that apply', type: 'multi', options: ['Directory', 'Community / meetups', 'Deals / rewards', 'Events', 'Guides / education', 'Activism', 'Business growth'] },
+      { id: 'q16_wants', none: true, team: true, label: 'What do you most want from Vegans Explore?', hint: 'select all that apply', type: 'multi', options: ['Directory', 'Community / meetups', 'Deals / rewards', 'Events', 'Guides / education', 'Activism', 'Business growth'] },
       { id: 'q17_connect', team: true, label: 'How do you like to connect?', hint: 'select all that apply', type: 'multi', options: ['In-person events', 'Online groups', '1:1', 'Social media', 'Not looking to connect'] },
       { id: 'q18_events', team: true, label: 'Would you attend local Vegan events if we hosted them?', type: 'single', options: ['Definitely', 'Maybe', 'No'] },
       { id: 'q19_nps', team: true, label: 'How likely are you to recommend this community to a friend?', hint: '0 = not likely, 10 = extremely', type: 'scale', scale: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
@@ -145,6 +145,21 @@
     + '.vmp-who .vms-opts{margin-bottom:8px}.vmp-who p{font-size:13px;line-height:1.55;color:rgba(26,26,26,.65);margin:0}'
     + '.vmp-who em{font-style:normal;font-weight:700;color:#1f5f22;margin-left:8px}'
     + '.vmp-note{font-size:13.5px;line-height:1.6;color:rgba(26,26,26,.7);max-width:860px;margin:0 0 6px}'
+    + '.vms{max-width:100%;overflow-x:hidden}.vms-input{max-width:100%}'
+    + '.vmp-prog{margin:0 0 20px;max-width:620px}.vmp-prog-t{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#2d7d31}.vmp-prog-t span{color:rgba(26,26,26,.6)}'
+    + '.vmp-prog .vmp-bar{margin:8px 0 0;height:8px}'
+    + '.vmp-pl{max-width:620px}.vmp-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}'
+    + '.vmp-chip{display:inline-flex;align-items:center;gap:8px;background:#e8f5e9;color:#1f5f22;border-radius:6px;padding:7px 8px 7px 12px;font-size:14px;font-weight:700}.vmp-chip.new{background:#fff4e5;color:#7d4a00}'
+    + '.vmp-chip button{background:none;border:0;font:inherit;font-size:16px;line-height:1;cursor:pointer;color:inherit;padding:0 4px}'
+    + '.vmp-dd{border:1.5px solid rgba(0,0,0,.15);border-radius:10px;margin-top:6px;background:#fff;overflow:hidden}.vmp-dd[hidden]{display:none}'
+    + '.vmp-dd button{display:block;width:100%;text-align:left;background:#fff;border:0;border-bottom:1px solid rgba(0,0,0,.07);font:inherit;font-size:14px;font-weight:700;padding:11px 14px;cursor:pointer;color:#1a1a1a}.vmp-dd button:last-child{border-bottom:0}.vmp-dd button:hover,.vmp-dd button:focus{background:#f1f8f1}.vmp-dd small{color:rgba(26,26,26,.6);font-weight:600;margin-left:6px}.vmp-dd .add{color:#7d4a00}'
+    + '.vmr-box{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:14px;padding:22px;max-width:860px;margin:0 0 16px}.vmr-box h3{margin:0 0 8px;font-size:18px;font-weight:900}.vmr-box p{font-size:15px;line-height:1.6;color:rgba(26,26,26,.78);margin:0 0 10px}'
+    + '.vmr-video{aspect-ratio:16/9;width:100%;border-radius:10px;background:#0f1f14;display:block;margin:0 0 14px}'
+    + '.vmr-steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px;margin:0 0 4px}.vmr-steps div{background:#f4f8f4;border-radius:10px;padding:14px;font-size:14px;line-height:1.5}.vmr-steps b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#2d7d31;margin-bottom:4px}'
+    + '.vmr-list{display:grid;gap:0;margin:0}.vmr-row{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr) auto;gap:14px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,.08);font-size:14px;align-items:start}.vmr-row:last-child{border-bottom:0}.vmr-row span{color:rgba(26,26,26,.65);font-weight:700}.vmr-row b{font-weight:700;overflow-wrap:anywhere}.vmr-row a{color:#1f5f22;font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}'
+    + '@media (max-width:600px){.vmr-row{grid-template-columns:1fr;gap:4px}}'
+    + '.vmr-sendback{background:#fff4e5;border:1px solid #f3c98b;border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.55;margin:0 0 14px;max-width:860px}'
+    + '.vmr-check{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:700;margin:12px 0}.vmr-check input{margin-top:3px;width:18px;height:18px}'
     + '.vmp-done{background:#e8f5e9;border:1px solid #b8ddb9;border-radius:10px;padding:14px 16px;font-size:14px;font-weight:700;color:#1f5f22;margin:0 0 8px}';
   function injectCss() {
     if (document.getElementById('vms-css')) return;
@@ -205,26 +220,80 @@
       sel.addEventListener('change', function () { set(sel.value); });
       return sel;
     }
+    if (q.type === 'places') return places(q, answers, set, next);
     var box = document.createElement('div');
     box.className = 'vms-opts' + (q.type === 'scale' ? ' vms-scale' : '');
     box.setAttribute('role', 'group'); box.setAttribute('aria-labelledby', 'vms-qh');
-    (q.type === 'scale' ? q.scale.map(String) : q.options).forEach(function (v) {
+    var opts = q.type === 'scale' ? q.scale.map(String) : q.options.slice();
+    // A question you can pick several answers for always has a way out (Sean, 2026-11-03: "if none of it applies to them, they don't get
+    // a chance to get the points for it"): None apply clears the others, and picking any other answer clears it.
+    var NONE = null, cur = q.type === 'multi' ? (answers[q.id] || []).slice() : answers[q.id];
+    if (q.type === 'multi') { NONE = opts.filter(function (o) { return /^none\b/i.test(o); })[0] || (q.none ? 'None apply' : null); if (NONE && opts.indexOf(NONE) < 0) opts.push(NONE); }
+    function sync() { Array.prototype.forEach.call(box.children, function (c) {
+      var v = c.textContent, on = q.type === 'multi' ? cur.indexOf(v) >= 0 : String(cur) === v;
+      c.setAttribute('aria-pressed', on ? 'true' : 'false'); }); }
+    opts.forEach(function (v) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'vms-opt'; b.textContent = v;
-      var on = q.type === 'multi' ? (answers[q.id] || []).indexOf(v) >= 0 : String(answers[q.id]) === v;
-      b.setAttribute('aria-pressed', on ? 'true' : 'false');
       b.addEventListener('click', function () {
         if (q.type === 'multi') {
-          var arr = (answers[q.id] || []).slice(), i = arr.indexOf(v);
-          if (i < 0) arr.push(v); else arr.splice(i, 1);
-          set(arr); b.setAttribute('aria-pressed', i < 0 ? 'true' : 'false');
+          var arr = cur.slice(), i = arr.indexOf(v);
+          if (i >= 0) arr.splice(i, 1);
+          else if (NONE && v === NONE) arr = [NONE];
+          else { if (NONE) arr = arr.filter(function (x) { return x !== NONE; }); arr.push(v); }
+          cur = arr; set(arr); sync();
           return;
         }
-        set(v);
-        Array.prototype.forEach.call(box.children, function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+        cur = v; set(v); sync();
       });
       box.appendChild(b);
     });
+    sync();
     return box;
+  }
+
+  // The local-spots question: type a name, see the Directory's matches; a name it does not have is kept for us to add.
+  function places(q, answers, set, next) {
+    var names = String(answers[q.id] || '').split(/;\s*/).filter(function (x) { return x.trim(); });
+    var fresh = {};
+    var wrap = document.createElement('div'); wrap.className = 'vmp-pl';
+    wrap.innerHTML = '<div class="vmp-chips"></div><input type="text" class="vms-input" id="vms-' + q.id + '" autocomplete="off" data-dictate="off" placeholder="' + esc(q.placeholder || '') + '" aria-label="Search the Directory"><div class="vmp-dd" hidden></div>' +
+      '<span class="vms-hint" style="margin:8px 0 0">Pick a match, or add a name we do not have yet. We will look into every one.</span>';
+    var chips = wrap.children[0], input = wrap.children[1], dd = wrap.children[2], t = null, seq = 0;
+    function draw() {
+      chips.innerHTML = names.map(function (n, i) { return '<span class="vmp-chip' + (fresh[n] ? ' new' : '') + '">' + esc(n) + '<button type="button" data-rm="' + i + '" aria-label="Remove ' + esc(n) + '">&times;</button></span>'; }).join('');
+      Array.prototype.forEach.call(chips.querySelectorAll('[data-rm]'), function (b) { b.onclick = function () { names.splice(+b.getAttribute('data-rm'), 1); commit(); draw(); }; });
+    }
+    function commit() { set(names.join('; ')); }
+    function add(n, isNew) {
+      n = n.replace(/[;\s]+/g, ' ').trim().slice(0, 140); if (n.length < 2) return;
+      if (names.some(function (x) { return x.toLowerCase() === n.toLowerCase(); })) { input.value = ''; dd.hidden = true; return; }
+      if (names.length >= 15) return;
+      names.push(n); if (isNew) { fresh[n] = true; if (token()) api('place_lead', { name: n }); }
+      input.value = ''; dd.hidden = true; commit(); draw(); input.focus();
+    }
+    function show(list, typed) {
+      var exact = list.some(function (x) { return x.name.toLowerCase() === typed.toLowerCase(); });
+      dd.innerHTML = list.map(function (x, i) { return '<button type="button" data-i="' + i + '">' + esc(x.name) + '<small>' + esc([x.city, x.category].filter(Boolean).join(' · ')) + '</small></button>'; }).join('') +
+        (exact ? '' : '<button type="button" class="add" data-add="1">Add &ldquo;' + esc(typed) + '&rdquo; (not in the Directory yet)</button>');
+      dd.hidden = false;
+      Array.prototype.forEach.call(dd.querySelectorAll('[data-i]'), function (b) { b.onclick = function () { add(list[+b.getAttribute('data-i')].name, false); }; });
+      var ab = dd.querySelector('[data-add]'); if (ab) ab.onclick = function () { add(typed, true); };
+    }
+    input.addEventListener('input', function () {
+      var typed = input.value.trim(); clearTimeout(t);
+      if (typed.length < 2) { dd.hidden = true; return; }
+      var mine = ++seq;
+      t = setTimeout(function () {
+        if (!token()) return show([], typed);
+        api('place_search', { q: typed }).then(function (d) { if (mine === seq) show((d && d.places) || [], typed); }, function () { if (mine === seq) show([], typed); });
+      }, 220);
+    });
+    input.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); var first = dd.querySelector('[data-i]'), typed = input.value.trim();
+        if (!typed) return next(); if (first && first.textContent.toLowerCase().indexOf(typed.toLowerCase()) === 0) first.click(); else add(typed, true); }
+    });
+    draw(); wrap.focusable = input;
+    return wrap;
   }
 
   // Month and Year lists for a rough date. The year alone is enough (sent as January of that year).
@@ -252,12 +321,14 @@
   }
   function ptsTag(q, S) {
     var n = (S.points && S.points[q.id]) || PTS[q.id] || 0, paid = S.paid.indexOf(q.id) >= 0;
+    if (S.held) return '<span class="vms-pts' + (paid ? ' paid' : '') + '">+' + n + ' points' + (paid ? ' when approved' : '') + '</span>';
     return '<span class="vms-pts' + (paid ? ' paid' : '') + '">' + (paid ? 'Earned ' + n : '+' + n + ' points') + '</span>';
   }
   function newState(d) {
     d = d || {};
     return { answers: d.answers && typeof d.answers === 'object' ? d.answers : {}, points: d.points || PTS, paid: d.paid || [],
       earned: Number(d.earned) || 0, total: Number(d.total) || 250, at: Number(d.at) || 0, completed: !!d.completed,
+      door: !!d.door, held: !!d.held, ready: !!d.ready, review: d.review || null, reviewNote: d.review_note || '',
       shown: Object.assign({}, SHOWN, d.shown || {}) };
   }
   // Save one answer; the server pays its points once.
@@ -273,6 +344,7 @@
       if (!d.ok) return d;
       if (d.paid_now && S.paid.indexOf(id) < 0) S.paid.push(id);
       S.earned = Number(d.earned) || S.earned; S.total = Number(d.total) || S.total;
+      if (d.held !== undefined) { S.held = !!d.held; S.ready = !!d.ready; }
       return d;
     });
   }
@@ -298,9 +370,54 @@
       return hit ? hit.q.id : null;
     }
     function draw() {
+      try { window.scrollTo(0, 0); document.documentElement.scrollLeft = 0; } catch (e) {}
+      if (S.door && S.review === 'pending') return drawPending();
+      if (S.door && S.ready && location.hash === '#review') return drawReview();
       var m = /^#q\/([a-z0-9_]+)/.exec(location.hash || '');
       if (m && find(m[1])) return drawQuestion(find(m[1]));
       drawCards();
+    }
+    function backHash() { return S.door && S.ready ? '#review' : '#'; }
+    // How long is left, roughly: a line of your own words takes longest, a tap the least.
+    function eta(skip) {
+      var sec = 0;
+      QUESTIONS.forEach(function (x) { if (x.q.id !== skip && empty(S.answers[x.q.id])) sec += x.q.type === 'prompt' ? 45 : (x.q.type === 'longtext' || x.q.type === 'text' || x.q.type === 'places') ? 25 : 10; });
+      var mins = Math.ceil(sec / 60);
+      return sec === 0 ? 'last one' : mins <= 1 ? 'about a minute left' : 'about ' + mins + ' minutes left';
+    }
+    function sentBack() { return S.door && S.review === 'sent_back' ? '<div class="vmr-sendback"><b>Our team asked for a change.</b><br>' + esc(S.reviewNote) + '</div>' : ''; }
+    function drawPending() {
+      host.innerHTML = '<div class="vms"><div class="vmr-box"><h3>Our team is reviewing your answers</h3>' +
+        '<p>We are checking that everything was entered correctly. If something needs adjusting, we will let you know by email. If everything checks out, you will get a notification that it was accepted, your points will arrive, and you will be officially a founding member in our community.</p>' +
+        '<p><b>Your answers are locked while we look.</b> You do not need to do anything else. You can close this page.</p></div></div>';
+      changed();
+    }
+    function drawReview() {
+      var rows = '', total = QUESTIONS.length;
+      STEPS.forEach(function (st) { st.qs.forEach(function (q) { var v = S.answers[q.id];
+        rows += '<div class="vmr-row"><span>' + esc(q.label) + '</span><b>' + esc(empty(v) ? 'Not answered' : said(q, v)) + '</b><a href="#q/' + q.id + '">Edit</a></div>'; }); });
+      host.innerHTML = '<div class="vms">' +
+        '<p class="vmp-crumb"><a href="#">Your profile</a> / Review and finalize</p>' + sentBack() +
+        '<div class="vmr-box"><h3>One last look before you finalize</h3>' +
+        (opts.video ? '<video class="vmr-video" controls playsinline preload="metadata"' + (opts.poster ? ' poster="' + esc(opts.poster) + '"' : '') + ' src="' + esc(opts.video) + '"></video>' : '') +
+        '<p>Please make sure every answer is correct. Our team checks for accuracy, so a rushed or careless answer can be sent back to you.</p>' +
+        '<div class="vmr-steps"><div><b>1. You finalize</b>Your answers are locked and sent to our team.</div><div><b>2. We review</b>We check that everything was entered correctly. If something needs adjusting, we will email you.</div><div><b>3. You are in</b>Once it checks out, you get a notification, your ' + S.total + ' points, and you are officially a founding member in our community.</div></div></div>' +
+        '<div class="vmr-box"><h3>Your answers (' + total + ')</h3><div class="vmr-list">' + rows + '</div></div>' +
+        '<label class="vmr-check"><input type="checkbox" id="vmr-ok"> I checked my answers and they are correct.</label>' +
+        '<div class="vms-err" role="alert"></div>' +
+        '<div class="vms-nav"><button type="button" class="vms-btn" id="vmr-go" disabled>Finalize</button><button type="button" class="vms-link" data-exit>Save and exit</button></div></div>';
+      var ok = host.querySelector('#vmr-ok'), go = host.querySelector('#vmr-go'), err = host.querySelector('.vms-err');
+      ok.onchange = function () { go.disabled = !ok.checked; };
+      host.querySelector('[data-exit]').onclick = function () { if (opts.onExit) opts.onExit(S); else location.hash = '#'; };
+      go.onclick = function () {
+        go.disabled = true; go.textContent = 'Sending...';
+        api('finalize').then(function (d) {
+          if (d && d.ok) { S.review = 'pending'; if (opts.onFinalized) opts.onFinalized(d); return draw(); }
+          go.disabled = false; go.textContent = 'Finalize'; err.style.display = 'block';
+          err.textContent = d && d.error === 'not_finished' ? 'A few questions are still open. Go back to your profile to finish them.' : 'Could not send right now. Please try again.';
+        }, function () { go.disabled = false; go.textContent = 'Finalize'; err.style.display = 'block'; err.textContent = 'Could not reach the server. Please try again.'; });
+      };
+      changed();
     }
     function visTag(q) {
       if (q.team) return '';
@@ -324,15 +441,18 @@
         if (tm.length) team = team.concat(tm);
       });
       host.innerHTML = '<div class="vms">' +
-        '<div class="vmp-top"><div><b>' + S.earned + ' <small>of ' + S.total + ' points</small></b><span>' + answered + ' of ' + QUESTIONS.length + ' answered</span></div>' +
+        '<div class="vmp-top"><div><b>' + S.earned + ' <small>of ' + S.total + ' points' + (S.held ? ' when approved' : '') + '</small></b><span>' + answered + ' of ' + QUESTIONS.length + ' answered</span></div>' +
         (open ? '<button type="button" class="vms-btn" data-q="' + open + '">Answer the next one</button>' : '') + '</div>' +
         '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.min(100, Math.round(S.earned / S.total * 100)) + '%"></i></div>' +
-        (open ? '' : '<div class="vmp-done">Your profile is complete. Change any answer whenever you like.</div>') +
+        sentBack() +
+        (S.door && S.ready ? '<div class="vmp-done">Every question is answered. <button type="button" class="vms-btn" data-review style="margin-left:10px">Review and finalize</button></div>' : S.door ? '<div class="vmp-note"><b>Your points are held.</b> They arrive when our team approves your answers, after you finalize at the end.</div>' : '') +
+        (open || S.door ? '' : '<div class="vmp-done">Your profile is complete. Change any answer whenever you like.</div>') +
         '<p class="vmp-note">You choose who sees each answer. <b>Can be shown</b> means it may appear where you take part, like the guest list of an event you join. <b>Just for Vegans Explore</b> means only our team sees it, to make your experience better. Nobody browses profiles, and we never sell your information.</p>' +
         mine.join('') +
         '<h3 class="vmp-sec">Help us build your city</h3><p class="vmp-secnote">These are for the team, not your profile: they tell us what to build next where you live.</p>' +
         '<div class="vmp-grid">' + team.map(card).join('') + '</div></div>';
       Array.prototype.forEach.call(host.querySelectorAll('[data-q]'), function (b) { b.onclick = function () { location.hash = '#q/' + b.getAttribute('data-q'); }; });
+      var rv = host.querySelector('[data-review]'); if (rv) rv.onclick = function () { location.hash = '#review'; };
       changed();
     }
     function whoBox(q) {
@@ -346,7 +466,11 @@
     }
     function drawQuestion(x) {
       var q = x.q, value = S.answers[q.id], open = nextOpen(q.id), hint = hintFor(q);
+      var pos = QUESTIONS.indexOf(x) + 1, done = QUESTIONS.filter(function (y) { return !empty(S.answers[y.q.id]); }).length;
       host.innerHTML = '<div class="vms">' +
+        '<div class="vmp-prog"><div class="vmp-prog-t"><b>Question ' + pos + ' of ' + QUESTIONS.length + '</b><span>' + done + ' answered &middot; ' + eta(q.id) + '</span></div>' +
+        '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.round(done / QUESTIONS.length * 100) + '%"></i></div></div>' +
+        sentBack() +
         '<p class="vmp-crumb"><a href="#">Your profile</a> / ' + esc(x.step.title) + '</p>' +
         (flash ? '<div class="vms-flash" role="status">' + esc(flash) + '</div>' : '') +
         '<div class="vms-meta">' + esc(x.step.title) + ptsTag(q, S) + '</div>' +
@@ -356,22 +480,23 @@
         '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' + whoBox(q) +
         '<div class="vms-nav">' + (open && open !== q.id ? '<button type="button" class="vms-btn" data-save-next>Save and next</button>' : '') +
         '<button type="button" class="' + (open && open !== q.id ? 'vms-link' : 'vms-btn') + '" data-save>Save</button>' +
-        '<button type="button" class="vms-link" data-back>Back to your profile</button></div></div>';
+        '<button type="button" class="vms-link" data-exit>Save and exit</button><button type="button" class="vms-link" data-back>' + (S.door && S.ready ? 'Back to review' : 'Back to your profile') + '</button></div></div>';
       flash = '';
       var err = host.querySelector('.vms-err');
       var ctl = control(q, S.answers, function (v) { value = v; }, function () { save(true); });
       host.querySelector('.vms-ans').appendChild(ctl);
       var f = ctl.focusable;
       if (f) { try { f.focus({ preventScroll: true }); } catch (e) {} }
-      function save(goNext) {
+      function save(goNext, exit) {
         var btns = host.querySelectorAll('.vms-nav button'); Array.prototype.forEach.call(btns, function (b) { b.disabled = true; });
         saveAnswer(S, q.id, value, opts).then(function (d) {
           if (!d.ok) { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block';
-            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once your Passport is active, or when you start it from the join window.' : 'Could not save right now. Please try again.'; return; }
+            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once your Passport is active, or when you start it from the join window.' : d.error === 'under_review' ? 'Your answers are with our team now, so they cannot change until we reply.' : 'Could not save right now. Please try again.'; return; }
           if (d.paid_now) flash = '+' + d.points + ' points';
           if (d.admitted && opts.onAdmitted) { opts.onAdmitted(d); return; }
+          if (exit) { if (opts.onExit) return opts.onExit(S); location.hash = '#'; return; }
           var to = goNext ? nextOpen(q.id) : null;
-          location.hash = to ? '#q/' + to : '#';
+          location.hash = to ? '#q/' + to : (S.door && S.ready ? '#review' : '#');
           if (!to && flash) { var t = flash; setTimeout(function () { var el = host.querySelector('.vmp-top span'); if (el) el.textContent = t + ' earned. ' + el.textContent; }, 0); flash = ''; }
         }).catch(function () { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block'; err.textContent = 'Could not reach the server. Please try again.'; });
       }
@@ -388,7 +513,8 @@
       });
       var sn = host.querySelector('[data-save-next]'); if (sn) sn.onclick = function () { save(true); };
       host.querySelector('[data-save]').onclick = function () { save(false); };
-      host.querySelector('[data-back]').onclick = function () { location.hash = '#'; };
+      host.querySelector('[data-exit]').onclick = function () { save(false, true); };
+      host.querySelector('[data-back]').onclick = function () { location.hash = backHash(); };
       host.querySelector('.vmp-crumb a').onclick = function (e) { e.preventDefault(); location.hash = '#'; };
       if (opts.onQuestion) opts.onQuestion({ id: q.id });
       changed();

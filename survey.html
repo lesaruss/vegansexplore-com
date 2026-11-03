@@ -63,7 +63,8 @@
   function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
   function tellParent() {
     if (!inFrame()) return;
-    try { window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin); } catch (e) {}
+    // Measure the page's own content, not the document: the document is never shorter than the frame it sits in, so a tall question would leave the frame tall for the next one (Sean, 2026-11-03).
+    try { var mn = document.querySelector('main'); var h = mn ? mn.offsetTop + mn.offsetHeight + 24 : document.body.offsetHeight; window.parent.postMessage({ type: 've-frame-height', h: h }, location.origin); } catch (e) {}
   }
   if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
   // A Guide's own survey (/survey?s=<slug>, rows in ve_surveys): free, earns its points, and finishing it opens that Guide and a membership.
@@ -117,20 +118,20 @@
   // The survey door (Sean, 2026-11-03: "people don't have to pay to get in, but they do have to show some effort"): an account
   // waiting on its Passport answers the whole profile and the last answer makes it a member (Founding before January 1, 2027).
   function door() {
-    $('lede').textContent = 'No $11 needed. Answer the whole profile and your membership opens the moment you finish, with the survey\'s own 250 points. Every answer goes on your profile, and you can stop and come back: your answers are saved as you go.';
-    $('why').innerHTML = '<span>Free</span><span>250 points</span><span>Membership when you finish</span><span>Saved as you go</span>';
+    $('lede').textContent = 'No $11 needed. Answer every question, check your answers, and finalize. Our team reviews them; when they check out you get the survey\'s 250 points and your membership, and you are a Founding Member if you finalize before January 1, 2027. Your answers save as you go, so you can stop and come back.';
+    $('why').innerHTML = '<span>Free</span><span>250 points</span><span>Reviewed by our team</span><span>Saved as you go</span>';
     VEMissionSurvey.doorStart().then(function (d) {
       if (!d || d.error) { $('gate').hidden = false; $('gate').textContent = 'This account cannot start the survey. Sign in again, or get your Passport.'; return; }
+      if (d.already_member) { location.href = '/dashboard'; return; }
       $('host').hidden = false;
       VEMissionSurvey.profile($('host'), {
-        onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
-        // The last answer admits the account: refresh the session, then on to the dashboard.
-        onAdmitted: function () {
-          fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
-            .then(function (r) { return r.json(); })
-            .then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); })
-            .catch(function () {})
-            .then(function () { location.href = '/dashboard?welcome=survey'; });
+        // A short video on what happens after finalizing goes here when it is recorded: video: '/path.mp4', poster: '/path.jpg'.
+        onChange: function () { var q = /^#(q\/|review)/.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
+        onFinalized: function () { $('lede').hidden = true; $('why').hidden = true; tellParent(); },
+        onExit: function () {
+          $('lede').hidden = true; $('why').hidden = true;
+          $('host').innerHTML = '<div class="card done"><h2>Saved. Come back whenever you like.</h2><p>Your answers are kept exactly as you left them. To pick up again, sign in and choose Take the survey instead, or open this page again.</p><p><a class="btn" href="/survey?door=1" onclick="location.reload();return false">Keep going</a></p></div>';
+          try { window.scrollTo(0, 0); } catch (e) {} tellParent();
         }
       });
     });
