@@ -95,6 +95,13 @@
     if (gs) { $('h1').textContent = 'Free with a short survey'; return guideSurvey(gs[1]); }
     var rm = VEAuth.getRealMember && VEAuth.getRealMember();
     if (/[?&]door=1/.test(location.search) && VEAuth.getToken() && rm && rm.membership_status === 'pending_payment') return door();
+    if (!VEAuth.isLoggedIn() && /[?&]door=1/.test(location.search)) {
+      // A visitor with no account yet (a shared link, or the $11 window closed): make one, then the survey door opens.
+      $('gate').hidden = false;
+      $('gate').innerHTML = '<p>Make your account, then take the survey. Finishing it makes you a member, free.</p><p><button class="btn" id="gDoorStart" type="button">Make my account</button></p><p><a href="/login?next=/survey%3Fdoor%3D1">Already have an account? Sign in</a></p>';
+      $('gDoorStart').onclick = function () { VEAuth.showAuthModal('Make your account, then take the survey. It is free.', function () { location.reload(); }, 'signup'); };
+      return;
+    }
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
     if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
