@@ -9,7 +9,7 @@ Read CLAUDE.md "Abuse watch: a judge decides". Migration `supabase/migrations/20
   suspend blocks both earning and spending (`account_frozen`), ban and reinstate, six events logged. Nothing persisted.
 
 ## Not done, in order
-1. Salted IP and browser hash at sign-up in `ve-auth` (new column or table), and a signal for several accounts on one device.
+1. DONE 2026-11-03 (commit c7ddf70): `ve_member_devices`, `ve-auth` v71, `shared_browser` and `shared_ip` signals. `public/ve-auth.js` (sends `visitor`) is on the branch only: merge to `main` when Sean says deploy, or browser ids stay empty.
 2. `ve-auth` sign-in and participation refuse `standing` suspended or banned, with a plain message (not the survey door's account).
 3. Depot > Watchlist (`/admin/depot/watchlist`, `TABS` row in `public/depot-tabs.js`): cases list, one case per view with evidence, points
    history, linked accounts, and the judge's buttons (note required). Calls `ve-dashboard` or a new `ve-abuse` function with a super admin token.

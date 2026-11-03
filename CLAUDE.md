@@ -5863,7 +5863,14 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **The freeze** is `trg_ve_members_freeze_guard`: a suspended or banned account's `lesars_balance` cannot change, so every function that earns
   or spends points raises `account_frozen` (proven in a rolled-back transaction; void and restore pass a transaction-local bypass). Risk to
   check before the first suspension: a cron that loops over members (`ve_vault_settle`, `ve_challenge_settle`) would stop at a frozen one.
-- **Not built yet**: a salted IP and browser hash at sign-up (`ve-auth`), so "many accounts from one device" can be seen; sign-in and
+- **Devices** (migration `20261103_abuse_watch_devices.sql`, `ve-auth` version 71 from c7ddf70, source sha256 matched): every email and Google
+  sign-up writes a `ve_member_devices` row (`recordMemberDevice`: the IP's salted hash, the same one `ve_signup_attempts` keeps, and a salted
+  hash of the browser id the page keeps in `localStorage` `ve_visitor`, sent by `public/ve-auth.js` as `visitor`; best effort, never blocks a
+  sign-up; RLS on, no policies). Five existing sign-ups were backfilled with their IP hash. `ve_abuse_scan_devices()` (cron
+  `ve-abuse-scan-devices`, 9:09 UTC, before the scan) adds `shared_browser` (three or more accounts on one browser in 30 days, 35) and `shared_ip`
+  (four or more on one network in 7 days, 20: offices, homes and events share one, so it is weak alone). Browser ids reach the server only once
+  the page's `ve-auth.js` is on `main`; until then only the IP signal fills. Proven in a rolled-back transaction.
+- **Not built yet**: sign-in and
   participation refusing a suspended or banned account with a plain message; **Depot > Watchlist** (one case a view: evidence, points history,
   linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
 
