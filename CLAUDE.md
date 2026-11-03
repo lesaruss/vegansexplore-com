@@ -1275,6 +1275,20 @@ playbook (`playbook_records`, the brand's slug, one decision row per topic), can
 every DB change, `docs/handoff/<date>-<topic>.md`, pushed to main), a `brief_checkpoints` row (handed_off) and a `stream_events` row; checks each
 landed; then gives Sean one self-contained paste prompt for a new chat (no "continue" needed, no skills needed). Never call it done before the check.
 
+## Playbooks: open here first (Sean, 2026-11-03)
+
+"I've steered away from it being work on a playbook to going back to working on individual tasks... It's just idea after idea after idea. I need
+the playbooks to reel me in." **Depot > Playbooks** (`/admin/depot/playbooks`, first in the Go to menu; `ve_playbook_index`, edge function
+`ve-playbooks`, super admin token; migration `20261103_playbook_index.sql`; playbook `ve-playbook-index`): one card per active playbook with its
+goal, where it stands, **the one next action**, who owns it (Logan or Sean) and a due date. Tabs: Needs Sean (soonest due first), Building,
+Watching, Parked, Done, All and **Not in the index** (playbooks with records and no row, Vegans Explore only). One playbook per view (`#p/<slug>`):
+edit the row and read the playbook's records, newest first. Status words: Building, Waiting on Sean, Watching, Parked, Done.
+- **Every chat names its playbook first.** Before building anything, Logan says which playbook the work belongs to and what its next action is. Work
+  that fits no playbook is a new idea: say so, and bring Sean a recommendation (add a playbook, or park it), never build it quietly.
+- **Wrap up updates the row** (with the playbook record, canon and the rest of the wrap-up above): where it stands, the one next action, status, due date.
+- Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
+  index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
+
 ## The new header (Sean, 2026-11-03)
 
 Option A from `/mocks/header`: the default on every page that loads `nav.js` and on the dashboard; `?header=old` turns it off for the visit

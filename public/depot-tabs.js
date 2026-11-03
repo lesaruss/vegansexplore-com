@@ -28,6 +28,7 @@
   // Partner plan), Tours (2027), Passport Challenge (not running) and Import narration
   // (part of Onboarding). Put one back by adding its row here.
   var TABS = [
+    { group: 'Insights', href: '/admin/depot/playbooks', label: 'Playbooks' },
     { group: 'Insights', href: '/admin/depot/analytics', label: 'Analytics' },
     // Admin (Sean, 2026-10-30: "all the things that are an admin right now should be an admin section within the depot"): the
     // dashboard's own admin pages (kind 'dash'), which open in the dashboard's frame, never inside a Depot page.
