@@ -406,6 +406,7 @@
         '<div class="ve-menu-row">' + MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') + '</div>' +
         '<div class="ve-burger-menu" id="ve-burger-menu" hidden>' +
           MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') +
+          (p.indexOf('/directory') === 0 ? '<a href="/claim?add=1">Submit a listing</a>' : '') +
           (loggedIn ? '' : '<a class="ve-bm-login" href="/login">Log In</a>') +
         '</div>' +
       '</nav>';

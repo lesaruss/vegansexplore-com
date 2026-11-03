@@ -1404,6 +1404,28 @@
       follow();
     });
 
+    // New header, phones (Sean, 2026-11-03): the sub-section dropdown moves up into the page bar beside the section picker ("Media | Documentaries"),
+    // so the page starts a row sooner. It mirrors the open section's own dropdown and drives it, so nothing else changes.
+    if (hdrNewOn() && (root.classList.contains('vrd-menu-out') || root.querySelector('.vrd-menu-out')) && window.matchMedia) (function () {
+      var mq = window.matchMedia('(max-width: 768px)'), t;
+      function sync() {
+        var pick = document.querySelector('.vcb-bar .vcb-pick'); if (!pick) return;
+        var sub = pick.querySelector('.vcb-subsel'), src = root.querySelector('.board-panel.active [data-vrd-subsel]');
+        if (!mq.matches || !src) { if (sub) sub.remove(); document.documentElement.classList.remove('ve-sub-in-bar'); return; }
+        if (!sub) {
+          sub = document.createElement('select'); sub.className = 'vcb-subsel'; sub.setAttribute('aria-label', 'Sub-section'); pick.appendChild(sub);
+          sub.addEventListener('change', function () { var s = root.querySelector('.board-panel.active [data-vrd-subsel]'); if (s) { s.value = sub.value; s.dispatchEvent(new Event('change')); } });
+        }
+        var pid = src.closest('.board-panel').id;
+        if (sub.getAttribute('data-for') !== pid) { sub.innerHTML = src.innerHTML; sub.setAttribute('data-for', pid); }
+        sub.value = src.value;
+        document.documentElement.classList.add('ve-sub-in-bar');
+      }
+      if (window.MutationObserver) new MutationObserver(function () { clearTimeout(t); t = setTimeout(sync, 30); }).observe(root, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      if (mq.addEventListener) mq.addEventListener('change', sync);
+      setTimeout(sync, 300); setTimeout(sync, 1500);
+    })();
+
     root.querySelectorAll('[data-vrd-county]').forEach(function (sel) {
       sel.addEventListener('change', function () {
         var bar = sel.closest('.sort-bar');
