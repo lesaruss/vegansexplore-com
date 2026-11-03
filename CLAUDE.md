@@ -5840,6 +5840,33 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   do not offer the survey, nothing stops one person making many unpaid accounts to farm the 111-point referral (Sean's call), and the three challenges are not retired.
 - **Build order**: Pulse subscribe, the people sender, the survey door, the updated Welcome, profiles with groups, campaign homes.
 
+## Abuse watch: a judge decides (Sean, 2026-11-03)
+
+"Have some sort of security mechanism that looks for abuse... if an account is suspected of trying to game the system, internally we can
+start tracking them... if it turns out they have abused the system, any points they have will be null and void, and they will be either
+suspended or banned." Sean is the judge: every suspend, ban and void is his decision, never the system's. Migration
+`20261103_abuse_watch.sql` (applied through the one-time `ve-once-abuse-watch`, now the 410 stub).
+
+- **Tables** (RLS on, no policies): `ve_abuse_cases` (one open case a member: watching, cleared, voided, suspended, banned), `ve_abuse_signals`
+  (one row a member, kind and day, with its evidence) and `ve_abuse_events` (every move, who and why). `members.standing` is good, suspended
+  or banned.
+- **The scan** `ve_abuse_scan()` (cron `ve-abuse-scan`, 9:11 UTC daily) records signals: `referral_burst` (5 sign-ups on one link in 24 hours, 30),
+  `fast_survey` (survey door finished in under 2 minutes, 40), `disposable_email` (20), `points_velocity` (over 3,000 earned in 24 hours, 25),
+  `checkin_pace` (4 places in an hour, 25), `survey_only_referrals` (3 or more survey joins and no paid one, 15). A score is each kind once over
+  14 days. Only `member_class` member, never super admins. **Log-only until Sean turns it on** (`ve_site_settings` `abuse_watch`: `mode`
+  `log_only` | `on`, `open_at` 40, `watch_days` 30, `log_only_until` 2026-11-10): in log-only it opens no case and the scan returns who would
+  have opened. Logan's defaults, Sean's to change.
+- **The judge's functions** (service role only, a super admin and a note required, all logged): `ve_abuse_watch` (open a case by hand),
+  `ve_abuse_decide` with `clear`, `void`, `restore_points`, `suspend`, `ban` and `reinstate`. **Suspend freezes points and participation and is
+  reversible; a ban is permanent but can be undone with `reinstate`.** A void sets the balance and lifetime points to zero, writes an
+  `abuse_void` ledger row and keeps what it took in `void_snapshot`, so `restore_points` puts it back (`abuse_restore`). Nothing is deleted.
+- **The freeze** is `trg_ve_members_freeze_guard`: a suspended or banned account's `lesars_balance` cannot change, so every function that earns
+  or spends points raises `account_frozen` (proven in a rolled-back transaction; void and restore pass a transaction-local bypass). Risk to
+  check before the first suspension: a cron that loops over members (`ve_vault_settle`, `ve_challenge_settle`) would stop at a frozen one.
+- **Not built yet**: a salted IP and browser hash at sign-up (`ve-auth`), so "many accounts from one device" can be seen; sign-in and
+  participation refusing a suspended or banned account with a plain message; **Depot > Watchlist** (one case a view: evidence, points history,
+  linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
