@@ -1285,6 +1285,7 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
 - **Every chat names its playbook first.** Before building anything, Logan says which playbook the work belongs to and what its next action is. Work
   that fits no playbook is a new idea: say so, and bring Sean a recommendation (add a playbook, or park it), never build it quietly.
 - **Wrap up updates the row** (with the playbook record, canon and the rest of the wrap-up above): where it stands, the one next action, status, due date.
+- **Everything handed off is named by its playbook** (Sean, 2026-11-03: "named by their playbook... the playbook is the name of the task... I'm going in and updating it manually"): every playbook record, `brief_checkpoints` summary, `stream_events` summary, handoff doc title and paste prompt starts with the playbook's slug and the task, as `<playbook slug>: <task>` (for example `ve-pricing-points-passport: referral field on the join steps`). One chat can touch several playbooks; list each as its own line with the same pattern, never a bare task name.
 - Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
