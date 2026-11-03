@@ -261,7 +261,7 @@
   /* ---- Auth state ---- */
   var realMember = null;
   try { realMember = JSON.parse(localStorage.getItem('ve_member') || 'null'); } catch(e) {}
-  var realLoggedIn = !!(realMember && localStorage.getItem('ve_token'));
+  var realLoggedIn = !!(realMember && localStorage.getItem('ve_token') && realMember.membership_status !== 'pending_payment'); // an unpaid account is signed out (same as VEAuth.isLoggedIn; Sean 2026-11-03)
 
   function swEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function(c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
 
