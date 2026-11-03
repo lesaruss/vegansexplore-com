@@ -97,7 +97,7 @@ Deno.serve(async (req) => {
     const decoded = await verifyToken(token);
     if (!decoded) return json({ error: 'Invalid or expired token' }, 401);
     const memberId = decoded.sub;
-    const READ_ACTIONS = new Set(['profile', 'admin_list', 'admin_get']);
+    const READ_ACTIONS = new Set(['profile', 'survey_get', 'admin_list', 'admin_get']);
     if (!READ_ACTIONS.has(action) && await standingBlocked(supabase, memberId)) return json(NOT_IN_GOOD_STANDING, 403);
 
     const state = async () => {
