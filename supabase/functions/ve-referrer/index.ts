@@ -99,6 +99,42 @@ Deno.serve(async (req: Request) => {
       return json({ ok: true, status: data.status, credited });
     }
 
+    // Depot > Referral claims (super admin): conflict and unresolved claims, reviewed by a person.
+    if (['admin_list', 'admin_get', 'admin_find', 'admin_decide'].includes(action)) {
+      const { data: adm } = await db.from('members').select('id, is_superadmin').eq('id', sub).maybeSingle();
+      if (!adm?.is_superadmin) return json({ error: 'no_access' }, 403);
+      const who = async (id: string | null) => {
+        if (!id) return null;
+        const { data: m } = await db.from('members').select('id, name, email, membership_status, member_class, home_community, created_at, entry_via, founding_member').eq('id', id).maybeSingle();
+        return m ? { id: m.id, name: m.name, email: m.email, status: m.membership_status, class: m.member_class, chapter: m.home_community, joined: m.created_at, via: m.entry_via, founding: !!m.founding_member } : null;
+      };
+      if (action === 'admin_list') {
+        const { data: cs, error } = await db.from('ve_referral_claims').select('id, member_id, claimed_text, claimed_member_id, link_member_id, status, created_at, reviewed_at, decision').order('created_at', { ascending: false }).limit(1000);
+        if (error) return json({ error: 'load_failed' }, 500);
+        const ids = Array.from(new Set((cs ?? []).flatMap((c: any) => [c.member_id, c.claimed_member_id, c.link_member_id]).filter(Boolean)));
+        const names: Record<string, string> = {};
+        if (ids.length) { const { data: ms } = await db.from('members').select('id, name').in('id', ids); for (const m of ms ?? []) names[m.id] = m.name; }
+        return json({ ok: true, rows: (cs ?? []).map((c: any) => ({ ...c, friend: names[c.member_id] ?? null, claimed_name: names[c.claimed_member_id] ?? null, link_name: names[c.link_member_id] ?? null })) });
+      }
+      if (action === 'admin_find') {
+        const q = String(body.q ?? '').trim().replace(/[%,()]/g, ' ').slice(0, 60);
+        if (q.length < 2) return json({ ok: true, results: [] });
+        const { data } = await db.from('members').select('id, name, email, home_community').eq('membership_status', 'active').in('member_class', ['member', 'internal']).or(`name.ilike.%${q}%,email.ilike.%${q}%`).limit(8);
+        return json({ ok: true, results: data ?? [] });
+      }
+      if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+      const { data: c } = await db.from('ve_referral_claims').select('*').eq('id', body.id).maybeSingle();
+      if (!c) return json({ error: 'not_found' }, 404);
+      if (action === 'admin_get') {
+        return json({ ok: true, claim: c, friend: await who(c.member_id), link_sponsor: await who(c.link_member_id), claimed: await who(c.claimed_member_id), decided: await who(c.decided_member_id), reviewer: await who(c.reviewed_by) });
+      }
+      if (c.member_id === sub) return json({ error: 'not_your_own' }, 400);
+      const { data: r, error } = await db.rpc('ve_referral_claim_decide', { p_claim: c.id, p_admin: sub, p_decision: String(body.decision ?? ''), p_member: isId(body.member_id) ? body.member_id : null, p_note: String(body.note ?? '').slice(0, 2000) });
+      if (error) return json({ error: 'decide_failed' }, 500);
+      if (r?.error) return json({ error: r.error }, 409);
+      return json(r);
+    }
+
     return json({ error: 'unknown_action' }, 400);
   } catch (e) {
     return json({ error: 'server', detail: String((e as Error)?.message ?? e).slice(0, 200) }, 500);

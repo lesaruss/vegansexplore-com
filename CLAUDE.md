@@ -1213,7 +1213,7 @@ the active members of class member or internal, `ve_referrer_search`) and record
 (`status`, `search`, `claim`; migrations `20261103_referrer_claims*.sql`). **Rules**: a claim sets `referred_by` only when the link did not; a
 claim that disagrees with the link keeps the link's sponsor and is saved as `conflict`; typed words that match no one are saved as `unresolved`
 (`ve_referral_claims.status`: credited, matched, conflict, unresolved, self), one claim per member, refused once the account has paid
-(`already_member`). Not yet: a Depot view of conflict and unresolved claims (read the table until then), the field on the invitation,
+(`already_member`). **Depot > Referral claims** (`/admin/depot/referral-claims`, People in the Go to menu; built 2026-11-03; `ve-referrer` `admin_list`, `admin_get`, `admin_find`, `admin_decide`, super admin token; migration `20261103_referral_claims_review.sql`): To review, Conflicts, Not found, Decided, All; one claim per view with who joined, what they typed, who the link credits and who they named, and the decision: keep the link's sponsor, credit the person they named, credit another member you pick, or dismiss, with a note. `ve_referral_claim_decide` is atomic and once per claim; it changes `members.referred_by` only while the friend is still `pending_payment` (the 111 points and commission are paid when the account turns active), else it records the decision and you give points by hand. Proven in a rolled-back transaction. Not yet: the field on the invitation,
 challenge and dinner join steps, and a duplicate-account filter (Sean has several internal accounts that suggest as "Sean R.").
 Sign-up from one address is limited to 3 an hour (`ve-auth` `signup`), which a test run hits.
 

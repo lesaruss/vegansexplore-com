@@ -70,6 +70,7 @@
     { group: 'People', href: '/admin/depot/dinners', label: 'Dinner guests' },
     { group: 'People', href: '/admin/depot/links', label: 'Links' },
     { group: 'People', href: '/admin/depot/invites', label: 'Invites' },
+    { group: 'People', href: '/admin/depot/referral-claims', label: 'Referral claims' },
     { group: 'People', href: '/admin/depot/challenges', label: 'Challenges' },
     { group: 'People', href: '/admin/depot/watchlist', label: 'Watchlist' },
     { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },

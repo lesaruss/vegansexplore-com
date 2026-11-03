@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Referral claims | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .tag.conflict{background:#fff1dc;color:#8a5200;}.tag.unresolved{background:#e3eefc;color:#0f4a91;}.tag.reviewed{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .pick{border:1px solid var(--ve-border);border-radius:8px;max-height:200px;overflow:auto;background:#fff;}.pick label{display:block;padding:8px 12px;font-size:13.5px;cursor:pointer;border-bottom:1px solid var(--ve-border);}.pick label:last-child{border:0;}
+    .tag.open{background:#fff1dc;color:#8a5200;}.tag.answered{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.quarantined{background:#fde7e5;color:#8a1c12;}
+    .sw{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 16px;margin:0 0 16px;font-size:13.5px;}
+    .item input[type=text],.item select{font-family:inherit;font-size:14px;width:100%;min-height:42px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .item select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .item h3{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--ve-green-deep);}
+    .mailprev{border:1px solid var(--ve-border);border-radius:8px;padding:6px 14px;background:#fff;max-height:340px;overflow:auto;}
+    .askers{max-height:180px;overflow:auto;font-size:13px;border:1px solid var(--ve-border);border-radius:8px;padding:8px 12px;background:#fafafa;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Referral claims</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">When someone joins, the window asks Did someone send you? (Sean, 2026-11-03). The link always wins, so credit is never taken from a sponsor by a typed name. A Conflict is a name that disagrees with the link. Not found is a name we could not match to anyone. You decide. Changing who is credited works only before the friend joins, since the 111 points and any commission are paid when the account turns active. After that, the decision is recorded and you give the points by hand from the member card.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-referrer';
+      var $ = function (id) { return document.getElementById(id); };
+      var TABS = [['review', 'To review'], ['conflict', 'Conflicts'], ['unresolved', 'Not found'], ['done', 'Decided'], ['all', 'All']];
+      var rows = [], loaded = false, picked = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      var DEC = { keep_link: 'Kept the link\'s sponsor', credit_claimed: 'Credited the person they named', credit_member: 'Credited a member you picked', dismiss: 'Dismissed, no one to credit' };
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); return h[0] === 'c' ? { v: 'c', id: h[1] } : { v: 'list', tab: TABS.some(function (t) { return t[0] === h[1]; }) ? h[1] : 'review' }; }
+      function inTab(x, t) { var need = x.status === 'conflict' || x.status === 'unresolved'; if (t === 'all') return true; if (t === 'done') return !!x.reviewed_at; if (t === 'review') return need && !x.reviewed_at; return x.status === t && !x.reviewed_at; }
+      function drawList(r) {
+        var tabs = TABS.map(function (t) { var n = rows.filter(function (x) { return inTab(x, t[0]); }).length; return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + n + ')</a>'; }).join('');
+        var list = rows.filter(function (x) { return inTab(x, r.tab); });
+        $('view').innerHTML = '<nav class="tabs" aria-label="Filter">' + tabs + '</nav><div class="grid">' + (list.length ? list.map(function (x) {
+          return '<div class="card"><div class="body"><span class="kind">' + esc(when(x.created_at)) + '</span><div><span class="tag ' + (x.reviewed_at ? 'reviewed' : esc(x.status)) + '">' + (x.reviewed_at ? 'Decided' : x.status === 'conflict' ? 'Conflict' : x.status === 'unresolved' ? 'Not found' : esc(x.status)) + '</span></div>' +
+            '<h3>' + esc(x.friend || 'A new member') + '</h3><span class="meta">Said: ' + esc(x.claimed_name || x.claimed_text || 'a name') + (x.link_name ? ' &middot; link credits ' + esc(x.link_name) : '') + (x.decision ? ' &middot; ' + esc(DEC[x.decision]) : '') + '</span>' +
+            '<div class="acts"><a class="btn" href="#c/' + x.id + '">Open</a></div></div></div>';
+        }).join('') : '<p class="sub">' + (r.tab === 'review' ? 'Nothing to review.' : 'None here.') + '</p>') + '</div>';
+      }
+      function person(p, extra) { return p ? esc(p.name) + ' <span class="meta">' + esc(p.email) + (extra || '') + '</span>' : 'No one'; }
+      function drawItem(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>'; picked = null;
+        api({ action: 'admin_get', id: id }).then(function (d) {
+          if (!d || !d.claim) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var c = d.claim, f = d.friend, done = !!c.reviewed_at, pending = f && f.status === 'pending_payment';
+          var st = c.status === 'conflict' ? 'Conflict' : c.status === 'unresolved' ? 'Not found' : c.status;
+          $('view').innerHTML = '<p class="crumb"><a href="#list/review">Referral claims</a> / ' + esc(f ? f.name : 'claim') + '</p><div class="item">' +
+            '<div><span class="kind">' + esc(when(c.created_at)) + '</span> <span class="tag ' + (done ? 'reviewed' : esc(c.status)) + '">' + (done ? 'Decided' : esc(st)) + '</span></div>' +
+            '<dl><dt>The new member</dt><dd>' + person(f, ' &middot; ' + (pending ? 'has not joined yet' : 'joined ' + esc(f && f.via || 'by payment') + ' ' + esc(when(f && f.joined)))) + '</dd>' +
+            '<dt>They typed</dt><dd>' + esc(c.claimed_text || '(picked from the list)') + '</dd>' +
+            '<dt>The link credits</dt><dd>' + person(d.link_sponsor) + '</dd>' +
+            '<dt>They named</dt><dd>' + (d.claimed ? person(d.claimed) : 'No member matched') + '</dd>' +
+            (done ? '<dt>Decision</dt><dd>' + esc(DEC[c.decision]) + (d.decided ? ': ' + esc(d.decided.name) : '') + '<br><span class="meta">' + esc(when(c.reviewed_at)) + (d.reviewer ? ' by ' + esc(d.reviewer.name) : '') + (c.note ? ' &middot; ' + esc(c.note) : '') + '</span></dd>' : '') + '</dl>' +
+            (done ? '' : '<h3>Your decision</h3>' + (pending ? '<p class="meta">They have not joined yet, so credit can still move.</p>' : '<p class="meta">They have joined, so the points are already paid. A decision is recorded; give the points by hand from the member card if someone else should have them.</p>') +
+              (c.link_member_id ? '<div class="acts"><button type="button" class="btn btn-quiet" data-d="keep_link">Keep the link\'s sponsor</button></div>' : '') +
+              (d.claimed ? '<div class="acts"><button type="button" class="btn" data-d="credit_claimed">Credit ' + esc(d.claimed.name) + '</button></div>' : '') +
+              '<h3>Or pick another member</h3><input type="text" id="fq" placeholder="Name or email" data-dictate="off"><div class="pick" id="pk" hidden></div><div class="acts"><button type="button" class="btn" id="cm" disabled>Credit the member picked</button><button type="button" class="btn btn-quiet" data-d="dismiss">Dismiss, no one to credit</button></div>' +
+              '<div><label class="meta" for="note"><b>Note</b> (for the team)</label><textarea id="note" data-dictate="off"></textarea></div><span class="msg" id="msg"></span>') + '</div>';
+          if (done) return;
+          function decide(dec, mid) { if (!confirm('Record this decision' + (pending && dec.indexOf('credit') === 0 ? ' and change who is credited' : '') + '? It cannot be undone here.')) return; $('msg').textContent = 'Saving...'; api({ action: 'admin_decide', id: id, decision: dec, member_id: mid || undefined, note: $('note').value }).then(function (r) { if (r && r.ok) { loaded = false; $('msg').textContent = r.recorded_only ? 'Recorded. They had already joined, so give the points by hand if needed.' : 'Done.'; setTimeout(function () { drawItem(id); }, 900); } else $('msg').textContent = ({ already_decided: 'Already decided.', not_an_active_member: 'That person is not an active member.', self: 'A member cannot be credited for themselves.', not_your_own: 'You cannot decide your own claim.' })[r && r.error] || 'That did not go through.'; }); }
+          [].forEach.call(document.querySelectorAll('[data-d]'), function (b) { b.onclick = function () { decide(b.getAttribute('data-d')); }; });
+          var t; $('fq').oninput = function () { clearTimeout(t); var q = this.value; t = setTimeout(function () { if (q.trim().length < 2) { $('pk').hidden = true; return; } api({ action: 'admin_find', q: q }).then(function (r) { var res = (r && r.results) || []; $('pk').hidden = false; $('pk').innerHTML = res.length ? res.map(function (m) { return '<label><input type="radio" name="pm" value="' + esc(m.id) + '"> ' + esc(m.name) + ' <span class="meta">' + esc(m.email) + (m.home_community ? ' &middot; ' + esc(m.home_community) : '') + '</span></label>'; }).join('') : '<label class="meta">No active member found.</label>'; [].forEach.call($('pk').querySelectorAll('input'), function (i) { i.onchange = function () { picked = i.value; $('cm').disabled = false; }; }); }); }, 250); };
+          $('cm').onclick = function () { if (picked) decide('credit_member', picked); };
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'c') return drawItem(r.id);
+        if (loaded) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'admin_list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.rows; loaded = true; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to review referral claims.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
