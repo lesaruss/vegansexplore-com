@@ -5771,7 +5771,7 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
 
 - **Three doors, no comps**: a free **Daily Pulse subscription** (an email; cities picked; not a membership); the **survey**
   (membership, full access, 250 points); the **$11** (membership, full access, 1,100 points). Bonus points are given by hand from a
-  member's card. Open question: does the survey door earn Founding Member (default no; Founding is paying before 2027-01-01).
+  member's card. **Founding Member (Sean, 2026-11-03: "Yes, anyone who becomes a member before January is a founding member.")**: either door, before midnight Eastern on 2027-01-01, makes a Founding Member (the survey door too, not only the $11).
 - **One Welcome**: the Welcome, the Passport and the Taste merge into one free, public guide that explains how to use Vegans
   Explore and ends with the two paths. The Taster account type goes away; `ve-taster`, `/guides/taste` and the Taster emails keep
   working until then, and Pulse subscribers get no Taster sequence.

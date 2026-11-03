@@ -16,8 +16,10 @@ Concept session with V, locked by Sean: "we can lock it" (canon `canon-ve-people
 - Both membership doors give access to every feature and the ability to earn points. The $11's advantage is the bonus points.
 - No comps and no free memberships. If Sean has a good relationship with someone, he gives **bonus points by hand** from
   their profile (the member card's Give points, and Take back since 2026-11-03).
-- Founding Member is unchanged: paying the $11 before midnight Eastern on 2027-01-01. **Open question (Sean's words were
-  unclear): does the survey door also earn Founding Member?** Default until he says: no.
+- **Founding Member (Sean, 2026-11-03: "Yes, anyone who becomes a member before January is a founding member.")**: anyone who becomes a
+  member by either door before midnight Eastern on 2027-01-01 is a Founding Member, whether they paid the $11 or earned it with the
+  survey. After the deadline neither door makes one. (This replaces "Founding is paying the $11"; `trg_ve_founding_on_paid` follows
+  `entry_paid_at` and must also fire for the survey door's membership.)
 - The survey door is a rule change to "Earn your Passport" (the three challenges as the free path). Build it, then retire the
   challenges' role as the free path; do not delete them until Sean says.
 
