@@ -29,3 +29,16 @@ Read CLAUDE.md "Abuse watch: a judge decides" first. Canon `canon-ve-abuse-watch
 - `pg_get_functiondef` over every function fails on aggregates: filter `prokind = 'f'`.
 - A new edge function defaults to verify_jwt on: create it first with `deploy_edge_function` and `verify_jwt false`, then deploy the real source with `ve-function-deploy`.
 - Test accounts: Test Manager (`d8235957-df5a-4e7f-98cd-6ea6414c25ab`, zero points) is the safe target; the judge is Sean (`72712a4a-ea0e-4ef4-a29e-d382496ef8da`).
+
+## Update (2026-11-03, later, Logan): items 1 and 2 done
+- Item 1, freeze safety: `20261103_abuse_freeze_safety.sql` applied and proven (see CLAUDE.md "Abuse watch"). Commit f08d7b1.
+- Item 2, standing check: 15 edge functions deployed from 30bdda79 (commits e7d3bce, 30bdda7), source sha256 matched; proven live with a suspended Test Manager session (writes 403, reads 200). Fail closed: a new action on those functions is a write until added to its `READ_ACTIONS`.
+- Item 3, `/policies#community` wording: draft written, waiting for Sean's approval; nothing is on the page yet. **Do not turn on opening cases before it is live.**
+- Item 4: after 2026-11-10 read the Watchlist's Would flag tab; Sean decides whether to turn opening on.
+- Still guarded only by the trigger (points frozen) and not by the edge-function check: `ve-dashboard`, `ve-affiliate`, `ve-nonprofit`, `ve-ambassador`, `ve-people-outreach` and the other functions not listed above. Direct-balance writers not changed are listed in CLAUDE.md.
+
+## Final state (2026-11-03, Logan, wrap-up)
+- **PR** lesaruss/vegansexplore-com#135 (`claude/sleepy-keller-2hf8t5` into `main`): open, mergeable, CI green, no review comments. **Merging needs Sean.** It publishes the `/policies#community` "Earning points fairly" block (wording approved by Sean) and brings `main` in line with what is live.
+- **Merge with main** (6dedf455): `ve-guide-unlock` conflicted with the Door Guides reader (`readTaster`); both kept. My first deploy of `ve-guide-unlock` and `ve-referrer` (from 30bdda79) had reverted those two functions' newer `main` changes for about 10 minutes; both redeployed from 6dedf455 and their source sha256 matches the repo (`b47f8457…`, `4e903474…`). Lesson: deploy from a commit that contains `main`, and merge `main` first when other sessions are deploying.
+- **pg_net worker stalled** for about 4 minutes behind my deploy requests (worker pid active, empty query, queue growing). `pg_terminate_backend` was run once; the queue drained by itself shortly after. If it stalls again, deploy through `deploy_edge_function` directly.
+- **Open**: (1) Sean merges the PR; (2) after 2026-11-10 read Depot > Watchlist > Would flag and `select ve_abuse_scan()`, Sean decides whether to turn on opening cases (the policies block must be live first, which means the PR must be merged); (3) the standing check is not in `ve-dashboard`, `ve-affiliate`, `ve-nonprofit`, `ve-ambassador`, `ve-people-outreach` and others, only the points freeze covers them; (4) direct-balance writers left alone are listed in CLAUDE.md.

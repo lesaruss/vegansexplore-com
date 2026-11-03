@@ -314,6 +314,14 @@ async function ownsListing(memberId: string): Promise<boolean> {
   return !!(data && data.length);
 }
 
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+const READ_ACTIONS = new Set(['list', 'get', 'topic_desk', 'reports']);
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+
 const needMember = async (viewer: Viewer, lr = false) => {
   if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to join the conversation.' }, 401);
   if (!(await memberOn(viewer, lr))) {
@@ -329,6 +337,9 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const viewer = await loadViewer(req);
+  if (viewer && !READ_ACTIONS.has(String(body.action || '')) && await standingBlocked(db, viewer.id)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
   const business = viewer ? await ownsListing(viewer.id) : false;
   const viewerOut = viewer ? { signed_in: true, member: viewer.active, moderator: viewer.moderator, business } : { signed_in: false, member: false, moderator: false, business: false };
   const lrViewer = async () => ({ ...viewerOut, member: await memberOn(viewer, true), business: false });

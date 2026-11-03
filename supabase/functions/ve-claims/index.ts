@@ -714,6 +714,14 @@ async function listingHealth(l: any, food: boolean, kind: string, menuCount: num
     checked_on: times.length ? date(new Date(Math.max(...times)).toISOString()) : null };
 }
 
+// Abuse watch (Logan 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -767,6 +775,9 @@ Deno.serve(async (req) => {
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
   const { data: member } = await db.from('members').select('id, email, name, is_superadmin, membership_status, membership_tier, lesars_balance').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_authenticated' }, 401);
+  // Abuse watch (Logan 2026-11-03): suspended or banned members may read, never write. Fail closed: anything not listed is a write.
+  const READ_ACTIONS = new Set(['mine', 'partner_status', 'media_list', 'menu_list', 'owner_dashboard', 'owner_page', 'brand_stats', 'results', 'results_list', 'admin_list', 'admin_verified_list', 'admin_results']);
+  if (!member.is_superadmin && !READ_ACTIONS.has(String(body.action)) && await standingBlocked(db, memberId)) return json(NOT_IN_GOOD_STANDING, 403);
 
   if (body.action === 'mine') {
     const { data } = await db.from('ve_listing_claims').select('id, status, paid_cents, created_at').eq('member_id', memberId).eq('listing_id', String(body.listing_id || ''))

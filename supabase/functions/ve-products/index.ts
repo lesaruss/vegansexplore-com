@@ -63,10 +63,11 @@ async function verifyToken(token: string): Promise<string | null> {
     return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
   } catch { return null; }
 }
-type Viewer = { id: string; active: boolean; admin: boolean } | null;
+type Viewer = { id: string; active: boolean; admin: boolean; viaToken: boolean } | null;
 async function loadViewer(req: Request, body: any): Promise<Viewer> {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   let id = token ? await verifyToken(token) : null;
+  const viaToken = !!id;
   // Ops: the admin token acting as a member (as ve-bounties does), for the team's checks.
   if (!id && token && /^[0-9a-f-]{36}$/.test(String(body?.as_member || ''))) {
     const { data: adm } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
@@ -78,7 +79,7 @@ async function loadViewer(req: Request, body: any): Promise<Viewer> {
   const admin = !!m.is_superadmin;
   let active = m.membership_status === 'active' || admin;
   if (!active) { const { data } = await db.rpc('ve_member_entitled', { p_member: m.id }).then((r) => r, () => ({ data: false })); active = !!data; }
-  return { id: m.id, active, admin };
+  return { id: m.id, active, admin, viaToken };
 }
 
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
@@ -130,6 +131,15 @@ async function brandFor(name: string) {
   return null;
 }
 
+// Abuse watch (Sean 2026-11-03): a suspended or banned member may read but not write. A DB error means not blocked.
+async function standingBlocked(db: any, memberId: string | null): Promise<boolean> {
+  if (!memberId) return false;
+  const { data } = await db.from('members').select('standing').eq('id', memberId).maybeSingle();
+  return !!data?.standing && data.standing !== 'good';
+}
+// Pure reads or harmless (lookup only logs a scan). Anything not listed is treated as a write.
+const READ_ACTIONS = new Set(['lookup', 'nearby_stores', 'store_gaps', 'flags', 'barcode_queue', 'votes', 'picks', 'tracker']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -137,6 +147,9 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const action = String(body.action || '');
   const viewer = await loadViewer(req, body);
+  if (viewer?.viaToken && !READ_ACTIONS.has(action) && await standingBlocked(db, viewer.id)) {
+    return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
+  }
   const needMember = () => !viewer ? json({ error: 'not_authenticated', message: 'Sign in first.' }, 401)
     : !viewer.active ? json({ error: 'payment_required', message: 'This is for Passport holders: $11, one time.' }, 402) : null;
 
