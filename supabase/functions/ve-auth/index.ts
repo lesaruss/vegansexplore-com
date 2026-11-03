@@ -656,6 +656,23 @@ async function logSignupAttempt(ip_hash: string | null, email_domain: string | n
   } catch (_e) { /* best effort */ }
 }
 
+// Who signed up from which device (abuse watch, Sean 2026-11-03). Salted hashes only: the IP's is the one above, the browser's is
+// the random id the page keeps (localStorage ve_visitor). Read by ve_abuse_scan_devices(). Never let it be the reason a signup fails.
+async function recordMemberDevice(req: Request, body: any, memberId: string, via: string) {
+  try {
+    const ip = signupClientIp(req);
+    const ip_hash = ip ? await hashSignupIp(ip) : null;
+    let browser_hash: string | null = null;
+    if (typeof body?.visitor === 'string' && /^[A-Za-z0-9-]{8,64}$/.test(body.visitor)) {
+      const data = new TextEncoder().encode(`ve-browser:${SERVICE_KEY.slice(-24)}:${body.visitor}`);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      browser_hash = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    if (!ip_hash && !browser_hash) return;
+    await supabase.from('ve_member_devices').insert({ member_id: memberId, ip_hash, browser_hash, via });
+  } catch (_e) { /* best effort */ }
+}
+
 async function signupAttemptsSince(column: 'ip_hash' | 'email_domain', value: string, outcomes: string[]): Promise<number> {
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const { count, error } = await supabase
@@ -753,6 +770,7 @@ serve(async (req: Request) => {
         throw new Error(`signup insert failed: ${insertErr.message}`);
       }
       await logSignupAttempt(ip_hash, email_domain, 'created', member.id);
+      await recordMemberDevice(req, body, member.id, 'email');
 
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
@@ -849,6 +867,7 @@ serve(async (req: Request) => {
       }).select(MEMBER_FIELDS + ', avatar_url, membership_status').single();
 
       if (insertErr) throw new Error(`google insert failed: ${insertErr.message}`);
+      await recordMemberDevice(req, body, member.id, 'google');
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
       }

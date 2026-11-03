@@ -60,7 +60,8 @@ function call(action,body){return fetch(FN_URL+'?action='+action,{method:'POST',
 // $11 window, whose button goes to the checkout the server made for them. The page's own error box shows the same words.
 var _needUrl=null;
 function _passportNeeded(d){_needUrl=d.checkout_url||null;hideAuthModal();showActivateModal(d.message);return{error:d.message,passport_needed:true};}
-function signup(email,password,name,ref,community,website){return call('signup',{email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+function signupVisitor(){try{var v=localStorage.getItem('ve_visitor');if(!v||!/^[A-Za-z0-9-]{8,64}$/.test(v)){v=(global.crypto&&crypto.randomUUID)?crypto.randomUUID():String(Date.now())+'-'+Math.random().toString(36).slice(2,12);localStorage.setItem('ve_visitor',v);}return v;}catch(e){return null;}}
+function signup(email,password,name,ref,community,website){return call('signup',{visitor:signupVisitor(),email:email,password:password,name:name,referral_code:ref||null,home_community:community||null,website:website||''}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function login(email,password){return call('login',{email:email,password:password}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 // Continue with LESARUSS (Sean, 2026-10-29; edge function ve-lesaruss-sso, migration 20261029_lesaruss_sign_in.sql): one
 // LESARUSS account signs in here. The button sends them to hq.lesaruss.ai/connect with a random state kept in this tab;
@@ -98,7 +99,7 @@ var LESARUSS_NOTE='<p class="ve-lesaruss-note">Already a LESARUSS member? Sign i
 var LESARUSS_BTN='<button type="button" class="ve-lesaruss-btn" data-ve-lesaruss=""><span class="ve-lesaruss-mark" aria-hidden="true">L</span>Continue with LESARUSS</button>';
 var LESARUSS_CSS='.ve-lesaruss-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:42px;margin:0 0 12px;border:1px solid #dadce0;border-radius:6px;background:#fff;color:#1a1a1a;font:600 14px "Montserrat",sans-serif;cursor:pointer}.ve-lesaruss-btn:hover{background:#f7f7f7}.ve-lesaruss-mark{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:4px;background:#111;color:#fff;font-weight:900;font-size:12px}.ve-lesaruss-note{margin:0 0 12px;font:500 12.5px/1.45 "Montserrat",sans-serif;color:#595959;text-align:center}';
 (function(){try{var st=document.createElement('style');st.textContent=LESARUSS_CSS;document.head.appendChild(st);}catch(e){}})();
-function loginWithGoogle(idToken,community){return call('google',{id_token:idToken,home_community:community||joinCarry('ve_join_community'),referral_code:joinCarry('ve_join_ref')}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
+function loginWithGoogle(idToken,community){return call('google',{visitor:signupVisitor(),id_token:idToken,home_community:community||joinCarry('ve_join_community'),referral_code:joinCarry('ve_join_ref')}).then(function(d){if(d.token)setSession(d.token,d.member);return d;});}
 function forgotPassword(email){return call('forgot_password',{email:email});}
 function resetPassword(token,password){return call('reset_password',{token:token,password:password});}
 function verifyEmail(token){return call('verify_email',{token:token});}
