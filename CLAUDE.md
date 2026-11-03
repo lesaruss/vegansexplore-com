@@ -5897,9 +5897,16 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
   account. Proven live 2026-11-03 as Sean through a one-time function on the Test Manager account (no token 401, a non-admin 403, list, find,
   get, watch with no note and on yourself refused, watch, a second watch refused, void, a second void refused, restore, suspend, reinstate, ban,
   unban, the history, a bad decision and a bad mode refused; then every row removed). The page checked at 1440 and 390 px beside Feedback.
-- **Not built yet**: the `/policies#community` paragraph, which must be live before any enforcement; one shared standing check in the other
-  functions (board, check-ins, bounties) and a per-member guard in the two cron loops (`ve_vault_settle`, `ve_challenge_settle`), both before
-  the first suspension; the Watchlist's decision box sits below Points on a phone.
+- **Freeze safety, found 2026-11-03 and not fixed yet (do this before the first suspension)**: the freeze trigger makes any points change on a
+  suspended or banned account raise `account_frozen`, and several callers do not expect it. `ve_vault_settle` (cron every 15 min) has no standing
+  filter on bidders, so a suspended bidder would roll the whole run back every time; `ve_challenge_settle` pays through `ve_points_grant` and
+  `ve_challenge_sweep` has no handler, so one frozen challenger stops the sweep; `ve_points_grant`, `universe_join_from_purchase`,
+  `ve_bounty_pay`, `ve_recipe_review` and `ve_hunt_award` raise for a frozen member (a payment webhook or an admin approval could fail).
+  `ve_referral_on_admit` is safe (its exception block catches it). The fix is one migration: `ve_points_grant` returns `granted false` for a
+  frozen member, the settle loops hold and skip, each item in its own exception block. Details and order in `docs/handoff/2026-11-03-abuse-watch.md`.
+- **Not built yet**: the one shared standing check in the token-only edge functions (board, check-ins, bounties, events, venues, products, cookbook,
+  vault, challenge, group and the rest), and the `/policies#community` paragraph, which must be live before any enforcement. Canon
+  `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
 
 ## Image conventions
 
