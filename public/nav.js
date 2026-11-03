@@ -468,7 +468,7 @@
       if (loading) return;
       loading = true;
       var sc = document.createElement('script');
-      sc.src = 'https://hq.lesaruss.ai/shell/universal-bar.js';
+      sc.src = 'https://hq.lesaruss.ai/shell/universal-bar.js?v=20261103';
       sc.onload = function () { loading = false; if (mount()) toggle(); };
       sc.onerror = function () { loading = false; };
       document.head.appendChild(sc);
