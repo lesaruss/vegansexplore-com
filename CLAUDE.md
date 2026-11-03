@@ -5849,6 +5849,45 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   do not offer the survey, nothing stops one person making many unpaid accounts to farm the 111-point referral (Sean's call), and the three challenges are not retired.
 - **Build order**: Pulse subscribe, the people sender, the survey door, the updated Welcome, profiles with groups, campaign homes.
 
+## Abuse watch: a judge decides (Sean, 2026-11-03)
+
+"Have some sort of security mechanism that looks for abuse... if an account is suspected of trying to game the system, internally we can
+start tracking them... if it turns out they have abused the system, any points they have will be null and void, and they will be either
+suspended or banned." Sean is the judge: every suspend, ban and void is his decision, never the system's. Migration
+`20261103_abuse_watch.sql` (applied through the one-time `ve-once-abuse-watch`, now the 410 stub).
+
+- **Tables** (RLS on, no policies): `ve_abuse_cases` (one open case a member: watching, cleared, voided, suspended, banned), `ve_abuse_signals`
+  (one row a member, kind and day, with its evidence) and `ve_abuse_events` (every move, who and why). `members.standing` is good, suspended
+  or banned.
+- **The scan** `ve_abuse_scan()` (cron `ve-abuse-scan`, 9:11 UTC daily) records signals: `referral_burst` (5 sign-ups on one link in 24 hours, 30),
+  `fast_survey` (survey door finished in under 2 minutes, 40), `disposable_email` (20), `points_velocity` (over 3,000 earned in 24 hours, 25),
+  `checkin_pace` (4 places in an hour, 25), `survey_only_referrals` (3 or more survey joins and no paid one, 15). A score is each kind once over
+  14 days. Only `member_class` member, never super admins. **Log-only until Sean turns it on** (`ve_site_settings` `abuse_watch`: `mode`
+  `log_only` | `on`, `open_at` 40, `watch_days` 30, `log_only_until` 2026-11-10): in log-only it opens no case and the scan returns who would
+  have opened. Logan's defaults, Sean's to change.
+- **The judge's functions** (service role only, a super admin and a note required, all logged): `ve_abuse_watch` (open a case by hand),
+  `ve_abuse_decide` with `clear`, `void`, `restore_points`, `suspend`, `ban` and `reinstate`. **Suspend freezes points and participation and is
+  reversible; a ban is permanent but can be undone with `reinstate`.** A void sets the balance and lifetime points to zero, writes an
+  `abuse_void` ledger row and keeps what it took in `void_snapshot`, so `restore_points` puts it back (`abuse_restore`). Nothing is deleted.
+- **The freeze** is `trg_ve_members_freeze_guard`: a suspended or banned account's `lesars_balance` cannot change, so every function that earns
+  or spends points raises `account_frozen` (proven in a rolled-back transaction; void and restore pass a transaction-local bypass). Risk to
+  check before the first suspension: a cron that loops over members (`ve_vault_settle`, `ve_challenge_settle`) would stop at a frozen one.
+- **Devices** (migration `20261103_abuse_watch_devices.sql`, `ve-auth` version 71 from c7ddf70, source sha256 matched): every email and Google
+  sign-up writes a `ve_member_devices` row (`recordMemberDevice`: the IP's salted hash, the same one `ve_signup_attempts` keeps, and a salted
+  hash of the browser id the page keeps in `localStorage` `ve_visitor`, sent by `public/ve-auth.js` as `visitor`; best effort, never blocks a
+  sign-up; RLS on, no policies). Five existing sign-ups were backfilled with their IP hash. `ve_abuse_scan_devices()` (cron
+  `ve-abuse-scan-devices`, 9:09 UTC, before the scan) adds `shared_browser` (three or more accounts on one browser in 30 days, 35) and `shared_ip`
+  (four or more on one network in 7 days, 20: offices, homes and events share one, so it is weak alone). Browser ids reach the server only once
+  the page's `ve-auth.js` is on `main`; until then only the IP signal fills. Proven in a rolled-back transaction.
+- **Standing is enforced at sign-in** (`ve-auth` and `ve-votes` from e2c549c, source sha256 matched): `standingBlock` in `ve-auth` refuses email
+  login (after the password is right), Google sign-in, `me` (so a session in a browser drops) and `requireActiveMembership`; `ve-votes` refuses a
+  vote. A suspended account reads "suspended while our team reviews it, your points are on hold"; a banned one "this account has been closed";
+  neither says why, both give contact@lesaruss.com (403, `code` `account_suspended` or `account_banned`). Checked: the normal paths still
+  answer live; the refusal itself was not run against a real suspended account. **Known gap**: other edge functions (the board, check-ins,
+  bounties...) check only the token, so an old session could still post until it expires; points are frozen everywhere regardless.
+- **Not built yet**: **Depot > Watchlist** (one case a view: evidence, points history,
+  linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.

@@ -337,8 +337,28 @@ async function decodeToken(token: string): Promise<{ sub: string; exp: number } 
 // contribution of any amount (ve-entry-checkout) to have completed, which is
 // what flips this to 'active' (see ve-stripe-webhook). Members who existed
 // before this shipped are already 'active' and are untouched by it.
+// Account standing (abuse watch, Sean 2026-11-03): only Sean, as the judge, suspends or bans (ve_abuse_decide). A suspended or banned
+// account cannot sign in or take part. The words are plain and never say why.
+function standingBlock(standing: string | null | undefined): Response | null {
+  if (standing === 'suspended') {
+    return new Response(JSON.stringify({
+      error: 'Your account is suspended while our team reviews it. Your points are on hold. Write to contact@lesaruss.com and we will help.',
+      code: 'account_suspended',
+    }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+  if (standing === 'banned') {
+    return new Response(JSON.stringify({
+      error: 'This account has been closed. If you think that is a mistake, write to contact@lesaruss.com.',
+      code: 'account_banned',
+    }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+  }
+  return null;
+}
+
 async function requireActiveMembership(memberId: string): Promise<Response | null> {
-  const { data } = await supabase.from('members').select('membership_status').eq('id', memberId).maybeSingle();
+  const { data } = await supabase.from('members').select('membership_status, standing').eq('id', memberId).maybeSingle();
+  const blocked = standingBlock(data?.standing);
+  if (blocked) return blocked;
   if (!data || data.membership_status !== 'active') {
     return new Response(JSON.stringify({
       error: 'payment_required',
@@ -656,6 +676,23 @@ async function logSignupAttempt(ip_hash: string | null, email_domain: string | n
   } catch (_e) { /* best effort */ }
 }
 
+// Who signed up from which device (abuse watch, Sean 2026-11-03). Salted hashes only: the IP's is the one above, the browser's is
+// the random id the page keeps (localStorage ve_visitor). Read by ve_abuse_scan_devices(). Never let it be the reason a signup fails.
+async function recordMemberDevice(req: Request, body: any, memberId: string, via: string) {
+  try {
+    const ip = signupClientIp(req);
+    const ip_hash = ip ? await hashSignupIp(ip) : null;
+    let browser_hash: string | null = null;
+    if (typeof body?.visitor === 'string' && /^[A-Za-z0-9-]{8,64}$/.test(body.visitor)) {
+      const data = new TextEncoder().encode(`ve-browser:${SERVICE_KEY.slice(-24)}:${body.visitor}`);
+      const digest = await crypto.subtle.digest('SHA-256', data);
+      browser_hash = Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+    if (!ip_hash && !browser_hash) return;
+    await supabase.from('ve_member_devices').insert({ member_id: memberId, ip_hash, browser_hash, via });
+  } catch (_e) { /* best effort */ }
+}
+
 async function signupAttemptsSince(column: 'ip_hash' | 'email_domain', value: string, outcomes: string[]): Promise<number> {
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const { count, error } = await supabase
@@ -753,6 +790,7 @@ serve(async (req: Request) => {
         throw new Error(`signup insert failed: ${insertErr.message}`);
       }
       await logSignupAttempt(ip_hash, email_domain, 'created', member.id);
+      await recordMemberDevice(req, body, member.id, 'email');
 
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
@@ -795,7 +833,7 @@ serve(async (req: Request) => {
       const gUser = await verifyGoogleToken(id_token);
       if (!gUser) return new Response(JSON.stringify({ error: 'Invalid Google token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, tenant_id').eq('google_id', gUser.sub).maybeSingle();
+      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, tenant_id').eq('google_id', gUser.sub).maybeSingle();
 
       if (existing) {
         // 'pending_payment' is allowed through -- browsing, the Guide chat, and
@@ -805,6 +843,7 @@ serve(async (req: Request) => {
         if (existing.membership_status !== 'active' && existing.membership_status !== 'pending_payment') {
           return new Response(JSON.stringify({ error: 'Account suspended.' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
         }
+        { const blocked = standingBlock(existing.standing); if (blocked) return blocked; }
         if (await foreignNotEntitled(existing)) return await passportNeeded(existing);
         const token = await signJWT({ sub: existing.id, email: existing.email, tier: existing.membership_tier, brand: 'vegans-explore' });
         await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', existing.id);
@@ -817,8 +856,9 @@ serve(async (req: Request) => {
       const byEmail = await findMemberByEmail(gUser.email.toLowerCase());
       if (byEmail) {
         await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture, email_verified: true }).eq('id', byEmail.id);
-        const { data: linkedRow } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, tenant_id').eq('id', byEmail.id).single();
+        const { data: linkedRow } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, tenant_id').eq('id', byEmail.id).single();
         if (!linkedRow) throw new Error('Failed to load linked member after google_id update');
+        { const blocked = standingBlock(linkedRow.standing); if (blocked) return blocked; }
         if (await foreignNotEntitled(linkedRow)) return await passportNeeded(linkedRow);
         const { tenant_id: _lt, ...linked } = linkedRow;
         await ensureMemberPointsRow(linked.id);
@@ -849,6 +889,7 @@ serve(async (req: Request) => {
       }).select(MEMBER_FIELDS + ', avatar_url, membership_status').single();
 
       if (insertErr) throw new Error(`google insert failed: ${insertErr.message}`);
+      await recordMemberDevice(req, body, member.id, 'google');
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
       }
@@ -862,7 +903,7 @@ serve(async (req: Request) => {
       const { email, password } = body;
       if (!email || !password) return new Response(JSON.stringify({ error: 'email and password required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
 
-      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, password_hash, avatar_url, tenant_id').eq('email', email.toLowerCase()).limit(1).single();
+      const { data: member } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, password_hash, avatar_url, tenant_id').eq('email', email.toLowerCase()).limit(1).single();
       if (!member) return new Response(JSON.stringify({ error: 'No account found with that email.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       // 'pending_payment' signs in fine -- browsing, the Guide chat, and
       // onboarding stay open pre-payment (see requireActiveMembership); only
@@ -875,6 +916,7 @@ serve(async (req: Request) => {
 
       const valid = await verifyPassword(password, member.password_hash);
       if (!valid) return new Response(JSON.stringify({ error: 'Incorrect password.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      { const blocked = standingBlock(member.standing); if (blocked) return blocked; }
       if (await foreignNotEntitled(member)) return await passportNeeded(member);
 
       await supabase.from('members').update({ last_activity_at: new Date().toISOString() }).eq('id', member.id);
@@ -1436,8 +1478,9 @@ serve(async (req: Request) => {
       if (!token) return new Response(JSON.stringify({ error: 'No token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const decoded = await decodeToken(token);
       if (!decoded) return new Response(JSON.stringify({ error: 'Invalid or expired token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-      const { data: meRow } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, membership_status, created_at, mission_survey_completed_at, guest_review_status, level_override, ambassador_profile, tenant_id').eq('id', decoded.sub).maybeSingle();
+      const { data: meRow } = await supabase.from('members').select(MEMBER_FIELDS + ', avatar_url, onboarding_completed, standing, membership_status, created_at, mission_survey_completed_at, guest_review_status, level_override, ambassador_profile, tenant_id').eq('id', decoded.sub).maybeSingle();
       if (!meRow) return new Response(JSON.stringify({ error: 'Member not found' }), { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      { const blocked = standingBlock(meRow.standing); if (blocked) return blocked; }
       // A session another brand's account got before brand memberships reads here as waiting for its Passport.
       const { tenant_id: _meT, ...member } = meRow;
       if (await foreignNotEntitled(meRow)) member.membership_status = 'pending_payment';
