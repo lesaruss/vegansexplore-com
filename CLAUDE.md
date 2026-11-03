@@ -4597,6 +4597,13 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   skips anyone with no Taste answers (`why` null), so a reader never gets the Taste's Day 3, 7 and 14. Day 3 and Day 7 link the calendar
   (the event claim is on each event's page, so the note says find your event and tap Are you running this event?). Previews proven live;
   nothing sent, nothing switched on.
+- **Direction change, 2026-11-03, after step 1 (Sean; not built, canon v1 not yet edited)**: the email-only reader is replaced by a survey gate.
+  Everyone can get a free account, but must complete the survey tied to the Guide; the Guide is free to share, walks them through claiming
+  their profile and lays out what Vegans Explore offers; the way through is the one-time $11 or the Guide's survey, and a member who paid can
+  still take the survey for points. For events, everyone takes the event survey first; completing it admits a non-member and puts a sponsorship
+  applicant in the running; sponsorships are reviewed against each other, never an entitlement. It runs on the survey door engine
+  (`/survey?door=1`). Two answers wait on Sean: the event survey's points (Logan's default 100) and whether the general survey admits without
+  the event survey (default yes, but a sponsorship still needs the event survey). Full plan in `docs/handoff/2026-11-03-door-guides.md`.
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
