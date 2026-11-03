@@ -4,13 +4,13 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Passport — Vegans Explore</title>
-  <meta name="description" content="The Vegans Explore Passport: $11 one time, with 1,100 welcome points. Vote for the places you love, join your city's community, unlock Guides and build your Vegan world.">
+  <title>Welcome to Vegans Explore</title>
+  <meta name="description" content="How Vegans Explore works, free to read: the Directory, your city's Daily Pulse, Guides and points. Then come in with the survey, or the $11 Passport with 1,100 welcome points.">
   <link rel="canonical" href="https://vegansexplore.com/passport">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
-  <meta property="og:title" content="The Vegans Explore Passport">
-  <meta property="og:description" content="$11 one time, with 1,100 welcome points: enough for your first Guide.">
+  <meta property="og:title" content="Welcome to Vegans Explore">
+  <meta property="og:description" content="How Vegans Explore works, then two ways in: take the survey, or the $11 Passport with 1,100 welcome points.">
   <meta property="og:url" content="https://vegansexplore.com/passport">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,7 +20,10 @@
        a Guide stays on the right of every tab with their words in a bubble, the content sits to the left on a clean white
        page, Back / N of M / Next, and on desktop the nav, the Guide and the footer share one screen. No clips: each tab
        shows a Guide's picture (VEGuideArt square). A signed-out Vote, Save, Check in or Give anywhere on the site lands here (?from=vote|save|checkin|give|board|tickets&back=).
-       $11, one time: the Founding Membership checkout (VEAuth.showActivateModal), which comes with 1,100 welcome points. */
+       $11, one time: the Founding Membership checkout (VEAuth.showActivateModal), which comes with 1,100 welcome points.
+       Since 2026-11-03 this page is the Welcome (Sean: "the welcome should just be the passport too... we're merging the passport, the
+       welcome, and the taster all together"): free and public, how to use Vegans Explore, ending on the two ways in (the survey at
+       /survey?door=1, or the $11). canon-ve-people-campaigns-doors; docs/proposals/people-campaigns-doors.md section 2. */
     :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
     body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
     *,*::before,*::after{box-sizing:border-box;}
@@ -149,7 +152,21 @@
     .dg-taste{display:block;text-align:center;font-size:12.5px;font-weight:800;color:var(--g);text-decoration:underline;text-underline-offset:3px;}
     .dg-taste[hidden]{display:none;}
     .dg-taste-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:42px;margin-top:10px;border:1.5px solid var(--g);border-radius:6px;color:var(--g);background:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
-    @media (max-width:900px){#dgRail>.dg-cta,#dgRail>.dg-taste{grid-column:2 / -1;}html.pg-founding .dg-joinbox{display:none !important;}}
+    @media (max-width:900px){#dgRail>.dg-cta{grid-column:2 / -1;}html.pg-welcome .dg-joinbox{display:none !important;}}
+    /* The two ways in (Sean, 2026-11-03: the survey, or the $11): two equal cards, one on phones. */
+    .dg-paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;margin:0 0 16px;}
+    .dg-path{display:flex;flex-direction:column;border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:20px;}
+    .dg-path .dg-tag{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#fff;color:var(--g);margin-bottom:8px;}
+    .dg-path .dg-big{font-size:44px;font-weight:900;line-height:1;margin-bottom:6px;}
+    .dg-path .dg-big small{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .dg-path > b{font-size:16px;font-weight:900;}
+    .dg-path p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:6px 0 4px;}
+    .dg-path p a{color:var(--g);font-weight:800;}
+    .dg-path ul{margin:8px 0 16px;padding:0;list-style:none;}
+    .dg-path li{font-size:13.5px;line-height:1.45;color:var(--ink75);padding:7px 0 7px 24px;position:relative;border-bottom:1px solid var(--line);}
+    .dg-path li::before{content:'';position:absolute;left:3px;top:13px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
+    .dg-path li b{color:var(--ink);}
+    .dg-path .dg-btn{margin-top:auto;width:100%;}
   </style>
   <script src="/public/ve-guide-corner.js"></script>
 </head>
@@ -161,7 +178,7 @@
   <div class="dg-top-row">
     <div class="dg-brand-mark">
       <div class="dg-eyebrow">Vegans Explore Guides</div>
-      <h1 class="dg-title">The Passport</h1>
+      <h1 class="dg-title">Welcome</h1>
     </div>
     <div class="dg-joinbox" id="pgJoinbox">
       <div class="dg-jb-price"><b>$11</b><small>one time<br>purchase</small></div>
@@ -180,8 +197,7 @@
     <div class="dg-guide" id="dgGuide" role="img"></div>
     <div class="dg-guide-name" id="dgGuideName"></div>
     <div class="dg-bubble" id="dgBubble"></div>
-    <button type="button" class="dg-cta" id="dgCta" data-join hidden>Become a Founding Member, $11</button>
-    <a class="dg-taste" id="dgTaste" href="/guides/taste?from=passport" hidden>Not ready? Try a free taste first</a>
+    <a class="dg-cta" id="dgCta" href="#/join" hidden>Enter the room</a>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -200,16 +216,19 @@
   // the ensemble opens it ('all'), then each tab is a different Guide saying who they are and which Guide they lead, all eight once.
   var GUIDES = { all: 'Your Guides', liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani', kai: 'Kai', pascal: 'Pascal' };
   var ENSEMBLE = '/public/guides/welcome-ensemble.jpg';
+  // The Welcome (Sean, 2026-11-03: "the welcome should just be the passport too... we're merging the passport, the welcome, and the taster
+  // all together"): one free, public guide on how to use Vegans Explore. Visitors choose what they want to know, in any order, and the last
+  // tab is the two ways in: the survey (time) or the $11 (money). Each tab is a different Guide, all eight once; their lines are text drafts.
   var TABS = [
-    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us walks you through our own Guides, and you\'ll meet every one of us on the way. Your Passport is how you take part in Vegans Explore.' },
-    { k: 'places', label: 'Find your places', g: 'pascal', say: 'I\'m Pascal, the cook of the crew. I\'m making the Meat Alternatives and Meal Prep Guides. The Directory is every Vegan place we know, city by city, and with your Passport you vote for the ones you love, once a day each.' },
-    { k: 'community', label: 'Your community', g: 'river', say: 'I\'m River. I take you to game day in the Stadium and Arena Guide. Every city has its own hub too: the Daily Pulse, events, the Community Board and the members who make it happen.' },
-    { k: 'guides', label: 'Guides', g: 'maya', say: 'I\'m Maya, from the Dairy Guide, and I\'ll walk you through the Pre-Vegan Guide too. Guides are small apps that put our tools together around one topic. Each one is eleven dollars, or 1,100 points, and yours to keep.' },
+    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us walks you through our own Guides, and you\'ll meet every one of us on the way. Look around in any order, and when you\'re ready, come in.' },
+    { k: 'places', label: 'Find your places', g: 'pascal', say: 'I\'m Pascal, the cook of the crew. I\'m making the Meat Alternatives and Meal Prep Guides. The Directory is every place we know, city by city. Anyone can look, and members decide what rises to the top.' },
+    { k: 'community', label: 'Your city', g: 'river', say: 'I\'m River. I take you to game day in the Stadium and Arena Guide. Every city has its own hub too: the Daily Pulse and its boards, events and the members who make it happen.' },
+    { k: 'guides', label: 'Guides', g: 'maya', say: 'I\'m Maya, from the Dairy Guide, and I\'ll walk you through the Pre-Vegan Guide too. Guides are small apps that put our tools together around one topic. You can try a piece of each one free, right here.' },
     { k: 'points', label: 'Points and levels', g: 'theo', say: 'I\'m Theo, from the Nutrition Guide. Points come from taking part. Spend them on Guides or give them to the places you love. Your level comes from everything you have earned.' },
-    { k: 'supports', label: 'What your $11 supports', g: 'dani', say: 'I\'m Dani, from the Nonprofit Guide. Your eleven dollars is a contribution, not a donation. It keeps the community growing, city by city.' },
+    { k: 'supports', label: 'What it supports', g: 'dani', say: 'I\'m Dani, from the Nonprofit Guide. What you give, your time or eleven dollars, keeps the community growing, city by city, and it reaches the animals too.' },
     { k: 'bring', label: 'Bring people in', g: 'kai', say: 'I\'m Kai, from the Creator Guide. The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
-    { k: 'business', label: 'For businesses', g: 'liz', say: 'I\'m Liz, from the Vegan Restaurant Guide. Businesses come in the same way, for the same eleven dollars, and then get what we offer only to members.' },
-    { k: 'join', label: 'Get your Passport', g: 'nori', say: 'I\'m Nori, from the Airport Guide. Eleven dollars, one time, and it comes with 1,100 welcome points: enough for your first Guide. Come join us!' }
+    { k: 'business', label: 'For businesses', g: 'liz', say: 'I\'m Liz, from the Vegan Restaurant Guide. Businesses are members too, and get what we offer only to members. Start with a free check of your page.' },
+    { k: 'join', label: 'Enter the room', g: 'nori', say: 'I\'m Nori, from the Airport Guide. There are two ways in, and it is the same room. Give your time with the survey, or give eleven dollars. Come join us!' }
   ];
   // For businesses (Sean, 2026-10-27: "a page specifically for businesses... anytime we're asking them to become a member or
   // do something, they could take them to that version of the passport page"). /business is this page (rewrite in vercel.json)
@@ -224,18 +243,9 @@
     { k: 'managed', label: 'Managed by us', g: 'dani', say: 'Running a restaurant is a lot. If you would rather we handled your website, Google, photos and brand, this is how that works.' },
     { k: 'start', label: 'Get started', g: 'liz', say: 'Eleven dollars, one time. Your 1,100 welcome points cover your page. Come join us!' }
   ];
-  // The Passport is the Founding Member flow (Sean, 2026-11-01: "bring this down to 4 total pages, overview, 2 supporting pages,
-  // and then the checkout... Our focus is become a founding member before January 1st"); copy by the panel. The nine-tab
-  // ensemble tour is the Welcome Guide at /passport?guide=welcome.
-  var WELCOME = !BIZ && new URLSearchParams(location.search).get('guide') === 'welcome';
-  var FOUNDING = !BIZ && !WELCOME;
-  if (FOUNDING) document.documentElement.classList.add('pg-founding');
-  if (FOUNDING) TABS = [
-    { k: 'overview', label: 'Why now', g: 'all', say: 'We launch January 1, 2027. Join before then and you\'re a Founding Member for good.' },
-    { k: 'can', label: 'What you can do', g: 'theo', say: 'Browsing is free. Your Passport is how you take part.' },
-    { k: 'now', label: 'Why join now', g: 'dani', say: 'Right now, while we\'re still building, you can help steer where this goes.' },
-    { k: 'join', label: 'Get your Passport', g: 'liz', say: 'Eleven dollars, one time. Come help us build it.' }
-  ];
+  // The Welcome is the default. /business (BIZ) keeps its own tabs. ?guide=welcome, the old Welcome Guide's address, lands here too.
+  var WELCOME = !BIZ;
+  if (WELCOME) document.documentElement.classList.add('pg-welcome');
   var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
   var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
   var tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
@@ -257,81 +267,99 @@
   function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
   function joinBtns() {
     if (isMember()) return '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
-    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + (typeof FOUNDING !== 'undefined' && FOUNDING && Date.now() < Date.parse('2027-01-01T05:00:00Z') ? 'Become a Founding Member &middot; $11' : 'Get your Passport, $11') + '</button>' +
+    return '<div class="dg-btns"><a class="dg-btn" href="' + href('join') + '">Enter the room</a>' +
       (me() ? '' : '<a href="#" data-signin style="font-size:13px;font-weight:800;color:var(--g)">Already a member? Sign in</a>') + '</div>';
   }
 
-  // Founding Membership closes at midnight Eastern on January 1, 2027 (Sean, 2026-11-01); the line goes away by itself after.
-  var FOUNDING_LINE = Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.</p>' : '';
+  // Founding Membership closes at midnight Eastern on January 1, 2027 (Sean, 2026-11-01), and since 2026-11-03 either door before then makes
+  // a Founding Member ("anyone who becomes a member before January is a founding member"); the line goes away by itself after.
+  var FOUNDING_LINE = Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Come in by either door before then and Founding Member stays on your profile for good.</p>' : '';
+  var TRY = [
+    ['The Buttermilk swap', 'Maya, Dairy Guide: milk, butter and cheese swaps, and what to use instead.', '/guides/vegan-dairy-guide#/swaps'],
+    ['Vitamin B12', 'Theo, Nutrition Guide: how much, and where to get it.', '/guides/nutrition-guide#/nutrients/b12'],
+    ['Hard Rock Stadium', 'River, Stadium & Arena Guide: every Vegan stand, with a map.', '/guides/stadium-arena-guide#/venue/hard-rock-stadium'],
+    ['Fort Lauderdale airport', 'Nori, Airport Guide: Vegan food gate by gate.', '/guides/airport-guide#/airport/fll'],
+    ['A free check of a restaurant', 'Liz, Vegan Restaurant Guide: how a place shows up online, and what to fix.', '/guides/vegan-restaurant-guide#/audit'],
+    ['Creator tip 1', 'Kai, Creator Guide: know who you make content for, and why.', '/guides/creator-guide#/tips/purpose'],
+    ['Nonprofit tip 1', 'Dani, Nonprofit Guide: telling your story.', '/guides/nonprofit-guide#/tips/story']
+  ];
   var VIEWS = {
     overview: function () {
+      var BL = { places: 'The Directory, search, votes and saves.', community: 'The Daily Pulse, boards, events and bounties.', guides: 'Mini apps, and a free piece of each.', points: 'Earn them, spend them, give them. Four levels.',
+        supports: 'What your time or your $11 builds.', bring: 'Your link, and what it earns.', business: 'Members too, with services of their own.', join: 'Two ways in: the survey, or $11.' };
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
+        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BL[t.k]) + '</span></div></a>';
       }).join('');
-      return (fromVote ? '<p class="dg-note"><b>Voting is for members.</b> Get your Passport, $11 one time, and vote every day for the places you love. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromSave ? '<p class="dg-note"><b>Saving is for members.</b> Get your Passport, $11 one time, and keep the places you love on My list. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromCheckin ? '<p class="dg-note"><b>Check-ins are for members.</b> Get your Passport, $11 one time, and earn 10 points every time you visit a place. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromGive ? '<p class="dg-note"><b>Giving points is for members.</b> Get your Passport, $11 one time, with 1,100 welcome points to give to the places you love. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromTickets ? '<p class="dg-note"><b>This is a members-only event.</b> Get your Passport, $11 one time, and we take you straight to the tickets. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : fromBoard ? '<p class="dg-note"><b>Posting and comments are for members.</b> Get your Passport, $11 one time, and join the conversation on the Daily Pulse in every city. Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.</p>' : '') +
-        head('Vegans Explore Passport', 'Your way into the Vegan world', 'Looking around is free for everyone. The Passport, <b>$11 one time</b>, is how you take part: vote, post, join your city, unlock Guides and build your Vegan world from your dashboard. It comes with <b>1,100 welcome points</b>, enough for your first Guide. Everyone who holds one is a <b>Vegan Explorer</b>.') + FOUNDING_LINE +
-        '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
+      var cd = OPEN ? '<div class="dg-cd" id="pgCd" role="timer"><div class="dg-cd-l">Founding Membership closes in</div><div class="dg-cd-r">' +
+        ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div class="dg-cd-c"><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>' : '';
+      return gateNote() + head('Welcome to Vegans Explore', 'How it works, in a few minutes',
+        'Vegans Explore is where the Vegan community finds places to eat, shop and go, city by city, from South Florida to London. Looking around is free for everyone: pick what you want to know, in any order. When you are ready, <b>enter the room</b>.' + (OPEN ? ' We launch officially on <b>January 1, 2027</b>.' : '')) +
+        cd + '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
     },
     places: function () {
-      return head('Find your places', 'The Directory, voted on by members', 'Restaurants, bakeries, markets, food brands, coaches, nonprofits and more, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
+      return gateNote() + head('Find your places', 'The Directory, voted on by members', 'Local food, products, services, media, community groups and people, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
         '<div class="dg-grid">' +
+        card('Search from anywhere', 'The box at the top of every page finds a place, a kind of food or an answer. Try &ldquo;Vegan restaurants in Atlanta&rdquo;.', 'Everyone') +
+        card('The Directory', 'Browse by section and city, and open any page. <a href="/directory">Open the Directory</a>.', 'Everyone') +
+        card('Media', 'Podcasts, documentaries and books, ranked by member votes. <a href="/media">See Media</a>.', 'Everyone') +
+        card('Share any page', 'The Share button in the top bar copies the page you are on, just as you see it, so a friend lands in the same place.', 'Everyone') +
         card('Vote every day', 'Vote for each place you love once every 24 hours. The votes are real, and every Directory sorts by them.', 'Members') +
-        card('Save your favorites', 'Keep the places you want to try, and come back to them from your dashboard.', 'Members') +
-        card('Give a boost', 'Give some of your points to a business or nonprofit you believe in. It shows on their page, and it never lowers your level.', 'Members') +
-        card('Browse for free', 'Search, filter by city and section, and open any listing. <a href="/directory">Open the Directory</a>.', 'Everyone') +
+        card('Save and check in', 'Save the places you want to try. Check in when you are there for 10 points a visit. You can also give some of your points to a business or nonprofit you believe in.', 'Members') +
         '</div>' + joinBtns();
     },
     community: function () {
-      return head('Your community', 'A hub for your city', 'Every chapter, from South Florida to London, has its own community hub.') +
+      return gateNote() + head('Your city', 'A hub for your city', 'Every chapter, from South Florida to London, has its own community hub.') +
         '<div class="dg-grid">' +
-        card('The Daily Pulse', 'A topic every morning for your city and one for the country, to read and talk about.', 'Every day') +
-        card('The Community Board', 'Requests and offers, jobs, classifieds, fosters and rescues. Members post and reply.', 'Members post') +
-        card('Events', 'What is happening near you, from community nights to the places opening up.', 'Your city') +
-        card('Bounties', 'Jobs from the campaigns in your city, paid in points.', 'Earn points') +
-        '</div>' + '<p class="dg-lede" style="margin-top:16px">See yours: <a href="/communities" style="color:var(--g);font-weight:800">the communities</a>.</p>' + joinBtns();
-    },
-    guides: function () {
-      return head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Every Guide is <b>$11 or 1,100 points</b>, and yours to keep. Buying one also makes you a member.') +
-        '<div class="dg-grid">' +
-        card('The Vegan Dairy Guide', 'The brands to buy, swaps for every kind of dairy, recipes and cookbooks, with Maya. <a href="/guides/vegan-dairy-guide">Take a look</a>.', 'Live') +
-        card('The Vegan Restaurant Guide', 'A free check of a restaurant\'s Google listing, website and social, then the fixes in order, with Liz. <a href="/guides/vegan-restaurant-guide">Take a look</a>.', 'Live') +
-        card('More on the way', 'New Guides join the catalog as they are ready. <a href="/guides">See every Guide</a>.', 'Coming', true) +
+        card('The Daily Pulse', 'A topic every morning for your city, to read and talk about. Anyone can read it. <a href="/pulse">Open the Pulse</a>.', 'Every day') +
+        card('The boards', 'Jobs, classifieds, fosters and rescues for your city, and Suggest a Topic. Members post and reply.', 'Members post') +
+        card('Events', 'Vegan events in your city and around the world, open to everyone, and you can submit one. <a href="/events">See events</a>.', 'Everyone') +
+        card('Bounties', 'Small jobs from the campaigns in your city, paid in points.', 'Earn points') +
+        card('Your chapter', 'Every city has its own page. Vote for it and save it to join it. <a href="/communities">Find your city</a>.', 'Everyone') +
         '</div>' + joinBtns();
     },
+    guides: function () {
+      var tries = TRY.map(function (t) { return card(t[0], esc(t[1]) + ' <a href="' + t[2] + '">Open it</a>.', 'Free to try'); }).join('');
+      return gateNote() + head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Most are <b>$11 or 1,100 points</b>, yours to keep, and some, like the Vegan Events Guide, are free with a short survey. Buying one also makes you a member.') +
+        '<div class="dg-k" style="margin:4px 0 10px">Try a piece of each, free</div><div class="dg-grid">' + tries + '</div>' +
+        '<div class="dg-btns"><a class="dg-btn dg-ghost" href="/guides">See every Guide</a></div>' + joinBtns();
+    },
     points: function () {
-      return head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: Bounties, competitions and campaigns, the Daily Pulse and the Community Board. Every purchase, a Guide, a ticket or merchandise, earns a <b>25-point thank-you</b>.') +
+      return gateNote() + head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: bounties, check-ins, campaigns, the Daily Pulse and the boards. The survey starts you with <b>250</b>, and the $11 Passport with <b>1,100</b>. Every purchase earns a <b>25-point thank-you</b>.') +
         '<div class="dg-levels">' +
         '<div class="dg-level"><b>Level 1</b><strong>Start</strong><span>Every member</span></div>' +
         '<div class="dg-level"><b>Level 2</b><strong>2,500</strong><span>points earned</span></div>' +
         '<div class="dg-level"><b>Level 3</b><strong>10,000</strong><span>points earned</span></div>' +
         '<div class="dg-level"><b>Level 4</b><strong>25,000</strong><span>points earned</span></div></div>' +
         '<div class="dg-grid">' +
-        card('Unlock Guides', 'Any Guide for 1,100 points. Your 1,100 welcome points cover the first one.', 'Spend') +
+        card('Unlock Guides', 'Any Guide for 1,100 points. The Passport\'s welcome points cover your first one, and with the survey you earn the rest by taking part.', 'Spend') +
         card('Boost the places you love', 'Give points to a business or nonprofit. Points are a boost, never money.', 'Give') +
         card('Talk with your Guide', 'Ask your Guide anything Vegan, a few points a message.', 'Spend') +
         card('Your level never drops', 'Your level comes from every point you have ever earned, so spending or giving points never lowers it.', 'Levels') +
         '</div>' + joinBtns();
     },
     supports: function () {
-      return head('What your $11 supports', 'A contribution to the community', 'Your $11 is a membership contribution to Vegans Explore, one time, never a tax-deductible donation. It is how we grow and keep this running.') +
+      return gateNote() + head('What it supports', 'What you give keeps it growing', 'Give your time with the survey or $11 one time, and you are helping build the Vegan community\'s home base. The $11 is a membership contribution, never a tax-deductible donation.') +
         '<div class="dg-grid">' +
         card('Events', 'Community nights and gatherings in our cities, where members meet in person.', 'In person') +
         card('Community Managers', 'Local people in each city who welcome members and businesses and keep the hub alive. It is gig work, paid as the community grows.', 'People') +
         card('The tools', 'The Directory, the hubs, the Guides and your dashboard, built and kept up for members.', 'Apps') +
+        card('The animals', 'Rescues and sanctuaries are listed in every city, the Fosters and Rescues boards help animals find homes, and you can give your points to the organizations you believe in. <a href="/directory?tab=community">See them</a>.', 'Animals') +
+        card('Your answers', 'The survey helps us build the right things for your city. We never sell your answers, and you choose which parts others can see.', 'Your time') +
         '</div>' + joinBtns();
     },
     bring: function () {
-      return head('Bring people in', 'More people, more to find', 'Every member makes the Directory sharper and the hubs busier. Bring in the people who would love it.') +
+      return gateNote() + head('Bring people in', 'More people, more to find', 'Every member makes the Directory sharper and the hubs busier. Bring in the people who would love it.') +
         '<div class="dg-grid">' +
         card('Your link', 'Every member gets one. A friend who joins with it earns you 111 points, and from Level 2 your link earns a share of what they buy, 20%, rising with your level. Keep it, or give it to an organization you care about.', 'Earn') +
+        card('The Share button', 'When you are signed in, it copies any page with your own link on it, so anyone who joins from it is credited to you.', 'Earn') +
         card('Vote together', 'Every vote moves a place up the list for the whole city. The more members vote, the truer the list.', 'Your city') +
         card('Share what you love', 'Send a friend a listing, a Daily Pulse topic or a Guide.', 'Share') +
         '</div>' + joinBtns();
     },
     business: function () {
-      return head('For businesses', 'The same way in', 'Businesses come in at the same <b>$11</b>, one time. Then they get the advertising, sponsorships and marketing services we offer only to members.') +
+      return gateNote() + head('For businesses', 'Members too, with services of their own', 'Businesses come in the same ways as everyone. Then they get the advertising, sponsorships and marketing services we offer only to members.') +
         '<div class="dg-grid">' +
-        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. <a href="/claim">Join the Directory</a>.', 'Claim it') +
+        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. Each page is $11 or 1,100 points. <a href="/claim">Join the Directory</a>.', 'Claim it') +
         card('Your business dashboard', 'Your numbers, your page and menu, ads and the campaigns open to you, on your own page.', 'Members') +
         card('Advertising and sponsorships', 'Ad spots across the site, and sponsorships of our campaigns and events, only for members.', 'Members') +
         card('Marketing services', 'Help with your Google listing, website and social, starting with a free check in the Restaurant Guide.', 'Members') +
@@ -339,23 +367,22 @@
     },
     join: function () {
       var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
-      var box;
       if (isMember()) {
-        box = '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status;
-      } else {
-        box = '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet. Get your Passport, $11 one time, with 1,100 welcome points.'
-          : 'Create your account and get your Passport: $11 one time, with 1,100 welcome points. Already a member? <a href="#" data-signin>Sign in</a>.') +
-          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button>' + status;
+        return head('Enter the room', 'You are in', 'You are a member, and every door is open. Thank you for being here.') +
+          '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>' + status;
       }
-      return head('Get your Passport', 'One time, yours to keep', 'It never renews, and it makes you a Vegan Explorer. After that, you buy only what you want: Guides, merchandise and event tickets.') + (isMember() ? '' : FOUNDING_LINE + '<p class="dg-note"><b>Would rather give your time than $11?</b> Make your account, then choose to finish the whole profile survey instead. Membership opens when you finish, with the survey\'s 250 points, and it counts toward Founding Member before the deadline.</p>') +
-        '<div class="dg-access"><ul>' +
-        '<li><b>1,100 welcome points</b>, enough for your first Guide.</li>' +
-        '<li><b>Vote</b> every day for the places you love in the Directory.</li>' +
-        '<li><b>Your community:</b> post and reply on the Community Board, and join your city.</li>' +
-        '<li><b>Your dashboard</b>, to build your Vegan world with our tools.</li>' +
-        '<li><b>Points and levels</b>: earn by taking part, give them to the places you love.</li>' +
-        '<li><b>For businesses:</b> advertising, sponsorships and marketing services, only for members.</li></ul>' +
-        '<div class="dg-pricebox">' + box + '</div></div>';
+      var vid = window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v1.mp4', vtt: '/public/home/next-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v1' }) : '';
+      return gateNote() + head('Enter the room', 'Two ways in, the same room', 'Either way you are a member with everything open: vote, post, join your city, take on bounties, earn points and unlock Guides. Choose the one that suits you.') + FOUNDING_LINE +
+        '<div class="dg-paths">' +
+        '<div class="dg-path"><span class="dg-tag">Give your time</span><div class="dg-big">Free</div><b>Take the survey</b>' +
+        '<p>Build your profile, one question at a time, in any order, saved as you go. Your membership opens when you finish.</p><ul>' +
+        '<li><b>250 points</b>, earned by the survey itself</li><li><b>Everything open</b>, with more points from bounties and check-ins</li></ul>' +
+        '<a class="dg-btn" href="/survey?door=1">Start the survey</a></div>' +
+        '<div class="dg-path"><span class="dg-tag">Give $11</span><div class="dg-big">$11<small>one time</small></div><b>Get your Passport</b>' +
+        '<p>' + (me() ? 'Your account is not a member yet. ' : '') + 'It opens at once and never renews. Already a member? <a href="#" data-signin>Sign in</a>.</p><ul>' +
+        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Everything open</b>, with more points from bounties and check-ins</li></ul>' +
+        '<button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button></div></div>' + status +
+        '<p class="dg-lede" style="margin-top:6px">Not sure yet? Nothing here needs an account: <a href="' + href('overview') + '" style="color:var(--g);font-weight:800">look around first</a>.</p>' + (vid ? '<div style="max-width:520px">' + vid + '</div>' : '');
     }
   };
   var SAMPLE = '/business/sample', SAMPLE_DASH = '/business/sample?tab=brand';
@@ -449,69 +476,19 @@
   };
   var BIZ_BLURB = { page: 'Claim it or add it. Yours to keep up to date.', dash: 'Your numbers, check-ins, menu and ads.', found: 'The Directory, Events, ads and Guides.',
     partner: '$111 a period of 111 days. Join now and until January is bonus.', managed: 'We do your website, Google, photos and brand.', start: '$11 one time. Your points cover your page.' };
-  var BLURB = {
-    places: 'Vote for the places you love, every day.', community: 'Your city\'s hub, its Daily Pulse and its Board.',
-    guides: 'Mini apps, $11 or 1,100 points each.', points: 'Earn them, spend them, give them. Levels 1 to 3.',
-    supports: 'Where your contribution goes.', bring: 'More members, more to find.', business: 'The same $11, then services for members.',
-    join: '$11 one time, with 1,100 welcome points.'
-  };
 
-  // The four Founding Member pages (FOUNDING).
-  var LOCKED = '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.</p>';
+  // Old links: the four Founding Member pages (2026-11-01) and the nine-tab Welcome Guide's tabs land on the page that holds them now.
+  var OLD = { can: 'places', now: 'supports' };
   var OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  var TOPIC = { can: '/public/guides/thumb-directory.jpg', now: '/public/guides/thumb-community.jpg', join: '/public/guides/thumb-passport.jpg' };
+  // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the join step (Sean, 2026-11-01).
   function gateNote() {
     var w = fromVote ? ['Voting is for members.', 'vote every day for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
-      fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your 1,100 welcome points to the places you love'] :
+      fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your points to the places you love'] :
       fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
     if (!w || isMember()) return '';
-    return '<p class="dg-note"><b>' + w[0] + '</b> Get your Passport, $11 one time, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + '</p>';
+    return '<p class="dg-note"><b>' + w[0] + '</b> Enter the room, with the survey or the $11 Passport, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + ' <a href="' + href('join') + '" style="color:var(--g);font-weight:800">See the two ways in</a>.</p>';
   }
-  if (FOUNDING) VIEWS = {
-    overview: function () {
-      var steps = [['can', '1. What you can do', 'Vote, earn points on bounties, give points and get your first Guide.'], ['now', '2. Why join now', 'Help steer it while it is still being built.'], ['join', '3. Get your Passport', '$11, one time. It never renews.']];
-      var tiles = steps.map(function (x) { return '<a class="dg-tile" href="' + href(x[0]) + '"><div class="dg-ic dg-topic" style="background-image:url(\'' + TOPIC[x[0]] + '\')"></div><div><b>' + x[1] + '</b><span>' + x[2] + '</span></div></a>'; }).join('');
-      var cd = OPEN ? '<div class="dg-cd" id="pgCd" role="timer"><div class="dg-cd-l">Founding Membership closes in</div><div class="dg-cd-r">' +
-        ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div class="dg-cd-c"><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>' : '';
-      return gateNote() + head('Vegans Explore Passport', OPEN ? 'Be a Founding Member of Vegans Explore' : 'Your Passport to Vegans Explore',
-        'We\'re building the Vegan community\'s home base, city by city, from South Florida to London. ' + (OPEN ? 'It officially launches January 1, 2027.' : '') +
-        '</p><p class="dg-lede">Your Passport is <b>$11, one time</b>, and comes with <b>1,100 welcome points</b>.') + cd + '<div class="dg-tiles">' + tiles + '</div>';
-    },
-    can: function () {
-      return gateNote() + head('What you can do', 'Browsing is free. Taking part takes a Passport.') + '<div class="dg-grid">' +
-        card('Vote', 'Rank the Vegan places and brands you love, once a day each.') +
-        card('Earn points', 'Check in at the places you visit and take on bounties: small jobs that help your community, like confirming a place is still open or a Vegan item at the stadium.') +
-        card('Give points', 'Back the places, nonprofits, rescues and sanctuaries you care about.') +
-        card('Get your first Guide', 'Your 1,100 welcome points cover it.') +
-        card('Join your city', 'Post on the Daily Pulse and its boards, and RSVP to events.') +
-        card('Share your link', 'Earn 111 points when a friend joins.') + '</div>' + joinBtns();
-    },
-    now: function () {
-      return gateNote() + head('Why join now', 'Help us build it before it launches') + '<div class="dg-grid">' +
-        card('Shape it', 'Tell us what\'s missing, what works and how we can support you. We have the tools. We just need you.') +
-        card('Founding Member for good', 'It stays on your profile. After January 1 the Passport is still $11, but nobody new becomes a Founding Member.') +
-        card('Keep your city growing', 'Your $11 pays for Community Managers, events and the apps, city by city. It\'s a contribution, not a donation.') +
-        '</div>' + (OPEN ? '<div style="margin-top:16px">' + LOCKED + '</div>' : '') + joinBtns();
-    },
-    join: function () {
-      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
-      var box = isMember()
-        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. Thank you for being here.</p><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a>' + status
-        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button>' +
-          '<a class="dg-taste-btn" href="/guides/taste?from=passport">Not ready? Try a free taste first</a>' +
-          '<p style="margin-top:10px;font-size:13px">Your Welcome Guide shows you everything once you join.</p>' + status;
-      var vid = !isMember() && window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v1.mp4', vtt: '/public/home/next-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v1' }) : '';
-      return head('Get your Passport', 'Your Passport: $11, one time') + (OPEN && !isMember() ? LOCKED : '') + '<div class="dg-access"><div>' + vid + '<ul>' +
-        (OPEN ? '<li><b>Founding Member</b> on your profile for good</li>' : '') +
-        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Vote, save, check in</b>, take on bounties and give points</li>' +
-        '<li><b>Your city\'s Daily Pulse</b>, boards and events</li><li><b>Never renews</b></li></ul></div>' +
-        '<div class="dg-pricebox">' + box + '</div></div>';
-    }
-  };
-  // Old links: the nine tabs land on the page that now holds them.
-  var OLD = { places: 'can', community: 'can', guides: 'can', points: 'can', bring: 'can', business: 'can', supports: 'now' };
-  // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the checkout (Sean, 2026-11-01).
-  if (FOUNDING && /^#\/join/.test(location.hash) && (fromVote || fromSave || fromCheckin || fromGive || fromBoard || fromTickets)) history.replaceState(null, '', location.pathname + location.search + '#/overview');
+  if (WELCOME && /^#\/join/.test(location.hash) && (fromVote || fromSave || fromCheckin || fromGive || fromBoard || fromTickets)) history.replaceState(null, '', location.pathname + location.search + '#/overview');
   function tickCd() {
     var el = document.getElementById('pgCd'); if (!el) return;
     var ms = Date.parse('2027-01-01T05:00:00Z') - Date.now(); if (ms <= 0) { el.hidden = true; return; }
@@ -522,7 +499,7 @@
 
   function draw() {
     var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
-    if (FOUNDING && OLD[k]) k = OLD[k];
+    if (OLD[k]) k = OLD[k];
     cur = VIEWS[k] ? k : 'overview';
     var t = tab(cur), i = TABS.indexOf(t);
     main.innerHTML = VIEWS[cur]();
@@ -536,9 +513,7 @@
     nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
     bubble.textContent = t.say;
     var cta = document.getElementById('dgCta');
-    var tst = document.getElementById('dgTaste'); if (tst) tst.hidden = !FOUNDING || isMember() || cur === 'join';
-    var jbb = document.querySelector('#pgJoinbox [data-join]'); if (jbb && FOUNDING) jbb.innerHTML = OPEN ? 'Become a Founding Member' : 'Get your Passport';
-    if (cta) { cta.hidden = !FOUNDING || isMember() || cur === 'join'; cta.innerHTML = OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11'; }
+    if (cta) cta.hidden = BIZ || isMember() || cur === 'join';
     tickCd();
     var nav = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
@@ -573,6 +548,10 @@
     document.title = 'For businesses — Vegans Explore';
     var h1 = document.querySelector('.dg-title'); if (h1) h1.textContent = 'For businesses';
     var cn = document.querySelector('link[rel="canonical"]'); if (cn) cn.href = 'https://vegansexplore.com/business';
+  }
+  if (!BIZ) {
+    // The Welcome's header: free to look around, and one way in (the Enter the room tab); /business keeps its $11 box.
+    document.getElementById('pgJoinbox').innerHTML = '<div class="dg-jb-price"><b>Free</b><small>to look<br>around</small></div><a class="dg-btn" href="#/join">Enter the room</a><div class="dg-jb-in" id="pgSignin">Already a member?<br><a href="#" data-signin>Sign in</a></div>';
   }
   document.documentElement.classList.add('dg-fit');
   draw();
