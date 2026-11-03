@@ -1237,7 +1237,7 @@ those same information." Locked: "Lock it in." (migrations `20261103_search_ques
   fits as added value, and search finds it. The Guides are the site's blog, with no separate blog page.
 - **Built 2026-11-03**: both tables, `ve_search_ask` (service role only), `ve-search` `ask` (and every zero-result logged search is queued),
   Liz's card at 1440 and 390 px. **Built 2026-11-03: **Depot > Search questions** (`/admin/depot/search-questions`, Content in the Go to menu; `ve-search` `q_list`, `q_get`, `q_set`, `q_notify`, `q_setting`, super admin token, in `ve-search` v6 from e816d07): chips Open / Working / Answered / Set aside / Quarantined / All, a Guide filter and search (`#list/<status>/<guide>`), one question per view (`#q/<id>`: who asked and how many left an email, the Guide it belongs in, the answer text and link, a note, status buttons, and the email as Liz sends it). **Emailing askers is off until Sean turns it on** (`ve_site_settings` `search_answers` `send_on`, the switch on the page); Send me a test works either way; each asker is told once (`notified_at`), through `email-send` brand `vegans-explore`, campaign `ve-search-answer-<id>`, suppressions respected. Liz's email is a text draft for Sean. **Not built yet**: an Inbox notice when answered, Guide
-  articles found by search, and the first vegan suit brands in Clothing and Fashion (Suits & formal has none). Open: who works the queue
+  articles found by search, and more vegan suit brands (Suits & formal has WILDA.ECO since 2026-11-03; Hangrr and Sartoro sell wool too, Brave GentleMan shows no sign of trading). Open: who works the queue
   daily; whether a signed-out email also joins the Daily Pulse list (default no until Pulse subscribe exists).
 
 ## Feedback button on every page (Sean, 2026-11-03)
@@ -2910,7 +2910,7 @@ see everything and then filter for what they want... the products are the produc
   Delivery showing). The Makes filter follows the shelf (`KIND_GROUPS`, `SUB_FILTERS` `kind`): Food & Drink **Makes** (as before);
   Nutrition & Supplements **Type**: Protein, Vitamins & minerals, Meal replacements, Greens & superfoods, Sports & performance; Clothing and
   Fashion: Shoes, Streetwear & casual, Outerwear, Suits & formal, Bags & accessories; Beauty and Personal Care: Makeup, Skincare, Hair care,
-  Fragrance, Body & bath. A type shows only when at least one listing on the shelf has it (Suits & formal waits for its first). All are
+  Fragrance, Body & bath. A type shows only when at least one listing on the shelf has it (Suits & formal has WILDA.ECO, 2026-11-03; search reads suit, blazer, tuxedo and formalwear through `ve_search_vocab`, migrations `20261103_suits_formal_wilda.sql`, `20261103_search_vocab_suits.sql`). All are
   `listings.product_kinds` (keys `vitamins`, `meal_replace`, `greens`, `sports`, `shoes`, `streetwear`, `outerwear`, `formal`, `bags`,
   `makeup`, `skincare`, `haircare`, `fragrance`, `bodycare`; `protein` is shared with Food & Drink), set in the listing editor per shelf
   ticked (`KIND_SETS` in `ve-listing-admin.js`) and saved by `ve-claims` `admin_listing`. Every listing on the three shelves was tagged from
