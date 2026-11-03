@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header mocks: search first — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Three header concepts for desktop and phone, with search as the front door. Illustrative mocks, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/header/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+
+    /* ---------- layout of a slide: mocks on the left, notes on the right ---------- */
+    .hm-row{display:flex;flex-wrap:wrap;gap:20px 28px;align-items:flex-start;}
+    .hm-fig{flex:none;}
+    .hm-fig figcaption{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;margin-top:8px;}
+    .hm-scale{--w:1440;--s:.5;--h:600;width:calc(var(--w)*var(--s)*1px);height:calc(var(--h)*var(--s)*1px);overflow:hidden;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.45);background:#fff;position:relative;}
+    .hm-scale>.mk{width:calc(var(--w)*1px);transform:scale(var(--s));transform-origin:0 0;}
+    .hm-ph{--w:390;--s:.5;--h:560;}
+    .hm-scale.big{--s:.62;}
+    @media (min-width:901px) and (max-height:820px){.hm-scale{--s:.4;}.hm-ph{--s:.42;}.hm-scale.big{--s:.5;}.hm-notes{font-size:12px;}.hm-notes ul{gap:4px;margin-bottom:8px;}.vg-h{margin-bottom:8px;}}
+    .hm-ph2{display:flex;gap:14px;}
+    .hm-notes{flex:1 1 100%;column-count:2;column-gap:36px;font-size:12.5px;line-height:1.5;}
+    .hm-notes>*{break-inside:avoid;}
+    .hm-notes h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#c5f2c7;margin:0 0 6px;}
+    .hm-notes ul{list-style:none;display:grid;gap:7px;margin-bottom:14px;}
+    .hm-notes li{padding-left:16px;position:relative;}
+    .hm-notes li::before{content:"+";position:absolute;left:0;color:#22C55E;font-weight:900;}
+    .hm-notes .cost li::before{content:"–";color:#F69820;}
+    .hm-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:rgba(246,152,32,.18);color:#ffd79a;border-radius:4px;padding:3px 8px;margin-right:6px;}
+    .hm-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    .hm-card{padding:16px 18px;font-size:13px;line-height:1.55;}
+    .hm-card b{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;margin-bottom:6px;}
+    .hm-tbl{width:100%;border-collapse:collapse;font-size:12.5px;}
+    .hm-tbl th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;text-align:left;padding:6px 10px;border-bottom:1px solid rgba(255,255,255,.25);}
+    .hm-tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.12);vertical-align:top;}
+    .hm-tbl td:first-child{font-weight:800;white-space:nowrap;}
+    .hm-win{color:#22C55E;font-weight:900;}
+    .hm-pin{position:absolute;width:22px;height:22px;border-radius:50%;background:#F69820;color:#1a1100;font-size:12px;font-weight:900;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px rgba(0,0,0,.35);}
+    .hm-pinwrap{position:relative;margin-left:32px;}
+    .hm-pinwrap .hm-pin{left:-32px !important;}
+    .hm-shot{position:relative;border-radius:10px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.45);}
+    .hm-shot img{display:block;width:100%;height:auto;}
+    .hm-dkwrap{max-width:100%;}
+
+    /* ---------- the mocks themselves, drawn at real size (1440 / 390) and scaled ---------- */
+    .mk{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;text-align:left;}
+    .mk *{box-sizing:border-box;}
+    .mk-bar{display:flex;align-items:center;gap:22px;height:64px;padding:0 28px;border-bottom:1px solid rgba(0,0,0,.09);background:#fff;position:relative;}
+    .mk-logo{height:34px;flex:none;display:block;}
+    .mk-mark{height:36px;flex:none;display:block;}
+    .mk-links{display:flex;gap:26px;font-size:13px;font-weight:700;color:#1a1a1a;margin-left:8px;}
+    .mk-links .on{color:#2d7d31;box-shadow:0 2px 0 #3A9B3E;padding-bottom:3px;}
+    .mk-sp{flex:1;}
+    .mk-right{display:flex;align-items:center;gap:8px;margin-left:auto;}
+    .mk-login{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 12px;}
+    .mk-join{background:#22C55E;color:#06210f;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:11px 18px;border-radius:6px;white-space:nowrap;}
+    .mk-ghost{border:1.5px solid rgba(0,0,0,.14);border-radius:6px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;display:inline-flex;align-items:center;gap:8px;background:#fff;white-space:nowrap;}
+    .mk-ico{width:18px;height:18px;flex:none;background-repeat:no-repeat;background-position:center;background-size:contain;display:inline-block;}
+    .i-mag{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.3' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-3.5-3.5'/%3E%3C/svg%3E");}
+    .i-chev{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");width:14px;height:14px;}
+    .i-burger{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M4 7h16M4 12h16M4 17h16'/%3E%3C/svg%3E");}
+    .i-x{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.6' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");width:14px;height:14px;}
+    .i-pin{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z'/%3E%3Ccircle cx='12' cy='9.5' r='2.4'/%3E%3C/svg%3E");width:16px;height:16px;}
+    .i-share{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 15V4M8 8l4-4 4 4M5 13v6h14v-6'/%3E%3C/svg%3E");width:16px;height:16px;}
+    .mk-search{flex:1;display:flex;align-items:center;gap:12px;height:44px;border:1.5px solid #2d7d31;border-radius:6px;padding:0 14px;font-size:14px;font-weight:600;color:#5a5a5a;background:#fff;box-shadow:0 0 0 3px rgba(58,155,62,.12);min-width:0;}
+    .mk-search span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+    .mk-search kbd{font-family:inherit;font-size:11px;font-weight:800;border:1.5px solid rgba(0,0,0,.18);border-radius:4px;padding:1px 7px;color:#555;}
+    .mk-search.sm{height:38px;font-size:13px;box-shadow:none;border-color:rgba(0,0,0,.18);}
+    .mk-menu{display:flex;align-items:center;gap:30px;height:40px;padding:0 28px;border-bottom:1px solid rgba(0,0,0,.09);font-size:13px;font-weight:700;background:#fff;}
+    .mk-menu .on{color:#2d7d31;box-shadow:0 2px 0 #3A9B3E;padding:9px 0;}
+    .mk-city{margin-left:auto;display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;}
+    .mk-ctx{display:flex;align-items:center;gap:14px;height:48px;padding:0 40px;background:#f4f7f4;border-bottom:1px solid rgba(0,0,0,.07);font-size:13px;font-weight:700;}
+    .mk-ctx .crumb{display:flex;align-items:center;gap:10px;}
+    .mk-ctx .crumb i{font-style:normal;color:#8a8a8a;}
+    .mk-ctx .crumb b{font-weight:900;}
+    .mk-ctx .act{margin-left:auto;display:flex;gap:8px;}
+    .mk-art{height:74px;background:linear-gradient(90deg,rgba(10,26,16,.92) 0%,rgba(10,26,16,.6) 55%,rgba(10,26,16,.3) 100%),url("/communities/south-florida/banner.jpg") center 30%/cover,#0f1f14;color:#fff;display:flex;align-items:center;gap:18px;padding:0 40px;}
+    .mk-art h4{font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:-.01em;line-height:1;}
+    .mk-art h4 em{font-style:normal;color:#4ade80;margin-left:10px;}
+    .mk-art .act{margin-left:auto;display:flex;gap:8px;}
+    .mk-art .mk-ghost{background:transparent;color:#fff;border-color:rgba(255,255,255,.5);}
+    .mk-main{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:40px;padding:22px 40px;}
+    .mk-tabs{display:flex;gap:30px;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#555;border-bottom:1.5px solid rgba(0,0,0,.1);height:44px;align-items:center;margin-bottom:16px;}
+    .mk-tabs .on{color:#1a1a1a;box-shadow:0 2px 0 #3A9B3E;padding:14px 0;margin-bottom:-1.5px;}
+    .mk-frow{display:flex;gap:16px;margin-bottom:16px;}
+    .mk-frow .mk-search{box-shadow:none;border:1.5px solid rgba(0,0,0,.16);font-weight:500;height:42px;}
+    .mk-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+    .mk-card{display:flex;align-items:center;gap:14px;border:1.5px solid rgba(0,0,0,.1);border-radius:10px;padding:14px;min-height:90px;}
+    .mk-th{width:58px;height:58px;border-radius:8px;flex:none;}
+    .mk-ct{flex:1;min-width:0;font-size:14px;font-weight:900;line-height:1.2;}
+    .mk-ct small{display:block;font-size:11.5px;font-weight:600;color:#555;margin-top:4px;}
+    .mk-v{text-align:center;font-size:18px;font-weight:900;line-height:1;}
+    .mk-v small{display:block;font-size:9px;letter-spacing:.1em;background:#e8f5e9;color:#1f5f22;border:1px solid #b9dfbc;border-radius:5px;padding:5px 9px;margin-top:5px;font-weight:800;}
+    .mk-rail{background:#f0f0f0;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;letter-spacing:.2em;color:#999;text-transform:uppercase;height:250px;margin-top:4px;}
+    .mk-pop{position:absolute;z-index:5;background:#fff;border:1.5px solid rgba(0,0,0,.14);border-radius:10px;box-shadow:0 22px 44px rgba(0,0,0,.22);font-size:13px;font-weight:600;overflow:hidden;}
+    .mk-pop .row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-bottom:1px solid rgba(0,0,0,.06);}
+    .mk-pop .row small{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#777;}
+    .mk-pop .hd{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#777;padding:10px 16px 4px;background:#fafafa;}
+    .mk-pop .row.all{background:#f0faf4;color:#1f5f22;font-weight:800;}
+    .mk-chip{display:inline-flex;align-items:center;gap:8px;background:#e8f5e9;color:#1f5f22;border:1px solid #b9dfbc;border-radius:5px;padding:4px 8px 4px 10px;font-size:12px;font-weight:800;white-space:nowrap;}
+    .mk-mega{position:absolute;right:230px;top:64px;width:760px;z-index:6;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:0 0 12px 12px;box-shadow:0 26px 48px rgba(0,0,0,.2);display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:22px 26px;}
+    .mk-mega b{display:block;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#777;margin-bottom:8px;}
+    .mk-mega a{display:block;font-size:14px;font-weight:800;padding:7px 0;color:#1a1a1a;}
+    .mk-mega a small{display:block;font-size:11.5px;font-weight:500;color:#666;}
+    /* phone mocks */
+    .mk-p .mk-bar{height:60px;padding:0 14px;gap:10px;}
+    .mk-p .mk-logo{height:30px;}
+    .mk-p .mk-join{padding:10px 14px;}
+    .mk-pb{width:42px;height:42px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;display:flex;align-items:center;justify-content:center;flex:none;}
+    .mk-prow{padding:10px 14px;background:#fff;border-bottom:1px solid rgba(0,0,0,.08);}
+    .mk-p .mk-search{height:44px;font-size:14px;}
+    .mk-pctx{display:flex;align-items:center;gap:10px;height:44px;padding:0 14px;background:#f4f7f4;font-size:13px;font-weight:700;border-bottom:1px solid rgba(0,0,0,.07);}
+    .mk-pctx .crumb{display:flex;align-items:center;gap:8px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;}
+    .mk-pctx .crumb i{font-style:normal;color:#8a8a8a;}
+    .mk-pmain{padding:14px;}
+    .mk-pf{display:flex;gap:10px;margin-bottom:12px;}
+    .mk-pf .mk-ghost{flex:1;justify-content:center;}
+    .mk-p .mk-cards{grid-template-columns:1fr;}
+    .mk-ovl{position:absolute;inset:0;background:#fff;z-index:9;}
+    .mk-ovl .hd{font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#777;padding:16px 16px 6px;}
+    .mk-ovl .row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid rgba(0,0,0,.06);font-size:15px;font-weight:700;}
+    .mk-ovl .row small{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#777;}
+    .mk-drawer{position:absolute;left:0;right:0;top:60px;background:#fff;z-index:8;box-shadow:0 20px 30px rgba(0,0,0,.18);padding:6px 0 16px;}
+    .mk-drawer a{display:block;padding:13px 18px;font-size:15px;font-weight:800;}
+    .mk-drawer a.on{color:#2d7d31;border-left:3px solid #3A9B3E;background:#f0faf4;}
+    .mk-drawer .mk-join{display:block;margin:10px 18px 0;text-align:center;padding:14px;}
+    .mk-drawer .sub{padding:8px 18px 2px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#777;font-weight:800;}
+
+    @media (max-width:900px){
+      .hm-row{flex-direction:column;}
+      .hm-dkwrap{overflow-x:auto;width:100%;}
+      .hm-grid3{grid-template-columns:1fr;}
+      .hm-notes{column-count:1;}
+      .hm-ph2{flex-direction:column;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>Header mocks for review. Nothing here is live and nothing has been changed on the site.</div>
+
+  <main class="vg-stage" data-bg="linear-gradient(135deg,#0d130e 0%,#12301a 100%)" aria-label="Header mocks: search first">
+
+    <!-- 1. Where it is today -->
+    <section class="vg-slide" id="now" data-title="Today">
+      <div class="vg-eyebrow">1 · The header today</div>
+      <h2 class="vg-h">Two dozen controls before the first listing</h2>
+      <div class="hm-row">
+        <div class="hm-dkwrap"><figure class="hm-fig">
+          <div class="hm-pinwrap" style="width:640px;max-width:100%"><div class="hm-shot">
+            <img src="/mocks/header/img/now-d.jpg" width="1440" height="370" alt="Today's Directory page, Media, Documentaries and Films, at desktop width"></div>
+            <span class="hm-pin" style="left:8px;top:2px">1</span>
+            <span class="hm-pin" style="left:8px;top:50px">2</span>
+            <span class="hm-pin" style="left:8px;top:108px">3</span>
+            <span class="hm-pin" style="left:8px;top:134px">4</span>
+          </div>
+          <figcaption>Desktop, as it is live</figcaption>
+        </figure></div>
+        <figure class="hm-fig">
+          <div class="hm-pinwrap" style="width:200px"><div class="hm-shot">
+            <img src="/mocks/header/img/now-m.jpg" width="390" height="400" alt="Today's Directory page at phone width"></div>
+            <span class="hm-pin" style="left:6px;top:4px">1</span>
+            <span class="hm-pin" style="left:6px;top:50px">2</span>
+            <span class="hm-pin" style="left:6px;top:108px">3</span>
+            <span class="hm-pin" style="left:6px;top:140px">4</span>
+          </div>
+          <figcaption>Phone</figcaption>
+        </figure>
+        <div class="hm-notes">
+          <h3>What is stacked</h3>
+          <ul class="cost">
+            <li><b>1</b> Menu bar: logo, six sections, Search, Share, Log In, Join</li>
+            <li><b>2</b> Banner: title, section name, a dropdown and three buttons (Directory Home, Submit Listing, Expand)</li>
+            <li><b>3</b> Sub-section tabs</li>
+            <li><b>4</b> A second search box, plus Filters</li>
+          </ul>
+          <h3>What it adds up to</h3>
+          <ul class="cost">
+            <li>Desktop: about 24 things to read or tap before a listing, and the first card starts 40% of the way down.</li>
+            <li>Phone: the first card starts at 46%.</li>
+            <li>"Media" appears three times and "Directory" three times, all saying where you are.</li>
+            <li><b>Two search boxes</b>, one labelled Search and one that searches only this list. A visitor cannot tell which is which.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The idea -->
+    <section class="vg-slide" id="idea" data-title="The idea">
+      <div class="vg-eyebrow">2 · What I'd change, and why</div>
+      <h2 class="vg-h">Search is the front door. Everything else gets quieter.</h2>
+      <div class="hm-grid3">
+        <div class="vg-glass hm-card"><b>Root cause</b>Every feature we added got its own button in the header: Search, Share, Apps, Expand, Directory Home, Submit Listing. Each was fine alone. Nobody ever set a budget for the top of the page, so it only grows.</div>
+        <div class="vg-glass hm-card"><b>The rule: a chrome budget</b>Desktop top bar: five things at most. Phone: three. Banner art belongs on the home page and city pages. Inside the site, one line says where you are.</div>
+        <div class="vg-glass hm-card"><b>Search says what it does</b>A wide labelled box in the same place on every page, with an example in it ("vegan pizza in Atlanta"), so a visitor knows they can search for anything.</div>
+      </div>
+      <div class="hm-grid3" style="margin-top:14px">
+        <div class="vg-glass hm-card"><b>Where today's buttons go</b>Share and Submit Listing: the one-line page bar. Apps: the account menu. Expand: gone with the banner. Directory Home and the section dropdown: the breadcrumb.</div>
+        <div class="vg-glass hm-card"><b>The two-searches problem</b>One box on top that searches everything. On a list page it carries a chip, "in Documentaries &amp; Films ✕", so the same box narrows to the list. No second box competing (slide 6).</div>
+        <div class="vg-glass hm-card"><b>About the inspiration</b>I could not open PETA, VegNews or HappyCow from this build environment (the connection is blocked), so these mocks do not copy them. The pattern I'm taking from that kind of site: a short top menu with one clear search entry beside it. Drop screenshots in and I'll fold them in.</div>
+      </div>
+    </section>
+
+    <!-- 3. Option A -->
+    <section class="vg-slide" id="a" data-title="Option A">
+      <div class="vg-eyebrow">3 · Option A <span class="hm-chip">My pick</span></div>
+      <h2 class="vg-h">The search bar is the header</h2>
+      <div class="hm-row">
+        <div class="hm-dkwrap"><figure class="hm-fig">
+          <div class="hm-scale" style="--h:520"><div class="mk">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><div class="mk-search"><i class="mk-ico i-mag"></i><span>Search places, people, shows, products… try “vegan pizza in Atlanta”</span><kbd>/</kbd></div><div class="mk-right"><span class="mk-login">Log in</span><span class="mk-join">Join</span></div></div>
+            <div class="mk-menu"><span class="on">Directory</span><span>Events</span><span>Daily Pulse</span><span>Media</span><span>Guides</span><span>Communities</span><span class="mk-city"><i class="mk-ico i-pin"></i>South Florida<i class="mk-ico i-chev"></i></span></div>
+            <div class="mk-ctx"><span class="crumb">Directory <i>›</i> Media <i>›</i> <b>Documentaries &amp; Films</b></span><span class="act"><span class="mk-ghost"><i class="mk-ico i-share"></i>Share</span><span class="mk-ghost">Submit listing</span></span></div>
+            <div class="mk-main"><div>
+              <div class="mk-tabs"><span>All</span><span>Podcasts</span><span>YouTube</span><span>News outlets</span><span class="on">Documentaries &amp; Films</span><span>Books</span></div>
+              <div class="mk-frow"><div class="mk-search"><i class="mk-ico i-mag"></i><span>Filter this list…</span></div><span class="mk-ghost">Filters</span></div>
+              <div class="mk-cards" data-cards="6"></div>
+            </div><div class="mk-rail">Ad</div></div>
+          </div></div>
+          <figcaption>Desktop</figcaption>
+        </figure></div>
+        <figure class="hm-fig">
+          <div class="hm-scale hm-ph" style="--h:560"><div class="mk mk-p">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><span class="mk-sp"></span><span class="mk-join">Join</span><span class="mk-pb"><i class="mk-ico i-burger"></i></span></div>
+            <div class="mk-prow"><div class="mk-search"><i class="mk-ico i-mag"></i><span>Search anything…</span></div></div>
+            <div class="mk-pctx"><span class="crumb">Directory <i>›</i> <b>Documentaries</b></span><i class="mk-ico i-chev"></i></div>
+            <div class="mk-pmain"><div class="mk-pf"><span class="mk-ghost">Filters</span><span class="mk-ghost">Sort</span></div><div class="mk-cards" data-cards="3"></div></div>
+          </div></div>
+          <figcaption>Phone</figcaption>
+        </figure>
+        <div class="hm-notes">
+          <h3>Wins</h3>
+          <ul>
+            <li>You cannot miss it: the biggest thing in the header is a search box that gives an example.</li>
+            <li>Menu stays visible on desktop, so nothing we already built gets harder to find.</li>
+            <li>Join stays on screen on a phone, so the conversion path is untouched.</li>
+            <li>The first card moves up about 95 px on desktop and about 140 px on a phone.</li>
+          </ul>
+          <h3>Costs</h3>
+          <ul class="cost">
+            <li>The header is still two rows on desktop (search, then menu).</li>
+            <li>The banner art goes from inner pages. The chapter's photo stays on the home page and city pages.</li>
+            <li>Phone is two rows too, one more than option C.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Option B -->
+    <section class="vg-slide" id="b" data-title="Option B">
+      <div class="vg-eyebrow">4 · Option B</div>
+      <h2 class="vg-h">One slim row, search that grows when you use it</h2>
+      <div class="hm-row">
+        <div class="hm-dkwrap"><figure class="hm-fig">
+          <div class="hm-scale" style="--h:520"><div class="mk">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><div class="mk-links"><span class="on">Directory</span><span>Events</span><span>Pulse</span><span>Media</span><span>Guides</span><span>Communities</span></div><div class="mk-right"><div class="mk-search sm" style="width:300px;flex:none"><i class="mk-ico i-mag"></i><span>Search Vegans Explore</span><kbd>/</kbd></div><span class="mk-login">Log in</span><span class="mk-join">Join</span></div></div>
+            <div class="mk-art"><h4>Vegan Directory<em>Media</em></h4><span class="act"><span class="mk-ghost">Submit listing</span><span class="mk-ghost">⋯</span></span></div>
+            <div class="mk-main"><div>
+              <div class="mk-tabs"><span>All</span><span>Podcasts</span><span>YouTube</span><span>News outlets</span><span class="on">Documentaries &amp; Films</span><span>Books</span></div>
+              <div class="mk-frow"><div class="mk-search"><i class="mk-ico i-mag"></i><span>Filter this list…</span></div><span class="mk-ghost">Filters</span></div>
+              <div class="mk-cards" data-cards="6"></div>
+            </div><div class="mk-rail">Ad</div></div>
+          </div></div>
+          <figcaption>Desktop: one row, art kept but half the height</figcaption>
+        </figure></div>
+        <div class="hm-ph2">
+          <figure class="hm-fig"><div class="hm-scale hm-ph" style="--h:560"><div class="mk mk-p">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><span class="mk-sp"></span><span class="mk-pb"><i class="mk-ico i-mag"></i></span><span class="mk-join">Join</span><span class="mk-pb"><i class="mk-ico i-burger"></i></span></div>
+            <div class="mk-pctx"><span class="crumb">Directory <i>›</i> <b>Documentaries</b></span><i class="mk-ico i-chev"></i></div>
+            <div class="mk-pmain"><div class="mk-pf"><span class="mk-ghost">Filters</span><span class="mk-ghost">Sort</span></div><div class="mk-cards" data-cards="3"></div></div>
+          </div></div><figcaption>Phone, closed</figcaption></figure>
+          <figure class="hm-fig"><div class="hm-scale hm-ph" style="--h:560"><div class="mk mk-p" style="height:560px;position:relative">
+            <div class="mk-ovl">
+              <div class="mk-bar" style="padding:0 14px"><div class="mk-search"><i class="mk-ico i-mag"></i><span style="color:#1a1a1a">pizza</span></div><span style="font-size:13px;font-weight:800">Cancel</span></div>
+              <div class="hd">Places near you</div>
+              <div class="row"><i class="mk-ico i-pin"></i>Vegan pizza near Fort Lauderdale<small>Directory</small></div>
+              <div class="row"><i class="mk-ico i-pin"></i>Pizza places in Atlanta<small>Directory</small></div>
+              <div class="hd">Also</div>
+              <div class="row"><i class="mk-ico i-mag"></i>Vegan pizza dough, Dairy Guide<small>Guide</small></div>
+              <div class="row"><i class="mk-ico i-mag"></i>Pizza and plant cheese in the Pulse<small>Pulse</small></div>
+              <div class="hd">Recent</div>
+              <div class="row"><i class="mk-ico i-mag"></i>Documentaries<small>Directory</small></div>
+            </div>
+          </div></div><figcaption>Phone, search open</figcaption></figure>
+        </div>
+        <div class="hm-notes">
+          <h3>Wins</h3>
+          <ul>
+            <li>Lightest desktop: one 64 px row, then the page.</li>
+            <li>The chapter art stays, so the site keeps its look.</li>
+            <li>On a phone, search takes over the whole screen when tapped, so it has room to show suggestions.</li>
+          </ul>
+          <h3>Costs</h3>
+          <ul class="cost">
+            <li>On desktop the search box is 300 px wide and shares the row with six links. It is easier to miss than A.</li>
+            <li>On a phone search is an icon, the weakest signal that you can search for anything.</li>
+            <li>Still a banner on inner pages, the thing Josh's feedback points at.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Option C -->
+    <section class="vg-slide" id="c" data-title="Option C">
+      <div class="vg-eyebrow">5 · Option C</div>
+      <h2 class="vg-h">Almost nothing: logo, search, Menu</h2>
+      <div class="hm-row">
+        <div class="hm-dkwrap"><figure class="hm-fig">
+          <div class="hm-scale" style="--h:520"><div class="mk" style="position:relative">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><div class="mk-search"><i class="mk-ico i-mag"></i><span>Search places, people, shows, products… try “vegan pizza in Atlanta”</span><kbd>/</kbd></div><div class="mk-right"><span class="mk-ghost" style="border-color:#2d7d31"><i class="mk-ico i-burger" style="width:16px;height:16px"></i>Menu</span><span class="mk-join">Join</span></div></div>
+            <div class="mk-mega">
+              <div><b>Explore</b><a>Directory<small>Food, products, services, people</small></a><a>Events<small>Everything on the calendar</small></a><a>Media<small>Podcasts, films, books</small></a></div>
+              <div><b>Learn and read</b><a>Guides<small>Mini apps for every topic</small></a><a>Daily Pulse<small>Your city, every morning</small></a><a>Communities<small>A chapter in every city</small></a></div>
+              <div><b>Take part</b><a>Get your Passport<small>$11, one time</small></a><a>Submit a listing</a><a>Log in</a></div>
+            </div>
+            <div class="mk-ctx" style="margin-top:0"><span class="crumb">Directory <i>›</i> Media <i>›</i> <b>Documentaries &amp; Films</b></span><span class="act"><span class="mk-ghost"><i class="mk-ico i-share"></i>Share</span><span class="mk-ghost">Submit listing</span></span></div>
+            <div class="mk-main"><div>
+              <div class="mk-tabs"><span>All</span><span>Podcasts</span><span>YouTube</span><span>News outlets</span><span class="on">Documentaries &amp; Films</span><span>Books</span></div>
+              <div class="mk-cards" data-cards="3"></div>
+            </div><div class="mk-rail">Ad</div></div>
+          </div></div>
+          <figcaption>Desktop, Menu open</figcaption>
+        </figure></div>
+        <div class="hm-ph2">
+          <figure class="hm-fig"><div class="hm-scale hm-ph" style="--h:560"><div class="mk mk-p" style="position:relative">
+            <div class="mk-bar"><img class="mk-mark" src="/public/ve-logo-mark.svg" alt=""><div class="mk-search" style="height:42px"><i class="mk-ico i-mag"></i><span>Search anything…</span></div><span class="mk-pb"><i class="mk-ico i-burger"></i></span></div>
+            <div class="mk-pctx"><span class="crumb">Directory <i>›</i> <b>Documentaries</b></span><i class="mk-ico i-chev"></i></div>
+            <div class="mk-pmain"><div class="mk-pf"><span class="mk-ghost">Filters</span><span class="mk-ghost">Sort</span></div><div class="mk-cards" data-cards="3"></div></div>
+          </div></div><figcaption>Phone, one row</figcaption></figure>
+          <figure class="hm-fig"><div class="hm-scale hm-ph" style="--h:560"><div class="mk mk-p" style="position:relative;height:560px">
+            <div class="mk-bar"><img class="mk-mark" src="/public/ve-logo-mark.svg" alt=""><div class="mk-search" style="height:42px"><i class="mk-ico i-mag"></i><span>Search anything…</span></div><span class="mk-pb" style="border-color:#2d7d31"><i class="mk-ico i-x"></i></span></div>
+            <div class="mk-drawer"><a class="on">Directory</a><a>Events</a><a>Daily Pulse</a><a>Media</a><a>Guides</a><a>Communities</a><div class="sub">Account</div><a>Log in</a><span class="mk-join">Get your Passport · $11</span></div>
+          </div></div><figcaption>Phone, Menu open</figcaption></figure>
+        </div>
+        <div class="hm-notes">
+          <h3>Wins</h3>
+          <ul>
+            <li>The cleanest. Search is the header, with nothing beside it competing.</li>
+            <li>One row on a phone, so the page starts 60 px down.</li>
+            <li>The Menu panel can explain each section in a line, which helps a first-timer.</li>
+          </ul>
+          <h3>Costs</h3>
+          <ul class="cost">
+            <li>Every section is a click deeper. A visitor can no longer see what the site contains at a glance.</li>
+            <li>On a phone Join moves into the menu. That is a real cost to the Founding Member push before January 1.</li>
+            <li>The wordmark shrinks to the mark on a phone.</li>
+            <li>I left out bottom tab bars: you said no bottom bar on 11-01.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. The two-searches answer -->
+    <section class="vg-slide" id="scope" data-title="One search">
+      <div class="vg-eyebrow">6 · Works with every option</div>
+      <h2 class="vg-h">One box. On a list it carries a scope.</h2>
+      <div class="hm-row">
+        <div class="hm-dkwrap"><figure class="hm-fig">
+          <div class="hm-scale big" style="--h:440"><div class="mk" style="position:relative;height:440px">
+            <div class="mk-bar"><img class="mk-logo" src="/public/logo-ve-landscape-v1.svg" alt=""><div class="mk-search" style="max-width:700px"><i class="mk-ico i-mag"></i><span class="mk-chip" style="flex:none;overflow:visible">in Documentaries &amp; Films<i class="mk-ico i-x" style="width:11px;height:11px"></i></span><span style="color:#1a1a1a">earth</span></div><div class="mk-right"><span class="mk-login">Log in</span><span class="mk-join">Join</span></div></div>
+            <div class="mk-pop" style="left:116px;top:62px;width:700px">
+              <div class="hd">In Documentaries &amp; Films</div>
+              <div class="row"><span class="mk-th" style="width:30px;height:30px;background:#b3261e"></span>Earthlings<small>Film · 2005</small></div>
+              <div class="row"><span class="mk-th" style="width:30px;height:30px;background:#2d7d31"></span>Earthlings (the book)<small>Book</small></div>
+              <div class="row all"><i class="mk-ico i-mag"></i>Search everything for “earth”<small>Press ↵ after ✕</small></div>
+              <div class="hd">Elsewhere on Vegans Explore</div>
+              <div class="row"><i class="mk-ico i-pin"></i>Earth Day events<small>Events</small></div>
+              <div class="row"><i class="mk-ico i-pin"></i>Earth Burger<small>Directory</small></div>
+            </div>
+          </div></div>
+          <figcaption>Typed on a list page: the box starts scoped, and one tap widens it</figcaption>
+        </figure></div>
+        <div class="hm-notes">
+          <h3>How it works</h3>
+          <ul>
+            <li>On the home page, a city page, a Guide or anywhere else: no chip, the box searches everything.</li>
+            <li>On a list, such as Documentaries or Events: the box opens with a chip for that list, so people searching <i>inside</i> a list find it where they expect to.</li>
+            <li>The ✕ on the chip, or the "Search everything" row, widens it. This is how Amazon and Airbnb handle it.</li>
+            <li>The in-page "Filter this list…" box stays, but it is a filter, not a search, so it no longer competes.</li>
+          </ul>
+          <h3>Not decided</h3>
+          <ul class="cost">
+            <li>Whether results show as a dropdown (as drawn) or a full page. The dropdown is faster. The full page is what the engine has now.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Panel + recommendation -->
+    <section class="vg-slide" id="verdict" data-title="Verdict">
+      <div class="vg-eyebrow">7 · Panel pass and my recommendation</div>
+      <h2 class="vg-h">Option A, with the scope chip</h2>
+      <div class="hm-row" style="gap:36px">
+        <div style="flex:1 1 560px;min-width:0">
+          <table class="hm-tbl">
+            <thead><tr><th>Persona</th><th>A</th><th>B</th><th>C</th></tr></thead>
+            <tbody>
+              <tr><td>First-time visitor (Josh's "it's a lot")</td><td class="hm-win">Sees one box, knows what to do</td><td>Search is easy to miss on a phone</td><td>Calm, but can't see what the site has</td></tr>
+              <tr><td>Restaurant owner</td><td class="hm-win">Directory stays in sight</td><td>Fine</td><td>Directory is a click away</td></tr>
+              <tr><td>Skeptical non-Vegan</td><td class="hm-win">Search first suits them</td><td>Fine</td><td class="hm-win">Least pushy</td></tr>
+              <tr><td>Brand marketer</td><td class="hm-win">Join stays visible</td><td>Join visible, banner kept</td><td>Join hides on phones</td></tr>
+              <tr><td>Clarity editor</td><td class="hm-win">Fixes the two searches</td><td>Banner still adds noise</td><td class="hm-win">Fewest elements</td></tr>
+            </tbody>
+          </table>
+          <p class="vg-fine">The panel was me working through the five personas we've used before, not five separate reviewers. The best real test is Josh: show him A and C, and ask him to find a documentary and a Vegan pizza place.</p>
+        </div>
+        <div style="flex:1 1 360px;min-width:0" class="vg-glass hm-card">
+          <b>Defaults I'll take unless you say otherwise</b>
+          <ul style="list-style:none;display:grid;gap:8px;margin-top:6px">
+            <li><b style="display:inline;color:#22C55E">1</b> Build Option A.</li>
+            <li><b style="display:inline;color:#22C55E">2</b> Banner art only on the home page and city pages. Everywhere else, the one-line page bar.</li>
+            <li><b style="display:inline;color:#22C55E">3</b> Share moves into the page bar beside Submit Listing. Apps moves into the account menu.</li>
+            <li><b style="display:inline;color:#22C55E">4</b> City picker sits at the right end of the menu row.</li>
+            <li><b style="display:inline;color:#22C55E">5</b> Search gets the scope chip on list pages (slide 6).</li>
+          </ul>
+          <p style="margin-top:10px">Next, if you pick A: I build it behind a switch (<code>?header=new</code>), screenshot it beside today's at 1440 and 390 px, and you compare before it goes live. The search engine's own tuning is a separate pass.</p>
+          <p style="margin-top:8px"><b style="display:inline;color:#F69820">Your call:</b> A, B or C, and whether Share stays on top.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+<script>
+(function(){
+  var T=[['Earthlings','Documentary film · 2005','#b3261e','2'],['Cowspiracy','Documentary film · 2014','#1d3557','2'],['The Game Changers','Documentary film · 2019','#111','2'],['What the Health','Documentary film · 2017','#e5322d','2'],['A Prayer for Compassion','Documentary film · 2019','#27406b','1'],["They're Trying to Kill Us",'Documentary film · 2021','#222','1']];
+  [].forEach.call(document.querySelectorAll('[data-cards]'),function(el){
+    var n=+el.getAttribute('data-cards');
+    el.innerHTML=T.slice(0,n).map(function(t){return '<div class="mk-card"><span class="mk-th" style="background:'+t[2]+'"></span><div class="mk-ct">'+t[0]+'<small>'+t[1]+'</small></div><div class="mk-v">'+t[3]+'<small>VOTES</small></div></div>';}).join('');
+  });
+})();
+</script>
+</body>
+</html>
