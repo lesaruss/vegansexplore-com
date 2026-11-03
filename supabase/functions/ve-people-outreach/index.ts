@@ -13,7 +13,7 @@
 //   { action: 'test', id }                  the email to the signed-in admin only, [Test] in the subject, nothing recorded as sent
 //   { action: 'create', messages: [...] }   load messages (ops or admin)
 //   { action: 'templates' } | { action: 'template_approve', key }   approving a base email approves its messages that are not personal
-//   { action: 'pick', q?, pool?, limit?, offset? }   people to pick from (ve_founding_candidates: HQ People with an email and unpaid accounts, no members,
+//   { action: 'pick', q?, pool?, tag?, limit?, offset? }   people to pick from (ve_founding_candidates: HQ People with an email and unpaid accounts, no members,
 //                                              no one invited, nobody suppressed; Tasters are not in it), each with where they already stand in a campaign
 //   { action: 'draft_batch', people: [{name, email, person_id?, org?}], bucket, campaign, day, subject, body }
 //                                              one draft each (status draft, personal, never approved here); {first_name} is filled in; a person already
@@ -356,16 +356,29 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
   if (action === 'pick') {
     const limit = Math.min(Math.max(Math.floor(+body.limit || 50), 1), 100);
     const offset = Math.max(Math.floor(+body.offset || 0), 0);
-    const { data, error } = await db.rpc('ve_founding_candidates', { p_q: clean(body.q, 100) || null, p_pool: clean(body.pool, 30) || null, p_limit: limit, p_offset: offset });
+    // A tag narrows the list to the people holding it (ve_person_tags, by email; profiles step 3, 2026-11-03).
+    const tag = clean(body.tag, 60);
+    let tagged: string[] | null = null;
+    if (tag) {
+      const { data: tg } = await db.from('ve_person_tags').select('person_key').eq('tag_slug', tag).is('removed_at', null).like('person_key', '%@%').limit(5000);
+      tagged = (tg || []).map((x) => String(x.person_key).toLowerCase());
+    }
+    const { data, error } = await db.rpc('ve_founding_candidates', { p_q: clean(body.q, 100) || null, p_pool: clean(body.pool, 30) || null, p_limit: limit, p_offset: offset, p_emails: tagged });
     if (error) return { error: error.message };
     const rows: any[] = data?.rows || [];
     const emails = rows.map((r) => String(r.email || '').toLowerCase()).filter(Boolean);
     const queued = new Map<string, unknown[]>();
+    const tagsBy = new Map<string, string[]>();
+    const { data: catalog } = await db.from('ve_tags').select('slug,name,color').eq('active', true).order('name');
+    if (emails.length) {
+      const { data: pt } = await db.from('ve_person_tags').select('person_key,tag_slug').in('person_key', emails).is('removed_at', null);
+      for (const x of pt || []) { const l = tagsBy.get(x.person_key) || []; l.push(x.tag_slug); tagsBy.set(x.person_key, l); }
+    }
     if (emails.length) {
       const { data: q } = await db.from('ve_people_outreach').select('person_key,campaign,day,status').in('person_key', emails).neq('status', 'skipped');
       for (const x of q || []) { const l = queued.get(x.person_key) || []; l.push({ campaign: x.campaign, day: x.day, status: x.status }); queued.set(x.person_key, l); }
     }
-    return { total: data?.total ?? 0, pools: data?.pools || {}, limit, offset, rows: rows.map((r) => ({ ...r, queued: queued.get(String(r.email || '').toLowerCase()) || [] })) };
+    return { total: data?.total ?? 0, pools: data?.pools || {}, tags: catalog || [], limit, offset, rows: rows.map((r) => ({ ...r, queued: queued.get(String(r.email || '').toLowerCase()) || [], tags: tagsBy.get(String(r.email || '').toLowerCase()) || [] })) };
   }
 
   if (action === 'draft_batch') {
