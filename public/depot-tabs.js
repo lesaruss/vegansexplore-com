@@ -70,6 +70,7 @@
     { group: 'People', href: '/admin/depot/links', label: 'Links' },
     { group: 'People', href: '/admin/depot/invites', label: 'Invites' },
     { group: 'People', href: '/admin/depot/challenges', label: 'Challenges' },
+    { group: 'People', href: '/admin/depot/watchlist', label: 'Watchlist' },
     { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },
     { group: 'Site', href: '/admin/depot/preview', label: 'Preview journeys' },
     { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },

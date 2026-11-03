@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Watchlist | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.watching{background:#fff1dc;color:#8a5200;}.tag.suspended{background:#e3eefc;color:#0f4a91;}.tag.banned,.tag.voided{background:#fde7e5;color:var(--ve-red);}.tag.cleared,.tag.good{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Watchlist</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Accounts that may be gaming points. The system only gathers evidence and watches quietly; nothing changes for a member until you decide. Open one to see why it was flagged, their points, who is around them and the history, then clear them, void their points, suspend them (points and taking part are frozen, and you can reverse it) or ban them (you can reinstate them later). Every decision needs a note and is logged.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-abuse';
+      var $ = function (id) { return document.getElementById(id); };
+      var TABS = [['watching', 'Watching'], ['would', 'Would flag'], ['suspended', 'Suspended'], ['banned', 'Banned'], ['voided', 'Points voided'], ['cleared', 'Cleared'], ['all', 'All cases']];
+      var WORDS = { referral_burst: 'Many people joined on their link in a day', fast_survey: 'Finished the survey in minutes', disposable_email: 'Throwaway email address', points_velocity: 'Earned a lot of points in a day', checkin_pace: 'Checked in at many places within an hour', survey_only_referrals: 'Everyone they brought joined by survey, none paid', shared_browser: 'Several accounts on one browser', shared_ip: 'Several accounts on one network' };
+      var STATUS = { watching: 'Watching', cleared: 'Cleared', voided: 'Points voided', suspended: 'Suspended', banned: 'Banned' };
+      var data = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function day(t) { return t ? new Date(t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function num(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function word(k) { return WORDS[k] || k; }
+      function avatar(m) { m = m || {}; return m.avatar_url ? '<img class="av" src="' + esc(m.avatar_url) + '" alt="">' : '<span class="av" style="background:' + esc(m.color || '#1f5f22') + '">' + esc(m.initials || (m.name || '?').slice(0, 2).toUpperCase()) + '</span>'; }
+      function tag(s) { return '<span class="tag ' + esc(s) + '">' + esc(STATUS[s] || (s === 'good' ? 'Good standing' : s)) + '</span>'; }
+      function kindChips(items) { return '<div class="chips">' + items.map(function (x) { return '<span class="chip">' + esc(word(x)) + '</span>'; }).join('') + '</div>'; }
+      function evSummary(e) { if (!e || typeof e !== 'object') return ''; return Object.keys(e).map(function (k) { var v = e[k]; if (Array.isArray(v)) v = v.length + ' accounts'; else if (v && typeof v === 'object') v = ''; else if (/^\d{4}-\d\d-\d\dT/.test(String(v))) v = when(v); return v === '' ? '' : k.replace(/_/g, ' ') + ': ' + v; }).filter(Boolean).join(', '); }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'case') return { v: 'item', id: h[1] }; if (h[0] === 'member') return { v: 'item', member: h[1] }; if (h[0] === 'new') return { v: 'new' }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'watching' }; }
+      function modeBanner() {
+        var s = data.settings, n = (data.would_flag || []).length;
+        if (s.mode === 'on') return '<div class="mode on"><p><b>Opening cases is on.</b> The daily scan opens a case at a score of ' + s.open_at + ' and watches for ' + s.watch_days + ' days. Nothing happens to an account until you decide.</p><button type="button" class="btn btn-quiet" id="mode" data-m="log_only">Back to log only</button></div>';
+        return '<div class="mode"><p><b>Log only' + (s.log_only_until ? ' until ' + day(s.log_only_until) : '') + '.</b> The scan records signals but opens no case. ' + (n ? n + (n === 1 ? ' account' : ' accounts') + ' would have opened (see Would flag).' : 'Nobody would have opened yet.') + ' ' + num(data.signals_total) + ' signals recorded so far.</p><button type="button" class="btn" id="mode" data-m="on">Turn on opening cases</button></div>';
+      }
+      function wireMode() { var b = $('mode'); if (!b) return; b.onclick = function () { var on = b.getAttribute('data-m') === 'on'; if (!confirm(on ? 'Turn on opening cases? The scan will start opening watch cases when a score reaches ' + data.settings.open_at + '. Nothing changes for any member until you decide.' : 'Go back to log only? No new cases will open.')) return; api({ action: 'set_mode', mode: b.getAttribute('data-m') }).then(function (r) { if (r && r.ok) { data = null; render(); } else alert('That did not go through.'); }); }; }
+      function caseCard(c) {
+        var m = c.member || {}, left = c.watch_until ? Math.ceil((new Date(c.watch_until) - Date.now()) / 864e5) : null;
+        return '<div class="card"><div class="body"><div class="who">' + avatar(m) + '<div><b>' + esc(m.name || 'Unknown') + '</b><span class="meta">' + esc(m.email || '') + '</span></div></div>' +
+          '<div>' + tag(c.status) + (m.standing && m.standing !== 'good' && m.standing !== c.status ? ' ' + tag(m.standing) : '') + ' <span class="meta">Score ' + c.score + ' &middot; opened by ' + (c.opened_by === 'judge' ? 'you' : 'the scan') + ' ' + esc(day(c.created_at)) + '</span></div>' +
+          ((c.reasons || []).length ? kindChips(c.reasons.map(function (r) { return r.kind; })) : '') +
+          (c.decision_note ? '<div class="excerpt meta">' + esc(c.decision_note) + '</div>' : '') +
+          '<div class="acts"><a class="btn" href="#case/' + c.id + '">Open</a>' + (c.status === 'watching' && left != null ? '<span class="meta">' + (left > 0 ? left + ' days of watching left' : 'Watch period over') + '</span>' : '') + '</div></div></div>';
+      }
+      function drawList(r) {
+        var cs = data.cases, cnt = {};
+        cs.forEach(function (c) { cnt[c.status] = (cnt[c.status] || 0) + 1; });
+        cnt.would = (data.would_flag || []).length; cnt.all = cs.length;
+        var tabs = TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (cnt[t[0]] || 0) + ')</a>'; }).join('');
+        var html = modeBanner() + '<nav class="tabs" aria-label="Filter">' + tabs + '<a href="#new">Watch someone</a></nav>';
+        if (r.tab === 'would') {
+          html += (data.would_flag.length ? '<p class="sub">The scan would open a case for these accounts if opening cases were on. Look at the evidence, and open a case yourself if it looks real.</p><div class="grid">' + data.would_flag.map(function (w) {
+            return '<div class="card"><div class="body"><div class="who">' + avatar(w.member) + '<div><b>' + esc(w.member.name) + '</b><span class="meta">' + esc(w.member.email) + '</span></div></div><div><span class="meta">Score ' + w.score + ' &middot; last signal ' + esc(day(w.last)) + '</span></div>' + kindChips(Object.keys(w.kinds)) + '<div class="acts"><a class="btn" href="#member/' + w.member.id + '">Look at the evidence</a></div></div></div>';
+          }).join('') + '</div>' : '<p class="sub">Nobody would be flagged right now.</p>');
+        } else {
+          var list = cs.filter(function (c) { return r.tab === 'all' || c.status === r.tab; });
+          html += list.length ? '<div class="grid">' + list.map(caseCard).join('') + '</div>' : '<p class="sub">' + (r.tab === 'watching' ? 'Nobody is being watched.' : 'None here.') + '</p>';
+        }
+        $('view').innerHTML = html; wireMode();
+      }
+      function dl(rows) { return '<dl>' + rows.filter(Boolean).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>'; }
+      function personRow(p, extra) { return '<div class="row"><a href="#member/' + p.id + '">' + esc(p.name || p.email) + '</a><span class="meta">' + esc(p.email || '') + '</span>' + (p.standing && p.standing !== 'good' ? tag(p.standing) : '') + (extra ? '<span class="meta">' + extra + '</span>' : '') + '</div>'; }
+      function drawItem(r) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api(r.id ? { action: 'get', id: r.id } : { action: 'get', member_id: r.member }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var m = d.member, c = d.cases.filter(function (x) { return x.id === d.case_id; })[0] || null;
+          var score = 0, seen = {}; d.signals.forEach(function (s) { if (new Date(s.created_at) > Date.now() - 14 * 864e5 && !seen[s.kind]) { seen[s.kind] = 1; score += s.weight; } });
+          var left = c && c.watch_until ? Math.ceil((new Date(c.watch_until) - Date.now()) / 864e5) : null;
+          var who = '<div class="box"><div class="who">' + avatar(m) + '<div><b style="font-size:18px">' + esc(m.name) + '</b><span class="meta">' + esc(m.email) + '</span></div></div><div style="margin:10px 0 12px">' + tag(m.standing || 'good') + (c ? ' ' + tag(c.status) : '') + '</div>' +
+            dl([['Joined', esc(when(m.created_at))], ['How', m.entry_via === 'survey' ? 'The free survey door' : m.entry_via === 'passport' ? 'Paid the $11' : esc(m.membership_status || '')], ['Founding Member', m.founding_member ? 'Yes' : 'No'], ['Chapter', esc(m.home_community || 'None')], ['Last seen', esc(when(m.last_activity_at) || 'Not recorded')],
+              m.survey_door_at ? ['Survey', 'Started ' + esc(when(m.survey_door_at)) + (m.mission_survey_completed_at ? ', finished ' + esc(when(m.mission_survey_completed_at)) : ', not finished')] : null,
+              ['Score now', '<b>' + score + '</b> of ' + d.settings.open_at + ' to open a case'], c ? ['Case', 'Opened ' + esc(day(c.created_at)) + ' by ' + (c.opened_by === 'judge' ? 'you' : 'the scan') + (left != null && c.status === 'watching' ? ', ' + (left > 0 ? left + ' days of watching left' : 'watch period over') : '')] : null]) + '</div>';
+          var why = '<div class="box"><h2>Why they were flagged</h2>' + (d.signals.length ? '<div class="scroll"><table><thead><tr><th>Signal</th><th>Weight</th><th>Seen</th><th>What we saw</th></tr></thead><tbody>' + d.signals.map(function (s) { return '<tr><td>' + esc(word(s.kind)) + '</td><td>' + s.weight + '</td><td>' + esc(day(s.created_at)) + '</td><td>' + esc(evSummary(s.evidence)) + '</td></tr>'; }).join('') + '</tbody></table></div>' : '<p class="meta">No signals recorded for this account.</p>') + '</div>';
+          var pts = '<div class="box"><h2>Points</h2>' + dl([['Balance', '<b>' + num(m.lesars_balance) + '</b>'], ['Lifetime', num(d.points.total_points)], ['Spent', num(d.points.spent_points)]]) + '<div class="scroll" style="margin-top:12px"><table><thead><tr><th>When</th><th>Points</th><th>For</th></tr></thead><tbody>' + (d.ledger.length ? d.ledger.map(function (l) { return '<tr><td>' + esc(day(l.created_at)) + '</td><td class="' + (l.delta < 0 ? 'neg' : 'pos') + '">' + (l.delta > 0 ? '+' : '') + num(l.delta) + '</td><td>' + esc(l.reason) + '</td></tr>'; }).join('') : '<tr><td colspan="3">No points yet.</td></tr>') + '</tbody></table></div></div>';
+          var around = '<div class="box"><h2>People around them</h2>' +
+            (d.referred_by ? '<p class="meta" style="margin-bottom:4px">Joined through</p>' + personRow(d.referred_by) : '<p class="meta">Did not join through anyone\'s link.</p>') +
+            '<p class="meta" style="margin:12px 0 4px">Brought in (' + d.referred.length + ')</p>' + (d.referred.length ? '<div class="scroll" style="padding:0 12px">' + d.referred.map(function (p) { return personRow(p, (p.entry_via === 'survey' ? 'survey' : p.entry_via === 'passport' ? 'paid' : esc(p.membership_status || '')) + ', ' + esc(day(p.created_at))); }).join('') + '</div>' : '<p class="meta">Nobody yet.</p>') +
+            '<p class="meta" style="margin:12px 0 4px">On the same browser or network</p>' + (d.linked.length ? d.linked.map(function (p) { return personRow(p, esc(p.via.join(', '))); }).join('') : '<p class="meta">' + (d.devices.rows ? 'No other account found on their browser' + (d.devices.network_accounts > 12 ? '; ' + d.devices.network_accounts + ' accounts share their network (too busy to name)' : '') + '.' : 'No device was recorded at their sign-up.') + '</p>') + '</div>';
+          var hist = '<div class="box"><h2>History</h2>' + (d.events.length ? '<ul class="log">' + d.events.map(function (e) { return '<li><b>' + esc(e.action.replace(/_/g, ' ')) + '</b> &middot; ' + esc(e.actor_name) + ' &middot; ' + esc(when(e.created_at)) + (e.note ? '<br><span class="meta">' + esc(e.note) + '</span>' : '') + '</li>'; }).join('') + '</ul>' : '<p class="meta">No case yet.</p>') + '</div>';
+          $('view').innerHTML = '<p class="crumb"><a href="#list/watching">Watchlist</a> / ' + esc(m.name) + '</p><div class="cols"><div>' + who + why + pts + '</div><div>' + decision(d, c) + around + hist + '</div></div>';
+          wireDecision(d, c);
+        });
+      }
+      function decision(d, c) {
+        if (!c) return '<div class="box judge"><h2>No case yet</h2><p class="meta">Nothing is watching this account. Open a case to start watching it for ' + d.settings.watch_days + ' days. Nothing changes for them.</p><label class="meta" for="note"><b>Why</b> (required, only the team sees it)</label><textarea id="note"></textarea><div class="acts"><button type="button" class="btn" id="watch">Start watching</button><span class="msg" id="msg"></span></div></div>';
+        var st = c.status, b = [];
+        if (st === 'watching') b = [['clear', 'Clear them', ''], ['void', 'Void their points', 'btn-stop'], ['suspend', 'Suspend', 'btn-stop'], ['ban', 'Ban', 'btn-stop']];
+        else if (st === 'voided') b = [['restore_points', 'Restore their points', ''], ['suspend', 'Suspend', 'btn-stop'], ['ban', 'Ban', 'btn-stop'], ['clear', 'Clear them', 'btn-quiet']];
+        else if (st === 'suspended') b = [['reinstate', 'Reinstate', ''], ['ban', 'Ban', 'btn-stop']].concat(c.void_snapshot ? [['restore_points', 'Restore their points', 'btn-quiet']] : [['void', 'Void their points', 'btn-stop']]);
+        else if (st === 'banned') b = [['reinstate', 'Reinstate (undo the ban)', '']].concat(c.void_snapshot ? [['restore_points', 'Restore their points', 'btn-quiet']] : [['void', 'Void their points', 'btn-stop']]);
+        else b = [['suspend', 'Suspend', 'btn-stop'], ['ban', 'Ban', 'btn-stop']];
+        var said = { watching: 'Being watched. Nothing has changed for them.', voided: 'Their points were voided. You can restore them.', suspended: 'Suspended: points and taking part are frozen, and they cannot sign in.', banned: 'Banned: closed, and they cannot sign in. You can reinstate them.', cleared: 'Cleared.' };
+        return '<div class="box judge"><h2>Your decision</h2><p class="meta" style="margin-bottom:8px">' + esc(said[st] || '') + '</p><label class="meta" for="note"><b>Your note</b> (required, kept in the history)</label><textarea id="note"></textarea><div class="acts">' + b.map(function (x) { return '<button type="button" class="btn ' + x[2] + '" data-d="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '<span class="msg" id="msg"></span></div></div>';
+      }
+      var SURE = { clear: 'Clear this account? The case closes and any suspension is lifted.', void: 'Void their points? Their balance and lifetime points go to zero. You can restore them later.', restore_points: 'Put their voided points back?', suspend: 'Suspend this account? Their points and taking part freeze and they cannot sign in until you reinstate them.', ban: 'Ban this account? They cannot sign in. You can reinstate them later.', reinstate: 'Reinstate this account? They can sign in and take part again.' };
+      function wireDecision(d, c) {
+        function fail(m, e) { m.className = 'msg err'; m.textContent = { note_required: 'Write a note first.', judge_only: 'Only a super admin can decide.', already_open: 'There is already an open case.', already_voided: 'Their points are already voided.', nothing_to_restore: 'There is nothing to restore.', not_yourself: 'You cannot decide your own account.' }[e] || 'That did not go through.'; }
+        var w = $('watch'); if (w) w.onclick = function () { var m = $('msg'); if (($('note').value || '').trim().length < 3) return fail(m, 'note_required'); w.disabled = true; api({ action: 'watch', member_id: d.member.id, note: $('note').value }).then(function (r) { if (r && r.ok) { data = null; location.hash = 'case/' + r.case_id; } else { w.disabled = false; fail(m, r && r.error); } }); };
+        [].forEach.call(document.querySelectorAll('[data-d]'), function (btn) { btn.onclick = function () { var m = $('msg'), k = btn.getAttribute('data-d'); if (($('note').value || '').trim().length < 3) return fail(m, 'note_required'); if (!confirm(SURE[k] + '\n\n' + d.member.name + ' (' + d.member.email + ')')) return; m.className = 'msg'; m.textContent = 'Saving...'; btn.disabled = true; api({ action: 'decide', id: c.id, decision: k, note: $('note').value }).then(function (r) { if (r && r.ok) { data = null; drawItem(route()); } else { btn.disabled = false; fail(m, r && r.error); } }); }; });
+      }
+      function drawNew() {
+        $('view').innerHTML = '<p class="crumb"><a href="#list/watching">Watchlist</a> / Watch someone</p><div class="box"><h2>Watch someone</h2><p class="meta" style="margin-bottom:8px">Find the member by name or email, then open their page. Nothing changes for them until you decide.</p><div class="tools"><input id="fq" type="search" placeholder="Name or email" data-dictate="off"></div><div class="pick" id="found"></div></div>';
+        var t; $('fq').oninput = function () { clearTimeout(t); var q = this.value; t = setTimeout(function () { if (q.trim().length < 2) { $('found').innerHTML = ''; return; } api({ action: 'find', q: q }).then(function (r) { $('found').innerHTML = r && r.rows && r.rows.length ? r.rows.map(function (p) { return '<div class="row">' + avatar(p) + '<a href="#member/' + p.id + '">' + esc(p.name) + '</a><span class="meta">' + esc(p.email) + '</span>' + (p.standing !== 'good' ? tag(p.standing) : '') + '</div>'; }).join('') : '<p class="meta">Nobody found.</p>'; }); }, 250); };
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'item') return drawItem(r);
+        if (r.v === 'new') return drawNew();
+        if (data) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } data = d; drawList(route()); });
+      }
+      window.addEventListener('hashchange', function () { var r = route(); if (r.v === 'list' && !data) data = null; render(); });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the Watchlist.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
