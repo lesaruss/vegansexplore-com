@@ -215,7 +215,7 @@
     '@media(max-width:480px){.ve-nav-inner{gap:10px;} .ve-wordmark-logo{height:30px;} .ve-nav-login{padding:9px 8px;} .ve-nav-cta{padding:9px 14px;} .ve-burger{margin-left:4px;} .ve-share-btn{margin-right:4px;}}',
     // Phones (Sean, 2026-11-03: "a series of squares on the top"): right to left the hamburger, the member's square, Apps, Feedback, every
     // one the same 38px square with 6px corners. The member's picture is a rounded square too, not a circle.
-    '@media(max-width:860px){.ve-nav-right-wrap{gap:6px;} .ve-nav-right-wrap>.ve-share-btn,.ve-nav-right-wrap>.ve-nav-apps,.ve-nav-right-wrap>.ve-burger{width:38px;height:38px;margin:0;padding:0;box-sizing:border-box;} .ve-nav-member{width:38px;height:38px;padding:0;margin:0;gap:0;} .ve-nav-member .ve-nav-lesars{display:none;} .ve-nav-avatar,.ve-nav-avatar img{width:38px !important;height:38px !important;border-radius:6px !important;box-sizing:border-box;}}',
+    '@media(max-width:860px){.ve-nav-public .ve-nav-right-wrap{gap:6px;} .ve-nav-right-wrap>.ve-feedback-btn,.ve-nav-right-wrap>.ve-share-btn,.ve-nav-right-wrap>.ve-nav-apps,.ve-nav-right-wrap>.ve-burger{width:38px;height:38px;margin:0;padding:0;box-sizing:border-box;} .ve-nav-member{width:38px;height:38px;padding:0;margin:0;gap:0;} .ve-nav-member .ve-nav-lesars{display:none;} .ve-nav-avatar,.ve-nav-avatar img{width:38px !important;height:38px !important;border-radius:6px !important;box-sizing:border-box;}}',
     '@media(max-width:380px){.ve-nav-inner{padding:0 10px;gap:6px;} .ve-wordmark-logo{height:24px;} .ve-nav-login{padding:9px 6px;letter-spacing:0.04em;} .ve-nav-cta{padding:9px 10px;} .ve-burger{margin-left:3px;width:38px;height:38px;} .ve-share-btn{width:34px;height:34px;margin-right:2px;}}',
   ].join('');
 
