@@ -5879,8 +5879,13 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
   `ve-abuse-scan-devices`, 9:09 UTC, before the scan) adds `shared_browser` (three or more accounts on one browser in 30 days, 35) and `shared_ip`
   (four or more on one network in 7 days, 20: offices, homes and events share one, so it is weak alone). Browser ids reach the server only once
   the page's `ve-auth.js` is on `main`; until then only the IP signal fills. Proven in a rolled-back transaction.
-- **Not built yet**: sign-in and
-  participation refusing a suspended or banned account with a plain message; **Depot > Watchlist** (one case a view: evidence, points history,
+- **Standing is enforced at sign-in** (`ve-auth` and `ve-votes` from e2c549c, source sha256 matched): `standingBlock` in `ve-auth` refuses email
+  login (after the password is right), Google sign-in, `me` (so a session in a browser drops) and `requireActiveMembership`; `ve-votes` refuses a
+  vote. A suspended account reads "suspended while our team reviews it, your points are on hold"; a banned one "this account has been closed";
+  neither says why, both give contact@lesaruss.com (403, `code` `account_suspended` or `account_banned`). Checked: the normal paths still
+  answer live; the refusal itself was not run against a real suspended account. **Known gap**: other edge functions (the board, check-ins,
+  bounties...) check only the token, so an old session could still post until it expires; points are frozen everywhere regardless.
+- **Not built yet**: **Depot > Watchlist** (one case a view: evidence, points history,
   linked accounts, and the judge's buttons); and the `/policies#community` paragraph, which must be live before any enforcement.
 
 ## Image conventions
