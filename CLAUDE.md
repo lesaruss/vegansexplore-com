@@ -2367,7 +2367,7 @@ website, Instagram, Facebook, Google Images, and the logo we set aside on 2026-1
 then Ctrl+V), drag one from another tab, or paste its link (fetched server side by `logo_fetch`, JPEG, PNG, WebP, GIF or SVG, so the
 canvas is never tainted); an 800 x 800 square to drag, zoom (slider or wheel), Fit, Fill, Trim edges and Center; the background
 fills what the picture does not (Match its edges by default for a solid picture, white for a transparent one, black, our green or
-any color); a preview at card and listing size. **Save and next** uploads the square as a JPEG (`add_logo_url`, staged in
+any color); a preview at card and listing size. **Cut out** (Sean, 2026-11-03, Lettuce Stain's logo sitting inside a menu picture: "crop it so I can just select the section that I want... diagonal patterns... it automatically will fill the background"): **Box** (drag) or **Shape** (click points, so diagonals work; close on the green first point, Enter or a double click; Backspace takes a point back; Shift and drag moves the picture, the wheel zooms), then **Cut it out** crops to the selection and fills what a shape leaves outside with the most common color along its edge, which also becomes Match its edges (a see-through edge stays see-through and takes the white default); **Undo cut** steps back and cuts can follow one another. It is inside `ve-logo-editor.js`, so Depot > Logos, the listing editor's Replace the logo, New places and Add a listing all have it. **Save and next** uploads the square as a JPEG (`add_logo_url`, staged in
 `vegan-media/media/listings/_new/`) and `logo_set` copies it to `media/listings/<slug>/logo-*` (never hot-linked; under 200 px on
 the shorter side is refused), sets `details.logo_source` admin and `details.logo_checked`, moves a set-aside logo to
 `details.logo_replaced`, and logs a `ve_listing_edits` row (field `logo`). **The letter is fine** (`logo_skip`,
@@ -4586,6 +4586,17 @@ don't scare them away by saying it's $11"; the $11 unlocks their voice.
   tailored to the Guide), **This month**, the question of the month, your story, good news and the private **struggling** clip (team and
   Community Manager only, a second yes to air), the free organizer account for claimed hosts with no account, saving the plan to an
   account, a Depot view of the measures, and the other three door Guides after 30 days of numbers.
+- **The Events Guide's welcome notes, built 2026-11-03, draft and off** (Sean: "Drafts are good, build the sender in draft state"; `ve-nurture`
+  from 4ec38d8, Depot > Challenges > Taster emails). Two notes to a reader (a Taster with `door_guides` holding the Guide, email confirmed,
+  not unsubscribed, not a member, and who has not taken the Taste): Day 3 "Decide the rain plan before the day", Day 7 "Running an event?
+  Here is what we can do with you" (`door-events-3`, `door-events-7`, one `ve_taster_emails` row each, campaign `ve-taster-door-events-*` in HQ
+  > Email, through `email-send` brand vegans-explore, signed Vegans Explore team, no prices, weekdays from 10 AM Eastern). **Draft until
+  approved**: they send only while `ve_site_settings` `nurture.door_on` is true and `door_approved_hash` equals the hash of the words in the
+  code (`doorHash`), so any edit puts them back to draft. The Depot card shows Draft / Approved, switched off / Sending, with **Approve this
+  wording**, **Switch on** and links to read each email. `ve-nurture` `settings` {door_approve: true | door_on: bool}. The Taster sequence now
+  skips anyone with no Taste answers (`why` null), so a reader never gets the Taste's Day 3, 7 and 14. Day 3 and Day 7 link the calendar
+  (the event claim is on each event's page, so the note says find your event and tap Are you running this event?). Previews proven live;
+  nothing sent, nothing switched on.
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
