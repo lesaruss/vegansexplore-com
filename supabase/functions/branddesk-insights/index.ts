@@ -733,16 +733,60 @@ function socialSummary(s: any) {
   return { connected: true, channels, posts_published: all.length, posts_with_numbers: posts.length, posts_without_numbers_yet: all.length - posts.length, posts_by_channel: byChannel, views: sum('views'), likes: sum('likes'), comments: sum('comments'), shares: sum('shares'), top, scheduled_in_metricool: (s.posts ?? []).filter((p: any) => p.status === 'scheduled').length,
     note: 'views, likes, comments and shares count only posts Metricool has reported numbers for' };
 }
+// ---- The podcast, for the analysis (Logan, 2026-11-04: the podcast belongs in Insights beside web and social, so the written analysis reads it too) ----
+// Only reads what the Podcast tab already caches (the daily record, the per-episode range, first 7 and 30 days from the table) plus one light audience call
+// (countries, apps, systems, devices; no per-country province or city calls). A brand with no PODCAST_SHOWS row gets null, and the analysis leaves the section out.
+async function podAudienceTop(brand: string, sh: any, from: string, to: string) {
+  return cached(`ins:podaudtop:${brand}:${sh.key}:${from}:${to}`, 3 * H, false, async () => {
+    const win = { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null };
+    const j = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: null, types: ['byLocation', 'byUserAgentBrowser', 'byUserAgentOs', 'byUserAgentDevice'] });
+    const countries = (j?.byLocation?.byCountry || []).map((x: any) => ({ name: String(x.country), total: Number(x.total) || 0 })).filter((x: any) => x.total > 0).sort((a: any, b: any) => b.total - a.total);
+    return { connected: true, total: Number(j?.total) || 0, countries, apps: topN(j?.byUserAgentBrowser, 'browser', 5), systems: topN(j?.byUserAgentOs, 'os', 4), devices: topN(j?.byUserAgentDevice, 'device', 4) };
+  });
+}
+async function podcastFacts(brand: string, from: string, to: string) {
+  const shows = PODCAST_SHOWS[brand];
+  if (!shows) return null;
+  const pc = (n: number, t: number) => (t > 0 ? Math.round((n / t) * 1000) / 10 : null);
+  const out = await Promise.all(shows.map(async (sh) => {
+    try {
+      const ov: any = await podOverview(brand, sh, from, to, false);
+      if (ov.error) return { show: sh.name, downloads: 0, note: 'No downloads on record for this show in the period.' };
+      const [eps, range, aud, firstRows]: any[] = await Promise.all([
+        podEpisodeList(brand, sh, false),
+        cached(`ins:podrange:${brand}:${sh.key}:${from}:${to}`, 3 * H, false, async () => {
+          const j = await capReq(`/insights/${sh.id}/overview/range`, { startTimestamp: sec(etStart(from)), endTimestamp: sec(etStart(plusDays(to, 1))) });
+          return { connected: true, by: Object.fromEntries((j?.byEpisode || []).map((x: any) => [x.episodeId, Number(x.total) || 0])) };
+        }),
+        podAudienceTop(brand, sh, from, to),
+        db.from('ve_podcast_episode_firsts').select('episode_id, d7, d30').eq('brand_slug', brand).eq('show_key', sh.key).then((r: any) => r.data || []),
+      ]);
+      const fm = new Map<string, any>(firstRows.map((r: any) => [r.episode_id, r]));
+      const t = ov.totals;
+      const top = eps.list.filter((e: any) => e.published <= to).map((e: any) => ({ title: e.title, published: e.published, downloads: range.by[e.id] || 0 }))
+        .filter((e: any) => e.downloads > 0).sort((a: any, b: any) => b.downloads - a.downloads).slice(0, 5);
+      const recent = eps.list.slice(0, 8).map((e: any) => ({ title: e.title, published: e.published, first_7_days: fm.get(e.id)?.d7 ?? null, first_30_days: fm.get(e.id)?.d30 ?? null })).filter((e: any) => e.first_7_days != null || e.first_30_days != null);
+      return {
+        show: sh.name, downloads: t.downloads, before: t.prev, per_day: t.per_day, new_episodes_in_period: t.episodes_out, episodes_total: t.episodes_total, all_time_downloads: t.all_time,
+        top_episodes_in_period: top, latest_episodes_first_days: recent,
+        top_countries: aud.countries.slice(0, 5).map((c: any) => ({ country: c.name, downloads: c.total, share_pct: pc(c.total, aud.total) })), countries_heard_in: aud.countries.length,
+        top_apps: aud.apps.map((a: any) => ({ app: a.name, share_pct: pc(a.total, aud.total) })), top_systems: aud.systems.map((a: any) => ({ system: a.name, share_pct: pc(a.total, aud.total) })), top_devices: aud.devices.map((a: any) => ({ device: a.name, share_pct: pc(a.total, aud.total) })),
+      };
+    } catch (e) { return { show: sh.name, error: (e as Error).message }; }
+  }));
+  return { shows: out, note: 'Downloads are what Captivate counts: an episode file fetched by an app or browser, with its own bot filtering. They are not listeners. Audience figures are Captivate\'s range report and can differ slightly from the daily downloads. A first 7 or 30 days figure appears only after those days are over and once that episode has been counted.' };
+}
 async function analysis(brand: string, name: string, from: string, to: string) {
   const errs: string[] = [];
   const safe = async <T,>(label: string, f: () => Promise<T>) => { try { return await f(); } catch (e) { errs.push(`${label}: ${(e as Error).message}`); return null; } };
   const today = new Date().toISOString();
-  const [web, search, ad, camp, soc, plan] = await Promise.all([
+  const [web, search, ad, camp, soc, pod, plan] = await Promise.all([
     safe('web', () => cached(`ins:web:${brand}:${from}:${to}`, 3 * H, false, () => webAnalytics(brand, from, to))),
     safe('seo', () => cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, false, () => seo(brand, from, to))),
     safe('ads', () => ads(brand, from, to)),
     safe('campaigns', () => campaigns(brand, from, to)),
     safe('social', () => socialReport(brand, from, to)),
+    safe('podcast', () => podcastFacts(brand, from, to)),
     safe('plan', async () => { const { data } = await db.from('ve_social_slots').select('status').eq('brand_slug', brand).gte('slot_at', today).limit(2000); const c: Record<string, number> = {}; for (const r of (data ?? []) as any[]) c[r.status] = (c[r.status] ?? 0) + 1; return c; }),
   ]);
   const facts = {
@@ -751,6 +795,7 @@ async function analysis(brand: string, name: string, from: string, to: string) {
     search: search && (search as any).connected ? { totals: (search as any).totals, before: (search as any).totals_prev, top_queries: (search as any).queries.slice(0, 10), near_page_one: (search as any).nearly.slice(0, 8) } : { connected: false },
     social: { ...socialSummary(soc), social_plan_coming_up_by_status: plan ?? {}, plan_status_words: { proposed: 'waiting for approval in the Social plan', approved: 'approved', scheduled: 'scheduled in Metricool', manual: 'to post by hand', held: 'held' } },
     ads: ad ? { totals: (ad as any).totals, campaigns: (ad as any).campaigns.slice(0, 6), empty_slots: (ad as any).slots.filter((s: any) => !s.filled_by).length } : null,
+    podcast: pod ?? null,
     campaigns: camp ? (camp as any).campaigns.map((c: any) => ({ kind: c.kind, name: c.name, status: c.status, line: c.line })).slice(0, 30) : null,
   };
   const apiKey = await secret('ANTHROPIC_API_KEY');
@@ -760,22 +805,22 @@ async function analysis(brand: string, name: string, from: string, to: string) {
     properties: {
       headline: { type: 'string' }, summary: { type: 'string' },
       sections: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['area', 'verdict', 'points'], properties: {
-        area: { type: 'string', enum: ['Web', 'Search', 'Social', 'Ads', 'Campaigns'] }, verdict: { type: 'string', enum: ['up', 'down', 'flat', 'not_connected', 'mixed'] },
+        area: { type: 'string', enum: ['Web', 'Search', 'Social', 'Podcast', 'Ads', 'Campaigns'] }, verdict: { type: 'string', enum: ['up', 'down', 'flat', 'not_connected', 'mixed'] },
         points: { type: 'array', items: { type: 'string' } } } } },
       next_steps: { type: 'array', items: { type: 'string' } },
     },
   };
-  const system = `You write the Insights analysis for ${name}'s team in BrandDesk. Read only the numbers given. Never invent a number, a cause or a trend the numbers do not show; when something is not connected, say so in one line. Plain words, short sentences, no jargon (say "visitors" not "active users", "shown in Google" not "impressions" the first time, then either). Compare with the period before wherever both are given, with the change as a number and a percent. Capitalize Vegan. Never use dashes as punctuation (no em or en dashes, no hyphens between clauses). The headline is one sentence. The summary is two to four sentences. Each section has two to five points. next_steps are three to six concrete things to do this week, each tied to a number above. Posts with no numbers yet are not zero views: say their numbers have not come in. Referral visits from hq.lesaruss.ai are the team's own dashboard framing the site, not outside traffic; say so if they show up.`;
+  const system = `You write the Insights analysis for ${name}'s team in BrandDesk. Read only the numbers given. Never invent a number, a cause or a trend the numbers do not show; when something is not connected, say so in one line. Plain words, short sentences, no jargon (say "visitors" not "active users", "shown in Google" not "impressions" the first time, then either). Compare with the period before wherever both are given, with the change as a number and a percent. Capitalize Vegan. Never use dashes as punctuation (no em or en dashes, no hyphens between clauses). The headline is one sentence. The summary is two to four sentences. Each section has two to five points. next_steps are three to six concrete things to do this week, each tied to a number above. Posts with no numbers yet are not zero views: say their numbers have not come in. The podcast section, when the numbers include one, reads downloads (never call them listeners), names the show, compares each show with the period before, points to the top episodes and to how the latest episodes did in their first 7 and 30 days where those numbers exist, and says where it is heard and on what in a sentence or two; a country called AA is not a real country, so call it not placed and do not guess what it means; do not say any country looks like bots or data centers. When the podcast number is null the brand has no podcast, so leave the Podcast section out entirely. Referral visits from hq.lesaruss.ai are the team's own dashboard framing the site, not outside traffic; say so if they show up.`;
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST', headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 3000, system, messages: [{ role: 'user', content: 'The numbers, as JSON:\n' + JSON.stringify(facts) }],
+    body: JSON.stringify({ model: MODEL, max_tokens: 8000, system, messages: [{ role: 'user', content: 'The numbers, as JSON:\n' + JSON.stringify(facts) }],
       output_config: { format: { type: 'json_schema', schema } } }),
     signal: AbortSignal.timeout(120000),
   });
   const j = await r.json();
   if (j.error) return { error: 'model: ' + (j.error.message || j.error.type), facts };
   const text = (j.content ?? []).find((c: any) => c.type === 'text')?.text ?? '';
-  let out: any; try { out = JSON.parse(text); } catch { return { error: 'model_output', facts }; }
+  let out: any; try { out = JSON.parse(text); } catch { return { error: 'model_output' + (j.stop_reason ? ` (${j.stop_reason})` : ''), facts }; }
   const fix = (v: any): any => typeof v === 'string' ? v.replace(/\s*[\u2014\u2013]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan') : Array.isArray(v) ? v.map(fix) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fix(x)])) : v;
   return { ...fix(out), facts, errors: errs, model: MODEL };
 }
@@ -825,7 +870,7 @@ Deno.serve(async (req) => {
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));
       case 'campaign': return json(await campaign(brand, String(body.kind || ''), String(body.id || ''), from, to));
-      case 'analysis': return json(await cached(`ins:analysis:${brand}:${from}:${to}`, 6 * H, refresh, () => analysis(brand, name, from, to)));
+      case 'analysis': return json(await cached(`ins:analysis2:${brand}:${from}:${to}`, 6 * H, refresh, () => analysis(brand, name, from, to)));
       default: return json({ error: 'unknown_action' }, 400);
     }
   } catch (e) {

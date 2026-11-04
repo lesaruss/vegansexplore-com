@@ -49,5 +49,32 @@ Playbook `podcast-network-transcript-upload`: Insights > Podcast any period, Aud
 - The branch push needs no force: reset the branch to its remote tip and merge `main` into it.
 - One-time functions used and stubbed: `ve-once-captivate-shows`, `ve-once-captivate-probe`, `ve-once-qa-session` (all 410).
 
-### Paste prompt for the next chat
+### Paste prompt for the next chat (the first one; the later one is at the end of part 3)
 Logan here. Open the playbook `podcast-network-transcript-upload` (VE Podcast Network, project `fwbhwfxpncrsfhttimna`, brand `vegans-explore`, repo `lesaruss/vegansexplore-com`, HQ repo `lesaruss/lesaruss-hq`). Read its `briefings` row, its `playbook_records` newest first, `docs/handoff/2026-11-04-podcast-network-transcript-upload.md` (both parts) and the CLAUDE.md section "Podcast analytics in BrandDesk Insights". State: Insights > Podcast is live with a Show dropdown, Period (all time and custom) and Overview / Episodes / Audience / Uploads; places, apps and devices come from Captivate's API; transcripts 131 of 278 and Sean is still transcribing. Do first: name the playbook and its next action. Then: the podcast in the Analysis write-up; run the three after-batch transcript checks whenever I say a batch landed; the one bad Vegans Who Lift failed-transcript row stays until I say delete. To look at the live page, use the standing headless login for `vegan@lesaruss.com` (agent-headless-page-verification; never print the session). Eastern time only. Wrap up only when I say "wrap up".
+
+
+## Part 3, later on Nov 4 (afternoon): the Audience layout merged, the podcast in the Analysis write-up
+Playbook `podcast-network-transcript-upload`: Audience layout (live), the podcast in the Analysis write-up (deployed). Read all three parts.
+
+### Shipped
+- **Audience layout**, from Sean's notes: white Insights page, white text on the active toggle, Countries and State/City boxes fixed at 10 rows that scroll, a globe until a country is picked, Show cities / Show states, a click on a state opens its cities, a new country resets to states. HQ `main` 7063d6e, checked signed in as `vegan@` on the branch preview (1440 and 390 px, no script errors), then merged; Sean's own screenshot shows it live.
+- **The podcast in the Analysis**: `branddesk-insights` v14 from vegansexplore-com 9c246f3 (sha256 matched), `podcastFacts`, the `Podcast` section, cache key `ins:analysis2`, `max_tokens` 8000. Real run: verdict mixed; Vegans Explore 230 against 413, SoFlo 539 against 106, Vegans Who Lift 247 against 195, Pre-Vegans 42 against 8.
+- Sean's rule recorded: Insights holds every analytic; a later Podcast tab is for making the podcast and links into Insights, never a copy.
+- CLAUDE.md "Podcast analytics in BrandDesk Insights" updated; vegansexplore-com branch merged to `main` at wrap-up.
+
+### Next actions
+1. Logan: look at the Analysis tab with the new Podcast section in a browser (headless login), and read its words against the facts.
+2. Logan, if Sean says go: show Captivate's `AA` as "Not placed" in Audience; make Apps, Systems and Devices scroll like the places boxes.
+3. Sean: pick the next community from the Audience places; say if he wants a saved snapshot of the places.
+4. Run the three after-batch transcript checks when Sean says a batch landed (131 of 278). The one failed Vegans Who Lift row stays until he says delete.
+5. Decide what the "all 278 transcribed" finish line counts (Captivate holds 111 SoFlo and 90 Vegans Who Lift episodes against our 59 and 57).
+
+### Lessons
+- A "we did that already" check earned its keep: the Audience layout and the Analysis write-up had been blended. Look at the deployed code before saying a thing is done or not.
+- A pg_net request stays in `net.http_request_queue` while the worker runs it; a long analysis call looks stuck for about a minute and is not.
+- Adding a section to a model-written JSON schema needs a bigger `max_tokens`; a truncated reply shows only as a parse failure.
+- A branch deploy of an edge function leaves `main` behind the deployed source: merge to `main` before the next deploy from `main`.
+- One-time function used and stubbed again: `ve-once-qa-session` (410). Its run key and the minted session were deleted from the scratchpad.
+
+### Paste prompt for the next chat
+Logan here. Open the playbook `podcast-network-transcript-upload` (VE Podcast Network, project `fwbhwfxpncrsfhttimna`, brand `vegans-explore`, repo `lesaruss/vegansexplore-com`, HQ repo `lesaruss/lesaruss-hq`). Read its `briefings` row, its `playbook_records` newest first, `docs/handoff/2026-11-04-podcast-network-transcript-upload.md` (all three parts) and the CLAUDE.md section "Podcast analytics in BrandDesk Insights". State: Insights > Podcast is live (Show, Period incl. all time and custom, Overview / Episodes / Audience / Uploads; the Audience boxes are two fixed 10-row scrolling lists with a state or city toggle) and the Analysis write-up now includes a Podcast section (`branddesk-insights` v14, on `main`); Sean wants every analytic in Insights, and a later Podcast tab will be for making the podcast and will link into Insights. Transcripts 131 of 278, Sean still transcribing. Do first: name the playbook and its next action. Then: look at the Analysis tab with the Podcast section in a browser and read it against the numbers; with Sean's go, show Captivate's country `AA` as Not placed and make Apps, Systems and Devices scroll like the places boxes; run the three after-batch transcript checks whenever I say a batch landed; the one bad Vegans Who Lift failed-transcript row stays until I say delete. To look at a live or preview page, use the standing headless login for `vegan@lesaruss.com` (agent-headless-page-verification; mint into a file, never print the session, sign it out and stub the one-time function after; a Vercel preview needs its share link first). Eastern time only. Wrap up only when I say "wrap up".

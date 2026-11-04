@@ -5918,9 +5918,24 @@ gives one. **First 7 and first 30 days** per episode: `ve_podcast_episode_firsts
 release day, Eastern), 40 episodes an Episodes visit while the page re-asks until none are left; the Episodes table sorts by any column. **View only for agent accounts**: `branddesk-insights`
 refuses `podcast_upload_start`, `podcast_upload_done` and `podcast_file_remove` for `member_class` `agent` (403 `view_only`), so the standing QA login `vegan@lesaruss.com`
 (already a super admin row) can read Insights and never change it; uploads are per show (`ve_podcast_uploads.show_key`, older ones stay on Vegans Explore). Captivate holds more
-episodes than our table for SoFlo (111 against 59) and Vegans Who Lift (90 against 57), which may move the "all 278 transcribed" finish line. Not yet: the podcast in the Analysis
-write-up, reading numbers out of uploaded screenshots (Sean's answer was not given; the API now covers places, apps and devices, so the uploads are for reports and anything else), a
-saved snapshot of the places for the community decision (the CSV is the first step), and the one bad Vegans Who Lift failed-transcript row, which stays until Sean says delete.
+episodes than our table for SoFlo (111 against 59) and Vegans Who Lift (90 against 57), which may move the "all 278 transcribed" finish line. Not yet: reading numbers out of uploaded
+screenshots (Sean's answer was not given; the API now covers places, apps and devices, so the uploads are for reports and anything else), a saved snapshot of the places for the community
+decision (the CSV is the first step), and the one bad Vegans Who Lift failed-transcript row, which stays until Sean says delete.
+
+**Insights holds every analytic, Podcast included** (Sean, 2026-11-04: "I wanted to be able to look at all of the analytics in one go... podcasts will become its own tab later", a Podcast
+tab for making the podcast; when it comes it links into Insights > Podcast and never copies the numbers). **The Analysis write-up reads the podcast** (`branddesk-insights` v14 from 9c246f3,
+source sha256 9fb6f2dd matched): `podcastFacts` gathers, per show, downloads against the period before, top episodes, first 7 and 30 days of the latest episodes (read from
+`ve_podcast_episode_firsts`, no new Captivate calls) and, from one light range call (`podAudienceTop`, no province or city calls), top countries, apps, systems and devices as shares; `Podcast`
+is a section in the schema (`area` enum); a brand with no `PODCAST_SHOWS` row gets `podcast: null` and the writer leaves the section out. The prompt says downloads are never listeners, that the
+country `AA` is not a real country (say not placed, do not guess), and never to call a country bots or a data center. The analysis cache key is `ins:analysis2:` (bumped so the old six-hour copy
+did not hide the section) and `max_tokens` is 8000: six sections at 3000 were cut off and returned `model_output`, which now names its `stop_reason`. Proven 2026-11-04 on vegans-explore,
+2026-10-05 to 2026-11-03: a Podcast section, verdict mixed (Vegans Explore 230 against 413, SoFlo 539 against 106, Vegans Who Lift 247 against 195, Pre-Vegans 42 against 8). Not yet seen in a browser.
+**The Audience layout** (HQ main 7063d6e, seen signed in on the branch preview first): the Insights page is white (`.bh-root:has(.in-root)`), the active toggle has white text, and Countries and
+State or province / City are two boxes fixed at 10 rows (`.in-aud-box`, `Table scroll`) that scroll inside; the right box shows a turning globe until a country is picked, then states, with a Show cities /
+Show states toggle, a click on a state shows its cities (`United States › Florida`), and a new country resets to its states; phones tighten the table. Not yet: the country `AA` (Captivate's, 309
+downloads on Vegans Who Lift) should read not placed in Audience, and Apps, Systems and Devices still use Show all buttons, not the scrolling box. **The headless login worked again** (canon
+`agent-headless-page-verification`, replacement 2026-10-27): a one-time function mints the vegan@ magiclink session and builds the `sb-fwbhwfxpncrsfhttimna-auth-token` cookie into a file; a Vercel
+branch preview needs `get_access_to_vercel_url` first (its `_vercel_share` link); Playwright in this session reached both. Sign the session out and stub the function afterwards (`ve-once-qa-session`, 410).
 
 ## Depot > Social (Sean, 2026-11-01)
 
