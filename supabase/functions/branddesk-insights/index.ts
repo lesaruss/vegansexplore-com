@@ -459,6 +459,78 @@ async function webHealth(brand: string) {
 }
 
 // ---- The analysis ----
+// ---- Podcast (Captivate; Sean, 2026-11-04: "we don't have podcast analytics in the BrandDesk, in that Insights section") ----
+// Captivate's API (probed 2026-11-04 through a one-time function): GET /insights/<show>/overview?start&end -> {hits} (downloads;
+// start included, end excluded, so a day is start=d end=d+1; no dates = all time), GET /insights/<show>/overview/<episode>?start&end
+// -> the same for one episode, GET /insights/<show>/monthly -> the last 12 months. No listeners, apps, devices or places endpoint
+// exists (every guess was a 404), so those stay in Captivate's own dashboard. A brand's show is added to PODCAST_SHOWS.
+const CAPTIVATE = 'https://api.captivate.fm';
+const PODCAST_SHOWS: Record<string, string> = { 'vegans-explore': '5f0184ac-771d-41be-9db2-49f08fc0b880' };
+const plusDays = (d: string, n: number) => day(Date.parse(d) + n * 864e5);
+async function capToken(): Promise<string> {
+  const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'captivate').maybeSingle();
+  const userId = conn?.config?.user_id;
+  const key = await secret(conn?.config?.api_key_secret || 'VE_CAPTIVATE_API_KEY');
+  if (!userId || !key) throw new Error('Captivate is not configured');
+  const af = new FormData(); af.append('username', String(userId)); af.append('token', key);
+  const ar = await fetch(`${CAPTIVATE}/authenticate/token`, { method: 'POST', body: af });
+  const token = (await ar.json().catch(() => ({})))?.user?.token;
+  if (!token) throw new Error(`Captivate refused the key (${ar.status})`);
+  return token;
+}
+async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const k = i++; out[k] = await fn(items[k]); } }));
+  return out;
+}
+async function podcast(brand: string, from: string, to: string) {
+  const show = PODCAST_SHOWS[brand];
+  if (!show) return { connected: false };
+  const t0 = Date.now();
+  const token = await capToken();
+  const get = async (path: string) => {
+    const r = await fetch(CAPTIVATE + path, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(20000) });
+    if (!r.ok) throw new Error(`Captivate ${r.status} on ${path.split('?')[0].replace(show, '<show>')}`);
+    return r.json();
+  };
+  const hits = async (s: string, e: string, ep?: string) => Number((await get(`/insights/${show}/overview${ep ? '/' + ep : ''}?start=${s}&end=${plusDays(e, 1)}`)).hits) || 0;
+  const { pf, pt, days } = prevOf(from, to);
+  const step = Math.max(1, Math.ceil(days / 30));
+  const buckets: { s: string; e: string }[] = [];
+  for (let s = from; s <= to; s = plusDays(s, step)) { const e = plusDays(s, step - 1); buckets.push({ s, e: e > to ? to : e }); }
+  const errors: string[] = [];
+  const safe = async <T,>(label: string, f: () => Promise<T>): Promise<T | null> => { try { return await f(); } catch (e) { errors.push(`${label}: ${(e as Error).message}`); return null; } };
+  const [cur, prev, all, monthly, eps, series] = await Promise.all([
+    safe('downloads', () => hits(from, to)), safe('downloads before', () => hits(pf, pt)),
+    safe('all time', async () => Number((await get(`/insights/${show}/overview`)).hits) || 0),
+    safe('months', () => get(`/insights/${show}/monthly`)),
+    safe('episodes', () => get(`/shows/${show}/episodes`)),
+    pool(buckets, 8, (b) => safe(`day ${b.s}`, () => hits(b.s, b.e)).then((v) => ({ t: b.s, v: v ?? 0, ok: v != null }))),
+  ]);
+  const todayIso = new Date().toISOString();
+  const published = ((eps as any)?.episodes || []).filter((e: any) => String(e.status || '').toLowerCase() === 'published' && String(e.published_date || '') <= todayIso)
+    .sort((a: any, b: any) => String(b.published_date).localeCompare(String(a.published_date)));
+  let read = 0, partial = false;
+  const episodes = await pool(published, 10, async (e: any) => {
+    const pub = String(e.published_date).slice(0, 10);
+    let dl: number | null = null;
+    if (Date.now() - t0 > 100000) partial = true;
+    else if (pub <= to) { dl = await safe(`episode ${String(e.title).slice(0, 30)}`, () => hits(from, to, e.id)); if (dl != null) read++; }
+    return { id: e.id, title: e.title, published: pub, art: e.episode_art || null, downloads: dl ?? 0, counted: dl != null, days_out: Math.max(0, Math.round((Date.parse(todayIso.slice(0, 10)) - Date.parse(pub)) / 864e5)), number: e.itunes_episode ?? e.episode_number ?? null };
+  });
+  const months = ((monthly as any)?.past_12_months || []).map((m: any) => { const d = new Date(`${m.x} 1 12:00:00 UTC`); return { t: isNaN(+d) ? m.x : `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`, v: Number(m.y) || 0, label: m.x }; });
+  if (cur == null && !errors.length) errors.push('Captivate gave no numbers');
+  if (cur == null) return { error: errors.join('; ') };
+  return {
+    connected: true, show_id: show, from, to, prev_from: pf, prev_to: pt, days, step,
+    totals: { downloads: cur, prev: prev ?? null, all_time: all, this_month: (monthly as any)?.this_month ?? null, past_12_months: (monthly as any)?.total_downloads_in_past_12_months ?? null,
+      per_day: Math.round((cur / days) * 10) / 10, episodes_out: published.filter((e: any) => String(e.published_date).slice(0, 10) >= from && String(e.published_date).slice(0, 10) <= to).length, episodes_total: published.length },
+    series: series.map((p) => ({ t: p.t, v: p.v })), months, episodes, episodes_read: read, partial,
+    errors,
+    note: 'Downloads are what Captivate counts: an episode file fetched by an app or a browser, with its own bot filtering. Captivate does not share listeners, apps or places through its API; those are in Captivate\'s own dashboard.',
+  };
+}
+
 async function socialReport(brand: string, from: string, to: string) {
   const key = await secret('LESARUSS_ADMIN_TOKEN');
   try {
@@ -553,6 +625,7 @@ Deno.serve(async (req) => {
     switch (act) {
       case 'web_analytics': return json(await cached(`ins:web:${brand}:${from}:${to}`, 3 * H, refresh, () => webAnalytics(brand, from, to)));
       case 'seo': return json(await cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, refresh, () => seo(brand, from, to)));
+      case 'podcast': return json(await cached(`ins:podcast:${brand}:${from}:${to}`, 3 * H, refresh, () => podcast(brand, from, to)));
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));
       case 'campaign': return json(await campaign(brand, String(body.kind || ''), String(body.id || ''), from, to));
